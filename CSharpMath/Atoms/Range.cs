@@ -20,5 +20,18 @@ namespace CSharpMath.Atoms {
         return Location + Length - 1;
       }
     }
+    public static bool operator == (Range range1, Range range2)
+      => range1.Length == range2.Length && range1.Location == range2.Location;
+
+    public static bool operator !=(Range range1, Range range2)
+      => !(range1 == range2);
+
+    public override bool Equals(object obj) => (obj is Range) && this == (Range)obj;
+
+    public override int GetHashCode() {
+      unchecked {
+        return 13 * Length.GetHashCode() + Location.GetHashCode();
+      }
+    }
   }
 }

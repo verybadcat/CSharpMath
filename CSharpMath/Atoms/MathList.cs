@@ -21,7 +21,7 @@ namespace CSharpMath.Atoms {
           return false;
       }
     }
-    public List<IMathAtom> Atoms => throw new NotImplementedException();
+    public List<IMathAtom> Atoms { get; set; } = new List<IMathAtom>();
 
     public string StringValue => throw new NotImplementedException();
 
@@ -33,5 +33,21 @@ namespace CSharpMath.Atoms {
     public void RemoveAtom(int index) => throw new NotImplementedException();
     public void RemoveAtoms(Range inRange) => throw new NotImplementedException();
     public void RemoveLastAtom() => throw new NotImplementedException();
+    public MathList() { }
+    public MathList(MathList cloneMe, bool finalize): this() {
+      if (!finalize) {
+        foreach(var atom in cloneMe.Atoms) {
+          var cloneAtom = AtomCloner.Instance.Clone(atom, finalize);
+          AddAtom(cloneAtom);
+        }
+      } else {
+        IMathAtom prevNode = null;
+        foreach (IMathAtom atom in Atoms) {
+          if (atom.IndexRange == Ranges.Zero) {
+
+          }
+        }
+      }
+    }
   }
 }

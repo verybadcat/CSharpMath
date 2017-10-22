@@ -12,6 +12,10 @@ namespace CSharpMath.Atoms {
 
     public bool HasRule { get; private set; }
 
+    public Fraction(bool hasRule): base(MathItemType.Fraction, "") {
+
+    }
+
     public override string StringValue {
       get {
         var builder = new StringBuilder();

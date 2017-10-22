@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace CSharpMath.Interfaces {
+  /// <summary>
+  /// Noteworthy that this does NOT inherit from IMathAtom.
+  /// </summary>
   public interface IMathList {
     List<IMathAtom> Atoms { get; }
 
@@ -19,6 +22,6 @@ namespace CSharpMath.Interfaces {
 
     IMathList FinalizedList();
 
-    IMathList DeepCopy();
+//    IMathList DeepCopy(); // can we get away without this?
   }
 }

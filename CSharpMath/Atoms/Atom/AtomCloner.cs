@@ -5,6 +5,7 @@ using System.Text;
 
 namespace CSharpMath.Atoms {
   public class AtomCloner: IMathAtomVisitor<IMathAtom, bool> {
+    public static AtomCloner Instance { get; } = new AtomCloner();
     public IMathAtom Visit(MathAtom target, bool finalize) {
       return new MathAtom(target, finalize);
     }
@@ -13,6 +14,12 @@ namespace CSharpMath.Atoms {
         return null;
       }
       return target.Accept(this, finalize);
+    }
+    public IMathList Clone(IMathList target, bool finalize) {
+      if (target == null) {
+        return null;
+      }
+      return new MathList((MathList)target, finalize);
     }
   }
 }

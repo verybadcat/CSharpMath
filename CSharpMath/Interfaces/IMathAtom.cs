@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using CSharpMath.Enumerations;
+using CSharpMath.Atoms;
 
 namespace CSharpMath.Interfaces {
   public interface IMathAtom {
@@ -11,6 +12,7 @@ namespace CSharpMath.Interfaces {
     IMathList Superscript { get; set; }
     IMathList Subscript { get; set; }
     FontStyle FontStyle { get; set;}
+    Range IndexRange { get; }
 
     /// <summary>
     /// Whether or not the atom allows superscripts and subscripts.

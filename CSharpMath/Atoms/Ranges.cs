@@ -8,5 +8,9 @@ namespace CSharpMath.Atoms {
       Location = Range.NotFound,
       Length = Range.NotFound
     };
+    public static Range Zero => new Range {
+      Location = 0,
+      Length = 0
+    };
   }
 }
