@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CSharpMath.Models {
+namespace CSharpMath.Atoms {
   public struct Range {
     public const int NotFound = int.MinValue;
     public int Location { get; set; }

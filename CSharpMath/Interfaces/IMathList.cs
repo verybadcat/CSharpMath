@@ -1,4 +1,4 @@
-﻿using CSharpMath.Models;
+﻿using CSharpMath.Atoms;
 using System;
 using System.Collections.Generic;
 using System.Text;

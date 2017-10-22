@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
-namespace CSharpMath.Enumerations {
+namespace CSharpMath {
   public enum MathItemType {
     Ordinary = 1,
     Number,
@@ -69,5 +70,17 @@ namespace CSharpMath.Enumerations {
     Color,
     ///<summary>A table. Not part of TeX.</summary>
     Table = 1001
+  }
+  public static class MathItemTypeExtensions {
+    public static string ToText(this MathItemType itemType) {
+      // Insert a space before every capital letter other than the first one.
+      var chars = itemType.ToString().ToCharArray().ToList();
+      for (int i=chars.Count-1; i>0; i--) {
+        if (chars[i].ToString()!=chars[i].ToString().ToLower()) {
+          chars.Insert(i, ' ');
+        }
+      }
+      return new string(chars.ToArray());
+    }
   }
 }

@@ -5,7 +5,7 @@ using CSharpMath.Enumerations;
 
 namespace CSharpMath.Interfaces {
   public interface IMathAtom {
-    string StringValue { get; set; }
+    string StringValue { get; }
     MathItemType ItemType { get; set; }
     string Nucleus { get; set; }
     IMathList Superscript { get; set; }
@@ -23,5 +23,7 @@ namespace CSharpMath.Interfaces {
     /// and preprocessing steps.
     /// </summary>
     List<IMathAtom> FusedAtoms { get; }
+
+    T Accept<T, THelper>(IMathAtomVisitor<T, THelper> visitor, THelper helper);
   }
 }

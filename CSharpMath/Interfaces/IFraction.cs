@@ -11,6 +11,6 @@ namespace CSharpMath.Interfaces {
     /// </summary>
     bool HasRule { get; }
     string LeftDelimiter { get; set; }
-    string RightDelmiter { get; set; }
+    string RightDelimiter { get; set; }
   }
 }

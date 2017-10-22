@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CSharpMath.Enumerations {
+namespace CSharpMath {
   public enum FontStyle {
     Default = 0,
     ///<summary>\mathrm</summary>
