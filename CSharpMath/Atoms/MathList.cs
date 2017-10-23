@@ -10,12 +10,12 @@ namespace CSharpMath.Atoms {
       if (prevNode == null) {
         return true;
       }
-      switch (prevNode.ItemType) {
-        case MathItemType.BinaryOperator:
-        case MathItemType.Relation:
-        case MathItemType.Open:
-        case MathItemType.Punctuation:
-        case MathItemType.LargeOperator:
+      switch (prevNode.AtomType) {
+        case MathAtomType.BinaryOperator:
+        case MathAtomType.Relation:
+        case MathAtomType.Open:
+        case MathAtomType.Punctuation:
+        case MathAtomType.LargeOperator:
           return true;
         default:
           return false;
@@ -49,21 +49,21 @@ namespace CSharpMath.Atoms {
             int prevIndex = (prevNode == null) ? 0 : prevNode.IndexRange.End;
             newNode.IndexRange = new Range(prevIndex, 1);
           }
-          switch (newNode.ItemType) {
-            case MathItemType.BinaryOperator:
+          switch (newNode.AtomType) {
+            case MathAtomType.BinaryOperator:
               if (IsNotBinaryOperator(prevNode)) {
-                newNode.ItemType = MathItemType.UnaryOperator;
+                newNode.AtomType = MathAtomType.UnaryOperator;
               }
               break;
-            case MathItemType.Relation:
-            case MathItemType.Punctuation:
-            case MathItemType.Close:
-              if (prevNode!=null && prevNode.ItemType == MathItemType.BinaryOperator) {
-                prevNode.ItemType = MathItemType.UnaryOperator;
+            case MathAtomType.Relation:
+            case MathAtomType.Punctuation:
+            case MathAtomType.Close:
+              if (prevNode!=null && prevNode.AtomType == MathAtomType.BinaryOperator) {
+                prevNode.AtomType = MathAtomType.UnaryOperator;
               }
               break;
-            case MathItemType.Number:
-              if (prevNode != null && prevNode.ItemType == MathItemType.Number && prevNode.Subscript == null && prevNode.Superscript == null) {
+            case MathAtomType.Number:
+              if (prevNode != null && prevNode.AtomType == MathAtomType.Number && prevNode.Subscript == null && prevNode.Superscript == null) {
                 prevNode.Fuse(newNode);
                 continue; // do not add the new node; we fused it instead.
               }

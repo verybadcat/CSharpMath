@@ -12,7 +12,7 @@ namespace CSharpMath.Atoms {
 
     public bool HasRule { get; private set; }
 
-    public Fraction(bool hasRule): base(MathItemType.Fraction, "") {
+    public Fraction(bool hasRule): base(MathAtomType.Fraction, "") {
 
     }
 
@@ -29,12 +29,7 @@ namespace CSharpMath.Atoms {
         }
         builder.AppendInBraces(Numerator.StringValue, NullHandling.EmptyString);
         builder.AppendInBraces(Denominator.StringValue, NullHandling.EmptyString);
-        if (Superscript!=null) {
-          builder.Append("^" + Superscript.StringValue.WrapInBraces(NullHandling.None));
-        }
-        if (Subscript!=null) {
-          builder.Append("_" + Subscript.StringValue.WrapInBraces(NullHandling.None));
-        }
+        builder.AppendScripts(this);
         return builder.ToString();
       }
     }

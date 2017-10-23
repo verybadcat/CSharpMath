@@ -5,7 +5,7 @@ namespace CSharpMath.Tests.Enumerations {
   public class MathItemTypeTests {
     [Fact]
     public void TestToText() {
-      var str = MathItemType.BinaryOperator.ToText();
+      var str = MathAtomType.BinaryOperator.ToText();
       Assert.Equal("Binary Operator", str);
     }
   }

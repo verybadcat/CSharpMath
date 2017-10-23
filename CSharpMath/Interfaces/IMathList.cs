@@ -7,7 +7,7 @@ namespace CSharpMath.Interfaces {
   /// <summary>
   /// Noteworthy that this does NOT inherit from IMathAtom.
   /// </summary>
-  public interface IMathList {
+  public interface IMathList: IStringValue {
     List<IMathAtom> Atoms { get; }
 
     void AddAtom(IMathAtom atom);
@@ -17,8 +17,8 @@ namespace CSharpMath.Interfaces {
     void RemoveAtom(int index);
     void RemoveAtoms(Range inRange);
     
-    ///<summary>Not the LaTeX form.</summary>
-    string StringValue { get; }
+
+
 
     IMathList FinalizedList();
 

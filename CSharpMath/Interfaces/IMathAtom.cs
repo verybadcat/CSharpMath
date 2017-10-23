@@ -5,19 +5,17 @@ using CSharpMath.Enumerations;
 using CSharpMath.Atoms;
 
 namespace CSharpMath.Interfaces {
-  public interface IMathAtom {
-    string StringValue { get; }
-    MathItemType ItemType { get; set; }
+  public interface IMathAtom: IStringValue, IScripts {
+    MathAtomType AtomType { get; set; }
     string Nucleus { get; set; }
-    IMathList Superscript { get; set; }
-    IMathList Subscript { get; set; }
+
     FontStyle FontStyle { get; set;}
     Range IndexRange { get; set; }
 
     /// <summary>
     /// Whether or not the atom allows superscripts and subscripts.
     /// </summary>
-    bool ScriptsAllowed();
+    bool ScriptsAllowed { get; }
 
     void Fuse(IMathAtom fuseMe);
 

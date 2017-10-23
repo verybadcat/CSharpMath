@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace CSharpMath {
-  public enum MathItemType {
+  public enum MathAtomType {
     Ordinary = 1,
     Number,
     Variable,
@@ -72,7 +72,7 @@ namespace CSharpMath {
     Table = 1001
   }
   public static class MathItemTypeExtensions {
-    public static string ToText(this MathItemType itemType) {
+    public static string ToText(this MathAtomType itemType) {
       // Insert a space before every capital letter other than the first one.
       var chars = itemType.ToString().ToCharArray().ToList();
       for (int i=chars.Count-1; i>0; i--) {

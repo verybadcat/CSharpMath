@@ -14,24 +14,44 @@ namespace CSharpMath.Atoms {
         return builder.ToString();
       }
     }
-    public MathItemType ItemType { get; set; }
+    public MathAtomType AtomType { get; set; }
     public string Nucleus { get; set; }
-    public IMathList Superscript { get; set; }
-    public IMathList Subscript { get; set; }
+    private IMathList _Superscript;
+    public IMathList Superscript {
+      get => _Superscript;
+      set {
+        if (ScriptsAllowed) {
+          _Superscript = value;
+        } else {
+          throw new Exception("Scripts are not allowed in itom type " + AtomType.ToText());
+        }
+      }
+    }
+    private IMathList _Subscript;
+    public IMathList Subscript {
+      get => _Subscript;
+      set {
+        if (ScriptsAllowed) {
+          _Subscript = value;
+        } else {
+          throw new Exception("Scripts are not allowed in itom type " + AtomType.ToText());
+        }
+      }
+    }
     public FontStyle FontStyle { get; set; }
 
     public Range IndexRange { get; set; }
 
     public List<IMathAtom> FusedAtoms { get; set; }
 
-    public bool ScriptsAllowed() => ItemType < CSharpMath.MathItemType.Boundary;
+    public bool ScriptsAllowed => AtomType < MathAtomType.Boundary;
 
-    public MathAtom(MathItemType type, string nucleus) {
-      ItemType = type;
+    public MathAtom(MathAtomType type, string nucleus) {
+      AtomType = type;
       Nucleus = nucleus;
     }
     public MathAtom(MathAtom cloneMe, bool finalize) {
-      ItemType = cloneMe.ItemType;
+      AtomType = cloneMe.AtomType;
       Nucleus = cloneMe.Nucleus;
       Superscript = AtomCloner.Clone(cloneMe.Superscript, finalize);
       Subscript = AtomCloner.Clone(cloneMe.Subscript, finalize);
@@ -46,7 +66,7 @@ namespace CSharpMath.Atoms {
       if (Superscript != null) {
         throw new InvalidOperationException("Cannot fuse into an atom with a superscript " + StringValue);
       }
-      if (otherAtom.ItemType != ItemType) {
+      if (otherAtom.AtomType != AtomType) {
         throw new InvalidOperationException("Cannot fuse atoms with different types");
       }
       if (FusedAtoms == null) {
@@ -67,5 +87,8 @@ namespace CSharpMath.Atoms {
 
     public virtual T Accept<T, THelper>(IMathAtomVisitor<T, THelper> visitor, THelper helper)
       => visitor.Visit(this, helper);
+
+    public override string ToString() =>
+      AtomType.ToText() + " " + StringValue;
   }
 }

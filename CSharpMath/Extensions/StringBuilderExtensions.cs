@@ -17,7 +17,7 @@ namespace CSharpMath {
     public static void AppendInSquareBrackets(this StringBuilder builder, string appendMe, NullHandling handling)
       => builder.Append(appendMe.WrapInSquareBrackets(handling));
     public static void AppendInParens(this StringBuilder builder, string appendMe, NullHandling handling)
-      => builder.Append(appendMe.WrapInSquareBrackets(handling));
+      => builder.Append(appendMe.WrapInParens(handling));
     
   }
 }
