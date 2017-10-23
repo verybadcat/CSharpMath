@@ -37,15 +37,42 @@ namespace CSharpMath.Atoms {
     public MathList(MathList cloneMe, bool finalize): this() {
       if (!finalize) {
         foreach(var atom in cloneMe.Atoms) {
-          var cloneAtom = AtomCloner.Instance.Clone(atom, finalize);
+          var cloneAtom = AtomCloner.Clone(atom, finalize);
           AddAtom(cloneAtom);
+          
         }
       } else {
         IMathAtom prevNode = null;
         foreach (IMathAtom atom in Atoms) {
+          var newNode = AtomCloner.Clone(atom, finalize);
           if (atom.IndexRange == Ranges.Zero) {
-
+            int prevIndex = (prevNode == null) ? 0 : prevNode.IndexRange.End;
+            newNode.IndexRange = new Range(prevIndex, 1);
           }
+          switch (newNode.ItemType) {
+            case MathItemType.BinaryOperator:
+              if (IsNotBinaryOperator(prevNode)) {
+                newNode.ItemType = MathItemType.UnaryOperator;
+              }
+              break;
+            case MathItemType.Relation:
+            case MathItemType.Punctuation:
+            case MathItemType.Close:
+              if (prevNode!=null && prevNode.ItemType == MathItemType.BinaryOperator) {
+                prevNode.ItemType = MathItemType.UnaryOperator;
+              }
+              break;
+            case MathItemType.Number:
+              if (prevNode != null && prevNode.ItemType == MathItemType.Number && prevNode.Subscript == null && prevNode.Superscript == null) {
+                prevNode.Fuse(newNode);
+                continue; // do not add the new node; we fused it instead.
+              }
+              break;
+            
+          }
+          AddAtom(newNode);
+          prevNode = newNode;
+          
         }
       }
     }

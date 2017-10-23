@@ -12,12 +12,14 @@ namespace CSharpMath.Interfaces {
     IMathList Superscript { get; set; }
     IMathList Subscript { get; set; }
     FontStyle FontStyle { get; set;}
-    Range IndexRange { get; }
+    Range IndexRange { get; set; }
 
     /// <summary>
     /// Whether or not the atom allows superscripts and subscripts.
     /// </summary>
     bool ScriptsAllowed();
+
+    void Fuse(IMathAtom fuseMe);
 
     /// <summary>
     /// If this atom was formed by fusion of multiple atoms, then this stores the list

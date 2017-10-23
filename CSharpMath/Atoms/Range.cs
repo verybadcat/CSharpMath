@@ -11,6 +11,11 @@ namespace CSharpMath.Atoms {
     /// </summary>
     public int Length { get; set; }
 
+    public Range(int location, int length) {
+      Location = location;
+      Length = length;
+    }
+
     public bool IsNotFound() => Location == NotFound || Length == NotFound;
     public int End {
       get {

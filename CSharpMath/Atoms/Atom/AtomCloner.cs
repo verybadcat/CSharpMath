@@ -9,13 +9,13 @@ namespace CSharpMath.Atoms {
     public IMathAtom Visit(MathAtom target, bool finalize) {
       return new MathAtom(target, finalize);
     }
-    public IMathAtom Clone(IMathAtom target, bool finalize) {
+    public static IMathAtom Clone(IMathAtom target, bool finalize) {
       if (target == null) {
         return null;
       }
-      return target.Accept(this, finalize);
+      return target.Accept(Instance, finalize);
     }
-    public IMathList Clone(IMathList target, bool finalize) {
+    public static IMathList Clone(IMathList target, bool finalize) {
       if (target == null) {
         return null;
       }
