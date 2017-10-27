@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace CSharpMath.Atoms {
-  class MathList : IMathList {
+  public class MathList : IMathList {
 
     private static bool IsNotBinaryOperator(IMathAtom prevNode) {
       if (prevNode == null) {
