@@ -12,7 +12,7 @@ namespace CSharpMath.Atoms {
 
     public bool HasRule { get; private set; }
 
-    public Fraction(bool hasRule): base(MathAtomType.Fraction, "") {
+    public Fraction(bool hasRule = true): base(MathAtomType.Fraction, "") {
 
     }
 

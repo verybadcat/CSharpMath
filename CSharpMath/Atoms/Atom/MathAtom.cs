@@ -20,7 +20,7 @@ namespace CSharpMath.Atoms {
     public IMathList Superscript {
       get => _Superscript;
       set {
-        if (ScriptsAllowed) {
+        if (ScriptsAllowed || value == null) {
           _Superscript = value;
         } else {
           throw new Exception("Scripts are not allowed in itom type " + AtomType.ToText());
@@ -31,7 +31,7 @@ namespace CSharpMath.Atoms {
     public IMathList Subscript {
       get => _Subscript;
       set {
-        if (ScriptsAllowed) {
+        if (ScriptsAllowed || value == null) {
           _Subscript = value;
         } else {
           throw new Exception("Scripts are not allowed in itom type " + AtomType.ToText());

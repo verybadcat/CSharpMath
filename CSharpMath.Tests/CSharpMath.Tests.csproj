@@ -14,8 +14,4 @@
     <ProjectReference Include="..\CSharpMath\CSharpMath.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Language\" />
-  </ItemGroup>
-
 </Project>

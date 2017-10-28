@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CSharpMath.Atoms.Atom {
+namespace CSharpMath.Atoms {
   public class Inner : MathAtom,IMathInner {
     public Inner(): base(MathAtomType.Inner, "") {
 
