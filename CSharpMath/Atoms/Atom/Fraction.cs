@@ -35,5 +35,27 @@ namespace CSharpMath.Atoms {
     }
     public override T Accept<T, THelper>(IMathAtomVisitor<T, THelper> visitor, THelper helper)
   => visitor.Visit(this, helper);
+
+    public override bool Equals(object obj) {
+      if (obj is Fraction) {
+        return EqualsFraction((Fraction)obj);
+      }
+      return false;
+    }
+
+    public bool EqualsFraction(Fraction other) 
+      => EqualsAtom(other)
+        && Numerator == other.Numerator
+        && Denominator == other.Denominator
+        && LeftDelimiter == other.LeftDelimiter
+        && RightDelimiter == other.RightDelimiter;
+    
+
+    public override int GetHashCode() =>
+      base.GetHashCode()
+      + 17 * Numerator?.GetHashCode() ?? 0
+      + 19 * Denominator?.GetHashCode() ?? 0
+      + 61 * LeftDelimiter?.GetHashCode() ?? 0
+      + 101 * RightDelimiter?.GetHashCode() ?? 0;
   }
 }

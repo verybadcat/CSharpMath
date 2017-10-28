@@ -39,5 +39,6 @@ namespace CSharpMath.Tests {
       Assert.ThrowsAny<Exception>(() => atom2.Subscript = list);
       Assert.ThrowsAny<Exception>(() => atom2.Superscript = list);
     }
+
   }
 }

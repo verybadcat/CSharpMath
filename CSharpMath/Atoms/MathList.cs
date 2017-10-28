@@ -22,10 +22,13 @@ namespace CSharpMath.Atoms {
       }
     }
     public List<IMathAtom> Atoms { get; set; } = new List<IMathAtom>();
+    public IMathAtom this[int index] => Atoms[index];
+
+    public int Count => Atoms.Count;
 
     public string StringValue => throw new NotImplementedException();
 
-    public void AddAtom(IMathAtom atom) => throw new NotImplementedException();
+    public void AddAtom(IMathAtom atom) => Atoms.Add(atom);
     public void Append(IMathList list) => throw new NotImplementedException();
     public IMathList DeepCopy() => throw new NotImplementedException();
     public IMathList FinalizedList() => throw new NotImplementedException();
@@ -33,7 +36,40 @@ namespace CSharpMath.Atoms {
     public void RemoveAtom(int index) => throw new NotImplementedException();
     public void RemoveAtoms(Range inRange) => throw new NotImplementedException();
     public void RemoveLastAtom() => throw new NotImplementedException();
+    public bool EqualsList(MathList otherList) {
+      if (otherList == null) {
+        return false;
+      } 
+      if (otherList.Count!=this.Count) {
+        return false;
+      }
+      for (int i=0; i<this.Count; i++) {
+        if (this[i]!=otherList[i]) {
+          return false;
+        }
+      }
+      return true;
+    }
+    public override bool Equals(object obj) {
+      if (obj is MathList) {
+        return Equals((MathList)obj);
+      }
+      return false;
+    }
+    public static bool operator == (MathList list1, MathList list2) {
+      if (ReferenceEquals(list1, null) && ReferenceEquals(list2, null)) {
+        return true;
+      }
+      if (ReferenceEquals(list1, null) || ReferenceEquals(list2, null)) {
+        return false;
+      }
+      return list1.Equals(list2);
+    }
+    public static bool operator !=(MathList list1, MathList list2) {
+      return !(list1 == list2);
+    }
     public MathList() { }
+  
     public MathList(MathList cloneMe, bool finalize): this() {
       if (!finalize) {
         foreach(var atom in cloneMe.Atoms) {

@@ -74,7 +74,7 @@ namespace CSharpMath.Atoms {
           AtomCloner.Clone(this, false)
         };
       }
-      if (otherAtom.FusedAtoms!=null) {
+      if (otherAtom.FusedAtoms != null) {
         FusedAtoms.AddRange(otherAtom.FusedAtoms);
       } else {
         FusedAtoms.Add(otherAtom);
@@ -90,5 +90,48 @@ namespace CSharpMath.Atoms {
 
     public override string ToString() =>
       AtomType.ToText() + " " + StringValue;
+
+    public bool EqualsAtom(MathAtom otherAtom) =>
+      otherAtom!=null
+        && Nucleus == otherAtom.Nucleus
+        && AtomType == otherAtom.AtomType
+        && Superscript == otherAtom.Superscript
+        && Subscript == otherAtom.Subscript
+        && IndexRange == otherAtom.IndexRange
+        && FontStyle == otherAtom.FontStyle
+      && otherAtom.GetType() == this.GetType();
+    
+
+    public override bool Equals (object obj) {
+      if (obj is MathAtom) {
+        return this.Equals((MathAtom)obj);
+      }
+      return false;
+    }
+
+    public static bool operator == (MathAtom atom1, MathAtom atom2) {
+      if (ReferenceEquals(atom1, null) && ReferenceEquals(atom2, null)) {
+        return true;
+      }
+      if (ReferenceEquals(atom1, null) || ReferenceEquals(atom2, null)) {
+        return false;
+      }
+      return atom1.Equals(atom2);
+    }
+
+    public static bool operator !=(MathAtom atom1, MathAtom atom2) {
+      return !(atom1 == atom2);
+    }
+
+    public override int GetHashCode() {
+      unchecked {
+        return
+        AtomType.GetHashCode()
+        + 3 * ((Superscript == null) ? 0 : Superscript.GetHashCode())
+        + 5 * ((Subscript == null) ? 0 : Subscript.GetHashCode())
+        + 7 * IndexRange.GetHashCode()
+        + 13 * FontStyle.GetHashCode();
+      }
+    }
   }
 }
