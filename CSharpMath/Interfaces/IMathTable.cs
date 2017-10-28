@@ -25,10 +25,10 @@ namespace CSharpMath.Interfaces {
     /// <summary>
     /// Number of columns
     /// </summary>
-    int NColumns { get; set; }
+    int NColumns { get; }
     /// <summary>
     /// Number of rows
     /// </summary>
-    int NRows { get; set; }
+    int NRows { get; }
   }
 }
