@@ -30,6 +30,32 @@ namespace CSharpMath.Atoms {
       }
     }
 
+    public Inner(Inner cloneMe, bool finalize): base(cloneMe, finalize) {
+      InnerList = AtomCloner.Clone(cloneMe.InnerList, finalize);
+      LeftBoundary = AtomCloner.Clone(cloneMe.LeftBoundary, finalize);
+      RightBoundary = AtomCloner.Clone(cloneMe.RightBoundary, finalize);
+    }
+
+    public bool EqualsInner(Inner otherInner) {
+      bool r = EqualsAtom(otherInner);
+      r &= InnerList.NullCheckingEquals(otherInner.InnerList);
+      r &= LeftBoundary.NullCheckingEquals(otherInner.LeftBoundary);
+      r &= RightBoundary.NullCheckingEquals(otherInner.RightBoundary);
+      return r;
+    }
+
+    public override bool Equals(object obj) =>
+      (obj is Inner) ? EqualsInner((Inner)obj) : false;
+
+    public override int GetHashCode() {
+      unchecked {
+        return base.GetHashCode()
+          + 23 * InnerList?.GetHashCode() ?? 0
+          + 101 * LeftBoundary?.GetHashCode() ?? 0
+          + 103 * RightBoundary?.GetHashCode() ?? 0;
+      }
+    }
+
     public override string StringValue {
       get {
         var builder = new StringBuilder(@"\inner");

@@ -49,5 +49,24 @@ namespace CSharpMath {
           return null;
       }
     }
+    public static Dictionary<string, FontStyle> FontStyles { get; } =
+      new Dictionary<string, FontStyle> {
+        {"mathnormal", FontStyle.Default },
+        {"mathrm", FontStyle.Roman },
+        {"rm", FontStyle.Roman },
+        {"bf", FontStyle.Bold },
+        {"mathcal", FontStyle.Caligraphic },
+        {"cal", FontStyle.Caligraphic },
+        {"mathtt", FontStyle.Typewriter },
+        {"mathit", FontStyle.Italic },
+        {"mit", FontStyle.Italic },
+        {"mathsf", FontStyle.SansSerif },
+        {"mathfrak", FontStyle.Fraktur },
+        {"frak", FontStyle.Fraktur },
+        {"mathbb", FontStyle.Blackboard },
+        {"mathbfit", FontStyle.BoldItalic },
+        {"bm", FontStyle.BoldItalic },
+        {"text", FontStyle.Roman }
+      };
   }
 }

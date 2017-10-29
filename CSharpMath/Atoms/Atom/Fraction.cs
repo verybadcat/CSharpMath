@@ -16,6 +16,14 @@ namespace CSharpMath.Atoms {
 
     }
 
+    public Fraction(Fraction cloneMe, bool finalize): base(cloneMe, finalize) {
+      Numerator = AtomCloner.Clone(cloneMe.Numerator, finalize);
+      Denominator = AtomCloner.Clone(cloneMe.Denominator, finalize);
+      LeftDelimiter = cloneMe.LeftDelimiter;
+      RightDelimiter = cloneMe.RightDelimiter;
+      HasRule = cloneMe.HasRule;
+    }
+
     public override string StringValue {
       get {
         var builder = new StringBuilder();
@@ -27,8 +35,8 @@ namespace CSharpMath.Atoms {
         if (LeftDelimiter!=null || RightDelimiter!=null) {
           builder.Append($@"[{LeftDelimiter.NullToNull(NullHandling.EmptyContent)}][{RightDelimiter.NullToNull(NullHandling.EmptyContent)}]");
         }
-        builder.AppendInBraces(Numerator.StringValue, NullHandling.EmptyString);
-        builder.AppendInBraces(Denominator.StringValue, NullHandling.EmptyString);
+        builder.AppendInBraces(Numerator, NullHandling.EmptyString);
+        builder.AppendInBraces(Denominator, NullHandling.EmptyString);
         builder.AppendScripts(this);
         return builder.ToString();
       }
@@ -36,6 +44,7 @@ namespace CSharpMath.Atoms {
     public override T Accept<T, THelper>(IMathAtomVisitor<T, THelper> visitor, THelper helper)
   => visitor.Visit(this, helper);
 
+    
     public override bool Equals(object obj) {
       if (obj is Fraction) {
         return EqualsFraction((Fraction)obj);
@@ -43,14 +52,16 @@ namespace CSharpMath.Atoms {
       return false;
     }
 
-    public bool EqualsFraction(Fraction other) 
-      => EqualsAtom(other)
-        && Numerator == other.Numerator
-        && Denominator == other.Denominator
-        && LeftDelimiter == other.LeftDelimiter
-        && RightDelimiter == other.RightDelimiter;
+    public bool EqualsFraction(Fraction other) {
+      bool r = EqualsAtom(other);
+      r &= Numerator.NullCheckingEquals( other.Numerator);
+      r &= Denominator.NullCheckingEquals( other.Denominator);
+      r &= LeftDelimiter == other.LeftDelimiter;
+      r &= RightDelimiter == other.RightDelimiter;
+      return r;
+    }
     
-
+    
     public override int GetHashCode() =>
       base.GetHashCode()
       + 17 * Numerator?.GetHashCode() ?? 0

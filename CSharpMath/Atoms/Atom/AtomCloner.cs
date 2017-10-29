@@ -9,6 +9,9 @@ namespace CSharpMath.Atoms {
     public IMathAtom Visit(MathAtom target, bool finalize) {
       return new MathAtom(target, finalize);
     }
+    public IMathAtom Visit(Fraction target, bool finalize) {
+      return new Fraction(target, finalize);
+    }
     public static IMathAtom Clone(IMathAtom target, bool finalize) {
       if (target == null) {
         return null;
@@ -21,5 +24,7 @@ namespace CSharpMath.Atoms {
       }
       return new MathList((MathList)target, finalize);
     }
+
+   
   }
 }

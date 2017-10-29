@@ -19,7 +19,7 @@ namespace CSharpMath.Atoms {
 
     public Radical(Radical cloneMe, bool finalize): base(cloneMe, finalize) {
       Radicand = AtomCloner.Clone(cloneMe.Radicand, finalize);
-      Degree = AtomCloner.Clone(cloneMe.Radicand, finalize);
+      Degree = AtomCloner.Clone(cloneMe.Degree, finalize);
     }
 
     public override string StringValue {

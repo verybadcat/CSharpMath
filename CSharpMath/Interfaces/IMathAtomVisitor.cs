@@ -6,5 +6,6 @@ using System.Text;
 namespace CSharpMath.Interfaces {
   public interface IMathAtomVisitor<T, THelper> {
     T Visit(MathAtom atom, THelper helper);
+    T Visit(Fraction fraction, THelper helper);
   }
 }

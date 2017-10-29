@@ -12,5 +12,11 @@ namespace CSharpMath.Atoms {
     public LargeOperator(LargeOperator cloneMe, bool finalize): base(cloneMe, finalize) {
       _limits = cloneMe.Limits;
     }
+
+    public bool EqualsLargeOperator(LargeOperator obj) {
+      bool r = this.EqualsAtom(obj);
+      r &= (this.Limits == obj.Limits);
+      return r;
+    }
   }
 }
