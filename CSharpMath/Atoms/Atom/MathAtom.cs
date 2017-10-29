@@ -9,8 +9,8 @@ namespace CSharpMath.Atoms {
     public virtual string StringValue {
       get {
         StringBuilder builder = new StringBuilder(Nucleus);
-        builder.AppendInBraces(Superscript.StringValue, NullHandling.EmptyString);
-        builder.AppendInBraces(Subscript.StringValue, NullHandling.EmptyString);
+        builder.AppendInBraces(Superscript, NullHandling.EmptyString);
+        builder.AppendInBraces(Subscript, NullHandling.EmptyString);
         return builder.ToString();
       }
     }
@@ -91,37 +91,26 @@ namespace CSharpMath.Atoms {
     public override string ToString() =>
       AtomType.ToText() + " " + StringValue;
 
-    public bool EqualsAtom(MathAtom otherAtom) =>
-      otherAtom!=null
-        && Nucleus == otherAtom.Nucleus
-        && AtomType == otherAtom.AtomType
-        && Superscript == otherAtom.Superscript
-        && Subscript == otherAtom.Subscript
-        && IndexRange == otherAtom.IndexRange
-        && FontStyle == otherAtom.FontStyle
-      && otherAtom.GetType() == this.GetType();
+    public bool EqualsAtom(MathAtom otherAtom) {
+      var r = (otherAtom != null);
+      r &= Nucleus == otherAtom.Nucleus;
+      r &= AtomType == otherAtom.AtomType;
+      r &= Superscript.NullCheckingEquals(otherAtom.Superscript);
+      r &= Subscript.NullCheckingEquals(otherAtom.Subscript);
+      r &= IndexRange == otherAtom.IndexRange;
+      r &= FontStyle == otherAtom.FontStyle;
+      r &= otherAtom.GetType() == this.GetType();
+      return r;
+    }
     
 
     public override bool Equals (object obj) {
       if (obj is MathAtom) {
-        return this.Equals((MathAtom)obj);
+        return this.EqualsAtom((MathAtom)obj);
       }
       return false;
     }
 
-    public static bool operator == (MathAtom atom1, MathAtom atom2) {
-      if (ReferenceEquals(atom1, null) && ReferenceEquals(atom2, null)) {
-        return true;
-      }
-      if (ReferenceEquals(atom1, null) || ReferenceEquals(atom2, null)) {
-        return false;
-      }
-      return atom1.Equals(atom2);
-    }
-
-    public static bool operator !=(MathAtom atom1, MathAtom atom2) {
-      return !(atom1 == atom2);
-    }
 
     public override int GetHashCode() {
       unchecked {

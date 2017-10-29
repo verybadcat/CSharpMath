@@ -7,7 +7,7 @@ namespace CSharpMath.Interfaces {
   /// <summary>
   /// Noteworthy that this does NOT inherit from IMathAtom.
   /// </summary>
-  public interface IMathList: IStringValue {
+  public interface IMathList: IStringValue, IMathObject {
     List<IMathAtom> Atoms { get; }
 
     void AddAtom(IMathAtom atom);

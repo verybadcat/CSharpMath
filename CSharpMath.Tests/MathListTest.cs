@@ -1,4 +1,5 @@
 ﻿using CSharpMath.Atoms;
+using CSharpMath.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,15 @@ using Xunit;
 
 namespace CSharpMath.Tests {
   public class MathListTest {
+    internal static void CheckClone(IMathAtom original, IMathAtom clone) {
+      Assert.Equal(original, clone);
+      Assert.False(ReferenceEquals(original, clone));
+    }
+
+    internal static void CheckClone(IMathList original, IMathList clone) {
+      Assert.Equal(original, clone);
+      Assert.False(ReferenceEquals(original, clone));
+    }
     [Fact]
     public void TestCopy() {
       var list = new MathList();
@@ -18,7 +28,15 @@ namespace CSharpMath.Tests {
       var list2 = new MathList();
       list2.AddAtom(MathAtoms.Divide);
       list2.AddAtom(MathAtoms.Times);
-      //TODO: finish
+
+      var open = MathAtoms.Create(MathAtomType.Open, "(");
+      open.Subscript = list;
+      open.Superscript = list2;
+
+      var clone = AtomCloner.Clone(open, false);
+      CheckClone(open, clone);
+      CheckClone(open.Superscript, clone.Superscript);
+      CheckClone(open.Subscript, clone.Subscript);
     }
   }
 }

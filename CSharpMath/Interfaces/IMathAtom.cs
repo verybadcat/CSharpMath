@@ -5,7 +5,7 @@ using CSharpMath.Enumerations;
 using CSharpMath.Atoms;
 
 namespace CSharpMath.Interfaces {
-  public interface IMathAtom: IStringValue, IScripts {
+  public interface IMathAtom: IStringValue, IScripts, IMathObject {
     MathAtomType AtomType { get; set; }
     string Nucleus { get; set; }
 

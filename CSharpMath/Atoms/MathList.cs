@@ -6,6 +6,7 @@ using System.Text;
 namespace CSharpMath.Atoms {
   public class MathList : IMathList {
 
+
     private static bool IsNotBinaryOperator(IMathAtom prevNode) {
       if (prevNode == null) {
         return true;
@@ -26,16 +27,28 @@ namespace CSharpMath.Atoms {
 
     public int Count => Atoms.Count;
 
-    public string StringValue => throw new NotImplementedException();
+    public string StringValue {
+      get {
+        var builder = new StringBuilder();
+        foreach (var atom in Atoms) {
+          builder.Append(atom.StringValue);
+        }
+        return builder.ToString();
+      }
+    }
 
     public void AddAtom(IMathAtom atom) => Atoms.Add(atom);
-    public void Append(IMathList list) => throw new NotImplementedException();
-    public IMathList DeepCopy() => throw new NotImplementedException();
-    public IMathList FinalizedList() => throw new NotImplementedException();
+    public void Append(IMathList list) => this.Atoms.AddRange(list.Atoms);
+    public IMathList DeepCopy() => AtomCloner.Clone(this, false);
+    public IMathList FinalizedList() => AtomCloner.Clone(this, true);
     public void InsertAtom(IMathAtom atom, int index) => throw new NotImplementedException();
-    public void RemoveAtom(int index) => throw new NotImplementedException();
-    public void RemoveAtoms(Range inRange) => throw new NotImplementedException();
-    public void RemoveLastAtom() => throw new NotImplementedException();
+    public void RemoveAtom(int index) => Atoms.RemoveAt(index);
+    public void RemoveAtoms(Range inRange) => Atoms.RemoveRange(inRange.Location, inRange.Length);
+    public void RemoveLastAtom() {
+      if (Atoms.Count > 0) {
+        Atoms.RemoveAt(Atoms.Count - 1);
+      }
+    }
     public bool EqualsList(MathList otherList) {
       if (otherList == null) {
         return false;
@@ -44,7 +57,7 @@ namespace CSharpMath.Atoms {
         return false;
       }
       for (int i=0; i<this.Count; i++) {
-        if (this[i]!=otherList[i]) {
+        if (!this[i].NullCheckingEquals(otherList[i])) {
           return false;
         }
       }
@@ -52,22 +65,12 @@ namespace CSharpMath.Atoms {
     }
     public override bool Equals(object obj) {
       if (obj is MathList) {
-        return Equals((MathList)obj);
+        return EqualsList((MathList)obj);
       }
       return false;
     }
-    public static bool operator == (MathList list1, MathList list2) {
-      if (ReferenceEquals(list1, null) && ReferenceEquals(list2, null)) {
-        return true;
-      }
-      if (ReferenceEquals(list1, null) || ReferenceEquals(list2, null)) {
-        return false;
-      }
-      return list1.Equals(list2);
-    }
-    public static bool operator !=(MathList list1, MathList list2) {
-      return !(list1 == list2);
-    }
+    public override int GetHashCode() => Atoms.GetHashCode();
+ 
     public MathList() { }
   
     public MathList(MathList cloneMe, bool finalize): this() {
