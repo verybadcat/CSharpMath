@@ -7,7 +7,7 @@ using System.Text;
 namespace CSharpMath.Atoms {
   public class MathTable : MathAtom, IMathTable {
     public List<ColumnAlignment> Alignments { get; } = new List<ColumnAlignment>();
-    public List<List<IMathList>> Cells { get; set} = new List<List<IMathList>>();
+    public List<List<IMathList>> Cells { get; set; } = new List<List<IMathList>>();
 
     public float InterColumnSpacing { get; set; }
     public float InterRowAdditionalSpacing { get; set; }

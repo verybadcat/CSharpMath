@@ -567,10 +567,47 @@ namespace CSharpMath.Atoms {
           table.InterRowAdditionalSpacing = 1;
           table.SetAlignment(ColumnAlignment.Right, 0);
           table.SetAlignment(ColumnAlignment.Left, 1);
+          r = table;
         }
       }
+      else if (environment == "eqnarray") {
+        if (table.NColumns!=3) {
+          errorMessage = environment + " must have exactly 3 columns.";
+        } else {
+          table.InterRowAdditionalSpacing = 1;
+          table.InterColumnSpacing = 18;
+          table.SetAlignment(ColumnAlignment.Right, 0);
+          table.SetAlignment(ColumnAlignment.Center, 1);
+          table.SetAlignment(ColumnAlignment.Left, 2);
+          r = table;
+        }
+      }
+      else if (environment == "cases") {
+        if (table.NColumns!=2) {
+          errorMessage = "cases environment must have exactly 2 columns";
+        } else {
+          table.InterColumnSpacing = 18;
+          table.SetAlignment(ColumnAlignment.Left, 0);
+          table.SetAlignment(ColumnAlignment.Left, 1);
+          var style = new MathStyle(LineStyle.Text);
+          foreach (var row in table.Cells) {
+            foreach (var cell in row) {
+              cell.InsertAtom(style, 0);
+            }
+          }
+          // add delimiters
+          var inner = new Inner {
+            LeftBoundary = BoundaryAtom("{"),
+            RightBoundary = BoundaryAtom(".")
+          };
+          var space = ForLatexSymbolName(",");
+          inner.InnerList = MathLists.WithAtoms(space, table);
+          r = inner;
+        }
+
+      }
       return r;
-      
+
     }
    
   }
