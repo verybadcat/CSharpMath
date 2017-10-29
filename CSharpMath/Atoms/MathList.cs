@@ -6,7 +6,7 @@ using System.Text;
 namespace CSharpMath.Atoms {
   public class MathList : IMathList {
 
-
+    public List<IMathAtom> Atoms { get; set; } = new List<IMathAtom>();
     private static bool IsNotBinaryOperator(IMathAtom prevNode) {
       if (prevNode == null) {
         return true;
@@ -22,7 +22,53 @@ namespace CSharpMath.Atoms {
           return false;
       }
     }
-    public List<IMathAtom> Atoms { get; set; } = new List<IMathAtom>();
+
+    public MathList() { }
+
+    public MathList(MathList cloneMe, bool finalize) : this() {
+      if (!finalize) {
+        foreach (var atom in cloneMe.Atoms) {
+          var cloneAtom = AtomCloner.Clone(atom, finalize);
+          AddAtom(cloneAtom);
+
+        }
+      } else {
+        IMathAtom prevNode = null;
+        foreach (IMathAtom atom in Atoms) {
+          var newNode = AtomCloner.Clone(atom, finalize);
+          if (atom.IndexRange == Ranges.Zero) {
+            int prevIndex = (prevNode == null) ? 0 : prevNode.IndexRange.End;
+            newNode.IndexRange = new Range(prevIndex, 1);
+          }
+          switch (newNode.AtomType) {
+            case MathAtomType.BinaryOperator:
+              if (IsNotBinaryOperator(prevNode)) {
+                newNode.AtomType = MathAtomType.UnaryOperator;
+              }
+              break;
+            case MathAtomType.Relation:
+            case MathAtomType.Punctuation:
+            case MathAtomType.Close:
+              if (prevNode != null && prevNode.AtomType == MathAtomType.BinaryOperator) {
+                prevNode.AtomType = MathAtomType.UnaryOperator;
+              }
+              break;
+            case MathAtomType.Number:
+              if (prevNode != null && prevNode.AtomType == MathAtomType.Number && prevNode.Subscript == null && prevNode.Superscript == null) {
+                prevNode.Fuse(newNode);
+                continue; // do not add the new node; we fused it instead.
+              }
+              break;
+
+          }
+          AddAtom(newNode);
+          prevNode = newNode;
+
+        }
+      }
+
+    }
+
     public IMathAtom this[int index] => Atoms[index];
 
     public int Count => Atoms.Count;
@@ -71,49 +117,7 @@ namespace CSharpMath.Atoms {
     }
     public override int GetHashCode() => Atoms.GetHashCode();
  
-    public MathList() { }
-  
-    public MathList(MathList cloneMe, bool finalize): this() {
-      if (!finalize) {
-        foreach(var atom in cloneMe.Atoms) {
-          var cloneAtom = AtomCloner.Clone(atom, finalize);
-          AddAtom(cloneAtom);
-          
-        }
-      } else {
-        IMathAtom prevNode = null;
-        foreach (IMathAtom atom in Atoms) {
-          var newNode = AtomCloner.Clone(atom, finalize);
-          if (atom.IndexRange == Ranges.Zero) {
-            int prevIndex = (prevNode == null) ? 0 : prevNode.IndexRange.End;
-            newNode.IndexRange = new Range(prevIndex, 1);
-          }
-          switch (newNode.AtomType) {
-            case MathAtomType.BinaryOperator:
-              if (IsNotBinaryOperator(prevNode)) {
-                newNode.AtomType = MathAtomType.UnaryOperator;
-              }
-              break;
-            case MathAtomType.Relation:
-            case MathAtomType.Punctuation:
-            case MathAtomType.Close:
-              if (prevNode!=null && prevNode.AtomType == MathAtomType.BinaryOperator) {
-                prevNode.AtomType = MathAtomType.UnaryOperator;
-              }
-              break;
-            case MathAtomType.Number:
-              if (prevNode != null && prevNode.AtomType == MathAtomType.Number && prevNode.Subscript == null && prevNode.Superscript == null) {
-                prevNode.Fuse(newNode);
-                continue; // do not add the new node; we fused it instead.
-              }
-              break;
-            
-          }
-          AddAtom(newNode);
-          prevNode = newNode;
-          
-        }
-      }
-    }
+ 
+
   }
 }

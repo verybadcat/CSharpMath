@@ -4,6 +4,11 @@ using System.Text;
 
 namespace CSharpMath {
   public static class StringExtensions {
+    public static bool IsEmpty(this String str)
+      => String.IsNullOrEmpty(str);
+
+    public static bool IsNonEmpty(this string str)
+      => !IsEmpty(str);
     /// <summary>If the input is null, returns "null". Otherwise, returns the input.</summary>
     public static string NullToNull(this string str, NullHandling handling) {
       if (str == null) {

@@ -21,4 +21,33 @@ namespace CSharpMath {
     Blackboard,
     BoldItalic
   }
+
+  public static class FontStyleExtensions {
+    public static string FontName(this FontStyle style) {
+      switch (style) {
+        case FontStyle.Default:
+          return "mathnormal";
+        case FontStyle.Roman:
+          return "mathrm";
+        case FontStyle.Bold:
+          return "mathbf";
+        case FontStyle.Fraktur:
+          return "mathfrak";
+        case FontStyle.Caligraphic:
+          return "mathcal";
+        case FontStyle.Italic:
+          return "mathit";
+        case FontStyle.SansSerif:
+          return "mathsf";
+        case FontStyle.Blackboard:
+          return "mathbb";
+        case FontStyle.Typewriter:
+          return "mathtt";
+        case FontStyle.BoldItalic:
+          return "bm";
+        default:
+          return null;
+      }
+    }
+  }
 }

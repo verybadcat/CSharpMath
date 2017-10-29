@@ -18,7 +18,7 @@ namespace CSharpMath.Interfaces {
     /// <summary>
     /// Additional spacing between rows in jots (one jot is 0.3 times font size).
     /// </summary>
-    float InterRowSpacing { get; set; }
+    float InterRowAdditionalSpacing { get; set; }
 
     void SetCell(IMathList cellContent, int row, int column);
     void SetAlignment(ColumnAlignment alignment, int column);

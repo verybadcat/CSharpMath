@@ -155,12 +155,12 @@ namespace CSharpMath.Atoms {
       }
     }
 
-    private static Dictionary<string, IMathAtom> _commands;
+    private static Dictionary<string, IMathAtom> _supportedLatexSymbols;
 
     public static Dictionary<string, IMathAtom> Commands {
       get {
-        if (_commands == null) {
-          _commands = new Dictionary<string, IMathAtom> {
+        if (_supportedLatexSymbols == null) {
+          _supportedLatexSymbols = new Dictionary<string, IMathAtom> {
                      { "square", Placeholder },
                      
                      // Greek characters
@@ -244,7 +244,6 @@ namespace CSharpMath.Atoms {
                      { "Longleftarrow", Create(MathAtomType.Relation, "\u27F8") },
                      { "Longrightarrow", Create(MathAtomType.Relation, "\u27F9") },
                      { "Longleftrightarrow", Create(MathAtomType.Relation, "\u27FA") },
-                     
                      
                      // Relations
                      { "leq", Create(MathAtomType.Relation, Symbols.LessEqual) },
@@ -418,9 +417,9 @@ namespace CSharpMath.Atoms {
                      { "textstyle", new MathStyle(LineStyle.Text) },
                      { "scriptstyle", new MathStyle(LineStyle.Script) },
                      { "scriptscriptstyle",  new MathStyle(LineStyle.ScriptScript) }
-                     };
+          };
         }
-        return _commands;
+        return _supportedLatexSymbols;
       }
     }
 
@@ -446,7 +445,133 @@ namespace CSharpMath.Atoms {
       return null;
     }
 
+    public static string LatexSymbolNameForAtom(IMathAtom atom) {
+      if (atom.Nucleus.IsEmpty()) {
+        return null;
+      }
+      return TextToLatexSymbolNames[atom.Nucleus];
+    }
 
+    public static void AddLatexSymbol(string name, IMathAtom atom) {
+      _supportedLatexSymbols[name] = atom;
+      if (atom.Nucleus.IsNonEmpty()) {
+        _textToLatexSymbolNames[atom.Nucleus] = name;
+      }
+    }
 
+    private static Dictionary<string, string> _textToLatexSymbolNames = null;
+    public static Dictionary<string, string> TextToLatexSymbolNames {
+      get {
+        if (_textToLatexSymbolNames == null) {
+          _textToLatexSymbolNames = DictionaryHelpers.BuildValueToKeyDictionary(Commands.Keys, key => Commands[key].Nucleus);
+        }
+        return _textToLatexSymbolNames;
+      }
+    }
+
+    public static IEnumerable<string> SupportedLatexSymbolNames => _supportedLatexSymbols.Keys;
+
+    public static IAccent Accent(string accentName) =>
+      AccentNames.NameToValue.ContainsKey(accentName) ? new Accent(AccentNames.NameToValue[accentName]) : null;
+
+    public static string AccentName(IAccent accent)
+      => AccentNames.ValueToName.GetValueOrDefault(accent.Nucleus);
+
+    public static IMathAtom BoundaryAtom(string delimiterName) {
+      var dict = DelimiterNames.NameToValue;
+      var value = dict.GetValueOrDefault(delimiterName);
+      if (value == null) {
+        return null;
+      }
+      return Create(MathAtomType.Boundary, value);
+    }
+
+    public static string DelimiterName(IMathAtom boundaryAtom) {
+      string r = null;
+      if (boundaryAtom.AtomType == MathAtomType.Boundary) {
+        r = DelimiterNames.ValueToName.GetValueOrDefault(boundaryAtom.Nucleus);
+      }
+      return r;
+    }
+
+    public static IFraction Fraction(IMathList numerator, IMathList denominator) {
+      var fraction = new Fraction {
+        Numerator = numerator,
+        Denominator = denominator
+      };
+      return fraction;
+    }
+
+    public static IFraction Fraction(string numerator, string denominator)
+      => Fraction(MathListForCharacters(numerator), MathListForCharacters(denominator));
+
+    private static Dictionary<string, List<string>> _matrixEnvironments { get; } =
+      new Dictionary<string, List<string>> {
+        { "matrix", new List<string>() } ,
+        {"pmatrix", new List<string> {"(", ")"} } ,
+        {"bmatrix", new List<string> {"[", "]"} },
+        {"Bmatrix", new List<string>{"{", "}"} },
+        {"vmatrix", new List<string>{"vert", "vert"} },
+        {"Vmatrix", new List<string>{"Vert", "Vert"} }
+      };
+      
+
+    public static IMathAtom Table(
+      string environment,
+      List<List<IMathList>> rows,
+      out string errorMessage) {
+      errorMessage = null;
+      var table = new MathTable(environment) {
+        Cells = rows
+      };
+      IMathAtom r = null;
+      if (_matrixEnvironments.ContainsKey(environment)) {
+        table.Environment = "matrix"; // Environment is set to matrix as delimiters are converted to latex outside the table.
+        table.InterColumnSpacing = 18;
+
+        var style = new MathStyle(LineStyle.Text);
+        foreach (var row in table.Cells) {
+          foreach (var cell in row) {
+            cell.InsertAtom(style, 0);
+          }
+        }
+        var delimiters = _matrixEnvironments[environment];
+        if (delimiters.Count == 2) {
+          var inner = new Inner {
+            LeftBoundary = BoundaryAtom(delimiters[0]),
+            RightBoundary = BoundaryAtom(delimiters[1]),
+            InnerList = MathLists.WithAtoms(table)
+          };
+          r = inner;
+        }
+        r = table;
+      }
+      else if (environment == null) {
+        table.InterRowAdditionalSpacing = 1;
+        for (int i=0; i<table.NColumns; i++) {
+          table.SetAlignment(ColumnAlignment.Left, i);
+        }
+        r = table;
+      }
+      else if (environment == "eqalign" || environment == "split" || environment == "aligned") {
+        if (table.NColumns!=2) {
+          errorMessage = environment + " environment can have only 2 columns";
+        } else {
+          // add a spacer before each of the second column elements, in order to create the correct spacing for "=" and other relations.
+          var spacer = Create(MathAtomType.Ordinary, "");
+          foreach (var row in table.Cells) {
+            if (row.Count > 1) {
+              row[1].InsertAtom(spacer, 0);
+            }
+          }
+          table.InterRowAdditionalSpacing = 1;
+          table.SetAlignment(ColumnAlignment.Right, 0);
+          table.SetAlignment(ColumnAlignment.Left, 1);
+        }
+      }
+      return r;
+      
+    }
+   
   }
 }
