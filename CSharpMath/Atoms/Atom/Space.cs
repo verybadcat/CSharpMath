@@ -12,6 +12,20 @@ namespace CSharpMath.Atoms {
       _space = space;
     }
 
-   
+    public MathSpace(MathSpace cloneMe, bool finalize): base(cloneMe, finalize) {
+      _space = cloneMe._space;
+    }
+
+    public bool EqualsSpace(MathSpace otherSpace) {
+      bool r = EqualsAtom(otherSpace);
+      r &= Space == otherSpace.Space;
+      return r;
+    }
+
+    public override int GetHashCode() {
+      unchecked {
+        return base.GetHashCode() + 73 * _space.GetHashCode();
+      }
+    }
   }
 }

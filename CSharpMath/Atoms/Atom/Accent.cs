@@ -12,5 +12,21 @@ namespace CSharpMath.Atoms {
       InnerList = AtomCloner.Clone(cloneMe.InnerList, finalize);
       Nucleus = cloneMe.Nucleus;
     }
+
+    public bool EqualsAccent(Accent other) {
+      bool r = this.EqualsAtom(other);
+      r &= InnerList.NullCheckingEquals(other.InnerList);
+      return r;
+    }
+
+    public override bool Equals(object obj)
+      => EqualsAccent(obj as Accent);
+
+    public override int GetHashCode() {
+      unchecked {
+        return base.GetHashCode()
+      + 71 * InnerList?.GetHashCode() ?? 1;
+      }
+    }
   }
 }

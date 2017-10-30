@@ -10,5 +10,21 @@ namespace CSharpMath.Atoms {
     public Overline(Overline cloneMe, bool finalize) : base(cloneMe, finalize) {
       this.InnerList = AtomCloner.Clone(cloneMe.InnerList, finalize);
     }
+
+    public bool EqualsOverline(Overline other) {
+      bool r = this.EqualsAtom(other);
+      r &= InnerList.NullCheckingEquals(other.InnerList);
+      return r;
+    }
+
+    public override bool Equals(object obj)
+      => EqualsOverline(obj as Overline);
+
+    public override int GetHashCode() {
+      unchecked {
+        return base.GetHashCode()
+        + 53 * InnerList?.GetHashCode() ?? 1;
+      }
+    }
   }
 }

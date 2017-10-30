@@ -16,5 +16,20 @@ namespace CSharpMath.Atoms
       _style = cloneMe.Style;
     }
     public LineStyle Style => _style;
+
+    public bool EqualsStyle(MathStyle otherStyle) {
+      bool r = EqualsAtom(otherStyle);
+      r &= Style == otherStyle.Style;
+      return r;
+    }
+
+    public override bool Equals(object obj)
+      => EqualsStyle(obj as MathStyle);
+
+    public override int GetHashCode() {
+      unchecked {
+        return base.GetHashCode() + 107 * _style.GetHashCode();
+      }
+    }
   }
 }

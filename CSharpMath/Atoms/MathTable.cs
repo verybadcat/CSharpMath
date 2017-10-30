@@ -2,6 +2,7 @@
 using CSharpMath.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace CSharpMath.Atoms {
@@ -18,6 +19,8 @@ namespace CSharpMath.Atoms {
       _environment = environment;
     }
 
+    public MathTable():this(null) { }
+
     public string Environment {
       get => _environment;
       set => _environment = value;
@@ -25,10 +28,10 @@ namespace CSharpMath.Atoms {
 
 
     public int NRows => Cells.Count;
-    public int NColumns => (NRows == 0) ? 0 : Cells[0].Count;
+    public int NColumns => (NRows == 0) ? 0 : Cells.Max(row => row.Count);
 
     public void SetCell(IMathList list, int iRow, int iColumn) {
-      while (Cells.Count < iRow) {
+      while (Cells.Count <= iRow) {
         Cells.Add(new List<IMathList>());
       }
       while (Cells[iRow].Count <= iColumn) {
@@ -49,6 +52,27 @@ namespace CSharpMath.Atoms {
         return ColumnAlignment.Center;
       }
       return Alignments[columnIndex];
+    }
+
+    public bool EqualsTable(MathTable otherTable) {
+      bool r = EqualsAtom(otherTable);
+      r &= (NRows == otherTable.NRows);
+      for (int i=0; i<NRows; i++) {
+        r &= (Cells[i].EqualsEnumerable(otherTable.Cells[i]));
+      }
+      r &= Alignments.EqualsEnumerable(otherTable.Alignments);
+      return r;
+    }
+
+    public override bool Equals(object obj)
+      => EqualsTable(obj as MathTable);
+
+    public override int GetHashCode() {
+      unchecked {
+        return base.GetHashCode()
+          + 109 * Cells.GetHashCode()
+          + 113 * Alignments.GetHashCode();
+      }
     }
   }
 }

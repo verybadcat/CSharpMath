@@ -60,13 +60,17 @@ namespace CSharpMath.Atoms {
       r &= RightDelimiter == other.RightDelimiter;
       return r;
     }
-    
-    
-    public override int GetHashCode() =>
+
+
+    public override int GetHashCode() {
+      unchecked {
+        return
       base.GetHashCode()
       + 17 * Numerator?.GetHashCode() ?? 0
       + 19 * Denominator?.GetHashCode() ?? 0
       + 61 * LeftDelimiter?.GetHashCode() ?? 0
       + 101 * RightDelimiter?.GetHashCode() ?? 0;
+      }
+    }
   }
 }
