@@ -14,6 +14,7 @@ namespace CSharpMath.Atoms.Factories {
     private bool _spacesAllowed;
     private FontStyle _currentFontStyle;
     private EnvironmentProperties _currentEnvironment;
+    private Inner _currentInnerAtom;
     public MathListBuilder(string str) {
       _chars = str.ToCharArray();
       _currentFontStyle = FontStyle.Default;
@@ -254,8 +255,119 @@ namespace CSharpMath.Atoms.Factories {
       return false;
     }
 
-    private string ReadCommand() {
 
+    private string ReadCommand() {
+      char[] singleCharCommands = @"{}$#%_| ,>;!\\".ToCharArray();
+      if (HasCharacters) {
+        var ch = GetNextCharacter();
+        if (singleCharCommands.Contains(ch)) {
+          return ch.ToString();
+        } else {
+          unlookCharacter();
+        }
+      }
+      return ReadString();
+    }
+
+    private string ReadDelimiter() {
+      SkipSpaces();
+      while (HasCharacters) {
+        var ch = GetNextCharacter();
+        AssertNotSpace(ch);
+        if (ch == '\\') {
+          // a command
+          var command = ReadCommand();
+          if (command == "|") {
+            return @"||";
+          }
+          return command;
+        }
+        return ch.ToString();
+      }
+      return null;
+    }
+
+    private string ReadEnvironment() {
+      if (ExpectCharacter('{')) {
+        _error = "Missing {";
+        return null;
+      }
+      SkipSpaces();
+      var env = ReadString();
+      if (!ExpectCharacter('}')) {
+        _error = "Missing }";
+        return null;
+      }
+      return env;
+    }
+
+    private IMathAtom AtomForCommand(string command) {
+      var atom = MathAtoms.ForLatexSymbolName(command);
+      if (atom!=null) {
+        return atom;
+      }
+      switch (command) {
+        case "frac":
+          var fraction = new Fraction();
+          fraction.Numerator = BuildInternal(true);
+          fraction.Denominator = BuildInternal(true);
+          return fraction;
+        case "binom":
+          var frac = new Fraction(false);
+          frac.Numerator = BuildInternal(true);
+          frac.Denominator = BuildInternal(true);
+          frac.LeftDelimiter = "(";
+          frac.RightDelimiter = ")";
+          return frac;
+        case "sqrt":
+          var rad = new Radical();
+          var ch = GetNextCharacter();
+          if (ch == '[') {
+            rad.Degree = BuildInternal(false, ']');
+            rad.Radicand = BuildInternal(true);
+          } else {
+            unlookCharacter();
+            rad.Radicand = BuildInternal(true);
+          }
+          return rad;
+        case "left":
+          var oldInner = _currentInnerAtom;
+          _currentInnerAtom = new Inner();
+          _currentInnerAtom.LeftBoundary = GetBoundaryAtom("left");
+          if (_currentInnerAtom.LeftBoundary == null) {
+            return null;
+          }
+          _currentInnerAtom.InnerList = BuildInternal(false);
+          if (_currentInnerAtom.RightBoundary == null) {
+            _error = "Missing \\right";
+            return null;
+          }
+          _currentInnerAtom = oldInner;
+          break;
+        case "overline":
+          var over = new Overline();
+          over.InnerList = BuildInternal(true);
+          return over;
+        case "underline":
+          var under = new Underline();
+          under.InnerList = BuildInternal(true);
+          return under;
+        case "begin":
+          var env = ReadEnvironment();
+          if (env == null) {
+            return null;
+          }
+          var table = BuildTable(env, null, false);
+          return table;
+        case "color":
+          var mathColor = new MathColor();
+          mathColor.ColorString = ReadColor();
+          mathColor.InnerList = BuildInternal(true);
+          return mathColor;
+        default:
+          _error = "Invalid command \\" + command;
+          return null;
+      }
     }
   }
 }
