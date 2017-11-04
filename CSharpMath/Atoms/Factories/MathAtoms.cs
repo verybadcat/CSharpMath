@@ -155,6 +155,8 @@ namespace CSharpMath.Atoms {
       }
     }
 
+    internal static FontStyle? FontStyle(string command) => FontStyleExtensions.FontStyles.GetValueOrDefault(command);
+
     private static Dictionary<string, IMathAtom> _supportedLatexSymbols;
 
     public static Dictionary<string, IMathAtom> Commands {

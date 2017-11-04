@@ -42,8 +42,8 @@ namespace CSharpMath.Tests {
 
     [Fact]
     public void TestSubscript() {
-   //   var str = "-52x^{13+y}_{15-} + (-12.3 *)\\frac{-12}{15.2}";
-   //   var list = MathLists.FromString(str);
+      var str = "-52x^{13+y}_{15-} + (-12.3 *)\\frac{-12}{15.2}";
+      var list = MathLists.FromString(str);
     }
 
 

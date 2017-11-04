@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace CSharpMath.Atoms {
-  public class MathLists {
+  /// <summary>Entry point for all ways of creating MathList objects. Much of the
+  /// actual "meat" is in MathListBuilder.</summary> 
+  public static class MathLists {
     public static MathList WithAtoms(List<IMathAtom> atoms) {
       var r = new MathList();
       foreach (var atom in atoms) {
@@ -19,6 +21,11 @@ namespace CSharpMath.Atoms {
         r.AddAtom(atom);
       }
       return r;
+    }
+
+    public static MathList FromString(string str) {
+      var builder = new MathListBuilder(str);
+      return builder.Build();
     }
   }
 }
