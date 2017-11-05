@@ -97,7 +97,7 @@ namespace CSharpMath.Atoms {
             continue;
           case '{':
             var sublist = BuildInternal(false, '}');
-            prevAtom = sublist.Atoms.Last();
+            prevAtom = sublist.Atoms.LastOrDefault();
             r.Append(sublist);
             if (oneCharOnly) {
               return r;

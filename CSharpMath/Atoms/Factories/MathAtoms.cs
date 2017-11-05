@@ -3,7 +3,6 @@ using CSharpMath.Enumerations;
 using CSharpMath.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace CSharpMath.Atoms {
   public static class MathAtoms {

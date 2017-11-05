@@ -37,11 +37,29 @@ namespace CSharpMath.Tests {
       MathAtomType.Space, MathAtomType.Variable}, @"x\quad y\; z\! q");
     }
 
-    public IEnumerable<(string, MathAtomType[][], string)> SuperscriptTestData() {
+    public static IEnumerable<(string, MathAtomType[][], string)> RawSuperscriptTestData() {
       yield return ("x^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Variable }, new MathAtomType[] { MathAtomType.Number } }, "x^{2}");
       yield return ("x^23", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Variable, MathAtomType.Number }, new MathAtomType[] { MathAtomType.Number } }, "x^{2}3");
       yield return ("x^{23}", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Variable }, new MathAtomType[] { MathAtomType.Number, MathAtomType.Number } }, "x^{23}");
-      yield return ("x^2^3", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Variable, MathAtomType.Ordinary } }, "x^{2}{}^{3}");
+      yield return ("x^2^3", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Variable, MathAtomType.Ordinary }, new MathAtomType[] { MathAtomType.Number } }, "x^{2}{}^{3}");
+      yield return ("x^{2^3}", new MathAtomType[][] { new MathAtomType[] {MathAtomType.Variable},
+        new MathAtomType[] { MathAtomType.Number },
+      new MathAtomType[]{MathAtomType.Number} }, "x^{2^{3 } }");
+      yield return ("x^{^2*}", new MathAtomType[][] {
+        new MathAtomType[]{MathAtomType.Variable },
+        new MathAtomType[]{MathAtomType.Ordinary, MathAtomType.BinaryOperator },
+        new MathAtomType[]{MathAtomType.Number } },
+        "x^{{}^{2}*}");
+      yield return ("^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Ordinary }, new MathAtomType[] { MathAtomType.Number } }, "{}^{2}");
+      yield return ("{}^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Ordinary }, new MathAtomType[] { MathAtomType.Number } }, "{}^{2}");
+      yield return ("x^^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Variable, MathAtomType.Ordinary } , new MathAtomType[] { } }, "x^{}{}^{2}");
+      yield return ("5{x}^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Number, MathAtomType.Variable }, new MathAtomType[] { } }, "5x^2");
+    }
+
+    public static IEnumerable<object[]> SuperscriptTestData() {
+      foreach (var tuple in RawSuperscriptTestData()) {
+        yield return new object[] { tuple.Item1, tuple.Item2, tuple.Item3 };
+      }
     }
 
     public static IEnumerable<object[]> TestData() {
@@ -56,15 +74,40 @@ namespace CSharpMath.Tests {
       var list = builder.Build();
       Assert.Null(builder.Error);
 
-      string errorDescription = "Error for string: " + input;
-      CheckAtomTypes(list, atomTypes, errorDescription);
+      CheckAtomTypes(list, atomTypes);
 
       // TODO: convert back and check.
     }
 
-    private void CheckAtomTypes(IMathList list, MathAtomType[] types, string errorDescription) {
-      Assert.Equal(types.Count(), list.Atoms.Count);
-      for (int i=0; i<list.Atoms.Count; i++) {
+    [Theory, MemberData(nameof(SuperscriptTestData))]
+    public void TestSuperscript(string input, MathAtomType[][] atomTypes, string output) {
+      var builder = new MathListBuilder(input);
+      var list = builder.Build();
+      Assert.Null(builder.Error);
+      CheckAtomTypes(list, atomTypes[0]);
+
+      IMathAtom firstAtom = list.Atoms[0];
+      var types = atomTypes[1];
+      if (types.Count() > 0) {
+        Assert.NotNull(firstAtom.Superscript);
+      }
+      var superList = firstAtom.Superscript;
+      CheckAtomTypes(superList, atomTypes[1]);
+      if (atomTypes.Count() == 3) {
+        // one more level
+        var superFirst = superList.Atoms[0];
+        var superSuperList = superFirst.Superscript;
+        CheckAtomTypes(superSuperList, atomTypes[2]);
+      }
+
+      // TODO: convert back to string and check.
+    }
+
+    /// <summary>Safe to call with a null list. Types cannot be null however.</summary>
+    private void CheckAtomTypes(IMathList list, MathAtomType[] types) {
+      int atomCount = (list == null) ? 0 : list.Atoms.Count;
+      Assert.Equal(types.Count(), atomCount);
+      for (int i=0; i<atomCount; i++) {
         var atom = list.Atoms[i];
         Assert.NotNull(atom);
         Assert.Equal(atom.AtomType, types[i]);
