@@ -23,7 +23,7 @@ namespace CSharpMath.Atoms {
       return r;
     }
 
-    public static MathList FromString(string str) {
+    public static IMathList FromString(string str) {
       var builder = new MathListBuilder(str);
       return builder.Build();
     }

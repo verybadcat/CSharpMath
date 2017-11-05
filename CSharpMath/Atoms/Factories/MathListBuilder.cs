@@ -1,11 +1,12 @@
-﻿using CSharpMath.Environment;
+﻿using CSharpMath.Enumerations;
+using CSharpMath.Environment;
 using CSharpMath.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CSharpMath.Atoms.Factories {
+namespace CSharpMath.Atoms {
   internal class MathListBuilder {
     private string _error;
     private char[] _chars;
@@ -20,7 +21,7 @@ namespace CSharpMath.Atoms.Factories {
       _currentFontStyle = FontStyle.Default;
       _length = str.Length;
     }
-    public MathList Build() {
+    public IMathList Build() {
       var r = this.BuildInternal(false);
       if (HasCharacters && _error != null) {
         _error = "Error; most likely mismatched braces " + new string(_chars);
@@ -47,10 +48,10 @@ namespace CSharpMath.Atoms.Factories {
     private bool HasCharacters => _currentChar < _length;
 
 
-    private MathList BuildInternal(bool oneCharOnly)
+    private IMathList BuildInternal(bool oneCharOnly)
       => BuildInternal(oneCharOnly, (char)0);
 
-    private MathList BuildInternal(bool oneCharOnly, char stopChar) {
+    private IMathList BuildInternal(bool oneCharOnly, char stopChar) {
       if (oneCharOnly && stopChar > 0) {
         throw new InvalidOperationException("Cannot set both oneCharOnly and stopChar");
       }
@@ -303,7 +304,7 @@ namespace CSharpMath.Atoms.Factories {
 
     private IMathAtom AtomForCommand(string command) {
       var atom = MathAtoms.ForLatexSymbolName(command);
-      if (atom!=null) {
+      if (atom != null) {
         return atom;
       }
       switch (command) {
@@ -333,7 +334,7 @@ namespace CSharpMath.Atoms.Factories {
         case "left":
           var oldInner = _currentInnerAtom;
           _currentInnerAtom = new Inner();
-          _currentInnerAtom.LeftBoundary = GetBoundaryAtom("left");
+          _currentInnerAtom.LeftBoundary = MathAtoms.BoundaryAtom("left");
           if (_currentInnerAtom.LeftBoundary == null) {
             return null;
           }
@@ -342,8 +343,9 @@ namespace CSharpMath.Atoms.Factories {
             _error = "Missing \\right";
             return null;
           }
+          var newInner = _currentInnerAtom;
           _currentInnerAtom = oldInner;
-          break;
+          return newInner;
         case "overline":
           var over = new Overline();
           over.InnerList = BuildInternal(true);
@@ -369,5 +371,141 @@ namespace CSharpMath.Atoms.Factories {
           return null;
       }
     }
+
+    private static Dictionary<string, String[]> fractionCommands = new Dictionary<string, string[]> {
+      {"over", new string[0] },
+      {"atop", new string[0] },
+      {"choose", new string[]{"(", ")" } },
+      {"brack", new string[]{"[", "]"} },
+      {"brace", new string[]{"{", "}"} }
+    };
+
+    private IMathList StopCommand(string command, IMathList list, char stopChar) {
+      if (command == "right") {
+        if (_currentInnerAtom == null) {
+          _error = "Missing \\left";
+          return null;
+        }
+        return list;
+      }
+      if (fractionCommands.ContainsKey(command)) {
+        bool rule = (command == "over");
+        var fraction = new Fraction(rule);
+        string[] delimiters = fractionCommands[command];
+        if (delimiters.Count() == 2) {
+          fraction.LeftDelimiter = delimiters[0];
+          fraction.RightDelimiter = delimiters[1];
+        }
+        fraction.Numerator = list;
+        fraction.Denominator = BuildInternal(false, stopChar);
+        if (_error != null) {
+          return null;
+        }
+        var fracList = MathLists.WithAtoms(fraction);
+        return fracList;
+      } else if (command == "\\" || command == "cr") {
+        if (_currentEnvironment == null) {
+          var table = BuildTable(null, list, true);
+          return MathLists.WithAtoms(table);
+        } else {
+          // stop the current list and increment the row count
+          _currentEnvironment.NRows++;
+          return list;
+        }
+      } else if (command == "end") {
+        if (_currentEnvironment == null) {
+          _error = @"Missing \begin";
+          return null;
+        }
+        _currentEnvironment.Ended = true;
+        return list;
+      }
+      return null;
+    }
+    private bool ApplyModifier(string modifier, IMathAtom atom) {
+      if (modifier == "limits") {
+        if (atom.AtomType == MathAtomType.LargeOperator) {
+          var op = (LargeOperator)atom;
+          op.Limits = true;
+        } else {
+          _error = "nolimits can only be applied to an operator.";
+        }
+        return true;
+      }else if (modifier == "nolimits") {
+        if (atom is LargeOperator) {
+          var op = (LargeOperator)atom;
+          op.Limits = false;
+        }
+        return true;
+      }
+      return false;
+    }
+
+    private void setError(string message) {
+      if (_error == null) {
+        _error = message;
+      }
+    }
+
+    private IMathAtom BuildTable(string environment, IMathList firstList, bool isRow) {
+      var oldEnv = _currentEnvironment;
+      _currentEnvironment = new EnvironmentProperties("env");
+      int currentRow = 0;
+      int currentColumn = 0;
+      List<List<IMathList>> rows = new List<List<IMathList>>();
+      rows.Add(new List<IMathList>());
+      if (firstList!=null) {
+        rows[currentRow].Add(firstList);
+        if (isRow) {
+          _currentEnvironment.NRows++;
+          currentRow++;
+          rows.Add(new List<IMathList>());
+        } else {
+          currentColumn++;
+        }
+      }
+      while (HasCharacters && !(_currentEnvironment.Ended)) {
+        var list = BuildInternal(false);
+        if (list == null) {
+          return null;
+        }
+        rows[currentRow].Add(list);
+        currentColumn++;
+        if (_currentEnvironment.NRows > currentRow) {
+          currentRow = _currentEnvironment.NRows;
+          rows.Add(new List<IMathList>());
+          currentColumn = 0;
+        }
+      }
+      if (_currentEnvironment.Name!=null && !_currentEnvironment.Ended) {
+        _error = @"Missing \end";
+        return null;
+      }
+      IMathAtom table = MathAtoms.Table(_currentEnvironment.Name, rows, out string errorMessage);
+      if (table == null && errorMessage!=null) {
+        _error = errorMessage;
+        return null;
+      }
+      _currentEnvironment = oldEnv;
+      return table;
+    }
+
+    private Dictionary<int, string> spaceToCommands { get; } = new Dictionary<int, string> {
+      {3, "," },
+      {4, ">" },
+      {5, ";" },
+      {-3, "!" },
+      {18, "quad" },
+      {36, "qquad" }
+    };
+
+    private Dictionary<LineStyle, string> styleToCommands { get; } = new Dictionary<LineStyle, string> {
+      {LineStyle.Display, "displaystyle" },
+      {LineStyle.Text, "textstyle" },
+      {LineStyle.Script, "scriptstyle" },
+      {LineStyle.ScriptScript, "scriptscriptstyle" }
+    };
+    
+    
   }
 }
