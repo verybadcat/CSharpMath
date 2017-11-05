@@ -25,7 +25,7 @@ namespace CSharpMath.Atoms {
 
     public MathList() { }
 
-    public MathList(MathList cloneMe, bool finalize) : this() {
+    public MathList(IMathList cloneMe, bool finalize) : this() {
       if (!finalize) {
         foreach (var atom in cloneMe.Atoms) {
           var cloneAtom = AtomCloner.Clone(atom, finalize);
