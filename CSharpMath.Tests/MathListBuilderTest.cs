@@ -21,6 +21,27 @@ namespace CSharpMath.Tests {
       yield return (",", new MathAtomType[] { MathAtomType.Punctuation }, ",");
       yield return ("!", new MathAtomType[] { MathAtomType.Close }, "!");
       yield return ("=", new MathAtomType[] { MathAtomType.Relation }, "=");
+      yield return ("x+2", new MathAtomType[] { MathAtomType.Variable, MathAtomType.BinaryOperator, MathAtomType.Number }, "x+2");
+      yield return ("(2.3 * 8)", new MathAtomType[] { MathAtomType.Open, MathAtomType.Number, MathAtomType.Number, MathAtomType.Number, MathAtomType.BinaryOperator, MathAtomType.Number, MathAtomType.Close }, "(2.3*8)");
+      yield return ("5{3+4}", new MathAtomType[] { MathAtomType.Number, MathAtomType.Number, MathAtomType.BinaryOperator, MathAtomType.Number }, "53+4"); // braces are just for grouping
+      // commands
+      yield return (@"\pi+\theta\geq 3", new MathAtomType[] { MathAtomType.Variable, MathAtomType.BinaryOperator, MathAtomType.Variable, MathAtomType.Relation, MathAtomType.Number }, @"\pi +\theta \geq 3");
+      //aliases
+      yield return (@"\pi\ne 5 \land 3", new MathAtomType[] { MathAtomType.Variable, MathAtomType.Relation, MathAtomType.Number, MathAtomType.BinaryOperator, MathAtomType.Number }, @"\pi \neq 5\wedge 3");
+      // control space
+      yield return (@"x \ y", new MathAtomType[] { MathAtomType.Variable, MathAtomType.Ordinary, MathAtomType.Variable }, @"x\  y");
+      // spacing
+      yield return (@"x \quad y \; z \! q", new MathAtomType[]
+      {MathAtomType.Variable, MathAtomType.Space, MathAtomType.Variable,
+        MathAtomType.Space, MathAtomType.Variable,
+      MathAtomType.Space, MathAtomType.Variable}, @"x\quad y\; z\! q");
+    }
+
+    public IEnumerable<(string, MathAtomType[][], string)> SuperscriptTestData() {
+      yield return ("x^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Variable }, new MathAtomType[] { MathAtomType.Number } }, "x^{2}");
+      yield return ("x^23", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Variable, MathAtomType.Number }, new MathAtomType[] { MathAtomType.Number } }, "x^{2}3");
+      yield return ("x^{23}", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Variable }, new MathAtomType[] { MathAtomType.Number, MathAtomType.Number } }, "x^{23}");
+      yield return ("x^2^3", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Variable, MathAtomType.Ordinary } }, "x^{2}{}^{3}");
     }
 
     public static IEnumerable<object[]> TestData() {
@@ -42,6 +63,7 @@ namespace CSharpMath.Tests {
     }
 
     private void CheckAtomTypes(IMathList list, MathAtomType[] types, string errorDescription) {
+      Assert.Equal(types.Count(), list.Atoms.Count);
       for (int i=0; i<list.Atoms.Count; i++) {
         var atom = list.Atoms[i];
         Assert.NotNull(atom);

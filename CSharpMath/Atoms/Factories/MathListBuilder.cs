@@ -142,6 +142,7 @@ namespace CSharpMath.Atoms {
             atom = AtomForCommand(command);
             if (atom == null) {
               _error = "Internal error";
+              atom = AtomForCommand(command);
               return null;
             }
             break;
@@ -261,7 +262,7 @@ namespace CSharpMath.Atoms {
 
 
     private string ReadCommand() {
-      char[] singleCharCommands = @"{}$#%_| ,>;!\\".ToCharArray();
+      char[] singleCharCommands = @"{}$#%_| ,>;!\".ToCharArray();
       if (HasCharacters) {
         var ch = GetNextCharacter();
         if (singleCharCommands.Contains(ch)) {

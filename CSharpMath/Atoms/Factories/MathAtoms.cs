@@ -15,6 +15,7 @@ namespace CSharpMath.Atoms {
             {"lnot", "neg" },
             {"land", "wedge" },
             {"lor", "vee" },
+            {"ne", "neq" },
             {"le", "leq" },
             {"ge", "geq" },
             {"lbrace", "{" },
@@ -157,7 +158,11 @@ namespace CSharpMath.Atoms {
       }
     }
 
-    internal static FontStyle? FontStyle(string command) => FontStyleExtensions.FontStyles.GetValueOrDefault(command);
+    internal static FontStyle? FontStyle(string command) {
+      var dict = FontStyleExtensions.FontStyles;
+      FontStyle? r = dict.ContainsKey(command) ? (FontStyle?) dict[command] : null;
+      return r;
+    }
 
     private static Dictionary<string, IMathAtom> _supportedLatexSymbols;
 
