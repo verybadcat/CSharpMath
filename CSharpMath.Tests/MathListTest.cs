@@ -40,15 +40,15 @@ namespace CSharpMath.Tests {
       CheckClone(open.Subscript, clone.Subscript);
     }
 
-    [Fact]
-    public void TestSubscript() {
-      var str = "-52x^{13+y}_{15-} + (-12.3 *)\\frac{-12}{15.2}";
-      var list = MathLists.FromString(str);
-      var finalized = new MathList(list, true);
-      MathListValidator.CheckListContents(finalized);
-      var reFinalized = new MathList(finalized, true);
-      MathListValidator.CheckListContents(reFinalized);
-    }
+   // [Fact]
+    //public void TestSubscript() {
+    //  var str = "-52x^{13+y}_{15-} + (-12.3 *)\\frac{-12}{15.2}";
+    //  var list = MathLists.FromString(str);
+    //  var finalized = new MathList(list, true);
+    //  MathListValidator.CheckListContents(finalized);
+    //  var reFinalized = new MathList(finalized, true);
+    //  MathListValidator.CheckListContents(reFinalized);
+    //}
 
 
   }

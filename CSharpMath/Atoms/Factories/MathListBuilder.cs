@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 
 namespace CSharpMath.Atoms {
-  internal class MathListBuilder {
+  public class MathListBuilder {
     private string _error;
     private char[] _chars;
     private int _length;
@@ -16,6 +16,9 @@ namespace CSharpMath.Atoms {
     private FontStyle _currentFontStyle;
     private EnvironmentProperties _currentEnvironment;
     private Inner _currentInnerAtom;
+
+    public string Error => _error;
+
     public MathListBuilder(string str) {
       _chars = str.ToCharArray();
       _currentFontStyle = FontStyle.Default;
