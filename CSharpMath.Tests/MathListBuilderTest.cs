@@ -62,6 +62,16 @@ namespace CSharpMath.Tests {
       }
     }
 
+    public static IEnumerable<object[]> SubscriptTestData() {
+      foreach (var tuple in RawSuperscriptTestData()) {
+        yield return new object[] {
+          tuple.Item1.Replace('^', '_'),
+          tuple.Item2,
+          tuple.Item3.Replace('^', '_')
+        };
+      }
+    }
+
     public static IEnumerable<object[]> TestData() {
       foreach (var tuple in RawTestData()) {
         yield return new object[] { tuple.Item1, tuple.Item2, tuple.Item3 };
@@ -80,7 +90,14 @@ namespace CSharpMath.Tests {
     }
 
     [Theory, MemberData(nameof(SuperscriptTestData))]
-    public void TestSuperscript(string input, MathAtomType[][] atomTypes, string output) {
+    public void TestSuperscript(string input, MathAtomType[][] atomTypes, string output)
+     => RunScriptTest(input, atom => atom.Superscript, atomTypes, output);
+
+    [Theory, MemberData(nameof(SubscriptTestData))]
+    public void TestSubscript(string input, MathAtomType[][] atomTypes, string output)
+     => RunScriptTest(input, atom => atom.Subscript, atomTypes, output);
+
+    private void RunScriptTest(string input, Func<IMathAtom, IMathList> scriptGetter, MathAtomType[][] atomTypes, string output) {
       var builder = new MathListBuilder(input);
       var list = builder.Build();
       Assert.Null(builder.Error);
@@ -89,15 +106,15 @@ namespace CSharpMath.Tests {
       IMathAtom firstAtom = list.Atoms[0];
       var types = atomTypes[1];
       if (types.Count() > 0) {
-        Assert.NotNull(firstAtom.Superscript);
+        Assert.NotNull(scriptGetter(firstAtom));
       }
-      var superList = firstAtom.Superscript;
-      CheckAtomTypes(superList, atomTypes[1]);
+      var scriptList = scriptGetter(firstAtom);
+      CheckAtomTypes(scriptList, atomTypes[1]);
       if (atomTypes.Count() == 3) {
         // one more level
-        var superFirst = superList.Atoms[0];
-        var superSuperList = superFirst.Superscript;
-        CheckAtomTypes(superSuperList, atomTypes[2]);
+        var firstScript = scriptList.Atoms[0];
+        var scriptScriptList = scriptGetter(firstScript);
+        CheckAtomTypes(scriptScriptList, atomTypes[2]);
       }
 
       // TODO: convert back to string and check.
