@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Collections;
 
 namespace CSharpMath.Atoms {
   public class MathList : IMathList {
@@ -69,8 +70,6 @@ namespace CSharpMath.Atoms {
 
     }
 
-    public IMathAtom this[int index] => Atoms[index];
-
     public int Count => Atoms.Count;
 
     public string StringValue {
@@ -82,6 +81,10 @@ namespace CSharpMath.Atoms {
         return builder.ToString();
       }
     }
+
+    public bool IsReadOnly => throw new NotImplementedException();
+
+    public IMathAtom this[int index] { get => Atoms[index]; set => Atoms[index] = value; }
 
     public void AddAtom(IMathAtom atom) => Atoms.Add(atom);
     public void Append(IMathList list) => this.Atoms.AddRange(list.Atoms);
@@ -116,8 +119,15 @@ namespace CSharpMath.Atoms {
       return false;
     }
     public override int GetHashCode() => Atoms.GetHashCode();
- 
- 
-
+    public IEnumerator<IMathAtom> GetEnumerator() => Atoms.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => Atoms.GetEnumerator();
+    public int IndexOf(IMathAtom item) => Atoms.IndexOf(item);
+    public void Insert(int index, IMathAtom item) => Atoms.Insert(0, item);
+    public void RemoveAt(int index) => Atoms.RemoveAt(index);
+    public void Add(IMathAtom item) => Atoms.Add(item);
+    public void Clear() => Atoms.Clear();
+    public bool Contains(IMathAtom item) => Atoms.Contains(item);
+    public void CopyTo(IMathAtom[] array, int arrayIndex) => Atoms.CopyTo(array, arrayIndex);
+    public bool Remove(IMathAtom item) => Atoms.Remove(item);
   }
 }

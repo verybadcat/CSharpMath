@@ -13,7 +13,7 @@ namespace CSharpMath.Atoms {
     public bool HasRule { get; private set; }
 
     public Fraction(bool hasRule = true): base(MathAtomType.Fraction, "") {
-
+      HasRule = hasRule;
     }
 
     public Fraction(Fraction cloneMe, bool finalize): base(cloneMe, finalize) {

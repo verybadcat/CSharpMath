@@ -103,7 +103,7 @@ namespace CSharpMath.Tests {
       Assert.Null(builder.Error);
       CheckAtomTypes(list, atomTypes[0]);
 
-      IMathAtom firstAtom = list.Atoms[0];
+      IMathAtom firstAtom = list[0];
       var types = atomTypes[1];
       if (types.Count() > 0) {
         Assert.NotNull(scriptGetter(firstAtom));
@@ -112,7 +112,7 @@ namespace CSharpMath.Tests {
       CheckAtomTypes(scriptList, atomTypes[1]);
       if (atomTypes.Count() == 3) {
         // one more level
-        var firstScript = scriptList.Atoms[0];
+        var firstScript = scriptList[0];
         var scriptScriptList = scriptGetter(firstScript);
         CheckAtomTypes(scriptScriptList, atomTypes[2]);
       }
@@ -125,10 +125,104 @@ namespace CSharpMath.Tests {
       int atomCount = (list == null) ? 0 : list.Atoms.Count;
       Assert.Equal(types.Count(), atomCount);
       for (int i=0; i<atomCount; i++) {
-        var atom = list.Atoms[i];
+        var atom = list[i];
         Assert.NotNull(atom);
         Assert.Equal(atom.AtomType, types[i]);
       }
+    }
+
+    private void CheckAtomTypeAndNucleus(IMathAtom atom, MathAtomType type, string nucleus) {
+      Assert.Equal(type, atom.AtomType);
+      Assert.Equal(nucleus, atom.Nucleus);
+    }
+
+    [Fact]
+    public void TestSymbols() {
+      string str = @"5\times3^{2\div2}";
+      var builder = new MathListBuilder(str);
+      var list = builder.Build();
+      Assert.NotNull(list);
+      Assert.Equal(3, list.Atoms.Count());
+
+      CheckAtomTypeAndNucleus(list[0], MathAtomType.Number, "5");
+      CheckAtomTypeAndNucleus(list[1], MathAtomType.BinaryOperator, "\u00D7");
+      CheckAtomTypeAndNucleus(list[2], MathAtomType.Number, "3");
+
+      var superList = list[2].Superscript;
+      Assert.NotNull(superList);
+      Assert.Equal(3, superList.Atoms.Count());
+      CheckAtomTypeAndNucleus(superList[0], MathAtomType.Number, "2");
+      CheckAtomTypeAndNucleus(superList[1], MathAtomType.BinaryOperator, "\u00F7");
+      CheckAtomTypeAndNucleus(superList[2], MathAtomType.Number, "2");
+    }
+
+    [Fact]
+    void TestFraction() {
+      var input = @"\frac1c";
+      var list = MathLists.FromString(input);
+      Assert.NotNull(list);
+      Assert.Single(list);
+
+      var fraction = list[0] as Fraction;
+      Assert.NotNull(fraction);
+      CheckAtomTypeAndNucleus(fraction, MathAtomType.Fraction, "");
+      Assert.True(fraction.HasRule);
+      Assert.Null(fraction.LeftDelimiter);
+      Assert.Null(fraction.RightDelimiter);
+
+      var sublist = fraction.Numerator;
+      Assert.Single(sublist);
+      CheckAtomTypeAndNucleus(sublist[0], MathAtomType.Number, "1");
+
+      var denominator = fraction.Denominator;
+      Assert.Single(denominator);
+      CheckAtomTypeAndNucleus(denominator[0], MathAtomType.Variable, "c");
+
+      //TODO: convert back and check.
+    }
+
+    [Fact]
+    public void TestFractionInFraction() {
+      var input = @"\frac1\frac23";
+      var list = MathLists.FromString(input);
+      Assert.Single(list);
+      CheckAtomTypeAndNucleus(list[0], MathAtomType.Fraction, "");
+      var fraction = list[0] as Fraction;
+
+      var numerator = fraction.Numerator;
+      Assert.Single(numerator);
+      CheckAtomTypeAndNucleus(numerator[0], MathAtomType.Number, "1");
+
+      var denominator = fraction.Denominator;
+      Assert.Single(denominator);
+      CheckAtomTypeAndNucleus(denominator[0], MathAtomType.Fraction, "");
+      var subFraction = denominator[0] as Fraction;
+
+      var subNumerator = subFraction.Numerator;
+      Assert.Single(subNumerator);
+      CheckAtomTypeAndNucleus(subNumerator[0], MathAtomType.Number, "2");
+
+      var subDenominator = subFraction.Denominator;
+      Assert.Single(subDenominator);
+      CheckAtomTypeAndNucleus(subDenominator[0], MathAtomType.Number, "3");
+
+      // TODO: convert back and check
+    }
+
+    [Fact]
+    public void TestSqrt() {
+      var input = @"\sqrt2";
+      var list = MathLists.FromString(input);
+
+      Assert.Single(list);
+      var radical = list[0] as Radical;
+      CheckAtomTypeAndNucleus(radical, MathAtomType.Radical, "");
+
+      var radicand = radical.Radicand;
+      Assert.Single(radicand);
+      CheckAtomTypeAndNucleus(radicand[0], MathAtomType.Number, "2");
+
+      // TODO: convert back and check
     }
   }
 }
