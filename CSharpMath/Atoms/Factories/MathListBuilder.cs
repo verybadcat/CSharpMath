@@ -435,7 +435,7 @@ namespace CSharpMath.Atoms {
           _error = "nolimits can only be applied to an operator.";
         }
         return true;
-      }else if (modifier == "nolimits") {
+      } else if (modifier == "nolimits") {
         if (atom is LargeOperator) {
           var op = (LargeOperator)atom;
           op.Limits = false;
@@ -458,7 +458,7 @@ namespace CSharpMath.Atoms {
       int currentColumn = 0;
       List<List<IMathList>> rows = new List<List<IMathList>>();
       rows.Add(new List<IMathList>());
-      if (firstList!=null) {
+      if (firstList != null) {
         rows[currentRow].Add(firstList);
         if (isRow) {
           _currentEnvironment.NRows++;
@@ -481,12 +481,12 @@ namespace CSharpMath.Atoms {
           currentColumn = 0;
         }
       }
-      if (_currentEnvironment.Name!=null && !_currentEnvironment.Ended) {
+      if (_currentEnvironment.Name != null && !_currentEnvironment.Ended) {
         _error = @"Missing \end";
         return null;
       }
       IMathAtom table = MathAtoms.Table(_currentEnvironment.Name, rows, out string errorMessage);
-      if (table == null && errorMessage!=null) {
+      if (table == null && errorMessage != null) {
         _error = errorMessage;
         return null;
       }
@@ -494,7 +494,7 @@ namespace CSharpMath.Atoms {
       return table;
     }
 
-    private Dictionary<int, string> spaceToCommands { get; } = new Dictionary<int, string> {
+    private static Dictionary<int, string> SpaceToCommands { get; } = new Dictionary<int, string> {
       {3, "," },
       {4, ">" },
       {5, ";" },
@@ -503,13 +503,210 @@ namespace CSharpMath.Atoms {
       {36, "qquad" }
     };
 
-    private Dictionary<LineStyle, string> styleToCommands { get; } = new Dictionary<LineStyle, string> {
+    private static Dictionary<LineStyle, string> StyleToCommands { get; } = new Dictionary<LineStyle, string> {
       {LineStyle.Display, "displaystyle" },
       {LineStyle.Text, "textstyle" },
       {LineStyle.Script, "scriptstyle" },
       {LineStyle.ScriptScript, "scriptscriptstyle" }
     };
-    
-    
+
+    public static string DelimiterToString(IMathAtom delimiter) {
+      var command = MathAtoms.DelimiterName(delimiter);
+      if (command == null) {
+        return "";
+      }
+      var singleChars = @"()[]<>|./";
+      if (singleChars.IndexOf(command, StringComparison.InvariantCultureIgnoreCase) >= 0 && command.Length == 1) {
+        return command;
+      }
+      if (command == "||") {
+        return @"\|";
+      } else {
+        return @"\" + command;
+      }
+    }
+
+    public static string MathListToString(IMathList mathList) {
+      var builder = new StringBuilder();
+      var currentFontStyle = FontStyle.Default;
+      foreach (var atom in mathList) {
+        if (currentFontStyle != atom.FontStyle) {
+          // close the previous font style
+          builder.Append("}");
+        }
+        if (atom.FontStyle != FontStyle.Default) {
+          // open a new font style
+          var fontStyleName = currentFontStyle.FontName();
+          builder.Append(@"\" + fontStyleName + "{");
+        }
+        currentFontStyle = atom.FontStyle;
+        switch (atom.AtomType) {
+          case MathAtomType.Fraction: {
+              IFraction fraction = (IFraction)atom;
+              var numerator = MathListToString(fraction.Numerator);
+              var denominator = MathListToString(fraction.Denominator);
+              if (fraction.HasRule) {
+                builder.Append(@"\frac{" + numerator + "}{" + denominator + "}");
+              } else {
+                string command = null;
+                if (fraction.LeftDelimiter == null && fraction.RightDelimiter == null) {
+                  command = "atop";
+                } else if (fraction.LeftDelimiter == "(" && fraction.RightDelimiter == ")") {
+                  command = "choose";
+                } else if (fraction.LeftDelimiter == "{" && fraction.RightDelimiter == "}") {
+                  command = "brace";
+                } else if (fraction.LeftDelimiter == "[" && fraction.RightDelimiter == "]") {
+                  command = "brack";
+                } else {
+                  command = $"atopwithdelims{fraction.LeftDelimiter}{fraction.RightDelimiter}";
+                }
+                builder.Append("{" + numerator + @" \" + command + " " + denominator);
+              }
+            }
+            break;
+          case MathAtomType.Radical: {
+              builder.Append(@"\sqrt");
+              var radical = (IRadical)atom;
+              if (radical.Degree != null) {
+                builder.Append($"[{MathListToString(radical.Degree)}]");
+              }
+              builder.Append("{" + MathListToString(radical.Radicand) + "}");
+              break;
+            }
+          case MathAtomType.Inner: {
+              var inner = (IMathInner)atom;
+              if (inner.LeftBoundary == null && inner.RightBoundary == null) {
+                builder.Append("{" + MathListToString(inner.InnerList) + "}");
+              } else {
+                if (inner.LeftBoundary == null) {
+                  builder.Append(@"\left. ");
+                } else {
+                  builder.Append(@"\left" + DelimiterToString(inner.LeftBoundary));
+                }
+                builder.Append(MathListToString(inner.InnerList));
+                if (inner.RightBoundary == null) {
+                  builder.Append(@"\right. ");
+                } else {
+                  builder.Append(@"\right" + DelimiterToString(inner.RightBoundary));
+
+                }
+              }
+              break;
+            }
+          case MathAtomType.Table: {
+              var table = (IMathTable)atom;
+              if (table.Environment != null) {
+                builder.Append(@"\begin{" + table.Environment + "}");
+              }
+              for (int i = 0; i < table.NRows; i++) {
+                var row = table.Cells[i];
+                for (int j = 0; j < row.Count; j++) {
+                  var cell = row[j];
+                  if (table.Environment == "matrix") {
+                    if (cell.Count >= 1 && cell[0].AtomType == MathAtomType.Style) {
+                      // remove the first atom.
+                      var atoms = cell.Atoms.GetRange(1, cell.Count - 1);
+                      cell = MathLists.WithAtoms(atoms.ToArray());
+                    }
+                  }
+                  if (table.Environment == "eqalign" || table.Environment == "aligned" || table.Environment == "split") {
+                    if (j == 1 && cell.Count >= 1 && cell[0].AtomType == MathAtomType.Ordinary && string.IsNullOrEmpty(cell[0].Nucleus)) {
+                      // empty nucleus added for spacing. Remove it.
+                      var atoms = cell.Atoms.GetRange(1, cell.Count - 1);
+                      cell = MathLists.WithAtoms(atoms.ToArray());
+                    }
+                  }
+                  builder.Append(MathListToString(cell));
+                  if (j < row.Count - 1) {
+                    builder.Append("&");
+                  }
+                }
+                if (i < table.NRows - 1) {
+                  builder.Append(@"\\ ");
+                }
+              }
+              if (table.Environment != null) {
+                builder.Append(@"\end{" + table.Environment + "}");
+              }
+              break;
+            }
+          case MathAtomType.Overline: {
+              var over = (IOverline)atom;
+              builder.Append(@"\overline{" + MathListToString(over.InnerList) + "}");
+              break;
+            }
+          case MathAtomType.Underline: {
+              var under = (IUnderline)atom;
+              builder.Append(@"\underline{" + MathListToString(under.InnerList) + "}");
+              break;
+            }
+          case MathAtomType.Accent: {
+              var accent = (IAccent)atom;
+              builder.Append(@"\" + MathAtoms.AccentName(accent) + "{" + MathListToString(accent.InnerList) + "}");
+              break;
+            }
+          case MathAtomType.LargeOperator: {
+              var op = (LargeOperator)atom;
+              var command = MathAtoms.LatexSymbolNameForAtom(atom);
+              LargeOperator originalOperator = (LargeOperator)MathAtoms.ForLatexSymbolName(command);
+              builder.Append($@"\{command} ");
+              if (originalOperator.Limits != op.Limits) {
+                if (op.Limits) {
+                  builder.Append(@"\limits ");
+                } else {
+                  builder.Append(@"\nolimits ");
+                }
+              }
+              break;
+            }
+          case MathAtomType.Space: {
+              var space = (IMathSpace)atom;
+              var intSpace = (int)space.Space;
+              if (SpaceToCommands.ContainsKey(intSpace) && intSpace == space.Space) {
+                var command = SpaceToCommands[intSpace];
+                builder.Append(@"\" + command + " ");
+              } else {
+                builder.Append(@"\mkern" + space.Space.ToString("0.0") + "mu");
+              }
+              break;
+            }
+          case MathAtomType.Style: {
+              var style = (IMathStyle)atom;
+              var command = StyleToCommands[style.Style];
+              builder.Append(@"\" + command + " ");
+              break;
+            }
+          default: {
+              var aNucleus = atom.Nucleus;
+              if (String.IsNullOrEmpty(aNucleus)) {
+                builder.Append(@"{}");
+              } else if (aNucleus == "\u2236") {
+                builder.Append(":");
+              } else if (aNucleus == "\u2212") {
+                builder.Append("-");
+              } else {
+                var command = MathAtoms.LatexSymbolNameForAtom(atom);
+                if (command == null) {
+                  builder.Append(aNucleus);
+                } else {
+                  builder.Append(@"\" + command + " ");
+                }
+              }
+              break;
+            }
+
+        }
+        if (atom.Superscript != null) {
+          builder.Append(@"^{" + MathListToString(atom.Superscript) + "}");
+        }
+        if (atom.Subscript!=null) {
+          builder.Append(@"_{" + MathListToString(atom.Subscript) + "}");
+        }
+      }
+      if (currentFontStyle!=FontStyle.Default) {
+        builder.Append("}");
+      }
+      return builder.ToString();
+    }
   }
 }
