@@ -44,7 +44,7 @@ namespace CSharpMath.Tests {
       yield return ("x^2^3", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Variable, MathAtomType.Ordinary }, new MathAtomType[] { MathAtomType.Number } }, "x^{2}{}^{3}");
       yield return ("x^{2^3}", new MathAtomType[][] { new MathAtomType[] {MathAtomType.Variable},
         new MathAtomType[] { MathAtomType.Number },
-      new MathAtomType[]{MathAtomType.Number} }, "x^{2^{3 } }");
+      new MathAtomType[]{MathAtomType.Number} }, "x^{2^{3}}");
       yield return ("x^{^2*}", new MathAtomType[][] {
         new MathAtomType[]{MathAtomType.Variable },
         new MathAtomType[]{MathAtomType.Ordinary, MathAtomType.BinaryOperator },
@@ -53,7 +53,7 @@ namespace CSharpMath.Tests {
       yield return ("^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Ordinary }, new MathAtomType[] { MathAtomType.Number } }, "{}^{2}");
       yield return ("{}^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Ordinary }, new MathAtomType[] { MathAtomType.Number } }, "{}^{2}");
       yield return ("x^^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Variable, MathAtomType.Ordinary } , new MathAtomType[] { } }, "x^{}{}^{2}");
-      yield return ("5{x}^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Number, MathAtomType.Variable }, new MathAtomType[] { } }, "5x^2");
+      yield return ("5{x}^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Number, MathAtomType.Variable }, new MathAtomType[] { } }, "5x^{2}");
     }
 
     public static IEnumerable<object[]> SuperscriptTestData() {
@@ -119,7 +119,8 @@ namespace CSharpMath.Tests {
         CheckAtomTypes(scriptScriptList, atomTypes[2]);
       }
 
-      // TODO: convert back to string and check.
+      string latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(output, latex);
     }
 
     /// <summary>Safe to call with a null list. Types cannot be null however.</summary>
@@ -180,7 +181,8 @@ namespace CSharpMath.Tests {
       Assert.Single(denominator);
       CheckAtomTypeAndNucleus(denominator[0], MathAtomType.Variable, "c");
 
-      //TODO: convert back and check.
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"\frac{1}{c}", latex);
     }
 
     [Fact]
@@ -208,7 +210,9 @@ namespace CSharpMath.Tests {
       Assert.Single(subDenominator);
       CheckAtomTypeAndNucleus(subDenominator[0], MathAtomType.Number, "3");
 
-      // TODO: convert back and check
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"\frac{1}{\frac{2}{3}}", latex);
+
     }
 
     [Fact]
@@ -224,7 +228,8 @@ namespace CSharpMath.Tests {
       Assert.Single(radicand);
       CheckAtomTypeAndNucleus(radicand[0], MathAtomType.Number, "2");
 
-      // TODO: convert back and check
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"\sqrt{2}", latex);
     }
   }
 }
