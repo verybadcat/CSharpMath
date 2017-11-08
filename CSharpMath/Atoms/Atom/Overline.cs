@@ -26,5 +26,8 @@ namespace CSharpMath.Atoms {
         + 53 * InnerList?.GetHashCode() ?? 1;
       }
     }
+
+    public override T Accept<T, THelper>(IMathAtomVisitor<T, THelper> visitor, THelper helper)
+=> visitor.Visit(this, helper);
   }
 }

@@ -660,7 +660,7 @@ namespace CSharpMath.Atoms {
               break;
             }
           case MathAtomType.Space: {
-              var space = (IMathSpace)atom;
+              var space = (ISpace)atom;
               var intSpace = (int)space.Space;
               if (SpaceToCommands.ContainsKey(intSpace) && intSpace == space.Space) {
                 var command = SpaceToCommands[intSpace];

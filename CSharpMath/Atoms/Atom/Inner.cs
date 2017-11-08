@@ -66,5 +66,8 @@ namespace CSharpMath.Atoms {
         return r;
       }
     }
+
+    public override T Accept<T, THelper>(IMathAtomVisitor<T, THelper> visitor, THelper helper)
+  => visitor.Visit(this, helper);
   }
 }

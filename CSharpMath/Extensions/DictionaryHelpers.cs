@@ -28,12 +28,16 @@ namespace CSharpMath {
 
     public static Dictionary<string, string> BuildValueToKeyDictionary (
       IEnumerable<string> values,
-      Func <string, string> getKeyForValue) {
+      Func <string, string> getKeyForValue,
+      Func<string, bool> keepKey) {
       Dictionary<string, string> r = new Dictionary<string, string>();
       foreach (var val in values) {
+        
         var key = getKeyForValue(val);
-        if (ShouldSetValueWhenBuildingDictionary(r, key, val)) {
-          r[val] = key;
+        if (keepKey(key)) {
+          if (ShouldSetValueWhenBuildingDictionary(r, key, val)) {
+            r[key] = val;
+          }
         }
       }
       return r;

@@ -21,6 +21,14 @@ namespace CSharpMath.Atoms {
 
     public MathTable():this(null) { }
 
+    public MathTable(MathTable cloneMe, bool finalize) : base(cloneMe, finalize) {
+      InterColumnSpacing = cloneMe.InterColumnSpacing;
+      InterRowAdditionalSpacing = cloneMe.InterRowAdditionalSpacing;
+      Environment = cloneMe.Environment;
+      Alignments = cloneMe.Alignments.ToList();
+      Cells = new List<List<IMathList>>(cloneMe.Cells.Select(list => list.ToList()));
+    }
+
     public string Environment {
       get => _environment;
       set => _environment = value;
@@ -54,6 +62,7 @@ namespace CSharpMath.Atoms {
       return Alignments[columnIndex];
     }
 
+
     public bool EqualsTable(MathTable otherTable) {
       bool r = EqualsAtom(otherTable);
       r &= (NRows == otherTable.NRows);
@@ -74,5 +83,8 @@ namespace CSharpMath.Atoms {
           + 113 * Alignments.GetHashCode();
       }
     }
+
+    public override T Accept<T, THelper>(IMathAtomVisitor<T, THelper> visitor, THelper helper)
+=> visitor.Visit(this, helper);
   }
 }

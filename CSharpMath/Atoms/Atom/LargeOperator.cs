@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CSharpMath.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -12,6 +13,7 @@ namespace CSharpMath.Atoms {
     public LargeOperator(string value, bool limits): base(MathAtomType.LargeOperator, value) {
       _limits = limits;
     }
+
     public LargeOperator(LargeOperator cloneMe, bool finalize): base(cloneMe, finalize) {
       _limits = cloneMe.Limits;
     }
@@ -21,5 +23,8 @@ namespace CSharpMath.Atoms {
       r &= (this.Limits == obj.Limits);
       return r;
     }
+
+    public override T Accept<T, THelper>(IMathAtomVisitor<T, THelper> visitor, THelper helper)
+  => visitor.Visit(this, helper);
   }
 }

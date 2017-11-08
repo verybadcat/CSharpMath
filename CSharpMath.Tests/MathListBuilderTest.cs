@@ -86,7 +86,9 @@ namespace CSharpMath.Tests {
 
       CheckAtomTypes(list, atomTypes);
 
-      // TODO: convert back and check.
+
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(output, latex);
     }
 
     [Theory, MemberData(nameof(SuperscriptTestData))]

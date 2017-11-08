@@ -27,5 +27,8 @@ namespace CSharpMath.Atoms {
         return base.GetHashCode() + 73 * _space.GetHashCode();
       }
     }
+
+    public override T Accept<T, THelper>(IMathAtomVisitor<T, THelper> visitor, THelper helper)
+      => visitor.Visit(this, helper);
   }
 }

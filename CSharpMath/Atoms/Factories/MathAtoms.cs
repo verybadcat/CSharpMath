@@ -457,7 +457,8 @@ namespace CSharpMath.Atoms {
       if (atom.Nucleus.IsEmpty()) {
         return null;
       }
-      return TextToLatexSymbolNames[atom.Nucleus];
+      string r = TextToLatexSymbolNames.GetValueOrDefault(atom.Nucleus);
+      return r;
     }
 
     public static void AddLatexSymbol(string name, IMathAtom atom) {
@@ -471,7 +472,7 @@ namespace CSharpMath.Atoms {
     public static Dictionary<string, string> TextToLatexSymbolNames {
       get {
         if (_textToLatexSymbolNames == null) {
-          _textToLatexSymbolNames = DictionaryHelpers.BuildValueToKeyDictionary(Commands.Keys, key => Commands[key].Nucleus);
+          _textToLatexSymbolNames = DictionaryHelpers.BuildValueToKeyDictionary(Commands.Keys, key => Commands[key].Nucleus, str => !(string.IsNullOrEmpty(str)));
         }
         return _textToLatexSymbolNames;
       }
