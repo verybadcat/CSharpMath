@@ -8,7 +8,7 @@ using CSharpMath.Atoms;
 using CSharpMath.Interfaces;
 
 namespace CSharpMath.Tests {
- 
+
   public class MathListBuilderTest {
     public static IEnumerable<(string, MathAtomType[], string)> RawTestData() {
       yield return ("x", new MathAtomType[] { MathAtomType.Variable }, "x");
@@ -52,7 +52,7 @@ namespace CSharpMath.Tests {
         "x^{{}^{2}*}");
       yield return ("^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Ordinary }, new MathAtomType[] { MathAtomType.Number } }, "{}^{2}");
       yield return ("{}^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Ordinary }, new MathAtomType[] { MathAtomType.Number } }, "{}^{2}");
-      yield return ("x^^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Variable, MathAtomType.Ordinary } , new MathAtomType[] { } }, "x^{}{}^{2}");
+      yield return ("x^^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Variable, MathAtomType.Ordinary }, new MathAtomType[] { } }, "x^{}{}^{2}");
       yield return ("5{x}^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Number, MathAtomType.Variable }, new MathAtomType[] { } }, "5x^{2}");
     }
 
@@ -127,7 +127,7 @@ namespace CSharpMath.Tests {
     private void CheckAtomTypes(IMathList list, MathAtomType[] types) {
       int atomCount = (list == null) ? 0 : list.Atoms.Count;
       Assert.Equal(types.Count(), atomCount);
-      for (int i=0; i<atomCount; i++) {
+      for (int i = 0; i < atomCount; i++) {
         var atom = list[i];
         Assert.NotNull(atom);
         Assert.Equal(atom.AtomType, types[i]);
@@ -230,6 +230,113 @@ namespace CSharpMath.Tests {
 
       var latex = MathListBuilder.MathListToString(list);
       Assert.Equal(@"\sqrt{2}", latex);
+    }
+
+    [Fact]
+    public void TestSqrtInSqrt() {
+      var input = @"\sqrt\sqrt2";
+      var list = MathLists.FromString(input);
+      Assert.Single(list);
+
+      var radical = list[0] as Radical;
+      CheckAtomTypeAndNucleus(radical, MathAtomType.Radical, "");
+
+      var sublist = radical.Radicand;
+      Assert.Single(sublist);
+
+      CheckAtomTypeAndNucleus(sublist[0], MathAtomType.Radical, "");
+
+      var subSubList = (sublist[0] as Radical).Radicand;
+      Assert.Single(subSubList);
+      CheckAtomTypeAndNucleus(subSubList[0], MathAtomType.Number, "2");
+
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"\sqrt{\sqrt{2}}", latex);
+    }
+
+    [Fact]
+    public void TestRadical() {
+      string input = @"\sqrt[3]2";
+      var list = MathLists.FromString(input);
+
+      Assert.Single(list);
+      var radical = list[0] as Radical;
+      CheckAtomTypeAndNucleus(radical, MathAtomType.Radical, "");
+
+      IMathList subList = radical.Radicand;
+      Assert.Single(subList);
+
+      var atom = subList[0];
+      CheckAtomTypeAndNucleus(atom, MathAtomType.Number, "2");
+
+      var degree = radical.Degree;
+      Assert.Single(degree);
+      CheckAtomTypeAndNucleus(degree[0], MathAtomType.Number, "3");
+
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"\sqrt[3]{2}", latex);
+    }
+
+    public static IEnumerable<(string, MathAtomType[], int, MathAtomType[], string, string, string)> RawTestDataLeftRight() {
+      var singletonList = new MathAtomType[] { MathAtomType.Inner };
+      var singletonNumber = new MathAtomType[] { MathAtomType.Number };
+      var singletonVariable = new MathAtomType[] { MathAtomType.Variable };
+      yield return ("\\left( 2 \\right)", singletonList, 0, singletonNumber, @"(", @")", @"\\left( 2\\right) ");
+      // spacing
+      yield return ("\\left ( 2 \\right )", singletonList, 0, singletonNumber, @"(", @")", @"\\left( 2\\right) ");
+      // commands
+      yield return ("\\left\\{ 2 \\right\\}", singletonList, 0, singletonNumber, @"{", @"}", @"\\left\\{ 2\\right\\} ");
+      // complex commands
+      yield return ("\\left\\langle x \\right\\rangle", singletonList, 0, singletonVariable, @"\u2329", @"\u232A", @"\\left< x\\right> ");
+      // bars
+      yield return ("\\left| x \\right\\|", singletonList, 0, singletonVariable, @"|", @"\u2016", @"\\left| x\\right\\| ");
+      // inner in between
+      yield return ("5 + \\left( 2 \\right) - 2", new MathAtomType[] { MathAtomType.Number, MathAtomType.BinaryOperator, MathAtomType.Inner, MathAtomType.BinaryOperator, MathAtomType.Number }, 2, singletonNumber, @"(", @")", @"5+\\left( 2\\right) -2");
+      // long inner
+      yield return ("\\left( 2 + \\frac12\\right)", singletonList, 0, new MathAtomType[] { MathAtomType.Number, MathAtomType.BinaryOperator, MathAtomType.Fraction }, @"(", @")", @"\\left( 2+\\frac{1}{2}\\right) ");
+      // nested
+      yield return ("\\left[ 2 + \\left|\\frac{-x}{2}\\right| \\right]", singletonList, 0, new MathAtomType[] { MathAtomType.Number, MathAtomType.BinaryOperator, MathAtomType.Inner }, @"[", @"]", @"\\left[ 2+\\left| \\frac{-x}{2}\\right| \\right] ");
+      // With scripts
+      yield return ("\\left( 2 \\right)^2", singletonList, 0, singletonNumber, @"(", @")", @"\\left( 2\\right) ^{2}");
+      // Scripts on left
+      yield return ("\\left(^2 \\right )", singletonList, 0, new MathAtomType[] { MathAtomType.Ordinary }, @"(", @")", @"\\left( {}^{2}\\right) ");
+      // Dot
+      yield return ("\\left( 2 \\right.", singletonList, 0, singletonNumber, @"(", @"", @"\\left( 2\\right. ");
+
+    }
+
+    public static IEnumerable<object[]> TestDataLeftRight() {
+      foreach (var tuple in RawTestDataLeftRight()) {
+        yield return new object[] { tuple.Item1, tuple.Item2, tuple.Item3, tuple.Item4, tuple.Item5, tuple.Item6, tuple.Item7 };
+      }
+    }
+
+    [Theory, MemberData(nameof(TestDataLeftRight))]
+    public void TestLeftRight(
+      string input, 
+      MathAtomType[] expectedOutputTypes,
+      int innerIndex,
+      MathAtomType[] expectedInnerTypes,
+      string leftBoundary,
+      string rightBoundary,
+      string expectedLatex) {
+      var builder = new MathListBuilder(input);
+      var list = builder.Build();
+
+      Assert.NotNull(list);
+      Assert.Null(builder.Error);
+
+      CheckAtomTypes(list, expectedOutputTypes);
+      var inner = list[innerIndex] as Inner;
+      Assert.NotNull(inner);
+      CheckAtomTypeAndNucleus(inner, MathAtomType.Inner, "");
+
+      CheckAtomTypes(inner.InnerList, expectedInnerTypes);
+      CheckAtomTypeAndNucleus(inner.LeftBoundary, MathAtomType.Boundary, leftBoundary);
+      CheckAtomTypeAndNucleus(inner.RightBoundary, MathAtomType.Boundary, rightBoundary);
+
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(expectedLatex, latex);
     }
   }
 }
