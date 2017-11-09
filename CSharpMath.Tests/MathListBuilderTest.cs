@@ -287,9 +287,9 @@ namespace CSharpMath.Tests {
       // commands
       yield return (@"\left\{ 2 \right\}", singletonList, 0, singletonNumber, @"{", @"}", @"\left\{ 2\right\} ");
       // complex commands
-      yield return (@"\left\langle x \right\rangle", singletonList, 0, singletonVariable, @"\u2329", @"\u232A", @"\left< x\right> ");
+      yield return (@"\left\langle x \right\rangle", singletonList, 0, singletonVariable, "\u2329", "\u232A", @"\left< x\right> ");
       // bars
-      yield return (@"\left| x \right\|", singletonList, 0, singletonVariable, @"|", @"\u2016", @"\left| x\right\| ");
+      yield return (@"\left| x \right\|", singletonList, 0, singletonVariable, @"|", "\u2016", @"\left| x\right\| ");
       // inner in between
       yield return (@"5 + \left( 2 \right) - 2", new MathAtomType[] { MathAtomType.Number, MathAtomType.BinaryOperator, MathAtomType.Inner, MathAtomType.BinaryOperator, MathAtomType.Number }, 2, singletonNumber, @"(", @")", @"5+\left( 2\right) -2");
       // long inner
