@@ -281,27 +281,27 @@ namespace CSharpMath.Tests {
       var singletonList = new MathAtomType[] { MathAtomType.Inner };
       var singletonNumber = new MathAtomType[] { MathAtomType.Number };
       var singletonVariable = new MathAtomType[] { MathAtomType.Variable };
-      yield return ("\\left( 2 \\right)", singletonList, 0, singletonNumber, @"(", @")", @"\\left( 2\\right) ");
+      yield return (@"\left( 2 \right)", singletonList, 0, singletonNumber, @"(", @")", @"\left( 2\right) ");
       // spacing
-      yield return ("\\left ( 2 \\right )", singletonList, 0, singletonNumber, @"(", @")", @"\\left( 2\\right) ");
+      yield return (@"\left ( 2 \right )", singletonList, 0, singletonNumber, @"(", @")", @"\left( 2\right) ");
       // commands
-      yield return ("\\left\\{ 2 \\right\\}", singletonList, 0, singletonNumber, @"{", @"}", @"\\left\\{ 2\\right\\} ");
+      yield return (@"\left\{ 2 \right\}", singletonList, 0, singletonNumber, @"{", @"}", @"\left\{ 2\right\} ");
       // complex commands
-      yield return ("\\left\\langle x \\right\\rangle", singletonList, 0, singletonVariable, @"\u2329", @"\u232A", @"\\left< x\\right> ");
+      yield return (@"\left\langle x \right\rangle", singletonList, 0, singletonVariable, @"\u2329", @"\u232A", @"\left< x\right> ");
       // bars
-      yield return ("\\left| x \\right\\|", singletonList, 0, singletonVariable, @"|", @"\u2016", @"\\left| x\\right\\| ");
+      yield return (@"\left| x \right\|", singletonList, 0, singletonVariable, @"|", @"\u2016", @"\left| x\right\| ");
       // inner in between
-      yield return ("5 + \\left( 2 \\right) - 2", new MathAtomType[] { MathAtomType.Number, MathAtomType.BinaryOperator, MathAtomType.Inner, MathAtomType.BinaryOperator, MathAtomType.Number }, 2, singletonNumber, @"(", @")", @"5+\\left( 2\\right) -2");
+      yield return (@"5 + \left( 2 \right) - 2", new MathAtomType[] { MathAtomType.Number, MathAtomType.BinaryOperator, MathAtomType.Inner, MathAtomType.BinaryOperator, MathAtomType.Number }, 2, singletonNumber, @"(", @")", @"5+\left( 2\right) -2");
       // long inner
-      yield return ("\\left( 2 + \\frac12\\right)", singletonList, 0, new MathAtomType[] { MathAtomType.Number, MathAtomType.BinaryOperator, MathAtomType.Fraction }, @"(", @")", @"\\left( 2+\\frac{1}{2}\\right) ");
+      yield return (@"\left( 2 + \frac12\right)", singletonList, 0, new MathAtomType[] { MathAtomType.Number, MathAtomType.BinaryOperator, MathAtomType.Fraction }, @"(", @")", @"\left( 2+\frac{1}{2}\right) ");
       // nested
-      yield return ("\\left[ 2 + \\left|\\frac{-x}{2}\\right| \\right]", singletonList, 0, new MathAtomType[] { MathAtomType.Number, MathAtomType.BinaryOperator, MathAtomType.Inner }, @"[", @"]", @"\\left[ 2+\\left| \\frac{-x}{2}\\right| \\right] ");
+      yield return (@"\left[ 2 + \left|\frac{-x}{2}\right| \right]", singletonList, 0, new MathAtomType[] { MathAtomType.Number, MathAtomType.BinaryOperator, MathAtomType.Inner }, @"[", @"]", @"\left[ 2+\left| \frac{-x}{2}\right| \right] ");
       // With scripts
-      yield return ("\\left( 2 \\right)^2", singletonList, 0, singletonNumber, @"(", @")", @"\\left( 2\\right) ^{2}");
+      yield return (@"\left( 2 \right)^2", singletonList, 0, singletonNumber, @"(", @")", @"\left( 2\right) ^{2}");
       // Scripts on left
-      yield return ("\\left(^2 \\right )", singletonList, 0, new MathAtomType[] { MathAtomType.Ordinary }, @"(", @")", @"\\left( {}^{2}\\right) ");
+      yield return (@"\left(^2 \right )", singletonList, 0, new MathAtomType[] { MathAtomType.Ordinary }, @"(", @")", @"\left( {}^{2}\right) ");
       // Dot
-      yield return ("\\left( 2 \\right.", singletonList, 0, singletonNumber, @"(", @"", @"\\left( 2\\right. ");
+      yield return (@"\left( 2 \right.", singletonList, 0, singletonNumber, @"(", @"", @"\left( 2\right. ");
 
     }
 

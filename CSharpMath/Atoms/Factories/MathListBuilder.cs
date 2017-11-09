@@ -306,6 +306,19 @@ namespace CSharpMath.Atoms {
       return env;
     }
 
+    private IMathAtom _BoundaryAtomForDelimiterType(string delimiterType) {
+      string delim = ReadDelimiter();
+      if (delim == null) {
+        _error = "Missing delimiter for " + delimiterType;
+        return null;
+      }
+      var boundary = MathAtoms.BoundaryAtom(delim);
+      if (boundary == null) {
+        _error = @"Invalid delimiter for \" + delimiterType + ": " + delim;
+      }
+      return boundary;
+    }
+
     private IMathAtom AtomForCommand(string command) {
       var atom = MathAtoms.ForLatexSymbolName(command);
       if (atom != null) {
@@ -338,7 +351,7 @@ namespace CSharpMath.Atoms {
         case "left":
           var oldInner = _currentInnerAtom;
           _currentInnerAtom = new Inner();
-          _currentInnerAtom.LeftBoundary = MathAtoms.BoundaryAtom("left");
+          _currentInnerAtom.LeftBoundary = _BoundaryAtomForDelimiterType("left");
           if (_currentInnerAtom.LeftBoundary == null) {
             return null;
           }
@@ -388,6 +401,10 @@ namespace CSharpMath.Atoms {
       if (command == "right") {
         if (_currentInnerAtom == null) {
           _error = "Missing \\left";
+          return null;
+        }
+        _currentInnerAtom.RightBoundary = _BoundaryAtomForDelimiterType("right");
+        if (_currentInnerAtom.RightBoundary == null) {
           return null;
         }
         return list;
@@ -581,13 +598,13 @@ namespace CSharpMath.Atoms {
                 if (inner.LeftBoundary == null) {
                   builder.Append(@"\left. ");
                 } else {
-                  builder.Append(@"\left" + DelimiterToString(inner.LeftBoundary));
+                  builder.Append(@"\left" + DelimiterToString(inner.LeftBoundary) + " ");
                 }
                 builder.Append(MathListToString(inner.InnerList));
                 if (inner.RightBoundary == null) {
                   builder.Append(@"\right. ");
                 } else {
-                  builder.Append(@"\right" + DelimiterToString(inner.RightBoundary));
+                  builder.Append(@"\right" + DelimiterToString(inner.RightBoundary) + " ");
 
                 }
               }

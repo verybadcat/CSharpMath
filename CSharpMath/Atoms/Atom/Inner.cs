@@ -14,7 +14,7 @@ namespace CSharpMath.Atoms {
     public IMathAtom LeftBoundary {
       get => _LeftBoundary;
       set {
-        if (value.AtomType!=MathAtomType.Boundary) {
+        if (value != null && value.AtomType!=MathAtomType.Boundary) {
           throw new InvalidOperationException("Boundary must have atom type Boundary");
         }
         _LeftBoundary = value;
@@ -23,7 +23,7 @@ namespace CSharpMath.Atoms {
     public IMathAtom RightBoundary {
       get => _RightBoundary;
       set {
-        if (value.AtomType != MathAtomType.Boundary) {
+        if (value != null && value.AtomType != MathAtomType.Boundary) {
           throw new InvalidOperationException("Boundary must have atom type Boundary");
         }
         _RightBoundary = value;
