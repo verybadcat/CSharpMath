@@ -577,7 +577,7 @@ namespace CSharpMath.Atoms {
                 } else {
                   command = $"atopwithdelims{fraction.LeftDelimiter}{fraction.RightDelimiter}";
                 }
-                builder.Append("{" + numerator + @" \" + command + " " + denominator);
+                builder.Append("{" + numerator + @" \" + command + " " + denominator + "}");
               }
             }
             break;

@@ -338,5 +338,74 @@ namespace CSharpMath.Tests {
       var latex = MathListBuilder.MathListToString(list);
       Assert.Equal(expectedLatex, latex);
     }
+
+    [Fact]
+    public void TestOver() {
+      var input = @"1 \over c";
+      var list = MathLists.FromString(input);
+      Assert.Single(list);
+
+      var fraction = list[0] as Fraction;
+      CheckAtomTypeAndNucleus(fraction, MathAtomType.Fraction, "");
+      Assert.True(fraction.HasRule);
+      Assert.Null(fraction.LeftDelimiter);
+      Assert.Null(fraction.RightDelimiter);
+
+      Assert.Single(fraction.Numerator);
+      CheckAtomTypeAndNucleus(fraction.Numerator[0], MathAtomType.Number, "1");
+
+      Assert.Single(fraction.Denominator);
+      CheckAtomTypeAndNucleus(fraction.Denominator[0], MathAtomType.Variable, "c");
+
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"\frac{1}{c}", latex);
+    }
+
+    [Fact]
+    public void TestOverInParens() {
+      var input = @"5 + {1 \over c} + 8";
+      var list = MathLists.FromString(input);
+
+      Assert.NotNull(list);
+      Assert.Equal(5, list.Count);
+      var types = new MathAtomType[] { MathAtomType.Number, MathAtomType.BinaryOperator, MathAtomType.Fraction, MathAtomType.BinaryOperator, MathAtomType.Number };
+      CheckAtomTypes(list, types);
+
+      var fraction = list[2] as Fraction;
+      CheckAtomTypeAndNucleus(fraction, MathAtomType.Fraction, "");
+      Assert.True(fraction.HasRule);
+      Assert.Null(fraction.LeftDelimiter);
+      Assert.Null(fraction.RightDelimiter);
+
+      Assert.Single(fraction.Numerator);
+      CheckAtomTypeAndNucleus(fraction.Numerator[0], MathAtomType.Number, "1");
+      Assert.Single(fraction.Denominator);
+      CheckAtomTypeAndNucleus(fraction.Denominator[0], MathAtomType.Variable, "c");
+
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"5+\frac{1}{c}+8", latex);
+    }
+
+    [Fact]
+    public void TestAtop() {
+      var input = @"1 \atop c";
+      var list = MathLists.FromString(input);
+
+      Assert.Single(list);
+      var fraction = list[0] as Fraction;
+      CheckAtomTypeAndNucleus(fraction, MathAtomType.Fraction, "");
+      Assert.False(fraction.HasRule);
+      Assert.Null(fraction.LeftDelimiter);
+      Assert.Null(fraction.RightDelimiter);
+
+      Assert.Single(fraction.Numerator);
+      CheckAtomTypeAndNucleus(fraction.Numerator[0], MathAtomType.Number, "1");
+
+      Assert.Single(fraction.Denominator);
+      CheckAtomTypeAndNucleus(fraction.Denominator[0], MathAtomType.Variable, "c");
+
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"{1 \atop c}", latex);
+    }
   }
 }
