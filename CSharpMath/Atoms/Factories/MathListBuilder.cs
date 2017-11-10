@@ -324,6 +324,11 @@ namespace CSharpMath.Atoms {
       if (atom != null) {
         return atom;
       }
+      var accent = MathAtoms.Accent(command);
+      if (accent!=null) {
+        accent.InnerList = BuildInternal(true);
+        return accent;
+      }
       switch (command) {
         case "frac":
           var fraction = new Fraction();

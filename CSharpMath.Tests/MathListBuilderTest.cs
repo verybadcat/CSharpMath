@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Xunit;
 using CSharpMath.Atoms;
 using CSharpMath.Interfaces;
+using CSharpMath.Enumerations;
 
 namespace CSharpMath.Tests {
 
@@ -406,6 +407,206 @@ namespace CSharpMath.Tests {
 
       var latex = MathListBuilder.MathListToString(list);
       Assert.Equal(@"{1 \atop c}", latex);
+    }
+
+    [Fact]
+    public void TestAtopInParens() {
+      var input = @"5 + {1 \atop c} + 8";
+      var list = MathLists.FromString(input);
+
+      Assert.Equal(5, list.Count);
+      var types = new MathAtomType[] {
+        MathAtomType.Number,
+        MathAtomType.BinaryOperator,
+        MathAtomType.Fraction,
+        MathAtomType.BinaryOperator,
+        MathAtomType.Number
+      };
+      CheckAtomTypes(list, types);
+      var fraction = list[2] as IFraction;
+      CheckAtomTypeAndNucleus(fraction, MathAtomType.Fraction, "");
+      Assert.False(fraction.HasRule);
+      Assert.Null(fraction.LeftDelimiter);
+      Assert.Null(fraction.RightDelimiter);
+
+      Assert.Single(fraction.Numerator);
+      CheckAtomTypeAndNucleus(fraction.Numerator[0], MathAtomType.Number, "1");
+
+      Assert.Single(fraction.Denominator);
+      CheckAtomTypeAndNucleus(fraction.Denominator[0], MathAtomType.Variable, "c");
+
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"5+{1 \atop c}+8", latex);
+    }
+
+    [Fact]
+    public void TestChoose() {
+      var input = @"n \choose k";
+      var list = MathLists.FromString(input);
+
+      Assert.Single(list);
+      CheckAtomTypeAndNucleus(list[0], MathAtomType.Fraction, "");
+
+      var fraction = list[0] as IFraction;
+      Assert.False(fraction.HasRule);
+      Assert.Equal("(", fraction.LeftDelimiter);
+      Assert.Equal(")", fraction.RightDelimiter);
+
+      Assert.Single(fraction.Numerator);
+      CheckAtomTypeAndNucleus(fraction.Numerator[0], MathAtomType.Variable, "n");
+
+      Assert.Single(fraction.Denominator);
+      CheckAtomTypeAndNucleus(fraction.Denominator[0], MathAtomType.Variable, "k");
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"{n \choose k}", latex);
+    }
+
+    [Fact]
+    public void TestBrack() {
+      var input = @"n \brack k";
+      var list = MathLists.FromString(input);
+
+      Assert.Single(list);
+      var fraction = list[0] as IFraction;
+      CheckAtomTypeAndNucleus(fraction, MathAtomType.Fraction, "");
+
+      Assert.False(fraction.HasRule);
+      Assert.Equal("[", fraction.LeftDelimiter);
+      Assert.Equal("]", fraction.RightDelimiter);
+
+      Assert.Single(fraction.Numerator);
+      CheckAtomTypeAndNucleus(fraction.Numerator[0], MathAtomType.Variable, "n");
+      Assert.Single(fraction.Denominator);
+      CheckAtomTypeAndNucleus(fraction.Denominator[0], MathAtomType.Variable, "k");
+
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"{n \brack k}", latex);
+    }
+
+    [Fact]
+    public void TestBrace() {
+      var input = @"n \brace k";
+      var list = MathLists.FromString(input);
+
+      Assert.Single(list);
+      var fraction = list[0] as IFraction;
+      CheckAtomTypeAndNucleus(fraction, MathAtomType.Fraction, "");
+
+      Assert.False(fraction.HasRule);
+      Assert.Equal("{", fraction.LeftDelimiter);
+      Assert.Equal("}", fraction.RightDelimiter);
+
+      Assert.Single(fraction.Numerator);
+      CheckAtomTypeAndNucleus(fraction.Numerator[0], MathAtomType.Variable, "n");
+      Assert.Single(fraction.Denominator);
+      CheckAtomTypeAndNucleus(fraction.Denominator[0], MathAtomType.Variable, "k");
+
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"{n \brace k}", latex);
+    }
+
+    [Fact]
+    public void TestBinomial() {
+      var input = @"\binom{n}{k}";
+      var list = MathLists.FromString(input);
+
+      Assert.Single(list);
+      var fraction = list[0] as IFraction;
+      CheckAtomTypeAndNucleus(fraction, MathAtomType.Fraction, "");
+
+      Assert.False(fraction.HasRule);
+      Assert.Equal("(", fraction.LeftDelimiter);
+      Assert.Equal(")", fraction.RightDelimiter);
+
+      Assert.Single(fraction.Numerator);
+      CheckAtomTypeAndNucleus(fraction.Numerator[0], MathAtomType.Variable, "n");
+      Assert.Single(fraction.Denominator);
+      CheckAtomTypeAndNucleus(fraction.Denominator[0], MathAtomType.Variable, "k");
+
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"{n \choose k}", latex);
+    }
+
+    [Fact]
+    public void TestOverline() {
+      var input = @"\overline 2";
+      var list = MathLists.FromString(input);
+
+      Assert.Single(list);
+      var overline = list[0] as IOverline;
+      CheckAtomTypeAndNucleus(overline, MathAtomType.Overline, "");
+
+      var inner = overline.InnerList;
+      Assert.Single(inner);
+      CheckAtomTypeAndNucleus(inner[0], MathAtomType.Number, "2");
+
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"\overline{2}", latex);
+    }
+
+    [Fact]
+    public void TestUnderline() {
+      var input = @"\underline 2";
+      var list = MathLists.FromString(input);
+
+      Assert.Single(list);
+      var underline = list[0] as IUnderline;
+      CheckAtomTypeAndNucleus(underline, MathAtomType.Underline, "");
+
+      var inner = underline.InnerList;
+      Assert.Single(inner);
+      CheckAtomTypeAndNucleus(inner[0], MathAtomType.Number, "2");
+
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"\underline{2}", latex);
+    }
+
+    [Fact]
+    public void TestAccent() {
+      var input = @"\bar x";
+      var list = MathLists.FromString(input);
+
+      Assert.Single(list);
+      var accent = list[0] as IAccent;
+      CheckAtomTypeAndNucleus(accent, MathAtomType.Accent, "\u0304");
+
+      var inner = accent.InnerList;
+      Assert.Single(inner);
+      CheckAtomTypeAndNucleus(inner[0], MathAtomType.Variable, "x");
+
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"\bar{x}", latex);
+    }
+
+    [Fact]
+    public void TestMathSpace() {
+      var input = @"\!";
+      var list = MathLists.FromString(input);
+
+      Assert.Single(list);
+      CheckAtomTypeAndNucleus(list[0], MathAtomType.Space, "");
+      Assert.Equal(-3, (list[0] as ISpace).Space);
+
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"\! ", latex);
+    }
+
+    [Fact]
+    public void TestMathStyle() {
+      var input = @"\textstyle y \scriptstyle x";
+      var list = MathLists.FromString(input);
+      Assert.Equal(4, list.Count);
+
+      var style = list[0] as IMathStyle;
+      CheckAtomTypeAndNucleus(style, MathAtomType.Style, "");
+      Assert.Equal(LineStyle.Text, style.Style);
+
+      var style2 = list[2] as IMathStyle;
+      CheckAtomTypeAndNucleus(style2, MathAtomType.Style, "");
+      Assert.Equal(LineStyle.Script, style2.Style);
+
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"\textstyle y\scriptstyle x", latex);
     }
   }
 }

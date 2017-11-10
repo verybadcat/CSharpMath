@@ -24,7 +24,7 @@ namespace CSharpMath.Constants {
     public static Dictionary<string, string> ValueToName {
       get {
         if (_valueToName == null) {
-          _valueToName = DictionaryHelpers.BuildValueToKeyDictionary(_valueToName.Keys, key => _valueToName[key], str => true);
+          _valueToName = DictionaryHelpers.BuildValueToKeyDictionary(NameToValue.Keys, key => NameToValue[key], str => true);
         }
         return _valueToName;
       }
