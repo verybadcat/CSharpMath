@@ -534,7 +534,8 @@ namespace CSharpMath.Atoms {
         Cells = rows
       };
       IMathAtom r = null;
-      if (_matrixEnvironments.ContainsKey(environment)) {
+      if (environment!=null && _matrixEnvironments.ContainsKey(environment)) {
+        var delimiters = _matrixEnvironments[environment];
         table.Environment = "matrix"; // Environment is set to matrix as delimiters are converted to latex outside the table.
         table.InterColumnSpacing = 18;
 
@@ -544,7 +545,7 @@ namespace CSharpMath.Atoms {
             cell.Insert(0, style);
           }
         }
-        var delimiters = _matrixEnvironments[environment];
+
         if (delimiters.Count == 2) {
           var inner = new Inner {
             LeftBoundary = BoundaryAtom(delimiters[0]),
@@ -552,8 +553,9 @@ namespace CSharpMath.Atoms {
             InnerList = MathLists.WithAtoms(table)
           };
           r = inner;
+        } else {
+          r = table;
         }
-        r = table;
       }
       else if (environment == null) {
         table.InterRowAdditionalSpacing = 1;

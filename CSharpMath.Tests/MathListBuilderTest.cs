@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 using CSharpMath.Atoms;
 using CSharpMath.Interfaces;
@@ -638,6 +636,126 @@ namespace CSharpMath.Tests {
       }
       var latex = MathListBuilder.MathListToString(list);
       Assert.Equal(@"\begin{matrix}x&y\\ z&w\end{matrix}", latex);
+    }
+
+    [Fact]
+    public void TestPMatrix() {
+      var input = @"\begin{pmatrix} x & y \\ z & w \end{pmatrix}";
+      var list = MathLists.FromString(input);
+      Assert.Single(list);
+      var inner = list[0] as IMathInner;
+      CheckAtomTypeAndNucleus(inner, MathAtomType.Inner, "");
+      var innerList = inner.InnerList;
+      CheckAtomTypeAndNucleus(inner.LeftBoundary, MathAtomType.Boundary, "(");
+      CheckAtomTypeAndNucleus(inner.RightBoundary, MathAtomType.Boundary, ")");
+      Assert.Single(innerList);
+      var table = innerList[0] as IMathTable;
+      CheckAtomTypeAndNucleus(table, MathAtomType.Table, "");
+      Assert.Equal("matrix", table.Environment);
+      Assert.Equal(0, table.InterRowAdditionalSpacing);
+      Assert.Equal(18, table.InterColumnSpacing);
+      Assert.Equal(2, table.NRows);
+      Assert.Equal(2, table.NColumns);
+
+      for (int i = 0; i < 2; i++) {
+        var alignment = table.GetAlignment(i);
+        Assert.Equal(ColumnAlignment.Center, alignment);
+        for (int j = 0; j < 2; j++) {
+          var cell = table.Cells[j][i];
+          Assert.Equal(2, cell.Count);
+          var style = cell[0] as IMathStyle;
+          Assert.Equal(MathAtomType.Style, style.AtomType);
+          Assert.Equal(LineStyle.Text, style.Style);
+
+          var atom = cell[1];
+          Assert.Equal(MathAtomType.Variable, atom.AtomType);
+        }
+      }
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"\left( \begin{matrix}x&y\\ z&w\end{matrix}\right) ", latex);
+    }
+
+    [Fact]
+    public void TestDefaultTable() {
+      var input = @"x \\ y";
+      var list = MathLists.FromString(input);
+
+      Assert.Single(list);
+      var table = list[0] as IMathTable;
+      CheckAtomTypeAndNucleus(table, MathAtomType.Table, "");
+      Assert.Null(table.Environment);
+      Assert.Equal(1, table.InterRowAdditionalSpacing);
+      Assert.Equal(0, table.InterColumnSpacing);
+      Assert.Equal(2, table.NRows);
+      Assert.Equal(1, table.NColumns);
+      for (int i=0; i<1; i++) {
+        Assert.Equal(ColumnAlignment.Left, table.GetAlignment(i));
+        for (int j=0; j<2; j++) {
+          var cell = table.Cells[j][i];
+          Assert.Single(cell);
+          Assert.Equal(MathAtomType.Variable, cell[0].AtomType);
+        }
+      }
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"x\\ y", latex);
+    }
+
+    [Fact]
+    public void TestTableWithColumns() {
+      var input = @"x & y \\ z & w";
+      var list = MathLists.FromString(input);
+      Assert.Single(list);
+      var table = list[0] as IMathTable;
+      CheckAtomTypeAndNucleus(table, MathAtomType.Table, "");
+      Assert.Null(table.Environment);
+      Assert.Equal(1, table.InterRowAdditionalSpacing);
+      Assert.Equal(0, table.InterColumnSpacing);
+      Assert.Equal(2, table.NRows);
+      Assert.Equal(2, table.NColumns);
+
+      for (int i=0; i<2; i++) {
+        Assert.Equal(ColumnAlignment.Left, table.GetAlignment(i));
+        for (int j=0; j<2; j++) {
+          var cell = table.Cells[j][i];
+          Assert.Single(cell);
+          Assert.Equal(MathAtomType.Variable, cell[0].AtomType);
+        }
+      }
+
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"x&y\\ z&w", latex);
+    }
+
+    [Theory]
+    [InlineData(@"\begin{eqalign}x&y\\ z&w\end{eqalign}")]
+    [InlineData(@"\begin{split}x&y\\ z&w\end{split}")]
+    [InlineData(@"\begin{aligned}x&y\\ z&w\end{aligned}")]
+    public void TestEqAlign(string input) {
+      var list = MathLists.FromString(input);
+      Assert.Single(list);
+      var table = list[0] as IMathTable;
+      CheckAtomTypeAndNucleus(table, MathAtomType.Table, "");
+      Assert.Equal(1, table.InterRowAdditionalSpacing);
+      Assert.Equal(0, table.InterColumnSpacing);
+      Assert.Equal(2, table.NRows);
+      Assert.Equal(2, table.NColumns);
+      for (int i=0; i<2; i++) {
+        var alignment = table.GetAlignment(i);
+        Assert.Equal(i == 0 ? ColumnAlignment.Right : ColumnAlignment.Left, alignment);
+        for (int j=0; j<2; j++) {
+          var cell = table.Cells[j][i];
+          if (i==0) {
+            Assert.Single(cell);
+            Assert.Equal(MathAtomType.Variable, cell[0].AtomType);
+          } else {
+            Assert.Equal(2, cell.Count);
+            Assert.Equal(MathAtomType.Ordinary, cell[0].AtomType);
+            Assert.Equal(MathAtomType.Variable, cell[1].AtomType);
+          }
+        }
+      }
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(input, latex);
     }
   }
 }
