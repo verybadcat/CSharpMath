@@ -90,8 +90,7 @@ namespace CSharpMath.Atoms {
     public void Append(IMathList list) => this.Atoms.AddRange(list.Atoms);
     public IMathList DeepCopy() => AtomCloner.Clone(this, false);
     public IMathList FinalizedList() => AtomCloner.Clone(this, true);
-    public void InsertAtom(IMathAtom atom, int index) => throw new NotImplementedException();
-    public void RemoveAtom(int index) => Atoms.RemoveAt(index);
+     public void RemoveAtom(int index) => Atoms.RemoveAt(index);
     public void RemoveAtoms(Range inRange) => Atoms.RemoveRange(inRange.Location, inRange.Length);
     public void RemoveLastAtom() {
       if (Atoms.Count > 0) {

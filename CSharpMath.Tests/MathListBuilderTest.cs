@@ -608,5 +608,36 @@ namespace CSharpMath.Tests {
       var latex = MathListBuilder.MathListToString(list);
       Assert.Equal(@"\textstyle y\scriptstyle x", latex);
     }
+
+    [Fact]
+    public void TestMatrix() {
+      var input = @"\begin{matrix} x & y \\ z & w \end{matrix}";
+      var list = MathLists.FromString(input);
+      Assert.Single(list);
+      var table = list[0] as IMathTable;
+      CheckAtomTypeAndNucleus(table, MathAtomType.Table, "");
+      Assert.Equal("matrix", table.Environment);
+      Assert.Equal(0, table.InterRowAdditionalSpacing);
+      Assert.Equal(18, table.InterColumnSpacing);
+      Assert.Equal(2, table.NRows);
+      Assert.Equal(2, table.NColumns);
+
+      for (int i=0; i<2; i++) {
+        var alignment = table.GetAlignment(i);
+        Assert.Equal(ColumnAlignment.Center, alignment);
+        for (int j=0; j<2; j++) {
+          var cell = table.Cells[j][i];
+          Assert.Equal(2, cell.Count);
+          var style = cell[0] as IMathStyle;
+          Assert.Equal(MathAtomType.Style, style.AtomType);
+          Assert.Equal(LineStyle.Text, style.Style);
+
+          var atom = cell[1];
+          Assert.Equal(MathAtomType.Variable, atom.AtomType);
+        }
+      }
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"\begin{matrix}x&y\\ z&w\end{matrix}", latex);
+    }
   }
 }

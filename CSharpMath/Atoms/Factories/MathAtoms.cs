@@ -541,7 +541,7 @@ namespace CSharpMath.Atoms {
         var style = new MathStyle(LineStyle.Text);
         foreach (var row in table.Cells) {
           foreach (var cell in row) {
-            cell.InsertAtom(style, 0);
+            cell.Insert(0, style);
           }
         }
         var delimiters = _matrixEnvironments[environment];
@@ -570,7 +570,7 @@ namespace CSharpMath.Atoms {
           var spacer = Create(MathAtomType.Ordinary, "");
           foreach (var row in table.Cells) {
             if (row.Count > 1) {
-              row[1].InsertAtom(spacer, 0);
+              row[1].Insert(0, spacer);
             }
           }
           table.InterRowAdditionalSpacing = 1;
@@ -601,7 +601,7 @@ namespace CSharpMath.Atoms {
           var style = new MathStyle(LineStyle.Text);
           foreach (var row in table.Cells) {
             foreach (var cell in row) {
-              cell.InsertAtom(style, 0);
+              cell.Insert(0, style);
             }
           }
           // add delimiters

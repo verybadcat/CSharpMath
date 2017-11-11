@@ -22,6 +22,7 @@ namespace CSharpMath.Interfaces {
 
     void SetCell(IMathList cellContent, int row, int column);
     void SetAlignment(ColumnAlignment alignment, int column);
+    ColumnAlignment GetAlignment(int columnIndex);
     /// <summary>
     /// Number of columns
     /// </summary>

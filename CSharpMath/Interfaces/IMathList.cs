@@ -11,7 +11,6 @@ namespace CSharpMath.Interfaces {
     List<IMathAtom> Atoms { get; }
 
     void AddAtom(IMathAtom atom);
-    void InsertAtom(IMathAtom atom, int index);
     void Append(IMathList list);
     void RemoveLastAtom();
     void RemoveAtom(int index);

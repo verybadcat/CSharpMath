@@ -112,7 +112,7 @@ namespace CSharpMath.Atoms {
             return null;
 
           case '\\':
-            string command = ReadCommand();
+            var command = ReadCommand();
             var done = StopCommand(command, r, stopChar);
             if (done != null) {
               return done;
@@ -139,7 +139,7 @@ namespace CSharpMath.Atoms {
               }
               continue;
             }
-            atom = AtomForCommand(command);
+            atom = AtomForCommand(command); // WJWJ problem is that we are returning null here.
             if (atom == null) {
               _error = "Internal error";
               atom = AtomForCommand(command);
@@ -152,7 +152,6 @@ namespace CSharpMath.Atoms {
               }
               var table = BuildTable(null, r, false);
               return MathLists.WithAtoms(table);
-
             }
           default:
             if (_spacesAllowed && ch == ' ') {
@@ -293,7 +292,7 @@ namespace CSharpMath.Atoms {
     }
 
     private string ReadEnvironment() {
-      if (ExpectCharacter('{')) {
+      if (!ExpectCharacter('{')) {
         _error = "Missing {";
         return null;
       }
@@ -443,6 +442,14 @@ namespace CSharpMath.Atoms {
           _error = @"Missing \begin";
           return null;
         }
+        var env = ReadEnvironment();
+        if (env == null) {
+          return null;
+        }
+        if (env!=_currentEnvironment.Name) {
+          _error = $"Begin environment name {_currentEnvironment.Name} does not match end environment name {env}";
+          return null;
+        }
         _currentEnvironment.Ended = true;
         return list;
       }
@@ -475,7 +482,7 @@ namespace CSharpMath.Atoms {
 
     private IMathAtom BuildTable(string environment, IMathList firstList, bool isRow) {
       var oldEnv = _currentEnvironment;
-      _currentEnvironment = new EnvironmentProperties("env");
+      _currentEnvironment = new EnvironmentProperties(environment);
       int currentRow = 0;
       int currentColumn = 0;
       List<List<IMathList>> rows = new List<List<IMathList>>();
