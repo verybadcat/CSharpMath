@@ -21,6 +21,9 @@ namespace CSharpMath.Atoms {
 
     public MathTable():this(null) { }
 
+    /// <summary>
+    /// Deep copy, finalized or not.
+    /// </summary>
     public MathTable(MathTable cloneMe, bool finalize) : base(cloneMe, finalize) {
       InterColumnSpacing = cloneMe.InterColumnSpacing;
       InterRowAdditionalSpacing = cloneMe.InterRowAdditionalSpacing;
