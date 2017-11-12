@@ -38,5 +38,7 @@ namespace CSharpMath.Atoms {
         return 13 * Length.GetHashCode() + Location.GetHashCode();
       }
     }
+
+    public override string ToString() => "Range " + Location + " " + Length;
   }
 }

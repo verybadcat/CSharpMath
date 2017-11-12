@@ -80,7 +80,7 @@ namespace CSharpMath.Atoms {
           case '^':
             if (prevAtom == null || prevAtom.Superscript != null || !prevAtom.ScriptsAllowed) {
               prevAtom = MathAtoms.Create(MathAtomType.Ordinary, "");
-              r.AddAtom(prevAtom);
+              r.Add(prevAtom);
             }
             // this is a subscript for the previous atom.
             // note, if the next char is StopChar, it will be consumed and doesn't count as stop.
@@ -89,7 +89,7 @@ namespace CSharpMath.Atoms {
           case '_':
             if (prevAtom == null || prevAtom.Subscript != null || !prevAtom.ScriptsAllowed) {
               prevAtom = MathAtoms.Create(MathAtomType.Ordinary, "");
-              r.AddAtom(prevAtom);
+              r.Add(prevAtom);
             }
             // this is a subscript for the previous atom.
             // note, if the next char is StopChar, it will be consumed and doesn't count as stop.
@@ -170,7 +170,7 @@ namespace CSharpMath.Atoms {
           throw new Exception("Atom shouldn't be null");
         }
         atom.FontStyle = _currentFontStyle;
-        r.AddAtom(atom);
+        r.Add(atom);
         prevAtom = atom;
         if (oneCharOnly) {
           return r; // we consumed our character.

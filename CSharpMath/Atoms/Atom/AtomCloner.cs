@@ -44,6 +44,7 @@ namespace CSharpMath.Atoms {
       }
       return target.Accept(Instance, finalize);
     }
+    /// <summary>Deep copy</summary> 
     public static IMathList Clone(IMathList target, bool finalize) {
       if (target == null) {
         return null;

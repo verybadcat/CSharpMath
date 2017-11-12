@@ -10,10 +10,8 @@ namespace CSharpMath.Interfaces {
   public interface IMathList: IStringValue, IMathObject, IList<IMathAtom> {
     List<IMathAtom> Atoms { get; }
 
-    void AddAtom(IMathAtom atom);
     void Append(IMathList list);
     void RemoveLastAtom();
-    void RemoveAtom(int index);
     void RemoveAtoms(Range inRange);
     
 

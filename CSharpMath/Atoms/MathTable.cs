@@ -26,7 +26,9 @@ namespace CSharpMath.Atoms {
       InterRowAdditionalSpacing = cloneMe.InterRowAdditionalSpacing;
       Environment = cloneMe.Environment;
       Alignments = cloneMe.Alignments.ToList();
-      Cells = new List<List<IMathList>>(cloneMe.Cells.Select(list => list.ToList()));
+      Cells = new List<List<IMathList>>(cloneMe.Cells.Select(list =>
+      new List<IMathList>(list.Select(sublist =>
+      AtomCloner.Clone(sublist, finalize)))));
     }
 
     public string Environment {

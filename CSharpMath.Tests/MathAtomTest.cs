@@ -54,13 +54,13 @@ namespace CSharpMath.Tests {
       var atom3 = MathAtoms.Divide;
 
       var list = new MathList();
-      list.AddAtom(atom);
-      list.AddAtom(atom2);
-      list.AddAtom(atom3);
+      list.Add(atom);
+      list.Add(atom2);
+      list.Add(atom3);
 
       var list2 = new MathList();
-      list2.AddAtom(atom3);
-      list2.AddAtom(atom2);
+      list2.Add(atom3);
+      list2.Add(atom2);
 
       var frac = new Fraction(false) {
         Numerator = list,
@@ -248,6 +248,44 @@ namespace CSharpMath.Tests {
       Assert.Equal(ColumnAlignment.Right, table.Alignments[1]);
       Assert.Equal(ColumnAlignment.Left, table.Alignments[2]);
 
+    }
+
+    [Fact]
+    public void TestCopyMathTable() {
+      var table = new MathTable();
+      Assert.Equal(MathAtomType.Table, table.AtomType);
+
+      var list = new MathList();
+      var atom = MathAtoms.Placeholder;
+      var atom2 = MathAtoms.Times;
+      var atom3 = MathAtoms.Divide;
+      list.Add(atom);
+      list.Add(atom2);
+      list.Add(atom3);
+
+      var list2 = new MathList();
+      list2.Add(atom3);
+      list2.Add(atom2);
+
+      table.SetCell(list, 0, 1);
+      table.SetCell(list2, 0, 2);
+
+      table.SetAlignment(ColumnAlignment.Left, 2);
+      table.SetAlignment(ColumnAlignment.Right, 1);
+
+      var clone = AtomCloner.Clone(table, false) as MathTable;
+      CheckClone(table, clone);
+      Assert.Equal(clone.InterColumnSpacing, table.InterColumnSpacing);
+      Assert.Equal(clone.Alignments, table.Alignments);
+      Assert.False(ReferenceEquals(clone.Alignments, table.Alignments));
+      Assert.False(ReferenceEquals(clone.Cells, table.Cells));
+      Assert.False(ReferenceEquals(clone.Cells[0], table.Cells[0]));
+      Assert.Equal(clone.Cells[0].Count, table.Cells[0].Count);
+      Assert.Empty(clone.Cells[0][0]);
+
+      CheckClone(table.Cells[0][1], clone.Cells[0][1]);
+      CheckClone(table.Cells[0][2], clone.Cells[0][2]);
+      Assert.False(ReferenceEquals(clone.Cells[0][0], table.Cells[0][0]));
     }
   }
 }

@@ -65,7 +65,7 @@ namespace CSharpMath.Atoms {
     private static MathList PlaceholderList {
       get {
         var r = new MathList();
-        r.AddAtom(Placeholder);
+        r.Add(Placeholder);
         return r;
       }
     }
@@ -434,7 +434,7 @@ namespace CSharpMath.Atoms {
     public static MathList MathListForCharacters(string chars) {
       var r = new MathList();
       foreach (char c in chars) {
-        r.AddAtom(ForCharacter(c));
+        r.Add(ForCharacter(c));
       }
       return r;
     }

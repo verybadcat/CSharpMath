@@ -10,7 +10,7 @@ namespace CSharpMath.Atoms {
     public static MathList WithAtoms(List<IMathAtom> atoms) {
       var r = new MathList();
       foreach (var atom in atoms) {
-        r.AddAtom(atom);
+        r.Add(atom);
       }
       return r;
     }
@@ -18,7 +18,7 @@ namespace CSharpMath.Atoms {
     public static MathList WithAtoms(params IMathAtom[] atoms) {
       var r = new MathList();
       foreach (var atom in atoms) {
-        r.AddAtom(atom);
+        r.Add(atom);
       }
       return r;
     }

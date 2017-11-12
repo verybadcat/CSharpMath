@@ -22,13 +22,13 @@ namespace CSharpMath.Tests {
     [Fact]
     public void TestCopy() {
       var list = new MathList();
-      list.AddAtom(MathAtoms.Placeholder);
-      list.AddAtom(MathAtoms.Times);
-      list.AddAtom(MathAtoms.Divide);
+      list.Add(MathAtoms.Placeholder);
+      list.Add(MathAtoms.Times);
+      list.Add(MathAtoms.Divide);
 
       var list2 = new MathList();
-      list2.AddAtom(MathAtoms.Divide);
-      list2.AddAtom(MathAtoms.Times);
+      list2.Add(MathAtoms.Divide);
+      list2.Add(MathAtoms.Times);
 
       var open = MathAtoms.Create(MathAtomType.Open, "(");
       open.Subscript = list;
@@ -40,16 +40,145 @@ namespace CSharpMath.Tests {
       CheckClone(open.Subscript, clone.Subscript);
     }
 
-   // [Fact]
-    //public void TestSubscript() {
-    //  var str = "-52x^{13+y}_{15-} + (-12.3 *)\\frac{-12}{15.2}";
-    //  var list = MathLists.FromString(str);
-    //  var finalized = new MathList(list, true);
-    //  MathListValidator.CheckListContents(finalized);
-    //  var reFinalized = new MathList(finalized, true);
-    //  MathListValidator.CheckListContents(reFinalized);
-    //}
+    [Fact]
+    public void TestSubscript() {
+      var input = @"-52x^{13+y}_{15-} + (-12.3 *)\frac{-12}{15.2}";
+      var list = MathLists.FromString(input);
+      var finalized = new MathList(list, true);
+      MathListValidator.CheckListContents(finalized);
+      var reFinalized = new MathList(finalized, true);
+      MathListValidator.CheckListContents(reFinalized);
+    }
 
+    [Fact]
+    public void TestAdd() {
+      var list = new MathList();
+      Assert.Empty(list);
+      var atom = MathAtoms.Placeholder;
+      list.Add(atom);
+      Assert.Single(list);
+      Assert.Equal(atom, list[0]);
+      var atom2 = MathAtoms.Times;
+      list.Add(atom2);
+      Assert.Equal(2, list.Count);
+      Assert.Equal(atom2, list[1]);
+    }
 
+    [Fact]
+    public void TestAddErrors() {
+      var list = new MathList();
+      Assert.Throws<InvalidOperationException>(() => list.Add(null));
+      Assert.Throws<InvalidOperationException>(() => list.Add(MathAtoms.Create(MathAtomType.Boundary, "")));
+    }
+
+    [Fact]
+    public void TestInsert() {
+      var list = new MathList();
+      Assert.Empty(list);
+      var atom = MathAtoms.Placeholder;
+      list.Insert(0, atom);
+      Assert.Single(list);
+      Assert.Equal(atom, list[0]);
+      var atom2 = MathAtoms.Operator("+", false);
+      list.Insert(0, atom2);
+      Assert.Equal(2, list.Count);
+      Assert.Equal(atom2, list[0]);
+      Assert.Equal(atom, list[1]);
+      var atom3 = MathAtoms.Create(MathAtomType.Variable, "x");
+      list.Insert(2, atom3);
+      Assert.Equal(3, list.Count);
+      Assert.Equal(atom2, list[0]);
+      Assert.Equal(atom, list[1]);
+      Assert.Equal(atom3, list[2]);
+    }
+   
+    [Fact]
+    public void TestAppend() {
+      var list1 = new MathList();
+      var atom1 = MathAtoms.Placeholder;
+      var atom2 = MathAtoms.Operator("+", false);
+      var atom3 = MathAtoms.Operator("-", false);
+      list1.Add(atom1);
+      list1.Add(atom2);
+      list1.Add(atom3);
+
+      var list2 = new MathList();
+      var atom5 = MathAtoms.Times;
+      var atom6 = MathAtoms.Divide;
+      list2.Add(atom5);
+      list2.Add(atom6);
+
+      Assert.Equal(3, list1.Count);
+      Assert.Equal(2, list2.Count);
+
+      list1.Append(list2);
+      Assert.Equal(5, list1.Count);
+      Assert.Equal(atom5, list1[3]);
+      Assert.Equal(atom6, list1[4]);
+    }
+
+    [Fact]
+    public void TestRemoveLast() {
+      var list = new MathList();
+      var atom = MathAtoms.Placeholder;
+      list.Add(atom);
+      Assert.Single(list);
+      list.RemoveLastAtom();
+      Assert.Empty(list);
+      list.RemoveLastAtom(); // should not throw; just noop in this case
+      Assert.Empty(list);
+      var atom2 = MathAtoms.Times;
+      list.Add(atom);
+      list.Add(atom2);
+      Assert.Equal(2, list.Count);
+      list.RemoveLastAtom();
+      Assert.Single(list);
+      Assert.Equal(atom, list[0]);
+    }
+
+    [Fact]
+    public void TestRemoveAtomAtIndex() {
+      var list = new MathList();
+      var atom = MathAtoms.Placeholder;
+      var atom2 = MathAtoms.Times;
+      list.Add(atom);
+      list.Add(atom2);
+      Assert.Equal(2, list.Count);
+      list.RemoveAt(0);
+      Assert.Single(list);
+      Assert.Equal(atom2, list[0]);
+      Assert.Throws<ArgumentOutOfRangeException>(() => list.RemoveAt(1));
+      Assert.Throws<ArgumentOutOfRangeException>(() => list.RemoveAt(2));
+    }
+
+    [Fact]
+    public void TestRemoveAtomsInRange() {
+      var list = new MathList();
+      var atom = MathAtoms.Placeholder;
+      var atom2 = MathAtoms.Times;
+      var atom3 = MathAtoms.Divide;
+      list.Add(atom);
+      list.Add(atom2);
+      list.Add(atom3);
+      Assert.Equal(3, list.Count);
+      list.RemoveAtoms(new Range(1, 2));
+      Assert.Single(list);
+      Assert.Equal(atom, list[0]);
+      Assert.Throws<ArgumentException>(() => list.RemoveAtoms(new Range(1, 1)));
+    }
+
+    [Fact]
+    public void TestListCopy() {
+      var list = new MathList();
+      var atom = MathAtoms.Placeholder;
+      var atom2 = MathAtoms.Times;
+      var atom3 = MathAtoms.Divide;
+      list.Add(atom);
+      list.Add(atom2);
+      list.Add(atom3);
+
+      var list2 = AtomCloner.Clone(list, false);
+      CheckClone(list, list2);
+    }
   }
 }

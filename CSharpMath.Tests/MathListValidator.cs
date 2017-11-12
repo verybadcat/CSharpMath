@@ -8,7 +8,7 @@ namespace CSharpMath.Tests {
       Assert.Equal(10, list.Atoms.Count);
       var atom0 = list.Atoms[0];
       Assert.Equal(MathAtomType.UnaryOperator, atom0.AtomType);
-      Assert.Equal("-", atom0.Nucleus);
+      Assert.Equal("\u2212", atom0.Nucleus);
       Assert.Equal(new Range(0, 1), atom0.IndexRange);
       var atom1 = list.Atoms[1];
       Assert.Equal(MathAtomType.Number, atom1.AtomType);
