@@ -581,6 +581,16 @@ namespace CSharpMath.Atoms {
           r = table;
         }
       }
+      else if (environment == "displaylines" || environment == "gather") {
+        if (table.NColumns !=1) {
+          errorMessage = environment + " environment can only have 1 column.";
+          return null;
+        }
+        table.InterRowAdditionalSpacing = 1;
+        table.InterColumnSpacing = 0;
+        table.SetAlignment(ColumnAlignment.Center, 0);
+        r = table;
+      }
       else if (environment == "eqnarray") {
         if (table.NColumns!=3) {
           errorMessage = environment + " must have exactly 3 columns.";
@@ -621,5 +631,6 @@ namespace CSharpMath.Atoms {
 
     }
    
+
   }
 }

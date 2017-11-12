@@ -105,7 +105,7 @@ namespace CSharpMath.Atoms {
             continue;
 
           case '}':
-            if (stopChar == 0) {
+            if (oneCharOnly || stopChar != 0) {
               throw new InvalidOperationException("This should have been handled before.");
             }
             _error = "Mismatched braces";
@@ -128,6 +128,7 @@ namespace CSharpMath.Atoms {
               var fontStyle = fontStyleQ.Value;
               var oldSpacesAllowed = _spacesAllowed;
               var oldFontStyle = _currentFontStyle;
+              _spacesAllowed = (command == "text");
               _currentFontStyle = fontStyle;
               var childList = BuildInternal(true);
               _currentFontStyle = oldFontStyle;
@@ -139,7 +140,7 @@ namespace CSharpMath.Atoms {
               }
               continue;
             }
-            atom = AtomForCommand(command); // WJWJ problem is that we are returning null here.
+            atom = AtomForCommand(command); 
             if (atom == null) {
               _error = "Internal error";
               atom = AtomForCommand(command);
@@ -457,17 +458,19 @@ namespace CSharpMath.Atoms {
     }
     private bool ApplyModifier(string modifier, IMathAtom atom) {
       if (modifier == "limits") {
-        if (atom.AtomType == MathAtomType.LargeOperator) {
+        if (atom!=null && atom.AtomType == MathAtomType.LargeOperator) {
           var op = (LargeOperator)atom;
           op.Limits = true;
         } else {
-          _error = "nolimits can only be applied to an operator.";
+          _error = "limits can only be applied to an operator.";
         }
         return true;
       } else if (modifier == "nolimits") {
         if (atom is LargeOperator) {
           var op = (LargeOperator)atom;
           op.Limits = false;
+        } else {
+          _error = "nolimits can only be applied to an operator.";
         }
         return true;
       }
@@ -560,13 +563,15 @@ namespace CSharpMath.Atoms {
       var currentFontStyle = FontStyle.Default;
       foreach (var atom in mathList) {
         if (currentFontStyle != atom.FontStyle) {
-          // close the previous font style
-          builder.Append("}");
-        }
-        if (atom.FontStyle != FontStyle.Default) {
-          // open a new font style
-          var fontStyleName = currentFontStyle.FontName();
-          builder.Append(@"\" + fontStyleName + "{");
+          if (currentFontStyle != FontStyle.Default) {
+            // close the previous font style
+            builder.Append("}");
+          }
+          if (atom.FontStyle != FontStyle.Default) {
+            // open a new font style
+            var fontStyleName = atom.FontStyle.FontName();
+            builder.Append(@"\" + fontStyleName + "{");
+          }
         }
         currentFontStyle = atom.FontStyle;
         switch (atom.AtomType) {

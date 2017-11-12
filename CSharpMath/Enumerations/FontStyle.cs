@@ -54,6 +54,7 @@ namespace CSharpMath {
         {"mathnormal", FontStyle.Default },
         {"mathrm", FontStyle.Roman },
         {"rm", FontStyle.Roman },
+        {"mathbf", FontStyle.Bold },
         {"bf", FontStyle.Bold },
         {"mathcal", FontStyle.Caligraphic },
         {"cal", FontStyle.Caligraphic },

@@ -123,7 +123,7 @@ namespace CSharpMath.Tests {
     }
 
     /// <summary>Safe to call with a null list. Types cannot be null however.</summary>
-    private void CheckAtomTypes(IMathList list, MathAtomType[] types) {
+    private void CheckAtomTypes(IMathList list, params MathAtomType[] types) {
       int atomCount = (list == null) ? 0 : list.Atoms.Count;
       Assert.Equal(types.Count(), atomCount);
       for (int i = 0; i < atomCount; i++) {
@@ -312,7 +312,7 @@ namespace CSharpMath.Tests {
 
     [Theory, MemberData(nameof(TestDataLeftRight))]
     public void TestLeftRight(
-      string input, 
+      string input,
       MathAtomType[] expectedOutputTypes,
       int innerIndex,
       MathAtomType[] expectedInnerTypes,
@@ -620,10 +620,10 @@ namespace CSharpMath.Tests {
       Assert.Equal(2, table.NRows);
       Assert.Equal(2, table.NColumns);
 
-      for (int i=0; i<2; i++) {
+      for (int i = 0; i < 2; i++) {
         var alignment = table.GetAlignment(i);
         Assert.Equal(ColumnAlignment.Center, alignment);
-        for (int j=0; j<2; j++) {
+        for (int j = 0; j < 2; j++) {
           var cell = table.Cells[j][i];
           Assert.Equal(2, cell.Count);
           var style = cell[0] as IMathStyle;
@@ -688,9 +688,9 @@ namespace CSharpMath.Tests {
       Assert.Equal(0, table.InterColumnSpacing);
       Assert.Equal(2, table.NRows);
       Assert.Equal(1, table.NColumns);
-      for (int i=0; i<1; i++) {
+      for (int i = 0; i < 1; i++) {
         Assert.Equal(ColumnAlignment.Left, table.GetAlignment(i));
-        for (int j=0; j<2; j++) {
+        for (int j = 0; j < 2; j++) {
           var cell = table.Cells[j][i];
           Assert.Single(cell);
           Assert.Equal(MathAtomType.Variable, cell[0].AtomType);
@@ -713,9 +713,9 @@ namespace CSharpMath.Tests {
       Assert.Equal(2, table.NRows);
       Assert.Equal(2, table.NColumns);
 
-      for (int i=0; i<2; i++) {
+      for (int i = 0; i < 2; i++) {
         Assert.Equal(ColumnAlignment.Left, table.GetAlignment(i));
-        for (int j=0; j<2; j++) {
+        for (int j = 0; j < 2; j++) {
           var cell = table.Cells[j][i];
           Assert.Single(cell);
           Assert.Equal(MathAtomType.Variable, cell[0].AtomType);
@@ -739,12 +739,12 @@ namespace CSharpMath.Tests {
       Assert.Equal(0, table.InterColumnSpacing);
       Assert.Equal(2, table.NRows);
       Assert.Equal(2, table.NColumns);
-      for (int i=0; i<2; i++) {
+      for (int i = 0; i < 2; i++) {
         var alignment = table.GetAlignment(i);
         Assert.Equal(i == 0 ? ColumnAlignment.Right : ColumnAlignment.Left, alignment);
-        for (int j=0; j<2; j++) {
+        for (int j = 0; j < 2; j++) {
           var cell = table.Cells[j][i];
-          if (i==0) {
+          if (i == 0) {
             Assert.Single(cell);
             Assert.Equal(MathAtomType.Variable, cell[0].AtomType);
           } else {
@@ -756,6 +756,198 @@ namespace CSharpMath.Tests {
       }
       var latex = MathListBuilder.MathListToString(list);
       Assert.Equal(input, latex);
+    }
+
+    [Theory]
+    [InlineData(@"\begin{displaylines}x\\ y\end{displaylines}")]
+    [InlineData(@"\begin{gather}x\\ y\end{gather}")]
+    public void TestDisplayLines(string input) {
+      var list = MathLists.FromString(input);
+      Assert.Single(list);
+      var table = list[0] as IMathTable;
+      CheckAtomTypeAndNucleus(table, MathAtomType.Table, "");
+      Assert.Equal(1, table.InterRowAdditionalSpacing);
+      Assert.Equal(0, table.InterColumnSpacing);
+      Assert.Equal(2, table.NRows);
+      Assert.Equal(1, table.NColumns);
+      Assert.Equal(ColumnAlignment.Center, table.GetAlignment(0));
+      for (int j = 0; j < 2; j++) {
+        var cell = table.Cells[j][0];
+        Assert.Single(cell);
+        Assert.Equal(MathAtomType.Variable, cell[0].AtomType);
+      }
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(input, latex);
+    }
+
+    [Theory]
+    [InlineData(@"}a")]
+    [InlineData(@"\notacommand")]
+    [InlineData(@"\sqrt[5+3")]
+    [InlineData(@"{5+3")]
+    [InlineData(@"5+3}")]
+    [InlineData(@"{1+\frac{3+2")]
+    [InlineData(@"1+\left")]
+    [InlineData(@"\left(\frac12\right")]
+    [InlineData(@"\left 5 + 3 \right)")]
+    [InlineData(@"\left(\frac12\right + 3")]
+    [InlineData(@"\left\lmoustache 5 + 3 \right)")]
+    [InlineData(@"\left(\frac12\right\rmoustache + 3")]
+    [InlineData(@"5 + 3 \right)")]
+    [InlineData(@"\left(\frac12")]
+    [InlineData(@"\left(5 + \left| \frac12 \right)")]
+    [InlineData(@"5+ \left|\frac12\right| \right)")]
+    [InlineData(@"\begin matrix \end matrix")] // missing {
+    [InlineData(@"\begin")] // missing {
+    [InlineData(@"\begin{")] // missing }
+    [InlineData(@"\begin{matrix parens}")] // missing } (no spaces in env)
+    [InlineData(@"\begin{matrix} x")]
+    [InlineData(@"\begin{matrix} x \end")] // missing {
+    [InlineData(@"\begin{matrix} x \end + 3")] // missing {
+    [InlineData(@"\begin{matrix} x \end{")] // missing }
+    [InlineData(@"\begin{matrix} x \end{matrix + 3")]// missing }
+    [InlineData(@"\begin{matrix} x \end{pmatrix}")]
+    [InlineData(@"x \end{matrix}")]
+    [InlineData(@"\begin{notanenv} x \end{notanenv}")]
+    [InlineData(@"\begin{matrix} \notacommand \end{matrix}")]
+    [InlineData(@"\begin{displaylines} x & y \end{displaylines}")]
+    [InlineData(@"\begin{eqalign} x \end{eqalign}")]
+    [InlineData(@"\nolimits")]
+    [InlineData(@"\frac\limits{1}{2}")]
+    public void TestErrors(string badInput) {
+      var builder = new MathListBuilder(badInput);
+      var list = builder.Build();
+      Assert.Null(list);
+      Assert.NotNull(builder.Error);
+    }
+
+    [Fact]
+    public void TestCustom() {
+      var input = @"\lcm(a,b)";
+      var builder = new MathListBuilder(input);
+      var list = builder.Build();
+      Assert.Null(list);
+      Assert.NotNull(builder.Error);
+
+      MathAtoms.AddLatexSymbol("lcm", MathAtoms.Operator("lcm", false));
+      var builder2 = new MathListBuilder(input);
+      var list2 = builder2.Build();
+      CheckAtomTypes(list2, MathAtomType.LargeOperator, MathAtomType.Open,
+        MathAtomType.Variable, MathAtomType.Punctuation, MathAtomType.Variable,
+        MathAtomType.Close);
+      var latex = MathListBuilder.MathListToString(list2);
+      Assert.Equal(@"\lcm (a,b)", latex);
+    }
+
+    [Fact]
+    public void TestFontSingle() {
+      var input = @"\mathbf x";
+      var list = MathLists.FromString(input);
+
+      Assert.Single(list);
+      CheckAtomTypeAndNucleus(list[0], MathAtomType.Variable, "x");
+      Assert.Equal(FontStyle.Bold, list[0].FontStyle);
+
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"\mathbf{x}", latex);
+    }
+
+    [Fact]
+    public void TestFontMultipleCharacters() {
+      var input = @"\frak{xy}";
+      var list = MathLists.FromString(input);
+      Assert.Equal(2, list.Count);
+      CheckAtomTypeAndNucleus(list[0], MathAtomType.Variable, "x");
+      Assert.Equal(FontStyle.Fraktur, list[0].FontStyle);
+      CheckAtomTypeAndNucleus(list[1], MathAtomType.Variable, "y");
+      Assert.Equal(FontStyle.Fraktur, list[1].FontStyle);
+
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"\mathfrak{xy}", latex);
+    }
+
+    [Fact]
+    public void TestFontOneCharacterInside() {
+      var input = @"\sqrt \mathrm x y";
+      var list = MathLists.FromString(input);
+      Assert.Equal(2, list.Count);
+
+      var radical = list[0] as IRadical;
+      CheckAtomTypeAndNucleus(radical, MathAtomType.Radical, "");
+
+      var sublist = radical.Radicand;
+      var atom = sublist[0];
+      CheckAtomTypeAndNucleus(atom, MathAtomType.Variable, "x");
+      Assert.Equal(FontStyle.Roman, atom.FontStyle);
+
+      CheckAtomTypeAndNucleus(list[1], MathAtomType.Variable, "y");
+      Assert.Equal(FontStyle.Default, list[1].FontStyle);
+
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"\sqrt{\mathrm{x}}y", latex);
+    }
+
+    [Fact]
+    public void TestText() {
+      var input = @"\text{x y}";
+      var list = MathLists.FromString(input);
+      Assert.Equal(3, list.Count);
+      CheckAtomTypeAndNucleus(list[0], MathAtomType.Variable, @"x");
+      Assert.Equal(FontStyle.Roman, list[0].FontStyle);
+
+      CheckAtomTypeAndNucleus(list[1], MathAtomType.Ordinary, " ");
+      CheckAtomTypeAndNucleus(list[2], MathAtomType.Variable, @"y");
+      Assert.Equal(FontStyle.Roman, list[2].FontStyle);
+
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"\mathrm{x\  y}", latex);
+    }
+
+    [Fact]
+    public void TestLimits() {
+      var input = @"\int";
+      var list = MathLists.FromString(input);
+
+      Assert.Single(list);
+      var op = list[0] as LargeOperator;
+      Assert.Equal(MathAtomType.LargeOperator, op.AtomType);
+      Assert.False(op.Limits);
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"\int ", latex);
+
+      var input2 = @"\int\limits";
+      var list2 = MathLists.FromString(input2);
+      Assert.Single(list2);
+      var op2 = list2[0] as LargeOperator;
+      Assert.Equal(MathAtomType.LargeOperator, op2.AtomType);
+      Assert.True(op2.Limits);
+
+      var latex2 = MathListBuilder.MathListToString(list2);
+      Assert.Equal(@"\int \limits ", latex2);
+    }
+
+    [Fact]
+    public void TestNoLimits() {
+      var input = @"\sum";
+      var list = MathLists.FromString(input);
+      Assert.Single(list);
+      var op = list[0] as LargeOperator;
+      Assert.Equal(MathAtomType.LargeOperator, op.AtomType);
+      Assert.True(op.Limits);
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"\sum ", latex);
+    }
+
+    [Fact]
+    public void TestNoLimits2() {
+      var input = @"\sum\nolimits";
+      var list = MathLists.FromString(input);
+      Assert.Single(list);
+      var op = list[0] as LargeOperator;
+      Assert.Equal(MathAtomType.LargeOperator, op.AtomType);
+      Assert.False(op.Limits);
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"\sum \nolimits ", latex);
     }
   }
 }
