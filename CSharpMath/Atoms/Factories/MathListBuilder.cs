@@ -1,5 +1,5 @@
 ﻿using CSharpMath.Enumerations;
-using CSharpMath.Environment;
+using CSharpMath.TableEnvironment;
 using CSharpMath.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -14,7 +14,7 @@ namespace CSharpMath.Atoms {
     private int _currentChar;
     private bool _spacesAllowed;
     private FontStyle _currentFontStyle;
-    private EnvironmentProperties _currentEnvironment;
+    private TableEnvironmentProperties _currentEnvironment;
     private Inner _currentInnerAtom;
 
     public string Error => _error;
@@ -485,7 +485,7 @@ namespace CSharpMath.Atoms {
 
     private IMathAtom BuildTable(string environment, IMathList firstList, bool isRow) {
       var oldEnv = _currentEnvironment;
-      _currentEnvironment = new EnvironmentProperties(environment);
+      _currentEnvironment = new TableEnvironmentProperties(environment);
       int currentRow = 0;
       int currentColumn = 0;
       List<List<IMathList>> rows = new List<List<IMathList>>();

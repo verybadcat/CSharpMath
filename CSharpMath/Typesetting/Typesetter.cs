@@ -67,6 +67,7 @@ namespace CSharpMath {
             }
             break;
         }
+        // TODO: add italic correction here or in second pass?
         prevNode = atom;
         r.Add(prevNode);
         break;
@@ -81,6 +82,18 @@ namespace CSharpMath {
         builder.Append(unicode);
       }
       return builder.ToString();
+    }
+
+    private static float GetStyleSize(LineStyle style, Font font) {
+      float original = font.PointSize;
+      switch (style) {
+        case LineStyle.Script:
+          return original * font.MathTable.ScriptScaleDown;
+        case LineStyle.ScriptScript:
+          return original * font.MathTable.ScriptScriptScaleDown;
+        default:
+          return original;
+      }
     }
 
     private static char _StyleCharacter(char inputChar, FontStyle style) {
