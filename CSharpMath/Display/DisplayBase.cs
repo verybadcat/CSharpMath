@@ -5,6 +5,9 @@ using System.Drawing;
 using System.Text;
 
 namespace CSharpMath.Display {
+  /// <summary>
+  /// Corresponds to MTDisplay in iosMath.
+  /// </summary>
   public class DisplayBase : IDisplay {
     public float Ascent { get; protected set; }
     public float Descent { get; protected set; }

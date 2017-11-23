@@ -6,6 +6,9 @@ using System.Linq;
 using System.Text;
 
 namespace CSharpMath.Display {
+  /// <summary>
+  /// Corresponds to MTMathListDisplay in iosMath.
+  /// </summary>
   public class MathListDisplay: DisplayBase {
     public DisplayBase[] Displays { get; set; }
     public LinePosition MyLinePosition { get; set; }
