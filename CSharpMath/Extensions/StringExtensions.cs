@@ -48,5 +48,9 @@ namespace CSharpMath {
         return "(" + str.NullToNull(handling) + ")";
       }
     }
+
+    public static bool StartsWithInvariant(this string str, string prefix) {
+      return str.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase);
+    }
   }
 }
