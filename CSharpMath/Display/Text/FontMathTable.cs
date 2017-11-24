@@ -20,6 +20,7 @@ namespace CSharpMath.Display.Text {
 
     public float ScriptScriptScaleDown { get; internal set; }
     public float ScriptScaleDown { get; internal set; }
+    public float MuUnit => _font.PointSize / 18f;
 
     public FontMathTable(Font font, Dictionary<object, object> mathTable) {
       _unitsPerEm = FontMeasurers.Current.GetUnitsPerEm(font);

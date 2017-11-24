@@ -16,7 +16,7 @@ namespace CSharpMath.Display {
     public bool HasScript { get; protected set; }
     public PointF Position { get; set; }
     public Color? TextColor { get;  set; }
-    public Color? LocalTextColor { get; protected set; }
+    public Color? LocalTextColor { get; set; }
     public RectangleF DisplayBounds => new RectangleF(
       this.Position.X,
       this.Position.Y,

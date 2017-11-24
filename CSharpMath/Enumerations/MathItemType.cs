@@ -5,6 +5,7 @@ using System.Text;
 
 namespace CSharpMath {
   public enum MathAtomType {
+    MinValue = 0,
     Ordinary = 1,
     Number,
     Variable,

@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.Extensions.Configuration;
-using System.Reflection;
+﻿
 using System.IO;
 using Newtonsoft.Json;
-using System.Dynamic;
+using Newtonsoft.Json.Linq;
 
 namespace CSharpMath.Resources {
   public static class ResourceLoader {
@@ -14,10 +10,11 @@ namespace CSharpMath.Resources {
       => Path.Combine(Directory.GetCurrentDirectory(), "Resources");
     static ResourceLoader() {
       var content = ResourceProvider.ManifestString(_latinModernJsonFilename);
-      var expando = JsonConvert.DeserializeObject<ExpandoObject>(content);
-      LatinMath = expando;
+      var jObject = JsonConvert.DeserializeObject(content);
+      LatinMath = jObject as JObject;
+      var type = jObject.GetType();
     }
-    public static ExpandoObject LatinMath;
+    public static JObject LatinMath;
 
 
   }
