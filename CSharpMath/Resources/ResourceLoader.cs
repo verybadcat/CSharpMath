@@ -9,7 +9,7 @@ namespace CSharpMath.Resources {
   public static class ResourceLoader {
 
     private static string _resourcesPath
-      => Path.Combine(Assembly.GetExecutingAssembly().Location, "Resources");
+      => Path.Combine(Directory.GetCurrentDirectory(), "Resources");
     static ResourceLoader() {
       var builder = new ConfigurationBuilder();
       builder.SetBasePath(_resourcesPath);
