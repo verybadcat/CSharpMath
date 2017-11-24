@@ -19,7 +19,7 @@ namespace CSharpMath {
         } else if (payload is long) {
           long lPayload = (long)payload;
           if (lPayload <= (long)int.MaxValue && lPayload >= (long)int.MinValue) {
-            return new IntAttribute(lPayload.ToInt());
+            return new IntAttribute((int)lPayload);
           } else {
             return new StringAttribute(payload.ToString());
           }
@@ -56,7 +56,7 @@ namespace CSharpMath {
           throw new InvalidOperationException();
         }
       } catch (Exception e) {
-        return new StringAttribute(payload.ToString(), false);
+        return new StringAttribute(payload.ToString());
       }
     }
 

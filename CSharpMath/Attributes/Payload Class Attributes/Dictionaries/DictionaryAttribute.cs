@@ -15,7 +15,7 @@ namespace CSharpMath
     public void SetObject(string key, object value) {
       if (key != null) {
         GenericAttribute attr = GenericAttributes.Wrap(value);
-        this.Payload.SetValue(key, attr);
+        this.Payload[key] = attr;
       }
     }
     public void SetEnumerable<T>(string key, IEnumerable<T> value) {
@@ -177,19 +177,6 @@ namespace CSharpMath
       return r;
     }
 
-    public void SetFlexibleDictionary(string key, IFlexibleDictionary value) {
-      GenericAttribute wrapped = GenericAttributes.Wrap(value);
-      this[key] = wrapped;
-    }
-
-    /// <summary>This getter is not like the others because it does not unwrap.</summary>
-    public IFlexibleDictionary FlexibleDictionaryForKey(string key, IFlexibleDictionary defaultValue) {
-      IFlexibleDictionary r = this.DictionaryForKey(key);
-      if (r == null) {
-        r = defaultValue;
-      }
-      return r;
-    }
 
     public double DoubleForKey(string key, double defaultValue) {
       double r = this.PayloadForKey(key, (attr, x) => attr.PayloadDouble(x), defaultValue);
@@ -310,11 +297,6 @@ namespace CSharpMath
       return r;
     }
 
-    public override IEnumerable<object> GetTreeDescriptionChildren() {
-      foreach (string key in this.Payload.Keys) {
-        yield return new TreeDescriptionPair(key, this.Payload[key]);
-      }
-    }
 
     #region ICollection implementation
 

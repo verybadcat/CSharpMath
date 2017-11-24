@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Drawing;
-using CSharpMath.Maths;
+﻿using CSharpMath.Extensions.NumericTypes;
 using numericType = System.Double;
 
 namespace CSharpMath
@@ -34,7 +28,7 @@ namespace CSharpMath
     }
     public DoubleAttribute(string s)
     {
-      numericType value = DoubleAdditions.TryParse(s);
+      numericType value = DoubleExtensions.TryParse(s);
       this.Payload = value;
     }
     public override bool PayloadIsUndefined() {

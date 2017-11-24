@@ -1,5 +1,4 @@
 ﻿using System;
-using CSharpMath.Maths;
 
 namespace CSharpMath
 {
@@ -10,9 +9,10 @@ namespace CSharpMath
     }
 
     public static IntAttribute FromString(string encodedPayload) {
-      int? parsePay = IntAdditions.TryParseQ(encodedPayload);
-      IntAttribute r = parsePay.Construct(n => new IntAttribute(n));
-      return r;
+      if (int.TryParse(encodedPayload, out int parsePay)) {
+        return new IntAttribute(parsePay);
+      }
+      return null;
     }
 
     public override GenericAttribute CloneAttribute() {

@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Drawing;
-using CSharpMath.Maths;
+﻿
+using CSharpMath.Extensions.NumericTypes;
 using numericType = System.Single;
 
 namespace CSharpMath
@@ -25,7 +20,7 @@ namespace CSharpMath
     }
     public FloatAttribute(string s)
     {
-      numericType value = FloatAdditions.TryParse(s);
+      numericType value = (float)DoubleExtensions.TryParse(s);
       this.Payload = value;
     }
     public override bool PayloadIsUndefined() {
