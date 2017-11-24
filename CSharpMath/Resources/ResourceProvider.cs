@@ -6,16 +6,27 @@ using System.Text;
 
 namespace CSharpMath.Resources {
   public static class ResourceProvider {
-    public static byte[] ManifestContents(string resourceName) {
+    private static Stream ManifestStream(string resourceName) {
       Assembly a = Assembly.GetExecutingAssembly();
       var prefix = a.ManifestResourcePrefix();
       var path = prefix + resourceName;
       var stream = a.GetManifestResourceStream(path);
+      return stream;
+    }
+    public static byte[] ManifestContents(string resourceName) {
+      var stream = ManifestStream(resourceName);
       if (stream == null) {
         return null;
       }
       byte[] r = _Buffer(stream);
       stream?.Dispose();
+      return r;
+    }
+
+    public static string ManifestString(string resourceName) {
+      var stream = ManifestStream(resourceName);
+      var reader = new StreamReader(stream);
+      var r = reader.ReadToEnd();
       return r;
     }
 

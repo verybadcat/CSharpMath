@@ -15,8 +15,9 @@ namespace CSharpMath.Tests.PreTypesetting {
     }
     [Fact]
     public void ResourceProvider_FindsMathConfiguration() {
-      var content = ResourceLoader.LatinMathConfiguration;
-      int x = 666;
+      var content = ResourceLoader.LatinMath;
+      var count = content.Count();
+      Assert.True(count > 0);
     }
   }
 }
