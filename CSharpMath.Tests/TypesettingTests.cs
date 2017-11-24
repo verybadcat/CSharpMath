@@ -12,12 +12,12 @@ namespace CSharpMath.Tests {
   public class TypesettingTests {
 
     private Font _font => new Font(); // TODO: flesh out
-    [Fact]
-    public void TestSimpleVariable() {
-      var list = new MathList();
-      list.Add(MathAtoms.ForCharacter('x'));
-      var display = Typesetter.CreateLine(list, _font, LineStyle.Display);
-      Assert.NotNull(display);
-    }
+    //[Fact]
+    //public void TestSimpleVariable() {
+    //  var list = new MathList();
+    //  list.Add(MathAtoms.ForCharacter('x'));
+    //  var display = Typesetter.CreateLine(list, _font, LineStyle.Display);
+    //  Assert.NotNull(display);
+    //}
   }
 }

@@ -37,7 +37,10 @@ namespace CSharpMath {
       var preprocessedAtoms = _PreprocessMathList(list);
       var typesetter = new Typesetter(font, style, cramped, spaced);
       typesetter._CreateDisplayAtoms(preprocessedAtoms);
+      throw new NotImplementedException();
     }
+
+    private void _CreateDisplayAtoms(List<IMathAtom> preprocessedAtoms) => throw new NotImplementedException();
 
     private static List<IMathAtom> _PreprocessMathList(IMathList list) {
       IMathAtom prevNode = null;
