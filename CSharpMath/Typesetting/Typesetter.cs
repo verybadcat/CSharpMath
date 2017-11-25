@@ -21,7 +21,7 @@ namespace CSharpMath {
     private PointF _currentPosition;
     private AttributedString _currentLine;
     private Range _currentLineIndexRange;
-    private List<IMathAtom> _currentAtoms;
+    private List<IMathAtom> _currentAtoms = new List<IMathAtom>();
 
     public Typesetter(MathFont font, LineStyle style, bool cramped, bool spaced) {
       _font = font;
@@ -91,7 +91,7 @@ namespace CSharpMath {
           case MathAtomType.Close:
           case MathAtomType.Placeholder:
           case MathAtomType.Punctuation:
-            if (prevNode!=null) {
+            if (prevNode != null) {
               float interElementSpace = GetInterElementSpace(prevNode.AtomType, atom.AtomType);
               if (_currentLine.Length > 0) {
                 if (interElementSpace > 0) {
@@ -108,24 +108,26 @@ namespace CSharpMath {
             } else {
               current = new AttributedString(atom.Nucleus, Color.Transparent);
             }
-            _currentLine.AppendAttributedString(current);
+            _currentLine = AttributedStringExtensions.Combine(_currentLine, current);
+            if (_currentLineIndexRange.Location == Range.NotFound) {
+              _currentLineIndexRange = atom.IndexRange;
+            } else {
+              _currentLineIndexRange.Length += atom.IndexRange.Length;
+            }
+            // add the fused atoms
+            if (atom.FusedAtoms != null) {
+              _currentAtoms.AddRange(atom.FusedAtoms);
+            } else {
+              _currentAtoms.Add(atom);
+            }
+            if (atom.Subscript != null || atom.Superscript != null) {
+              throw new NotImplementedException();
+            }
+            break;
         }
-        if (_currentLineIndexRange.Location == Range.NotFound) {
-          _currentLineIndexRange = atom.IndexRange;
-        } else {
-          _currentLineIndexRange.Length += atom.IndexRange.Length;
-        }
-        // add the fused atoms
-        if (atom.FusedAtoms!=null) {
-          _currentAtoms.AddRange(atom.FusedAtoms);
-        } else {
-          _currentAtoms.Add(atom);
-        }
-        if (atom.Subscript!=null || atom.Superscript!=null) {
-          throw new NotImplementedException();
-        }
-        break;
+
       }
+
       AddDisplayLine(false);
       if (_spaced && prevType!=MathAtomType.MinValue) {
         var lastDisplay = _displayAtoms.LastOrDefault();

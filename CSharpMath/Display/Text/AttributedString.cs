@@ -17,10 +17,23 @@ namespace CSharpMath.Display.Text {
     }
     public AttributedString(string text, Color textColor) {
       Text = text;
-      TextColor = new StringAttribute(textColor) ;
+      TextColor = new StringAttribute<Color>(textColor) ;
     } 
     public void AppendAttributedString(AttributedString other) {
 
+    }
+  }
+
+  public static class AttributedStringExtensions {
+    public static AttributedString Combine(AttributedString attr1, AttributedString attr2) {
+      if (attr1 == null) {
+        return attr2;
+      }
+      if (attr2 == null) {
+        return attr1;
+      }
+      attr1.AppendAttributedString(attr2);
+      return attr1;
     }
   }
 }

@@ -3,8 +3,7 @@ using System;
 using System.Collections.Generic;
 
 namespace CSharpMath.Display.Text {
-  public class StringAttribute<T>
-    where T: IEquatable<T> {
+  public class StringAttribute<T> {
     private List<(int index, T t)> _values = new List<(int index, T t)>(); // the integer is the character at which the string starts having the value for the attribute. The list is always kept sorted by index.
     public T ValueAt(int atIndex) {
       T r = default(T);
@@ -16,6 +15,9 @@ namespace CSharpMath.Display.Text {
         }
       }
       return r;
+    }
+    public StringAttribute(T t) {
+      _values.Add((0, t));
     }
     public void Set(T value, Range range) {
       var endValue = ValueAt(range.End);
