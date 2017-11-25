@@ -82,8 +82,49 @@ namespace CSharpMath {
             // Radicals are considered as Ord in rule 16.
             AddInterElementSpace(prevNode, MathAtomType.Ordinary);
             var displayRad = MakeRadical(rad.Radicand, rad.IndexRange);
-            break;
+            throw new NotImplementedException();
+          // break;
+          case MathAtomType.Ordinary:
+          case MathAtomType.BinaryOperator:
+          case MathAtomType.Relation:
+          case MathAtomType.Open:
+          case MathAtomType.Close:
+          case MathAtomType.Placeholder:
+          case MathAtomType.Punctuation:
+            if (prevNode!=null) {
+              float interElementSpace = GetInterElementSpace(prevNode.AtomType, atom.AtomType);
+              if (_currentLine.Length > 0) {
+                if (interElementSpace > 0) {
+                  // add a kerning of that space to the previous character.
+                  // iosMath uses [NSString rangeOfComposedCharacterSequenceAtIndex: xxx] here.
+                }
+              } else {
+                _currentPosition.X += interElementSpace;
+              }
+            }
+            AttributedString current = null;
+            if (atom.AtomType == MathAtomType.Placeholder) {
+              current = new AttributedString(atom.Nucleus, _placeholderColor);
+            } else {
+              current = new AttributedString(atom.Nucleus, Color.Transparent);
+            }
+            _currentLine.AppendAttributedString(current);
         }
+        if (_currentLineIndexRange.Location == Range.NotFound) {
+          _currentLineIndexRange = atom.IndexRange;
+        } else {
+          _currentLineIndexRange.Length += atom.IndexRange.Length;
+        }
+        // add the fused atoms
+        if (atom.FusedAtoms!=null) {
+          _currentAtoms.AddRange(atom.FusedAtoms);
+        } else {
+          _currentAtoms.Add(atom);
+        }
+        if (atom.Subscript!=null || atom.Superscript!=null) {
+          throw new NotImplementedException();
+        }
+        break;
       }
       AddDisplayLine(false);
       if (_spaced && prevType!=MathAtomType.MinValue) {
@@ -95,6 +136,7 @@ namespace CSharpMath {
       }
     }
 
+    private static Color _placeholderColor => Color.Blue;
 
     private float GetInterElementSpace(MathAtomType left, MathAtomType right) {
       var leftIndex = GetInterElementSpaceArrayIndexForType(left, true);

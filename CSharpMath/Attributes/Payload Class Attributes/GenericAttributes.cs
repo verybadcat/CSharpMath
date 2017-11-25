@@ -55,7 +55,7 @@ namespace CSharpMath {
         } else {
           throw new InvalidOperationException();
         }
-      } catch (Exception e) {
+      } catch (Exception) {
         return new StringAttribute(payload.ToString());
       }
     }
