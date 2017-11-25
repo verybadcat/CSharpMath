@@ -12,9 +12,15 @@ namespace CSharpMath.Display.Text {
     public StringAttribute<Color> TextColor { get; set; }
     public StringAttribute<float> Kern { get; set; } // or int? Not sure
 
+    public AttributedString(string text = "") {
+      Text = text;
+    }
     public AttributedString(string text, Color textColor) {
       Text = text;
-      TextColor = textColor;
+      TextColor = new StringAttribute(textColor) ;
     } 
+    public void AppendAttributedString(AttributedString other) {
+
+    }
   }
 }

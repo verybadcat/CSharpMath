@@ -1,10 +1,10 @@
 ﻿using CSharpMath.Atoms;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace CSharpMath.Display.Text {
-  public class StringAttribute<T> {
+  public class StringAttribute<T>
+    where T: IEquatable<T> {
     private List<(int index, T t)> _values = new List<(int index, T t)>(); // the integer is the character at which the string starts having the value for the attribute. The list is always kept sorted by index.
     public T ValueAt(int atIndex) {
       T r = default(T);
@@ -44,6 +44,30 @@ namespace CSharpMath.Display.Text {
         }
         _values.Insert(n + 1, (range.End, endValue));
       }
+    }
+    public void Append(StringAttribute<T> other, int myLength) {
+      T endValue = ValueAt(myLength);
+      bool first = false;
+      foreach (var otherValue in other._values) {
+        if (first && otherValue.t.Equals(endValue)) {
+          continue;
+        }
+        else {
+          _values.Add((myLength + otherValue.index, otherValue.t));
+        }
+      }
+    }
+  }
+  public static class StringAttributeExtensions {
+    public static StringAttribute<T> Combine<T>(this StringAttribute<T> attr1, StringAttribute<T> attr2, int length1)
+    where T : IEquatable<T> {
+      if (attr1 == null) {
+        return attr2;
+      } if (attr2 == null) {
+        return attr1;
+      }
+      attr1.Append(attr2, length1);
+      return attr1;
     }
   }
 }
