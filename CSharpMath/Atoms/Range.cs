@@ -5,6 +5,7 @@ using System.Text;
 namespace CSharpMath.Atoms {
   public struct Range {
     public const int NotFound = int.MinValue;
+    public static Range NotFoundRange = new Range(NotFound, NotFound);
     public int Location { get; set; }
     /// <summary>
     /// The number of integers in the range. So End-Start=Length-1.

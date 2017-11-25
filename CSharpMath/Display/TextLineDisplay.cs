@@ -21,6 +21,7 @@ namespace CSharpMath.Display {
       Position = position;
       AttributedText = text;
       Atoms = atoms.ToArray();
+      Range = range;
     }
 
   }

@@ -31,6 +31,11 @@ namespace CSharpMath.Tests {
       Assert.True(sub0 is TextLineDisplay);
       var line = sub0 as TextLineDisplay;
       Assert.Single(line.Atoms);
+
+      Assert.Equal("x", line.AttributedText.Text);
+      Assert.Equal(new PointF(), line.Position);
+      Assert.Equal(new Range(0, 1), line.Range);
+      Assert.False(line.HasScript);
     }
   }
 }

@@ -20,7 +20,7 @@ namespace CSharpMath {
     private List<DisplayBase> _displayAtoms = new List<DisplayBase>();
     private PointF _currentPosition;
     private AttributedString _currentLine;
-    private Range _currentLineIndexRange;
+    private Range _currentLineIndexRange = Range.NotFoundRange;
     private List<IMathAtom> _currentAtoms = new List<IMathAtom>();
 
     public Typesetter(MathFont font, LineStyle style, bool cramped, bool spaced) {
@@ -42,7 +42,8 @@ namespace CSharpMath {
       var typesetter = new Typesetter(font, style, cramped, spaced);
       typesetter._CreateDisplayAtoms(preprocessedAtoms);
       var lastAtom = list.Atoms.Last();
-      var line = new MathListDisplay(typesetter._displayAtoms.ToArray(), new Range(0, lastAtom.IndexRange.End));
+      var line = new MathListDisplay(typesetter._displayAtoms.ToArray(), 
+        new Range(0, lastAtom.IndexRange.End));
       return line;
     }
 
