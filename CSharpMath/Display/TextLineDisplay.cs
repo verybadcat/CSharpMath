@@ -17,7 +17,7 @@ namespace CSharpMath.Display {
     public IMathAtom[] Atoms { get; private set; }
 
     public TextLineDisplay(AttributedString text, 
-      PointF position, Range range, Font font, IEnumerable<IMathAtom> atoms) {
+      PointF position, Range range, MathFont font, IEnumerable<IMathAtom> atoms) {
       Position = position;
       AttributedText = text;
       Atoms = atoms.ToArray();

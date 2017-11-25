@@ -9,10 +9,10 @@ namespace CSharpMath.Display.Text {
     private float _fontSize;
     private Dictionary<object, object> _mathTable;
 
-    private WeakReference<Font> _fontReference { get; }
-    private Font _font {
+    private WeakReference<MathFont> _fontReference { get; }
+    private MathFont _font {
       get {
-        Font font = null;
+        MathFont font = null;
         _fontReference?.TryGetTarget(out font);
         return font;
       }
@@ -22,7 +22,7 @@ namespace CSharpMath.Display.Text {
     public float ScriptScaleDown { get; internal set; }
     public float MuUnit => _font.PointSize / 18f;
 
-    public FontMathTable(Font font, Dictionary<object, object> mathTable) {
+    public FontMathTable(MathFont font, Dictionary<object, object> mathTable) {
       _unitsPerEm = FontMeasurers.Current.GetUnitsPerEm(font);
       _fontSize = _font.PointSize;
       _mathTable = mathTable;

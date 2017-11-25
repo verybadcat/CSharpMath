@@ -5,6 +5,6 @@ using System.Text;
 
 namespace CSharpMath.FrontEnd {
   public interface IFontMeasurer {
-    int GetUnitsPerEm(Font font);
+    int GetUnitsPerEm(MathFont font);
   }
 }

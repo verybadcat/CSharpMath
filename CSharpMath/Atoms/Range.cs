@@ -22,7 +22,7 @@ namespace CSharpMath.Atoms {
         if (IsNotFound()) {
           return NotFound;
         }
-        return Location + Length - 1;
+        return Location + Length;
       }
     }
     public static bool operator == (Range range1, Range range2)

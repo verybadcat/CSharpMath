@@ -7,11 +7,12 @@ using CSharpMath.Enumerations;
 using CSharpMath.Display;
 using CSharpMath.Interfaces;
 using System.Drawing;
+using System.Linq;
 
 namespace CSharpMath {
   public class Typesetter {
-    private Font _font;
-    private Font _styleFont;
+    private MathFont _font;
+    private MathFont _styleFont;
     private LineStyle _style;
     private bool _cramped;
     private bool _spaced;
@@ -21,25 +22,27 @@ namespace CSharpMath {
     private Range _currentLineIndexRange;
     private List<IMathAtom> _currentAtoms;
 
-    public Typesetter(Font font, LineStyle style, bool cramped, bool spaced) {
+    public Typesetter(MathFont font, LineStyle style, bool cramped, bool spaced) {
       _font = font;
       _style = style;
       _cramped = cramped;
       _spaced = spaced;
     }
 
-    public static MathListDisplay CreateLine(IMathList list, Font font, LineStyle style) {
+    public static MathListDisplay CreateLine(IMathList list, MathFont font, LineStyle style) {
       var finalized = list.FinalizedList();
       return _CreateLine(finalized, font, style, false);
     }
 
     private static MathListDisplay _CreateLine(
-      IMathList list, Font font,
+      IMathList list, MathFont font,
       LineStyle style, bool cramped, bool spaced = false) {
       var preprocessedAtoms = _PreprocessMathList(list);
       var typesetter = new Typesetter(font, style, cramped, spaced);
       typesetter._CreateDisplayAtoms(preprocessedAtoms);
-      throw new NotImplementedException();
+      var lastAtom = list.Atoms.Last();
+      var line = new MathListDisplay(typesetter._displayAtoms.ToArray(), new Range(0, lastAtom.IndexRange.End));
+      return line;
     }
 
     private void _CreateDisplayAtoms(List<IMathAtom> preprocessedAtoms) {
@@ -134,7 +137,7 @@ namespace CSharpMath {
       return builder.ToString();
     }
 
-    private static float GetStyleSize(LineStyle style, Font font) {
+    private static float GetStyleSize(LineStyle style, MathFont font) {
       float original = font.PointSize;
       switch (style) {
         case LineStyle.Script:
