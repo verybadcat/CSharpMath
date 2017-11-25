@@ -1,4 +1,5 @@
 ﻿using CSharpMath.FrontEnd;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,7 +8,7 @@ namespace CSharpMath.Display.Text {
   internal class FontMathTable {
     private int _unitsPerEm;
     private float _fontSize;
-    private Dictionary<object, object> _mathTable;
+    private JObject _mathTable;
 
     private WeakReference<MathFont> _fontReference { get; }
     private MathFont _font {
@@ -18,11 +19,25 @@ namespace CSharpMath.Display.Text {
       }
     }
 
+    private JObject _constantsDictionary
+      => _mathTable.Root["constants"] as JObject;
+
+    private float _ConstantFromTable(string constantName) {
+      var value = _constantsDictionary[constantName];
+      throw new NotImplementedException();
+    }
+
+    private float _FontUnitsToPt(int fontUnits)
+      => fontUnits * _fontSize / _unitsPerEm;
+
     public float ScriptScriptScaleDown { get; internal set; }
     public float ScriptScaleDown { get; internal set; }
     public float MuUnit => _font.PointSize / 18f;
 
-    public FontMathTable(MathFont font, Dictionary<object, object> mathTable) {
+    public float RadicalDisplayStyleVerticalGap { get; internal set; }
+    public float RadicalVerticalGap { get; internal set; }
+
+    public FontMathTable(MathFont font, JObject mathTable) {
       _unitsPerEm = FontMeasurers.Current.GetUnitsPerEm(font);
       _fontSize = _font.PointSize;
       _mathTable = mathTable;

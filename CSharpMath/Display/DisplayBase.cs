@@ -11,7 +11,7 @@ namespace CSharpMath.Display {
   public class DisplayBase : IDisplay {
     public float Ascent { get; protected set; }
     public float Descent { get; protected set; }
-    public float Width { get; protected set; }
+    public float Width { get; set; }
     public Range Range { get; protected set; }
     public bool HasScript { get; protected set; }
     public PointF Position { get; set; }

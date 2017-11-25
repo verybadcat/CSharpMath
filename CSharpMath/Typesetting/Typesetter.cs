@@ -8,6 +8,7 @@ using CSharpMath.Display;
 using CSharpMath.Interfaces;
 using System.Drawing;
 using System.Linq;
+using CSharpMath.TypesetterInternal;
 
 namespace CSharpMath {
   public class Typesetter {
@@ -75,21 +76,95 @@ namespace CSharpMath {
             var display = CreateLine(color.InnerList, _font, _style);
             display.LocalTextColor = ColorExtensions.From6DigitHexString(color.ColorString);
             break;
+          case MathAtomType.Radical:
+            AddDisplayLine(false);
+            var rad = atom as IRadical;
+            // Radicals are considered as Ord in rule 16.
+            AddInterElementSpace(prevNode, MathAtomType.Ordinary);
+            var displayRad = MakeRadical(rad.Radicand, rad.IndexRange);
+            break;
+        }
+      }
+      AddDisplayLine(false);
+      if (_spaced && prevType!=MathAtomType.MinValue) {
+        var lastDisplay = _displayAtoms.LastOrDefault();
+        if (lastDisplay!=null) {
+          float space = GetInterElementSpace(prevType, MathAtomType.Close);
+          lastDisplay.Width += space;
         }
       }
     }
 
-    private TextLineDisplay AddDisplayLine(bool evenIfLengthIsZero) {
-      if (_currentLine.Length > 0 || evenIfLengthIsZero) {
-        _currentLine.Font = _styleFont;
+
+    private float GetInterElementSpace(MathAtomType left, MathAtomType right) {
+      var leftIndex = GetInterElementSpaceArrayIndexForType(left, true);
+      var rightIndex = GetInterElementSpaceArrayIndexForType(right, false);
+      var spaces = InterElementSpaces.Spaces;
+      var spaceArray = spaces[leftIndex];
+      var spaceType = spaceArray[rightIndex];
+      Assertions.Assert(spaceType != InterElementSpaceType.Invalid, $"Invalid space between {left} and {right}");
+      var multiplier = spaceType.SpacingInMu(_style);
+      if (multiplier > 0) {
+        return multiplier * _styleFont.MathTable.MuUnit;
       }
-      var displayAtom = new TextLineDisplay(_currentLine, _currentPosition, _currentLineIndexRange, _styleFont, _currentAtoms);
-      _displayAtoms.Add(displayAtom);
-      _currentPosition.X += displayAtom.Width;
-      _currentLine = new AttributedString();
-      _currentAtoms = new List<IMathAtom>();
-      _currentLineIndexRange = Ranges.NotFound;
-      return displayAtom;
+      return 0;
+    }
+
+    private void AddInterElementSpace(IMathAtom prevNode, MathAtomType currentType) {
+      float space = 0;
+      if (prevNode!=null) {
+        space = GetInterElementSpace(prevNode.AtomType, currentType);
+      } else if (_spaced) {
+        space = GetInterElementSpace(MathAtomType.Open, currentType);
+      }
+      _currentPosition.X += space;
+    }
+
+
+    
+
+    private int GetInterElementSpaceArrayIndexForType(MathAtomType atomType, bool row) {
+      switch (atomType) {
+        case MathAtomType.Color:
+        case MathAtomType.Placeholder:
+        case MathAtomType.Ordinary:
+          return 0;
+        case MathAtomType.LargeOperator:
+          return 1;
+        case MathAtomType.BinaryOperator:
+          return 2;
+        case MathAtomType.Relation:
+          return 3;
+        case MathAtomType.Open:
+          return 4;
+        case MathAtomType.Close:
+          return 5;
+        case MathAtomType.Punctuation:
+          return 6;
+        case MathAtomType.Fraction:
+        case MathAtomType.Inner:
+          return 7;
+        case MathAtomType.Radical:
+          if (row) {
+            return 8;
+          }
+          throw new InvalidOperationException("Inter-element space undefined for radical on the right. Treat radical as ordinary.");
+      }
+      throw new InvalidOperationException($"Inter-element space undefined for atom type {atomType}");
+    }
+
+    private TextLineDisplay AddDisplayLine(bool evenIfLengthIsZero) {
+      if (evenIfLengthIsZero || (_currentLine!=null && _currentLine.Length > 0)) {
+        _currentLine.Font = _styleFont;
+        var displayAtom = new TextLineDisplay(_currentLine, _currentPosition, _currentLineIndexRange, _styleFont, _currentAtoms);
+        _displayAtoms.Add(displayAtom);
+        _currentPosition.X += displayAtom.Width;
+        _currentLine = new AttributedString();
+        _currentAtoms = new List<IMathAtom>();
+        _currentLineIndexRange = Ranges.NotFound;
+        return displayAtom;
+      }
+      return null;
     }
 
     private static List<IMathAtom> _PreprocessMathList(IMathList list) {
@@ -156,6 +231,14 @@ namespace CSharpMath {
       return inputChar;
     }
 
+    private float _radicalVerticalGap => (_style == LineStyle.Display)
+      ? _styleFont.MathTable.RadicalDisplayStyleVerticalGap
+      : _styleFont.MathTable.RadicalVerticalGap;
+
+    private RadicalDisplay MakeRadical(IMathList radicand, Range range) {
+      var innerDisplay = _CreateLine(radicand, _font, _style, true);
+      throw new NotImplementedException();
+    }
     
   }
 }
