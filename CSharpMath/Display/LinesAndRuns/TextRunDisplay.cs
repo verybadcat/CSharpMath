@@ -18,12 +18,11 @@ namespace CSharpMath.Display {
     public TextRunDisplay(
       AttributedGlyphRun run, 
       Range range, 
-      FontMathTable table, 
-      IGlyphBoundsProvider _boundsProvider) {
+      TypesettingContext context) {
       var font = run.Font;
       Run = run;
       Range = range;
-      var bounds = _boundsProvider.GetBoundingRectForGlyphs(font, run.Text);
+      var bounds = context.GlyphBoundsProvider.GetBoundingRectForGlyphs(font, run.Text);
       Width = bounds.Width;
       Ascent = Math.Max(0, bounds.Top);
       Descent = Math.Max(0, -bounds.Bottom);

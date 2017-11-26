@@ -8,11 +8,11 @@ namespace CSharpMath.Display {
   /// <summary>
   /// Corresponds to MTDisplay in iosMath.
   /// </summary>
-  public class DisplayBase : IDisplay {
+  public abstract class DisplayBase : IDisplay {
     public float Ascent { get; protected set; }
     public float Descent { get; protected set; }
     public float Width { get; set; }
-    public Range Range { get; protected set; }
+    public Range Range { get; }
     public bool HasScript { get; protected set; }
     public PointF Position { get; set; }
     public Color? TextColor { get;  set; }

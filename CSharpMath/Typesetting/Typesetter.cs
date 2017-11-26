@@ -14,8 +14,8 @@ using CSharpMath.FrontEnd;
 namespace CSharpMath {
   public class Typesetter {
     private MathFont _font;
-    private readonly FontMathTable _mathTable;
-    private readonly IGlyphBoundsProvider _boundsProvider;
+    private readonly TypesettingContext _context;
+    private FontMathTable _mathTable => _context.MathTable;
     private MathFont _styleFont;
     private LineStyle _style;
     private bool _cramped;
@@ -26,24 +26,25 @@ namespace CSharpMath {
     private Range _currentLineIndexRange = Range.NotFoundRange;
     private List<IMathAtom> _currentAtoms = new List<IMathAtom>();
 
-    internal Typesetter(MathFont font, FontMathTable table, LineStyle style, bool cramped, bool spaced) {
+    internal Typesetter(MathFont font, TypesettingContext context, LineStyle style, bool cramped, bool spaced) {
       _font = font;
-      _mathTable = table;
+      _context = context;
       _style = style;
+      _styleFont = font.CopyWithSize(context.MathTable.GetStyleSize(style, font));
       _cramped = cramped;
       _spaced = spaced;
     }
 
-    public static MathListDisplay CreateLine(IMathList list, MathFont font, FontMathTable table, LineStyle style) {
+    public static MathListDisplay CreateLine(IMathList list, MathFont font, TypesettingContext context, LineStyle style) {
       var finalized = list.FinalizedList();
-      return _CreateLine(finalized, font, table, style, false);
+      return _CreateLine(finalized, font, context, style, false);
     }
 
     private static MathListDisplay _CreateLine(
-      IMathList list, MathFont font, FontMathTable table,
+      IMathList list, MathFont font, TypesettingContext context,
       LineStyle style, bool cramped, bool spaced = false) {
       var preprocessedAtoms = _PreprocessMathList(list);
-      var typesetter = new Typesetter(font, table, style, cramped, spaced);
+      var typesetter = new Typesetter(font, context, style, cramped, spaced);
       typesetter._CreateDisplayAtoms(preprocessedAtoms);
       var lastAtom = list.Atoms.Last();
       var line = new MathListDisplay(typesetter._displayAtoms.ToArray(), 
@@ -78,7 +79,7 @@ namespace CSharpMath {
           case MathAtomType.Color:
             AddDisplayLine(false);
             var color = atom as IMathColor;
-            var display = CreateLine(color.InnerList, _font, _mathTable, _style);
+            var display = CreateLine(color.InnerList, _font, _context, _style);
             display.LocalTextColor = ColorExtensions.From6DigitHexString(color.ColorString);
             break;
           case MathAtomType.Radical:
@@ -113,7 +114,7 @@ namespace CSharpMath {
             } else {
               current = AttributedGlyphRuns.Create(atom.Nucleus, Color.Transparent);
             }
-            _currentLine.AppendGlyphRun(current);
+            _currentLine = AttributedStringExtensions.Combine(_currentLine, current);
             if (_currentLineIndexRange.Location == Range.NotFound) {
               _currentLineIndexRange = atom.IndexRange;
             } else {
@@ -205,7 +206,7 @@ namespace CSharpMath {
     private TextLineDisplay AddDisplayLine(bool evenIfLengthIsZero) {
       if (evenIfLengthIsZero || (_currentLine!=null && _currentLine.Length > 0)) {
         _currentLine.SetFont(_styleFont);
-        var displayAtom = new TextLineDisplay(_currentLine, _currentPosition, _currentLineIndexRange, _styleFont, _currentAtoms);
+        var displayAtom = TextLineDisplays.Create(_currentLine, _currentLineIndexRange, _context, _currentAtoms);
         _displayAtoms.Add(displayAtom);
         _currentPosition.X += displayAtom.Width;
         _currentLine = new AttributedString();
@@ -285,7 +286,7 @@ namespace CSharpMath {
       : _styleFont.MathTable.RadicalVerticalGap;
 
     private RadicalDisplay MakeRadical(IMathList radicand, Range range) {
-      var innerDisplay = _CreateLine(radicand, _font, _mathTable, _style, true);
+      var innerDisplay = _CreateLine(radicand, _font, _context, _style, true);
       throw new NotImplementedException();
     }
     

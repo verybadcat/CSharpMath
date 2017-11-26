@@ -7,13 +7,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CSharpMath.Display.LinesAndRuns {
+namespace CSharpMath.Display {
   public static class TextLineDisplays {
     public static TextLineDisplay Create(
       AttributedString text,
       Range range,
-      FontMathTable table,
-      IGlyphBoundsProvider boundsProvider,
+      TypesettingContext context,
       IEnumerable<IMathAtom> atoms
       ) {
       int index = range.Location;
@@ -23,14 +22,11 @@ namespace CSharpMath.Display.LinesAndRuns {
         var textRun = new TextRunDisplay(
           run,
           innerRange,
-          table,
-          boundsProvider
+          context
           );
         textRuns.Add(textRun);
       }
-      return new TextLineDisplay {
-        Runs = textRuns,
-      }
+      return new TextLineDisplay(textRuns, atoms);
     }
   }
 }

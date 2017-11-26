@@ -7,10 +7,15 @@ namespace CSharpMath.Display.Text {
     public MathFont(float pointSize) {
       PointSize = pointSize;
     }
+    public MathFont(float pointSize, FontStyle style) {
+      PointSize = pointSize;
+      Style = style;
+    }
     internal FontMathTable MathTable { get; }
     public float PointSize { get; }
     public FontStyle Style { get; }
-
+    public MathFont CopyWithSize(float pointSize)
+      => new MathFont(pointSize, Style);
     public bool Equals(MathFont otherFont) =>
       PointSize.Equals(otherFont.PointSize)
       && Style.Equals(otherFont.Style);

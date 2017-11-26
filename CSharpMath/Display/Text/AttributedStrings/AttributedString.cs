@@ -54,6 +54,16 @@ namespace CSharpMath.Display.Text {
     public static AttributedString Combine(AttributedGlyphRun run1, AttributedGlyphRun run2)
       => AttributedStrings.FromGlyphRuns(run1, run2);
 
+    public static AttributedString Combine(AttributedString aStr, AttributedGlyphRun run) {
+      if (aStr == null) {
+        return AttributedStrings.FromGlyphRuns(run);
+      } else {
+        if (run != null) {
+          aStr.AppendGlyphRun(run);
+        }
+        return aStr;
+      }
+    }
     
   }
 }
