@@ -16,9 +16,7 @@ namespace CSharpMath.Tests.PreTypesetting {
     [Fact]
     public void ResourceProvider_FindsMathConfiguration() {
       var content = ResourceLoader.LatinMath;
-      var root = content.Root;
-      var rootType = root.GetType();
-      var constants = root["constants"];
+      var constants = content["constants"];
       var constantsType = constants.GetType();
       Assert.True(1 > 0);
     }

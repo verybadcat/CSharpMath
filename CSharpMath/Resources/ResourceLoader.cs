@@ -11,10 +11,10 @@ namespace CSharpMath.Resources {
     static ResourceLoader() {
       var content = ResourceProvider.ManifestString(_latinModernJsonFilename);
       var jObject = JsonConvert.DeserializeObject(content);
-      LatinMath = jObject as JObject;
+      LatinMath = (jObject as JObject).Root;
       var type = jObject.GetType();
     }
-    public static JObject LatinMath;
+    public static JToken LatinMath;
 
 
   }

@@ -1,8 +1,6 @@
 ﻿using CSharpMath.FrontEnd;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CSharpMath.Display.Text {
   internal class FontMathTable {

@@ -23,6 +23,5 @@ namespace CSharpMath.Display {
       Atoms = atoms.ToArray();
       Range = range;
     }
-
   }
 }
