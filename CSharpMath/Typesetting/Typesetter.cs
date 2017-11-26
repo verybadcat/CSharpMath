@@ -13,6 +13,7 @@ using CSharpMath.TypesetterInternal;
 namespace CSharpMath {
   public class Typesetter {
     private MathFont _font;
+    private readonly FontMathTable _mathTable;
     private MathFont _styleFont;
     private LineStyle _style;
     private bool _cramped;
@@ -23,23 +24,24 @@ namespace CSharpMath {
     private Range _currentLineIndexRange = Range.NotFoundRange;
     private List<IMathAtom> _currentAtoms = new List<IMathAtom>();
 
-    public Typesetter(MathFont font, LineStyle style, bool cramped, bool spaced) {
+    internal Typesetter(MathFont font, FontMathTable table, LineStyle style, bool cramped, bool spaced) {
       _font = font;
+      _mathTable = table;
       _style = style;
       _cramped = cramped;
       _spaced = spaced;
     }
 
-    public static MathListDisplay CreateLine(IMathList list, MathFont font, LineStyle style) {
+    public static MathListDisplay CreateLine(IMathList list, MathFont font, FontMathTable table, LineStyle style) {
       var finalized = list.FinalizedList();
-      return _CreateLine(finalized, font, style, false);
+      return _CreateLine(finalized, font, table, style, false);
     }
 
     private static MathListDisplay _CreateLine(
-      IMathList list, MathFont font,
+      IMathList list, MathFont font, FontMathTable table,
       LineStyle style, bool cramped, bool spaced = false) {
       var preprocessedAtoms = _PreprocessMathList(list);
-      var typesetter = new Typesetter(font, style, cramped, spaced);
+      var typesetter = new Typesetter(font, table, style, cramped, spaced);
       typesetter._CreateDisplayAtoms(preprocessedAtoms);
       var lastAtom = list.Atoms.Last();
       var line = new MathListDisplay(typesetter._displayAtoms.ToArray(), 
@@ -61,7 +63,7 @@ namespace CSharpMath {
           case MathAtomType.Space:
             AddDisplayLine(false);
             var space = atom as MathSpace;
-            _currentPosition.X += space.Space * _styleFont.MathTable.MuUnit;
+            _currentPosition.X += space.Space * _mathTable.MuUnit(_font);
             continue;
           case MathAtomType.Style:
             // stash the existing layout
@@ -74,7 +76,7 @@ namespace CSharpMath {
           case MathAtomType.Color:
             AddDisplayLine(false);
             var color = atom as IMathColor;
-            var display = CreateLine(color.InnerList, _font, _style);
+            var display = CreateLine(color.InnerList, _font, _mathTable, _style);
             display.LocalTextColor = ColorExtensions.From6DigitHexString(color.ColorString);
             break;
           case MathAtomType.Radical:
@@ -150,7 +152,7 @@ namespace CSharpMath {
       Assertions.Assert(spaceType != InterElementSpaceType.Invalid, $"Invalid space between {left} and {right}");
       var multiplier = spaceType.SpacingInMu(_style);
       if (multiplier > 0) {
-        return multiplier * _styleFont.MathTable.MuUnit;
+        return multiplier * _mathTable.MuUnit(_styleFont);
       }
       return 0;
     }
@@ -281,7 +283,7 @@ namespace CSharpMath {
       : _styleFont.MathTable.RadicalVerticalGap;
 
     private RadicalDisplay MakeRadical(IMathList radicand, Range range) {
-      var innerDisplay = _CreateLine(radicand, _font, _style, true);
+      var innerDisplay = _CreateLine(radicand, _font, _mathTable, _style, true);
       throw new NotImplementedException();
     }
     

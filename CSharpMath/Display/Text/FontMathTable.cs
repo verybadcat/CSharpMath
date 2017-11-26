@@ -3,41 +3,30 @@ using Newtonsoft.Json.Linq;
 using System;
 
 namespace CSharpMath.Display.Text {
-  internal class FontMathTable {
-    private int _unitsPerEm;
-    private float _fontSize;
-    private JObject _mathTable;
-
-    private WeakReference<MathFont> _fontReference { get; }
-    private MathFont _font {
-      get {
-        MathFont font = null;
-        _fontReference?.TryGetTarget(out font);
-        return font;
-      }
-    }
+  public class FontMathTable {
+    private JToken _mathTable;
+    private float _unitsPerEm;
 
     private JObject _constantsDictionary
-      => _mathTable.Root["constants"] as JObject;
+      => _mathTable["constants"] as JObject;
 
     private float _ConstantFromTable(string constantName) {
       var value = _constantsDictionary[constantName];
       throw new NotImplementedException();
     }
 
-    private float _FontUnitsToPt(int fontUnits)
-      => fontUnits * _fontSize / _unitsPerEm;
+    private float _FontUnitsToPt(MathFont font, int fontUnits)
+      => fontUnits * font.PointSize / _unitsPerEm;
 
     public float ScriptScriptScaleDown { get; internal set; }
     public float ScriptScaleDown { get; internal set; }
-    public float MuUnit => _font.PointSize / 18f;
+    public float MuUnit(MathFont font) => font.PointSize / 18f;
 
     public float RadicalDisplayStyleVerticalGap { get; internal set; }
     public float RadicalVerticalGap { get; internal set; }
 
-    public FontMathTable(MathFont font, JObject mathTable) {
-      _unitsPerEm = FontMeasurers.Current.GetUnitsPerEm(font);
-      _fontSize = _font.PointSize;
+    public FontMathTable(float unitsPerEm, JToken mathTable) {
+      _unitsPerEm = unitsPerEm;
       _mathTable = mathTable;
     }
   }

@@ -17,13 +17,15 @@ namespace CSharpMath.Tests {
     public TypesettingTests() {
       
     }
-    private TypesettingContext _context => TestTypesettingContexts.Create();
+    private MathFont _font { get; } = new MathFont(10);
+    private FontMathTable _table { get; } = new FontMathTable(1000, Resources.ResourceLoader.LatinMath);
+    private TypesettingContext _context { get; } = TestTypesettingContexts.Create();
     [Fact]
     public void TestSimpleVariable() {
       var list = new MathList {
         MathAtoms.ForCharacter('x')
       };
-      var display = Typesetter.CreateLine(list, _font, LineStyle.Display);
+      var display = _context.CreateLine(list, _font, LineStyle.Display);
       Assert.NotNull(display);
       Assert.Equal(LinePosition.Regular, display.MyLinePosition);
       Assert.Equal(new PointF(), display.Position);
