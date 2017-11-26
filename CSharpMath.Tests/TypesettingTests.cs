@@ -34,11 +34,11 @@ namespace CSharpMath.Tests {
       Assert.Equal(int.MinValue, display.IndexInParent);
       Assert.Single(display.Displays);
       var sub0 = display.Displays[0];
-      Assert.True(sub0 is TextLineDisplay);
-      var line = sub0 as TextLineDisplay;
+      Assert.True(sub0 is TextRunDisplay);
+      var line = sub0 as TextRunDisplay;
       Assert.Single(line.Atoms);
 
-      Assert.Equal("x", line.AttributedText.Text);
+      Assert.Equal("x", line.Run.Text);
       Assert.Equal(new PointF(), line.Position);
       Assert.Equal(new Range(0, 1), line.Range);
       Assert.False(line.HasScript);

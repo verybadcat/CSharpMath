@@ -9,11 +9,13 @@ using CSharpMath.Interfaces;
 using System.Drawing;
 using System.Linq;
 using CSharpMath.TypesetterInternal;
+using CSharpMath.FrontEnd;
 
 namespace CSharpMath {
   public class Typesetter {
     private MathFont _font;
     private readonly FontMathTable _mathTable;
+    private readonly IGlyphBoundsProvider _boundsProvider;
     private MathFont _styleFont;
     private LineStyle _style;
     private bool _cramped;
@@ -105,13 +107,13 @@ namespace CSharpMath {
                 _currentPosition.X += interElementSpace;
               }
             }
-            AttributedString current = null;
+            AttributedGlyphRun current = null;
             if (atom.AtomType == MathAtomType.Placeholder) {
-              current = new AttributedString(atom.Nucleus, _placeholderColor);
+              current = AttributedGlyphRuns.Create(atom.Nucleus, _placeholderColor);
             } else {
-              current = new AttributedString(atom.Nucleus, Color.Transparent);
+              current = AttributedGlyphRuns.Create(atom.Nucleus, Color.Transparent);
             }
-            _currentLine = AttributedStringExtensions.Combine(_currentLine, current);
+            _currentLine.AppendGlyphRun(current);
             if (_currentLineIndexRange.Location == Range.NotFound) {
               _currentLineIndexRange = atom.IndexRange;
             } else {
@@ -202,7 +204,7 @@ namespace CSharpMath {
 
     private TextLineDisplay AddDisplayLine(bool evenIfLengthIsZero) {
       if (evenIfLengthIsZero || (_currentLine!=null && _currentLine.Length > 0)) {
-        _currentLine.Font = _styleFont;
+        _currentLine.SetFont(_styleFont);
         var displayAtom = new TextLineDisplay(_currentLine, _currentPosition, _currentLineIndexRange, _styleFont, _currentAtoms);
         _displayAtoms.Add(displayAtom);
         _currentPosition.X += displayAtom.Width;
