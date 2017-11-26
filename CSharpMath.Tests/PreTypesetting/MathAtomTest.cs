@@ -210,7 +210,7 @@ namespace CSharpMath.Tests {
 
     [Fact]
     public void TestCreateMathTable() {
-      var table = new MathTable();
+      var table = new Table();
 
       Assert.Equal(MathAtomType.Table, table.AtomType);
 
@@ -252,7 +252,7 @@ namespace CSharpMath.Tests {
 
     [Fact]
     public void TestCopyMathTable() {
-      var table = new MathTable();
+      var table = new Table();
       Assert.Equal(MathAtomType.Table, table.AtomType);
 
       var list = new MathList();
@@ -273,7 +273,7 @@ namespace CSharpMath.Tests {
       table.SetAlignment(ColumnAlignment.Left, 2);
       table.SetAlignment(ColumnAlignment.Right, 1);
 
-      var clone = AtomCloner.Clone(table, false) as MathTable;
+      var clone = AtomCloner.Clone(table, false) as Table;
       CheckClone(table, clone);
       Assert.Equal(clone.InterColumnSpacing, table.InterColumnSpacing);
       Assert.Equal(clone.Alignments, table.Alignments);

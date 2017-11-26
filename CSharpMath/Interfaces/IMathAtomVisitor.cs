@@ -14,7 +14,7 @@ namespace CSharpMath.Interfaces {
     T Visit(MathColor color, THelper helper);
     T Visit(MathSpace space, THelper helper);
     T Visit(MathStyle style, THelper helper);
-    T Visit(MathTable table, THelper helper);
+    T Visit(Table table, THelper helper);
 
     T Visit(Overline overline, THelper helper);
     T Visit(Underline underline, THelper helper);

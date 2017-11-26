@@ -530,7 +530,7 @@ namespace CSharpMath.Atoms {
       List<List<IMathList>> rows,
       out string errorMessage) {
       errorMessage = null;
-      var table = new MathTable(environment) {
+      var table = new Table(environment) {
         Cells = rows
       };
       IMathAtom r = null;

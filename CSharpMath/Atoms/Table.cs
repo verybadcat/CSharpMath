@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 
 namespace CSharpMath.Atoms {
-  public class MathTable : MathAtom, IMathTable {
+  public class Table : MathAtom, IMathTable {
     public List<ColumnAlignment> Alignments { get; } = new List<ColumnAlignment>();
     public List<List<IMathList>> Cells { get; set; } = new List<List<IMathList>>();
 
@@ -15,16 +15,16 @@ namespace CSharpMath.Atoms {
 
     private string _environment;
 
-    public MathTable(string environment): base(MathAtomType.Table, "") {
+    public Table(string environment): base(MathAtomType.Table, "") {
       _environment = environment;
     }
 
-    public MathTable():this(null) { }
+    public Table():this(null) { }
 
     /// <summary>
     /// Deep copy, finalized or not.
     /// </summary>
-    public MathTable(MathTable cloneMe, bool finalize) : base(cloneMe, finalize) {
+    public Table(Table cloneMe, bool finalize) : base(cloneMe, finalize) {
       InterColumnSpacing = cloneMe.InterColumnSpacing;
       InterRowAdditionalSpacing = cloneMe.InterRowAdditionalSpacing;
       Environment = cloneMe.Environment;
@@ -68,7 +68,7 @@ namespace CSharpMath.Atoms {
     }
 
 
-    public bool EqualsTable(MathTable otherTable) {
+    public bool EqualsTable(Table otherTable) {
       bool r = EqualsAtom(otherTable);
       r &= (NRows == otherTable.NRows);
       for (int i=0; i<NRows; i++) {
@@ -79,7 +79,7 @@ namespace CSharpMath.Atoms {
     }
 
     public override bool Equals(object obj)
-      => EqualsTable(obj as MathTable);
+      => EqualsTable(obj as Table);
 
     public override int GetHashCode() {
       unchecked {

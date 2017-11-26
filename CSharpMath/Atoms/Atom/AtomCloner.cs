@@ -24,8 +24,8 @@ namespace CSharpMath.Atoms {
     public IMathAtom Visit(MathSpace target, bool finalize)
       => new MathSpace(target, finalize);
 
-    public IMathAtom Visit(MathTable target, bool finalize)
-      => new MathTable(target, finalize);
+    public IMathAtom Visit(Table target, bool finalize)
+      => new Table(target, finalize);
 
     public IMathAtom Visit(MathStyle target, bool finalize)
       => new MathStyle(target, finalize);
