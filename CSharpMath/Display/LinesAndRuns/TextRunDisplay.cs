@@ -27,7 +27,7 @@ namespace CSharpMath.Display {
       Descent = Math.Max(0, -bounds.Bottom);
     }
     public RectangleF DisplayBounds
-  => this.OriginBoundsFromAscentDescentWidth();
+  => this.ComputeDisplayBounds();
 
     public void Draw(IGraphicsContext context) {
 
@@ -36,6 +36,7 @@ namespace CSharpMath.Display {
     public float Width { get; set; }
     public float Ascent { get; set; }
     public float Descent { get; set; }
+    public PointF Position { get; set; }
  
   }
 }

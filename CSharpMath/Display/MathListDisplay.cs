@@ -13,6 +13,7 @@ namespace CSharpMath.Display {
     public IDisplay[] Displays { get; set; }
     public LinePosition MyLinePosition { get; set; }
     public Color TextColor { get; set; }
+    public bool HasScript { get; set; }
     /// <summary> Recursively. While translating, we'll keep the iosMath name "setTextColor".</summary> 
     public void SetTextColor(Color textColor) {
       TextColor = textColor;
@@ -24,38 +25,25 @@ namespace CSharpMath.Display {
     /// parent list. For a regular list, it is int.MinValue.</summary>
     public int IndexInParent { get; set; }
 
-    public MathListDisplay(IDisplay[] displays, Range range ): base() {
+    public MathListDisplay(IDisplay[] displays): base() {
       Displays = displays.ToArray();
       MyLinePosition = LinePosition.Regular;
       IndexInParent = int.MinValue;
-      Range = range;
-      _RecomputeDimensions();
     }
 
-    private void _RecomputeDimensions() {
-      float maxAscent = 0;
-      float maxDescent = 0;
-      float maxWidth = 0;
-      foreach (var atom in Displays) {
-        float ascent = Math.Max(0, atom.Position.Y + atom.Ascent);
-        if (ascent > maxAscent) {
-          maxAscent = ascent;
-        }
-        float descent = Math.Min(0, 0 - (atom.Position.Y - atom.Descent));
-        if (descent > maxDescent) {
-          maxDescent = descent;
-        }
-        float width = atom.Width + atom.Position.X;
-        if (width > maxWidth) {
-          maxWidth = width;
-        }
+    public float Ascent => Displays.CollectionAscent();
+    public float Descent => Displays.CollectionDescent();
+    public PointF Position { get; set; }
+    public RectangleF DisplayBounds => this.ComputeDisplayBounds();
+    public Range Range => RangeExtensions.Combine(Displays.Select(d => d.Range));
+    public float Width {
+      get {
+        var x = Displays.Min(d => d.Position.X);
+        var maxX = Displays.Max(d => d.Position.X + d.Width);
+        return maxX - x;
       }
-      Ascent = maxAscent;
-      Descent = maxDescent;
-      Width = maxWidth;
     }
-
-    public override void Draw(IGraphicsContext context) {
+    public void Draw(IGraphicsContext context) {
       context.SaveState();
       context.Translate(this.Position);
       context.SetTextPosition(new PointF());

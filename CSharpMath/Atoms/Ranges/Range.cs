@@ -41,5 +41,6 @@ namespace CSharpMath.Atoms {
     }
 
     public override string ToString() => "Range " + Location + " " + Length;
+    internal float First() => throw new NotImplementedException();
   }
 }

@@ -20,9 +20,10 @@ namespace CSharpMath.Display {
     public float Width => ((IDisplay)this.Inner).Width;
 
     public Range Range => ((IDisplay)this.Inner).Range;
+    public PointF Position { get; set; }
 
     public void Draw(IGraphicsContext context) => ((IDisplay)this.Inner).Draw(context);
 
-    /// sub-display.</summary> 
+    
   }
 }

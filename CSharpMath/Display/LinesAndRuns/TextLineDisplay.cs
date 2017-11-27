@@ -26,28 +26,18 @@ namespace CSharpMath.Display {
     }
 
     public RectangleF DisplayBounds
-      => this.OriginBoundsFromAscentDescentWidth();
+      => this.ComputeDisplayBounds();
 
     public void Draw(IGraphicsContext context) {
 
     }
+    public PointF Position { get; set; }
 
     public float Ascent => throw new NotImplementedException();
     public float Descent => throw new NotImplementedException(); // TODO: runs probably need a location.
     public float Width => throw new NotImplementedException(); // again, probably need a location on runs
-    public Range Range {
-      get {
-        if (Runs.IsEmpty()) {
-          return Ranges.NotFound;
-        }
-        int start = int.MaxValue;
-        int end = 0;
-        foreach (var run in Runs) {
-          start = Math.Min(start, run.Range.Location);
-          end = Math.Max(end, run.Range.End);
-        }
-        return new Range(start, end - start);
-      }
+    public Range Range => RangeExtensions.Combine(Runs.Select(r => r.Range));
+    public bool HasScript { get; set; }
     }
   }
 }

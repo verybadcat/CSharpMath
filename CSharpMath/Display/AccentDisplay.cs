@@ -19,6 +19,8 @@ namespace CSharpMath.Display {
 
     public Range Range => ((IDisplay)this.Accentee).Range;
 
+    public PointF Position => ((IDisplay)this.Accentee).Position;
+
     public void Draw(IGraphicsContext context) => ((IDisplay)this.Accentee).Draw(context);
   }
 }
