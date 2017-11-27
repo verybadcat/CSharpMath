@@ -11,8 +11,7 @@ using System.Text;
 namespace CSharpMath.Display {
   /// <summary>Corresponds to MTCTLineDisplay in iOSMath. Will need to
   /// figure out Core Text a bit in order to fill this out.</summary> 
-  public class TextRunDisplay : DisplayBase {
-    public TextLine Line { get; private set; }
+  public class TextRunDisplay : IDisplay {
     public AttributedGlyphRun Run { get; private set; }
 
     public TextRunDisplay(
@@ -27,5 +26,16 @@ namespace CSharpMath.Display {
       Ascent = Math.Max(0, bounds.Top);
       Descent = Math.Max(0, -bounds.Bottom);
     }
+    public RectangleF DisplayBounds
+  => this.OriginBoundsFromAscentDescentWidth();
+
+    public void Draw(IGraphicsContext context) {
+
+    }
+    public Range Range { get; set; }
+    public float Width { get; set; }
+    public float Ascent { get; set; }
+    public float Descent { get; set; }
+ 
   }
 }

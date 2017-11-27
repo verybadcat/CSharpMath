@@ -20,7 +20,7 @@ namespace CSharpMath {
     private LineStyle _style;
     private bool _cramped;
     private bool _spaced;
-    private List<DisplayBase> _displayAtoms = new List<DisplayBase>();
+    private List<IDisplay> _displayAtoms = new List<IDisplay>();
     private PointF _currentPosition;
     private AttributedString _currentLine;
     private Range _currentLineIndexRange = Range.NotFoundRange;

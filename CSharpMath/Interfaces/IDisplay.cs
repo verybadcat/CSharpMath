@@ -8,10 +8,11 @@ namespace CSharpMath {
     float Ascent { get; }
     float Descent { get; }
     float Width { get; }
-    PointF Position { get; set; }
     Range Range { get; }
-    bool HasScript { get; }
-    Color? TextColor { get; }
-    Color? LocalTextColor { get; }
+  }
+
+  public static class IDisplayExtensions {
+    public static RectangleF OriginBoundsFromAscentDescentWidth(this IDisplay display)
+      => new RectangleF(0, -display.Ascent, display.Width, display.Ascent + display.Descent);
   }
 }

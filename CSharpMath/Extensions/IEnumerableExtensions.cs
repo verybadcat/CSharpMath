@@ -7,6 +7,17 @@ namespace CSharpMath
 {
     public static class IEnumerableExtensions
     {
+    public static bool IsEmpty<T>(this IEnumerable<T> enumerable) {
+      if (enumerable == null) {
+        return true;
+      }
+      foreach (T obj in enumerable) {
+        return false;
+      }
+      return true;
+    }
+    public static bool IsNonempty<T>(this IEnumerable<T> enumerable)
+      => !enumerable.IsEmpty();
     public static bool EqualsEnumerable<T>(this IEnumerable<T> enumerable, IEnumerable<T> otherEnumerable,
   Func<T, T, bool> equalityTester = null) {
       if (equalityTester == null) {

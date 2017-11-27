@@ -9,21 +9,22 @@ namespace CSharpMath.Display {
   /// <summary>
   /// Corresponds to MTMathListDisplay in iosMath.
   /// </summary>
-  public class MathListDisplay: DisplayBase {
-    public DisplayBase[] Displays { get; set; }
+  public class MathListDisplay: IDisplay {
+    public IDisplay[] Displays { get; set; }
     public LinePosition MyLinePosition { get; set; }
+    public Color TextColor { get; set; }
     /// <summary> Recursively. While translating, we'll keep the iosMath name "setTextColor".</summary> 
     public void SetTextColor(Color textColor) {
       TextColor = textColor;
       foreach (var atom in Displays) {
-        atom.TextColor = atom.LocalTextColor ?? textColor;
+        atom.TextColor = textColor;
       }
     }
     /// <summary>For a subscript or superscript, this is the index in the
     /// parent list. For a regular list, it is int.MinValue.</summary>
     public int IndexInParent { get; set; }
 
-    public MathListDisplay(DisplayBase[] displays, Range range ): base() {
+    public MathListDisplay(IDisplay[] displays, Range range ): base() {
       Displays = displays.ToArray();
       MyLinePosition = LinePosition.Regular;
       IndexInParent = int.MinValue;
