@@ -12,7 +12,9 @@ namespace CSharpMath.Display.Text {
     public MathFont Font { get; set; }
     public Color TextColor { get; set; }
     public float Kern { get; set; }
-   
+
+    public override string ToString() => "AttributedGlyphRun " + Text;
+
   }
  
   public static class AttributedGlyphRunExtensions {

@@ -28,19 +28,6 @@ namespace CSharpMath {
     /// <summary>Where the display is located, expressed in its parent's coordinate system.</summary>
     public static RectangleF Frame(this IDisplay display)
       => display.DisplayBounds.Plus(display.Position);
-    public static float CollectionAscent(this IEnumerable<IDisplay> displays) {
-      float r = 0;
-      foreach (var display in displays) {
-        r = Math.Max(r, display.Ascent - display.Position.Y);
-      }
-      return r;
-    }
-    public static float CollectionDescent(this IEnumerable<IDisplay> displays) {
-      float r = 0;
-      foreach (var display in displays) {
-        r = Math.Max(r, display.Descent + display.Position.Y);
-      }
-      return r;
-    }
+ 
   }
 }

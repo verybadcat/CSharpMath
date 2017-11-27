@@ -47,8 +47,7 @@ namespace CSharpMath {
       var typesetter = new Typesetter(font, context, style, cramped, spaced);
       typesetter._CreateDisplayAtoms(preprocessedAtoms);
       var lastAtom = list.Atoms.Last();
-      var line = new MathListDisplay(typesetter._displayAtoms.ToArray(), 
-        new Range(0, lastAtom.IndexRange.End));
+      var line = new MathListDisplay(typesetter._displayAtoms.ToArray());
       return line;
     }
 
@@ -80,7 +79,7 @@ namespace CSharpMath {
             AddDisplayLine(false);
             var color = atom as IMathColor;
             var display = CreateLine(color.InnerList, _font, _context, _style);
-            display.LocalTextColor = ColorExtensions.From6DigitHexString(color.ColorString);
+//            display.LocalTextColor = ColorExtensions.From6DigitHexString(color.ColorString);
             break;
           case MathAtomType.Radical:
             AddDisplayLine(false);
@@ -139,7 +138,8 @@ namespace CSharpMath {
         var lastDisplay = _displayAtoms.LastOrDefault();
         if (lastDisplay!=null) {
           float space = GetInterElementSpace(prevType, MathAtomType.Close);
-          lastDisplay.Width += space;
+          throw new NotImplementedException();
+   //       lastDisplay.Width += space;
         }
       }
     }

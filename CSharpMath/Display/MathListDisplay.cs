@@ -17,9 +17,9 @@ namespace CSharpMath.Display {
     /// <summary> Recursively. While translating, we'll keep the iosMath name "setTextColor".</summary> 
     public void SetTextColor(Color textColor) {
       TextColor = textColor;
-      foreach (var atom in Displays) {
-        atom.TextColor = textColor;
-      }
+      //foreach (var atom in Displays) {
+      //  atom.TextColor = textColor;
+      //}
     }
     /// <summary>For a subscript or superscript, this is the index in the
     /// parent list. For a regular list, it is int.MinValue.</summary>
@@ -38,8 +38,8 @@ namespace CSharpMath.Display {
     public Range Range => RangeExtensions.Combine(Displays.Select(d => d.Range));
     public float Width {
       get {
-        var x = Displays.Min(d => d.Position.X);
-        var maxX = Displays.Max(d => d.Position.X + d.Width);
+        var x = Displays.CollectionX();
+        var maxX = Displays.CollectionMaxX();
         return maxX - x;
       }
     }

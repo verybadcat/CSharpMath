@@ -33,11 +33,11 @@ namespace CSharpMath.Display {
     }
     public PointF Position { get; set; }
 
-    public float Ascent => throw new NotImplementedException();
-    public float Descent => throw new NotImplementedException(); // TODO: runs probably need a location.
-    public float Width => throw new NotImplementedException(); // again, probably need a location on runs
+    public float Ascent => Runs.CollectionAscent();
+    public float Descent => Runs.CollectionDescent(); // TODO: runs probably need a location.
+    public float Width => Runs.CollectionWidth();
     public Range Range => RangeExtensions.Combine(Runs.Select(r => r.Range));
     public bool HasScript { get; set; }
-    }
   }
 }
+

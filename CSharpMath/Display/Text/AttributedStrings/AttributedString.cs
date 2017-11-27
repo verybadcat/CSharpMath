@@ -14,6 +14,15 @@ namespace CSharpMath.Display.Text {
     public void SetFont(MathFont font) {
       _Runs.ForEach(r => r.Font = font);
     }
+    public string Text {
+      get {
+        string r = "";
+        foreach (var run in Runs) {
+          r += run.Text;
+        }
+        return r;
+      }
+    }
     public int Length => _Runs.Sum(r => r.Length);
     public IEnumerable<AttributedGlyphRun> Runs => _Runs;
     internal void FuseMatchingRuns() {
@@ -38,6 +47,8 @@ namespace CSharpMath.Display.Text {
       _Runs.Add(run);
       TryFuseRunAt(_Runs.Count - 1);
     }
+
+    public override string ToString() => "AttributedString " + Text;
   }
 
   public static class AttributedStringExtensions {
