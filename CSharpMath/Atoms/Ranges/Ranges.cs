@@ -5,8 +5,8 @@ using System.Text;
 namespace CSharpMath.Atoms {
   public static class Ranges {
     public static Range NotFound => new Range {
-      Location = Range.NotFound,
-      Length = Range.NotFound
+      Location = Range.Undefined,
+      Length = Range.Undefined
     };
     public static Range Zero => new Range {
       Location = 0,

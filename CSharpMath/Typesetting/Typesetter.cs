@@ -79,7 +79,7 @@ namespace CSharpMath {
             AddDisplayLine(false);
             var color = atom as IMathColor;
             var display = CreateLine(color.InnerList, _font, _context, _style);
-//            display.LocalTextColor = ColorExtensions.From6DigitHexString(color.ColorString);
+            //            display.LocalTextColor = ColorExtensions.From6DigitHexString(color.ColorString);
             break;
           case MathAtomType.Radical:
             AddDisplayLine(false);
@@ -114,7 +114,7 @@ namespace CSharpMath {
               current = AttributedGlyphRuns.Create(atom.Nucleus, Color.Transparent);
             }
             _currentLine = AttributedStringExtensions.Combine(_currentLine, current);
-            if (_currentLineIndexRange.Location == Range.NotFound) {
+            if (_currentLineIndexRange.Location == Range.Undefined) {
               _currentLineIndexRange = atom.IndexRange;
             } else {
               _currentLineIndexRange.Length += atom.IndexRange.Length;
@@ -134,12 +134,12 @@ namespace CSharpMath {
       }
 
       AddDisplayLine(false);
-      if (_spaced && prevType!=MathAtomType.MinValue) {
+      if (_spaced && prevType != MathAtomType.MinValue) {
         var lastDisplay = _displayAtoms.LastOrDefault();
-        if (lastDisplay!=null) {
+        if (lastDisplay != null) {
           float space = GetInterElementSpace(prevType, MathAtomType.Close);
           throw new NotImplementedException();
-   //       lastDisplay.Width += space;
+          //       lastDisplay.Width += space;
         }
       }
     }
@@ -162,7 +162,7 @@ namespace CSharpMath {
 
     private void AddInterElementSpace(IMathAtom prevNode, MathAtomType currentType) {
       float space = 0;
-      if (prevNode!=null) {
+      if (prevNode != null) {
         space = GetInterElementSpace(prevNode.AtomType, currentType);
       } else if (_spaced) {
         space = GetInterElementSpace(MathAtomType.Open, currentType);
@@ -171,7 +171,7 @@ namespace CSharpMath {
     }
 
 
-    
+
 
     private int GetInterElementSpaceArrayIndexForType(MathAtomType atomType, bool row) {
       switch (atomType) {
@@ -204,7 +204,7 @@ namespace CSharpMath {
     }
 
     private TextLineDisplay AddDisplayLine(bool evenIfLengthIsZero) {
-      if (evenIfLengthIsZero || (_currentLine!=null && _currentLine.Length > 0)) {
+      if (evenIfLengthIsZero || (_currentLine != null && _currentLine.Length > 0)) {
         _currentLine.SetFont(_styleFont);
         var displayAtom = TextLineDisplays.Create(_currentLine, _currentLineIndexRange, _context, _currentAtoms);
         _displayAtoms.Add(displayAtom);
@@ -221,34 +221,30 @@ namespace CSharpMath {
       IMathAtom prevNode = null;
       var r = new List<IMathAtom>();
       foreach (IMathAtom atom in list.Atoms) {
-        switch (atom.AtomType) {
-          case MathAtomType.Variable:
-          case MathAtomType.Number:
-            // These are not a TeX type nodes. TeX does this during parsing the input.
-            // switch to using the font specified in the atom
-            var newFont = _ChangeFont(atom.Nucleus, atom.FontStyle);
-            // we convert it to ordinary
-            atom.AtomType = MathAtomType.Ordinary;
-            atom.Nucleus = newFont;
-            break;
-          case MathAtomType.UnaryOperator:
-          case MathAtomType.Ordinary:
-            // TeX treats unary operators as Ordinary. So will we.
-            atom.AtomType = MathAtomType.Ordinary;
-            // This is Rule 14 to merge ordinary characters.
-            // combine ordinary atoms together
-            if (prevNode != null && prevNode.AtomType == MathAtomType.Ordinary
-              && prevNode.Superscript == null && prevNode.Subscript == null) {
-              prevNode.Fuse(atom);
-              // skip the current node as we fused it
-              continue;
-            }
-            break;
+        // we do not use a switch statement on AtomType here as we may be changing said type.
+        if (atom.AtomType == MathAtomType.Variable || atom.AtomType == MathAtomType.Number) {
+          // These are not a TeX type nodes. TeX does this during parsing the input.
+          // switch to using the font specified in the atom
+          var newFont = _ChangeFont(atom.Nucleus, atom.FontStyle);
+          // we convert it to ordinary
+          atom.AtomType = MathAtomType.Ordinary;
+          atom.Nucleus = newFont;
+        }
+        if (atom.AtomType == MathAtomType.Ordinary || atom.AtomType == MathAtomType.UnaryOperator) {
+          // TeX treats unary operators as Ordinary. So will we.
+          atom.AtomType = MathAtomType.Ordinary;
+          // This is Rule 14 to merge ordinary characters.
+          // combine ordinary atoms together
+          if (prevNode != null && prevNode.AtomType == MathAtomType.Ordinary
+            && prevNode.Superscript == null && prevNode.Subscript == null) {
+            prevNode.Fuse(atom);
+            // skip the current node as we fused it
+            continue;
+          }
         }
         // TODO: add italic correction here or in second pass?
         prevNode = atom;
         r.Add(prevNode);
-        break;
       }
       return r;
     }
@@ -289,6 +285,6 @@ namespace CSharpMath {
       var innerDisplay = _CreateLine(radicand, _font, _context, _style, true);
       throw new NotImplementedException();
     }
-    
+
   }
 }

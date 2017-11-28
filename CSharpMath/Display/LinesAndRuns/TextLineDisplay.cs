@@ -13,6 +13,7 @@ namespace CSharpMath.Display {
       Runs = runs;
       Atoms = atoms.ToList();
     }
+    // We don't implement count as it's not clear if it would refer to runs or atoms.
     public List<TextRunDisplay> Runs { get; }
     public List<IMathAtom> Atoms { get; }
     public string Text {
