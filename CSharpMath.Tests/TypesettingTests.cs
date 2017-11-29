@@ -13,7 +13,7 @@ namespace CSharpMath.Tests {
     public TypesettingTests() {
       
     }
-    private MathFont _font { get; } = new MathFont(10);
+    private MathFont _font { get; } = new MathFont(20);
     private IFontMeasurer _fontMeasurer => _context.FontMeasurer;
     private TypesettingContext _context { get; } = TestTypesettingContexts.Create();
     [Fact]
@@ -39,9 +39,9 @@ namespace CSharpMath.Tests {
       Assert.Equal(new Range(0, 1), line.Range);
       Assert.False(line.HasScript);
 
-      Assertions.ApproximatelyEqual(2, display.Ascent, 0.01);
-      Assertions.ApproximatelyEqual(0.5, display.Descent, 0.01);
-      Assertions.ApproximatelyEqual(1, display.Width, 0.01);
+      Assertions.ApproximatelyEqual(14, display.Ascent, 0.01);
+      Assertions.ApproximatelyEqual(4, display.Descent, 0.01);
+      Assertions.ApproximatelyEqual(10, display.Width, 0.01);
       Assert.Equal(display.Ascent, line.Ascent);
       Assert.Equal(display.Descent, line.Descent);
       Assert.Equal(display.Width, line.Width);
@@ -74,9 +74,9 @@ namespace CSharpMath.Tests {
       Assert.Equal(display.Ascent, line.Ascent);
       Assert.Equal(display.Descent, line.Descent);
       Assert.Equal(display.Width, line.Width);
-      Assertions.ApproximatelyEqual(2, display.Ascent, 0.01);
-      Assertions.ApproximatelyEqual(0.5, display.Descent, 0.01);
-      Assertions.ApproximatelyEqual(4, display.Width, 0.01);
+      Assertions.ApproximatelyEqual(14, display.Ascent, 0.01);
+      Assertions.ApproximatelyEqual(4, display.Descent, 0.01);
+      Assertions.ApproximatelyEqual(40, display.Width, 0.01);
     }
 
     [Fact]
@@ -104,9 +104,9 @@ namespace CSharpMath.Tests {
       Assert.Equal(display.Ascent, line.Ascent);
       Assert.Equal(display.Descent, line.Descent);
       Assert.Equal(display.Width, line.Width);
-      Assertions.ApproximatelyEqual(2, display.Ascent, 0.01);
-      Assertions.ApproximatelyEqual(0.5, display.Descent, 0.01);
-      Assertions.ApproximatelyEqual(4, display.Width, 0.01);
+      Assertions.ApproximatelyEqual(14, display.Ascent, 0.01);
+      Assertions.ApproximatelyEqual(4, display.Descent, 0.01);
+      Assertions.ApproximatelyEqual(40, display.Width, 0.01);
     }
 
     [Fact]
@@ -139,7 +139,20 @@ namespace CSharpMath.Tests {
       Assert.NotNull(sub1);
       Assert.Equal(LinePosition.Subscript, sub1.MyLinePosition);
       var sub1Position = sub1.Position;
-      
+      Assertions.ApproximatelyEqual(10, -4.94, sub1Position, 0.01); // may change as we implement more details?
+      Assert.Equal(new Range(0, 1), sub1.Range);
+      Assert.False(sub1.HasScript);
+      Assert.Equal(0, sub1.IndexInParent);
+      Assert.Single(sub1.Displays);
+
+      var sub10 = sub1.Displays[0] as TextLineDisplay;
+      Assert.NotNull(sub10);
+      Assert.Single(sub10.Atoms);
+      Assert.Equal(new PointF(), sub10.Position);
+      Assert.False(sub10.HasScript);
+
+      Assertions.ApproximatelyEqual(14, display.Ascent, 0.01);
+      Assertions.ApproximatelyEqual(4, display.Descent, 0.01);
     }
   }
 }

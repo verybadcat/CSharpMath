@@ -21,7 +21,7 @@ namespace CSharpMath.Display.Text {
     private float PercentFromTable(string name)
       // different from _ConstantFromTable in that the _ConstantFromTable requires
       // a font and uses _FontUnitsToPt, while this is just a straight percentage.
-      => _constantsDictionary[name].Value<int>() / 100;
+      => _constantsDictionary[name].Value<int>() / 100f;
 
     private float _FontUnitsToPt(MathFont font, int fontUnits)
       => fontUnits * font.PointSize / _unitsPerEm(font);

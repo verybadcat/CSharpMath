@@ -30,5 +30,7 @@ namespace CSharpMath.Display.Text {
         return Style.GetHashCode() + 13 * PointSize.GetHashCode();
       }
     }
+
+    public override string ToString() => $"MathFont {PointSize}";
   }
 }

@@ -9,9 +9,9 @@ using System.Drawing;
 
 namespace CSharpMath.Tests.FrontEnd {
   public class TestGlyphBoundsProvider : IGlyphBoundsProvider {
-    private const float WidthPerCharacterPerFontSize = 0.1f; // "m" and "M" get double width.
-    private const float AscentPerFontSize = 0.2f;
-    private const float DescentPerFontSize = 0.05f;
+    private const float WidthPerCharacterPerFontSize = 0.5f; // "m" and "M" get double width.
+    private const float AscentPerFontSize = 0.7f;
+    private const float DescentPerFontSize = 0.2f; // all constants were chosen to bear some resemblance to a real font.
     public RectangleF GetBoundingRectForGlyphs(MathFont font, string glyphs) {
       float pointSize = font.PointSize;
       int length = glyphs.Length;
