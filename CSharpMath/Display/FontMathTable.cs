@@ -13,10 +13,15 @@ namespace CSharpMath.Display.Text {
     private JObject _constantsDictionary
       => _mathTable["constants"] as JObject;
 
-    private float _ConstantFromTable(string constantName) {
-      var value = _constantsDictionary[constantName];
-      throw new NotImplementedException();
+    private float _ConstantFromTable(MathFont font, string constantName) {
+      var value = _constantsDictionary[constantName].Value<int>();
+      return _FontUnitsToPt(font, value);
     }
+
+    private float PercentFromTable(string name)
+      // different from _ConstantFromTable in that the _ConstantFromTable requires
+      // a font and uses _FontUnitsToPt, while this is just a straight percentage.
+      => _constantsDictionary[name].Value<int>() / 100;
 
     private float _FontUnitsToPt(MathFont font, int fontUnits)
       => fontUnits * font.PointSize / _unitsPerEm(font);
@@ -45,10 +50,36 @@ namespace CSharpMath.Display.Text {
           throw new NotImplementedException();
       }
     }
-    private float PercentFromTable(string name)
-      => _ConstantFromTable(name) / 100;
+
 
     public float ScriptScaleDown => PercentFromTable("ScriptPercentScaleDown");
     public float ScriptScriptScaleDown => PercentFromTable("ScriptScriptPercentScaleDown");
+
+    internal float GetItalicCorrection(char v) {
+      // TODO: write. See GetItalicCorrection in MTFontMathTable.m.
+      return 0;
+    }
+    public float FractionDelimiterSize(MathFont font)
+    => font.PointSize * 1.01f;
+
+    public float SuperscriptBaselineDropMax(MathFont font)
+      => _ConstantFromTable(font, @"SuperscriptShiftUp");
+
+    public float SuperscriptBaselineDropMin(MathFont font)
+      => _ConstantFromTable(font, "SuperscriptBaselineDropMax");
+
+    public float SubscriptBaselineDropMin(MathFont font)
+      => _ConstantFromTable(font, "SubscriptBaselineDropMin");
+    internal float SubscriptShiftDown(MathFont font)
+      => _ConstantFromTable(font, "SubscriptShiftDown");
+
+    internal float SubscriptTopMax(MathFont font)
+      => _ConstantFromTable(font, "SubscriptTopMax");
+
+    internal float SuperscriptShiftUp(MathFont font)
+      => _ConstantFromTable(font, "SuperscriptShiftUp");
+    internal float SpaceAfterScript(MathFont font)
+      => _ConstantFromTable(font, "SpaceAfterScript");
+      
   }
 }

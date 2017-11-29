@@ -30,5 +30,7 @@ namespace CSharpMath.Tests {
 
     public static void ApproximatelyEquals(RectangleF actual, double x, double y, double width, double height, double tolerance)
       => ApproximatelyEqual(new RectangleF((float)x, (float)y, (float)width, (float)height), actual, tolerance);
+
+
   }
 }

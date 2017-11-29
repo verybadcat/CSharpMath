@@ -21,6 +21,7 @@ namespace CSharpMath.Display {
 
     public PointF Position => ((IDisplay)this.Accentee).Position;
 
+    public bool HasScript { get; set; }
     public void Draw(IGraphicsContext context) => ((IDisplay)this.Accentee).Draw(context);
   }
 }

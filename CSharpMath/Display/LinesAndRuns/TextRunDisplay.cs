@@ -37,6 +37,6 @@ namespace CSharpMath.Display {
     public float Ascent { get; set; }
     public float Descent { get; set; }
     public PointF Position { get; set; }
- 
+    public bool HasScript { get; set; }
   }
 }

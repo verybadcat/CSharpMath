@@ -32,6 +32,7 @@ namespace CSharpMath.Display {
 
     public PointF Position => throw new NotImplementedException();
 
+    public bool HasScript { get; set; }
     public void Draw(IGraphicsContext context) => throw new NotImplementedException();
   }
 }

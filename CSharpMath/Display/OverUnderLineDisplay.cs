@@ -21,7 +21,7 @@ namespace CSharpMath.Display {
 
     public Range Range => ((IDisplay)this.Inner).Range;
     public PointF Position { get; set; }
-
+    public bool HasScript { get; set; }
     public void Draw(IGraphicsContext context) => ((IDisplay)this.Inner).Draw(context);
 
     

@@ -24,7 +24,7 @@ namespace CSharpMath.Display {
     public Range Range => throw new NotImplementedException();
 
     public PointF Position => throw new NotImplementedException();
-
+    public bool HasScript { get; set; }
     public void Draw(IGraphicsContext context) => throw new NotImplementedException();
   }
 }

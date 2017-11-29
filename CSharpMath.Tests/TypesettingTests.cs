@@ -3,7 +3,6 @@ using CSharpMath.Display;
 using CSharpMath.Display.Text;
 using CSharpMath.Enumerations;
 using CSharpMath.FrontEnd;
-using CSharpMath.Interfaces;
 using CSharpMath.Tests.FrontEnd;
 using System.Drawing;
 using Xunit;
@@ -107,6 +106,19 @@ namespace CSharpMath.Tests {
       Assertions.ApproximatelyEqual(2, display.Ascent, 0.01);
       Assertions.ApproximatelyEqual(0.5, display.Descent, 0.01);
       Assertions.ApproximatelyEqual(4, display.Width, 0.01);
+    }
+
+    [Fact]
+    public void TestSubscript() {
+      var mathList = new MathList();
+      var x = MathAtoms.ForCharacter('x');
+      var subscript = new MathList();
+      subscript.Add(MathAtoms.ForCharacter('1'));
+      x.Subscript = subscript;
+      mathList.Add(x);
+
+      var display = Typesetter.CreateLine(mathList, _font, _context, LineStyle.Display);
+      Assert.NotNull(display);
     }
   }
 }

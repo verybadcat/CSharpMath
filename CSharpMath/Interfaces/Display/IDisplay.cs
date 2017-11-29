@@ -20,6 +20,8 @@ namespace CSharpMath {
     Range Range { get; }
     /// <summary>Position of the display, relative to its parent.</summary> 
     PointF Position { get; }
+
+    bool HasScript { get; set; }
   }
 
   public static class IDisplayExtensions {

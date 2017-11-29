@@ -26,6 +26,23 @@ namespace CSharpMath {
     private Range _currentLineIndexRange = Range.NotFoundRange;
     private List<IMathAtom> _currentAtoms = new List<IMathAtom>();
 
+    private LineStyle _scriptStyle {
+      get {
+        switch (_style) {
+          case LineStyle.Display:
+          case LineStyle.Text:
+            return LineStyle.Script;
+          case LineStyle.Script:
+          case LineStyle.ScriptScript:
+            return LineStyle.ScriptScript;
+          default:
+            throw new InvalidOperationException();
+        }
+      }
+    }
+
+    private bool _subscriptCramped => true;
+
     internal Typesetter(MathFont font, TypesettingContext context, LineStyle style, bool cramped, bool spaced) {
       _font = font;
       _context = context;
@@ -126,7 +143,16 @@ namespace CSharpMath {
               _currentAtoms.Add(atom);
             }
             if (atom.Subscript != null || atom.Superscript != null) {
-              throw new NotImplementedException();
+              var line = AddDisplayLine(true);
+              float delta = 0;
+              if (atom.Nucleus.IsNonEmpty()) {
+                delta = _context.MathTable.GetItalicCorrection(atom.Nucleus.Last());
+              }
+              if (delta > 0 && atom.Subscript == null) {
+                // add a kern of delta
+                _currentPosition.X += delta;
+              }
+              MakeScripts(atom, line, atom.IndexRange.End - 1, delta);
             }
             break;
         }
@@ -142,6 +168,34 @@ namespace CSharpMath {
           //       lastDisplay.Width += space;
         }
       }
+    }
+
+    private void MakeScripts(IMathAtom atom, IDisplay display, int index, float delta) {
+      float superscriptShiftUp = 0;
+      float subscriptShiftDown = 0;
+      display.HasScript = true;
+      if (!(display is TextLineDisplay)) {
+        float scriptFontSize = GetStyleSize(_scriptStyle, _font);
+        MathFont scriptFont = _font.CopyWithSize(scriptFontSize);
+        superscriptShiftUp = display.Ascent - _context.MathTable.SuperscriptBaselineDropMax(scriptFont);
+        subscriptShiftDown = display.Descent + _context.MathTable.SubscriptBaselineDropMin(scriptFont);
+      }
+      if (atom.Superscript == null) {
+        var line = display as TextLineDisplay;
+        Assertions.NotNull(atom.Subscript);
+        var subscript = Typesetter._CreateLine(atom.Subscript, _font, _context, _scriptStyle, _subscriptCramped);
+        subscript.MyLinePosition = LinePosition.Subscript;
+        subscript.IndexInParent = index;
+        subscriptShiftDown = Math.Max(subscriptShiftDown, _mathTable.SubscriptShiftDown(_styleFont));
+        subscriptShiftDown = Math.Max(subscriptShiftDown, subscript.Ascent - _mathTable.SubscriptTopMax(_styleFont));
+        subscript.Position = new PointF(_currentPosition.X, _currentPosition.Y - subscriptShiftDown);
+        _displayAtoms.Add(subscript);
+        _currentPosition.X += subscript.Width + _mathTable.SpaceAfterScript(_styleFont);
+        return;
+      }
+      
+      // If we get here, superscript is not null
+
     }
 
     private static Color _placeholderColor => Color.Blue;
