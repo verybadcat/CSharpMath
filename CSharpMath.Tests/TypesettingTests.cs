@@ -5,6 +5,7 @@ using CSharpMath.Enumerations;
 using CSharpMath.FrontEnd;
 using CSharpMath.Tests.FrontEnd;
 using System.Drawing;
+using System.Linq;
 using Xunit;
 
 namespace CSharpMath.Tests {
@@ -57,7 +58,7 @@ namespace CSharpMath.Tests {
       Assert.Equal(new PointF(), display.Position);
       Assert.Equal(new Range(0, 4), display.Range);
       Assert.False(display.HasScript);
-      Assert.Equal(Range.Undefined, display.IndexInParent);
+      Assert.Equal(Range.UndefinedInt, display.IndexInParent);
       Assert.Single(display.Displays);
 
       var subDisplay = display.Displays[0];
@@ -88,7 +89,7 @@ namespace CSharpMath.Tests {
       Assert.Equal(new PointF(), display.Position);
       Assert.Equal(new Range(0, 4), display.Range);
       Assert.False(display.HasScript);
-      Assert.Equal(Range.Undefined, display.IndexInParent);
+      Assert.Equal(Range.UndefinedInt, display.IndexInParent);
       Assert.Single(display.Displays);
 
       var sub0 = display.Displays[0];
@@ -119,6 +120,26 @@ namespace CSharpMath.Tests {
 
       var display = Typesetter.CreateLine(mathList, _font, _context, LineStyle.Display);
       Assert.NotNull(display);
+
+      Assert.Equal(LinePosition.Regular, display.MyLinePosition);
+      Assert.Equal(new PointF(), display.Position);
+      Assert.Equal(new Range(0, 1), display.Range);
+      Assert.False(display.HasScript);
+      Assert.Equal(display.IndexInParent, Range.UndefinedInt);
+      Assert.Equal(2, display.Displays.Count());
+
+      var sub0 = display.Displays[0];
+      var line = sub0 as TextLineDisplay;
+      Assert.NotNull(line);
+      Assert.Single(line.Atoms);
+      Assert.Equal("x", line.Text);
+      Assert.Equal(new PointF(), line.Position);
+      Assert.True(line.HasScript);
+      var sub1 = display.Displays[1] as MathListDisplay;
+      Assert.NotNull(sub1);
+      Assert.Equal(LinePosition.Subscript, sub1.MyLinePosition);
+      var sub1Position = sub1.Position;
+      
     }
   }
 }

@@ -131,7 +131,7 @@ namespace CSharpMath {
               current = AttributedGlyphRuns.Create(atom.Nucleus, Color.Transparent);
             }
             _currentLine = AttributedStringExtensions.Combine(_currentLine, current);
-            if (_currentLineIndexRange.Location == Range.Undefined) {
+            if (_currentLineIndexRange.Location == Range.UndefinedInt) {
               _currentLineIndexRange = atom.IndexRange;
             } else {
               _currentLineIndexRange.Length += atom.IndexRange.Length;

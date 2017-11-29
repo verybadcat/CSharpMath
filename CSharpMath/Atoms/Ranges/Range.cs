@@ -4,8 +4,8 @@ using System.Text;
 
 namespace CSharpMath.Atoms {
   public struct Range {
-    public const int Undefined = int.MinValue;
-    public static Range NotFoundRange = new Range(Undefined, Undefined);
+    public const int UndefinedInt = int.MinValue;
+    public static Range NotFoundRange = new Range(UndefinedInt, UndefinedInt);
     public int Location { get; set; }
     /// <summary>
     /// The number of integers in the range. So End-Start=Length-1.
@@ -17,11 +17,11 @@ namespace CSharpMath.Atoms {
       Length = length;
     }
 
-    public bool IsNotFound() => Location == Undefined || Length == Undefined;
+    public bool IsNotFound() => Location == UndefinedInt || Length == UndefinedInt;
     public int End {
       get {
         if (IsNotFound()) {
-          return Undefined;
+          return UndefinedInt;
         }
         return Location + Length;
       }
