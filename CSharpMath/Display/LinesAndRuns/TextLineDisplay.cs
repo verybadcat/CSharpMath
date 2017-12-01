@@ -35,7 +35,7 @@ namespace CSharpMath.Display {
     public PointF Position { get; set; }
 
     public float Ascent => Runs.CollectionAscent();
-    public float Descent => Runs.CollectionDescent(); // TODO: runs probably need a location.
+    public float Descent => Runs.CollectionDescent();
     public float Width => Runs.CollectionWidth();
     public Range Range => RangeExtensions.Combine(Runs.Select(r => r.Range));
     public bool HasScript { get; set; }

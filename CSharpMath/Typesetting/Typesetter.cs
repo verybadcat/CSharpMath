@@ -21,7 +21,7 @@ namespace CSharpMath {
     private bool _cramped;
     private bool _spaced;
     private List<IDisplay> _displayAtoms = new List<IDisplay>();
-    private PointF _currentPosition;
+    private PointF _currentPosition; // the Y axis is NOT inverted in the typesetter.
     private AttributedString _currentLine;
     private Range _currentLineIndexRange = Range.NotFoundRange;
     private List<IMathAtom> _currentAtoms = new List<IMathAtom>();
@@ -200,7 +200,7 @@ namespace CSharpMath {
         subscript.IndexInParent = index;
         subscriptShiftDown = Math.Max(subscriptShiftDown, _mathTable.SubscriptShiftDown(_styleFont));
         subscriptShiftDown = Math.Max(subscriptShiftDown, subscript.Ascent - _mathTable.SubscriptTopMax(_styleFont));
-        subscript.Position = new PointF(_currentPosition.X, _currentPosition.Y + subscriptShiftDown);
+        subscript.Position = new PointF(_currentPosition.X, _currentPosition.Y - subscriptShiftDown);
         _displayAtoms.Add(subscript);
         _currentPosition.X += subscript.Width + _mathTable.SpaceAfterScript(_styleFont);
         return;
@@ -213,7 +213,7 @@ namespace CSharpMath {
       superscriptShiftUp = Math.Max(superscriptShiftUp, _superscriptShiftUp);
       superscriptShiftUp = Math.Max(superscriptShiftUp, superscript.Descent + _mathTable.SuperscriptBottomMin(_styleFont));
       if (atom.Subscript == null) {
-        superscript.Position = new PointF(_currentPosition.X, _currentPosition.Y - superscriptShiftUp);
+        superscript.Position = new PointF(_currentPosition.X, _currentPosition.Y + superscriptShiftUp);
         _displayAtoms.Add(superscript);
         _currentPosition.X += superscript.Width + _mathTable.SpaceAfterScript(_styleFont);
         return;
@@ -237,9 +237,9 @@ namespace CSharpMath {
         }
       }
       // the delta is the italic correction above that shift superscript position.
-      superscript.Position = new PointF(_currentPosition.X + delta, _currentPosition.Y - superscriptShiftUp);
+      superscript.Position = new PointF(_currentPosition.X + delta, _currentPosition.Y + superscriptShiftUp);
       _displayAtoms.Add(superscript);
-      subscriptB.Position = new PointF(_currentPosition.X, _currentPosition.Y + subscriptShiftDown);
+      subscriptB.Position = new PointF(_currentPosition.X, _currentPosition.Y - subscriptShiftDown);
       _displayAtoms.Add(subscriptB);
       _currentPosition.X += Math.Max(superscript.Width + delta, subscriptB.Width) + _mathTable.SpaceAfterScript(_styleFont);
     }

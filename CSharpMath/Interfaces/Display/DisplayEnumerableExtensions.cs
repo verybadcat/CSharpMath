@@ -8,14 +8,14 @@ namespace CSharpMath {
     public static float CollectionAscent(this IEnumerable<IDisplay> displays) {
       float r = 0;
       foreach (var display in displays) {
-        r = Math.Max(r, display.Ascent - display.Position.Y);
+        r = Math.Max(r, display.Ascent + display.Position.Y);
       }
       return r;
     }
     public static float CollectionDescent(this IEnumerable<IDisplay> displays) {
       float r = 0;
       foreach (var display in displays) {
-        r = Math.Max(r, display.Descent + display.Position.Y);
+        r = Math.Max(r, display.Descent - display.Position.Y);
       }
       return r;
     }

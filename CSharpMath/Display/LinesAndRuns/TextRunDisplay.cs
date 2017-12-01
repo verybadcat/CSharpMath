@@ -23,8 +23,8 @@ namespace CSharpMath.Display {
       Range = range;
       var bounds = context.GlyphBoundsProvider.GetBoundingRectForGlyphs(font, run.Text);
       Width = bounds.Width;
-      Ascent = Math.Max(0, -bounds.Top);
-      Descent = Math.Max(0, bounds.Bottom);
+      Ascent = Math.Max(0, bounds.YMax());
+      Descent = Math.Max(0, -bounds.Y);
     }
     public RectangleF DisplayBounds
   => this.ComputeDisplayBounds();

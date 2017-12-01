@@ -20,7 +20,8 @@ namespace CSharpMath.Tests.FrontEnd {
       float width = font.PointSize * effectiveLength * WidthPerCharacterPerFontSize;
       float ascent = font.PointSize * AscentPerFontSize;
       float descent = font.PointSize * DescentPerFontSize;
-      return new RectangleF(0, -ascent, width, ascent + descent);
+      //  The y axis is NOT inverted. So our y coordinate is minus the descent, i.e. the rect bottom is the descent below the axis.
+      return new RectangleF(0, -descent, width, ascent + descent);
     }
   }
 }

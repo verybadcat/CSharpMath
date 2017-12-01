@@ -19,5 +19,9 @@ namespace CSharpMath {
       var maxY = Math.Max(rect1.Bottom, rect2.Bottom);
       return new RectangleClass(x, y, maxX - x, maxY - y);
     }
+
+    /// <summary>Because we are NOT inverting our y axis, the properties "Top" and "Bottom" have misleading names.</summary>
+    public static float YMax(this RectangleClass rect)
+      => rect.Bottom;
   }
 }
