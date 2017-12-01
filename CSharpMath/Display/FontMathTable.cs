@@ -70,6 +70,7 @@ namespace CSharpMath.Display.Text {
 
     public float SubscriptBaselineDropMin(MathFont font)
       => _ConstantFromTable(font, "SubscriptBaselineDropMin");
+    
     internal float SubscriptShiftDown(MathFont font)
       => _ConstantFromTable(font, "SubscriptShiftDown");
 
@@ -78,8 +79,21 @@ namespace CSharpMath.Display.Text {
 
     internal float SuperscriptShiftUp(MathFont font)
       => _ConstantFromTable(font, "SuperscriptShiftUp");
+
+    internal float SuperscriptShiftUpCramped(MathFont font)
+      => _ConstantFromTable(font, "SuperscriptShiftUpCramped");
+
+    internal float SuperscriptBottomMin(MathFont font)
+      => _ConstantFromTable(font, "SuperscriptBottomMin");
+
     internal float SpaceAfterScript(MathFont font)
       => _ConstantFromTable(font, "SpaceAfterScript");
-      
+
+    internal float SubSuperscriptGapMin(MathFont font)
+      => _ConstantFromTable(font, "SubSuperscriptGapMin");
+
+    internal float SuperscriptBottomMaxWithSubscript(MathFont font)
+      => _ConstantFromTable(font, "SuperscriptBottomMaxWithSubscript");
+
   }
 }

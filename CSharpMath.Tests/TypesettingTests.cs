@@ -110,6 +110,53 @@ namespace CSharpMath.Tests {
     }
 
     [Fact]
+    public void TestSuperScript() {
+      var mathList = new MathList();
+      var x = MathAtoms.ForCharacter('x');
+      var superscript = new MathList();
+      superscript.Add(MathAtoms.ForCharacter('2'));
+      x.Superscript = superscript;
+      mathList.Add(x);
+
+      var display = Typesetter.CreateLine(mathList, _font, _context, LineStyle.Display);
+      Assert.NotNull(display);
+
+      Assert.Equal(LinePosition.Regular, display.MyLinePosition);
+      Assert.Equal(new PointF(), display.Position);
+      Assert.Equal(new Range(0, 1), display.Range);
+      Assert.False(display.HasScript);
+      Assert.Equal(display.IndexInParent, Range.UndefinedInt);
+      Assert.Equal(2, display.Displays.Count());
+
+      var sub0 = display.Displays[0];
+      var line = sub0 as TextLineDisplay;
+      Assert.NotNull(line);
+      Assert.Single(line.Atoms);
+      Assert.Equal("x", line.Text);
+      Assert.Equal(new PointF(), line.Position);
+      Assert.True(line.HasScript);
+
+      var super1 = display.Displays[1] as MathListDisplay;
+      Assert.NotNull(super1);
+      Assert.Equal(LinePosition.Supersript, super1.MyLinePosition);
+      var super1Position = super1.Position;
+      Assertions.ApproximatelyEqual(10, 4.94, super1Position, 0.01); // may change as we implement more details?
+      Assert.Equal(new Range(0, 1), super1.Range);
+      Assert.False(super1.HasScript);
+      Assert.Equal(0, super1.IndexInParent);
+      Assert.Single(super1.Displays);
+
+      var sub10 = super1.Displays[0] as TextLineDisplay;
+      Assert.NotNull(sub10);
+      Assert.Single(sub10.Atoms);
+      Assert.Equal(new PointF(), sub10.Position);
+      Assert.False(sub10.HasScript);
+
+      Assertions.ApproximatelyEqual(14, display.Ascent, 0.01);
+      Assertions.ApproximatelyEqual(4, display.Descent, 0.01);
+    }
+
+    [Fact]
     public void TestSubscript() {
       var mathList = new MathList();
       var x = MathAtoms.ForCharacter('x');
@@ -139,7 +186,7 @@ namespace CSharpMath.Tests {
       Assert.NotNull(sub1);
       Assert.Equal(LinePosition.Subscript, sub1.MyLinePosition);
       var sub1Position = sub1.Position;
-      Assertions.ApproximatelyEqual(10, -4.94, sub1Position, 0.01); // may change as we implement more details?
+      Assertions.ApproximatelyEqual(10, 4.94, sub1Position, 0.01); // may change as we implement more details?
       Assert.Equal(new Range(0, 1), sub1.Range);
       Assert.False(sub1.HasScript);
       Assert.Equal(0, sub1.IndexInParent);
@@ -152,7 +199,7 @@ namespace CSharpMath.Tests {
       Assert.False(sub10.HasScript);
 
       Assertions.ApproximatelyEqual(14, display.Ascent, 0.01);
-      Assertions.ApproximatelyEqual(4, display.Descent, 0.01);
+      Assertions.ApproximatelyEqual(7.74, display.Descent, 0.01);
     }
   }
 }

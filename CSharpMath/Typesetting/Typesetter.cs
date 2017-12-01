@@ -26,6 +26,7 @@ namespace CSharpMath {
     private Range _currentLineIndexRange = Range.NotFoundRange;
     private List<IMathAtom> _currentAtoms = new List<IMathAtom>();
 
+
     private LineStyle _scriptStyle {
       get {
         switch (_style) {
@@ -42,6 +43,17 @@ namespace CSharpMath {
     }
 
     private bool _subscriptCramped => true;
+
+    private bool _superscriptCramped => _cramped;
+
+    private float _superscriptShiftUp {
+      get {
+        if (_cramped) {
+          return _mathTable.SuperscriptShiftUpCramped(_styleFont);
+        }
+        return _mathTable.SuperscriptShiftUp(_styleFont);
+      }
+    }
 
     internal Typesetter(MathFont font, TypesettingContext context, LineStyle style, bool cramped, bool spaced) {
       _font = font;
@@ -188,14 +200,48 @@ namespace CSharpMath {
         subscript.IndexInParent = index;
         subscriptShiftDown = Math.Max(subscriptShiftDown, _mathTable.SubscriptShiftDown(_styleFont));
         subscriptShiftDown = Math.Max(subscriptShiftDown, subscript.Ascent - _mathTable.SubscriptTopMax(_styleFont));
-        subscript.Position = new PointF(_currentPosition.X, _currentPosition.Y - subscriptShiftDown);
+        subscript.Position = new PointF(_currentPosition.X, _currentPosition.Y + subscriptShiftDown);
         _displayAtoms.Add(subscript);
         _currentPosition.X += subscript.Width + _mathTable.SpaceAfterScript(_styleFont);
         return;
       }
-      
-      // If we get here, superscript is not null
 
+      // If we get here, superscript is not null
+      var superscript = _CreateLine(atom.Superscript, _font, _context, _scriptStyle, _superscriptCramped);
+      superscript.MyLinePosition = LinePosition.Supersript;
+      superscript.IndexInParent = index;
+      superscriptShiftUp = Math.Max(superscriptShiftUp, _superscriptShiftUp);
+      superscriptShiftUp = Math.Max(superscriptShiftUp, superscript.Descent + _mathTable.SuperscriptBottomMin(_styleFont));
+      if (atom.Subscript == null) {
+        superscript.Position = new PointF(_currentPosition.X, _currentPosition.Y - superscriptShiftUp);
+        _displayAtoms.Add(superscript);
+        _currentPosition.X += superscript.Width + _mathTable.SpaceAfterScript(_styleFont);
+        return;
+      }
+      // If we get here, we have both a superscript and a subscript.
+      var subscriptB = _CreateLine(atom.Subscript, _font, _context, _scriptStyle, _subscriptCramped);
+      subscriptB.MyLinePosition = LinePosition.Subscript;
+      subscriptB.IndexInParent = index;
+      subscriptShiftDown = Math.Max(subscriptShiftDown, _mathTable.SubscriptShiftDown(_styleFont));
+
+      // joint positioning of subscript and superscript
+
+      var subSuperScriptGap = (superscriptShiftUp - superscript.Descent + (subscriptShiftDown - subscriptB.Ascent));
+      var gapShortfall = _mathTable.SubSuperscriptGapMin(_styleFont) - subSuperScriptGap;
+      if (gapShortfall > 0) {
+        subscriptShiftDown += gapShortfall;
+        var superscriptBottomDelta = _mathTable.SuperscriptBottomMaxWithSubscript(_styleFont) - (superscriptShiftUp - superscript.Descent);
+        if (superscriptBottomDelta > 0) {
+          superscriptShiftUp += superscriptBottomDelta;
+          subscriptShiftDown -= superscriptBottomDelta;
+        }
+      }
+      // the delta is the italic correction above that shift superscript position.
+      superscript.Position = new PointF(_currentPosition.X + delta, _currentPosition.Y - superscriptShiftUp);
+      _displayAtoms.Add(superscript);
+      subscriptB.Position = new PointF(_currentPosition.X, _currentPosition.Y + subscriptShiftDown);
+      _displayAtoms.Add(subscriptB);
+      _currentPosition.X += Math.Max(superscript.Width + delta, subscriptB.Width) + _mathTable.SpaceAfterScript(_styleFont);
     }
 
     private static Color _placeholderColor => Color.Blue;
@@ -223,9 +269,6 @@ namespace CSharpMath {
       }
       _currentPosition.X += space;
     }
-
-
-
 
     private int GetInterElementSpaceArrayIndexForType(MathAtomType atomType, bool row) {
       switch (atomType) {
