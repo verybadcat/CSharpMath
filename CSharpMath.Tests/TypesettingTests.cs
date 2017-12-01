@@ -268,5 +268,36 @@ namespace CSharpMath.Tests {
       Assertions.ApproximatelyEqual(display.Ascent, display2.Position.Y + line2.Ascent, 0.01);
       Assertions.ApproximatelyEqual(display.Descent, line3.Descent - display3.Position.Y, 0.01);
     }
+    [Fact]
+    public void TestBinomial() {
+      var list = new MathList();
+      var fraction = new Fraction(false) {
+        Numerator = new MathList {
+          MathAtoms.ForCharacter('1')
+        },
+        Denominator = new MathList {
+          MathAtoms.ForCharacter('3')
+        },
+        LeftDelimiter = "(",
+        RightDelimiter = ")"
+      };
+      list.Add(fraction);
+
+      var display = Typesetter.CreateLine(list, _font, _context, LineStyle.Display);
+      Assert.Equal(LinePosition.Regular, display.MyLinePosition);
+      Assert.Equal(new PointF(), display.Position);
+      Assert.Equal(new Range(0, 1), display.Range);
+      Assert.False(display.HasScript);
+      Assert.Equal(Range.UndefinedInt, display.IndexInParent);
+      Assert.Single(display.Displays);
+
+      var display0 = display.Displays[0] as MathListDisplay;
+      Assert.Equal(LinePosition.Regular, display0.MyLinePosition);
+      Assert.Equal(new PointF(), display0.Position);
+      Assert.Equal(new Range(0, 1), display.Range);
+      Assert.False(display0.HasScript);
+      Assert.Equal(Range.UndefinedInt, display0.IndexInParent);
+      Assert.Equal(3, display0.Displays.Count());
+    }
   }
 }

@@ -62,6 +62,9 @@ namespace CSharpMath.Display.Text {
     public float FractionDelimiterSize(MathFont font)
     => font.PointSize * 1.01f;
 
+    public float FractionDelimiterDisplayStyleSize(MathFont font)
+    => font.PointSize * 2.39f;
+
     public float SuperscriptBaselineDropMax(MathFont font)
       => _ConstantFromTable(font, @"SuperscriptShiftUp");
 
@@ -95,5 +98,54 @@ namespace CSharpMath.Display.Text {
     internal float SuperscriptBottomMaxWithSubscript(MathFont font)
       => _ConstantFromTable(font, "SuperscriptBottomMaxWithSubscript");
 
+    #region fractions
+    internal float FractionNumeratorStyleShiftUp(MathFont font)
+      => _ConstantFromTable(font, "FractionNumeratorStyleShiftUp");
+
+    internal float FractionNumeratorShiftUp(MathFont font)
+  => _ConstantFromTable(font, "FractionNumeratorShiftUp");
+
+    internal float StackTopDisplayStyleShiftUp(MathFont font)
+  => _ConstantFromTable(font, "StackTopDisplayStyleShiftUp");
+
+    internal float StackTopShiftUp(MathFont font)
+  => _ConstantFromTable(font, "StackTopShiftUp");
+
+    internal float FractionNumeratorDisplayStyleGapMin(MathFont font)
+=> _ConstantFromTable(font, "FractionNumeratorDisplayStyleGapMin");
+
+    internal float FractionNumeratorGapMin(MathFont font)
+=> _ConstantFromTable(font, "FractionNumeratorGapMin");
+
+    internal float FractionDenominatorDisplayStyleShiftDown(MathFont font)
+=> _ConstantFromTable(font, "FractionDenominatorDisplayStyleShiftDown");
+
+    internal float FractionDenominatorShiftDown(MathFont font)
+=> _ConstantFromTable(font, "FractionDenominatorShiftDown");
+
+    internal float StackBottomDisplayStyleShiftDown(MathFont font)
+=> _ConstantFromTable(font, "StackBottomDisplayStyleShiftDown");
+
+    internal float StackBottomShiftDown(MathFont font)
+=> _ConstantFromTable(font, "StackBottomShiftDown");
+
+    internal float FractionDenominatorDisplayStyleGapMin(MathFont font)
+=> _ConstantFromTable(font, "FractionDenominatorDisplayStyleGapMin");
+
+    internal float FractionDenominatorGapMin(MathFont font)
+=> _ConstantFromTable(font, "FractionDenominatorGapMin");
+
+    internal float AxisHeight(MathFont font)
+=> _ConstantFromTable(font, "AxisHeight");
+
+    internal float FractionRuleThickness(MathFont font)
+=> _ConstantFromTable(font, "FractionRuleThickness");
+
+    internal float StackDisplayStyleGapMin(MathFont font)
+=> _ConstantFromTable(font, "StackDisplayStyleGapMin");
+
+    internal float StackGapMin(MathFont font)
+=> _ConstantFromTable(font, "StackGapMin");
+    #endregion
   }
 }

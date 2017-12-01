@@ -23,5 +23,11 @@ namespace CSharpMath {
     /// <summary>Because we are NOT inverting our y axis, the properties "Top" and "Bottom" have misleading names.</summary>
     public static float YMax(this RectangleClass rect)
       => rect.Bottom;
+
+    public static void GetAscentDescentWidth(this RectangleClass rect, out float ascent, out float descent, out float width) {
+      ascent = -rect.Bottom;
+      width = rect.Width;
+      descent = rect.Y;
+    }
   }
 }

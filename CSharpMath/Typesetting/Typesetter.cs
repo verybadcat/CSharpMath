@@ -10,6 +10,7 @@ using System.Drawing;
 using System.Linq;
 using CSharpMath.TypesetterInternal;
 using CSharpMath.FrontEnd;
+using GlyphType = System.Char; // will likely change
 
 namespace CSharpMath {
   public class Typesetter {
@@ -39,6 +40,15 @@ namespace CSharpMath {
           default:
             throw new InvalidOperationException();
         }
+      }
+    }
+
+    private LineStyle _fractionStyle {
+      get {
+        if (_style == LineStyle.ScriptScript) {
+          return _style;
+        }
+        return _style + 1;
       }
     }
 
@@ -109,6 +119,17 @@ namespace CSharpMath {
             var color = atom as IMathColor;
             var display = CreateLine(color.InnerList, _font, _context, _style);
             //            display.LocalTextColor = ColorExtensions.From6DigitHexString(color.ColorString);
+            break;
+          case MathAtomType.Fraction:
+            AddDisplayLine(false);
+            var fraction = atom as IFraction;
+            AddInterElementSpace(prevNode, atom.AtomType);
+            var fractionDisplay = MakeFraction(fraction);
+            _displayAtoms.Add(fractionDisplay);
+            _currentPosition.X += fractionDisplay.Width;
+            if (atom.Superscript!=null || atom.Subscript!=null) {
+              MakeScripts(atom, fractionDisplay, fraction.IndexRange.Location, 0);
+            }
             break;
           case MathAtomType.Radical:
             AddDisplayLine(false);
@@ -381,6 +402,181 @@ namespace CSharpMath {
     private RadicalDisplay MakeRadical(IMathList radicand, Range range) {
       var innerDisplay = _CreateLine(radicand, _font, _context, _style, true);
       throw new NotImplementedException();
+    }
+
+    private float _NumeratorShiftUp(bool hasRule) {
+      if (hasRule) {
+        if (_style == LineStyle.Display) {
+          return _mathTable.FractionNumeratorStyleShiftUp(_styleFont);
+        }
+        return _mathTable.FractionNumeratorShiftUp(_styleFont);
+      }
+      if (_style == LineStyle.Display) {
+        return _mathTable.StackTopDisplayStyleShiftUp(_styleFont);
+      }
+      return _mathTable.StackTopShiftUp(_styleFont);
+    }
+
+    private float _NumeratorGapMin {
+      get {
+        if (_style == LineStyle.Display) {
+          return _mathTable.FractionNumeratorDisplayStyleGapMin(_styleFont);
+        }
+        return _mathTable.FractionNumeratorGapMin(_styleFont);
+      }
+    }
+
+    private float _DenominatorShiftDown(bool hasRule) {
+      if (hasRule) {
+        if (_style == LineStyle.Display) {
+          return _mathTable.FractionDenominatorDisplayStyleShiftDown(_styleFont);
+        }
+        return _mathTable.FractionDenominatorShiftDown(_styleFont);
+      }
+      if (_style == LineStyle.Display) {
+        return _mathTable.StackBottomDisplayStyleShiftDown(_styleFont);
+      }
+      return _mathTable.StackBottomShiftDown(_styleFont);
+    }
+
+    private float _DenominatorGapMin {
+      get {
+        if (_style == LineStyle.Display) {
+          return _mathTable.FractionDenominatorDisplayStyleGapMin(_styleFont);
+        }
+        return _mathTable.FractionDenominatorGapMin(_styleFont);
+      }
+    }
+
+    private float _StackGapMin {
+      get {
+        if (_style == LineStyle.Display) {
+          return _mathTable.StackDisplayStyleGapMin(_styleFont);
+        }
+        return _mathTable.StackGapMin(_styleFont);
+      }
+    }
+
+    private float _FractionDelimiterHeight {
+      get {
+        if (_style == LineStyle.Display) {
+          return _mathTable.FractionDelimiterDisplayStyleSize(_styleFont);
+        }
+        return _mathTable.FractionDelimiterSize(_styleFont);
+      }
+    }
+
+    private IDisplay MakeFraction(IFraction fraction) {
+      var numeratorDisplay = _CreateLine(fraction.Numerator, _font, _context, _fractionStyle, false);
+      var denominatorDisplay = _CreateLine(fraction.Denominator, _font, _context, _fractionStyle, true);
+
+      var numeratorShiftUp = _NumeratorShiftUp(fraction.HasRule);
+      var denominatorShiftDown = _DenominatorShiftDown(fraction.HasRule);
+      var barLocation = _mathTable.AxisHeight(_styleFont);
+      var barThickness = (fraction.HasRule) ? _mathTable.FractionRuleThickness(_styleFont) : 0;
+
+      if (fraction.HasRule) {
+        // this is the difference between the lowest portion of the numerator and the top edge of the fraction bar.
+        var distanceFromNumeratorToBar = (numeratorShiftUp - numeratorDisplay.Descent) - (barLocation + barThickness / 2);
+        // The distance should be at least displayGap
+        if (distanceFromNumeratorToBar < _NumeratorGapMin) {
+          numeratorShiftUp += (_NumeratorGapMin - distanceFromNumeratorToBar);
+        }
+        // now, do the same for the denominator
+        var distanceFromDenominatorToBar = (barLocation - barThickness / 2) - (denominatorDisplay.Ascent - denominatorShiftDown);
+        if (distanceFromNumeratorToBar < _DenominatorGapMin) {
+          denominatorShiftDown += (_DenominatorGapMin - distanceFromDenominatorToBar);
+        }
+      } else {
+        float clearance = (numeratorShiftUp - numeratorDisplay.Descent) - (denominatorDisplay.Ascent - denominatorShiftDown);
+        float minClearance = _StackGapMin;
+        if (clearance < minClearance) {
+          numeratorShiftUp += (minClearance - clearance / 2);
+          denominatorShiftDown += (minClearance - clearance) / 2;
+        }
+      }
+
+      var display = new FractionDisplay(numeratorDisplay, denominatorDisplay, _currentPosition, fraction.IndexRange) {
+        NumeratorUp = numeratorShiftUp,
+        DenominatorDown = denominatorShiftDown,
+        LineThickness = barThickness,
+        LinePosition = barLocation
+      };
+
+      if (fraction.LeftDelimiter==null && fraction.RightDelimiter == null) {
+        return display;
+      }
+      return _AddDelimitersToFractionDisplay(display, fraction);
+    }
+
+    private MathListDisplay _AddDelimitersToFractionDisplay(FractionDisplay display, IFraction fraction) {
+      var glyphHeight = _FractionDelimiterHeight;
+      var position = new PointF();
+      var innerGlyphs = new List<IDisplay>();
+      if (fraction.LeftDelimiter.IsNonEmpty()) {
+        var leftGlyph = _FindGlyphForBoundary(fraction.LeftDelimiter, glyphHeight);
+        leftGlyph.SetPosition(position);
+        innerGlyphs.Add(leftGlyph);
+      }
+      innerGlyphs.Add(display);
+      if (fraction.RightDelimiter.IsNonEmpty()) {
+        var rightGlyph = _FindGlyphForBoundary(fraction.RightDelimiter, glyphHeight);
+        rightGlyph.SetPosition(position);
+        innerGlyphs.Add(rightGlyph);
+      }
+      var innerDisplay = new MathListDisplay(innerGlyphs.ToArray());
+      innerDisplay.Position = _currentPosition;
+      return innerDisplay;
+    }
+
+    private Range _RangeOfComposedCharacterSequenceAtIndex(int index) {
+      // This will likely change once we start dealing with fonts and weird characters.
+      return new Range(index, 1); 
+    }
+
+
+    private IDownshiftableDisplay _FindGlyphForBoundary(string delimiter, float glyphHeight) {
+      float glyphAscent, glyphDescent, glyphWidth;
+      GlyphType leftGlyph = _FindGlyphForCharacterAtIndex(0, delimiter);
+      GlyphType glyph = _FindGlyph(leftGlyph, glyphHeight, out glyphAscent, out glyphDescent, out glyphWidth);
+      IDownshiftableDisplay glyphDisplay = null;
+      if (glyphAscent + glyphDescent < glyphHeight) {
+        // Not yet implemented -- construct a glyph.
+      }
+      if (glyphDisplay == null) {
+        glyphDisplay = new GlyphDisplay(glyph, Range.NotFoundRange, _styleFont) {
+          Ascent = glyphAscent,
+          Descent = glyphDescent,
+          Width = glyphWidth
+        };
+        // Center the glyph on the axis
+        var shiftDown = 0.5f * (glyphDisplay.Ascent - glyphDisplay.Descent) - _mathTable.AxisHeight(_styleFont);
+        glyphDisplay.ShiftDown = shiftDown;
+      }
+      return glyphDisplay;
+    }
+
+    private GlyphType _FindGlyph(GlyphType rawGlyph, float height, 
+      out float glyphAscent, out float glyphDescent, out float glyphWidth) {
+      // Todo -- flesh out. See findGlyph:withHeight:glyphAscent:glyphDescent:glyphWidth: 
+      // in iosMath.
+      var glyph = rawGlyph;
+      var rect = _context.GlyphBoundsProvider.GetBoundingRectForGlyphs(_font, glyph.ToString());
+      rect.GetAscentDescentWidth(out glyphAscent, out glyphDescent, out glyphWidth);
+      return glyph;
+    }
+
+    private GlyphType _FindGlyphDisplay(GlyphType glyph, float height, out float glyphAscent, out float glyphDescent, out float glyphWidth) {
+      // TODO: flesh this out
+      var bounds = _context.GlyphBoundsProvider.GetBoundingRectForGlyphs(_font, glyph.ToString());
+      bounds.GetAscentDescentWidth(out glyphAscent, out glyphDescent, out glyphWidth);
+      return glyph;
+      
+    }
+
+    private GlyphType _FindGlyphForCharacterAtIndex(int index, string str) {
+      var range = _RangeOfComposedCharacterSequenceAtIndex(index);
+      return str[range.Location];
     }
 
   }
