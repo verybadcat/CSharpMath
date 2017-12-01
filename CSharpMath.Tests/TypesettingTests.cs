@@ -201,5 +201,72 @@ namespace CSharpMath.Tests {
       Assertions.ApproximatelyEqual(14, display.Ascent, 0.01);
       Assertions.ApproximatelyEqual(7.74, display.Descent, 0.01);
     }
+
+    [Fact]
+    public void TestSuperSubscript() {
+      var mathList = new MathList();
+      var x = MathAtoms.ForCharacter('x');
+      var superscript = new MathList {
+        MathAtoms.ForCharacter('2')
+      };
+      var subscript = new MathList {
+        MathAtoms.ForCharacter('1')
+      };
+      x.Subscript = subscript;
+      x.Superscript = superscript;
+      mathList.Add(x);
+
+      var display = Typesetter.CreateLine(mathList, _font, _context, LineStyle.Display);
+      Assert.NotNull(display);
+      Assert.Equal(LinePosition.Regular, display.MyLinePosition);
+      Assert.Equal(new PointF(), display.Position);
+      Assert.Equal(new Range(0, 1), display.Range);
+      Assert.False(display.HasScript);
+      Assert.Equal(Range.UndefinedInt, display.IndexInParent);
+      Assert.Equal(3, display.Displays.Count());
+
+      var line = display.Displays[0] as TextLineDisplay;
+      Assert.Single(line.Atoms);
+      Assert.Equal("x", line.Text);
+      Assert.Equal(new PointF(), line.Position);
+      Assert.True(line.HasScript);
+
+      var display2 = display.Displays[1] as MathListDisplay;
+      Assert.Equal(LinePosition.Supersript, display2.MyLinePosition);
+      Assertions.ApproximatelyEqual(10, 9.68, display2.Position, 0.01);
+      Assert.Equal(new Range(0, 1), display2.Range);
+      Assert.False(display2.HasScript);
+      Assert.Equal(0, display2.IndexInParent);
+      Assert.Single(display2.Displays);
+
+      var line2 = display2.Displays[0] as TextLineDisplay;
+      Assert.Single(line2.Atoms);
+      Assert.Equal("2", line2.Text);
+      Assert.Equal(new PointF(), line2.Position);
+      Assert.False(line2.HasScript);
+
+      var display3 = display.Displays[2] as MathListDisplay;
+      Assert.Equal(LinePosition.Subscript, display3.MyLinePosition);
+
+      // Because both subscript and superscript are present, coords are
+      // different from the subscript-only case.
+      Assertions.ApproximatelyEqual(10, -6.12, display3.Position, 0.01);
+      Assert.Equal(new Range(0, 1), display3.Range);
+      Assert.False(display3.HasScript);
+      Assert.Equal(0, display3.IndexInParent);
+      Assert.Single(display3.Displays);
+
+      var line3 = display3.Displays[0] as TextLineDisplay;
+      Assert.Single(line3.Atoms);
+      Assert.Equal("1", line3.Text);
+      Assert.Equal(new PointF(), line3.Position);
+      Assert.False(line3.HasScript);
+
+      Assertions.ApproximatelyEqual(19.48, display.Ascent, 0.01);
+      Assertions.ApproximatelyEqual(8.92, display.Descent, 0.01);
+      Assertions.ApproximatelyEqual(17, display.Width, 0.01);
+      Assertions.ApproximatelyEqual(display.Ascent, display2.Position.Y + line2.Ascent, 0.01);
+      Assertions.ApproximatelyEqual(display.Descent, line3.Descent - display3.Position.Y, 0.01);
+    }
   }
 }
