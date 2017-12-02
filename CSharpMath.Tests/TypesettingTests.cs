@@ -402,6 +402,97 @@ namespace CSharpMath.Tests {
       Assert.Equal(new PointF(), subDenominator.Position);
       Assert.Equal(new Range(0, 1), subDenominator.Range);
       Assert.False(subDenominator.HasScript);
+
+      Assertions.ApproximatelyEqual(27.54, display.Ascent, 0.01);
+      Assertions.ApproximatelyEqual(17.72, display.Descent, 0.01);
+      Assertions.ApproximatelyEqual(10, display.Width, 0.01);
+    }
+
+    [Fact]
+    public void TestEquationWithOperatorsAndRelations() {
+      var mathList = MathLists.FromString("2x+3=y");
+      var display = Typesetter.CreateLine(mathList, _font, _context, LineStyle.Display);
+      Assert.Equal(LinePosition.Regular, display.MyLinePosition);
+      Assert.Equal(new Range(0, 6), display.Range);
+      Assert.False(display.HasScript);
+      Assert.Equal(Range.UndefinedInt, display.IndexInParent);
+      Assert.Single(display.Displays);
+
+      var line = display.Displays[0] as TextLineDisplay;
+      Assert.Equal(6, line.Atoms.Count);
+      Assert.Equal("2x+3=y", line.Text);
+      Assert.Equal(new PointF(), line.Position);
+      Assert.Equal(new Range(0, 6), line.Range);
+      Assert.False(line.HasScript);
+
+      Assert.Equal(display.Ascent, line.Ascent);
+      Assert.Equal(display.Width, line.Width);
+      Assert.Equal(display.Descent, line.Descent);
+
+      Assertions.ApproximatelyEqual(14, display.Ascent, 0.01);
+      Assertions.ApproximatelyEqual(4, display.Descent, 0.01);
+      Assertions.ApproximatelyEqual(60, display.Width, 0.01);
+    }
+
+    [Fact]
+    public void TestAtop() {
+      var mathList = new MathList {
+        new Fraction(false) {
+          Numerator = new MathList {
+            MathAtoms.ForCharacter('1')
+          },
+          Denominator = new MathList {
+            MathAtoms.ForCharacter('3')
+          }
+        }
+      };
+
+      var display = Typesetter.CreateLine(mathList, _font, _context, LineStyle.Display);
+      Assert.Equal(LinePosition.Regular, display.MyLinePosition);
+      Assert.Equal(new PointF(), display.Position);
+      Assert.Equal(new Range(0, 1), display.Range);
+      Assert.False(display.HasScript);
+      Assert.Equal(Range.UndefinedInt, display.IndexInParent);
+      Assert.Single(display.Displays);
+
+      var fraction = display.Displays[0] as FractionDisplay;
+      Assert.Equal(new Range(0, 1), fraction.Range);
+      Assert.False(fraction.HasScript);
+      Assert.Equal(new PointF(), fraction.Position);
+
+      var numerator = fraction.Numerator;
+      Assert.Equal(LinePosition.Regular, numerator.MyLinePosition);
+      Assert.False(numerator.HasScript);
+      Assertions.ApproximatePoint(0, 13.54, numerator.Position, 0.01);
+      Assert.Equal(new Range(0, 1), numerator.Range);
+      Assert.Equal(Range.UndefinedInt, numerator.IndexInParent);
+      Assert.Single(numerator.Displays);
+
+      var subNumerator = numerator.Displays[0] as TextLineDisplay;
+      Assert.Single(subNumerator.Atoms);
+      Assert.Equal("1", subNumerator.Text);
+      Assert.Equal(new PointF(), subNumerator.Position);
+      Assert.Equal(new Range(0, 1), subNumerator.Range);
+      Assert.False(subNumerator.HasScript);
+
+      var denominator = fraction.Denominator;
+      Assert.Equal(LinePosition.Regular, denominator.MyLinePosition);
+      Assertions.ApproximatePoint(0, -13.73, denominator.Position, 0.01);
+      Assert.Equal(new Range(0, 1), denominator.Range);
+      Assert.False(denominator.HasScript);
+      Assert.Equal(Range.UndefinedInt, denominator.IndexInParent);
+      Assert.Single(denominator.Displays);
+
+      var subDenominator = denominator.Displays[0] as TextLineDisplay;
+      Assert.Single(subDenominator.Atoms);
+      Assert.Equal("3", subDenominator.Text);
+      Assert.Equal(new PointF(), subDenominator.Position);
+      Assert.Equal(new Range(0, 1), subDenominator.Range);
+      Assert.False(subDenominator.HasScript);
+
+      Assertions.ApproximatelyEqual(27.54, display.Ascent, 0.01);
+      Assertions.ApproximatelyEqual(17.72, display.Descent, 0.01);
+      Assertions.ApproximatelyEqual(10, display.Width, 0.01);
     }
   }
 }
