@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Text;
 
 namespace CSharpMath {
-  public interface ISettablePosition: IPosition {
+  public interface ISettablePosition {
     void SetPosition(PointF value);
   }
 }

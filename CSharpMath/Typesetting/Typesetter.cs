@@ -566,7 +566,7 @@ namespace CSharpMath {
 
       var innerElements = new List<IDisplay>();
       var innerPosition = new PointF();
-      if (inner.LeftBoundary!=null && inner.RightBoundary!=null) {
+      if (inner.LeftBoundary!=null && inner.LeftBoundary.Nucleus.IsNonEmpty()) {
         var leftGlyph = _FindGlyphForBoundary(inner.LeftBoundary.Nucleus, glyphHeight);
         leftGlyph.SetPosition(innerPosition);
         innerPosition.X += leftGlyph.Width;

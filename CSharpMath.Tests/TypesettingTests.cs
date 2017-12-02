@@ -521,6 +521,38 @@ namespace CSharpMath.Tests {
       Assert.False(display2.HasScript);
       Assert.Equal(Range.UndefinedInt, display2.IndexInParent);
       Assert.Equal(3, display2.Displays.Count());
+
+      var glyph = display2.Displays[0] as GlyphDisplay;
+      Assert.Equal(new PointF(), glyph.Position);
+      Assert.Equal(Range.NotFoundRange, glyph.Range);
+      Assert.False(glyph.HasScript);
+
+      var display3 = display2.Displays[1] as MathListDisplay;
+      Assert.Equal(LinePosition.Regular, display3.MyLinePosition);
+      Assertions.ApproximatePoint(10, 0, display3.Position, 0.01);
+      Assert.Equal(new Range(0, 1), display3.Range);
+      Assert.False(display3.HasScript);
+      Assert.Equal(Range.UndefinedInt, display3.IndexInParent);
+      Assert.Single(display3.Displays);
+
+      var line = display3.Displays[0] as TextLineDisplay;
+      Assert.Single(line.Atoms);
+      Assert.Equal("x", line.Text);
+      Assert.Equal(new PointF(), line.Position);
+      Assert.False(line.HasScript);
+
+      var glyph2 = display2.Displays[2] as GlyphDisplay;
+      Assertions.ApproximatePoint(20, 0, glyph2.Position, 0.01);
+      Assert.Equal(Range.NotFoundRange, glyph2.Range);
+      Assert.False(glyph2.HasScript);
+
+      Assert.Equal(display.Ascent, display2.Ascent);
+      Assert.Equal(display.Descent, display2.Descent);
+      Assert.Equal(display.Width, display2.Width);
+
+      Assertions.ApproximatelyEqual(14, display.Ascent, 0.01);
+      Assertions.ApproximatelyEqual(4, display.Descent, 0.01);
+      Assertions.ApproximatelyEqual(30, display.Width, 0.01);
     }
   }
 }
