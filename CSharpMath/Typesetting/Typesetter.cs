@@ -407,7 +407,7 @@ namespace CSharpMath {
     private float _NumeratorShiftUp(bool hasRule) {
       if (hasRule) {
         if (_style == LineStyle.Display) {
-          return _mathTable.FractionNumeratorStyleShiftUp(_styleFont);
+          return _mathTable.FractionNumeratorDisplayStyleShiftUp(_styleFont);
         }
         return _mathTable.FractionNumeratorShiftUp(_styleFont);
       }
@@ -502,6 +502,7 @@ namespace CSharpMath {
         LineThickness = barThickness,
         LinePosition = barLocation
       };
+      display.UpdateNumeratorAndDenominatorPositions();
 
       if (fraction.LeftDelimiter==null && fraction.RightDelimiter == null) {
         return display;

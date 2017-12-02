@@ -29,6 +29,7 @@ namespace CSharpMath.Display {
       Denominator = denominatorDisplay;
       _currentPosition = currentPosition;
       _range = range;
+      UpdateNumeratorAndDenominatorPositions();
     }
 
 
@@ -47,6 +48,10 @@ namespace CSharpMath.Display {
 
     public float Width => Math.Max(Numerator.Width, Denominator.Width);
 
+    public void UpdateNumeratorAndDenominatorPositions() {
+      _UpdateNumeratorPosition();
+      _UpdateDenominatorPosition();
+    }
     private void _UpdateNumeratorPosition() => Numerator.Position = new PointF(
         this.Position.X + (this.Width - Numerator.Width) / 2,
         this.Position.Y + this.NumeratorUp);
@@ -61,8 +66,7 @@ namespace CSharpMath.Display {
       get => _Position;
       set {
         _Position = value;
-        _UpdateNumeratorPosition();
-        _UpdateDenominatorPosition();
+        UpdateNumeratorAndDenominatorPositions();
       }
     }
 

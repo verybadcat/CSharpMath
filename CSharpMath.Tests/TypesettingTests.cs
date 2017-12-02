@@ -346,5 +346,62 @@ namespace CSharpMath.Tests {
       Assertions.ApproximatelyEqual(17.72, display.Descent, 0.01);
       Assertions.ApproximatelyEqual(30, display.Width, 0.01);
     }
+
+    [Fact]
+    public void TestFraction() {
+      var mathList = new MathList {
+        new Fraction(true) {
+          Numerator = new MathList {
+            MathAtoms.ForCharacter('1')
+          },
+          Denominator = new MathList {
+            MathAtoms.ForCharacter('3')
+          }
+        }
+      };
+
+      var display = Typesetter.CreateLine(mathList, _font, _context, LineStyle.Display);
+      Assert.Equal(LinePosition.Regular, display.MyLinePosition);
+      Assert.Equal(new PointF(), display.Position);
+      Assert.Equal(new Range(0, 1), display.Range);
+      Assert.False(display.HasScript);
+      Assert.Equal(Range.UndefinedInt, display.IndexInParent);
+      Assert.Single(display.Displays);
+
+      var fraction = display.Displays[0] as FractionDisplay;
+      Assert.Equal(new Range(0, 1), fraction.Range);
+      Assert.Equal(new PointF(), fraction.Position);
+      Assert.False(fraction.HasScript);
+
+      var numerator = fraction.Numerator;
+      Assert.Equal(LinePosition.Regular, numerator.MyLinePosition);
+      Assertions.ApproximatePoint(0, 13.54, numerator.Position, 0.01);
+      Assert.Equal(new Range(0, 1), numerator.Range);
+      Assert.False(numerator.HasScript);
+      Assert.Equal(Range.UndefinedInt, numerator.IndexInParent);
+      Assert.Single(numerator.Displays);
+
+      var subNumerator = numerator.Displays[0] as TextLineDisplay;
+      Assert.Single(subNumerator.Atoms);
+      Assert.Equal("1", subNumerator.Text);
+      Assert.Equal(new PointF(), subNumerator.Position);
+      Assert.Equal(new Range(0, 1), subNumerator.Range);
+      Assert.False(subNumerator.HasScript);
+
+      var denominator = fraction.Denominator;
+      Assert.Equal(LinePosition.Regular, denominator.MyLinePosition);
+      Assertions.ApproximatePoint(0, -13.72, denominator.Position, 0.01);
+      Assert.Equal(new Range(0, 1), denominator.Range);
+      Assert.False(denominator.HasScript);
+      Assert.Equal(Range.UndefinedInt, denominator.IndexInParent);
+      Assert.Single(denominator.Displays);
+
+      var subDenominator = denominator.Displays[0] as TextLineDisplay;
+      Assert.Single(subDenominator.Atoms);
+      Assert.Equal("3", subDenominator.Text);
+      Assert.Equal(new PointF(), subDenominator.Position);
+      Assert.Equal(new Range(0, 1), subDenominator.Range);
+      Assert.False(subDenominator.HasScript);
+    }
   }
 }

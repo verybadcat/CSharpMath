@@ -99,8 +99,8 @@ namespace CSharpMath.Display.Text {
       => _ConstantFromTable(font, "SuperscriptBottomMaxWithSubscript");
 
     #region fractions
-    internal float FractionNumeratorStyleShiftUp(MathFont font)
-      => _ConstantFromTable(font, "FractionNumeratorStyleShiftUp");
+    internal float FractionNumeratorDisplayStyleShiftUp(MathFont font)
+      => _ConstantFromTable(font, "FractionNumeratorDisplayStyleShiftUp");
 
     internal float FractionNumeratorShiftUp(MathFont font)
   => _ConstantFromTable(font, "FractionNumeratorShiftUp");
@@ -112,7 +112,7 @@ namespace CSharpMath.Display.Text {
   => _ConstantFromTable(font, "StackTopShiftUp");
 
     internal float FractionNumeratorDisplayStyleGapMin(MathFont font)
-=> _ConstantFromTable(font, "FractionNumeratorDisplayStyleGapMin");
+=> _ConstantFromTable(font, "FractionNumDisplayStyleGapMin");
 
     internal float FractionNumeratorGapMin(MathFont font)
 => _ConstantFromTable(font, "FractionNumeratorGapMin");
@@ -130,7 +130,7 @@ namespace CSharpMath.Display.Text {
 => _ConstantFromTable(font, "StackBottomShiftDown");
 
     internal float FractionDenominatorDisplayStyleGapMin(MathFont font)
-=> _ConstantFromTable(font, "FractionDenominatorDisplayStyleGapMin");
+=> _ConstantFromTable(font, "FractionDenomDisplayStyleGapMin");
 
     internal float FractionDenominatorGapMin(MathFont font)
 => _ConstantFromTable(font, "FractionDenominatorGapMin");
