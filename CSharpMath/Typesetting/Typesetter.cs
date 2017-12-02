@@ -138,7 +138,11 @@ namespace CSharpMath {
             // Radicals are considered as Ord in rule 16.
             AddInterElementSpace(prevNode, MathAtomType.Ordinary);
             var displayRad = MakeRadical(rad.Radicand, rad.IndexRange);
-            throw new NotImplementedException();
+            if (rad.Degree !=null) {
+              // add the degree to the radical
+              var degree = CreateLine(rad.Degree, _font, _context, LineStyle.Script);
+              displayRad.SetDegree(degree, _styleFont, _mathTable);
+            }
           // break;
           case MathAtomType.Inner:
             AddDisplayLine(false);

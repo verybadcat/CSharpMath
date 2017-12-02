@@ -554,5 +554,50 @@ namespace CSharpMath.Tests {
       Assertions.ApproximatelyEqual(4, display.Descent, 0.01);
       Assertions.ApproximatelyEqual(30, display.Width, 0.01);
     }
+
+    [Fact]
+    public void TestRadical() {
+      var mathList = new MathList {
+        new Radical {
+          Radicand = new MathList {
+            MathAtoms.ForCharacter('1')
+          }
+        }
+      };
+
+      var display = Typesetter.CreateLine(mathList, _font, _context, LineStyle.Display);
+      Assert.Equal(LinePosition.Regular, display.MyLinePosition);
+      Assert.Equal(new PointF(), display.Position);
+      Assert.Equal(new Range(0, 1), display.Range);
+      Assert.False(display.HasScript);
+      Assert.Equal(Range.UndefinedInt, display.IndexInParent);
+      Assert.Single(display.Displays);
+
+      var radical = display.Displays[0] as RadicalDisplay;
+      Assert.Equal(new Range(0, 1), radical.Range);
+      Assert.False(radical.HasScript);
+      Assert.Equal(new PointF(), radical.Position);
+      Assert.NotNull(radical.Radicand);
+      Assert.Null(radical.Degree);
+
+      var display2 = radical.Radicand;
+      Assert.Equal(LinePosition.Regular, display2.MyLinePosition);
+      Assertions.ApproximatePoint(16.66, 0, display2.Position, 0.01);
+      Assert.Equal(new Range(0, 1), display2.Range);
+      Assert.False(display2.HasScript);
+      Assert.Equal(Range.UndefinedInt, display2.IndexInParent);
+      Assert.Single(display2.Displays);
+
+      var line2 = display2.Displays[0] as TextLineDisplay;
+      Assert.Single(line2.Atoms);
+      Assert.Equal("1", line2.Text);
+      Assert.Equal(new PointF(), line2.Position);
+      Assert.Equal(new Range(0, 1), line2.Range);
+      Assert.False(line2.HasScript);
+
+      Assertions.ApproximatelyEqual(19.34, display.Ascent, 0.01);
+      Assertions.ApproximatelyEqual(5, display.Descent, 0.01);
+      Assertions.ApproximatelyEqual(26.66, display.Width, 0.01);
+    }
   }
 }

@@ -147,5 +147,16 @@ namespace CSharpMath.Display.Text {
     internal float StackGapMin(MathFont font)
 => _ConstantFromTable(font, "StackGapMin");
     #endregion
+
+    #region radicals
+    internal float RadicalKernBeforeDegree(MathFont font)
+      => _ConstantFromTable(font, "RadicalKernBeforeDegree");
+
+    internal float RadicalKernAfterDegree(MathFont font)
+  => _ConstantFromTable(font, "RadicalKernAfterDegree");
+
+    internal float RadicalDegreeBottomRaisePercent(MathFont font)
+      => _ConstantFromTable(font, "RadicalDegreeBottomRaisePercent");
+    #endregion
   }
 }
