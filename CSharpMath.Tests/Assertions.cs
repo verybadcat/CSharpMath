@@ -18,7 +18,7 @@ namespace CSharpMath.Tests {
       ApproximatelyEqual(expected.Y, actual.Y, tolerance);
     }
 
-    public static void ApproximatelyEqual(double x, double y, PointF actual, double tolerance)
+    public static void ApproximatePoint(double x, double y, PointF actual, double tolerance)
       => ApproximatelyEqual(new PointF((float)x, (float)y), actual, tolerance);
 
     public static void ApproximatelyEqual(SizeF expected, SizeF actual, double tolerance) {

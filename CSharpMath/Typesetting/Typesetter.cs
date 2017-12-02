@@ -517,12 +517,16 @@ namespace CSharpMath {
         var leftGlyph = _FindGlyphForBoundary(fraction.LeftDelimiter, glyphHeight);
         leftGlyph.SetPosition(position);
         innerGlyphs.Add(leftGlyph);
+        position.X += leftGlyph.Width;
       }
+      display.Position = position;
+      position.X += display.Width;
       innerGlyphs.Add(display);
       if (fraction.RightDelimiter.IsNonEmpty()) {
         var rightGlyph = _FindGlyphForBoundary(fraction.RightDelimiter, glyphHeight);
         rightGlyph.SetPosition(position);
         innerGlyphs.Add(rightGlyph);
+        position.X += rightGlyph.Width;
       }
       var innerDisplay = new MathListDisplay(innerGlyphs.ToArray());
       innerDisplay.Position = _currentPosition;

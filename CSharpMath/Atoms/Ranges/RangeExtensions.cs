@@ -5,15 +5,18 @@ using System.Text;
 
 namespace CSharpMath.Atoms {
   public static class RangeExtensions {
+    /// <summary>
+    /// An
+    /// </summary>
+    /// <param name="ranges"></param>
+    /// <returns></returns>
     public static Range Combine(IEnumerable<Range> ranges) {
-      if (ranges.IsEmpty()) {
+      var trimRanges = ranges.Where(r => !(r.IsNotFound()));
+      if (trimRanges.IsEmpty()) {
         return Ranges.NotFound;
       }
-      if (ranges.Any(r => r.IsNotFound())) {
-        return Ranges.NotFound;
-      }
-      int start = ranges.Min(r => r.Location);
-      int end = ranges.Max(r => r.End);
+      int start = trimRanges.Min(r => r.Location);
+      int end = trimRanges.Max(r => r.End);
       return new Range(start, end - start);
     }
     public static Range Combine(Range range1, Range range2)
