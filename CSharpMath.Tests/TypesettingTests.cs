@@ -11,7 +11,7 @@ using Xunit;
 namespace CSharpMath.Tests {
   public class TypesettingTests {
     public TypesettingTests() {
-      
+
     }
     private MathFont _font { get; } = new MathFont(20);
     private IFontMeasurer _fontMeasurer => _context.FontMeasurer;
@@ -493,6 +493,34 @@ namespace CSharpMath.Tests {
       Assertions.ApproximatelyEqual(27.54, display.Ascent, 0.01);
       Assertions.ApproximatelyEqual(17.72, display.Descent, 0.01);
       Assertions.ApproximatelyEqual(10, display.Width, 0.01);
+    }
+
+    [Fact]
+    public void TestInner() {
+      var mathList = new MathList {
+        new Inner {
+          InnerList = new MathList {
+            MathAtoms.ForCharacter('x'),
+          },
+          LeftBoundary = MathAtoms.Create(MathAtomType.Boundary, '('),
+          RightBoundary = MathAtoms.Create(MathAtomType.Boundary, ')')
+        }
+      };
+
+      var display = Typesetter.CreateLine(mathList, _font, _context, LineStyle.Display);
+      Assert.Equal(LinePosition.Regular, display.MyLinePosition);
+      Assert.Equal(new Range(0, 1), display.Range);
+      Assert.False(display.HasScript);
+      Assert.Equal(Range.UndefinedInt, display.IndexInParent);
+      Assert.Single(display.Displays);
+
+      var display2 = display.Displays[0] as MathListDisplay;
+      Assert.Equal(LinePosition.Regular, display2.MyLinePosition);
+      Assert.Equal(new PointF(), display2.Position);
+      Assert.Equal(new Range(0, 1), display2.Range);
+      Assert.False(display2.HasScript);
+      Assert.Equal(Range.UndefinedInt, display2.IndexInParent);
+      Assert.Equal(3, display2.Displays.Count());
     }
   }
 }

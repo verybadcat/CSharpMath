@@ -26,7 +26,8 @@ namespace CSharpMath {
     private AttributedString _currentLine;
     private Range _currentLineIndexRange = Range.NotFoundRange;
     private List<IMathAtom> _currentAtoms = new List<IMathAtom>();
-
+    private const int _delimiterFactor = 901;
+    private const int _delimiterShortfallPoints = 5;
 
     private LineStyle _scriptStyle {
       get {
@@ -139,6 +140,23 @@ namespace CSharpMath {
             var displayRad = MakeRadical(rad.Radicand, rad.IndexRange);
             throw new NotImplementedException();
           // break;
+          case MathAtomType.Inner:
+            AddDisplayLine(false);
+            AddInterElementSpace(prevNode, atom.AtomType);
+            var inner = atom as IMathInner;
+            MathListDisplay innerDisplay;
+            if (inner.LeftBoundary!=null || inner.RightBoundary!=null) {
+              innerDisplay = _MakeLeftRight(inner);
+            } else {
+              innerDisplay = _CreateLine(inner.InnerList, _font, _context, _style, _cramped);
+            }
+            innerDisplay.Position = _currentPosition;
+            _currentPosition.X += innerDisplay.Width;
+            _displayAtoms.Add(innerDisplay);
+            if (atom.Subscript!=null || atom.Superscript!=null) {
+              MakeScripts(atom, innerDisplay, atom.IndexRange.Location, 0);
+            }
+            break;
           case MathAtomType.Ordinary:
           case MathAtomType.BinaryOperator:
           case MathAtomType.Relation:
@@ -532,6 +550,40 @@ namespace CSharpMath {
       var innerDisplay = new MathListDisplay(innerGlyphs.ToArray());
       innerDisplay.Position = _currentPosition;
       return innerDisplay;
+    }
+
+    private MathListDisplay _MakeLeftRight(IMathInner inner) {
+      if (inner.LeftBoundary==null && inner.RightBoundary == null) {
+        throw new InvalidOperationException("Inner should have a boundary to call this function.");
+      }
+      var innerListDisplay = _CreateLine(inner.InnerList, _font, _context, _style, _cramped, true);
+      float axisHeight = _mathTable.AxisHeight(_styleFont);
+      // delta is the max distance from the axis.
+      float delta = Math.Max(innerListDisplay.Ascent - axisHeight, innerListDisplay.Descent + axisHeight);
+      var d1 = (delta / 500) * _delimiterFactor;
+      float d2 = 2 * delta - _delimiterShortfallPoints;
+      float glyphHeight = Math.Max(d1, d2);
+
+      var innerElements = new List<IDisplay>();
+      var innerPosition = new PointF();
+      if (inner.LeftBoundary!=null && inner.RightBoundary!=null) {
+        var leftGlyph = _FindGlyphForBoundary(inner.LeftBoundary.Nucleus, glyphHeight);
+        leftGlyph.SetPosition(innerPosition);
+        innerPosition.X += leftGlyph.Width;
+        innerElements.Add(leftGlyph);
+      }
+      innerListDisplay.Position = innerPosition;
+      innerPosition.X += innerListDisplay.Width;
+      innerElements.Add(innerListDisplay);
+
+      if (inner.RightBoundary!=null && inner.RightBoundary.Nucleus.Length > 0) {
+        var rightGlyph = _FindGlyphForBoundary(inner.RightBoundary.Nucleus, glyphHeight);
+        rightGlyph.SetPosition(innerPosition);
+        innerPosition.X += rightGlyph.Width;
+        innerElements.Add(rightGlyph);
+      }
+      var innerArrayDisplay = new MathListDisplay(innerElements.ToArray());
+      return innerArrayDisplay;
     }
 
     private Range _RangeOfComposedCharacterSequenceAtIndex(int index) {
