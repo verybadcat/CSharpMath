@@ -629,9 +629,26 @@ namespace CSharpMath {
     }
 
     private IDownshiftableDisplay _GetRadicalGlyph(float radicalHeight) {
-      float glyphAscent, glyphDescent, glyphWidth;
+      TGlyph radicalGlyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(0, "\u221A");
+      TGlyph glyph = _FindGlyph(radicalGlyph, radicalHeight, out float glyphAscent, out float glyphDescent, out float glyphWidth);
 
-      
+      IDownshiftableDisplay glyphDisplay = null;
+      if (glyphAscent + glyphDescent < radicalHeight) {
+        // the glyphs are not beg enough, so we construct one using extenders
+        glyphDisplay = _ConstructGlyph(radicalGlyph, radicalHeight);
+      }
+      if (glyphDisplay == null) {
+        glyphDisplay = new GlyphDisplay<TGlyph>(glyph, Range.NotFoundRange, _styleFont) {
+          Ascent = glyphAscent,
+          Descent = glyphDescent,
+          Width = glyphWidth
+        };
+      }
+      return glyphDisplay;
+    }
+
+    private GlyphConstructionDisplay<TGlyph> _ConstructGlyph(TGlyph glyph, float glyphHeight) {
+
     }
 
     private TGlyph _FindGlyph(TGlyph rawGlyph, float height, 
