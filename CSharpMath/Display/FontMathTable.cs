@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 using System;
 
 namespace CSharpMath.Display.Text {
-  public class FontMathTable {
+  public class FontMathTable<TGlyph> {
     private JToken _mathTable;
     private IFontMeasurer _fontMeasurer;
     private float _unitsPerEm(MathFont font)

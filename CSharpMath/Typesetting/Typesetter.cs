@@ -648,7 +648,7 @@ namespace CSharpMath {
     }
 
     private GlyphConstructionDisplay<TGlyph> _ConstructGlyph(TGlyph glyph, float glyphHeight) {
-
+      List<GlyphPart<TGlyph>> parts = _mathTable.GetVerticalGlyphAssembly(_styleFont, glyph);
     }
 
     private TGlyph _FindGlyph(TGlyph rawGlyph, float height, 
