@@ -5,7 +5,8 @@ using System.Drawing;
 using System.Text;
 
 namespace CSharpMath.FrontEnd {
-  public interface IGlyphBoundsProvider {
-    RectangleF GetBoundingRectForGlyphs(MathFont font, string glyphs);
+  public interface IGlyphBoundsProvider<TGlyph> {
+    RectangleF GetBoundingRectForGlyphs(MathFont font, TGlyph[] glyphs);
+    float GetAdvancesForGlyphs(MathFont font, TGlyph[] glyphs);
   }
 }

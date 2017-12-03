@@ -55,7 +55,7 @@ namespace CSharpMath.Display.Text {
     public float ScriptScaleDown => PercentFromTable("ScriptPercentScaleDown");
     public float ScriptScriptScaleDown => PercentFromTable("ScriptScriptPercentScaleDown");
 
-    internal float GetItalicCorrection(char v) {
+    internal float GetItalicCorrection(object glyph) {
       // TODO: write. See GetItalicCorrection in MTFontMathTable.m.
       return 0;
     }
@@ -157,6 +157,9 @@ namespace CSharpMath.Display.Text {
 
     internal float RadicalDegreeBottomRaisePercent(MathFont font)
       => _ConstantFromTable(font, "RadicalDegreeBottomRaisePercent");
+
+    internal float RadicalRuleThickness(MathFont font)
+      => _ConstantFromTable(font, "RadicalRuleThickness");
     #endregion
   }
 }

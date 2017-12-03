@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CSharpMath.Display.Text {
   public static class AttributedStrings {
-    public static AttributedString FromGlyphRuns(params AttributedGlyphRun[] runs)
-      => new AttributedString(runs);
+    public static AttributedString<TGlyph> FromGlyphRuns<TGlyph>(params AttributedGlyphRun<TGlyph>[] runs)
+      => new AttributedString<TGlyph>(runs);
   }
 }

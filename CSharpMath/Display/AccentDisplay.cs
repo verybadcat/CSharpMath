@@ -5,9 +5,9 @@ using System.Text;
 using CSharpMath.Atoms;
 
 namespace CSharpMath.Display {
-  public class AccentDisplay : IDisplay {
+  public class AccentDisplay<TGlyph> : IDisplay {
     public MathListDisplay Accentee { get; private set; }
-    public GlyphDisplay Accent { get; private set; }
+    public GlyphDisplay<TGlyph> Accent { get; private set; }
 
     public RectangleF DisplayBounds => ((IDisplay)this.Accentee).DisplayBounds;
 

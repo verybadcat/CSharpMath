@@ -4,10 +4,9 @@ using System.Drawing;
 using System.Text;
 using CSharpMath.Atoms;
 using CSharpMath.Display.Text;
-using GlyphType = System.Char; // type of this will likely change at some point
 
 namespace CSharpMath.Display {
-  public class GlyphDisplay : IDownshiftableDisplay {
+  public class GlyphDisplay<TGlyph> : IDownshiftableDisplay {
    
     public RectangleF DisplayBounds => this.ComputeDisplayBounds();
 
@@ -26,10 +25,10 @@ namespace CSharpMath.Display {
     public bool HasScript { get; set; }
     public float ShiftDown { get; set; }
 
-    public GlyphType Glyph { get; set; } 
+    public TGlyph Glyph { get; set; } 
 
     public MathFont Font { get; set; }
-    public GlyphDisplay(GlyphType glyph, Range range, MathFont font) {
+    public GlyphDisplay(TGlyph glyph, Range range, MathFont font) {
       Glyph = glyph;
       Range = range;
       Font = font;

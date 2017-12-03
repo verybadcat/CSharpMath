@@ -8,10 +8,11 @@ using System.Threading.Tasks;
 
 namespace CSharpMath.Tests.FrontEnd {
   public static class TestTypesettingContexts {
-    public static TypesettingContext Create()
-      => new TypesettingContext(
+    public static TypesettingContext<char> Create()
+      => new TypesettingContext<char>(
         new TestFontMeasurer(),
         new TestGlyphBoundsProvider(),
+        new TestGlyphFinder(),
         ResourceLoader.LatinMath);
   }
 }

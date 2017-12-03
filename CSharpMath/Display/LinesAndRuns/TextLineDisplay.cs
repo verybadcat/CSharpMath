@@ -7,14 +7,14 @@ using System.Linq;
 using System.Text;
 
 namespace CSharpMath.Display {
-  public class TextLineDisplay : IDisplay {
-    public TextLineDisplay(List<TextRunDisplay> runs,
+  public class TextLineDisplay<TGlyph> : IDisplay {
+    public TextLineDisplay(List<TextRunDisplay<TGlyph>> runs,
       IEnumerable<IMathAtom> atoms) {
       Runs = runs;
       Atoms = atoms.ToList();
     }
     // We don't implement count as it's not clear if it would refer to runs or atoms.
-    public List<TextRunDisplay> Runs { get; }
+    public List<TextRunDisplay<TGlyph>> Runs { get; }
     public List<IMathAtom> Atoms { get; }
     public string Text {
       get {

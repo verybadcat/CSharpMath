@@ -6,8 +6,8 @@ using System.Text;
 namespace CSharpMath.Display.Text {
   /// <summary>Like an attributed string, but the attributes are required to be fixed
   /// over the whole string.</summary>
-  public class AttributedGlyphRun {
-    public string Text { get; set; }
+  public class AttributedGlyphRun<TGlyph> {
+    public TGlyph[] Text { get; set; }
     public int Length => Text.Length;
     public MathFont Font { get; set; }
     public Color TextColor { get; set; }
@@ -18,7 +18,7 @@ namespace CSharpMath.Display.Text {
   }
  
   public static class AttributedGlyphRunExtensions {
-    public static bool AttributesMatch(this AttributedGlyphRun run1, AttributedGlyphRun run2) {
+    public static bool AttributesMatch<TGlyph>(this AttributedGlyphRun<TGlyph> run1, AttributedGlyphRun<TGlyph> run2) {
       if (run1==null || run2 == null) {
         return false;
       }

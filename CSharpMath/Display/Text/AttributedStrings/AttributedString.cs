@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 
 namespace CSharpMath.Display.Text {
-  public class AttributedString {
-    private List<AttributedGlyphRun> _Runs { get; }
-    public AttributedString(IEnumerable<AttributedGlyphRun> runs = null) {
-      _Runs = runs?.ToList() ?? new List<AttributedGlyphRun>();
+  public class AttributedString<TGlyph> {
+    private List<AttributedGlyphRun<TGlyph>> _Runs { get; }
+    public AttributedString(IEnumerable<AttributedGlyphRun<TGlyph>> runs = null) {
+      _Runs = runs?.ToList() ?? new List<AttributedGlyphRun<TGlyph>>();
       FuseMatchingRuns();
     }
     public void SetFont(MathFont font) {
@@ -24,7 +24,7 @@ namespace CSharpMath.Display.Text {
       }
     }
     public int Length => _Runs.Sum(r => r.Length);
-    public IEnumerable<AttributedGlyphRun> Runs => _Runs;
+    public IEnumerable<AttributedGlyphRun<TGlyph>> Runs => _Runs;
     internal void FuseMatchingRuns() {
       for (int i=_Runs.Count-1; i>0; i--) {
         TryFuseRunAt(i);
@@ -32,18 +32,18 @@ namespace CSharpMath.Display.Text {
     }
     public bool TryFuseRunAt(int index) {
       if (_Runs[index].AttributesMatch(_Runs[index - 1])) {
-        _Runs[index - 1].Text += _Runs[index].Text;
+        _Runs[index - 1].Text = _Runs[index - 1].Text.Concat(_Runs[index].Text).ToArray();
         _Runs.RemoveAt(index);
         return true;
       }
       return false;
     }
-    public void AppendAttributedString(AttributedString other) {
+    public void AppendAttributedString(AttributedString<TGlyph> other) {
       _Runs.AddRange(other.Runs);
       FuseMatchingRuns();
     }
 
-    internal void AppendGlyphRun(AttributedGlyphRun run) {
+    internal void AppendGlyphRun(AttributedGlyphRun<TGlyph> run) {
       _Runs.Add(run);
       TryFuseRunAt(_Runs.Count - 1);
     }
@@ -52,7 +52,7 @@ namespace CSharpMath.Display.Text {
   }
 
   public static class AttributedStringExtensions {
-    public static AttributedString Combine(AttributedString attr1, AttributedString attr2) {
+    public static AttributedString<TGlyph> Combine<TGlyph>(AttributedString<TGlyph> attr1, AttributedString<TGlyph> attr2) {
       if (attr1 == null) {
         return attr2;
       }
@@ -62,10 +62,10 @@ namespace CSharpMath.Display.Text {
       attr1.AppendAttributedString(attr2);
       return attr1;
     }
-    public static AttributedString Combine(AttributedGlyphRun run1, AttributedGlyphRun run2)
+    public static AttributedString<TGlyph> Combine<TGlyph>(AttributedGlyphRun<TGlyph> run1, AttributedGlyphRun<TGlyph> run2)
       => AttributedStrings.FromGlyphRuns(run1, run2);
 
-    public static AttributedString Combine(AttributedString aStr, AttributedGlyphRun run) {
+    public static AttributedString<TGlyph> Combine<TGlyph>(AttributedString<TGlyph> aStr, AttributedGlyphRun<TGlyph> run) {
       if (aStr == null) {
         return AttributedStrings.FromGlyphRuns(run);
       } else {

@@ -36,7 +36,12 @@ namespace CSharpMath.Display {
       Degree.Position = new PointF(this.Position.X + kernBefore, this.Position.Y + raise);
       // update the width by the _radicalShift
       Width = _radicalShift + _radicalGlyph.Width + Radicand.Width;
-      
+      _UpdateRadicandPosition();
+    }
+
+    private void _UpdateRadicandPosition() {
+      var x = this.Position.X + _radicalShift + _radicalGlyph.Width;
+      Radicand.Position = new PointF(x, this.Position.Y);
     }
 
     public RectangleF DisplayBounds => throw new NotImplementedException();
