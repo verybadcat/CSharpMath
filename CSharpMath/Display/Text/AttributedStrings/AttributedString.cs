@@ -11,7 +11,7 @@ namespace CSharpMath.Display.Text {
       _Runs = runs?.ToList() ?? new List<AttributedGlyphRun<TGlyph>>();
       FuseMatchingRuns();
     }
-    public void SetFont(MathFont font) {
+    public void SetFont(MathFont<TGlyph> font) {
       _Runs.ForEach(r => r.Font = font);
     }
     public string Text {

@@ -16,11 +16,11 @@ namespace CSharpMath.Display {
     // We don't implement count as it's not clear if it would refer to runs or atoms.
     public List<TextRunDisplay<TGlyph>> Runs { get; }
     public List<IMathAtom> Atoms { get; }
-    public string Text {
+    public List<TGlyph> Text {
       get {
-        string r = "";
+        List<TGlyph> r = new List<TGlyph>();
         foreach (var run in Runs) {
-          r += run.Run.Text;
+          r.AddRange(run.Run.Text);
         }
         return r;
       }

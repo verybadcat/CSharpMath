@@ -3,6 +3,7 @@ using CSharpMath.Tests.FrontEnd;
 using System;
 using System.Drawing;
 using Xunit;
+using TGlyph = System.Char;
 
 namespace CSharpMath.Tests {
   // purpose of this class is to make sure our mocks behave as expected.
@@ -10,18 +11,18 @@ namespace CSharpMath.Tests {
     [Fact]
     public void TestGlyphBoundsWithoutM() {
       string hello = "Hello";
-      MathFont font = new MathFont(10);
+      MathFont<TGlyph> font = new MathFont<TGlyph>(10);
       var provider = new TestGlyphBoundsProvider();
-      RectangleF bounds = provider.GetBoundingRectForGlyphs(font, hello);
+      RectangleF bounds = provider.GetBoundingRectForGlyphs(font, hello.ToCharArray());
       Assertions.ApproximatelyEquals(bounds, 0, -2, 25, 9,  0.01);
     }
 
     [Fact]
     public void TestGlyphBoundsWithM() {
       string america = "America";
-      MathFont font = new MathFont(10);
+      MathFont<TGlyph> font = new MathFont<TGlyph>(10);
       var provider = new TestGlyphBoundsProvider();
-      RectangleF bounds = provider.GetBoundingRectForGlyphs(font, america);
+      RectangleF bounds = provider.GetBoundingRectForGlyphs(font, america.ToCharArray());
       Assertions.ApproximatelyEquals(bounds, 0, -2, 40, 9, 0.01);
     }
   }

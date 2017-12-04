@@ -11,7 +11,7 @@ namespace CSharpMath.Display {
 
     private TGlyph[] _glyphs;
     private PointF[] _glyphPositions;
-    private MathFont _mathFont;
+    private MathFont<TGlyph> _mathFont;
     private int _nGlyphs => _glyphs.Length;
 
     public float ShiftDown { get; set; }
@@ -33,7 +33,7 @@ namespace CSharpMath.Display {
 
     public bool HasScript { get; set; }
 
-    public GlyphConstructionDisplay(IEnumerable<TGlyph> glyphs, IEnumerable<float> offsets, MathFont font) {
+    public GlyphConstructionDisplay(IEnumerable<TGlyph> glyphs, IEnumerable<float> offsets, MathFont<TGlyph> font) {
       _glyphs = glyphs.ToArray();
       _glyphPositions = offsets.Select(x => new PointF(0, x)).ToArray();
       _mathFont = font;

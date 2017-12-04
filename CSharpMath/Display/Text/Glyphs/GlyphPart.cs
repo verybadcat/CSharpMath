@@ -11,6 +11,6 @@ namespace CSharpMath.Display {
     public float EndConnectorLength { get; set; }
 
     /// <summary>If the glyph is an extender, it can be skipped or repeated.</summary>
-    public bool IsExtender { get; }
+    public bool IsExtender { get; set; }
   }
 }

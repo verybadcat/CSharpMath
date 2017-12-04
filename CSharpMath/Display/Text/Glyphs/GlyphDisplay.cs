@@ -27,8 +27,8 @@ namespace CSharpMath.Display {
 
     public TGlyph Glyph { get; set; } 
 
-    public MathFont Font { get; set; }
-    public GlyphDisplay(TGlyph glyph, Range range, MathFont font) {
+    public MathFont<TGlyph> Font { get; set; }
+    public GlyphDisplay(TGlyph glyph, Range range, MathFont<TGlyph> font) {
       Glyph = glyph;
       Range = range;
       Font = font;

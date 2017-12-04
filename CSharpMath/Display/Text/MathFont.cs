@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace CSharpMath.Display.Text {
-  public class MathFont {
+  public class MathFont<TGlyph> {
     public MathFont(float pointSize) {
       PointSize = pointSize;
     }
@@ -11,16 +11,16 @@ namespace CSharpMath.Display.Text {
       PointSize = pointSize;
       Style = style;
     }
-    internal FontMathTable MathTable { get; }
+    internal FontMathTable<TGlyph> MathTable { get; }
     public float PointSize { get; }
     public FontStyle Style { get; }
-    public MathFont CopyWithSize(float pointSize)
-      => new MathFont(pointSize, Style);
-    public bool Equals(MathFont otherFont) =>
+    public MathFont<TGlyph> CopyWithSize(float pointSize)
+      => new MathFont<TGlyph>(pointSize, Style);
+    public bool Equals(MathFont<TGlyph> otherFont) =>
       PointSize.Equals(otherFont.PointSize)
       && Style.Equals(otherFont.Style);
     public override bool Equals(object obj) {
-      if (obj is MathFont font) {
+      if (obj is MathFont<TGlyph> font) {
         return Equals(font);
       }
       return false;
@@ -31,6 +31,6 @@ namespace CSharpMath.Display.Text {
       }
     }
 
-    public override string ToString() => $"MathFont {PointSize}";
+    public override string ToString() => $"MathFont<TGlyph> {PointSize}";
   }
 }

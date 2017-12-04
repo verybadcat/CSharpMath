@@ -9,7 +9,7 @@ namespace CSharpMath.Display.Text {
   public class AttributedGlyphRun<TGlyph> {
     public TGlyph[] Text { get; set; }
     public int Length => Text.Length;
-    public MathFont Font { get; set; }
+    public MathFont<TGlyph> Font { get; set; }
     public Color TextColor { get; set; }
     public float Kern { get; set; }
 

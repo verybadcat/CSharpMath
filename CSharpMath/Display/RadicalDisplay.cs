@@ -6,7 +6,7 @@ using CSharpMath.Atoms;
 using CSharpMath.Display.Text;
 
 namespace CSharpMath.Display {
-  public class RadicalDisplay : IDisplay {
+  public class RadicalDisplay<TGlyph> : IDisplay {
     // A display representing the numerator of the fraction. Its position is relative
     // to the parent and it is not treated as a sub-display.
     public MathListDisplay Radicand { get; private set; }
@@ -16,10 +16,21 @@ namespace CSharpMath.Display {
 
     public float Width { get; set; }
 
+    public float TopKern { get; set; }
+
+    public float LineThickness { get; set; } // the thickness of the top bar of the radical.
+
     private float _radicalShift;
     private IDisplay _radicalGlyph;
 
-    public void SetDegree(MathListDisplay degree, MathFont degreeFont, FontMathTable degreeFontMathTable) {
+    public RadicalDisplay(MathListDisplay innerDisplay, IDownshiftableDisplay glyph, PointF currentPosition, Range range) {
+      Radicand = innerDisplay;
+      _radicalGlyph = glyph;
+      Position = Position;
+      Range = range;
+    }
+
+    public void SetDegree(MathListDisplay degree, MathFont<TGlyph> degreeFont, FontMathTable<TGlyph> degreeFontMathTable) {
       var kernBefore = degreeFontMathTable.RadicalKernBeforeDegree(degreeFont);
       var kernAfter = degreeFontMathTable.RadicalKernAfterDegree(degreeFont);
       var raise = degreeFontMathTable.RadicalDegreeBottomRaisePercent(degreeFont) * (this.Ascent - this.Descent);
@@ -44,17 +55,17 @@ namespace CSharpMath.Display {
       Radicand.Position = new PointF(x, this.Position.Y);
     }
 
-    public RectangleF DisplayBounds => throw new NotImplementedException();
+    public RectangleF DisplayBounds => IDisplayExtensions.ComputeDisplayBounds(this);
 
-    public float Ascent => throw new NotImplementedException();
+    public float Ascent { get; set; }
 
-    public float Descent => throw new NotImplementedException();
+    public float Descent { get; set; }
 
 
 
-    public Range Range => throw new NotImplementedException();
+    public Range Range { get; set; }
 
-    public PointF Position => throw new NotImplementedException();
+    public PointF Position { get; set; }
     public bool HasScript { get; set; }
     public void Draw(IGraphicsContext context) => throw new NotImplementedException();
   }

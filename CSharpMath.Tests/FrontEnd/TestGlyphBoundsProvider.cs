@@ -20,7 +20,7 @@ namespace CSharpMath.Tests.FrontEnd {
       int effectiveLength = length + extraLength;
       return effectiveLength;
     }
-    public RectangleF GetBoundingRectForGlyphs(MathFont font, char[] glyphs) {
+    public RectangleF GetBoundingRectForGlyphs(MathFont<char> font, char[] glyphs) {
       int effectiveLength = GetEffectiveLength(glyphs);
       float width = font.PointSize * effectiveLength * WidthPerCharacterPerFontSize;
       float ascent = font.PointSize * AscentPerFontSize;
@@ -29,7 +29,7 @@ namespace CSharpMath.Tests.FrontEnd {
       return new RectangleF(0, -descent, width, ascent + descent);
     }
 
-    public float GetAdvancesForGlyphs(MathFont font, char[] glyphs) {
+    public float GetAdvancesForGlyphs(MathFont<char> font, char[] glyphs) {
       int effectiveLength = GetEffectiveLength(glyphs);
       float width = font.PointSize * effectiveLength * WidthPerCharacterPerFontSize;
       return width;

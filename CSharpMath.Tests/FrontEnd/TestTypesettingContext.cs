@@ -12,6 +12,7 @@ namespace CSharpMath.Tests.FrontEnd {
       => new TypesettingContext<char>(
         new TestFontMeasurer(),
         new TestGlyphBoundsProvider(),
+        new TestGlyphNameProvider(),
         new TestGlyphFinder(),
         ResourceLoader.LatinMath);
   }
