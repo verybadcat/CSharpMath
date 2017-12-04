@@ -9,24 +9,25 @@ using System.Text;
 
 namespace CSharpMath.Display {
   public static class TextLineDisplays {
-    public static TextLineDisplay<TGlyph> Create<TGlyph>(
-      AttributedString<TGlyph> text,
+    public static TextLineDisplay<TMathFont, TGlyph> Create<TMathFont, TGlyph>(
+      AttributedString<TMathFont, TGlyph> text,
       Range range,
-      TypesettingContext<TGlyph> context,
+      TypesettingContext<TMathFont, TGlyph> context,
       IEnumerable<IMathAtom> atoms
-      ) {
+      )
+      where TMathFont: MathFont<TGlyph> {
       int index = range.Location;
-      List<TextRunDisplay<TGlyph>> textRuns = new List<TextRunDisplay<TGlyph>>();
+      List<TextRunDisplay<TMathFont, TGlyph>> textRuns = new List<TextRunDisplay<TMathFont, TGlyph>>();
       foreach (var run in text.Runs) {
         var innerRange = new Range(index, run.Length);
-        var textRun = new TextRunDisplay<TGlyph>(
+        var textRun = new TextRunDisplay<TMathFont, TGlyph>(
           run,
           innerRange,
           context
           );
         textRuns.Add(textRun);
       }
-      return new TextLineDisplay<TGlyph>(textRuns, atoms);
+      return new TextLineDisplay<TMathFont, TGlyph>(textRuns, atoms);
     }
   }
 }

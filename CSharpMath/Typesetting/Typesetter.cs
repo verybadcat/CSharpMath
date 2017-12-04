@@ -12,17 +12,18 @@ using CSharpMath.TypesetterInternal;
 using CSharpMath.FrontEnd;
 
 namespace CSharpMath {
-  public class Typesetter<TGlyph> {
-    private MathFont<TGlyph> _font;
-    private readonly TypesettingContext<TGlyph> _context;
+  public class Typesetter<TMathFont, TGlyph>
+    where TMathFont: MathFont<TGlyph> {
+    private TMathFont _font;
+    private readonly TypesettingContext<TMathFont, TGlyph> _context;
     private FontMathTable<TGlyph> _mathTable => _context.MathTable;
-    private MathFont<TGlyph> _styleFont;
+    private TMathFont _styleFont;
     private LineStyle _style;
     private bool _cramped;
     private bool _spaced;
     private List<IDisplay> _displayAtoms = new List<IDisplay>();
     private PointF _currentPosition; // the Y axis is NOT inverted in the typesetter.
-    private AttributedString<TGlyph> _currentLine;
+    private AttributedString<TMathFont, TGlyph> _currentLine;
     private Range _currentLineIndexRange = Range.NotFoundRange;
     private List<IMathAtom> _currentAtoms = new List<IMathAtom>();
     private const int _delimiterFactor = 901;
@@ -65,25 +66,25 @@ namespace CSharpMath {
       }
     }
 
-    internal Typesetter(MathFont<TGlyph> font, TypesettingContext<TGlyph> context, LineStyle style, bool cramped, bool spaced) {
+    internal Typesetter(TMathFont font, TypesettingContext<TMathFont, TGlyph> context, LineStyle style, bool cramped, bool spaced) {
       _font = font;
       _context = context;
       _style = style;
-      _styleFont = font.CopyWithSize(context.MathTable.GetStyleSize(style, font));
+      _styleFont = _context.MathFontCloner.Invoke(font, context.MathTable.GetStyleSize(style, font));
       _cramped = cramped;
       _spaced = spaced;
     }
 
-    public static MathListDisplay CreateLine(IMathList list, MathFont<TGlyph> font, TypesettingContext<TGlyph> context, LineStyle style) {
+    public static MathListDisplay CreateLine(IMathList list, TMathFont font, TypesettingContext<TMathFont, TGlyph> context, LineStyle style) {
       var finalized = list.FinalizedList();
       return _CreateLine(finalized, font, context, style, false);
     }
 
     private static MathListDisplay _CreateLine(
-      IMathList list, MathFont<TGlyph> font, TypesettingContext<TGlyph> context,
+      IMathList list, TMathFont font, TypesettingContext<TMathFont, TGlyph> context,
       LineStyle style, bool cramped, bool spaced = false) {
       var preprocessedAtoms = _PreprocessMathList(list);
-      var typesetter = new Typesetter<TGlyph>(font, context, style, cramped, spaced);
+      var typesetter = new Typesetter<TMathFont, TGlyph>(font, context, style, cramped, spaced);
       typesetter._CreateDisplayAtoms(preprocessedAtoms);
       var lastAtom = list.Atoms.Last();
       var line = new MathListDisplay(typesetter._displayAtoms.ToArray());
@@ -184,12 +185,12 @@ namespace CSharpMath {
                 _currentPosition.X += interElementSpace;
               }
             }
-            AttributedGlyphRun<TGlyph> current = null;
+            AttributedGlyphRun<TMathFont, TGlyph> current = null;
             var glyphs = _context.GlyphFinder.FindGlyphs(atom.Nucleus);
             if (atom.AtomType == MathAtomType.Placeholder) {
-              current = AttributedGlyphRuns.Create(glyphs, _placeholderColor);
+              current = AttributedGlyphRuns.Create<TMathFont, TGlyph>(glyphs, _placeholderColor);
             } else {
-              current = AttributedGlyphRuns.Create(glyphs, Color.Transparent);
+              current = AttributedGlyphRuns.Create<TMathFont, TGlyph>(glyphs, Color.Transparent);
             }
             _currentLine = AttributedStringExtensions.Combine(_currentLine, current);
             if (_currentLineIndexRange.Location == Range.UndefinedInt) {
@@ -236,16 +237,16 @@ namespace CSharpMath {
       float superscriptShiftUp = 0;
       float subscriptShiftDown = 0;
       display.HasScript = true;
-      if (!(display is TextLineDisplay<TGlyph>)) {
+      if (!(display is TextLineDisplay<TMathFont, TGlyph>)) {
         float scriptFontSize = GetStyleSize(_scriptStyle, _font);
-        MathFont<TGlyph> scriptFont = _font.CopyWithSize(scriptFontSize);
+        TMathFont scriptFont = _context.MathFontCloner.Invoke(_font, scriptFontSize);
         superscriptShiftUp = display.Ascent - _context.MathTable.SuperscriptBaselineDropMax(scriptFont);
         subscriptShiftDown = display.Descent + _context.MathTable.SubscriptBaselineDropMin(scriptFont);
       }
       if (atom.Superscript == null) {
-        var line = display as TextLineDisplay<TGlyph>;
+        var line = display as TextLineDisplay<TMathFont, TGlyph>;
         Assertions.NotNull(atom.Subscript);
-        var subscript = Typesetter<TGlyph>._CreateLine(atom.Subscript, _font, _context, _scriptStyle, _subscriptCramped);
+        var subscript = _CreateLine(atom.Subscript, _font, _context, _scriptStyle, _subscriptCramped);
         subscript.MyLinePosition = LinePosition.Subscript;
         subscript.IndexInParent = index;
         subscriptShiftDown = Math.Max(subscriptShiftDown, _mathTable.SubscriptShiftDown(_styleFont));
@@ -350,13 +351,13 @@ namespace CSharpMath {
       throw new InvalidOperationException($"Inter-element space undefined for atom type {atomType}");
     }
 
-    private TextLineDisplay<TGlyph> AddDisplayLine(bool evenIfLengthIsZero) {
+    private TextLineDisplay<TMathFont, TGlyph> AddDisplayLine(bool evenIfLengthIsZero) {
       if (evenIfLengthIsZero || (_currentLine != null && _currentLine.Length > 0)) {
         _currentLine.SetFont(_styleFont);
         var displayAtom = TextLineDisplays.Create(_currentLine, _currentLineIndexRange, _context, _currentAtoms);
         _displayAtoms.Add(displayAtom);
         _currentPosition.X += displayAtom.Width;
-        _currentLine = new AttributedString<TGlyph>();
+        _currentLine = new AttributedString<TMathFont, TGlyph>();
         _currentAtoms = new List<IMathAtom>();
         _currentLineIndexRange = Ranges.NotFound;
         return displayAtom;
@@ -405,7 +406,7 @@ namespace CSharpMath {
       return builder.ToString();
     }
 
-    private static float GetStyleSize(LineStyle style, MathFont<TGlyph> font) {
+    private static float GetStyleSize(LineStyle style, TMathFont font) {
       float original = font.PointSize;
       switch (style) {
         case LineStyle.Script:

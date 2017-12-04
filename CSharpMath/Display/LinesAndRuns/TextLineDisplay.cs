@@ -5,16 +5,18 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using CSharpMath.Display.Text;
 
 namespace CSharpMath.Display {
-  public class TextLineDisplay<TGlyph> : IDisplay {
-    public TextLineDisplay(List<TextRunDisplay<TGlyph>> runs,
+  public class TextLineDisplay<TMathFont, TGlyph> : IDisplay 
+    where TMathFont: MathFont<TGlyph> {
+    public TextLineDisplay(List<TextRunDisplay<TMathFont, TGlyph>> runs,
       IEnumerable<IMathAtom> atoms) {
       Runs = runs;
       Atoms = atoms.ToList();
     }
     // We don't implement count as it's not clear if it would refer to runs or atoms.
-    public List<TextRunDisplay<TGlyph>> Runs { get; }
+    public List<TextRunDisplay<TMathFont, TGlyph>> Runs { get; }
     public List<IMathAtom> Atoms { get; }
     public List<TGlyph> Text {
       get {
