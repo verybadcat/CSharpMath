@@ -583,7 +583,7 @@ namespace CSharpMath.Tests {
 
       var display2 = radical.Radicand;
       Assert.Equal(LinePosition.Regular, display2.MyLinePosition);
-      Assertions.ApproximatePoint(16.66, 0, display2.Position, 0.01);
+      Assertions.ApproximatePoint(10, 0, display2.Position, 0.01);
       Assert.Equal(new Range(0, 1), display2.Range);
       Assert.False(display2.HasScript);
       Assert.Equal(Range.UndefinedInt, display2.IndexInParent);
@@ -596,9 +596,9 @@ namespace CSharpMath.Tests {
       Assert.Equal(new Range(0, 1), line2.Range);
       Assert.False(line2.HasScript);
 
-      Assertions.ApproximatelyEqual(19.34, display.Ascent, 0.01);
-      Assertions.ApproximatelyEqual(5, display.Descent, 0.01);
-      Assertions.ApproximatelyEqual(26.66, display.Width, 0.01);
+      Assertions.ApproximatelyEqual(15.6, display.Ascent, 0.01);
+      Assertions.ApproximatelyEqual(4, display.Descent, 0.01);
+      Assertions.ApproximatelyEqual(20, display.Width, 0.01);
     }
   }
 }

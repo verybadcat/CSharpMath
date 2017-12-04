@@ -23,10 +23,10 @@ namespace CSharpMath.Display {
     private float _radicalShift;
     private IDisplay _radicalGlyph;
 
-    public RadicalDisplay(MathListDisplay innerDisplay, IDownshiftableDisplay glyph, PointF currentPosition, Range range) {
+    public RadicalDisplay(MathListDisplay innerDisplay, IDownshiftableDisplay glyph, PointF position, Range range) {
       Radicand = innerDisplay;
       _radicalGlyph = glyph;
-      Position = Position;
+      SetPosition(position);
       Range = range;
     }
 
@@ -65,7 +65,12 @@ namespace CSharpMath.Display {
 
     public Range Range { get; set; }
 
-    public PointF Position { get; set; }
+    public void SetPosition(PointF position) {
+      Position = position;
+      _UpdateRadicandPosition();
+    }
+
+    public PointF Position { get; private set; } // set with SetPosition().
     public bool HasScript { get; set; }
     public void Draw(IGraphicsContext context) => throw new NotImplementedException();
   }

@@ -11,7 +11,6 @@ namespace CSharpMath.Display.Text {
       PointSize = pointSize;
       Style = style;
     }
-    internal FontMathTable<TGlyph> MathTable { get; }
     public float PointSize { get; }
     public FontStyle Style { get; }
     public MathFont<TGlyph> CopyWithSize(float pointSize)

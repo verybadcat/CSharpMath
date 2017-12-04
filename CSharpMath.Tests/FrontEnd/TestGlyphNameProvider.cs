@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CSharpMath.Tests.FrontEnd {
   class TestGlyphNameProvider : IGlyphNameProvider<char> {
-    public char GetGlyph(string glyphName) => throw new NotImplementedException();
-    public string GetGlyphName(char glyph) => throw new NotImplementedException();
+    public char GetGlyph(string glyphName) => glyphName.IsEmpty() ? (char)0 : glyphName[0];
+    public string GetGlyphName(char glyph) => glyph.ToString();
   }
 }

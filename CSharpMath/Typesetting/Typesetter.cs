@@ -405,13 +405,13 @@ namespace CSharpMath {
       return builder.ToString();
     }
 
-    private static float GetStyleSize(LineStyle style, MathFont<TGlyph> font) {
+    private float GetStyleSize(LineStyle style, MathFont<TGlyph> font) {
       float original = font.PointSize;
       switch (style) {
         case LineStyle.Script:
-          return original * font.MathTable.ScriptScaleDown;
+          return original * _mathTable.ScriptScaleDown;
         case LineStyle.ScriptScript:
-          return original * font.MathTable.ScriptScriptScaleDown;
+          return original * _mathTable.ScriptScriptScaleDown;
         default:
           return original;
       }
@@ -424,9 +424,14 @@ namespace CSharpMath {
       return inputChar;
     }
 
-    private float _radicalVerticalGap => (_style == LineStyle.Display)
-      ? _styleFont.MathTable.RadicalDisplayStyleVerticalGap
-      : _styleFont.MathTable.RadicalVerticalGap;
+    private float _radicalVerticalGap {
+      get {
+        if (_style == LineStyle.Display) {
+          return _mathTable.RadicalDisplayStyleVerticalGap;
+        }
+        return _mathTable.RadicalVerticalGap;
+      }
+    }
 
     private RadicalDisplay<TGlyph> MakeRadical(IMathList radicand, Range range) {
       var innerDisplay = _CreateLine(radicand, _font, _context, _style, true);
@@ -699,9 +704,9 @@ namespace CSharpMath {
           if (part.IsExtender) {
             repeats = nExtenders;
           }
-          for (int i=0; i<repeats; i++) {
+          for (int i = 0; i < repeats; i++) {
             glyphs.Add(part.Glyph);
-            if (prevPart!=null) {
+            if (prevPart != null) {
               float maxOverlap = Math.Min(prevPart.EndConnectorLength, part.StartConnectorLength);
               // the minimum amount we can add to the offset
               float minOffsetDelta = prevPart.FullAdvance - maxOverlap;
@@ -727,7 +732,7 @@ namespace CSharpMath {
           float delta = glyphHeight - minHeight;
           float dDelta = delta / (glyphs.Count - 1);
           float lastOffset = 0;
-          for (int i=0; i<offsets.Count; i++) {
+          for (int i = 0; i < offsets.Count; i++) {
             float offset = offsets[i] + i * dDelta;
             offsets[i] = offset;
             lastOffset = offset;
