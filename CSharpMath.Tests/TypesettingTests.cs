@@ -15,9 +15,9 @@ namespace CSharpMath.Tests {
     public TypesettingTests() {
 
     }
-    private MathFont<char> _font { get; } = new MathFont<char>(20);
-    private IFontMeasurer<char> _fontMeasurer => _context.FontMeasurer;
-    private TypesettingContext<MathFont<char>, char> _context { get; } = TestTypesettingContexts.Create();
+    private TMathFont _font { get; } = new TMathFont(20);
+    private IFontMeasurer<TMathFont, char> _fontMeasurer => _context.FontMeasurer;
+    private TypesettingContext<TMathFont, char> _context { get; } = TestTypesettingContexts.Create();
     [Fact]
     public void TestSimpleVariable() {
       var list = new MathList {
@@ -575,7 +575,7 @@ namespace CSharpMath.Tests {
       Assert.Equal(Range.UndefinedInt, display.IndexInParent);
       Assert.Single(display.Displays);
 
-      var radical = display.Displays[0] as RadicalDisplay<TGlyph>;
+      var radical = display.Displays[0] as RadicalDisplay<TMathFont, TGlyph>;
       Assert.Equal(new Range(0, 1), radical.Range);
       Assert.False(radical.HasScript);
       Assert.Equal(new PointF(), radical.Position);

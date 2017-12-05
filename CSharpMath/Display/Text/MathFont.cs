@@ -11,7 +11,7 @@ namespace CSharpMath.Display.Text {
       PointSize = pointSize;
       Style = style;
     }
-    internal FontMathTable<TGlyph> MathTable { get; }
+    internal FontMathTable<MathFont<TGlyph>, TGlyph> MathTable { get; }
     public float PointSize { get; }
     public FontStyle Style { get; }
     public bool Equals(MathFont<TGlyph> otherFont) =>

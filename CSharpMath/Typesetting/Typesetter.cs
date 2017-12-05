@@ -16,7 +16,7 @@ namespace CSharpMath {
     where TMathFont: MathFont<TGlyph> {
     private TMathFont _font;
     private readonly TypesettingContext<TMathFont, TGlyph> _context;
-    private FontMathTable<TGlyph> _mathTable => _context.MathTable;
+    private FontMathTable<TMathFont, TGlyph> _mathTable => _context.MathTable;
     private TMathFont _styleFont;
     private LineStyle _style;
     private bool _cramped;
@@ -429,7 +429,7 @@ namespace CSharpMath {
       ? _styleFont.MathTable.RadicalDisplayStyleVerticalGap
       : _styleFont.MathTable.RadicalVerticalGap;
 
-    private RadicalDisplay<TGlyph> MakeRadical(IMathList radicand, Range range) {
+    private RadicalDisplay<TMathFont, TGlyph> MakeRadical(IMathList radicand, Range range) {
       var innerDisplay = _CreateLine(radicand, _font, _context, _style, true);
       var clearance = _radicalVerticalGap;
       var radicalRuleThickness = _mathTable.RadicalRuleThickness(_styleFont);
@@ -451,7 +451,7 @@ namespace CSharpMath {
       var shiftUp = radicalAscent - glyph.Ascent;   // Note: if the font designer followed latex conventions, this is the same as glyphAscent == thickness.
       glyph.ShiftDown = -shiftUp;
 
-      var radical = new RadicalDisplay<TGlyph>(innerDisplay, glyph, _currentPosition, range);
+      var radical = new RadicalDisplay<TMathFont, TGlyph>(innerDisplay, glyph, _currentPosition, range);
       radical.Ascent = radicalAscent + _mathTable.RadicalExtraAscender(_styleFont);
       radical.TopKern = _mathTable.RadicalExtraAscender(_styleFont);
       radical.LineThickness = radicalRuleThickness;
