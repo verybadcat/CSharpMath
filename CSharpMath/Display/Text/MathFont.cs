@@ -13,8 +13,6 @@ namespace CSharpMath.Display.Text {
     }
     public float PointSize { get; }
     public FontStyle Style { get; }
-    public MathFont<TGlyph> CopyWithSize(float pointSize)
-      => new MathFont<TGlyph>(pointSize, Style);
     public bool Equals(MathFont<TGlyph> otherFont) =>
       PointSize.Equals(otherFont.PointSize)
       && Style.Equals(otherFont.Style);

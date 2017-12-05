@@ -1,13 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2002
+VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath", "CSharpMath\CSharpMath.csproj", "{5157367B-F03E-4ACB-83A1-0DE414A3BFCA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Tests", "CSharpMath.Tests\CSharpMath.Tests.csproj", "{0830C47F-AA16-4A0E-9CCF-E40835D1430D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Tests", "CSharpMath.Tests\CSharpMath.Tests.csproj", "{0830C47F-AA16-4A0E-9CCF-E40835D1430D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Ios", "CSharpMath.Ios\CSharpMath.Ios.csproj", "{6D722340-0808-4231-BF91-8DCE9CC83B09}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSharpMath.Apple", "CSharpMath.Apple\CSharpMath.Apple.shproj", "{1E62C0F0-B5C9-430E-ADDC-6F6EC6E0BDE1}"
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		CSharpMath.Apple\CSharpMath.Apple.projitems*{1e62c0f0-b5c9-430e-addc-6f6ec6e0bde1}*SharedItemsImports = 13
+		CSharpMath.Apple\CSharpMath.Apple.projitems*{6d722340-0808-4231-bf91-8dce9cc83b09}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -21,6 +29,10 @@ Global
 		{0830C47F-AA16-4A0E-9CCF-E40835D1430D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0830C47F-AA16-4A0E-9CCF-E40835D1430D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0830C47F-AA16-4A0E-9CCF-E40835D1430D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D722340-0808-4231-BF91-8DCE9CC83B09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D722340-0808-4231-BF91-8DCE9CC83B09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D722340-0808-4231-BF91-8DCE9CC83B09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D722340-0808-4231-BF91-8DCE9CC83B09}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

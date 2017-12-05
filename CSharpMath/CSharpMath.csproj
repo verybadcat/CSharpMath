@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\latinmodern-math.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
 

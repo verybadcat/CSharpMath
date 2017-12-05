@@ -8,7 +8,7 @@ using CSharpMath.Display.Text;
 using System.Drawing;
 
 namespace CSharpMath.Tests.FrontEnd {
-  public class TestGlyphBoundsProvider : IGlyphBoundsProvider<char> {
+  public class TestGlyphBoundsProvider : IGlyphBoundsProvider<MathFont<char>, char> {
     private const float WidthPerCharacterPerFontSize = 0.5f; // "m" and "M" get double width.
     private const float AscentPerFontSize = 0.7f;
     private const float DescentPerFontSize = 0.2f; // all constants were chosen to bear some resemblance to a real font.

@@ -8,8 +8,9 @@ using CSharpMath.Display.Text;
 
 namespace CSharpMath.FrontEnd {
   public static class TypesettingContextExtensions {
-    public static MathListDisplay CreateLine<TGlyph>(this TypesettingContext<TGlyph> context, IMathList list, MathFont<TGlyph> font, LineStyle style) {
-      return Typesetter<TGlyph>.CreateLine(list, font, context, style);
+    public static MathListDisplay CreateLine<TMathFont, TGlyph>(this TypesettingContext<TMathFont, TGlyph> context, IMathList list, TMathFont font, LineStyle style)
+      where TMathFont: MathFont<TGlyph> {
+      return Typesetter<TMathFont, TGlyph>.CreateLine(list, font, context, style);
       }
   }
 }

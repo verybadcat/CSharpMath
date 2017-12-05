@@ -6,7 +6,8 @@ using CSharpMath.Atoms;
 using CSharpMath.Display.Text;
 
 namespace CSharpMath.Display {
-  public class RadicalDisplay<TGlyph> : IDisplay {
+  public class RadicalDisplay<TMathFont, TGlyph> : IDisplay
+    where TMathFont: MathFont<TGlyph> {
     // A display representing the numerator of the fraction. Its position is relative
     // to the parent and it is not treated as a sub-display.
     public MathListDisplay Radicand { get; private set; }
@@ -30,7 +31,7 @@ namespace CSharpMath.Display {
       Range = range;
     }
 
-    public void SetDegree(MathListDisplay degree, MathFont<TGlyph> degreeFont, FontMathTable<TGlyph> degreeFontMathTable) {
+    public void SetDegree(MathListDisplay degree, TMathFont degreeFont, FontMathTable<TMathFont, TGlyph> degreeFontMathTable) {
       var kernBefore = degreeFontMathTable.RadicalKernBeforeDegree(degreeFont);
       var kernAfter = degreeFontMathTable.RadicalKernAfterDegree(degreeFont);
       var raise = degreeFontMathTable.RadicalDegreeBottomRaisePercent(degreeFont) * (this.Ascent - this.Descent);

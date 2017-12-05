@@ -5,10 +5,11 @@ using System.Drawing;
 using System.Text;
 
 namespace CSharpMath.FrontEnd {
-  public interface IFontMeasurer<TGlyph> {
+  public interface IFontMeasurer<TMathFont, TGlyph>
+    where TMathFont: MathFont<TGlyph> {
     /// <summary>A proportionality constant that is applied when
     /// reading from the Json table.</summary>
-    int GetUnitsPerEm(MathFont<TGlyph> font);
+    int GetUnitsPerEm(TMathFont font);
 
   }
 }
