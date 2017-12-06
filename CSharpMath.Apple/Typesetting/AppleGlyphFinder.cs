@@ -30,6 +30,8 @@ namespace CSharpMath.Apple
           break;
         }
       }
+      var nsString = new NSString(str.Substring(start, end - start));
+      
       var encoding = new UnicodeEncoding();
       var substring = str.Substring(start, end - start);
       var encodeSubstring = encoding.GetBytes(substring);
