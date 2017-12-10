@@ -12,6 +12,9 @@ EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSharpMath.Apple", "CSharpMath.Apple\CSharpMath.Apple.shproj", "{1E62C0F0-B5C9-430E-ADDC-6F6EC6E0BDE1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Src", "Src", "{4095C402-9D46-4F54-9A19-4FA063852135}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
