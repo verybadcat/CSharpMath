@@ -9,6 +9,8 @@
     <Import_RootNamespace>CSharpMath.Apple</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AppleLatexView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Drawing\AppleGraphicsContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Typesetting\AppleGlyphBoundsProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Typesetting\AppleMathFont.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Typesetting\AppleTypesetters.cs" />

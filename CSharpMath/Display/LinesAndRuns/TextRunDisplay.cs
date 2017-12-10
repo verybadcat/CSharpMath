@@ -32,6 +32,7 @@ namespace CSharpMath.Display {
   => this.ComputeDisplayBounds();
 
     public void Draw(IGraphicsContext context) {
+            context.SaveState();
 
     }
     public Range Range { get; set; }
