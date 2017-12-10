@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
+using CSharpMath.Atoms;
 
 namespace CSharpMath.Display.Text {
   /// <summary>Like an attributed string, but the attributes are required to be fixed
@@ -11,7 +12,7 @@ namespace CSharpMath.Display.Text {
     public TGlyph[] Text { get; set; }
     public int Length => Text.Length;
     public TMathFont Font { get; set; }
-    public Color TextColor { get; set; }
+    public MathColor TextColor { get; set; }
     public float Kern { get; set; }
 
     public override string ToString() => "AttributedGlyphRun " + Text;

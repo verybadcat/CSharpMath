@@ -1,5 +1,4 @@
-﻿using System;
-using CoreText;
+﻿using CoreText;
 using CSharpMath.FrontEnd;
 using Foundation;
 using TGlyph = System.UInt16;
@@ -34,6 +33,11 @@ namespace CSharpMath.Apple {
       var encodeSubstring = encoding.GetBytes(substring);
       return encodeSubstring[0];
     }
+
+    //public string GetString(TGlyph[] glyphs) {
+    //  var encoding = new UnicodeEncoding();
+    //  int charCount = encoding.GetCharCount()
+    //}
 
     private IEnumerable<ushort> FindGlyphsInternal(string str) {
       // not completely sure this is correct. Need an actual

@@ -21,10 +21,7 @@ namespace CSharpMath.Atoms {
       InnerList = AtomCloner.Clone(cloneMe.InnerList, finalize);
     }
 
-    
-
-
     public override T Accept<T, THelper>(IMathAtomVisitor<T, THelper> visitor, THelper helper)
-=> visitor.Visit(this, helper);
+       => visitor.Visit(this, helper);
   }
 }

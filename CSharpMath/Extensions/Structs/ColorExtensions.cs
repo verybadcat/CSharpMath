@@ -14,7 +14,7 @@ namespace CSharpMath {
       var green = _fromHex(hex.Substring(2));
       var blue = _fromHex(hex.Substring(4));
       return Color.FromArgb(red, green, blue);
-      
     }
+
   }
 }

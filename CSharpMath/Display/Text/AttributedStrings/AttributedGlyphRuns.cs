@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
+using CSharpMath.Atoms;
 
 namespace CSharpMath.Display.Text {
   public static class AttributedGlyphRuns {
-    public static AttributedGlyphRun<TMathFont, TGlyph> Create<TMathFont, TGlyph>(TGlyph[] text, TMathFont font, Color color)
+    public static AttributedGlyphRun<TMathFont, TGlyph> Create<TMathFont, TGlyph>(TGlyph[] text, TMathFont font, MathColor color)
       where TMathFont: MathFont<TGlyph>
       => new AttributedGlyphRun<TMathFont, TGlyph> {
         Text = text,
@@ -20,7 +21,7 @@ namespace CSharpMath.Display.Text {
         Font = font
       };
 
-    public static AttributedGlyphRun<TMathFont, TGlyph> Create<TMathFont, TGlyph>(TGlyph[] text, Color color)
+    public static AttributedGlyphRun<TMathFont, TGlyph> Create<TMathFont, TGlyph>(TGlyph[] text, MathColor color)
       where TMathFont: MathFont<TGlyph>
       => new AttributedGlyphRun<TMathFont, TGlyph> {
         Text = text,

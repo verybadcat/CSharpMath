@@ -115,8 +115,9 @@ namespace CSharpMath.Tests {
     public void TestSuperScript() {
       var mathList = new MathList();
       var x = MathAtoms.ForCharacter('x');
-      var superscript = new MathList();
-      superscript.Add(MathAtoms.ForCharacter('2'));
+      var superscript = new MathList {
+        MathAtoms.ForCharacter('2')
+      };
       x.Superscript = superscript;
       mathList.Add(x);
 
@@ -162,8 +163,9 @@ namespace CSharpMath.Tests {
     public void TestSubscript() {
       var mathList = new MathList();
       var x = MathAtoms.ForCharacter('x');
-      var subscript = new MathList();
-      subscript.Add(MathAtoms.ForCharacter('1'));
+      var subscript = new MathList {
+        MathAtoms.ForCharacter('1')
+      };
       x.Subscript = subscript;
       mathList.Add(x);
 
