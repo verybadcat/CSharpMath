@@ -29,11 +29,10 @@ namespace CSharpMath.Display {
       Descent = Math.Max(0, -bounds.Y);
     }
     public RectangleF DisplayBounds
-  => this.ComputeDisplayBounds();
+      => this.ComputeDisplayBounds();
 
     public void Draw(IGraphicsContext context) {
-            context.SaveState();
-
+      context.SaveState();
     }
     public Range Range { get; set; }
     public float Width { get; set; }

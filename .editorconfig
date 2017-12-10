@@ -3,3 +3,26 @@ root = true
 [*.cs]
 indent_style = space
 indent_size = 2
+csharp_new_line_before_open_brace = none
+csharp_new_line_before_else = false
+csharp_new_line_before_catch = false
+csharp_new_line_before_finally = false
+csharp_new_line_before_members_in_object_initializers = true
+csharp_new_line_before_members_in_anonymous_types = true
+csharp_new_line_between_query_expression_clauses = false
+
+csharp_indent_case_contents = true
+csharp_indent_switch_labels = true
+csharp_indent_labels = false
+
+csharp_space_after_cast = false
+csharp_space_after_keywords_in_control_flow_statements = true
+csharp_space_between_method_call_parameter_list_parenteses = true
+csharp_space_between_parentheses = false
+
+csharp_preserve_single_line_statements = true
+csharp_preserve_single_line_blocks = true
+
+dotnet_sort_system_directives_first = true
+
+
