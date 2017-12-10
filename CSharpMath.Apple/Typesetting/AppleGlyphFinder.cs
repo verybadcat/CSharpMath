@@ -1,6 +1,4 @@
-﻿using CoreText;
-using CSharpMath.FrontEnd;
-using Foundation;
+﻿using CSharpMath.FrontEnd;
 using TGlyph = System.UInt16;
 using System.Globalization;
 using System.Text;
@@ -9,10 +7,8 @@ using System.Linq;
 
 namespace CSharpMath.Apple {
   public class AppleGlyphFinder : IGlyphFinder<TGlyph> {
-    private readonly CTFont _font;
 
-    public AppleGlyphFinder(CTFont font) {
-      _font = font;
+    public AppleGlyphFinder() {
     }
     public ushort FindGlyphForCharacterAtIndex(int index, string str) {
       var unicodeIndexes = StringInfo.ParseCombiningCharacters(str);
@@ -26,7 +22,6 @@ namespace CSharpMath.Apple {
           break;
         }
       }
-      var nsString = new NSString(str.Substring(start, end - start));
 
       var encoding = new UnicodeEncoding();
       var substring = str.Substring(start, end - start);

@@ -14,7 +14,7 @@ namespace CSharpMath.Apple {
         (font, size) => new AppleMathFont(font.Name, size),
         new AppleGlyphBoundsProvider(),
         new AppleGlyphNameProvider(someCtFontSizeIrrelevant),
-        new AppleGlyphFinder(someCtFontSizeIrrelevant),
+        new AppleGlyphFinder(),
         ResourceLoader.LatinMath
       );
     }
