@@ -50,11 +50,15 @@ namespace CSharpMath.Tests {
 
     [Fact]
     public void AATestBitConverter() {
-      var bytes = new byte[] { 10, 20, 30, 40 };
+      var bytes = new byte[] { 10, 20, 30, 40, 50 };
       var shorts = ToUintArray(bytes);
       var bytes2 = ToByteArray(shorts);
       for (int i=0; i<bytes.Length; i++) {
         Assert.Equal(bytes[i], bytes2[i]);
+      }
+      if (bytes2.Length > bytes.Length) {
+        Assert.Equal(0, bytes2.Last());
+        Assert.Equal(bytes.Length + 1, bytes2.Length);
       }
     }
   }
