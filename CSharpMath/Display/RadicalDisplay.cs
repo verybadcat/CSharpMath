@@ -6,14 +6,14 @@ using CSharpMath.Atoms;
 using CSharpMath.Display.Text;
 
 namespace CSharpMath.Display {
-  public class RadicalDisplay<TMathFont, TGlyph> : IDisplay
+  public class RadicalDisplay<TMathFont, TGlyph> : IDisplay<TGlyph>
     where TMathFont: MathFont<TGlyph> {
     // A display representing the numerator of the fraction. Its position is relative
     // to the parent and it is not treated as a sub-display.
-    public MathListDisplay Radicand { get; private set; }
+    public MathListDisplay<TGlyph> Radicand { get; private set; }
     // A display representing the numerator of the fraction. Its position is relative
     // to the parent and it is not treated as a sub-display.
-    public MathListDisplay Degree { get; private set; }
+    public MathListDisplay<TGlyph> Degree { get; private set; }
 
     public float Width { get; set; }
 
@@ -22,16 +22,16 @@ namespace CSharpMath.Display {
     public float LineThickness { get; set; } // the thickness of the top bar of the radical.
 
     private float _radicalShift;
-    private IDisplay _radicalGlyph;
+    private IDisplay<TGlyph> _radicalGlyph;
 
-    public RadicalDisplay(MathListDisplay innerDisplay, IDownshiftableDisplay glyph, PointF position, Range range) {
+    public RadicalDisplay(MathListDisplay<TGlyph> innerDisplay, IDownshiftableDisplay<TGlyph> glyph, PointF position, Range range) {
       Radicand = innerDisplay;
       _radicalGlyph = glyph;
       SetPosition(position);
       Range = range;
     }
 
-    public void SetDegree(MathListDisplay degree, TMathFont degreeFont, FontMathTable<TMathFont, TGlyph> degreeFontMathTable) {
+    public void SetDegree(MathListDisplay<TGlyph> degree, TMathFont degreeFont, FontMathTable<TMathFont, TGlyph> degreeFontMathTable) {
       var kernBefore = degreeFontMathTable.RadicalKernBeforeDegree(degreeFont);
       var kernAfter = degreeFontMathTable.RadicalKernAfterDegree(degreeFont);
       var raise = degreeFontMathTable.RadicalDegreeBottomRaisePercent(degreeFont) * (this.Ascent - this.Descent);
@@ -73,6 +73,6 @@ namespace CSharpMath.Display {
 
     public PointF Position { get; private set; } // set with SetPosition().
     public bool HasScript { get; set; }
-    public void Draw(IGraphicsContext context) => throw new NotImplementedException();
+    public void Draw(IGraphicsContext<TGlyph> context) => throw new NotImplementedException();
   }
 }

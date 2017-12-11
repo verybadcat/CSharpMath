@@ -8,7 +8,7 @@ using System.Text;
 using CSharpMath.Display.Text;
 
 namespace CSharpMath.Display {
-  public class TextLineDisplay<TMathFont, TGlyph> : IDisplay 
+  public class TextLineDisplay<TMathFont, TGlyph> : IDisplay<TGlyph>
     where TMathFont: MathFont<TGlyph> {
     public TextLineDisplay(List<TextRunDisplay<TMathFont, TGlyph>> runs,
       IEnumerable<IMathAtom> atoms) {
@@ -31,7 +31,7 @@ namespace CSharpMath.Display {
     public RectangleF DisplayBounds
       => this.ComputeDisplayBounds();
 
-    public void Draw(IGraphicsContext context) {
+    public void Draw(IGraphicsContext<TGlyph> context) {
 
     }
     public PointF Position { get; set; }

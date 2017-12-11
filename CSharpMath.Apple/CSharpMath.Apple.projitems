@@ -12,14 +12,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)AppleLatexView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Drawing\AttributedStrings\AppleAttributeDictionaryFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Drawing\AttributedStrings\AppleAttributedStringFactory.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Drawing\AppleGraphicsContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\AppleColorExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Typesetting\AppleGlyphBoundsProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Typesetting\AppleMathFont.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Typesetting\AppleTypesetters.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Typesetting\AppleFontMeasurer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Typesetting\AppleGlyphNameProvider.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Typesetting\AppleGlyphFinder.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Typesetting\" />

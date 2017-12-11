@@ -11,7 +11,7 @@ using System.Text;
 namespace CSharpMath.Display {
   /// <summary>Corresponds to MTCTLineDisplay in iOSMath. Will need to
   /// figure out Core Text a bit in order to fill this out.</summary> 
-  public class TextRunDisplay<TMathFont, TGlyph> : IDisplay
+  public class TextRunDisplay<TMathFont, TGlyph> : IDisplay<TGlyph>
       where TMathFont : MathFont<TGlyph> {
     public AttributedGlyphRun<TMathFont, TGlyph> Run { get; private set; }
 
@@ -31,7 +31,7 @@ namespace CSharpMath.Display {
     public RectangleF DisplayBounds
       => this.ComputeDisplayBounds();
 
-    public void Draw<TGlyph>(IGraphicsContext<TGlyph> context) {
+    public void Draw(IGraphicsContext<TGlyph> context) {
       context.SaveState();
       var glyphs = Run.Text;
       context.DrawGlyphsAtPoint(glyphs, this.Position);

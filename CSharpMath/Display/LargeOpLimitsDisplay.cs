@@ -5,13 +5,13 @@ using System.Text;
 using CSharpMath.Atoms;
 
 namespace CSharpMath.Display {
-  public class LargeOpLimitsDisplay : IDisplay {
+  public class LargeOpLimitsDisplay<TGlyph> : IDisplay<TGlyph> {
     // A display representing the numerator of the fraction. Its position is relative
     // to the parent and it is not treated as a sub-display.
-    public MathListDisplay UpperLimit { get; private set; }
+    public MathListDisplay<TGlyph> UpperLimit { get; private set; }
     // A display representing the numerator of the fraction. Its position is relative
     // to the parent and it is not treated as a sub-display.
-    public MathListDisplay LowerLimit { get; private set; }
+    public MathListDisplay<TGlyph> LowerLimit { get; private set; }
 
     public RectangleF DisplayBounds => throw new NotImplementedException();
 
@@ -25,6 +25,6 @@ namespace CSharpMath.Display {
 
     public PointF Position => throw new NotImplementedException();
     public bool HasScript { get; set; }
-    public void Draw(IGraphicsContext context) => throw new NotImplementedException();
+    public void Draw(IGraphicsContext<TGlyph> context) => throw new NotImplementedException();
   }
 }

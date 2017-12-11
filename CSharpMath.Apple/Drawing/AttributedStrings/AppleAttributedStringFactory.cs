@@ -9,9 +9,9 @@ using TMathFont = CSharpMath.Apple.AppleMathFont;
 
 namespace CSharpMath.Apple.Drawing {
   public class AppleAttributedStringFactory {
-    private readonly AppleGlyphFinder _glyphFinder;
+    private readonly UnicodeGlyphFinder _glyphFinder;
 
-    public AppleAttributedStringFactory(AppleGlyphFinder glyphFinder) {
+    public AppleAttributedStringFactory(UnicodeGlyphFinder glyphFinder) {
       _glyphFinder = glyphFinder;
     }
     //public CTRun FromAttributedGlyphRun(AttributedGlyphRun<TMathFont, TGlyph> glyphRun) {

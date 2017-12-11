@@ -2,8 +2,8 @@
 using System.Drawing;
 
 namespace CSharpMath {
-  public interface IDisplay {
-    void Draw<TGlyph>(IGraphicsContext<TGlyph> context);
+  public interface IDisplay<TGlyph> {
+    void Draw(IGraphicsContext<TGlyph> context);
     /// <summary>The display's bounds, in its own coordinate system.</summary> 
     RectangleF DisplayBounds { get; }
 
@@ -22,10 +22,10 @@ namespace CSharpMath {
   }
 
   public static class IDisplayExtensions {
-    public static RectangleF ComputeDisplayBounds(this IDisplay display)
+    public static RectangleF ComputeDisplayBounds<TGlyph>(this IDisplay<TGlyph> display)
       => new RectangleF(0, -display.Ascent, display.Width, display.Ascent + display.Descent);
     /// <summary>Where the display is located, expressed in its parent's coordinate system.</summary>
-    public static RectangleF Frame(this IDisplay display)
+    public static RectangleF Frame<TGlyph>(this IDisplay<TGlyph> display)
       => display.DisplayBounds.Plus(display.Position);
  
   }
