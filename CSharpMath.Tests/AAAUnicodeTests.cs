@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace CSharpMath.Tests {
@@ -60,6 +59,16 @@ namespace CSharpMath.Tests {
         Assert.Equal(0, bytes2.Last());
         Assert.Equal(bytes.Length + 1, bytes2.Length);
       }
+    }
+
+    [Fact]
+    public void AATestUnicodeGlyphFinder() {
+      var input = "\u03C0 is pi";
+
+      var encoder = new UnicodeGlyphFinder();
+      var glyphs = encoder.FindGlyphs(input);
+      var roundTrip = encoder.FindString(glyphs);
+      Assert.Equal(input, roundTrip);
     }
   }
 }
