@@ -6,7 +6,7 @@ using CSharpMath.Atoms;
 using CSharpMath.Display.Text;
 
 namespace CSharpMath.Display {
-  public class GlyphDisplay<TGlyph> : IDownshiftableDisplay {
+  public class GlyphDisplay<TGlyph> : IDownshiftableDisplay<TGlyph> {
    
     public RectangleF DisplayBounds => this.ComputeDisplayBounds();
 
@@ -33,6 +33,6 @@ namespace CSharpMath.Display {
       Range = range;
       Font = font;
     }
-    public void Draw(IGraphicsContext context) => throw new NotImplementedException();
+    public void Draw(IGraphicsContext<TGlyph> context) => throw new NotImplementedException();
   }
 }

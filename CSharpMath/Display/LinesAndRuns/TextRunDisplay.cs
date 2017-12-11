@@ -31,8 +31,11 @@ namespace CSharpMath.Display {
     public RectangleF DisplayBounds
       => this.ComputeDisplayBounds();
 
-    public void Draw(IGraphicsContext context) {
+    public void Draw<TGlyph>(IGraphicsContext<TGlyph> context) {
       context.SaveState();
+      var glyphs = Run.Text;
+      context.DrawGlyphsAtPoint(glyphs, this.Position);
+      context.RestoreState();
     }
     public Range Range { get; set; }
     public float Width { get; set; }

@@ -3,10 +3,19 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
+using TGlyph = System.UInt16;
+using CSharpMath.FrontEnd;
 
 namespace CSharpMath.Apple.Drawing {
-  public class AppleGraphicsContext : IGraphicsContext {
+  public class AppleGraphicsContext : IGraphicsContext<TGlyph> {
+
+    public AppleGraphicsContext() {
+      GlyphFinder = new AppleGlyphFinder();
+    }
     public CGContext CgContext { get; set; }
+
+    public IGlyphFinder<TGlyph> GlyphFinder { get; set; }
+
     public void DrawLine(float x1, float y1, float x2, float y2) {
       CgContext.MoveTo(x1, y1);
       CgContext.AddLineToPoint(x2, y2);
@@ -32,5 +41,7 @@ namespace CSharpMath.Apple.Drawing {
     public void Translate(PointF dxy) {
       CgContext.TranslateCTM(dxy.X, dxy.Y);
     }
+
+
   }
 }

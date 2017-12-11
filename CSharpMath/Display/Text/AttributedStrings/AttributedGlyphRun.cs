@@ -17,7 +17,10 @@ namespace CSharpMath.Display.Text {
 
     public override string ToString() => "AttributedGlyphRun " + Text;
 
+
+
   }
+
  
   public static class AttributedGlyphRunExtensions {
     public static bool AttributesMatch<TMathFont, TGlyph>(this AttributedGlyphRun<TMathFont, TGlyph> run1, AttributedGlyphRun<TMathFont, TGlyph> run2)

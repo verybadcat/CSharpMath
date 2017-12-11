@@ -5,9 +5,9 @@ using System.Text;
 using Xunit;
 
 namespace CSharpMath.Tests {
-  public class AAAUnicodeTests {
+  public class UnicodeTests {
     [Fact]
-    public void AATestPi() {
+    public void TestPi() {
       var input = "\u03C0 is pi";
       var encoding = new UnicodeEncoding();
       var bytes = encoding.GetBytes(input);
@@ -48,7 +48,7 @@ namespace CSharpMath.Tests {
     }
 
     [Fact]
-    public void AATestBitConverter() {
+    public void TestBitConverter() {
       var bytes = new byte[] { 10, 20, 30, 40, 50 };
       var shorts = ToUintArray(bytes);
       var bytes2 = ToByteArray(shorts);
@@ -62,7 +62,7 @@ namespace CSharpMath.Tests {
     }
 
     [Fact]
-    public void AATestUnicodeGlyphFinder() {
+    public void TestUnicodeGlyphFinder() {
       var input = "\u03C0 is pi";
 
       var encoder = new UnicodeGlyphFinder();

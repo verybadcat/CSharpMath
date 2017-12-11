@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace CSharpMath {
   public interface IDisplay {
-    void Draw(IGraphicsContext context);
+    void Draw<TGlyph>(IGraphicsContext<TGlyph> context);
     /// <summary>The display's bounds, in its own coordinate system.</summary> 
     RectangleF DisplayBounds { get; }
 
