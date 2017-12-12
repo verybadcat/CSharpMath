@@ -51,6 +51,11 @@ namespace CSharpMath.Apple {
       TextColor = NColor.Black;
     }
 
+    public override CGSize SizeThatFits(CGSize size)
+    {
+      return _displayList.ComputeDisplayBounds().Size;
+    }
+
     public override void Draw(CGRect rect) {
       base.Draw(rect);
       if (_mathList != null) {

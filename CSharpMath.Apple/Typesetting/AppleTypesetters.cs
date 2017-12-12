@@ -2,9 +2,8 @@
 using CSharpMath.FrontEnd;
 using CSharpMath.Resources;
 using Foundation;
-using TGlyph = System.UInt16;
-using Newtonsoft.Json.Linq;
 using CoreText;
+using TGlyph = System.UInt16;
 
 namespace CSharpMath.Apple {
   public static class AppleTypesetters {
