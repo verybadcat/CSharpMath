@@ -6,6 +6,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using System.Diagnostics;
 
 namespace CSharpMath {
   public class UnicodeGlyphFinder : IGlyphFinder<TGlyph> {
@@ -36,8 +37,6 @@ namespace CSharpMath {
       return r;
     }
 
-    
-
     private IEnumerable<ushort> FindGlyphsInternal(string str) {
       // not completely sure this is correct. Need an actual
       // example of a composed character sequence coming from LaTeX.
@@ -66,9 +65,10 @@ namespace CSharpMath {
       byte enc0 = encodeSubstring[0];
       byte enc1 = (encodeSubstring.Length <= 1) ? (byte)0 : encodeSubstring[1];
       var bytes = new byte[] { enc0, enc1 };
-      return BitConverter.ToUInt16(bytes, 0);
+      var r = BitConverter.ToUInt16(bytes, 0);
+      Debug.WriteLine(str + " " + index + " => " + r);
+      return r;
     }
-
 
     public TGlyph[] FindGlyphs(string str)
       => FindGlyphsInternal(str).ToArray();
@@ -80,7 +80,9 @@ namespace CSharpMath {
       var nChars = decoder.GetCharCount(bytes, 0, bytes.Length);
       var chars = new char[nChars];
       decoder.GetChars(bytes, 0, bytes.Length, chars, 0, true);
-      return new string(chars);
+      var r = new string(chars);
+      Debug.WriteLine(glyphs[0].ToString() + "=>" + r);
+      return r;
     }
   }
 }

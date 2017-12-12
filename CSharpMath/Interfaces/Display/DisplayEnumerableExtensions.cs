@@ -21,9 +21,22 @@ namespace CSharpMath {
     }
 
     public static float CollectionX<TGlyph>(this IEnumerable<IDisplay<TGlyph>> displays)
-      => displays.Min(d => d.Position.X);
+    {
+      float r = 0;
+      if (displays.IsNonempty()) {
+        r = displays.Min(d => d.Position.X);
+      }
+      return r;
+    }
     public static float CollectionMaxX<TGlyph>(this IEnumerable<IDisplay<TGlyph>> displays)
-      => displays.Max(d => d.Position.X + d.Width);
+    {
+      float r = 0;
+      if (displays.IsNonempty())
+      {
+        r = displays.Max(d => d.Position.X + d.Width);
+      }
+      return r;
+    }
 
     public static float CollectionWidth<TGlyph>(this IEnumerable<IDisplay<TGlyph>> displays)
       => displays.CollectionMaxX() - displays.CollectionX();

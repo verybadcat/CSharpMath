@@ -32,7 +32,12 @@ namespace CSharpMath.Display {
       => this.ComputeDisplayBounds();
 
     public void Draw(IGraphicsContext<TGlyph> context) {
-
+      context.SaveState();
+      context.Translate(this.Position);
+      foreach (var run in Runs) {
+        run.Draw(context);
+      }
+      context.RestoreState();
     }
     public PointF Position { get; set; }
 

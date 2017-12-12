@@ -10,6 +10,7 @@ using CoreGraphics;
 using UIKit;
 using TGlyph = System.UInt16;
 using CoreText;
+using CSharpMath.Apple.Drawing;
 #if __IOS__
 using NView = UIKit.UIView;
 using NColor = UIKit.UIColor;
@@ -29,11 +30,12 @@ namespace CSharpMath.Apple {
       Latex = latex;
       _mathList = MathLists.FromString(latex);
       InvalidateIntrinsicContentSize();
-      var uiFont = UIFont.SystemFontOfSize(18);
+      var fontSize = 50;
+      var uiFont = UIFont.SystemFontOfSize(fontSize);
       var descriptor = new CTFontDescriptor(uiFont.Name, uiFont.PointSize);
-      var ctFont = new CTFont(descriptor, 18);
+      var ctFont = new CTFont(descriptor, fontSize);
       var typesetting = AppleTypesetters.CreateTypesettingContext(ctFont);
-      _displayList = typesetting.CreateLine(_mathList, new AppleMathFont(uiFont.Name, 18), LineStyle.Display);
+      _displayList = typesetting.CreateLine(_mathList, new AppleMathFont(uiFont.Name, fontSize), LineStyle.Display);
       SetNeedsLayout();
     }
     public ColumnAlignment TextAlignment { get; set; } = ColumnAlignment.Left;
@@ -53,15 +55,20 @@ namespace CSharpMath.Apple {
 
     public override CGSize SizeThatFits(CGSize size)
     {
-      return _displayList.ComputeDisplayBounds().Size;
+      var r = _displayList.ComputeDisplayBounds().Size;
+      return r;
     }
 
     public override void Draw(CGRect rect) {
       base.Draw(rect);
       if (_mathList != null) {
         var cgContext = UIGraphics.GetCurrentContext();
+        var appleContext = new AppleGraphicsContext
+        {
+          CgContext = cgContext
+        };
         cgContext.SaveState();
-
+        _displayList.Draw(appleContext);
         cgContext.RestoreState();
       }
     }

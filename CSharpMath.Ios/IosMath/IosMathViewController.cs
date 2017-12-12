@@ -11,10 +11,12 @@ namespace CSharpMath.Ios
 
     public override void ViewDidLoad()
     {
-      var view = IosMathLabels.LatexView("x");
-      view.BackgroundColor = UIColor.LightGray;
-      view.SizeToFit();
-      View.Add(view);
+      View.BackgroundColor = UIColor.White;
+      var latexView = IosMathLabels.LatexView("x");
+      latexView.BackgroundColor = UIColor.LightGray;
+      latexView.SizeToFit();
+      latexView.Frame = new CoreGraphics.CGRect(0, 20, latexView.Frame.Width, latexView.Frame.Height);
+      View.Add(latexView);
     }
   }
 }
