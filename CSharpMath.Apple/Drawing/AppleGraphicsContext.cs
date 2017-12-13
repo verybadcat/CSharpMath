@@ -8,6 +8,7 @@ using CSharpMath.FrontEnd;
 using System.Diagnostics;
 using UIKit;
 using CoreText;
+using Foundation;
 
 namespace CSharpMath.Apple.Drawing {
   public class AppleGraphicsContext : IGraphicsContext<TGlyph> {
@@ -21,17 +22,7 @@ namespace CSharpMath.Apple.Drawing {
 
     public void DrawGlyphsAtPoint(ushort[] glyphs, PointF point, float maxWidth = float.NaN) {
       var text = GlyphFinder.FindString(glyphs);
-      Debug.WriteLine("drawing "+ glyphs[0].ToString() + " => " + text);
-      Debug.WriteLine(point.ToString());
-
-      var fontSize = 18;
-      var uiFont = UIFont.SystemFontOfSize(fontSize);
-      var descriptor = new CTFontDescriptor(uiFont.Name, uiFont.PointSize);
-      var ctFont = new CTFont(descriptor, fontSize);
-      var cgFont = ctFont.ToCGFont();
-      CgContext.SetFont(cgFont);
-      CgContext.ShowGlyphsAtPoint(point.X, point.Y, glyphs);
-      CgContext.ShowTextAtPoint(point.X, point.Y, text);
+      DrawTextAtPoint(text, point, maxWidth);
     }
 
     public void DrawLine(float x1, float y1, float x2, float y2) {
@@ -41,7 +32,17 @@ namespace CSharpMath.Apple.Drawing {
     }
 
     public void DrawTextAtPoint(string text, PointF point, float maxWidth = float.NaN) {
-      CgContext.ShowTextAtPoint(point.X, point.Y, text);
+      var attributes = new CTStringAttributes
+      {
+        ForegroundColorFromContext = true,
+        Font = new CTFont("Arial", 20)
+      };
+      CgContext.SetStrokeColor(UIColor.Red.CGColor);
+      CgContext.TextPosition = point;
+      var attributedString = new NSAttributedString(text, attributes);
+      using (var textLine = new CTLine(attributedString)) {
+        textLine.Draw(CgContext);
+      }
     }
 
     public void RestoreState() {
