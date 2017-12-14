@@ -71,6 +71,12 @@ namespace CSharpMath.Display {
     }
 
     public bool HasScript { get; set; }
-    public void Draw(IGraphicsContext<TGlyph> context) => throw new NotImplementedException();
+    public void Draw(IGraphicsContext<TGlyph> context) {
+      Numerator.Draw(context);
+      Denominator.Draw(context);
+      context.SaveState();
+      context.DrawLine(Position.X, Position.Y + LinePosition, Position.X+Width, Position.Y+LinePosition);
+      context.RestoreState();
+    }
   }
 }

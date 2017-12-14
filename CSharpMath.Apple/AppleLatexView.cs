@@ -56,6 +56,7 @@ namespace CSharpMath.Apple {
     public override CGSize SizeThatFits(CGSize size)
     {
       var r = _displayList.ComputeDisplayBounds().Size;
+      r.Height += 50;
       return r;
     }
 
@@ -68,6 +69,7 @@ namespace CSharpMath.Apple {
           CgContext = cgContext
         };
         cgContext.SaveState();
+        cgContext.TranslateCTM(0, 30);
         _displayList.Draw(appleContext);
         cgContext.RestoreState();
       }
