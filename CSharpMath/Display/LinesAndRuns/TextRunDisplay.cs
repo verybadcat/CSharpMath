@@ -34,7 +34,8 @@ namespace CSharpMath.Display {
     public void Draw(IGraphicsContext<TGlyph> context) {
       context.SaveState();
       var glyphs = Run.Text;
-      context.DrawGlyphsAtPoint(glyphs, this.Position);
+      var font = Run.Font;
+      context.DrawGlyphsAtPoint(glyphs, font, this.Position);
       context.RestoreState();
     }
     public Range Range { get; set; }
