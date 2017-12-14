@@ -31,12 +31,10 @@ namespace CSharpMath.Apple {
       Latex = latex;
       _mathList = MathLists.FromString(latex);
       InvalidateIntrinsicContentSize();
-      var fontSize = 50;
-      var uiFont = UIFont.SystemFontOfSize(fontSize);
-      var descriptor = new CTFontDescriptor(uiFont.Name, uiFont.PointSize);
-      var ctFont = new CTFont(descriptor, fontSize);
-      var typesetting = AppleTypesetters.CreateTypesettingContext(ctFont);
-      _displayList = typesetting.CreateLine(_mathList, new AppleMathFont("latinmodern-math", fontSize), LineStyle.Display);
+      var fontSize = 40;
+      var appleFont = new AppleMathFont("latinmodern-math", fontSize);
+      var typesetting = AppleTypesetters.CreateTypesettingContext(appleFont.CtFont);
+      _displayList = typesetting.CreateLine(_mathList, appleFont, LineStyle.Display);
       SetNeedsLayout();
     }
     public ColumnAlignment TextAlignment { get; set; } = ColumnAlignment.Left;
@@ -58,6 +56,7 @@ namespace CSharpMath.Apple {
     {
       var r = _displayList.ComputeDisplayBounds().Size;
       r.Height += 50;
+      r.Width += 50;
       return r;
     }
 
@@ -70,7 +69,7 @@ namespace CSharpMath.Apple {
           CgContext = cgContext
         };
         cgContext.SaveState();
-        cgContext.TranslateCTM(0, 30);
+        cgContext.TranslateCTM(10, 30);
         _displayList.Draw(appleContext);
         cgContext.RestoreState();
       }

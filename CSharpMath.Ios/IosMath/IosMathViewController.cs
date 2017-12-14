@@ -12,7 +12,7 @@ namespace CSharpMath.Ios
     public override void ViewDidLoad()
     {
       View.BackgroundColor = UIColor.White;
-      var latexView = IosMathLabels.LatexView(@"\frac{\phi \alpha}{3}");
+      var latexView = IosMathLabels.LatexView(@"\frac{x}{3}");
       latexView.BackgroundColor = UIColor.LightGray;
       latexView.SizeToFit();
       latexView.Frame = new CoreGraphics.CGRect(0, 20, latexView.Frame.Width, latexView.Frame.Height);
