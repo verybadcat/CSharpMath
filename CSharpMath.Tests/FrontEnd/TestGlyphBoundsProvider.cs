@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CSharpMath.Display.Text;
+using CSharpMath.Display;
 using System.Drawing;
 
 namespace CSharpMath.Tests.FrontEnd {

@@ -7,7 +7,8 @@ using CSharpMath.Display.Text;
 using System.Linq;
 
 namespace CSharpMath.Display {
-  class GlyphConstructionDisplay<TGlyph> : IDownshiftableDisplay<TGlyph> {
+  class GlyphConstructionDisplay<TFont, TGlyph> : IDownshiftableDisplay<TFont, TGlyph> 
+    where TFont : MathFont<TGlyph> {
 
     private TGlyph[] _glyphs;
     private PointF[] _glyphPositions;
@@ -39,6 +40,6 @@ namespace CSharpMath.Display {
       _mathFont = font;
     }
 
-    public void Draw(IGraphicsContext<TGlyph> context) => throw new NotImplementedException();
+    public void Draw(IGraphicsContext<TFont, TGlyph> context) => throw new NotImplementedException();
   }
 }

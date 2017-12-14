@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
+using CSharpMath.Display;
 
 namespace CSharpMath.FrontEnd {
   public interface IGlyphBoundsProvider<TMathFont, TGlyph>

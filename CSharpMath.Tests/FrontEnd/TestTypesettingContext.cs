@@ -1,6 +1,6 @@
 ﻿using CSharpMath.FrontEnd;
 using CSharpMath.Resources;
-using CSharpMath.Display.Text;
+using CSharpMath.Display;
 
 namespace CSharpMath.Tests.FrontEnd {
   public static class TestTypesettingContexts {

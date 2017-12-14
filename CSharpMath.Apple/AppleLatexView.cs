@@ -9,6 +9,7 @@ using CSharpMath.Interfaces;
 using CoreGraphics;
 using UIKit;
 using TGlyph = System.UInt16;
+using TFont = CSharpMath.Apple.AppleMathFont;
 using CoreText;
 using CSharpMath.Apple.Drawing;
 #if __IOS__
@@ -43,7 +44,7 @@ namespace CSharpMath.Apple {
     private IMathList _mathList;
 
     public string Latex { get; private set; }
-    private MathListDisplay<TGlyph> _displayList { get; set; }
+    private MathListDisplay<TFont, TGlyph> _displayList { get; set; }
 
     public bool DisplayErrorInline { get; set; } = true;
     public NColor TextColor { get; set; }

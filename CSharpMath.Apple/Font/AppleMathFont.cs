@@ -2,7 +2,7 @@
 using Foundation;
 using CoreGraphics;
 using CoreText;
-using CSharpMath.Display.Text;
+using CSharpMath.Display;
 
 namespace CSharpMath.Apple
 {

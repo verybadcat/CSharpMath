@@ -8,16 +8,16 @@ using System.Drawing;
 using System.Linq;
 using Xunit;
 using TGlyph = System.Char;
-using TMathFont = CSharpMath.Display.Text.MathFont<System.Char>;
+using TFont = CSharpMath.Display.MathFont<System.Char>;
 
 namespace CSharpMath.Tests {
   public class TypesettingTests {
     public TypesettingTests() {
 
     }
-    private TMathFont _font { get; } = new TMathFont(20);
-    private IFontMeasurer<TMathFont, char> _fontMeasurer => _context.FontMeasurer;
-    private TypesettingContext<TMathFont, char> _context { get; } = TestTypesettingContexts.Create();
+    private TFont _font { get; } = new TFont(20);
+    private IFontMeasurer<TFont, char> _fontMeasurer => _context.FontMeasurer;
+    private TypesettingContext<TFont, char> _context { get; } = TestTypesettingContexts.Create();
     [Fact]
     public void TestSimpleVariable() {
       var list = new MathList {
@@ -32,8 +32,8 @@ namespace CSharpMath.Tests {
       Assert.Equal(int.MinValue, display.IndexInParent);
       Assert.Single(display.Displays);
       var sub0 = display.Displays[0];
-      Assert.True(sub0 is TextLineDisplay<TMathFont, TGlyph>);
-      var line = sub0 as TextLineDisplay<TMathFont, TGlyph>;
+      Assert.True(sub0 is TextLineDisplay<TFont, TGlyph>);
+      var line = sub0 as TextLineDisplay<TFont, TGlyph>;
       //Assert.Single(line.Atoms); // have to think about these; doesn't really work atm
 
       Assert.Equal("x", line.StringText());
@@ -52,7 +52,7 @@ namespace CSharpMath.Tests {
     [Fact]
     public void TestMultipleVariables() {
       var list = MathLists.FromString("xyzw");
-      var display = Typesetter<TMathFont, TGlyph>.CreateLine(list, _font, _context, LineStyle.Display);
+      var display = Typesetter<TFont, TGlyph>.CreateLine(list, _font, _context, LineStyle.Display);
 
       Assert.NotNull(display);
 
@@ -64,7 +64,7 @@ namespace CSharpMath.Tests {
       Assert.Single(display.Displays);
 
       var subDisplay = display.Displays[0];
-      var line = subDisplay as TextLineDisplay<TMathFont, TGlyph>;
+      var line = subDisplay as TextLineDisplay<TFont, TGlyph>;
       Assert.NotNull(line);
       Assert.Equal(4, line.Atoms.Count);
 
@@ -85,7 +85,7 @@ namespace CSharpMath.Tests {
     public void TestVariablesAndNumbers() {
       var mathList = MathLists.FromString("xy2w");
 
-      var display = Typesetter<TMathFont, TGlyph>.CreateLine(mathList, _font, _context, LineStyle.Display);
+      var display = Typesetter<TFont, TGlyph>.CreateLine(mathList, _font, _context, LineStyle.Display);
       Assert.NotNull(display);
       Assert.Equal(LinePosition.Regular, display.MyLinePosition);
       Assert.Equal(new PointF(), display.Position);
@@ -95,7 +95,7 @@ namespace CSharpMath.Tests {
       Assert.Single(display.Displays);
 
       var sub0 = display.Displays[0];
-      var line = sub0 as TextLineDisplay<TMathFont, TGlyph>;
+      var line = sub0 as TextLineDisplay<TFont, TGlyph>;
       Assert.NotNull(line);
       Assert.Equal(4, line.Atoms.Count);
       Assert.Equal("xy2w", line.StringText());
@@ -121,7 +121,7 @@ namespace CSharpMath.Tests {
       x.Superscript = superscript;
       mathList.Add(x);
 
-      var display = Typesetter<TMathFont, TGlyph>.CreateLine(mathList, _font, _context, LineStyle.Display);
+      var display = Typesetter<TFont, TGlyph>.CreateLine(mathList, _font, _context, LineStyle.Display);
       Assert.NotNull(display);
 
       Assert.Equal(LinePosition.Regular, display.MyLinePosition);
@@ -132,14 +132,14 @@ namespace CSharpMath.Tests {
       Assert.Equal(2, display.Displays.Count());
 
       var super0 = display.Displays[0];
-      var line = super0 as TextLineDisplay<TMathFont, TGlyph>;
+      var line = super0 as TextLineDisplay<TFont, TGlyph>;
       Assert.NotNull(line);
       Assert.Single(line.Atoms);
       Assert.Equal("x", line.StringText());
       Assert.Equal(new PointF(), line.Position);
       Assert.True(line.HasScript);
 
-      var super1 = display.Displays[1] as MathListDisplay<TGlyph>;
+      var super1 = display.Displays[1] as MathListDisplay<TFont, TGlyph>;
       Assert.NotNull(super1);
       Assert.Equal(LinePosition.Supersript, super1.MyLinePosition);
       var super1Position = super1.Position;
@@ -149,7 +149,7 @@ namespace CSharpMath.Tests {
       Assert.Equal(0, super1.IndexInParent);
       Assert.Single(super1.Displays);
 
-      var super10 = super1.Displays[0] as TextLineDisplay<TMathFont, TGlyph>;
+      var super10 = super1.Displays[0] as TextLineDisplay<TFont, TGlyph>;
       Assert.NotNull(super10);
       Assert.Single(super10.Atoms);
       Assert.Equal(new PointF(), super10.Position);
@@ -169,7 +169,7 @@ namespace CSharpMath.Tests {
       x.Subscript = subscript;
       mathList.Add(x);
 
-      var display = Typesetter<TMathFont, TGlyph>.CreateLine(mathList, _font, _context, LineStyle.Display);
+      var display = Typesetter<TFont, TGlyph>.CreateLine(mathList, _font, _context, LineStyle.Display);
       Assert.NotNull(display);
 
       Assert.Equal(LinePosition.Regular, display.MyLinePosition);
@@ -180,13 +180,13 @@ namespace CSharpMath.Tests {
       Assert.Equal(2, display.Displays.Count());
 
       var sub0 = display.Displays[0];
-      var line = sub0 as TextLineDisplay<TMathFont, TGlyph>;
+      var line = sub0 as TextLineDisplay<TFont, TGlyph>;
       Assert.NotNull(line);
       Assert.Single(line.Atoms);
       Assert.Equal("x", line.StringText());
       Assert.Equal(new PointF(), line.Position);
       Assert.True(line.HasScript);
-      var sub1 = display.Displays[1] as MathListDisplay<TGlyph>;
+      var sub1 = display.Displays[1] as MathListDisplay<TFont, TGlyph>;
       Assert.NotNull(sub1);
       Assert.Equal(LinePosition.Subscript, sub1.MyLinePosition);
       var sub1Position = sub1.Position;
@@ -196,7 +196,7 @@ namespace CSharpMath.Tests {
       Assert.Equal(0, sub1.IndexInParent);
       Assert.Single(sub1.Displays);
 
-      var sub10 = sub1.Displays[0] as TextLineDisplay<TMathFont, TGlyph>;
+      var sub10 = sub1.Displays[0] as TextLineDisplay<TFont, TGlyph>;
       Assert.NotNull(sub10);
       Assert.Single(sub10.Atoms);
       Assert.Equal(new PointF(), sub10.Position);
@@ -220,7 +220,7 @@ namespace CSharpMath.Tests {
       x.Superscript = superscript;
       mathList.Add(x);
 
-      var display = Typesetter<TMathFont, TGlyph>.CreateLine(mathList, _font, _context, LineStyle.Display);
+      var display = Typesetter<TFont, TGlyph>.CreateLine(mathList, _font, _context, LineStyle.Display);
       Assert.NotNull(display);
       Assert.Equal(LinePosition.Regular, display.MyLinePosition);
       Assert.Equal(new PointF(), display.Position);
@@ -229,13 +229,13 @@ namespace CSharpMath.Tests {
       Assert.Equal(Range.UndefinedInt, display.IndexInParent);
       Assert.Equal(3, display.Displays.Count());
 
-      var line = display.Displays[0] as TextLineDisplay<TMathFont, TGlyph>;
+      var line = display.Displays[0] as TextLineDisplay<TFont, TGlyph>;
       Assert.Single(line.Atoms);
       Assert.Equal("x", line.StringText());
       Assert.Equal(new PointF(), line.Position);
       Assert.True(line.HasScript);
 
-      var display2 = display.Displays[1] as MathListDisplay<TGlyph>;
+      var display2 = display.Displays[1] as MathListDisplay<TFont, TGlyph>;
       Assert.Equal(LinePosition.Supersript, display2.MyLinePosition);
       Assertions.ApproximatePoint(10, 9.68, display2.Position, 0.01);
       Assert.Equal(new Range(0, 1), display2.Range);
@@ -243,13 +243,13 @@ namespace CSharpMath.Tests {
       Assert.Equal(0, display2.IndexInParent);
       Assert.Single(display2.Displays);
 
-      var line2 = display2.Displays[0] as TextLineDisplay<TMathFont, TGlyph>;
+      var line2 = display2.Displays[0] as TextLineDisplay<TFont, TGlyph>;
       Assert.Single(line2.Atoms);
       Assert.Equal("2", line2.StringText());
       Assert.Equal(new PointF(), line2.Position);
       Assert.False(line2.HasScript);
 
-      var display3 = display.Displays[2] as MathListDisplay<TGlyph>;
+      var display3 = display.Displays[2] as MathListDisplay<TFont, TGlyph>;
       Assert.Equal(LinePosition.Subscript, display3.MyLinePosition);
 
       // Because both subscript and superscript are present, coords are
@@ -260,7 +260,7 @@ namespace CSharpMath.Tests {
       Assert.Equal(0, display3.IndexInParent);
       Assert.Single(display3.Displays);
 
-      var line3 = display3.Displays[0] as TextLineDisplay<TMathFont, TGlyph>;
+      var line3 = display3.Displays[0] as TextLineDisplay<TFont, TGlyph>;
       Assert.Single(line3.Atoms);
       Assert.Equal("1", line3.StringText());
       Assert.Equal(new PointF(), line3.Position);
@@ -287,7 +287,7 @@ namespace CSharpMath.Tests {
       };
       list.Add(fraction);
 
-      var display = Typesetter<TMathFont, TGlyph>.CreateLine(list, _font, _context, LineStyle.Display);
+      var display = Typesetter<TFont, TGlyph>.CreateLine(list, _font, _context, LineStyle.Display);
       Assert.Equal(LinePosition.Regular, display.MyLinePosition);
       Assert.Equal(new PointF(), display.Position);
       Assert.Equal(new Range(0, 1), display.Range);
@@ -295,7 +295,7 @@ namespace CSharpMath.Tests {
       Assert.Equal(Range.UndefinedInt, display.IndexInParent);
       Assert.Single(display.Displays);
 
-      var display0 = display.Displays[0] as MathListDisplay<TGlyph>;
+      var display0 = display.Displays[0] as MathListDisplay<TFont, TGlyph>;
       Assert.Equal(LinePosition.Regular, display0.MyLinePosition);
       Assert.Equal(new PointF(), display0.Position);
       Assert.Equal(new Range(0, 1), display.Range);
@@ -303,12 +303,12 @@ namespace CSharpMath.Tests {
       Assert.Equal(Range.UndefinedInt, display0.IndexInParent);
       Assert.Equal(3, display0.Displays.Count());
 
-      var glyph = display0.Displays[0] as GlyphDisplay<TGlyph>;
+      var glyph = display0.Displays[0] as GlyphDisplay<TFont, TGlyph>;
       Assert.Equal(new PointF(), glyph.Position);
       Assert.Equal(Ranges.NotFound, glyph.Range);
       Assert.False(glyph.HasScript);
 
-      var subFraction = display0.Displays[1] as FractionDisplay<TGlyph>;
+      var subFraction = display0.Displays[1] as FractionDisplay<TFont, TGlyph>;
       Assert.Equal(new Range(0, 1), subFraction.Range);
       Assert.False(subFraction.HasScript);
       Assertions.ApproximatePoint(10, 0, subFraction.Position, 0.01);
@@ -320,7 +320,7 @@ namespace CSharpMath.Tests {
       Assert.Equal(Range.UndefinedInt, numerator.IndexInParent);
       Assert.False(numerator.HasScript);
 
-      var subNumerator = numerator.Displays[0] as TextLineDisplay<TMathFont, TGlyph>;
+      var subNumerator = numerator.Displays[0] as TextLineDisplay<TFont, TGlyph>;
       Assert.Single(subNumerator.Atoms);
       Assert.Equal("1", subNumerator.StringText());
       Assert.Equal(new PointF(), subNumerator.Position);
@@ -335,14 +335,14 @@ namespace CSharpMath.Tests {
       Assert.Equal(Range.UndefinedInt, denominator.IndexInParent);
       Assert.Single(denominator.Displays);
 
-      var subDenominator = denominator.Displays[0] as TextLineDisplay<TMathFont, TGlyph>;
+      var subDenominator = denominator.Displays[0] as TextLineDisplay<TFont, TGlyph>;
       Assert.Single(subDenominator.Atoms);
       Assert.Equal("3", subDenominator.StringText());
       Assert.Equal(new PointF(), subDenominator.Position);
       Assert.Equal(new Range(0, 1), subDenominator.Range);
       Assert.False(subDenominator.HasScript);
 
-      var subRight = display0.Displays[2] as GlyphDisplay<TGlyph>;
+      var subRight = display0.Displays[2] as GlyphDisplay<TFont, TGlyph>;
       Assert.False(subRight.HasScript);
       Assert.Equal(Range.NotFoundRange, subRight.Range);
       Assertions.ApproximatePoint(20, 0, subRight.Position, 0.01);
@@ -364,7 +364,7 @@ namespace CSharpMath.Tests {
         }
       };
 
-      var display = Typesetter<TMathFont, TGlyph>.CreateLine(mathList, _font, _context, LineStyle.Display);
+      var display = Typesetter<TFont, TGlyph>.CreateLine(mathList, _font, _context, LineStyle.Display);
       Assert.Equal(LinePosition.Regular, display.MyLinePosition);
       Assert.Equal(new PointF(), display.Position);
       Assert.Equal(new Range(0, 1), display.Range);
@@ -372,7 +372,7 @@ namespace CSharpMath.Tests {
       Assert.Equal(Range.UndefinedInt, display.IndexInParent);
       Assert.Single(display.Displays);
 
-      var fraction = display.Displays[0] as FractionDisplay<TGlyph>;
+      var fraction = display.Displays[0] as FractionDisplay<TFont, TGlyph>;
       Assert.Equal(new Range(0, 1), fraction.Range);
       Assert.Equal(new PointF(), fraction.Position);
       Assert.False(fraction.HasScript);
@@ -385,7 +385,7 @@ namespace CSharpMath.Tests {
       Assert.Equal(Range.UndefinedInt, numerator.IndexInParent);
       Assert.Single(numerator.Displays);
 
-      var subNumerator = numerator.Displays[0] as TextLineDisplay<TMathFont, TGlyph>;
+      var subNumerator = numerator.Displays[0] as TextLineDisplay<TFont, TGlyph>;
       Assert.Single(subNumerator.Atoms);
       Assert.Equal("1", subNumerator.StringText());
       Assert.Equal(new PointF(), subNumerator.Position);
@@ -400,7 +400,7 @@ namespace CSharpMath.Tests {
       Assert.Equal(Range.UndefinedInt, denominator.IndexInParent);
       Assert.Single(denominator.Displays);
 
-      var subDenominator = denominator.Displays[0] as TextLineDisplay<TMathFont, TGlyph>;
+      var subDenominator = denominator.Displays[0] as TextLineDisplay<TFont, TGlyph>;
       Assert.Single(subDenominator.Atoms);
       Assert.Equal("3", subDenominator.StringText());
       Assert.Equal(new PointF(), subDenominator.Position);
@@ -415,14 +415,14 @@ namespace CSharpMath.Tests {
     [Fact]
     public void TestEquationWithOperatorsAndRelations() {
       var mathList = MathLists.FromString("2x+3=y");
-      var display = Typesetter<TMathFont, TGlyph>.CreateLine(mathList, _font, _context, LineStyle.Display);
+      var display = Typesetter<TFont, TGlyph>.CreateLine(mathList, _font, _context, LineStyle.Display);
       Assert.Equal(LinePosition.Regular, display.MyLinePosition);
       Assert.Equal(new Range(0, 6), display.Range);
       Assert.False(display.HasScript);
       Assert.Equal(Range.UndefinedInt, display.IndexInParent);
       Assert.Single(display.Displays);
 
-      var line = display.Displays[0] as TextLineDisplay<TMathFont, TGlyph>;
+      var line = display.Displays[0] as TextLineDisplay<TFont, TGlyph>;
       Assert.Equal(6, line.Atoms.Count);
       Assert.Equal("2x+3=y", line.StringText());
       Assert.Equal(new PointF(), line.Position);
@@ -451,7 +451,7 @@ namespace CSharpMath.Tests {
         }
       };
 
-      var display = Typesetter<TMathFont, TGlyph>.CreateLine(mathList, _font, _context, LineStyle.Display);
+      var display = Typesetter<TFont, TGlyph>.CreateLine(mathList, _font, _context, LineStyle.Display);
       Assert.Equal(LinePosition.Regular, display.MyLinePosition);
       Assert.Equal(new PointF(), display.Position);
       Assert.Equal(new Range(0, 1), display.Range);
@@ -459,7 +459,7 @@ namespace CSharpMath.Tests {
       Assert.Equal(Range.UndefinedInt, display.IndexInParent);
       Assert.Single(display.Displays);
 
-      var fraction = display.Displays[0] as FractionDisplay<TGlyph>;
+      var fraction = display.Displays[0] as FractionDisplay<TFont, TGlyph>;
       Assert.Equal(new Range(0, 1), fraction.Range);
       Assert.False(fraction.HasScript);
       Assert.Equal(new PointF(), fraction.Position);
@@ -472,7 +472,7 @@ namespace CSharpMath.Tests {
       Assert.Equal(Range.UndefinedInt, numerator.IndexInParent);
       Assert.Single(numerator.Displays);
 
-      var subNumerator = numerator.Displays[0] as TextLineDisplay<TMathFont, TGlyph>;
+      var subNumerator = numerator.Displays[0] as TextLineDisplay<TFont, TGlyph>;
       Assert.Single(subNumerator.Atoms);
       Assert.Equal("1", subNumerator.StringText());
       Assert.Equal(new PointF(), subNumerator.Position);
@@ -487,7 +487,7 @@ namespace CSharpMath.Tests {
       Assert.Equal(Range.UndefinedInt, denominator.IndexInParent);
       Assert.Single(denominator.Displays);
 
-      var subDenominator = denominator.Displays[0] as TextLineDisplay<TMathFont, TGlyph>;
+      var subDenominator = denominator.Displays[0] as TextLineDisplay<TFont, TGlyph>;
       Assert.Single(subDenominator.Atoms);
       Assert.Equal("3", subDenominator.StringText());
       Assert.Equal(new PointF(), subDenominator.Position);
@@ -511,14 +511,14 @@ namespace CSharpMath.Tests {
         }
       };
 
-      var display = Typesetter<TMathFont, TGlyph>.CreateLine(mathList, _font, _context, LineStyle.Display);
+      var display = Typesetter<TFont, TGlyph>.CreateLine(mathList, _font, _context, LineStyle.Display);
       Assert.Equal(LinePosition.Regular, display.MyLinePosition);
       Assert.Equal(new Range(0, 1), display.Range);
       Assert.False(display.HasScript);
       Assert.Equal(Range.UndefinedInt, display.IndexInParent);
       Assert.Single(display.Displays);
 
-      var display2 = display.Displays[0] as MathListDisplay<TGlyph>;
+      var display2 = display.Displays[0] as MathListDisplay<TFont, TGlyph>;
       Assert.Equal(LinePosition.Regular, display2.MyLinePosition);
       Assert.Equal(new PointF(), display2.Position);
       Assert.Equal(new Range(0, 1), display2.Range);
@@ -526,12 +526,12 @@ namespace CSharpMath.Tests {
       Assert.Equal(Range.UndefinedInt, display2.IndexInParent);
       Assert.Equal(3, display2.Displays.Count());
 
-      var glyph = display2.Displays[0] as GlyphDisplay<TGlyph>;
+      var glyph = display2.Displays[0] as GlyphDisplay<TFont, TGlyph>;
       Assert.Equal(new PointF(), glyph.Position);
       Assert.Equal(Range.NotFoundRange, glyph.Range);
       Assert.False(glyph.HasScript);
 
-      var display3 = display2.Displays[1] as MathListDisplay<TGlyph>;
+      var display3 = display2.Displays[1] as MathListDisplay<TFont, TGlyph>;
       Assert.Equal(LinePosition.Regular, display3.MyLinePosition);
       Assertions.ApproximatePoint(10, 0, display3.Position, 0.01);
       Assert.Equal(new Range(0, 1), display3.Range);
@@ -539,13 +539,13 @@ namespace CSharpMath.Tests {
       Assert.Equal(Range.UndefinedInt, display3.IndexInParent);
       Assert.Single(display3.Displays);
 
-      var line = display3.Displays[0] as TextLineDisplay<TMathFont, TGlyph>;
+      var line = display3.Displays[0] as TextLineDisplay<TFont, TGlyph>;
       Assert.Single(line.Atoms);
       Assert.Equal("x", line.StringText());
       Assert.Equal(new PointF(), line.Position);
       Assert.False(line.HasScript);
 
-      var glyph2 = display2.Displays[2] as GlyphDisplay<TGlyph>;
+      var glyph2 = display2.Displays[2] as GlyphDisplay<TFont, TGlyph>;
       Assertions.ApproximatePoint(20, 0, glyph2.Position, 0.01);
       Assert.Equal(Range.NotFoundRange, glyph2.Range);
       Assert.False(glyph2.HasScript);
@@ -569,7 +569,7 @@ namespace CSharpMath.Tests {
         }
       };
 
-      var display = Typesetter<TMathFont, TGlyph>.CreateLine(mathList, _font, _context, LineStyle.Display);
+      var display = Typesetter<TFont, TGlyph>.CreateLine(mathList, _font, _context, LineStyle.Display);
       Assert.Equal(LinePosition.Regular, display.MyLinePosition);
       Assert.Equal(new PointF(), display.Position);
       Assert.Equal(new Range(0, 1), display.Range);
@@ -577,7 +577,7 @@ namespace CSharpMath.Tests {
       Assert.Equal(Range.UndefinedInt, display.IndexInParent);
       Assert.Single(display.Displays);
 
-      var radical = display.Displays[0] as RadicalDisplay<TMathFont, TGlyph>;
+      var radical = display.Displays[0] as RadicalDisplay<TFont, TGlyph>;
       Assert.Equal(new Range(0, 1), radical.Range);
       Assert.False(radical.HasScript);
       Assert.Equal(new PointF(), radical.Position);
@@ -592,7 +592,7 @@ namespace CSharpMath.Tests {
       Assert.Equal(Range.UndefinedInt, display2.IndexInParent);
       Assert.Single(display2.Displays);
 
-      var line2 = display2.Displays[0] as TextLineDisplay<TMathFont, TGlyph>;
+      var line2 = display2.Displays[0] as TextLineDisplay<TFont, TGlyph>;
       Assert.Single(line2.Atoms);
       Assert.Equal("1", line2.StringText());
       Assert.Equal(new PointF(), line2.Position);

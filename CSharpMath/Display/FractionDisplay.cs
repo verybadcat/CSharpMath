@@ -5,17 +5,18 @@ using System.Text;
 using CSharpMath.Atoms;
 
 namespace CSharpMath.Display {
-  public class FractionDisplay<TGlyph> : IDisplay<TGlyph> {
+  public class FractionDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph>
+    where TFont : MathFont<TGlyph> {
     private PointF _currentPosition;
     private Range _range;
 
     // A display representing the numerator of the fraction. Its position is relative
     //to the parent and it is not treated as a sub-display.
 
-    public MathListDisplay<TGlyph> Numerator { get; private set; }
+    public MathListDisplay<TFont, TGlyph> Numerator { get; private set; }
     // A display representing the numerator of the fraction. Its position is relative
     //to the parent and it is not treated as a sub-display.
-    public MathListDisplay<TGlyph> Denominator { get; private set; }
+    public MathListDisplay<TFont, TGlyph> Denominator { get; private set; }
 
     public float NumeratorUp { get; set; }
     public float DenominatorDown { get; set; }
@@ -24,7 +25,7 @@ namespace CSharpMath.Display {
 
     public Range Range => _range;
 
-    public FractionDisplay(MathListDisplay<TGlyph> numeratorDisplay, MathListDisplay<TGlyph> denominatorDisplay, PointF currentPosition, Range range) {
+    public FractionDisplay(MathListDisplay<TFont, TGlyph> numeratorDisplay, MathListDisplay<TFont, TGlyph> denominatorDisplay, PointF currentPosition, Range range) {
       Numerator = numeratorDisplay;
       Denominator = denominatorDisplay;
       _currentPosition = currentPosition;
@@ -71,7 +72,7 @@ namespace CSharpMath.Display {
     }
 
     public bool HasScript { get; set; }
-    public void Draw(IGraphicsContext<TGlyph> context) {
+    public void Draw(IGraphicsContext<TFont, TGlyph> context) {
       Numerator.Draw(context);
       Denominator.Draw(context);
       context.SaveState();

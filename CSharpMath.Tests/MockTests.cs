@@ -1,4 +1,4 @@
-﻿using CSharpMath.Display.Text;
+﻿using CSharpMath.Display;
 using CSharpMath.Tests.FrontEnd;
 using System;
 using System.Drawing;

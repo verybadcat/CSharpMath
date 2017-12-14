@@ -9,8 +9,9 @@ namespace CSharpMath.Display {
   /// <summary>
   /// Corresponds to MTMathListDisplay in iosMath.
   /// </summary>
-  public class MathListDisplay<TGlyph>: IDisplay<TGlyph> {
-    public IDisplay<TGlyph>[] Displays { get; set; }
+  public class MathListDisplay<TFont, TGlyph>: IDisplay<TFont, TGlyph>
+    where TFont : MathFont<TGlyph> {
+    public IDisplay<TFont, TGlyph>[] Displays { get; set; }
     public LinePosition MyLinePosition { get; set; }
     public Color TextColor { get; set; }
     public bool HasScript { get; set; }
@@ -25,7 +26,7 @@ namespace CSharpMath.Display {
     /// parent list. For a regular list, it is int.MinValue.</summary>
     public int IndexInParent { get; set; }
 
-    public MathListDisplay(IDisplay<TGlyph>[] displays): base() {
+    public MathListDisplay(IDisplay<TFont, TGlyph>[] displays): base() {
       Displays = displays.ToArray();
       MyLinePosition = LinePosition.Regular;
       IndexInParent = int.MinValue;
@@ -43,7 +44,7 @@ namespace CSharpMath.Display {
         return maxX - x;
       }
     }
-    public void Draw(IGraphicsContext<TGlyph> context) {
+    public void Draw(IGraphicsContext<TFont, TGlyph> context) {
       context.SaveState();
       context.Translate(this.Position);
       context.SetTextPosition(new PointF());

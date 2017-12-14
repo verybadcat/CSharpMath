@@ -5,23 +5,24 @@ using System.Text;
 using CSharpMath.Atoms;
 
 namespace CSharpMath.Display {
-  public class AccentDisplay<TGlyph> : IDisplay<TGlyph> {
-    public MathListDisplay<TGlyph> Accentee { get; private set; }
-    public GlyphDisplay<TGlyph> Accent { get; private set; }
+  public class AccentDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph>
+    where TFont : MathFont<TGlyph> {
+    public MathListDisplay<TFont, TGlyph> Accentee { get; private set; }
+    public GlyphDisplay<TFont, TGlyph> Accent { get; private set; }
 
-    public RectangleF DisplayBounds => ((IDisplay<TGlyph>)this.Accentee).DisplayBounds;
+    public RectangleF DisplayBounds => ((IDisplay<TFont, TGlyph>)this.Accentee).DisplayBounds;
 
-    public float Ascent => ((IDisplay<TGlyph>)this.Accentee).Ascent;
+    public float Ascent => ((IDisplay<TFont, TGlyph>)this.Accentee).Ascent;
 
-    public float Descent => ((IDisplay<TGlyph>)this.Accentee).Descent;
+    public float Descent => ((IDisplay<TFont, TGlyph>)this.Accentee).Descent;
 
-    public float Width => ((IDisplay<TGlyph>)this.Accentee).Width;
+    public float Width => ((IDisplay<TFont, TGlyph>)this.Accentee).Width;
 
-    public Range Range => ((IDisplay<TGlyph>)this.Accentee).Range;
+    public Range Range => ((IDisplay<TFont, TGlyph>)this.Accentee).Range;
 
-    public PointF Position => ((IDisplay<TGlyph>)this.Accentee).Position;
+    public PointF Position => ((IDisplay<TFont, TGlyph>)this.Accentee).Position;
 
     public bool HasScript { get; set; }
-    public void Draw(IGraphicsContext<TGlyph> context) => ((IDisplay<TGlyph>)this.Accentee).Draw(context);
+    public void Draw(IGraphicsContext<TFont, TGlyph> context) => ((IDisplay<TFont, TGlyph>)this.Accentee).Draw(context);
   }
 }

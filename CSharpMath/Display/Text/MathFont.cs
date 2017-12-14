@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CSharpMath.Display.Text {
+namespace CSharpMath.Display {
   public class MathFont<TGlyph> {
     public MathFont(float pointSize) {
       PointSize = pointSize;
