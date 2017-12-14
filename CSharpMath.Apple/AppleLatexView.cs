@@ -35,7 +35,7 @@ namespace CSharpMath.Apple {
       var descriptor = new CTFontDescriptor(uiFont.Name, uiFont.PointSize);
       var ctFont = new CTFont(descriptor, fontSize);
       var typesetting = AppleTypesetters.CreateTypesettingContext(ctFont);
-      _displayList = typesetting.CreateLine(_mathList, new AppleMathFont(uiFont.Name, fontSize), LineStyle.Display);
+      _displayList = typesetting.CreateLine(_mathList, new AppleMathFont("latinmodern-math", fontSize), LineStyle.Display);
       SetNeedsLayout();
     }
     public ColumnAlignment TextAlignment { get; set; } = ColumnAlignment.Left;

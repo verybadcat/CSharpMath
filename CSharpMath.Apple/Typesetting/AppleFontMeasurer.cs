@@ -13,7 +13,7 @@ namespace CSharpMath.Apple
 
     public int GetUnitsPerEm(AppleMathFont font)
     {
-      return (int)font.MyCTFont.UnitsPerEmMetric;
+      return (int)font.CtFont.UnitsPerEmMetric;
     }
   }
 }

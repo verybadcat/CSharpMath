@@ -13,13 +13,13 @@ namespace CSharpMath.Apple {
     }
 
     public float GetAdvancesForGlyphs(TMathFont font, ushort[] glyphs) {
-      var ctFont = font.MyCTFont;
+      var ctFont = font.CtFont;
       var r = ctFont.GetAdvancesForGlyphs(CTFontOrientation.Default, glyphs);
       return (float)r;
     }
 
     public RectangleF GetBoundingRectForGlyphs(TMathFont font, ushort[] glyphs) {
-      var cgRect = font.MyCTFont.GetBoundingRects(CTFontOrientation.Horizontal, glyphs);
+      var cgRect = font.CtFont.GetBoundingRects(CTFontOrientation.Horizontal, glyphs);
       return (RectangleF)cgRect;
     }
   }
