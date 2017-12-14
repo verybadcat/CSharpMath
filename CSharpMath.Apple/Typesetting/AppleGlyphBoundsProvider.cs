@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using CoreGraphics;
 using CoreText;
+using Foundation;
+using UIKit;
 using CSharpMath.Display.Text;
 using CSharpMath.FrontEnd;
 using TGlyph = System.UInt16;
@@ -9,7 +12,9 @@ using TMathFont = CSharpMath.Apple.AppleMathFont;
 
 namespace CSharpMath.Apple {
   public class AppleGlyphBoundsProvider: IGlyphBoundsProvider<TMathFont, TGlyph> {
-    public AppleGlyphBoundsProvider() {
+    private readonly UnicodeGlyphFinder _glyphFinder;
+    public AppleGlyphBoundsProvider(UnicodeGlyphFinder glyphFinder) {
+      _glyphFinder = glyphFinder;
     }
 
     public float GetAdvancesForGlyphs(TMathFont font, ushort[] glyphs) {
@@ -19,8 +24,34 @@ namespace CSharpMath.Apple {
     }
 
     public RectangleF GetBoundingRectForGlyphs(TMathFont font, ushort[] glyphs) {
-      var cgRect = font.CtFont.GetBoundingRects(CTFontOrientation.Horizontal, glyphs);
-      return (RectangleF)cgRect;
+      int nGlyphs = glyphs.Length;
+      var rects = new CGRect[nGlyphs];
+      var sizes = new CGSize[nGlyphs];
+      var fontSize = font.CtFont.Size;
+      var cgRect = font.CtFont.GetBoundingRects(CTFontOrientation.Default, glyphs, rects, nGlyphs);
+      var advances = font.CtFont.GetAdvancesForGlyphs(CTFontOrientation.Default, glyphs, sizes, nGlyphs);
+      CGRect outputRect = CGRect.Empty;
+      nfloat x = 0;
+      nfloat y = 0;
+      for (int i = 0; i < nGlyphs; i++) {
+        var glyphRect = new CGRect(
+          rects[i].X + x,
+          rects[i].Y + y,
+          rects[i].Width,
+          rects[i].Height
+        );
+        x += sizes[i].Width;
+        y += sizes[i].Height;
+        if (outputRect == CGRect.Empty) {
+          outputRect = glyphRect;
+        }
+        else {
+          outputRect = CGRect.Union(outputRect, glyphRect);
+        }
+      }
+      var text = _glyphFinder.FindStringDebugPurposesOnly(glyphs);
+      Debug.WriteLine((int)fontSize + " " + text + " " + outputRect.X + " " + outputRect.Y + " " + outputRect.Width + " " + outputRect.Height);
+      return (RectangleF)outputRect;
     }
   }
 }

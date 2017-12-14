@@ -14,6 +14,6 @@ namespace CSharpMath.Tests.FrontEnd
 
     public char[] FindGlyphs(string str) => str.ToArray();
 
-    public string FindString(char[] glyphs) => new string(glyphs);
+    public string FindStringDebugPurposesOnly(char[] glyphs) => new string(glyphs);
   }
 }

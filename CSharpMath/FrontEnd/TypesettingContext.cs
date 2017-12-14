@@ -11,6 +11,7 @@ namespace CSharpMath.FrontEnd {
       IGlyphBoundsProvider<TMathFont, TGlyph> glyphBoundsProvider,
       IGlyphNameProvider<TGlyph> glyphNameProvider,
       IGlyphFinder<TGlyph> glyphFinder,
+                              IFontChanger<TGlyph> fontChanger,
       JToken mathJson) {
       FontMeasurer = fontMeasurer;
       GlyphBoundsProvider = glyphBoundsProvider;

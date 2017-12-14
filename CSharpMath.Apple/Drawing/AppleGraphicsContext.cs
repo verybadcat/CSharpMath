@@ -22,7 +22,7 @@ namespace CSharpMath.Apple.Drawing {
     public IGlyphFinder<TGlyph> GlyphFinder { get; set; }
 
     public void DrawGlyphsAtPoint(ushort[] glyphs, TFont font, PointF point, float maxWidth = float.NaN) {
-      var text = GlyphFinder.FindString(glyphs);
+      var text = GlyphFinder.FindStringDebugPurposesOnly(glyphs);
       DrawTextAtPoint(text, font, point, maxWidth);
     }
 

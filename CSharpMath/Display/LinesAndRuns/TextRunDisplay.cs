@@ -25,6 +25,7 @@ namespace CSharpMath.Display {
       
       var bounds = context.GlyphBoundsProvider.GetBoundingRectForGlyphs(font, run.Text);
       Width = bounds.Width;
+      System.Diagnostics.Debug.WriteLine("Width " + Width + " " + run.Text.Length);
       Ascent = Math.Max(0, bounds.YMax());
       Descent = Math.Max(0, -bounds.Y);
     }

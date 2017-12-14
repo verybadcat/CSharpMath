@@ -69,7 +69,7 @@ namespace CSharpMath.Apple {
           CgContext = cgContext
         };
         cgContext.SaveState();
-        cgContext.TranslateCTM(10, 30);
+        cgContext.TranslateCTM(10, 40);
         _displayList.Draw(appleContext);
         cgContext.RestoreState();
       }

@@ -67,7 +67,7 @@ namespace CSharpMath.Tests {
 
       var encoder = new UnicodeGlyphFinder();
       var glyphs = encoder.FindGlyphs(input);
-      var roundTrip = encoder.FindString(glyphs);
+      var roundTrip = encoder.FindStringDebugPurposesOnly(glyphs);
       Assert.Equal(input, roundTrip);
     }
   }

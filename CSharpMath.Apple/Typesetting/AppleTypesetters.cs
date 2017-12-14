@@ -8,12 +8,13 @@ using TGlyph = System.UInt16;
 namespace CSharpMath.Apple {
   public static class AppleTypesetters {
     public static TypesettingContext<AppleMathFont, TGlyph> CreateTypesettingContext(CTFont someCtFontSizeIrrelevant) {
+      var glyphFinder = new UnicodeGlyphFinder();
       return new TypesettingContext<AppleMathFont, TGlyph>(
         new AppleFontMeasurer(),
         (font, size) => new AppleMathFont(font.Name, size),
-        new AppleGlyphBoundsProvider(),
+        new AppleGlyphBoundsProvider(glyphFinder),
         new AppleGlyphNameProvider(someCtFontSizeIrrelevant),
-        new UnicodeGlyphFinder(),
+        glyphFinder,
         ResourceLoader.LatinMath
       );
     }

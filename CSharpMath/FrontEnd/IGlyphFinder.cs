@@ -6,6 +6,6 @@ namespace CSharpMath.FrontEnd {
   public interface IGlyphFinder<TGlyph> {
     TGlyph FindGlyphForCharacterAtIndex(int index, string str);
     TGlyph[] FindGlyphs(string str);
-    string FindString(TGlyph[] glyphs);
+    string FindStringDebugPurposesOnly(TGlyph[] glyphs);
   }
 }
