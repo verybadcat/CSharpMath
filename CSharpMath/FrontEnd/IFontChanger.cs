@@ -3,6 +3,6 @@ namespace CSharpMath.FrontEnd
 {
   public interface IFontChanger<TGlyph>
   {
-    TGlyph[] ChangeFont(TGlyph inputGlyphs, FontStyle outputFontStyle);
+    TGlyph[] ChangeFont(TGlyph[] inputGlyphs, FontStyle outputFontStyle);
   }
 }
