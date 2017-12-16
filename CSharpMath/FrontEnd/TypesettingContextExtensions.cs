@@ -12,5 +12,10 @@ namespace CSharpMath.FrontEnd {
       where TFont: MathFont<TGlyph> {
       return Typesetter<TFont, TGlyph>.CreateLine(list, font, context, style);
       }
+    internal static string ChangeFont<TFont, TGlyph>(this TypesettingContext<TFont, TGlyph> context, string input, FontStyle outputFontStyle) 
+      where TFont: MathFont<TGlyph> {
+      var changer = context.FontChanger;
+      return changer.ChangeFont(input, outputFontStyle);
+    }
   }
 }

@@ -77,10 +77,7 @@ namespace CSharpMath {
       byte[] bytes = ToByteArray(glyphs);
       var encoding = new UnicodeEncoding();
       var decoder = encoding.GetDecoder();
-      var nChars = decoder.GetCharCount(bytes, 0, bytes.Length);
-      var chars = new char[nChars];
-      decoder.GetChars(bytes, 0, bytes.Length, chars, 0, true);
-      var r = new string(chars);
+      var r = encoding.GetString(bytes, 0, bytes.Length);
       Debug.WriteLine(glyphs[0].ToString() + "=>" + r);
       return r;
     }

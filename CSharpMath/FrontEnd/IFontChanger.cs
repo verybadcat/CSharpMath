@@ -1,8 +1,8 @@
 ﻿using System;
 namespace CSharpMath.FrontEnd
 {
-  public interface IFontChanger<TGlyph>
+  public interface IFontChanger
   {
-    TGlyph[] ChangeFont(TGlyph[] inputGlyphs, FontStyle outputFontStyle);
+    string ChangeFont(string inputString, FontStyle outputFontStyle);
   }
 }

@@ -11,6 +11,9 @@ namespace CSharpMath.Tests.FrontEnd {
         new TestGlyphBoundsProvider(),
         new TestGlyphNameProvider(),
         new TestGlyphFinder(),
-        ResourceLoader.LatinMath);
+      new DoNothingFontChanger<char>(),
+        ResourceLoader.LatinMath
+
+    );
   }
 }

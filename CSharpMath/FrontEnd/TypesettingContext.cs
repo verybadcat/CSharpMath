@@ -11,7 +11,7 @@ namespace CSharpMath.FrontEnd {
       IGlyphBoundsProvider<TMathFont, TGlyph> glyphBoundsProvider,
       IGlyphNameProvider<TGlyph> glyphNameProvider,
       IGlyphFinder<TGlyph> glyphFinder,
-                              IFontChanger<TGlyph> fontChanger,
+      IFontChanger fontChanger,
       JToken mathJson) {
       FontMeasurer = fontMeasurer;
       GlyphBoundsProvider = glyphBoundsProvider;
@@ -19,6 +19,7 @@ namespace CSharpMath.FrontEnd {
       MathFontCloner = mathFontCloner;
       GlyphFinder = glyphFinder;
       GlyphNameProvider = glyphNameProvider;
+      FontChanger = fontChanger;
       MathTable = new FontMathTable<TMathFont, TGlyph>(fontMeasurer, mathJson, glyphNameProvider);
     }
     public IFontMeasurer<TMathFont, TGlyph> FontMeasurer { get; }
@@ -31,5 +32,6 @@ namespace CSharpMath.FrontEnd {
     public JToken MathJson { get; }
     public FontMathTable<TMathFont, TGlyph> MathTable { get; private set; }
     public Func<TMathFont, float, TMathFont> MathFontCloner { get; private set; }
+    public IFontChanger FontChanger { get; private set; }
   }
 }

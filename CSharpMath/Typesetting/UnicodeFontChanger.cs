@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using CSharpMath.FrontEnd;
 using TGlyph = System.UInt16;
-using TLongGlyph = System.UInt32;
+using TLongGlyph = System.Int32;
 
-namespace CSharpMath.Apple.Font {
-  class AppleFontChanger : IFontChanger<TGlyph> {
+namespace CSharpMath {
+  public class UnicodeFontChanger : IFontChanger {
 
     private const TGlyph UnicodeGreekLowerStart = 0x03B1;
     private const TGlyph UnicodeGreekLowerEnd = 0x03C9;
@@ -52,6 +52,11 @@ namespace CSharpMath.Apple.Font {
     private const TLongGlyph UnicodeNumberBlackboardStart = 0x1D7D8;
 
     private const TLongGlyph UnicodeMathCapitalScriptStart = 0x1D49C;
+    private readonly UnicodeGlyphFinder _glyphFinder;
+
+    public UnicodeFontChanger(UnicodeGlyphFinder glyphFinder) {
+      _glyphFinder = glyphFinder;
+    }
 
     private bool IsLowerEn(TGlyph glyph)
       => glyph >= 'a' && glyph <= 'z';
@@ -126,11 +131,14 @@ namespace CSharpMath.Apple.Font {
         r = kMTUnicodePlanksConstant;
       } else if (IsUpperEn(glyph)) {
         r = UnicodeMathCapitalItalicStart + (TLongGlyph)(glyph - 'A');
-      } else if (IsUpperGreek(glyph)) {
-        r = UnicodeGreekCapitalItalicStart + (TLongGlyph)(glyph - 'a');
+      } else if (IsLowerEn(glyph)) {
+        r = UnicodeMathLowerItalicStart + (TLongGlyph)(glyph - 'a');
       } else if (IsLowerGreek(glyph)) {
-        r = UnicodeGreekCapitalItalicStart + (TLongGlyph)(glyph - UnicodeGreekLowerStart);
-      } else if (IsGreekSymbol(glyph)) {
+        r = UnicodeGreekLowerItalicStart + (TLongGlyph)(glyph - UnicodeGreekLowerStart);
+      } else if (IsUpperGreek(glyph)) {
+        r = UnicodeGreekCapitalItalicStart + (TLongGlyph)(glyph - UnicodeGreekUpperStart);
+      }
+      else if (IsGreekSymbol(glyph)) {
         r = UnicodeGreekSymbolItalicStart + (TLongGlyph)GreekSymbolOrder(glyph);
       }
       return r;
@@ -293,22 +301,31 @@ namespace CSharpMath.Apple.Font {
       return glyph; // TODO: figure out and implement this. Most systems are little endian in which case it is already correct.
     }
 
-    public IEnumerable<TGlyph> ChangeFontEnumerable(IEnumerable<TGlyph> inputGlyphs, FontStyle outputFontStyle) {
+    public IEnumerable<string> ChangeFontEnumerable(IEnumerable<TGlyph> inputGlyphs, FontStyle outputFontStyle) {
       foreach (TGlyph glyph in inputGlyphs) {
         TLongGlyph unicode = StyleCharacter(glyph, outputFontStyle);
         unicode = ToLittleEndian(unicode);
-        var encoding = new UTF32Encoding();
-        var decoder = encoding.GetDecoder();
-        var bytes = BitConverter.GetBytes(unicode);
-        int nChars = decoder.GetCharCount(bytes, 0, bytes.Length, false);
-        var chars = new char[nChars];
-        decoder.GetChars(bytes, 0, bytes.Length, chars, nChars, true);
-        foreach (var ch in chars) {
-          yield return ch;
-        }
+        string utf32String = char.ConvertFromUtf32(unicode);
+        var bytes = BitConverter.GetBytes((UInt32)unicode).Reverse().ToArray();
+        string bar = new UTF32Encoding().GetString(bytes);
+        int length2 = bar.Length;
+        int length = utf32String.Length;
+        string tryagain = "\uF09d\u919a";
+        string wtf = "\udc5a\ud835";
+        string omg = "\u1D45A"; 
+        yield return wtf;
       }
     }
-    public TGlyph[] ChangeFont(TGlyph[] inputGlyphs, FontStyle outputFontStyle)
-      => ChangeFontEnumerable(inputGlyphs, outputFontStyle).ToArray();
+
+    public string ChangeFont(string inputString, FontStyle outputFontStyle) {
+      StringBuilder r = new StringBuilder();
+      var encoding = new UnicodeEncoding();
+      var bytes = encoding.GetBytes(inputString);
+      var glyphs = _glyphFinder.FindGlyphs(inputString);
+      foreach (string changed in ChangeFontEnumerable(glyphs, outputFontStyle)) {
+        r.Append(changed);
+      }
+      return r.ToString();
+    }
   }
 }
