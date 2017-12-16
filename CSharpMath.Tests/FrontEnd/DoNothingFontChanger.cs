@@ -8,6 +8,10 @@ namespace CSharpMath.Tests.FrontEnd
     {
     }
 
+    public string ChangeFont(string inputString, FontStyle outputFontStyle) {
+      return inputString;
+    }
+
     public string ChangeGlyphs (string inputGlyphs, FontStyle outputFontStyle)
     {
       return inputGlyphs;
