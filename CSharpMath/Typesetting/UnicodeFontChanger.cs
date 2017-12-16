@@ -306,6 +306,9 @@ namespace CSharpMath {
         TLongGlyph unicode = StyleCharacter(glyph, outputFontStyle);
         unicode = ToLittleEndian(unicode);
         string utf32String = char.ConvertFromUtf32(unicode);
+        var utf32chars = utf32String.ToCharArray();
+        var char0 = utf32chars[0];
+        var char1 = utf32chars[1];
         yield return utf32String;
       }
     }
