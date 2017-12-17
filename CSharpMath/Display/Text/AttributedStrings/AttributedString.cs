@@ -19,7 +19,7 @@ namespace CSharpMath.Display.Text {
       get {
         string r = "";
         foreach (var run in Runs) {
-          r += run.Text;
+          r += run.Glyphs;
         }
         return r;
       }
@@ -33,7 +33,7 @@ namespace CSharpMath.Display.Text {
     }
     public bool TryFuseRunAt(int index) {
       if (_Runs[index].AttributesMatch(_Runs[index - 1])) {
-        _Runs[index - 1].Text = _Runs[index - 1].Text.Concat(_Runs[index].Text).ToArray();
+        _Runs[index - 1].Glyphs = _Runs[index - 1].Glyphs.Concat(_Runs[index].Glyphs).ToArray();
         _Runs.RemoveAt(index);
         return true;
       }

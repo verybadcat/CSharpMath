@@ -73,12 +73,5 @@ namespace CSharpMath.Apple {
     public TGlyph[] FindGlyphs(string str)
       => FindGlyphsInternal(str).ToArray();
 
-    public string FindStringDebugPurposesOnly(TGlyph[] glyphs) {
-      byte[] bytes = ToByteArray(glyphs);
-      var encoding = new UnicodeEncoding();
-      var decoder = encoding.GetDecoder();
-      var r = encoding.GetString(bytes, 0, bytes.Length);
-      return r;
-    }
   }
 }

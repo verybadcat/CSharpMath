@@ -8,24 +8,18 @@ namespace CSharpMath.Display.Text {
   /// over the whole string.</summary>
   public class AttributedGlyphRun<TMathFont, TGlyph>
     where TMathFont: MathFont<TGlyph>{
-    private TGlyph[] _Text;
-    public TGlyph[] Text {
-      get => _Text;
-      set {
-        _Text = value;
-        Debug.WriteLine("Glyphs");
-        foreach (var glyph in value) {
-          Debug.WriteLine(glyph);
-        }
-      }
+    public AttributedGlyphRun() {
+      int foo = 666;
     }
+    public TGlyph[] Glyphs { get; set; }
+    public string Text { get; set; }
 
-    public int Length => Text.Length;
+    public int Length => Glyphs.Length;
     public TMathFont Font { get; set; }
     public MathColor TextColor { get; set; }
     public float Kern { get; set; }
 
-    public override string ToString() => "AttributedGlyphRun " + Text;
+    public override string ToString() => "AttributedGlyphRun " + Glyphs;
 
 
 

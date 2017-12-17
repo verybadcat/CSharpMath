@@ -22,7 +22,7 @@ namespace CSharpMath.Display {
       get {
         List<TGlyph> r = new List<TGlyph>();
         foreach (var run in Runs) {
-          r.AddRange(run.Run.Text);
+          r.AddRange(run.Run.Glyphs);
         }
         return r;
       }

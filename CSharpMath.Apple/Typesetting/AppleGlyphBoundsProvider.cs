@@ -49,7 +49,6 @@ namespace CSharpMath.Apple {
           outputRect = CGRect.Union(outputRect, glyphRect);
         }
       }
-      var text = _glyphFinder.FindStringDebugPurposesOnly(glyphs);
       return (RectangleF)outputRect;
     }
   }

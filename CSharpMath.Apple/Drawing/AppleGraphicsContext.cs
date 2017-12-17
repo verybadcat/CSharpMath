@@ -21,11 +21,6 @@ namespace CSharpMath.Apple.Drawing {
 
     public IGlyphFinder<TGlyph> GlyphFinder { get; set; }
 
-    public void DrawGlyphsAtPoint(ushort[] glyphs, TFont font, PointF point, float maxWidth = float.NaN) {
-      var text = GlyphFinder.FindStringDebugPurposesOnly(glyphs);
-      DrawTextAtPoint(text, font, point, maxWidth);
-    }
-
     public void DrawLine(float x1, float y1, float x2, float y2) {
       CgContext.MoveTo(x1, y1);
       CgContext.AddLineToPoint(x2, y2);

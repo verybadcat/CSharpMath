@@ -10,7 +10,6 @@ namespace CSharpMath {
     where TFont: MathFont<TGlyph> {
     void DrawLine(float x1, float y1, float x2, float y2);
     void DrawTextAtPoint(string text, TFont font, PointF point, float maxWidth = float.NaN);
-    void DrawGlyphsAtPoint(TGlyph[] glyphs, TFont font, PointF point, float maxWidth = float.NaN);
     void Translate(PointF dxy);
     void SaveState();
     void RestoreState();

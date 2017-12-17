@@ -55,11 +55,9 @@ namespace CSharpMath
     private const TLongGlyph UnicodeNumberBlackboardStart = 0x1D7D8;
 
     private const TLongGlyph UnicodeMathCapitalScriptStart = 0x1D49C;
-    private readonly IGlyphFinder<TGlyph> _glyphFinder;
 
-    public UnicodeFontChanger(IGlyphFinder<TGlyph> glyphFinder)
+    public UnicodeFontChanger()
     {
-      _glyphFinder = glyphFinder;
     }
 
     private bool IsLowerEn(TGlyph glyph)
@@ -89,7 +87,7 @@ namespace CSharpMath
     private bool IsGreekSymbol(TGlyph glyph)
       => GreekSymbolOrder(glyph) != -1;
 
-    private TLongGlyph StyleCharacter(TGlyph glyph, FontStyle fontStyle)
+    private TLongGlyph StyleCharacter(char c, FontStyle fontStyle)
     {
       switch (fontStyle)
       {
@@ -378,12 +376,12 @@ namespace CSharpMath
       return glyph; // TODO: figure out and implement this. Most systems are little endian in which case it is already correct.
     }
 
-    public string ChangeFont(TGlyph glyph, FontStyle outputFontStyle)
+    public string ChangeFont(char c, FontStyle outputFontStyle)
     {
-      TLongGlyph unicode = StyleCharacter(glyph, outputFontStyle);
+      TLongGlyph unicode = StyleCharacter(c, outputFontStyle);
       unicode = ToLittleEndian(unicode);
       string utf32String = char.ConvertFromUtf32(unicode);
-      Debug.WriteLine(glyph.ToString() + " =>");
+      Debug.WriteLine(c.ToString() + " =>");
       utf32String.LogCharacters();
       return utf32String;
     }
@@ -392,7 +390,7 @@ namespace CSharpMath
     {
       StringBuilder builder = new StringBuilder();
       var encoding = new UnicodeEncoding();
-      var glyphs = _glyphFinder.FindGlyphs(inputString);
+      var chars = inputString.ToCharArray();
       foreach (TGlyph glyph in glyphs)
       {
         var changedGlyph = ChangeFont(glyph, outputFontStyle);
