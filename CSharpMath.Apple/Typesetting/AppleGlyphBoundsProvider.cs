@@ -50,7 +50,6 @@ namespace CSharpMath.Apple {
         }
       }
       var text = _glyphFinder.FindStringDebugPurposesOnly(glyphs);
-      Debug.WriteLine((int)fontSize + " " + text + " " + outputRect.X + " " + outputRect.Y + " " + outputRect.Width + " " + outputRect.Height);
       return (RectangleF)outputRect;
     }
   }

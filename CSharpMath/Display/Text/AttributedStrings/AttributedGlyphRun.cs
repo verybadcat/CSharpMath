@@ -1,15 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
 using CSharpMath.Atoms;
+using System.Diagnostics;
 
 namespace CSharpMath.Display.Text {
   /// <summary>Like an attributed string, but the attributes are required to be fixed
   /// over the whole string.</summary>
   public class AttributedGlyphRun<TMathFont, TGlyph>
     where TMathFont: MathFont<TGlyph>{
-    public TGlyph[] Text { get; set; }
+    private TGlyph[] _Text;
+    public TGlyph[] Text {
+      get => _Text;
+      set {
+        _Text = value;
+        Debug.WriteLine("Glyphs");
+        foreach (var glyph in value) {
+          Debug.WriteLine(glyph);
+        }
+      }
+    }
+
     public int Length => Text.Length;
     public TMathFont Font { get; set; }
     public MathColor TextColor { get; set; }

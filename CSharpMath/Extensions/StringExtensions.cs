@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace CSharpMath {
@@ -58,6 +59,14 @@ namespace CSharpMath {
         return str.Substring(prefix.Length);
       }
       return str;
+    }
+
+    public static void LogCharacters(this string str) {
+      var chars = str.ToCharArray();
+      Debug.WriteLine("Chars in " + str);
+      foreach (var c in chars) {
+        Debug.WriteLine((int)c);
+      }
     }
   }
 }

@@ -26,6 +26,7 @@ namespace CSharpMath {
     public TGlyph[] ToUintArray(byte[] bytes) {
       return ToUintEnumerable(bytes).ToArray();
     }
+    
 
     public byte[] ToByteArray(TGlyph[] glyphs) {
       byte[] r = new byte[glyphs.Length * 2];
@@ -47,6 +48,7 @@ namespace CSharpMath {
     }
 
     public ushort FindGlyphForCharacterAtIndex(int index, string str) {
+      
       var unicodeIndexes = StringInfo.ParseCombiningCharacters(str);
       int start = 0;
       int end = str.Length;
@@ -58,7 +60,6 @@ namespace CSharpMath {
           break;
         }
       }
-
       var encoding = new UnicodeEncoding();
       var substring = str.Substring(start, end - start);
       var encodeSubstring = encoding.GetBytes(substring);
@@ -66,7 +67,6 @@ namespace CSharpMath {
       byte enc1 = (encodeSubstring.Length <= 1) ? (byte)0 : encodeSubstring[1];
       var bytes = new byte[] { enc0, enc1 };
       var r = BitConverter.ToUInt16(bytes, 0);
-      Debug.WriteLine(str + " " + index + " => " + r);
       return r;
     }
 
@@ -78,7 +78,6 @@ namespace CSharpMath {
       var encoding = new UnicodeEncoding();
       var decoder = encoding.GetDecoder();
       var r = encoding.GetString(bytes, 0, bytes.Length);
-      Debug.WriteLine(glyphs[0].ToString() + "=>" + r);
       return r;
     }
   }

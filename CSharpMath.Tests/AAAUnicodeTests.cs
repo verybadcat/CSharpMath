@@ -47,7 +47,7 @@ namespace CSharpMath.Tests {
       return r;
     }
 
-    [Fact]
+ //   [Fact]
     public void TestBitConverter() {
       var bytes = new byte[] { 10, 20, 30, 40, 50 };
       var shorts = ToUintArray(bytes);
@@ -69,6 +69,26 @@ namespace CSharpMath.Tests {
       var glyphs = encoder.FindGlyphs(input);
       var roundTrip = encoder.FindStringDebugPurposesOnly(glyphs);
       Assert.Equal(input, roundTrip);
+    }
+
+    [Fact]
+    public void ShouldFail() {
+      Assert.False(true);
+    }
+
+    [Fact]
+    public void TestUtf32()
+    {
+      Assert.False(true);
+      var input = 0x0001D45A; // mathematical italic small m
+
+      var stringified = Char.ConvertFromUtf32(input);
+      var chars = stringified.ToCharArray();
+      var char0 = chars[0];
+      var char1 = chars[1];
+      Assert.Equal(55349, char0);
+      Assert.Equal(56410, char1);
+      Assert.False(true);
     }
   }
 }
