@@ -8,9 +8,6 @@ namespace CSharpMath.Display.Text {
   /// over the whole string.</summary>
   public class AttributedGlyphRun<TMathFont, TGlyph>
     where TMathFont: MathFont<TGlyph>{
-    public AttributedGlyphRun() {
-      int foo = 666;
-    }
     public TGlyph[] Glyphs { get; set; }
     public string Text { get; set; }
 
