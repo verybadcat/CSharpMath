@@ -50,7 +50,7 @@ namespace CSharpMath.Apple {
       }
     }
 
-    public ushort FindGlyphForCharacterAtIndex(int index, string str) {
+    public TGlyph FindGlyphForCharacterAtIndex(int index, string str) {
 
       var unicodeIndexes = StringInfo.ParseCombiningCharacters(str);
       int start = 0;
@@ -63,14 +63,11 @@ namespace CSharpMath.Apple {
           break;
         }
       }
-      var encoding = new UnicodeEncoding();
-      var substring = str.Substring(start, end - start);
-      var encodeSubstring = encoding.GetBytes(substring);
-      byte enc0 = encodeSubstring[0];
-      byte enc1 = (encodeSubstring.Length <= 1) ? (byte)0 : encodeSubstring[1];
-      var bytes = new byte[] { enc0, enc1 };
-      var r = BitConverter.ToUInt16(bytes, 0);
-      return r;
+      int length = end - start;
+      TGlyph[] glyphs = new TGlyph[length];
+      char[] chars = str.Substring(start, length).ToCharArray();
+      _ctFont.GetGlyphsForCharacters(chars, glyphs, length);
+      return glyphs[0];
     }
 
     public TGlyph[] FindGlyphs(string str)
