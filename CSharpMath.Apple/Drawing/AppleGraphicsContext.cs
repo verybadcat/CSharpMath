@@ -21,8 +21,9 @@ namespace CSharpMath.Apple.Drawing {
 
     public IGlyphFinder<TGlyph> GlyphFinder { get; set; }
 
-    public void DrawLine(float x1, float y1, float x2, float y2) {
+    public void DrawLine(float x1, float y1, float x2, float y2, float lineThickness) {
       CgContext.MoveTo(x1, y1);
+      CgContext.SetLineWidth(lineThickness);
       CgContext.AddLineToPoint(x2, y2);
       CgContext.DrawPath(CGPathDrawingMode.Stroke);
     }

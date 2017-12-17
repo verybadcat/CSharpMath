@@ -76,7 +76,7 @@ namespace CSharpMath.Display {
       Numerator.Draw(context);
       Denominator.Draw(context);
       context.SaveState();
-      context.DrawLine(Position.X, Position.Y + LinePosition, Position.X+Width, Position.Y+LinePosition);
+      context.DrawLine(Position.X, Position.Y + LinePosition, Position.X+Width, Position.Y+LinePosition, LineThickness);
       context.RestoreState();
     }
   }

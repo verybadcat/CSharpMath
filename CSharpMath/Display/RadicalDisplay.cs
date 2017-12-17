@@ -7,7 +7,8 @@ using CSharpMath.Display.Text;
 
 namespace CSharpMath.Display {
   public class RadicalDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph>
-    where TFont: MathFont<TGlyph> {
+    where TFont : MathFont<TGlyph>
+  {
     // A display representing the numerator of the fraction. Its position is relative
     // to the parent and it is not treated as a sub-display.
     public MathListDisplay<TFont, TGlyph> Radicand { get; private set; }
@@ -24,20 +25,23 @@ namespace CSharpMath.Display {
     private float _radicalShift;
     private IDisplay<TFont, TGlyph> _radicalGlyph;
 
-    public RadicalDisplay(MathListDisplay<TFont, TGlyph> innerDisplay, IDownshiftableDisplay<TFont, TGlyph> glyph, PointF position, Range range) {
+    public RadicalDisplay(MathListDisplay<TFont, TGlyph> innerDisplay, IDownshiftableDisplay<TFont, TGlyph> glyph, PointF position, Range range)
+    {
       Radicand = innerDisplay;
       _radicalGlyph = glyph;
       SetPosition(position);
       Range = range;
     }
 
-    public void SetDegree(MathListDisplay<TFont, TGlyph> degree, TFont degreeFont, FontMathTable<TFont, TGlyph> degreeFontMathTable) {
+    public void SetDegree(MathListDisplay<TFont, TGlyph> degree, TFont degreeFont, FontMathTable<TFont, TGlyph> degreeFontMathTable)
+    {
       var kernBefore = degreeFontMathTable.RadicalKernBeforeDegree(degreeFont);
       var kernAfter = degreeFontMathTable.RadicalKernAfterDegree(degreeFont);
       var raise = degreeFontMathTable.RadicalDegreeBottomRaisePercent(degreeFont) * (this.Ascent - this.Descent);
       Degree = degree;
       _radicalShift = kernBefore + degree.Width + kernAfter;
-      if (_radicalShift < 0) {
+      if (_radicalShift < 0)
+      {
         kernBefore -= _radicalShift;
         _radicalShift = 0;
       }
@@ -51,7 +55,8 @@ namespace CSharpMath.Display {
       _UpdateRadicandPosition();
     }
 
-    private void _UpdateRadicandPosition() {
+    private void _UpdateRadicandPosition()
+    {
       var x = this.Position.X + _radicalShift + _radicalGlyph.Width;
       Radicand.Position = new PointF(x, this.Position.Y);
     }
@@ -66,13 +71,31 @@ namespace CSharpMath.Display {
 
     public Range Range { get; set; }
 
-    public void SetPosition(PointF position) {
+    public void SetPosition(PointF position)
+    {
       Position = position;
       _UpdateRadicandPosition();
     }
 
     public PointF Position { get; private set; } // set with SetPosition().
     public bool HasScript { get; set; }
-    public void Draw(IGraphicsContext<TFont, TGlyph> context) => throw new NotImplementedException();
+    public void Draw(IGraphicsContext<TFont, TGlyph> context)
+    {
+      Radicand?.Draw(context);
+      Degree?.Draw(context);
+      context.SaveState();
+      var translation = new PointF(Position.X + _radicalShift, Position.Y);
+      context.Translate(translation);
+      _radicalGlyph?.Draw(context);
+      // Draw the VBOX
+      // for the kern of, we don't need to draw anything.
+      float heightFromTop = TopKern;
+      // draw the horizontal line with the given thickness
+      PointF lineStart = new PointF(_radicalGlyph.Width, Ascent - heightFromTop - LineThickness / 2);
+      PointF lineEnd = new PointF(lineStart.X + Radicand.Width, lineStart.Y);
+      context.DrawLine(lineStart.X, lineStart.Y, lineEnd.X, lineEnd.Y, LineThickness);
+
+      context.RestoreState();
+    }
   }
 }
