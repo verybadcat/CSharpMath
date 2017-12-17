@@ -203,8 +203,8 @@ namespace CSharpMath.Display.Text {
       }
       return r.ToArray();
     }
-    public float MinConnecterGap(TMathFont font)
-      => _ConstantFromTable(font, "MinConnecterGap");
+    public float MinConnectorOverlap(TMathFont font)
+    => _ConstantFromTable(font, "MinConnectorOverlap");
     #endregion
   }
 
