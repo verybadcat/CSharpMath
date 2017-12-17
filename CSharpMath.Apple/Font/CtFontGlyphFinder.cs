@@ -8,10 +8,11 @@ using System.Linq;
 using System;
 using System.Diagnostics;
 
-namespace CSharpMath {
-  public class UnicodeGlyphFinder : IGlyphFinder<TGlyph> {
+namespace CSharpMath.Apple {
+  public class CtFontGlyphFinder : IGlyphFinder<TGlyph> {
 
-    public UnicodeGlyphFinder() {
+    public CTFontGlyphFinder(CTFont ctFontPointSizeIrrelevant) {
+      _ctFont = ctFontPointSizeIrrelevant;
     }
     private IEnumerable<TGlyph> ToUintEnumerable(byte[] bytes) {
       for (int i = 0; i < bytes.Length; i += 2) {

@@ -55,9 +55,9 @@ namespace CSharpMath
     private const TLongGlyph UnicodeNumberBlackboardStart = 0x1D7D8;
 
     private const TLongGlyph UnicodeMathCapitalScriptStart = 0x1D49C;
-    private readonly UnicodeGlyphFinder _glyphFinder;
+    private readonly IGlyphFinder<TGlyph> _glyphFinder;
 
-    public UnicodeFontChanger(UnicodeGlyphFinder glyphFinder)
+    public UnicodeFontChanger(IGlyphFinder<TGlyph> glyphFinder)
     {
       _glyphFinder = glyphFinder;
     }

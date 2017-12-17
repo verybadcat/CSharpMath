@@ -12,8 +12,8 @@ using TMathFont = CSharpMath.Apple.AppleMathFont;
 
 namespace CSharpMath.Apple {
   public class AppleGlyphBoundsProvider: IGlyphBoundsProvider<TMathFont, TGlyph> {
-    private readonly UnicodeGlyphFinder _glyphFinder;
-    public AppleGlyphBoundsProvider(UnicodeGlyphFinder glyphFinder) {
+    private readonly CtFontGlyphFinder _glyphFinder;
+    public AppleGlyphBoundsProvider(CtFontGlyphFinder glyphFinder) {
       _glyphFinder = glyphFinder;
     }
 

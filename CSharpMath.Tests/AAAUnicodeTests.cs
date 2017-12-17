@@ -61,15 +61,6 @@ namespace CSharpMath.Tests {
       }
     }
 
-    [Fact]
-    public void TestUnicodeGlyphFinder() {
-      var input = "\u03C0 is pi";
-
-      var encoder = new UnicodeGlyphFinder();
-      var glyphs = encoder.FindGlyphs(input);
-      var roundTrip = encoder.FindStringDebugPurposesOnly(glyphs);
-      Assert.Equal(input, roundTrip);
-    }
 
     [Fact]
     public void ShouldFail() {
