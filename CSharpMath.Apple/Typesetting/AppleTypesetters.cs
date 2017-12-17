@@ -15,7 +15,7 @@ namespace CSharpMath.Apple {
         new AppleGlyphBoundsProvider(glyphFinder),
         new AppleGlyphNameProvider(someCtFontSizeIrrelevant),
         glyphFinder,
-        new UnicodeFontChanger(glyphFinder),
+        new UnicodeFontChanger(),
         ResourceLoader.LatinMath
       );
     }

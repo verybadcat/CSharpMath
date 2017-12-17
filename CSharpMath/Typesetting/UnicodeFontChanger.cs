@@ -4,228 +4,228 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using CSharpMath.FrontEnd;
-using TGlyph = System.UInt16;
-using TLongGlyph = System.Int32;
+using TChar = System.Char;
+using TLongChar = System.Int32;
 
 namespace CSharpMath
 {
   public class UnicodeFontChanger : IFontChanger
   {
 
-    private const TGlyph UnicodeGreekLowerStart = 0x03B1;
-    private const TGlyph UnicodeGreekLowerEnd = 0x03C9;
-    private const TGlyph UnicodeGreekUpperStart = 0x0391;
-    private const TGlyph UnicodeGreekUpperEnd = 0x03A9;
+    private const TChar UnicodeGreekLowerStart = '\x03B1';
+    private const TChar UnicodeGreekLowerEnd = '\x03C9';
+    private const TChar UnicodeGreekUpperStart = '\x0391';
+    private const TChar UnicodeGreekUpperEnd = '\x03A9';
 
-    private const TLongGlyph UnicodeMathCapitalBoldStart = 0x1D400;
-    private const TLongGlyph UnicodeMathLowerBoldStart = 0x1D41A;
-    private const TLongGlyph UnicodeGreekCapitalBoldStart = 0x1D6A8;
-    private const TLongGlyph UnicodeGreekLowerBoldStart = 0x1D6C2;
-    private const TLongGlyph UnicodeGreekSymbolBoldStart = 0x1D6DC;
-    private const TLongGlyph UnicodeNumberBoldStart = 0x1D7CE;
+    private const TLongChar UnicodeMathCapitalBoldStart = 0x1D400;
+    private const TLongChar UnicodeMathLowerBoldStart = 0x1D41A;
+    private const TLongChar UnicodeGreekCapitalBoldStart = 0x1D6A8;
+    private const TLongChar UnicodeGreekLowerBoldStart = 0x1D6C2;
+    private const TLongChar UnicodeGreekSymbolBoldStart = 0x1D6DC;
+    private const TLongChar UnicodeNumberBoldStart = 0x1D7CE;
 
-    private const TGlyph kMTUnicodePlanksConstant = 0x210e;
-    private const TLongGlyph UnicodeMathCapitalItalicStart = 0x1D434;
-    private const TLongGlyph UnicodeMathLowerItalicStart = 0x1D44E;
-    private const TLongGlyph UnicodeGreekCapitalItalicStart = 0x1D6E2;
-    private const TLongGlyph UnicodeGreekLowerItalicStart = 0x1D6FC;
-    private const TLongGlyph UnicodeGreekSymbolItalicStart = 0x1D716;
+    private const TChar kMTUnicodePlanksConstant = '\x210e';
+    private const TLongChar UnicodeMathCapitalItalicStart = 0x1D434;
+    private const TLongChar UnicodeMathLowerItalicStart = 0x1D44E;
+    private const TLongChar UnicodeGreekCapitalItalicStart = 0x1D6E2;
+    private const TLongChar UnicodeGreekLowerItalicStart = 0x1D6FC;
+    private const TLongChar UnicodeGreekSymbolItalicStart = 0x1D716;
 
-    private const TLongGlyph UnicodeMathCapitalBoldItalicStart = 0x1D468;
-    private const TLongGlyph UnicodeMathLowerBoldItalicStart = 0x1D482;
-    private const TLongGlyph UnicodeGreekCapitalBoldItalicStart = 0x1D71C;
-    private const TLongGlyph UnicodeGreekLowerBoldItalicStart = 0x1D736;
-    private const TLongGlyph UnicodeGreekSymbolBoldItalicStart = 0x1D750;
-
-
-    private const TLongGlyph UnicodeMathCapitalTTStart = 0x1D670;
-    private const TLongGlyph UnicodeMathLowerTTStart = 0x1D68A;
-    private const TLongGlyph UnicodeNumberTTStart = 0x1D7F6;
+    private const TLongChar UnicodeMathCapitalBoldItalicStart = 0x1D468;
+    private const TLongChar UnicodeMathLowerBoldItalicStart = 0x1D482;
+    private const TLongChar UnicodeGreekCapitalBoldItalicStart = 0x1D71C;
+    private const TLongChar UnicodeGreekLowerBoldItalicStart = 0x1D736;
+    private const TLongChar UnicodeGreekSymbolBoldItalicStart = 0x1D750;
 
 
-    private const TLongGlyph UnicodeMathCapitalSansSerifStart = 0x1D5A0;
-    private const TLongGlyph UnicodeMathLowerSansSerifStart = 0x1D5BA;
-    private const TLongGlyph UnicodeNumberSansSerifStart = 0x1D7E2;
+    private const TLongChar UnicodeMathCapitalTTStart = 0x1D670;
+    private const TLongChar UnicodeMathLowerTTStart = 0x1D68A;
+    private const TLongChar UnicodeNumberTTStart = 0x1D7F6;
 
-    private const TLongGlyph UnicodeMathCapitalFrakturStart = 0x1D504;
-    private const TLongGlyph UnicodeMathLowerFrakturStart = 0x1D51E;
 
-    private const TLongGlyph UnicodeMathCapitalBlackboardStart = 0x1D538;
-    private const TLongGlyph UnicodeMathLowerBlackboardStart = 0x1D552;
-    private const TLongGlyph UnicodeNumberBlackboardStart = 0x1D7D8;
+    private const TLongChar UnicodeMathCapitalSansSerifStart = 0x1D5A0;
+    private const TLongChar UnicodeMathLowerSansSerifStart = 0x1D5BA;
+    private const TLongChar UnicodeNumberSansSerifStart = 0x1D7E2;
 
-    private const TLongGlyph UnicodeMathCapitalScriptStart = 0x1D49C;
+    private const TLongChar UnicodeMathCapitalFrakturStart = 0x1D504;
+    private const TLongChar UnicodeMathLowerFrakturStart = 0x1D51E;
+
+    private const TLongChar UnicodeMathCapitalBlackboardStart = 0x1D538;
+    private const TLongChar UnicodeMathLowerBlackboardStart = 0x1D552;
+    private const TLongChar UnicodeNumberBlackboardStart = 0x1D7D8;
+
+    private const TLongChar UnicodeMathCapitalScriptStart = 0x1D49C;
 
     public UnicodeFontChanger()
     {
     }
 
-    private bool IsLowerEn(TGlyph glyph)
-      => glyph >= 'a' && glyph <= 'z';
+    private bool IsLowerEn(TChar c)
+      => c >= 'a' && c <= 'z';
 
-    private bool IsUpperEn(TGlyph glyph)
-      => glyph >= 'A' && glyph <= 'Z';
+    private bool IsUpperEn(TChar c)
+      => c >= 'A' && c <= 'Z';
 
-    private bool IsNumber(TGlyph glyph)
-      => glyph >= '0' && glyph <= '9';
+    private bool IsNumber(TChar c)
+      => c >= '0' && c <= '9';
 
-    private bool IsLowerGreek(TGlyph glyph)
-      => glyph >= UnicodeGreekLowerStart && glyph <= UnicodeGreekLowerEnd;
+    private bool IsLowerGreek(TChar c)
+      => c >= UnicodeGreekLowerStart && c <= UnicodeGreekLowerEnd;
 
-    private bool IsUpperGreek(TGlyph glyph)
-      => glyph >= UnicodeGreekUpperStart && glyph <= UnicodeGreekUpperEnd;
+    private bool IsUpperGreek(TChar c)
+      => c >= UnicodeGreekUpperStart && c <= UnicodeGreekUpperEnd;
 
-    private int GreekSymbolOrder(TGlyph glyph)
+    private int GreekSymbolOrder(TChar c)
     {
       // These greek symbols that always appear in unicode in this particular order
       // after the alphabet. 
       // The symbols are epsilon, vartheta, varkappa, phi, varrho, and varpi.
-      TGlyph[] greekSymbols = { 0x03F5, 0x03D1, 0x03F0, 0x03F1, 0x03D6 };
-      return Array.IndexOf(greekSymbols, glyph);
+      TChar[] greekSymbols = { '\x03F5', '\x03D1', '\x03F0', '\x03F1', '\x03D6' };
+      return Array.IndexOf(greekSymbols, c);
     }
 
-    private bool IsGreekSymbol(TGlyph glyph)
-      => GreekSymbolOrder(glyph) != -1;
+    private bool IsGreekSymbol(TChar c)
+      => GreekSymbolOrder(c) != -1;
 
-    private TLongGlyph StyleCharacter(char c, FontStyle fontStyle)
+    private TLongChar StyleCharacter(char c, FontStyle fontStyle)
     {
       switch (fontStyle)
       {
         case FontStyle.Default:
-          return GetDefaultStyle(glyph);
+          return GetDefaultStyle(c);
         case FontStyle.Roman:
-          return glyph;
+          return c;
         case FontStyle.Bold:
-          return GetBold(glyph);
+          return GetBold(c);
         case FontStyle.Italic:
-          return GetItalicized(glyph);
+          return GetItalicized(c);
         case FontStyle.BoldItalic:
-          return GetBoldItalic(glyph);
+          return GetBoldItalic(c);
         case FontStyle.Caligraphic:
-          return GetCaligraphic(glyph);
+          return GetCaligraphic(c);
         case FontStyle.Typewriter:
-          return GetTypewriter(glyph);
+          return GetTypewriter(c);
         case FontStyle.SansSerif:
-          return GetSansSerif(glyph);
+          return GetSansSerif(c);
         case FontStyle.Fraktur:
-          return GetFraktur(glyph);
+          return GetFraktur(c);
         case FontStyle.Blackboard:
-          return GetBlackboard(glyph);
+          return GetBlackboard(c);
         default: throw new NotImplementedException("Unknown font style " + fontStyle);
       }
     }
 
-    private TLongGlyph GetDefaultStyle(ushort glyph)
+    private TLongChar GetDefaultStyle(TChar c)
     {
-      if (IsLowerEn(glyph) || IsUpperEn(glyph) || IsLowerGreek(glyph) || IsGreekSymbol(glyph))
+      if (IsLowerEn(c) || IsUpperEn(c) || IsLowerGreek(c) || IsGreekSymbol(c))
       {
-        return GetItalicized(glyph);
+        return GetItalicized(c);
       }
-      if (IsNumber(glyph) || IsUpperGreek(glyph))
+      if (IsNumber(c) || IsUpperGreek(c))
       {
-        return glyph;
+        return c;
       }
-      if (glyph == '.')
+      if (c == '.')
       {
-        return glyph;
+        return c;
       }
       else
       {
-        throw new InvalidOperationException(@"Illegal character " + glyph);
+        throw new InvalidOperationException(@"Illegal character " + c);
       }
     }
 
-    private TLongGlyph GetItalicized(TGlyph glyph)
+    private TLongChar GetItalicized(TChar c)
     {
-      TLongGlyph r = glyph;
-      if (glyph == 'h')
+      TLongChar r = c;
+      if (c == 'h')
       {
         r = kMTUnicodePlanksConstant;
       }
-      else if (IsUpperEn(glyph))
+      else if (IsUpperEn(c))
       {
-        r = UnicodeMathCapitalItalicStart + (TLongGlyph)(glyph - 'A');
+        r = UnicodeMathCapitalItalicStart + (TLongChar)(c - 'A');
       }
-      else if (IsLowerEn(glyph))
+      else if (IsLowerEn(c))
       {
-        r = UnicodeMathLowerItalicStart + (TLongGlyph)(glyph - 'a');
+        r = UnicodeMathLowerItalicStart + (TLongChar)(c - 'a');
       }
-      else if (IsLowerGreek(glyph))
+      else if (IsLowerGreek(c))
       {
-        r = UnicodeGreekLowerItalicStart + (TLongGlyph)(glyph - UnicodeGreekLowerStart);
+        r = UnicodeGreekLowerItalicStart + (TLongChar)(c - UnicodeGreekLowerStart);
       }
-      else if (IsUpperGreek(glyph))
+      else if (IsUpperGreek(c))
       {
-        r = UnicodeGreekCapitalItalicStart + (TLongGlyph)(glyph - UnicodeGreekUpperStart);
+        r = UnicodeGreekCapitalItalicStart + (TLongChar)(c - UnicodeGreekUpperStart);
       }
-      else if (IsGreekSymbol(glyph))
+      else if (IsGreekSymbol(c))
       {
-        r = UnicodeGreekSymbolItalicStart + (TLongGlyph)GreekSymbolOrder(glyph);
-      }
-      return r;
-    }
-
-    private TLongGlyph GetBold(TGlyph glyph)
-    {
-      TLongGlyph r = glyph;
-      if (IsUpperEn(glyph))
-      {
-        r = UnicodeMathCapitalBoldStart + (TLongGlyph)(glyph - 'A');
-      }
-      else if (IsLowerEn(glyph))
-      {
-        r = UnicodeMathLowerBoldStart + (TLongGlyph)(glyph - 'a');
-      }
-      else if (IsUpperGreek(glyph))
-      {
-        r = UnicodeGreekCapitalBoldStart + (TLongGlyph)(glyph - UnicodeGreekUpperStart);
-      }
-      else if (IsLowerGreek(glyph))
-      {
-        r = UnicodeGreekLowerBoldStart + (TLongGlyph)(glyph - UnicodeGreekLowerStart);
-      }
-      else if (IsNumber(glyph))
-      {
-        r = UnicodeNumberBoldStart + (TLongGlyph)(glyph - '0');
+        r = UnicodeGreekSymbolItalicStart + (TLongChar)GreekSymbolOrder(c);
       }
       return r;
     }
 
-    private TLongGlyph GetBoldItalic(TGlyph glyph)
+    private TLongChar GetBold(TChar c)
     {
-      TLongGlyph r = glyph;
-      if (IsLowerEn(glyph))
+      TLongChar r = c;
+      if (IsUpperEn(c))
       {
-        r = UnicodeMathLowerBoldItalicStart + (TLongGlyph)(glyph - 'a');
+        r = UnicodeMathCapitalBoldStart + (TLongChar)(c - 'A');
       }
-      else if (IsUpperEn(glyph))
+      else if (IsLowerEn(c))
       {
-        r = UnicodeMathCapitalBoldItalicStart + (TLongGlyph)(glyph - 'A');
+        r = UnicodeMathLowerBoldStart + (TLongChar)(c - 'a');
       }
-      else if (IsUpperGreek(glyph))
+      else if (IsUpperGreek(c))
       {
-        r = UnicodeGreekCapitalBoldItalicStart + (TLongGlyph)(glyph - UnicodeGreekUpperStart);
+        r = UnicodeGreekCapitalBoldStart + (TLongChar)(c - UnicodeGreekUpperStart);
       }
-      else if (IsLowerGreek(glyph))
+      else if (IsLowerGreek(c))
       {
-        r = UnicodeGreekLowerBoldItalicStart + (TLongGlyph)(glyph - UnicodeGreekLowerStart);
+        r = UnicodeGreekLowerBoldStart + (TLongChar)(c - UnicodeGreekLowerStart);
       }
-      else if (IsGreekSymbol(glyph))
+      else if (IsNumber(c))
       {
-        r = UnicodeGreekSymbolBoldItalicStart + (TLongGlyph)GreekSymbolOrder(glyph);
+        r = UnicodeNumberBoldStart + (TLongChar)(c - '0');
       }
-      else if (IsNumber(glyph))
+      return r;
+    }
+
+    private TLongChar GetBoldItalic(TChar c)
+    {
+      TLongChar r = c;
+      if (IsLowerEn(c))
+      {
+        r = UnicodeMathLowerBoldItalicStart + (TLongChar)(c - 'a');
+      }
+      else if (IsUpperEn(c))
+      {
+        r = UnicodeMathCapitalBoldItalicStart + (TLongChar)(c - 'A');
+      }
+      else if (IsUpperGreek(c))
+      {
+        r = UnicodeGreekCapitalBoldItalicStart + (TLongChar)(c - UnicodeGreekUpperStart);
+      }
+      else if (IsLowerGreek(c))
+      {
+        r = UnicodeGreekLowerBoldItalicStart + (TLongChar)(c - UnicodeGreekLowerStart);
+      }
+      else if (IsGreekSymbol(c))
+      {
+        r = UnicodeGreekSymbolBoldItalicStart + (TLongChar)GreekSymbolOrder(c);
+      }
+      else if (IsNumber(c))
       {
         // no bold italic for numbers, so we just bold them.
-        r = GetBold(glyph);
+        r = GetBold(c);
       }
       return r;
     }
 
-    private TLongGlyph GetCaligraphic(TGlyph glyph)
+    private TLongChar GetCaligraphic(TChar c)
     {
       // Caligraphic has lots of exceptions:
-      switch (glyph)
+      switch (c)
       {
         case 'B':
           return 0x212C;   // Script B (bernoulli)
@@ -250,48 +250,48 @@ namespace CSharpMath
         case 'o':
           return 0x2134;   // Script o (order)
       }
-      TLongGlyph r;
-      if (IsUpperEn(glyph))
+      TLongChar r;
+      if (IsUpperEn(c))
       {
-        r = UnicodeMathCapitalScriptStart + (TLongGlyph)(glyph - 'A');
+        r = UnicodeMathCapitalScriptStart + (TLongChar)(c - 'A');
       }
-      else if (IsLowerEn(glyph))
+      else if (IsLowerEn(c))
       {
         // Latin modern math doesn't have lower case caligraphic characters
-        r = GetDefaultStyle(glyph);
+        r = GetDefaultStyle(c);
       }
       else
       {
         // doesn't exist for greek or numbers.
-        r = GetDefaultStyle(glyph);
+        r = GetDefaultStyle(c);
       }
       return r;
     }
 
     // mathsf
-    private TLongGlyph GetSansSerif(TGlyph glyph)
+    private TLongChar GetSansSerif(TChar c)
     {
-      if (IsUpperEn(glyph))
+      if (IsUpperEn(c))
       {
-        return UnicodeMathCapitalSansSerifStart + (TLongGlyph)(glyph - 'A');
+        return UnicodeMathCapitalSansSerifStart + (TLongChar)(c - 'A');
       }
-      else if (IsLowerEn(glyph))
+      else if (IsLowerEn(c))
       {
-        return UnicodeMathLowerSansSerifStart + (TLongGlyph)(glyph - 'a');
+        return UnicodeMathLowerSansSerifStart + (TLongChar)(c - 'a');
       }
-      else if (IsNumber(glyph))
+      else if (IsNumber(c))
       {
-        return UnicodeNumberSansSerifStart + (TLongGlyph)(glyph - 0);
+        return UnicodeNumberSansSerifStart + (TLongChar)(c - 0);
       }
       // SansSerif doesn't exist for greek
-      return GetDefaultStyle(glyph);
+      return GetDefaultStyle(c);
     }
 
     // mathfrak
-    private TLongGlyph GetFraktur(TGlyph glyph)
+    private TLongChar GetFraktur(TChar c)
     {
       // Fraktur has exceptions:
-      switch (glyph)
+      switch (c)
       {
         case 'C':
           return 0x212D;   // C Fraktur
@@ -304,40 +304,40 @@ namespace CSharpMath
         case 'Z':
           return 0x2128;   // Z Fraktur
       }
-      if (IsUpperEn(glyph))
+      if (IsUpperEn(c))
       {
-        return UnicodeMathCapitalFrakturStart + (TLongGlyph)(glyph - 'A');
+        return UnicodeMathCapitalFrakturStart + (TLongChar)(c - 'A');
       }
-      else if (IsLowerEn(glyph))
+      else if (IsLowerEn(c))
       {
-        return UnicodeMathLowerFrakturStart + (TLongGlyph)(glyph - 'a');
+        return UnicodeMathLowerFrakturStart + (TLongChar)(c - 'a');
       }
-      return GetDefaultStyle(glyph);
+      return GetDefaultStyle(c);
     }
 
     // mathtt
-    private TLongGlyph GetTypewriter(TGlyph glyph)
+    private TLongChar GetTypewriter(TChar c)
     {
-      if (IsUpperEn(glyph))
+      if (IsUpperEn(c))
       {
-        return UnicodeMathCapitalTTStart + (TLongGlyph)(glyph - 'A');
+        return UnicodeMathCapitalTTStart + (TLongChar)(c - 'A');
       }
-      else if (IsLowerEn(glyph))
+      else if (IsLowerEn(c))
       {
-        return UnicodeMathLowerTTStart + (TLongGlyph)(glyph - 'a');
+        return UnicodeMathLowerTTStart + (TLongChar)(c - 'a');
       }
-      else if (IsNumber(glyph))
+      else if (IsNumber(c))
       {
-        return UnicodeNumberTTStart + (TLongGlyph)(glyph - '0');
+        return UnicodeNumberTTStart + (TLongChar)(c - '0');
       }
       // monospace doesn't exist for Greek, so use the default treatment
-      return GetDefaultStyle(glyph);
+      return GetDefaultStyle(c);
     }
 
-    private TLongGlyph GetBlackboard(TGlyph glyph)
+    private TLongChar GetBlackboard(TChar c)
     {
       // Blackboard has lots of exceptions:
-      switch (glyph)
+      switch (c)
       {
         case 'C':
           return 0x2102;   // Complex numbers
@@ -356,29 +356,29 @@ namespace CSharpMath
         default:
           break;
       }
-      if (IsUpperEn(glyph))
+      if (IsUpperEn(c))
       {
-        return UnicodeMathCapitalBlackboardStart + (TLongGlyph)(glyph - 'A');
+        return UnicodeMathCapitalBlackboardStart + (TLongChar)(c - 'A');
       }
-      else if (IsLowerEn(glyph))
+      else if (IsLowerEn(c))
       {
-        return UnicodeMathLowerBlackboardStart + (TLongGlyph)(glyph - 'a');
+        return UnicodeMathLowerBlackboardStart + (TLongChar)(c - 'a');
       }
-      else if (IsNumber(glyph))
+      else if (IsNumber(c))
       {
-        return UnicodeNumberBlackboardStart + (TLongGlyph)(glyph - '0');
+        return UnicodeNumberBlackboardStart + (TLongChar)(c - '0');
       }
-      return GetDefaultStyle(glyph);
+      return GetDefaultStyle(c);
     }
 
-    private TLongGlyph ToLittleEndian(TLongGlyph glyph)
+    private TLongChar ToLittleEndian(TLongChar c)
     {
-      return glyph; // TODO: figure out and implement this. Most systems are little endian in which case it is already correct.
+      return c; // TODO: figure out and implement this. Most systems are little endian in which case it is already correct.
     }
 
     public string ChangeFont(char c, FontStyle outputFontStyle)
     {
-      TLongGlyph unicode = StyleCharacter(c, outputFontStyle);
+      TLongChar unicode = StyleCharacter(c, outputFontStyle);
       unicode = ToLittleEndian(unicode);
       string utf32String = char.ConvertFromUtf32(unicode);
       Debug.WriteLine(c.ToString() + " =>");
@@ -391,9 +391,9 @@ namespace CSharpMath
       StringBuilder builder = new StringBuilder();
       var encoding = new UnicodeEncoding();
       var chars = inputString.ToCharArray();
-      foreach (TGlyph glyph in glyphs)
+      foreach (TChar c in chars)
       {
-        var changedGlyph = ChangeFont(glyph, outputFontStyle);
+        var changedGlyph = ChangeFont(c, outputFontStyle);
         builder.Append(changedGlyph);
       }
       var r = builder.ToString();
