@@ -10,6 +10,7 @@ using System.Diagnostics;
 using UIKit;
 using CoreText;
 using Foundation;
+using System.Linq;
 
 namespace CSharpMath.Apple.Drawing {
   public class AppleGraphicsContext : IGraphicsContext<TFont, TGlyph> {
@@ -20,6 +21,13 @@ namespace CSharpMath.Apple.Drawing {
     public CGContext CgContext { get; set; }
 
     public IGlyphFinder<TGlyph> GlyphFinder { get; set; }
+
+    public void DrawGlyphsAtPoints(TGlyph[] glyphs, TFont font, PointF[] points)
+    {
+      var ctFont = font.CtFont;
+      var cgPoints = points.Select(p => (CGPoint)p).ToArray();
+      ctFont.DrawGlyphs(CgContext, glyphs, cgPoints);
+    }
 
     public void DrawLine(float x1, float y1, float x2, float y2, float lineThickness) {
       CgContext.MoveTo(x1, y1);
