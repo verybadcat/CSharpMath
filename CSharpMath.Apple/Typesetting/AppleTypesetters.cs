@@ -19,5 +19,11 @@ namespace CSharpMath.Apple {
         ResourceLoader.LatinMath
       );
     }
+
+    public static TypesettingContext<AppleMathFont, TGlyph> CreateLatinMath() {
+      var fontSize = 40;
+      var appleFont = new AppleMathFont("latinmodern-math", fontSize);
+      return CreateTypesettingContext(appleFont.CtFont);
+    }
   }
 }

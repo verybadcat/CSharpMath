@@ -1,8 +1,5 @@
 ﻿using CSharpMath.Display;
 using CSharpMath.Enumerations;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using CSharpMath.FrontEnd;
 using CSharpMath.Atoms;
 using CSharpMath.Interfaces;
@@ -32,8 +29,8 @@ namespace CSharpMath.Apple {
       _mathList = MathLists.FromString(latex);
       InvalidateIntrinsicContentSize();
       var fontSize = 40;
-      var appleFont = new AppleMathFont("latinmodern-math", fontSize);
-      var typesetting = AppleTypesetters.CreateTypesettingContext(appleFont.CtFont);
+      var appleFont = new TFont("latinmodern-math", fontSize);
+      var typesetting = AppleTypesetters.CreateLatinMath();
       _displayList = typesetting.CreateLine(_mathList, appleFont, LineStyle.Display);
       SetNeedsLayout();
     }
