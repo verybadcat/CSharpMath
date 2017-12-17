@@ -179,7 +179,7 @@ namespace CSharpMath.Display.Text {
     private const string _startConnectorKey = "startConnector";
     private const string _extenderKey = "extender";
     private const string _glyphKey = "glyph";
-    public GlyphPart<TGlyph>[] GetVerticalGlyphAssembly(TGlyph rawGlyph) {
+    public GlyphPart<TGlyph>[] GetVerticalGlyphAssembly(TGlyph rawGlyph, TMathFont font) {
       var glyphName = _glyphNameProvider.GetGlyphName(rawGlyph);
       var glyphAssemblyInfo = _assemblyTable[glyphName];
       if (glyphAssemblyInfo == null) {
@@ -193,10 +193,12 @@ namespace CSharpMath.Display.Text {
       List<GlyphPart<TGlyph>> r = new List<GlyphPart<TGlyph>>();
       foreach (JToken partInfo in parts) {
         var innerGlyphName = partInfo[_glyphKey];
+        var endConnectorLength = _FontUnitsToPt(font, partInfo[_endConnectorKey].Value<int>());
+        var startConnectorLength = _FontUnitsToPt(font, partInfo[_startConnectorKey].Value<int>());
+        var fullAdvance = _FontUnitsToPt(font, partInfo[_advanceKey].Value<int>());
         r.Add(new GlyphPart<TGlyph> {
-          FullAdvance = partInfo[_advanceKey].Value<int>(),
-          EndConnectorLength = partInfo[_endConnectorKey].Value<int>(),
-          StartConnectorLength = partInfo[_startConnectorKey].Value<int>(),
+          EndConnectorLength = endConnectorLength,
+          StartConnectorLength = startConnectorLength,
           IsExtender = partInfo[_extenderKey].Value<bool>(),
           Glyph = _glyphNameProvider.GetGlyph(glyphName)
         });
