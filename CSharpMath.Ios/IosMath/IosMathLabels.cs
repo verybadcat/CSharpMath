@@ -6,8 +6,8 @@ namespace CSharpMath.Ios
   {
     public static AppleLatexView LatexView(string latex)
     {
-      var typesettingContext = AppleTypesetters.CreateTypesettingContext()
-      var view = new AppleLatexView();
+      var typesettingContext = AppleTypesetters.CreateLatinMath();
+      var view = new AppleLatexView(typesettingContext);
       view.SetLatex(latex);
       return view;
     }
