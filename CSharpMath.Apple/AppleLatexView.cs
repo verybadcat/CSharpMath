@@ -46,10 +46,14 @@ namespace CSharpMath.Apple {
 
     public bool DisplayErrorInline { get; set; } = true;
     public NColor TextColor { get; set; }
-    public AppleLatexView() {
+
+    private readonly TypesettingContext<TFont, ushort> _typesettingContext;
+
+    public AppleLatexView(TypesettingContext<TFont, TGlyph> typesettingContext) {
       Layer.GeometryFlipped = true;
       BackgroundColor = NColor.Clear;
       TextColor = NColor.Black;
+      _typesettingContext = typesettingContext;
     }
 
     public override CGSize SizeThatFits(CGSize size)
@@ -64,7 +68,7 @@ namespace CSharpMath.Apple {
       base.Draw(rect);
       if (_mathList != null) {
         var cgContext = UIGraphics.GetCurrentContext();
-        var appleContext = new AppleGraphicsContext
+        var appleContext = new AppleGraphicsContext(_typesettingContext.GlyphFinder)
         {
           CgContext = cgContext
         };

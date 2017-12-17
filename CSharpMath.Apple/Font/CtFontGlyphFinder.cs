@@ -7,11 +7,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using System.Diagnostics;
+using CoreText;
 
 namespace CSharpMath.Apple {
   public class CtFontGlyphFinder : IGlyphFinder<TGlyph> {
+    private readonly CTFont _ctFont;
 
-    public CTFontGlyphFinder(CTFont ctFontPointSizeIrrelevant) {
+    public CtFontGlyphFinder(CTFont ctFontPointSizeIrrelevant) {
       _ctFont = ctFontPointSizeIrrelevant;
     }
     private IEnumerable<TGlyph> ToUintEnumerable(byte[] bytes) {
@@ -27,7 +29,7 @@ namespace CSharpMath.Apple {
     public TGlyph[] ToUintArray(byte[] bytes) {
       return ToUintEnumerable(bytes).ToArray();
     }
-    
+
 
     public byte[] ToByteArray(TGlyph[] glyphs) {
       byte[] r = new byte[glyphs.Length * 2];
@@ -49,7 +51,7 @@ namespace CSharpMath.Apple {
     }
 
     public ushort FindGlyphForCharacterAtIndex(int index, string str) {
-      
+
       var unicodeIndexes = StringInfo.ParseCombiningCharacters(str);
       int start = 0;
       int end = str.Length;

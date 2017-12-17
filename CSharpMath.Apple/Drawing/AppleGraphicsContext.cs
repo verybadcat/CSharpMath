@@ -14,8 +14,8 @@ using Foundation;
 namespace CSharpMath.Apple.Drawing {
   public class AppleGraphicsContext : IGraphicsContext<TFont, TGlyph> {
 
-    public AppleGraphicsContext() {
-      GlyphFinder = new UnicodeGlyphFinder();
+    public AppleGraphicsContext(IGlyphFinder<TGlyph> glyphFinder) {
+      GlyphFinder = glyphFinder;
     }
     public CGContext CgContext { get; set; }
 
