@@ -196,11 +196,12 @@ namespace CSharpMath.Display.Text {
         var endConnectorLength = _FontUnitsToPt(font, partInfo[_endConnectorKey].Value<int>());
         var startConnectorLength = _FontUnitsToPt(font, partInfo[_startConnectorKey].Value<int>());
         var fullAdvance = _FontUnitsToPt(font, partInfo[_advanceKey].Value<int>());
+        var glyphPartName = partInfo[_glyphKey].Value<string>();
         r.Add(new GlyphPart<TGlyph> {
           EndConnectorLength = endConnectorLength,
           StartConnectorLength = startConnectorLength,
           IsExtender = partInfo[_extenderKey].Value<bool>(),
-          Glyph = _glyphNameProvider.GetGlyph(glyphName)
+          Glyph = _glyphNameProvider.GetGlyph(glyphPartName)
         });
       }
       return r.ToArray();
