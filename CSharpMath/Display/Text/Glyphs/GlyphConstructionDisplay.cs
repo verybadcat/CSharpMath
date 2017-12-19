@@ -44,6 +44,7 @@ namespace CSharpMath.Display {
       context.SaveState();
       PointF delta = new PointF(Position.X, Position.Y - ShiftDown);
       context.Translate(delta);
+      context.SetTextPosition(new PointF());
       context.DrawGlyphsAtPoints(_glyphs, _mathFont, _glyphPositions);
       context.RestoreState();
     }

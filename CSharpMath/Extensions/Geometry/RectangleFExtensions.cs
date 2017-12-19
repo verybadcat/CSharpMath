@@ -25,9 +25,9 @@ namespace CSharpMath {
       => rect.Bottom;
 
     public static void GetAscentDescentWidth(this RectangleClass rect, out float ascent, out float descent, out float width) {
-      ascent = -rect.Bottom;
+      ascent = rect.Bottom;
       width = rect.Width;
-      descent = rect.Y;
+      descent = -rect.Y;
     }
   }
 }

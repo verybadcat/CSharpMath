@@ -13,7 +13,7 @@ namespace CSharpMath.Tests {
       string hello = "Hello";
       MathFont<TGlyph> font = new MathFont<TGlyph>(10);
       var provider = new TestGlyphBoundsProvider();
-      RectangleF bounds = provider.GetBoundingRectForGlyphs(font, hello.ToCharArray());
+      RectangleF bounds = provider.GetCombinedBoundingRectForGlyphs(font, hello.ToCharArray());
       Assertions.ApproximatelyEquals(bounds, 0, -2, 25, 9,  0.01);
     }
 
@@ -22,7 +22,7 @@ namespace CSharpMath.Tests {
       string america = "America";
       MathFont<TGlyph> font = new MathFont<TGlyph>(10);
       var provider = new TestGlyphBoundsProvider();
-      RectangleF bounds = provider.GetBoundingRectForGlyphs(font, america.ToCharArray());
+      RectangleF bounds = provider.GetCombinedBoundingRectForGlyphs(font, america.ToCharArray());
       Assertions.ApproximatelyEquals(bounds, 0, -2, 40, 9, 0.01);
     }
   }

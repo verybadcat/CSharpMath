@@ -3,6 +3,7 @@ using CSharpMath.FrontEnd;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CSharpMath.Display.Text {
   public class FontMathTable<TMathFont, TGlyph>
@@ -200,6 +201,7 @@ namespace CSharpMath.Display.Text {
         r.Add(new GlyphPart<TGlyph> {
           EndConnectorLength = endConnectorLength,
           StartConnectorLength = startConnectorLength,
+          FullAdvance = fullAdvance,
           IsExtender = partInfo[_extenderKey].Value<bool>(),
           Glyph = _glyphNameProvider.GetGlyph(glyphPartName)
         });
@@ -208,6 +210,42 @@ namespace CSharpMath.Display.Text {
     }
     public float MinConnectorOverlap(TMathFont font)
     => _ConstantFromTable(font, "MinConnectorOverlap");
+
+
+    private const string VerticalVariantsKey = "v_variants";
+    private const string HorizontalVariantsKey = "h_variants";
+    internal TGlyph[] GetVerticalVariantsForGlyph(TGlyph rawGlyph) 
+    {
+      var variants = _mathTable[VerticalVariantsKey];
+      return GetVariantsForGlyph(rawGlyph, variants).ToArray();
+    }
+
+    internal TGlyph[] GetHorizontalVariantsForGlyph(TGlyph rawGlyph)
+    {
+      var variants = _mathTable[HorizontalVariantsKey];
+      return GetVariantsForGlyph(rawGlyph, variants).ToArray();
+    }
+
+    private IEnumerable<TGlyph> GetVariantsForGlyph(TGlyph rawGlyph, JToken variants) {
+      var glyphName = _glyphNameProvider.GetGlyphName(rawGlyph);
+      var variantGlyphs = variants[glyphName];
+      var variantGlyphsArray = variantGlyphs as JArray;
+      if (variantGlyphsArray == null) {
+        var outputGlyph = _glyphNameProvider.GetGlyph(glyphName);
+         // but are they ever different?
+        if (!(outputGlyph.Equals(rawGlyph))) {
+          throw new Exception("Just wanted to see if this ever happens");
+        }
+        yield return outputGlyph;
+      } else {
+        foreach (var variantObj in variantGlyphsArray) {
+          var variantValue = variantObj as JValue;
+          var variantName = variantValue.ToString();
+          var aGlyph = _glyphNameProvider.GetGlyph(variantName);
+          yield return aGlyph;
+        }
+      }
+    }
     #endregion
   }
 

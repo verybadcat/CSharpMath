@@ -19,7 +19,9 @@ namespace CSharpMath.Display.Text {
     public override string ToString() => "AttributedGlyphRun " + Glyphs;
 
 
-
+    public AttributedGlyphRun() {
+      int x = 666;
+    }
   }
 
  

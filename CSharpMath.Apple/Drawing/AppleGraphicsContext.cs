@@ -37,7 +37,6 @@ namespace CSharpMath.Apple.Drawing {
     }
 
     public void DrawTextAtPoint(string text, TFont font, PointF point, float maxWidth = float.NaN) {
-      text.LogCharacters();
       var attributes = new CTStringAttributes
       {
         ForegroundColorFromContext = true,
@@ -64,6 +63,7 @@ namespace CSharpMath.Apple.Drawing {
     }
 
     public void Translate(PointF dxy) {
+      Debug.WriteLine("dx=" + dxy.X);
       CgContext.TranslateCTM(dxy.X, dxy.Y);
     }
 

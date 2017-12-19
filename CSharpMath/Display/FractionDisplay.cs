@@ -62,11 +62,10 @@ namespace CSharpMath.Display {
         this.Position.X + (this.Width - Denominator.Width) / 2,
         this.Position.Y - this.DenominatorDown);
 
-    private PointF _Position;
     public PointF Position {
-      get => _Position;
+      get => _currentPosition;
       set {
-        _Position = value;
+        _currentPosition = value;
         UpdateNumeratorAndDenominatorPositions();
       }
     }

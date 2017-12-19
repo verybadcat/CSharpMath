@@ -33,7 +33,7 @@ namespace CSharpMath.Display {
 
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
       context.SaveState();
-      context.Translate(this.Position);
+      context.SetTextPosition(this.Position);
       foreach (var run in Runs) {
         run.Draw(context);
       }

@@ -86,6 +86,7 @@ namespace CSharpMath.Display {
       context.SaveState();
       var translation = new PointF(Position.X + _radicalShift, Position.Y);
       context.Translate(translation);
+      context.SetTextPosition(new PointF());
       _radicalGlyph?.Draw(context);
       // Draw the VBOX
       // for the kern of, we don't need to draw anything.

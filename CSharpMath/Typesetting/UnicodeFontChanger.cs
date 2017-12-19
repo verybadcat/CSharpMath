@@ -381,8 +381,6 @@ namespace CSharpMath
       TLongChar unicode = StyleCharacter(c, outputFontStyle);
       unicode = ToLittleEndian(unicode);
       string utf32String = char.ConvertFromUtf32(unicode);
-      Debug.WriteLine(c.ToString() + " =>");
-      utf32String.LogCharacters();
       return utf32String;
     }
 
@@ -397,7 +395,6 @@ namespace CSharpMath
         builder.Append(changedGlyph);
       }
       var r = builder.ToString();
-      r.LogCharacters();
       return r;
     }
   }

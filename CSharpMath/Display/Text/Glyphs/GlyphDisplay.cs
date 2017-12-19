@@ -28,12 +28,17 @@ namespace CSharpMath.Display {
 
     public TGlyph Glyph { get; set; } 
 
-    public MathFont<TGlyph> Font { get; set; }
-    public GlyphDisplay(TGlyph glyph, Range range, MathFont<TGlyph> font) {
+    public TFont Font { get; set; }
+    public GlyphDisplay(TGlyph glyph, Range range, TFont font) {
       Glyph = glyph;
       Range = range;
       Font = font;
     }
-    public void Draw(IGraphicsContext<TFont, TGlyph> context) => throw new NotImplementedException();
+    public void Draw(IGraphicsContext<TFont, TGlyph> context) {
+      TGlyph[] glyphArray = { Glyph };
+      PointF[] positions = { new PointF(Position.X, Position.Y - ShiftDown)};
+      context.SetTextPosition(new PointF());
+      context.DrawGlyphsAtPoints(glyphArray, Font, positions);
+    }
   }
 }

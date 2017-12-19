@@ -23,7 +23,7 @@ namespace CSharpMath.Display {
       Run = run;
       Range = range;
       
-      var bounds = context.GlyphBoundsProvider.GetBoundingRectForGlyphs(font, run.Glyphs);
+      var bounds = context.GlyphBoundsProvider.GetCombinedBoundingRectForGlyphs(font, run.Glyphs);
       Width = bounds.Width;
       Ascent = Math.Max(0, bounds.YMax());
       Descent = Math.Max(0, -bounds.Y);
