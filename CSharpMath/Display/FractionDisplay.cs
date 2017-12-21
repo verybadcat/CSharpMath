@@ -7,7 +7,7 @@ using CSharpMath.Atoms;
 namespace CSharpMath.Display {
   public class FractionDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph>
     where TFont : MathFont<TGlyph> {
-    private PointF _currentPosition;
+    private PointF _position;
     private Range _range;
 
     // A display representing the numerator of the fraction. Its position is relative
@@ -28,7 +28,7 @@ namespace CSharpMath.Display {
     public FractionDisplay(MathListDisplay<TFont, TGlyph> numeratorDisplay, MathListDisplay<TFont, TGlyph> denominatorDisplay, PointF currentPosition, Range range) {
       Numerator = numeratorDisplay;
       Denominator = denominatorDisplay;
-      _currentPosition = currentPosition;
+      _position = currentPosition;
       _range = range;
       UpdateNumeratorAndDenominatorPositions();
     }
@@ -63,9 +63,9 @@ namespace CSharpMath.Display {
         this.Position.Y - this.DenominatorDown);
 
     public PointF Position {
-      get => _currentPosition;
+      get => _position;
       set {
-        _currentPosition = value;
+        _position = value;
         UpdateNumeratorAndDenominatorPositions();
       }
     }

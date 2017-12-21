@@ -23,10 +23,24 @@ namespace CSharpMath.Display {
       Run = run;
       Range = range;
       
-      var bounds = context.GlyphBoundsProvider.GetCombinedBoundingRectForGlyphs(font, run.Glyphs);
-      Width = bounds.Width;
-      Ascent = Math.Max(0, bounds.YMax());
-      Descent = Math.Max(0, -bounds.Y);
+      var width = context.GlyphBoundsProvider.GetTypographicWidth(font, run);
+      Width = (float)width;
+      _ComputeAscentDescent(context, font);
+    }
+    private void _ComputeAscentDescent(TypesettingContext<TFont, TGlyph> context, TFont font) {
+      var rects = context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(font, Run.Glyphs, Run.Glyphs.Length);
+      var tops = rects.Select(rect => rect.Bottom); // Convert to non-flipped naming here, 
+      var bottoms = rects.Select(rect => rect.Y);
+      float ascent = 0;
+      float descent = 0;
+      foreach (var top in tops) {
+        ascent = Math.Max(ascent, top);
+      }
+      foreach (var bottom in bottoms) {
+        descent = Math.Min(descent, bottom);
+      }
+      Ascent = ascent;
+      Descent = descent;
     }
     public RectangleF DisplayBounds
       => this.ComputeDisplayBounds();

@@ -14,12 +14,12 @@ namespace CSharpMath.Ios
     private const string RadicalSum = @"2 + \sqrt{3}";
     private const string Fraction = @"\frac{2}{34}";
     private const string RadicalFraction = @"2+ \frac{\sqrt{3}}{2}";
-    private const string IntPlusFraction = @"4\frac{2}{3}";
+    private const string IntPlusFraction = @"1\frac234";
 
     public override void ViewDidLoad()
     {
       View.BackgroundColor = UIColor.White;
-      var latexView = IosMathLabels.LatexView("5");
+      var latexView = IosMathLabels.LatexView(IntPlusFraction);
       latexView.BackgroundColor = UIColor.LightGray;
       latexView.SizeToFit();
       latexView.Frame = new CoreGraphics.CGRect(0, 20, latexView.Frame.Width, latexView.Frame.Height);

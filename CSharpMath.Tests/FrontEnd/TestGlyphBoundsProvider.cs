@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 using CSharpMath.Display;
 using System.Drawing;
 using TGlyph = System.Char;
-using TMathFont = CSharpMath.Display.MathFont<System.Char>;
+using TFont = CSharpMath.Display.MathFont<System.Char>;
+using CSharpMath.Display.Text;
 
 namespace CSharpMath.Tests.FrontEnd {
   public class TestGlyphBoundsProvider : IGlyphBoundsProvider<MathFont<TGlyph>, TGlyph> {
@@ -23,16 +24,13 @@ namespace CSharpMath.Tests.FrontEnd {
       return effectiveLength;
     }
 
-    public RectangleF GetCombinedBoundingRectForGlyphs(MathFont<char> font, TGlyph[] glyphs) {
-      int effectiveLength = GetEffectiveLength(glyphs);
-      float width = font.PointSize * effectiveLength * WidthPerCharacterPerFontSize;
-      float ascent = font.PointSize * AscentPerFontSize;
-      float descent = font.PointSize * DescentPerFontSize;
-      //  The y axis is NOT inverted. So our y coordinate is minus the descent, i.e. the rect bottom is the descent below the axis.
-      return new RectangleF(0, -descent, width, ascent + descent);
+    public double GetTypographicWidth(MathFont<char> font, AttributedGlyphRun<TFont, TGlyph> run) {
+      int effectiveLength = GetEffectiveLength(run.Glyphs);
+      double width = font.PointSize * effectiveLength * WidthPerCharacterPerFontSize;
+      return width;
     }
 
-    public RectangleF[] GetBoundingRectsForGlyphs(TMathFont font, TGlyph[] glyphs, int nVariants) {
+    public RectangleF[] GetBoundingRectsForGlyphs(TFont font, TGlyph[] glyphs, int nVariants) {
       RectangleF[] r = new RectangleF[nVariants];
       for (int i = 0; i < glyphs.Length; i++) {
         var glyph = glyphs[i];
