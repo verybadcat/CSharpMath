@@ -19,7 +19,7 @@ namespace CSharpMath.Ios
     public override void ViewDidLoad()
     {
       View.BackgroundColor = UIColor.White;
-      var latexView = IosMathLabels.LatexView(IntPlusFraction);
+      var latexView = IosMathLabels.LatexView("5");
       latexView.BackgroundColor = UIColor.LightGray;
       latexView.SizeToFit();
       latexView.Frame = new CoreGraphics.CGRect(0, 20, latexView.Frame.Width, latexView.Frame.Height);

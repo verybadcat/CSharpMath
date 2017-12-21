@@ -6,12 +6,12 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace CSharpMath.Display.Text {
-  public class FontMathTable<TMathFont, TGlyph>
-    where TMathFont: MathFont<TGlyph>{
+  public class FontMathTable<TFont, TGlyph>
+    where TFont: MathFont<TGlyph>{
     private JToken _mathTable;
-    private IFontMeasurer<TMathFont, TGlyph> _fontMeasurer;
+    private IFontMeasurer<TFont, TGlyph> _fontMeasurer;
     private IGlyphNameProvider<TGlyph> _glyphNameProvider;
-    private float _unitsPerEm(TMathFont font)
+    private float _unitsPerEm(TFont font)
       => _fontMeasurer.GetUnitsPerEm(font);
 
     private JObject _constantsDictionary
@@ -20,7 +20,10 @@ namespace CSharpMath.Display.Text {
     private JObject _assemblyTable
       => _mathTable["v_assembly"] as JObject;
 
-    private float _ConstantFromTable(TMathFont font, string constantName) {
+    private JObject _italicTable
+    => _mathTable["italic"] as JObject;
+
+    private float _ConstantFromTable(TFont font, string constantName) {
       var value = _constantsDictionary[constantName].Value<int>();
       return _FontUnitsToPt(font, value);
     }
@@ -30,21 +33,21 @@ namespace CSharpMath.Display.Text {
       // a font and uses _FontUnitsToPt, while this is just a straight percentage.
       => _constantsDictionary[name].Value<int>() / 100f;
 
-    private float _FontUnitsToPt(TMathFont font, int fontUnits)
+    private float _FontUnitsToPt(TFont font, int fontUnits)
       => fontUnits * font.PointSize / _unitsPerEm(font);
 
-    public float MuUnit(TMathFont font) => font.PointSize / 18f;
+    public float MuUnit(TFont font) => font.PointSize / 18f;
 
     public float RadicalDisplayStyleVerticalGap { get; internal set; }
     public float RadicalVerticalGap { get; internal set; }
 
-    public FontMathTable(IFontMeasurer<TMathFont, TGlyph> fontMeasurer, JToken mathTable, IGlyphNameProvider<TGlyph> glyphNameProvider) {
+    public FontMathTable(IFontMeasurer<TFont, TGlyph> fontMeasurer, JToken mathTable, IGlyphNameProvider<TGlyph> glyphNameProvider) {
       _fontMeasurer = fontMeasurer;
       _mathTable = mathTable;
       _glyphNameProvider = glyphNameProvider;
     }
 
-    public float GetStyleSize(LineStyle style, TMathFont font) {
+    public float GetStyleSize(LineStyle style, TFont font) {
       float originalSize = font.PointSize;
       switch (style) {
         case LineStyle.Display:
@@ -63,113 +66,124 @@ namespace CSharpMath.Display.Text {
     public float ScriptScaleDown => PercentFromTable("ScriptPercentScaleDown");
     public float ScriptScriptScaleDown => PercentFromTable("ScriptScriptPercentScaleDown");
 
-    internal float GetItalicCorrection(object glyph) {
-      // TODO: write. See GetItalicCorrection in MTFontMathTable.m.
-      return 0;
+    /*
+     *     NSDictionary* italics = (NSDictionary*) _mathTable[kItalic];
+    NSString* glyphName = [self.font getGlyphName:glyph];
+    NSNumber* val = (NSNumber*) italics[glyphName];
+    // if val is nil, this returns 0.
+    return [self fontUnitsToPt:val.intValue];*/
+    internal float GetItalicCorrection(TFont font, TGlyph glyph) {
+      var glyphName = _glyphNameProvider.GetGlyphName(glyph);
+      var entry = _italicTable[glyphName];
+      if (entry == null) {
+        return 0;
+      }
+      var intEntry = entry.Value<int>();
+      return _FontUnitsToPt(font, intEntry);
     }
-    public float FractionDelimiterSize(TMathFont font)
+    public float FractionDelimiterSize(TFont font)
     => font.PointSize * 1.01f;
 
-    public float FractionDelimiterDisplayStyleSize(TMathFont font)
+    public float FractionDelimiterDisplayStyleSize(TFont font)
     => font.PointSize * 2.39f;
 
-    public float SuperscriptBaselineDropMax(TMathFont font)
+    public float SuperscriptBaselineDropMax(TFont font)
       => _ConstantFromTable(font, @"SuperscriptShiftUp");
 
-    public float SuperscriptBaselineDropMin(TMathFont font)
+    public float SuperscriptBaselineDropMin(TFont font)
       => _ConstantFromTable(font, "SuperscriptBaselineDropMax");
 
-    public float SubscriptBaselineDropMin(TMathFont font)
+    public float SubscriptBaselineDropMin(TFont font)
       => _ConstantFromTable(font, "SubscriptBaselineDropMin");
 
-    internal float SubscriptShiftDown(TMathFont font)
+    internal float SubscriptShiftDown(TFont font)
       => _ConstantFromTable(font, "SubscriptShiftDown");
 
-    internal float SubscriptTopMax(TMathFont font)
+    internal float SubscriptTopMax(TFont font)
       => _ConstantFromTable(font, "SubscriptTopMax");
 
-    internal float SuperscriptShiftUp(TMathFont font)
+    internal float SuperscriptShiftUp(TFont font)
       => _ConstantFromTable(font, "SuperscriptShiftUp");
 
-    internal float SuperscriptShiftUpCramped(TMathFont font)
+    internal float SuperscriptShiftUpCramped(TFont font)
       => _ConstantFromTable(font, "SuperscriptShiftUpCramped");
 
-    internal float SuperscriptBottomMin(TMathFont font)
+    internal float SuperscriptBottomMin(TFont font)
       => _ConstantFromTable(font, "SuperscriptBottomMin");
 
-    internal float SpaceAfterScript(TMathFont font)
+    internal float SpaceAfterScript(TFont font)
       => _ConstantFromTable(font, "SpaceAfterScript");
 
-    internal float SubSuperscriptGapMin(TMathFont font)
+    internal float SubSuperscriptGapMin(TFont font)
       => _ConstantFromTable(font, "SubSuperscriptGapMin");
 
-    internal float SuperscriptBottomMaxWithSubscript(TMathFont font)
+    internal float SuperscriptBottomMaxWithSubscript(TFont font)
       => _ConstantFromTable(font, "SuperscriptBottomMaxWithSubscript");
 
     #region fractions
-    internal float FractionNumeratorDisplayStyleShiftUp(TMathFont font)
+    internal float FractionNumeratorDisplayStyleShiftUp(TFont font)
       => _ConstantFromTable(font, "FractionNumeratorDisplayStyleShiftUp");
 
-    internal float FractionNumeratorShiftUp(TMathFont font)
+    internal float FractionNumeratorShiftUp(TFont font)
   => _ConstantFromTable(font, "FractionNumeratorShiftUp");
 
-    internal float StackTopDisplayStyleShiftUp(TMathFont font)
+    internal float StackTopDisplayStyleShiftUp(TFont font)
   => _ConstantFromTable(font, "StackTopDisplayStyleShiftUp");
 
-    internal float StackTopShiftUp(TMathFont font)
+    internal float StackTopShiftUp(TFont font)
   => _ConstantFromTable(font, "StackTopShiftUp");
 
-    internal float FractionNumeratorDisplayStyleGapMin(TMathFont font)
+    internal float FractionNumeratorDisplayStyleGapMin(TFont font)
 => _ConstantFromTable(font, "FractionNumDisplayStyleGapMin");
 
-    internal float FractionNumeratorGapMin(TMathFont font)
+    internal float FractionNumeratorGapMin(TFont font)
 => _ConstantFromTable(font, "FractionNumeratorGapMin");
 
-    internal float FractionDenominatorDisplayStyleShiftDown(TMathFont font)
+    internal float FractionDenominatorDisplayStyleShiftDown(TFont font)
 => _ConstantFromTable(font, "FractionDenominatorDisplayStyleShiftDown");
 
-    internal float FractionDenominatorShiftDown(TMathFont font)
+    internal float FractionDenominatorShiftDown(TFont font)
 => _ConstantFromTable(font, "FractionDenominatorShiftDown");
 
-    internal float StackBottomDisplayStyleShiftDown(TMathFont font)
+    internal float StackBottomDisplayStyleShiftDown(TFont font)
 => _ConstantFromTable(font, "StackBottomDisplayStyleShiftDown");
 
-    internal float StackBottomShiftDown(TMathFont font)
+    internal float StackBottomShiftDown(TFont font)
 => _ConstantFromTable(font, "StackBottomShiftDown");
 
-    internal float FractionDenominatorDisplayStyleGapMin(TMathFont font)
+    internal float FractionDenominatorDisplayStyleGapMin(TFont font)
 => _ConstantFromTable(font, "FractionDenomDisplayStyleGapMin");
 
-    internal float FractionDenominatorGapMin(TMathFont font)
+    internal float FractionDenominatorGapMin(TFont font)
 => _ConstantFromTable(font, "FractionDenominatorGapMin");
 
-    internal float AxisHeight(TMathFont font)
+    internal float AxisHeight(TFont font)
 => _ConstantFromTable(font, "AxisHeight");
 
-    internal float FractionRuleThickness(TMathFont font)
+    internal float FractionRuleThickness(TFont font)
 => _ConstantFromTable(font, "FractionRuleThickness");
 
-    internal float StackDisplayStyleGapMin(TMathFont font)
+    internal float StackDisplayStyleGapMin(TFont font)
 => _ConstantFromTable(font, "StackDisplayStyleGapMin");
 
-    internal float StackGapMin(TMathFont font)
+    internal float StackGapMin(TFont font)
 => _ConstantFromTable(font, "StackGapMin");
     #endregion
 
     #region radicals
-    internal float RadicalKernBeforeDegree(TMathFont font)
+    internal float RadicalKernBeforeDegree(TFont font)
       => _ConstantFromTable(font, "RadicalKernBeforeDegree");
 
-    internal float RadicalKernAfterDegree(TMathFont font)
+    internal float RadicalKernAfterDegree(TFont font)
   => _ConstantFromTable(font, "RadicalKernAfterDegree");
 
-    internal float RadicalDegreeBottomRaisePercent(TMathFont font)
+    internal float RadicalDegreeBottomRaisePercent(TFont font)
       => _ConstantFromTable(font, "RadicalDegreeBottomRaisePercent");
 
-    internal float RadicalRuleThickness(TMathFont font)
+    internal float RadicalRuleThickness(TFont font)
       => _ConstantFromTable(font, "RadicalRuleThickness");
 
-    internal float RadicalExtraAscender(TMathFont font)
+    internal float RadicalExtraAscender(TFont font)
       => _ConstantFromTable(font, "RadicalExtraAscender");
     #endregion
     #region glyph assembly
@@ -180,7 +194,7 @@ namespace CSharpMath.Display.Text {
     private const string _startConnectorKey = "startConnector";
     private const string _extenderKey = "extender";
     private const string _glyphKey = "glyph";
-    public GlyphPart<TGlyph>[] GetVerticalGlyphAssembly(TGlyph rawGlyph, TMathFont font) {
+    public GlyphPart<TGlyph>[] GetVerticalGlyphAssembly(TGlyph rawGlyph, TFont font) {
       var glyphName = _glyphNameProvider.GetGlyphName(rawGlyph);
       var glyphAssemblyInfo = _assemblyTable[glyphName];
       if (glyphAssemblyInfo == null) {
@@ -208,7 +222,7 @@ namespace CSharpMath.Display.Text {
       }
       return r.ToArray();
     }
-    public float MinConnectorOverlap(TMathFont font)
+    public float MinConnectorOverlap(TFont font)
     => _ConstantFromTable(font, "MinConnectorOverlap");
 
 

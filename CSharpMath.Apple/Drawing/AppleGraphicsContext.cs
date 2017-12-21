@@ -24,12 +24,14 @@ namespace CSharpMath.Apple.Drawing {
 
     public void DrawGlyphsAtPoints(TGlyph[] glyphs, TFont font, PointF[] points)
     {
+      Debug.WriteLine($"{glyphs.Length} Glyphs");
       var ctFont = font.CtFont;
       var cgPoints = points.Select(p => (CGPoint)p).ToArray();
       ctFont.DrawGlyphs(CgContext, glyphs, cgPoints);
     }
 
     public void DrawLine(float x1, float y1, float x2, float y2, float lineThickness) {
+      Debug.WriteLine($"DrawLine {x1} {y1} {x2} {y2}");
       CgContext.MoveTo(x1, y1);
       CgContext.SetLineWidth(lineThickness);
       CgContext.AddLineToPoint(x2, y2);
@@ -37,6 +39,7 @@ namespace CSharpMath.Apple.Drawing {
     }
 
     public void DrawTextAtPoint(string text, TFont font, PointF point, float maxWidth = float.NaN) {
+      Debug.WriteLine($"Text {text} {point.X} {point.Y}");
       var attributes = new CTStringAttributes
       {
         ForegroundColorFromContext = true,
@@ -51,19 +54,22 @@ namespace CSharpMath.Apple.Drawing {
     }
 
     public void RestoreState() {
+      Debug.WriteLine("Restore");
       CgContext.RestoreState();
     }
 
     public void SaveState() {
+      Debug.WriteLine("Save");
       CgContext.SaveState();
     }
 
     public void SetTextPosition(PointF position) {
+      Debug.WriteLine("SetTextPosition " + position.X + " " + position.Y);
       CgContext.TextPosition = position;
     }
 
     public void Translate(PointF dxy) {
-      Debug.WriteLine("dx=" + dxy.X);
+      Debug.WriteLine("translate " + dxy.X + " " + dxy.Y);
       CgContext.TranslateCTM(dxy.X, dxy.Y);
     }
 

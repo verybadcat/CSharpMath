@@ -9,9 +9,11 @@ using TGlyph = System.UInt16;
 using TFont = CSharpMath.Apple.AppleMathFont;
 using CoreText;
 using CSharpMath.Apple.Drawing;
+using System;
 #if __IOS__
 using NView = UIKit.UIView;
 using NColor = UIKit.UIColor;
+using NContentInsets = UIKit.UIEdgeInsets;
 #else
 using NView = AppKit.NSView;
 #endif
@@ -28,13 +30,14 @@ namespace CSharpMath.Apple {
       Latex = latex;
       _mathList = MathLists.FromString(latex);
       InvalidateIntrinsicContentSize();
-      var fontSize = 40;
-      var appleFont = new TFont("latinmodern-math", fontSize);
-      var typesetting = AppleTypesetters.CreateLatinMath();
-      _displayList = typesetting.CreateLine(_mathList, appleFont, LineStyle.Display);
+      _CreateDisplayList();
       SetNeedsLayout();
     }
+    public float FontSize { get; set; } = 40f;
     public ColumnAlignment TextAlignment { get; set; } = ColumnAlignment.Left;
+    public NContentInsets ContentInsets { get; set; }
+
+
 
     private IMathList _mathList;
 
@@ -61,6 +64,40 @@ namespace CSharpMath.Apple {
       return r;
     }
 
+    public override void LayoutSubviews()
+    {
+      if (_mathList!=null) {
+        float displayWidth = _displayList.Width;
+        nfloat textX = 0;
+        switch (TextAlignment) {
+          case ColumnAlignment.Left:
+            textX = ContentInsets.Left;
+            break;
+          case ColumnAlignment.Center:
+            textX = ContentInsets.Left + (Bounds.Size.Width - ContentInsets.Left - ContentInsets.Right - displayWidth) / 2;
+            break;
+          case ColumnAlignment.Right:
+            textX = Bounds.Size.Width - ContentInsets.Right - displayWidth;
+            break;
+        }
+        nfloat availableHeight = Bounds.Size.Height - ContentInsets.Top - ContentInsets.Bottom;
+        nfloat contentHeight = _displayList.Ascent + _displayList.Descent;
+        if (contentHeight < FontSize/2) {
+          contentHeight = FontSize / 2;
+        }
+        nfloat textY = (contentHeight / 2) + ContentInsets.Bottom + _displayList.Descent;
+        _displayList.Position = new System.Drawing.PointF((float)textX, (float)textY);
+      }
+    }
+
+    private void _CreateDisplayList()
+    {
+      var fontSize = FontSize;
+      var appleFont = new TFont("latinmodern-math", fontSize);
+      var typesetting = AppleTypesetters.CreateLatinMath();
+      _displayList = typesetting.CreateLine(_mathList, appleFont, LineStyle.Display);
+    }
+
     public override void Draw(CGRect rect) {
       base.Draw(rect);
       if (_mathList != null) {
@@ -70,7 +107,6 @@ namespace CSharpMath.Apple {
           CgContext = cgContext
         };
         cgContext.SaveState();
-        cgContext.TranslateCTM(10, 40);
         _displayList.Draw(appleContext);
         cgContext.RestoreState();
       }
