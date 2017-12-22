@@ -38,15 +38,15 @@ namespace CSharpMath.Apple.Drawing {
       CgContext.DrawPath(CGPathDrawingMode.Stroke);
     }
 
-    public void DrawTextAtPoint(string text, TFont font, PointF point, float maxWidth = float.NaN) {
-      Debug.WriteLine($"Text {text} {point.X} {point.Y}");
+    public void DrawTextWithOffset(string text, TFont font, PointF offset, float maxWidth = float.NaN) {
+      Debug.WriteLine($"Text {text} {offset.X} {offset.Y}");
       var attributes = new CTStringAttributes
       {
         ForegroundColorFromContext = true,
         Font = font.CtFont
       };
       CgContext.SetStrokeColor(UIColor.Red.CGColor);
-      CgContext.TextPosition = point;
+      CgContext.TextPosition = new CGPoint(CgContext.TextPosition.X + offset.X, CgContext.TextPosition.Y + offset.Y);
       var attributedString = new NSAttributedString(text, attributes);
       using (var textLine = new CTLine(attributedString)) {
         textLine.Draw(CgContext);

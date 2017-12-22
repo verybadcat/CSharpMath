@@ -9,8 +9,7 @@ using System.Linq;
 using System.Text;
 
 namespace CSharpMath.Display {
-  /// <summary>Corresponds to MTCTLineDisplay in iOSMath. Will need to
-  /// figure out Core Text a bit in order to fill this out.</summary> 
+  /// <summary>Corresponds to MTCTLineDisplay in iOSMath.</summary> 
   public class TextRunDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph>
       where TFont : MathFont<TGlyph> {
     public AttributedGlyphRun<TFont, TGlyph> Run { get; private set; }
@@ -49,7 +48,7 @@ namespace CSharpMath.Display {
       context.SaveState();
       var text = Run.Text;
       var font = Run.Font;
-      context.DrawTextAtPoint(text, font, this.Position);
+      context.DrawTextWithOffset(text, font, Position);
       context.RestoreState();
     }
     public Range Range { get; set; }
