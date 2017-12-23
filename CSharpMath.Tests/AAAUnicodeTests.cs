@@ -47,7 +47,7 @@ namespace CSharpMath.Tests {
       return r;
     }
 
- //   [Fact]
+    [Fact]
     public void TestBitConverter() {
       var bytes = new byte[] { 10, 20, 30, 40, 50 };
       var shorts = ToUintArray(bytes);
@@ -62,10 +62,6 @@ namespace CSharpMath.Tests {
     }
 
 
-    [Fact]
-    public void ShouldFail() {
-      Assert.False(true);
-    }
 
     [Fact]
     public void TestUtf32()
@@ -79,7 +75,6 @@ namespace CSharpMath.Tests {
       var char1 = chars[1];
       Assert.Equal(55349, char0);
       Assert.Equal(56410, char1);
-      Assert.False(true);
     }
   }
 }

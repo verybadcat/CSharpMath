@@ -40,9 +40,9 @@ namespace CSharpMath.Tests {
       Assert.Equal(new PointF(), line.Position);
       Assert.Equal(new Range(0, 1), line.Range);
       Assert.False(line.HasScript);
-
+      var descent = display.Descent;
       Assertions.ApproximatelyEqual(14, display.Ascent, 0.01);
-      Assertions.ApproximatelyEqual(4, display.Descent, 0.01);
+      Assertions.ApproximatelyEqual(4, descent, 0.01);
       Assertions.ApproximatelyEqual(10, display.Width, 0.01);
       Assert.Equal(display.Ascent, line.Ascent);
       Assert.Equal(display.Descent, line.Descent);

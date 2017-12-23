@@ -36,7 +36,7 @@ namespace CSharpMath.Display {
         ascent = Math.Max(ascent, top);
       }
       foreach (var bottom in bottoms) {
-        descent = Math.Min(descent, bottom);
+        descent = Math.Max(descent, -bottom);
       }
       Ascent = ascent;
       Descent = descent;
