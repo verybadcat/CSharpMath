@@ -33,7 +33,7 @@ namespace CSharpMath.Apple {
       _CreateDisplayList();
       SetNeedsLayout();
     }
-    public float FontSize { get; set; } = 40f;
+    public float FontSize { get; set; } = 30f;
     public ColumnAlignment TextAlignment { get; set; } = ColumnAlignment.Left;
     public NContentInsets ContentInsets { get; set; }
 
@@ -59,8 +59,6 @@ namespace CSharpMath.Apple {
     public override CGSize SizeThatFits(CGSize size)
     {
       var r = _displayList.ComputeDisplayBounds().Size;
-      r.Height += 50;
-      r.Width += 50;
       return r;
     }
 

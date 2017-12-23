@@ -35,11 +35,13 @@ namespace CSharpMath.Display {
       Font = font;
     }
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
+      context.SaveState();
       TGlyph[] glyphArray = { Glyph };
       PointF[] positions = { new PointF()};
       context.Translate(new PointF(Position.X, Position.Y - ShiftDown));
       context.SetTextPosition(new PointF());
       context.DrawGlyphsAtPoints(glyphArray, Font, positions);
+      context.RestoreState();
     }
   }
 }

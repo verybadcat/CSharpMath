@@ -24,7 +24,8 @@ namespace CSharpMath.Apple.Drawing {
 
     public void DrawGlyphsAtPoints(TGlyph[] glyphs, TFont font, PointF[] points)
     {
-      Debug.WriteLine($"{glyphs.Length} Glyphs");
+      var glyphStrings = string.Join(" ", glyphs.Select(g => ((int)g).ToString()).ToArray());
+      Debug.WriteLine($"glyphs {glyphStrings}");
       var ctFont = font.CtFont;
       var cgPoints = points.Select(p => (CGPoint)p).ToArray();
       ctFont.DrawGlyphs(CgContext, glyphs, cgPoints);

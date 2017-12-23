@@ -9,7 +9,7 @@ namespace CSharpMath.Ios
     {
     }
 
-    private const string QuadraticFormula = @"y = -b \pm \frac{\sqrt{b^2-4ac}}{2a}";
+    private const string QuadraticFormula = @"x = -b \pm \frac{\sqrt{b^2-4ac}}{2a}";
     private const string NestedRadical = @"\sqrt{\sqrt{x}}";
     private const string Radical = @"\sqrt{3}";
     private const string RadicalSum = @"2 + \sqrt{3}";
@@ -20,7 +20,7 @@ namespace CSharpMath.Ios
     public override void ViewDidLoad()
     {
       View.BackgroundColor = UIColor.White;
-      var latexView = IosMathLabels.LatexView(@"\sqrt{x}");
+      var latexView = IosMathLabels.LatexView("x=");
       latexView.BackgroundColor = UIColor.LightGray;
       var size = latexView.SizeThatFits(new CoreGraphics.CGSize(370, 500));
       latexView.Frame = new CoreGraphics.CGRect(0, 20, 320, 180);
