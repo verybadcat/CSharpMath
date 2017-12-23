@@ -36,8 +36,7 @@ namespace CSharpMath.Apple {
     }
 
     public double GetTypographicWidth(TFont font, AttributedGlyphRun<TFont, TGlyph> run) {
-      var attributes = AppleAttributeDictionaryFactory.CtFromAttributedGlyphRun(run);
-      var aString = new NSAttributedString(run.Text, attributes);
+      var aString = run.ToNsAttributedString();
       var ctLine = new CTLine(aString);
       var typographicBounds = ctLine.GetTypographicBounds();
       ctLine.Dispose();

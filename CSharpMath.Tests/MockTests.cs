@@ -5,6 +5,7 @@ using System.Drawing;
 using Xunit;
 using TGlyph = System.Char;
 using CSharpMath.Display.Text;
+using System.Linq;
 
 namespace CSharpMath.Tests {
   // purpose of this class is to make sure our mocks behave as expected.
@@ -17,7 +18,7 @@ namespace CSharpMath.Tests {
       var glyphRun = new AttributedGlyphRun<MathFont<TGlyph>, TGlyph>
       {
         Font = font,
-        Glyphs = hello.ToCharArray(),
+        KernedGlyphs = hello.ToCharArray().Select(c => new KernedGlyph<char>(c)).ToArray(),
       };
       var width = provider.GetTypographicWidth(font, glyphRun);
       Assertions.ApproximatelyEqual(width, 25,  0.01);
@@ -31,7 +32,7 @@ namespace CSharpMath.Tests {
       var glyphRun = new AttributedGlyphRun<MathFont<TGlyph>, TGlyph>
       {
         Font = font,
-        Glyphs = america.ToCharArray(),
+        KernedGlyphs = america.ToCharArray().Select(c => new KernedGlyph<char>(c)).ToArray(),
       };
       var width = provider.GetTypographicWidth(font, glyphRun);
       Assertions.ApproximatelyEqual(width, 40, 0.01);

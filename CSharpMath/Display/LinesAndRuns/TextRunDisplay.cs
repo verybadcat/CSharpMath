@@ -27,7 +27,7 @@ namespace CSharpMath.Display {
       _ComputeAscentDescent(context, font);
     }
     private void _ComputeAscentDescent(TypesettingContext<TFont, TGlyph> context, TFont font) {
-      var rects = context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(font, Run.Glyphs, Run.Glyphs.Length);
+      var rects = context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(font, Run.Glyphs, Run.KernedGlyphs.Count());
       var tops = rects.Select(rect => rect.Bottom); // Convert to non-flipped naming here, 
       var bottoms = rects.Select(rect => rect.Y);
       float ascent = 0;
@@ -48,7 +48,7 @@ namespace CSharpMath.Display {
       context.SaveState();
       var text = Run.Text;
       var font = Run.Font;
-      context.DrawTextWithOffset(text, font, Position);
+      context.DrawGlyphRunWithOffset(Run, Position);
       context.RestoreState();
     }
     public Range Range { get; set; }
