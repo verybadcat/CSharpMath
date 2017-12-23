@@ -20,9 +20,9 @@ namespace CSharpMath.Ios
     public override void ViewDidLoad()
     {
       View.BackgroundColor = UIColor.White;
-      var latexView = IosMathLabels.LatexView("x=");
+      var latexView = IosMathLabels.LatexView(QuadraticFormula);
       latexView.BackgroundColor = UIColor.LightGray;
-      var size = latexView.SizeThatFits(new CoreGraphics.CGSize(370, 500));
+      var size = latexView.SizeThatFits(new CoreGraphics.CGSize(370, 180));
       latexView.Frame = new CoreGraphics.CGRect(0, 20, 320, 180);
       View.Add(latexView);
     }
