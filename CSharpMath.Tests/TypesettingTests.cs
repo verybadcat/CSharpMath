@@ -143,7 +143,7 @@ namespace CSharpMath.Tests {
       Assert.NotNull(super1);
       Assert.Equal(LinePosition.Supersript, super1.MyLinePosition);
       var super1Position = super1.Position;
-      Assertions.ApproximatePoint(10, 7.26, super1Position, 0.01); // may change as we implement more details?
+      Assertions.ApproximatePoint(10.32, 7.26, super1Position, 0.01); // may change as we implement more details?
       Assert.Equal(new Range(0, 1), super1.Range);
       Assert.False(super1.HasScript);
       Assert.Equal(0, super1.IndexInParent);
@@ -237,7 +237,7 @@ namespace CSharpMath.Tests {
 
       var display2 = display.Displays[1] as MathListDisplay<TFont, TGlyph>;
       Assert.Equal(LinePosition.Supersript, display2.MyLinePosition);
-      Assertions.ApproximatePoint(10, 9.68, display2.Position, 0.01);
+      Assertions.ApproximatePoint(10.32, 9.68, display2.Position, 0.01);
       Assert.Equal(new Range(0, 1), display2.Range);
       Assert.False(display2.HasScript);
       Assert.Equal(0, display2.IndexInParent);
@@ -268,7 +268,7 @@ namespace CSharpMath.Tests {
 
       Assertions.ApproximatelyEqual(19.48, display.Ascent, 0.01);
       Assertions.ApproximatelyEqual(8.92, display.Descent, 0.01);
-      Assertions.ApproximatelyEqual(17, display.Width, 0.01);
+      Assertions.ApproximatelyEqual(17.32, display.Width, 0.01);
       Assertions.ApproximatelyEqual(display.Ascent, display2.Position.Y + line2.Ascent, 0.01);
       Assertions.ApproximatelyEqual(display.Descent, line3.Descent - display3.Position.Y, 0.01);
     }
@@ -435,7 +435,7 @@ namespace CSharpMath.Tests {
 
       Assertions.ApproximatelyEqual(14, display.Ascent, 0.01);
       Assertions.ApproximatelyEqual(4, display.Descent, 0.01);
-      Assertions.ApproximatelyEqual(60, display.Width, 0.01);
+      Assertions.ApproximatelyEqual(80, display.Width, 0.01);
     }
 
     [Fact]

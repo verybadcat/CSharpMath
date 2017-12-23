@@ -66,7 +66,6 @@ namespace CSharpMath.Tests {
     [Fact]
     public void TestUtf32()
     {
-      Assert.False(true);
       var input = 0x0001D45A; // mathematical italic small m
 
       var stringified = Char.ConvertFromUtf32(input);
