@@ -33,7 +33,7 @@ namespace CSharpMath.Apple {
       _CreateDisplayList();
       SetNeedsLayout();
     }
-    public float FontSize { get; set; } = 30f;
+    public float FontSize { get; set; } = 20f;
     public ColumnAlignment TextAlignment { get; set; } = ColumnAlignment.Left;
     public NContentInsets ContentInsets { get; set; }
 
@@ -49,10 +49,11 @@ namespace CSharpMath.Apple {
 
     private readonly TypesettingContext<TFont, ushort> _typesettingContext;
 
-    public AppleLatexView(TypesettingContext<TFont, TGlyph> typesettingContext) {
+    public AppleLatexView(TypesettingContext<TFont, TGlyph> typesettingContext, float fontSize) {
       Layer.GeometryFlipped = true;
       BackgroundColor = NColor.Clear;
       TextColor = NColor.Black;
+      FontSize = fontSize;
       _typesettingContext = typesettingContext;
     }
 
