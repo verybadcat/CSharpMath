@@ -36,7 +36,8 @@ namespace CSharpMath.Display {
     }
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
       TGlyph[] glyphArray = { Glyph };
-      PointF[] positions = { new PointF(Position.X, Position.Y - ShiftDown)};
+      PointF[] positions = { new PointF()};
+      context.Translate(new PointF(Position.X, Position.Y - ShiftDown));
       context.SetTextPosition(new PointF());
       context.DrawGlyphsAtPoints(glyphArray, Font, positions);
     }
