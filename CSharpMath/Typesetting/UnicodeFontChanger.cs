@@ -80,7 +80,7 @@ namespace CSharpMath
       // These greek symbols that always appear in unicode in this particular order
       // after the alphabet. 
       // The symbols are epsilon, vartheta, varkappa, phi, varrho, and varpi.
-      TChar[] greekSymbols = { '\x03F5', '\x03D1', '\x03F0', '\x03F1', '\x03D6' };
+      TChar[] greekSymbols = { '\x03F5', '\x03D1', '\x03F0', '\x03D5', '\x03F1', '\x03D6' };
       return Array.IndexOf(greekSymbols, c);
     }
 
