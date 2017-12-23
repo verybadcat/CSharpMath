@@ -421,13 +421,13 @@ namespace CSharpMath {
       }
     }
 
-    private float _radicalVerticalGap => (_style == LineStyle.Display)
-      ? _mathTable.RadicalDisplayStyleVerticalGap
-      : _mathTable.RadicalVerticalGap;
+    private float _radicalVerticalGap(TFont font) => (_style == LineStyle.Display)
+      ? _mathTable.RadicalDisplayStyleVerticalGap(font)
+                    : _mathTable.RadicalVerticalGap(font);
 
     private RadicalDisplay<TFont, TGlyph> MakeRadical(IMathList radicand, Range range) {
       var innerDisplay = _CreateLine(radicand, _font, _context, _style, true);
-      var clearance = _radicalVerticalGap;
+      var clearance = _radicalVerticalGap(_styleFont);
       var radicalRuleThickness = _mathTable.RadicalRuleThickness(_styleFont);
       var radicalHeight = innerDisplay.Ascent + innerDisplay.Descent + clearance + radicalRuleThickness;
 
@@ -437,7 +437,9 @@ namespace CSharpMath {
       // Latex computes delta as descent - (h(inner) + d(inner) + clearance)
       // but since we may not have ascent == thickness, we modify the delta calculation slightly.
       // If the font designer followes Latex conventions, it will be identical.
-      var delta = (glyph.Descent - glyph.Ascent) - (innerDisplay.Ascent + innerDisplay.Descent + clearance + radicalRuleThickness);
+      var descent = glyph.Descent;
+      var ascent = glyph.Ascent;
+      var delta = (glyph.Descent + glyph.Ascent) - (innerDisplay.Ascent + innerDisplay.Descent + clearance + radicalRuleThickness);
       if (delta > 0) {
         clearance += delta / 2;
       }

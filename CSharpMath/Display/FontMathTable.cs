@@ -38,8 +38,8 @@ namespace CSharpMath.Display.Text {
 
     public float MuUnit(TFont font) => font.PointSize / 18f;
 
-    public float RadicalDisplayStyleVerticalGap { get; internal set; }
-    public float RadicalVerticalGap { get; internal set; }
+    public float RadicalDisplayStyleVerticalGap(TFont font) => _ConstantFromTable(font, "RadicalDisplayStyleVerticalGap");
+    public float RadicalVerticalGap(TFont font) => _ConstantFromTable(font, "RadicalVerticalGap");
 
     public FontMathTable(IFontMeasurer<TFont, TGlyph> fontMeasurer, JToken mathTable, IGlyphNameProvider<TGlyph> glyphNameProvider) {
       _fontMeasurer = fontMeasurer;
