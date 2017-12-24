@@ -20,10 +20,14 @@ namespace CSharpMath.Apple {
       _glyphFinder = glyphFinder;
     }
 
-    public float GetAdvancesForGlyphs(TFont font, TGlyph[] glyphs) {
+    public float[] GetAdvancesForGlyphs(TFont font, TGlyph[] glyphs) {
       var ctFont = font.CtFont;
-      var r = ctFont.GetAdvancesForGlyphs(CTFontOrientation.Default, glyphs);
-      return (float)r;
+      var nGlyphs = glyphs.Length;
+      var advanceSizes = new CGSize[nGlyphs];
+      var combinedAdvance = ctFont.GetAdvancesForGlyphs(CTFontOrientation.Default, glyphs, advanceSizes, nGlyphs);
+
+      var advances = Enumerable.Append(advanceSizes.Select(a => (float)a.Width), (float)combinedAdvance).ToArray();
+      return advances;
     }
 
     public RectangleF[] GetBoundingRectsForGlyphs(TFont font, ushort[] glyphs, int nVariants)

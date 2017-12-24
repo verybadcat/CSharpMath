@@ -26,7 +26,10 @@ namespace CSharpMath.Ios
                             a\alpha + b\\gamma & a\beta + b \delta \\
                             c\alpha + d\\gamma & c\beta + d \delta 
                             \end{pmatrix}";
+    private const string LeftRight = @"\left(\frac23\right)";
+    private const string LeftRightMinus = @"\left(\frac23\right)-";
     private const string LeftSide = @"\frac{1}{\left(\sqrt{\phi \sqrt{5}}-\phi\right) e^{\frac25 \pi}}";
+    private const string LeftSidePortion = @"\sqrt{\phi \sqrt{5}}";
     private const string DeeplyNestedFraction = @"\frac{1}{\left(\sqrt{\phi \sqrt{5}}-\phi\right) e^{\frac25 \pi}} \
 = 1+\frac{e^{-2\pi}} {1 +\frac{e^{-4\pi}} {1+\frac{e^{-6\pi}} {1+\frac{e^{-8\pi}} {1+\cdots} } } }";
     private const string NestedFraction = @"\frac{e^{-6\pi}} {1+\frac{e^{-8\pi}} {1+\cdots} }";
@@ -41,7 +44,7 @@ namespace CSharpMath.Ios
     {
       View.BackgroundColor = UIColor.White;
       /// WJWJWJ Set latex here.
-      var latexView = IosMathLabels.LatexView(DeeplyNestedFraction, 15);
+      var latexView = IosMathLabels.LatexView(LeftRightMinus, 15);
       latexView.BackgroundColor = UIColor.LightGray;
       var size = latexView.SizeThatFits(new CoreGraphics.CGSize(370, 180));
       latexView.Frame = new CoreGraphics.CGRect(0, 20, 320, 180);

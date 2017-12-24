@@ -74,6 +74,7 @@ namespace CSharpMath {
       _styleFont = _context.MathFontCloner.Invoke(font, context.MathTable.GetStyleSize(style, font));
       _cramped = cramped;
       _spaced = spaced;
+      _currentLine = new AttributedString<TFont, TGlyph>();
     }
 
     public static MathListDisplay<TFont, TGlyph> CreateLine(IMathList list, TFont font, TypesettingContext<TFont, TGlyph> context, LineStyle style) {
@@ -679,7 +680,7 @@ namespace CSharpMath {
       List<float> offsets = new List<float>();
       float height = _ConstructGlyphWithParts(parts, glyphHeight, glyphs, offsets);
       TGlyph firstGlyph = glyphs[0];
-      float width = _context.GlyphBoundsProvider.GetAdvancesForGlyphs(_styleFont, new TGlyph[] { firstGlyph });
+      float width = _context.GlyphBoundsProvider.GetAdvancesForGlyphs(_styleFont, new TGlyph[] { firstGlyph }).Last();
       var display = new GlyphConstructionDisplay<TFont, TGlyph>(glyphs, offsets, _styleFont) {
         Width = width,
         Ascent = height,
@@ -752,6 +753,7 @@ namespace CSharpMath {
         var rect = rects[i];
         rect.GetAscentDescentWidth(out glyphAscent, out glyphDescent, out glyphWidth);
         if (glyphAscent + glyphDescent >= height) {
+          glyphWidth = advances[i];
           return variants[i];
         }
       }

@@ -16,6 +16,9 @@ namespace CSharpMath.Tests.FrontEnd {
     private const float AscentPerFontSize = 0.7f;
     private const float DescentPerFontSize = 0.2f; // all constants were chosen to bear some resemblance to a real font.
 
+    private int GetEffectiveLength(TGlyph glyph)
+    => GetEffectiveLength(new TGlyph[] { glyph });
+
     private int GetEffectiveLength(TGlyph[] glyphs) {
       string glyphString = new string(glyphs);
       int length = glyphs.Length;
@@ -46,10 +49,15 @@ namespace CSharpMath.Tests.FrontEnd {
       return r;
     }
 
-    public float GetAdvancesForGlyphs(MathFont<TGlyph> font, TGlyph[] glyphs) {
-      int effectiveLength = GetEffectiveLength(glyphs);
-      float width = font.PointSize * effectiveLength * WidthPerCharacterPerFontSize;
-      return width;
+    public float[] GetAdvancesForGlyphs(MathFont<TGlyph> font, TGlyph[] glyphs) {
+      var advances = glyphs.Select(g => GetEffectiveLength(g) * font.PointSize * WidthPerCharacterPerFontSize).ToArray();
+      var r = new float[1 + advances.Count()];
+      for (int i = 0; i < advances.Length; i++) {
+        r[i] = advances[i];
+      }
+      r[advances.Length] = advances.Sum();
+
+      return r;
     }
   }
 }
