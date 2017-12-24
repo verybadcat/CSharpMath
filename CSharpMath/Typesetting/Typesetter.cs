@@ -770,7 +770,8 @@ namespace CSharpMath {
       return variants.Last();
     }
     private IDisplay<TFont, TGlyph> MakeTable(Table table) {
-      throw new NotImplementedException();
+      int nColumns = table.NColumns;
+
     }
   }
 }
