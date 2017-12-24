@@ -168,6 +168,16 @@ namespace CSharpMath {
               MakeScripts(atom, innerDisplay, atom.IndexRange.Location, 0);
             }
             break;
+          case MathAtomType.Table:
+            AddDisplayLine(false);
+            // We will consider tables as inner
+            AddInterElementSpace(prevNode, MathAtomType.Inner);
+            var table = atom as Table;
+            table.AtomType = MathAtomType.Inner;
+            var tableDisplay = MakeTable(table);
+            _displayAtoms.Add(tableDisplay);
+            _currentPosition.X += tableDisplay.Width;
+            break;
           case MathAtomType.Ordinary:
           case MathAtomType.BinaryOperator:
           case MathAtomType.Relation:
@@ -758,6 +768,9 @@ namespace CSharpMath {
         }
       }
       return variants.Last();
+    }
+    private IDisplay MakeTable(Table table) {
+      throw new NotImplementedException();
     }
   }
 }
