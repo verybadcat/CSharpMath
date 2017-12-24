@@ -23,6 +23,13 @@ namespace CSharpMath.Atoms {
       return r;
     }
 
+    public static MathListBuildResult BuildResultFromString(string str) {
+      var builder = new MathListBuilder(str);
+      var list = builder.Build();
+      var error = builder.Error;
+      return new MathListBuildResult(list, error);
+    }
+
     public static IMathList FromString(string str) {
       var builder = new MathListBuilder(str);
       return builder.Build();

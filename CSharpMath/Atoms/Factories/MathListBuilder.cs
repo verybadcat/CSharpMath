@@ -25,7 +25,7 @@ namespace CSharpMath.Atoms {
       _length = str.Length;
     }
     public IMathList Build() {
-      var r = this.BuildInternal(false);
+      var r = BuildInternal(false);
       if (HasCharacters && _error != null) {
         _error = "Error; most likely mismatched braces " + new string(_chars);
       }

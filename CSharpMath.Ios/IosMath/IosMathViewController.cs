@@ -28,7 +28,7 @@ namespace CSharpMath.Ios
                             \end{pmatrix}";
     private const string ShortMatrix = @"\begin{pmatrix} a & b\ c & d \end{pmatrix}";
     private const string VeryShortMatrix = @"\begin{pmatrix}2\end{pmatrix}";
-    private const string EmptyMAtrix = @"\begin{pmatrix}\end{pmatrix}";
+    private const string EmptyMatrix = @"\begin{pmatrix}\end{pmatrix}";
     private const string LeftRight = @"\left(\frac23\right)";
     private const string LeftRightMinus = @"\left(\frac23\right)-";
     private const string LeftSide = @"\frac{1}{\left(\sqrt{\phi \sqrt{5}}-\phi\right) e^{\frac25 \pi}}";
@@ -43,12 +43,13 @@ namespace CSharpMath.Ios
     private const string Pi = @"\pi";
     private const string Phi = @"\phi";
     private const string FractionWithRoot = @"\frac{1}{\sqrt{2}}";
+    private const string EmptyTable = @"\begin{table}\end{table}";
 
     public override void ViewDidLoad()
     {
       View.BackgroundColor = UIColor.White;
       /// WJWJWJ Set latex here.
-      var latexView = IosMathLabels.LatexView(VeryShortMatrix, 15);
+      var latexView = IosMathLabels.LatexView(EmptyTable, 15);
       latexView.BackgroundColor = UIColor.LightGray;
       var size = latexView.SizeThatFits(new CoreGraphics.CGSize(370, 180));
       latexView.Frame = new CoreGraphics.CGRect(0, 20, 320, 180);

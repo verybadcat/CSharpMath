@@ -10,6 +10,7 @@ using TFont = CSharpMath.Apple.AppleMathFont;
 using CoreText;
 using CSharpMath.Apple.Drawing;
 using System;
+using Foundation;
 #if __IOS__
 using NView = UIKit.UIView;
 using NColor = UIKit.UIColor;
@@ -20,17 +21,26 @@ using NView = AppKit.NSView;
 
 namespace CSharpMath.Apple {
   public class AppleLatexView : NView {
-    public void SetMathList(IMathList mathList) {
+    public string ErrorMessage { get; set; }
+    public void SetMathList(IMathList mathList)
+    {
       _mathList = mathList;
       Latex = MathListBuilder.MathListToString(mathList);
       InvalidateIntrinsicContentSize();
       SetNeedsLayout();
     }
-    public void SetLatex(string latex) {
+    public void SetLatex(string latex)
+    {
       Latex = latex;
-      _mathList = MathLists.FromString(latex);
+      var buildResult = MathLists.BuildResultFromString(latex);
+      _mathList = buildResult.MathList;
+      ErrorMessage = buildResult.Error;
+      if (_mathList != null)
+      {
+        _CreateDisplayList();
+      }
       InvalidateIntrinsicContentSize();
-      _CreateDisplayList();
+
       SetNeedsLayout();
     }
     public float FontSize { get; set; } = 20f;
@@ -59,7 +69,12 @@ namespace CSharpMath.Apple {
 
     public override CGSize SizeThatFits(CGSize size)
     {
-      var r = _displayList.ComputeDisplayBounds().Size;
+      CGSize r;
+      if (_displayList!=null) {
+        r = _displayList.ComputeDisplayBounds().Size;
+      } else {
+        r = new CGSize(320, 40);
+      }
       return r;
     }
 
@@ -99,14 +114,30 @@ namespace CSharpMath.Apple {
 
     public override void Draw(CGRect rect) {
       base.Draw(rect);
+      var cgContext = UIGraphics.GetCurrentContext();
       if (_mathList != null) {
-        var cgContext = UIGraphics.GetCurrentContext();
+
         var appleContext = new AppleGraphicsContext(_typesettingContext.GlyphFinder)
         {
           CgContext = cgContext
         };
         cgContext.SaveState();
         _displayList.Draw(appleContext);
+        cgContext.RestoreState();
+      } else if (ErrorMessage.IsNonEmpty()) {
+        cgContext.SaveState();
+        float errorFontSize = 20;
+        var attributes = new UIStringAttributes
+        {
+
+          ForegroundColor = NColor.Red,
+          Font = UIFont.SystemFontOfSize(errorFontSize),
+
+        };
+        var attributedString = new NSAttributedString(ErrorMessage, attributes);
+        var ctLine = new CTLine(attributedString);
+        cgContext.TextPosition = new CGPoint(0, Bounds.Size.Height - errorFontSize);
+        ctLine.Draw(cgContext);
         cgContext.RestoreState();
       }
     }
