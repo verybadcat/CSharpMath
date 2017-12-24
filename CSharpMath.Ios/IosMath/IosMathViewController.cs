@@ -28,6 +28,7 @@ namespace CSharpMath.Ios
                             \end{pmatrix}";
     private const string ShortMatrix = @"\begin{pmatrix} a & b\ c & d \end{pmatrix}";
     private const string VeryShortMatrix = @"\begin{pmatrix}2\end{pmatrix}";
+    private const string EmptyMAtrix = @"\begin{pmatrix}\end{pmatrix}";
     private const string LeftRight = @"\left(\frac23\right)";
     private const string LeftRightMinus = @"\left(\frac23\right)-";
     private const string LeftSide = @"\frac{1}{\left(\sqrt{\phi \sqrt{5}}-\phi\right) e^{\frac25 \pi}}";

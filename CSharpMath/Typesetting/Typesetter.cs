@@ -771,7 +771,13 @@ namespace CSharpMath {
     }
     private IDisplay<TFont, TGlyph> MakeTable(Table table) {
       int nColumns = table.NColumns;
-
+      if (nColumns == 0 || table.NRows == 0) {
+        //Empty table
+        MathListDisplay<TFont, TGlyph> emptyTable = new MathListDisplay<TFont, TGlyph>(new IDisplay<TFont, TGlyph>[0]) {
+        };
+        return emptyTable;
+      }
+      throw new NotImplementedException();
     }
   }
 }
