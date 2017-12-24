@@ -599,7 +599,7 @@ namespace CSharpMath.Tests {
       Assert.Equal(new Range(0, 1), line2.Range);
       Assert.False(line2.HasScript);
 
-      Assertions.ApproximatelyEqual(15.6, display.Ascent, 0.01);
+      Assertions.ApproximatelyEqual(18.56, display.Ascent, 0.01);
       Assertions.ApproximatelyEqual(4, display.Descent, 0.01);
       Assertions.ApproximatelyEqual(20, display.Width, 0.01);
     }
