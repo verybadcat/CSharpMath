@@ -541,7 +541,7 @@ namespace CSharpMath {
         }
         // now, do the same for the denominator
         var distanceFromDenominatorToBar = (barLocation - barThickness / 2) - (denominatorDisplay.Ascent - denominatorShiftDown);
-        if (distanceFromNumeratorToBar < _DenominatorGapMin) {
+        if (distanceFromDenominatorToBar < _DenominatorGapMin) {
           denominatorShiftDown += (_DenominatorGapMin - distanceFromDenominatorToBar);
         }
       } else {
