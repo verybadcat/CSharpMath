@@ -84,7 +84,7 @@ namespace CSharpMath.Apple {
         if (contentHeight < FontSize/2) {
           contentHeight = FontSize / 2;
         }
-        nfloat textY = (contentHeight / 2) + ContentInsets.Bottom + _displayList.Descent;
+        nfloat textY = ((availableHeight - contentHeight) / 2) + ContentInsets.Bottom + _displayList.Descent;
         _displayList.Position = new System.Drawing.PointF((float)textX, (float)textY);
       }
     }
