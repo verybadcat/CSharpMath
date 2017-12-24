@@ -5,14 +5,14 @@ using System.Linq;
 using System.Text;
 
 namespace CSharpMath.Display.Text {
-  public class AttributedString<TMathFont, TGlyph>
-    where TMathFont: MathFont<TGlyph> {
-    private List<AttributedGlyphRun<TMathFont, TGlyph>> _Runs { get; }
-    public AttributedString(IEnumerable<AttributedGlyphRun<TMathFont, TGlyph>> runs = null) {
-      _Runs = runs?.ToList() ?? new List<AttributedGlyphRun<TMathFont, TGlyph>>();
+  public class AttributedString<TFont, TGlyph>
+    where TFont: MathFont<TGlyph> {
+    private List<AttributedGlyphRun<TFont, TGlyph>> _Runs { get; }
+    public AttributedString(IEnumerable<AttributedGlyphRun<TFont, TGlyph>> runs = null) {
+      _Runs = runs?.ToList() ?? new List<AttributedGlyphRun<TFont, TGlyph>>();
       FuseMatchingRuns();
     }
-    public void SetFont(TMathFont font) {
+    public void SetFont(TFont font) {
       _Runs.ForEach(r => r.Font = font);
     }
     public string Text {
@@ -25,7 +25,7 @@ namespace CSharpMath.Display.Text {
       }
     }
     public int Length => _Runs.Sum(r => r.Length);
-    public IEnumerable<AttributedGlyphRun<TMathFont, TGlyph>> Runs => _Runs;
+    public IEnumerable<AttributedGlyphRun<TFont, TGlyph>> Runs => _Runs;
     internal void FuseMatchingRuns() {
       for (int i=_Runs.Count-1; i>0; i--) {
         TryFuseRunAt(i);
@@ -40,12 +40,12 @@ namespace CSharpMath.Display.Text {
       }
       return false;
     }
-    public void AppendAttributedString(AttributedString<TMathFont, TGlyph> other) {
+    public void AppendAttributedString(AttributedString<TFont, TGlyph> other) {
       _Runs.AddRange(other.Runs);
       FuseMatchingRuns();
     }
 
-    internal void AppendGlyphRun(AttributedGlyphRun<TMathFont, TGlyph> run) {
+    internal void AppendGlyphRun(AttributedGlyphRun<TFont, TGlyph> run) {
       _Runs.Add(run);
       TryFuseRunAt(_Runs.Count - 1);
     }
@@ -54,8 +54,8 @@ namespace CSharpMath.Display.Text {
   }
 
   public static class AttributedStringExtensions {
-    public static AttributedString<TMathFont, TGlyph> Combine<TMathFont, TGlyph>(AttributedString<TMathFont, TGlyph> attr1, AttributedString<TMathFont, TGlyph> attr2) 
-        where TMathFont: MathFont<TGlyph> {
+    public static AttributedString<TFont, TGlyph> Combine<TFont, TGlyph>(AttributedString<TFont, TGlyph> attr1, AttributedString<TFont, TGlyph> attr2) 
+        where TFont: MathFont<TGlyph> {
       if (attr1 == null) {
         return attr2;
       }
@@ -65,12 +65,12 @@ namespace CSharpMath.Display.Text {
       attr1.AppendAttributedString(attr2);
       return attr1;
     }
-    public static AttributedString<TMathFont, TGlyph> Combine<TMathFont, TGlyph>(AttributedGlyphRun<TMathFont, TGlyph> run1, AttributedGlyphRun<TMathFont, TGlyph> run2)
-      where TMathFont: MathFont<TGlyph>
+    public static AttributedString<TFont, TGlyph> Combine<TFont, TGlyph>(AttributedGlyphRun<TFont, TGlyph> run1, AttributedGlyphRun<TFont, TGlyph> run2)
+      where TFont: MathFont<TGlyph>
       => AttributedStrings.FromGlyphRuns(run1, run2);
 
-    public static AttributedString<TMathFont, TGlyph> Combine<TMathFont, TGlyph>(AttributedString<TMathFont, TGlyph> aStr, AttributedGlyphRun<TMathFont, TGlyph> run) 
-      where TMathFont: MathFont<TGlyph> {
+    public static AttributedString<TFont, TGlyph> Combine<TFont, TGlyph>(AttributedString<TFont, TGlyph> aStr, AttributedGlyphRun<TFont, TGlyph> run) 
+      where TFont: MathFont<TGlyph> {
       if (aStr == null) {
         return AttributedStrings.FromGlyphRuns(run);
       } else {

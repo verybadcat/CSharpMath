@@ -9,11 +9,11 @@ namespace CSharpMath.Display.Text
 {
   public static class AttributedGlyphRuns
   {
-    public static AttributedGlyphRun<TMathFont, TGlyph> Create<TMathFont, TGlyph>(string text, TGlyph[] glyphs, TMathFont font, MathColor color)
-      where TMathFont : MathFont<TGlyph>
+    public static AttributedGlyphRun<TFont, TGlyph> Create<TFont, TGlyph>(string text, TGlyph[] glyphs, TFont font, MathColor color)
+      where TFont : MathFont<TGlyph>
     {
       var kernedGlyphs = glyphs.Select(g => new KernedGlyph<TGlyph>(g)).ToArray();
-      return new AttributedGlyphRun<TMathFont, TGlyph>
+      return new AttributedGlyphRun<TFont, TGlyph>
       {
         Text = text,
         KernedGlyphs = kernedGlyphs,
@@ -22,8 +22,8 @@ namespace CSharpMath.Display.Text
       };
     }
 
-    public static AttributedGlyphRun<TMathFont, TGlyph> Create<TMathFont, TGlyph>(string text, TGlyph[] glyphs, TMathFont font)
-      where TMathFont : MathFont<TGlyph>
+    public static AttributedGlyphRun<TFont, TGlyph> Create<TFont, TGlyph>(string text, TGlyph[] glyphs, TFont font)
+      where TFont : MathFont<TGlyph>
     => Create(text, glyphs, font, default(MathColor));
 
 

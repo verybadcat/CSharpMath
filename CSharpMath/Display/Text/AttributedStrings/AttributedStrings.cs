@@ -5,8 +5,8 @@ using System.Text;
 
 namespace CSharpMath.Display.Text {
   public static class AttributedStrings {
-    public static AttributedString<TMathFont, TGlyph> FromGlyphRuns<TMathFont, TGlyph>(params AttributedGlyphRun<TMathFont, TGlyph>[] runs)
-      where TMathFont: MathFont<TGlyph>
-    => new AttributedString<TMathFont, TGlyph>(runs);
+    public static AttributedString<TFont, TGlyph> FromGlyphRuns<TFont, TGlyph>(params AttributedGlyphRun<TFont, TGlyph>[] runs)
+      where TFont: MathFont<TGlyph>
+    => new AttributedString<TFont, TGlyph>(runs);
   }
 }

@@ -769,7 +769,7 @@ namespace CSharpMath {
       }
       return variants.Last();
     }
-    private IDisplay MakeTable(Table table) {
+    private IDisplay<TFont, TGlyph> MakeTable(Table table) {
       throw new NotImplementedException();
     }
   }

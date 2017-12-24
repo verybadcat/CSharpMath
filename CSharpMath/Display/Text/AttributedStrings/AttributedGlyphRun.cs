@@ -26,8 +26,8 @@ namespace CSharpMath.Display.Text {
 
  
   public static class AttributedGlyphRunExtensions {
-    public static bool AttributesMatch<TMathFont, TGlyph>(this AttributedGlyphRun<TMathFont, TGlyph> run1, AttributedGlyphRun<TMathFont, TGlyph> run2)
-      where TMathFont: MathFont<TGlyph> {
+    public static bool AttributesMatch<TFont, TGlyph>(this AttributedGlyphRun<TFont, TGlyph> run1, AttributedGlyphRun<TFont, TGlyph> run2)
+      where TFont: MathFont<TGlyph> {
       if (run1==null || run2 == null) {
         return false;
       }
