@@ -12,5 +12,18 @@ namespace CSharpMath.Atoms {
       Location = 0,
       Length = 0
     };
+    /// <summary>If either Range is NotFound, returns the other.
+    /// Otherwise, combines the ranges.</summary>
+    public static Range Union(Range range1, Range range2) {
+      if (range1.IsNotFound()) {
+        return range2;
+      }
+      if (range2.IsNotFound()) {
+        return range1;
+      }
+      var start = Math.Min(range1.Location, range2.Location);
+      var end = Math.Max(range1.End, range2.End);
+      return new Range(start, end - start);
+    }
   }
 }

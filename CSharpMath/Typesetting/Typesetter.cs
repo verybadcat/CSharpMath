@@ -769,6 +769,19 @@ namespace CSharpMath {
       }
       return variants.Last();
     }
+    private List<List<IDisplay<TFont, TGlyph>>> TypesetCells(Table table, float[] columnWidths) {
+      var r = new List<List<IDisplay<TFont, TGlyph>>>();
+      foreach(var row in table.Cells) {
+        var colDispalys = new List<IDisplay<TFont, TGlyph>>();
+        r.Add(colDispalys);
+        for (int i=0; i<row.Count; i++) {
+          var disp = Typesetter<TFont, TGlyph>.CreateLine(row[i], _font, _context, _style);
+          columnWidths[i] = Math.Max(disp.Width, columnWidths[i]);
+          colDispalys.Add(disp);
+        }
+      }
+      return r;
+    }
     private IDisplay<TFont, TGlyph> MakeTable(Table table) {
       int nColumns = table.NColumns;
       if (nColumns == 0 || table.NRows == 0) {
@@ -777,7 +790,81 @@ namespace CSharpMath {
         };
         return emptyTable;
       }
-      throw new NotImplementedException();
+      var columnWidths = new float[nColumns];
+      var displays = TypesetCells(table, columnWidths);
+      var rowDisplays = new List<MathListDisplay<TFont, TGlyph>>();
+      foreach (var row in displays) {
+        var rowDisplay = MakeRowWithColumns(row, table, columnWidths);
+        rowDisplays.Add(rowDisplay);
+      }
+
+      // position all the rows
+      PositionRows(rowDisplays, table);
+      var tableDisplay = new MathListDisplay<TFont, TGlyph>(rowDisplays.ToArray());
+      // Range is set here in the objective C code.
+      tableDisplay.Position = _currentPosition;
+      return tableDisplay;
+    }
+
+    private MathListDisplay<TFont, TGlyph> MakeRowWithColumns(List<IDisplay<TFont, TGlyph>> row, Table table, float[] columnWidths) {
+      float columnStart = 0;
+      Range rowRange = Ranges.NotFound;
+      for (int i=0; i<row.Count; i++) {
+        var entry = row[i];
+        float columnWidth = columnWidths[i];
+        var alignment = table.GetAlignment(i);
+        var cellPosition = columnStart;
+        switch (alignment) {
+          case ColumnAlignment.Right:
+            cellPosition += (columnWidth - entry.Width);
+            break;
+          case ColumnAlignment.Center:
+            cellPosition += (columnWidth - entry.Width) / 2;
+            break;
+        }
+        rowRange = Ranges.Union(rowRange, entry.Range);
+      }
+      var rowDisplay = new MathListDisplay<TFont, TGlyph>(row.ToArray());
+      return rowDisplay;
+    }
+
+    private const float jotMultiplier = 0.3f;
+    private const float lineSkipMultiplier = 0.1f;
+    private const float lineSkipLimitMultiplier = 0;
+    private const float baseLineSkipMultiplier = 1.2f;
+
+    private void PositionRows(List<MathListDisplay<TFont, TGlyph>> rows, Table table) {
+      float currPos = 0;
+      float openUp = table.InterRowAdditionalSpacing * jotMultiplier * _styleFont.PointSize;
+      float baselineSkip = openUp + baseLineSkipMultiplier * _styleFont.PointSize;
+      float lineSkip = openUp + lineSkipMultiplier * _styleFont.PointSize;
+      float lineSkipLimit = openUp + lineSkipMultiplier * _styleFont.PointSize;
+      float prevRowDescent = 0;
+      float ascent = 0;
+      bool first = true;
+      foreach (var display in rows) {
+        if (first) {
+          display.Position = new PointF();
+          ascent += display.Ascent;
+          first = false;
+        } else {
+          float skip = baselineSkip;
+          if (skip - (prevRowDescent + display.Ascent) < lineSkipLimit) {
+            // Rows are too close together. Space them apart further.
+            skip = prevRowDescent + display.Ascent + lineSkip;
+          }
+          currPos -= skip;
+          display.Position = new PointF(0, currPos);
+        }
+        prevRowDescent = display.Descent;
+      }
+
+      float descent = -currPos + prevRowDescent;
+      float shiftDown = 0.5f * (ascent - descent) - _mathTable.AxisHeight(_styleFont);
+
+      foreach (var display in rows) {
+        display.Position = new PointF(display.Position.X, display.Position.Y - shiftDown);
+      }
     }
   }
 }
