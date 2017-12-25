@@ -43,13 +43,12 @@ namespace CSharpMath.Ios
     private const string Pi = @"\pi";
     private const string Phi = @"\phi";
     private const string FractionWithRoot = @"\frac{1}{\sqrt{2}}";
-    private const string EmptyTable = @"\begin{table}\end{table}";
 
     public override void ViewDidLoad()
     {
       View.BackgroundColor = UIColor.White;
       /// WJWJWJ Set latex here.
-      var latexView = IosMathLabels.LatexView(EmptyTable, 15);
+      var latexView = IosMathLabels.LatexView(ShortMatrix, 15);
       latexView.BackgroundColor = UIColor.LightGray;
       var size = latexView.SizeThatFits(new CoreGraphics.CGSize(370, 180));
       latexView.Frame = new CoreGraphics.CGRect(0, 20, 320, 180);
