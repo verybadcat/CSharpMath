@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\latinmodern-math.json" />
     <None Remove="Xunit.runner.json" />
   </ItemGroup>
 
@@ -12,6 +13,10 @@
     <Content Include="Xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\latinmodern-math.json" />
   </ItemGroup>
 
   <ItemGroup>

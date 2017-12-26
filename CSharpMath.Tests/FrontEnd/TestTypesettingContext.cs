@@ -1,6 +1,7 @@
 ﻿using CSharpMath.FrontEnd;
 using CSharpMath.Resources;
 using CSharpMath.Display;
+using CSharpMath.Tests.Resources;
 
 namespace CSharpMath.Tests.FrontEnd {
   public static class TestTypesettingContexts {
@@ -12,7 +13,7 @@ namespace CSharpMath.Tests.FrontEnd {
         new TestGlyphNameProvider(),
         new TestGlyphFinder(),
       new DoNothingFontChanger(),
-        JTokenLoader.LatinMath
+        TestResources.LatinMath
 
     );
   }

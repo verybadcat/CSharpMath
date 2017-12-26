@@ -11,7 +11,7 @@ namespace CSharpMath.Tests.PreTypesetting {
   public class ResourceProviderTest {
     [Fact]
     public void ResourceProvider_FindsResource() {
-      var content = ManifestResourceProvider.ManifestContents("latinmodern-math.json");
+      var content = TestResources.LatinMathContent;
       Assert.NotEmpty(content);
     }
     [Fact]

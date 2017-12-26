@@ -5,15 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\latinmodern-math.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\latinmodern-math.json">
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
   </ItemGroup>
 
