@@ -12,7 +12,7 @@ namespace CSharpMath.Tests.FrontEnd {
         new TestGlyphNameProvider(),
         new TestGlyphFinder(),
       new DoNothingFontChanger(),
-        ResourceLoader.LatinMath
+        JTokenLoader.LatinMath
 
     );
   }

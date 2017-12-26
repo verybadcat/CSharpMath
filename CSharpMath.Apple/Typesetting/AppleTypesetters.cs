@@ -16,7 +16,7 @@ namespace CSharpMath.Apple {
         new AppleGlyphNameProvider(someCtFontSizeIrrelevant),
         glyphFinder,
         new UnicodeFontChanger(),
-        ResourceLoader.LatinMath
+        JTokenLoader.LatinMath
       );
     }
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using CSharpMath.Atoms;
 using CSharpMath.Display.Text;
 using CSharpMath.Enumerations;
@@ -10,7 +9,6 @@ using System.Drawing;
 using System.Linq;
 using CSharpMath.TypesetterInternal;
 using CSharpMath.FrontEnd;
-using System.Diagnostics;
 
 namespace CSharpMath {
   public class Typesetter<TFont, TGlyph>

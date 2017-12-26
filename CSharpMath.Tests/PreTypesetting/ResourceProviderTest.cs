@@ -1,4 +1,5 @@
 ﻿using CSharpMath.Resources;
+using CSharpMath.Tests.Resources;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,12 +11,12 @@ namespace CSharpMath.Tests.PreTypesetting {
   public class ResourceProviderTest {
     [Fact]
     public void ResourceProvider_FindsResource() {
-      var content = ResourceProvider.ManifestContents("latinmodern-math.json");
+      var content = ManifestResourceProvider.ManifestContents("latinmodern-math.json");
       Assert.NotEmpty(content);
     }
     [Fact]
     public void ResourceProvider_FindsMathConfiguration() {
-      var content = ResourceLoader.LatinMath;
+      var content = TestResources.LatinMath;
       var constants = content["constants"];
       var constantsType = constants.GetType();
       Assert.True(1 > 0);
