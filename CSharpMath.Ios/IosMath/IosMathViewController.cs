@@ -20,10 +20,10 @@ namespace CSharpMath.Ios
                            a & b\\ c & d
                             \end{pmatrix}
                             \begin{pmatrix}
-                            \alpha & \beta \gamma & \delta
+                            \alpha & \beta \\ \gamma & \delta
                             \end{pmatrix} = 
                             \begin{pmatrix}
-                            a\alpha + b\gamma & a\beta + b \delta
+                            a\alpha + b\gamma & a\beta + b \delta \\
                             c\alpha + d\gamma & c\beta + d \delta 
                             \end{pmatrix}";
     private const string ShortMatrix = @"\begin{pmatrix} a & b\\ c & d \end{pmatrix}";
@@ -48,7 +48,7 @@ namespace CSharpMath.Ios
     {
       View.BackgroundColor = UIColor.White;
       /// WJWJWJ Set latex here.
-      var latexView = IosMathLabels.LatexView(ShortMatrix, 15);
+      var latexView = IosMathLabels.LatexView(Matrix, 15);
       latexView.BackgroundColor = UIColor.LightGray;
       var size = latexView.SizeThatFits(new CoreGraphics.CGSize(370, 180));
       latexView.Frame = new CoreGraphics.CGRect(0, 20, 320, 180);
