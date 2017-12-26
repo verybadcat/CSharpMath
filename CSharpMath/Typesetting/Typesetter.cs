@@ -769,10 +769,10 @@ namespace CSharpMath {
       }
       return variants.Last();
     }
-    private List<List<IDisplay<TFont, TGlyph>>> TypesetCells(Table table, float[] columnWidths) {
-      var r = new List<List<IDisplay<TFont, TGlyph>>>();
+    private List<List<MathListDisplay<TFont, TGlyph>>> TypesetCells(Table table, float[] columnWidths) {
+      var r = new List<List<MathListDisplay<TFont, TGlyph>>>();
       foreach(var row in table.Cells) {
-        var colDispalys = new List<IDisplay<TFont, TGlyph>>();
+        var colDispalys = new List<MathListDisplay<TFont, TGlyph>>();
         r.Add(colDispalys);
         for (int i=0; i<row.Count; i++) {
           var disp = Typesetter<TFont, TGlyph>.CreateLine(row[i], _font, _context, _style);
@@ -806,7 +806,7 @@ namespace CSharpMath {
       return tableDisplay;
     }
 
-    private MathListDisplay<TFont, TGlyph> MakeRowWithColumns(List<IDisplay<TFont, TGlyph>> row, Table table, float[] columnWidths) {
+    private MathListDisplay<TFont, TGlyph> MakeRowWithColumns(List<MathListDisplay<TFont, TGlyph>> row, Table table, float[] columnWidths) {
       float columnStart = 0;
       Range rowRange = Ranges.NotFound;
       for (int i=0; i<row.Count; i++) {
@@ -822,7 +822,9 @@ namespace CSharpMath {
             cellPosition += (columnWidth - entry.Width) / 2;
             break;
         }
+        entry.Position = new PointF(cellPosition, 0);
         rowRange = Ranges.Union(rowRange, entry.Range);
+        columnStart += (columnWidth + table.InterColumnSpacing + _mathTable.MuUnit(_styleFont));
       }
       var rowDisplay = new MathListDisplay<TFont, TGlyph>(row.ToArray());
       return rowDisplay;

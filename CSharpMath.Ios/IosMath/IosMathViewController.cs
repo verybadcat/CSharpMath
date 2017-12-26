@@ -17,7 +17,7 @@ namespace CSharpMath.Ios
     private const string RadicalFraction = @"2+ \frac{\sqrt{3}}{2}";
     private const string IntPlusFraction = @"1+\frac23";
     private const string Matrix = @"\begin{pmatrix}
-                           a & b\ c & d
+                           a & b\\ c & d
                             \end{pmatrix}
                             \begin{pmatrix}
                             \alpha & \beta \gamma & \delta
@@ -26,7 +26,7 @@ namespace CSharpMath.Ios
                             a\alpha + b\gamma & a\beta + b \delta
                             c\alpha + d\gamma & c\beta + d \delta 
                             \end{pmatrix}";
-    private const string ShortMatrix = @"\begin{pmatrix} a & b\ c & d \end{pmatrix}";
+    private const string ShortMatrix = @"\begin{pmatrix} a & b\\ c & d \end{pmatrix}";
     private const string VeryShortMatrix = @"\begin{pmatrix}2\end{pmatrix}";
     private const string EmptyMatrix = @"\begin{pmatrix}\end{pmatrix}";
     private const string LeftRight = @"\left(\frac23\right)";
