@@ -824,7 +824,7 @@ namespace CSharpMath {
         }
         entry.Position = new PointF(cellPosition, 0);
         rowRange = Ranges.Union(rowRange, entry.Range);
-        columnStart += (columnWidth + table.InterColumnSpacing + _mathTable.MuUnit(_styleFont));
+        columnStart += (columnWidth + table.InterColumnSpacing * _mathTable.MuUnit(_styleFont));
       }
       var rowDisplay = new MathListDisplay<TFont, TGlyph>(row.ToArray());
       return rowDisplay;
