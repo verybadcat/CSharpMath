@@ -931,12 +931,12 @@ namespace CSharpMath {
         opsDisplay.Position = _currentPosition;
         if (superscript!=null) {
           var upperGap = Math.Max(_mathTable.UpperLimitGapMin(_styleFont),
-                                  _mathTable.UpperLimitBaselineRiseMin(_styleFont)-superscript.Ascent);
+                                  _mathTable.UpperLimitBaselineRiseMin(_styleFont)-superscript.Descent);
           opsDisplay.SetUpperLimitGap(upperGap);
         }
         if (subscript!=null) {
           var lowerGap = Math.Max(_mathTable.LowerLimitGapMin(_styleFont), 
-                                  _mathTable.LowerLimitBaselineDropMin(_styleFont) - subscript.Descent);
+                                  _mathTable.LowerLimitBaselineDropMin(_styleFont) - subscript.Ascent);
           opsDisplay.SetLowerLimitGap(lowerGap);
         }
         _currentPosition.X += opsDisplay.Width;
