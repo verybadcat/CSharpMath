@@ -176,6 +176,13 @@ namespace CSharpMath {
             _displayAtoms.Add(tableDisplay);
             _currentPosition.X += tableDisplay.Width;
             break;
+          case MathAtomType.LargeOperator:
+            AddDisplayLine(false);
+            AddInterElementSpace(prevNode, atom.AtomType);
+            var op = atom as LargeOperator;
+            var opDisplay = MakeLargeOperator(op);
+            _displayAtoms.Add(opDisplay);
+            break;
           case MathAtomType.Ordinary:
           case MathAtomType.BinaryOperator:
           case MathAtomType.Relation:

@@ -99,8 +99,8 @@ namespace CSharpMath.Display {
       _nucleusDisplay.SetPosition(position);
     }
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
-      UpperLimit.Draw(context);
-      LowerLimit.Draw(context);
+      UpperLimit?.Draw(context);
+      LowerLimit?.Draw(context);
       _nucleusDisplay.Draw(context);
     }
   }
