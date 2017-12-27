@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace CSharpMath.Display.Text {
   public class FontMathTable<TFont, TGlyph>
-    where TFont: MathFont<TGlyph>{
+    where TFont : MathFont<TGlyph> {
     private JToken _mathTable;
     private IFontMeasurer<TFont, TGlyph> _fontMeasurer;
     private IGlyphNameProvider<TGlyph> _glyphNameProvider;
@@ -228,14 +228,12 @@ namespace CSharpMath.Display.Text {
 
     private const string VerticalVariantsKey = "v_variants";
     private const string HorizontalVariantsKey = "h_variants";
-    internal TGlyph[] GetVerticalVariantsForGlyph(TGlyph rawGlyph) 
-    {
+    internal TGlyph[] GetVerticalVariantsForGlyph(TGlyph rawGlyph) {
       var variants = _mathTable[VerticalVariantsKey];
       return GetVariantsForGlyph(rawGlyph, variants).ToArray();
     }
 
-    internal TGlyph[] GetHorizontalVariantsForGlyph(TGlyph rawGlyph)
-    {
+    internal TGlyph[] GetHorizontalVariantsForGlyph(TGlyph rawGlyph) {
       var variants = _mathTable[HorizontalVariantsKey];
       return GetVariantsForGlyph(rawGlyph, variants).ToArray();
     }
@@ -246,7 +244,7 @@ namespace CSharpMath.Display.Text {
       var variantGlyphsArray = variantGlyphs as JArray;
       if (variantGlyphsArray == null) {
         var outputGlyph = _glyphNameProvider.GetGlyph(glyphName);
-         // but are they ever different?
+        // but are they ever different?
         if (!(outputGlyph.Equals(rawGlyph))) {
           throw new Exception("Just wanted to see if this ever happens");
         }
@@ -260,8 +258,23 @@ namespace CSharpMath.Display.Text {
         }
       }
     }
+
+    internal TGlyph GetLargerGlyph(TFont font, TGlyph glyph) {
+      JToken variants = _mathTable[VerticalVariantsKey];
+      var glyphName = _glyphNameProvider.GetGlyphName(glyph);
+      if (variants[glyphName] is JArray variantGlyphs) {
+        foreach (var jVariant in variantGlyphs) {
+          var variantName = jVariant.ToString();
+          if (variantName != glyphName) {
+            //return the first glyph with a different name.
+            var variantGlyph = _glyphNameProvider.GetGlyph(variantName);
+            return variantGlyph;
+          }
+        }
+      }
+      return glyph;
+    }
     #endregion
   }
-
 }
 

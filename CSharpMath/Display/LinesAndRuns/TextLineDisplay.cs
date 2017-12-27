@@ -8,7 +8,7 @@ using System.Text;
 using CSharpMath.Display.Text;
 
 namespace CSharpMath.Display {
-  public class TextLineDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph>
+  public class TextLineDisplay<TFont, TGlyph> : IPositionableDisplay<TFont, TGlyph>
     where TFont: MathFont<TGlyph> {
     public TextLineDisplay(List<TextRunDisplay<TFont, TGlyph>> runs,
       IEnumerable<IMathAtom> atoms) {
@@ -40,6 +40,9 @@ namespace CSharpMath.Display {
       context.RestoreState();
     }
     public PointF Position { get; set; }
+    public void SetPosition(PointF position) {
+      Position = position;
+    }
 
     public float Ascent => Runs.CollectionAscent();
     public float Descent => Runs.CollectionDescent();

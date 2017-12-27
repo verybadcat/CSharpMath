@@ -50,6 +50,9 @@ namespace CSharpMath.Apple {
       }
     }
 
+    public bool GlyphIsEmpty(TGlyph glyph)
+      => glyph == 0;
+
     public TGlyph FindGlyphForCharacterAtIndex(int index, string str) {
 
       var unicodeIndexes = StringInfo.ParseCombiningCharacters(str);

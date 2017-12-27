@@ -866,5 +866,68 @@ namespace CSharpMath {
         display.Position = new PointF(display.Position.X, display.Position.Y - shiftDown);
       }
     }
+
+    private IDisplay<TFont, TGlyph> MakeLargeOperator(LargeOperator op) {
+      bool limits = op.Limits && _style == LineStyle.Display;
+      float delta = 0;
+      if (op.Nucleus.Length == 1) {
+        var glyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(0, op.Nucleus);
+        if (_style == LineStyle.Display && !(_context.GlyphFinder.GlyphIsEmpty(glyph))) {
+          // Enlarge the character in display style.
+          glyph = _mathTable.GetLargerGlyph(_styleFont, glyph);
+        }
+        delta = _mathTable.GetItalicCorrection(_styleFont, glyph);
+        var glyphArray = new TGlyph[] { glyph };
+        var boundingBoxArray = _context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(_styleFont, glyphArray, 1);
+        var boundingBox = boundingBoxArray[0];
+        var width = _context.GlyphBoundsProvider.GetAdvancesForGlyphs(_styleFont, glyphArray)[0];
+        boundingBox.GetAscentDescentWidth(out float ascent, out float descent, out float _);
+        var shiftDown = 0.5 * (ascent - descent) - _mathTable.AxisHeight(_styleFont);
+        var glyphDisplay = new GlyphDisplay<TFont, TGlyph>(glyph, op.IndexRange, _styleFont);
+        glyphDisplay.Ascent = ascent;
+        glyphDisplay.Descent = descent;
+        glyphDisplay.Width = width;
+        if (op.Subscript!=null && !limits) {
+          // remove italic correction in this case
+          glyphDisplay.Width -= delta;
+        }
+        glyphDisplay.ShiftDown = (float)shiftDown;
+        glyphDisplay.Position = _currentPosition;
+        return AddLimitsToDisplay(glyphDisplay, op, delta);
+      } else {
+        // create a regular node.
+        var glyphs = _context.GlyphFinder.FindGlyphs(op.Nucleus);
+        var glyphRun = AttributedGlyphRuns.Create(op.Nucleus, glyphs, _styleFont);
+        var run = new TextRunDisplay<TFont, TGlyph>(glyphRun, op.IndexRange, _context);
+        var runs = new List<TextRunDisplay<TFont, TGlyph>>{ run };
+        var atoms = new List<IMathAtom> { op };
+        var line = new TextLineDisplay<TFont, TGlyph>(runs, atoms);
+        return AddLimitsToDisplay(line, op, 0);
+      }
+    }
+
+    private IPositionableDisplay<TFont, TGlyph> AddLimitsToDisplay(IPositionableDisplay<TFont, TGlyph> display,
+      LargeOperator op, float delta) {
+      if (op.Subscript == null && op.Superscript == null) {
+        return display;
+      }
+      if (op.Limits && _style == LineStyle.Display) {
+        MathListDisplay<TFont, TGlyph> superscript = null;
+        MathListDisplay<TFont, TGlyph> subscript = null;
+        if (op.Superscript!=null) {
+          superscript = _CreateLine(op.Superscript, _font, _context, _scriptStyle, _superscriptCramped);
+        }
+        if (op.Subscript!=null) {
+          subscript = _CreateLine(op.Subscript, _font, _context, _scriptStyle, _subscriptCramped);
+        }
+        var opsDisplay = new LargeOpLimitsDisplay<TFont, TGlyph>(display, superscript, subscript, delta/2, 0);
+        opsDisplay.Position = _currentPosition;
+        _currentPosition.X += opsDisplay.Width;
+        return opsDisplay;
+      }
+      _currentPosition.X += display.Width;
+      MakeScripts(op, display, op.IndexRange.Location, delta);
+      return display;
+    }
   }
 }
