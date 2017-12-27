@@ -82,7 +82,7 @@ namespace CSharpMath.Display {
       }
     }
 
-    public PointF Position { get; set; }
+    public PointF Position { get; private set; }
     public void SetPosition(PointF position) {
       Position = position;
       _UpdateComponentPositions();
@@ -104,7 +104,7 @@ namespace CSharpMath.Display {
     private void _UpdateUpperLimitPosition() {
       if (UpperLimit!=null) {
         UpperLimit.Position = new PointF(
-          Position.X + _limitShift + (Width - UpperLimit.Width / 2),
+          Position.X + _limitShift + (Width - UpperLimit.Width) / 2,
           Position.Y + _nucleusDisplay.Ascent + _upperLimitGap + UpperLimit.Descent);
       }
     }

@@ -48,14 +48,16 @@ namespace CSharpMath.Ios
     private const string SomeIntegral = @"\int_{0}^{\infty}e^x \,dx=\oint_0^{\Delta}5\Gamma";
     private const string ShortIntegral = @"\int_0^1";
     private const string Commands = @"5\times(-2 \div 1) = -10";
-    private const string SummationWithCup = @"\sum_{n=1}^{\infty}\frac{1+n}{1-n}=\bigcup_{A\in\Im}C\cup B";
+    private const string SummationWithCup = @"\sum_{n=1}^{\infty}\frac{1+n}{1-n}=\bigcup_{1}C\cup B";
     private const string DoubleSummation = @"\sum \sum";
+    private const string SummationBigCup = @"234 \bigcup_1";
+    private const string SummationWithLimits = @"\sum_{n=1}^{\infty}";
 
     public override void ViewDidLoad()
     {
       View.BackgroundColor = UIColor.White;
       /// WJWJWJ Set latex here.
-      var latexView = IosMathLabels.LatexView(DoubleSummation, 15);
+      var latexView = IosMathLabels.LatexView(SummationBigCup, 15);
       latexView.BackgroundColor = UIColor.LightGray;
       var size = latexView.SizeThatFits(new CoreGraphics.CGSize(370, 180));
       latexView.Frame = new CoreGraphics.CGRect(0, 20, 320, 180);

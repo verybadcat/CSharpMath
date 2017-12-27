@@ -929,7 +929,7 @@ namespace CSharpMath {
           subscript = _CreateLine(op.Subscript, _font, _context, _scriptStyle, _subscriptCramped);
         }
         var opsDisplay = new LargeOpLimitsDisplay<TFont, TGlyph>(display, superscript, subscript, delta/2, 0);
-        opsDisplay.Position = _currentPosition;
+        opsDisplay.SetPosition(_currentPosition);
         if (superscript!=null) {
           var upperGap = Math.Max(_mathTable.UpperLimitGapMin(_styleFont),
                                   _mathTable.UpperLimitBaselineRiseMin(_styleFont)-superscript.Descent);
