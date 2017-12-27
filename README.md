@@ -6,6 +6,7 @@ This is now working in a lot of cases. Some examples are below. Ironically enoug
 ![Quadratic Formula](https://github.com/verybadcat/CSharpMath/blob/master/CSharpMath/RenderedSamples/Quadratic%20Formula.png)
 
 ![Power Series](https://github.com/verybadcat/CSharpMath/blob/master/CSharpMath/RenderedSamples/PowerSeries.png)
-![Matrix Product] (https://github.com/verybadcat/CSharpMath/blob/master/CSharpMath/RenderedSamples/MatrixProduct.png)
 
-![Continued Fraction] (https://github.com/verybadcat/CSharpMath/blob/master/CSharpMath/RenderedSamples/ContinuedFraction.png)
+![Matrix Product](https://github.com/verybadcat/CSharpMath/blob/master/CSharpMath/RenderedSamples/MatrixProduct.png)
+
+![Continued Fraction](https://github.com/verybadcat/CSharpMath/blob/master/CSharpMath/RenderedSamples/ContinuedFraction.png)
