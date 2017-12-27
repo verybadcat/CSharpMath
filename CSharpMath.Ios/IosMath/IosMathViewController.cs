@@ -47,12 +47,14 @@ namespace CSharpMath.Ios
     private const string SimpleLimit = @"\lim_{x\to\infty}3=3";
     private const string SomeIntegral = @"\int_{0}^{\infty}e^x \,dx=\oint_0^{\Delta}5\Gamma";
     private const string ShortIntegral = @"\int_0^1";
+    private const string Commands = @"5\times(-2 \div 1) = -10";
+    private const string SummationWithCup = @"\sum_{n=1}^{\infty}\frac{1+n}{1-n}=\bigcup_{A\in\Im}C\cup B";
 
     public override void ViewDidLoad()
     {
       View.BackgroundColor = UIColor.White;
       /// WJWJWJ Set latex here.
-      var latexView = IosMathLabels.LatexView(SimpleLimit, 15);
+      var latexView = IosMathLabels.LatexView(SummationWithCup, 15);
       latexView.BackgroundColor = UIColor.LightGray;
       var size = latexView.SizeThatFits(new CoreGraphics.CGSize(370, 180));
       latexView.Frame = new CoreGraphics.CGRect(0, 20, 320, 180);
