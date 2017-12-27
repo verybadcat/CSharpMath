@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Text;
 using CSharpMath.Atoms;
 using CSharpMath.Display.Text;
+using CSharpMath.FrontEnd;
 
 namespace CSharpMath.Display {
   public class GlyphDisplay<TFont, TGlyph> : IDownshiftableDisplay<TFont, TGlyph> 

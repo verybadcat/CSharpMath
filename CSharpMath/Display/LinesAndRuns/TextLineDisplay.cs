@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using CSharpMath.Display.Text;
+using CSharpMath.FrontEnd;
 
 namespace CSharpMath.Display {
   public class TextLineDisplay<TFont, TGlyph> : IPositionableDisplay<TFont, TGlyph>

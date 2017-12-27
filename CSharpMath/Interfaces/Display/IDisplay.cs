@@ -1,6 +1,7 @@
 ﻿using CSharpMath.Atoms;
 using System.Drawing;
 using CSharpMath.Display;
+using CSharpMath.FrontEnd;
 
 namespace CSharpMath {
   public interface IDisplay<TFont, TGlyph>

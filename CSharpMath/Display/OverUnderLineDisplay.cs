@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 using CSharpMath.Atoms;
+using CSharpMath.FrontEnd;
 
 namespace CSharpMath.Display {
   /// <summary>Corresponds to MTLineDisplay in iosMath.</summary> 

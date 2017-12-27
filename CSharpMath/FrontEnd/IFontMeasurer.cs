@@ -11,6 +11,5 @@ namespace CSharpMath.FrontEnd {
     /// <summary>A proportionality constant that is applied when
     /// reading from the Json table.</summary>
     int GetUnitsPerEm(TFont font);
-
   }
 }

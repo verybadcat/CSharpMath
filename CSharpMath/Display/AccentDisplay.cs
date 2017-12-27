@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 using CSharpMath.Atoms;
+using CSharpMath.FrontEnd;
 
 namespace CSharpMath.Display {
   public class AccentDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph>

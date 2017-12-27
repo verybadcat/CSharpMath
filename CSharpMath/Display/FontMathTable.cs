@@ -6,6 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace CSharpMath.Display.Text {
+  /// <summary>Holds lots of constants for spacing between various visible elements.
+  /// If you are writing a new front end, you can likely re-use the code here,
+  /// but you will probably need to create your own json file that holds the
+  /// actual constants. </summary>
   public class FontMathTable<TFont, TGlyph>
     where TFont : MathFont<TGlyph> {
     private JToken _mathTable;
