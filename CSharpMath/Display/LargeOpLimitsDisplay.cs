@@ -13,6 +13,16 @@ namespace CSharpMath.Display {
     private float _upperLimitGap { get; set; }
     private float _lowerLimitGap { get; set; }
 
+    public void SetUpperLimitGap(float value) {
+      _upperLimitGap = value;
+      _UpdateUpperLimitPosition();
+    }
+
+    public void SetLowerLimitGap(float value) {
+      _lowerLimitGap = value;
+      _UpdateLowerLimitPosition();
+    }
+
     public LargeOpLimitsDisplay(IPositionableDisplay<TFont, TGlyph> nucleusDisplay, MathListDisplay<TFont, TGlyph> upperLimit, MathListDisplay<TFont, TGlyph> lowerLimit, float limitShift, int extraPadding) {
       _nucleusDisplay = nucleusDisplay;
       UpperLimit = upperLimit;
@@ -24,6 +34,7 @@ namespace CSharpMath.Display {
       var nucleusWidth = nucleusDisplay?.Width ?? 0f;
       var maxWidth = Math.Max(nucleusWidth, Math.Max(upperWidth, lowerWidth));
       Width = maxWidth;
+      _UpdateComponentPositions();
     }
 
     // A display representing the numerator of the fraction. Its position is relative
@@ -74,8 +85,15 @@ namespace CSharpMath.Display {
     public PointF Position { get; set; }
     public void SetPosition(PointF position) {
       Position = position;
+      _UpdateComponentPositions();
     }
     public bool HasScript { get; set; }
+
+    private void _UpdateComponentPositions() {
+      _UpdateNucleusPosition();
+      _UpdateUpperLimitPosition();
+      _UpdateLowerLimitPosition();
+    }
     private void _UpdateLowerLimitPosition() {
       if (LowerLimit!=null) {
         LowerLimit.Position = new PointF(

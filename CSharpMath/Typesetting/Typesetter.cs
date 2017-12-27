@@ -929,6 +929,16 @@ namespace CSharpMath {
         }
         var opsDisplay = new LargeOpLimitsDisplay<TFont, TGlyph>(display, superscript, subscript, delta/2, 0);
         opsDisplay.Position = _currentPosition;
+        if (superscript!=null) {
+          var upperGap = Math.Max(_mathTable.UpperLimitGapMin(_styleFont),
+                                  _mathTable.UpperLimitBaselineRiseMin(_styleFont)-superscript.Ascent);
+          opsDisplay.SetUpperLimitGap(upperGap);
+        }
+        if (subscript!=null) {
+          var lowerGap = Math.Max(_mathTable.LowerLimitGapMin(_styleFont), 
+                                  _mathTable.LowerLimitBaselineDropMin(_styleFont) - subscript.Descent);
+          opsDisplay.SetLowerLimitGap(lowerGap);
+        }
         _currentPosition.X += opsDisplay.Width;
         return opsDisplay;
       }

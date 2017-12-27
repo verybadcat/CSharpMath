@@ -274,7 +274,22 @@ namespace CSharpMath.Display.Text {
       }
       return glyph;
     }
+
+
     #endregion
+
+    internal float UpperLimitGapMin(TFont font)
+       => _ConstantFromTable(font, "UpperLimitGapMin");
+
+    internal float UpperLimitBaselineRiseMin(TFont font)
+       => _ConstantFromTable(font, "UpperLimitBaselineRiseMin");
+
+    internal float LowerLimitGapMin(TFont font)
+       => _ConstantFromTable(font, "LowerLimitGapMin");
+
+    internal float LowerLimitBaselineDropMin(TFont font)
+       => _ConstantFromTable(font, "LowerLimitBaselineDropMin");
+
   }
 }
 
