@@ -44,6 +44,7 @@ namespace CSharpMath.Ios
     private const string Phi = @"\phi";
     private const string FractionWithRoot = @"\frac{1}{\sqrt{2}}";
     private const string SomeLimit = @"\lim_{x\to\infty}\frac{e^2}{1-x}=\limsup_{\sigma}5";
+    private const string SimpleLimit = @"\lim_{x\to\infty}3=3";
     private const string SomeIntegral = @"\int_{0}^{\infty}e^x \,dx=\oint_0^{\Delta}5\Gamma";
     private const string ShortIntegral = @"\int_0^1";
 
@@ -51,7 +52,7 @@ namespace CSharpMath.Ios
     {
       View.BackgroundColor = UIColor.White;
       /// WJWJWJ Set latex here.
-      var latexView = IosMathLabels.LatexView(SomeLimit, 15);
+      var latexView = IosMathLabels.LatexView(SimpleLimit, 15);
       latexView.BackgroundColor = UIColor.LightGray;
       var size = latexView.SizeThatFits(new CoreGraphics.CGSize(370, 180));
       latexView.Frame = new CoreGraphics.CGRect(0, 20, 320, 180);
