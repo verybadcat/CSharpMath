@@ -4,6 +4,7 @@ using CSharpMath.Resources;
 using Foundation;
 using CoreText;
 using TGlyph = System.UInt16;
+using CSharpMath.Ios.Resources;
 
 namespace CSharpMath.Apple {
   public static class AppleTypesetters {
@@ -16,7 +17,7 @@ namespace CSharpMath.Apple {
         new AppleGlyphNameProvider(someCtFontSizeIrrelevant),
         glyphFinder,
         new UnicodeFontChanger(),
-        JTokenLoader.JToken
+        IosResources.LatinMath
       );
     }
 

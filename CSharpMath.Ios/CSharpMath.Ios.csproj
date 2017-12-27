@@ -125,6 +125,8 @@
     <Compile Include="AppDelegate.cs" />
     <Compile Include="IosMath\IosMathLabels.cs" />
     <Compile Include="IosMath\IosMathViewController.cs" />
+    <Compile Include="Resources\IosResources.cs" />
+    <Compile Include="Resources\IosResourceProviders.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CSharpMath\CSharpMath.csproj">
@@ -134,6 +136,9 @@
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\latinmodern-math.otf" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\latinmodern-math.json" />
   </ItemGroup>
   <Import Project="..\CSharpMath.Apple\CSharpMath.Apple.projitems" Label="Shared" Condition="Exists('..\CSharpMath.Apple\CSharpMath.Apple.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
