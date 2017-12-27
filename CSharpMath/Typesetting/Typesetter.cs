@@ -916,6 +916,7 @@ namespace CSharpMath {
     private IPositionableDisplay<TFont, TGlyph> AddLimitsToDisplay(IPositionableDisplay<TFont, TGlyph> display,
       LargeOperator op, float delta) {
       if (op.Subscript == null && op.Superscript == null) {
+        _currentPosition.X += display.Width;
         return display;
       }
       if (op.Limits && _style == LineStyle.Display) {
