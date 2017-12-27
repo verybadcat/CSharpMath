@@ -142,8 +142,7 @@ namespace CSharpMath.Atoms {
             }
             atom = AtomForCommand(command); 
             if (atom == null) {
-              _error = "Internal error";
-              atom = AtomForCommand(command);
+              _error = _error ?? "Internal error";
               return null;
             }
             break;

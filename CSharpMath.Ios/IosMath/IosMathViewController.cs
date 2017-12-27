@@ -34,7 +34,6 @@ namespace CSharpMath.Ios
     private const string LeftSide = @"\frac{1}{\left(\sqrt{\phi \sqrt{5}}-\phi\right) e^{\frac25 \pi}}";
     private const string RightSide = @"1+\frac{e^{-2\pi}} {1 +\frac{e^{-4\pi}} {1+\frac{e^{-6\pi}} {1+\frac{e^{-8\pi}} {1+\cdots} } } }";
     private const string DeeplyNestedFraction = @"\frac{1}{\left(\sqrt{\phi \sqrt{5}}-\phi\right) e^{\frac25 \pi}} = 1+\frac{e^{-2\pi}} {1 +\frac{e^{-4\pi}} {1+\frac{e^{-6\pi}} {1+\frac{e^{-8\pi}} {1+\cdots} } } }";
-    private const string DeeplyNestedFraction2 = @"\frac{1}{\left(\sqrt{\phi \sqrt{5}}-\phi\right) e^{\frac25 \pi}} = 1+\frac{e^{-2\pi}} {1 +\frac{e^{-4\pi}} {1+\frac{e^{-6\pi}} {1+\frac{e^{-8\pi}} {1+\cdots} } } }";
     private const string NestedFraction = @"\frac{e^{-6\pi}} {1+\frac{e^{-8\pi}} {1+\cdots} }";
     private const string Exponential = @"e^2";
     private const string ExponentWithFraction = @"e^{4\frac25}";
@@ -52,15 +51,22 @@ namespace CSharpMath.Ios
     private const string DoubleSummation = @"\sum \sum";
     private const string SummationBigCup = @"234 \bigcup_1";
     private const string SummationWithLimits = @"\sum_{n=1}^{\infty}";
+    private const string Taylor = @"\begin{eqnarray} e^x  &=&  \sum_{x=0}^{\infty}\frac{x^n}{n!}
+    \\
+    \\ 
+    \sin(x) &=& \sum_{x=0}^{\infty}(-1)^n\frac{(2x+1)^n}{(2n)!} 
+    \\ \\
+    -\ln(1-x)   &=& \sum_{x=0}^{\infty}\frac{x^n}{n}  \ \ \ \ \ (-1 <= x < 1) \end{eqnarray}";
+    private const string TwoSin = @"2 \sin";
 
     public override void ViewDidLoad()
     {
       View.BackgroundColor = UIColor.White;
       /// WJWJWJ Set latex here.
-      var latexView = IosMathLabels.LatexView(SummationBigCup, 15);
+      var latexView = IosMathLabels.LatexView(Matrix, 15);
       latexView.BackgroundColor = UIColor.LightGray;
       var size = latexView.SizeThatFits(new CoreGraphics.CGSize(370, 180));
-      latexView.Frame = new CoreGraphics.CGRect(0, 20, 320, 180);
+      latexView.Frame = new CoreGraphics.CGRect(0, 20, 370, 180);
       View.Add(latexView);
     }
   }

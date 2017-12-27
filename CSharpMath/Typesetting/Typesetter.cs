@@ -909,6 +909,7 @@ namespace CSharpMath {
         var runs = new List<TextRunDisplay<TFont, TGlyph>>{ run };
         var atoms = new List<IMathAtom> { op };
         var line = new TextLineDisplay<TFont, TGlyph>(runs, atoms);
+        line.Position = _currentPosition;
         return AddLimitsToDisplay(line, op, 0);
       }
     }
