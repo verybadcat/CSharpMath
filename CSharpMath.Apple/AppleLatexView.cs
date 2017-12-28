@@ -47,8 +47,6 @@ namespace CSharpMath.Apple {
     public ColumnAlignment TextAlignment { get; set; } = ColumnAlignment.Left;
     public NContentInsets ContentInsets { get; set; }
 
-
-
     private IMathList _mathList;
 
     public string Latex { get; private set; }
@@ -107,9 +105,8 @@ namespace CSharpMath.Apple {
     private void _CreateDisplayList()
     {
       var fontSize = FontSize;
-      var appleFont = new TFont("latinmodern-math", fontSize);
-      var typesetting = AppleTypesetters.CreateLatinMath();
-      _displayList = typesetting.CreateLine(_mathList, appleFont, LineStyle.Display);
+      var appleFont = AppleFontManager.LatinMath(fontSize);
+      _displayList = _typesettingContext.CreateLine(_mathList, appleFont, LineStyle.Display);
     }
 
     public override void Draw(CGRect rect) {

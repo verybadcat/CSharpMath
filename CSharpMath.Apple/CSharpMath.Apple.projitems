@@ -21,6 +21,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Font\AppleMathFont.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Font\CtFontGlyphFinder.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
     <Compile Include="$(MSBuildThisFileDirectory)Drawing\AttributedStrings\AppleAttributedStringFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Font\AppleFontManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Typesetting\" />
