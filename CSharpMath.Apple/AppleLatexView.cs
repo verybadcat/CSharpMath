@@ -59,7 +59,7 @@ namespace CSharpMath.Apple {
 
     public AppleLatexView(TypesettingContext<TFont, TGlyph> typesettingContext, float fontSize) {
       Layer.GeometryFlipped = true;
-      BackgroundColor = NColor.Clear;
+      BackgroundColor = NColor.FromRGB(0.9f, 0.9f, 0.9f);
       TextColor = NColor.Black;
       FontSize = fontSize;
       _typesettingContext = typesettingContext;
@@ -126,10 +126,8 @@ namespace CSharpMath.Apple {
         float errorFontSize = 20;
         var attributes = new UIStringAttributes
         {
-
           ForegroundColor = NColor.Red,
           Font = UIFont.SystemFontOfSize(errorFontSize),
-
         };
         var attributedString = new NSAttributedString(ErrorMessage, attributes);
         var ctLine = new CTLine(attributedString);
