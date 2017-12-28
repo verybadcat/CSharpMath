@@ -6,8 +6,8 @@
     <ProjectGuid>{664EAD44-C19D-462B-9127-FD1106B4F3C6}</ProjectGuid>
     <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
-    <RootNamespace>CSharpMath.Ios</RootNamespace>
-    <AssemblyName>CSharpMath.Ios</AssemblyName>
+    <RootNamespace>CSharpMath.Ios.Example</RootNamespace>
+    <AssemblyName>CSharpMath.Ios.Example</AssemblyName>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
@@ -121,12 +121,15 @@
   <ItemGroup>
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
-    <Compile Include="Views\IosMathLabels.cs" />
     <Compile Include="Views\IosMathViewController.cs" />
-    <Compile Include="Resources\IosResources.cs" />
-    <Compile Include="Resources\IosResourceProviders.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CSharpMath.Ios\CSharpMath.Ios.csproj">
+      <Project>{11d4e6c7-c8e2-449c-a1e7-18bbbce4e6f3}</Project>
+      <Name>CSharpMath.Ios</Name>
+      <IsAppExtension>false</IsAppExtension>
+      <IsWatchApp>false</IsWatchApp>
+    </ProjectReference>
     <ProjectReference Include="..\CSharpMath\CSharpMath.csproj">
       <Project>{5157367B-F03E-4ACB-83A1-0DE414A3BFCA}</Project>
       <Name>CSharpMath</Name>
@@ -138,6 +141,5 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\latinmodern-math.json" />
   </ItemGroup>
-  <Import Project="..\CSharpMath.Apple\CSharpMath.Apple.projitems" Label="Shared" Condition="Exists('..\CSharpMath.Apple\CSharpMath.Apple.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>

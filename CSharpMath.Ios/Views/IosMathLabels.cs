@@ -2,7 +2,7 @@
 
 namespace CSharpMath.Ios
 {
-  static class IosMathLabels
+  public static class IosMathLabels
   {
     public static AppleLatexView LatexView(string latex, float fontSize)
     {

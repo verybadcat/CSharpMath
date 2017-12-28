@@ -1,6 +1,6 @@
 ﻿using UIKit;
 
-namespace CSharpMath.Ios
+namespace CSharpMath.Ios.Example
 {
   public class Application
   {
