@@ -10,3 +10,5 @@ It is now working in a lot of cases. Some examples are below. Ironically enough,
 ![Matrix Product](https://github.com/verybadcat/CSharpMath/blob/master/CSharpMath/RenderedSamples/MatrixProduct.png)
 
 ![Continued Fraction](https://github.com/verybadcat/CSharpMath/blob/master/CSharpMath/RenderedSamples/ContinuedFraction.png)
+
+The latin-modern-math font is licenced by the [GUST Font License](./fonts/GUST-FONT-LICENSE.txt)
