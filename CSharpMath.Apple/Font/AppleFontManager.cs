@@ -1,6 +1,7 @@
 ﻿using System;
 using CoreGraphics;
 using CoreText;
+using CSharpMath.Ios.Resources;
 using Foundation;
 
 namespace CSharpMath.Apple
@@ -11,9 +12,9 @@ namespace CSharpMath.Apple
     private static CGFont _latinMathCg { get; set; }
     public const string LatinMathFontName = "latinmodern-math";
     private static CGFont _CreateLatinMathCg() {
-      NSBundle bundle = NSBundle.MainBundle;
-      string fontPath = bundle.PathForResource(LatinMathFontName, "otf");
-      using (CGDataProvider fontDataProvider = CGDataProvider.FromFile(fontPath))
+      var manifestProvider = IosResourceProviders.Manifest();
+      byte[] buffer = manifestProvider.ManifestContents(LatinMathFontName + ".otf");
+      using (CGDataProvider fontDataProvider = new CGDataProvider(buffer))
       {
         var r = CGFont.CreateFromProvider(fontDataProvider);
         return r;
