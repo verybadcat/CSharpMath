@@ -51,21 +51,16 @@ namespace CSharpMath.Ios.Example
     private const string DoubleSummation = @"\sum \sum";
     private const string SummationBigCup = @"234 \bigcup_1";
     private const string SummationWithLimits = @"\sum_{n=1}^{\infty}";
-    private const string Taylor = @"\begin{eqnarray} e^x  &=&  \sum_{x=0}^{\infty}\frac{x^n}{n!}
-    \\
-    \\ 
-    \sin(x) &=& \sum_{x=0}^{\infty}(-1)^n\frac{(2x+1)^n}{(2n)!} 
-    \\ \\
-    -\ln(1-x)   &=& \sum_{x=0}^{\infty}\frac{x^n}{n}  \ \ \ \ \ (-1 <= x < 1) \end{eqnarray}";
+    private const string Taylor = @"\begin{eqnarray} e^x  &=&  \sum_{x=0}^{\infty}\frac{x^n}{n!} \\ \\ \sin(x) &=& \sum_{x=0}^{\infty}(-1)^n\frac{(2x+1)^n}{(2n)!}  \\ \\ -\ln(1-x)   &=& \sum_{x=0}^{\infty}\frac{x^n}{n}  \ \ \ \ \ (-1 <= x < 1) \end{eqnarray}";
     private const string TwoSin = @"2 \sin";
 
     public override void ViewDidLoad()
     {
       View.BackgroundColor = UIColor.White;
-      /// WJWJWJ Set latex here.
-      var latexView = IosMathLabels.LatexView(Matrix, 15);
+      var latexView = IosMathLabels.LatexView(@"x = -b \pm \frac{\sqrt{b^2-4ac}}{2a}", 15);
+      latexView.ContentInsets = new UIEdgeInsets(10, 10, 10, 10);
       var size = latexView.SizeThatFits(new CoreGraphics.CGSize(370, 180));
-      latexView.Frame = new CoreGraphics.CGRect(0, 20, 370, 180);
+      latexView.Frame = new CoreGraphics.CGRect(0, 20, size.Width, size.Height);
       View.Add(latexView);
     }
   }

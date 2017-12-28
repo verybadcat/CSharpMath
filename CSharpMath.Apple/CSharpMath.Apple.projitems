@@ -15,13 +15,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\AppleColorExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Font\CtFontGlyphFinder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Typesetting\AppleGlyphBoundsProvider.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Typesetting\AppleTypesetters.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Typesetting\AppleFontMeasurer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Typesetting\AppleGlyphNameProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Font\AppleMathFont.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Font\CtFontGlyphFinder.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
     <Compile Include="$(MSBuildThisFileDirectory)Drawing\AttributedStrings\AppleAttributedStringFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Font\AppleFontManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Typesetting\AppleTypesetters.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Typesetting\" />

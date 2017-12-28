@@ -70,9 +70,12 @@ namespace CSharpMath.Apple {
       CGSize r;
       if (_displayList!=null) {
         r = _displayList.ComputeDisplayBounds().Size;
+        r.Width += ContentInsets.Left + ContentInsets.Right;
+        r.Height += ContentInsets.Top + ContentInsets.Bottom;
       } else {
         r = new CGSize(320, 40);
       }
+
       return r;
     }
 
@@ -119,6 +122,8 @@ namespace CSharpMath.Apple {
           CgContext = cgContext
         };
         cgContext.SaveState();
+        cgContext.SetStrokeColor(TextColor.CGColor);
+        cgContext.SetFillColor(TextColor.CGColor);
         _displayList.Draw(appleContext);
         cgContext.RestoreState();
       } else if (ErrorMessage.IsNonEmpty()) {
