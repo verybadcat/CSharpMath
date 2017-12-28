@@ -138,8 +138,5 @@
   <ItemGroup>
     <BundleResource Include="Resources\latinmodern-math.otf" />
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\latinmodern-math.json" />
-  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>
