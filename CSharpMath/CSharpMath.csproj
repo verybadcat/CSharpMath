@@ -2,6 +2,18 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>0.0.0</Version>
+    <Description>C# LaTeX engine core. Needs a front end to function. Currently, front end exists for iOS.</Description>
+    <Authors>CSharpMath contributors</Authors>
+    <Company>none</Company>
+    <RepositoryUrl>https://github.com/verybadcat/CSharpMath</RepositoryUrl>
+    <PackageLicenseUrl>https://github.com/verybadcat/CSharpMath</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/verybadcat/CSharpMath</PackageProjectUrl>
+    <Copyright>CSharpMath contributors 2017</Copyright>
+    <PackageReleaseNotes>Initial release</PackageReleaseNotes>
+    <PackageTags>latex math</PackageTags>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
