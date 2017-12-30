@@ -11,7 +11,7 @@ It is now working in most cases. Some examples are below. Ironically enough, the
 
 ![Continued Fraction](https://github.com/verybadcat/CSharpMath/blob/master/CSharpMath/RenderedSamples/ContinuedFraction.png)
 
-USAGE
+# Usage
 
 To get started, do something like this:
 
