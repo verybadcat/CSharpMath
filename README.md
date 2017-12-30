@@ -21,4 +21,6 @@ To get started, do something like this:
       latexView.Frame = new CoreGraphics.CGRect(0, 20, size.Width, size.Height);
       someSuperview.Add(latexView);
 
-The latin-modern-math font is licenced by the [GUST Font License](./fonts/GUST-FONT-LICENSE.txt)
+#License
+
+The code is licenced by the MIT license. The latin-modern-math font is licenced by the [GUST Font License](./fonts/GUST-FONT-LICENSE.txt).
