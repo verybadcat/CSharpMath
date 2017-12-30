@@ -11,4 +11,14 @@ It is now working in most cases. Some examples are below. Ironically enough, the
 
 ![Continued Fraction](https://github.com/verybadcat/CSharpMath/blob/master/CSharpMath/RenderedSamples/ContinuedFraction.png)
 
+USAGE
+
+To get started, do something like this:
+
+      var latexView = IosMathLabels.LatexView(@"x = -b \pm \frac{\sqrt{b^2-4ac}}{2a}", 15);
+      latexView.ContentInsets = new UIEdgeInsets(10, 10, 10, 10);
+      var size = latexView.SizeThatFits(new CoreGraphics.CGSize(370, 180));
+      latexView.Frame = new CoreGraphics.CGRect(0, 20, size.Width, size.Height);
+      someSuperview.Add(latexView);
+
 The latin-modern-math font is licenced by the [GUST Font License](./fonts/GUST-FONT-LICENSE.txt)
