@@ -23,4 +23,4 @@ To get started, do something like this:
 
 # License
 
-The code is licenced by the MIT license. The latin-modern-math font is licenced by the [GUST Font License](./fonts/GUST-FONT-LICENSE.txt).
+The code is licensed by the MIT license. The latin-modern-math font is licensed by the [GUST Font License](./fonts/GUST-FONT-LICENSE.txt).
