@@ -4,4 +4,12 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="SkiaSharp.Views" Version="1.59.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CSharpMath\CSharpMath.csproj" />
+  </ItemGroup>
+
 </Project>
