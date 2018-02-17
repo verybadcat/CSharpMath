@@ -7,7 +7,6 @@ using System;
 
 namespace CSharpMath.Apple
 {
-  /// <remarks>Corresponds to MTFont in iosMath.</remarks>
   public class SkiaMathFont: MathFont<TGlyph>
   {
     public CGFont CgFont { get; private set; }

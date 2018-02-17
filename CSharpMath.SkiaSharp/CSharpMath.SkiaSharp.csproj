@@ -5,11 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SkiaSharp.Views" Version="1.59.3" />
+    <PackageReference Include="SkiaSharp" Version="1.59.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\CSharpMath\CSharpMath.csproj" />
   </ItemGroup>
 
+  <Import Project="..\Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems" Label="Shared" />
+  <Import Project="..\Typography\Typography.OpenFont\Typography.OpenFont.projitems" Label="Shared" />
 </Project>

@@ -45,8 +45,7 @@ namespace CSharpMath.SkiaSharp.Drawing {
     public void DrawGlyphRunWithOffset(AttributedGlyphRun<TFont, TGlyph> run, PointF offset, float maxWidth = float.NaN) {
       Debug.WriteLine($"Text {run} {offset.X} {offset.Y}");
       textPosition = textPosition.Plus(offset);
-
-      run.
+      
       using (var textLine = new CTLine(attributedString)) {
         textLine.Draw(Canvas);
       }

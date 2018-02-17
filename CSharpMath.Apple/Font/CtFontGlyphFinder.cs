@@ -52,10 +52,10 @@ namespace CSharpMath.Apple {
 
     public TGlyph FindGlyphForCharacterAtIndex(int index, string str) {
 
-      var unicodeIndexes = StringInfo.ParseCombiningCharacters(str);
+      var unicodeIndices = StringInfo.ParseCombiningCharacters(str);
       int start = 0;
       int end = str.Length;
-      foreach (var unicodeIndex in unicodeIndexes) {
+      foreach (var unicodeIndex in unicodeIndices) {
         if (unicodeIndex <= index) {
           start = unicodeIndex;
         } else {
