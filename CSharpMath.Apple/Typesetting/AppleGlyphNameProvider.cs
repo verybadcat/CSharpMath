@@ -10,12 +10,12 @@ namespace CSharpMath.Apple
     public AppleGlyphNameProvider(CTFont ctFont) {
       _ctFont = ctFont;
     }
-    public ushort GetGlyph(string glyphName)
+    public TGlyph GetGlyph(string glyphName)
     {
       return _ctFont.GetGlyphWithName(glyphName);
     }
 
-    public string GetGlyphName(ushort glyph)
+    public string GetGlyphName(TGlyph glyph)
     {
       var cgFont = _ctFont.ToCGFont();
       return cgFont.GlyphNameForGlyph(glyph);

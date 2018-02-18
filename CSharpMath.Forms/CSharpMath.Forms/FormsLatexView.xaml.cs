@@ -14,7 +14,7 @@ namespace CSharpMath.Forms
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class FormsLatexView : SKCanvasView
 	{
-    readonly SkiaSharp.SkiaLatexPainter painter = new SkiaSharp.SkiaLatexPainter();
+    readonly Apple.SkiaLatexPainter painter = new Apple.SkiaLatexPainter();
 
     public FormsLatexView() => InitializeComponent();
 

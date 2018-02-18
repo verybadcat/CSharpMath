@@ -151,8 +151,8 @@
     <PackageReference Include="SkiaSharp.Views.Forms">
       <Version>1.59.3</Version>
     </PackageReference>
-    <PackageReference Include="Xamarin.Forms" Version="2.5.0.122203" />
-    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.0.6" />
+    <PackageReference Include="Xamarin.Forms" Version="2.5.0.280555" />
+    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.0.7" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CSharpMath.Forms\CSharpMath.Forms.csproj">

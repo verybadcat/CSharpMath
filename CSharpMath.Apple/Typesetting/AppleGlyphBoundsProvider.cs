@@ -15,10 +15,6 @@ using CSharpMath.Apple.Drawing;
 
 namespace CSharpMath.Apple {
   public class AppleGlyphBoundsProvider: IGlyphBoundsProvider<TFont, TGlyph> {
-    private readonly CtFontGlyphFinder _glyphFinder;
-    public AppleGlyphBoundsProvider(CtFontGlyphFinder glyphFinder) {
-      _glyphFinder = glyphFinder;
-    }
 
     public float[] GetAdvancesForGlyphs(TFont font, TGlyph[] glyphs) {
       var ctFont = font.CtFont;
@@ -30,7 +26,7 @@ namespace CSharpMath.Apple {
       return advances;
     }
 
-    public RectangleF[] GetBoundingRectsForGlyphs(TFont font, ushort[] glyphs, int nVariants)
+    public RectangleF[] GetBoundingRectsForGlyphs(TFont font, TGlyph[] glyphs, int nVariants)
     {
       CTFont ctFont = font.CtFont;
       CGRect[] rects = new CGRect[nVariants];

@@ -2,9 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Text;
-using TGlyph = System.UInt16;
-using TFont = CSharpMath.Apple.SkiaMathFont;
+using Typography.OpenFont;
+using Typography.TextLayout;
+using TFont = CSharpMath.SkiaSharp.SkiaMathFont;
+using TGlyph = System.Int32;
 using CSharpMath.FrontEnd;
 using System.Diagnostics;
 using System.Linq;
@@ -25,21 +26,18 @@ namespace CSharpMath.SkiaSharp.Drawing {
 
     public void DrawGlyphsAtPoints(TGlyph[] glyphs, TFont font, PointF[] points)
     {
-      var glyphStrings = string.Join(" ", glyphs.Select(g => ((int)g).ToString()).ToArray());
-      Debug.WriteLine($"glyphs {glyphStrings}");
-      var ctFont = font.CtFont;
-      var cgPoints = points.Select(p => (CGPoint)p).ToArray();
+      Debug.WriteLine($"glyphs {string.Join(" ", glyphs.Select(g => g.ToString()).ToArray())}");
+      var typeface = font.Typeface;
+      var skPoints = points.Select(p => new SKPoint(p.X, p.Y)).ToArray();
+      foreach (var glyph in glyphs) {
+        typeface.GetGlyphByIndex(glyph).
+      }
       ctFont.DrawGlyphs(Canvas, glyphs, cgPoints);
     }
 
     public void DrawLine(float x1, float y1, float x2, float y2, float lineThickness) {
       Debug.WriteLine($"DrawLine {x1} {y1} {x2} {y2}");
-      UIBezierPath path = new UIBezierPath();
-      path.LineWidth = lineThickness;
-      path.LineCapStyle = CGLineCap.Round;
-      path.MoveTo(new CGPoint(x1, y1));
-      path.AddLineTo(new CGPoint(x2, y2));
-      path.Stroke();
+      Canvas.DrawLine(x1, y1, x2, y2, new SKPaint { StrokeCap = SKStrokeCap.Round, StrokeWidth = lineThickness });
     }
 
     public void DrawGlyphRunWithOffset(AttributedGlyphRun<TFont, TGlyph> run, PointF offset, float maxWidth = float.NaN) {

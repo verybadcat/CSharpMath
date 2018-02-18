@@ -2,7 +2,7 @@
 
 using SkiaSharp;
 
-namespace CSharpMath.SkiaSharp
+namespace CSharpMath.Apple
 {
   public class SkiaLatexPainter {
     public void PaintSurface(SKSurface surface, SKImageInfo imageInfo) { }
