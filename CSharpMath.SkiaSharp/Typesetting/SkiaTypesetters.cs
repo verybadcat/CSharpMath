@@ -2,7 +2,7 @@
 using CSharpMath.FrontEnd;
 using CSharpMath.Resources;
 using Typography.OpenFont;
-using TGlyph = System.Int32;
+using TGlyph = System.UInt16;
 
 namespace CSharpMath.SkiaSharp {
   public static class SkiaTypesetters {
@@ -19,8 +19,8 @@ namespace CSharpMath.SkiaSharp {
 
     private static TypesettingContext<SkiaMathFont, TGlyph> CreateLatinMath() {
       var fontSize = 20;
-      var appleFont = SkiaFontManager.LatinMath(fontSize);
-      return CreateTypesettingContext(appleFont.CtFont);
+      var skiaFont = SkiaFontManager.LatinMath(fontSize);
+      return CreateTypesettingContext(skiaFont.Typeface);
     }
 
     private static TypesettingContext<SkiaMathFont, TGlyph> _latinMath;

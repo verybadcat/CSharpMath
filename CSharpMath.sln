@@ -26,12 +26,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms.iOS", "CSh
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms.UWP", "CSharpMath.Forms\CSharpMath.Forms.UWP\CSharpMath.Forms.UWP.csproj", "{9E83749E-663D-4327-97A2-9E5A786906E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms", "CSharpMath.Forms\CSharpMath.Forms\CSharpMath.Forms.csproj", "{E024CC1D-D022-44B2-8B11-ECCC1462DEF7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Forms", "CSharpMath.Forms\CSharpMath.Forms\CSharpMath.Forms.csproj", "{E024CC1D-D022-44B2-8B11-ECCC1462DEF7}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Typography.Contours", "Typography.Contours\Typography.Contours.shproj", "{A82F1A0E-DA63-409D-A308-7D4A7C284D6A}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		CSharpMath.Apple\CSharpMath.Apple.projitems*{11d4e6c7-c8e2-449c-a1e7-18bbbce4e6f3}*SharedItemsImports = 4
 		CSharpMath.Apple\CSharpMath.Apple.projitems*{1e62c0f0-b5c9-430e-addc-6f6ec6e0bde1}*SharedItemsImports = 13
+		Typography.Contours\Typography.Contours.projitems*{a82f1a0e-da63-409d-a308-7d4a7c284d6a}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Ad-Hoc|Any CPU = Ad-Hoc|Any CPU

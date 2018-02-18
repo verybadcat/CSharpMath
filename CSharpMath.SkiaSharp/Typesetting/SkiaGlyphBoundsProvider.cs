@@ -2,13 +2,15 @@
 using SkiaSharp;
 using System.Drawing;
 using Typography.OpenFont;
+using Typography.TextLayout;
 using CSharpMath.Display.Text;
 using CSharpMath.FrontEnd;
 using TFont = CSharpMath.SkiaSharp.SkiaMathFont;
-using TGlyph = System.Int32;
+using TGlyph = System.UInt16;
 using System.Linq;
 using CSharpMath.Display;
 using CSharpMath.SkiaSharp.Drawing;
+using System.Collections.Generic;
 
 namespace CSharpMath.SkiaSharp {
   public class SkiaGlyphBoundsProvider: IGlyphBoundsProvider<TFont, TGlyph> {
@@ -36,13 +38,7 @@ namespace CSharpMath.SkiaSharp {
       return rects;
     }
 
-    public double GetTypographicWidth(TFont font, AttributedGlyphRun<TFont, TGlyph> run) {
-      SKTypeface.FromFile(null).
-      var aString = run.ToNsAttributedString();
-      var ctLine = new CTLine(aString);
-      var typographicBounds = ctLine.GetTypographicBounds();
-      ctLine.Dispose();
-      return typographicBounds;
-    }
+    public double GetTypographicWidth(TFont font, AttributedGlyphRun<TFont, TGlyph> run) =>
+      run.KernedGlyphs.Sum(g => font.Typeface.GetHAdvanceWidthFromGlyphIndex(g.Glyph) + g.KernAfterGlyph);
   }
 }

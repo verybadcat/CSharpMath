@@ -34,9 +34,10 @@ namespace CSharpMath.Apple.Drawing {
 
     public void DrawLine(float x1, float y1, float x2, float y2, float lineThickness) {
       Debug.WriteLine($"DrawLine {x1} {y1} {x2} {y2}");
-      UIBezierPath path = new UIBezierPath();
-      path.LineWidth = lineThickness;
-      path.LineCapStyle = CGLineCap.Round;
+      UIBezierPath path = new UIBezierPath {
+        LineWidth = lineThickness,
+        LineCapStyle = CGLineCap.Round
+      };
       path.MoveTo(new CGPoint(x1, y1));
       path.AddLineTo(new CGPoint(x2, y2));
       path.Stroke();

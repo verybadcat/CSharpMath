@@ -14,4 +14,6 @@
 
   <Import Project="..\Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems" Label="Shared" />
   <Import Project="..\Typography\Typography.OpenFont\Typography.OpenFont.projitems" Label="Shared" />
+  <Import Project="..\Typography.Contours\Typography.Contours.projitems" Label="Shared" />
+  <Import Project="..\Typography\Demo\Shared\DrawingGL.Common.projitems" Label="Shared" />
 </Project>

@@ -1,5 +1,5 @@
 ﻿using static System.Array;
-using TGlyph = System.Int32;
+using TGlyph = System.UInt16;
 using Typography.OpenFont;
 namespace CSharpMath.SkiaSharp
 {

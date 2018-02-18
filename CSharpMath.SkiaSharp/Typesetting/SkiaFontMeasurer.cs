@@ -1,6 +1,6 @@
 ﻿using Typography.OpenFont;
 using CSharpMath.FrontEnd;
-using TGlyph = System.Int32;
+using TGlyph = System.UInt16;
 
 namespace CSharpMath.SkiaSharp
 {

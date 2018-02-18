@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using Typography.OpenFont;
-using TGlyph = System.Int32;
+using TGlyph = System.UInt16;
 
 namespace CSharpMath.SkiaSharp {
   public class SkiaGlyphFinder : IGlyphFinder<TGlyph> {
