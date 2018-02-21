@@ -15,13 +15,8 @@ using CSharpMath.Display.Text;
 
 namespace CSharpMath.Apple.Drawing {
   public class AppleGraphicsContext : IGraphicsContext<TFont, TGlyph> {
-
-    public AppleGraphicsContext(IGlyphFinder<TGlyph> glyphFinder) {
-      GlyphFinder = glyphFinder;
-    }
+    
     public CGContext CgContext { get; set; }
-
-    public IGlyphFinder<TGlyph> GlyphFinder { get; set; }
 
     public void DrawGlyphsAtPoints(TGlyph[] glyphs, TFont font, PointF[] points)
     {

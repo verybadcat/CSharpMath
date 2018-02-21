@@ -22,8 +22,7 @@ namespace CSharpMath.Display {
       Run = run;
       Range = range;
       
-      var width = context.GlyphBoundsProvider.GetTypographicWidth(font, run);
-      Width = (float)width;
+      Width = context.GlyphBoundsProvider.GetTypographicWidth(font, run);
       _ComputeAscentDescent(context, font);
     }
     private void _ComputeAscentDescent(TypesettingContext<TFont, TGlyph> context, TFont font) {

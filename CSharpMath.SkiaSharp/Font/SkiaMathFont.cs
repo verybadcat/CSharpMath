@@ -10,23 +10,18 @@ namespace CSharpMath.SkiaSharp {
   {
     public string Name { get; }
     public Typeface Typeface { get; }
-    public float FontSizeInPoints { get; }
-    public GlyphLayout GlyphLayout => new GlyphLayout { Typeface = Typeface, FontSizeInPoints = FontSizeInPoints };
     public SKTypeface SKTypeface { get; }
+    public GlyphLayout GlyphLayout { get; }
 
     internal SkiaMathFont(string name, Typeface typeface, SKTypeface skTypeface, float pointSize) : base(pointSize)
     {
       Name = name;
       Typeface = typeface;
       SKTypeface = skTypeface;
-      FontSizeInPoints = pointSize;
+      GlyphLayout = new GlyphLayout { Typeface = Typeface, FontSizeInPoints = PointSize };
     }
 
-    public SkiaMathFont(SkiaMathFont cloneMe, float pointSize): base(pointSize) {
-      Name = cloneMe.Name;
-      Typeface = cloneMe.Typeface;
-      SKTypeface = cloneMe.SKTypeface;
-      FontSizeInPoints = pointSize;
-    }
+    public SkiaMathFont(SkiaMathFont cloneMe, float pointSize) :
+      this(cloneMe.Name, cloneMe.Typeface, cloneMe.SKTypeface, pointSize) { }
   }
 }

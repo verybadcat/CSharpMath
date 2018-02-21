@@ -14,7 +14,6 @@ namespace CSharpMath.FrontEnd {
     void SaveState();
     void RestoreState();
     void SetTextPosition(PointF position);
-    IGlyphFinder<TGlyph> GlyphFinder { get; }
   }
 
 }

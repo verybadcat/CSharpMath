@@ -35,12 +35,10 @@ namespace CSharpMath.Apple {
       return r;
     }
 
-    public double GetTypographicWidth(TFont font, AttributedGlyphRun<TFont, TGlyph> run) {
+    public float GetTypographicWidth(TFont font, AttributedGlyphRun<TFont, TGlyph> run) {
       var aString = run.ToNsAttributedString();
-      var ctLine = new CTLine(aString);
-      var typographicBounds = ctLine.GetTypographicBounds();
-      ctLine.Dispose();
-      return typographicBounds;
+      using (var ctLine = new CTLine(aString))
+        return (float)ctLine.GetTypographicBounds();
     }
   }
 }
