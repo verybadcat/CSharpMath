@@ -32,6 +32,5 @@ namespace CSharpMath {
     public static RectangleF Frame<TFont, TGlyph>(this IDisplay<TFont, TGlyph> display)
       where TFont : MathFont<TGlyph>
       => display.DisplayBounds.Plus(display.Position);
- 
   }
 }
