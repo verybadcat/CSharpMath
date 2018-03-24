@@ -11,4 +11,20 @@ It is now working in most cases. Some examples are below. Ironically enough, the
 
 ![Continued Fraction](https://github.com/verybadcat/CSharpMath/blob/master/CSharpMath/RenderedSamples/ContinuedFraction.png)
 
-The latin-modern-math font is licenced by the [GUST Font License](./fonts/GUST-FONT-LICENSE.txt)
+# Usage
+
+To get started, do something like this:
+
+      var latexView = IosMathLabels.LatexView(@"x = -b \pm \frac{\sqrt{b^2-4ac}}{2a}", 15);
+      latexView.ContentInsets = new UIEdgeInsets(10, 10, 10, 10);
+      var size = latexView.SizeThatFits(new CoreGraphics.CGSize(370, 180));
+      latexView.Frame = new CoreGraphics.CGRect(0, 20, size.Width, size.Height);
+      someSuperview.Add(latexView);
+      
+# Project needs
+
+We need more front ends! As a sub-question, it would be interesting to know where iosMath got the data they use to create their mathTables. See [issues](https://github.com/verybadcat/CSharpMath/issues).
+
+# License
+
+The code is licensed by the MIT license. The latin-modern-math font is licensed by the [GUST Font License](./fonts/GUST-FONT-LICENSE.txt).
