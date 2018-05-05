@@ -2,11 +2,9 @@
 using Typography.OpenFont;
 using Typography.TextLayout;
 using CSharpMath.Display;
-using TGlyph = System.UInt16;
-using System.Collections.Generic;
 
 namespace CSharpMath.SkiaSharp {
-  public class SkiaMathFont: MathFont<TGlyph>
+  public class SkiaMathFont: MathFont<Glyph>
   {
     public string Name { get; }
     public Typeface Typeface { get; }
@@ -18,7 +16,7 @@ namespace CSharpMath.SkiaSharp {
       Name = name;
       Typeface = typeface;
       SKTypeface = skTypeface;
-      GlyphLayout = new GlyphLayout { Typeface = Typeface, FontSizeInPoints = PointSize };
+      GlyphLayout = new GlyphLayout { Typeface = Typeface };
     }
 
     public SkiaMathFont(SkiaMathFont cloneMe, float pointSize) :

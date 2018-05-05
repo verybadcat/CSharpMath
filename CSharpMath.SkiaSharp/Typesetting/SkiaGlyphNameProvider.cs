@@ -1,20 +1,14 @@
-﻿using static System.Array;
-using TGlyph = System.UInt16;
-using Typography.OpenFont;
+﻿using Typography.OpenFont;
 namespace CSharpMath.SkiaSharp
 {
-  public class SkiaGlyphNameProvider: IGlyphNameProvider<TGlyph>
+  public class SkiaGlyphNameProvider: IGlyphNameProvider<Glyph>
   {
     private readonly Typeface _typeface;
 
     public SkiaGlyphNameProvider(Typeface typeface) => _typeface = typeface;
+#warning Use GetGlyphByIndex once PR is merged
+    public Glyph GetGlyph(string glyphName) => _typeface.CffTable.Cff1FontSet._fonts[0].GetGlyphByName(glyphName);
 
-    public TGlyph GetGlyph(string glyphName) => System.Array.Find(_typeface.Glyphs, g => g);
-
-    public string GetGlyphName(TGlyph glyph)
-    {
-      var cgFont = _ctFont.ToCGFont();
-      return cgFont.GlyphNameForGlyph(glyph);
-    }
+    public string GetGlyphName(Glyph glyph) => glyph.GetCff1GlyphData().Name;
   }
 }

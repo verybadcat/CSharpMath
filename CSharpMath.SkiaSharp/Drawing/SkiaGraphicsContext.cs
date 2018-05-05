@@ -2,16 +2,17 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using Typography.Contours;
 using Typography.OpenFont;
 using Typography.TextLayout;
+using Typography.TextServices;
 using TFont = CSharpMath.SkiaSharp.SkiaMathFont;
-using TGlyph = System.UInt16;
 using CSharpMath.FrontEnd;
 using System.Linq;
 using CSharpMath.Display.Text;
 
 namespace CSharpMath.SkiaSharp.Drawing {
-  public class SkiaGraphicsContext : IGraphicsContext<TFont, TGlyph> {
+  public class SkiaGraphicsContext : IGraphicsContext<TFont, Glyph> {
     private static readonly SKPaint glyphPaint =
       new SKPaint { IsStroke = true, StrokeCap = SKStrokeCap.Round, StrokeWidth = 2 };
 
@@ -19,18 +20,18 @@ namespace CSharpMath.SkiaSharp.Drawing {
 
     public SKCanvas Canvas { get; set; }
 
-    public void DrawGlyphsAtPoints(TGlyph[] glyphs, TFont font, PointF[] points) {
+    public void DrawGlyphsAtPoints(Glyph[] glyphs, TFont font, PointF[] points) {
       Debug($"glyphs {string.Join(" ", glyphs.Select(g => g.ToString()).ToArray())}");
       var typeface = font.Typeface;
 
       //Modified version of https://github.com/LayoutFarm/Typography/blob/master/Demo/Windows/GlyphTess.WinForms/Form1.cs
-      var pathBuilder = new Typography.Rendering.GlyphPathBuilder(typeface);
+      var pathBuilder = new Typography.Contours.GlyphPathBuilder(typeface);
       var translator = new DrawingGL.Text.GlyphTranslatorToPath();
       var path = new DrawingGL.WritablePath();
       translator.SetOutput(path);
       var curveFlattener = new DrawingGL.SimpleCurveFlattener();
       for (int i = 0; i < glyphs.Length; i++) {
-        pathBuilder.BuildFromGlyphIndex(glyphs[i], font.PointSize);
+        pathBuilder.BuildFromGlyphIndex(glyphs[i].GetCff1GlyphData().GlyphIndex, font.PointSize);
         pathBuilder.ReadShapes(translator);
         var flattenPoints = curveFlattener.Flatten(path._points, out var contourEnds);
 
@@ -58,7 +59,7 @@ namespace CSharpMath.SkiaSharp.Drawing {
       Canvas.DrawLine(x1, y1, x2, y2, new SKPaint { IsStroke = true, StrokeCap = SKStrokeCap.Round, StrokeWidth = lineThickness });
     }
 
-    public void DrawGlyphRunWithOffset(AttributedGlyphRun<TFont, TGlyph> run, PointF offset, float maxWidth = float.NaN) {
+    public void DrawGlyphRunWithOffset(AttributedGlyphRun<TFont, Glyph> run, PointF offset, float maxWidth = float.NaN) {
       Debug($"Text {run} {offset.X} {offset.Y}");
       textPosition = textPosition.Plus(offset);
       List<GlyphPlan> glyphPlans = null;
