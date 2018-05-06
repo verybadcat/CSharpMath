@@ -62,13 +62,26 @@ namespace CSharpMath.SkiaSharp.Drawing {
     public void DrawGlyphRunWithOffset(AttributedGlyphRun<TFont, Glyph> run, PointF offset, float maxWidth = float.NaN) {
       Debug($"Text {run} {offset.X} {offset.Y}");
       textPosition = textPosition.Plus(offset);
-      List<GlyphPlan> glyphPlans = null;
-      run.Font.GlyphLayout.Layout(run.Text.ToCharArray(), 0, run.Length, glyphPlans);
+      
+      var layout = run.Font.GlyphLayout;
+      layout.Layout(run.Text.ToCharArray(), 0, run.Length);
 
-      float totalKern = 0f;
-      DrawGlyphsAtPoints(run.Glyphs, run.Font,
-        glyphPlans.Zip(/*kern before each glyph*/ new[] { 0f }.Concat(run.KernedGlyphs.Select(g => g.KernAfterGlyph)),
-          (g, k) => new PointF(g.ExactX + (/*take into account of aggregated kern*/ totalKern += k), g.ExactY).Plus(textPosition)).ToArray());
+      var totalAdvance = textPosition.X;
+      var glyphPositions = new PointF[layout._glyphPositions.Count];
+      for (int i = 0; i < glyphPositions.Length; i++) {
+        var p = layout._glyphPositions[i];
+        var glyphPosition = new PointF(totalAdvance + p.OffsetX, textPosition.Y + p.OffsetY);
+        totalAdvance += p.advanceW;
+        glyphPositions[i] = glyphPosition;
+      }
+      DrawGlyphsAtPoints(run.Glyphs, run.Font, glyphPositions);
+
+      //GlyphPlanList glyphPlans = new GlyphPlanList();
+      //GlyphLayoutExtensions.GenerateGlyphPlan(layout._glyphPositions, layout.Typeface.CalculateScaleToPixelFromPointSize(run.Font.PointSize), false, glyphPlans);
+      //float totalKern = 0f;
+      //DrawGlyphsAtPoints(run.Glyphs, run.Font,
+      //  glyphPlans.Zip(/*kern before each glyph*/ new[] { 0f }.Concat(run.KernedGlyphs.Select(g => g.KernAfterGlyph)),
+      //    (g, k) => new PointF(g.ExactX + (/*take into account of aggregated kern*/ totalKern += k), g.ExactY).Plus(textPosition)).ToArray());
     }
 
     public void RestoreState() {

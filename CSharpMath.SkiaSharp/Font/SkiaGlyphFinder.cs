@@ -11,6 +11,7 @@ namespace CSharpMath.SkiaSharp {
 
     public SkiaGlyphFinder(Typeface typeface) => _typeface = typeface;
 
+#warning replace once PR is merged
     public static List<int> StringToCodepoints(string str) {
       //get array with correct number of codepoints
       var codepoints = new List<int>();
