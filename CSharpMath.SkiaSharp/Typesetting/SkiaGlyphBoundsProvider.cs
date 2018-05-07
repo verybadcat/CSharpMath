@@ -38,7 +38,7 @@ namespace CSharpMath.SkiaSharp {
     }
 
     public float GetTypographicWidth(TFont font, AttributedGlyphRun<TFont, Glyph> run) {
-      font.GlyphLayout.MeasureString(run.Text.ToCharArray(), 0, run.Length, out var stringBox, 1);
+      var stringBox = font.GlyphLayout.LayoutAndMeasureString(run.Text.ToCharArray(), 0, run.Length, font.PointSize, out var _);
       return stringBox.width + run.KernedGlyphs.Sum(g => g.KernAfterGlyph);
     }
   }

@@ -5,7 +5,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SkiaSharp" Version="1.59.3" />
+    <None Remove="Font Reference\latinmodern-math.json" />
+    <None Remove="Font Reference\latinmodern-math.otf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Font Reference\latinmodern-math.json" />
+    <EmbeddedResource Include="Font Reference\latinmodern-math.otf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SkiaSharp" Version="1.60.0" />
   </ItemGroup>
 
   <ItemGroup>

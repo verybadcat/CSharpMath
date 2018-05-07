@@ -13,7 +13,7 @@ namespace CSharpMath.SkiaSharp {
         new SkiaGlyphNameProvider(someTypefaceSizeIrrelevant),
         new SkiaGlyphFinder(someTypefaceSizeIrrelevant),
         new UnicodeFontChanger(),
-        SkiaResources.JToken
+        SkiaResources.Json
       );
 
     private static TypesettingContext<SkiaMathFont, Glyph> CreateLatinMath() {
