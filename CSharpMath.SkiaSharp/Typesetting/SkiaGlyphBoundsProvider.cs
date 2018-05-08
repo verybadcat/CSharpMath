@@ -1,15 +1,9 @@
-﻿using System;
-using SkiaSharp;
-using System.Drawing;
+﻿using System.Drawing;
+using System.Linq;
 using Typography.OpenFont;
-using Typography.TextLayout;
 using CSharpMath.Display.Text;
 using CSharpMath.FrontEnd;
 using TFont = CSharpMath.SkiaSharp.SkiaMathFont;
-using System.Linq;
-using CSharpMath.Display;
-using CSharpMath.SkiaSharp.Drawing;
-using System.Collections.Generic;
 
 namespace CSharpMath.SkiaSharp {
   public class SkiaGlyphBoundsProvider: IGlyphBoundsProvider<TFont, Glyph> {

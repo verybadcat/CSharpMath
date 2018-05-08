@@ -9,20 +9,13 @@ namespace CSharpMath.SkiaSharp {
     static SkiaFontManager() {
       var bytes = SkiaResources.Otf;
       var reader = new OpenFontReader();
-      _latinMathTypeface = reader.Read(new MemoryStream(bytes, false));
-      _latinMathSKTypeface = SKTypeface.FromStream(new MemoryStream(bytes, false));
+      LatinMathTypeface = reader.Read(new MemoryStream(bytes, false));
+      LatinMathSKTypeface = SKTypeface.FromStream(new MemoryStream(bytes, false));
     }
 
     public const string LatinMathFontName = "latinmodern-math";
-
-    private static Typeface _latinMathTypeface;
-    public static Typeface LatinMathTypeface {
-      get => _latinMathTypeface;
-    }
-    private static SKTypeface _latinMathSKTypeface;
-    public static SKTypeface LatinMathSKTypeface {
-      get => _latinMathSKTypeface;
-    }
+    public static Typeface LatinMathTypeface { get; }
+    public static SKTypeface LatinMathSKTypeface { get; }
 
     public static SkiaMathFont LatinMath(float pointSize) {
       return new SkiaMathFont(LatinMathFontName, LatinMathTypeface, LatinMathSKTypeface, pointSize);

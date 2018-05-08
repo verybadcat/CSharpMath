@@ -33,6 +33,7 @@
     <MtouchVerbosity>
     </MtouchVerbosity>
     <MtouchI18n>west</MtouchI18n>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType>pdbonly</DebugType>

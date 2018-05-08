@@ -23,9 +23,7 @@ namespace CSharpMath.SkiaSharp {
     }
 
     private static TypesettingContext<SkiaMathFont, Glyph> _latinMath;
-
-    private static object _lock = new object();
-
+    private static readonly object _lock = new object();
     public static TypesettingContext<SkiaMathFont, Glyph> LatinMath {
       get {
         if (_latinMath == null) {
