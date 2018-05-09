@@ -14,12 +14,15 @@ namespace CSharpMath.Forms
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class FormsLatexView : SKCanvasView
 	{
-    readonly SkiaSharp.SkiaLatexPainter painter = new SkiaSharp.SkiaLatexPainter();
+    SkiaSharp.SkiaLatexPainter painter;
 
     public FormsLatexView() => InitializeComponent();
 
     protected override void OnPaintSurface(SKPaintSurfaceEventArgs e) {
-      painter.PaintSurface(e.Surface, e.Info);
+      painter = painter ?? new SkiaSharp.SkiaLatexPainter(e.Info.Size);
+      painter.BoundsSK = e.Info.Size;
+      painter.LaTeX = @"1 + 1";
+      painter.Draw(e.Surface.Canvas);
       base.OnPaintSurface(e); 
     }
   }

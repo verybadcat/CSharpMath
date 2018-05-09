@@ -6,11 +6,27 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="Font Reference\latinmodern-math.json" />
     <None Remove="Font Reference\latinmodern-math.otf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Typography\Demo\Shared\DrawingGL.Text\GlyphTranslatorToPath.cs" Link="GlyphTranslatorToPath.cs" />
+    <Compile Include="..\Typography\Demo\Shared\DrawingGL\CurveFlattener.cs" Link="CurveFlattener.cs" />
+    <Compile Include="..\Typography\Demo\Shared\DrawingGL\Path.cs" Link="Path.cs" />
+    <Compile Include="..\Typography\Demo\Shared\DrawingGL\Primitives.cs" Link="Primitives.cs" />
+    <Compile Include="..\Typography\Demo\Shared\GlyphPathBuilder\GlyphPathBuilder.cs" Link="GlyphPathBuilder.cs" />
+    <Compile Include="..\Typography\Demo\Shared\GlyphPathBuilder\GlyphPathBuilderBase.cs" Link="GlyphPathBuilderBase.cs" />
+    <Compile Include="..\Typography\Demo\Shared\GlyphPathBuilder\HintTechnique.cs" Link="HintTechnique.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,5 +44,4 @@
 
   <Import Project="..\Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems" Label="Shared" />
   <Import Project="..\Typography\Typography.OpenFont\Typography.OpenFont.projitems" Label="Shared" />
-  <Import Project="..\Typography\Demo\Shared\DrawingGL.Common.projitems" Label="Shared" />
 </Project>

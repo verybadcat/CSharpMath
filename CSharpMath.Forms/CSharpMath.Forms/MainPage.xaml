@@ -4,8 +4,6 @@
              xmlns:local="clr-namespace:CSharpMath.Forms"
              x:Class="CSharpMath.Forms.MainPage">
 
-	<Label Text="Welcome to Xamarin.Forms!" 
-           VerticalOptions="Center" 
-           HorizontalOptions="Center" />
+    <local:FormsLatexView/>
 
 </ContentPage>

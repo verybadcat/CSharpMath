@@ -1,22 +1,27 @@
 ﻿using SkiaSharp;
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using Typography.Contours;
 using Typography.OpenFont;
-using Typography.TextLayout;
-using Typography.TextServices;
 using TFont = CSharpMath.SkiaSharp.SkiaMathFont;
 using CSharpMath.FrontEnd;
 using System.Linq;
 using CSharpMath.Display.Text;
 
-namespace CSharpMath.SkiaSharp.Drawing {
+namespace CSharpMath.SkiaSharp {
   public class SkiaGraphicsContext : IGraphicsContext<TFont, Glyph> {
-    private static readonly SKPaint glyphPaint =
+    protected SKPaint glyphPaint =
       new SKPaint { IsStroke = true, StrokeCap = SKStrokeCap.Round, StrokeWidth = 2 };
+    
+    public SKColor Color { get => glyphPaint.Color; set => glyphPaint.Color = value; }
 
     private PointF textPosition;
+    public PointF TextPosition {
+      get => textPosition;
+      set {
+        textPosition = value;
+        Debug("SetTextPosition " + textPosition.X + " " + textPosition.Y);
+      }
+    }
+    void IGraphicsContext<TFont, Glyph>.SetTextPosition(PointF position) => TextPosition = position;
 
     public SKCanvas Canvas { get; set; }
 
@@ -92,11 +97,6 @@ namespace CSharpMath.SkiaSharp.Drawing {
     public void SaveState() {
       Debug("Save");
       Canvas.Save();
-    }
-
-    public void SetTextPosition(PointF position) {
-      Debug("SetTextPosition " + position.X + " " + position.Y);
-      textPosition = position;
     }
 
     public void Translate(PointF dxy) {

@@ -9,7 +9,12 @@ namespace CSharpMath.SkiaSharp {
     static SkiaFontManager() {
       var bytes = SkiaResources.Otf;
       var reader = new OpenFontReader();
-      LatinMathTypeface = reader.Read(new MemoryStream(bytes, false));
+      try {
+        LatinMathTypeface = reader.Read(new MemoryStream(bytes, false));
+      } catch (Exception) {
+        ;
+        throw;
+      }
       LatinMathSKTypeface = SKTypeface.FromStream(new MemoryStream(bytes, false));
     }
 
