@@ -101,7 +101,7 @@ namespace CSharpMath.SkiaSharp
       }
     }
 
-    public void Redraw() => Draw(_canvas);
+    public void Redraw() { if (_canvas != null) Draw(_canvas); }
     public void Draw(SKCanvas canvas) {
       _canvas = canvas;
       if (_mathList != null) {

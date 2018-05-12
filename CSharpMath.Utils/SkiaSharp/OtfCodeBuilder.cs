@@ -1,0 +1,36 @@
+﻿using System;
+using System.IO;
+using System.Text;
+
+namespace CSharpMath.DevUtils.SkiaSharp {
+  static class OtfCodeBuilder {
+    /// <summary>
+    /// Builds the Otf.cs file located at CSharpMath\CSharpMath.SkiaSharp\Font Reference\Otf.cs
+    /// from latinmodern-math.otf located at CSharpMath\CSharpMath.SkiaSharp\Font Reference\latinmodern-math.otf
+    /// </summary>
+    public static void Build() {
+      const int numbersPerLine = 25;
+      var basePath = Path.Combine(Global.Path, nameof(CSharpMath) + "." + nameof(SkiaSharp), "Font Reference");
+
+      var bytes = File.ReadAllBytes(Path.Combine(basePath, "latinmodern-math.otf"));
+      var b = new StringBuilder()
+        .AppendLine("namespace CSharpMath.SkiaSharp {")
+        .AppendLine("  //Do not modify this file directly. Instead, modify this at")
+        .AppendLine("  //CSharpMath\\CSharpMath.Utils\\SkiaSharp\\OtfCodeBuilder.cs and re-generate")
+        .AppendLine("  //this file by executing the method in that file in the CSharpMath.Utils project.")
+        .AppendLine("  [System.Runtime.CompilerServices.CompilerGenerated]")
+        .AppendLine("  internal static partial class SkiaResources {")
+        .AppendLine("    public static byte[] Otf { get; } = new byte[] {");
+      int i = 0;
+      for (int l = bytes.Length - numbersPerLine; i < l; i += numbersPerLine)
+        b.Append("      ").AppendJoin(", ", new ArraySegment<byte>(bytes, i, numbersPerLine)).AppendLine(", ");
+      b
+        .Append("      ").AppendJoin(", ", new ArraySegment<byte>(bytes, i, bytes.Length - i)).AppendLine()
+        .AppendLine("    };")
+        .AppendLine("  }")
+        .AppendLine("}");
+
+      File.WriteAllText(Path.Combine(basePath, "Otf.cs"), b.ToString());
+    }
+  }
+}
