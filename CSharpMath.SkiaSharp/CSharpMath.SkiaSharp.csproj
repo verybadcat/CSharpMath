@@ -24,9 +24,6 @@
     <Compile Include="..\Typography\Demo\Shared\DrawingGL\CurveFlattener.cs" Link="CurveFlattener.cs" />
     <Compile Include="..\Typography\Demo\Shared\DrawingGL\Path.cs" Link="Path.cs" />
     <Compile Include="..\Typography\Demo\Shared\DrawingGL\Primitives.cs" Link="Primitives.cs" />
-    <Compile Include="..\Typography\Demo\Shared\GlyphPathBuilder\GlyphPathBuilder.cs" Link="GlyphPathBuilder.cs" />
-    <Compile Include="..\Typography\Demo\Shared\GlyphPathBuilder\GlyphPathBuilderBase.cs" Link="GlyphPathBuilderBase.cs" />
-    <Compile Include="..\Typography\Demo\Shared\GlyphPathBuilder\HintTechnique.cs" Link="HintTechnique.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,12 +33,15 @@
 
   <ItemGroup>
     <PackageReference Include="SkiaSharp" Version="1.60.0" />
+    <PackageReference Include="System.Numerics.Vectors" Version="4.4.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\CSharpMath\CSharpMath.csproj" />
   </ItemGroup>
 
-  <Import Project="..\Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems" Label="Shared" />
   <Import Project="..\Typography\Typography.OpenFont\Typography.OpenFont.projitems" Label="Shared" />
+  <Import Project="..\Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems" Label="Shared" />
+  <Import Project="..\Typography\PixelFarm.NetStandard\PixelFarm.Triangulation\PixelFarm.Triangulation.projitems" Label="Shared"  />
+  <Import Project="..\Typography\Typography.Contours\Typography.Contours.projitems" Label="Shared" />
 </Project>
