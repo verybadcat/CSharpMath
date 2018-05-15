@@ -10,9 +10,7 @@ namespace CSharpMath.DevUtils.SkiaSharp {
     /// </summary>
     public static void Build() {
       const int numbersPerLine = 25;
-      var basePath = Path.Combine(Global.Path, nameof(CSharpMath) + "." + nameof(SkiaSharp), "Font Reference");
-
-      var bytes = File.ReadAllBytes(Path.Combine(basePath, "latinmodern-math.otf"));
+      var bytes = File.ReadAllBytes(Paths.LatinModernMath);
       var b = new StringBuilder()
         .AppendLine("namespace CSharpMath.SkiaSharp {")
         .AppendLine("  //Do not modify this file directly. Instead, modify this at")
@@ -30,7 +28,7 @@ namespace CSharpMath.DevUtils.SkiaSharp {
         .AppendLine("  }")
         .AppendLine("}");
 
-      File.WriteAllText(Path.Combine(basePath, "Otf.cs"), b.ToString());
+      File.WriteAllText(Paths.OtfFile, b.ToString());
     }
   }
 }

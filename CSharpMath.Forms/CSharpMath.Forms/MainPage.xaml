@@ -4,6 +4,6 @@
              xmlns:local="clr-namespace:CSharpMath.Forms"
              x:Class="CSharpMath.Forms.MainPage">
 
-    <local:FormsLatexView/>
+    <local:FormsLatexView VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"/>
 
 </ContentPage>

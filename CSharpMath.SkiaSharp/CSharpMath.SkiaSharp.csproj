@@ -21,9 +21,7 @@
 
   <ItemGroup>
     <Compile Include="..\Typography\Demo\Shared\DrawingGL.Text\GlyphTranslatorToPath.cs" Link="GlyphTranslatorToPath.cs" />
-    <Compile Include="..\Typography\Demo\Shared\DrawingGL\CurveFlattener.cs" Link="CurveFlattener.cs" />
     <Compile Include="..\Typography\Demo\Shared\DrawingGL\Path.cs" Link="Path.cs" />
-    <Compile Include="..\Typography\Demo\Shared\DrawingGL\Primitives.cs" Link="Primitives.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,6 +40,6 @@
 
   <Import Project="..\Typography\Typography.OpenFont\Typography.OpenFont.projitems" Label="Shared" />
   <Import Project="..\Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems" Label="Shared" />
-  <Import Project="..\Typography\PixelFarm.NetStandard\PixelFarm.Triangulation\PixelFarm.Triangulation.projitems" Label="Shared"  />
+  <Import Project="..\Typography\PixelFarm.NetStandard\PixelFarm.Triangulation\PixelFarm.Triangulation.projitems" Label="Shared" />
   <Import Project="..\Typography\Typography.Contours\Typography.Contours.projitems" Label="Shared" />
 </Project>

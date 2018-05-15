@@ -24,9 +24,12 @@ namespace CSharpMath.SkiaSharp
     public float Right { get; }
   }
   public class SkiaLatexPainter {
-    public SkiaLatexPainter(SKSizeI bounds, float fontSize = 20f) : this(new SizeF(bounds.Width, bounds.Height), fontSize) { }
     public SkiaLatexPainter(SizeF bounds, float fontSize = 20f) {
       Bounds = bounds;
+      FontSize = fontSize;
+    }
+    public SkiaLatexPainter(float width, float height, float fontSize = 20f) {
+      Bounds = new SizeF(width, height);
       FontSize = fontSize;
     }
 
@@ -35,7 +38,6 @@ namespace CSharpMath.SkiaSharp
     protected readonly TypesettingContext<TFont, Glyph> _typesettingContext = SkiaTypesetters.LatinMath;
 
     public SizeF Bounds { get; set; }
-    public SKSizeI BoundsSK { set => Bounds = new SizeF(value.Width, value.Height); }
     public Thickness Margin { get; set; } = new Thickness();
     public string ErrorMessage { get; private set; }
     public bool DisplayErrorInline { get; set; } = true;
@@ -101,24 +103,27 @@ namespace CSharpMath.SkiaSharp
       }
     }
 
+    object _lock = new object();
     public void Redraw() { if (_canvas != null) Draw(_canvas); }
     public void Draw(SKCanvas canvas) {
-      _canvas = canvas;
-      if (_mathList != null) {
-        InitPositions();
-        var skiaContext = new SkiaGraphicsContext() {
-          Canvas = canvas
-        };
-        canvas.Save();
-        canvas.DrawColor(BackgroundColor);
-        skiaContext.Color = TextColor;
-        _displayList.Draw(skiaContext);
-        canvas.Restore();
-      } else if (ErrorMessage.IsNonEmpty()) {
-        canvas.Save();
-        canvas.DrawColor(BackgroundColor);
-        canvas.DrawText(ErrorMessage, new SKPoint(0, Bounds.Height - ErrorFontSize ?? FontSize), new SKPaint { Color = ErrorColor, Typeface = SKFontManager.Default.MatchCharacter('A') });
-        canvas.Restore();
+      lock (_lock) { //we cannot have multiple draws going on at once
+        _canvas = canvas;
+        if (_mathList != null) {
+          InitPositions();
+          var skiaContext = new SkiaGraphicsContext() {
+            Canvas = canvas
+          };
+          canvas.Save();
+          canvas.DrawColor(BackgroundColor);
+          skiaContext.Color = TextColor;
+          _displayList.Draw(skiaContext);
+          canvas.Restore();
+        } else if (ErrorMessage.IsNonEmpty()) {
+          canvas.Save();
+          canvas.DrawColor(BackgroundColor);
+          canvas.DrawText(ErrorMessage, new SKPoint(0, Bounds.Height - ErrorFontSize ?? FontSize), new SKPaint { Color = ErrorColor, Typeface = SKFontManager.Default.MatchCharacter('A') });
+          canvas.Restore();
+        }
       }
     }
   }

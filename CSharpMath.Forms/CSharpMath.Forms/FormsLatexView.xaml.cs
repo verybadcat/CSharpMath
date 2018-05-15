@@ -19,10 +19,10 @@ namespace CSharpMath.Forms
     public FormsLatexView() => InitializeComponent();
 
     protected override void OnPaintSurface(SKPaintSurfaceEventArgs e) {
-      painter = painter ?? new SkiaSharp.SkiaLatexPainter(e.Info.Size);
-      painter.BoundsSK = e.Info.Size;
-      painter.LaTeX = @"1 + 1";
+      painter = painter ?? new SkiaSharp.SkiaLatexPainter((float)Width, (float)Height);
       painter.Draw(e.Surface.Canvas);
+      painter.TextAlignment = Enumerations.ColumnAlignment.Center;
+      painter.LaTeX = @"1 + 1";
       base.OnPaintSurface(e); 
     }
   }

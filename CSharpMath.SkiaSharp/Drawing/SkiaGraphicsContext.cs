@@ -28,34 +28,17 @@ namespace CSharpMath.SkiaSharp {
     public void DrawGlyphsAtPoints(Glyph[] glyphs, TFont font, PointF[] points) {
       Debug($"glyphs {string.Join(" ", glyphs.Select(g => g.ToString()).ToArray())}");
       var typeface = font.Typeface;
-
-      //Modified version of https://github.com/LayoutFarm/Typography/blob/master/Demo/Windows/GlyphTess.WinForms/Form1.cs
       var pathBuilder = new Typography.Contours.GlyphPathBuilder(typeface);
       var translator = new DrawingGL.Text.GlyphTranslatorToPath();
-      var path = new DrawingGL.WritablePath();
+      var path = new SkiaGlyphPath();
       translator.SetOutput(path);
-      var curveFlattener = new DrawingGL.SimpleCurveFlattener();
       for (int i = 0; i < glyphs.Length; i++) {
         pathBuilder.BuildFromGlyphIndex(glyphs[i].GetCff1GlyphData().GlyphIndex, font.PointSize);
         pathBuilder.ReadShapes(translator);
-        var flattenPoints = curveFlattener.Flatten(path._points, out var contourEnds);
-
-        int contourCount = contourEnds.Length;
-        int startAt = 3;
-        for (int cnt_index = 0; cnt_index < contourCount; ++cnt_index) {
-          int endAt = contourEnds[cnt_index];
-          SaveState();
-          Translate(points[i]);
-          for (int m = startAt; m <= endAt; m += 2) {
-            Canvas.DrawLine(flattenPoints[m - 3], flattenPoints[m - 2], flattenPoints[m - 1], flattenPoints[m], glyphPaint);
-
-          }
-          //close coutour 
-          Canvas.DrawLine(flattenPoints[endAt - 1], flattenPoints[endAt], flattenPoints[startAt - 3], flattenPoints[startAt - 2], glyphPaint);
-          RestoreState();
-          //
-          startAt = (endAt + 1) + 3;
-        }
+        Canvas.Save();
+        Canvas.Translate(points[i].X, points[i].Y);
+        Canvas.DrawPath(path.Path, glyphPaint);
+        Canvas.Restore();
       }
     }
 
@@ -104,8 +87,9 @@ namespace CSharpMath.SkiaSharp {
       Canvas.Translate(dxy.X, dxy.Y);
     }
     
+    [System.Diagnostics.DebuggerStepThrough, System.Diagnostics.Conditional("DEBUG")]
     private void Debug(string message) {
-      //System.Diagnostics.Debug.WriteLine(message); //comment out to avoid spamming the debug output
+      System.Diagnostics.Debug.WriteLine(message); //comment out to avoid spamming the debug output
     }
   }
 }
