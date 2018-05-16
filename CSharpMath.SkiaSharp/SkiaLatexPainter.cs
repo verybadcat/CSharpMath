@@ -33,9 +33,9 @@ namespace CSharpMath.SkiaSharp
       FontSize = fontSize;
     }
 
+    protected static readonly TypesettingContext<TFont, Glyph> _typesettingContext = SkiaTypesetters.LatinMath;
     protected MathListDisplay<TFont, Glyph> _displayList;
     protected SKCanvas _canvas;
-    protected readonly TypesettingContext<TFont, Glyph> _typesettingContext = SkiaTypesetters.LatinMath;
 
     public SizeF Bounds { get; set; }
     public Thickness Margin { get; set; } = new Thickness();
@@ -114,6 +114,9 @@ namespace CSharpMath.SkiaSharp
             Canvas = canvas
           };
           canvas.Save();
+          //invert the canvas vertically
+          canvas.Scale(1, -1);
+          canvas.Translate(0, -Bounds.Height);
           canvas.DrawColor(BackgroundColor);
           skiaContext.Color = TextColor;
           _displayList.Draw(skiaContext);

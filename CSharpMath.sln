@@ -20,15 +20,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Ios", "CSharpMat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.SkiaSharp", "CSharpMath.SkiaSharp\CSharpMath.SkiaSharp.csproj", "{35B4BB5B-2202-436E-9AFE-00997CA2CC65}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms.Android", "CSharpMath.Forms\CSharpMath.Forms.Android\CSharpMath.Forms.Android.csproj", "{95596BAD-4D78-4D19-939B-C6EA3D60D988}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms.Example.Android", "CSharpMath.Forms\CSharpMath.Forms.Android\CSharpMath.Forms.Example.Android.csproj", "{95596BAD-4D78-4D19-939B-C6EA3D60D988}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms.iOS", "CSharpMath.Forms\CSharpMath.Forms.iOS\CSharpMath.Forms.iOS.csproj", "{D2DCB05B-D4D2-4FB2-A65D-22CDB8F4F96C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms.Example.iOS", "CSharpMath.Forms\CSharpMath.Forms.iOS\CSharpMath.Forms.Example.iOS.csproj", "{D2DCB05B-D4D2-4FB2-A65D-22CDB8F4F96C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms.UWP", "CSharpMath.Forms\CSharpMath.Forms.UWP\CSharpMath.Forms.UWP.csproj", "{9E83749E-663D-4327-97A2-9E5A786906E7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms.Example.UWP", "CSharpMath.Forms\CSharpMath.Forms.UWP\CSharpMath.Forms.Example.UWP.csproj", "{9E83749E-663D-4327-97A2-9E5A786906E7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Forms", "CSharpMath.Forms\CSharpMath.Forms\CSharpMath.Forms.csproj", "{E024CC1D-D022-44B2-8B11-ECCC1462DEF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Utils", "CSharpMath.Utils\CSharpMath.Utils.csproj", "{20986A1A-BF57-4EA7-92E1-E88D3C70874B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Utils", "CSharpMath.Utils\CSharpMath.Utils.csproj", "{20986A1A-BF57-4EA7-92E1-E88D3C70874B}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

@@ -10,7 +10,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>CSharpMath.Forms.iOS</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-    <AssemblyName>CSharpMath.Forms.iOS</AssemblyName>
+    <AssemblyName>CSharpMath.Forms.Example.iOS</AssemblyName>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>

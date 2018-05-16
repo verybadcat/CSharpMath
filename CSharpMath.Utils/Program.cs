@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Text;
 
 namespace CSharpMath.DevUtils {
   class Program {
     static void Main(string[] args) {
       //SkiaSharp.OtfCodeBuilder.Build();
-      Console.WriteLine(TypographyTest.MeasureString.Measure("1+1+1+1+1+1+1+1"));
+      Console.WriteLine(new StringBuilder().AppendJoin(", ", TypographyTest.LayoutString.Layout("1+1+1+1+1+1+1+1")).ToString());
 
       Console.WriteLine();
       Console.WriteLine("Finished executing the method(s) requested.");

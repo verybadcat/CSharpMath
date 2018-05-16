@@ -20,11 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\Typography\Demo\Shared\DrawingGL.Text\GlyphTranslatorToPath.cs" Link="GlyphTranslatorToPath.cs" />
-    <Compile Include="..\Typography\Demo\Shared\DrawingGL\Path.cs" Link="Path.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="Font Reference\latinmodern-math.json" />
     <EmbeddedResource Include="Font Reference\latinmodern-math.otf" />
   </ItemGroup>

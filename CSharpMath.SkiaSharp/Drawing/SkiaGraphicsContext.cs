@@ -26,19 +26,18 @@ namespace CSharpMath.SkiaSharp {
     public SKCanvas Canvas { get; set; }
 
     public void DrawGlyphsAtPoints(Glyph[] glyphs, TFont font, PointF[] points) {
-      Debug($"glyphs {string.Join(" ", glyphs.Select(g => g.ToString()).ToArray())}");
+      Debug($"glyphs: {string.Join(" ", glyphs.Select(g => g.GetCff1GlyphData().Name).ToArray())}, points: {string.Join(" ", points)}");
       var typeface = font.Typeface;
-      var pathBuilder = new Typography.Contours.GlyphPathBuilder(typeface);
-      var translator = new DrawingGL.Text.GlyphTranslatorToPath();
+      var pathBuilder = new SkiaGlyphPathBuilder(typeface);
       var path = new SkiaGlyphPath();
-      translator.SetOutput(path);
       for (int i = 0; i < glyphs.Length; i++) {
         pathBuilder.BuildFromGlyphIndex(glyphs[i].GetCff1GlyphData().GlyphIndex, font.PointSize);
-        pathBuilder.ReadShapes(translator);
+        pathBuilder.ReadShapes(path);
         Canvas.Save();
         Canvas.Translate(points[i].X, points[i].Y);
         Canvas.DrawPath(path.Path, glyphPaint);
         Canvas.Restore();
+        path.Clear();
       }
     }
 
@@ -55,11 +54,12 @@ namespace CSharpMath.SkiaSharp {
       layout.Layout(run.Text.ToCharArray(), 0, run.Length);
 
       var totalAdvance = textPosition.X;
+      var pxscale = layout.Typeface.CalculateScaleToPixelFromPointSize(run.Font.PointSize);
       var glyphPositions = new PointF[layout._glyphPositions.Count];
       for (int i = 0; i < glyphPositions.Length; i++) {
         var p = layout._glyphPositions[i];
         var glyphPosition = new PointF(totalAdvance + p.OffsetX, textPosition.Y + p.OffsetY);
-        totalAdvance += p.advanceW;
+        totalAdvance += p.advanceW * pxscale;
         glyphPositions[i] = glyphPosition;
       }
       DrawGlyphsAtPoints(run.Glyphs, run.Font, glyphPositions);
