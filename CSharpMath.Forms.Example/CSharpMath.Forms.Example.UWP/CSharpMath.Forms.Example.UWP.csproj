@@ -156,9 +156,9 @@
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.1.4" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CSharpMath.Forms\CSharpMath.Forms.csproj">
-      <Project>{DA4C8E80-E53A-4329-8BC7-E5AFDF93D420}</Project>
-      <Name>CSharpMath.Forms</Name>
+    <ProjectReference Include="..\CSharpMath.Forms\CSharpMath.Forms.Example.csproj">
+      <Project>{E024CC1D-D022-44B2-8B11-ECCC1462DEF7}</Project>
+      <Name>CSharpMath.Forms.Example</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

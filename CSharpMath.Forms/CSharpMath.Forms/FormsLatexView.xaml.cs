@@ -17,14 +17,13 @@ namespace CSharpMath.Forms
     public FormsLatexView() => InitializeComponent();
 
     protected override void OnPaintSurface(SKPaintSurfaceEventArgs e) {
-      var painter = new SkiaSharp.SkiaLatexPainter((float)Width, (float)Height) {
+      var painter = new SkiaSharp.SkiaLatexPainter((float)Width, (float)Height, FontSize) {
         BackgroundColor = BackgroundColor.ToSKColor(),
         DisplayErrorInline = DisplayErrorInline,
         ErrorColor = ErrorColor.ToSKColor(),
         ErrorFontSize = ErrorFontSize,
-        FontSize = FontSize,
         LaTeX = LaTeX,
-        Margin = new SkiaSharp.Thickness((float)Margin.Left, (float)Margin.Top, (float)Margin.Right, (float)Margin.Bottom),
+        Padding = new SkiaSharp.Thickness((float)Padding.Left, (float)Padding.Top, (float)Padding.Right, (float)Padding.Bottom),
         TextAlignment = (Enumerations.ColumnAlignment)TextAlignment,
         TextColor = TextColor.ToSKColor()
       };
@@ -34,11 +33,19 @@ namespace CSharpMath.Forms
     
     public string ErrorMessage { get; private set; }
     public bool DisplayErrorInline { get; set; } = true;
+    /// <summary>
+    /// Unit of measure: points
+    /// </summary>
     public float FontSize { get; set; } = 20f;
+    /// <summary>
+    /// Unit of measure: points;
+    /// Defaults to <see cref="FontSize"/>.
+    /// </summary>
     public float? ErrorFontSize { get; set; } = null;
     public Color TextColor { get; set; } = Color.Black;
     public Color ErrorColor { get; set; } = Color.Red;
     public TextAlignment TextAlignment { get; set; } = TextAlignment.Start;
+    public Thickness Padding { get; set; }
     public string LaTeX { get; set; }
   }
 }

@@ -38,10 +38,17 @@ namespace CSharpMath.SkiaSharp
     protected SKCanvas _canvas;
 
     public SizeF Bounds { get; set; }
-    public Thickness Margin { get; set; } = new Thickness();
+    public Thickness Padding { get; set; } = new Thickness();
     public string ErrorMessage { get; private set; }
     public bool DisplayErrorInline { get; set; } = true;
+    /// <summary>
+    /// Unit of measure: points
+    /// </summary>
     public float FontSize { get; set; } = 20f;
+    /// <summary>
+    /// Unit of measure: points;
+    /// Defaults to <see cref="FontSize"/>.
+    /// </summary>
     public float? ErrorFontSize { get; set; } = null;
     public NColor TextColor { get; set; } = NColors.Black;
     public NColor BackgroundColor { get; set; } = new NColor(230, 230, 230);
@@ -49,7 +56,7 @@ namespace CSharpMath.SkiaSharp
     public ColumnAlignment TextAlignment { get; set; } = ColumnAlignment.Left;
     
     public SizeF DrawingSize => _displayList == null ? Bounds :
-      SizeF.Add(_displayList.ComputeDisplayBounds().Size, new SizeF(Margin.Left + Margin.Right, Margin.Top + Margin.Bottom));
+      SizeF.Add(_displayList.ComputeDisplayBounds().Size, new SizeF(Padding.Left + Padding.Right, Padding.Top + Padding.Bottom));
 
     private IMathList _mathList;
     public IMathList MathList {
@@ -84,21 +91,21 @@ namespace CSharpMath.SkiaSharp
         float textX = 0;
         switch (TextAlignment) {
           case ColumnAlignment.Left:
-            textX = Margin.Left;
+            textX = Padding.Left;
             break;
           case ColumnAlignment.Center:
-            textX = Margin.Left + (Bounds.Width - Margin.Left - Margin.Right - displayWidth) / 2;
+            textX = Padding.Left + (Bounds.Width - Padding.Left - Padding.Right - displayWidth) / 2;
             break;
           case ColumnAlignment.Right:
-            textX = Bounds.Width - Margin.Right - displayWidth;
+            textX = Bounds.Width - Padding.Right - displayWidth;
             break;
         }
-        float availableHeight = Bounds.Height - Margin.Top - Margin.Bottom;
+        float availableHeight = Bounds.Height - Padding.Top - Padding.Bottom;
         float contentHeight = _displayList.Ascent + _displayList.Descent;
         if (contentHeight < FontSize / 2) {
           contentHeight = FontSize / 2;
         }
-        float textY = ((availableHeight - contentHeight) / 2) + Margin.Bottom + _displayList.Descent;
+        float textY = ((availableHeight - contentHeight) / 2) + Padding.Bottom + _displayList.Descent;
         _displayList.Position = new PointF(textX, textY);
       }
     }
