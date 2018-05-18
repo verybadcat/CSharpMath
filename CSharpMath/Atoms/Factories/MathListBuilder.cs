@@ -547,7 +547,7 @@ namespace CSharpMath.Atoms {
         return "";
       }
       var singleChars = @"()[]<>|./";
-      if (singleChars.IndexOf(command, StringComparison.InvariantCultureIgnoreCase) >= 0 && command.Length == 1) {
+      if (singleChars.IndexOf(command, StringComparison.OrdinalIgnoreCase) >= 0 && command.Length == 1) {
         return command;
       }
       if (command == "||") {

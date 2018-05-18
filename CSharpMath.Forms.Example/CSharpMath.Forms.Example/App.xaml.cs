@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+using System;
 using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
 
-namespace CSharpMath.Forms
+[assembly: XamlCompilation (XamlCompilationOptions.Compile)]
+namespace CSharpMath.Forms.Example
 {
 	public partial class App : Application
 	{
@@ -13,7 +11,7 @@ namespace CSharpMath.Forms
 		{
 			InitializeComponent();
 
-			MainPage = new CSharpMath.Forms.MainPage();
+			MainPage = new MainPage();
 		}
 
 		protected override void OnStart ()

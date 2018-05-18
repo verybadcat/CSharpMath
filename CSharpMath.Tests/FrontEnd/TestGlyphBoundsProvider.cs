@@ -27,10 +27,10 @@ namespace CSharpMath.Tests.FrontEnd {
       return effectiveLength;
     }
 
-    public double GetTypographicWidth(MathFont<char> font, AttributedGlyphRun<TFont, TGlyph> run) {
+    public float GetTypographicWidth(MathFont<char> font, AttributedGlyphRun<TFont, TGlyph> run) {
       int effectiveLength = GetEffectiveLength(run.Glyphs);
-      double width = font.PointSize * effectiveLength * WidthPerCharacterPerFontSize +
-                         (double)run.KernedGlyphs.Sum(g => g.KernAfterGlyph);
+      float width = font.PointSize * effectiveLength * WidthPerCharacterPerFontSize +
+                         run.KernedGlyphs.Sum(g => g.KernAfterGlyph);
       return width;
     }
 

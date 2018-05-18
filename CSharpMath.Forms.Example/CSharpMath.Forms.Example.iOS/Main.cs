@@ -5,7 +5,7 @@ using System.Linq;
 using Foundation;
 using UIKit;
 
-namespace CSharpMath.Forms.iOS
+namespace CSharpMath.Forms.Example.iOS
 {
     public class Application
     {

@@ -51,10 +51,10 @@ namespace CSharpMath {
     }
 
     public static bool StartsWithInvariant(this string str, string prefix) {
-      return str.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase);
+      return str.StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
     }
 
-    public static string RemovePrefix(this string str, string prefix, StringComparison compare = StringComparison.InvariantCultureIgnoreCase) {
+    public static string RemovePrefix(this string str, string prefix, StringComparison compare = StringComparison.OrdinalIgnoreCase) {
       if (str.StartsWith(prefix, compare)) {
         return str.Substring(prefix.Length);
       }

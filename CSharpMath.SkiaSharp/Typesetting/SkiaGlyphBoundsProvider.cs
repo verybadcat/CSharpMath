@@ -10,7 +10,7 @@ namespace CSharpMath.SkiaSharp {
 
     public float[] GetAdvancesForGlyphs(TFont font, Glyph[] glyphs) {
       var typeface = font.Typeface;
-      var nGlyphs = typeface.Glyphs.Length;
+      var nGlyphs = glyphs.Length;
       var advanceSizes = new float[nGlyphs + 1];
       for (int i = 0; i < nGlyphs; i++) {
         advanceSizes[i] = glyphs[i].OriginalAdvanceWidth;

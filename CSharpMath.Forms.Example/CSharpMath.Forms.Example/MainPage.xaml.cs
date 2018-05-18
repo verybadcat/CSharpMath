@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
-namespace CSharpMath.Forms
+namespace CSharpMath.Forms.Example
 {
 	public partial class MainPage : ContentPage
 	{

@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:CSharpMath.Forms"
-             x:Class="CSharpMath.Forms.MainPage">
+             xmlns:local="clr-namespace:CSharpMath.Forms;assembly=CSharpMath.Forms"
+             x:Class="CSharpMath.Forms.Example.MainPage">
 
-    <local:FormsLatexView VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"/>
+    <local:FormsLatexView LaTeX="\\sqrt{1+1}"/>
 
 </ContentPage>

@@ -17,7 +17,7 @@ namespace CSharpMath {
       int resourcesStringLength = resourceString.Length;
       string[] names = assembly.GetManifestResourceNames();
       foreach (string name in names) {
-        int resIndex = name.LastIndexOf(resourceString, StringComparison.InvariantCultureIgnoreCase);
+        int resIndex = name.LastIndexOf(resourceString, StringComparison.OrdinalIgnoreCase);
         if (resIndex > 0) {
           int resEndIndex = resIndex + resourcesStringLength;
           r = name.Substring(0, resEndIndex);
@@ -44,7 +44,7 @@ namespace CSharpMath {
         string[] names = assembly.GetManifestResourceNames();
         string fullPrefix = namePrefix + prefix;
         foreach (string name in names) {
-          if (name.StartsWith(fullPrefix, StringComparison.InvariantCultureIgnoreCase)) {
+          if (name.StartsWith(fullPrefix, StringComparison.OrdinalIgnoreCase)) {
             string removeMyName = name.Substring(resEndIndex);
             r.Add(removeMyName);
           }
@@ -52,7 +52,7 @@ namespace CSharpMath {
 #if DEBUG
         if (r.Count == 0) {
           string errorMessage;
-          if (fullPrefix.ToLowerInvariant().IndexOf("resources.resources.resources", StringComparison.InvariantCultureIgnoreCase) != -1) {
+          if (fullPrefix.ToLowerInvariant().IndexOf("resources.resources.resources", StringComparison.OrdinalIgnoreCase) != -1) {
             errorMessage = prefix + " not found!  Input path should not start with 'Resources' as that is added in this method.";
           } else {
             errorMessage = prefix + " not found!  Probably either an incorrect path or incorrect resource type (should be EmbeddedResource).";

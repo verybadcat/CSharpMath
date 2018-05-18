@@ -110,7 +110,7 @@ namespace CSharpMath.SkiaSharp
       }
     }
 
-    object _lock = new object();
+    private readonly object _lock = new object();
     public void Redraw() { if (_canvas != null) Draw(_canvas); }
     public void Draw(SKCanvas canvas) {
       lock (_lock) { //we cannot have multiple draws going on at once

@@ -13,7 +13,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-namespace CSharpMath.Forms.UWP
+namespace CSharpMath.Forms.Example.UWP
 {
     public sealed partial class MainPage
     {
@@ -21,7 +21,7 @@ namespace CSharpMath.Forms.UWP
         {
             this.InitializeComponent();
 
-            LoadApplication(new CSharpMath.Forms.App());
+            LoadApplication(new CSharpMath.Forms.Example.App());
         }
     }
 }
