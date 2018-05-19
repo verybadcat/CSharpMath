@@ -4,15 +4,15 @@ using Typography.OpenFont;
 using TFont = CSharpMath.SkiaSharp.SkiaMathFont;
 using CSharpMath.FrontEnd;
 using System.Linq;
-using CSharpMath.Display.Text;
 
 namespace CSharpMath.SkiaSharp {
   public class SkiaGraphicsContext : IGraphicsContext<TFont, Glyph> {
     protected SKPaint glyphPaint =
-      new SKPaint { IsStroke = true, StrokeCap = SKStrokeCap.Round, StrokeWidth = 2 };
-    
+      new SKPaint { IsStroke = true, StrokeCap = SKStrokeCap.Butt };
+
     public SKColor Color { get => glyphPaint.Color; set => glyphPaint.Color = value; }
-    
+    public SKPaintStyle PaintStyle { get => glyphPaint.Style; set => glyphPaint.Style = value; }
+
     public PointF TextPosition { get; set; }
     void IGraphicsContext<TFont, Glyph>.SetTextPosition(PointF position) => TextPosition = position;
 
@@ -33,26 +33,33 @@ namespace CSharpMath.SkiaSharp {
       }
     }
 
-    public void DrawLine(float x1, float y1, float x2, float y2, float lineThickness) => 
-      Canvas.DrawLine(x1, y1, x2, y2, new SKPaint { IsStroke = true, StrokeCap = SKStrokeCap.Round, StrokeWidth = lineThickness });
+    public void DrawLine(float x1, float y1, float x2, float y2, float lineThickness) {
+      var paint = glyphPaint.Clone();
+      paint.StrokeWidth = lineThickness;
+      Canvas.DrawLine(x1, y1, x2, y2, paint);
+    }
 
-    public void DrawGlyphRunWithOffset(AttributedGlyphRun<TFont, Glyph> run, PointF offset, float maxWidth = float.NaN) {
+    public void DrawGlyphRunWithOffset(Display.Text.AttributedGlyphRun<TFont, Glyph> run, PointF offset, float maxWidth = float.NaN) {
       Debug($"Text {run.Text} {offset.X} {offset.Y}");
       TextPosition = TextPosition.Plus(offset);
       
+      var typeface = run.Font.Typeface;
+      var glyphs = run.KernedGlyphs;
+      var pointSize = run.Font.PointSize;
       var layout = run.Font.GlyphLayout;
-      layout.Layout(run.Text.ToCharArray(), 0, run.Length);
-
-      var totalAdvance = TextPosition.X;
-      var pxscale = layout.Typeface.CalculateScaleToPixelFromPointSize(run.Font.PointSize);
-      var glyphPositions = new PointF[layout._glyphPositions.Count];
-      for (int i = 0; i < glyphPositions.Length; i++) {
-        var p = layout._glyphPositions[i];
-        var glyphPosition = new PointF(totalAdvance + p.OffsetX, TextPosition.Y + p.OffsetY);
-        totalAdvance += p.advanceW * pxscale;
-        glyphPositions[i] = glyphPosition;
+      var pathBuilder = new SkiaGlyphPathBuilder(typeface);
+      var path = new SkiaGlyphPath();
+      var scale = typeface.CalculateScaleToPixelFromPointSize(pointSize);
+      Canvas.Save();
+      for (int i = 0; i < glyphs.Length; i++) {
+        var index = glyphs[i].Glyph.GetCff1GlyphData().GlyphIndex;
+        pathBuilder.BuildFromGlyphIndex(index, pointSize);
+        pathBuilder.ReadShapes(path);
+        Canvas.DrawPath(path.Path, glyphPaint);
+        Canvas.Translate(typeface.GetHAdvanceWidthFromGlyphIndex(index) * scale + glyphs[i].KernAfterGlyph, 0);
+        path.Clear();
       }
-      DrawGlyphsAtPoints(run.Glyphs, run.Font, glyphPositions);
+      Canvas.Restore();
     }
 
     public void RestoreState() {

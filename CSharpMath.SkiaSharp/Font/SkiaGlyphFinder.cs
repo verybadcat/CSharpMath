@@ -11,10 +11,11 @@ namespace CSharpMath.SkiaSharp {
 
     public SkiaGlyphFinder(Typeface typeface) => _typeface = typeface;
 
-    public Glyph FindGlyphForCharacterAtIndex(int index, string str) => _typeface.Lookup(StringUtils.GetCodepoints(str.ToCharArray()).ElementAt(index));
+    public Glyph FindGlyphForCharacterAtIndex(int index, string str) =>
+      _typeface.Lookup(char.ConvertToUtf32(str, index - (char.IsLowSurrogate(str[index]) ? 1 : 0)));
 
     public Glyph[] FindGlyphs(string str) => StringUtils.GetCodepoints(str.ToCharArray()).Select(_typeface.Lookup).ToArray();
 
-    public bool GlyphIsEmpty(Glyph glyph) => glyph is null;
+    public bool GlyphIsEmpty(Glyph glyph) => glyph == null || glyph == Glyph.Empty;
   }
 }

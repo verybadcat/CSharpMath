@@ -51,10 +51,11 @@ namespace CSharpMath.SkiaSharp
     /// </summary>
     public float? ErrorFontSize { get; set; } = null;
     public NColor TextColor { get; set; } = NColors.Black;
-    public NColor BackgroundColor { get; set; } = new NColor(230, 230, 230);
+    public NColor BackgroundColor { get; set; } = new NColor( );
     public NColor ErrorColor { get; set; } = NColors.Red;
     public ColumnAlignment TextAlignment { get; set; } = ColumnAlignment.Left;
-    
+    public SKPaintStyle PaintStyle { get; set; } = SKPaintStyle.StrokeAndFill;
+
     public SizeF DrawingSize => _displayList == null ? Bounds :
       SizeF.Add(_displayList.ComputeDisplayBounds().Size, new SizeF(Padding.Left + Padding.Right, Padding.Top + Padding.Bottom));
 
@@ -72,8 +73,8 @@ namespace CSharpMath.SkiaSharp
     public string LaTeX {
       get => _latex;
       set {
-        _latex = value;
-        var buildResult = MathLists.BuildResultFromString(value);
+        _latex = value ?? "";
+        var buildResult = MathLists.BuildResultFromString(_latex);
         _mathList = buildResult.MathList;
         ErrorMessage = buildResult.Error;
         if (_mathList != null) {
@@ -118,14 +119,15 @@ namespace CSharpMath.SkiaSharp
         if (_mathList != null) {
           InitPositions();
           var skiaContext = new SkiaGraphicsContext() {
-            Canvas = canvas
+            Canvas = canvas,
+            Color = TextColor,
+            PaintStyle = PaintStyle
           };
           canvas.Save();
           //invert the canvas vertically
           canvas.Scale(1, -1);
           canvas.Translate(0, -Bounds.Height);
           canvas.DrawColor(BackgroundColor);
-          skiaContext.Color = TextColor;
           _displayList.Draw(skiaContext);
           canvas.Restore();
         } else if (ErrorMessage.IsNonEmpty()) {

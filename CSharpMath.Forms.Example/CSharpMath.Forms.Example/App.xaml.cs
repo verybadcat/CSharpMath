@@ -11,7 +11,7 @@ namespace CSharpMath.Forms.Example
 		{
 			InitializeComponent();
 
-			MainPage = new MainPage();
+			MainPage = new AllExamplesPage();
 		}
 
 		protected override void OnStart ()

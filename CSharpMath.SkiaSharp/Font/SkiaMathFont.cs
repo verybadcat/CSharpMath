@@ -7,19 +7,16 @@ namespace CSharpMath.SkiaSharp {
   public class SkiaMathFont: MathFont<Glyph>
   {
     public string Name { get; }
-    public Typeface Typeface { get; }
-    public SKTypeface SKTypeface { get; }
     public GlyphLayout GlyphLayout { get; }
+    public Typeface Typeface => GlyphLayout.Typeface;
 
-    internal SkiaMathFont(string name, Typeface typeface, SKTypeface skTypeface, float pointSize) : base(pointSize)
+    internal SkiaMathFont(string name, Typeface typeface, float pointSize) : base(pointSize)
     {
       Name = name;
-      Typeface = typeface;
-      SKTypeface = skTypeface;
-      GlyphLayout = new GlyphLayout { Typeface = Typeface };
+      GlyphLayout = new GlyphLayout { Typeface = typeface };
     }
 
     public SkiaMathFont(SkiaMathFont cloneMe, float pointSize) :
-      this(cloneMe.Name, cloneMe.Typeface, cloneMe.SKTypeface, pointSize) { }
+      this(cloneMe.Name, cloneMe.Typeface, pointSize) { }
   }
 }

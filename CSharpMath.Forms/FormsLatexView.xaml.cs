@@ -11,7 +11,7 @@ using SkiaSharp.Views.Forms;
 
 namespace CSharpMath.Forms
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
+	[XamlCompilation(XamlCompilationOptions.Compile), ContentProperty(nameof(LaTeX))]
 	public partial class FormsLatexView : SKCanvasView
 	{
     public FormsLatexView() => InitializeComponent();
@@ -24,6 +24,7 @@ namespace CSharpMath.Forms
         ErrorFontSize = ErrorFontSize,
         LaTeX = LaTeX,
         Padding = new SkiaSharp.Thickness((float)Padding.Left, (float)Padding.Top, (float)Padding.Right, (float)Padding.Bottom),
+        PaintStyle = PaintStyle,
         TextAlignment = (Enumerations.ColumnAlignment)HorizontalTextAlignment,
         TextColor = TextColor.ToSKColor()
       };
@@ -45,6 +46,7 @@ namespace CSharpMath.Forms
     public Color TextColor { get; set; } = Color.Black;
     public Color ErrorColor { get; set; } = Color.Red;
     public TextAlignment HorizontalTextAlignment { get; set; } = TextAlignment.Start;
+    public global::SkiaSharp.SKPaintStyle PaintStyle { get; set; } = global::SkiaSharp.SKPaintStyle.StrokeAndFill;
     public Thickness Padding { get; set; }
     public string LaTeX { get; set; }
   }
