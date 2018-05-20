@@ -2,9 +2,13 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:CSharpMath.Forms;assembly=CSharpMath.Forms"
-             x:Class="CSharpMath.Forms.Example.ExamplePage">
+             x:Class="CSharpMath.Forms.Example.ExamplePage"
+             Title="Select an example">
     <StackLayout>
-        <Picker x:Name="Picker"/>
+        <StackLayout Orientation="Horizontal" BackgroundColor="LightGray">
+            <Picker x:Name="Picker" HorizontalOptions="FillAndExpand"/>
+            <Picker x:Name="Size" HorizontalOptions="FillAndExpand"/>
+        </StackLayout>
         <Label x:Name="Label"/>
         <local:FormsLatexView x:Name="View" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"/>
     </StackLayout>

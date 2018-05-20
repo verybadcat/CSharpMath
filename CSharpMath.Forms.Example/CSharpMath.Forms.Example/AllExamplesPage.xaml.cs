@@ -57,11 +57,13 @@ namespace CSharpMath.Forms.Example {
     public const string TwoSin = @"2 \sin";
     public const string BMartix = @"\begin{bmatrix} x_{11}&x_{12}&x_{13}&.&.&.&.&x_{1n} \end{bmatrix}";
 
+    public AllExamplesPage() => InitializeComponent();
+
     public static IEnumerable<FieldInfo> AllConstants { get; } = typeof(AllExamplesPage).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly).
       Where(fi => fi.IsLiteral && !fi.IsInitOnly);
 
-    public AllExamplesPage() {
-      InitializeComponent();
+    protected override void OnAppearing() {
+      base.OnAppearing();
       View.FontSize = 50;
       View.LaTeX = "Loading...";
       Device.StartTimer(TimeSpan.FromSeconds(1),

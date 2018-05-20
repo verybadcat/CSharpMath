@@ -22,22 +22,27 @@ namespace CSharpMath.SkiaSharp
     public float Bottom { get; }
     public float Left { get; }
     public float Right { get; }
+
+    public void Deconstruct(out float left, out float top, out float right, out float bottom) =>
+      (left, top, right, bottom) = (Left, Top, Right, Bottom);
   }
   public class SkiaLatexPainter {
-    public SkiaLatexPainter(SizeF bounds, float fontSize = 20f) {
+    public SkiaLatexPainter(System.Action invalidate, SKSize bounds, float fontSize = 20f) {
+      Invalidate = invalidate ?? throw new System.ArgumentNullException(nameof(invalidate));
       Bounds = bounds;
       FontSize = fontSize;
     }
-    public SkiaLatexPainter(float width, float height, float fontSize = 20f) {
-      Bounds = new SizeF(width, height);
+    public SkiaLatexPainter(System.Action invalidate, float width, float height, float fontSize = 20f) {
+      Invalidate = invalidate ?? throw new System.ArgumentNullException(nameof(invalidate));
+      Bounds = new SKSize(width, height);
       FontSize = fontSize;
     }
 
     protected static readonly TypesettingContext<TFont, Glyph> _typesettingContext = SkiaTypesetters.LatinMath;
     protected MathListDisplay<TFont, Glyph> _displayList;
-    protected SKCanvas _canvas;
 
-    public SizeF Bounds { get; set; }
+    public System.Action Invalidate { get; }
+    public SKSize Bounds { get; set; }
     public Thickness Padding { get; set; } = new Thickness();
     public string ErrorMessage { get; private set; }
     public bool DisplayErrorInline { get; set; } = true;
@@ -51,21 +56,22 @@ namespace CSharpMath.SkiaSharp
     /// </summary>
     public float? ErrorFontSize { get; set; } = null;
     public NColor TextColor { get; set; } = NColors.Black;
-    public NColor BackgroundColor { get; set; } = new NColor( );
+    public NColor BackgroundColor { get; set; } = new NColor();
     public NColor ErrorColor { get; set; } = NColors.Red;
     public ColumnAlignment TextAlignment { get; set; } = ColumnAlignment.Left;
     public SKPaintStyle PaintStyle { get; set; } = SKPaintStyle.StrokeAndFill;
 
-    public SizeF DrawingSize => _displayList == null ? Bounds :
-      SizeF.Add(_displayList.ComputeDisplayBounds().Size, new SizeF(Padding.Left + Padding.Right, Padding.Top + Padding.Bottom));
+    private SKSize ToSKSize(SizeF size) => new SKSize(size.Width, size.Height);
+    public SKSize DrawingSize => _displayList == null ? Bounds :
+      SKSize.Add(ToSKSize(_displayList.ComputeDisplayBounds().Size), new SKSize(Padding.Left + Padding.Right, Padding.Top + Padding.Bottom));
 
     private IMathList _mathList;
     public IMathList MathList {
       get => _mathList;
       set {
-        _mathList = value;
+        _mathList = value ?? new MathList();
         _latex = MathListBuilder.MathListToString(value);
-        Redraw();
+        Invalidate();
       }
     }
 
@@ -77,17 +83,15 @@ namespace CSharpMath.SkiaSharp
         var buildResult = MathLists.BuildResultFromString(_latex);
         _mathList = buildResult.MathList;
         ErrorMessage = buildResult.Error;
-        if (_mathList != null) {
-          var fontSize = FontSize;
-          var skiaFont = SkiaFontManager.LatinMath(fontSize);
-          _displayList = _typesettingContext.CreateLine(_mathList, skiaFont, LineStyle.Display);
-        }
-        Redraw();
+        Invalidate();
       }
     }
 
     public void InitPositions() {
       if (_mathList != null) {
+        var fontSize = FontSize;
+        var skiaFont = SkiaFontManager.LatinMath(fontSize);
+        _displayList = _typesettingContext.CreateLine(_mathList, skiaFont, LineStyle.Display);
         float displayWidth = _displayList.Width;
         float textX = 0;
         switch (TextAlignment) {
@@ -112,10 +116,8 @@ namespace CSharpMath.SkiaSharp
     }
 
     private readonly object _lock = new object();
-    public void Redraw() { if (_canvas != null) Draw(_canvas); }
     public void Draw(SKCanvas canvas) {
       lock (_lock) { //we cannot have multiple draws going on at once
-        _canvas = canvas;
         if (_mathList != null) {
           InitPositions();
           var skiaContext = new SkiaGraphicsContext() {

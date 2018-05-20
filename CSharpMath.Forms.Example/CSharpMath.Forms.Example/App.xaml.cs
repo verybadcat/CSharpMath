@@ -7,12 +7,15 @@ namespace CSharpMath.Forms.Example
 {
 	public partial class App : Application
 	{
-		public App ()
-		{
-			InitializeComponent();
+    public App() {
+      InitializeComponent();
 
-			MainPage = new AllExamplesPage();
-		}
+      MainPage = new TabbedPage {
+        Children = {
+          new ExamplePage(), new AllExamplesPage()
+        }
+      };
+    }
 
 		protected override void OnStart ()
 		{
