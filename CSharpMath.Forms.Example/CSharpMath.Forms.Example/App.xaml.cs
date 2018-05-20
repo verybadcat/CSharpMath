@@ -12,7 +12,7 @@ namespace CSharpMath.Forms.Example
 
       MainPage = new TabbedPage {
         Children = {
-          new ExamplePage(), new AllExamplesPage()
+          new ExamplePage(), new AllExamplesPage(), new CustomExamplePage()
         }
       };
     }

@@ -10,9 +10,9 @@ using Glyph = Typography.OpenFont.Glyph;
 using SkiaSharp;
 using NColor = SkiaSharp.SKColor;
 using NColors = SkiaSharp.SKColors;
+using System;
 
-namespace CSharpMath.SkiaSharp
-{
+namespace CSharpMath.SkiaSharp {
   public readonly struct Thickness {
     public Thickness(float uniformSize) { Left = Right = Top = Bottom = uniformSize; }
     public Thickness(float horizontalSize, float verticalSize) { Left = Right = horizontalSize; Top = Bottom = verticalSize; }
@@ -115,29 +115,26 @@ namespace CSharpMath.SkiaSharp
       }
     }
 
-    private readonly object _lock = new object();
     public void Draw(SKCanvas canvas) {
-      lock (_lock) { //we cannot have multiple draws going on at once
-        if (_mathList != null) {
-          InitPositions();
-          var skiaContext = new SkiaGraphicsContext() {
-            Canvas = canvas,
-            Color = TextColor,
-            PaintStyle = PaintStyle
-          };
-          canvas.Save();
-          //invert the canvas vertically
-          canvas.Scale(1, -1);
-          canvas.Translate(0, -Bounds.Height);
-          canvas.DrawColor(BackgroundColor);
-          _displayList.Draw(skiaContext);
-          canvas.Restore();
-        } else if (ErrorMessage.IsNonEmpty()) {
-          canvas.Save();
-          canvas.DrawColor(BackgroundColor);
-          canvas.DrawText(ErrorMessage, new SKPoint(0, Bounds.Height - ErrorFontSize ?? FontSize), new SKPaint { Color = ErrorColor, Typeface = SKFontManager.Default.MatchCharacter('A') });
-          canvas.Restore();
-        }
+      if (_mathList != null) {
+        InitPositions();
+        var skiaContext = new SkiaGraphicsContext() {
+          Canvas = canvas,
+          Color = TextColor,
+          PaintStyle = PaintStyle
+        };
+        canvas.Save();
+        //invert the canvas vertically
+        canvas.Scale(1, -1);
+        canvas.Translate(0, -Bounds.Height);
+        canvas.DrawColor(BackgroundColor);
+        _displayList.Draw(skiaContext);
+        canvas.Restore();
+      } else if (ErrorMessage.IsNonEmpty()) {
+        canvas.Save();
+        canvas.DrawColor(BackgroundColor);
+        canvas.DrawText(ErrorMessage, new SKPoint(0, Bounds.Height - ErrorFontSize ?? FontSize), new SKPaint { Color = ErrorColor, Typeface = SKFontManager.Default.MatchCharacter('A') });
+        canvas.Restore();
       }
     }
   }

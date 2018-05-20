@@ -20,6 +20,9 @@
     <Compile Update="AllExamplesPage.xaml.cs">
       <DependentUpon>AllExamplesPage.xaml</DependentUpon>
     </Compile>
+    <Compile Update="CustomExamplePage.xaml.cs">
+      <DependentUpon>CustomExamplePage.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

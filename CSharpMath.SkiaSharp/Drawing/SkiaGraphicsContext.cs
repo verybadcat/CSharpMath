@@ -14,11 +14,15 @@ namespace CSharpMath.SkiaSharp {
     public SKPaintStyle PaintStyle { get => glyphPaint.Style; set => glyphPaint.Style = value; }
 
     public PointF TextPosition { get; set; }
-    void IGraphicsContext<TFont, Glyph>.SetTextPosition(PointF position) => TextPosition = position;
+    void IGraphicsContext<TFont, Glyph>.SetTextPosition(PointF position) {
+      Debug($"TextPosition {position.X}, {position.Y}");
+      TextPosition = position;
+    }
 
     public SKCanvas Canvas { get; set; }
 
     public void DrawGlyphsAtPoints(Glyph[] glyphs, TFont font, PointF[] points) {
+      Debug($"Glyphs {string.Join("; ", glyphs.Zip(points, (g, p) => $"{g.GetCff1GlyphData().Name} at {p.X}, {p.Y}"))} ");
       var typeface = font.Typeface;
       var pathBuilder = new SkiaGlyphPathBuilder(typeface);
       var path = new SkiaGlyphPath();
@@ -34,6 +38,7 @@ namespace CSharpMath.SkiaSharp {
     }
 
     public void DrawLine(float x1, float y1, float x2, float y2, float lineThickness) {
+      Debug($"Line {x1} {y1} -> {x2} {y2}");
       var paint = glyphPaint.Clone();
       paint.StrokeWidth = lineThickness;
       Canvas.DrawLine(x1, y1, x2, y2, paint);
@@ -73,7 +78,7 @@ namespace CSharpMath.SkiaSharp {
     }
 
     public void Translate(PointF dxy) {
-      Debug("translate " + dxy.X + " " + dxy.Y);
+      Debug("Translate " + dxy.X + " " + dxy.Y);
       Canvas.Translate(dxy.X, dxy.Y);
     }
     
