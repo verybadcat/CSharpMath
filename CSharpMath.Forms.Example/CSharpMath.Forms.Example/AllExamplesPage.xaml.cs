@@ -62,8 +62,10 @@ namespace CSharpMath.Forms.Example {
     public static IEnumerable<FieldInfo> AllConstants { get; } = typeof(AllExamplesPage).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly).
       Where(fi => fi.IsLiteral && !fi.IsInitOnly);
 
+    void OnDrawStringBoxewsChanged(object _, bool value) => View.DrawStringBoxes = value;
     protected override void OnAppearing() {
       base.OnAppearing();
+      App.AllViews.Add(View);
       View.FontSize = 50;
       View.LaTeX = "Loading...";
       Device.StartTimer(TimeSpan.FromSeconds(1),
@@ -73,6 +75,10 @@ namespace CSharpMath.Forms.Example {
           return false;
         }
       );
+    }
+    protected override void OnDisappearing() {
+      App.AllViews.Remove(View);
+      base.OnDisappearing();
     }
   }
 }

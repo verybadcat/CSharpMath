@@ -1,0 +1,24 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
+
+namespace CSharpMath.Forms.Example
+{
+	[XamlCompilation(XamlCompilationOptions.Compile)]
+	public partial class SettingsPage : ContentPage
+	{
+		public SettingsPage ()
+		{
+			InitializeComponent ();
+		}
+
+    private void SwitchCell_OnChanged(object sender, ToggledEventArgs e) {
+      App.AllViews.ForEach(v => { v.DrawStringBoxes = e.Value; v.InvalidateSurface(); });
+    }
+  }
+}

@@ -39,6 +39,7 @@ namespace CSharpMath.Forms {
     public Color ErrorColor { get => painter.ErrorColor.ToFormsColor(); set => painter.ErrorColor = value.ToSKColor(); }
     public TextAlignment HorizontalTextAlignment { get => (TextAlignment)painter.TextAlignment; set => painter.TextAlignment = (Enumerations.ColumnAlignment)value; }
     public global::SkiaSharp.SKPaintStyle PaintStyle { get => painter.PaintStyle; set => painter.PaintStyle = value; }
+    public bool DrawStringBoxes { get => painter.DrawStringBoxes; set => painter.DrawStringBoxes = value; }
     public Thickness Padding {
       get => new Thickness(painter.Padding.Left, painter.Padding.Top, painter.Padding.Right, painter.Padding.Bottom);
       set => painter.Padding = new SkiaSharp.Thickness((float)Padding.Left, (float)Padding.Top, (float)Padding.Right, (float)Padding.Bottom);

@@ -1,16 +1,18 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
+
 using CSharpMath.Display;
 using CSharpMath.Enumerations;
 using CSharpMath.FrontEnd;
 using CSharpMath.Atoms;
 using CSharpMath.Interfaces;
 using TFont = CSharpMath.SkiaSharp.SkiaMathFont;
+
 using Glyph = Typography.OpenFont.Glyph;
 
 using SkiaSharp;
 using NColor = SkiaSharp.SKColor;
 using NColors = SkiaSharp.SKColors;
-using System;
 
 namespace CSharpMath.SkiaSharp {
   public readonly struct Thickness {
@@ -27,13 +29,13 @@ namespace CSharpMath.SkiaSharp {
       (left, top, right, bottom) = (Left, Top, Right, Bottom);
   }
   public class SkiaLatexPainter {
-    public SkiaLatexPainter(System.Action invalidate, SKSize bounds, float fontSize = 20f) {
-      Invalidate = invalidate ?? throw new System.ArgumentNullException(nameof(invalidate));
+    public SkiaLatexPainter(Action invalidate, SKSize bounds, float fontSize = 20f) {
+      Invalidate = invalidate ?? throw new ArgumentNullException(nameof(invalidate));
       Bounds = bounds;
       FontSize = fontSize;
     }
-    public SkiaLatexPainter(System.Action invalidate, float width, float height, float fontSize = 20f) {
-      Invalidate = invalidate ?? throw new System.ArgumentNullException(nameof(invalidate));
+    public SkiaLatexPainter(Action invalidate, float width, float height, float fontSize = 20f) {
+      Invalidate = invalidate ?? throw new ArgumentNullException(nameof(invalidate));
       Bounds = new SKSize(width, height);
       FontSize = fontSize;
     }
@@ -41,7 +43,7 @@ namespace CSharpMath.SkiaSharp {
     protected static readonly TypesettingContext<TFont, Glyph> _typesettingContext = SkiaTypesetters.LatinMath;
     protected MathListDisplay<TFont, Glyph> _displayList;
 
-    public System.Action Invalidate { get; }
+    public Action Invalidate { get; }
     public SKSize Bounds { get; set; }
     public Thickness Padding { get; set; } = new Thickness();
     public string ErrorMessage { get; private set; }
@@ -60,6 +62,7 @@ namespace CSharpMath.SkiaSharp {
     public NColor ErrorColor { get; set; } = NColors.Red;
     public ColumnAlignment TextAlignment { get; set; } = ColumnAlignment.Left;
     public SKPaintStyle PaintStyle { get; set; } = SKPaintStyle.StrokeAndFill;
+    public bool DrawStringBoxes { get; set; }
 
     private SKSize ToSKSize(SizeF size) => new SKSize(size.Width, size.Height);
     public SKSize DrawingSize => _displayList == null ? Bounds :
@@ -121,7 +124,8 @@ namespace CSharpMath.SkiaSharp {
         var skiaContext = new SkiaGraphicsContext() {
           Canvas = canvas,
           Color = TextColor,
-          PaintStyle = PaintStyle
+          PaintStyle = PaintStyle,
+          DrawStringBoxes = DrawStringBoxes
         };
         canvas.Save();
         //invert the canvas vertically

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -7,12 +8,12 @@ namespace CSharpMath.Forms.Example
 {
 	public partial class App : Application
 	{
+    public static List<FormsLatexView> AllViews = new List<FormsLatexView>();
     public App() {
       InitializeComponent();
-
       MainPage = new TabbedPage {
         Children = {
-          new ExamplePage(), new AllExamplesPage(), new CustomExamplePage()
+          new ExamplePage(), new AllExamplesPage(), new CustomExamplePage(), new SettingsPage()
         }
       };
     }
