@@ -8,16 +8,19 @@ using CSharpMath.Ios.Resources;
 
 namespace CSharpMath.Apple {
   public static class AppleTypesetters {
-    private static TypesettingContext<AppleMathFont, TGlyph> CreateTypesettingContext(CTFont someCtFontSizeIrrelevant) =>
-      new TypesettingContext<AppleMathFont, TGlyph>(
-        new AppleFontMeasurer(),
+    private static TypesettingContext<AppleMathFont, TGlyph> CreateTypesettingContext(CTFont someCtFontSizeIrrelevant) {
+      var measurer = new AppleFontMeasurer();
+      var nameProvider = new AppleGlyphNameProvider(someCtFontSizeIrrelevant);
+      return new TypesettingContext<AppleMathFont, TGlyph>(
+        measurer,
         (font, size) => new AppleMathFont(font, size),
         new AppleGlyphBoundsProvider(),
-        new AppleGlyphNameProvider(someCtFontSizeIrrelevant),
+        nameProvider,
         new CtFontGlyphFinder(someCtFontSizeIrrelevant),
         new UnicodeFontChanger(),
-        IosResources.LatinMath
+        new JsonMathTable<AppleMathFont, TGlyph>(measurer, IosResources.LatinMath, nameProvider)
       );
+    }
 
     private static TypesettingContext<AppleMathFont, TGlyph> CreateLatinMath() {
       var fontSize = 20;

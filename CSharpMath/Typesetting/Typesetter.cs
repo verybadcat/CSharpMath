@@ -18,8 +18,8 @@ namespace CSharpMath {
     private FontMathTable<TFont, TGlyph> _mathTable => _context.MathTable;
     private TFont _styleFont;
     private LineStyle _style;
-    private bool _cramped;
-    private bool _spaced;
+    private readonly bool _cramped;
+    private readonly bool _spaced;
     private List<IDisplay<TFont, TGlyph>> _displayAtoms = new List<IDisplay<TFont, TGlyph>>();
     private PointF _currentPosition; // the Y axis is NOT inverted in the typesetter.
     private AttributedString<TFont, TGlyph> _currentLine;
@@ -258,7 +258,7 @@ namespace CSharpMath {
       if (!(display is TextLineDisplay<TFont, TGlyph>)) {
         float scriptFontSize = GetStyleSize(_scriptStyle, _font);
         TFont scriptFont = _context.MathFontCloner.Invoke(_font, scriptFontSize);
-        superscriptShiftUp = display.Ascent - _context.MathTable.SuperscriptBaselineDropMax(scriptFont);
+        superscriptShiftUp = display.Ascent - _context.MathTable.SuperscriptShiftUp(scriptFont);
         subscriptShiftDown = display.Descent + _context.MathTable.SubscriptBaselineDropMin(scriptFont);
       }
       if (atom.Superscript == null) {
@@ -492,7 +492,7 @@ namespace CSharpMath {
     private float _NumeratorGapMin {
       get {
         if (_style == LineStyle.Display) {
-          return _mathTable.FractionNumeratorDisplayStyleGapMin(_styleFont);
+          return _mathTable.FractionNumDisplayStyleGapMin(_styleFont);
         }
         return _mathTable.FractionNumeratorGapMin(_styleFont);
       }
@@ -514,7 +514,7 @@ namespace CSharpMath {
     private float _DenominatorGapMin {
       get {
         if (_style == LineStyle.Display) {
-          return _mathTable.FractionDenominatorDisplayStyleGapMin(_styleFont);
+          return _mathTable.FractionDenomDisplayStyleGapMin(_styleFont);
         }
         return _mathTable.FractionDenominatorGapMin(_styleFont);
       }
