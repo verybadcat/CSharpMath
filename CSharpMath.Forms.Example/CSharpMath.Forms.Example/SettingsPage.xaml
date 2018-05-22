@@ -6,7 +6,7 @@
     <TableView>
         <TableRoot>
             <TableSection>
-                <SwitchCell Text="Draw string boxes" OnChanged="SwitchCell_OnChanged"/>
+                <SwitchCell x:Name="DrawStringBoxes" Text="Draw string boxes" On="True" OnChanged="SwitchCell_OnChanged"/>
             </TableSection>
         </TableRoot>
     </TableView>

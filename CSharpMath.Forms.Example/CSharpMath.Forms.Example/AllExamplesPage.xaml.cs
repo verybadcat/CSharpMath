@@ -77,7 +77,7 @@ namespace CSharpMath.Forms.Example {
       );
     }
     protected override void OnDisappearing() {
-      App.AllViews.Remove(View);
+      //App.AllViews.Remove(View);
       base.OnDisappearing();
     }
   }

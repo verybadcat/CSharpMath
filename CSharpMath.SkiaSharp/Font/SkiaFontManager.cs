@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using SkiaSharp;
 using Typography.OpenFont;
 
 namespace CSharpMath.SkiaSharp {
@@ -10,6 +9,7 @@ namespace CSharpMath.SkiaSharp {
       var bytes = SkiaResources.Otf;
       var reader = new OpenFontReader();
       LatinMathTypeface = reader.Read(new MemoryStream(bytes, false));
+      LatinMathTypeface.UpdateAllCffGlyphBounds();
     }
 
     public const string LatinMathFontName = "latinmodern-math";

@@ -5,7 +5,8 @@ namespace CSharpMath.DevUtils {
   class Program {
     static void Main(string[] args) {
       //SkiaSharp.OtfCodeBuilder.Build();
-      Console.WriteLine(new StringBuilder().AppendJoin(", ", TypographyTest.Get.Codepoints("𝑥")).ToString());
+      //Console.WriteLine(new StringBuilder().AppendJoin(", ", TypographyTest.Get.Codepoints("𝑥")).ToString());
+      Console.WriteLine(TypographyTest.JsonAndMathTableEquivalence.Test());
 
       Console.WriteLine();
       Console.WriteLine("Finished executing the method(s) requested.");

@@ -37,7 +37,6 @@ namespace CSharpMath.Atoms {
 
     private char? GetNextCharacter() {
       if (!HasCharacters) {
-        _error = "Unexpected end of string";
         return null;
       }
       var r = _chars[_currentChar];
@@ -107,7 +106,6 @@ namespace CSharpMath.Atoms {
               return r;
             }
             continue;
-
           case '}':
             if (oneCharOnly || stopChar != 0) {
               throw new InvalidOperationException("This should have been handled before.");
@@ -137,7 +135,7 @@ namespace CSharpMath.Atoms {
               var childList = BuildInternal(true);
               _currentFontStyle = oldFontStyle;
               _spacesAllowed = oldSpacesAllowed;
-              prevAtom = childList.Atoms.Last();
+              prevAtom = childList.Atoms.LastOrDefault();
               r.Append(childList);
               if (oneCharOnly) {
                 return r;
@@ -348,7 +346,9 @@ namespace CSharpMath.Atoms {
         case "sqrt":
           var rad = new Radical();
           var ch = GetNextCharacter();
-          if (ch == '[') {
+          if (ch == null)
+            _error = "Missing argument for sqrt";
+          else if (ch == '[') {
             rad.Degree = BuildInternal(false, ']');
             rad.Radicand = BuildInternal(true);
           } else {
