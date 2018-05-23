@@ -9,26 +9,23 @@ using TFont = CSharpMath.SkiaSharp.SkiaMathFont;
 namespace CSharpMath.SkiaSharp {
   public class SkiaGlyphBoundsProvider: IGlyphBoundsProvider<TFont, Glyph> {
 
-    public float[] GetAdvancesForGlyphs(TFont font, Glyph[] glyphs) {
+    public (float[] Advances, float Total) GetAdvancesForGlyphs(TFont font, Glyph[] glyphs) {
       var typeface = font.Typeface;
       var nGlyphs = glyphs.Length;
-      var advanceSizes = new float[nGlyphs + 1];
-      for (int i = 0; i < nGlyphs; i++) {
-        advanceSizes[i] = glyphs[i].OriginalAdvanceWidth;
-      }
-      var combinedAdvance = advanceSizes.Sum();
-      advanceSizes[nGlyphs] = combinedAdvance;
-      return advanceSizes;
+      var advanceSizes = new float[nGlyphs];
+      var scale = typeface.CalculateScaleToPixelFromPointSize(font.PointSize);
+      var total = 0f;
+      for (int i = 0; i < nGlyphs; i++) total += advanceSizes[i] = font.Typeface.GetHAdvanceWidthFromGlyphIndex(glyphs[i].GlyphIndex) * scale;
+      return (advanceSizes, total);
     }
 
-    public RectangleF[] GetBoundingRectsForGlyphs(TFont font, Glyph[] glyphs, int nVariants)
+    public RectangleF[] GetBoundingRectsForGlyphs(TFont font, Glyph[] glyphs)
     {
+      var scale = font.Typeface.CalculateScaleToPixelFromPointSize(font.PointSize);
       var rects = new RectangleF[glyphs.Length];
       for (int i = 0; i < glyphs.Length; i++) {
         var bounds = glyphs[i].Bounds;
-        var scale = font.Typeface.CalculateScaleToPixelFromPointSize(font.PointSize);
-        rects[i] = new RectangleF(bounds.XMin * scale, bounds.YMin * scale,
-          (bounds.XMax - bounds.XMin) * scale, (bounds.YMax - bounds.YMin) * scale);
+        rects[i] = RectangleF.FromLTRB(bounds.XMin * scale, bounds.YMin * scale, bounds.XMax * scale, bounds.YMax * scale);
       }
       return rects;
     }

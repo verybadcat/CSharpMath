@@ -111,7 +111,9 @@ namespace CSharpMath.FrontEnd {
 
     public abstract float RadicalKernAfterDegree(TFont font);
 
-    public abstract short RadicalDegreeBottomRaisePercent(TFont font);
+    public float RadicalDegreeBottomRaise(TFont font) => RadicalDegreeBottomRaisePercent(font) / 100f;
+
+    protected abstract short RadicalDegreeBottomRaisePercent(TFont font);
 
     public abstract float RadicalRuleThickness(TFont font);
 

@@ -695,7 +695,7 @@ namespace CSharpMath {
       List<float> offsets = new List<float>();
       float height = _ConstructGlyphWithParts(parts, glyphHeight, glyphs, offsets);
       TGlyph firstGlyph = glyphs[0];
-      float width = _context.GlyphBoundsProvider.GetAdvancesForGlyphs(_styleFont, new TGlyph[] { firstGlyph }).Last();
+      float width = _context.GlyphBoundsProvider.GetAdvancesForGlyphs(_styleFont, new TGlyph[] { firstGlyph }).Total;
       var display = new GlyphConstructionDisplay<TFont, TGlyph>(glyphs, offsets, _styleFont) {
         Width = width,
         Ascent = height,
@@ -760,18 +760,18 @@ namespace CSharpMath {
       TGlyph[] variants = _mathTable.GetVerticalVariantsForGlyph(rawGlyph);
       var nVariants = variants.Length;
       var glyph = rawGlyph;
-      var rects = _context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(_font, variants, nVariants);
-      var advances = _context.GlyphBoundsProvider.GetAdvancesForGlyphs(_font, variants);
-      glyphAscent = 0; glyphDescent = 0; glyphWidth = 0; // This is just to make the compiler happy. There will always be at least one variant.
-      for (int i = 0; i < nVariants; i++)
-      {
+      var rects = _context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(_font, variants);
+      var advances = _context.GlyphBoundsProvider.GetAdvancesForGlyphs(_font, variants).Advances;
+      int i = 0;
+      do {
         var rect = rects[i];
         rect.GetAscentDescentWidth(out glyphAscent, out glyphDescent, out glyphWidth);
         if (glyphAscent + glyphDescent >= height) {
           glyphWidth = advances[i];
           return variants[i];
         }
-      }
+        i++;
+      } while (i < nVariants);
       return variants.Last();
     }
     private List<List<MathListDisplay<TFont, TGlyph>>> TypesetCells(Table table, float[] columnWidths) {
@@ -885,9 +885,9 @@ namespace CSharpMath {
         }
         delta = _mathTable.GetItalicCorrection(_styleFont, glyph);
         var glyphArray = new TGlyph[] { glyph };
-        var boundingBoxArray = _context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(_styleFont, glyphArray, 1);
+        var boundingBoxArray = _context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(_styleFont, glyphArray);
         var boundingBox = boundingBoxArray[0];
-        var width = _context.GlyphBoundsProvider.GetAdvancesForGlyphs(_styleFont, glyphArray)[0];
+        var width = _context.GlyphBoundsProvider.GetAdvancesForGlyphs(_styleFont, glyphArray).Advances[0];
         boundingBox.GetAscentDescentWidth(out float ascent, out float descent, out float _);
         var shiftDown = 0.5 * (ascent - descent) - _mathTable.AxisHeight(_styleFont);
         var glyphDisplay = new GlyphDisplay<TFont, TGlyph>(glyph, op.IndexRange, _styleFont);

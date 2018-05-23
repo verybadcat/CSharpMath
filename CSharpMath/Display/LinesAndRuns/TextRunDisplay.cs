@@ -26,7 +26,7 @@ namespace CSharpMath.Display {
       _ComputeAscentDescent(context, font);
     }
     private void _ComputeAscentDescent(TypesettingContext<TFont, TGlyph> context, TFont font) {
-      var rects = context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(font, Run.Glyphs, Run.KernedGlyphs.Count());
+      var rects = context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(font, Run.Glyphs);
       var tops = rects.Select(rect => rect.Bottom); // Convert to non-flipped naming here, 
       var bottoms = rects.Select(rect => rect.Y);
       float ascent = 0;

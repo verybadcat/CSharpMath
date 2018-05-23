@@ -167,7 +167,7 @@ namespace CSharpMath.FrontEnd {
     public override float RadicalKernAfterDegree(TFont font)
   => _ConstantFromTable(font, nameof(RadicalKernAfterDegree));
 
-    public override short RadicalDegreeBottomRaisePercent(TFont font)
+    protected override short RadicalDegreeBottomRaisePercent(TFont font)
       => _constantsDictionary[nameof(RadicalDegreeBottomRaisePercent)].Value<short>();
 
     public override float RadicalRuleThickness(TFont font)

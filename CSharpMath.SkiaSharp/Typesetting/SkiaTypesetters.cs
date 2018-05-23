@@ -5,15 +5,16 @@ using Typography.OpenFont;
 
 namespace CSharpMath.SkiaSharp {
   public static class SkiaTypesetters {
-    private static TypesettingContext<SkiaMathFont, Glyph> CreateTypesettingContext(Typeface someTypefaceSizeIrrelevant) =>
+    private static TypesettingContext<SkiaMathFont, Glyph> CreateTypesettingContext(Typeface typeface) =>
       new TypesettingContext<SkiaMathFont, Glyph>(
-        new SkiaFontMeasurer(),
+        //new SkiaFontMeasurer(),
         (font, size) => new SkiaMathFont(font, size),
         new SkiaGlyphBoundsProvider(),
-        new SkiaGlyphNameProvider(someTypefaceSizeIrrelevant),
-        new SkiaGlyphFinder(someTypefaceSizeIrrelevant),
+        //new SkiaGlyphNameProvider(someTypefaceSizeIrrelevant),
+        new SkiaGlyphFinder(typeface),
         new UnicodeFontChanger(),
-        SkiaResources.Json
+        //SkiaResources.Json
+        new SkiaMathTable(typeface)
       );
 
     private static TypesettingContext<SkiaMathFont, Glyph> CreateLatinMath() {

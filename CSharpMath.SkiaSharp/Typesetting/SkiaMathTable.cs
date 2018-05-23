@@ -11,7 +11,8 @@ namespace CSharpMath.SkiaSharp
     protected readonly MathConstants _constants;
     protected readonly Func<ushort, Glyph> _lookup;
 
-    public SkiaMathTable(Typeface typeface) => (_constants, _lookup) = (typeface.MathConsts, typeface.GetGlyphByIndex);
+    public SkiaMathTable(Typeface typeface) => (_constants, _lookup) = (typeface.MathConsts ??
+      throw new ArgumentException($"{nameof(typeface)}.{nameof(typeface.MathConsts)} is {null}."), typeface.GetGlyphByIndex);
 
     float ReadRecord(MathValueRecord rec, SkiaMathFont font) =>
       rec.Value * font.Typeface.CalculateScaleToPixelFromPointSize(font.PointSize);
@@ -51,7 +52,7 @@ namespace CSharpMath.SkiaSharp
     public override Glyph[] GetHorizontalVariantsForGlyph(Glyph rawGlyph) => GetVariants(rawGlyph.MathGlyphInfo?.HoriGlyphConstruction);
 
     public override float GetItalicCorrection(SkiaMathFont font, Glyph glyph) =>
-      glyph.MathGlyphInfo?.ItalicCorrection?.Value * font.Typeface.CalculateScaleToPixelFromPointSize(font.PointSize) ?? 0;
+      glyph.MathGlyphInfo.ItalicCorrection?.Value * font.Typeface.CalculateScaleToPixelFromPointSize(font.PointSize) ?? 0;
 
     public override Glyph GetLargerGlyph(SkiaMathFont font, Glyph glyph) {
       var variants = glyph.MathGlyphInfo.VertGlyphConstruction.glyphVariantRecords;
@@ -68,7 +69,17 @@ namespace CSharpMath.SkiaSharp
     }
 
     public override GlyphPart<Glyph>[] GetVerticalGlyphAssembly(Glyph rawGlyph, SkiaMathFont font) {
-      throw new NotImplementedException();
+      var records = rawGlyph.MathGlyphInfo.VertGlyphConstruction.GlyphAsm_GlyphPartRecords;
+      var scale = font.Typeface.CalculateScaleToPixelFromPointSize(font.PointSize);
+      var parts = new GlyphPart<Glyph>[records.Length];
+      for (int i = 0; i < records.Length; i++) parts[i] = new GlyphPart<Glyph> {
+        EndConnectorLength = records[i].EndConnectorLength * scale,
+        FullAdvance = records[i].FullAdvance * scale,
+        Glyph = _lookup(records[i].GlyphId),
+        IsExtender = records[i].IsExtender,
+        StartConnectorLength = records[i].StartConnectorLength * scale
+      };
+      return parts;
     }
 
     public override Glyph[] GetVerticalVariantsForGlyph(Glyph rawGlyph) => GetVariants(rawGlyph.MathGlyphInfo?.VertGlyphConstruction);
@@ -77,9 +88,9 @@ namespace CSharpMath.SkiaSharp
 
     public override float LowerLimitGapMin(SkiaMathFont font) => ReadRecord(_constants.LowerLimitGapMin, font);
 
-    public override float MinConnectorOverlap(SkiaMathFont font) => ReadRecord(_constants.MinConnectorOverlap, font);
+    public override float MinConnectorOverlap(SkiaMathFont font) => _constants.MinConnectorOverlap;
 
-    public override short RadicalDegreeBottomRaisePercent(SkiaMathFont font) => _constants.RadicalDegreeBottomRaisePercent;
+    protected override short RadicalDegreeBottomRaisePercent(SkiaMathFont font) => _constants.RadicalDegreeBottomRaisePercent;
 
     public override float RadicalDisplayStyleVerticalGap(SkiaMathFont font) => ReadRecord(_constants.RadicalDisplayStyleVerticalGap, font);
 

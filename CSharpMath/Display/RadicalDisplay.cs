@@ -38,7 +38,7 @@ namespace CSharpMath.Display {
     {
       var kernBefore = degreeFontMathTable.RadicalKernBeforeDegree(degreeFont);
       var kernAfter = degreeFontMathTable.RadicalKernAfterDegree(degreeFont);
-      var raise = degreeFontMathTable.RadicalDegreeBottomRaisePercent(degreeFont) * (this.Ascent - this.Descent);
+      var raise = degreeFontMathTable.RadicalDegreeBottomRaise(degreeFont) * (this.Ascent - this.Descent);
       Degree = degree;
       _radicalShift = kernBefore + degree.Width + kernAfter;
       if (_radicalShift < 0)

@@ -13,10 +13,8 @@ namespace CSharpMath.FrontEnd {
     /// <summary>This should treat the glyphs independently. In other words,
     /// we don't assume they are one after the other; likely use case is considering
     /// different options.</summary>
-    RectangleF[] GetBoundingRectsForGlyphs(TFont font, TGlyph[] glyphs, int nVariants);
-    /// <summary>The last float in the return value is the overall advance. The remainder
-    /// gives the advances for the individual glyphs. The length of the returned array
-    /// is therefore one greater than the number of glyphs.</summary>
-    float[] GetAdvancesForGlyphs(TFont font, TGlyph[] glyphs);
+    RectangleF[] GetBoundingRectsForGlyphs(TFont font, TGlyph[] glyphs);
+    /// <summary>The advances for the individual glyphs and the overall advance.</summary>
+    (float[] Advances, float Total) GetAdvancesForGlyphs(TFont font, TGlyph[] glyphs);
   }
 }

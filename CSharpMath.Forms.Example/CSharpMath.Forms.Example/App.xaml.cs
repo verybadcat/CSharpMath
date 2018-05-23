@@ -19,7 +19,7 @@ namespace CSharpMath.Forms.Example
         Children = {
           new ExamplePage(), new AllExamplesPage(), new CustomExamplePage(), new SettingsPage()
         }
-      }.SetCurrentPageIndex(2);
+      }.SetCurrentPageIndex(0);
     }
 
 

@@ -16,14 +16,14 @@ namespace CSharpMath.SkiaSharp {
 
     public PointF TextPosition { get; set; }
     void IGraphicsContext<TFont, Glyph>.SetTextPosition(PointF position) {
-      Debug($"TextPosition {position.X}, {position.Y}");
+      Debug($"TextPosition ({position.X}, {position.Y})");
       TextPosition = position;
     }
 
     public SKCanvas Canvas { get; set; }
    
     public void DrawGlyphsAtPoints(Glyph[] glyphs, TFont font, PointF[] points) {
-      Debug($"Glyphs {string.Join("; ", glyphs.Zip(points, (g, p) => $"{g.GetCff1GlyphData().Name} at {p.X}, {p.Y}"))} ");
+      Debug($"Glyphs {string.Join("; ", glyphs.Zip(points, (g, p) => $"{g.GetCff1GlyphData().Name} ({p.X}, {p.Y})"))} ");
 
       var typeface = font.Typeface;
       var pathBuilder = new SkiaGlyphPathBuilder(typeface);
@@ -31,7 +31,7 @@ namespace CSharpMath.SkiaSharp {
       Canvas.Save();
       Canvas.Translate(TextPosition.X, TextPosition.Y);
       if (DrawStringBoxes) {
-        RectangleF[] rects = new SkiaGlyphBoundsProvider().GetBoundingRectsForGlyphs(font, glyphs, 0);
+        RectangleF[] rects = new SkiaGlyphBoundsProvider().GetBoundingRectsForGlyphs(font, glyphs);
         for (int i = 0; i < rects.Length; i++) {
           var rect = rects[i];
           var point = points[i];
@@ -53,14 +53,14 @@ namespace CSharpMath.SkiaSharp {
     }
 
     public void DrawLine(float x1, float y1, float x2, float y2, float lineThickness) {
-      Debug($"Line {x1} {y1} -> {x2} {y2}");
+      Debug($"Line ({x1}, {y1}) -> ({x2}, {y2})");
       var paint = glyphPaint.Clone();
       paint.StrokeWidth = lineThickness;
       Canvas.DrawLine(x1, y1, x2, y2, paint);
     }
 
     public void DrawGlyphRunWithOffset(Display.Text.AttributedGlyphRun<TFont, Glyph> run, PointF offset, float maxWidth = float.NaN) {
-      Debug($"Text {run.Text} {offset.X} {offset.Y}");
+      Debug($"Text {run.Text} ({offset.X}, {offset.Y})");
       var textPosition = TextPosition.Plus(offset);
 
       if (DrawStringBoxes) {
@@ -99,7 +99,7 @@ namespace CSharpMath.SkiaSharp {
     }
 
     public void Translate(PointF dxy) {
-      Debug("Translate " + dxy.X + " " + dxy.Y);
+      Debug($"Translate ({dxy.X}, {dxy.Y})");
       Canvas.Translate(dxy.X, dxy.Y);
     }
     
