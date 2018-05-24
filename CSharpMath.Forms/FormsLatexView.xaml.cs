@@ -8,6 +8,7 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 using SkiaSharp.Views.Forms;
+using SKStyle = SkiaSharp.SKPaintStyle;
 
 namespace CSharpMath.Forms {
   [XamlCompilation(XamlCompilationOptions.Compile), ContentProperty(nameof(LaTeX))]
@@ -24,19 +25,21 @@ namespace CSharpMath.Forms {
       base.OnPaintSurface(e);
     }
     #region BindableProperties
+    static FormsLatexView() {
+    }
     private static readonly Type thisType = typeof(FormsLatexView);
     public static readonly BindableProperty LaTeXProperty = BindableProperty.Create(nameof(LaTeX), typeof(string), thisType, null, BindingMode.TwoWay);
     public static readonly BindableProperty DisplayErrorInlineProperty = BindableProperty.Create(nameof(DisplayErrorInline), typeof(bool), thisType, true, BindingMode.OneWay);
-    public static readonly BindableProperty FontSizeProperty = BindableProperty.Create(nameof(FontSize), typeof(float), thisType);
-    public static readonly BindableProperty ErrorFontSizeProperty = BindableProperty.Create(nameof(ErrorFontSize), typeof(float?), thisType);
-    public static readonly BindableProperty TextColorProperty = BindableProperty.Create(nameof(TextColor), typeof(Color), thisType);
-    public static readonly BindableProperty ErrorColorProperty = BindableProperty.Create(nameof(ErrorColor), typeof(Color), thisType);
-    public static readonly BindableProperty HorizontalTextAlignmentProperty = BindableProperty.Create(nameof(HorizontalTextAlignment), typeof(TextAlignment), thisType);
-    public static readonly BindableProperty PaintStyleProperty = BindableProperty.Create(nameof(PaintStyle), typeof(global::SkiaSharp.SKPaintStyle), thisType);
-    public static readonly BindableProperty DrawGlyphBoxesProperty = BindableProperty.Create(nameof(DrawGlyphBoxes), typeof(bool), thisType);
-    public static readonly BindableProperty PaddingProperty = BindableProperty.Create(nameof(Padding), typeof(Thickness), thisType);
-    public static readonly BindableProperty MathListProperty = BindableProperty.Create(nameof(MathList), typeof(Interfaces.IMathList), thisType, null, BindingMode.TwoWay);
-    internal static readonly BindablePropertyKey ErrorMessagePropertyKey = BindableProperty.CreateReadOnly(nameof(ErrorMessage), typeof(string), thisType, null, BindingMode.OneWayToSource);
+    public static readonly BindableProperty FontSizeProperty = BindableProperty.Create(nameof(FontSize), typeof(float), thisType, 0f);
+    public static readonly BindableProperty ErrorFontSizeProperty = BindableProperty.Create(nameof(ErrorFontSize), typeof(float?), thisType, null);
+    public static readonly BindableProperty TextColorProperty = BindableProperty.Create(nameof(TextColor), typeof(Color), thisType, Color.Black);
+    public static readonly BindableProperty ErrorColorProperty = BindableProperty.Create(nameof(ErrorColor), typeof(Color), thisType, Color.Red);
+    public static readonly BindableProperty HorizontalTextAlignmentProperty = BindableProperty.Create(nameof(HorizontalTextAlignment), typeof(TextAlignment), thisType, TextAlignment.Center);
+    public static readonly BindableProperty PaintStyleProperty = BindableProperty.Create(nameof(PaintStyle), typeof(SKStyle), thisType, SKStyle.StrokeAndFill);
+    public static readonly BindableProperty DrawGlyphBoxesProperty = BindableProperty.Create(nameof(DrawGlyphBoxes), typeof(bool), thisType, false);
+    public static readonly BindableProperty PaddingProperty = BindableProperty.Create(nameof(Padding), typeof(Thickness), thisType, default(Thickness));
+    public static readonly BindableProperty MathListProperty = BindableProperty.Create(nameof(MathList), typeof(Interfaces.IMathList), thisType, null, BindingMode.TwoWay, null, null, null, null, null);
+    private static readonly BindablePropertyKey ErrorMessagePropertyKey = BindableProperty.CreateReadOnly(nameof(ErrorMessage), typeof(string), thisType, null, BindingMode.OneWayToSource);
     public static readonly BindableProperty ErrorMessageProperty = ErrorMessagePropertyKey.BindableProperty;
     #endregion
 
@@ -87,7 +90,7 @@ namespace CSharpMath.Forms {
     public Color TextColor { get => (Color)GetValue(TextColorProperty); set => SetValue(TextColorProperty, value); }
     public Color ErrorColor { get => (Color)GetValue(ErrorColorProperty); set => SetValue(ErrorColorProperty, value); }
     public TextAlignment HorizontalTextAlignment { get => (TextAlignment)GetValue(HorizontalTextAlignmentProperty); set => SetValue(HorizontalTextAlignmentProperty, value); }
-    public global::SkiaSharp.SKPaintStyle PaintStyle { get => (global::SkiaSharp.SKPaintStyle)GetValue(PaintStyleProperty); set => SetValue(PaintStyleProperty, value); }
+    public SKStyle PaintStyle { get => (SKStyle)GetValue(PaintStyleProperty); set => SetValue(PaintStyleProperty, value); }
     public bool DrawGlyphBoxes { get => (bool)GetValue(DrawGlyphBoxesProperty); set => SetValue(DrawGlyphBoxesProperty, value); }
     public Thickness Padding { get => (Thickness)GetValue(PaddingProperty); set => SetValue(PaddingProperty, value); }
     public Interfaces.IMathList MathList { get => (Interfaces.IMathList)GetValue(MathListProperty); set => SetValue(MathListProperty, value); }

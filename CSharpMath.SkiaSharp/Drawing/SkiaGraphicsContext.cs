@@ -33,11 +33,11 @@ namespace CSharpMath.SkiaSharp {
         for (int i = 0; i < rects.Length; i++) {
           var rect = rects[i];
           var point = points[i];
-          Canvas.DrawRect(point.X, point.Y, rect.Width, rect.Height, new SKPaint() { Color = SKColors.Red, Style = SKPaintStyle.Stroke });
+          Canvas.DrawRect(point.X + rect.X, point.Y + rect.Y, rect.Width, rect.Height, new SKPaint() { Color = SKColors.Red, Style = SKPaintStyle.Stroke });
         }
       }
       for (int i = 0; i < glyphs.Length; i++) {
-        pathBuilder.BuildFromGlyphIndex(glyphs[i].GetCff1GlyphData().GlyphIndex, font.PointSize);
+        pathBuilder.BuildFromGlyphIndex(glyphs[i].GlyphIndex, font.PointSize);
         pathBuilder.ReadShapes(path);
         Canvas.Save();
         

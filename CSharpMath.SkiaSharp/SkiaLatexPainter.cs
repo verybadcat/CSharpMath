@@ -73,7 +73,7 @@ namespace CSharpMath.SkiaSharp {
       get => _mathList;
       set {
         _mathList = value ?? new MathList();
-        _latex = MathListBuilder.MathListToString(value);
+        _latex = MathListBuilder.MathListToString(_mathList);
         Invalidate();
       }
     }
