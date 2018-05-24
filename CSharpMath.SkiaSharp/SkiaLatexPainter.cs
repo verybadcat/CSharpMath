@@ -62,7 +62,7 @@ namespace CSharpMath.SkiaSharp {
     public NColor ErrorColor { get; set; } = NColors.Red;
     public ColumnAlignment TextAlignment { get; set; } = ColumnAlignment.Left;
     public SKPaintStyle PaintStyle { get; set; } = SKPaintStyle.StrokeAndFill;
-    public bool DrawStringBoxes { get; set; }
+    public bool DrawGlyphBoxes { get; set; }
 
     private SKSize ToSKSize(SizeF size) => new SKSize(size.Width, size.Height);
     public SKSize DrawingSize => _displayList == null ? Bounds :
@@ -125,7 +125,7 @@ namespace CSharpMath.SkiaSharp {
           Canvas = canvas,
           Color = TextColor,
           PaintStyle = PaintStyle,
-          DrawStringBoxes = DrawStringBoxes
+          DrawGlyphBoxes = DrawGlyphBoxes
         };
         canvas.Save();
         //invert the canvas vertically

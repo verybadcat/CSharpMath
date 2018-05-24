@@ -23,13 +23,13 @@ namespace CSharpMath.Forms.Example
 
     private void CollectionChanged(object sender, Args e) {
       if(e.NewItems != null) foreach (var v in e.NewItems.Cast<FormsLatexView>()) {
-        v.DrawStringBoxes = DrawStringBoxes.On;
+        v.DrawGlyphBoxes = DrawStringBoxes.On;
       } 
     }
 
     private void SwitchCell_OnChanged(object sender, ToggledEventArgs e) {
       foreach (var v in App.AllViews) {
-        v.DrawStringBoxes = e.Value;
+        v.DrawGlyphBoxes = e.Value;
         v.InvalidateSurface();
       }
     }

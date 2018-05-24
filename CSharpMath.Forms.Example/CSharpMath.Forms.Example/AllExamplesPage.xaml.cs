@@ -62,7 +62,7 @@ namespace CSharpMath.Forms.Example {
     public static IEnumerable<FieldInfo> AllConstants { get; } = typeof(AllExamplesPage).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly).
       Where(fi => fi.IsLiteral && !fi.IsInitOnly);
 
-    void OnDrawStringBoxewsChanged(object _, bool value) => View.DrawStringBoxes = value;
+    void OnDrawStringBoxewsChanged(object _, bool value) => View.DrawGlyphBoxes = value;
     protected override void OnAppearing() {
       base.OnAppearing();
       App.AllViews.Add(View);
