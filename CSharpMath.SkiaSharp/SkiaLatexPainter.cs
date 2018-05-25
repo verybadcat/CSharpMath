@@ -60,7 +60,8 @@ namespace CSharpMath.SkiaSharp {
     public NColor TextColor { get; set; } = NColors.Black;
     public NColor BackgroundColor { get; set; } = new NColor();
     public NColor ErrorColor { get; set; } = NColors.Red;
-    public ColumnAlignment TextAlignment { get; set; } = ColumnAlignment.Left;
+    public ColumnAlignment HorizontalTextAlignment { get; set; } = ColumnAlignment.Left;
+    public RowAlignment VerticalTextAlignment { get; set; } = RowAlignment.Center;
     public SKPaintStyle PaintStyle { get; set; } = SKPaintStyle.StrokeAndFill;
     public bool DrawGlyphBoxes { get; set; }
 
@@ -96,8 +97,8 @@ namespace CSharpMath.SkiaSharp {
         var skiaFont = SkiaFontManager.LatinMath(fontSize);
         _displayList = _typesettingContext.CreateLine(_mathList, skiaFont, LineStyle.Display);
         float displayWidth = _displayList.Width;
-        float textX = 0;
-        switch (TextAlignment) {
+        float textX;
+        switch (HorizontalTextAlignment) {
           case ColumnAlignment.Left:
             textX = Padding.Left;
             break;
@@ -107,13 +108,29 @@ namespace CSharpMath.SkiaSharp {
           case ColumnAlignment.Right:
             textX = Bounds.Width - Padding.Right - displayWidth;
             break;
+          default:
+            throw new InvalidOperationException($"{nameof(HorizontalTextAlignment)} is not a valid value.");
         }
-        float availableHeight = Bounds.Height - Padding.Top - Padding.Bottom;
         float contentHeight = _displayList.Ascent + _displayList.Descent;
         if (contentHeight < FontSize / 2) {
           contentHeight = FontSize / 2;
         }
-        float textY = ((availableHeight - contentHeight) / 2) + Padding.Bottom + _displayList.Descent;
+        float textY;
+        switch (VerticalTextAlignment) {
+          case RowAlignment.Top:
+            textY = Padding.Top;
+            break;
+          case RowAlignment.Center:
+            float availableHeight = Bounds.Height - Padding.Top - Padding.Bottom;
+            textY = ((availableHeight - contentHeight) / 2) + Padding.Top + _displayList.Descent;
+            break;
+          case RowAlignment.Bottom:
+            textY = Bounds.Height - Padding.Bottom - contentHeight;
+            break;
+          default:
+            throw new InvalidOperationException($"{nameof(VerticalTextAlignment)} is not a valid value.");
+        }
+        
         _displayList.Position = new PointF(textX, textY);
       }
     }

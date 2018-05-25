@@ -62,7 +62,7 @@ namespace CSharpMath.SkiaSharp {
 
       if (DrawGlyphBoxes) {
         var box = run.Font.GlyphLayout.LayoutAndMeasureString(run.Text.ToCharArray(), 0, run.Text.Length, run.Font.PointSize);
-        Canvas.DrawRect(offset.X, offset.Y, box.width + run.KernedGlyphs.Sum(g => g.KernAfterGlyph), box.btbd, new SKPaint() { Color = SKColors.Blue, Style = SKPaintStyle.Stroke });
+        Canvas.DrawRect(textPosition.X, textPosition.Y, box.width + run.KernedGlyphs.Sum(g => g.KernAfterGlyph), box.btbd, new SKPaint() { Color = SKColors.Blue, Style = SKPaintStyle.Stroke });
       }
 
       var typeface = run.Font.Typeface;
