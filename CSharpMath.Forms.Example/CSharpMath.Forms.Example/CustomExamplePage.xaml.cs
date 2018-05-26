@@ -21,7 +21,7 @@ namespace CSharpMath.Forms.Example
         View.FontSize = (float)Size.SelectedItem;
         View.InvalidateSurface();
       };
-      Entry.TextChanged += (sender, e) => Task.Run(() => View.LaTeX = Entry.Text);
+      Entry.TextChanged += (sender, e) => View.LaTeX = Entry.Text;
     }
     protected override void OnDisappearing() {
       //App.AllViews.Remove(View);
