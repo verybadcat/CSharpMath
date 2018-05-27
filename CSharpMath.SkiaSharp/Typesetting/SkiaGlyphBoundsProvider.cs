@@ -25,7 +25,8 @@ namespace CSharpMath.SkiaSharp {
       var rects = new RectangleF[glyphs.Length];
       for (int i = 0; i < glyphs.Length; i++) {
         var bounds = glyphs[i].Bounds;
-        rects[i] = RectangleF.FromLTRB(bounds.XMin * scale, bounds.YMin * scale, bounds.XMax * scale, bounds.YMax * scale);
+        var obounds = glyphs[i].GetOriginalBounds();
+        rects[i] = RectangleF.FromLTRB(obounds.XMin * scale, bounds.YMin * scale, obounds.XMax * scale, bounds.YMax * scale);
       }
       return rects;
     }

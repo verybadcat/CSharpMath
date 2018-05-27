@@ -207,7 +207,7 @@ namespace CSharpMath {
             if (atom.AtomType == MathAtomType.Placeholder) {
               current = AttributedGlyphRuns.Create<TFont, TGlyph>(nucleusText, glyphs, _font, _placeholderColor);
             } else {
-              current = AttributedGlyphRuns.Create<TFont, TGlyph>(nucleusText, glyphs, _font, _blackColor);
+              current = AttributedGlyphRuns.Create<TFont, TGlyph>(nucleusText, glyphs, _font, null);
             }
             _currentLine = AttributedStringExtensions.Combine(_currentLine, current);
             if (_currentLineIndexRange.Location == Range.UndefinedInt) {

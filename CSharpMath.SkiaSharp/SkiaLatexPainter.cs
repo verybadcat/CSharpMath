@@ -60,8 +60,9 @@ namespace CSharpMath.SkiaSharp {
     public NColor TextColor { get; set; } = NColors.Black;
     public NColor BackgroundColor { get; set; } = new NColor();
     public NColor ErrorColor { get; set; } = NColors.Red;
-    public ColumnAlignment HorizontalTextAlignment { get; set; } = ColumnAlignment.Left;
-    public RowAlignment VerticalTextAlignment { get; set; } = RowAlignment.Center;
+    public SkiaTextAlignment TextAlignment { get; set; } = SkiaTextAlignment.Centre;
+    public float? ScrollX { get; set; }
+    public float? ScrollY { get; set; }
     public SKPaintStyle PaintStyle { get; set; } = SKPaintStyle.StrokeAndFill;
     public bool DrawGlyphBoxes { get; set; }
 
@@ -91,53 +92,41 @@ namespace CSharpMath.SkiaSharp {
       }
     }
 
-    public void InitPositions() {
+    public void ResetPositions() {
       if (_mathList != null) {
         var fontSize = FontSize;
         var skiaFont = SkiaFontManager.LatinMath(fontSize);
         _displayList = _typesettingContext.CreateLine(_mathList, skiaFont, LineStyle.Display);
         float displayWidth = _displayList.Width;
-        float textX;
-        switch (HorizontalTextAlignment) {
-          case ColumnAlignment.Left:
-            textX = Padding.Left;
-            break;
-          case ColumnAlignment.Center:
-            textX = Padding.Left + (Bounds.Width - Padding.Left - Padding.Right - displayWidth) / 2;
-            break;
-          case ColumnAlignment.Right:
-            textX = Bounds.Width - Padding.Right - displayWidth;
-            break;
-          default:
-            throw new InvalidOperationException($"{nameof(HorizontalTextAlignment)} is not a valid value.");
+        if (ScrollX == null) {
+          if ((TextAlignment & SkiaTextAlignment.Left) != 0)
+            ScrollX = Padding.Left;
+          else if ((TextAlignment & SkiaTextAlignment.Right) != 0)
+            ScrollX = Bounds.Width - Padding.Right - displayWidth;
+          else
+            ScrollX = Padding.Left + (Bounds.Width - Padding.Left - Padding.Right - displayWidth) / 2;
         }
         float contentHeight = _displayList.Ascent + _displayList.Descent;
         if (contentHeight < FontSize / 2) {
           contentHeight = FontSize / 2;
         }
-        float textY;
-        switch (VerticalTextAlignment) {
-          case RowAlignment.Top:
-            textY = Padding.Top;
-            break;
-          case RowAlignment.Center:
+        if (ScrollY == null) {
+          if ((TextAlignment & SkiaTextAlignment.Top) != 0)
+            ScrollY = Padding.Top;
+          else if ((TextAlignment & SkiaTextAlignment.Bottom) != 0)
+            ScrollY = Bounds.Height - Padding.Bottom - contentHeight;
+          else {
             float availableHeight = Bounds.Height - Padding.Top - Padding.Bottom;
-            textY = ((availableHeight - contentHeight) / 2) + Padding.Top + _displayList.Descent;
-            break;
-          case RowAlignment.Bottom:
-            textY = Bounds.Height - Padding.Bottom - contentHeight;
-            break;
-          default:
-            throw new InvalidOperationException($"{nameof(VerticalTextAlignment)} is not a valid value.");
+            ScrollY = ((availableHeight - contentHeight) / 2) + Padding.Top + _displayList.Descent;
+          }
         }
-        
-        _displayList.Position = new PointF(textX, textY);
+        _displayList.Position = new PointF(ScrollX.Value, ScrollY.Value);
       }
     }
 
     public void Draw(SKCanvas canvas) {
       if (_mathList != null) {
-        InitPositions();
+        ResetPositions();
         var skiaContext = new SkiaGraphicsContext() {
           Canvas = canvas,
           Color = TextColor,

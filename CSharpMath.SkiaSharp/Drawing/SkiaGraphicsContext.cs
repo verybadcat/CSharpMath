@@ -36,12 +36,14 @@ namespace CSharpMath.SkiaSharp {
           Canvas.DrawRect(point.X + rect.X, point.Y + rect.Y, rect.Width, rect.Height, new SKPaint() { Color = SKColors.Red, Style = SKPaintStyle.Stroke });
         }
       }
+      var scale = typeface.CalculateScaleToPixelFromPointSize(font.PointSize);
       for (int i = 0; i < glyphs.Length; i++) {
         pathBuilder.BuildFromGlyphIndex(glyphs[i].GlyphIndex, font.PointSize);
         pathBuilder.ReadShapes(path);
         Canvas.Save();
         
         Canvas.Translate(points[i].X, points[i].Y);
+        Canvas.Translate(-(glyphs[i].Bounds.XMin-glyphs[i].GetOriginalBounds().XMin) * scale, 0);
         Canvas.DrawPath(path.Path, glyphPaint);
         Canvas.Restore();
         path.Clear();
@@ -74,11 +76,17 @@ namespace CSharpMath.SkiaSharp {
       var scale = typeface.CalculateScaleToPixelFromPointSize(pointSize);
       Canvas.Save();
       Canvas.Translate(textPosition.X, textPosition.Y);
+      var paint = glyphPaint;
+      var color = run.TextColor.ToNative();
+      if (color != null) {
+        paint = paint.Clone();
+        paint.Color = color.Value;
+      }
       for (int i = 0; i < glyphs.Length; i++) {
         var index = glyphs[i].Glyph.GlyphIndex;
         pathBuilder.BuildFromGlyphIndex(index, pointSize);
         pathBuilder.ReadShapes(path);
-        Canvas.DrawPath(path.Path, glyphPaint);
+        Canvas.DrawPath(path.Path, paint);
         Canvas.Translate(typeface.GetHAdvanceWidthFromGlyphIndex(index) * scale + glyphs[i].KernAfterGlyph, 0);
         path.Clear();
       }

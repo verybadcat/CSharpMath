@@ -41,15 +41,21 @@ namespace CSharpMath.SkiaSharp
 
     public override float FractionRuleThickness(SkiaMathFont font) => ReadRecord(_constants.FractionRuleThickness, font);
 
-    Glyph[] GetVariants(MathGlyphConstruction glyphs) {
+    internal static Dictionary<Glyph, Bounds> OriginalBounds = new Dictionary<Glyph, Bounds>();
+    Glyph[] GetVariants(MathGlyphConstruction glyphs, Bounds bounds) {
       var records = glyphs.glyphVariantRecords;
       if (records == null) return Array.Empty<Glyph>();
       var variants = new Glyph[records.Length];
-      for (int i = 0; i < records.Length; i++) variants[i] = _lookup(records[i].VariantGlyph);
+      for (int i = 0; i < records.Length; i++) {
+        var variant = records[i].VariantGlyph;
+        variants[i] = _lookup(variant);
+        OriginalBounds[variants[i]] = bounds;
+      }
       return variants;
     }
 
-    public override Glyph[] GetHorizontalVariantsForGlyph(Glyph rawGlyph) => GetVariants(rawGlyph.MathGlyphInfo?.HoriGlyphConstruction);
+    public override Glyph[] GetHorizontalVariantsForGlyph(Glyph rawGlyph) =>
+      GetVariants(rawGlyph.MathGlyphInfo?.HoriGlyphConstruction, rawGlyph.Bounds);
 
     public override float GetItalicCorrection(SkiaMathFont font, Glyph glyph) =>
       glyph.MathGlyphInfo.ItalicCorrection?.Value * font.Typeface.CalculateScaleToPixelFromPointSize(font.PointSize) ?? 0;
@@ -82,7 +88,8 @@ namespace CSharpMath.SkiaSharp
       return parts;
     }
 
-    public override Glyph[] GetVerticalVariantsForGlyph(Glyph rawGlyph) => GetVariants(rawGlyph.MathGlyphInfo?.VertGlyphConstruction);
+    public override Glyph[] GetVerticalVariantsForGlyph(Glyph rawGlyph) =>
+      GetVariants(rawGlyph.MathGlyphInfo?.VertGlyphConstruction, rawGlyph.Bounds);
 
     public override float LowerLimitBaselineDropMin(SkiaMathFont font) => ReadRecord(_constants.LowerLimitBaselineDropMin, font);
 
@@ -139,5 +146,10 @@ namespace CSharpMath.SkiaSharp
     public override float UpperLimitBaselineRiseMin(SkiaMathFont font) => ReadRecord(_constants.UpperLimitBaselineRiseMin, font);
 
     public override float UpperLimitGapMin(SkiaMathFont font) => ReadRecord(_constants.UpperLimitGapMin, font);
+  }
+
+  internal static class GlyphExtensions {
+    public static Bounds GetOriginalBounds(this Glyph rawGlyph) =>
+      SkiaMathTable.OriginalBounds.TryGetValue(rawGlyph, out var value) ? value : rawGlyph.Bounds;
   }
 }

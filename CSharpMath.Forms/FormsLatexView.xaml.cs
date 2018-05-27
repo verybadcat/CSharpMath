@@ -34,8 +34,7 @@ namespace CSharpMath.Forms {
       ErrorFontSizeProperty = BindableProperty.Create(nameof(ErrorFontSize), typeof(float?), thisType, painter.ErrorFontSize);
       TextColorProperty = BindableProperty.Create(nameof(TextColor), typeof(Color), thisType, painter.TextColor.ToFormsColor());
       ErrorColorProperty = BindableProperty.Create(nameof(ErrorColor), typeof(Color), thisType, painter.ErrorColor.ToFormsColor());
-      HorizontalTextAlignmentProperty = BindableProperty.Create(nameof(HorizontalTextAlignment), typeof(TextAlignment), thisType, (TextAlignment)painter.HorizontalTextAlignment);
-      VerticalTextAlignmentProperty = BindableProperty.Create(nameof(VerticalTextAlignment), typeof(TextAlignment), thisType, (TextAlignment)painter.VerticalTextAlignment);
+      TextAlignmentProperty = BindableProperty.Create(nameof(TextAlignment), typeof(SkiaSharp.SkiaTextAlignment), thisType, painter.TextAlignment);
       PaintStyleProperty = BindableProperty.Create(nameof(PaintStyle), typeof(SKStyle), thisType, painter.PaintStyle);
       DrawGlyphBoxesProperty = BindableProperty.Create(nameof(DrawGlyphBoxes), typeof(bool), thisType, painter.DrawGlyphBoxes);
       PaddingProperty = BindableProperty.Create(nameof(Padding), typeof(Thickness), thisType, new Thickness(painter.Padding.Left, painter.Padding.Top, painter.Padding.Right, painter.Padding.Bottom));
@@ -49,8 +48,7 @@ namespace CSharpMath.Forms {
     public static readonly BindableProperty ErrorFontSizeProperty;
     public static readonly BindableProperty TextColorProperty;
     public static readonly BindableProperty ErrorColorProperty;
-    public static readonly BindableProperty HorizontalTextAlignmentProperty;
-    public static readonly BindableProperty VerticalTextAlignmentProperty;
+    public static readonly BindableProperty TextAlignmentProperty;
     public static readonly BindableProperty PaintStyleProperty;
     public static readonly BindableProperty DrawGlyphBoxesProperty;
     public static readonly BindableProperty PaddingProperty;
@@ -77,8 +75,7 @@ namespace CSharpMath.Forms {
         case nameof(ErrorFontSize): painter.ErrorFontSize = ErrorFontSize; break;
         case nameof(TextColor): painter.TextColor = TextColor.ToSKColor(); break;
         case nameof(ErrorColor): painter.ErrorColor = ErrorColor.ToSKColor(); break;
-        case nameof(HorizontalTextAlignment): painter.HorizontalTextAlignment = (Enumerations.ColumnAlignment)HorizontalTextAlignment; break;
-        case nameof(VerticalTextAlignment): painter.VerticalTextAlignment = (Enumerations.RowAlignment)VerticalTextAlignment; break;
+        case nameof(TextAlignment): painter.TextAlignment = TextAlignment; break;
         case nameof(PaintStyle): painter.PaintStyle = PaintStyle; break;
         case nameof(DrawGlyphBoxes): painter.DrawGlyphBoxes = DrawGlyphBoxes; break;
         case nameof(Padding): painter.Padding = new SkiaSharp.Thickness((float)Padding.Left, (float)Padding.Top, (float)Padding.Right, (float)Padding.Bottom); break;
@@ -106,8 +103,7 @@ namespace CSharpMath.Forms {
     public float? ErrorFontSize { get => (float?)GetValue(ErrorFontSizeProperty); set => SetValue(ErrorFontSizeProperty, value); }
     public Color TextColor { get => (Color)GetValue(TextColorProperty); set => SetValue(TextColorProperty, value); }
     public Color ErrorColor { get => (Color)GetValue(ErrorColorProperty); set => SetValue(ErrorColorProperty, value); }
-    public TextAlignment HorizontalTextAlignment { get => (TextAlignment)GetValue(HorizontalTextAlignmentProperty); set => SetValue(HorizontalTextAlignmentProperty, value); }
-    public TextAlignment VerticalTextAlignment { get => (TextAlignment)GetValue(HorizontalTextAlignmentProperty); set => SetValue(HorizontalTextAlignmentProperty, value); }
+    public SkiaSharp.SkiaTextAlignment TextAlignment { get => (SkiaSharp.SkiaTextAlignment)GetValue(TextAlignmentProperty); set => SetValue(TextAlignmentProperty, value); }
     public SKStyle PaintStyle { get => (SKStyle)GetValue(PaintStyleProperty); set => SetValue(PaintStyleProperty, value); }
     public bool DrawGlyphBoxes { get => (bool)GetValue(DrawGlyphBoxesProperty); set => SetValue(DrawGlyphBoxesProperty, value); }
     public Thickness Padding { get => (Thickness)GetValue(PaddingProperty); set => SetValue(PaddingProperty, value); }

@@ -100,6 +100,7 @@ namespace CSharpMath.Atoms {
             continue;
           case '{':
             var sublist = BuildInternal(false, '}');
+            if (sublist == null) return null;
             prevAtom = sublist.Atoms.LastOrDefault();
             r.Append(sublist);
             if (oneCharOnly) {
@@ -153,6 +154,7 @@ namespace CSharpMath.Atoms {
                 return r;
               }
               var table = BuildTable(null, r, false);
+              if (table == null) return null;
               return MathLists.WithAtoms(table);
             }
           default:
@@ -435,6 +437,7 @@ namespace CSharpMath.Atoms {
       } else if (command == "\\" || command == "cr") {
         if (_currentEnvironment == null) {
           var table = BuildTable(null, list, true);
+          if (table == null) return null;
           return MathLists.WithAtoms(table);
         } else {
           // stop the current list and increment the row count
