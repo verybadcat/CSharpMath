@@ -23,7 +23,7 @@ namespace CSharpMath.Atoms {
         if (ScriptsAllowed || value == null) {
           _Superscript = value;
         } else {
-          throw new Exception("Scripts are not allowed in itom type " + AtomType.ToText());
+          throw new Exception("Scripts are not allowed in atom type " + AtomType.ToText());
         }
       }
     }
@@ -34,7 +34,7 @@ namespace CSharpMath.Atoms {
         if (ScriptsAllowed || value == null) {
           _Subscript = value;
         } else {
-          throw new Exception("Scripts are not allowed in itom type " + AtomType.ToText());
+          throw new Exception("Scripts are not allowed in atom type " + AtomType.ToText());
         }
       }
     }
@@ -91,17 +91,15 @@ namespace CSharpMath.Atoms {
     public override string ToString() =>
       AtomType.ToText() + " " + StringValue;
 
-    public bool EqualsAtom(MathAtom otherAtom) {
-      var r = (otherAtom != null);
-      r &= Nucleus == otherAtom.Nucleus;
-      r &= AtomType == otherAtom.AtomType;
-      r &= Superscript.NullCheckingEquals(otherAtom.Superscript);
-      r &= Subscript.NullCheckingEquals(otherAtom.Subscript);
-      r &= IndexRange == otherAtom.IndexRange;
-      r &= FontStyle == otherAtom.FontStyle;
-      r &= otherAtom.GetType() == this.GetType();
-      return r;
-    }
+    public bool EqualsAtom(MathAtom otherAtom) =>
+      otherAtom != null &&
+      Nucleus == otherAtom.Nucleus &&
+      AtomType == otherAtom.AtomType &&
+      Superscript.NullCheckingEquals(otherAtom.Superscript) &&
+      Subscript.NullCheckingEquals(otherAtom.Subscript) &&
+      IndexRange == otherAtom.IndexRange &&
+      FontStyle == otherAtom.FontStyle &&
+      otherAtom.GetType() == this.GetType();
     
 
     public override bool Equals (object obj) {

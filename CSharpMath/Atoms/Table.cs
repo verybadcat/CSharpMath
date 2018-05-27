@@ -68,18 +68,13 @@ namespace CSharpMath.Atoms {
     }
 
 
-    public bool EqualsTable(Table otherTable) {
-      bool r = EqualsAtom(otherTable);
-      r &= (NRows == otherTable.NRows);
-      for (int i=0; i<NRows; i++) {
-        r &= (Cells[i].EqualsEnumerable(otherTable.Cells[i]));
-      }
-      r &= Alignments.EqualsEnumerable(otherTable.Alignments);
-      return r;
-    }
+    public bool EqualsTable(Table otherTable) =>
+        EqualsAtom(otherTable) &&
+        NRows == otherTable.NRows &&
+        Cells.EqualsEnumerable(otherTable.Cells, (c1, c2) => c1.EqualsEnumerable(c2)) &&
+        Alignments.EqualsEnumerable(otherTable.Alignments);
 
-    public override bool Equals(object obj)
-      => EqualsTable(obj as Table);
+    public override bool Equals(object obj) => EqualsTable(obj as Table);
 
     public override int GetHashCode() {
       unchecked {
