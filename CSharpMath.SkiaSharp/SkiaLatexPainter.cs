@@ -61,8 +61,8 @@ namespace CSharpMath.SkiaSharp {
     public NColor BackgroundColor { get; set; } = new NColor();
     public NColor ErrorColor { get; set; } = NColors.Red;
     public SkiaTextAlignment TextAlignment { get; set; } = SkiaTextAlignment.Centre;
-    public float? ScrollX { get; set; }
-    public float? ScrollY { get; set; }
+    public float? OriginX { get; set; }
+    public float? OriginY { get; set; }
     public SKPaintStyle PaintStyle { get; set; } = SKPaintStyle.StrokeAndFill;
     public bool DrawGlyphBoxes { get; set; }
 
@@ -98,29 +98,29 @@ namespace CSharpMath.SkiaSharp {
         var skiaFont = SkiaFontManager.LatinMath(fontSize);
         _displayList = _typesettingContext.CreateLine(_mathList, skiaFont, LineStyle.Display);
         float displayWidth = _displayList.Width;
-        if (ScrollX == null) {
+        if (OriginX == null) {
           if ((TextAlignment & SkiaTextAlignment.Left) != 0)
-            ScrollX = Padding.Left;
+            OriginX = Padding.Left;
           else if ((TextAlignment & SkiaTextAlignment.Right) != 0)
-            ScrollX = Bounds.Width - Padding.Right - displayWidth;
+            OriginX = Bounds.Width - Padding.Right - displayWidth;
           else
-            ScrollX = Padding.Left + (Bounds.Width - Padding.Left - Padding.Right - displayWidth) / 2;
+            OriginX = Padding.Left + (Bounds.Width - Padding.Left - Padding.Right - displayWidth) / 2;
         }
         float contentHeight = _displayList.Ascent + _displayList.Descent;
         if (contentHeight < FontSize / 2) {
           contentHeight = FontSize / 2;
         }
-        if (ScrollY == null) {
+        if (OriginY == null) {
           if ((TextAlignment & SkiaTextAlignment.Top) != 0)
-            ScrollY = Padding.Top;
+            OriginY = Padding.Top;
           else if ((TextAlignment & SkiaTextAlignment.Bottom) != 0)
-            ScrollY = Bounds.Height - Padding.Bottom - contentHeight;
+            OriginY = Bounds.Height - Padding.Bottom - contentHeight;
           else {
             float availableHeight = Bounds.Height - Padding.Top - Padding.Bottom;
-            ScrollY = ((availableHeight - contentHeight) / 2) + Padding.Top + _displayList.Descent;
+            OriginY = ((availableHeight - contentHeight) / 2) + Padding.Top + _displayList.Descent;
           }
         }
-        _displayList.Position = new PointF(ScrollX.Value, ScrollY.Value);
+        _displayList.Position = new PointF(OriginX.Value, OriginY.Value);
       }
     }
 
@@ -143,7 +143,8 @@ namespace CSharpMath.SkiaSharp {
       } else if (ErrorMessage.IsNonEmpty()) {
         canvas.Save();
         canvas.DrawColor(BackgroundColor);
-        canvas.DrawText(ErrorMessage, new SKPoint(0, Bounds.Height - ErrorFontSize ?? FontSize), new SKPaint { Color = ErrorColor, Typeface = SKFontManager.Default.MatchCharacter('A') });
+        canvas.DrawText(ErrorMessage, new SKPoint(0, 0),
+          new SKPaint { Color = ErrorColor, Typeface = SKFontManager.Default.MatchCharacter('A'), TextSize = ErrorFontSize ?? FontSize });
         canvas.Restore();
       }
     }

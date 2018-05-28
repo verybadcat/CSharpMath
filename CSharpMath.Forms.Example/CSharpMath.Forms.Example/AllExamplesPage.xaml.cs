@@ -70,7 +70,6 @@ namespace CSharpMath.Forms.Example {
       View.LaTeX = "Loading...";
       Device.StartTimer(TimeSpan.FromSeconds(1),
         () => {
-          View.WidthRequest = View.HeightRequest = 5000;
           View.LaTeX = string.Join("\\\\", AllConstants.Select(info => $@"{info.Name}: {info.GetRawConstantValue()}"));
           return false;
         }

@@ -6,7 +6,11 @@ using Xamarin.Forms.Xaml;
 [assembly: XamlCompilation (XamlCompilationOptions.Compile)]
 namespace CSharpMath.Forms.Example
 {
-  static class SetCurrentPageIndexExtension {
+  static class PageExtensions {
+    public static Page ApplyiOSPadding(this Page page) {
+      page.Padding = new Thickness(0, Device.RuntimePlatform == Device.iOS ? 20 : 0, 0, 0); //Accomodate the iOS status bar
+      return page;
+    }
     public static MultiPage<T> SetCurrentPageIndex<T>(this MultiPage<T> page, int index) where T : Page 
       { page.CurrentPage = page.Children[index]; return page; }
   }
@@ -17,7 +21,7 @@ namespace CSharpMath.Forms.Example
       InitializeComponent();
       MainPage = new TabbedPage {
         Children = {
-          new ExamplePage(), new AllExamplesPage(), new CustomExamplePage(), new SettingsPage()
+          new ExamplePage().ApplyiOSPadding(), new AllExamplesPage().ApplyiOSPadding(), new CustomExamplePage().ApplyiOSPadding(), new SettingsPage().ApplyiOSPadding()
         }
       }.SetCurrentPageIndex(2);
     }
