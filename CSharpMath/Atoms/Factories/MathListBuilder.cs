@@ -35,13 +35,17 @@ namespace CSharpMath.Atoms {
       return r;
     }
 
-    private char GetNextCharacter() {
+    private char? GetNextCharacter() {
+      if (!HasCharacters) {
+        _error = "Unexpected end of string";
+        return null;
+      }
       var r = _chars[_currentChar];
       _currentChar++;
       return r;
     }
 
-    private void unlookCharacter() {
+    private void UnlookCharacter() {
       if (_currentChar == 0) {
         throw new InvalidOperationException("Can't unlook below character 0");
       }
@@ -65,11 +69,11 @@ namespace CSharpMath.Atoms {
           return null;
         }
         IMathAtom atom = null;
-        var ch = GetNextCharacter();
+        var ch = (char)GetNextCharacter();
         if (oneCharOnly) {
           if (ch == '^' || ch == '}' || ch == '_' || ch == '&') {
             // this is not the character we are looking for. They are for the caller to look at.
-            unlookCharacter();
+            UnlookCharacter();
             return r;
           }
         }
@@ -194,7 +198,7 @@ namespace CSharpMath.Atoms {
         if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')) {
           builder.Append(ch.ToString());
         } else {
-          unlookCharacter();
+          UnlookCharacter();
           break;
         }
       }
@@ -214,7 +218,7 @@ namespace CSharpMath.Atoms {
           builder.Append(ch);
         } else {
           // we went too far
-          unlookCharacter();
+          UnlookCharacter();
           break;
         }
       }
@@ -231,7 +235,7 @@ namespace CSharpMath.Atoms {
         if (ch < 0x21 || ch > 0x7e) {
           continue;
         } else {
-          unlookCharacter();
+          UnlookCharacter();
           return;
         }
       }
@@ -247,12 +251,12 @@ namespace CSharpMath.Atoms {
       AssertNotSpace(ch);
       SkipSpaces();
       if (HasCharacters) {
-        var c = GetNextCharacter();
+        var c = (char)GetNextCharacter();
         AssertNotSpace(c);
         if (c == ch) {
           return true;
         } else {
-          unlookCharacter();
+          UnlookCharacter();
           return false;
         }
       }
@@ -263,11 +267,11 @@ namespace CSharpMath.Atoms {
     private string ReadCommand() {
       char[] singleCharCommands = @"{}$#%_| ,>;!\".ToCharArray();
       if (HasCharacters) {
-        var ch = GetNextCharacter();
+        var ch = (char)GetNextCharacter();
         if (singleCharCommands.Contains(ch)) {
           return ch.ToString();
         } else {
-          unlookCharacter();
+          UnlookCharacter();
         }
       }
       return ReadString();
@@ -276,7 +280,7 @@ namespace CSharpMath.Atoms {
     private string ReadDelimiter() {
       SkipSpaces();
       while (HasCharacters) {
-        var ch = GetNextCharacter();
+        var ch = (char)GetNextCharacter();
         AssertNotSpace(ch);
         if (ch == '\\') {
           // a command
@@ -348,7 +352,7 @@ namespace CSharpMath.Atoms {
             rad.Degree = BuildInternal(false, ']');
             rad.Radicand = BuildInternal(true);
           } else {
-            unlookCharacter();
+            UnlookCharacter();
             rad.Radicand = BuildInternal(true);
           }
           return rad;
