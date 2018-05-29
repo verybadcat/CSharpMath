@@ -105,26 +105,28 @@ namespace CSharpMath.Forms {
     double _lastX, _lastY;
     protected virtual void OnTouch(object sender, PanUpdatedEventArgs e) {
       System.Diagnostics.Debug.WriteLine("OnTouch");
-      switch (e.StatusType) {
-        case GestureStatus.Started:
-          System.Diagnostics.Debug.WriteLine("Pressed");
-          _lastX = _lastY = 0;
-          break;
-        case GestureStatus.Running:
-          System.Diagnostics.Debug.WriteLine($"Moved - Origin: ({OriginX}, {OriginY})");
-          OriginX += (float)(e.TotalX - _lastX);
-          OriginY += (float)-(e.TotalY - _lastY);
-          InvalidateSurface();
-          _lastX = e.TotalX;
-          _lastY = e.TotalY;
-          break;
-        case GestureStatus.Completed:
-          System.Diagnostics.Debug.WriteLine("Released");
-          break;
-        case GestureStatus.Canceled:
-          break;
-        default:
-          break;
+      if (painter.LaTeX.IsNonEmpty()) {
+        switch (e.StatusType) {
+          case GestureStatus.Started:
+            System.Diagnostics.Debug.WriteLine("Pressed");
+            _lastX = _lastY = 0;
+            break;
+          case GestureStatus.Running:
+            System.Diagnostics.Debug.WriteLine($"Moved - Origin: ({OriginX}, {OriginY})");
+            OriginX += (float)(e.TotalX - _lastX);
+            OriginY += (float)-(e.TotalY - _lastY);
+            InvalidateSurface();
+            _lastX = e.TotalX;
+            _lastY = e.TotalY;
+            break;
+          case GestureStatus.Completed:
+            System.Diagnostics.Debug.WriteLine("Released");
+            break;
+          case GestureStatus.Canceled:
+            break;
+          default:
+            break;
+        }
       }
     }
 

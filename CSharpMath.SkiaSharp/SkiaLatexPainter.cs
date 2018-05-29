@@ -143,8 +143,9 @@ namespace CSharpMath.SkiaSharp {
       } else if (ErrorMessage.IsNonEmpty()) {
         canvas.Save();
         canvas.DrawColor(BackgroundColor);
-        canvas.DrawText(ErrorMessage, new SKPoint(0, 0),
-          new SKPaint { Color = ErrorColor, Typeface = SKFontManager.Default.MatchCharacter('A'), TextSize = ErrorFontSize ?? FontSize });
+        var size = ErrorFontSize ?? FontSize;
+        canvas.DrawText(ErrorMessage, 0, size,
+          new SKPaint { Color = ErrorColor, Typeface = SKFontManager.Default.MatchCharacter('A'), TextSize = size });
         canvas.Restore();
       }
     }
