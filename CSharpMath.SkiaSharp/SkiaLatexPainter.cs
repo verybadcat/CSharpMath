@@ -40,7 +40,9 @@ namespace CSharpMath.SkiaSharp {
       FontSize = fontSize;
     }
 
+    protected bool _displayChanged = false;
     protected MathListDisplay<TFont, Glyph> _displayList;
+    protected SkiaGraphicsContext _skiaContext;
     protected static readonly TypesettingContext<TFont, Glyph> _typesettingContext = SkiaTypesetters.LatinMath;
 
     public Action Invalidate { get; }
@@ -76,6 +78,7 @@ namespace CSharpMath.SkiaSharp {
       set {
         _mathList = value ?? new MathList();
         _latex = MathListBuilder.MathListToString(_mathList);
+        _displayChanged = true;
         Invalidate();
       }
     }
@@ -88,15 +91,13 @@ namespace CSharpMath.SkiaSharp {
         var buildResult = MathLists.BuildResultFromString(_latex);
         _mathList = buildResult.MathList;
         ErrorMessage = buildResult.Error;
+        _displayChanged = true;
         Invalidate();
       }
     }
 
     public void ResetPositions() {
       if (_mathList != null) {
-        var fontSize = FontSize;
-        var skiaFont = SkiaFontManager.LatinMath(fontSize);
-        _displayList = _typesettingContext.CreateLine(_mathList, skiaFont, LineStyle.Display);
         float displayWidth = _displayList.Width;
         if (OriginX == null) {
           if ((TextAlignment & SkiaTextAlignment.Left) != 0)
@@ -106,11 +107,11 @@ namespace CSharpMath.SkiaSharp {
           else
             OriginX = Padding.Left + (Bounds.Width - Padding.Left - Padding.Right - displayWidth) / 2;
         }
-        float contentHeight = _displayList.Ascent + _displayList.Descent;
-        if (contentHeight < FontSize / 2) {
-          contentHeight = FontSize / 2;
-        }
         if (OriginY == null) {
+          float contentHeight = _displayList.Ascent + _displayList.Descent;
+          if (contentHeight < FontSize / 2) {
+            contentHeight = FontSize / 2;
+          }
           if ((TextAlignment & SkiaTextAlignment.Top) != 0)
             OriginY = Padding.Top;
           else if ((TextAlignment & SkiaTextAlignment.Bottom) != 0)
@@ -120,34 +121,55 @@ namespace CSharpMath.SkiaSharp {
             OriginY = ((availableHeight - contentHeight) / 2) + Padding.Top + _displayList.Descent;
           }
         }
-        _displayList.Position = new PointF(OriginX.Value, OriginY.Value);
       }
     }
 
     public void Draw(SKCanvas canvas) {
       if (_mathList != null) {
-        ResetPositions();
-        var skiaContext = new SkiaGraphicsContext() {
-          //Canvas = canvas,
-          //Color = TextColor,
-          PaintStyle = PaintStyle,
-          DrawGlyphBoxes = DrawGlyphBoxes
-        };
         canvas.Save();
         //invert the canvas vertically
         canvas.Scale(1, -1);
         canvas.Translate(0, -Bounds.Height);
+        if (_displayChanged) {
+          var fontSize = FontSize;
+          var skiaFont = SkiaFontManager.LatinMath(fontSize);
+          _displayList = _typesettingContext.CreateLine(_mathList, skiaFont, LineStyle.Display);
+          ResetPositions();
+          _displayList.Position = new PointF(OriginX.Value, OriginY.Value);
+          _skiaContext = new SkiaGraphicsContext() {
+            DrawGlyphBoxes = DrawGlyphBoxes
+          };
+          _displayList.Draw(_skiaContext);
+          _displayChanged = false;
+        } else {
+          ResetPositions();
+          canvas.Translate(OriginX.Value, OriginY.Value);
+        }
         canvas.DrawColor(BackgroundColor);
         var timer = System.Diagnostics.Stopwatch.StartNew();
-        _displayList.Draw(skiaContext);
-        var paths = skiaContext.Paths;
-        var paint = new SKPaint { IsStroke = true, StrokeCap = SKStrokeCap.Round };
-        for (var path = paths.Pop(); path.Path != null; path = paths.Pop()) {
-          paint.Color = path.Color;
-          canvas.DrawPath(path, )
+        var paths = _skiaContext.Paths;
+        var paint = new SKPaint { IsStroke = true, StrokeCap = SKStrokeCap.Round, Style = PaintStyle };
+        foreach (var (path, pos, color) in paths) {
+          paint.Color = color ?? TextColor;
+          canvas.Save();
+          canvas.Translate(pos);
+          canvas.DrawPath(path, paint);
+          canvas.Restore();
+        }
+        paint.Style = SKPaintStyle.Stroke;
+        var boxPaths = _skiaContext.BoxPaths;
+        foreach (var (path, color) in boxPaths) {
+          paint.Color = color;
+          canvas.DrawPath(path, paint);
+        }
+        paint.Color = TextColor;
+        var lines = _skiaContext.LinePaths;
+        foreach (var (from, to, thickness) in lines) {
+          paint.StrokeWidth = thickness;
+          canvas.DrawLine(from, to, paint);
         }
         timer.Stop();
-        //00:00:04.3327243
+        //Old: 00:00:04.3327243
         System.Diagnostics.Debug.WriteLine(timer.Elapsed);
         canvas.Restore();
       } else if (ErrorMessage.IsNonEmpty()) {
