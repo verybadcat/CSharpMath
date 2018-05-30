@@ -1,18 +1,18 @@
-﻿using SkiaSharp;
+﻿using System.Collections.Generic;
 using System.Drawing;
-using Typography.OpenFont;
-using TFont = CSharpMath.SkiaSharp.SkiaMathFont;
-using CSharpMath.FrontEnd;
 using System.Linq;
+using CSharpMath.FrontEnd;
+using TFont = CSharpMath.SkiaSharp.SkiaMathFont;
+using SkiaSharp;
+using Typography.OpenFont;
 
 namespace CSharpMath.SkiaSharp {
+  static class StackExtensions { public static void Add<T>(this Stack<T> stack, T element) => stack.Push(element); }
   public class SkiaGraphicsContext : IGraphicsContext<TFont, Glyph> {
-    protected SKPaint glyphPaint = new SKPaint { IsStroke = true, StrokeCap = SKStrokeCap.Round };
-
-    public SKCanvas Canvas { get; set; }
+    protected readonly Stack<PointF> _posStack = new Stack<PointF>();
+    public Stack<(SKPath Path, SKColor? Color)> Paths { get; set; } = new Stack<(SKPath, SKColor?)>() { (null, null) };
+    public Stack<(SKPath Path, SKColor? Color)> BoxPaths { get; set; } = new Stack<(SKPath, SKColor?)>() { (null, null) };
     public bool DrawGlyphBoxes { get; set; }
-    public SKColor Color { get => glyphPaint.Color; set => glyphPaint.Color = value; }
-    public SKPaintStyle PaintStyle { get => glyphPaint.Style; set => glyphPaint.Style = value; }
 
     public PointF TextPosition { get; set; }
     void IGraphicsContext<TFont, Glyph>.SetTextPosition(PointF position) {
@@ -25,37 +25,36 @@ namespace CSharpMath.SkiaSharp {
 
       var typeface = font.Typeface;
       var pathBuilder = new SkiaGlyphPathBuilder(typeface);
-      var path = new SkiaGlyphPath();
-      Canvas.Save();
-      Canvas.Translate(TextPosition.X, TextPosition.Y);
       if (DrawGlyphBoxes) {
-        RectangleF[] rects = new SkiaGlyphBoundsProvider().GetBoundingRectsForGlyphs(font, glyphs);
+        var boxPath = new SKPath();
+        var rects = new SkiaGlyphBoundsProvider().GetBoundingRectsForGlyphs(font, glyphs);
         for (int i = 0; i < rects.Length; i++) {
           var rect = rects[i];
-          var point = points[i];
-          Canvas.DrawRect(point.X + rect.X, point.Y + rect.Y, rect.Width, rect.Height, new SKPaint() { Color = SKColors.Red, Style = SKPaintStyle.Stroke });
+          var point = points[i].Plus(TextPosition);
+          var _rect = new SKRect(point.X + rect.X, point.Y + rect.Y, point.X + rect.Right, point.Y + rect.Height);
+          boxPath.AddRect(_rect);
         }
+        BoxPaths.Push((boxPath, SKColors.Red));
       }
+      var _path = new SKPath();
       var scale = typeface.CalculateScaleToPixelFromPointSize(font.PointSize);
       for (int i = 0; i < glyphs.Length; i++) {
+        var path = new SkiaGlyphPath();
         pathBuilder.BuildFromGlyphIndex(glyphs[i].GlyphIndex, font.PointSize);
         pathBuilder.ReadShapes(path);
-        Canvas.Save();
-        
-        Canvas.Translate(points[i].X, points[i].Y);
-        Canvas.Translate(-(glyphs[i].Bounds.XMin-glyphs[i].GetOriginalBounds().XMin) * scale, 0);
-        Canvas.DrawPath(path.Path, glyphPaint);
-        Canvas.Restore();
-        path.Clear();
+
+        path.Path.Transform(new SKMatrix { TransX = points[i].X - (glyphs[i].Bounds.XMin - glyphs[i].GetOriginalBounds().XMin) * scale, TransY = points[i].Y });
+        Paths.Push((path.Path, null));
       }
-      Canvas.Restore();
     }
 
     public void DrawLine(float x1, float y1, float x2, float y2, float lineThickness) {
       Debug($"Line ({x1}, {y1}) -> ({x2}, {y2})");
-      var paint = glyphPaint.Clone();
-      paint.StrokeWidth = lineThickness;
-      Canvas.DrawLine(x1, y1, x2, y2, paint);
+      var _path = new SKPath();
+      //var midptLeftAngle = System.Math.PI / 2 - System.Math.Tan((x2-x1) / (y1-y2));
+      _path.MoveTo(x1, y1);
+      _path.ConicTo(x2, y2, x2, y2, lineThickness);
+      Paths.Push((_path, null));
     }
 
     public void DrawGlyphRunWithOffset(Display.Text.AttributedGlyphRun<TFont, Glyph> run, PointF offset, float maxWidth = float.NaN) {
@@ -64,7 +63,9 @@ namespace CSharpMath.SkiaSharp {
 
       if (DrawGlyphBoxes) {
         var box = run.Font.GlyphLayout.LayoutAndMeasureString(run.Text.ToCharArray(), 0, run.Text.Length, run.Font.PointSize);
-        Canvas.DrawRect(textPosition.X, textPosition.Y, box.width + run.KernedGlyphs.Sum(g => g.KernAfterGlyph), box.btbd, new SKPaint() { Color = SKColors.Blue, Style = SKPaintStyle.Stroke });
+        var _path = new SKPath();
+        _path.AddRect(SKRect.Create(textPosition.X, textPosition.Y, box.width + run.KernedGlyphs.Sum(g => g.KernAfterGlyph), box.btbd));
+        BoxPaths.Push((_path, SKColors.Blue));
       }
 
       var typeface = run.Font.Typeface;
@@ -74,38 +75,30 @@ namespace CSharpMath.SkiaSharp {
       var pathBuilder = new SkiaGlyphPathBuilder(typeface);
       var path = new SkiaGlyphPath();
       var scale = typeface.CalculateScaleToPixelFromPointSize(pointSize);
-      Canvas.Save();
-      Canvas.Translate(textPosition.X, textPosition.Y);
-      var paint = glyphPaint;
-      var color = run.TextColor.ToNative();
-      if (color != null) {
-        paint = paint.Clone();
-        paint.Color = color.Value;
-      }
       for (int i = 0; i < glyphs.Length; i++) {
         var index = glyphs[i].Glyph.GlyphIndex;
         pathBuilder.BuildFromGlyphIndex(index, pointSize);
         pathBuilder.ReadShapes(path);
-        Canvas.DrawPath(path.Path, paint);
-        Canvas.Translate(typeface.GetHAdvanceWidthFromGlyphIndex(index) * scale + glyphs[i].KernAfterGlyph, 0);
+        path.Path.Transform(new SKMatrix { TransX = textPosition.X, TransY = textPosition.Y });
+        Paths.Push((path.Path, run.TextColor.ToNative()));
+        textPosition.X += typeface.GetHAdvanceWidthFromGlyphIndex(index) * scale + glyphs[i].KernAfterGlyph;
         path.Clear();
       }
-      Canvas.Restore();
     }
 
     public void RestoreState() {
       Debug("Restore");
-      Canvas.Restore();
+      TextPosition = _posStack.Pop();
     }
 
     public void SaveState() {
       Debug("Save");
-      Canvas.Save();
+      _posStack.Push(TextPosition);
     }
 
     public void Translate(PointF dxy) {
       Debug($"Translate ({dxy.X}, {dxy.Y})");
-      Canvas.Translate(dxy.X, dxy.Y);
+      TextPosition = TextPosition.Plus(dxy);
     }
     
     [System.Diagnostics.DebuggerStepThrough, System.Diagnostics.Conditional("DEBUG")]

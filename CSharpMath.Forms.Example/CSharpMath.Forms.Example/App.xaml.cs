@@ -8,7 +8,7 @@ namespace CSharpMath.Forms.Example
 {
   static class PageExtensions {
     public static Page ApplyiOSPadding(this Page page) {
-      page.Padding = new Thickness(0, Device.RuntimePlatform == Device.iOS ? 20 : 0, 0, 0); //Accomodate the iOS status bar
+      page.Padding = new Thickness(0, Device.RuntimePlatform == Device.iOS ? 30 : 0, 0, 0); //Accomodate the iOS status bar
       return page;
     }
     public static MultiPage<T> SetCurrentPageIndex<T>(this MultiPage<T> page, int index) where T : Page 

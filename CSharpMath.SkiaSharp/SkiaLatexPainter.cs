@@ -40,8 +40,8 @@ namespace CSharpMath.SkiaSharp {
       FontSize = fontSize;
     }
 
-    protected static readonly TypesettingContext<TFont, Glyph> _typesettingContext = SkiaTypesetters.LatinMath;
     protected MathListDisplay<TFont, Glyph> _displayList;
+    protected static readonly TypesettingContext<TFont, Glyph> _typesettingContext = SkiaTypesetters.LatinMath;
 
     public Action Invalidate { get; }
     public SKSize Bounds { get; set; }
@@ -128,8 +128,8 @@ namespace CSharpMath.SkiaSharp {
       if (_mathList != null) {
         ResetPositions();
         var skiaContext = new SkiaGraphicsContext() {
-          Canvas = canvas,
-          Color = TextColor,
+          //Canvas = canvas,
+          //Color = TextColor,
           PaintStyle = PaintStyle,
           DrawGlyphBoxes = DrawGlyphBoxes
         };
@@ -138,7 +138,17 @@ namespace CSharpMath.SkiaSharp {
         canvas.Scale(1, -1);
         canvas.Translate(0, -Bounds.Height);
         canvas.DrawColor(BackgroundColor);
+        var timer = System.Diagnostics.Stopwatch.StartNew();
         _displayList.Draw(skiaContext);
+        var paths = skiaContext.Paths;
+        var paint = new SKPaint { IsStroke = true, StrokeCap = SKStrokeCap.Round };
+        for (var path = paths.Pop(); path.Path != null; path = paths.Pop()) {
+          paint.Color = path.Color;
+          canvas.DrawPath(path, )
+        }
+        timer.Stop();
+        //00:00:04.3327243
+        System.Diagnostics.Debug.WriteLine(timer.Elapsed);
         canvas.Restore();
       } else if (ErrorMessage.IsNonEmpty()) {
         canvas.Save();
