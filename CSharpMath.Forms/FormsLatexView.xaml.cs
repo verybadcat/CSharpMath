@@ -17,9 +17,12 @@ namespace CSharpMath.Forms {
     public FormsLatexView() {
       InitializeComponent();
       painter = new SkiaSharp.SkiaLatexPainter(InvalidateSurface, CanvasSize);
-      var g = new PanGestureRecognizer { TouchPoints = 1 };
-      g.PanUpdated += OnTouch;
-      GestureRecognizers.Add(g);
+      var pan = new PanGestureRecognizer { TouchPoints = 1 };
+      pan.PanUpdated += OnPan;
+      GestureRecognizers.Add(pan);
+      var pinch = new PinchGestureRecognizer();
+      pinch.PinchUpdated += OnPinch;
+      GestureRecognizers.Add(pinch);
     }
 
     protected SkiaSharp.SkiaLatexPainter painter;
@@ -43,6 +46,7 @@ namespace CSharpMath.Forms {
       TextAlignmentProperty = BindableProperty.Create(nameof(TextAlignment), typeof(SkiaSharp.SkiaTextAlignment), thisType, painter.TextAlignment);
       OriginXProperty = BindableProperty.Create(nameof(OriginX), typeof(float?), thisType, painter.OriginX, BindingMode.TwoWay);
       OriginYProperty = BindableProperty.Create(nameof(OriginY), typeof(float?), thisType, painter.OriginY, BindingMode.TwoWay);
+      MagnificationProperty = BindableProperty.Create(nameof(Magnification), typeof(float), thisType, painter.Magnification);
       PaintStyleProperty = BindableProperty.Create(nameof(PaintStyle), typeof(SKStyle), thisType, painter.PaintStyle);
       DrawGlyphBoxesProperty = BindableProperty.Create(nameof(DrawGlyphBoxes), typeof(bool), thisType, painter.DrawGlyphBoxes);
       PaddingProperty = BindableProperty.Create(nameof(Padding), typeof(Thickness), thisType, new Thickness(painter.Padding.Left, painter.Padding.Top, painter.Padding.Right, painter.Padding.Bottom));
@@ -59,6 +63,7 @@ namespace CSharpMath.Forms {
     public static readonly BindableProperty TextAlignmentProperty;
     public static readonly BindableProperty OriginXProperty;
     public static readonly BindableProperty OriginYProperty;
+    public static readonly BindableProperty MagnificationProperty;
     public static readonly BindableProperty PaintStyleProperty;
     public static readonly BindableProperty DrawGlyphBoxesProperty;
     public static readonly BindableProperty PaddingProperty;
@@ -88,6 +93,7 @@ namespace CSharpMath.Forms {
         case nameof(TextAlignment): painter.TextAlignment = TextAlignment; break;
         case nameof(OriginX): if (painter.OriginX != OriginX) painter.OriginX = OriginX; break;
         case nameof(OriginY): if (painter.OriginY != OriginY) painter.OriginY = OriginY; break;
+        case nameof(Magnification): painter.Magnification = Magnification; break;
         case nameof(PaintStyle): painter.PaintStyle = PaintStyle; break;
         case nameof(DrawGlyphBoxes): painter.DrawGlyphBoxes = DrawGlyphBoxes; break;
         case nameof(Padding): painter.Padding = new SkiaSharp.Thickness((float)Padding.Left, (float)Padding.Top, (float)Padding.Right, (float)Padding.Bottom); break;
@@ -103,7 +109,7 @@ namespace CSharpMath.Forms {
     }
     
     double _lastX, _lastY;
-    protected virtual void OnTouch(object sender, PanUpdatedEventArgs e) {
+    protected virtual void OnPan(object sender, PanUpdatedEventArgs e) {
       System.Diagnostics.Debug.WriteLine("OnTouch");
       if (painter.LaTeX.IsNonEmpty()) {
         switch (e.StatusType) {
@@ -113,8 +119,8 @@ namespace CSharpMath.Forms {
             break;
           case GestureStatus.Running:
             System.Diagnostics.Debug.WriteLine($"Moved - Origin: ({OriginX}, {OriginY})");
-            OriginX += (float)(e.TotalX - _lastX);
-            OriginY += (float)-(e.TotalY - _lastY);
+            OriginX += (float)(e.TotalX - _lastX) / Magnification;
+            OriginY += (float)-(e.TotalY - _lastY) / Magnification;
             InvalidateSurface();
             _lastX = e.TotalX;
             _lastY = e.TotalY;
@@ -129,7 +135,31 @@ namespace CSharpMath.Forms {
         }
       }
     }
+    protected virtual void OnPinch(object sender, PinchGestureUpdatedEventArgs e) {
+      System.Diagnostics.Debug.WriteLine("OnPinch");
+      if (painter.LaTeX.IsNonEmpty()) {
+        switch (e.Status) {
+          case GestureStatus.Started:
+            System.Diagnostics.Debug.WriteLine("Pressed");
+            break;
+          case GestureStatus.Running:
+            System.Diagnostics.Debug.WriteLine($"Moved - Origin: ({OriginX}, {OriginY})");
+            Magnification *= (float)e.Scale;
+            InvalidateSurface();
+            break;
+          case GestureStatus.Completed:
+            System.Diagnostics.Debug.WriteLine("Released");
+            break;
+          case GestureStatus.Canceled:
+            break;
+          default:
+            break;
+        }
+      }
+    }
 
+    public event EventHandler GestureStarted = delegate { };
+    public event EventHandler GestureEnded = delegate { };
     public string LaTeX { get => (string)GetValue(LaTeXProperty); set => SetValue(LaTeXProperty, value); }
     public bool DisplayErrorInline { get => (bool)GetValue(DisplayErrorInlineProperty); set => SetValue(DisplayErrorInlineProperty, value); }
     /// <summary>
@@ -146,6 +176,7 @@ namespace CSharpMath.Forms {
     public SkiaSharp.SkiaTextAlignment TextAlignment { get => (SkiaSharp.SkiaTextAlignment)GetValue(TextAlignmentProperty); set => SetValue(TextAlignmentProperty, value); }
     public float? OriginX { get => (float?)GetValue(OriginXProperty); set => SetValue(OriginXProperty, value); }
     public float? OriginY { get => (float?)GetValue(OriginYProperty); set => SetValue(OriginYProperty, value); }
+    public float Magnification { get => (float)GetValue(MagnificationProperty); set => SetValue(MagnificationProperty, value); }
     public SKStyle PaintStyle { get => (SKStyle)GetValue(PaintStyleProperty); set => SetValue(PaintStyleProperty, value); }
     public bool DrawGlyphBoxes { get => (bool)GetValue(DrawGlyphBoxesProperty); set => SetValue(DrawGlyphBoxesProperty, value); }
     public Thickness Padding { get => (Thickness)GetValue(PaddingProperty); set => SetValue(PaddingProperty, value); }

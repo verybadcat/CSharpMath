@@ -65,6 +65,7 @@ namespace CSharpMath.SkiaSharp {
     public SkiaTextAlignment TextAlignment { get; set; } = SkiaTextAlignment.Centre;
     public float? OriginX { get; set; }
     public float? OriginY { get; set; }
+    public float Magnification { get; set; } = 1;
     public SKPaintStyle PaintStyle { get; set; } = SKPaintStyle.StrokeAndFill;
     public bool DrawGlyphBoxes { get; set; }
 
@@ -130,6 +131,7 @@ namespace CSharpMath.SkiaSharp {
         //invert the canvas vertically
         canvas.Scale(1, -1);
         canvas.Translate(0, -Bounds.Height);
+        canvas.Scale(Magnification);
         if (_displayChanged) {
           var fontSize = FontSize;
           var skiaFont = SkiaFontManager.LatinMath(fontSize);
