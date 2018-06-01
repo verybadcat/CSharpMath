@@ -673,7 +673,7 @@ namespace CSharpMath {
 
       IDownshiftableDisplay<TFont, TGlyph> glyphDisplay = null;
       if (glyphAscent + glyphDescent < radicalHeight) {
-        // the glyphs are not beg enough, so we construct one using extenders
+        // the glyphs are not big enough, so we construct one using extenders
         glyphDisplay = _ConstructGlyph(radicalGlyph, radicalHeight);
       }
       if (glyphDisplay == null) {
@@ -706,6 +706,8 @@ namespace CSharpMath {
 
     private float _ConstructGlyphWithParts(GlyphPart<TGlyph>[] parts, float glyphHeight, List<TGlyph> glyphs, List<float> offsets) {
       for (int nExtenders = 0; true; nExtenders++) {
+        glyphs.Clear();
+        offsets.Clear();
         GlyphPart<TGlyph> prevPart = null;
         float minDistance = _mathTable.MinConnectorOverlap(_styleFont);
         float minOffset = 0;
@@ -722,7 +724,8 @@ namespace CSharpMath {
               // the minimum amount we can add to the offset
               float minOffsetDelta = prevPart.FullAdvance - maxOverlap;
               // the maximum amount we can add to the offset
-              float maxOffsetDelta = prevPart.FullAdvance - minOffsetDelta;
+              float maxOffsetDelta = prevPart.FullAdvance - minDistance;
+              maxDelta = Math.Min(maxDelta, maxOffsetDelta - minOffsetDelta);
               minOffset = minOffset + minOffsetDelta;
             }
             offsets.Add(minOffset);

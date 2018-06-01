@@ -8,9 +8,6 @@ namespace CSharpMath.Ios.Example
     public IosMathViewController()
     {
     }
-
-    private const string QuadraticFormula = @"x = -b \pm \frac{\sqrt{b^2-4ac}}{2a}";
-    private const string NestedRadical = @"\sqrt{\sqrt{x}}";
     private const string Radical = @"\sqrt{3}";
     private const string RadicalSum = @"2 + \sqrt{3}";
     private const string Fraction = @"\frac{2}{34}";
@@ -39,9 +36,13 @@ namespace CSharpMath.Ios.Example
     private const string ExponentWithFraction = @"e^{4\frac25}";
     private const string ExponentWithProduct = @"e^{2x}";
     private const string ExponentWithPi = @"e^{2\pi}";
+    private const string FractionWithRoot = @"\frac{1}{\sqrt{2}}";
+    private const string NestedRadical = @"\sqrt{\sqrt{x}}";
+    private const string NestedRadicalDeep = @"\sqrt{\sqrt{\sqrt{\sqrt{\sqrt{\sqrt{\sqrt{\sqrt{x}}}}}}}}";
     private const string Pi = @"\pi";
     private const string Phi = @"\phi";
-    private const string FractionWithRoot = @"\frac{1}{\sqrt{2}}";
+    private const string QuadraticFormula = @"x = -b \pm \frac{\sqrt{b^2-4ac}}{2a}";
+
     private const string SomeLimit = @"\lim_{x\to\infty}\frac{e^2}{1-x}=\limsup_{\sigma}5";
     private const string SimpleLimit = @"\lim_{x\to\infty}3=3";
     private const string SomeIntegral = @"\int_{0}^{\infty}e^x \,dx=\oint_0^{\Delta}5\Gamma";
@@ -57,10 +58,10 @@ namespace CSharpMath.Ios.Example
     public override void ViewDidLoad()
     {
       View.BackgroundColor = UIColor.White;
-      var latexView = IosMathLabels.LatexView(@"x = -b \pm \frac{\sqrt{b^2-4ac}}{2a}", 15);
+      var latexView = IosMathLabels.LatexView(NestedRadicalDeep, 15);
       latexView.ContentInsets = new UIEdgeInsets(10, 10, 10, 10);
       var size = latexView.SizeThatFits(new CoreGraphics.CGSize(370, 180));
-      latexView.Frame = new CoreGraphics.CGRect(0, 20, size.Width, size.Height);
+      latexView.Frame = new CoreGraphics.CGRect(0, 40, size.Width, size.Height);
       View.Add(latexView);
     }
   }
