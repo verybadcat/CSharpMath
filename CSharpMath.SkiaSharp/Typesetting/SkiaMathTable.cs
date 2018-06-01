@@ -95,7 +95,8 @@ namespace CSharpMath.SkiaSharp
 
     public override float LowerLimitGapMin(SkiaMathFont font) => ReadRecord(_constants.LowerLimitGapMin, font);
 
-    public override float MinConnectorOverlap(SkiaMathFont font) => _constants.MinConnectorOverlap;
+    public override float MinConnectorOverlap(SkiaMathFont font) =>
+      _constants.MinConnectorOverlap * font.Typeface.CalculateScaleToPixelFromPointSize(font.PointSize);
 
     protected override short RadicalDegreeBottomRaisePercent(SkiaMathFont font) => _constants.RadicalDegreeBottomRaisePercent;
 

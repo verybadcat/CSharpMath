@@ -40,37 +40,48 @@ namespace CSharpMath.SkiaSharp {
       FontSize = fontSize;
     }
 
+    //_field == private field, __field == property-only field
+    protected void Redisplay<T>(T assignment) => _displayChanged = true;
     protected bool _displayChanged = false;
     protected MathListDisplay<TFont, Glyph> _displayList;
     protected SkiaGraphicsContext _skiaContext;
     protected static readonly TypesettingContext<TFont, Glyph> _typesettingContext = SkiaTypesetters.LatinMath;
 
     public Action Invalidate { get; }
-    public SKSize Bounds { get; set; }
-    public Thickness Padding { get; set; } = new Thickness();
+
     public string ErrorMessage { get; private set; }
-    public bool DisplayErrorInline { get; set; } = true;
+    public SKSize Bounds { get; set; }
+
+    Thickness __padding; public Thickness Padding { get => __padding; set => Redisplay(__padding = value); }
+    bool __inline = true; public bool DisplayErrorInline { get => __inline; set => Redisplay(__inline = value); }
     /// <summary>
     /// Unit of measure: points
     /// </summary>
-    public float FontSize { get; set; } = 20f;
+    public float FontSize { get => __size; set => Redisplay(__size = value); } float __size = 20f; 
     /// <summary>
     /// Unit of measure: points;
     /// Defaults to <see cref="FontSize"/>.
     /// </summary>
-    public float? ErrorFontSize { get; set; } = null;
-    public NColor TextColor { get; set; } = NColors.Black;
-    public NColor BackgroundColor { get; set; } = new NColor();
-    public NColor ErrorColor { get; set; } = NColors.Red;
-    public SkiaTextAlignment TextAlignment { get; set; } = SkiaTextAlignment.Centre;
+    public float? ErrorFontSize { get => __erf; set => Redisplay(__erf = value); } float? __erf = null; 
+    NColor __color = NColors.Black; public NColor TextColor { get => __color; set => Redisplay(__color = value); }
+    NColor __back = NColors.Transparent; public NColor BackgroundColor { get => __back; set => Redisplay(__back = value); }
+    NColor __error = NColors.Red; public NColor ErrorColor { get => __error; set => Redisplay(__error = value); }
+    SkiaTextAlignment __align = SkiaTextAlignment.Centre; public SkiaTextAlignment TextAlignment { get => __align; set => Redisplay(__align = value); }
+    SKPaintStyle __style = SKPaintStyle.StrokeAndFill; public SKPaintStyle PaintStyle { get => __style; set => Redisplay(__style = value); }
+    bool __boxes; public bool DrawGlyphBoxes { get => __boxes; set => Redisplay(__boxes = value); }
+
+    /// <summary>
+    /// Defults to <see cref="null"/>, which signals <see cref="UpdateOrigin"/> to update its value by calculating the text alignment.
+    /// </summary>
     public float? OriginX { get; set; }
+    /// <summary>
+    /// Defults to <see cref="null"/>, which signals <see cref="UpdateOrigin"/> to update its value by calculating the text alignment.
+    /// </summary>
     public float? OriginY { get; set; }
     public float Magnification { get; set; } = 1;
-    public SKPaintStyle PaintStyle { get; set; } = SKPaintStyle.StrokeAndFill;
-    public bool DrawGlyphBoxes { get; set; }
 
     private SKSize ToSKSize(SizeF size) => new SKSize(size.Width, size.Height);
-    public SKSize DrawingSize => _displayList == null ? Bounds :
+    public SKSize? DrawingSize => _displayList == null ? default(SKSize?) :
       SKSize.Add(ToSKSize(_displayList.ComputeDisplayBounds().Size), new SKSize(Padding.Left + Padding.Right, Padding.Top + Padding.Bottom));
 
     private IMathList _mathList;
@@ -97,7 +108,7 @@ namespace CSharpMath.SkiaSharp {
       }
     }
 
-    public void ResetPositions() {
+    public void UpdateOrigin() {
       if (_mathList != null) {
         float displayWidth = _displayList.Width;
         if (OriginX == null) {
@@ -136,7 +147,7 @@ namespace CSharpMath.SkiaSharp {
           var fontSize = FontSize;
           var skiaFont = SkiaFontManager.LatinMath(fontSize);
           _displayList = _typesettingContext.CreateLine(_mathList, skiaFont, LineStyle.Display);
-          ResetPositions();
+          UpdateOrigin();
           _displayList.Position = new PointF(OriginX.Value, OriginY.Value);
           _skiaContext = new SkiaGraphicsContext() {
             DrawGlyphBoxes = DrawGlyphBoxes
@@ -144,11 +155,10 @@ namespace CSharpMath.SkiaSharp {
           _displayList.Draw(_skiaContext);
           _displayChanged = false;
         } else {
-          ResetPositions();
+          UpdateOrigin();
           canvas.Translate(OriginX.Value, OriginY.Value);
         }
         canvas.DrawColor(BackgroundColor);
-        var timer = System.Diagnostics.Stopwatch.StartNew();
         var paths = _skiaContext.Paths;
         var paint = new SKPaint { IsStroke = true, StrokeCap = SKStrokeCap.Round, Style = PaintStyle };
         foreach (var (path, pos, color) in paths) {
@@ -170,9 +180,6 @@ namespace CSharpMath.SkiaSharp {
           paint.StrokeWidth = thickness;
           canvas.DrawLine(from, to, paint);
         }
-        timer.Stop();
-        //Old: 00:00:04.3327243
-        System.Diagnostics.Debug.WriteLine(timer.Elapsed);
         canvas.Restore();
       } else if (ErrorMessage.IsNonEmpty()) {
         canvas.Save();

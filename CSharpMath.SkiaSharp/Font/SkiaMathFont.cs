@@ -16,7 +16,9 @@ namespace CSharpMath.SkiaSharp {
       GlyphLayout = new GlyphLayout { Typeface = typeface };
     }
 
-    public SkiaMathFont(SkiaMathFont cloneMe, float pointSize) :
-      this(cloneMe.Name, cloneMe.Typeface, pointSize) { }
+    public SkiaMathFont(SkiaMathFont cloneMe, float pointSize) : base(pointSize) {
+      Name = cloneMe.Name;
+      GlyphLayout = cloneMe.GlyphLayout;
+    }
   }
 }

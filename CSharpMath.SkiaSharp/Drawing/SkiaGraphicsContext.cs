@@ -9,9 +9,9 @@ using Typography.OpenFont;
 namespace CSharpMath.SkiaSharp {
   public class SkiaGraphicsContext : IGraphicsContext<TFont, Glyph> {
     protected readonly Stack<PointF> _posStack = new Stack<PointF>();
-    public Stack<(SKPath path, SKPoint pos, SKColor? color)> Paths { get; set; } = new Stack<(SKPath, SKPoint, SKColor?)>();
-    public Stack<(SKPath path, SKColor color)> BoxPaths { get; set; } = new Stack<(SKPath, SKColor)>();
-    public Stack<(SKPoint from, SKPoint to, float thickness)> LinePaths { get; set; } = new Stack<(SKPoint, SKPoint, float)>();
+    public Stack<(SKPath path, SKPoint pos, SKColor? color)> Paths { get; } = new Stack<(SKPath, SKPoint, SKColor?)>();
+    public Stack<(SKPath path, SKColor color)> BoxPaths { get; } = new Stack<(SKPath, SKColor)>();
+    public Stack<(SKPoint from, SKPoint to, float thickness)> LinePaths { get; } = new Stack<(SKPoint, SKPoint, float)>();
     public bool DrawGlyphBoxes { get; set; }
 
     public PointF DrawPosition { get; set; }

@@ -51,8 +51,11 @@ namespace CSharpMath.Forms {
       DrawGlyphBoxesProperty = BindableProperty.Create(nameof(DrawGlyphBoxes), typeof(bool), thisType, painter.DrawGlyphBoxes);
       PaddingProperty = BindableProperty.Create(nameof(Padding), typeof(Thickness), thisType, new Thickness(painter.Padding.Left, painter.Padding.Top, painter.Padding.Right, painter.Padding.Bottom));
       MathListProperty = BindableProperty.Create(nameof(MathList), typeof(Interfaces.IMathList), thisType, painter.MathList, BindingMode.TwoWay);
+      LockGesturesProperty = BindableProperty.Create(nameof(LockGestures), typeof(bool), thisType, false);
       ErrorMessagePropertyKey = BindableProperty.CreateReadOnly(nameof(ErrorMessage), typeof(string), thisType, painter.ErrorMessage, BindingMode.OneWayToSource);
       ErrorMessageProperty = ErrorMessagePropertyKey.BindableProperty;
+      GestureCountPropertyKey = BindableProperty.CreateReadOnly(nameof(GestureCount), typeof(int), thisType, 0, BindingMode.OneWayToSource);
+      GestureCountProperty = GestureCountPropertyKey.BindableProperty;
     }
     public static readonly BindableProperty LaTeXProperty;
     public static readonly BindableProperty DisplayErrorInlineProperty;
@@ -68,8 +71,11 @@ namespace CSharpMath.Forms {
     public static readonly BindableProperty DrawGlyphBoxesProperty;
     public static readonly BindableProperty PaddingProperty;
     public static readonly BindableProperty MathListProperty;
+    public static readonly BindableProperty LockGesturesProperty;
     private static readonly BindablePropertyKey ErrorMessagePropertyKey;
     public static readonly BindableProperty ErrorMessageProperty;
+    private static readonly BindablePropertyKey GestureCountPropertyKey;
+    public static readonly BindableProperty GestureCountProperty;
     #endregion
 
     bool _LaTeX_MathList_Lock = false;
@@ -104,21 +110,24 @@ namespace CSharpMath.Forms {
             _LaTeX_MathList_Lock = true;
           } else _LaTeX_MathList_Lock = false;
           break;
-        case nameof(ErrorMessage): break; //Only can be set from this class
+        case nameof(LockGestures):
+          GestureCount = 0;
+          break;
+        case nameof(ErrorMessage):
+        case nameof(GestureCount):
+          break; //Only can be set from this class
       }
     }
-    
+
     double _lastX, _lastY;
     protected virtual void OnPan(object sender, PanUpdatedEventArgs e) {
-      System.Diagnostics.Debug.WriteLine("OnTouch");
-      if (painter.LaTeX.IsNonEmpty()) {
+      if (!LockGestures && painter.LaTeX.IsNonEmpty()) {
         switch (e.StatusType) {
           case GestureStatus.Started:
-            System.Diagnostics.Debug.WriteLine("Pressed");
+            GestureCount++;
             _lastX = _lastY = 0;
             break;
           case GestureStatus.Running:
-            System.Diagnostics.Debug.WriteLine($"Moved - Origin: ({OriginX}, {OriginY})");
             OriginX += (float)(e.TotalX - _lastX) / Magnification;
             OriginY += (float)-(e.TotalY - _lastY) / Magnification;
             InvalidateSurface();
@@ -126,40 +135,36 @@ namespace CSharpMath.Forms {
             _lastY = e.TotalY;
             break;
           case GestureStatus.Completed:
-            System.Diagnostics.Debug.WriteLine("Released");
-            break;
           case GestureStatus.Canceled:
+            GestureCount--;
             break;
           default:
-            break;
+            throw new NotImplementedException("A new GestureStatus is in Xamarin.Forms?");
         }
       }
     }
     protected virtual void OnPinch(object sender, PinchGestureUpdatedEventArgs e) {
-      System.Diagnostics.Debug.WriteLine("OnPinch");
-      if (painter.LaTeX.IsNonEmpty()) {
+      if (!LockGestures && painter.LaTeX.IsNonEmpty()) {
         switch (e.Status) {
           case GestureStatus.Started:
-            System.Diagnostics.Debug.WriteLine("Pressed");
+            GestureCount++;
             break;
           case GestureStatus.Running:
-            System.Diagnostics.Debug.WriteLine($"Moved - Origin: ({OriginX}, {OriginY})");
             Magnification *= (float)e.Scale;
             InvalidateSurface();
             break;
           case GestureStatus.Completed:
-            System.Diagnostics.Debug.WriteLine("Released");
-            break;
           case GestureStatus.Canceled:
+            GestureCount--;
             break;
           default:
-            break;
+            throw new NotImplementedException("A new GestureStatus is in Xamarin.Forms?");
         }
       }
     }
 
-    public event EventHandler GestureStarted = delegate { };
-    public event EventHandler GestureEnded = delegate { };
+    public bool LockGestures { get => (bool)GetValue(LockGesturesProperty); set => SetValue(LockGesturesProperty, value); }
+    public int GestureCount { get => (int)GetValue(GestureCountProperty); private set => SetValue(GestureCountPropertyKey, value); }
     public string LaTeX { get => (string)GetValue(LaTeXProperty); set => SetValue(LaTeXProperty, value); }
     public bool DisplayErrorInline { get => (bool)GetValue(DisplayErrorInlineProperty); set => SetValue(DisplayErrorInlineProperty, value); }
     /// <summary>
