@@ -131,9 +131,9 @@ namespace CSharpMath.SkiaSharp {
           }
           //Canvas is inverted!
           if ((TextAlignment & SkiaTextAlignment.Top) != 0)
-            OriginY = Bounds.Height - Padding.Bottom - contentHeight;
+            OriginY = Bounds.Height - Padding.Bottom - _displayList.Ascent;
           else if ((TextAlignment & SkiaTextAlignment.Bottom) != 0)
-            OriginY = Padding.Top;
+            OriginY = Padding.Top + _displayList.Descent;
           else {
             float availableHeight = Bounds.Height - Padding.Top - Padding.Bottom;
             OriginY = ((availableHeight - contentHeight) / 2) + Padding.Top + _displayList.Descent;

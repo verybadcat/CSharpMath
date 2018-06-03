@@ -5,12 +5,17 @@
              Title="Settings">
     <TableView>
         <TableRoot>
-            <TableSection Title="Display">
+            <TableSection>
                 <SwitchCell x:Name="DrawStringBoxes" Text="Draw string boxes" On="True" OnChanged="SwitchCell_OnChanged"/>
-                <TextCell Text="Alignment: "/>
+            </TableSection>
+            <TableSection Title="Alignment">
                 <ViewCell>
                     <Picker x:Name="Alignment" SelectedIndexChanged="Alignment_SelectedIndexChanged"/>
                 </ViewCell>
+            </TableSection>
+            <TableSection>
+                <EntryCell x:Name="TextColor" Label="Text color" Text="#000000" Completed="TextColor_Completed"/>
+                <EntryCell x:Name="BackColor" Label="Background color" Text="#D3D3D3" Completed="BackColor_Completed"/>
             </TableSection>
         </TableRoot>
     </TableView>
