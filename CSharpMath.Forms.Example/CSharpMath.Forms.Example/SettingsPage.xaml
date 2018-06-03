@@ -6,16 +6,29 @@
     <TableView>
         <TableRoot>
             <TableSection>
-                <SwitchCell x:Name="DrawStringBoxes" Text="Draw string boxes" On="True" OnChanged="SwitchCell_OnChanged"/>
-            </TableSection>
-            <TableSection Title="Alignment">
+                <TextCell Text="Alignment" TextColor="Black"/>
                 <ViewCell>
                     <Picker x:Name="Alignment" SelectedIndexChanged="Alignment_SelectedIndexChanged"/>
                 </ViewCell>
             </TableSection>
             <TableSection>
+                <SwitchCell x:Name="DrawGlyphBoxes" Text="Draw glyph boxes" On="False" OnChanged="DrawGlyphBoxes_OnChanged"/>
+                <EntryCell x:Name="GlyphBoxColor" Label="Glyph box color" Text="#FF0000" Completed="GlyphBoxColor_Completed"/>
+                <EntryCell x:Name="GlyphRunColor" Label="Glyph run color" Text="#0000FF" Completed="GlyphRunColor_Completed"/>
+            </TableSection>
+            <TableSection>
                 <EntryCell x:Name="TextColor" Label="Text color" Text="#000000" Completed="TextColor_Completed"/>
-                <EntryCell x:Name="BackColor" Label="Background color" Text="#D3D3D3" Completed="BackColor_Completed"/>
+                <EntryCell x:Name="BackColor" Label="Background color" Text="#ddffdd" Completed="BackColor_Completed"/>
+            </TableSection>
+            <TableSection>
+                <TextCell Text="Drawing style" TextColor="Black"/>
+                <ViewCell>
+                    <Picker x:Name="PaintStyle" SelectedIndexChanged="PaintStyle_SelectedIndexChanged"/>
+                </ViewCell>
+                <TextCell Text="Text style" TextColor="Black"/>
+                <ViewCell>
+                    <Picker x:Name="LineStyle" SelectedIndexChanged="LineStyle_SelectedIndexChanged"/>
+                </ViewCell>
             </TableSection>
         </TableRoot>
     </TableView>

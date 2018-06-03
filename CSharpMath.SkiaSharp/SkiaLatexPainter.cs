@@ -73,7 +73,7 @@ namespace CSharpMath.SkiaSharp {
     }
     SKPaintStyle __paint = SKPaintStyle.StrokeAndFill; public SKPaintStyle PaintStyle { get => __paint; set => Redisplay(__paint = value); }
     LineStyle __style = LineStyle.Display; public LineStyle LineStyle { get => __style; set => Redisplay(__style = value); }
-    bool __boxes; public bool DrawGlyphBoxes { get => __boxes; set => Redisplay(__boxes = value); }
+    (NColor glyph, NColor textRun)? __box; public (NColor glyph, NColor textRun)? GlyphBoxColor { get => __box; set => Redisplay(__box = value); }
 
     /// <summary>
     /// Defults to <see cref="null"/>, which signals <see cref="UpdateOrigin"/> to update its value by calculating the text alignment.
@@ -155,7 +155,7 @@ namespace CSharpMath.SkiaSharp {
           _displayList = _typesettingContext.CreateLine(_mathList, skiaFont, LineStyle);
           _displayList.Position = new PointF(0, 0);
           _skiaContext = new SkiaGraphicsContext() {
-            DrawGlyphBoxes = DrawGlyphBoxes
+            GlyphBoxColor = GlyphBoxColor
           };
           _displayList.Draw(_skiaContext);
           _displayChanged = false;
@@ -164,7 +164,7 @@ namespace CSharpMath.SkiaSharp {
         canvas.Translate(OriginX.Value, OriginY.Value);
         canvas.DrawColor(BackgroundColor);
         var paths = _skiaContext.Paths;
-        var paint = new SKPaint { IsStroke = true, StrokeCap = SKStrokeCap.Round, Style = PaintStyle };
+        var paint = new SKPaint { IsStroke = true, StrokeCap = SKStrokeCap.Round, Style = PaintStyle, IsAntialias = true };
         foreach (var (path, pos, color) in paths) {
           paint.Color = color ?? TextColor;
           canvas.Save();

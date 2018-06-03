@@ -22,24 +22,34 @@ namespace CSharpMath.Forms.Example
       Alignment.ItemsSource = values;
       Alignment.SelectedItem = SkiaSharp.SkiaTextAlignment.Centre;
 
+      values = typeof(global::SkiaSharp.SKPaintStyle).GetEnumValues();
+      PaintStyle.ItemsSource = values;
+      PaintStyle.SelectedItem = global::SkiaSharp.SKPaintStyle.Fill;
+
+      values = typeof(Enumerations.LineStyle).GetEnumValues();
+      LineStyle.ItemsSource = values;
+      LineStyle.SelectedItem = Enumerations.LineStyle.Display;
+
+      DrawGlyphBoxes_OnChanged(this, new ToggledEventArgs(DrawGlyphBoxes.On));
+      TextColor_Completed(this, EventArgs.Empty);
+      BackColor_Completed(this, EventArgs.Empty);
+
       App.AllViews.CollectionChanged += CollectionChanged;
       CollectionChanged(this, new Args(Action.Add, App.AllViews));
     }
 
+    Color Parse(string color) => global::SkiaSharp.Views.Forms.Extensions.ToFormsColor
+        (global::SkiaSharp.SKColor.TryParse(color, out var c) ? c : global::SkiaSharp.SKColors.Black);
+
     private void CollectionChanged(object sender, Args e) {
       if (e.NewItems != null) foreach (var v in e.NewItems.Cast<FormsLatexView>()) {
-          v.DrawGlyphBoxes = DrawStringBoxes.On;
+          v.GlyphBoxColor = DrawGlyphBoxes.On ? (Parse(GlyphBoxColor.Text), Parse(GlyphRunColor.Text)) : default((Color glyph, Color textRun)?);
           v.TextAlignment = (SkiaSharp.SkiaTextAlignment)Alignment.SelectedItem;
           v.TextColor = TextColor.LabelColor;
           v.BackgroundColor = BackColor.LabelColor;
+          v.PaintStyle = (global::SkiaSharp.SKPaintStyle)PaintStyle.SelectedItem;
+          v.LineStyle = (Enumerations.LineStyle)LineStyle.SelectedItem;
         }
-    }
-
-    private void SwitchCell_OnChanged(object sender, ToggledEventArgs e) {
-      foreach (var v in App.AllViews) {
-        v.DrawGlyphBoxes = e.Value;
-        v.InvalidateSurface();
-      }
     }
 
     private void Alignment_SelectedIndexChanged(object sender, EventArgs e) {
@@ -50,9 +60,7 @@ namespace CSharpMath.Forms.Example
     }
 
     private void TextColor_Completed(object sender, EventArgs e) {
-      TextColor.LabelColor =
-        global::SkiaSharp.Views.Forms.Extensions.ToFormsColor
-        (global::SkiaSharp.SKColor.TryParse(TextColor.Text, out var c) ? c : global::SkiaSharp.SKColors.Black);
+      TextColor.LabelColor = Parse(TextColor.Text);
       foreach (var v in App.AllViews) {
         v.TextColor = TextColor.LabelColor;
         v.InvalidateSurface();
@@ -60,11 +68,52 @@ namespace CSharpMath.Forms.Example
     }
 
     private void BackColor_Completed(object sender, EventArgs e) {
-      BackColor.LabelColor =
-        global::SkiaSharp.Views.Forms.Extensions.ToFormsColor
-        (global::SkiaSharp.SKColor.TryParse(BackColor.Text, out var c) ? c : global::SkiaSharp.SKColors.Black);
+      BackColor.LabelColor = Parse(BackColor.Text);
       foreach (var v in App.AllViews) {
         v.BackgroundColor = BackColor.LabelColor;
+        v.InvalidateSurface();
+      }
+    }
+
+    private void GlyphBoxColor_Completed(object sender, EventArgs e) {
+      GlyphBoxColor.LabelColor = Parse(GlyphBoxColor.Text);
+      foreach (var v in App.AllViews) {
+        var value = v.GlyphBoxColor.Value;
+        value.glyph = Parse(GlyphBoxColor.Text);
+        v.GlyphBoxColor = value;
+      }
+    }
+
+    private void GlyphRunColor_Completed(object sender, EventArgs e) {
+      GlyphRunColor.LabelColor = Parse(GlyphRunColor.Text);
+      foreach (var v in App.AllViews) {
+        var value = v.GlyphBoxColor.Value;
+        value.textRun = Parse(GlyphRunColor.Text);
+        v.GlyphBoxColor = value;
+      }
+    }
+
+    private void DrawGlyphBoxes_OnChanged(object sender, ToggledEventArgs e) {
+      GlyphBoxColor.IsEnabled = e.Value;
+      GlyphRunColor.IsEnabled = e.Value;
+      GlyphBoxColor.LabelColor = Parse(GlyphBoxColor.Text);
+      GlyphRunColor.LabelColor = Parse(GlyphRunColor.Text);
+      foreach (var v in App.AllViews) {
+        v.GlyphBoxColor = e.Value ? (Parse(GlyphBoxColor.Text), Parse(GlyphRunColor.Text)) : default((Color glyph, Color textRun)?);
+        v.InvalidateSurface();
+      }
+    }
+
+    private void PaintStyle_SelectedIndexChanged(object sender, EventArgs e) {
+      foreach (var v in App.AllViews) {
+        v.PaintStyle = (global::SkiaSharp.SKPaintStyle)PaintStyle.SelectedItem;
+        v.InvalidateSurface();
+      }
+    }
+
+    private void LineStyle_SelectedIndexChanged(object sender, EventArgs e) {
+      foreach (var v in App.AllViews) {
+        v.LineStyle = (Enumerations.LineStyle)LineStyle.SelectedItem;
         v.InvalidateSurface();
       }
     }

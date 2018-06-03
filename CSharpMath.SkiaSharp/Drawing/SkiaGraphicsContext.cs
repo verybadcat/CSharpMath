@@ -12,7 +12,7 @@ namespace CSharpMath.SkiaSharp {
     public Stack<(SKPath path, SKPoint pos, SKColor? color)> Paths { get; } = new Stack<(SKPath, SKPoint, SKColor?)>();
     public Stack<(SKPath path, SKColor color)> BoxPaths { get; } = new Stack<(SKPath, SKColor)>();
     public Stack<(SKPoint from, SKPoint to, float thickness)> LinePaths { get; } = new Stack<(SKPoint, SKPoint, float)>();
-    public bool DrawGlyphBoxes { get; set; }
+    public (SKColor glyph, SKColor textRun)? GlyphBoxColor { get; set; }
 
     public PointF DrawPosition { get; set; }
     public PointF TextPosition { get; set; }
@@ -26,7 +26,7 @@ namespace CSharpMath.SkiaSharp {
       var textPosition = DrawPosition.Plus(TextPosition);
       var typeface = font.Typeface;
       var pathBuilder = new SkiaGlyphPathBuilder(typeface);
-      if (DrawGlyphBoxes) {
+      if (GlyphBoxColor != null) {
         var boxPath = new SKPath();
         var rects = new SkiaGlyphBoundsProvider().GetBoundingRectsForGlyphs(font, glyphs);
         for (int i = 0; i < rects.Length; i++) {
@@ -35,7 +35,7 @@ namespace CSharpMath.SkiaSharp {
           var _rect = new SKRect(point.X + rect.X, point.Y + rect.Y, point.X + rect.Right, point.Y + rect.Bottom);
           boxPath.AddRect(_rect);
         }
-        BoxPaths.Push((boxPath, SKColors.Red));
+        BoxPaths.Push((boxPath, GlyphBoxColor.Value.glyph));
       }
       var scale = typeface.CalculateScaleToPixelFromPointSize(font.PointSize);
       for (int i = 0; i < glyphs.Length; i++) {
@@ -55,11 +55,11 @@ namespace CSharpMath.SkiaSharp {
       Debug($"Text {run.Text} ({offset.X}, {offset.Y})");
       var textPosition = DrawPosition.Plus(offset).Plus(TextPosition);
 
-      if (DrawGlyphBoxes) {
+      if (GlyphBoxColor != null) {
         var box = run.Font.GlyphLayout.LayoutAndMeasureString(run.Text.ToCharArray(), 0, run.Text.Length, run.Font.PointSize);
         var _path = new SKPath();
         _path.AddRect(SKRect.Create(textPosition.X, textPosition.Y, box.width + run.KernedGlyphs.Sum(g => g.KernAfterGlyph), box.btbd));
-        BoxPaths.Push((_path, SKColors.Blue));
+        BoxPaths.Push((_path, GlyphBoxColor.Value.textRun));
       }
 
       var typeface = run.Font.Typeface;
