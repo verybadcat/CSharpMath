@@ -14,12 +14,16 @@ namespace CSharpMath.Forms.Example
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class SettingsPage : ContentPage
 	{
-		public SettingsPage ()
-		{
-			InitializeComponent ();
+    public SettingsPage() {
+      InitializeComponent();
       App.AllViews.CollectionChanged += CollectionChanged;
       CollectionChanged(this, new Args(Action.Add, App.AllViews));
-		}
+
+      var values = typeof(SkiaSharp.SkiaTextAlignment).GetEnumValues();
+      Array.Reverse(values);
+      Alignment.ItemsSource = values;
+      Alignment.SelectedItem = SkiaSharp.SkiaTextAlignment.Centre;
+    }
 
     private void CollectionChanged(object sender, Args e) {
       if(e.NewItems != null) foreach (var v in e.NewItems.Cast<FormsLatexView>()) {
@@ -30,6 +34,13 @@ namespace CSharpMath.Forms.Example
     private void SwitchCell_OnChanged(object sender, ToggledEventArgs e) {
       foreach (var v in App.AllViews) {
         v.DrawGlyphBoxes = e.Value;
+        v.InvalidateSurface();
+      }
+    }
+
+    private void Alignment_SelectedIndexChanged(object sender, EventArgs e) {
+      foreach (var v in App.AllViews) {
+        v.TextAlignment = (SkiaSharp.SkiaTextAlignment)Alignment.SelectedItem;
         v.InvalidateSurface();
       }
     }

@@ -23,7 +23,10 @@ namespace CSharpMath.Forms.Example
       };
       Size.SelectedItem = 96f;
       Picker.ItemsSource = dict.Keys.ToList();
-      Picker.SelectedIndexChanged += (sender, e) => View.LaTeX = Label.Text = dict[(string)Picker.SelectedItem];
+      Picker.SelectedIndexChanged += (sender, e) => {
+        View.LaTeX = Label.Text = dict[(string)Picker.SelectedItem];
+        View.InvalidateSurface();
+      };
       Picker.SelectedItem = nameof(AllExamplesPage.ShortIntegral);
     }
     protected override void OnDisappearing() {

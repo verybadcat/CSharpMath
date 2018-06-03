@@ -5,8 +5,12 @@
              Title="Settings">
     <TableView>
         <TableRoot>
-            <TableSection>
+            <TableSection Title="Display">
                 <SwitchCell x:Name="DrawStringBoxes" Text="Draw string boxes" On="True" OnChanged="SwitchCell_OnChanged"/>
+                <TextCell Text="Alignment: "/>
+                <ViewCell>
+                    <Picker x:Name="Alignment" SelectedIndexChanged="Alignment_SelectedIndexChanged"/>
+                </ViewCell>
             </TableSection>
         </TableRoot>
     </TableView>

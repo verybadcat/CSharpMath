@@ -29,13 +29,11 @@ namespace CSharpMath.SkiaSharp {
       (left, top, right, bottom) = (Left, Top, Right, Bottom);
   }
   public class SkiaLatexPainter {
-    public SkiaLatexPainter(Action invalidate, SKSize bounds, float fontSize = 20f) {
-      Invalidate = invalidate ?? throw new ArgumentNullException(nameof(invalidate));
+    public SkiaLatexPainter(SKSize bounds, float fontSize = 20f) {
       Bounds = bounds;
       FontSize = fontSize;
     }
-    public SkiaLatexPainter(Action invalidate, float width, float height, float fontSize = 20f) {
-      Invalidate = invalidate ?? throw new ArgumentNullException(nameof(invalidate));
+    public SkiaLatexPainter(float width, float height, float fontSize = 20f) {
       Bounds = new SKSize(width, height);
       FontSize = fontSize;
     }
@@ -66,8 +64,15 @@ namespace CSharpMath.SkiaSharp {
     NColor __color = NColors.Black; public NColor TextColor { get => __color; set => Redisplay(__color = value); }
     NColor __back = NColors.Transparent; public NColor BackgroundColor { get => __back; set => Redisplay(__back = value); }
     NColor __error = NColors.Red; public NColor ErrorColor { get => __error; set => Redisplay(__error = value); }
-    SkiaTextAlignment __align = SkiaTextAlignment.Centre; public SkiaTextAlignment TextAlignment { get => __align; set => Redisplay(__align = value); }
-    SKPaintStyle __style = SKPaintStyle.StrokeAndFill; public SKPaintStyle PaintStyle { get => __style; set => Redisplay(__style = value); }
+    SkiaTextAlignment __align = SkiaTextAlignment.Centre; public SkiaTextAlignment TextAlignment {
+      get => __align;
+      set {
+        Redisplay(__align = value);
+        OriginX = OriginY = null; //Reset origin using TextAlignment
+      }
+    }
+    SKPaintStyle __paint = SKPaintStyle.StrokeAndFill; public SKPaintStyle PaintStyle { get => __paint; set => Redisplay(__paint = value); }
+    LineStyle __style = LineStyle.Display; public LineStyle LineStyle { get => __style; set => Redisplay(__style = value); }
     bool __boxes; public bool DrawGlyphBoxes { get => __boxes; set => Redisplay(__boxes = value); }
 
     /// <summary>
@@ -90,8 +95,8 @@ namespace CSharpMath.SkiaSharp {
       set {
         _mathList = value ?? new MathList();
         _latex = MathListBuilder.MathListToString(_mathList);
+        OriginX = OriginY = null;
         _displayChanged = true;
-        Invalidate();
       }
     }
 
@@ -103,15 +108,15 @@ namespace CSharpMath.SkiaSharp {
         var buildResult = MathLists.BuildResultFromString(_latex);
         _mathList = buildResult.MathList;
         ErrorMessage = buildResult.Error;
+        OriginX = OriginY = null;
         _displayChanged = true;
-        Invalidate();
       }
     }
 
     public void UpdateOrigin() {
-      if (_mathList != null) {
-        float displayWidth = _displayList.Width;
+      if (_displayList != null) {
         if (OriginX == null) {
+          float displayWidth = _displayList.Width;
           if ((TextAlignment & SkiaTextAlignment.Left) != 0)
             OriginX = Padding.Left;
           else if ((TextAlignment & SkiaTextAlignment.Right) != 0)
@@ -124,10 +129,11 @@ namespace CSharpMath.SkiaSharp {
           if (contentHeight < FontSize / 2) {
             contentHeight = FontSize / 2;
           }
+          //Canvas is inverted!
           if ((TextAlignment & SkiaTextAlignment.Top) != 0)
-            OriginY = Padding.Top;
-          else if ((TextAlignment & SkiaTextAlignment.Bottom) != 0)
             OriginY = Bounds.Height - Padding.Bottom - contentHeight;
+          else if ((TextAlignment & SkiaTextAlignment.Bottom) != 0)
+            OriginY = Padding.Top;
           else {
             float availableHeight = Bounds.Height - Padding.Top - Padding.Bottom;
             OriginY = ((availableHeight - contentHeight) / 2) + Padding.Top + _displayList.Descent;
@@ -146,18 +152,16 @@ namespace CSharpMath.SkiaSharp {
         if (_displayChanged) {
           var fontSize = FontSize;
           var skiaFont = SkiaFontManager.LatinMath(fontSize);
-          _displayList = _typesettingContext.CreateLine(_mathList, skiaFont, LineStyle.Display);
-          UpdateOrigin();
-          _displayList.Position = new PointF(OriginX.Value, OriginY.Value);
+          _displayList = _typesettingContext.CreateLine(_mathList, skiaFont, LineStyle);
+          _displayList.Position = new PointF(0, 0);
           _skiaContext = new SkiaGraphicsContext() {
             DrawGlyphBoxes = DrawGlyphBoxes
           };
           _displayList.Draw(_skiaContext);
           _displayChanged = false;
-        } else {
-          UpdateOrigin();
-          canvas.Translate(OriginX.Value, OriginY.Value);
         }
+        UpdateOrigin();
+        canvas.Translate(OriginX.Value, OriginY.Value);
         canvas.DrawColor(BackgroundColor);
         var paths = _skiaContext.Paths;
         var paint = new SKPaint { IsStroke = true, StrokeCap = SKStrokeCap.Round, Style = PaintStyle };

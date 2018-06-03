@@ -16,7 +16,7 @@ namespace CSharpMath.Forms {
   public partial class FormsLatexView : SKCanvasView {
     public FormsLatexView() {
       InitializeComponent();
-      painter = new SkiaSharp.SkiaLatexPainter(InvalidateSurface, CanvasSize);
+      painter = new SkiaSharp.SkiaLatexPainter(CanvasSize);
       var pan = new PanGestureRecognizer { TouchPoints = 1 };
       pan.PanUpdated += OnPan;
       GestureRecognizers.Add(pan);
@@ -27,15 +27,21 @@ namespace CSharpMath.Forms {
 
     protected SkiaSharp.SkiaLatexPainter painter;
     protected override void OnPaintSurface(SKPaintSurfaceEventArgs e) {
+      base.OnPaintSurface(e);
       painter.Bounds = CanvasSize;
       painter.Draw(e.Surface.Canvas);
-      SetValue(OriginXProperty, painter.OriginX);
-      SetValue(OriginYProperty, painter.OriginY);
-      base.OnPaintSurface(e);
+      OriginX = painter.OriginX;
+      OriginY = painter.OriginY;
     }
+
+    protected override void OnSizeAllocated(double width, double height) {
+      base.OnSizeAllocated(width, height);
+      OriginX = OriginY = null; //Reset location of origin when view size is changed
+    }
+
     #region BindableProperties
     static FormsLatexView() {
-      var painter = new SkiaSharp.SkiaLatexPainter(() => { }, default);
+      var painter = new SkiaSharp.SkiaLatexPainter(default);
       var thisType = typeof(FormsLatexView);
       LaTeXProperty = BindableProperty.Create(nameof(LaTeX), typeof(string), thisType, painter.LaTeX, BindingMode.TwoWay);
       DisplayErrorInlineProperty = BindableProperty.Create(nameof(DisplayErrorInline), typeof(bool), thisType, painter.DisplayErrorInline, BindingMode.OneWay);
@@ -48,6 +54,7 @@ namespace CSharpMath.Forms {
       OriginYProperty = BindableProperty.Create(nameof(OriginY), typeof(float?), thisType, painter.OriginY, BindingMode.TwoWay);
       MagnificationProperty = BindableProperty.Create(nameof(Magnification), typeof(float), thisType, painter.Magnification);
       PaintStyleProperty = BindableProperty.Create(nameof(PaintStyle), typeof(SKStyle), thisType, painter.PaintStyle);
+      LineStyleProperty = BindableProperty.Create(nameof(LineStyle), typeof(Enumerations.LineStyle), thisType, painter.LineStyle);
       DrawGlyphBoxesProperty = BindableProperty.Create(nameof(DrawGlyphBoxes), typeof(bool), thisType, painter.DrawGlyphBoxes);
       PaddingProperty = BindableProperty.Create(nameof(Padding), typeof(Thickness), thisType, new Thickness(painter.Padding.Left, painter.Padding.Top, painter.Padding.Right, painter.Padding.Bottom));
       MathListProperty = BindableProperty.Create(nameof(MathList), typeof(Interfaces.IMathList), thisType, painter.MathList, BindingMode.TwoWay);
@@ -68,6 +75,7 @@ namespace CSharpMath.Forms {
     public static readonly BindableProperty OriginYProperty;
     public static readonly BindableProperty MagnificationProperty;
     public static readonly BindableProperty PaintStyleProperty;
+    public static readonly BindableProperty LineStyleProperty;
     public static readonly BindableProperty DrawGlyphBoxesProperty;
     public static readonly BindableProperty PaddingProperty;
     public static readonly BindableProperty MathListProperty;
@@ -80,7 +88,7 @@ namespace CSharpMath.Forms {
 
     bool _LaTeX_MathList_Lock = false;
     protected override void OnPropertyChanged(string propertyName) {
-      base.OnPropertyChanged(propertyName);    // Be sure to do all the "normal" activities of the base class
+      base.OnPropertyChanged(propertyName); //Be sure to do all the "normal" activities of the base class
 
       switch (propertyName) {
         case nameof(LaTeX):
@@ -101,6 +109,7 @@ namespace CSharpMath.Forms {
         case nameof(OriginY): if (painter.OriginY != OriginY) painter.OriginY = OriginY; break;
         case nameof(Magnification): painter.Magnification = Magnification; break;
         case nameof(PaintStyle): painter.PaintStyle = PaintStyle; break;
+        case nameof(LineStyle): painter.LineStyle = LineStyle; break;
         case nameof(DrawGlyphBoxes): painter.DrawGlyphBoxes = DrawGlyphBoxes; break;
         case nameof(Padding): painter.Padding = new SkiaSharp.Thickness((float)Padding.Left, (float)Padding.Top, (float)Padding.Right, (float)Padding.Bottom); break;
         case nameof(MathList):
@@ -183,6 +192,7 @@ namespace CSharpMath.Forms {
     public float? OriginY { get => (float?)GetValue(OriginYProperty); set => SetValue(OriginYProperty, value); }
     public float Magnification { get => (float)GetValue(MagnificationProperty); set => SetValue(MagnificationProperty, value); }
     public SKStyle PaintStyle { get => (SKStyle)GetValue(PaintStyleProperty); set => SetValue(PaintStyleProperty, value); }
+    public Enumerations.LineStyle LineStyle { get => (Enumerations.LineStyle)GetValue(LineStyleProperty); set => SetValue(LineStyleProperty, value); }
     public bool DrawGlyphBoxes { get => (bool)GetValue(DrawGlyphBoxesProperty); set => SetValue(DrawGlyphBoxesProperty, value); }
     public Thickness Padding { get => (Thickness)GetValue(PaddingProperty); set => SetValue(PaddingProperty, value); }
     public Interfaces.IMathList MathList { get => (Interfaces.IMathList)GetValue(MathListProperty); set => SetValue(MathListProperty, value); }
