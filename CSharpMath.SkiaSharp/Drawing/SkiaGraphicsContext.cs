@@ -40,7 +40,7 @@ namespace CSharpMath.SkiaSharp {
       var scale = typeface.CalculateScaleToPixelFromPointSize(font.PointSize);
       for (int i = 0; i < glyphs.Length; i++) {
         var path = new SkiaGlyphPath();
-        pathBuilder.BuildFromGlyphIndex(glyphs[i].GlyphIndex, font.PointSize);
+        pathBuilder.BuildFromGlyph(glyphs[i], font.PointSize);
         pathBuilder.ReadShapes(path);
         Paths.Push((path.Path, new SKPoint(textPosition.X + points[i].X - (glyphs[i].Bounds.XMin - glyphs[i].GetOriginalBounds().XMin) * scale, textPosition.Y + points[i].Y), null));
       }
@@ -71,7 +71,7 @@ namespace CSharpMath.SkiaSharp {
       for (int i = 0; i < glyphs.Length; i++) {
         var path = new SkiaGlyphPath();
         var index = glyphs[i].Glyph.GlyphIndex;
-        pathBuilder.BuildFromGlyphIndex(index, pointSize);
+        pathBuilder.BuildFromGlyph(glyphs[i].Glyph, pointSize);
         pathBuilder.ReadShapes(path);
         Paths.Push((path.Path, new SKPoint(textPosition.X, textPosition.Y), run.TextColor.ToNative()));
         textPosition.X += typeface.GetHAdvanceWidthFromGlyphIndex(index) * scale + glyphs[i].KernAfterGlyph;

@@ -6,14 +6,19 @@ using System.Drawing;
 namespace CSharpMath {
   public static class ColorExtensions {
 
-    private static byte _fromHex(string hex)
-      => Convert.ToByte(hex.Substring(0, 2), 16);
-    public static (byte r, byte g, byte b) From6DigitHexString(string hex) {
+    private static byte _fromHex(string hex, int index, int length)
+      => Convert.ToByte(hex.Substring(index, length), 16);
+    public static (byte r, byte g, byte b)? FromHexString(string hex) {
+      if (hex == null) return null;
       hex = hex.RemovePrefix("#").RemovePrefix("0x");
-      var red = _fromHex(hex);
-      var green = _fromHex(hex.Substring(2));
-      var blue = _fromHex(hex.Substring(4));
-      return (red, green, blue);
+      if (hex.Length == 3)
+        return (_fromHex(hex, 0, 1), _fromHex(hex, 1, 1), _fromHex(hex, 2, 1));
+      else if (hex.Length == 6) {
+        var red = _fromHex(hex, 0, 2);
+        var green = _fromHex(hex, 2, 2);
+        var blue = _fromHex(hex, 4, 2);
+        return (red, green, blue);
+      } else return null;
     }
 
   }

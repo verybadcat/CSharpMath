@@ -118,7 +118,8 @@ namespace CSharpMath {
             AddDisplayLine(false);
             var color = atom as IMathColor;
             var display = CreateLine(color.InnerList, _font, _context, _style);
-            //            display.LocalTextColor = ColorExtensions.From6DigitHexString(color.ColorString);
+            display.SetTextColor(ColorExtensions.FromHexString(color.ColorString));
+            _displayAtoms.Add(display);
             break;
           case MathAtomType.Fraction:
             AddDisplayLine(false);
