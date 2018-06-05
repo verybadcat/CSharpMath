@@ -5,6 +5,7 @@ using System.Text;
 using CSharpMath.Atoms;
 using CSharpMath.Display.Text;
 using CSharpMath.FrontEnd;
+using CSharpMath.Structures;
 
 namespace CSharpMath.Display {
   public class RadicalDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph>
@@ -95,9 +96,16 @@ namespace CSharpMath.Display {
       // draw the horizontal line with the given thickness
       PointF lineStart = new PointF(_radicalGlyph.Width, Ascent - heightFromTop - LineThickness / 2);
       PointF lineEnd = new PointF(lineStart.X + Radicand.Width, lineStart.Y);
-      context.DrawLine(lineStart.X, lineStart.Y, lineEnd.X, lineEnd.Y, LineThickness);
+      context.DrawLine(lineStart.X, lineStart.Y, lineEnd.X, lineEnd.Y, LineThickness, TextColor);
 
       context.RestoreState();
+    }
+    public Color? TextColor { get; set; }
+
+    public void SetTextColor(Color? textColor) {
+      TextColor = textColor;
+      ((IDisplay<TFont, TGlyph>)Radicand)?.SetTextColor(textColor);
+      ((IDisplay<TFont, TGlyph>)Degree)?.SetTextColor(textColor);
     }
   }
 }

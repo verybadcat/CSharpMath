@@ -178,9 +178,9 @@ namespace CSharpMath.SkiaSharp {
           paint.Color = color;
           canvas.DrawPath(path, paint);
         }
-        paint.Color = TextColor;
         var lines = _skiaContext.LinePaths;
-        foreach (var (from, to, thickness) in lines) {
+        foreach (var (from, to, thickness, color) in lines) {
+          paint.Color = color ?? TextColor;
           paint.StrokeWidth = thickness;
           canvas.DrawLine(from, to, paint);
         }

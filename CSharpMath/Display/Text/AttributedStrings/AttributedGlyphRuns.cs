@@ -9,7 +9,7 @@ namespace CSharpMath.Display.Text
 {
   public static class AttributedGlyphRuns
   {
-    public static AttributedGlyphRun<TFont, TGlyph> Create<TFont, TGlyph>(string text, TGlyph[] glyphs, TFont font, MathColor color)
+    public static AttributedGlyphRun<TFont, TGlyph> Create<TFont, TGlyph>(string text, TGlyph[] glyphs, TFont font, bool isPlaceHolder)
       where TFont : MathFont<TGlyph>
     {
       var kernedGlyphs = glyphs.Select(g => new KernedGlyph<TGlyph>(g)).ToArray();
@@ -17,15 +17,8 @@ namespace CSharpMath.Display.Text
       {
         Text = text,
         KernedGlyphs = kernedGlyphs,
-        Font = font,
-        TextColor = color
+        Font = font
       };
     }
-
-    public static AttributedGlyphRun<TFont, TGlyph> Create<TFont, TGlyph>(string text, TGlyph[] glyphs, TFont font)
-      where TFont : MathFont<TGlyph>
-    => Create(text, glyphs, font, default(MathColor));
-
-
   }
 }

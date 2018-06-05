@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Text;
 using CSharpMath.Atoms;
 using CSharpMath.FrontEnd;
+using CSharpMath.Structures;
 
 namespace CSharpMath.Display {
   public class FractionDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph>
@@ -72,12 +73,20 @@ namespace CSharpMath.Display {
     }
 
     public bool HasScript { get; set; }
+
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
       Numerator.Draw(context);
       Denominator.Draw(context);
       context.SaveState();
-      context.DrawLine(Position.X, Position.Y + LinePosition, Position.X+Width, Position.Y+LinePosition, LineThickness);
+      context.DrawLine(Position.X, Position.Y + LinePosition, Position.X+Width, Position.Y+LinePosition, LineThickness, TextColor);
       context.RestoreState();
+    }
+    public Color? TextColor { get; set; }
+
+    public void SetTextColor(Color? textColor) {
+      TextColor = textColor;
+      ((IDisplay<TFont, TGlyph>)Numerator).SetTextColor(textColor);
+      ((IDisplay<TFont, TGlyph>)Denominator).SetTextColor(textColor);
     }
   }
 }

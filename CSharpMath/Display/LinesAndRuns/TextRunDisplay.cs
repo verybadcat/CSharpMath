@@ -2,6 +2,7 @@
 using CSharpMath.Display.Text;
 using CSharpMath.FrontEnd;
 using CSharpMath.Interfaces;
+using CSharpMath.Structures;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -47,7 +48,7 @@ namespace CSharpMath.Display {
       context.SaveState();
       var text = Run.Text;
       var font = Run.Font;
-      context.DrawGlyphRunWithOffset(Run, Position);
+      context.DrawGlyphRunWithOffset(Run, Position, TextColor);
       context.RestoreState();
     }
     public Range Range { get; set; }
@@ -56,5 +57,10 @@ namespace CSharpMath.Display {
     public float Descent { get; set; }
     public PointF Position { get; set; }
     public bool HasScript { get; set; }
+    public Color? TextColor { get; set; }
+
+    public void SetTextColor(Color? textColor) {
+      TextColor = textColor;
+    }
   }
 }

@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using CSharpMath.FrontEnd;
+using CSharpMath.Structures;
 
 namespace CSharpMath.Display {
   /// <summary>
@@ -14,13 +15,13 @@ namespace CSharpMath.Display {
     where TFont : MathFont<TGlyph> {
     public IDisplay<TFont, TGlyph>[] Displays { get; set; }
     public LinePosition MyLinePosition { get; set; }
-    public (byte r, byte g, byte b)? TextColor { get; set; }
+    public Color? TextColor { get; set; }
     public bool HasScript { get; set; }
     /// <summary> Recursively. While translating, we'll keep the iosMath name "setTextColor".</summary> 
-    public void SetTextColor((byte r, byte g, byte b)? textColor) {
+    public void SetTextColor(Color? textColor) {
       TextColor = textColor;
       foreach (var atom in Displays) {
-        atom.TextColor = textColor;
+        atom.SetTextColor(textColor);
       }
     }
     /// <summary>For a subscript or superscript, this is the index in the

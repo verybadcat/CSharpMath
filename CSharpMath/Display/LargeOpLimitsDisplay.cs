@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Text;
 using CSharpMath.Atoms;
 using CSharpMath.FrontEnd;
+using CSharpMath.Structures;
 
 namespace CSharpMath.Display {
   public class LargeOpLimitsDisplay<TFont, TGlyph> : IPositionableDisplay<TFont, TGlyph>
@@ -119,6 +120,14 @@ namespace CSharpMath.Display {
       UpperLimit?.Draw(context);
       LowerLimit?.Draw(context);
       _nucleusDisplay.Draw(context);
+    }
+
+    public Color? TextColor { get; set; }
+
+    public void SetTextColor(Color? textColor) {
+      TextColor = textColor;
+      ((IDisplay<TFont, TGlyph>)UpperLimit).SetTextColor(textColor);
+      ((IDisplay<TFont, TGlyph>)LowerLimit).SetTextColor(textColor);
     }
   }
 }

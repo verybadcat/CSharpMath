@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Text;
 using CSharpMath.Atoms;
 using CSharpMath.FrontEnd;
+using CSharpMath.Structures;
 
 namespace CSharpMath.Display {
   /// <summary>Corresponds to MTLineDisplay in iosMath.</summary> 
@@ -25,7 +26,12 @@ namespace CSharpMath.Display {
     public PointF Position { get; set; }
     public bool HasScript { get; set; }
     public void Draw(IGraphicsContext<TFont, TGlyph> context) => ((IDisplay<TFont, TGlyph>)this.Inner).Draw(context);
+    public Color? TextColor { get; set; }
 
-    
+    public void SetTextColor(Color? textColor) {
+      TextColor = textColor;
+      ((IDisplay<TFont, TGlyph>)Inner).SetTextColor(textColor);
+    }
+
   }
 }

@@ -5,6 +5,7 @@ using System.Text;
 using CSharpMath.Atoms;
 using CSharpMath.Display.Text;
 using CSharpMath.FrontEnd;
+using CSharpMath.Structures;
 
 namespace CSharpMath.Display {
   public class GlyphDisplay<TFont, TGlyph> : IDownshiftableDisplay<TFont, TGlyph> 
@@ -38,11 +39,17 @@ namespace CSharpMath.Display {
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
       context.SaveState();
       TGlyph[] glyphArray = { Glyph };
-      PointF[] positions = { new PointF()};
+      PointF[] positions = { new PointF() };
+      Color?[] colors = { TextColor };
       context.Translate(new PointF(Position.X, Position.Y - ShiftDown));
       context.SetTextPosition(new PointF());
-      context.DrawGlyphsAtPoints(glyphArray, Font, positions);
+      context.DrawGlyphsAtPoints(glyphArray, Font, positions, colors);
       context.RestoreState();
+    }
+    public Color? TextColor { get; set; }
+
+    public void SetTextColor(Color? textColor) {
+      TextColor = textColor;
     }
   }
 }

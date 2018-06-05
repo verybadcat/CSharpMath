@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Text;
 using CSharpMath.Atoms;
 using CSharpMath.FrontEnd;
+using CSharpMath.Structures;
 
 namespace CSharpMath.Display {
   public class AccentDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph>
@@ -22,8 +23,17 @@ namespace CSharpMath.Display {
     public Range Range => ((IDisplay<TFont, TGlyph>)this.Accentee).Range;
 
     public PointF Position => ((IDisplay<TFont, TGlyph>)this.Accentee).Position;
-
+    
     public bool HasScript { get; set; }
+
     public void Draw(IGraphicsContext<TFont, TGlyph> context) => ((IDisplay<TFont, TGlyph>)this.Accentee).Draw(context);
+
+    public Color? TextColor { get; set; }
+
+    public void SetTextColor(Color? textColor) {
+      TextColor = textColor;
+      ((IDisplay<TFont, TGlyph>)Accentee).SetTextColor(textColor);
+      ((IDisplay<TFont, TGlyph>)Accent).SetTextColor(textColor);
+    }
   }
 }

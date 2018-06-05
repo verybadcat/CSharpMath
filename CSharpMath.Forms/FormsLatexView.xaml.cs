@@ -12,6 +12,7 @@ using SkiaSharp.Views.Forms;
 using SKStyle = SkiaSharp.SKPaintStyle;
 
 namespace CSharpMath.Forms {
+  using Color = Xamarin.Forms.Color;
   [XamlCompilation(XamlCompilationOptions.Compile), ContentProperty(nameof(LaTeX))]
   public partial class FormsLatexView : SKCanvasView {
     public FormsLatexView() {

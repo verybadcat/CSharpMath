@@ -16,7 +16,6 @@ namespace CSharpMath.Display.Text {
 
     public int Length => KernedGlyphs.Length;
     public TFont Font { get; set; }
-    public MathColor TextColor { get; set; }
 
     public override string ToString() => $"AttributedGlyphRun {KernedGlyphs.Length} glyphs";
 
@@ -32,9 +31,6 @@ namespace CSharpMath.Display.Text {
         return false;
       }
       if (!AnyType.SafeEquals(run1.Font, run2.Font)) {
-        return false;
-      }
-      if (!AnyType.SafeEquals(run1.TextColor, run2.TextColor)) {
         return false;
       }
       return true;

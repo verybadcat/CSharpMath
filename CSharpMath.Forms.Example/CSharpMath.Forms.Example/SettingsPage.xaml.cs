@@ -9,9 +9,9 @@ using Action = System.Collections.Specialized.NotifyCollectionChangedAction;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace CSharpMath.Forms.Example
-{
-	[XamlCompilation(XamlCompilationOptions.Compile)]
+namespace CSharpMath.Forms.Example {
+  using Color = Xamarin.Forms.Color;
+  [XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class SettingsPage : ContentPage
 	{
     public SettingsPage() {

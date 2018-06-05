@@ -19,6 +19,7 @@ namespace CSharpMath.Atoms {
     }
     public MathColor(MathColor cloneMe, bool finalize): base(cloneMe, finalize) {
       InnerList = AtomCloner.Clone(cloneMe.InnerList, finalize);
+      ColorString = cloneMe.ColorString;
     }
 
     public override T Accept<T, THelper>(IMathAtomVisitor<T, THelper> visitor, THelper helper)

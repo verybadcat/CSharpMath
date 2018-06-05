@@ -1,12 +1,13 @@
 ﻿using CSharpMath.Atoms;
+using CSharpMath.Display.Text;
+using CSharpMath.FrontEnd;
 using CSharpMath.Interfaces;
+using CSharpMath.Structures;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using CSharpMath.Display.Text;
-using CSharpMath.FrontEnd;
 
 namespace CSharpMath.Display {
   public class TextLineDisplay<TFont, TGlyph> : IPositionableDisplay<TFont, TGlyph>
@@ -50,6 +51,12 @@ namespace CSharpMath.Display {
     public float Width => Runs.CollectionWidth();
     public Range Range => RangeExtensions.Combine(Runs.Select(r => r.Range));
     public bool HasScript { get; set; }
+    public Color? TextColor { get; set; }
+
+    public void SetTextColor(Color? textColor) {
+      TextColor = textColor;
+      Runs.ForEach(d => d.SetTextColor(textColor));
+    }
   }
 }
 

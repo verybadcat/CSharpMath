@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Text;
 using CSharpMath.Atoms;
 using CSharpMath.Display.Text;
-using System.Linq;
 using CSharpMath.FrontEnd;
+using CSharpMath.Structures;
 
 namespace CSharpMath.Display {
   class GlyphConstructionDisplay<TFont, TGlyph> : IDownshiftableDisplay<TFont, TGlyph> 
     where TFont : MathFont<TGlyph> {
 
     private TGlyph[] _glyphs;
-    private PointF[] _glyphPositions;
-    private TFont _mathFont;
+    private readonly PointF[] _glyphPositions;
+    private readonly TFont _mathFont;
     private int _nGlyphs => _glyphs.Length;
 
     public float ShiftDown { get; set; }
@@ -46,8 +47,13 @@ namespace CSharpMath.Display {
       PointF delta = new PointF(Position.X, Position.Y - ShiftDown);
       context.Translate(delta);
       context.SetTextPosition(new PointF());
-      context.DrawGlyphsAtPoints(_glyphs, _mathFont, _glyphPositions);
+      context.DrawGlyphsAtPoints(_glyphs, _mathFont, _glyphPositions, new[] { TextColor });
       context.RestoreState();
+    }
+    public Color? TextColor { get; set; }
+
+    public void SetTextColor(Color? textColor) {
+      TextColor = textColor;
     }
   }
 }

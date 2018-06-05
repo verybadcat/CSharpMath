@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CSharpMath.Structures;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
@@ -8,7 +9,7 @@ namespace CSharpMath {
 
     private static byte _fromHex(string hex, int index, int length)
       => Convert.ToByte(hex.Substring(index, length), 16);
-    public static (byte r, byte g, byte b)? FromHexString(string hex) {
+    public static Color? FromHexString(string hex) {
       if (hex == null) return null;
       hex = hex.RemovePrefix("#").RemovePrefix("0x");
       if (hex.Length == 3)

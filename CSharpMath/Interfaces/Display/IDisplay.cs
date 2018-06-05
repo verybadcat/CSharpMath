@@ -2,6 +2,7 @@
 using System.Drawing;
 using CSharpMath.Display;
 using CSharpMath.FrontEnd;
+using CSharpMath.Structures;
 
 namespace CSharpMath {
   public interface IDisplay<TFont, TGlyph>
@@ -20,7 +21,8 @@ namespace CSharpMath {
     Range Range { get; }
     /// <summary>Position of the display, relative to its parent.</summary> 
     PointF Position { get; }
-
+    Color? TextColor { get; set; }
+    void SetTextColor(Color? textColor);
     bool HasScript { get; set; }
   }
 

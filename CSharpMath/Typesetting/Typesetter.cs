@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using CSharpMath.Atoms;
+using CSharpMath.Display;
 using CSharpMath.Display.Text;
 using CSharpMath.Enumerations;
-using CSharpMath.Display;
+using CSharpMath.FrontEnd;
 using CSharpMath.Interfaces;
+using CSharpMath.Structures;
 using System.Drawing;
 using System.Linq;
 using CSharpMath.TypesetterInternal;
-using CSharpMath.FrontEnd;
 
 namespace CSharpMath {
   public class Typesetter<TFont, TGlyph>
     where TFont: MathFont<TGlyph> {
-    private TFont _font;
+    private readonly TFont _font;
     private readonly TypesettingContext<TFont, TGlyph> _context;
     private FontMathTable<TFont, TGlyph> _mathTable => _context.MathTable;
     private TFont _styleFont;
@@ -206,9 +207,9 @@ namespace CSharpMath {
             var nucleusText = atom.Nucleus;
             var glyphs = _context.GlyphFinder.FindGlyphs(nucleusText); 
             if (atom.AtomType == MathAtomType.Placeholder) {
-              current = AttributedGlyphRuns.Create<TFont, TGlyph>(nucleusText, glyphs, _font, _placeholderColor);
+              current = AttributedGlyphRuns.Create(nucleusText, glyphs, _font, true);
             } else {
-              current = AttributedGlyphRuns.Create<TFont, TGlyph>(nucleusText, glyphs, _font, null);
+              current = AttributedGlyphRuns.Create(nucleusText, glyphs, _font, false);
             }
             _currentLine = AttributedStringExtensions.Combine(_currentLine, current);
             if (_currentLineIndexRange.Location == Range.UndefinedInt) {
@@ -809,9 +810,10 @@ namespace CSharpMath {
 
       // position all the rows
       PositionRows(rowDisplays, table);
-      var tableDisplay = new MathListDisplay<TFont, TGlyph>(rowDisplays.ToArray());
-      // Range is set here in the objective C code.
-      tableDisplay.Position = _currentPosition;
+      var tableDisplay = new MathListDisplay<TFont, TGlyph>(rowDisplays.ToArray()) {
+        // Range is set here in the objective C code.
+        Position = _currentPosition
+      };
       return tableDisplay;
     }
 
@@ -894,10 +896,11 @@ namespace CSharpMath {
         var width = _context.GlyphBoundsProvider.GetAdvancesForGlyphs(_styleFont, glyphArray).Advances[0];
         boundingBox.GetAscentDescentWidth(out float ascent, out float descent, out float _);
         var shiftDown = 0.5 * (ascent - descent) - _mathTable.AxisHeight(_styleFont);
-        var glyphDisplay = new GlyphDisplay<TFont, TGlyph>(glyph, op.IndexRange, _styleFont);
-        glyphDisplay.Ascent = ascent;
-        glyphDisplay.Descent = descent;
-        glyphDisplay.Width = width;
+        var glyphDisplay = new GlyphDisplay<TFont, TGlyph>(glyph, op.IndexRange, _styleFont) {
+          Ascent = ascent,
+          Descent = descent,
+          Width = width
+        };
         if (op.Subscript!=null && !limits) {
           // remove italic correction in this case
           glyphDisplay.Width -= delta;
@@ -908,12 +911,13 @@ namespace CSharpMath {
       } else {
         // create a regular node.
         var glyphs = _context.GlyphFinder.FindGlyphs(op.Nucleus);
-        var glyphRun = AttributedGlyphRuns.Create(op.Nucleus, glyphs, _styleFont);
+        var glyphRun = AttributedGlyphRuns.Create(op.Nucleus, glyphs, _styleFont, false);
         var run = new TextRunDisplay<TFont, TGlyph>(glyphRun, op.IndexRange, _context);
         var runs = new List<TextRunDisplay<TFont, TGlyph>>{ run };
         var atoms = new List<IMathAtom> { op };
-        var line = new TextLineDisplay<TFont, TGlyph>(runs, atoms);
-        line.Position = _currentPosition;
+        var line = new TextLineDisplay<TFont, TGlyph>(runs, atoms) {
+          Position = _currentPosition
+        };
         return AddLimitsToDisplay(line, op, 0);
       }
     }
