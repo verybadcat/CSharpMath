@@ -24,7 +24,7 @@ namespace CSharpMath.Display {
 
     public float Descent { get; set; }
 
-    public float Width {get;set;}
+    public float Width { get; set; }
 
     public Range Range { get; set; }
 
@@ -47,7 +47,7 @@ namespace CSharpMath.Display {
       PointF delta = new PointF(Position.X, Position.Y - ShiftDown);
       context.Translate(delta);
       context.SetTextPosition(new PointF());
-      context.DrawGlyphsAtPoints(_glyphs, _mathFont, _glyphPositions, new[] { TextColor });
+      context.DrawGlyphsAtPoints(_glyphs, _mathFont, _glyphPositions, Enumerable.Repeat(TextColor, _glyphs.Length).ToArray());
       context.RestoreState();
     }
     public Color? TextColor { get; set; }

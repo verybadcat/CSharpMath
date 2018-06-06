@@ -164,7 +164,7 @@ namespace CSharpMath.SkiaSharp {
         canvas.Translate(OriginX.Value, OriginY.Value);
         canvas.DrawColor(BackgroundColor);
         var paths = _skiaContext.Paths;
-        var paint = new SKPaint { IsStroke = true, StrokeCap = SKStrokeCap.Round, Style = PaintStyle, IsAntialias = true };
+        var paint = new SKPaint { IsStroke = false, StrokeCap = SKStrokeCap.Round, Style = PaintStyle, IsAntialias = true };
         foreach (var (path, pos, color) in paths) {
           paint.Color = color ?? TextColor;
           canvas.Save();
