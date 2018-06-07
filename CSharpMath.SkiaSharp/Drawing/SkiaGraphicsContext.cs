@@ -22,9 +22,7 @@ namespace CSharpMath.SkiaSharp {
       TextPosition = position;
     }
 
-    SKColor? ToSKColor(Color? color) => color != null ? new SKColor?(new SKColor(color.Value.R, color.Value.G, color.Value.B)) : null;
-
-    public void DrawGlyphsAtPoints(Glyph[] glyphs, TFont font, PointF[] points, Color?[] colors) {
+    public void DrawGlyphsAtPoints(Glyph[] glyphs, TFont font, PointF[] points, Color? color) {
       Debug($"Glyphs {string.Join("; ", glyphs.Zip(points, (g, p) => $"{g.GetCff1GlyphData().Name} ({p.X}, {p.Y})"))} ");
       var textPosition = DrawPosition.Plus(TextPosition);
       var typeface = font.Typeface;
@@ -41,17 +39,18 @@ namespace CSharpMath.SkiaSharp {
         BoxPaths.Push((boxPath, GlyphBoxColor.Value.glyph));
       }
       var scale = typeface.CalculateScaleToPixelFromPointSize(font.PointSize);
+      var skColor = color.ToNative();
       for (int i = 0; i < glyphs.Length; i++) {
         var path = new SkiaGlyphPath();
         pathBuilder.BuildFromGlyph(glyphs[i], font.PointSize);
         pathBuilder.ReadShapes(path);
-        Paths.Push((path.Path, new SKPoint(textPosition.X + points[i].X - (glyphs[i].Bounds.XMin - glyphs[i].GetOriginalBounds().XMin) * scale, textPosition.Y + points[i].Y), ToSKColor(colors[i])));
+        Paths.Push((path.Path, new SKPoint(textPosition.X + points[i].X - (glyphs[i].Bounds.XMin - glyphs[i].GetOriginalBounds().XMin) * scale, textPosition.Y + points[i].Y), skColor));
       }
     }
 
     public void DrawLine(float x1, float y1, float x2, float y2, float lineThickness, Color? color) {
       Debug($"Line ({x1}, {y1}) -> ({x2}, {y2})");
-      LinePaths.Push((new SKPoint(x1 + DrawPosition.X, y1 + DrawPosition.Y), new SKPoint(x2 + DrawPosition.X, y2 + DrawPosition.Y), lineThickness, ToSKColor(color)));
+      LinePaths.Push((new SKPoint(x1 + DrawPosition.X, y1 + DrawPosition.Y), new SKPoint(x2 + DrawPosition.X, y2 + DrawPosition.Y), lineThickness, color.ToNative()));
     }
 
     public void DrawGlyphRunWithOffset(Display.Text.AttributedGlyphRun<TFont, Glyph> run, PointF offset, Color? color) {
@@ -71,12 +70,13 @@ namespace CSharpMath.SkiaSharp {
       var layout = run.Font.GlyphLayout;
       var pathBuilder = new SkiaGlyphPathBuilder(typeface);
       var scale = typeface.CalculateScaleToPixelFromPointSize(pointSize);
+      var skColor = color.ToNative();
       for (int i = 0; i < glyphs.Length; i++) {
         var path = new SkiaGlyphPath();
         var index = glyphs[i].Glyph.GlyphIndex;
         pathBuilder.BuildFromGlyph(glyphs[i].Glyph, pointSize);
         pathBuilder.ReadShapes(path);
-        Paths.Push((path.Path, new SKPoint(textPosition.X, textPosition.Y), ToSKColor(color)));
+        Paths.Push((path.Path, new SKPoint(textPosition.X, textPosition.Y), skColor));
         textPosition.X += typeface.GetHAdvanceWidthFromGlyphIndex(index) * scale + glyphs[i].KernAfterGlyph;
       }
     }

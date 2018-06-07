@@ -40,10 +40,9 @@ namespace CSharpMath.Display {
       context.SaveState();
       TGlyph[] glyphArray = { Glyph };
       PointF[] positions = { new PointF() };
-      Color?[] colors = { TextColor };
       context.Translate(new PointF(Position.X, Position.Y - ShiftDown));
       context.SetTextPosition(new PointF());
-      context.DrawGlyphsAtPoints(glyphArray, Font, positions, colors);
+      context.DrawGlyphsAtPoints(glyphArray, Font, positions, TextColor);
       context.RestoreState();
     }
     public Color? TextColor { get; set; }

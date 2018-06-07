@@ -101,7 +101,7 @@ namespace CSharpMath {
           case MathAtomType.UnaryOperator:
             throw new InvalidOperationException($"Type {atom.AtomType} should have been removed by preprocessing");
           case MathAtomType.Boundary:
-            throw new InvalidOperationException("A bounadry atom should never be inside a mathlist");
+            throw new InvalidOperationException("A boundary atom should never be inside a mathlist");
           case MathAtomType.Space:
             AddDisplayLine(false);
             var space = atom as MathSpace;
@@ -119,8 +119,9 @@ namespace CSharpMath {
             AddDisplayLine(false);
             var color = atom as IMathColor;
             var display = CreateLine(color.InnerList, _font, _context, _style);
-            display.SetTextColor(ColorExtensions.FromHexString(color.ColorString));
+            display.SetTextColor(Color.FromHexString(color.ColorString));
             _displayAtoms.Add(display);
+            _currentPosition.X += display.Width;
             break;
           case MathAtomType.Fraction:
             AddDisplayLine(false);

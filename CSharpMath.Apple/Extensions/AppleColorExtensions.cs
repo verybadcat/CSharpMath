@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using CSharpMath.Atoms;
+using CSharpMath.Structures;
 using NColor = UIKit.UIColor;
 
 namespace CSharpMath.Apple {
@@ -18,8 +19,10 @@ namespace CSharpMath.Apple {
       return new NColor(red / 255f, green / 255f, blue / 255f, 1);
     }
 
-
     public static NColor ToNative(this MathColor mathColor)
       => From6DigitHexString(mathColor?.ColorString);
+
+    public static CoreGraphics.CGColor ToCgColor(this Color color)
+      => new CoreGraphics.CGColor(color.R / 255f, color.G / 255f, color.B / 255f, color.A / 255f);
   }
 }

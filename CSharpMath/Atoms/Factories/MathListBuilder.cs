@@ -26,7 +26,7 @@ namespace CSharpMath.Atoms {
     }
     public IMathList Build() {
       var r = BuildInternal(false);
-      if (HasCharacters && _error != null) {
+      if (HasCharacters && _error == null) {
         _error = "Error; most likely mismatched braces " + new string(_chars);
       }
       if (_error != null) {

@@ -47,7 +47,7 @@ namespace CSharpMath.Display {
       PointF delta = new PointF(Position.X, Position.Y - ShiftDown);
       context.Translate(delta);
       context.SetTextPosition(new PointF());
-      context.DrawGlyphsAtPoints(_glyphs, _mathFont, _glyphPositions, Enumerable.Repeat(TextColor, _glyphs.Length).ToArray());
+      context.DrawGlyphsAtPoints(_glyphs, _mathFont, _glyphPositions, TextColor);
       context.RestoreState();
     }
     public Color? TextColor { get; set; }

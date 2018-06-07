@@ -44,21 +44,22 @@ namespace CSharpMath.Forms {
     static FormsLatexView() {
       var painter = new SkiaSharp.SkiaLatexPainter(default);
       var thisType = typeof(FormsLatexView);
-      LaTeXProperty = BindableProperty.Create(nameof(LaTeX), typeof(string), thisType, painter.LaTeX, BindingMode.TwoWay);
-      DisplayErrorInlineProperty = BindableProperty.Create(nameof(DisplayErrorInline), typeof(bool), thisType, painter.DisplayErrorInline, BindingMode.OneWay);
-      FontSizeProperty = BindableProperty.Create(nameof(FontSize), typeof(float), thisType, painter.FontSize);
-      ErrorFontSizeProperty = BindableProperty.Create(nameof(ErrorFontSize), typeof(float?), thisType, painter.ErrorFontSize);
-      TextColorProperty = BindableProperty.Create(nameof(TextColor), typeof(Color), thisType, painter.TextColor.ToFormsColor());
-      ErrorColorProperty = BindableProperty.Create(nameof(ErrorColor), typeof(Color), thisType, painter.ErrorColor.ToFormsColor());
-      TextAlignmentProperty = BindableProperty.Create(nameof(TextAlignment), typeof(SkiaSharp.SkiaTextAlignment), thisType, painter.TextAlignment);
-      OriginXProperty = BindableProperty.Create(nameof(OriginX), typeof(float?), thisType, painter.OriginX, BindingMode.TwoWay);
-      OriginYProperty = BindableProperty.Create(nameof(OriginY), typeof(float?), thisType, painter.OriginY, BindingMode.TwoWay);
-      MagnificationProperty = BindableProperty.Create(nameof(Magnification), typeof(float), thisType, painter.Magnification);
-      PaintStyleProperty = BindableProperty.Create(nameof(PaintStyle), typeof(SKStyle), thisType, painter.PaintStyle);
-      LineStyleProperty = BindableProperty.Create(nameof(LineStyle), typeof(Enumerations.LineStyle), thisType, painter.LineStyle);
-      GlyphBoxColorProperty = BindableProperty.Create(nameof(GlyphBoxColor), typeof((Color glyph, Color textRun)?), thisType, painter.GlyphBoxColor != null ? (painter.GlyphBoxColor.Value.glyph.ToFormsColor(), painter.GlyphBoxColor.Value.textRun.ToFormsColor()) : default((Color glyph, Color textRun)?));
-      PaddingProperty = BindableProperty.Create(nameof(Padding), typeof(Thickness), thisType, new Thickness(painter.Padding.Left, painter.Padding.Top, painter.Padding.Right, painter.Padding.Bottom));
-      MathListProperty = BindableProperty.Create(nameof(MathList), typeof(Interfaces.IMathList), thisType, painter.MathList, BindingMode.TwoWay);
+      SkiaSharp.SkiaLatexPainter p(BindableObject b) => ((FormsLatexView)b).painter;
+      LaTeXProperty = BindableProperty.Create(nameof(LaTeX), typeof(string), thisType, painter.LaTeX, BindingMode.TwoWay, null, (b, o, n) => { if ((string)o == (string)n) return; p(b).LaTeX = (string)n; ((FormsLatexView)b).ErrorMessage = p(b).ErrorMessage; ((FormsLatexView)b).MathList = p(b).MathList; });
+      DisplayErrorInlineProperty = BindableProperty.Create(nameof(DisplayErrorInline), typeof(bool), thisType, painter.DisplayErrorInline, propertyChanged: (b, o, n) => p(b).DisplayErrorInline = (bool)n);
+      FontSizeProperty = BindableProperty.Create(nameof(FontSize), typeof(float), thisType, painter.FontSize, propertyChanged: (b, o, n) => p(b).FontSize = (float)n);
+      ErrorFontSizeProperty = BindableProperty.Create(nameof(ErrorFontSize), typeof(float?), thisType, painter.ErrorFontSize, propertyChanged: (b, o, n) => p(b).ErrorFontSize = (float)n);
+      TextColorProperty = BindableProperty.Create(nameof(TextColor), typeof(Color), thisType, painter.TextColor.ToFormsColor(), propertyChanged: (b, o, n) => p(b).TextColor = ((Color)n).ToSKColor());
+      ErrorColorProperty = BindableProperty.Create(nameof(ErrorColor), typeof(Color), thisType, painter.ErrorColor.ToFormsColor(), propertyChanged: (b, o, n) => p(b).ErrorColor = ((Color)n).ToSKColor());
+      TextAlignmentProperty = BindableProperty.Create(nameof(TextAlignment), typeof(SkiaSharp.SkiaTextAlignment), thisType, painter.TextAlignment, propertyChanged: (b, o, n) => p(b).TextAlignment = (SkiaSharp.SkiaTextAlignment)n);
+      OriginXProperty = BindableProperty.Create(nameof(OriginX), typeof(float?), thisType, painter.OriginX, BindingMode.TwoWay, propertyChanged: (b, o, n) => p(b).OriginX = (float?)n);
+      OriginYProperty = BindableProperty.Create(nameof(OriginY), typeof(float?), thisType, painter.OriginY, BindingMode.TwoWay, propertyChanged: (b, o, n) => p(b).OriginY = (float?)n);
+      MagnificationProperty = BindableProperty.Create(nameof(Magnification), typeof(float), thisType, painter.Magnification, propertyChanged: (b, o, n) => p(b).Magnification = (float)n);
+      PaintStyleProperty = BindableProperty.Create(nameof(PaintStyle), typeof(SKStyle), thisType, painter.PaintStyle, propertyChanged: (b, o, n) => p(b).PaintStyle = (SKStyle)n);
+      LineStyleProperty = BindableProperty.Create(nameof(LineStyle), typeof(Enumerations.LineStyle), thisType, painter.LineStyle, propertyChanged: (b, o, n) => p(b).LineStyle = (Enumerations.LineStyle)n);
+      GlyphBoxColorProperty = BindableProperty.Create(nameof(GlyphBoxColor), typeof((Color glyph, Color textRun)?), thisType, painter.GlyphBoxColor != null ? (painter.GlyphBoxColor.Value.glyph.ToFormsColor(), painter.GlyphBoxColor.Value.textRun.ToFormsColor()) : default((Color glyph, Color textRun)?), propertyChanged: (b, o, n) => p(b).GlyphBoxColor = n != null ? ((((Color glyph, Color textRun)?)n).Value.glyph.ToSKColor(), (((Color glyph, Color textRun)?)n).Value.textRun.ToSKColor()) : default((SKColor glyph, SKColor textRun)?));
+      PaddingProperty = BindableProperty.Create(nameof(Padding), typeof(Thickness), thisType, new Thickness(painter.Padding.Left, painter.Padding.Top, painter.Padding.Right, painter.Padding.Bottom), propertyChanged: (b, o, n) => p(b).Padding = new SkiaSharp.Thickness((float)((Thickness)n).Left, (float)((Thickness)n).Top, (float)((Thickness)n).Right, (float)((Thickness)n).Bottom));
+      MathListProperty = BindableProperty.Create(nameof(MathList), typeof(Interfaces.IMathList), thisType, painter.MathList, BindingMode.TwoWay, null, (b, o, n) => { if (o == n) return; p(b).MathList = (Interfaces.IMathList)n; ((FormsLatexView)b).LaTeX = p(b).LaTeX; });
       LockGesturesProperty = BindableProperty.Create(nameof(LockGestures), typeof(bool), thisType, false);
       ErrorMessagePropertyKey = BindableProperty.CreateReadOnly(nameof(ErrorMessage), typeof(string), thisType, painter.ErrorMessage, BindingMode.OneWayToSource);
       ErrorMessageProperty = ErrorMessagePropertyKey.BindableProperty;
@@ -86,48 +87,6 @@ namespace CSharpMath.Forms {
     private static readonly BindablePropertyKey GestureCountPropertyKey;
     public static readonly BindableProperty GestureCountProperty;
     #endregion
-
-    bool _LaTeX_MathList_Lock = false;
-    protected override void OnPropertyChanged(string propertyName) {
-      base.OnPropertyChanged(propertyName); //Be sure to do all the "normal" activities of the base class
-
-      switch (propertyName) {
-        case nameof(LaTeX):
-          painter.LaTeX = LaTeX;
-          if (!_LaTeX_MathList_Lock) {
-            SetValue(ErrorMessagePropertyKey, painter.ErrorMessage);
-            SetValue(MathListProperty, painter.MathList);
-            _LaTeX_MathList_Lock = true;
-          } else _LaTeX_MathList_Lock = false;
-          break;
-        case nameof(DisplayErrorInline): painter.DisplayErrorInline = DisplayErrorInline; break;
-        case nameof(FontSize): painter.FontSize = FontSize; break;
-        case nameof(ErrorFontSize): painter.ErrorFontSize = ErrorFontSize; break;
-        case nameof(TextColor): painter.TextColor = TextColor.ToSKColor(); break;
-        case nameof(ErrorColor): painter.ErrorColor = ErrorColor.ToSKColor(); break;
-        case nameof(TextAlignment): painter.TextAlignment = TextAlignment; break;
-        case nameof(OriginX): if (painter.OriginX != OriginX) painter.OriginX = OriginX; break;
-        case nameof(OriginY): if (painter.OriginY != OriginY) painter.OriginY = OriginY; break;
-        case nameof(Magnification): painter.Magnification = Magnification; break;
-        case nameof(PaintStyle): painter.PaintStyle = PaintStyle; break;
-        case nameof(LineStyle): painter.LineStyle = LineStyle; break;
-        case nameof(GlyphBoxColor): painter.GlyphBoxColor = GlyphBoxColor.HasValue ? (GlyphBoxColor.Value.glyph.ToSKColor(), GlyphBoxColor.Value.textRun.ToSKColor()) : default((SKColor glyph, SKColor textRun)?); break;
-        case nameof(Padding): painter.Padding = new SkiaSharp.Thickness((float)Padding.Left, (float)Padding.Top, (float)Padding.Right, (float)Padding.Bottom); break;
-        case nameof(MathList):
-          painter.MathList = MathList;
-          if (!_LaTeX_MathList_Lock) {
-            SetValue(LaTeXProperty, painter.LaTeX);
-            _LaTeX_MathList_Lock = true;
-          } else _LaTeX_MathList_Lock = false;
-          break;
-        case nameof(LockGestures):
-          GestureCount = 0;
-          break;
-        case nameof(ErrorMessage):
-        case nameof(GestureCount):
-          break; //Only can be set from this class
-      }
-    }
 
     double _lastX, _lastY;
     protected virtual void OnPan(object sender, PanUpdatedEventArgs e) {
@@ -197,6 +156,6 @@ namespace CSharpMath.Forms {
     public (Color glyph, Color textRun)? GlyphBoxColor { get => ((Color glyph, Color textRun)?)GetValue(GlyphBoxColorProperty); set => SetValue(GlyphBoxColorProperty, value); }
     public Thickness Padding { get => (Thickness)GetValue(PaddingProperty); set => SetValue(PaddingProperty, value); }
     public Interfaces.IMathList MathList { get => (Interfaces.IMathList)GetValue(MathListProperty); set => SetValue(MathListProperty, value); }
-    public string ErrorMessage => (string)GetValue(ErrorMessageProperty);
+    public string ErrorMessage { get => (string)GetValue(ErrorMessageProperty); private set => SetValue(ErrorMessagePropertyKey, value); }
   }
 }
