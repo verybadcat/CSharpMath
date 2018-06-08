@@ -6,10 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace CSharpMath.FrontEnd {
-  /// <summary>Holds lots of constants for spacing between various visible elements.
-  /// If you are writing a new front end, you can likely re-use the code here,
-  /// but you will probably need to create your own json file that holds the
-  /// actual constants. </summary>
+  /// <summary>Holds lots of constants for spacing between various visible elements.</summary>
   public abstract class FontMathTable<TFont, TGlyph>
     where TFont : MathFont<TGlyph> {
 
@@ -120,13 +117,6 @@ namespace CSharpMath.FrontEnd {
     public abstract float RadicalExtraAscender(TFont font);
     #endregion
     #region glyph assembly
-
-    private const string _assemblyPartsKey = "parts";
-    private const string _advanceKey = "advance";
-    private const string _endConnectorKey = "endConnector";
-    private const string _startConnectorKey = "startConnector";
-    private const string _extenderKey = "extender";
-    private const string _glyphKey = "glyph";
     public abstract GlyphPart<TGlyph>[] GetVerticalGlyphAssembly(TGlyph rawGlyph, TFont font);
     public abstract float MinConnectorOverlap(TFont font);
     

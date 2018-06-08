@@ -407,7 +407,7 @@ namespace CSharpMath.Atoms {
       {"brace", new string[]{"{", "}"} }
     };
 
-    private IMathList StopCommand(string command, IMathList list, char stopChar) {
+    private MathList StopCommand(string command, MathList list, char stopChar) {
       if (command == "right") {
         if (_currentInnerAtom == null) {
           _error = "Missing \\left";
@@ -714,6 +714,11 @@ namespace CSharpMath.Atoms {
               var style = (IMathStyle)atom;
               var command = StyleToCommands[style.Style];
               builder.Append(@"\" + command + " ");
+              break;
+            }
+          case MathAtomType.Color: {
+              var color = (IMathColor)atom;
+              builder.Append($@"\color{{{color.ColorString}}}{{{MathListToString(color.InnerList)}}}");
               break;
             }
           default: {

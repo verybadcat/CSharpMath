@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CSharpMath.SkiaSharp {
+namespace CSharpMath.Rendering {
   [Flags]
-  public enum SkiaTextAlignment : byte {
+  public enum TextAlignment : byte {
     //              LRTB
     TopLeft     = 0b1010,
     Top         = 0b0010,

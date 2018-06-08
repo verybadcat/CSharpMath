@@ -1,11 +1,10 @@
 ﻿using Typography.OpenFont;
-namespace CSharpMath.SkiaSharp
-{
-  public class SkiaGlyphNameProvider: IGlyphNameProvider<Glyph>
+namespace CSharpMath.Rendering {
+  public class GlyphNameProvider: IGlyphNameProvider<Glyph>
   {
     private readonly Typeface _typeface;
 
-    public SkiaGlyphNameProvider(Typeface typeface) => _typeface = typeface;
+    public GlyphNameProvider(Typeface typeface) => _typeface = typeface;
 
     public Glyph GetGlyph(string glyphName) => _typeface.GetGlyphByName(glyphName);
 

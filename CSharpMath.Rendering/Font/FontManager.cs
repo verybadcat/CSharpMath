@@ -3,10 +3,10 @@ using System.Diagnostics;
 using System.IO;
 using Typography.OpenFont;
 
-namespace CSharpMath.SkiaSharp {
-  public static class SkiaFontManager {
-    static SkiaFontManager() {
-      var bytes = SkiaResources.Otf;
+namespace CSharpMath.Rendering {
+  public static class FontManager {
+    static FontManager() {
+      var bytes = Resources.Otf;
       var reader = new OpenFontReader();
       LatinMathTypeface = reader.Read(new MemoryStream(bytes, false));
       LatinMathTypeface.UpdateAllCffGlyphBounds();
@@ -15,8 +15,8 @@ namespace CSharpMath.SkiaSharp {
     public const string LatinMathFontName = "latinmodern-math";
     public static Typeface LatinMathTypeface { get; }
 
-    public static SkiaMathFont LatinMath(float pointSize) {
-      return new SkiaMathFont(LatinMathFontName, LatinMathTypeface, pointSize);
+    public static MathFont LatinMath(float pointSize) {
+      return new MathFont(LatinMathFontName, LatinMathTypeface, pointSize);
     }
   }
 }

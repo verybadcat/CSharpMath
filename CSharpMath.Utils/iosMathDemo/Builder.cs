@@ -8,15 +8,13 @@ namespace CSharpMath.DevUtils.iosMathDemo {
   static class Builder {
     public static void Build(string inFile, string outFile) {
       var text = File.ReadAllText(inFile);
-      int i = 0;
-      for (; !lines[i].Contains("// Demo formulae"); i++) ;
-      //i is at "// Demo formulae"
-
-      var regex = new Regex(@"self.demoLabels\[(\d+)\] = \[self createMathLabel:@""(.+)"" withHeight:(\d+)\];");
-
-      for (; !lines[i].Contains("- (void)didReceiveMemoryWarning"); i++) {
-
+      var regex = new Regex(@"self.((?:demoLabels|labels)\[(\d+)\] = )\[self createMathLabel:@("".+"") withHeight:(\d+)\];", RegexOptions.Compiled);
+      var m = regex.Matches(text);
+      var sb = new StringBuilder("var demoLabels = new List<View>();\nvar labels = new List<View>();\n");
+      for (int i = 0; i < m.Count; i++) {
+        sb.Append(m[i].Captures[0].Value).Append("new FormsLatexView { ");
       }
+#error Unfinished!
     }
   }
 }

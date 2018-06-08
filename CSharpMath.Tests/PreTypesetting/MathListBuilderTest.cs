@@ -949,5 +949,17 @@ namespace CSharpMath.Tests {
       var latex = MathListBuilder.MathListToString(list);
       Assert.Equal(@"\sum \nolimits ", latex);
     }
+
+    [Fact]
+    public void TestColor() {
+      var input = @"\color{#F00}a";
+      var list = MathLists.FromString(input);
+      Assert.Single(list);
+      var op = list[0] as MathColor;
+      Assert.Equal(MathAtomType.Color, op.AtomType);
+      Assert.False(op.ScriptsAllowed);
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"\color{#F00}{a}", latex);
+    }
   }
 }

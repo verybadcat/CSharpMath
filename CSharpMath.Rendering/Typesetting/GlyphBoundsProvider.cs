@@ -4,10 +4,10 @@ using Typography.OpenFont;
 using static Typography.Contours.MyMath;
 using CSharpMath.Display.Text;
 using CSharpMath.FrontEnd;
-using TFont = CSharpMath.SkiaSharp.SkiaMathFont;
+using TFont = CSharpMath.Rendering.MathFont;
 
-namespace CSharpMath.SkiaSharp {
-  public class SkiaGlyphBoundsProvider: IGlyphBoundsProvider<TFont, Glyph> {
+namespace CSharpMath.Rendering {
+  public class GlyphBoundsProvider: IGlyphBoundsProvider<TFont, Glyph> {
 
     public (float[] Advances, float Total) GetAdvancesForGlyphs(TFont font, Glyph[] glyphs) {
       var typeface = font.Typeface;

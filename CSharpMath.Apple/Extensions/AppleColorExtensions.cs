@@ -1,28 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using CSharpMath.Atoms;
-using CSharpMath.Structures;
-using NColor = UIKit.UIColor;
+﻿using CSharpMath.Structures;
 
 namespace CSharpMath.Apple {
   public static class ColorExtensions {
-
-    private static byte _fromHex(string hex)
-      => Convert.ToByte(hex.Substring(0, 2), 16);
-    public static NColor From6DigitHexString(string hex) {
-      if (hex == null) return NColor.Black;
-      hex = hex.RemovePrefix("#").RemovePrefix("0x");
-      var red = _fromHex(hex);
-      var green = _fromHex(hex.Substring(2));
-      var blue = _fromHex(hex.Substring(4));
-      return new NColor(red / 255f, green / 255f, blue / 255f, 1);
-    }
-
-    public static NColor ToNative(this MathColor mathColor)
-      => From6DigitHexString(mathColor?.ColorString);
-
     public static CoreGraphics.CGColor ToCgColor(this Color color)
       => new CoreGraphics.CGColor(color.R / 255f, color.G / 255f, color.B / 255f, color.A / 255f);
+    public static UIKit.UIColor ToUiColor(this Color color)
+      => new UIKit.UIColor(color.R / 255f, color.G / 255f, color.B / 255f, color.A / 255f);
   }
 }

@@ -6,12 +6,13 @@ using CSharpMath.Display.Text;
 using UIKit;
 using TGlyph = System.UInt16;
 using CoreText;
+using CSharpMath.Structures;
 
 namespace CSharpMath.Apple.Drawing {
   public class AppleAttributeDictionaryFactory {
-    public static UIStringAttributes FromAttributedGlyphRun(AttributedGlyphRun<TFont, TGlyph> glyphRun) {
+    public static UIStringAttributes FromAttributedGlyphRun(AttributedGlyphRun<TFont, TGlyph> glyphRun, Color color) {
       return new UIStringAttributes {
-        ForegroundColor = glyphRun.TextColor.ToNative(),
+        ForegroundColor = color.ToUiColor(),
         Font = UIFont.SystemFontOfSize(glyphRun.Font.PointSize)
       };
     }

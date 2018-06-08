@@ -17,10 +17,10 @@ namespace CSharpMath.Forms.Example {
     public SettingsPage() {
       InitializeComponent();
 
-      var values = typeof(SkiaSharp.SkiaTextAlignment).GetEnumValues();
+      var values = typeof(Rendering.TextAlignment).GetEnumValues();
       Array.Reverse(values);
       Alignment.ItemsSource = values;
-      Alignment.SelectedItem = SkiaSharp.SkiaTextAlignment.Centre;
+      Alignment.SelectedItem = Rendering.TextAlignment.Centre;
 
       values = typeof(global::SkiaSharp.SKPaintStyle).GetEnumValues();
       PaintStyle.ItemsSource = values;
@@ -44,7 +44,7 @@ namespace CSharpMath.Forms.Example {
     private void CollectionChanged(object sender, Args e) {
       if (e.NewItems != null) foreach (var v in e.NewItems.Cast<FormsLatexView>()) {
           v.GlyphBoxColor = DrawGlyphBoxes.On ? (Parse(GlyphBoxColor.Text), Parse(GlyphRunColor.Text)) : default((Color glyph, Color textRun)?);
-          v.TextAlignment = (SkiaSharp.SkiaTextAlignment)Alignment.SelectedItem;
+          v.TextAlignment = (Rendering.TextAlignment)Alignment.SelectedItem;
           v.TextColor = TextColor.LabelColor;
           v.BackgroundColor = BackColor.LabelColor;
           v.PaintStyle = (global::SkiaSharp.SKPaintStyle)PaintStyle.SelectedItem;
@@ -54,7 +54,7 @@ namespace CSharpMath.Forms.Example {
 
     private void Alignment_SelectedIndexChanged(object sender, EventArgs e) {
       foreach (var v in App.AllViews) {
-        v.TextAlignment = (SkiaSharp.SkiaTextAlignment)Alignment.SelectedItem;
+        v.TextAlignment = (Rendering.TextAlignment)Alignment.SelectedItem;
         v.InvalidateSurface();
       }
     }

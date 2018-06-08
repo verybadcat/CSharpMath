@@ -14,10 +14,10 @@ namespace CSharpMath.DevUtils {
     /// <summary>
     /// The path of the latinmodern-math.otf file
     /// </summary>
-    public static readonly string LatinModernMath = P.Combine(Global, nameof(CSharpMath) + "." + nameof(SkiaSharp), "Font Reference", "latinmodern-math.otf");
+    public static readonly string LatinModernMath = P.Combine(Global, nameof(CSharpMath) + "." + nameof(Rendering), "Font Reference", "latinmodern-math.otf");
     /// <summary>
     /// The path of the Otf.cs file
     /// </summary>
-    public static readonly string OtfFile = P.Combine(Global, nameof(CSharpMath) + "." + nameof(SkiaSharp), "Font Reference", "Otf.cs");
+    public static readonly string OtfFile = P.Combine(Global, nameof(CSharpMath) + "." + nameof(Rendering), "Font Reference", "Otf.cs");
   }
 }

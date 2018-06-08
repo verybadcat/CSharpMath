@@ -34,8 +34,8 @@ namespace CSharpMath.Tests.FrontEnd {
       return width;
     }
 
-    public RectangleF[] GetBoundingRectsForGlyphs(TFont font, TGlyph[] glyphs, int nVariants) {
-      RectangleF[] r = new RectangleF[nVariants];
+    public RectangleF[] GetBoundingRectsForGlyphs(TFont font, TGlyph[] glyphs) {
+      RectangleF[] r = new RectangleF[glyphs.Length];
       for (int i = 0; i < glyphs.Length; i++) {
         var glyph = glyphs[i];
         TGlyph[] singleGlyph = { glyph };
@@ -49,15 +49,13 @@ namespace CSharpMath.Tests.FrontEnd {
       return r;
     }
 
-    public float[] GetAdvancesForGlyphs(MathFont<TGlyph> font, TGlyph[] glyphs) {
-      var advances = glyphs.Select(g => GetEffectiveLength(g) * font.PointSize * WidthPerCharacterPerFontSize).ToArray();
-      var r = new float[1 + advances.Count()];
-      for (int i = 0; i < advances.Length; i++) {
-        r[i] = advances[i];
+    public (float[] Advances, float Total) GetAdvancesForGlyphs(MathFont<TGlyph> font, TGlyph[] glyphs) {
+      var r = new float[glyphs.Length];
+      var total = 0f;
+      for (int i = 0; i < glyphs.Length; i++) {
+        total += r[i] = GetEffectiveLength(glyphs[i]) * font.PointSize * WidthPerCharacterPerFontSize;
       }
-      r[advances.Length] = advances.Sum();
-
-      return r;
+      return (r, total);
     }
   }
 }

@@ -1,15 +1,12 @@
-﻿using CSharpMath.FrontEnd;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using System;
+﻿using System.Linq;
+using CSharpMath.FrontEnd;
 using Typography.OpenFont;
 
-namespace CSharpMath.SkiaSharp {
-  public class SkiaGlyphFinder : IGlyphFinder<Glyph> {
+namespace CSharpMath.Rendering {
+  public class GlyphFinder : IGlyphFinder<Glyph> {
     private readonly Typeface _typeface;
 
-    public SkiaGlyphFinder(Typeface typeface) => _typeface = typeface;
+    public GlyphFinder(Typeface typeface) => _typeface = typeface;
 
     public Glyph FindGlyphForCharacterAtIndex(int index, string str) =>
       _typeface.Lookup(char.ConvertToUtf32(str, index - (char.IsLowSurrogate(str[index]) ? 1 : 0)));

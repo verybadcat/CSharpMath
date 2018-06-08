@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace CSharpMath.DevUtils.SkiaSharp {
+namespace CSharpMath.DevUtils.Rendering {
   static class OtfCodeBuilder {
     /// <summary>
     /// Builds the Otf.cs file located at CSharpMath\CSharpMath.SkiaSharp\Font Reference\Otf.cs
@@ -12,12 +12,12 @@ namespace CSharpMath.DevUtils.SkiaSharp {
       const int numbersPerLine = 25;
       var bytes = File.ReadAllBytes(Paths.LatinModernMath);
       var b = new StringBuilder()
-        .AppendLine("namespace CSharpMath.SkiaSharp {")
+        .AppendLine("namespace CSharpMath.Rendering {")
         .AppendLine("  //Do not modify this file directly. Instead, modify this at")
-        .AppendLine("  //CSharpMath\\CSharpMath.Utils\\SkiaSharp\\OtfCodeBuilder.cs and re-generate")
+        .AppendLine("  //CSharpMath\\CSharpMath.Utils\\Rendering\\OtfCodeBuilder.cs and re-generate")
         .AppendLine("  //this file by executing the method in that file in the CSharpMath.Utils project.")
         .AppendLine("  [System.Runtime.CompilerServices.CompilerGenerated]")
-        .AppendLine("  internal static partial class SkiaResources {")
+        .AppendLine("  internal static partial class Resources {")
         .AppendLine("    public static byte[] Otf { get; } = new byte[] {");
       int i = 0;
       for (int l = bytes.Length - numbersPerLine; i < l; i += numbersPerLine)

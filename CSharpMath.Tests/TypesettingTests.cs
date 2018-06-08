@@ -16,7 +16,6 @@ namespace CSharpMath.Tests {
 
     }
     private TFont _font { get; } = new TFont(20);
-    private IFontMeasurer<TFont, char> _fontMeasurer => _context.FontMeasurer;
     private TypesettingContext<TFont, char> _context { get; } = TestTypesettingContexts.Create();
     [Fact]
     public void TestSimpleVariable() {
