@@ -8,6 +8,7 @@ using Action = System.Collections.Specialized.NotifyCollectionChangedAction;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using CSharpMath.Rendering;
 
 namespace CSharpMath.Forms.Example {
   using Color = Xamarin.Forms.Color;
@@ -22,9 +23,9 @@ namespace CSharpMath.Forms.Example {
       Alignment.ItemsSource = values;
       Alignment.SelectedItem = Rendering.TextAlignment.Centre;
 
-      values = typeof(global::SkiaSharp.SKPaintStyle).GetEnumValues();
+      values = typeof(PaintStyle).GetEnumValues();
       PaintStyle.ItemsSource = values;
-      PaintStyle.SelectedItem = global::SkiaSharp.SKPaintStyle.Fill;
+      PaintStyle.SelectedItem = Rendering.PaintStyle.Fill;
 
       values = typeof(Enumerations.LineStyle).GetEnumValues();
       LineStyle.ItemsSource = values;
@@ -42,12 +43,12 @@ namespace CSharpMath.Forms.Example {
         (global::SkiaSharp.SKColor.TryParse(color, out var c) ? c : global::SkiaSharp.SKColors.Black);
 
     private void CollectionChanged(object sender, Args e) {
-      if (e.NewItems != null) foreach (var v in e.NewItems.Cast<FormsLatexView>()) {
+      if (e.NewItems != null) foreach (var v in e.NewItems.Cast<FormsMathView>()) {
           v.GlyphBoxColor = DrawGlyphBoxes.On ? (Parse(GlyphBoxColor.Text), Parse(GlyphRunColor.Text)) : default((Color glyph, Color textRun)?);
           v.TextAlignment = (Rendering.TextAlignment)Alignment.SelectedItem;
           v.TextColor = TextColor.LabelColor;
           v.BackgroundColor = BackColor.LabelColor;
-          v.PaintStyle = (global::SkiaSharp.SKPaintStyle)PaintStyle.SelectedItem;
+          v.PaintStyle = (Rendering.PaintStyle)PaintStyle.SelectedItem;
           v.LineStyle = (Enumerations.LineStyle)LineStyle.SelectedItem;
         }
     }
@@ -106,7 +107,7 @@ namespace CSharpMath.Forms.Example {
 
     private void PaintStyle_SelectedIndexChanged(object sender, EventArgs e) {
       foreach (var v in App.AllViews) {
-        v.PaintStyle = (global::SkiaSharp.SKPaintStyle)PaintStyle.SelectedItem;
+        v.PaintStyle = (PaintStyle)PaintStyle.SelectedItem;
         v.InvalidateSurface();
       }
     }

@@ -9,7 +9,7 @@ namespace CSharpMath.Forms.Example
 {
 	public partial class App : Application
 	{
-    public static ObservableCollection<FormsLatexView> AllViews = new ObservableCollection<FormsLatexView>();
+    public static ObservableCollection<FormsMathView> AllViews = new ObservableCollection<FormsMathView>();
     public App() {
       InitializeComponent();
     }

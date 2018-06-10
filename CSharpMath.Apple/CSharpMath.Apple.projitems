@@ -9,7 +9,7 @@
     <Import_RootNamespace>CSharpMath.Apple</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)AppleLatexView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AppleMathView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Drawing\AppleGraphicsContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Drawing\AttributedStrings\AppleAttributeDictionaryFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\AppleColorExtensions.cs" />

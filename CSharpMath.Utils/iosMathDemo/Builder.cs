@@ -12,7 +12,7 @@ namespace CSharpMath.DevUtils.iosMathDemo {
       var m = regex.Matches(text);
       var sb = new StringBuilder("var demoLabels = new List<View>();\nvar labels = new List<View>();\n");
       for (int i = 0; i < m.Count; i++) {
-        sb.Append(m[i].Captures[0].Value).Append("new FormsLatexView { ");
+        sb.Append(m[i].Captures[0].Value).Append("new FormsMathView { ");
       }
 #error Unfinished!
     }

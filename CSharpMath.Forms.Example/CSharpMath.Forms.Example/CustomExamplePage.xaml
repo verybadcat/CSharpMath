@@ -9,6 +9,6 @@
             <Entry x:Name="Entry" HorizontalOptions="FillAndExpand"/>
             <Picker x:Name="Size" HorizontalOptions="FillAndExpand"/>
         </StackLayout>
-        <local:FormsLatexView x:Name="View" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"/>
+        <local:FormsMathView x:Name="View" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"/>
     </StackLayout>
 </ContentPage>

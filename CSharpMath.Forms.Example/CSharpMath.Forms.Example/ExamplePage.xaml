@@ -10,6 +10,6 @@
             <Picker x:Name="Size" HorizontalOptions="FillAndExpand"/>
         </StackLayout>
         <Label x:Name="Label"/>
-        <local:FormsLatexView x:Name="View" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"/>
+        <local:FormsMathView x:Name="View" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"/>
     </StackLayout>
 </ContentPage>

@@ -20,7 +20,7 @@ using NView = AppKit.NSView;
 #endif
 
 namespace CSharpMath.Apple {
-  public class AppleLatexView : NView {
+  public class AppleMathView : NView {
     public string ErrorMessage { get; set; }
     public void SetMathList(IMathList mathList)
     {
@@ -57,7 +57,7 @@ namespace CSharpMath.Apple {
 
     private readonly TypesettingContext<TFont, TGlyph> _typesettingContext;
 
-    public AppleLatexView(TypesettingContext<TFont, TGlyph> typesettingContext, float fontSize) {
+    public AppleMathView(TypesettingContext<TFont, TGlyph> typesettingContext, float fontSize) {
       Layer.GeometryFlipped = true;
       BackgroundColor = NColor.FromRGB(0.9f, 0.9f, 0.9f);
       TextColor = NColor.Black;

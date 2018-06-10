@@ -5,8 +5,8 @@
              x:Class="CSharpMath.Forms.Example.AllExamplesPage"
              Title="All examples">
     <!--<ScrollView Orientation="Both" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-        <local:FormsLatexView x:Name="View"/>
+        <local:FormsMathView x:Name="View"/>
     </ScrollView>-->
-    <local:FormsLatexView x:Name="View"/>
+    <local:FormsMathView x:Name="View"/>
 </ContentPage>
 
