@@ -77,7 +77,7 @@ namespace CSharpMath.Rendering {
     /// Unit of measure: points
     /// </summary>
     public float FontSize { get => __size; set => Redisplay(__size = value); } float __size = 20f;
-    public List<Typeface> LocalTypefaces { get => __typefaces; set => Redisplay(__typefaces = value); } List<Typeface> __typefaces = new List<Typeface>();
+    List<Typeface> __typefaces = new List<Typeface>(); public List<Typeface> LocalTypefaces { get => __typefaces; set => Redisplay(__typefaces = value); }
     LineStyle __style = LineStyle.Display; public LineStyle LineStyle { get => __style; set => Redisplay(__style = value); }
     (Color glyph, Color textRun)? __box; public (Color glyph, Color textRun)? GlyphBoxColor { get => __box; set => Redisplay(__box = value); }
 
@@ -112,9 +112,8 @@ namespace CSharpMath.Rendering {
     }
 
     public void UpdateDisplay() {
-      var fontSize = FontSize;
-      var skiaFont = FontManager.LatinMath(fontSize);
-      _displayList = _typesettingContext.CreateLine(MathList, skiaFont, LineStyle);
+      var fonts = new TFonts(LocalTypefaces, FontSize);
+      _displayList = fonts.TypesettingContext.CreateLine(MathList, fonts, LineStyle);
       _displayList.Position = GetDisplayPosition();
       _displayChanged = false;
     }

@@ -13,9 +13,9 @@ namespace CSharpMath.Rendering {
     public ICanvas Canvas { get; set; }
     
     public PointF TextPosition { get; set; }
-    void IGraphicsContext<TFont, Glyph>.SetTextPosition(PointF position) => TextPosition = position;
+    void IGraphicsContext<TFonts, Glyph>.SetTextPosition(PointF position) => TextPosition = position;
 
-    public void DrawGlyphsAtPoints(Glyph[] glyphs, TFont font, PointF[] points, Color? color) {
+    public void DrawGlyphsAtPoints(Glyph[] glyphs, TFonts font, PointF[] points, Color? color) {
       var textPosition = TextPosition;
       if (GlyphBoxColor != null) {
         var rects = new GlyphBoundsProvider().GetBoundingRectsForGlyphs(font, glyphs);
@@ -44,9 +44,8 @@ namespace CSharpMath.Rendering {
       Canvas.AddLine(x1, y1, x2, y2, lineThickness);
     }
 
-    public void DrawGlyphRunWithOffset(Display.Text.AttributedGlyphRun<TFont, Glyph> run, PointF offset, Color? color) {
+    public void DrawGlyphRunWithOffset(Display.Text.AttributedGlyphRun<TFonts, Glyph> run, PointF offset, Color? color) {
       var textPosition = offset.Plus(TextPosition);
-
       if (GlyphBoxColor != null) {
         var size = new SizeF();
         Bounds bounds;
@@ -58,14 +57,14 @@ namespace CSharpMath.Rendering {
         Canvas.CurrentColor = GlyphBoxColor?.textRun;
         Canvas.StrokeRect(textPosition.X, textPosition.Y, size.Width + run.KernedGlyphs.Sum(g => g.KernAfterGlyph), size.Height);
       }
-
+      var layout = new GlyphLayout();
       var glyphs = run.KernedGlyphs;
       var pointSize = run.Font.PointSize;
       Canvas.Save();
       Canvas.Translate(textPosition.X, textPosition.Y);
       for (int i = 0; i < glyphs.Length; i++) {
         var typeface = glyphs[i].Glyph.Typeface;
-        var layout = new GlyphLayout { Typeface = typeface };
+        layout.Typeface = typeface;
         var pathBuilder = new GlyphPathBuilder(typeface);
         var scale = typeface.CalculateScaleToPixelFromPointSize(pointSize);
         var index = glyphs[i].Glyph.Info.GlyphIndex;

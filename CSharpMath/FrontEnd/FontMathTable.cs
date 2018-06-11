@@ -119,7 +119,7 @@ namespace CSharpMath.FrontEnd {
     #region glyph assembly
     public abstract GlyphPart<TGlyph>[] GetVerticalGlyphAssembly(TGlyph rawGlyph, TFont font);
     public abstract float MinConnectorOverlap(TFont font);
-    
+
     public abstract TGlyph[] GetVerticalVariantsForGlyph(TGlyph rawGlyph);
     public abstract TGlyph[] GetHorizontalVariantsForGlyph(TGlyph rawGlyph);
 

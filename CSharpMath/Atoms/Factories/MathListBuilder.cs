@@ -485,7 +485,7 @@ namespace CSharpMath.Atoms {
 
     private void SetError(string message) {
       if (_error == null) {
-        _error = message;
+        SetError(message);
       }
     }
 

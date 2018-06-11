@@ -7,7 +7,7 @@ using CSharpMath.FrontEnd;
 using TFonts = CSharpMath.Rendering.MathFonts;
 
 namespace CSharpMath.Rendering {
-  public class GlyphBoundsProvider: IGlyphBoundsProvider<TFonts, Glyph> {
+  public class GlyphBoundsProvider : IGlyphBoundsProvider<TFonts, Glyph> {
 
     public (float[] Advances, float Total) GetAdvancesForGlyphs(TFonts fonts, Glyph[] glyphs) {
       var nGlyphs = glyphs.Length;
@@ -22,8 +22,7 @@ namespace CSharpMath.Rendering {
       return (advanceSizes, total);
     }
 
-    public RectangleF[] GetBoundingRectsForGlyphs(TFonts font, Glyph[] glyphs)
-    {
+    public RectangleF[] GetBoundingRectsForGlyphs(TFonts font, Glyph[] glyphs) {
       var rects = new RectangleF[glyphs.Length];
       var i = 0;
       foreach (var glyph in glyphs) {
@@ -39,3 +38,4 @@ namespace CSharpMath.Rendering {
     public float GetTypographicWidth(TFonts fonts, AttributedGlyphRun<TFonts, Glyph> run) => GetAdvancesForGlyphs(fonts, run.Glyphs).Total + run.KernedGlyphs.Sum(g => g.KernAfterGlyph);
   }
 }
+
