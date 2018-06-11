@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using Typography.OpenFont;
@@ -8,15 +9,11 @@ namespace CSharpMath.Rendering {
     static FontManager() {
       var bytes = Resources.Otf;
       var reader = new OpenFontReader();
-      LatinMathTypeface = reader.Read(new MemoryStream(bytes, false));
-      LatinMathTypeface.UpdateAllCffGlyphBounds();
+      var latinMathTypeface = reader.Read(new MemoryStream(bytes, false));
+      latinMathTypeface.UpdateAllCffGlyphBounds();
+      GlobalTypefaces = new Typefaces(latinMathTypeface);
     }
 
-    public const string LatinMathFontName = "latinmodern-math";
-    public static Typeface LatinMathTypeface { get; }
-
-    public static MathFont LatinMath(float pointSize) {
-      return new MathFont(LatinMathFontName, LatinMathTypeface, pointSize);
-    }
+    public static Typefaces GlobalTypefaces { get; }
   }
 }

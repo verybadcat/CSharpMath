@@ -3,11 +3,11 @@ using System.Drawing;
 using System.Linq;
 using CSharpMath.FrontEnd;
 using CSharpMath.Structures;
-using TFont = CSharpMath.Rendering.MathFont;
+using TFonts = CSharpMath.Rendering.MathFonts;
 using Typography.OpenFont;
 
 namespace CSharpMath.Rendering {
-  public class GraphicsContext : IGraphicsContext<TFont, Glyph> {
+  public class GraphicsContext : IGraphicsContext<TFonts, Glyph> {
     public (Color glyph, Color textRun)? GlyphBoxColor { get; set; }
     public ICanvas Canvas { get; set; }
     
@@ -61,8 +61,8 @@ namespace CSharpMath.Rendering {
       Canvas.Save();
       Canvas.Translate(textPosition.X, textPosition.Y);
       for (int i = 0; i < glyphs.Length; i++) {
-        var index = glyphs[i].Glyph.GlyphIndex;
-        pathBuilder.BuildFromGlyph(glyphs[i].Glyph, pointSize);
+        var index = glyphs[i].Glyph.Info.GlyphIndex;
+        pathBuilder.BuildFromGlyph(glyphs[i].Glyph.Info, pointSize);
         Canvas.CurrentColor = color;
         pathBuilder.ReadShapes(Canvas);
         Canvas.Translate(typeface.GetHAdvanceWidthFromGlyphIndex(index) * scale + glyphs[i].KernAfterGlyph, 0);

@@ -4,34 +4,39 @@ using Typography.OpenFont;
 using static Typography.Contours.MyMath;
 using CSharpMath.Display.Text;
 using CSharpMath.FrontEnd;
-using TFont = CSharpMath.Rendering.MathFont;
+using TFonts = CSharpMath.Rendering.MathFonts;
 
 namespace CSharpMath.Rendering {
-  public class GlyphBoundsProvider: IGlyphBoundsProvider<TFont, Glyph> {
+  public class GlyphBoundsProvider: IGlyphBoundsProvider<TFonts, Glyph> {
 
-    public (float[] Advances, float Total) GetAdvancesForGlyphs(TFont font, Glyph[] glyphs) {
-      var typeface = font.Typeface;
+    public (float[] Advances, float Total) GetAdvancesForGlyphs(TFonts fonts, Glyph[] glyphs) {
       var nGlyphs = glyphs.Length;
       var advanceSizes = new float[nGlyphs];
-      var scale = typeface.CalculateScaleToPixelFromPointSize(font.PointSize);
       var total = 0f;
-      for (int i = 0; i < nGlyphs; i++) total += advanceSizes[i] = font.Typeface.GetHAdvanceWidthFromGlyphIndex(glyphs[i].GlyphIndex) * scale;
+      var i = 0;
+      foreach (var (typeface, glyph) in glyphs) {
+        var scale = typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);
+        total += advanceSizes[i] = typeface.GetHAdvanceWidthFromGlyphIndex(glyph.GlyphIndex) * scale;
+        i++;
+      }
       return (advanceSizes, total);
     }
 
-    public RectangleF[] GetBoundingRectsForGlyphs(TFont font, Glyph[] glyphs)
+    public RectangleF[] GetBoundingRectsForGlyphs(TFonts font, Glyph[] glyphs)
     {
-      var scale = font.Typeface.CalculateScaleToPixelFromPointSize(font.PointSize);
       var rects = new RectangleF[glyphs.Length];
-      for (int i = 0; i < glyphs.Length; i++) {
-        var bounds = glyphs[i].Bounds;
-        var obounds = glyphs[i].GetOriginalBounds();
+      var i = 0;
+      foreach (var (typeface, glyph) in glyphs) {
+        var scale = typeface.CalculateScaleToPixelFromPointSize(font.PointSize);
+        var bounds = glyph.Bounds;
+        var obounds = glyph.GetOriginalBounds();
         rects[i] = RectangleF.FromLTRB(obounds.XMin * scale, bounds.YMin * scale, obounds.XMax * scale, bounds.YMax * scale);
+        i++;
       }
       return rects;
     }
 
-    public float GetTypographicWidth(TFont font, AttributedGlyphRun<TFont, Glyph> run) {
+    public float GetTypographicWidth(TFonts font, AttributedGlyphRun<TFonts, Glyph> run) {
       var stringBox = font.GlyphLayout.LayoutAndMeasureString(run.Text.ToCharArray(), 0, run.Text.Length, font.PointSize);
       return stringBox.width + run.KernedGlyphs.Sum(g => g.KernAfterGlyph);
     }

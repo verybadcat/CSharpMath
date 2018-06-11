@@ -27,7 +27,7 @@ namespace CSharpMath.Atoms {
     public IMathList Build() {
       var r = BuildInternal(false);
       if (HasCharacters && _error == null) {
-        _error = "Error; most likely mismatched braces " + new string(_chars);
+        SetError("Error; most likely mismatched braces " + new string(_chars));
       }
       if (_error != null) {
         return null;
@@ -111,7 +111,7 @@ namespace CSharpMath.Atoms {
             if (oneCharOnly || stopChar != 0) {
               throw new InvalidOperationException("This should have been handled before.");
             }
-            _error = "Mismatched braces";
+            SetError("Mismatched braces");
             return null;
 
           case '\\':
@@ -145,7 +145,7 @@ namespace CSharpMath.Atoms {
             }
             atom = AtomForCommand(command); 
             if (atom == null) {
-              _error = _error ?? "Internal error";
+              SetError(_error ?? "Internal error");
               return null;
             }
             break;
@@ -181,10 +181,10 @@ namespace CSharpMath.Atoms {
       }
       if (stopChar > 0) {
         if (stopChar == '}') {
-          _error = "Missing closing brace";
+          SetError("Missing closing brace");
         } else {
           // we never found our stop character.
-          _error = "Expected character not found: " + stopChar.ToString();
+          SetError("Expected character not found: " + stopChar.ToString());
         }
       }
       return r;
@@ -207,7 +207,7 @@ namespace CSharpMath.Atoms {
 
     private string ReadColor() {
       if (!(ExpectCharacter('{'))) {
-        _error = "Missing {";
+        SetError("Missing {");
         return null;
       }
       SkipSpaces();
@@ -223,7 +223,7 @@ namespace CSharpMath.Atoms {
         }
       }
       if (!ExpectCharacter('}')) {
-        _error = "Missing }";
+        SetError("Missing }");
         return null;
       }
       return builder.ToString();
@@ -243,7 +243,7 @@ namespace CSharpMath.Atoms {
 
     private void AssertNotSpace(char ch) {
       if (ch < 0x21 || ch > 0x7E) {
-        _error = "Expected non space character; found " + ch;
+        SetError("Expected non space character; found " + ch);
       }
     }
 
@@ -297,13 +297,13 @@ namespace CSharpMath.Atoms {
 
     private string ReadEnvironment() {
       if (!ExpectCharacter('{')) {
-        _error = "Missing {";
+        SetError("Missing {");
         return null;
       }
       SkipSpaces();
       var env = ReadString();
       if (!ExpectCharacter('}')) {
-        _error = "Missing }";
+        SetError("Missing }");
         return null;
       }
       return env;
@@ -312,12 +312,12 @@ namespace CSharpMath.Atoms {
     private IMathAtom _BoundaryAtomForDelimiterType(string delimiterType) {
       string delim = ReadDelimiter();
       if (delim == null) {
-        _error = "Missing delimiter for " + delimiterType;
+        SetError("Missing delimiter for " + delimiterType);
         return null;
       }
       var boundary = MathAtoms.BoundaryAtom(delim);
       if (boundary == null) {
-        _error = @"Invalid delimiter for \" + delimiterType + ": " + delim;
+        SetError(@"Invalid delimiter for \" + delimiterType + ": " + delim);
       }
       return boundary;
     }
@@ -334,22 +334,22 @@ namespace CSharpMath.Atoms {
       }
       switch (command) {
         case "frac":
-          var fraction = new Fraction();
-          fraction.Numerator = BuildInternal(true);
-          fraction.Denominator = BuildInternal(true);
-          return fraction;
+          return new Fraction {
+            Numerator = BuildInternal(true),
+            Denominator = BuildInternal(true)
+          };
         case "binom":
-          var frac = new Fraction(false);
-          frac.Numerator = BuildInternal(true);
-          frac.Denominator = BuildInternal(true);
-          frac.LeftDelimiter = "(";
-          frac.RightDelimiter = ")";
-          return frac;
+          return new Fraction(false) {
+            Numerator = BuildInternal(true),
+            Denominator = BuildInternal(true),
+            LeftDelimiter = "(",
+            RightDelimiter = ")"
+          };
         case "sqrt":
           var rad = new Radical();
           var ch = GetNextCharacter();
           if (ch == null)
-            _error = "Missing argument for sqrt";
+            SetError("Missing argument for sqrt");
           else if (ch == '[') {
             rad.Degree = BuildInternal(false, ']');
             rad.Radicand = BuildInternal(true);
@@ -367,20 +367,20 @@ namespace CSharpMath.Atoms {
           }
           _currentInnerAtom.InnerList = BuildInternal(false);
           if (_currentInnerAtom.RightBoundary == null) {
-            _error = "Missing \\right";
+            SetError("Missing \\right");
             return null;
           }
           var newInner = _currentInnerAtom;
           _currentInnerAtom = oldInner;
           return newInner;
         case "overline":
-          var over = new Overline();
-          over.InnerList = BuildInternal(true);
-          return over;
+          return new Overline {
+            InnerList = BuildInternal(true)
+          };
         case "underline":
-          var under = new Underline();
-          under.InnerList = BuildInternal(true);
-          return under;
+          return new Underline() {
+              InnerList = BuildInternal(true)
+          };
         case "begin":
           var env = ReadEnvironment();
           if (env == null) {
@@ -389,28 +389,28 @@ namespace CSharpMath.Atoms {
           var table = BuildTable(env, null, false);
           return table;
         case "color":
-          var mathColor = new MathColor();
-          mathColor.ColorString = ReadColor();
-          mathColor.InnerList = BuildInternal(true);
-          return mathColor;
+          return new MathColor {
+            ColorString = ReadColor(),
+            InnerList = BuildInternal(true)
+          };
         default:
-          _error = "Invalid command \\" + command;
+          SetError("Invalid command \\" + command);
           return null;
       }
     }
 
-    private static Dictionary<string, String[]> fractionCommands = new Dictionary<string, string[]> {
-      {"over", new string[0] },
-      {"atop", new string[0] },
-      {"choose", new string[]{"(", ")" } },
-      {"brack", new string[]{"[", "]"} },
-      {"brace", new string[]{"{", "}"} }
+    private static Dictionary<string, (string left, string right)?> fractionCommands = new Dictionary<string, (string left, string right)?> {
+      {"over", null },
+      {"atop", null },
+      {"choose", ("(", ")") },
+      {"brack", ("[", "]") },
+      {"brace", ("{", "}") }
     };
 
     private MathList StopCommand(string command, MathList list, char stopChar) {
       if (command == "right") {
         if (_currentInnerAtom == null) {
-          _error = "Missing \\left";
+          SetError("Missing \\left");
           return null;
         }
         _currentInnerAtom.RightBoundary = _BoundaryAtomForDelimiterType("right");
@@ -422,10 +422,10 @@ namespace CSharpMath.Atoms {
       if (fractionCommands.ContainsKey(command)) {
         bool rule = (command == "over");
         var fraction = new Fraction(rule);
-        string[] delimiters = fractionCommands[command];
-        if (delimiters.Count() == 2) {
-          fraction.LeftDelimiter = delimiters[0];
-          fraction.RightDelimiter = delimiters[1];
+        (string left, string right)? delimiters = fractionCommands[command];
+        if (delimiters != null) {
+          fraction.LeftDelimiter = delimiters.Value.left;
+          fraction.RightDelimiter = delimiters.Value.right;
         }
         fraction.Numerator = list;
         fraction.Denominator = BuildInternal(false, stopChar);
@@ -446,7 +446,7 @@ namespace CSharpMath.Atoms {
         }
       } else if (command == "end") {
         if (_currentEnvironment == null) {
-          _error = @"Missing \begin";
+          SetError(@"Missing \begin");
           return null;
         }
         var env = ReadEnvironment();
@@ -454,7 +454,7 @@ namespace CSharpMath.Atoms {
           return null;
         }
         if (env!=_currentEnvironment.Name) {
-          _error = $"Begin environment name {_currentEnvironment.Name} does not match end environment name {env}";
+          SetError($"Begin environment name {_currentEnvironment.Name} does not match end environment name {env}");
           return null;
         }
         _currentEnvironment.Ended = true;
@@ -468,7 +468,7 @@ namespace CSharpMath.Atoms {
           var op = (LargeOperator)atom;
           op.Limits = true;
         } else {
-          _error = "limits can only be applied to an operator.";
+          SetError("limits can only be applied to an operator.");
         }
         return true;
       } else if (modifier == "nolimits") {
@@ -476,16 +476,16 @@ namespace CSharpMath.Atoms {
           var op = (LargeOperator)atom;
           op.Limits = false;
         } else {
-          _error = "nolimits can only be applied to an operator.";
+          SetError("nolimits can only be applied to an operator.");
         }
         return true;
       }
       return false;
     }
 
-    private void setError(string message) {
+    private void SetError(string message) {
       if (_error == null) {
-        _error = message;
+        SetError(message);
       }
     }
 
@@ -520,12 +520,12 @@ namespace CSharpMath.Atoms {
         }
       }
       if (_currentEnvironment.Name != null && !_currentEnvironment.Ended) {
-        _error = @"Missing \end";
+        SetError(@"Missing \end");
         return null;
       }
       IMathAtom table = MathAtoms.Table(_currentEnvironment.Name, rows, out string errorMessage);
       if (table == null && errorMessage != null) {
-        _error = errorMessage;
+        SetError(errorMessage);
         return null;
       }
       _currentEnvironment = oldEnv;

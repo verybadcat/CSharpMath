@@ -10,11 +10,17 @@ namespace CSharpMath.Structures {
       B = b;
       A = a;
     }
+    public Color(float r, float g, float b, float a = 1f)
+      : this((byte)(r * 255f), (byte)(g * 255f), (byte)(b * 255f), (byte)(a * 255f)) { }
 
     public byte R { get; }
     public byte G { get; }
     public byte B { get; }
     public byte A { get; }
+    public float Rf => R / 255f;
+    public float Gf => G / 255f;
+    public float Bf => B / 255f;
+    public float Af => A / 255f;
 
     public void Deconstruct(out byte r, out byte g, out byte b) {
       r = R;
@@ -22,10 +28,17 @@ namespace CSharpMath.Structures {
       b = B;
     }
     public void Deconstruct(out byte r, out byte g, out byte b, out byte a) {
-      r = R;
-      g = G;
-      b = B;
+      Deconstruct(out r, out g, out b);
       a = A;
+    }
+    public void Deconstruct(out float r, out float g, out float b) {
+      r = Rf;
+      g = Gf;
+      b = Bf;
+    }
+    public void Deconstruct(out float r, out float g, out float b, out float a) {
+      Deconstruct(out r, out g, out b);
+      a = Af;
     }
 
     public override string ToString() {

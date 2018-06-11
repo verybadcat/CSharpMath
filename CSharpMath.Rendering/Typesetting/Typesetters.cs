@@ -5,10 +5,10 @@ using Typography.OpenFont;
 
 namespace CSharpMath.Rendering {
   public static class Typesetters {
-    private static TypesettingContext<MathFont, Glyph> CreateTypesettingContext(Typeface typeface) =>
-      new TypesettingContext<MathFont, Glyph>(
+    private static TypesettingContext<MathFonts, Glyph> CreateTypesettingContext(Typeface typeface) =>
+      new TypesettingContext<MathFonts, Glyph>(
         //new SkiaFontMeasurer(),
-        (font, size) => new MathFont(font, size),
+        (fonts, size) => new MathFonts(fonts, size),
         new GlyphBoundsProvider(),
         //new SkiaGlyphNameProvider(someTypefaceSizeIrrelevant),
         new GlyphFinder(typeface),
@@ -17,9 +17,9 @@ namespace CSharpMath.Rendering {
         new MathTable(typeface)
       );
 
-    private static TypesettingContext<MathFont, Glyph> CreateLatinMath() {
+    private static TypesettingContext<MathFonts, Glyph> CreateLatinMath() {
       var fontSize = 20;
-      var skiaFont = FontManager.LatinMath(fontSize);
+      var skiaFont = new mathfo(fontSize);
       return CreateTypesettingContext(skiaFont.Typeface);
     }
 

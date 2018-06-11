@@ -8,7 +8,7 @@ using Typography.OpenFont.MathGlyphs;
 namespace CSharpMath.Rendering {
   public class MathTable : FontMathTable<MathFont, Glyph> {
     protected readonly MathConstants _constants;
-    protected readonly Func<ushort, Glyph> _lookup;
+    protected readonly Func<ushort, Typography.OpenFont.Glyph> _lookup;
 
     public MathTable(Typeface typeface) => (_constants, _lookup) = (typeface.MathConsts ??
       throw new ArgumentException($"{nameof(typeface)}.{nameof(typeface.MathConsts)} is {null}."), typeface.GetGlyphByIndex);

@@ -6,7 +6,7 @@ using CSharpMath.Enumerations;
 using CSharpMath.Rendering;
 using CSharpMath.Atoms;
 using CSharpMath.Interfaces;
-using TFont = CSharpMath.Rendering.MathFont;
+using TFonts = CSharpMath.Rendering.MathFonts;
 using CSharpMath.FrontEnd;
 using CSharpMath.Structures;
 
@@ -40,9 +40,9 @@ namespace CSharpMath.Rendering {
     //_field == private field, __field == property-only field
     protected void Redisplay<T>(T assignment) => _displayChanged = true;
     protected bool _displayChanged = false;
-    protected MathListDisplay<TFont, Glyph> _displayList;
+    protected MathListDisplay<TFonts, Glyph> _displayList;
     protected GraphicsContext _skiaContext;
-    protected static readonly TypesettingContext<TFont, Glyph> _typesettingContext = Typesetters.LatinMath;
+    protected static readonly TypesettingContext<TFonts, Glyph> _typesettingContext = Typesetters.LatinMath;
 
     public Action Invalidate { get; }
 
