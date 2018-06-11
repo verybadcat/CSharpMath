@@ -27,5 +27,18 @@ namespace CSharpMath.Forms.Example
       //App.AllViews.Remove(View);
       base.OnDisappearing();
     }
+
+    private async Task In_Clicked(object sender, EventArgs e) {
+      var file = await Plugin.FilePicker.CrossFilePicker.Current.PickFile();
+      var bytes = Encoding.Unicode.GetBytes(Entry.Text);
+      file.GetStream().Write(bytes, 0, bytes.Length);
+      await Plugin.FilePicker.CrossFilePicker.Current.SaveFile(file);
+    }
+
+    private async Task Out_Clicked(object sender, EventArgs e) {
+      var file = await Plugin.FilePicker.CrossFilePicker.Current.PickFile();
+      Entry.Text = Encoding.Unicode.GetString(file.DataArray);
+      await Plugin.FilePicker.CrossFilePicker.Current.SaveFile(file);
+    }
   }
 }

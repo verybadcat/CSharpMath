@@ -12,13 +12,9 @@ namespace CSharpMath.Rendering {
     public ICanvas Canvas { get; set; }
     
     public PointF TextPosition { get; set; }
-    void IGraphicsContext<TFont, Glyph>.SetTextPosition(PointF position) {
-      Debug($"TextPosition ({position.X}, {position.Y})");
-      TextPosition = position;
-    }
+    void IGraphicsContext<TFont, Glyph>.SetTextPosition(PointF position) => TextPosition = position;
 
     public void DrawGlyphsAtPoints(Glyph[] glyphs, TFont font, PointF[] points, Color? color) {
-      Debug($"Glyphs {string.Join("; ", glyphs.Zip(points, (g, p) => $"{g.GetCff1GlyphData().Name} ({p.X}, {p.Y})"))} ");
       var textPosition = TextPosition;
       var typeface = font.Typeface;
       var pathBuilder = new GlyphPathBuilder(typeface);
@@ -43,13 +39,11 @@ namespace CSharpMath.Rendering {
     }
 
     public void DrawLine(float x1, float y1, float x2, float y2, float lineThickness, Color? color) {
-      Debug($"Line ({x1}, {y1}) -> ({x2}, {y2})");
       Canvas.CurrentColor = color;
       Canvas.AddLine(x1, y1, x2, y2, lineThickness);
     }
 
     public void DrawGlyphRunWithOffset(Display.Text.AttributedGlyphRun<TFont, Glyph> run, PointF offset, Color? color) {
-      Debug($"Text {run.Text} ({offset.X}, {offset.Y})");
       var textPosition = offset.Plus(TextPosition);
 
       if (GlyphBoxColor != null) {
@@ -76,24 +70,10 @@ namespace CSharpMath.Rendering {
       Canvas.Restore();
     }
 
-    public void RestoreState() {
-      Debug("Restore");
-      Canvas.Restore();
-    }
+    public void RestoreState() => Canvas.Restore();
 
-    public void SaveState() {
-      Debug("Save");
-      Canvas.Save();
-    }
+    public void SaveState() => Canvas.Save();
 
-    public void Translate(PointF dxy) {
-      Debug($"Translate ({dxy.X}, {dxy.Y})");
-      Canvas.Translate(dxy.X, dxy.Y);
-    }
-    
-    [System.Diagnostics.DebuggerStepThrough, System.Diagnostics.Conditional("DEBUG")]
-    private void Debug(string message) {
-      System.Diagnostics.Debug.WriteLine(message); //comment out to avoid spamming the debug output
-    }
+    public void Translate(PointF dxy) => Canvas.Translate(dxy.X, dxy.Y);
   }
 }

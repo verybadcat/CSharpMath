@@ -7,7 +7,11 @@
     <StackLayout>
         <StackLayout Orientation="Horizontal" BackgroundColor="LightGray">
             <Entry x:Name="Entry" HorizontalOptions="FillAndExpand"/>
-            <Picker x:Name="Size" HorizontalOptions="FillAndExpand"/>
+            <Picker x:Name="Size" HorizontalOptions="End"/>
+        </StackLayout>
+        <StackLayout Orientation="Horizontal">
+            <Button x:Name="In" HorizontalOptions="FillAndExpand" Text="Load LaTeX" Clicked="In_Clicked"/>
+            <Button x:Name="Out" HorizontalOptions="FillAndExpand" Text="Save LaTeX" Clicked="Out_Clicked"/>
         </StackLayout>
         <local:FormsMathView x:Name="View" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"/>
     </StackLayout>
