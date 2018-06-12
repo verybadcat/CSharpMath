@@ -150,5 +150,8 @@ namespace CSharpMath.Forms {
     public (Color glyph, Color textRun)? GlyphBoxColor { get => ((Color glyph, Color textRun)?)GetValue(GlyphBoxColorProperty); set => SetValue(GlyphBoxColorProperty, value); }
     public Thickness Padding { get => (Thickness)GetValue(PaddingProperty); set => SetValue(PaddingProperty, value); }
     public string ErrorMessage { get => (string)GetValue(ErrorMessageProperty); private set => SetValue(ErrorMessagePropertyKey, value); }
+
+    public System.Drawing.SizeF? DrawingSize => painter.DrawingSize;
+    public Rectangle LayoutBounds { get { var sz = DrawingSize; if (sz.HasValue) return new Rectangle(X, Y, sz.Value.Width, sz.Value.Height); else return Bounds; } }
   }
 }

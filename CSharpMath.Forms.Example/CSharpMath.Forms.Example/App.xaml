@@ -11,7 +11,8 @@
                     <On Platform="iOS" Value="0, 30, 0, 0" />
                 </OnPlatform>
             </TabbedPage.Padding>
-            
+
+            <local:IconPage/>
             <local:ExamplePage/>
             <local:AllExamplesPage/>
             <local:CustomExamplePage/>

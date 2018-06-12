@@ -30,14 +30,16 @@ namespace CSharpMath.Forms.Example
 
     private async Task In_Clicked(object sender, EventArgs e) {
       var file = await Plugin.FilePicker.CrossFilePicker.Current.PickFile();
-      var bytes = Encoding.Unicode.GetBytes(Entry.Text);
+      if (file == null) return; // user canceled file picking
+      var bytes = Encoding.UTF8.GetBytes(Entry.Text);
       file.GetStream().Write(bytes, 0, bytes.Length);
       await Plugin.FilePicker.CrossFilePicker.Current.SaveFile(file);
     }
 
     private async Task Out_Clicked(object sender, EventArgs e) {
       var file = await Plugin.FilePicker.CrossFilePicker.Current.PickFile();
-      Entry.Text = Encoding.Unicode.GetString(file.DataArray);
+      if (file == null) return; // user canceled file picking
+      Entry.Text = Encoding.UTF8.GetString(file.DataArray);
       await Plugin.FilePicker.CrossFilePicker.Current.SaveFile(file);
     }
   }

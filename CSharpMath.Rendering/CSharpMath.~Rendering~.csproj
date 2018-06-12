@@ -18,12 +18,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Font Reference\latinmodern-math.otf" />
+    <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
-    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
+    <EmbeddedResource Include="Font Reference\latinmodern-math.otf" />
   </ItemGroup>
 
   <ItemGroup>
