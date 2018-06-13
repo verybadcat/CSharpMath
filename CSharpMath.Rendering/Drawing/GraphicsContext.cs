@@ -59,7 +59,7 @@ namespace CSharpMath.Rendering {
       var pathBuilder = new GlyphPathBuilder(typeface);
       var scale = typeface.CalculateScaleToPixelFromPointSize(pointSize);
       Canvas.Save();
-        Canvas.Translate(textPosition.X, textPosition.Y);
+      Canvas.Translate(textPosition.X, textPosition.Y);
       for (int i = 0; i < glyphs.Length; i++) {
         var index = glyphs[i].Glyph.GlyphIndex;
         pathBuilder.BuildFromGlyph(glyphs[i].Glyph, pointSize);

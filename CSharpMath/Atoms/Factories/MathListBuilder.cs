@@ -85,7 +85,7 @@ namespace CSharpMath.Atoms {
               prevAtom = MathAtoms.Create(MathAtomType.Ordinary, "");
               r.Add(prevAtom);
             }
-            // this is a subscript for the previous atom.
+            // this is a superscript for the previous atom.
             // note, if the next char is StopChar, it will be consumed and doesn't count as stop.
             prevAtom.Superscript = this.BuildInternal(true);
             continue;
@@ -265,7 +265,7 @@ namespace CSharpMath.Atoms {
 
 
     private string ReadCommand() {
-      char[] singleCharCommands = @"{}$#%_| ,>;!\".ToCharArray();
+      char[] singleCharCommands = @"{}$#%_| ,:>;!\".ToCharArray();
       if (HasCharacters) {
         var ch = (char)GetNextCharacter();
         if (singleCharCommands.Contains(ch)) {
@@ -534,7 +534,7 @@ namespace CSharpMath.Atoms {
 
     private static Dictionary<int, string> SpaceToCommands { get; } = new Dictionary<int, string> {
       {3, "," },
-      {4, ">" },
+      {4, ":" },
       {5, ";" },
       {-3, "!" },
       {18, "quad" },

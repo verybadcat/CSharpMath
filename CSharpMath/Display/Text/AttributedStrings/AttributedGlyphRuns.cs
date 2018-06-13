@@ -15,6 +15,7 @@ namespace CSharpMath.Display.Text
       var kernedGlyphs = glyphs.Select(g => new KernedGlyph<TGlyph>(g)).ToArray();
       return new AttributedGlyphRun<TFont, TGlyph>
       {
+        Placeholder = isPlaceHolder,
         Text = text,
         KernedGlyphs = kernedGlyphs,
         Font = font

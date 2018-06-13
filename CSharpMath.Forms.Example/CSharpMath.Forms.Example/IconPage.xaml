@@ -1,24 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:CSharpMath.Forms;assembly=CSharpMath.Forms"
              Title="Icon"
-             x:Class="CSharpMath.Forms.Example.IconPage">
-    <Page.Resources>
-        <Style TargetType="local:FormsMathView">
-            <Setter Property="AbsoluteLayout.LayoutBounds" Value="{Binding Source=LayoutBounds}" />
-        </Style>
-    </Page.Resources>
-    <AbsoluteLayout>
-        <local:FormsMathView>0</local:FormsMathView>
-        <local:FormsMathView Rotation="20" TranslationX="20">1</local:FormsMathView>
-        <local:FormsMathView>2</local:FormsMathView>
-        <local:FormsMathView>3</local:FormsMathView>
-        <local:FormsMathView>4</local:FormsMathView>
-        <local:FormsMathView>5</local:FormsMathView>
-        <local:FormsMathView>6</local:FormsMathView>
-        <local:FormsMathView>7</local:FormsMathView>
-        <local:FormsMathView>8</local:FormsMathView>
-        <local:FormsMathView>9</local:FormsMathView>
-    </AbsoluteLayout>
-</ContentPage>
+             x:Class="CSharpMath.Forms.Example.IconPage"/>

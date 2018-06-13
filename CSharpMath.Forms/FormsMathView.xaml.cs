@@ -32,6 +32,8 @@ namespace CSharpMath.Forms {
       painter.Draw(e.Surface.Canvas);
       ScrollX = painter.ScrollX;
       ScrollY = painter.ScrollY;
+      var sz = painter.DrawingSize;
+      if (sz.HasValue) LayoutBounds = new Rectangle(X, Y, sz.Value.Width, sz.Value.Height);
     }
 
     #region BindableProperties
@@ -58,6 +60,8 @@ namespace CSharpMath.Forms {
       ErrorMessageProperty = ErrorMessagePropertyKey.BindableProperty;
       GestureCountPropertyKey = BindableProperty.CreateReadOnly(nameof(GestureCount), typeof(int), thisType, 0, BindingMode.OneWayToSource);
       GestureCountProperty = GestureCountPropertyKey.BindableProperty;
+      LayoutBoundsPropertyKey = BindableProperty.CreateReadOnly(nameof(LayoutBounds), typeof(Rectangle), thisType, new Rectangle(), BindingMode.OneWayToSource);
+      LayoutBoundsProperty = LayoutBoundsPropertyKey.BindableProperty;
     }
     public static readonly BindableProperty DisplayErrorInlineProperty;
     public static readonly BindableProperty FontSizeProperty;
@@ -78,6 +82,8 @@ namespace CSharpMath.Forms {
     public static readonly BindableProperty ErrorMessageProperty;
     private static readonly BindablePropertyKey GestureCountPropertyKey;
     public static readonly BindableProperty GestureCountProperty;
+    private static readonly BindablePropertyKey LayoutBoundsPropertyKey;
+    public static readonly BindableProperty LayoutBoundsProperty;
     #endregion
 
     double _lastX, _lastY;
@@ -152,6 +158,6 @@ namespace CSharpMath.Forms {
     public string ErrorMessage { get => (string)GetValue(ErrorMessageProperty); private set => SetValue(ErrorMessagePropertyKey, value); }
 
     public System.Drawing.SizeF? DrawingSize => painter.DrawingSize;
-    public Rectangle LayoutBounds { get { var sz = DrawingSize; if (sz.HasValue) return new Rectangle(X, Y, sz.Value.Width, sz.Value.Height); else return Bounds; } }
+    public Rectangle LayoutBounds { get => (Rectangle)GetValue(LayoutBoundsProperty); private set => SetValue(LayoutBoundsPropertyKey, value); }
   }
 }

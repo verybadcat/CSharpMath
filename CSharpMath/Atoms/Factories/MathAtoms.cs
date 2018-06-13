@@ -414,6 +414,7 @@ namespace CSharpMath.Atoms {
                      
                      // Spacing
                      { ",", new MathSpace(3) },
+                     { ":", new MathSpace(4) },
                      { ">", new MathSpace(4) },
                      { ";", new MathSpace(5) },
                      { "!", new MathSpace(-3) },

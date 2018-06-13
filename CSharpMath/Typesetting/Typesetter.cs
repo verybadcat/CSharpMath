@@ -119,6 +119,7 @@ namespace CSharpMath {
             AddDisplayLine(false);
             var color = atom as IMathColor;
             var display = CreateLine(color.InnerList, _font, _context, _style);
+            display.Position = _currentPosition;
             display.SetTextColor(Color.FromHexString(color.ColorString));
             _displayAtoms.Add(display);
             _currentPosition.X += display.Width;
@@ -206,12 +207,8 @@ namespace CSharpMath {
             }
             AttributedGlyphRun<TFont, TGlyph> current = null;
             var nucleusText = atom.Nucleus;
-            var glyphs = _context.GlyphFinder.FindGlyphs(nucleusText); 
-            if (atom.AtomType == MathAtomType.Placeholder) {
-              current = AttributedGlyphRuns.Create(nucleusText, glyphs, _font, true);
-            } else {
-              current = AttributedGlyphRuns.Create(nucleusText, glyphs, _font, false);
-            }
+            var glyphs = _context.GlyphFinder.FindGlyphs(nucleusText);
+            current = AttributedGlyphRuns.Create(nucleusText, glyphs, _font, atom.AtomType == MathAtomType.Placeholder);
             _currentLine = AttributedStringExtensions.Combine(_currentLine, current);
             if (_currentLineIndexRange.Location == Range.UndefinedInt) {
               _currentLineIndexRange = atom.IndexRange;

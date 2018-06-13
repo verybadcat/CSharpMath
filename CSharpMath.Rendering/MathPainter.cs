@@ -66,8 +66,12 @@ namespace CSharpMath.Rendering {
     public float ScrollY { get; set; }
     public float Magnification { get; set; } = 1;
 
-    public SizeF? DrawingSize => 
-      _displayList?.ComputeDisplayBounds().Size + new SizeF(Padding.Left + Padding.Right, Padding.Top + Padding.Bottom);
+    public SizeF? DrawingSize {
+      get {
+        if (MathList != null && _displayList == null) UpdateDisplay();
+        return _displayList?.ComputeDisplayBounds().Size + new SizeF(Padding.Left + Padding.Right, Padding.Top + Padding.Bottom);
+      }
+    }
 
     /// <summary>
     /// Unit of measure: points
@@ -83,28 +87,36 @@ namespace CSharpMath.Rendering {
     public string LaTeX { get => Source.LaTeX; set => Source = new MathSource(value); }
 
     private PointF GetDisplayPosition() {
-        float x, y;
-          float displayWidth = _displayList.Width;
-          if ((TextAlignment & TextAlignment.Left) != 0)
-            x = Padding.Left;
-          else if ((TextAlignment & TextAlignment.Right) != 0)
-            x = Bounds.Width - Padding.Right - displayWidth;
-          else
-            x = Padding.Left + (Bounds.Width - Padding.Left - Padding.Right - displayWidth) / 2;
-          float contentHeight = _displayList.Ascent + _displayList.Descent;
-          if (contentHeight < FontSize / 2) {
-            contentHeight = FontSize / 2;
-          }
-          //Canvas is inverted!
-          if ((TextAlignment & TextAlignment.Top) != 0)
-            y = Bounds.Height - Padding.Bottom - _displayList.Ascent;
-          else if ((TextAlignment & TextAlignment.Bottom) != 0)
-            y = Padding.Top + _displayList.Descent;
-          else {
-            float availableHeight = Bounds.Height - Padding.Top - Padding.Bottom;
-            y = ((availableHeight - contentHeight) / 2) + Padding.Top + _displayList.Descent;
-        }
-        return new PointF(x, y);
+      float x, y;
+      float displayWidth = _displayList.Width;
+      if ((TextAlignment & TextAlignment.Left) != 0)
+        x = Padding.Left;
+      else if ((TextAlignment & TextAlignment.Right) != 0)
+        x = Bounds.Width - Padding.Right - displayWidth;
+      else
+        x = Padding.Left + (Bounds.Width - Padding.Left - Padding.Right - displayWidth) / 2;
+      float contentHeight = _displayList.Ascent + _displayList.Descent;
+      if (contentHeight < FontSize / 2) {
+        contentHeight = FontSize / 2;
+      }
+      //Canvas is inverted!
+      if ((TextAlignment & TextAlignment.Top) != 0)
+        y = Bounds.Height - Padding.Bottom - _displayList.Ascent;
+      else if ((TextAlignment & TextAlignment.Bottom) != 0)
+        y = Padding.Top + _displayList.Descent;
+      else {
+        float availableHeight = Bounds.Height - Padding.Top - Padding.Bottom;
+        y = ((availableHeight - contentHeight) / 2) + Padding.Top + _displayList.Descent;
+      }
+      return new PointF(x, y);
+    }
+
+    public void UpdateDisplay() {
+      var fontSize = FontSize;
+      var skiaFont = FontManager.LatinMath(fontSize);
+      _displayList = _typesettingContext.CreateLine(MathList, skiaFont, LineStyle);
+      _displayList.Position = GetDisplayPosition();
+      _displayChanged = false;
     }
 
     public void Draw(ICanvas canvas) {
@@ -117,13 +129,7 @@ namespace CSharpMath.Rendering {
         canvas.DefaultColor = TextColor;
         canvas.CurrentColor = BackgroundColor;
         canvas.FillColor();
-        if (_displayChanged) {
-          var fontSize = FontSize;
-          var skiaFont = FontManager.LatinMath(fontSize);
-          _displayList = _typesettingContext.CreateLine(MathList, skiaFont, LineStyle);
-          _displayList.Position = GetDisplayPosition();
-          _displayChanged = false;
-        }
+        if (_displayChanged) UpdateDisplay();
         canvas.Translate(ScrollX, ScrollY);
         var _context = new GraphicsContext() {
           Canvas = canvas,
