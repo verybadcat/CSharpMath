@@ -5,6 +5,7 @@ using CSharpMath.FrontEnd;
 using CSharpMath.Structures;
 using TFonts = CSharpMath.Rendering.MathFonts;
 using Typography.OpenFont;
+using Typography.TextLayout;
 
 namespace CSharpMath.Rendering {
   public class GraphicsContext : IGraphicsContext<TFonts, Glyph> {
@@ -16,8 +17,6 @@ namespace CSharpMath.Rendering {
 
     public void DrawGlyphsAtPoints(Glyph[] glyphs, TFont font, PointF[] points, Color? color) {
       var textPosition = TextPosition;
-      var typeface = font.Typeface;
-      var pathBuilder = new GlyphPathBuilder(typeface);
       if (GlyphBoxColor != null) {
         var rects = new GlyphBoundsProvider().GetBoundingRectsForGlyphs(font, glyphs);
         for (int i = 0; i < rects.Length; i++) {
@@ -27,12 +26,14 @@ namespace CSharpMath.Rendering {
           Canvas.StrokeRect(point.X + rect.X, point.Y + rect.Y, rect.Width, rect.Height);
         }
       }
-      var scale = typeface.CalculateScaleToPixelFromPointSize(font.PointSize);
       for (int i = 0; i < glyphs.Length; i++) {
-        pathBuilder.BuildFromGlyph(glyphs[i], font.PointSize);
+        var typeface = glyphs[i].Typeface;
+        var scale = typeface.CalculateScaleToPixelFromPointSize(font.PointSize);
+        var pathBuilder = new GlyphPathBuilder(typeface);
+        pathBuilder.BuildFromGlyph(glyphs[i].Info, font.PointSize);
         Canvas.Save();
         Canvas.CurrentColor = color;
-        Canvas.Translate(textPosition.X + points[i].X - (glyphs[i].Bounds.XMin - glyphs[i].GetOriginalBounds().XMin) * scale, textPosition.Y + points[i].Y);
+        Canvas.Translate(textPosition.X + points[i].X - (glyphs[i].Info.Bounds.XMin - glyphs[i].GetOriginalBounds().XMin) * scale, textPosition.Y + points[i].Y);
         pathBuilder.ReadShapes(Canvas);
         Canvas.Restore();
       }
@@ -47,20 +48,26 @@ namespace CSharpMath.Rendering {
       var textPosition = offset.Plus(TextPosition);
 
       if (GlyphBoxColor != null) {
-        var box = run.Font.GlyphLayout.LayoutAndMeasureString(run.Text.ToCharArray(), 0, run.Text.Length, run.Font.PointSize);
+        var size = new SizeF();
+        Bounds bounds;
+        foreach (var glyph in run.KernedGlyphs) {
+          bounds = glyph.Glyph.Info.Bounds;
+          size.Width += bounds.XMax - bounds.XMin;
+          size.Height += bounds.YMax - bounds.YMin;
+        }
         Canvas.CurrentColor = GlyphBoxColor?.textRun;
-        Canvas.StrokeRect(textPosition.X, textPosition.Y, box.width + run.KernedGlyphs.Sum(g => g.KernAfterGlyph), box.btbd);
+        Canvas.StrokeRect(textPosition.X, textPosition.Y, size.Width + run.KernedGlyphs.Sum(g => g.KernAfterGlyph), size.Height);
       }
 
-      var typeface = run.Font.Typeface;
       var glyphs = run.KernedGlyphs;
       var pointSize = run.Font.PointSize;
-      var layout = run.Font.GlyphLayout;
-      var pathBuilder = new GlyphPathBuilder(typeface);
-      var scale = typeface.CalculateScaleToPixelFromPointSize(pointSize);
       Canvas.Save();
       Canvas.Translate(textPosition.X, textPosition.Y);
       for (int i = 0; i < glyphs.Length; i++) {
+        var typeface = glyphs[i].Glyph.Typeface;
+        var layout = new GlyphLayout { Typeface = typeface };
+        var pathBuilder = new GlyphPathBuilder(typeface);
+        var scale = typeface.CalculateScaleToPixelFromPointSize(pointSize);
         var index = glyphs[i].Glyph.Info.GlyphIndex;
         pathBuilder.BuildFromGlyph(glyphs[i].Glyph.Info, pointSize);
         Canvas.CurrentColor = color;

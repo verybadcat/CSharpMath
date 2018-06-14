@@ -429,9 +429,9 @@ namespace CSharpMath {
       float original = font.PointSize;
       switch (style) {
         case LineStyle.Script:
-          return original * _mathTable.ScriptScaleDown;
+          return original * _mathTable.ScriptScaleDown(font);
         case LineStyle.ScriptScript:
-          return original * _mathTable.ScriptScriptScaleDown;
+          return original * _mathTable.ScriptScriptScaleDown(font);
         default:
           return original;
       }

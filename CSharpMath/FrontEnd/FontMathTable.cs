@@ -22,19 +22,19 @@ namespace CSharpMath.FrontEnd {
         case LineStyle.Text:
           return originalSize;
         case LineStyle.Script:
-          return originalSize * ScriptScaleDown;
+          return originalSize * ScriptScaleDown(font);
         case LineStyle.ScriptScript:
-          return originalSize * ScriptScriptScaleDown;
+          return originalSize * ScriptScriptScaleDown(font);
         default:
           throw new NotImplementedException();
       }
     }
 
 
-    public float ScriptScaleDown => ScriptPercentScaleDown / 100f;
-    public float ScriptScriptScaleDown => ScriptScriptPercentScaleDown / 100f;
-    protected abstract short ScriptPercentScaleDown { get; }
-    protected abstract short ScriptScriptPercentScaleDown { get; }
+    public float ScriptScaleDown(TFont font) => ScriptPercentScaleDown(font) / 100f;
+    public float ScriptScriptScaleDown(TFont font) => ScriptScriptPercentScaleDown(font) / 100f;
+    protected abstract short ScriptPercentScaleDown(TFont font);
+    protected abstract short ScriptScriptPercentScaleDown(TFont font);
 
     /*
      *     NSDictionary* italics = (NSDictionary*) _mathTable[kItalic];

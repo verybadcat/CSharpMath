@@ -56,8 +56,8 @@ namespace CSharpMath.FrontEnd {
 
     // different from _ConstantFromTable in that the _ConstantFromTable requires
     // a font and uses _FontUnitsToPt, while this is just a straight percentage.
-    protected override short ScriptPercentScaleDown => _constantsDictionary[nameof(ScriptPercentScaleDown)].Value<short>();
-    protected override short ScriptScriptPercentScaleDown => _constantsDictionary[nameof(ScriptScriptPercentScaleDown)].Value<short>();
+    protected override short ScriptPercentScaleDown(TFont font) => _constantsDictionary[nameof(ScriptPercentScaleDown)].Value<short>();
+    protected override short ScriptScriptPercentScaleDown(TFont font) => _constantsDictionary[nameof(ScriptScriptPercentScaleDown)].Value<short>();
 
     /*
      *     NSDictionary* italics = (NSDictionary*) _mathTable[kItalic];

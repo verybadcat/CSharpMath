@@ -26,9 +26,9 @@ namespace CSharpMath.Rendering {
     {
       var rects = new RectangleF[glyphs.Length];
       var i = 0;
-      foreach (var (typeface, glyph) in glyphs) {
-        var scale = typeface.CalculateScaleToPixelFromPointSize(font.PointSize);
-        var bounds = glyph.Bounds;
+      foreach (var glyph in glyphs) {
+        var scale = glyph.Typeface.CalculateScaleToPixelFromPointSize(font.PointSize);
+        var bounds = glyph.Info.Bounds;
         var obounds = glyph.GetOriginalBounds();
         rects[i] = RectangleF.FromLTRB(obounds.XMin * scale, bounds.YMin * scale, obounds.XMax * scale, bounds.YMax * scale);
         i++;
@@ -36,9 +36,6 @@ namespace CSharpMath.Rendering {
       return rects;
     }
 
-    public float GetTypographicWidth(TFonts font, AttributedGlyphRun<TFonts, Glyph> run) {
-      var stringBox = font.GlyphLayout.LayoutAndMeasureString(run.Text.ToCharArray(), 0, run.Text.Length, font.PointSize);
-      return stringBox.width + run.KernedGlyphs.Sum(g => g.KernAfterGlyph);
-    }
+    public float GetTypographicWidth(TFonts fonts, AttributedGlyphRun<TFonts, Glyph> run) => GetAdvancesForGlyphs(fonts, run.Glyphs).Total + run.KernedGlyphs.Sum(g => g.KernAfterGlyph);
   }
 }

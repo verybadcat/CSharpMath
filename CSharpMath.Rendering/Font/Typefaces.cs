@@ -1,39 +1,52 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using Typography.OpenFont;
 
 namespace CSharpMath.Rendering {
-  public class Typefaces : IList<Typeface>, IReadOnlyList<Typeface> {
-    internal Typefaces(Typeface _default) => _typefaces = new List<Typeface>(System.Linq.Enumerable.Repeat(_default, 1));
+  public class Typefaces : ICollection<Typeface>, IReadOnlyList<Typeface> {
+    internal Typefaces(Typeface _default) => _typefaces = new Dictionary<sbyte, Typeface> { [0] = _default };
 
-    private IList<Typeface> _typefaces;
+    private IDictionary<sbyte, Typeface> _typefaces;
 
-    public Typeface this[int index] { get => _typefaces[index]; set { if (index != 0) _typefaces[index] = value; } }
+    public Typeface this[sbyte index] { get => _typefaces[index]; set { if (index != 0) _typefaces[index] = value; } }
 
     public int Count => _typefaces.Count;
 
     public bool IsReadOnly => false;
 
-    public void Add(Typeface item) => _typefaces.Add(item);
+    Typeface IReadOnlyList<Typeface>.this[int index] => this[(sbyte)index];
+
+    public void Add(Typeface item) => AddEnd(item);
+    public void AddStart(Typeface item) => _typefaces.Add((sbyte)(_typefaces.Keys.Min() - 1), item);
+    public void AddEnd(Typeface item) => _typefaces.Add((sbyte)(_typefaces.Keys.Max() + 1), item);
 
     public void Clear() { var item = _typefaces[0]; _typefaces.Clear(); _typefaces[0] = item; }
 
-    public bool Contains(Typeface item) => _typefaces.Contains(item);
+    public bool Contains(Typeface item) => _typefaces.Values.Contains(item);
+    
+    public void CopyTo(Typeface[] array, int arrayIndex) { foreach (var item in _typefaces.OrderBy(p => p.Key).Select(p => p.Value)) array[arrayIndex++] = item; }
 
-    public void CopyTo(Typeface[] array, int arrayIndex) => _typefaces.CopyTo(array, arrayIndex);
+    public sbyte IndexOf(Typeface item) => _typefaces.OrderBy(p => p.Key).First(p => p.Value == item).Key;
 
-    public IEnumerator<Typeface> GetEnumerator() => _typefaces.GetEnumerator();
+    public void Insert(sbyte index, Typeface item) { //pushes original items' index away from zero
+      if (index != 0) {
+        var sign = (sbyte)Math.Sign(index);
+        var limit = sign == 1 ? sbyte.MaxValue : sbyte.MinValue;
+        var end = index; //end of index of displacement of original items
+        while (_typefaces.ContainsKey(end) && end != limit) end += sign;
+        
+        for (sbyte i = end; i != index;) _typefaces[i] = _typefaces[i -= sign];
+        _typefaces[index] = item;
+      }
+    }
 
-    public int IndexOf(Typeface item) => _typefaces.IndexOf(item);
+    public bool Remove(Typeface item) { if (item == _typefaces[0]) return false; return _typefaces.Remove(_typefaces.OrderBy(p => p.Key).First(p => p.Value == item)); }
 
-    public void Insert(int index, Typeface item) { if (index != 0) _typefaces.Insert(index, item); }
-
-    public bool Remove(Typeface item) { if (item == _typefaces[0]) return false; return _typefaces.Remove(item); }
-
-    public void RemoveAt(int index) { if (index != 0) _typefaces.RemoveAt(index); }
-
-    IEnumerator IEnumerable.GetEnumerator() => _typefaces.GetEnumerator();
+    public void RemoveAt(sbyte index) { if (index != 0) _typefaces.Remove(index); }
+    
+    public IEnumerator<Typeface> GetEnumerator() => _typefaces.OrderBy(p => p.Key).Select(p => p.Value).GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
   }
 }
