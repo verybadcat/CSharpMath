@@ -62,39 +62,21 @@ namespace CSharpMath.Atoms {
     public static MathAtom Divide
       => Create(MathAtomType.BinaryOperator, Symbols.Division);
 
-    private static MathList PlaceholderList {
-      get {
-        var r = new MathList();
-        r.Add(Placeholder);
-        return r;
-      }
-    }
+    private static MathList PlaceholderList => new MathList { Placeholder };
 
-    public static Fraction PlaceholderFraction {
-      get {
-        var r = new Fraction();
-        r.Numerator = PlaceholderList;
-        r.Denominator = PlaceholderList;
-        return r;
-      }
-    }
+    public static Fraction PlaceholderFraction => new Fraction {
+          Numerator = PlaceholderList,
+          Denominator = PlaceholderList
+        };
 
-    public static Radical PlaceholderRadical {
-      get {
-        var r = new Radical();
-        r.Degree = PlaceholderList;
-        r.Radicand = PlaceholderList;
-        return r;
-      }
-    }
+    public static Radical PlaceholderRadical => new Radical {
+          Degree = PlaceholderList,
+          Radicand = PlaceholderList
+        };
 
-    public static MathAtom PlaceholderSquareRoot {
-      get {
-        var r = new Radical();
-        r.Radicand = PlaceholderList;
-        return r;
-      }
-    }
+    public static MathAtom PlaceholderSquareRoot => new Radical {
+          Radicand = PlaceholderList
+        };
 
     public static LargeOperator Operator(string name, bool limits)
       => new LargeOperator(name, limits);

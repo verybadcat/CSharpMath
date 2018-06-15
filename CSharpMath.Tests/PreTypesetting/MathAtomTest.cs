@@ -53,14 +53,16 @@ namespace CSharpMath.Tests {
       var atom2 = MathAtoms.Times;
       var atom3 = MathAtoms.Divide;
 
-      var list = new MathList();
-      list.Add(atom);
-      list.Add(atom2);
-      list.Add(atom3);
+      var list = new MathList {
+        atom,
+        atom2,
+        atom3
+      };
 
-      var list2 = new MathList();
-      list2.Add(atom3);
-      list2.Add(atom2);
+      var list2 = new MathList {
+        atom3,
+        atom2
+      };
 
       var frac = new Fraction(false) {
         Numerator = list,
@@ -255,17 +257,19 @@ namespace CSharpMath.Tests {
       var table = new Table();
       Assert.Equal(MathAtomType.Table, table.AtomType);
 
-      var list = new MathList();
       var atom = MathAtoms.Placeholder;
       var atom2 = MathAtoms.Times;
       var atom3 = MathAtoms.Divide;
-      list.Add(atom);
-      list.Add(atom2);
-      list.Add(atom3);
+      var list = new MathList {
+        atom,
+        atom2,
+        atom3
+      };
 
-      var list2 = new MathList();
-      list2.Add(atom3);
-      list2.Add(atom2);
+      var list2 = new MathList {
+        atom3,
+        atom2
+      };
 
       table.SetCell(list, 0, 1);
       table.SetCell(list2, 0, 2);

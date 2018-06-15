@@ -6,7 +6,7 @@ namespace CSharpMath.Display.Text {
   public class StringAttribute<T> {
     private List<(int index, T t)> _values = new List<(int index, T t)>(); // the integer is the character at which the string starts having the value for the attribute. The list is always kept sorted by index.
     public T ValueAt(int atIndex) {
-      T r = default(T);
+      T r = default;
       foreach ((int index, T t) in _values) {
         if (index <= atIndex) {
           r = t;
@@ -50,12 +50,12 @@ namespace CSharpMath.Display.Text {
     public void Append(StringAttribute<T> other, int myLength) {
       T endValue = ValueAt(myLength);
       bool first = false;
-      foreach (var otherValue in other._values) {
-        if (first && otherValue.t.Equals(endValue)) {
+      foreach (var (index, t) in other._values) {
+        if (first && t.Equals(endValue)) {
           continue;
         }
         else {
-          _values.Add((myLength + otherValue.index, otherValue.t));
+          _values.Add((myLength + index, t));
         }
       }
     }

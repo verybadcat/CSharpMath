@@ -6,7 +6,7 @@ using System.Text;
 
 namespace CSharpMath.Resources {
   public class ManifestResourceProvider {
-    private Assembly _resourceAssembly;
+    private readonly Assembly _resourceAssembly;
 
     /// <summary>Pass in the assembly where the resources are stored.</summary>
     public ManifestResourceProvider(Assembly resourceAssembly) {

@@ -8,7 +8,7 @@ namespace CSharpMath.Apple
 {
   public static class AppleFontManager
   {
-    private static object _lock = new object();
+    private static readonly object _lock = new object();
     private static CGFont _latinMathCg { get; set; }
     public const string LatinMathFontName = "latinmodern-math";
     private static CGFont _CreateLatinMathCg() {

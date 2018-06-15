@@ -25,7 +25,7 @@ namespace CSharpMath.Apple {
 
     private static TypesettingContext<AppleMathFont, TGlyph> _latinMath;
 
-    private static object _lock = new object();
+    private static readonly object _lock = new object();
 
     public static TypesettingContext<AppleMathFont, TGlyph> LatinMath {
       get {

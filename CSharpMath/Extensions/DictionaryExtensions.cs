@@ -5,7 +5,7 @@ using System.Text;
 namespace CSharpMath {
   internal static class DictionaryExtensions {
     public static TValue GetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> source, TKey key) {
-      TValue r = default(TValue);
+      TValue r = default;
       if (source != null && key != null && source.ContainsKey(key)) {
         r = source[key];
       }

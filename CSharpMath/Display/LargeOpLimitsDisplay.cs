@@ -10,8 +10,8 @@ namespace CSharpMath.Display {
   public class LargeOpLimitsDisplay<TFont, TGlyph> : IPositionableDisplay<TFont, TGlyph>
     where TFont : MathFont<TGlyph> {
     private IPositionableDisplay<TFont, TGlyph> _nucleusDisplay;
-    private float _limitShift;
-    private int _extraPadding;
+    private readonly float _limitShift;
+    private readonly int _extraPadding;
     private float _upperLimitGap { get; set; }
     private float _lowerLimitGap { get; set; }
 

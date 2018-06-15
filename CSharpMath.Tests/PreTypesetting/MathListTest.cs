@@ -16,14 +16,16 @@ namespace CSharpMath.Tests {
     }
     [Fact]
     public void TestCopy() {
-      var list = new MathList();
-      list.Add(MathAtoms.Placeholder);
-      list.Add(MathAtoms.Times);
-      list.Add(MathAtoms.Divide);
+      var list = new MathList {
+        MathAtoms.Placeholder,
+        MathAtoms.Times,
+        MathAtoms.Divide
+      };
 
-      var list2 = new MathList();
-      list2.Add(MathAtoms.Divide);
-      list2.Add(MathAtoms.Times);
+      var list2 = new MathList {
+        MathAtoms.Divide,
+        MathAtoms.Times
+      };
 
       var open = MathAtoms.Create(MathAtomType.Open, "(");
       open.Subscript = list;

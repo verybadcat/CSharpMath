@@ -9,8 +9,8 @@ using System.Text;
 namespace CSharpMath.Atoms {
   public class MathListBuilder {
     private string _error;
-    private char[] _chars;
-    private int _length;
+    private readonly char[] _chars;
+    private readonly int _length;
     private int _currentChar;
     private bool _spacesAllowed;
     private FontStyle _currentFontStyle;
@@ -360,8 +360,9 @@ namespace CSharpMath.Atoms {
           return rad;
         case "left":
           var oldInner = _currentInnerAtom;
-          _currentInnerAtom = new Inner();
-          _currentInnerAtom.LeftBoundary = _BoundaryAtomForDelimiterType("left");
+          _currentInnerAtom = new Inner {
+            LeftBoundary = _BoundaryAtomForDelimiterType("left")
+          };
           if (_currentInnerAtom.LeftBoundary == null) {
             return null;
           }
@@ -464,7 +465,7 @@ namespace CSharpMath.Atoms {
     }
     private bool ApplyModifier(string modifier, IMathAtom atom) {
       if (modifier == "limits") {
-        if (atom!=null && atom.AtomType == MathAtomType.LargeOperator) {
+        if (atom !=null && atom.AtomType == MathAtomType.LargeOperator) {
           var op = (LargeOperator)atom;
           op.Limits = true;
         } else {
@@ -472,8 +473,7 @@ namespace CSharpMath.Atoms {
         }
         return true;
       } else if (modifier == "nolimits") {
-        if (atom is LargeOperator) {
-          var op = (LargeOperator)atom;
+        if (atom is LargeOperator op) {
           op.Limits = false;
         } else {
           SetError("nolimits can only be applied to an operator.");
@@ -485,7 +485,7 @@ namespace CSharpMath.Atoms {
 
     private void SetError(string message) {
       if (_error == null) {
-        SetError(message);
+        _error = message;
       }
     }
 
@@ -494,8 +494,7 @@ namespace CSharpMath.Atoms {
       _currentEnvironment = new TableEnvironmentProperties(environment);
       int currentRow = 0;
       int currentColumn = 0;
-      List<List<IMathList>> rows = new List<List<IMathList>>();
-      rows.Add(new List<IMathList>());
+      List<List<IMathList>> rows = new List<List<IMathList>> { new List<IMathList>() };
       if (firstList != null) {
         rows[currentRow].Add(firstList);
         if (isRow) {

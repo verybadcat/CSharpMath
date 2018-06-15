@@ -18,13 +18,10 @@ namespace CSharpMath.Rendering {
 
     public static Typefaces GlobalTypefaces { get; }
 
-    public MathFonts(IList<Typeface> localTypefaces, float pointSize) : this(localTypefaces.Concat(GlobalTypefaces), pointSize) { }
-    public MathFonts(MathFonts cloneMe, float pointSize) : this(cloneMe.Typefaces, pointSize) { }
-
-    private MathFonts(IEnumerable<Typeface> typefaces, float pointSize) : base(pointSize) {
+    public MathFonts(IList<Typeface> localTypefaces, float pointSize) : base(pointSize) {
+      var typefaces = localTypefaces.Concat(GlobalTypefaces);
       Typefaces = typefaces;
-#warning Use HasMathTable
-      MathTypeface = typefaces.First(t => t._mathTable != null);
+      MathTypeface = typefaces.First(t => t.HasMathTable());
       TypesettingContext = new TypesettingContext<MathFonts, Glyph>(
         //new FontMeasurer(),
         (fonts, size) => new MathFonts(fonts, size),
@@ -35,6 +32,11 @@ namespace CSharpMath.Rendering {
         //Resources.Json
         new MathTable()
       );
+    }
+    public MathFonts(MathFonts cloneMe, float pointSize) : base(pointSize) {
+      Typefaces = cloneMe.Typefaces;
+      MathTypeface = cloneMe.MathTypeface;
+      TypesettingContext = cloneMe.TypesettingContext;
     }
 
     public IEnumerable<Typeface> Typefaces { get; }

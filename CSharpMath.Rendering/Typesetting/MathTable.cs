@@ -41,7 +41,7 @@ namespace CSharpMath.Rendering {
       var variants = new Glyph[records.Length];
       for (int i = 0; i < records.Length; i++) {
         var variant = records[i].VariantGlyph;
-        variants[i] = new Glyph(typeface, typeface.Lookup(variant));
+        variants[i] = new Glyph(typeface, typeface.GetGlyphByIndex(variant));
         OriginalBounds[variants[i]] = bounds;
       }
       return variants;
@@ -60,7 +60,7 @@ namespace CSharpMath.Rendering {
           var variantIndex = variant.VariantGlyph;
           if (variantIndex != glyphIndex) {
             //return the first glyph with a different index.
-            var variantGlyph = glyph.Typeface.Lookup(variantIndex);
+            var variantGlyph = glyph.Typeface.GetGlyphByIndex(variantIndex);
             return new Glyph(glyph.Typeface, variantGlyph);
           }
         }
@@ -74,7 +74,7 @@ namespace CSharpMath.Rendering {
       for (int i = 0; i < records.Length; i++) parts[i] = new GlyphPart<Glyph> {
         EndConnectorLength = records[i].EndConnectorLength * scale,
         FullAdvance = records[i].FullAdvance * scale,
-        Glyph = new Glyph(rawGlyph.Typeface, rawGlyph.Typeface.Lookup(records[i].GlyphId)),
+        Glyph = new Glyph(rawGlyph.Typeface, rawGlyph.Typeface.GetGlyphByIndex(records[i].GlyphId)),
         IsExtender = records[i].IsExtender,
         StartConnectorLength = records[i].StartConnectorLength * scale
       };
