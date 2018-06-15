@@ -12,7 +12,7 @@ namespace CSharpMath.Forms.Example
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class ExamplePage : ContentPage
 	{
-    Dictionary<string, string> dict = AllExamplesPage.AllConstants.ToDictionary(info => info.Name, info => (string)info.GetRawConstantValue());
+    Dictionary<string, string> dict = ExamplesPage.AllConstants.ToDictionary(info => info.Name, info => (string)info.GetRawConstantValue());
     public ExamplePage() {
       InitializeComponent();
       App.AllViews.Add(View); 
@@ -27,7 +27,7 @@ namespace CSharpMath.Forms.Example
         View.LaTeX = Label.Text = dict[(string)Picker.SelectedItem];
         View.InvalidateSurface();
       };
-      Picker.SelectedItem = nameof(AllExamplesPage.ShortIntegral);
+      Picker.SelectedItem = nameof(ExamplesPage.ShortIntegral);
     }
     protected override void OnDisappearing() {
       //App.AllViews.Remove(View);

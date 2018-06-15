@@ -21,7 +21,7 @@ namespace CSharpMath.Forms.Example {
       var values = typeof(Rendering.TextAlignment).GetEnumValues();
       Array.Reverse(values);
       Alignment.ItemsSource = values;
-      Alignment.SelectedItem = Rendering.TextAlignment.Centre;
+      Alignment.SelectedItem = Rendering.TextAlignment.Center;
 
       values = typeof(PaintStyle).GetEnumValues();
       PaintStyle.ItemsSource = values;

@@ -16,7 +16,7 @@ namespace CSharpMath.DevUtils.Rendering {
         .AppendLine("  //Do not modify this file directly. Instead, modify this at")
         .AppendLine("  //CSharpMath\\CSharpMath.Utils\\Rendering\\OtfCodeBuilder.cs and re-generate")
         .AppendLine("  //this file by executing the method in that file in the CSharpMath.Utils project.")
-        .AppendLine("  [System.Runtime.CompilerServices.CompilerGenerated]")
+        .AppendLine("  [System.Diagnostics.DebuggerNonUserCode, System.Runtime.CompilerServices.CompilerGenerated]")
         .AppendLine("  internal static partial class Resources {")
         .AppendLine("    public static byte[] Otf { get; } = new byte[] {");
       int i = 0;

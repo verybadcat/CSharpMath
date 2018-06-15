@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace CSharpMath.Forms.Example {
-  public partial class AllExamplesPage : ContentPage {
+  public partial class ExamplesPage : ContentPage {
     public const string Numbers = @"0123456789";
     public const string Alphabets = @"abcdefghijklmnopqrstuvwxyz";
     public const string Capitals = @"ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -63,9 +63,9 @@ namespace CSharpMath.Forms.Example {
 
     public const string BMartix = @"\begin{bmatrix} x_{11}&x_{12}&x_{13}&.&.&.&.&x_{1n} \end{bmatrix}";
 
-    public AllExamplesPage() => InitializeComponent();
+    public ExamplesPage() => InitializeComponent();
 
-    public static IEnumerable<FieldInfo> AllConstants { get; } = typeof(AllExamplesPage).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly).
+    public static IEnumerable<FieldInfo> AllConstants { get; } = typeof(ExamplesPage).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly).
       Where(fi => fi.IsLiteral && !fi.IsInitOnly);
     
     protected override void OnAppearing() {

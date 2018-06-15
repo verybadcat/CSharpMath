@@ -22,7 +22,7 @@ namespace CSharpMath.Forms.Example {
         new FormsMathView {
           LockGestures = true,
           FontSize = size,
-          TextAlignment = Rendering.TextAlignment.Centre,
+          TextAlignment = Rendering.TextAlignment.Center,
           LaTeX = latex
         };
 

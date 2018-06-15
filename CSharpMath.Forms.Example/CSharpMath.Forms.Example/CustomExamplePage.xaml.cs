@@ -12,7 +12,7 @@ namespace CSharpMath.Forms.Example
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class CustomExamplePage : ContentPage
 	{
-    Dictionary<string, string> dict = AllExamplesPage.AllConstants.ToDictionary(info => info.Name, info => (string)info.GetRawConstantValue());
+    Dictionary<string, string> dict = ExamplesPage.AllConstants.ToDictionary(info => info.Name, info => (string)info.GetRawConstantValue());
     public CustomExamplePage() {
       InitializeComponent();
       App.AllViews.Add(View);

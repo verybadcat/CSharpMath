@@ -39,17 +39,9 @@ namespace CSharpMath.Rendering {
     }
 
     //_field == private field, __field == property-only field
-    protected void Redisplay<T>(T assignment) => _displayChanged = true;
     protected bool _displayChanged = false;
     protected MathListDisplay<TFonts, Glyph> _displayList;
-    protected GraphicsContext _skiaContext;
-
-    public Action Invalidate { get; }
-
-    public string ErrorMessage { get; private set; }
-    public SizeF Bounds { get; set; }
-
-    public TextAlignment TextAlignment { get; set; } = TextAlignment.Centre;
+    protected GraphicsContext _context = new GraphicsContext();
 
     /// <summary>
     /// Unit of measure: points;
@@ -58,7 +50,9 @@ namespace CSharpMath.Rendering {
     public float? ErrorFontSize { get; set; }
     public bool DisplayErrorInline { get; set; } = true;
     public Color ErrorColor { get; set; } = new Color(255, 0, 0);
+    public SizeF Bounds { get; set; }
     public Thickness Padding { get; set; }
+    public TextAlignment TextAlignment { get; set; } = TextAlignment.Center;
     public Color TextColor { get; set; } = new Color(0, 0, 0);
     public Color BackgroundColor { get; set; } = new Color(0, 0, 0, 0);
     public PaintStyle PaintStyle { get; set; } = PaintStyle.Fill;
@@ -73,6 +67,7 @@ namespace CSharpMath.Rendering {
       }
     }
 
+    protected void Redisplay<T>(T assignment) => _displayChanged = true;
     /// <summary>
     /// Unit of measure: points
     /// </summary>
@@ -81,11 +76,10 @@ namespace CSharpMath.Rendering {
     List<Typeface> __typefaces = new List<Typeface>();
     LineStyle __style = LineStyle.Display; public LineStyle LineStyle { get => __style; set => Redisplay(__style = value); }
     (Color glyph, Color textRun)? __box; public (Color glyph, Color textRun)? GlyphBoxColor { get => __box; set => Redisplay(__box = value); }
-
-    MathSource __source = new MathSource();
-    public MathSource Source { get => __source; set { __source = value; _displayChanged = true; } }
+    MathSource __source = new MathSource(); public MathSource Source { get => __source; set { __source = value; _displayChanged = true; } }
     public IMathList MathList { get => Source.MathList; set => Source = new MathSource(value); }
     public string LaTeX { get => Source.LaTeX; set => Source = new MathSource(value); }
+    public string ErrorMessage => Source.Error;
 
     private PointF GetDisplayPosition() {
       float x, y;
@@ -131,21 +125,17 @@ namespace CSharpMath.Rendering {
         canvas.FillColor();
         if (_displayChanged) UpdateDisplay();
         canvas.Translate(ScrollX, ScrollY);
-        var _context = new GraphicsContext() {
-          Canvas = canvas,
-          GlyphBoxColor = GlyphBoxColor
-        };
+        _context.Canvas = canvas;
+        _context.GlyphBoxColor = GlyphBoxColor;
         _displayList.Draw(_context);
         canvas.Restore();
-      } else if (ErrorMessage.IsNonEmpty()) {
+      } else if (DisplayErrorInline && ErrorMessage.IsNonEmpty()) {
         canvas.Save();
         canvas.CurrentColor = BackgroundColor;
         canvas.FillColor();
         var size = ErrorFontSize ?? FontSize;
-        if (DisplayErrorInline) {
-          canvas.CurrentColor = ErrorColor;
-          canvas.FillText(ErrorMessage, 0, size, size);
-        }
+        canvas.CurrentColor = ErrorColor;
+        canvas.FillText(ErrorMessage, 0, size, size);
         canvas.Restore();
       }
     }

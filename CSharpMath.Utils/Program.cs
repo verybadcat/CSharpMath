@@ -8,8 +8,8 @@ namespace CSharpMath.DevUtils {
       //Rendering.OtfCodeBuilder.Build();
       //Console.WriteLine(new StringBuilder().AppendJoin(", ", TypographyTest.Get.Codepoints("𝑥")).ToString());
       //Console.WriteLine(TypographyTest.MeasureString.Measure("𝑥", 20));
-      var path = Path.Combine(Environment.GetEnvironmentVariable("HOMEPATH"), "Desktop");
-      iosMathDemo.Builder.Build(Path.Combine(path, "in.txt"), Path.Combine(path, "out.txt"));
+      //var path = Path.Combine(Environment.GetEnvironmentVariable("HOMEPATH"), "Desktop");
+      iosMathDemo.Builder.Build();
 
       Console.WriteLine();
       Console.WriteLine("Finished executing the method(s) requested.");

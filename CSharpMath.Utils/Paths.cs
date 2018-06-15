@@ -19,5 +19,9 @@ namespace CSharpMath.DevUtils {
     /// The path of the Otf.cs file
     /// </summary>
     public static readonly string OtfFile = P.Combine(Global, nameof(CSharpMath) + "." + nameof(Rendering), "Font Reference", "Otf.cs");
+    /// <summary>
+    /// The path of the MoreExamples.cs file, which stores examples from iosMath
+    /// </summary>
+    public static readonly string iosMathExamplesFile = P.Combine(Global, "CSharpMath.Forms.Example", "CSharpMath.Forms.Example", "MoreExamples.cs");
   }
 }

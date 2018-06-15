@@ -14,7 +14,8 @@
 
             <local:IconPage/>
             <local:ExamplePage/>
-            <local:AllExamplesPage/>
+            <local:ExamplesPage/>
+            <local:MoreExamplesPage/>
             <local:CustomExamplePage/>
             <local:SettingsPage/>
         </TabbedPage>

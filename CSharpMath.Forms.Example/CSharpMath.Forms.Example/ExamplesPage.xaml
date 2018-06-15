@@ -2,8 +2,8 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:CSharpMath.Forms;assembly=CSharpMath.Forms"
-             x:Class="CSharpMath.Forms.Example.AllExamplesPage"
-             Title="All examples">
+             x:Class="CSharpMath.Forms.Example.ExamplesPage"
+             Title="Examples">
     <!--<ScrollView Orientation="Both" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
         <local:FormsMathView x:Name="View"/>
     </ScrollView>-->

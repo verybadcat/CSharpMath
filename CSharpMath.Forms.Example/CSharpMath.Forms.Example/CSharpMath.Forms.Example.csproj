@@ -20,8 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="AllExamplesPage.xaml.cs">
-      <DependentUpon>AllExamplesPage.xaml</DependentUpon>
+    <Compile Update="ExamplesPage.xaml.cs">
+      <DependentUpon>ExamplesPage.xaml</DependentUpon>
     </Compile>
     <Compile Update="CustomExamplePage.xaml.cs">
       <DependentUpon>CustomExamplePage.xaml</DependentUpon>
@@ -33,6 +33,9 @@
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="IconPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="MoreExamplesPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="SettingsPage.xaml">
