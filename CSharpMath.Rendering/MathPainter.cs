@@ -11,8 +11,7 @@ using CSharpMath.FrontEnd;
 using CSharpMath.Structures;
 
 using Glyph = Typography.OpenFont.Glyph;
-using Typography.OpenFont;
-using System.Collections.Generic;
+
 
 namespace CSharpMath.Rendering {
   public readonly struct Thickness {
@@ -43,6 +42,7 @@ namespace CSharpMath.Rendering {
     protected bool _displayChanged = false;
     protected MathListDisplay<TFonts, Glyph> _displayList;
     protected GraphicsContext _skiaContext;
+    protected static readonly TypesettingContext<TFonts, Glyph> _typesettingContext = Typesetters.LatinMath;
 
     public Action Invalidate { get; }
 
@@ -76,8 +76,8 @@ namespace CSharpMath.Rendering {
     /// <summary>
     /// Unit of measure: points
     /// </summary>
-    public float FontSize { get => __size; set => Redisplay(__size = value); } float __size = 20f;
-    List<Typeface> __typefaces = new List<Typeface>(); public List<Typeface> LocalTypefaces { get => __typefaces; set => Redisplay(__typefaces = value); }
+    public float FontSize { get => __size; set => Redisplay(__size = value); }
+    float __size = 20f;
     LineStyle __style = LineStyle.Display; public LineStyle LineStyle { get => __style; set => Redisplay(__style = value); }
     (Color glyph, Color textRun)? __box; public (Color glyph, Color textRun)? GlyphBoxColor { get => __box; set => Redisplay(__box = value); }
 
@@ -112,8 +112,9 @@ namespace CSharpMath.Rendering {
     }
 
     public void UpdateDisplay() {
-      var fonts = new TFonts(LocalTypefaces, FontSize);
-      _displayList = fonts.TypesettingContext.CreateLine(MathList, fonts, LineStyle);
+      var fontSize = FontSize;
+      var skiaFont = FontManager.LatinMath(fontSize);
+      _displayList = _typesettingContext.CreateLine(MathList, skiaFont, LineStyle);
       _displayList.Position = GetDisplayPosition();
       _displayChanged = false;
     }
