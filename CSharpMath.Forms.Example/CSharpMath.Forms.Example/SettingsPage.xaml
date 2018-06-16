@@ -29,6 +29,10 @@
                 <ViewCell>
                     <Picker x:Name="LineStyle" SelectedIndexChanged="LineStyle_SelectedIndexChanged"/>
                 </ViewCell>
+                <TextCell Text="Stroke cap" TextColor="Black"/>
+                <ViewCell>
+                    <Picker x:Name="StrokeCap" SelectedIndexChanged="StrokeCap_SelectedIndexChanged"/>
+                </ViewCell>
             </TableSection>
         </TableRoot>
     </TableView>

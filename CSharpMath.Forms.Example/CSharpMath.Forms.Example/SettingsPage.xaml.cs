@@ -30,6 +30,10 @@ namespace CSharpMath.Forms.Example {
       values = typeof(Enumerations.LineStyle).GetEnumValues();
       LineStyle.ItemsSource = values;
       LineStyle.SelectedItem = Enumerations.LineStyle.Display;
+      
+      values = typeof(global::SkiaSharp.SKStrokeCap).GetEnumValues();
+      StrokeCap.ItemsSource = values;
+      StrokeCap.SelectedItem = global::SkiaSharp.SKStrokeCap.Butt;
 
       DrawGlyphBoxes_OnChanged(this, new ToggledEventArgs(DrawGlyphBoxes.On));
       TextColor_Completed(this, EventArgs.Empty);
@@ -48,8 +52,9 @@ namespace CSharpMath.Forms.Example {
           v.TextAlignment = (Rendering.TextAlignment)Alignment.SelectedItem;
           v.TextColor = TextColor.LabelColor;
           v.BackgroundColor = BackColor.LabelColor;
-          v.PaintStyle = (Rendering.PaintStyle)PaintStyle.SelectedItem;
+          v.PaintStyle = (PaintStyle)PaintStyle.SelectedItem;
           v.LineStyle = (Enumerations.LineStyle)LineStyle.SelectedItem;
+          v.StrokeCap = (global::SkiaSharp.SKStrokeCap)StrokeCap.SelectedItem;
         }
     }
 
@@ -115,6 +120,13 @@ namespace CSharpMath.Forms.Example {
     private void LineStyle_SelectedIndexChanged(object sender, EventArgs e) {
       foreach (var v in App.AllViews) {
         v.LineStyle = (Enumerations.LineStyle)LineStyle.SelectedItem;
+        v.InvalidateSurface();
+      }
+    }
+
+    private void StrokeCap_SelectedIndexChanged(object sender, EventArgs e) {
+      foreach (var v in App.AllViews) {
+        v.StrokeCap = (global::SkiaSharp.SKStrokeCap)StrokeCap.SelectedItem;
         v.InvalidateSurface();
       }
     }

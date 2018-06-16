@@ -54,7 +54,8 @@ namespace CSharpMath.Forms {
       PaintStyleProperty = BindableProperty.Create(nameof(PaintStyle), typeof(PaintStyle), thisType, painter.PaintStyle, propertyChanged: (b, o, n) => p(b).PaintStyle = (PaintStyle)n);
       LineStyleProperty = BindableProperty.Create(nameof(LineStyle), typeof(Enumerations.LineStyle), thisType, painter.LineStyle, propertyChanged: (b, o, n) => p(b).LineStyle = (Enumerations.LineStyle)n);
       GlyphBoxColorProperty = BindableProperty.Create(nameof(GlyphBoxColor), typeof((Color glyph, Color textRun)?), thisType, painter.GlyphBoxColor.HasValue ? (painter.GlyphBoxColor.Value.glyph.ToNative(), painter.GlyphBoxColor.Value.textRun.ToNative()) : default((Color glyph, Color textRun)?), propertyChanged: (b, o, n) => p(b).GlyphBoxColor = n != null ? ((((Color glyph, Color textRun)?)n).Value.glyph.FromNative(), (((Color glyph, Color textRun)?)n).Value.textRun.FromNative()) : default((Structures.Color glyph, Structures.Color textRun)?));
-      PaddingProperty = BindableProperty.Create(nameof(Padding), typeof(Thickness), thisType, new Thickness(painter.Padding.Left, painter.Padding.Top, painter.Padding.Right, painter.Padding.Bottom), propertyChanged: (b, o, n) => p(b).Padding = new Rendering.Thickness((float)((Thickness)n).Left, (float)((Thickness)n).Top, (float)((Thickness)n).Right, (float)((Thickness)n).Bottom));
+      PaddingProperty = BindableProperty.Create(nameof(Padding), typeof(Thickness), thisType, new Thickness(painter.Padding.Left, painter.Padding.Top, painter.Padding.Right, painter.Padding.Bottom), propertyChanged: (b, o, n) => p(b).Padding = new Thickness(((Thickness)n).Left, ((Thickness)n).Top, ((Thickness)n).Right, ((Thickness)n).Bottom));
+      StrokeCapProperty = BindableProperty.Create(nameof(StrokeCap), typeof(SKStrokeCap), thisType, painter.StrokeCap, propertyChanged: (b, o, n) => p(b).StrokeCap = (SKStrokeCap)n);
       LockGesturesProperty = BindableProperty.Create(nameof(LockGestures), typeof(bool), thisType, false);
       ErrorMessagePropertyKey = BindableProperty.CreateReadOnly(nameof(ErrorMessage), typeof(string), thisType, painter.ErrorMessage, BindingMode.OneWayToSource);
       ErrorMessageProperty = ErrorMessagePropertyKey.BindableProperty;
@@ -77,6 +78,7 @@ namespace CSharpMath.Forms {
     public static readonly BindableProperty GlyphBoxColorProperty;
     public static readonly BindableProperty PaddingProperty;
     public static readonly BindableProperty SourceProperty;
+    public static readonly BindableProperty StrokeCapProperty;
     public static readonly BindableProperty LockGesturesProperty;
     private static readonly BindablePropertyKey ErrorMessagePropertyKey;
     public static readonly BindableProperty ErrorMessageProperty;
@@ -156,6 +158,7 @@ namespace CSharpMath.Forms {
     public (Color glyph, Color textRun)? GlyphBoxColor { get => ((Color glyph, Color textRun)?)GetValue(GlyphBoxColorProperty); set => SetValue(GlyphBoxColorProperty, value); }
     public Thickness Padding { get => (Thickness)GetValue(PaddingProperty); set => SetValue(PaddingProperty, value); }
     public string ErrorMessage { get => (string)GetValue(ErrorMessageProperty); private set => SetValue(ErrorMessagePropertyKey, value); }
+    public SKStrokeCap StrokeCap { get => (SKStrokeCap)GetValue(StrokeCapProperty); set => SetValue(StrokeCapProperty, value); }
 
     public System.Drawing.SizeF? DrawingSize => painter.DrawingSize;
     public Rectangle LayoutBounds { get => (Rectangle)GetValue(LayoutBoundsProperty); private set => SetValue(LayoutBoundsPropertyKey, value); }

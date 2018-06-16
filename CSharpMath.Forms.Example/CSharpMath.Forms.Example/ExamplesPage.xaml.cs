@@ -67,20 +67,14 @@ namespace CSharpMath.Forms.Example {
 
     public static IEnumerable<FieldInfo> AllConstants { get; } = typeof(ExamplesPage).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly).
       Where(fi => fi.IsLiteral && !fi.IsInitOnly);
-    
+    static readonly string latex = string.Join(@"\\", AllConstants.Select(info => $@"{info.Name}: {info.GetRawConstantValue()}"));
+
     protected override void OnAppearing() {
       base.OnAppearing();
       App.AllViews.Add(View);
       View.FontSize = 50;
-      View.LaTeX = "Loading...";
+      View.LaTeX = latex;
       View.InvalidateSurface();
-      Device.StartTimer(TimeSpan.FromSeconds(1),
-        () => {
-          View.LaTeX = string.Join(@"\\", AllConstants.Select(info => $@"{info.Name}: {info.GetRawConstantValue()}"));
-          View.InvalidateSurface();
-          return false;
-        }
-      );
     }
     protected override void OnDisappearing() {
       //App.AllViews.Remove(View);

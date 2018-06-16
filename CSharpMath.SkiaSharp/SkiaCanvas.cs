@@ -6,6 +6,7 @@ namespace CSharpMath.SkiaSharp
   public class SkiaCanvas : ICanvas {
     public SkiaCanvas(SKCanvas canvas) => Canvas = canvas;
     public SKCanvas Canvas { get; }
+    public SKStrokeCap StrokeCap { get; set; }
     public Color DefaultColor { get; set; }
     public Color? CurrentColor { get; set; }
     public PaintStyle CurrentStyle { get; set; }
@@ -17,6 +18,7 @@ namespace CSharpMath.SkiaSharp
       _paint.Color = Color;
       _paint.Style = (SKPaintStyle)style;
       _paint.StrokeWidth = strokeWidth;
+      _paint.StrokeCap = StrokeCap;
       return _paint;
     }
     private SKPaint Paint => StyledPaint(CurrentStyle);

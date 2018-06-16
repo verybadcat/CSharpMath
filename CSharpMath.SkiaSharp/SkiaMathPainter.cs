@@ -9,9 +9,11 @@ namespace CSharpMath.SkiaSharp {
       : base(new SizeF(bounds.Width, bounds.Height), fontSize) { }
     public SkiaMathPainter(float width, float height, float fontSize = 20f)
       : base(width, height, fontSize) { }
+    
+    public SKStrokeCap StrokeCap { get; set; }
 
     new void Draw(ICanvas _) => throw null;
-    public void Draw(SKCanvas canvas) => base.Draw(new SkiaCanvas(canvas));
+    public void Draw(SKCanvas canvas) => base.Draw(new SkiaCanvas(canvas) { StrokeCap = StrokeCap });
 
     public new SKSize Bounds {
       get => new SKSize(base.Bounds.Width, base.Bounds.Height);

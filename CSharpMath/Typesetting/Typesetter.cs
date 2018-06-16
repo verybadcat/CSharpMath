@@ -118,22 +118,11 @@ namespace CSharpMath {
           case MathAtomType.Color:
             AddDisplayLine(false);
             var color = atom as IMathColor;
-            var display = CreateLine(color.InnerList, _font, _context, _style);
-            display.Position = _currentPosition;
-            display.SetTextColor(Color.FromHexString(color.ColorString));
-            _displayAtoms.Add(display);
-            _currentPosition.X += display.Width;
-            break;
-          case MathAtomType.Fraction:
-            AddDisplayLine(false);
-            var fraction = atom as IFraction;
-            AddInterElementSpace(prevNode, atom.AtomType);
-            var fractionDisplay = MakeFraction(fraction);
-            _displayAtoms.Add(fractionDisplay);
-            _currentPosition.X += fractionDisplay.Width;
-            if (atom.Superscript != null || atom.Subscript != null) {
-              MakeScripts(atom, fractionDisplay, fraction.IndexRange.Location, 0);
-            }
+            var colorDisplay = CreateLine(color.InnerList, _font, _context, _style);
+            colorDisplay.SetTextColor(Color.FromHexString(color.ColorString));
+            colorDisplay.Position = _currentPosition;
+            _currentPosition.X += colorDisplay.Width;
+            _displayAtoms.Add(colorDisplay);
             break;
           case MathAtomType.Radical:
             AddDisplayLine(false);
@@ -153,6 +142,17 @@ namespace CSharpMath {
               MakeScripts(atom, displayRad, rad.IndexRange.Location, 0);
             }
             break;
+          case MathAtomType.Fraction:
+            AddDisplayLine(false);
+            var fraction = atom as IFraction;
+            AddInterElementSpace(prevNode, atom.AtomType);
+            var fractionDisplay = MakeFraction(fraction);
+            _displayAtoms.Add(fractionDisplay);
+            _currentPosition.X += fractionDisplay.Width;
+            if (atom.Superscript != null || atom.Subscript != null) {
+              MakeScripts(atom, fractionDisplay, fraction.IndexRange.Location, 0);
+            }
+            break;
           case MathAtomType.Inner:
             AddDisplayLine(false);
             AddInterElementSpace(prevNode, atom.AtomType);
@@ -168,6 +168,52 @@ namespace CSharpMath {
             _displayAtoms.Add(innerDisplay);
             if (atom.Subscript != null || atom.Superscript != null) {
               MakeScripts(atom, innerDisplay, atom.IndexRange.Location, 0);
+            }
+            break;
+          case MathAtomType.Underline:
+            AddDisplayLine(false);
+            // Underline is considered as Ord in rule 16.
+            AddInterElementSpace(prevNode, MathAtomType.Ordinary);
+            atom.AtomType = MathAtomType.Ordinary;
+            var under = atom as IUnderline;
+            var underlineDisplay = MakeUnderline(under);
+            _displayAtoms.Add(underlineDisplay);
+            _currentPosition.X += underlineDisplay.Width;
+                // add super scripts || subscripts
+                if (atom.Subscript != null || atom.Superscript != null) {
+                    MakeScripts(atom, underlineDisplay, atom.IndexRange.Location, 0);
+                }
+                break;
+                
+            case MathAtomType.Overline:
+            AddDisplayLine(false);
+            // Overline is considered as Ord in rule 16.
+            AddInterElementSpace(prevNode, MathAtomType.Ordinary);
+            atom.AtomType = MathAtomType.Ordinary;
+
+            var over = atom as IOverline;
+            var overlineDisplay = MakeOverline(over);
+            _displayAtoms.Add(overlineDisplay);
+            _currentPosition.X += overlineDisplay.Width;
+            // add super scripts || subscripts
+            if (atom.Subscript != null || atom.Superscript != null) {
+              MakeScripts(atom, overlineDisplay, atom.IndexRange.Location, 0);
+            }
+            break;
+                
+            case MathAtomType.Accent:
+            AddDisplayLine(false);
+            // Accent is considered as Ord in rule 16.
+            AddInterElementSpace(prevNode, MathAtomType.Ordinary);
+            atom.AtomType = MathAtomType.Ordinary;
+
+            var accent = atom as IAccent;
+            var accentDisplay = MakeAccent(accent);
+            _displayAtoms.Add(accentDisplay);
+            _currentPosition.X += accentDisplay.Width;
+            // add super scripts || subscripts
+            if (atom.Subscript != null || atom.Superscript != null) {
+              MakeScripts(atom, accentDisplay, atom.IndexRange.Location, 0);
             }
             break;
           case MathAtomType.Table:

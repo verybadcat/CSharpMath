@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,19 +29,14 @@ namespace CSharpMath.Forms.Example
       base.OnDisappearing();
     }
 
-    private async Task In_Clicked(object sender, EventArgs e) {
-      var file = await Plugin.FilePicker.CrossFilePicker.Current.PickFile();
-      if (file == null) return; // user canceled file picking
-      var bytes = Encoding.UTF8.GetBytes(Entry.Text);
-      file.GetStream().Write(bytes, 0, bytes.Length);
-      await Plugin.FilePicker.CrossFilePicker.Current.SaveFile(file);
+    static readonly string RefFile = Path.Combine(Environment.CurrentDirectory, "savedLaTeX.txt");
+
+    private void In_Clicked(object sender, EventArgs e) {
+      Entry.Text = File.ReadAllText(RefFile);
     }
 
-    private async Task Out_Clicked(object sender, EventArgs e) {
-      var file = await Plugin.FilePicker.CrossFilePicker.Current.PickFile();
-      if (file == null) return; // user canceled file picking
-      Entry.Text = Encoding.UTF8.GetString(file.DataArray);
-      await Plugin.FilePicker.CrossFilePicker.Current.SaveFile(file);
+    private void Out_Clicked(object sender, EventArgs e) {
+      File.WriteAllText(RefFile, Entry.Text);
     }
   }
 }
