@@ -31,6 +31,7 @@ namespace CSharpMath.Apple.Drawing {
       CgContext.SetLineCap(CGLineCap.Round);
       if (color.HasValue) CgContext.SetStrokeColor(color.Value.ToCgColor());
       CgContext.AddLines(new[] { new CGPoint(x1, y1), new CGPoint(x2, y2) });
+      CgContext.StrokePath();
     }
 
     public void DrawGlyphRunWithOffset(AttributedGlyphRun<TFont, TGlyph> run, PointF offset, Color? color) {

@@ -33,7 +33,14 @@ namespace CSharpMath.Display {
     
     public bool HasScript { get; set; }
 
-    public void Draw(IGraphicsContext<TFont, TGlyph> context) => ((IDisplay<TFont, TGlyph>)Accentee).Draw(context);
+    public void Draw(IGraphicsContext<TFont, TGlyph> context) {
+      ((IDisplay<TFont, TGlyph>)Accentee).Draw(context);
+      context.SaveState();
+      context.Translate(Position);
+      context.SetTextPosition(new PointF());
+      Accent.Draw(context);
+      context.RestoreState();
+    }
 
     public Color? TextColor { get; set; }
 

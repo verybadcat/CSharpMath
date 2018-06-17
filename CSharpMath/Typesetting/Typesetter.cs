@@ -201,7 +201,7 @@ namespace CSharpMath {
             }
             break;
                 
-            case MathAtomType.Accent:
+          case MathAtomType.Accent:
             AddDisplayLine(false);
             // Accent is considered as Ord in rule 16.
             AddInterElementSpace(prevNode, MathAtomType.Ordinary);
@@ -312,6 +312,7 @@ namespace CSharpMath {
       var overDisplay = new OverOrUnderlineDisplay<TFont, TGlyph>(innerListDisplay, _currentPosition);
       overDisplay.LineShiftUp = innerListDisplay.Ascent + _mathTable.OverbarVerticalGap(_font)
         + _mathTable.OverbarRuleThickness(_font) + _mathTable.OverbarExtraAscender(_font);
+      overDisplay.LineThickness = _mathTable.UnderbarRuleThickness(_styleFont);
       return overDisplay;
     }
 

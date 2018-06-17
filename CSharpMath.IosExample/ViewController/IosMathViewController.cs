@@ -3,11 +3,10 @@ using UIKit;
 
 namespace CSharpMath.Ios.Example
 {
-  public class IosMathViewController: UIViewController
-  {
-    public IosMathViewController()
-    {
+  public class IosMathViewController : UIViewController {
+    public IosMathViewController() {
     }
+    private const string Accent = @"\acute{x}";
     private const string Radical = @"\sqrt{3}";
     private const string RadicalSum = @"2 + \sqrt{3}";
     private const string Fraction = @"\frac{2}{34}";
@@ -54,13 +53,15 @@ namespace CSharpMath.Ios.Example
     private const string SummationWithLimits = @"\sum_{n=1}^{\infty}";
     private const string Taylor = @"\begin{eqnarray} e^x  &=&  \sum_{x=0}^{\infty}\frac{x^n}{n!} \\ \\ \sin(x) &=& \sum_{x=0}^{\infty}(-1)^n\frac{(2x+1)^n}{(2n)!}  \\ \\ -\ln(1-x)   &=& \sum_{x=0}^{\infty}\frac{x^n}{n}  \ \ \ \ \ (-1 <= x < 1) \end{eqnarray}";
     private const string TwoSin = @"2 \sin";
+    private const string Underline = @"\underline{Underline}";
+    private const string Overline = @"\overline{Overline}";
 
     public override void ViewDidLoad()
     {
       View.BackgroundColor = UIColor.White;
-      var latexView = IosMathLabels.MathView(NestedRadicalDeep, 15);
+      var latexView = IosMathLabels.MathView(Accent, 15);
       latexView.ContentInsets = new UIEdgeInsets(10, 10, 10, 10);
-      var size = latexView.SizeThatFits(new CoreGraphics.CGSize(370, 180));
+      var size = latexView.SizeThatFits(new CoreGraphics.CGSize(370, 280));
       latexView.Frame = new CoreGraphics.CGRect(0, 40, size.Width, size.Height);
       View.Add(latexView);
     }
