@@ -5,13 +5,15 @@ using CSharpMath.Tests.Resources;
 
 namespace CSharpMath.Tests.FrontEnd {
   public static class TestTypesettingContexts {
-    public static TypesettingContext<MathFont<char>, char> Create()
-      => new TypesettingContext<MathFont<char>, char>(
+    public static TypesettingContext<MathFont<char>, char> Create() {
+      var boundsProvider = new TestGlyphBoundsProvider();
+      return new TypesettingContext<MathFont<char>, char>(
         (font, size) => new MathFont<char>(size, font.Style),
-        new TestGlyphBoundsProvider(),
+        boundsProvider,
         new TestGlyphFinder(),
         new DoNothingFontChanger(),
-        new JsonMathTable<MathFont<char>, char>(new TestFontMeasurer(), TestResources.LatinMath, new TestGlyphNameProvider())
+        new JsonMathTable<MathFont<char>, char>(new TestFontMeasurer(), TestResources.LatinMath, new TestGlyphNameProvider(), boundsProvider)
     );
+    }
   }
 }

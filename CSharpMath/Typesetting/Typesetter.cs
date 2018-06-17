@@ -185,7 +185,7 @@ namespace CSharpMath {
                 }
                 break;
                 
-            case MathAtomType.Overline:
+          case MathAtomType.Overline:
             AddDisplayLine(false);
             // Overline is considered as Ord in rule 16.
             AddInterElementSpace(prevNode, MathAtomType.Ordinary);
@@ -295,6 +295,140 @@ namespace CSharpMath {
           ////       lastDisplay.Width += space;
         }
       }
+    }
+
+    private OverOrUnderlineDisplay<TFont, TGlyph> MakeUnderline(IUnderline underline) {
+      var inner = underline.InnerList;
+      var innerListDisplay = _CreateLine(inner, _font, _context, _style, _cramped);
+      var underDisplay = new OverOrUnderlineDisplay<TFont, TGlyph>(innerListDisplay, _currentPosition);
+      underDisplay.LineShiftUp = -(innerListDisplay.Descent + _mathTable.UnderbarVerticalGap(_styleFont));
+      underDisplay.LineThickness = _mathTable.UnderbarRuleThickness(_styleFont);
+      return underDisplay;
+    }
+
+    private OverOrUnderlineDisplay<TFont, TGlyph> MakeOverline(IOverline overline) {
+      var inner = overline.InnerList;
+      var innerListDisplay = _CreateLine(inner, _font, _context, _style, true);
+      var overDisplay = new OverOrUnderlineDisplay<TFont, TGlyph>(innerListDisplay, _currentPosition);
+      overDisplay.LineShiftUp = innerListDisplay.Ascent + _mathTable.OverbarVerticalGap(_font)
+        + _mathTable.OverbarRuleThickness(_font) + _mathTable.OverbarExtraAscender(_font);
+      return overDisplay;
+    }
+
+    private IDisplay<TFont, TGlyph> MakeAccent(IAccent accent) {
+      var accentee = _CreateLine(accent.InnerList, _font, _context, _style, true);
+      if (accent.Nucleus.Length == 0) {
+        // no accent
+        return accentee;
+      }
+
+      var rawAccentGlyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(accent.Nucleus.Length - 1, accent.Nucleus);
+      var accenteeWidth = accentee.Width;
+      float glyphAscent, glyphDescent, glyphWidth;
+      TGlyph accentGlyph = _FindVariantGlyph(rawAccentGlyph, accenteeWidth, out glyphAscent, out glyphDescent, out glyphWidth);
+      var delta = Math.Min(accentee.Ascent, _mathTable.AccentBaseHeight(_styleFont));
+      float skew = _GetSkew(accent, accenteeWidth, accentGlyph);
+      var height = accentee.Ascent - delta;
+      var accentPosition = new PointF(skew, height);
+      var accentGlyphDisplay = new GlyphDisplay<TFont, TGlyph>(accentGlyph, accent.IndexRange, _styleFont);
+      accentGlyphDisplay.Ascent = glyphAscent;
+      accentGlyphDisplay.Descent = glyphDescent;
+      accentGlyphDisplay.Width = glyphWidth;
+      accentGlyphDisplay.Position = accentPosition;
+
+      if (_IsSingleCharAccent(accent) && (accent.Subscript!=null || accent.Superscript!=null)) {
+        // Attach the super/subscripts to the accentee instead of the accent.
+        var innerAtom = accent.InnerList.Atoms[0];
+        innerAtom.Subscript = accent.Subscript;
+        innerAtom.Superscript = accent.Superscript;
+        accent.Subscript = null;
+        accent.Superscript = null;
+        // Remake the accentee (now with sub/superscripts)
+        // Note: Latex adjusts the heights in case the height of the char is different in non-cramped mode. However this shouldn't be the case since cramping
+        // only affects fractions and superscripts. We skip adjusting the heights.
+        accentee = _CreateLine(accent.InnerList, _font, _context, _style, _cramped);
+      }
+
+      var display = new AccentDisplay<TFont, TGlyph>(accentGlyphDisplay, accentee);
+      // WJWJWJ -- In the display, the position is the Accentee position. Is that correct, or should we be
+      // setting it here?
+      return display;
+    }
+
+
+    private float _GetSkew(IAccent accent, float accenteeWidth, TGlyph accentGlyph) {
+      if (accent.Nucleus.Length == 0) {
+        // no accent
+        return 0;
+      }
+      float accentAdjustment = _mathTable.GetTopAccentAdjustment(_styleFont, accentGlyph);
+      float accenteeAdjustment = 0;
+      if (!_IsSingleCharAccent(accent)) {
+        accenteeAdjustment = accenteeWidth / 2;
+      }
+      else {
+        var innerAtom = accent.InnerList.Atoms[0];
+        var accenteeGlyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(innerAtom.Nucleus.Length - 1, innerAtom.Nucleus);
+        accenteeAdjustment = _context.MathTable.GetTopAccentAdjustment(_styleFont, accenteeGlyph);
+      }
+      return accenteeAdjustment - accentAdjustment;
+    }
+
+    private TGlyph _FindVariantGlyph(TGlyph rawGlyph, float someWidth, out float glyphAscent, out float glyphDescent, out float glyphWidth) {
+      var glyphs = _mathTable.GetHorizontalVariantsForGlyph(rawGlyph);
+      int nGlyphs = glyphs.Count();
+      if (nGlyphs == 0) {
+        throw new Exception("There should always be at least one variant -- the glyph itself");
+      }
+      var currentGlyph = glyphs[0];
+
+      var boundingBoxes = _context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(_styleFont, glyphs);
+      var advances = _context.GlyphBoundsProvider.GetAdvancesForGlyphs(_styleFont, glyphs);
+
+
+      glyphAscent = float.NaN;  // These NaN values should never be returned. We have to set them to keep the compiler happy.
+      glyphDescent = float.NaN;
+      glyphWidth = float.NaN;
+      for (int i = 0; i < nGlyphs; i++) {
+        var bounds = boundingBoxes[i];
+        var advance = advances.Item1[i];
+        bounds.GetAscentDescentWidth(out float ascent, out float descent, out float _);
+        var width = bounds.Right;
+        if (width > someWidth) {
+
+          if (i == 0) {
+            // glyph dimensions are not yet set
+            glyphWidth = advance;
+            glyphAscent = ascent;
+            glyphDescent = descent;
+          }
+          return currentGlyph;
+        }
+        else {
+          currentGlyph = glyphs[i];
+          glyphWidth = advance;
+          glyphAscent = ascent;
+          glyphDescent = descent;
+
+        }
+      }
+      return currentGlyph;
+    }
+
+    private bool _IsSingleCharAccent(IAccent accent) {
+      if (accent.InnerList.Atoms.Count!=1) {
+        return false;
+      }
+      var innerAtom = accent.InnerList.Atoms[0];
+      if (innerAtom.IndexRange.Length > 1) {
+        // WJWJWJ There is something about "unicode length" here in iOSMath. Not sure how to handle that.
+        // This is frankly a guess.
+        return false;
+      }
+      if (innerAtom.Superscript!=null || innerAtom.Subscript!=null) {
+        return false;
+      }
+      return true;
     }
 
     private void MakeScripts(IMathAtom atom, IDisplay<TFont, TGlyph> display, int index, float delta) {

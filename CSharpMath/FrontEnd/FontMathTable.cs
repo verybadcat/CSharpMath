@@ -10,6 +10,7 @@ namespace CSharpMath.FrontEnd {
   public abstract class FontMathTable<TFont, TGlyph>
     where TFont : MathFont<TGlyph> {
 
+
     public float MuUnit(TFont font) => font.PointSize / 18f;
 
     public abstract float RadicalDisplayStyleVerticalGap(TFont font);
@@ -135,6 +136,13 @@ namespace CSharpMath.FrontEnd {
     public abstract float LowerLimitGapMin(TFont font);
 
     public abstract float LowerLimitBaselineDropMin(TFont font);
+
+    public abstract float UnderbarVerticalGap(TFont font);
+    public abstract float UnderbarRuleThickness(TFont font);
+    public abstract float OverbarVerticalGap(TFont font);
+    public abstract float OverbarRuleThickness(TFont font);
+    public abstract float OverbarExtraAscender(TFont font);
+    public abstract float AccentBaseHeight(TFont font);
+    public abstract float GetTopAccentAdjustment(TFont font, TGlyph glyph);
   }
 }
-

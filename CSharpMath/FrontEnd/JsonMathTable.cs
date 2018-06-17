@@ -1,6 +1,4 @@
 ﻿using CSharpMath.Display;
-using CSharpMath.Enumerations;
-using CSharpMath.FrontEnd;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -19,6 +17,7 @@ namespace CSharpMath.FrontEnd {
 
     public IFontMeasurer<TFont, TGlyph> FontMeasurer { get; set; }
     public IGlyphNameProvider<TGlyph> GlyphNameProvider { get; set; }
+    public IGlyphBoundsProvider<TFont, TGlyph> GlyphBoundsProvider { get; set; }
 
     protected float _unitsPerEm(TFont font)
       => FontMeasurer.GetUnitsPerEm(font);
@@ -48,10 +47,13 @@ namespace CSharpMath.FrontEnd {
     public override float RadicalDisplayStyleVerticalGap(TFont font) => _ConstantFromTable(font, nameof(RadicalDisplayStyleVerticalGap));
     public override float RadicalVerticalGap(TFont font) => _ConstantFromTable(font, nameof(RadicalVerticalGap));
 
-    public JsonMathTable(IFontMeasurer<TFont, TGlyph> fontMeasurer, JToken mathTable, IGlyphNameProvider<TGlyph> glyphNameProvider) {
+    public JsonMathTable(IFontMeasurer<TFont, TGlyph> fontMeasurer, JToken mathTable, 
+                         IGlyphNameProvider<TGlyph> glyphNameProvider,
+                         IGlyphBoundsProvider<TFont, TGlyph> glyphBoundsProvider) {
       FontMeasurer = fontMeasurer;
       _mathTable = mathTable;
       GlyphNameProvider = glyphNameProvider;
+      GlyphBoundsProvider = glyphBoundsProvider;
     }
 
     // different from _ConstantFromTable in that the _ConstantFromTable requires
@@ -115,49 +117,49 @@ namespace CSharpMath.FrontEnd {
       => _ConstantFromTable(font, nameof(FractionNumeratorDisplayStyleShiftUp));
 
     public override float FractionNumeratorShiftUp(TFont font)
-  => _ConstantFromTable(font, nameof(FractionNumeratorShiftUp));
+      => _ConstantFromTable(font, nameof(FractionNumeratorShiftUp));
 
     public override float StackTopDisplayStyleShiftUp(TFont font)
-  => _ConstantFromTable(font, nameof(StackTopDisplayStyleShiftUp));
+      => _ConstantFromTable(font, nameof(StackTopDisplayStyleShiftUp));
 
     public override float StackTopShiftUp(TFont font)
-  => _ConstantFromTable(font, nameof(StackTopShiftUp));
+      => _ConstantFromTable(font, nameof(StackTopShiftUp));
 
     public override float FractionNumDisplayStyleGapMin(TFont font)
-=> _ConstantFromTable(font, nameof(FractionNumDisplayStyleGapMin));
+      => _ConstantFromTable(font, nameof(FractionNumDisplayStyleGapMin));
 
     public override float FractionNumeratorGapMin(TFont font)
-=> _ConstantFromTable(font, nameof(FractionNumeratorGapMin));
+      => _ConstantFromTable(font, nameof(FractionNumeratorGapMin));
 
     public override float FractionDenominatorDisplayStyleShiftDown(TFont font)
-=> _ConstantFromTable(font, nameof(FractionDenominatorDisplayStyleShiftDown));
+      => _ConstantFromTable(font, nameof(FractionDenominatorDisplayStyleShiftDown));
 
     public override float FractionDenominatorShiftDown(TFont font)
-=> _ConstantFromTable(font, nameof(FractionDenominatorShiftDown));
+      => _ConstantFromTable(font, nameof(FractionDenominatorShiftDown));
 
     public override float StackBottomDisplayStyleShiftDown(TFont font)
-=> _ConstantFromTable(font, nameof(StackBottomDisplayStyleShiftDown));
+        => _ConstantFromTable(font, nameof(StackBottomDisplayStyleShiftDown));
 
     public override float StackBottomShiftDown(TFont font)
-=> _ConstantFromTable(font, nameof(StackBottomShiftDown));
+        => _ConstantFromTable(font, nameof(StackBottomShiftDown));
 
     public override float FractionDenomDisplayStyleGapMin(TFont font)
-=> _ConstantFromTable(font, nameof(FractionDenomDisplayStyleGapMin));
+        => _ConstantFromTable(font, nameof(FractionDenomDisplayStyleGapMin));
 
     public override float FractionDenominatorGapMin(TFont font)
-=> _ConstantFromTable(font, nameof(FractionDenominatorGapMin));
+        => _ConstantFromTable(font, nameof(FractionDenominatorGapMin));
 
     public override float AxisHeight(TFont font)
-=> _ConstantFromTable(font, nameof(AxisHeight));
+        => _ConstantFromTable(font, nameof(AxisHeight));
 
     public override float FractionRuleThickness(TFont font)
-=> _ConstantFromTable(font, nameof(FractionRuleThickness));
+        => _ConstantFromTable(font, nameof(FractionRuleThickness));
 
     public override float StackDisplayStyleGapMin(TFont font)
-=> _ConstantFromTable(font, nameof(StackDisplayStyleGapMin));
+        => _ConstantFromTable(font, nameof(StackDisplayStyleGapMin));
 
     public override float StackGapMin(TFont font)
-=> _ConstantFromTable(font, nameof(StackGapMin));
+        => _ConstantFromTable(font, nameof(StackGapMin));
     #endregion
 
     #region radicals
@@ -267,16 +269,50 @@ namespace CSharpMath.FrontEnd {
     #endregion
 
     public override float UpperLimitGapMin(TFont font)
-       => _ConstantFromTable(font, nameof(UpperLimitGapMin));
+        => _ConstantFromTable(font, nameof(UpperLimitGapMin));
 
     public override float UpperLimitBaselineRiseMin(TFont font)
-       => _ConstantFromTable(font, nameof(UpperLimitBaselineRiseMin));
+        => _ConstantFromTable(font, nameof(UpperLimitBaselineRiseMin));
 
     public override float LowerLimitGapMin(TFont font)
-       => _ConstantFromTable(font, nameof(LowerLimitGapMin));
+        => _ConstantFromTable(font, nameof(LowerLimitGapMin));
 
     public override float LowerLimitBaselineDropMin(TFont font)
-       => _ConstantFromTable(font, nameof(LowerLimitBaselineDropMin));
+        => _ConstantFromTable(font, nameof(LowerLimitBaselineDropMin));
+
+    #region overline/underline
+    public override float UnderbarVerticalGap(TFont font)
+        => _ConstantFromTable(font, nameof(UnderbarVerticalGap));
+
+    public override float UnderbarRuleThickness(TFont font)
+        => _ConstantFromTable(font, nameof(UnderbarRuleThickness));
+
+    public override float OverbarVerticalGap(TFont font)
+        => _ConstantFromTable(font, nameof(OverbarVerticalGap));
+
+    public override float OverbarExtraAscender(TFont font) 
+        => _ConstantFromTable(font, nameof(OverbarExtraAscender));
+
+    public override float OverbarRuleThickness(TFont font)
+        => _ConstantFromTable(font, nameof(OverbarRuleThickness));
+    #endregion
+    public override float AccentBaseHeight(TFont font)
+        => _ConstantFromTable(font, nameof(AccentBaseHeight));
+
+    public override float GetTopAccentAdjustment(TFont font, TGlyph glyph) {
+      var accents = _mathTable["accents"];
+      var glyphName = GlyphNameProvider.GetGlyphName(glyph);
+      var nameValue = accents[glyphName];
+      if (nameValue!=null) {
+        var intValue = nameValue.Value<int>();
+        return _FontUnitsToPt(font, intValue);
+      } else {
+        // If no top accent is defined then it is the center of the advance width.
+        var glyphs = new TGlyph[] { glyph };
+        var advances = GlyphBoundsProvider.GetAdvancesForGlyphs(font, glyphs);
+        return advances.Advances[0] / 2;
+      }
+    }
 
   }
 }

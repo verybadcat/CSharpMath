@@ -140,6 +140,34 @@ namespace CSharpMath.Rendering {
     public override float UpperLimitBaselineRiseMin(MathFonts font) => ReadRecord(font.MathConsts.UpperLimitBaselineRiseMin, font);
 
     public override float UpperLimitGapMin(MathFonts font) => ReadRecord(font.MathConsts.UpperLimitGapMin, font);
+
+    public override float UnderbarVerticalGap(MathFonts font) {
+      throw new NotImplementedException();
+    }
+
+    public override float AccentBaseHeight(MathFonts font) {
+      throw new NotImplementedException();
+    }
+
+    public override float GetTopAccentAdjustment(MathFonts font, Glyph glyph) {
+      throw new NotImplementedException();
+    }
+
+    public override float UnderbarRuleThickness(MathFonts font) {
+      throw new NotImplementedException();
+    }
+
+    public override float OverbarVerticalGap(MathFonts font) {
+      throw new NotImplementedException();
+    }
+
+    public override float OverbarRuleThickness(MathFonts font) {
+      throw new NotImplementedException();
+    }
+
+    public override float OverbarExtraAscender(MathFonts font) {
+      throw new NotImplementedException();
+    }
   }
 
   internal static class GlyphExtensions {
