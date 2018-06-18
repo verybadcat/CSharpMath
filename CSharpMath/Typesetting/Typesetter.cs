@@ -300,20 +300,20 @@ namespace CSharpMath {
     private OverOrUnderlineDisplay<TFont, TGlyph> MakeUnderline(IUnderline underline) {
       var inner = underline.InnerList;
       var innerListDisplay = _CreateLine(inner, _font, _context, _style, _cramped);
-      var underDisplay = new OverOrUnderlineDisplay<TFont, TGlyph>(innerListDisplay, _currentPosition);
-      underDisplay.LineShiftUp = -(innerListDisplay.Descent + _mathTable.UnderbarVerticalGap(_styleFont));
-      underDisplay.LineThickness = _mathTable.UnderbarRuleThickness(_styleFont);
-      return underDisplay;
+      return new OverOrUnderlineDisplay<TFont, TGlyph>(innerListDisplay, _currentPosition) {
+        LineShiftUp = -(innerListDisplay.Descent + _mathTable.UnderbarVerticalGap(_styleFont)),
+        LineThickness = _mathTable.UnderbarRuleThickness(_styleFont)
+      };
     }
 
     private OverOrUnderlineDisplay<TFont, TGlyph> MakeOverline(IOverline overline) {
       var inner = overline.InnerList;
       var innerListDisplay = _CreateLine(inner, _font, _context, _style, true);
-      var overDisplay = new OverOrUnderlineDisplay<TFont, TGlyph>(innerListDisplay, _currentPosition);
-      overDisplay.LineShiftUp = innerListDisplay.Ascent + _mathTable.OverbarVerticalGap(_font)
-        + _mathTable.OverbarRuleThickness(_font) + _mathTable.OverbarExtraAscender(_font);
-      overDisplay.LineThickness = _mathTable.UnderbarRuleThickness(_styleFont);
-      return overDisplay;
+      return new OverOrUnderlineDisplay<TFont, TGlyph>(innerListDisplay, _currentPosition) {
+        LineShiftUp = innerListDisplay.Ascent + _mathTable.OverbarVerticalGap(_font)
+        + _mathTable.OverbarRuleThickness(_font) + _mathTable.OverbarExtraAscender(_font),
+        LineThickness = _mathTable.UnderbarRuleThickness(_styleFont)
+      };
     }
 
     private IDisplay<TFont, TGlyph> MakeAccent(IAccent accent) {
@@ -331,11 +331,12 @@ namespace CSharpMath {
       float skew = _GetSkew(accent, accenteeWidth, accentGlyph);
       var height = accentee.Ascent - delta;
       var accentPosition = new PointF(skew, height);
-      var accentGlyphDisplay = new GlyphDisplay<TFont, TGlyph>(accentGlyph, accent.IndexRange, _styleFont);
-      accentGlyphDisplay.Ascent = glyphAscent;
-      accentGlyphDisplay.Descent = glyphDescent;
-      accentGlyphDisplay.Width = glyphWidth;
-      accentGlyphDisplay.Position = accentPosition;
+      var accentGlyphDisplay = new GlyphDisplay<TFont, TGlyph>(accentGlyph, accent.IndexRange, _styleFont) {
+        Ascent = glyphAscent,
+        Descent = glyphDescent,
+        Width = glyphWidth,
+        Position = accentPosition
+      };
 
       if (_IsSingleCharAccent(accent) && (accent.Subscript!=null || accent.Superscript!=null)) {
         // Attach the super/subscripts to the accentee instead of the accent.
@@ -421,9 +422,9 @@ namespace CSharpMath {
         return false;
       }
       var innerAtom = accent.InnerList.Atoms[0];
-      if (innerAtom.IndexRange.Length > 1) {
-        // WJWJWJ There is something about "unicode length" here in iOSMath. Not sure how to handle that.
-        // This is frankly a guess.
+      // WJWJWJ (Happypig375 edit): This is the only usage of iosMath/lib/MTUnicode.h and iosMath/lib/MTUnicode.m
+      var unicodeLength = System.Text.Encoding.UTF32.GetByteCount(innerAtom.Nucleus);
+      if (unicodeLength != 1) {
         return false;
       }
       if (innerAtom.Superscript!=null || innerAtom.Subscript!=null) {

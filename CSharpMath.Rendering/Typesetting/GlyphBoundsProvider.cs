@@ -15,18 +15,18 @@ namespace CSharpMath.Rendering {
       var total = 0f;
       var i = 0;
       foreach (var (typeface, glyph) in glyphs) {
-        var scale = typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);
-        total += advanceSizes[i] = typeface.GetHAdvanceWidthFromGlyphIndex(glyph.GlyphIndex) * scale;
+          var scale = typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);
+          total += advanceSizes[i] = typeface.GetHAdvanceWidthFromGlyphIndex(glyph.GlyphIndex) * scale;
         i++;
       }
       return (advanceSizes, total);
     }
 
-    public RectangleF[] GetBoundingRectsForGlyphs(TFonts font, Glyph[] glyphs) {
+    public RectangleF[] GetBoundingRectsForGlyphs(TFonts fonts, Glyph[] glyphs) {
       var rects = new RectangleF[glyphs.Length];
       var i = 0;
       foreach (var glyph in glyphs) {
-        var scale = glyph.Typeface.CalculateScaleToPixelFromPointSize(font.PointSize);
+        var scale = glyph.Typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);
         var bounds = glyph.Info.Bounds;
         var obounds = glyph.GetOriginalBounds();
         rects[i] = RectangleF.FromLTRB(obounds.XMin * scale, bounds.YMin * scale, obounds.XMax * scale, bounds.YMax * scale);

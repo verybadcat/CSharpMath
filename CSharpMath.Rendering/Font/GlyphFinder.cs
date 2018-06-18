@@ -12,7 +12,7 @@ namespace CSharpMath.Rendering {
         var g = font.Lookup(codepoint);
         if (g.GlyphIndex != 0) return new Glyph(font, g);
       }
-      return Glyph.Empty;
+      return new Glyph(_fonts.MathTypeface, _fonts.MathTypeface.Lookup(' '));
     }
 
     public Glyph FindGlyphForCharacterAtIndex(int index, string str) {

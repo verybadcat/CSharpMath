@@ -17,9 +17,6 @@ namespace CSharpMath.Forms {
     public FormsMathView() {
       InitializeComponent();
       painter = new SkiaSharp.SkiaMathPainter(CanvasSize);
-      var pan = new PanGestureRecognizer { TouchPoints = 1 };
-      pan.PanUpdated += OnPan;
-      GestureRecognizers.Add(pan);
       var pinch = new PinchGestureRecognizer();
       pinch.PinchUpdated += OnPinch;
       GestureRecognizers.Add(pinch);
@@ -56,7 +53,7 @@ namespace CSharpMath.Forms {
       GlyphBoxColorProperty = BindableProperty.Create(nameof(GlyphBoxColor), typeof((Color glyph, Color textRun)?), thisType, painter.GlyphBoxColor.HasValue ? (painter.GlyphBoxColor.Value.glyph.ToNative(), painter.GlyphBoxColor.Value.textRun.ToNative()) : default((Color glyph, Color textRun)?), propertyChanged: (b, o, n) => p(b).GlyphBoxColor = n != null ? ((((Color glyph, Color textRun)?)n).Value.glyph.FromNative(), (((Color glyph, Color textRun)?)n).Value.textRun.FromNative()) : default((Structures.Color glyph, Structures.Color textRun)?));
       PaddingProperty = BindableProperty.Create(nameof(Padding), typeof(Thickness), thisType, new Thickness(painter.Padding.Left, painter.Padding.Top, painter.Padding.Right, painter.Padding.Bottom), propertyChanged: (b, o, n) => p(b).Padding = new Thickness(((Thickness)n).Left, ((Thickness)n).Top, ((Thickness)n).Right, ((Thickness)n).Bottom));
       StrokeCapProperty = BindableProperty.Create(nameof(StrokeCap), typeof(SKStrokeCap), thisType, painter.StrokeCap, propertyChanged: (b, o, n) => p(b).StrokeCap = (SKStrokeCap)n);
-      LockGesturesProperty = BindableProperty.Create(nameof(LockGestures), typeof(bool), thisType, false);
+      EnableGesturesProperty = BindableProperty.Create(nameof(EnableGestures), typeof(bool), thisType, false);
       ErrorMessagePropertyKey = BindableProperty.CreateReadOnly(nameof(ErrorMessage), typeof(string), thisType, painter.ErrorMessage, BindingMode.OneWayToSource);
       ErrorMessageProperty = ErrorMessagePropertyKey.BindableProperty;
       GestureCountPropertyKey = BindableProperty.CreateReadOnly(nameof(GestureCount), typeof(int), thisType, 0, BindingMode.OneWayToSource);
@@ -79,7 +76,7 @@ namespace CSharpMath.Forms {
     public static readonly BindableProperty PaddingProperty;
     public static readonly BindableProperty SourceProperty;
     public static readonly BindableProperty StrokeCapProperty;
-    public static readonly BindableProperty LockGesturesProperty;
+    public static readonly BindableProperty EnableGesturesProperty;
     private static readonly BindablePropertyKey ErrorMessagePropertyKey;
     public static readonly BindableProperty ErrorMessageProperty;
     private static readonly BindablePropertyKey GestureCountPropertyKey;
@@ -88,32 +85,40 @@ namespace CSharpMath.Forms {
     public static readonly BindableProperty LayoutBoundsProperty;
     #endregion
 
-    double _lastX, _lastY;
-    protected virtual void OnPan(object sender, PanUpdatedEventArgs e) {
-      if (!LockGestures && painter.LaTeX.IsNonEmpty()) {
-        switch (e.StatusType) {
-          case GestureStatus.Started:
-            GestureCount++;
-            _lastX = _lastY = 0;
+    SKPoint _origin;
+    protected override void OnTouch(SKTouchEventArgs e) {
+      if (e.InContact) {
+        switch (e.ActionType) {
+          case SKTouchAction.Entered:
             break;
-          case GestureStatus.Running:
-            ScrollX += (float)(e.TotalX - _lastX) / Magnification;
-            ScrollY += (float)-(e.TotalY - _lastY) / Magnification;
+          case SKTouchAction.Pressed:
+            _origin = e.Location;
+            e.Handled = true;
+            break;
+          case SKTouchAction.Moved:
+            var displacement = e.Location - _origin;
+            painter.ScrollX += displacement.X;
+            painter.ScrollY -= displacement.Y; // Canvas is inverted!!
+            _origin = e.Location;
             InvalidateSurface();
-            _lastX = e.TotalX;
-            _lastY = e.TotalY;
+            e.Handled = true;
             break;
-          case GestureStatus.Completed:
-          case GestureStatus.Canceled:
-            GestureCount--;
+          case SKTouchAction.Released:
+            _origin = e.Location;
+            e.Handled = true;
+            break;
+          case SKTouchAction.Cancelled:
+            break;
+          case SKTouchAction.Exited:
             break;
           default:
-            throw new NotImplementedException("A new GestureStatus is in Xamarin.Forms?");
+            break;
         }
       }
+      base.OnTouch(e);
     }
     protected virtual void OnPinch(object sender, PinchGestureUpdatedEventArgs e) {
-      if (!LockGestures && painter.LaTeX.IsNonEmpty()) {
+      if (EnableGestures && painter.LaTeX.IsNonEmpty()) {
         switch (e.Status) {
           case GestureStatus.Started:
             GestureCount++;
@@ -132,7 +137,7 @@ namespace CSharpMath.Forms {
       }
     }
 
-    public bool LockGestures { get => (bool)GetValue(LockGesturesProperty); set => SetValue(LockGesturesProperty, value); }
+    public bool EnableGestures { get => (bool)GetValue(EnableGesturesProperty); set => SetValue(EnableGesturesProperty, value); }
     public int GestureCount { get => (int)GetValue(GestureCountProperty); private set => SetValue(GestureCountPropertyKey, value); }
     public MathSource Source { get => (MathSource)GetValue(SourceProperty); set => SetValue(SourceProperty, value); }
     public Interfaces.IMathList MathList { get => Source.MathList; set => Source = new MathSource(value); }

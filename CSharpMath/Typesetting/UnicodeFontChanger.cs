@@ -371,10 +371,8 @@ namespace CSharpMath
       return GetDefaultStyle(c);
     }
 
-    private TLongChar ToLittleEndian(TLongChar c)
-    {
-      return c; // TODO: figure out and implement this. Most systems are little endian in which case it is already correct.
-    }
+    private TLongChar ToLittleEndian(TLongChar c) => BitConverter.IsLittleEndian ? c :
+      (c & 0b11110000) >> 4 + (c & 0b00001111) << 4;
 
     public string ChangeFont(char c, FontStyle outputFontStyle)
     {

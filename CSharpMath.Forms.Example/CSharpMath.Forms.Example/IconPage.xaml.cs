@@ -20,7 +20,6 @@ namespace CSharpMath.Forms.Example {
       const double π = 3.1415926535897932384626433832795028841971;
       FormsMathView Create(string latex) =>
         new FormsMathView {
-          LockGestures = true,
           FontSize = size,
           TextAlignment = Rendering.TextAlignment.Center,
           LaTeX = latex
