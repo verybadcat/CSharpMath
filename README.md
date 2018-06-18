@@ -1,8 +1,12 @@
 ### Ever wanted to display LaTeX math formulae in C# but cannot find any tool to help you? Here is what you may be looking for.
 
-# CSharpMath
+![icon](https://user-images.githubusercontent.com/19922066/41504433-2c64c52c-7221-11e8-8177-9b6112bf1967.gif)
 
-This is a C# port of the wonderful [iosMath LaTeX engine](https://github.com/kostub/iosMath).
+CSharpMath is a C# port of the wonderful [iosMath LaTeX engine](https://github.com/kostub/iosMath).
+
+Current NuGet version|Current stable version|Commits since last version
+-|-|-
+![NuGet release shield](https://img.shields.io/nuget/v/CSharpMath.svg)|![GitHub Releases shield](https://img.shields.io/github/release/verybadcat/CSharpMath.svg)|![GitHub commits since last version shield](https://img.shields.io/github/commits-since/verybadcat/CSharpMath/latest.svg)
 
 It is now working in most cases. Some examples are below.
 
@@ -10,31 +14,6 @@ It is now working in most cases. Some examples are below.
 
 Ironically enough, the first front end was iOS (CSharpMath.Ios).
 As development continued, Xamarin.Forms (CSharpMath.Forms)<!-- and Windows environments--> is now supported via SkiaSharp (CSharpMath.SkiaSharp) as of 0.1.0.
-
-There are a few ways to extend this to more platforms:
-(Hopefully, you would not need to touch the core typesetting engine. If you do, we would consider that a bug.)
-
-### 1. Branching off from CSharpMath (the project)
-
-This path would require the most effort to implement, but allows you to plug in any font library and graphics library.
-
-You would have to define your own [TypesettingContext](CSharpMath/FrontEnd/TypesettingContext.cs) and write an implementation of [IGraphicsContext](CSharpMath/FrontEnd/IGraphicsContext.cs).
-
-The TypesettingContext in turn has several components, including choosing a font.
-
-### 2. Forking from CSharpMath.Rendering
-
-As CSharpMath.Rendering provides font lookup through [the Typography library](https://github.com/LayoutFarm/Typography), you would only need to write adapter classes to connect this library to your chosen graphics library.
-
-You would have to implement [ICanvas](CSharpMath.Rendering/Drawing/ICanvas.cs) and feed it into the Draw method of [MathPainter](CSharpMath.Rendering/MathPainter.cs).
-
-### 3. Referencing CSharpMath.SkiaSharp
-
-You can extend this library to other SkiaSharp-supported platforms by feeding the SKCanvas given in the OnPaintSurface override of a SkiaSharp view into the Draw method of [SkiaMathPainter](CSharpMath.SkiaSharp/SkiaMathPainter.cs).
-
-### 4. Building on top of CSharpMath.Apple
-
-You can use this library on other appleOSes by making use of [AppleMathView](CSharpMaath.Apple/AppleMathView.cs).
 
 # Usage and Examples
 
@@ -84,14 +63,54 @@ someLayout.Children.Add(view);
 iOS | Android | Windows UWP
 ----|---------|------------
 ![1/2](https://user-images.githubusercontent.com/19922066/40612166-fd6c5b38-62ab-11e8-9cb1-b2b7eb6883be.png) | ![1+1](https://user-images.githubusercontent.com/19922066/40575043-183a6970-6110-11e8-887f-820e14efc588.jpeg) | ![Panning a view](https://user-images.githubusercontent.com/19922066/40731183-18a09b68-6463-11e8-8095-1a4cc9df9eae.gif) ![Colors!](https://user-images.githubusercontent.com/19922066/40972206-8abc247c-68f2-11e8-8684-561b5e833c21.png)
+
+# [Documentation](https://github.com/verybadcat/CSharpMath/wiki/Documentation-of-public-facing-APIs-of-CSharpMath.Rendering,-CSharpMath.SkiaSharp-and-CSharpMath.Forms)
+
+# Extending to more platforms
+
+There are a few ways to extend this to more platforms:
+(Hopefully, you would not need to touch the core typesetting engine. If you do, we would consider that a bug.)
+
+### 1. Branching off from CSharpMath (the project)
+
+This path would require the most effort to implement, but allows you to plug in any font library and graphics library.
+
+You would have to define your own [TypesettingContext](CSharpMath/FrontEnd/TypesettingContext.cs) and write an implementation of [IGraphicsContext](CSharpMath/FrontEnd/IGraphicsContext.cs).
+
+The TypesettingContext in turn has several components, including choosing a font.
+
+### 2. Forking from CSharpMath.Rendering
+
+As CSharpMath.Rendering provides font lookup through [the Typography library](https://github.com/LayoutFarm/Typography), you would only need to write adapter classes to connect this library to your chosen graphics library.
+
+You would have to implement [ICanvas](CSharpMath.Rendering/Drawing/ICanvas.cs) and feed it into the Draw method of [MathPainter](CSharpMath.Rendering/MathPainter.cs).
+
+### 3. Referencing CSharpMath.SkiaSharp
+
+You can extend this library to other SkiaSharp-supported platforms by feeding the SKCanvas given in the OnPaintSurface override of a SkiaSharp view into the Draw method of [SkiaMathPainter](CSharpMath.SkiaSharp/SkiaMathPainter.cs).
+
+### 4. Building on top of CSharpMath.Apple
+
+You can use this library on other appleOSes by making use of [AppleMathView](CSharpMaath.Apple/AppleMathView.cs).
       
 # Project needs
 
 We need more contributors! Maybe you can contribute something to this repository. Whether they are bug reports, feature proposals or pull requests, you are welcome to send them to us. We are sure that we will take a look at them!
 
+Here is an idea list if you cannot think of anything right now:
+- A new example for the Exmple projects (please open pull requests straight away)
+- A new LaTeX command (please link documentation of it)
+- A new front end (please describe what it is and why should it be supported)
+- A new math syntax (please describe what it is and why should it be supported)
+
 # License
 
-The code is licensed by the MIT license. The latin-modern-math font is licensed by the [GUST Font License](./fonts/GUST-FONT-LICENSE.txt).
+CSharpMath is licensed by [the MIT license](LICENSE).
+
+Dependency|Used by|License
+-|-|-
+latin-modern-math font|CSharpMath.Ios, CSharpMath.Rendering|[GUST Font License](http://www.gust.org.pl/projects/e-foundry/licenses/GUST-FONT-LICENSE.txt/view)
+Typography project|CSharpMath.Rendering|[MIT](https://github.com/LayoutFarm/Typography/blob/master/LICENSE.md)
 
 # Authors
 
@@ -119,3 +138,4 @@ Shhh... Don't tell anybody!
 0.4.0: Infix?
 
 0.4.0: Math evaluation??
+0.5.0: Handwritten math recognition???
