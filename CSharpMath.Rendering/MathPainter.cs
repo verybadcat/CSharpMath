@@ -147,7 +147,7 @@ namespace CSharpMath.Rendering {
         canvas.CurrentStyle = PaintStyle;
         if (_displayChanged) UpdateDisplay();
         _displayList.Position = GetDisplayPosition();
-        canvas.Translate(ScrollX, ScrollY);
+        canvas.Translate(ScrollX, -ScrollY); //canvas is inverted so negate ScrollY
         _context.Canvas = canvas;
         _context.GlyphBoxColor = GlyphBoxColor;
         _displayList.Draw(_context);

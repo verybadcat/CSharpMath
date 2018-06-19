@@ -41,7 +41,7 @@ namespace CSharpMath.SkiaSharp
     public void MoveTo(float x0, float y0) { _path.Close(); _path.MoveTo(x0, y0); }
 
     public void StrokeRect(float left, float top, float width, float height) => Canvas.DrawRect(SKRect.Create(left, top, width, height), StyledPaint(PaintStyle.Stroke));
-    public void FillColor()  => Canvas.DrawColor(Color);
+    public void FillColor()  => Canvas.DrawColor(Color, SKBlendMode.Overlay);
     public void AddLine(float x1, float y1, float x2, float y2, float lineThickness) => Canvas.DrawLine(x1, y1, x2, y2, StyledPaint(PaintStyle.Stroke, lineThickness));
     public void Save() => Canvas.Save();
     public void Translate(float dx, float dy) => Canvas.Translate(dx, dy);

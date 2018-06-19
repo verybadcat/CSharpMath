@@ -25,6 +25,7 @@ namespace CSharpMath.Forms {
     protected SkiaSharp.SkiaMathPainter painter;
     protected override void OnPaintSurface(SKPaintSurfaceEventArgs e) {
       base.OnPaintSurface(e);
+      e.Surface.Canvas.Clear();
       painter.Bounds = CanvasSize;
       painter.Draw(e.Surface.Canvas);
       ScrollX = painter.ScrollX;
@@ -98,7 +99,7 @@ namespace CSharpMath.Forms {
           case SKTouchAction.Moved:
             var displacement = e.Location - _origin;
             painter.ScrollX += displacement.X;
-            painter.ScrollY -= displacement.Y; // Canvas is inverted!!
+            painter.ScrollY += displacement.Y;
             _origin = e.Location;
             InvalidateSurface();
             e.Handled = true;

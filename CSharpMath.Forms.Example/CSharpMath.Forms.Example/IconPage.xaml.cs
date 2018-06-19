@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
+using SkiaSharp;
 using SkiaSharp.Views.Forms;
 
 namespace CSharpMath.Forms.Example {
@@ -14,59 +15,43 @@ namespace CSharpMath.Forms.Example {
   public partial class IconPage : ContentPage {
     public IconPage() {
       InitializeComponent();
-    }/*
-    protected override async void OnAppearing() {
-      base.OnAppearing();
-      const int size = 40;
-      const int count = 10;
-      const double π = 3.1415926535897932384626433832795028841971;
       var v = new SKCanvasView();
       v.VerticalOptions = v.HorizontalOptions = LayoutOptions.FillAndExpand;
       v.PaintSurface += PaintSurface;
       Content = v;
-
-      FormsMathView Create(string latex) =>
-        new FormsMathView {
-          FontSize = size,
-          TextAlignment = Rendering.TextAlignment.Center,
-          LaTeX = latex
-        };
-
-      var a = new AbsoluteLayout();
-      Content = a;
-      var c = a.Children;
-      var o = new Point(a.Width / 2, a.Height / 2);
-      FormsMathView v;
-      const int r = 100;
-      
-      for (int i = 0; i < count; i++) {
-        v = Create(i.ToString());
-        c.Add(v, o);
-        var θ = 2 * π * i / count;
-        var x = r * Math.Sin(θ);
-        var y = -r * Math.Cos(θ);
-        await Task.WhenAll(v.TranslateTo(x, y, 400, Easing.SinIn), 
-                           v.RotateTo(360 / count * i, 400, null));
-      }
-      v = Create(@"\;\;\:\,\,\text{C\#} \\ \:\,\, Math");
-      c.Add(v, new Rectangle(0, 0, a.Width, a.Height));
     }
-    */
+
     SkiaSharp.SkiaMathPainter painter;
+    readonly SKPaint black = new SKPaint { Color = SKColors.Black };
+    readonly SKPaint white = new SKPaint { Color = SKColors.White };
     private void PaintSurface(object sender, SKPaintSurfaceEventArgs e) {
-      const int count = 10;
-      if (painter == null) painter = new SkiaSharp.SkiaMathPainter(e.Info.Size);
+      const int count = 10; //number of digits in outer circle
+      const float r = 100f; //outer circle radius
+      const float f = 40f; //font size in points
+      const float θ = 360f / count; //angle to rotate when drawing each digit
+      if (painter == null) painter = new SkiaSharp.SkiaMathPainter(e.Info.Size) {
+        TextAlignment = Rendering.TextAlignment.Center,
+        FontSize = f
+      };
       else painter.Bounds = e.Info.Size;
+      painter.ScrollY = -r; //scroll up
       var cx = e.Info.Width / 2;
       var cy = e.Info.Height / 2;
       var c = e.Surface.Canvas;
+      //draw outer circle
+      c.DrawCircle(cx, cy, r + f / 2, black);
+      painter.TextColor = SKColors.White;
       for (int i = 0; i < count; i++) {
         painter.LaTeX = i.ToString();
-        var θ = 360 / count;
-        c.RotateDegrees(θ, cx, cy);
-        painter.TextAlignment = Rendering.TextAlignment.Center;
         painter.Draw(c);
+        c.RotateDegrees(θ, cx, cy);
       }
+      //draw inner circle
+      c.DrawCircle(cx, cy, r - f / 2, white);
+      painter.ScrollY = 0; //reset scroll
+      painter.TextColor = SKColors.Black;
+      painter.LaTeX = @"\text{\;\;\,C\#}\\Math";
+      painter.Draw(c);
     }
   }
 }

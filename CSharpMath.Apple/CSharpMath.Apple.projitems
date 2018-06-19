@@ -21,8 +21,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Drawing\AttributedStrings\AppleAttributedStringFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Font\AppleFontManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Typesetting\AppleTypesetters.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Typesetting\" />
+    <Compile Include="$(MSBuildThisFileDirectory)Typesetting\JsonMathTable.cs" />
   </ItemGroup>
 </Project>

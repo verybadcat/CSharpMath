@@ -1,14 +1,12 @@
 ﻿using CSharpMath.Display;
+using CSharpMath.FrontEnd;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CSharpMath.FrontEnd {
-  /// <summary>Holds lots of constants for spacing between various visible elements.
-  /// If you are writing a new front end, you can likely re-use the code here,
-  /// but you will probably need to create your own json file that holds the
-  /// actual constants. </summary>
+namespace CSharpMath.Apple {
+  /// <summary>Holds lots of constants for spacing between various visible elements by reading a JSON file.</summary>
   public class JsonMathTable<TFont, TGlyph> : FontMathTable<TFont, TGlyph>
     where TFont : MathFont<TGlyph> {
     /// <summary>Dictionary object containing a zillion constants,
@@ -236,7 +234,7 @@ namespace CSharpMath.FrontEnd {
         var outputGlyph = GlyphNameProvider.GetGlyph(glyphName);
         // but are they ever different?
         if (!(outputGlyph.Equals(rawGlyph))) {
-          throw new DivideByZeroException("Just wanted to see if this ever happens");
+          throw new Exception("Just wanted to see if this ever happens");
         }
         yield return outputGlyph;
       } else {
@@ -309,8 +307,8 @@ namespace CSharpMath.FrontEnd {
       } else {
         // If no top accent is defined then it is the center of the advance width.
         var glyphs = new TGlyph[] { glyph };
-        var (Advances, _) = GlyphBoundsProvider.GetAdvancesForGlyphs(font, glyphs);
-        return Advances[0] / 2;
+        var advances = GlyphBoundsProvider.GetAdvancesForGlyphs(font, glyphs);
+        return advances.Advances[0] / 2;
       }
     }
 

@@ -12,7 +12,7 @@ namespace CSharpMath.Tests.FrontEnd {
         boundsProvider,
         new TestGlyphFinder(),
         new DoNothingFontChanger(),
-        new JsonMathTable<MathFont<char>, char>(new TestFontMeasurer(), TestResources.LatinMath, new TestGlyphNameProvider(), boundsProvider)
+        new Apple.JsonMathTable<MathFont<char>, char>(new TestFontMeasurer(), TestResources.LatinMath, new TestGlyphNameProvider(), boundsProvider)
     );
     }
   }
