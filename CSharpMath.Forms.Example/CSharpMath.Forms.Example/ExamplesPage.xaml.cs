@@ -13,6 +13,7 @@ namespace CSharpMath.Forms.Example {
     public const string Capitals = @"ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     public const string Color = @"\color{#008}a\color{#00F}b\color{#080}c\color{#088}d\color{#08F}e\color{#0F0}f\color{#0F8}g\color{#0FF}h\color{#800}i\color{#808}j\color{#80F}k\color{#880}l\color{#888}m\color{#88F}n\color{#8F0}o\color{#8F8}p\color{#8FF}q\color{#F00}r\color{#F08}s\color{#F0F}t\color{#F80}u\color{#F88}v\color{#F8F}w\color{#FF0}x\color{#FF8}y\color{#FFF}z";
     //START mirror CSharpMath.Ios.Example
+    public const string Accent = @"\acute{x}";
     public const string Radical = @"\sqrt{3}";
     public const string RadicalSum = @"2 + \sqrt{3}";
     public const string Fraction = @"\frac{2}{34}";
@@ -46,8 +47,8 @@ namespace CSharpMath.Forms.Example {
     public const string NestedRadicalDeep = @"\sqrt{\sqrt{\sqrt{\sqrt{\sqrt{\sqrt{\sqrt{\sqrt{x}}}}}}}}";
     public const string Pi = @"\pi";
     public const string Phi = @"\phi";
-
     public const string QuadraticFormula = @"x = -b \pm \frac{\sqrt{b^2-4ac}}{2a}";
+
     public const string SomeLimit = @"\lim_{x\to\infty}\frac{e^2}{1-x}=\limsup_{\sigma}5";
     public const string SimpleLimit = @"\lim_{x\to\infty}3=3";
     public const string SomeIntegral = @"\int_{0}^{\infty}e^x \,dx=\oint_0^{\Delta}5\Gamma";
@@ -59,6 +60,8 @@ namespace CSharpMath.Forms.Example {
     public const string SummationWithLimits = @"\sum_{n=1}^{\infty}";
     public const string Taylor = @"\begin{eqnarray} e^x  &=&  \sum_{x=0}^{\infty}\frac{x^n}{n!} \\ \\ \sin(x) &=& \sum_{x=0}^{\infty}(-1)^n\frac{(2x+1)^n}{(2n)!}  \\ \\ -\ln(1-x)   &=& \sum_{x=0}^{\infty}\frac{x^n}{n}  \ \ \ \ \ (-1 <= x < 1) \end{eqnarray}";
     public const string TwoSin = @"2 \sin";
+    public const string Underline = @"\underline{Underline}";
+    public const string Overline = @"\overline{Overline}";
     //END mirror CSharpMath.Ios.Example
 
     public const string BMartix = @"\begin{bmatrix} x_{11}&x_{12}&x_{13}&.&.&.&.&x_{1n} \end{bmatrix}";

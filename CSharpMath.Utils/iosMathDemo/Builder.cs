@@ -12,6 +12,7 @@ namespace CSharpMath.DevUtils.iosMathDemo {
   /// MoreExamples.cs located at CSharpMath\CSharpMath.Forms.Example\CSharpMath.Forms.Example\MoreExamples.cs"
   /// </summary>
   static class Builder {
+    static IndentedTextWriter Append(this IndentedTextWriter w, double n) { w.Write(n); return w; }
     static IndentedTextWriter Append(this IndentedTextWriter w, string text) { w.Write(text); return w; }
     static IndentedTextWriter AppendLine(this IndentedTextWriter w) { w.WriteLine(); return w; }
     static IndentedTextWriter AppendLine(this IndentedTextWriter w, string text) { w.WriteLine(text); return w; }
@@ -66,10 +67,10 @@ namespace CSharpMath.DevUtils.iosMathDemo {
                 .AppendLine("new FormsMathView {")
                 .Expand()
                 .Append("LaTeX = @\"")
-                .Append(m.Groups["latex"].Value.Replace("\n ", Environment.NewLine + ' ').Replace("\\\n", Environment.NewLine).Replace(@"\\", @"\").TrimEnd().Replace("\"", ""))
+                .Append(new StringBuilder(m.Groups["latex"].Value).Replace("\\\n ", "\n ").Replace("\n ", Environment.NewLine + ' ').Replace(@"\\", @"\").Replace("\"", "").ToString().TrimEnd())
                 .AppendLine("\",")
                 .Append("HeightRequest = ")
-                .Append(m.Groups["height"].Value)
+                .Append(int.Parse(m.Groups["height"].Value) * 1.2)
                 .AppendLine(",")
                 .AppendLine("FontSize = 15")
                 .Collapse()
