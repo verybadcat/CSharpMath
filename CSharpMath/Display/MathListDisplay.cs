@@ -19,7 +19,7 @@ namespace CSharpMath.Display {
     public bool HasScript { get; set; }
     /// <summary> Recursively. While translating, we'll keep the iosMath name "setTextColor".</summary> 
     public void SetTextColor(Color? textColor) {
-      TextColor = textColor;
+      TextColor = TextColor ?? textColor;
       foreach (var atom in Displays) {
         atom.SetTextColor(textColor);
       }

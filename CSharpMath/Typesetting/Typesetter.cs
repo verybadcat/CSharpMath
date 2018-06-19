@@ -325,8 +325,7 @@ namespace CSharpMath {
 
       var rawAccentGlyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(accent.Nucleus.Length - 1, accent.Nucleus);
       var accenteeWidth = accentee.Width;
-      float glyphAscent, glyphDescent, glyphWidth;
-      TGlyph accentGlyph = _FindVariantGlyph(rawAccentGlyph, accenteeWidth, out glyphAscent, out glyphDescent, out glyphWidth);
+      TGlyph accentGlyph = _FindVariantGlyph(rawAccentGlyph, accenteeWidth, out float glyphAscent, out float glyphDescent, out float glyphWidth);
       var delta = Math.Min(accentee.Ascent, _mathTable.AccentBaseHeight(_styleFont));
       float skew = _GetSkew(accent, accenteeWidth, accentGlyph);
       var height = accentee.Ascent - delta;
@@ -380,12 +379,12 @@ namespace CSharpMath {
       var glyphs = _mathTable.GetHorizontalVariantsForGlyph(rawGlyph);
       int nGlyphs = glyphs.Count();
       if (nGlyphs == 0) {
-        throw new Exception("There should always be at least one variant -- the glyph itself");
+        throw new ArgumentException("There should always be at least one variant -- the glyph itself");
       }
       var currentGlyph = glyphs[0];
 
       var boundingBoxes = _context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(_styleFont, glyphs);
-      var advances = _context.GlyphBoundsProvider.GetAdvancesForGlyphs(_styleFont, glyphs);
+      var (Advances, _) = _context.GlyphBoundsProvider.GetAdvancesForGlyphs(_styleFont, glyphs);
 
 
       glyphAscent = float.NaN;  // These NaN values should never be returned. We have to set them to keep the compiler happy.
@@ -393,7 +392,7 @@ namespace CSharpMath {
       glyphWidth = float.NaN;
       for (int i = 0; i < nGlyphs; i++) {
         var bounds = boundingBoxes[i];
-        var advance = advances.Item1[i];
+        var advance = Advances[i];
         bounds.GetAscentDescentWidth(out float ascent, out float descent, out float _);
         var width = bounds.Right;
         if (width > someWidth) {
@@ -990,11 +989,10 @@ namespace CSharpMath {
 
       // position all the rows
       PositionRows(rowDisplays, table);
-      var tableDisplay = new MathListDisplay<TFont, TGlyph>(rowDisplays.ToArray()) {
+      return new MathListDisplay<TFont, TGlyph>(rowDisplays.ToArray()) {
         // Range is set here in the objective C code.
         Position = _currentPosition
       };
-      return tableDisplay;
     }
 
     private MathListDisplay<TFont, TGlyph> MakeRowWithColumns(List<MathListDisplay<TFont, TGlyph>> row, Table table, float[] columnWidths) {
@@ -1017,8 +1015,7 @@ namespace CSharpMath {
         rowRange = Ranges.Union(rowRange, entry.Range);
         columnStart += (columnWidth + table.InterColumnSpacing * _mathTable.MuUnit(_styleFont));
       }
-      var rowDisplay = new MathListDisplay<TFont, TGlyph>(row.ToArray());
-      return rowDisplay;
+      return new MathListDisplay<TFont, TGlyph>(row.ToArray());
     }
 
     private const float jotMultiplier = 0.3f;

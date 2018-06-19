@@ -4,14 +4,22 @@ using SkiaSharp;
 namespace CSharpMath.SkiaSharp
 {
   public class SkiaCanvas : ICanvas {
-    public SkiaCanvas(SKCanvas canvas) => Canvas = canvas;
+    public SkiaCanvas(SKCanvas canvas, SKStrokeCap strokeCap) {
+      Canvas = canvas;
+      _paint = new SKPaint { IsAntialias = true };
+      _path = null;
+      CurrentStyle = default;
+      CurrentColor = default;
+      DefaultColor = default;
+      StrokeCap = strokeCap;
+    }
     public SKCanvas Canvas { get; }
     public SKStrokeCap StrokeCap { get; set; }
     public Color DefaultColor { get; set; }
     public Color? CurrentColor { get; set; }
     public PaintStyle CurrentStyle { get; set; }
 
-    private SKPaint _paint = new SKPaint { IsAntialias = true };
+    private SKPaint _paint;
     private SKPath _path;
 
     private SKPaint StyledPaint(PaintStyle style, float strokeWidth = 0) {

@@ -43,7 +43,8 @@ namespace CSharpMath.Rendering {
       for (int i = 0; i < records.Length; i++) {
         var variant = records[i].VariantGlyph;
         variants[i] = new Glyph(typeface, typeface.GetGlyphByIndex(variant));
-        OriginalBounds[variants[i]] = bounds;
+        if(!OriginalBounds.ContainsKey(variants[i]))
+          OriginalBounds[variants[i]] = bounds;
       }
       return variants;
     }

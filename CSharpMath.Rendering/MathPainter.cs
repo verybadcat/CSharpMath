@@ -10,9 +10,10 @@ using TFonts = CSharpMath.Rendering.MathFonts;
 using CSharpMath.FrontEnd;
 using CSharpMath.Structures;
 
-using Glyph = Typography.OpenFont.Glyph;
 using Typography.OpenFont;
-using System.Collections.Generic;
+
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
 namespace CSharpMath.Rendering {
   public readonly struct Thickness {
@@ -29,20 +30,36 @@ namespace CSharpMath.Rendering {
       (left, top, right, bottom) = (Left, Top, Right, Bottom);
   }
   public class MathPainter {
+    #region Constructors
+    public MathPainter(float width, float height, float fontSize = 20f) : this(new SizeF(width, height), fontSize) { }
     public MathPainter(SizeF bounds, float fontSize = 20f) {
       Bounds = bounds;
       FontSize = fontSize;
+      LocalTypefaces.CollectionChanged += CollectionChanged;
+      _typesettingContext = new TypesettingContext<TFonts, Glyph>(
+         //new FontMeasurer(),
+         (fonts, size) => new TFonts(fonts, size),
+         new GlyphBoundsProvider(),
+         //new GlyphNameProvider(someTypefaceSizeIrrelevant),
+         _finder,
+         new UnicodeFontChanger(),
+         //Resources.Json
+         new MathTable()
+       );
     }
-    public MathPainter(float width, float height, float fontSize = 20f) {
-      Bounds = new SizeF(width, height);
-      FontSize = fontSize;
-    }
+    void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) => Redisplay(0);
+    #endregion Constructors
 
+    #region Fields
     //_field == private field, __field == property-only field
-    protected bool _displayChanged = false;
+    protected bool _displayChanged = true;
     protected MathListDisplay<TFonts, Glyph> _displayList;
     protected GraphicsContext _context = new GraphicsContext();
+    protected GlyphFinder _finder = new GlyphFinder();
+    protected TypesettingContext<TFonts, Glyph> _typesettingContext;
+    #endregion Fields
 
+    #region Non-redisplaying properties
     /// <summary>
     /// Unit of measure: points;
     /// Defaults to <see cref="FontSize"/>.
@@ -67,20 +84,24 @@ namespace CSharpMath.Rendering {
       }
     }
 
+    public string ErrorMessage => Source.Error;
+    #endregion Non-redisplaying properties
+
+    #region Redisplaying properties
     protected void Redisplay<T>(T assignment) => _displayChanged = true;
     /// <summary>
     /// Unit of measure: points
     /// </summary>
     public float FontSize { get => __size; set => Redisplay(__size = value); } float __size = 20f;
-    public List<Typeface> LocalTypefaces { get => __typefaces; set => Redisplay(__typefaces = value); }
-    List<Typeface> __typefaces = new List<Typeface>();
+    public ObservableCollection<Typeface> LocalTypefaces { get; } = new ObservableCollection<Typeface>();
     LineStyle __style = LineStyle.Display; public LineStyle LineStyle { get => __style; set => Redisplay(__style = value); }
     (Color glyph, Color textRun)? __box; public (Color glyph, Color textRun)? GlyphBoxColor { get => __box; set => Redisplay(__box = value); }
-    MathSource __source = new MathSource(); public MathSource Source { get => __source; set { __source = value; _displayChanged = true; } }
+    MathSource __source = new MathSource(); public MathSource Source { get => __source; set => Redisplay(__source = value); }
     public IMathList MathList { get => Source.MathList; set => Source = new MathSource(value); }
     public string LaTeX { get => Source.LaTeX; set => Source = new MathSource(value); }
-    public string ErrorMessage => Source.Error;
+    #endregion Redisplaying properties
 
+    #region Methods
     private PointF GetDisplayPosition() {
       float x, y;
       float displayWidth = _displayList.Width;
@@ -108,8 +129,8 @@ namespace CSharpMath.Rendering {
 
     public void UpdateDisplay() {
       var fonts = new TFonts(LocalTypefaces, FontSize);
-      _displayList = fonts.TypesettingContext.CreateLine(MathList, fonts, LineStyle);
-      _displayList.Position = GetDisplayPosition();
+      _finder.Fonts = fonts;
+      _displayList = _typesettingContext.CreateLine(MathList, fonts, LineStyle);
       _displayChanged = false;
     }
 
@@ -123,7 +144,9 @@ namespace CSharpMath.Rendering {
         canvas.DefaultColor = TextColor;
         canvas.CurrentColor = BackgroundColor;
         canvas.FillColor();
+        canvas.CurrentStyle = PaintStyle;
         if (_displayChanged) UpdateDisplay();
+        _displayList.Position = GetDisplayPosition();
         canvas.Translate(ScrollX, ScrollY);
         _context.Canvas = canvas;
         _context.GlyphBoxColor = GlyphBoxColor;
@@ -138,6 +161,7 @@ namespace CSharpMath.Rendering {
         canvas.FillText(ErrorMessage, 0, size, size);
         canvas.Restore();
       }
+      #endregion Methods
     }
   }
 }

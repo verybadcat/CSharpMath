@@ -236,7 +236,7 @@ namespace CSharpMath.FrontEnd {
         var outputGlyph = GlyphNameProvider.GetGlyph(glyphName);
         // but are they ever different?
         if (!(outputGlyph.Equals(rawGlyph))) {
-          throw new Exception("Just wanted to see if this ever happens");
+          throw new DivideByZeroException("Just wanted to see if this ever happens");
         }
         yield return outputGlyph;
       } else {
@@ -309,8 +309,8 @@ namespace CSharpMath.FrontEnd {
       } else {
         // If no top accent is defined then it is the center of the advance width.
         var glyphs = new TGlyph[] { glyph };
-        var advances = GlyphBoundsProvider.GetAdvancesForGlyphs(font, glyphs);
-        return advances.Advances[0] / 2;
+        var (Advances, _) = GlyphBoundsProvider.GetAdvancesForGlyphs(font, glyphs);
+        return Advances[0] / 2;
       }
     }
 

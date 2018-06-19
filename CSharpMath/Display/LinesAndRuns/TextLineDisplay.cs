@@ -54,7 +54,7 @@ namespace CSharpMath.Display {
     public Color? TextColor { get; set; }
 
     public void SetTextColor(Color? textColor) {
-      TextColor = textColor;
+      TextColor = TextColor ?? textColor;
       Runs.ForEach(d => d.SetTextColor(textColor));
     }
   }

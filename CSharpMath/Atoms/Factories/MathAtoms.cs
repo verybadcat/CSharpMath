@@ -135,7 +135,7 @@ namespace CSharpMath.Atoms {
         case '|':
           return Create(MathAtomType.Ordinary, c);
         default:
-          throw new Exception($"Ascii character {c} should have been accounted for.");
+          throw new NotImplementedException($"Ascii character {c} should have been accounted for.");
       }
     }
 

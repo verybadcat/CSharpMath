@@ -170,7 +170,7 @@ namespace CSharpMath.Atoms {
             break;
         }
         if (atom == null) {
-          throw new Exception("Atom shouldn't be null");
+          throw new ArgumentNullException("Atom shouldn't be null");
         }
         atom.FontStyle = _currentFontStyle;
         r.Add(atom);

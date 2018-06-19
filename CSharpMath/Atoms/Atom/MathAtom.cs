@@ -23,7 +23,7 @@ namespace CSharpMath.Atoms {
         if (ScriptsAllowed || value == null) {
           _Superscript = value;
         } else {
-          throw new Exception("Scripts are not allowed in atom type " + AtomType.ToText());
+          throw new ArgumentException("Scripts are not allowed in atom type " + AtomType.ToText());
         }
       }
     }
@@ -34,7 +34,7 @@ namespace CSharpMath.Atoms {
         if (ScriptsAllowed || value == null) {
           _Subscript = value;
         } else {
-          throw new Exception("Scripts are not allowed in atom type " + AtomType.ToText());
+          throw new ArgumentException("Scripts are not allowed in atom type " + AtomType.ToText());
         }
       }
     }

@@ -45,7 +45,7 @@ namespace CSharpMath.Display {
     public Color? TextColor { get; set; }
 
     public void SetTextColor(Color? textColor) {
-      TextColor = textColor;
+      TextColor = TextColor ?? textColor;
       ((IDisplay<TFont, TGlyph>)Accentee).SetTextColor(textColor);
       ((IDisplay<TFont, TGlyph>)Accent).SetTextColor(textColor);
     }

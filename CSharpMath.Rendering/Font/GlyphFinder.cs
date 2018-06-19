@@ -3,16 +3,14 @@ using CSharpMath.FrontEnd;
 
 namespace CSharpMath.Rendering {
   public class GlyphFinder : IGlyphFinder<Glyph> {
-    private readonly MathFonts _fonts;
-
-    public GlyphFinder(MathFonts fontSizeIrrelevant) => _fonts = fontSizeIrrelevant;
-
+    public MathFonts Fonts { get; set; }
+    
     Glyph Lookup(int codepoint) {
-      foreach (var font in _fonts) {
+      foreach (var font in Fonts) {
         var g = font.Lookup(codepoint);
         if (g.GlyphIndex != 0) return new Glyph(font, g);
       }
-      return new Glyph(_fonts.MathTypeface, _fonts.MathTypeface.Lookup(' '));
+      return new Glyph(Fonts.MathTypeface, Fonts.MathTypeface.Lookup(' '));
     }
 
     public Glyph FindGlyphForCharacterAtIndex(int index, string str) {

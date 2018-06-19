@@ -103,7 +103,8 @@ namespace CSharpMath.Display {
     public Color? TextColor { get; set; }
 
     public void SetTextColor(Color? textColor) {
-      TextColor = textColor;
+      TextColor = TextColor ?? textColor;
+      _radicalGlyph.SetTextColor(TextColor);
       ((IDisplay<TFont, TGlyph>)Radicand)?.SetTextColor(textColor);
       ((IDisplay<TFont, TGlyph>)Degree)?.SetTextColor(textColor);
     }
