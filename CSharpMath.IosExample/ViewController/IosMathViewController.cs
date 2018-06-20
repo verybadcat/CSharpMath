@@ -72,7 +72,7 @@ namespace CSharpMath.Ios.Example
     public override void ViewDidLoad()
     {
       View.BackgroundColor = UIColor.White;
-      var latexView = IosMathLabels.MathView(RadicalPower, 15);  // WJWJWJ latex here
+      var latexView = IosMathLabels.MathView(Matrix6, 16);  // WJWJWJ latex here
       latexView.ContentInsets = new UIEdgeInsets(10, 10, 10, 10);
       var size = latexView.SizeThatFits(new CoreGraphics.CGSize(370, 280));
       latexView.Frame = new CoreGraphics.CGRect(0, 40, size.Width, size.Height);

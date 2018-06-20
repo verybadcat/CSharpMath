@@ -841,10 +841,10 @@ namespace CSharpMath {
           Descent = glyphDescent,// 18
           Width = glyphWidth
         };
-        // Center the glyph on the axis
-        var shiftDown = 0.5f * (glyphDisplay.Ascent - glyphDisplay.Descent) - _mathTable.AxisHeight(_styleFont);
-        glyphDisplay.ShiftDown = shiftDown;
       }
+      // Center the glyph on the axis
+      var shiftDown = 0.5f * (glyphDisplay.Ascent - glyphDisplay.Descent) - _mathTable.AxisHeight(_styleFont);
+      glyphDisplay.ShiftDown = shiftDown;
       return glyphDisplay;
     }
 
