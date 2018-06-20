@@ -833,12 +833,12 @@ namespace CSharpMath {
       TGlyph glyph = _FindGlyph(leftGlyph, glyphHeight, out float glyphAscent, out float glyphDescent, out float glyphWidth);
       IDownshiftableDisplay<TFont, TGlyph> glyphDisplay = null;
       if (glyphAscent + glyphDescent < glyphHeight) {
-        // Not yet implemented -- construct a glyph.
+        glyphDisplay = _ConstructGlyph(leftGlyph, glyphHeight);
       }
       if (glyphDisplay == null) {
         glyphDisplay = new GlyphDisplay<TFont, TGlyph>(glyph, Range.NotFoundRange, _styleFont) {
-          Ascent = glyphAscent,
-          Descent = glyphDescent,
+          Ascent = glyphAscent, // 26
+          Descent = glyphDescent,// 18
           Width = glyphWidth
         };
         // Center the glyph on the axis

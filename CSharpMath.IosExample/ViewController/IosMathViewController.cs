@@ -36,7 +36,9 @@ namespace CSharpMath.Ios.Example
                             a\alpha + b\gamma & a\beta + b \delta \\
                             c\alpha + d\gamma & c\beta + d \delta 
                             \end{pmatrix}";
-    private const string MatrixAnother = @"\begin{bmatrix}a&b\\c&d\\e&f\\g&h\\i&j\end{bmatrix}";
+    private const string Matrix3 = @"\begin{bmatrix}a&b\\c&d\\e&f\end{bmatrix}";
+    private const string Matrix5 = @"\begin{bmatrix}a&b\\c&d\\e&f\\g&h\\i&j\end{bmatrix}";
+    private const string Matrix6 = @"\begin{bmatrix}a&b\\c&d\\e&f\\g&h\\i&j\\k&m\end{bmatrix}";
     private const string MatrixEmpty = @"\begin{pmatrix}\end{pmatrix}";
     private const string MatrixShort = @"\begin{pmatrix} a & b\\ c & d \end{pmatrix}";
     private const string MatrixVeryShort = @"\begin{pmatrix}2\end{pmatrix}";
@@ -69,7 +71,7 @@ namespace CSharpMath.Ios.Example
     public override void ViewDidLoad()
     {
       View.BackgroundColor = UIColor.White;
-      var latexView = IosMathLabels.MathView(MatrixAnother, 15);  // WJWJWJ latex here
+      var latexView = IosMathLabels.MathView(Matrix6, 15);  // WJWJWJ latex here
       latexView.ContentInsets = new UIEdgeInsets(10, 10, 10, 10);
       var size = latexView.SizeThatFits(new CoreGraphics.CGSize(370, 280));
       latexView.Frame = new CoreGraphics.CGRect(0, 40, size.Width, size.Height);
