@@ -44,7 +44,7 @@ namespace CSharpMath.Atoms {
 
     public List<IMathAtom> FusedAtoms { get; set; }
 
-    public bool ScriptsAllowed => AtomType < MathAtomType.Boundary;
+    public virtual bool ScriptsAllowed => AtomType < MathAtomType.Boundary;
 
     public MathAtom(MathAtomType type, string nucleus) {
       AtomType = type;

@@ -1,7 +1,4 @@
 ﻿using CSharpMath.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CSharpMath.Atoms {
   public class Accent : MathAtom, IAccent {

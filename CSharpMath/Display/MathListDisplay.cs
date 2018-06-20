@@ -1,4 +1,5 @@
 ﻿using CSharpMath.Atoms;
+using Color = CSharpMath.Structures.Color;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -15,7 +16,7 @@ namespace CSharpMath.Display {
     where TFont : MathFont<TGlyph> {
     public IDisplay<TFont, TGlyph>[] Displays { get; set; }
     public LinePosition MyLinePosition { get; set; }
-    public Color? TextColor { get; set; }
+    public Structures.Color? TextColor { get; set; }
     public bool HasScript { get; set; }
     /// <summary> Recursively. While translating, we'll keep the iosMath name "setTextColor".</summary> 
     public void SetTextColor(Color? textColor) {

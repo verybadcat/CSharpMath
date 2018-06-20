@@ -5,7 +5,7 @@ using System.Text;
 using CSharpMath.Atoms;
 using CSharpMath.Display.Text;
 using CSharpMath.FrontEnd;
-using CSharpMath.Structures;
+using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Display {
   public class GlyphDisplay<TFont, TGlyph> : IDownshiftableDisplay<TFont, TGlyph> 

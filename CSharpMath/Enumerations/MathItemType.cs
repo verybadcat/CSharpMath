@@ -57,6 +57,13 @@ namespace CSharpMath {
     /// </summary>
     Accent,
 
+    #region Atoms not in iosMath (aka in the Extension)
+
+    RaiseBox = 50,
+
+    #endregion
+
+
     //Atoms after this point do not support subscripts or superscripts.
 
     ///<summary>A left atom -- Left and Right in TeX. We don't need two since we track boundaries separately.</summary>
@@ -71,17 +78,5 @@ namespace CSharpMath {
     Color,
     ///<summary>A table. Not part of TeX.</summary>
     Table = 1001
-  }
-  public static class MathItemTypeExtensions {
-    public static string ToText(this MathAtomType itemType) {
-      // Insert a space before every capital letter other than the first one.
-      var chars = itemType.ToString().ToCharArray().ToList();
-      for (int i=chars.Count-1; i>0; i--) {
-        if (chars[i].ToString()!=chars[i].ToString().ToLower()) {
-          chars.Insert(i, ' ');
-        }
-      }
-      return new string(chars.ToArray());
-    }
   }
 }

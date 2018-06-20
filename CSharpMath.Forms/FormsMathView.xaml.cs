@@ -28,8 +28,8 @@ namespace CSharpMath.Forms {
       e.Surface.Canvas.Clear();
       painter.Bounds = CanvasSize;
       painter.Draw(e.Surface.Canvas);
-      ScrollX = painter.ScrollX;
-      ScrollY = painter.ScrollY;
+      ScrollX = painter.TranslationX;
+      ScrollY = painter.TranslationY;
       var sz = painter.DrawingSize;
       if (sz.HasValue) LayoutBounds = new Rectangle(X, Y, sz.Value.Width, sz.Value.Height);
     }
@@ -46,8 +46,8 @@ namespace CSharpMath.Forms {
       TextColorProperty = BindableProperty.Create(nameof(TextColor), typeof(Color), thisType, painter.TextColor.ToFormsColor(), propertyChanged: (b, o, n) => p(b).TextColor = ((Color)n).ToSKColor());
       ErrorColorProperty = BindableProperty.Create(nameof(ErrorColor), typeof(Color), thisType, painter.ErrorColor.ToFormsColor(), propertyChanged: (b, o, n) => p(b).ErrorColor = ((Color)n).ToSKColor());
       TextAlignmentProperty = BindableProperty.Create(nameof(TextAlignment), typeof(TextAlignment), thisType, painter.TextAlignment, propertyChanged: (b, o, n) => p(b).TextAlignment = (TextAlignment)n);
-      ScrollXProperty = BindableProperty.Create(nameof(ScrollX), typeof(float), thisType, painter.ScrollX, BindingMode.TwoWay, propertyChanged: (b, o, n) => p(b).ScrollX = (float)n);
-      ScrollYProperty = BindableProperty.Create(nameof(ScrollY), typeof(float), thisType, painter.ScrollY, BindingMode.TwoWay, propertyChanged: (b, o, n) => p(b).ScrollY = (float)n);
+      ScrollXProperty = BindableProperty.Create(nameof(ScrollX), typeof(float), thisType, painter.TranslationX, BindingMode.TwoWay, propertyChanged: (b, o, n) => p(b).TranslationX = (float)n);
+      ScrollYProperty = BindableProperty.Create(nameof(ScrollY), typeof(float), thisType, painter.TranslationY, BindingMode.TwoWay, propertyChanged: (b, o, n) => p(b).TranslationY = (float)n);
       MagnificationProperty = BindableProperty.Create(nameof(Magnification), typeof(float), thisType, painter.Magnification, propertyChanged: (b, o, n) => p(b).Magnification = (float)n);
       PaintStyleProperty = BindableProperty.Create(nameof(PaintStyle), typeof(PaintStyle), thisType, painter.PaintStyle, propertyChanged: (b, o, n) => p(b).PaintStyle = (PaintStyle)n);
       LineStyleProperty = BindableProperty.Create(nameof(LineStyle), typeof(Enumerations.LineStyle), thisType, painter.LineStyle, propertyChanged: (b, o, n) => p(b).LineStyle = (Enumerations.LineStyle)n);
@@ -98,8 +98,8 @@ namespace CSharpMath.Forms {
             break;
           case SKTouchAction.Moved:
             var displacement = e.Location - _origin;
-            painter.ScrollX += displacement.X;
-            painter.ScrollY += displacement.Y;
+            painter.TranslationX += displacement.X;
+            painter.TranslationY += displacement.Y;
             _origin = e.Location;
             InvalidateSurface();
             e.Handled = true;

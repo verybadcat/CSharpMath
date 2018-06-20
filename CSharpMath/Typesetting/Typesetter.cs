@@ -6,7 +6,7 @@ using CSharpMath.Display.Text;
 using CSharpMath.Enumerations;
 using CSharpMath.FrontEnd;
 using CSharpMath.Interfaces;
-using CSharpMath.Structures;
+using Color = CSharpMath.Structures.Color;
 using System.Drawing;
 using System.Linq;
 using CSharpMath.TypesetterInternal;
@@ -14,20 +14,20 @@ using CSharpMath.TypesetterInternal;
 namespace CSharpMath {
   public class Typesetter<TFont, TGlyph>
     where TFont: MathFont<TGlyph> {
-    private readonly TFont _font;
-    private readonly TypesettingContext<TFont, TGlyph> _context;
-    private FontMathTable<TFont, TGlyph> _mathTable => _context.MathTable;
-    private TFont _styleFont;
-    private LineStyle _style;
-    private readonly bool _cramped;
-    private readonly bool _spaced;
-    private List<IDisplay<TFont, TGlyph>> _displayAtoms = new List<IDisplay<TFont, TGlyph>>();
-    private PointF _currentPosition; // the Y axis is NOT inverted in the typesetter.
-    private AttributedString<TFont, TGlyph> _currentLine;
-    private Range _currentLineIndexRange = Range.NotFoundRange;
-    private List<IMathAtom> _currentAtoms = new List<IMathAtom>();
-    private const int _delimiterFactor = 901;
-    private const int _delimiterShortfallPoints = 5;
+    internal readonly TFont _font;
+    internal readonly TypesettingContext<TFont, TGlyph> _context;
+    internal FontMathTable<TFont, TGlyph> _mathTable => _context.MathTable;
+    internal TFont _styleFont;
+    internal LineStyle _style;
+    internal readonly bool _cramped;
+    internal readonly bool _spaced;
+    internal List<IDisplay<TFont, TGlyph>> _displayAtoms = new List<IDisplay<TFont, TGlyph>>();
+    internal PointF _currentPosition; // the Y axis is NOT inverted in the typesetter.
+    internal AttributedString<TFont, TGlyph> _currentLine;
+    internal Range _currentLineIndexRange = Range.NotFoundRange;
+    internal List<IMathAtom> _currentAtoms = new List<IMathAtom>();
+    internal const int _delimiterFactor = 901;
+    internal const int _delimiterShortfallPoints = 5;
 
     private LineStyle _scriptStyle {
       get {
@@ -39,7 +39,7 @@ namespace CSharpMath {
           case LineStyle.ScriptScript:
             return LineStyle.ScriptScript;
           default:
-            throw new InvalidOperationException();
+            throw new ArgumentOutOfRangeException(nameof(_style));
         }
       }
     }
@@ -91,6 +91,9 @@ namespace CSharpMath {
       return line;
     }
 
+    internal float SpaceLength(ISpace space) =>
+      space.IsMu ? space.Length * _mathTable.MuUnit(_font) : space.Length;
+
     private void _CreateDisplayAtoms(List<IMathAtom> preprocessedAtoms) {
       IMathAtom prevNode = null;
       MathAtomType prevType = MathAtomType.MinValue;
@@ -104,20 +107,20 @@ namespace CSharpMath {
             throw new InvalidOperationException("A boundary atom should never be inside a mathlist");
           case MathAtomType.Space:
             AddDisplayLine(false);
-            var space = atom as MathSpace;
-            _currentPosition.X += space.Space * _mathTable.MuUnit(_font);
+            var space = atom as ISpace;
+            _currentPosition.X += SpaceLength(space);
             continue;
           case MathAtomType.Style:
             // stash the existing layout
             AddDisplayLine(false);
-            var style = atom as IMathStyle;
-            _style = style.Style;
+            var style = atom as IStyle;
+            _style = style.LineStyle;
             // We need to preserve the prevNode for any inter-element space changes,
             // so we skip to the next node.
             continue;
           case MathAtomType.Color:
             AddDisplayLine(false);
-            var color = atom as IMathColor;
+            var color = atom as IColor;
             var colorDisplay = CreateLine(color.InnerList, _font, _context, _style);
             colorDisplay.SetTextColor(Color.FromHexString(color.ColorString));
             colorDisplay.Position = _currentPosition;
@@ -280,6 +283,9 @@ namespace CSharpMath {
               }
               MakeScripts(atom, line, atom.IndexRange.End - 1, delta);
             }
+            break;
+          default:
+            Display.Extension._Typesetter.CreateDisplayAtom(this, atom);
             break;
         }
         prevNode = atom;
@@ -494,11 +500,11 @@ namespace CSharpMath {
       _currentPosition.X += Math.Max(superscript.Width + delta, subscriptB.Width) + _mathTable.SpaceAfterScript(_styleFont);
     }
 
-    private static MathColor _placeholderColor => new MathColor {
+    private static Atoms.Color _placeholderColor => new Atoms.Color {
       ColorString = "#0000ff" // blue
     };
 
-    private static MathColor _blackColor => new MathColor {
+    private static Atoms.Color _blackColor => new Atoms.Color {
       ColorString = "#000000"
     };
 
@@ -553,10 +559,12 @@ namespace CSharpMath {
           }
           throw new InvalidOperationException("Inter-element space undefined for radical on the right. Treat radical as ordinary.");
       }
+      var extResult = Display.Extension._Typesetter.GetInterElementSpaceArrayIndexForType(this, atomType);
+      if (extResult != -1) return extResult;
       throw new InvalidOperationException($"Inter-element space undefined for atom type {atomType}");
     }
 
-    private TextLineDisplay<TFont, TGlyph> AddDisplayLine(bool evenIfLengthIsZero) {
+    internal TextLineDisplay<TFont, TGlyph> AddDisplayLine(bool evenIfLengthIsZero) {
       if (evenIfLengthIsZero || (_currentLine != null && _currentLine.Length > 0)) {
         _currentLine.SetFont(_styleFont);
         var displayAtom = TextLineDisplays.Create(_currentLine, _currentLineIndexRange, _context, _currentAtoms);

@@ -5,7 +5,7 @@ using System.Text;
 namespace CSharpMath.Constants {
   public static class DelimiterNames {
     public static Dictionary<string, string> NameToValue { get; } = new Dictionary<string, string> {
-      { ".", "" }, // . means no delimiter
+      { ".", string.Empty }, // . means no delimiter
       { "(", "(" },
       { ")", ")" },
       { "[", "[" },

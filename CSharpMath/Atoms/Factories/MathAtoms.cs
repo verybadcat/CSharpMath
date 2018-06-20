@@ -34,7 +34,7 @@ namespace CSharpMath.Atoms {
         case MathAtomType.Accent:
           return new Accent(value);
         case MathAtomType.Color:
-          return new MathColor();
+          return new Color();
         case MathAtomType.Fraction:
           return new Fraction();
         case MathAtomType.Inner:
@@ -46,7 +46,7 @@ namespace CSharpMath.Atoms {
         case MathAtomType.Underline:
           return new Underline();
         case MathAtomType.Space:
-          return new MathSpace(0);
+          return new Space(0, true);
         default:
           return new MathAtom(type, value);
       }
@@ -395,19 +395,19 @@ namespace CSharpMath.Atoms {
                      { "partial", Create(MathAtomType.Ordinary, "\U0001D715") },
                      
                      // Spacing
-                     { ",", new MathSpace(3) },
-                     { ":", new MathSpace(4) },
-                     { ">", new MathSpace(4) },
-                     { ";", new MathSpace(5) },
-                     { "!", new MathSpace(-3) },
-                     { "quad", new MathSpace(18) },  // quad = 1em = 18mu
-                     { "qquad", new MathSpace(36) }, // qquad = 2em
+                     { ",", new Space(3, true) },
+                     { ":", new Space(4, true) },
+                     { ">", new Space(4, true) },
+                     { ";", new Space(5, true) },
+                     { "!", new Space(-3, true) },
+                     { "quad", new Space(18, true) },  // quad = 1em = 18mu
+                     { "qquad", new Space(36, true) }, // qquad = 2em
                      
                      // Style
-                     { "displaystyle", new MathStyle(LineStyle.Display) },
-                     { "textstyle", new MathStyle(LineStyle.Text) },
-                     { "scriptstyle", new MathStyle(LineStyle.Script) },
-                     { "scriptscriptstyle",  new MathStyle(LineStyle.ScriptScript) }
+                     { "displaystyle", new Style(LineStyle.Display) },
+                     { "textstyle", new Style(LineStyle.Text) },
+                     { "scriptstyle", new Style(LineStyle.Script) },
+                     { "scriptscriptstyle",  new Style(LineStyle.ScriptScript) }
           };
         }
         return _supportedLatexSymbols;
@@ -522,7 +522,7 @@ namespace CSharpMath.Atoms {
         table.Environment = "matrix"; // TableEnvironment is set to matrix as delimiters are converted to latex outside the table.
         table.InterColumnSpacing = 18;
 
-        var style = new MathStyle(LineStyle.Text);
+        var style = new Style(LineStyle.Text);
         foreach (var row in table.Cells) {
           foreach (var cell in row) {
             cell.Insert(0, style);
@@ -552,7 +552,7 @@ namespace CSharpMath.Atoms {
           errorMessage = environment + " environment can have only 2 columns";
         } else {
           // add a spacer before each of the second column elements, in order to create the correct spacing for "=" and other relations.
-          var spacer = Create(MathAtomType.Ordinary, "");
+          var spacer = Create(MathAtomType.Ordinary, string.Empty);
           foreach (var row in table.Cells) {
             if (row.Count > 1) {
               row[1].Insert(0, spacer);
@@ -593,7 +593,7 @@ namespace CSharpMath.Atoms {
           table.InterColumnSpacing = 18;
           table.SetAlignment(ColumnAlignment.Left, 0);
           table.SetAlignment(ColumnAlignment.Left, 1);
-          var style = new MathStyle(LineStyle.Text);
+          var style = new Style(LineStyle.Text);
           foreach (var row in table.Cells) {
             foreach (var cell in row) {
               cell.Insert(0, style);

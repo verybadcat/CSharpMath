@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Text;
 using CSharpMath.Atoms;
 using CSharpMath.FrontEnd;
-using CSharpMath.Structures;
+using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Display {
   public class FractionDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph>

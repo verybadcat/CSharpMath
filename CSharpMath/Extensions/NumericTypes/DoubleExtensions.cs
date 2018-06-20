@@ -6,7 +6,7 @@ namespace CSharpMath.Extensions.NumericTypes
   internal static class DoubleExtensions {
     public static numericType TryParse(string s, numericType failValue = numericType.NaN) {
       numericType r = failValue;
-      if (s?.Trim() == "") {
+      if (s?.Trim() == string.Empty) {
         r = 0;
       } else {
         bool success = numericType.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out numericType dub);

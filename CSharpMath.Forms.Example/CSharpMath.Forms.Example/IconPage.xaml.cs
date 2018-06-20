@@ -34,7 +34,7 @@ namespace CSharpMath.Forms.Example {
         FontSize = f
       };
       else painter.Bounds = e.Info.Size;
-      painter.ScrollY = -r; //scroll up
+      painter.TranslationY = -r; //scroll up
       var cx = e.Info.Width / 2;
       var cy = e.Info.Height / 2;
       var c = e.Surface.Canvas;
@@ -48,9 +48,9 @@ namespace CSharpMath.Forms.Example {
       }
       //draw inner circle
       c.DrawCircle(cx, cy, r - f / 2, white);
-      painter.ScrollY = 0; //reset scroll
+      painter.TranslationY = 0; //reset scroll
       painter.TextColor = SKColors.Black;
-      painter.LaTeX = @"\text{\;\;\,C\#}\\Math";
+      painter.LaTeX = @"\text{\kern.7222emC\#}\\Math"; //13/18em
       painter.Draw(c);
     }
   }

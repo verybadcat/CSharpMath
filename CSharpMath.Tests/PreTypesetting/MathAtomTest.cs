@@ -192,22 +192,23 @@ namespace CSharpMath.Tests {
 
     [Fact]
     public void TestCopySpace() {
-      var space = new MathSpace(3);
+      var space = new Space(3, true);
       Assert.Equal(MathAtomType.Space, space.AtomType);
 
-      var copy = new MathSpace(space, false);
+      var copy = new Space(space, false);
       CheckClone(space, copy);
-      Assert.Equal(3, copy.Space);
+      Assert.Equal(3, copy.Length);
+      Assert.True(copy.IsMu);
     }
 
     [Fact]
     public void TestCopyStyle() {
-      var style = new MathStyle(LineStyle.Script);
-      Assert.Equal(LineStyle.Script, style.Style);
+      var style = new Style(LineStyle.Script);
+      Assert.Equal(LineStyle.Script, style.LineStyle);
 
-      var clone = new MathStyle(style, false);
+      var clone = new Style(style, false);
       CheckClone(clone, style);
-      Assert.Equal(clone.Style, style.Style);
+      Assert.Equal(clone.LineStyle, style.LineStyle);
     }
 
     [Fact]

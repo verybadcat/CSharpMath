@@ -9,7 +9,7 @@ namespace CSharpMath.Display.Text {
   /// over the whole string. We use KernedGlyph objects instead of Glyphs to
   /// allow us to set kern on a per-glyph basis.</summary>
   public class AttributedGlyphRun<TFont, TGlyph>
-    where TFont: MathFont<TGlyph>{
+    where TFont : MathFont<TGlyph> {
     public bool Placeholder { get; set; }
 
     public TGlyph[] Glyphs => KernedGlyphs.Select(g => g.Glyph).ToArray();

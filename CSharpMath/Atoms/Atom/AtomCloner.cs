@@ -19,16 +19,16 @@ namespace CSharpMath.Atoms {
     public IMathAtom Visit(MathAtom target, bool finalize)
       => new MathAtom(target, finalize);
 
-    public IMathAtom Visit(MathColor target, bool finalize)
-      => new MathColor(target, finalize);
-    public IMathAtom Visit(MathSpace target, bool finalize)
-      => new MathSpace(target, finalize);
+    public IMathAtom Visit(Color target, bool finalize)
+      => new Color(target, finalize);
+    public IMathAtom Visit(Space target, bool finalize)
+      => new Space(target, finalize);
 
     public IMathAtom Visit(Table target, bool finalize)
       => new Table(target, finalize);
 
-    public IMathAtom Visit(MathStyle target, bool finalize)
-      => new MathStyle(target, finalize);
+    public IMathAtom Visit(Style target, bool finalize)
+      => new Style(target, finalize);
 
     public IMathAtom Visit(Overline target, bool finalize)
       => new Overline(target, finalize);

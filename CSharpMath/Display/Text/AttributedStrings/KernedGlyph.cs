@@ -7,7 +7,7 @@ namespace CSharpMath.Display.Text
       Glyph = glyph;
       KernAfterGlyph = kern;
     }
-    public TGlyph Glyph { get; set; }
+    public TGlyph Glyph { get; }
     public float KernAfterGlyph { get; set; }
   }
 }

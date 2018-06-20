@@ -15,7 +15,7 @@ namespace CSharpMath.Atoms {
 
     private string _environment;
 
-    public Table(string environment): base(MathAtomType.Table, "") {
+    public Table(string environment): base(MathAtomType.Table, string.Empty) {
       _environment = environment;
     }
 

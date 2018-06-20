@@ -11,9 +11,9 @@ namespace CSharpMath.Interfaces {
     T Visit(LargeOperator op, THelper helper);
     T Visit(MathAtom atom, THelper helper);
 
-    T Visit(MathColor color, THelper helper);
-    T Visit(MathSpace space, THelper helper);
-    T Visit(MathStyle style, THelper helper);
+    T Visit(Color color, THelper helper);
+    T Visit(Space space, THelper helper);
+    T Visit(Style style, THelper helper);
     T Visit(Table table, THelper helper);
 
     T Visit(Overline overline, THelper helper);

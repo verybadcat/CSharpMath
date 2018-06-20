@@ -2,7 +2,7 @@
 using System.Drawing;
 using CSharpMath.Display;
 using CSharpMath.FrontEnd;
-using CSharpMath.Structures;
+using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath {
   public interface IDisplay<TFont, TGlyph>

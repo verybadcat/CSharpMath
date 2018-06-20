@@ -4,27 +4,33 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace CSharpMath.Atoms {
-  public class MathSpace : MathAtom, ISpace {
-    private readonly float _space; // mu units
-    public float Space => _space;
+  public class Space : MathAtom, ISpace {
+    public float Length { get; }
 
-    public MathSpace(float space): base(MathAtomType.Space, "") {
-      _space = space;
+    //is the length in math units (mu) or points (pt)?
+    public bool IsMu { get; }
+
+    bool IsBreakable { get; }
+
+    public Space(float length, bool isMu, bool isBreakable = true) : base(MathAtomType.Space, string.Empty) {
+      Length = length;
+      IsMu = isMu;
+      IsBreakable = isBreakable;
     }
 
-    public MathSpace(MathSpace cloneMe, bool finalize): base(cloneMe, finalize) {
-      _space = cloneMe._space;
+    public Space(Space cloneMe, bool finalize) : base(cloneMe, finalize) {
+      Length = cloneMe.Length;
+      IsMu = cloneMe.IsMu;
     }
 
-    public bool EqualsSpace(MathSpace otherSpace) {
-      bool r = EqualsAtom(otherSpace);
-      r &= Space == otherSpace.Space;
-      return r;
-    }
+    public bool EqualsSpace(Space otherSpace) =>
+      EqualsAtom(otherSpace)
+      && Length == otherSpace.Length
+      && IsMu == otherSpace.IsMu;
 
     public override int GetHashCode() {
       unchecked {
-        return base.GetHashCode() + 73 * _space.GetHashCode();
+        return base.GetHashCode() + 73 * Length.GetHashCode() + 277 * IsMu.GetHashCode();
       }
     }
 

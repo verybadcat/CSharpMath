@@ -16,7 +16,7 @@ namespace CSharpMath {
         switch (handling) {
           case NullHandling.EmptyContent:
           case NullHandling.EmptyString:
-            return "";
+            return string.Empty;
           case NullHandling.LiteralNull:
             return "null";
           case NullHandling.None:
@@ -28,7 +28,7 @@ namespace CSharpMath {
     }
     public static string WrapInBraces(this string str, NullHandling handling) {
       if (str == null && handling == NullHandling.EmptyString) {
-        return "";
+        return string.Empty;
       } else {
         return "{" + str.NullToNull(handling) + "}";
       }
@@ -36,7 +36,7 @@ namespace CSharpMath {
 
     public static string WrapInParens(this string str, NullHandling handling) {
       if (str == null && handling == NullHandling.EmptyString) {
-        return "";
+        return string.Empty;
       } else {
         return "(" + str.NullToNull(handling) + ")";
       }
@@ -44,7 +44,7 @@ namespace CSharpMath {
 
     public static string WrapInSquareBrackets(this string str, NullHandling handling) {
       if (str == null && handling == NullHandling.EmptyString) {
-        return "";
+        return string.Empty;
       } else {
         return "(" + str.NullToNull(handling) + ")";
       }

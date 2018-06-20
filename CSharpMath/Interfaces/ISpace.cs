@@ -4,6 +4,7 @@ using System.Text;
 
 namespace CSharpMath.Interfaces {
   public interface ISpace: IMathAtom {
-    float Space { get; }
+    float Length { get; }
+    bool IsMu { get; }
   }
 }

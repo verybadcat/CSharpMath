@@ -583,7 +583,7 @@ namespace CSharpMath.Tests {
 
       Assert.Single(list);
       CheckAtomTypeAndNucleus(list[0], MathAtomType.Space, "");
-      Assert.Equal(-3, (list[0] as ISpace).Space);
+      Assert.Equal(-3, (list[0] as ISpace).Length);
 
       var latex = MathListBuilder.MathListToString(list);
       Assert.Equal(@"\! ", latex);
@@ -595,13 +595,13 @@ namespace CSharpMath.Tests {
       var list = MathLists.FromString(input);
       Assert.Equal(4, list.Count);
 
-      var style = list[0] as IMathStyle;
+      var style = list[0] as IStyle;
       CheckAtomTypeAndNucleus(style, MathAtomType.Style, "");
-      Assert.Equal(LineStyle.Text, style.Style);
+      Assert.Equal(LineStyle.Text, style.LineStyle);
 
-      var style2 = list[2] as IMathStyle;
+      var style2 = list[2] as IStyle;
       CheckAtomTypeAndNucleus(style2, MathAtomType.Style, "");
-      Assert.Equal(LineStyle.Script, style2.Style);
+      Assert.Equal(LineStyle.Script, style2.LineStyle);
 
       var latex = MathListBuilder.MathListToString(list);
       Assert.Equal(@"\textstyle y\scriptstyle x", latex);
@@ -626,9 +626,9 @@ namespace CSharpMath.Tests {
         for (int j = 0; j < 2; j++) {
           var cell = table.Cells[j][i];
           Assert.Equal(2, cell.Count);
-          var style = cell[0] as IMathStyle;
+          var style = cell[0] as IStyle;
           Assert.Equal(MathAtomType.Style, style.AtomType);
-          Assert.Equal(LineStyle.Text, style.Style);
+          Assert.Equal(LineStyle.Text, style.LineStyle);
 
           var atom = cell[1];
           Assert.Equal(MathAtomType.Variable, atom.AtomType);
@@ -663,9 +663,9 @@ namespace CSharpMath.Tests {
         for (int j = 0; j < 2; j++) {
           var cell = table.Cells[j][i];
           Assert.Equal(2, cell.Count);
-          var style = cell[0] as IMathStyle;
+          var style = cell[0] as IStyle;
           Assert.Equal(MathAtomType.Style, style.AtomType);
-          Assert.Equal(LineStyle.Text, style.Style);
+          Assert.Equal(LineStyle.Text, style.LineStyle);
 
           var atom = cell[1];
           Assert.Equal(MathAtomType.Variable, atom.AtomType);
@@ -955,7 +955,7 @@ namespace CSharpMath.Tests {
       var input = @"\color{#F00}a";
       var list = MathLists.FromString(input);
       Assert.Single(list);
-      var op = list[0] as MathColor;
+      var op = list[0] as Color;
       Assert.Equal(MathAtomType.Color, op.AtomType);
       Assert.False(op.ScriptsAllowed);
       var latex = MathListBuilder.MathListToString(list);

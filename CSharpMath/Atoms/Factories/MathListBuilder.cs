@@ -8,14 +8,14 @@ using System.Text;
 
 namespace CSharpMath.Atoms {
   public class MathListBuilder {
-    private string _error;
-    private readonly char[] _chars;
-    private readonly int _length;
-    private int _currentChar;
-    private bool _spacesAllowed;
-    private FontStyle _currentFontStyle;
-    private TableEnvironmentProperties _currentEnvironment;
-    private Inner _currentInnerAtom;
+    internal string _error;
+    internal readonly char[] _chars;
+    internal readonly int _length;
+    internal int _currentChar;
+    internal bool _textMode; //_spacesAllowed in iosMath
+    internal FontStyle _currentFontStyle;
+    internal TableEnvironmentProperties _currentEnvironment;
+    internal Inner _currentInnerAtom;
 
     public string Error => _error;
 
@@ -35,29 +35,26 @@ namespace CSharpMath.Atoms {
       return r;
     }
 
-    private char? GetNextCharacter() {
-      if (!HasCharacters) {
-        return null;
-      }
+    internal char GetNextCharacter() {
       var r = _chars[_currentChar];
       _currentChar++;
       return r;
     }
 
-    private void UnlookCharacter() {
+    internal void UnlookCharacter() {
       if (_currentChar == 0) {
         throw new InvalidOperationException("Can't unlook below character 0");
       }
       _currentChar--;
     }
 
-    private bool HasCharacters => _currentChar < _length;
+    internal bool HasCharacters => _currentChar < _length;
 
 
-    private IMathList BuildInternal(bool oneCharOnly)
+    internal IMathList BuildInternal(bool oneCharOnly)
       => BuildInternal(oneCharOnly, (char)0);
 
-    private IMathList BuildInternal(bool oneCharOnly, char stopChar) {
+    internal IMathList BuildInternal(bool oneCharOnly, char stopChar) {
       if (oneCharOnly && stopChar > 0) {
         throw new InvalidOperationException("Cannot set both oneCharOnly and stopChar");
       }
@@ -68,7 +65,7 @@ namespace CSharpMath.Atoms {
           return null;
         }
         IMathAtom atom = null;
-        var ch = (char)GetNextCharacter();
+        var ch = GetNextCharacter();
         if (oneCharOnly) {
           if (ch == '^' || ch == '}' || ch == '_' || ch == '&') {
             // this is not the character we are looking for. They are for the caller to look at.
@@ -82,7 +79,7 @@ namespace CSharpMath.Atoms {
         switch (ch) {
           case '^':
             if (prevAtom == null || prevAtom.Superscript != null || !prevAtom.ScriptsAllowed) {
-              prevAtom = MathAtoms.Create(MathAtomType.Ordinary, "");
+              prevAtom = MathAtoms.Create(MathAtomType.Ordinary, string.Empty);
               r.Add(prevAtom);
             }
             // this is a superscript for the previous atom.
@@ -91,7 +88,7 @@ namespace CSharpMath.Atoms {
             continue;
           case '_':
             if (prevAtom == null || prevAtom.Subscript != null || !prevAtom.ScriptsAllowed) {
-              prevAtom = MathAtoms.Create(MathAtomType.Ordinary, "");
+              prevAtom = MathAtoms.Create(MathAtomType.Ordinary, string.Empty);
               r.Add(prevAtom);
             }
             // this is a subscript for the previous atom.
@@ -129,13 +126,14 @@ namespace CSharpMath.Atoms {
             var fontStyleQ = MathAtoms.FontStyle(command);
             if (fontStyleQ.HasValue) {
               var fontStyle = fontStyleQ.Value;
-              var oldSpacesAllowed = _spacesAllowed;
+              var oldSpacesAllowed = _textMode;
               var oldFontStyle = _currentFontStyle;
-              _spacesAllowed = (command == "text");
+              _textMode = (command == "text");
               _currentFontStyle = fontStyle;
               var childList = BuildInternal(true);
+              if (childList == null) return null;
               _currentFontStyle = oldFontStyle;
-              _spacesAllowed = oldSpacesAllowed;
+              _textMode = oldSpacesAllowed;
               prevAtom = childList.Atoms.LastOrDefault();
               r.Append(childList);
               if (oneCharOnly) {
@@ -158,7 +156,7 @@ namespace CSharpMath.Atoms {
               return MathLists.WithAtoms(table);
             }
           default:
-            if (_spacesAllowed && ch == ' ') {
+            if (_textMode && ch == ' ') {
               atom = MathAtoms.ForLatexSymbolName(" ");
             } else {
               atom = MathAtoms.ForCharacter(ch);
@@ -188,10 +186,9 @@ namespace CSharpMath.Atoms {
         }
       }
       return r;
-
     }
 
-    private string ReadString() {
+    internal string ReadString() {
       var builder = new StringBuilder();
       while (HasCharacters) {
         var ch = GetNextCharacter();
@@ -205,7 +202,7 @@ namespace CSharpMath.Atoms {
       return builder.ToString();
     }
 
-    private string ReadColor() {
+    internal string ReadColor() {
       if (!(ExpectCharacter('{'))) {
         SetError("Missing {");
         return null;
@@ -229,10 +226,10 @@ namespace CSharpMath.Atoms {
       return builder.ToString();
     }
 
-    private void SkipSpaces() {
+    internal void SkipSpaces() {
       while (HasCharacters) {
         var ch = GetNextCharacter();
-        if (ch < 0x21 || ch > 0x7e) {
+        if (char.IsWhiteSpace(ch) || char.IsControl(ch)) {
           continue;
         } else {
           UnlookCharacter();
@@ -241,17 +238,18 @@ namespace CSharpMath.Atoms {
       }
     }
 
-    private void AssertNotSpace(char ch) {
-      if (ch < 0x21 || ch > 0x7E) {
-        SetError("Expected non space character; found " + ch);
+    internal void AssertNotSpace(char ch) {
+      if (char.IsWhiteSpace(ch) || char.IsControl(ch)) {
+        //throw since this is not normal
+        throw new InvalidOperationException("Expected non space character; found " + ch);
       }
     }
 
-    private bool ExpectCharacter(char ch) {
+    internal bool ExpectCharacter(char ch) {
       AssertNotSpace(ch);
       SkipSpaces();
       if (HasCharacters) {
-        var c = (char)GetNextCharacter();
+        var c = GetNextCharacter();
         AssertNotSpace(c);
         if (c == ch) {
           return true;
@@ -264,10 +262,10 @@ namespace CSharpMath.Atoms {
     }
 
 
-    private string ReadCommand() {
+    internal string ReadCommand() {
       char[] singleCharCommands = @"{}$#%_| ,:>;!\".ToCharArray();
       if (HasCharacters) {
-        var ch = (char)GetNextCharacter();
+        var ch = GetNextCharacter();
         if (singleCharCommands.Contains(ch)) {
           return ch.ToString();
         } else {
@@ -277,10 +275,10 @@ namespace CSharpMath.Atoms {
       return ReadString();
     }
 
-    private string ReadDelimiter() {
+    internal string ReadDelimiter() {
       SkipSpaces();
       while (HasCharacters) {
-        var ch = (char)GetNextCharacter();
+        var ch = GetNextCharacter();
         AssertNotSpace(ch);
         if (ch == '\\') {
           // a command
@@ -295,7 +293,7 @@ namespace CSharpMath.Atoms {
       return null;
     }
 
-    private string ReadEnvironment() {
+    internal string ReadEnvironment() {
       if (!ExpectCharacter('{')) {
         SetError("Missing {");
         return null;
@@ -309,7 +307,7 @@ namespace CSharpMath.Atoms {
       return env;
     }
 
-    private IMathAtom _BoundaryAtomForDelimiterType(string delimiterType) {
+    internal IMathAtom _BoundaryAtomForDelimiterType(string delimiterType) {
       string delim = ReadDelimiter();
       if (delim == null) {
         SetError("Missing delimiter for " + delimiterType);
@@ -322,7 +320,7 @@ namespace CSharpMath.Atoms {
       return boundary;
     }
 
-    private IMathAtom AtomForCommand(string command) {
+    internal IMathAtom AtomForCommand(string command) {
       var atom = MathAtoms.ForLatexSymbolName(command);
       if (atom != null) {
         return atom;
@@ -347,14 +345,10 @@ namespace CSharpMath.Atoms {
           };
         case "sqrt":
           var rad = new Radical();
-          var ch = GetNextCharacter();
-          if (ch == null)
-            SetError("Missing argument for sqrt");
-          else if (ch == '[') {
+          if (ExpectCharacter('[')) {
             rad.Degree = BuildInternal(false, ']');
             rad.Radicand = BuildInternal(true);
           } else {
-            UnlookCharacter();
             rad.Radicand = BuildInternal(true);
           }
           return rad;
@@ -390,17 +384,19 @@ namespace CSharpMath.Atoms {
           var table = BuildTable(env, null, false);
           return table;
         case "color":
-          return new MathColor {
+          return new Color {
             ColorString = ReadColor(),
             InnerList = BuildInternal(true)
           };
         default:
+          var extResult = Extension._MathListBuilder.AtomForCommand(this, command);
+          if (extResult != null) return extResult;
           SetError("Invalid command \\" + command);
           return null;
       }
     }
 
-    private static Dictionary<string, (string left, string right)?> fractionCommands = new Dictionary<string, (string left, string right)?> {
+    internal static Dictionary<string, (string left, string right)?> fractionCommands = new Dictionary<string, (string left, string right)?> {
       {"over", null },
       {"atop", null },
       {"choose", ("(", ")") },
@@ -408,7 +404,7 @@ namespace CSharpMath.Atoms {
       {"brace", ("{", "}") }
     };
 
-    private MathList StopCommand(string command, MathList list, char stopChar) {
+    internal MathList StopCommand(string command, MathList list, char stopChar) {
       if (command == "right") {
         if (_currentInnerAtom == null) {
           SetError("Missing \\left");
@@ -463,7 +459,7 @@ namespace CSharpMath.Atoms {
       }
       return null;
     }
-    private bool ApplyModifier(string modifier, IMathAtom atom) {
+    internal bool ApplyModifier(string modifier, IMathAtom atom) {
       if (modifier == "limits") {
         if (atom !=null && atom.AtomType == MathAtomType.LargeOperator) {
           var op = (LargeOperator)atom;
@@ -483,13 +479,13 @@ namespace CSharpMath.Atoms {
       return false;
     }
 
-    private void SetError(string message) {
+    internal void SetError(string message) {
       if (_error == null) {
         _error = message;
       }
     }
 
-    private IMathAtom BuildTable(string environment, IMathList firstList, bool isRow) {
+    internal IMathAtom BuildTable(string environment, IMathList firstList, bool isRow) {
       var oldEnv = _currentEnvironment;
       _currentEnvironment = new TableEnvironmentProperties(environment);
       int currentRow = 0;
@@ -531,7 +527,10 @@ namespace CSharpMath.Atoms {
       return table;
     }
 
-    private static Dictionary<int, string> SpaceToCommands { get; } = new Dictionary<int, string> {
+// ^ LaTeX -> Math atoms
+// v Math atoms -> LaTeX
+
+    internal static Dictionary<int, string> SpaceToCommands { get; } = new Dictionary<int, string> {
       {3, "," },
       {4, ":" },
       {5, ";" },
@@ -540,7 +539,7 @@ namespace CSharpMath.Atoms {
       {36, "qquad" }
     };
 
-    private static Dictionary<LineStyle, string> StyleToCommands { get; } = new Dictionary<LineStyle, string> {
+    internal static Dictionary<LineStyle, string> StyleToCommands { get; } = new Dictionary<LineStyle, string> {
       {LineStyle.Display, "displaystyle" },
       {LineStyle.Text, "textstyle" },
       {LineStyle.Script, "scriptstyle" },
@@ -550,7 +549,7 @@ namespace CSharpMath.Atoms {
     public static string DelimiterToString(IMathAtom delimiter) {
       var command = MathAtoms.DelimiterName(delimiter);
       if (command == null) {
-        return "";
+        return string.Empty;
       }
       var singleChars = @"()[]<>|./";
       if (singleChars.IndexOf(command, StringComparison.OrdinalIgnoreCase) >= 0 && command.Length == 1) {
@@ -700,23 +699,26 @@ namespace CSharpMath.Atoms {
             }
           case MathAtomType.Space: {
               var space = (ISpace)atom;
-              var intSpace = (int)space.Space;
-              if (SpaceToCommands.ContainsKey(intSpace) && intSpace == space.Space) {
+              var intSpace = (int)space.Length;
+              if (SpaceToCommands.ContainsKey(intSpace) && intSpace == space.Length) {
                 var command = SpaceToCommands[intSpace];
                 builder.Append(@"\" + command + " ");
               } else {
-                builder.Append(@"\mkern" + space.Space.ToString("0.0") + "mu");
+                if (space.IsMu)
+                  builder.Append(@"\mkern" + space.Length.ToString("0.0") + "mu");
+                else
+                  builder.Append(@"\kern" + space.Length.ToString("0.0") + "pt");
               }
               break;
             }
           case MathAtomType.Style: {
-              var style = (IMathStyle)atom;
-              var command = StyleToCommands[style.Style];
+              var style = (IStyle)atom;
+              var command = StyleToCommands[style.LineStyle];
               builder.Append(@"\" + command + " ");
               break;
             }
           case MathAtomType.Color: {
-              var color = (IMathColor)atom;
+              var color = (IColor)atom;
               builder.Append($@"\color{{{color.ColorString}}}{{{MathListToString(color.InnerList)}}}");
               break;
             }

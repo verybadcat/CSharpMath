@@ -4,7 +4,6 @@ using System.Drawing;
 using CSharpMath.Display;
 using CSharpMath.Enumerations;
 using CSharpMath.Rendering;
-using CSharpMath.Atoms;
 using CSharpMath.Interfaces;
 using TFonts = CSharpMath.Rendering.MathFonts;
 using CSharpMath.FrontEnd;
@@ -73,8 +72,8 @@ namespace CSharpMath.Rendering {
     public Color TextColor { get; set; } = new Color(0, 0, 0);
     public Color BackgroundColor { get; set; } = new Color(0, 0, 0, 0);
     public PaintStyle PaintStyle { get; set; } = PaintStyle.Fill;
-    public float ScrollX { get; set; }
-    public float ScrollY { get; set; }
+    public float TranslationX { get; set; }
+    public float TranslationY { get; set; }
     public float Magnification { get; set; } = 1;
 
     public SizeF? DrawingSize {
@@ -147,7 +146,8 @@ namespace CSharpMath.Rendering {
         canvas.CurrentStyle = PaintStyle;
         if (_displayChanged) UpdateDisplay();
         _displayList.Position = GetDisplayPosition();
-        canvas.Translate(ScrollX, -ScrollY); //canvas is inverted so negate ScrollY
+        //canvas is inverted so negate vertical translation
+        canvas.Translate(TranslationX, -TranslationY);
         _context.Canvas = canvas;
         _context.GlyphBoxColor = GlyphBoxColor;
         _displayList.Draw(_context);

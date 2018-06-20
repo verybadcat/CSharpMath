@@ -2,7 +2,7 @@
 using CSharpMath.Display.Text;
 using CSharpMath.FrontEnd;
 using CSharpMath.Interfaces;
-using CSharpMath.Structures;
+using Color = CSharpMath.Structures.Color;
 using System;
 using System.Collections.Generic;
 using System.Drawing;

@@ -15,15 +15,7 @@ namespace CSharpMath.Display.Text {
     public void SetFont(TFont font) {
       _Runs.ForEach(r => r.Font = font);
     }
-    public string Text {
-      get {
-        string r = "";
-        foreach (var run in Runs) {
-          r += run.KernedGlyphs;
-        }
-        return r;
-      }
-    }
+    public string Text => string.Concat(Runs.Select(r => r.Text));
     public int Length => _Runs.Sum(r => r.Length);
     public IEnumerable<AttributedGlyphRun<TFont, TGlyph>> Runs => _Runs;
     internal void FuseMatchingRuns() {
@@ -32,7 +24,7 @@ namespace CSharpMath.Display.Text {
       }
     }
     public bool TryFuseRunAt(int index) {
-      if (index > 0 &&_Runs[index].AttributesMatch(_Runs[index - 1])) {
+      if (index > 0 && _Runs[index].AttributesMatch(_Runs[index - 1])) {
         _Runs[index - 1].KernedGlyphs = _Runs[index - 1].KernedGlyphs.Concat(_Runs[index].KernedGlyphs).ToArray();
         _Runs[index - 1].Text = _Runs[index - 1].Text + _Runs[index].Text;
         _Runs.RemoveAt(index);

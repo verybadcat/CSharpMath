@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace CSharpMath.Interfaces {
-  public interface IMathStyle : IMathAtom {
-    LineStyle Style { get; }
+  public interface IStyle : IMathAtom {
+    LineStyle LineStyle { get; }
   }
 }
