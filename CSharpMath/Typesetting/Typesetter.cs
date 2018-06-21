@@ -952,8 +952,8 @@ namespace CSharpMath {
       TGlyph[] variants = _mathTable.GetVerticalVariantsForGlyph(rawGlyph);
       var nVariants = variants.Length;
       var glyph = rawGlyph;
-      var rects = _context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(_font, variants);
-      var advances = _context.GlyphBoundsProvider.GetAdvancesForGlyphs(_font, variants).Advances;
+      var rects = _context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(_styleFont, variants);
+      var advances = _context.GlyphBoundsProvider.GetAdvancesForGlyphs(_styleFont, variants).Advances;
       int i = 0;
       do {
         var rect = rects[i];

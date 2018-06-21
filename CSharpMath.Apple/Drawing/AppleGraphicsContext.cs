@@ -17,8 +17,12 @@ namespace CSharpMath.Apple.Drawing {
 
     public void DrawGlyphsAtPoints(TGlyph[] glyphs, TFont font, PointF[] points, Color? color)
     {
-      var glyphStrings = string.Join(" ", glyphs.Select(g => ((int)g).ToString()).ToArray());
-      Debug.WriteLine($"glyphs {glyphStrings}");
+      var glyphStrings = glyphs.Select(g => ((int)g).ToString()).ToArray();
+      var pointStrings = points.Select(pt => $@"{pt.X} {pt.Y}").ToArray();
+      for (int i = 0; i < glyphs.Count(); i++) {
+        Debug.WriteLine($"    {glyphStrings[i]} {pointStrings[i]}");
+      }
+      Debug.WriteLine($"glyphs {glyphStrings} {pointStrings}");
       var ctFont = font.CtFont;
       var cgPoints = points.Select(p => (CGPoint)p).ToArray();
       if(color.HasValue) CgContext.SetFillColor(color.Value.ToCgColor());

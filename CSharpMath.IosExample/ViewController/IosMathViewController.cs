@@ -54,7 +54,7 @@ namespace CSharpMath.Ios.Example
     private const string RadicalNestedDeep = @"\sqrt{\sqrt{\sqrt{\sqrt{\sqrt{\sqrt{\sqrt{\sqrt{x}}}}}}}}";
     private const string RadicalSum = @"2 + \sqrt{3}";
     private const string RadicalFraction = @"2+ \frac{\sqrt{3}}{2}";
-    private const string RadicalPower = @"\sqrt{2}^\sqrt{2}";
+    private const string RadicalPower = @"\sqrt{2}^\sqrt{3}";
     private const string RightSide = @"1+\frac{e^{-2\pi}} {1 +\frac{e^{-4\pi}} {1+\frac{e^{-6\pi}} {1+\frac{e^{-8\pi}} {1+\cdots} } } }";
 
     private const string SomeLimit = @"\lim_{x\to\infty}\frac{e^2}{1-x}=\limsup_{\sigma}5";
@@ -72,7 +72,7 @@ namespace CSharpMath.Ios.Example
     public override void ViewDidLoad()
     {
       View.BackgroundColor = UIColor.White;
-      var latexView = IosMathLabels.MathView(Matrix6, 16);  // WJWJWJ latex here
+      var latexView = IosMathLabels.MathView(RadicalPower, 50);  // WJWJWJ latex here
       latexView.ContentInsets = new UIEdgeInsets(10, 10, 10, 10);
       var size = latexView.SizeThatFits(new CoreGraphics.CGSize(370, 280));
       latexView.Frame = new CoreGraphics.CGRect(0, 40, size.Width, size.Height);
