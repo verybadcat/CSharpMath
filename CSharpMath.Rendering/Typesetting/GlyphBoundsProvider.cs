@@ -8,6 +8,9 @@ using TFonts = CSharpMath.Rendering.MathFonts;
 
 namespace CSharpMath.Rendering {
   public class GlyphBoundsProvider : IGlyphBoundsProvider<TFonts, Glyph> {
+    private GlyphBoundsProvider() { }
+
+    public static GlyphBoundsProvider Instance { get; } = new GlyphBoundsProvider();
 
     public (float[] Advances, float Total) GetAdvancesForGlyphs(TFonts fonts, Glyph[] glyphs) {
       var nGlyphs = glyphs.Length;

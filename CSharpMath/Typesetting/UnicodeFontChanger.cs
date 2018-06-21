@@ -56,9 +56,11 @@ namespace CSharpMath
 
     private const TLongChar UnicodeMathCapitalScriptStart = 0x1D49C;
 
-    public UnicodeFontChanger()
+    private UnicodeFontChanger()
     {
     }
+
+    public static UnicodeFontChanger Instance { get; } = new UnicodeFontChanger();
 
     private bool IsLowerEn(TChar c)
       => c >= 'a' && c <= 'z';

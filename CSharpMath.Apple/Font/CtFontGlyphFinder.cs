@@ -1,4 +1,5 @@
 ﻿using CSharpMath.FrontEnd;
+using TFont = CSharpMath.Apple.AppleMathFont;
 using TGlyph = System.UInt16;
 using System.Globalization;
 using System.Collections.Generic;
@@ -7,12 +8,11 @@ using System;
 using CoreText;
 
 namespace CSharpMath.Apple {
-  public class CtFontGlyphFinder : IGlyphFinder<TGlyph> {
-    private readonly CTFont _ctFont;
+  public class CtFontGlyphFinder : IGlyphFinder<TFont, TGlyph> {
+    private CtFontGlyphFinder() { }
 
-    public CtFontGlyphFinder(CTFont ctFontPointSizeIrrelevant) {
-      _ctFont = ctFontPointSizeIrrelevant;
-    }
+    public static CtFontGlyphFinder Instance { get; } = new CtFontGlyphFinder();
+
     private IEnumerable<TGlyph> ToUintEnumerable(byte[] bytes) {
       for (int i = 0; i < bytes.Length; i += 2) {
         if (i == bytes.Length - 1) {
@@ -38,19 +38,19 @@ namespace CSharpMath.Apple {
       return r;
     }
 
-    private IEnumerable<ushort> FindGlyphsInternal(string str) {
+    private IEnumerable<ushort> FindGlyphsInternal(TFont font, string str) {
       // not completely sure this is correct. Need an actual
       // example of a composed character sequence coming from LaTeX.
       var unicodeIndexes = StringInfo.ParseCombiningCharacters(str);
       foreach (var index in unicodeIndexes) {
-        yield return FindGlyphForCharacterAtIndex(index, str);
+        yield return FindGlyphForCharacterAtIndex(font, index, str);
       }
     }
 
     public bool GlyphIsEmpty(TGlyph glyph)
       => glyph == 0;
 
-    public TGlyph FindGlyphForCharacterAtIndex(int index, string str) {
+    public TGlyph FindGlyphForCharacterAtIndex(TFont font, int index, string str) {
 
       var unicodeIndices = StringInfo.ParseCombiningCharacters(str);
       int start = 0;
@@ -66,12 +66,12 @@ namespace CSharpMath.Apple {
       int length = end - start;
       TGlyph[] glyphs = new TGlyph[length];
       char[] chars = str.Substring(start, length).ToCharArray();
-      _ctFont.GetGlyphsForCharacters(chars, glyphs, length);
+      font.CtFont.GetGlyphsForCharacters(chars, glyphs, length);
       return glyphs[0];
     }
 
-    public TGlyph[] FindGlyphs(string str)
-      => FindGlyphsInternal(str).ToArray();
+    public TGlyph[] FindGlyphs(TFont font, string str)
+      => FindGlyphsInternal(font, str).ToArray();
 
   }
 }

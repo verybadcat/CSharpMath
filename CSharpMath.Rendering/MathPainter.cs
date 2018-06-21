@@ -15,19 +15,6 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
 namespace CSharpMath.Rendering {
-  public readonly struct Thickness {
-    public Thickness(float uniformSize) { Left = Right = Top = Bottom = uniformSize; }
-    public Thickness(float horizontalSize, float verticalSize) { Left = Right = horizontalSize; Top = Bottom = verticalSize; }
-    public Thickness(float left, float top, float right, float bottom) { Left = left; Top = top; Right = right; Bottom = bottom; }
-
-    public float Top { get; }
-    public float Bottom { get; }
-    public float Left { get; }
-    public float Right { get; }
-
-    public void Deconstruct(out float left, out float top, out float right, out float bottom) =>
-      (left, top, right, bottom) = (Left, Top, Right, Bottom);
-  }
   public class MathPainter {
     #region Constructors
     public MathPainter(float width, float height, float fontSize = 20f) : this(new SizeF(width, height), fontSize) { }
@@ -35,16 +22,6 @@ namespace CSharpMath.Rendering {
       Bounds = bounds;
       FontSize = fontSize;
       LocalTypefaces.CollectionChanged += CollectionChanged;
-      _typesettingContext = new TypesettingContext<TFonts, Glyph>(
-         //new FontMeasurer(),
-         (fonts, size) => new TFonts(fonts, size),
-         new GlyphBoundsProvider(),
-         //new GlyphNameProvider(someTypefaceSizeIrrelevant),
-         _finder,
-         new UnicodeFontChanger(),
-         //Resources.Json
-         new MathTable()
-       );
     }
     void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) => Redisplay(0);
     #endregion Constructors
@@ -54,8 +31,6 @@ namespace CSharpMath.Rendering {
     protected bool _displayChanged = true;
     protected MathListDisplay<TFonts, Glyph> _displayList;
     protected GraphicsContext _context = new GraphicsContext();
-    protected GlyphFinder _finder = new GlyphFinder();
-    protected TypesettingContext<TFonts, Glyph> _typesettingContext;
     #endregion Fields
 
     #region Non-redisplaying properties
@@ -128,8 +103,7 @@ namespace CSharpMath.Rendering {
 
     public void UpdateDisplay() {
       var fonts = new TFonts(LocalTypefaces, FontSize);
-      _finder.Fonts = fonts;
-      _displayList = _typesettingContext.CreateLine(MathList, fonts, LineStyle);
+      _displayList = TypesettingContext.Instance.CreateLine(MathList, fonts, LineStyle);
       _displayChanged = false;
     }
 

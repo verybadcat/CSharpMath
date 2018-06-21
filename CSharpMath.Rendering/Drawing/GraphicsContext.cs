@@ -18,7 +18,7 @@ namespace CSharpMath.Rendering {
     public void DrawGlyphsAtPoints(Glyph[] glyphs, TFonts font, PointF[] points, Color? color) {
       var textPosition = TextPosition;
       if (GlyphBoxColor != null) {
-        var rects = new GlyphBoundsProvider().GetBoundingRectsForGlyphs(font, glyphs);
+        var rects = GlyphBoundsProvider.Instance.GetBoundingRectsForGlyphs(font, glyphs);
         for (int i = 0; i < rects.Length; i++) {
           var rect = rects[i];
           var point = points[i].Plus(textPosition);

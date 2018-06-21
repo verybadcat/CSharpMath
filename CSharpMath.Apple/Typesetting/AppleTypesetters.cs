@@ -9,12 +9,12 @@ using CSharpMath.Ios.Resources;
 namespace CSharpMath.Apple {
   public static class AppleTypesetters {
     private static TypesettingContext<AppleMathFont, TGlyph> CreateTypesettingContext(CTFont someCtFontSizeIrrelevant) {
-      var boundsProvider = new AppleGlyphBoundsProvider();
+      var boundsProvider = AppleGlyphBoundsProvider.Instance;
       return new TypesettingContext<AppleMathFont, TGlyph>(
         (font, size) => new AppleMathFont(font, size),
         boundsProvider,
-        new CtFontGlyphFinder(someCtFontSizeIrrelevant),
-        new UnicodeFontChanger(),
+        CtFontGlyphFinder.Instance,
+        UnicodeFontChanger.Instance,
         new JsonMathTable<AppleMathFont, TGlyph>(new AppleFontMeasurer(), IosResources.LatinMath, new AppleGlyphNameProvider(someCtFontSizeIrrelevant), boundsProvider)
       );
     }

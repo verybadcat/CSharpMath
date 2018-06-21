@@ -13,7 +13,9 @@ namespace CSharpMath.Display.Text {
       FuseMatchingRuns();
     }
     public void SetFont(TFont font) {
-      _Runs.ForEach(r => r.Font = font);
+      foreach (var r in _Runs) {
+        r.Font = font;
+      }
     }
     public string Text => string.Concat(Runs.Select(r => r.Text));
     public int Length => _Runs.Sum(r => r.Length);

@@ -6,7 +6,11 @@ using Builder = CSharpMath.Atoms.MathListBuilder;
 
 namespace CSharpMath.Atoms.Extension {
   internal static class _MathListBuilder {
-    private static MathList TeX = (MathList)MathLists.FromString(@"\textrm{T\kern-.1667em\raisebox{-.5ex}{E}\kern-.125emX}");
+    private static readonly MathAtom TeX = new Inner {
+      //should be \textrm instead of \text
+      InnerList = MathLists.FromString(@"\text{T\kern-.1667em\raisebox{-.5ex}{E}\kern-.125emX}")
+        ?? throw new FormatException(@"A syntax error is present in the definition of \TeX.")
+    };
 
     internal static MathAtom AtomForCommand(Builder b, string command) {
       switch (command) {
@@ -25,8 +29,8 @@ namespace CSharpMath.Atoms.Extension {
           var space = b.ReadSpace();
           if(!b.ExpectCharacter('}')) { b.SetError("Expected }"); return null; }
           return new RaiseBox { Raise = space, InnerList = b.BuildInternal(true) };
-        //case "TeX":
-        //  return TeX;
+        case "TeX":
+          return TeX;
         default:
           return null;
       }

@@ -256,7 +256,7 @@ namespace CSharpMath {
             }
             AttributedGlyphRun<TFont, TGlyph> current = null;
             var nucleusText = atom.Nucleus;
-            var glyphs = _context.GlyphFinder.FindGlyphs(nucleusText);
+            var glyphs = _context.GlyphFinder.FindGlyphs(_font, nucleusText);
             current = AttributedGlyphRuns.Create(nucleusText, glyphs, _font, atom.AtomType == MathAtomType.Placeholder);
             _currentLine = AttributedStringExtensions.Combine(_currentLine, current);
             if (_currentLineIndexRange.Location == Range.UndefinedInt) {
@@ -274,7 +274,7 @@ namespace CSharpMath {
               var line = AddDisplayLine(true);
               float delta = 0;
               if (atom.Nucleus.IsNonEmpty()) {
-                TGlyph glyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(atom.Nucleus.Length - 1, atom.Nucleus);
+                TGlyph glyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, atom.Nucleus.Length - 1, atom.Nucleus);
                 delta = _context.MathTable.GetItalicCorrection(_styleFont, glyph);
               }
               if (delta > 0 && atom.Subscript == null) {
@@ -329,7 +329,7 @@ namespace CSharpMath {
         return accentee;
       }
 
-      var rawAccentGlyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(accent.Nucleus.Length - 1, accent.Nucleus);
+      var rawAccentGlyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, accent.Nucleus.Length - 1, accent.Nucleus);
       var accenteeWidth = accentee.Width;
       TGlyph accentGlyph = _FindVariantGlyph(rawAccentGlyph, accenteeWidth, out float glyphAscent, out float glyphDescent, out float glyphWidth);
       var delta = Math.Min(accentee.Ascent, _mathTable.AccentBaseHeight(_styleFont));
@@ -375,7 +375,7 @@ namespace CSharpMath {
       }
       else {
         var innerAtom = accent.InnerList.Atoms[0];
-        var accenteeGlyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(innerAtom.Nucleus.Length - 1, innerAtom.Nucleus);
+        var accenteeGlyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, innerAtom.Nucleus.Length - 1, innerAtom.Nucleus);
         accenteeAdjustment = _context.MathTable.GetTopAccentAdjustment(_styleFont, accenteeGlyph);
       }
       return accenteeAdjustment - accentAdjustment;
@@ -423,13 +423,17 @@ namespace CSharpMath {
     }
 
     private bool _IsSingleCharAccent(IAccent accent) {
+      bool UnicodeLengthNotOne(string str) {
+        if (str.Length == 1) return false;
+        if (str.Length == 2 && char.IsHighSurrogate(str[0]) && char.IsLowSurrogate(str[1])) return false;
+        return true;
+      }
       if (accent.InnerList.Atoms.Count!=1) {
         return false;
       }
       var innerAtom = accent.InnerList.Atoms[0];
       // WJWJWJ (Happypig375 edit): This is the only usage of iosMath/lib/MTUnicode.h and iosMath/lib/MTUnicode.m
-      var unicodeLength = System.Text.Encoding.UTF32.GetByteCount(innerAtom.Nucleus);
-      if (unicodeLength != 1) {
+      if (UnicodeLengthNotOne(innerAtom.Nucleus)) {
         return false;
       }
       if (innerAtom.Superscript!=null || innerAtom.Subscript!=null) {
@@ -837,7 +841,7 @@ namespace CSharpMath {
 
 
     private IDownshiftableDisplay<TFont, TGlyph> _FindGlyphForBoundary(string delimiter, float glyphHeight) {
-      TGlyph leftGlyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(0, delimiter);
+      TGlyph leftGlyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, 0, delimiter);
       TGlyph glyph = _FindGlyph(leftGlyph, glyphHeight, out float glyphAscent, out float glyphDescent, out float glyphWidth);
       IDownshiftableDisplay<TFont, TGlyph> glyphDisplay = null;
       if (glyphAscent + glyphDescent < glyphHeight) {
@@ -857,7 +861,7 @@ namespace CSharpMath {
     }
 
     private IDownshiftableDisplay<TFont, TGlyph> _GetRadicalGlyph(float radicalHeight) {
-      TGlyph radicalGlyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(0, "\u221A");
+      TGlyph radicalGlyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, 0, "\u221A");
       TGlyph glyph = _FindGlyph(radicalGlyph, radicalHeight, out float glyphAscent, out float glyphDescent, out float glyphWidth);
 
       IDownshiftableDisplay<TFont, TGlyph> glyphDisplay = null;
@@ -1069,7 +1073,7 @@ namespace CSharpMath {
       bool limits = op.Limits && _style == LineStyle.Display;
       float delta = 0;
       if (op.Nucleus.Length == 1) {
-        var glyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(0, op.Nucleus);
+        var glyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, 0, op.Nucleus);
         if (_style == LineStyle.Display && !(_context.GlyphFinder.GlyphIsEmpty(glyph))) {
           // Enlarge the character in display style.
           glyph = _mathTable.GetLargerGlyph(_styleFont, glyph);
@@ -1095,7 +1099,7 @@ namespace CSharpMath {
         return AddLimitsToDisplay(glyphDisplay, op, delta);
       } else {
         // create a regular node.
-        var glyphs = _context.GlyphFinder.FindGlyphs(op.Nucleus);
+        var glyphs = _context.GlyphFinder.FindGlyphs(_font, op.Nucleus);
         var glyphRun = AttributedGlyphRuns.Create(op.Nucleus, glyphs, _styleFont, false);
         var run = new TextRunDisplay<TFont, TGlyph>(glyphRun, op.IndexRange, _context);
         var runs = new List<TextRunDisplay<TFont, TGlyph>>{ run };

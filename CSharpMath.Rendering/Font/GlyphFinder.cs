@@ -2,23 +2,26 @@
 using CSharpMath.FrontEnd;
 
 namespace CSharpMath.Rendering {
-  public class GlyphFinder : IGlyphFinder<Glyph> {
-    public MathFonts Fonts { get; set; }
+  public class GlyphFinder : IGlyphFinder<MathFonts, Glyph> {
+    private GlyphFinder() { }
+
+    public static GlyphFinder Instance { get; } = new GlyphFinder();
     
-    Glyph Lookup(int codepoint) {
-      foreach (var font in Fonts) {
+    Glyph Lookup(MathFonts fonts, int codepoint) {
+      foreach (var font in fonts) {
         var g = font.Lookup(codepoint);
         if (g.GlyphIndex != 0) return new Glyph(font, g);
       }
-      return new Glyph(Fonts.MathTypeface, Fonts.MathTypeface.Lookup(' '));
+      return new Glyph(fonts.MathTypeface, fonts.MathTypeface.Lookup(' '));
     }
 
-    public Glyph FindGlyphForCharacterAtIndex(int index, string str) {
+    public Glyph FindGlyphForCharacterAtIndex(MathFonts fonts, int index, string str) {
       var codepoint = char.ConvertToUtf32(str, index - (char.IsLowSurrogate(str[index]) ? 1 : 0));
-      return Lookup(codepoint);
+      return Lookup(fonts, codepoint);
     }
 
-    public Glyph[] FindGlyphs(string str) => Typography.OpenFont.StringUtils.GetCodepoints(str.ToCharArray()).Select(Lookup).ToArray();
+    public Glyph[] FindGlyphs(MathFonts fonts, string str) =>
+      Typography.OpenFont.StringUtils.GetCodepoints(str.ToCharArray()).Select(c => Lookup(fonts, c)).ToArray();
 
     public bool GlyphIsEmpty(Glyph glyph) => glyph.IsEmpty;
   }

@@ -7,6 +7,10 @@ using Typography.OpenFont.MathGlyphs;
 
 namespace CSharpMath.Rendering {
   public class MathTable : FontMathTable<MathFonts, Glyph> {
+    private MathTable() { }
+
+    public static MathTable Instance { get; } = new MathTable();
+
     float ReadRecord(MathValueRecord rec, MathFonts fonts) =>
       rec.Value * fonts.MathTypeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);
 

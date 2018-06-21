@@ -10,7 +10,7 @@ namespace CSharpMath.FrontEnd {
   public class TypesettingContext<TFont, TGlyph>
     where TFont: MathFont<TGlyph> {
     public IGlyphBoundsProvider<TFont, TGlyph> GlyphBoundsProvider { get; }
-    public IGlyphFinder<TGlyph> GlyphFinder { get; }
+    public IGlyphFinder<TFont, TGlyph> GlyphFinder { get; }
     
     public FontMathTable<TFont, TGlyph> MathTable { get; private set; }
     public Func<TFont, float, TFont> MathFontCloner { get; private set; }
@@ -18,7 +18,7 @@ namespace CSharpMath.FrontEnd {
 
     public TypesettingContext(Func<TFont, float, TFont> mathFontCloner,
       IGlyphBoundsProvider<TFont, TGlyph> glyphBoundsProvider,
-      IGlyphFinder<TGlyph> glyphFinder,
+      IGlyphFinder<TFont, TGlyph> glyphFinder,
       IFontChanger fontChanger,
       FontMathTable<TFont, TGlyph> mathTable) {
       GlyphBoundsProvider = glyphBoundsProvider;

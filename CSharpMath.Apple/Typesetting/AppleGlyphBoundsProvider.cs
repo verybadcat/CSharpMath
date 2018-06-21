@@ -15,6 +15,9 @@ using CSharpMath.Apple.Drawing;
 
 namespace CSharpMath.Apple {
   public class AppleGlyphBoundsProvider: IGlyphBoundsProvider<TFont, TGlyph> {
+    private AppleGlyphBoundsProvider() { }
+
+    public static AppleGlyphBoundsProvider Instance { get; } = new AppleGlyphBoundsProvider();
 
     public (float[] Advances, float Total) GetAdvancesForGlyphs(TFont font, TGlyph[] glyphs) {
       var ctFont = font.CtFont;
