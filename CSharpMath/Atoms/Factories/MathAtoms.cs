@@ -587,8 +587,8 @@ namespace CSharpMath.Atoms {
         }
       }
       else if (environment == "cases") {
-        if (table.NColumns!=2) {
-          errorMessage = "cases environment must have exactly 2 columns";
+        if (table.NColumns < 1 || table.NColumns > 2) {
+          errorMessage = "cases environment must have 1 to 2 columns";
         } else {
           table.InterColumnSpacing = 18;
           table.SetAlignment(ColumnAlignment.Left, 0);

@@ -36,31 +36,27 @@ namespace CSharpMath.Atoms {
       RightBoundary = AtomCloner.Clone(cloneMe.RightBoundary, finalize);
     }
 
-    public bool EqualsInner(Inner otherInner) {
-      bool r = EqualsAtom(otherInner);
-      r &= InnerList.NullCheckingEquals(otherInner.InnerList);
-      r &= LeftBoundary.NullCheckingEquals(otherInner.LeftBoundary);
-      r &= RightBoundary.NullCheckingEquals(otherInner.RightBoundary);
-      return r;
-    }
+    public bool EqualsInner(Inner otherInner) =>
+      EqualsAtom(otherInner)
+      && InnerList.NullCheckingEquals(otherInner.InnerList)
+      && LeftBoundary.NullCheckingEquals(otherInner.LeftBoundary)
+      && RightBoundary.NullCheckingEquals(otherInner.RightBoundary);
 
     public override bool Equals(object obj) =>
       (obj is Inner) ? EqualsInner((Inner)obj) : false;
 
-    public override int GetHashCode() {
-      unchecked {
-        return base.GetHashCode()
+    public override int GetHashCode() =>
+      unchecked(base.GetHashCode()
           + 23 * InnerList?.GetHashCode() ?? 0
           + 101 * LeftBoundary?.GetHashCode() ?? 0
-          + 103 * RightBoundary?.GetHashCode() ?? 0;
-      }
-    }
+          + 103 * RightBoundary?.GetHashCode() ?? 0);
 
     public override string StringValue {
       get {
         var builder = new StringBuilder(@"\inner");
-        builder.AppendInSquareBrackets(LeftBoundary.Nucleus, NullHandling.EmptyString);
+        builder.AppendInSquareBrackets(LeftBoundary?.Nucleus, NullHandling.EmptyString);
         builder.AppendInBraces(InnerList, NullHandling.LiteralNull);
+        builder.AppendInBraces(RightBoundary?.Nucleus, NullHandling.EmptyString);
         builder.AppendScripts(this);
         var r = builder.ToString();
         return r;

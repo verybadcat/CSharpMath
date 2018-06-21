@@ -22,10 +22,11 @@ namespace CSharpMath.SkiaSharp
     private SKPaint _paint;
     private SKPath _path;
 
-    private SKPaint StyledPaint(PaintStyle style, float strokeWidth = 0) {
-      _paint.Color = Color;
+    private SKPaint StyledPaint(PaintStyle style, float? strokeWidth = null) {
+      //In SkiaSharp, line will still be visible even if width is 0
+      _paint.Color = strokeWidth == 0 ? SKColors.Transparent : (CurrentColor ?? DefaultColor).ToNative();
       _paint.Style = (SKPaintStyle)style;
-      _paint.StrokeWidth = strokeWidth;
+      _paint.StrokeWidth = strokeWidth ?? 0;
       _paint.StrokeCap = StrokeCap;
       return _paint;
     }

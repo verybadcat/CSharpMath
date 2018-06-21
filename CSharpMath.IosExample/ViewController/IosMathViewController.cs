@@ -65,7 +65,7 @@ namespace CSharpMath.Ios.Example
     private const string SummationBigCup = @"234 \bigcup_1";
     private const string SummationWithLimits = @"\sum_{n=1}^{\infty}";
 
-    private const string Taylor = @"\begin{eqnarray} e^x  &=&  \sum_{x=0}^{\infty}\frac{x^n}{n!} \\ \\ \sin(x) &=& \sum_{x=0}^{\infty}(-1)^n\frac{(2x+1)^n}{(2n)!}  \\ \\ -\ln(1-x)   &=& \sum_{x=0}^{\infty}\frac{x^n}{n}  \ \ \ \ \ (-1 <= x < 1) \end{eqnarray}";
+    private const string Taylor = @"\begin{eqnarray} e^x  &=&  \sum_{x=0}^{\infty}\frac{x^n}{n!} \\ \\ \sin(x) &=& \sum_{x=0}^{\infty}(-1)^n\frac{(2x+1)^n}{(2n)!}  \\ \\ -\ln(1-x)   &=& \sum_{x=0}^{\infty}\frac{x^n}{n}  \ \ \ \ \ (-1 \leq x < 1) \end{eqnarray}";
     private const string TwoSin = @"2 \sin";
     private const string Underline = @"\underline{Underline}";
 

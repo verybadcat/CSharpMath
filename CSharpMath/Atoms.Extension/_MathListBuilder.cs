@@ -6,7 +6,7 @@ using Builder = CSharpMath.Atoms.MathListBuilder;
 
 namespace CSharpMath.Atoms.Extension {
   internal static class _MathListBuilder {
-    //private static MathList TeX = (MathList)MathLists.FromString(@"\textrm{T\kern-.1667em\raisebox{-.5ex}{E}\kern-.125emX}");
+    private static MathList TeX = (MathList)MathLists.FromString(@"\textrm{T\kern-.1667em\raisebox{-.5ex}{E}\kern-.125emX}");
 
     internal static MathAtom AtomForCommand(Builder b, string command) {
       switch (command) {

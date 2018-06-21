@@ -9,7 +9,8 @@ namespace CSharpMath.DevUtils {
       //Console.WriteLine(new StringBuilder().AppendJoin(", ", TypographyTest.Get.Codepoints("𝑥")).ToString());
       //Console.WriteLine(TypographyTest.MeasureString.Measure("𝑥", 20));
       //var path = Path.Combine(Environment.GetEnvironmentVariable("HOMEPATH"), "Desktop");
-      iosMathDemo.Builder.Build();
+      //iosMathDemo.Builder.Build();
+      CSharpMathExamples.MirrorFromIos.Do();
 
       Console.WriteLine();
       Console.WriteLine("Finished executing the method(s) requested.");
