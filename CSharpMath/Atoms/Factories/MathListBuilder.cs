@@ -35,18 +35,9 @@ namespace CSharpMath.Atoms {
       return r;
     }
 
-    internal char GetNextCharacter() {
-      var r = _chars[_currentChar];
-      _currentChar++;
-      return r;
-    }
+    internal char GetNextCharacter() => _chars[_currentChar++];
 
-    internal void UnlookCharacter() {
-      if (_currentChar == 0) {
-        throw new InvalidOperationException("Can't unlook below character 0");
-      }
-      _currentChar--;
-    }
+    internal void UnlookCharacter() => _ = _currentChar == 0 ? throw new InvalidOperationException("Can't unlook below character 0") : _currentChar--;
 
     internal bool HasCharacters => _currentChar < _length;
 
@@ -141,7 +132,7 @@ namespace CSharpMath.Atoms {
               }
               continue;
             }
-            atom = AtomForCommand(command); 
+            atom = AtomForCommand(command, stopChar); 
             if (atom == null) {
               SetError(_error ?? "Internal error");
               return null;
@@ -151,7 +142,7 @@ namespace CSharpMath.Atoms {
               if (_currentEnvironment != null) {
                 return r;
               }
-              var table = BuildTable(null, r, false);
+              var table = BuildTable(null, r, false, stopChar);
               if (table == null) return null;
               return MathLists.WithAtoms(table);
             }
@@ -300,6 +291,7 @@ namespace CSharpMath.Atoms {
       }
       SkipSpaces();
       var env = ReadString();
+      SkipSpaces();
       if (!ExpectCharacter('}')) {
         SetError("Missing }");
         return null;
@@ -320,7 +312,7 @@ namespace CSharpMath.Atoms {
       return boundary;
     }
 
-    internal IMathAtom AtomForCommand(string command) {
+    internal IMathAtom AtomForCommand(string command, char stopChar) {
       var atom = MathAtoms.ForLatexSymbolName(command);
       if (atom != null) {
         return atom;
@@ -360,7 +352,7 @@ namespace CSharpMath.Atoms {
           if (_currentInnerAtom.LeftBoundary == null) {
             return null;
           }
-          _currentInnerAtom.InnerList = BuildInternal(false);
+          _currentInnerAtom.InnerList = BuildInternal(false, stopChar);
           if (_currentInnerAtom.RightBoundary == null) {
             SetError("Missing \\right");
             return null;
@@ -381,7 +373,7 @@ namespace CSharpMath.Atoms {
           if (env == null) {
             return null;
           }
-          var table = BuildTable(env, null, false);
+          var table = BuildTable(env, null, false, stopChar);
           return table;
         case "color":
           return new Color {
@@ -433,7 +425,7 @@ namespace CSharpMath.Atoms {
         return fracList;
       } else if (command == "\\" || command == "cr") {
         if (_currentEnvironment == null) {
-          var table = BuildTable(null, list, true);
+          var table = BuildTable(null, list, true, stopChar);
           if (table == null) return null;
           return MathLists.WithAtoms(table);
         } else {
@@ -465,14 +457,14 @@ namespace CSharpMath.Atoms {
           var op = (LargeOperator)atom;
           op.Limits = true;
         } else {
-          SetError("limits can only be applied to an operator.");
+          SetError(@"\limits can only be applied to an operator");
         }
         return true;
       } else if (modifier == "nolimits") {
         if (atom is LargeOperator op) {
           op.Limits = false;
         } else {
-          SetError("nolimits can only be applied to an operator.");
+          SetError(@"\nolimits can only be applied to an operator");
         }
         return true;
       }
@@ -485,7 +477,7 @@ namespace CSharpMath.Atoms {
       }
     }
 
-    internal IMathAtom BuildTable(string environment, IMathList firstList, bool isRow) {
+    internal IMathAtom BuildTable(string environment, IMathList firstList, bool isRow, char stopChar) {
       var oldEnv = _currentEnvironment;
       _currentEnvironment = new TableEnvironmentProperties(environment);
       int currentRow = 0;
@@ -502,7 +494,7 @@ namespace CSharpMath.Atoms {
         }
       }
       while (HasCharacters && !(_currentEnvironment.Ended)) {
-        var list = BuildInternal(false);
+        var list = BuildInternal(false, stopChar);
         if (list == null) {
           return null;
         }

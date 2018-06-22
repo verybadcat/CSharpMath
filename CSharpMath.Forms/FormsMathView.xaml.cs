@@ -1,19 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+using System.Collections.ObjectModel;
+using System.Drawing;
+using CSharpMath.Rendering;
+using SkiaSharp;
+using SkiaSharp.Views.Forms;
+using Typography.OpenFont;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-using SkiaSharp;
-using SkiaSharp.Views.Forms;
-
 namespace CSharpMath.Forms {
-  using Rendering;
+  using Color = Xamarin.Forms.Color;
+  using Rectangle = Xamarin.Forms.Rectangle;
+  using TextAlignment = Rendering.TextAlignment;
+  using Thickness = Rendering.Thickness;
+
   [XamlCompilation(XamlCompilationOptions.Compile), ContentProperty(nameof(LaTeX))]
-  public partial class FormsMathView : SKCanvasView {
+  public partial class FormsMathView : SKCanvasView, IPainter<MathSource, Color> {
     public FormsMathView() {
       InitializeComponent();
       painter = new SkiaSharp.SkiaMathPainter(CanvasSize);
@@ -28,8 +30,8 @@ namespace CSharpMath.Forms {
       e.Surface.Canvas.Clear();
       painter.Bounds = CanvasSize;
       painter.Draw(e.Surface.Canvas);
-      ScrollX = painter.TranslationX;
-      ScrollY = painter.TranslationY;
+      DisplacementX = painter.DisplacementX;
+      DisplacementY = painter.DisplacementY;
       var sz = painter.DrawingSize;
       if (sz.HasValue) LayoutBounds = new Rectangle(X, Y, sz.Value.Width, sz.Value.Height);
     }
@@ -46,8 +48,8 @@ namespace CSharpMath.Forms {
       TextColorProperty = BindableProperty.Create(nameof(TextColor), typeof(Color), thisType, painter.TextColor.ToFormsColor(), propertyChanged: (b, o, n) => p(b).TextColor = ((Color)n).ToSKColor());
       ErrorColorProperty = BindableProperty.Create(nameof(ErrorColor), typeof(Color), thisType, painter.ErrorColor.ToFormsColor(), propertyChanged: (b, o, n) => p(b).ErrorColor = ((Color)n).ToSKColor());
       TextAlignmentProperty = BindableProperty.Create(nameof(TextAlignment), typeof(TextAlignment), thisType, painter.TextAlignment, propertyChanged: (b, o, n) => p(b).TextAlignment = (TextAlignment)n);
-      ScrollXProperty = BindableProperty.Create(nameof(ScrollX), typeof(float), thisType, painter.TranslationX, BindingMode.TwoWay, propertyChanged: (b, o, n) => p(b).TranslationX = (float)n);
-      ScrollYProperty = BindableProperty.Create(nameof(ScrollY), typeof(float), thisType, painter.TranslationY, BindingMode.TwoWay, propertyChanged: (b, o, n) => p(b).TranslationY = (float)n);
+      DisplacementXProperty = BindableProperty.Create(nameof(DisplacementX), typeof(float), thisType, painter.DisplacementX, BindingMode.TwoWay, propertyChanged: (b, o, n) => p(b).DisplacementX = (float)n);
+      DisplacementYProperty = BindableProperty.Create(nameof(DisplacementY), typeof(float), thisType, painter.DisplacementY, BindingMode.TwoWay, propertyChanged: (b, o, n) => p(b).DisplacementY = (float)n);
       MagnificationProperty = BindableProperty.Create(nameof(Magnification), typeof(float), thisType, painter.Magnification, propertyChanged: (b, o, n) => p(b).Magnification = (float)n);
       PaintStyleProperty = BindableProperty.Create(nameof(PaintStyle), typeof(PaintStyle), thisType, painter.PaintStyle, propertyChanged: (b, o, n) => p(b).PaintStyle = (PaintStyle)n);
       LineStyleProperty = BindableProperty.Create(nameof(LineStyle), typeof(Enumerations.LineStyle), thisType, painter.LineStyle, propertyChanged: (b, o, n) => p(b).LineStyle = (Enumerations.LineStyle)n);
@@ -68,8 +70,8 @@ namespace CSharpMath.Forms {
     public static readonly BindableProperty TextColorProperty;
     public static readonly BindableProperty ErrorColorProperty;
     public static readonly BindableProperty TextAlignmentProperty;
-    public static readonly BindableProperty ScrollXProperty;
-    public static readonly BindableProperty ScrollYProperty;
+    public static readonly BindableProperty DisplacementXProperty;
+    public static readonly BindableProperty DisplacementYProperty;
     public static readonly BindableProperty MagnificationProperty;
     public static readonly BindableProperty PaintStyleProperty;
     public static readonly BindableProperty LineStyleProperty;
@@ -98,8 +100,8 @@ namespace CSharpMath.Forms {
             break;
           case SKTouchAction.Moved:
             var displacement = e.Location - _origin;
-            painter.TranslationX += displacement.X;
-            painter.TranslationY += displacement.Y;
+            painter.DisplacementX += displacement.X;
+            painter.DisplacementY += displacement.Y;
             _origin = e.Location;
             InvalidateSurface();
             e.Handled = true;
@@ -119,7 +121,7 @@ namespace CSharpMath.Forms {
       base.OnTouch(e);
     }
     protected virtual void OnPinch(object sender, PinchGestureUpdatedEventArgs e) {
-      if (EnableGestures && painter.LaTeX.IsNonEmpty()) {
+      if (painter.LaTeX.IsNonEmpty()) {
         switch (e.Status) {
           case GestureStatus.Started:
             GestureCount++;
@@ -137,6 +139,9 @@ namespace CSharpMath.Forms {
         }
       }
     }
+
+    void IPainter<MathSource, Color>.UpdateDisplay() => painter.UpdateDisplay();
+    void IPainter<MathSource, Color>.Draw(ICanvas canvas) => painter.Draw(canvas);
 
     public bool EnableGestures { get => (bool)GetValue(EnableGesturesProperty); set => SetValue(EnableGesturesProperty, value); }
     public int GestureCount { get => (int)GetValue(GestureCountProperty); private set => SetValue(GestureCountPropertyKey, value); }
@@ -156,8 +161,8 @@ namespace CSharpMath.Forms {
     public Color TextColor { get => (Color)GetValue(TextColorProperty); set => SetValue(TextColorProperty, value); }
     public Color ErrorColor { get => (Color)GetValue(ErrorColorProperty); set => SetValue(ErrorColorProperty, value); }
     public TextAlignment TextAlignment { get => (TextAlignment)GetValue(TextAlignmentProperty); set => SetValue(TextAlignmentProperty, value); }
-    public float ScrollX { get => (float)GetValue(ScrollXProperty); set => SetValue(ScrollXProperty, value); }
-    public float ScrollY { get => (float)GetValue(ScrollYProperty); set => SetValue(ScrollYProperty, value); }
+    public float DisplacementX { get => (float)GetValue(DisplacementXProperty); set => SetValue(DisplacementXProperty, value); }
+    public float DisplacementY { get => (float)GetValue(DisplacementYProperty); set => SetValue(DisplacementYProperty, value); }
     public float Magnification { get => (float)GetValue(MagnificationProperty); set => SetValue(MagnificationProperty, value); }
     public PaintStyle PaintStyle { get => (PaintStyle)GetValue(PaintStyleProperty); set => SetValue(PaintStyleProperty, value); }
     public Enumerations.LineStyle LineStyle { get => (Enumerations.LineStyle)GetValue(LineStyleProperty); set => SetValue(LineStyleProperty, value); }
@@ -165,8 +170,10 @@ namespace CSharpMath.Forms {
     public Thickness Padding { get => (Thickness)GetValue(PaddingProperty); set => SetValue(PaddingProperty, value); }
     public string ErrorMessage { get => (string)GetValue(ErrorMessageProperty); private set => SetValue(ErrorMessagePropertyKey, value); }
     public SKStrokeCap StrokeCap { get => (SKStrokeCap)GetValue(StrokeCapProperty); set => SetValue(StrokeCapProperty, value); }
+    public ObservableCollection<Typeface> LocalTypefaces => painter.LocalTypefaces;
 
-    public System.Drawing.SizeF? DrawingSize => painter.DrawingSize;
+    public SizeF? DrawingSize => painter.DrawingSize;
     public Rectangle LayoutBounds { get => (Rectangle)GetValue(LayoutBoundsProperty); private set => SetValue(LayoutBoundsPropertyKey, value); }
+    SizeF IPainter<MathSource, Color>.Bounds { get => new SizeF((float)Bounds.Width, (float)Bounds.Height); set { WidthRequest = value.Width; HeightRequest = value.Height; } }
   }
 }

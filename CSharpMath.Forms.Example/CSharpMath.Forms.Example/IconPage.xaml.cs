@@ -28,18 +28,19 @@ namespace CSharpMath.Forms.Example {
       const int count = 10; //number of digits in outer circle
       const float r = 100f; //outer circle radius
       const float f = 40f; //font size in points
+      const float thicknessAdjust = 2 * f / 3; //thickness adjust of the two circles
       const float θ = 360f / count; //angle to rotate when drawing each digit
       if (painter == null) painter = new SkiaSharp.SkiaMathPainter(e.Info.Size) {
         TextAlignment = Rendering.TextAlignment.Center,
         FontSize = f
       };
       else painter.Bounds = e.Info.Size;
-      painter.TranslationY = -r; //scroll up
+      painter.DisplacementY = -r; //scroll up
       var cx = e.Info.Width / 2;
       var cy = e.Info.Height / 2;
       var c = e.Surface.Canvas;
       //draw outer circle
-      c.DrawCircle(cx, cy, r + f / 2, black);
+      c.DrawCircle(cx, cy, r + thicknessAdjust, black);
       painter.TextColor = SKColors.White;
       for (int i = 0; i < count; i++) {
         painter.LaTeX = i.ToString();
@@ -47,10 +48,10 @@ namespace CSharpMath.Forms.Example {
         c.RotateDegrees(θ, cx, cy);
       }
       //draw inner circle
-      c.DrawCircle(cx, cy, r - f / 2, white);
-      painter.TranslationY = 0; //reset scroll
+      c.DrawCircle(cx, cy, r - thicknessAdjust, white);
+      painter.DisplacementY = 0; //reset scroll
       painter.TextColor = SKColors.Black;
-      painter.LaTeX = @"\text{\kern.7222emC\#}\\Math"; //13/18em
+      painter.LaTeX = @"\raisebox{25mu}{\text{\kern.7222emC\#}\\Math}"; //.7222em is 13/18em
       painter.Draw(c);
     }
   }

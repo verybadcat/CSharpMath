@@ -4,7 +4,7 @@ using CSharpMath.Rendering;
 using SkiaSharp;
 
 namespace CSharpMath.SkiaSharp {
-  public class SkiaMathPainter : MathPainter {
+  public class SkiaMathPainter : MathPainter, IPainter<MathSource, SKColor> {
     public SkiaMathPainter(SKSize bounds, float fontSize = 20f)
       : base(new SizeF(bounds.Width, bounds.Height), fontSize) { }
     public SkiaMathPainter(float width, float height, float fontSize = 20f)

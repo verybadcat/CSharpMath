@@ -15,7 +15,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
 namespace CSharpMath.Rendering {
-  public class MathPainter {
+  public class MathPainter : IPainter<MathSource, Color> {
     #region Constructors
     public MathPainter(float width, float height, float fontSize = 20f) : this(new SizeF(width, height), fontSize) { }
     public MathPainter(SizeF bounds, float fontSize = 20f) {
@@ -47,8 +47,8 @@ namespace CSharpMath.Rendering {
     public Color TextColor { get; set; } = new Color(0, 0, 0);
     public Color BackgroundColor { get; set; } = new Color(0, 0, 0, 0);
     public PaintStyle PaintStyle { get; set; } = PaintStyle.Fill;
-    public float TranslationX { get; set; }
-    public float TranslationY { get; set; }
+    public float DisplacementX { get; set; }
+    public float DisplacementY { get; set; }
     public float Magnification { get; set; } = 1;
 
     public SizeF? DrawingSize {
@@ -121,7 +121,7 @@ namespace CSharpMath.Rendering {
         if (_displayChanged) UpdateDisplay();
         _displayList.Position = GetDisplayPosition();
         //canvas is inverted so negate vertical translation
-        canvas.Translate(TranslationX, -TranslationY);
+        canvas.Translate(DisplacementX, -DisplacementY);
         _context.Canvas = canvas;
         _context.GlyphBoxColor = GlyphBoxColor;
         _displayList.Draw(_context);
