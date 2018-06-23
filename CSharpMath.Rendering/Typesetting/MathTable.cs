@@ -37,24 +37,20 @@ namespace CSharpMath.Rendering {
     public override float FractionNumeratorShiftUp(MathFonts fonts) => ReadRecord(fonts.MathConsts.FractionNumeratorShiftUp, fonts);
 
     public override float FractionRuleThickness(MathFonts fonts) => ReadRecord(fonts.MathConsts.FractionRuleThickness, fonts);
-
-    internal static Dictionary<Glyph, Bounds> OriginalBounds = new Dictionary<Glyph, Bounds>();
-    Glyph[] GetVariants(Typeface typeface, MathGlyphConstruction glyphs, Bounds bounds) {
+    
+    Glyph[] GetVariants(Typeface typeface, MathGlyphConstruction glyphs) {
       if (glyphs == null) return null;
       var records = glyphs.glyphVariantRecords;
       if (records == null) return null;
       var variants = new Glyph[records.Length];
       for (int i = 0; i < records.Length; i++) {
-        var variant = records[i].VariantGlyph;
-        variants[i] = new Glyph(typeface, typeface.GetGlyphByIndex(variant));
-        if(!OriginalBounds.ContainsKey(variants[i]))
-          OriginalBounds[variants[i]] = bounds;
+        variants[i] = new Glyph(typeface, typeface.GetGlyphByIndex(records[i].VariantGlyph));
       }
       return variants;
     }
 
     public override Glyph[] GetHorizontalVariantsForGlyph(Glyph rawGlyph) =>
-      GetVariants(rawGlyph.Typeface, rawGlyph.Info.MathGlyphInfo?.HoriGlyphConstruction, rawGlyph.Info.Bounds) ?? new[] { rawGlyph };
+      GetVariants(rawGlyph.Typeface, rawGlyph.Info.MathGlyphInfo?.HoriGlyphConstruction) ?? new[] { rawGlyph };
 
     public override float GetItalicCorrection(MathFonts fonts, Glyph glyph) =>
       glyph.Info.MathGlyphInfo?.ItalicCorrection?.Value * glyph.Typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize) ?? 0;
@@ -88,7 +84,7 @@ namespace CSharpMath.Rendering {
     }
 
     public override Glyph[] GetVerticalVariantsForGlyph(Glyph rawGlyph) =>
-      GetVariants(rawGlyph.Typeface, rawGlyph.Info.MathGlyphInfo?.VertGlyphConstruction, rawGlyph.Info.Bounds) ?? new[] { rawGlyph };
+      GetVariants(rawGlyph.Typeface, rawGlyph.Info.MathGlyphInfo?.VertGlyphConstruction) ?? new[] { rawGlyph };
 
     public override float LowerLimitBaselineDropMin(MathFonts fonts) => ReadRecord(fonts.MathConsts.LowerLimitBaselineDropMin, fonts);
 
@@ -164,10 +160,5 @@ namespace CSharpMath.Rendering {
     public override float OverbarRuleThickness(MathFonts fonts) => ReadRecord(fonts.MathConsts.OverbarRuleThickness, fonts);
 
     public override float OverbarExtraAscender(MathFonts fonts) => ReadRecord(fonts.MathConsts.OverbarExtraAscender, fonts);
-  }
-
-  internal static class GlyphExtensions {
-    public static Bounds GetOriginalBounds(this Glyph rawGlyph) =>
-      MathTable.OriginalBounds.TryGetValue(rawGlyph, out var value) ? value : rawGlyph.Info.Bounds;
   }
 }

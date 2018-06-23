@@ -31,8 +31,7 @@ namespace CSharpMath.Rendering {
       foreach (var glyph in glyphs) {
         var scale = glyph.Typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);
         var bounds = glyph.Info.Bounds;
-        var obounds = glyph.GetOriginalBounds();
-        rects[i] = RectangleF.FromLTRB(obounds.XMin * scale, bounds.YMin * scale, obounds.XMax * scale, bounds.YMax * scale);
+        rects[i] = RectangleF.FromLTRB(bounds.XMin * scale, bounds.YMin * scale, bounds.XMax * scale, bounds.YMax * scale);
         i++;
       }
       return rects;

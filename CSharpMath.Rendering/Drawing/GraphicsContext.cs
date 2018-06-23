@@ -33,7 +33,7 @@ namespace CSharpMath.Rendering {
         pathBuilder.BuildFromGlyph(glyphs[i].Info, font.PointSize);
         Canvas.Save();
         Canvas.CurrentColor = color;
-        Canvas.Translate(textPosition.X + points[i].X - (glyphs[i].Info.Bounds.XMin - glyphs[i].GetOriginalBounds().XMin) * scale, textPosition.Y + points[i].Y);
+        Canvas.Translate(textPosition.X + points[i].X, textPosition.Y + points[i].Y);
         pathBuilder.ReadShapes(Canvas);
         Canvas.Restore();
       }
@@ -47,15 +47,18 @@ namespace CSharpMath.Rendering {
     public void DrawGlyphRunWithOffset(Display.Text.AttributedGlyphRun<TFonts, Glyph> run, PointF offset, Color? color) {
       var textPosition = offset.Plus(TextPosition);
       if (GlyphBoxColor != null) {
-        var size = new SizeF();
         Bounds bounds;
+        float advance, scale, width = 0, ascent = 0, descent = 0;
         foreach (var glyph in run.KernedGlyphs) {
           bounds = glyph.Glyph.Info.Bounds;
-          size.Width += bounds.XMax - bounds.XMin;
-          size.Height += bounds.YMax - bounds.YMin;
+          advance = glyph.Glyph.Typeface.GetHAdvanceWidthFromGlyphIndex(glyph.Glyph.Info.GlyphIndex);
+          scale = glyph.Glyph.Typeface.CalculateScaleToPixelFromPointSize(run.Font.PointSize);
+          width += advance * scale + glyph.KernAfterGlyph;
+          ascent = System.Math.Max(ascent, bounds.YMax * scale);
+          descent = System.Math.Min(descent, bounds.YMin * scale);
         }
         Canvas.CurrentColor = GlyphBoxColor?.textRun;
-        Canvas.StrokeRect(textPosition.X, textPosition.Y, size.Width + run.KernedGlyphs.Sum(g => g.KernAfterGlyph), size.Height);
+        Canvas.StrokeRect(textPosition.X, textPosition.Y + descent, width, ascent - descent);
       }
       var layout = new GlyphLayout();
       var glyphs = run.KernedGlyphs;
