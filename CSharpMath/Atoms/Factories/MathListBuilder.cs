@@ -87,7 +87,16 @@ namespace CSharpMath.Atoms {
             prevAtom.Subscript = this.BuildInternal(true);
             continue;
           case '{':
-            var sublist = BuildInternal(false, '}');
+            IMathList sublist;
+            if (_currentEnvironment != null && _currentEnvironment.Name == null) {
+              // \\ or \cr which do not have a corrosponding \end
+              var oldEnv = _currentEnvironment;
+              _currentEnvironment = null;
+              sublist = BuildInternal(false, '}');
+              _currentEnvironment = oldEnv;
+            } else {
+              sublist = BuildInternal(false, '}');
+            }
             if (sublist == null) return null;
             prevAtom = sublist.Atoms.LastOrDefault();
             r.Append(sublist);
@@ -142,7 +151,7 @@ namespace CSharpMath.Atoms {
               if (_currentEnvironment != null) {
                 return r;
               }
-              var table = BuildTable(null, r, false, stopChar);
+              var table = BuildTable(null, r, false, stopChar); 
               if (table == null) return null;
               return MathLists.WithAtoms(table);
             }
@@ -352,7 +361,7 @@ namespace CSharpMath.Atoms {
           if (_currentInnerAtom.LeftBoundary == null) {
             return null;
           }
-          _currentInnerAtom.InnerList = BuildInternal(false, stopChar);
+          _currentInnerAtom.InnerList = BuildInternal(false, stopChar); 
           if (_currentInnerAtom.RightBoundary == null) {
             SetError("Missing \\right");
             return null;
@@ -373,7 +382,7 @@ namespace CSharpMath.Atoms {
           if (env == null) {
             return null;
           }
-          var table = BuildTable(env, null, false, stopChar);
+          var table = BuildTable(env, null, false, stopChar); 
           return table;
         case "color":
           return new Color {
@@ -425,7 +434,7 @@ namespace CSharpMath.Atoms {
         return fracList;
       } else if (command == "\\" || command == "cr") {
         if (_currentEnvironment == null) {
-          var table = BuildTable(null, list, true, stopChar);
+          var table = BuildTable(null, list, true, stopChar); 
           if (table == null) return null;
           return MathLists.WithAtoms(table);
         } else {
@@ -477,7 +486,7 @@ namespace CSharpMath.Atoms {
       }
     }
 
-    internal IMathAtom BuildTable(string environment, IMathList firstList, bool isRow, char stopChar) {
+    internal IMathAtom BuildTable(string environment, IMathList firstList, bool isRow, char stopChar) { 
       var oldEnv = _currentEnvironment;
       _currentEnvironment = new TableEnvironmentProperties(environment);
       int currentRow = 0;
@@ -494,7 +503,7 @@ namespace CSharpMath.Atoms {
         }
       }
       while (HasCharacters && !(_currentEnvironment.Ended)) {
-        var list = BuildInternal(false, stopChar);
+        var list = BuildInternal(false, stopChar); 
         if (list == null) {
           return null;
         }
