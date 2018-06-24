@@ -148,10 +148,11 @@ namespace CSharpMath.Rendering {
     public override float AccentBaseHeight(MathFonts fonts) => ReadRecord(fonts.MathConsts.AccentBaseHeight, fonts);
 
     public override float GetTopAccentAdjustment(MathFonts fonts, Glyph glyph) =>
-      glyph.Info.MathGlyphInfo?.TopAccentAttachment?.Value
-      * glyph.Typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize)
+      (glyph.Info.MathGlyphInfo?.TopAccentAttachment?.Value
       // If no top accent is defined then it is the center of the advance width.
-      ?? glyph.Typeface.GetHAdvanceWidthFromGlyphIndex(glyph.Info.GlyphIndex) / 2;
+      ?? glyph.Typeface.GetHAdvanceWidthFromGlyphIndex(glyph.Info.GlyphIndex) / 2)
+      //remember to scale the unit
+      * glyph.Typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);
 
     public override float UnderbarRuleThickness(MathFonts fonts) => ReadRecord(fonts.MathConsts.UnderbarRuleThickness, fonts);
     

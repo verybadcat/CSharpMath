@@ -63,7 +63,10 @@ namespace CSharpMath.Atoms.Extension {
         return null;
       }
 
-      var points = float.Parse(sb.ToString());
+      if(!(float.TryParse(str, out var points))) {
+        b.SetError("Invalid length value");
+        return null;
+      }
       var unit = new string(chars);
       if (b._textMode) {
         switch (unit) {

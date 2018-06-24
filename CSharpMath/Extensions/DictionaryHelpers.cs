@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 
 namespace CSharpMath {
+  /// <summary>
+  /// Used before the introduction of BiDictionary, currently unused
+  /// </summary>
   internal static class DictionaryHelpers {
     public static bool ShouldSetValueWhenBuildingDictionary(
       Dictionary<string, string> buildingDictionary,
@@ -12,7 +15,7 @@ namespace CSharpMath {
           // If there are two values for the same key, choose one deterministically
           var existingValue = buildingDictionary[keyInBuildingDictionary];
           if (proposedValue.Length > existingValue.Length) {
-            // keep the shorter valye
+            // keep the shorter value
             return false;
           }
           if (proposedValue.Length == existingValue.Length) {

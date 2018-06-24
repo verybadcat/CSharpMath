@@ -23,16 +23,17 @@ namespace CSharpMath.Atoms {
       IsMu = cloneMe.IsMu;
     }
 
+    public override string StringValue => " ";
+
+    public override bool Equals(object obj) => obj is Space s ? EqualsSpace(s) : false;
+
     public bool EqualsSpace(Space otherSpace) =>
       EqualsAtom(otherSpace)
       && Length == otherSpace.Length
       && IsMu == otherSpace.IsMu;
 
-    public override int GetHashCode() {
-      unchecked {
-        return base.GetHashCode() + 73 * Length.GetHashCode() + 277 * IsMu.GetHashCode();
-      }
-    }
+    public override int GetHashCode() =>
+      unchecked(base.GetHashCode() + 73 * Length.GetHashCode() + 277 * IsMu.GetHashCode());
 
     public override T Accept<T, THelper>(IMathAtomVisitor<T, THelper> visitor, THelper helper)
       => visitor.Visit(this, helper);

@@ -120,6 +120,7 @@ namespace CSharpMath {
             continue;
           case MathAtomType.Color:
             AddDisplayLine(false);
+            AddInterElementSpace(prevNode, MathAtomType.Color);
             var color = atom as IColor;
             var colorDisplay = CreateLine(color.InnerList, _font, _context, _style);
             colorDisplay.SetTextColor(Color.FromHexString(color.ColorString));
@@ -318,7 +319,7 @@ namespace CSharpMath {
       return new OverOrUnderlineDisplay<TFont, TGlyph>(innerListDisplay, _currentPosition) {
         LineShiftUp = innerListDisplay.Ascent + _mathTable.OverbarVerticalGap(_font)
         + _mathTable.OverbarRuleThickness(_font) + _mathTable.OverbarExtraAscender(_font),
-        LineThickness = _mathTable.UnderbarRuleThickness(_styleFont)
+        LineThickness = _mathTable.OverbarRuleThickness(_styleFont)
       };
     }
 
@@ -358,7 +359,8 @@ namespace CSharpMath {
 
       var display = new AccentDisplay<TFont, TGlyph>(accentGlyphDisplay, accentee);
       // WJWJWJ -- In the display, the position is the Accentee position. Is that correct, or should we be
-      // setting it here?
+      // setting it here? (Happypig375 edit: That should be correct but _currentPosition should have been added like below.)
+      accentee.Position = accentee.Position.Plus(_currentPosition);
       return display;
     }
 

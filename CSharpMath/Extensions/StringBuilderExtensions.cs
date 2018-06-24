@@ -4,19 +4,20 @@ using System.Text;
 
 namespace CSharpMath {
   public static class StringBuilderExtensions {
-    public static void AppendUnlessNull(this StringBuilder builder, string appendMe, string unlessNull) {
+    public static StringBuilder AppendUnlessNull(this StringBuilder builder, string appendMe, string unlessNull) {
       if (unlessNull!=null) {
-        builder.Append(appendMe);
+        return builder.Append(appendMe);
       }
+      return builder;
     }
-    public static void AppendNullAware(this StringBuilder builder, string appendMe, NullHandling handling) 
+    public static StringBuilder AppendNullAware(this StringBuilder builder, string appendMe, NullHandling handling) 
       => builder.Append(appendMe.NullToNull(handling));
 
-    public static void AppendInBraces(this StringBuilder builder, string appendMe, NullHandling handling)
+    public static StringBuilder AppendInBraces(this StringBuilder builder, string appendMe, NullHandling handling)
       => builder.Append(appendMe.WrapInBraces(handling));
-    public static void AppendInSquareBrackets(this StringBuilder builder, string appendMe, NullHandling handling)
+    public static StringBuilder AppendInSquareBrackets(this StringBuilder builder, string appendMe, NullHandling handling)
       => builder.Append(appendMe.WrapInSquareBrackets(handling));
-    public static void AppendInParens(this StringBuilder builder, string appendMe, NullHandling handling)
+    public static StringBuilder AppendInParens(this StringBuilder builder, string appendMe, NullHandling handling)
       => builder.Append(appendMe.WrapInParens(handling));
     
   }

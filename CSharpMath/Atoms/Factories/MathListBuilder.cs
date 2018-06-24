@@ -108,7 +108,7 @@ namespace CSharpMath.Atoms {
             if (oneCharOnly || stopChar != 0) {
               throw new InvalidOperationException("This should have been handled before.");
             }
-            SetError("Mismatched braces");
+            SetError("Missing opening brace");
             return null;
 
           case '\\':
@@ -155,6 +155,31 @@ namespace CSharpMath.Atoms {
               if (table == null) return null;
               return MathLists.WithAtoms(table);
             }
+          case '\'': // this case is NOT in iosMath
+            int i = 1;
+            while (ExpectCharacter('\'')) i++;
+            Append: switch (i) {
+              //glyphs are already superscripted
+              //pick appropriate codepoint depending on number of primes
+              case 1:
+                atom = MathAtoms.Create(MathAtomType.Ordinary, "\u2032");
+                break;
+              case 2:
+                atom = MathAtoms.Create(MathAtomType.Ordinary, "\u2033");
+                break;
+              case 3:
+                atom = MathAtoms.Create(MathAtomType.Ordinary, "\u2034");
+                break;
+              case 4:
+                atom = MathAtoms.Create(MathAtomType.Ordinary, "\u2057");
+                break;
+              default:
+                r.Add(MathAtoms.Create(MathAtomType.Ordinary, "\u2057"));
+                r.Add(new Space(-2.5f, true));
+                i -= 4;
+                goto Append;
+            }
+            break;
           default:
             if (_textMode && ch == ' ') {
               atom = MathAtoms.ForLatexSymbolName(" ");
@@ -262,11 +287,11 @@ namespace CSharpMath.Atoms {
     }
 
 
+    //static readonly char[] _singleCharCommands = @"{}$#%_| ,:>;!\".ToCharArray();
     internal string ReadCommand() {
-      char[] singleCharCommands = @"{}$#%_| ,:>;!\".ToCharArray();
       if (HasCharacters) {
         var ch = GetNextCharacter();
-        if (singleCharCommands.Contains(ch)) {
+        if ((ch < 'a' || ch > 'z') && (ch < 'A' || ch > 'Z')) {
           return ch.ToString();
         } else {
           UnlookCharacter();
@@ -323,13 +348,12 @@ namespace CSharpMath.Atoms {
 
     internal IMathAtom AtomForCommand(string command, char stopChar) {
       var atom = MathAtoms.ForLatexSymbolName(command);
-      if (atom != null) {
-        return atom;
-      }
-      var accent = MathAtoms.Accent(command);
-      if (accent!=null) {
+      if(atom is Accent accent) {
         accent.InnerList = BuildInternal(true);
         return accent;
+      }
+      if (atom != null) {
+        return atom;
       }
       switch (command) {
         case "frac":
@@ -681,12 +705,14 @@ namespace CSharpMath.Atoms {
             }
           case MathAtomType.Accent: {
               var accent = (IAccent)atom;
-              builder.Append(@"\" + MathAtoms.AccentName(accent) + "{" + MathListToString(accent.InnerList) + "}");
+              var list = accent.InnerList;
+              accent.InnerList = null; //for lookup
+              builder.Append(@"\" + MathAtoms.Commands[(MathAtom)atom] + "{" + MathListToString(list) + "}");
               break;
             }
           case MathAtomType.LargeOperator: {
               var op = (LargeOperator)atom;
-              var command = MathAtoms.LatexSymbolNameForAtom(atom);
+              var command = MathAtoms.LatexSymbolNameForAtom(op);
               LargeOperator originalOperator = (LargeOperator)MathAtoms.ForLatexSymbolName(command);
               builder.Append($@"\{command} ");
               if (originalOperator.Limits != op.Limits) {
@@ -732,7 +758,7 @@ namespace CSharpMath.Atoms {
               } else if (aNucleus == "\u2212") {
                 builder.Append("-");
               } else {
-                var command = MathAtoms.LatexSymbolNameForAtom(atom);
+                var command = MathAtoms.LatexSymbolNameForAtom((MathAtom)atom);
                 if (command == null) {
                   builder.Append(aNucleus);
                 } else {

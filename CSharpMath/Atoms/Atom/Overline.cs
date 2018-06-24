@@ -11,6 +11,11 @@ namespace CSharpMath.Atoms {
       this.InnerList = AtomCloner.Clone(cloneMe.InnerList, finalize);
     }
 
+    public override string StringValue =>
+      new StringBuilder(@"\overline")
+      .AppendInBraces(InnerList, NullHandling.LiteralNull)
+      .ToString();
+
     public bool EqualsOverline(Overline other) {
       bool r = this.EqualsAtom(other);
       r &= InnerList.NullCheckingEquals(other.InnerList);

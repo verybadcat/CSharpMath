@@ -19,6 +19,9 @@ namespace CSharpMath.DevUtils.iosMathDemo {
     static IndentedTextWriter Expand(this IndentedTextWriter w) { w.Indent++; return w; }
     static IndentedTextWriter Collapse(this IndentedTextWriter w) { w.Indent--; return w; }
     public static void Build() {
+      const double scale = 1.5; //scale of sizes of views and fonts from original iosMath examples
+      const double viewHeightExtraScale = 1.25;
+
       var sb = new StringBuilder();
       string text;
       using (var client = new WebClient())
@@ -70,9 +73,11 @@ namespace CSharpMath.DevUtils.iosMathDemo {
                 .Append(new StringBuilder(m.Groups["latex"].Value).Replace("\\\n ", "\n ").Replace("\n ", Environment.NewLine + ' ').Replace(@"\\", @"\").Replace("\"", "").ToString().TrimEnd())
                 .AppendLine("\",")
                 .Append("HeightRequest = ")
-                .Append(int.Parse(m.Groups["height"].Value) * 1.2)
+                .Append(int.Parse(m.Groups["height"].Value) * scale * viewHeightExtraScale)
                 .AppendLine(",")
-                .AppendLine("FontSize = 15")
+                .Append("FontSize = ")
+                .Append(15 * scale)
+                .AppendLine("f")
                 .Collapse()
                 .AppendLine("};");
         else if (!string.IsNullOrEmpty(m.Groups["colorTarget"].Value))

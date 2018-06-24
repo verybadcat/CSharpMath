@@ -11,19 +11,22 @@ namespace CSharpMath.Atoms {
       get {
         if (_aliases == null) {
           _aliases = new Dictionary<string, string> {
-            {"lnot", "neg" },
-            {"land", "wedge" },
-            {"lor", "vee" },
-            {"ne", "neq" },
-            {"le", "leq" },
-            {"ge", "geq" },
-            {"lbrace", "{" },
-            {"rbrace", "}" },
-            {"Vert", "|" },
-            {"gets", "leftarrow" },
-            {"to", "rightarrow" },
-            {"iff", "Longleftrightarrow" },
-            {"AA", "angstrom" }
+            { "lnot", "neg" },
+            { "land", "wedge" },
+            { "lor", "vee" },
+            { "ne", "neq" },
+            { "le", "leq" },
+            { "ge", "geq" },
+            { "lbrace", "{" },
+            { "rbrace", "}" },
+            { "Vert", "|" },
+            { "gets", "leftarrow" },
+            { "to", "rightarrow" },
+            { "iff", "Longleftrightarrow" },
+            { "AA", "angstrom" },
+            { ">", ":" },
+            { "widehat" , "hat" },
+            { "widetilde" , "tilde" },
           };
         }
         return _aliases;
@@ -82,8 +85,8 @@ namespace CSharpMath.Atoms {
       => new LargeOperator(name, limits);
 
     public static MathAtom ForCharacter(char c) {
-      if (c < 0x21 || c > 0x7E) {
-        return null; // skip non ascii characters and spaces
+      if (char.IsControl(c) || char.IsWhiteSpace(c)) {
+        return null; // skip spaces
       }
       if (c >= '0' && c <= '9') {
         return Create(MathAtomType.Number, c);
@@ -133,9 +136,9 @@ namespace CSharpMath.Atoms {
         case '@':
         case '`':
         case '|':
+        default: //also support non-ascii characters
           return Create(MathAtomType.Ordinary, c);
-        default:
-          throw new NotImplementedException($"Ascii character {c} should have been accounted for.");
+          //throw new NotImplementedException($"Ascii character {c} should have been accounted for.");
       }
     }
 
@@ -145,12 +148,12 @@ namespace CSharpMath.Atoms {
       return r;
     }
 
-    private static Dictionary<string, IMathAtom> _supportedLatexSymbols;
+    private static BiDictionary<string, MathAtom> _commands;
 
-    public static Dictionary<string, IMathAtom> Commands {
+    public static BiDictionary<string, MathAtom> Commands {
       get {
-        if (_supportedLatexSymbols == null) {
-          _supportedLatexSymbols = new Dictionary<string, IMathAtom> {
+        if (_commands == null) {
+          _commands = new BiDictionary<string, MathAtom> {
                      { "square", Placeholder },
                      
                      // Greek characters
@@ -397,7 +400,6 @@ namespace CSharpMath.Atoms {
                      // Spacing
                      { ",", new Space(3, true) },
                      { ":", new Space(4, true) },
-                     { ">", new Space(4, true) },
                      { ";", new Space(5, true) },
                      { "!", new Space(-3, true) },
                      { "quad", new Space(18, true) },  // quad = 1em = 18mu
@@ -407,10 +409,22 @@ namespace CSharpMath.Atoms {
                      { "displaystyle", new Style(LineStyle.Display) },
                      { "textstyle", new Style(LineStyle.Text) },
                      { "scriptstyle", new Style(LineStyle.Script) },
-                     { "scriptscriptstyle",  new Style(LineStyle.ScriptScript) }
+                     { "scriptscriptstyle",  new Style(LineStyle.ScriptScript) },
+
+                     // Accents
+                     { "acute" , new Accent("\u0301") },
+                     { "hat" , new Accent("\u0302") },  // In our implementation hat and widehat behave the same.
+                     { "grave" , new Accent("\u0300") },
+                     { "tilde" , new Accent("\u0303") }, // In our implementation tilde and widetilde behave the same.
+                     { "bar" , new Accent("\u0304") },
+                     { "breve" , new Accent("\u0306") },
+                     { "dot" , new Accent("\u0307") },
+                     { "ddot" , new Accent("\u0308") },
+                     { "check" , new Accent("\u030C") },
+                     { "vec" , new Accent("\u20D7") }
           };
         }
-        return _supportedLatexSymbols;
+        return _commands;
       }
     }
 
@@ -424,67 +438,69 @@ namespace CSharpMath.Atoms {
 
     public static IMathAtom ForLatexSymbolName(string symbolName) {
       if (symbolName == null) {
-        throw new ArgumentNullException();
+        throw new ArgumentNullException(nameof(symbolName));
       }
       if (Aliases.ContainsKey(symbolName)) {
         symbolName = Aliases[symbolName];
       }
-      Dictionary<string, IMathAtom> commands = Commands;
-      if (commands.ContainsKey(symbolName)) {
-        return AtomCloner.Clone(commands[symbolName], false);
+      if (Commands.TryGetByFirst(symbolName, out var symbol)) {
+        return AtomCloner.Clone(symbol, false);
       }
       return null;
     }
 
-    public static string LatexSymbolNameForAtom(IMathAtom atom) {
-      if (atom.Nucleus.IsEmpty()) {
-        return null;
-      }
-      string r = TextToLatexSymbolNames.GetValueOrDefault(atom.Nucleus);
-      return r;
-    }
+    public static string LatexSymbolNameForAtom(MathAtom atom) =>
+      Commands.TryGetBySecond(atom, out var name) ? name : null;
 
-    public static void AddLatexSymbol(string name, IMathAtom atom) {
-      _supportedLatexSymbols[name] = atom;
-      if (atom.Nucleus.IsNonEmpty()) {
-        _textToLatexSymbolNames[atom.Nucleus] = name;
-      }
-    }
+    public static void AddLatexSymbol(string name, MathAtom atom) =>
+      Commands.Add(name, atom);
 
-    private static Dictionary<string, string> _textToLatexSymbolNames = null;
-    public static Dictionary<string, string> TextToLatexSymbolNames {
-      get {
-        if (_textToLatexSymbolNames == null) {
-          _textToLatexSymbolNames = DictionaryHelpers.BuildValueToKeyDictionary(Commands.Keys, key => Commands[key].Nucleus, str => !(string.IsNullOrEmpty(str)));
-        }
-        return _textToLatexSymbolNames;
-      }
-    }
+    public static IEnumerable<string> SupportedLatexSymbolNames => Commands.Firsts;
 
-    public static IEnumerable<string> SupportedLatexSymbolNames => _supportedLatexSymbols.Keys;
 
-    public static IAccent Accent(string accentName) =>
-      AccentNames.NameToValue.ContainsKey(accentName) ? new Accent(AccentNames.NameToValue[accentName]) : null;
+    public static MultiDictionary<string, string> BoundaryDelimiters { get; } = new MultiDictionary<string, string> {
+      { ".", string.Empty }, // . means no delimiter
+      { "(", "(" },
+      { ")", ")" },
+      { "[", "[" },
+      { "]", "]" },
+      { "<", "\u2329" },
+      { ">", "\u232A" },
+      { "/", "/" },
+      { "\\", "\\" },
+      { "|", "|" },
+      { "lgroup", "\u27EE" },
+      { "rgroup", "\u27EF" },
+      { "||", "\u2016" },
+      { "Vert", "\u2016" },
+      { "vert", "|" },
+      { "uparrow", "\u2191" },
+      { "downarrow", "\u2193" },
+      { "updownarrow", "\u2195" },
+      { "Uparrow", "\u21D1" },
+      { "Downarrow", "\u21D3" },
+      { "Updownarrow", "\u21D5" },
+      { "backslash", "\\" },
+      { "rangle", "\u232A" },
+      { "langle", "\u2329" },
+      { "rbrace", "}" },
+      { "}", "}" },
+      { "{", "{" },
+      { "lbrace", "{" },
+      { "lceil", "\u2308" },
+      { "rceil", "\u2309" },
+      { "lfloor", "\u230A" },
+      { "rfloor", "\u230B" }
+    };
 
-    public static string AccentName(IAccent accent)
-      => AccentNames.ValueToName.GetValueOrDefault(accent.Nucleus);
+    public static IMathAtom BoundaryAtom(string delimiterName) =>
+      BoundaryDelimiters.TryGetByFirst(delimiterName, out var value) ?
+        Create(MathAtomType.Boundary, value) : null;
 
-    public static IMathAtom BoundaryAtom(string delimiterName) {
-      var dict = DelimiterNames.NameToValue;
-      var value = dict.GetValueOrDefault(delimiterName);
-      if (value == null) {
-        return null;
-      }
-      return Create(MathAtomType.Boundary, value);
-    }
-
-    public static string DelimiterName(IMathAtom boundaryAtom) {
-      string r = null;
-      if (boundaryAtom.AtomType == MathAtomType.Boundary) {
-        r = DelimiterNames.ValueToName.GetValueOrDefault(boundaryAtom.Nucleus);
-      }
-      return r;
-    }
+    public static string DelimiterName(IMathAtom boundaryAtom) =>
+     boundaryAtom.AtomType == MathAtomType.Boundary &&
+      BoundaryDelimiters.TryGetBySecond(boundaryAtom.Nucleus, out var name) ?
+        name : null;
 
     public static IFraction Fraction(IMathList numerator, IMathList denominator) {
       var fraction = new Fraction {
@@ -497,14 +513,14 @@ namespace CSharpMath.Atoms {
     public static IFraction Fraction(string numerator, string denominator)
       => Fraction(MathListForCharacters(numerator), MathListForCharacters(denominator));
 
-    private static Dictionary<string, List<string>> _matrixEnvironments { get; } =
-      new Dictionary<string, List<string>> {
-        { "matrix", new List<string>() } ,
-        {"pmatrix", new List<string> {"(", ")"} } ,
-        {"bmatrix", new List<string> {"[", "]"} },
-        {"Bmatrix", new List<string>{"{", "}"} },
-        {"vmatrix", new List<string>{"vert", "vert"} },
-        {"Vmatrix", new List<string>{"Vert", "Vert"} }
+    private static Dictionary<string, (string Left, string Right)?> _matrixEnvironments { get; } =
+      new Dictionary<string, (string Left, string Right)?> {
+        { "matrix", null } ,
+        { "pmatrix", ("(", ")") } ,
+        { "bmatrix", ("[", "]") },
+        { "Bmatrix", ("{", "}") },
+        { "vmatrix", ("vert", "vert") },
+        { "Vmatrix", ("Vert", "Vert") }
       };
       
 
@@ -529,10 +545,10 @@ namespace CSharpMath.Atoms {
           }
         }
 
-        if (delimiters.Count == 2) {
+        if (delimiters != null) {
           var inner = new Inner {
-            LeftBoundary = BoundaryAtom(delimiters[0]),
-            RightBoundary = BoundaryAtom(delimiters[1]),
+            LeftBoundary = BoundaryAtom(delimiters.Value.Left),
+            RightBoundary = BoundaryAtom(delimiters.Value.Right),
             InnerList = MathLists.WithAtoms(table)
           };
           r = inner;
@@ -592,7 +608,7 @@ namespace CSharpMath.Atoms {
         } else {
           table.InterColumnSpacing = 18;
           table.SetAlignment(ColumnAlignment.Left, 0);
-          table.SetAlignment(ColumnAlignment.Left, 1);
+          if(table.NColumns == 2) table.SetAlignment(ColumnAlignment.Left, 1);
           var style = new Style(LineStyle.Text);
           foreach (var row in table.Cells) {
             foreach (var cell in row) {

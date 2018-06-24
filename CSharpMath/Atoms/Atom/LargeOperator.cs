@@ -5,24 +5,21 @@ using System.Text;
 
 namespace CSharpMath.Atoms {
   public class LargeOperator : MathAtom {
-    private bool _limits { get; set; }
-    public bool Limits {
-      get => _limits;
-      set => _limits = value;
-    }
+    public bool Limits { get; set; }
+
     public LargeOperator(string value, bool limits): base(MathAtomType.LargeOperator, value) {
-      _limits = limits;
+      Limits = limits;
     }
 
     public LargeOperator(LargeOperator cloneMe, bool finalize): base(cloneMe, finalize) {
-      _limits = cloneMe.Limits;
+      Limits = cloneMe.Limits;
     }
 
-    public bool EqualsLargeOperator(LargeOperator obj) {
-      bool r = this.EqualsAtom(obj);
-      r &= (this.Limits == obj.Limits);
-      return r;
-    }
+    public override string StringValue => base.StringValue + (Limits ? @"\limits" : @"\nolimits");
+
+    public bool EqualsLargeOperator(LargeOperator obj) =>
+      EqualsAtom(obj)
+      && Limits == obj.Limits;
 
     public override T Accept<T, THelper>(IMathAtomVisitor<T, THelper> visitor, THelper helper)
   => visitor.Visit(this, helper);

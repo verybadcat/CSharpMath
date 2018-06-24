@@ -14,11 +14,10 @@ namespace CSharpMath.Atoms {
     }
     public LineStyle LineStyle { get; }
 
-    public bool EqualsStyle(Style otherStyle) {
-      bool r = EqualsAtom(otherStyle);
-      r &= LineStyle == otherStyle.LineStyle;
-      return r;
-    }
+    public override string StringValue => @"\" + LineStyle.ToString().ToLowerInvariant() + "style";
+
+    public bool EqualsStyle(Style otherStyle) =>
+      EqualsAtom(otherStyle) && LineStyle == otherStyle.LineStyle;
 
     public override bool Equals(object obj)
       => EqualsStyle(obj as Style);

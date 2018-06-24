@@ -9,8 +9,12 @@ namespace CSharpMath.Atoms {
     public Underline() : base(MathAtomType.Underline, string.Empty) { }
     public Underline(Underline cloneMe, bool finalize) : base(cloneMe, finalize) {
       this.InnerList = AtomCloner.Clone(cloneMe.InnerList, finalize);
-
     }
+    
+    public override string StringValue =>
+      new StringBuilder(@"\underline")
+      .AppendInBraces(InnerList, NullHandling.LiteralNull)
+      .ToString();
 
     public bool EqualsUnderline(Underline other) {
       bool r = this.EqualsAtom(other);

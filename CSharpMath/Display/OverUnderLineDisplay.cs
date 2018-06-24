@@ -32,14 +32,21 @@ namespace CSharpMath.Display {
     public float Width => ((IDisplay<TFont, TGlyph>)Inner).Width;
 
     public Range Range => ((IDisplay<TFont, TGlyph>)Inner).Range;
-    public PointF Position { get; set; }
+
+    public PointF Position {
+      get => Inner.Position;
+      set => Inner.Position = value;
+    }
+
     public bool HasScript { get; set; }
+
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
       ((IDisplay<TFont, TGlyph>)Inner).Draw(context);
       context.SaveState();
-      context.DrawLine(Position.X, Position.Y + LineShiftUp, Position.X + Inner.Width, Position.X + LineShiftUp, LineThickness, TextColor);
+      context.DrawLine(Position.X, Position.Y + LineShiftUp, Position.X + Inner.Width, Position.Y + LineShiftUp, LineThickness, TextColor);
       context.RestoreState();
     }
+
     public Color? TextColor { get; set; }
 
     public void SetTextColor(Color? textColor) {
