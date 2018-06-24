@@ -99,11 +99,15 @@ namespace CSharpMath.Atoms {
             }
             if (sublist == null) return null;
             prevAtom = sublist.Atoms.LastOrDefault();
-            r.Append(sublist);
             if (oneCharOnly) {
+              r.Append(sublist);
               return r;
             }
-            continue;
+            //https://phabricator.wikimedia.org/T99369
+            //https://phab.wmfusercontent.org/file/data/xsimlcnvo42siudvwuzk/PHID-FILE-bdcqexocj5b57tj2oezn/math_rendering.png
+            //dt, \text{d}t, \partial t, \nabla\psi \\ \underline\overline{dy/dx, \text{d}y/\text{d}x, \frac{dy}{dx}, \frac{\text{d}y}{\text{d}x}, \frac{\partial^2}{\partial x_1\partial x_2}y} \\ \prime,
+            atom = new Inner { InnerList = sublist, AllowTrailingAutoSpace = false };
+            break;
           case '}':
             if (oneCharOnly || stopChar != 0) {
               throw new InvalidOperationException("This should have been handled before.");
@@ -174,8 +178,8 @@ namespace CSharpMath.Atoms {
                 atom = MathAtoms.Create(MathAtomType.Ordinary, "\u2057");
                 break;
               default:
-                r.Add(MathAtoms.Create(MathAtomType.Ordinary, "\u2057"));
-                r.Add(new Space(-2.5f, true));
+                var atomPart = MathAtoms.Create(MathAtomType.Ordinary, "\u2057");
+                atomPart.AllowTrailingAutoSpace = false;
                 i -= 4;
                 goto Append;
             }

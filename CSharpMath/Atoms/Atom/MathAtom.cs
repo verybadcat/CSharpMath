@@ -57,6 +57,7 @@ namespace CSharpMath.Atoms {
       Subscript = AtomCloner.Clone(cloneMe.Subscript, finalize);
       IndexRange = cloneMe.IndexRange;
       FontStyle = cloneMe.FontStyle;
+      AllowTrailingAutoSpace = cloneMe.AllowTrailingAutoSpace;
     }
 
     public void Fuse(IMathAtom otherAtom) {
@@ -87,6 +88,8 @@ namespace CSharpMath.Atoms {
 
     public virtual T Accept<T, THelper>(IMathAtomVisitor<T, THelper> visitor, THelper helper)
       => visitor.Visit(this, helper);
+
+    public bool AllowTrailingAutoSpace { get; set; } = true;
 
     public override string ToString() =>
       AtomType.ToText() + " " + StringValue;

@@ -9,7 +9,7 @@ namespace CSharpMath.Interfaces {
     MathAtomType AtomType { get; set; }
     string Nucleus { get; set; }
 
-    FontStyle FontStyle { get; set;}
+    FontStyle FontStyle { get; set; }
     Range IndexRange { get; set; }
 
     /// <summary>
@@ -27,5 +27,7 @@ namespace CSharpMath.Interfaces {
     List<IMathAtom> FusedAtoms { get; }
 
     T Accept<T, THelper>(IMathAtomVisitor<T, THelper> visitor, THelper helper);
+
+    bool AllowTrailingAutoSpace { get; set; }
   }
 }

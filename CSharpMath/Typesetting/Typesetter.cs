@@ -115,6 +115,7 @@ namespace CSharpMath {
             AddDisplayLine(false);
             var style = atom as IStyle;
             _style = style.LineStyle;
+            _styleFont = _context.MathFontCloner.Invoke(_font, _mathTable.GetStyleSize(_style, _font));
             // We need to preserve the prevNode for any inter-element space changes,
             // so we skip to the next node.
             continue;
@@ -244,7 +245,7 @@ namespace CSharpMath {
           case MathAtomType.Close:
           case MathAtomType.Placeholder:
           case MathAtomType.Punctuation:
-            if (prevNode != null) {
+            if (prevNode != null && prevNode.AllowTrailingAutoSpace) {
               float interElementSpace = GetInterElementSpace(prevNode.AtomType, atom.AtomType);
               if (_currentLine.Length > 0) {
                 if (interElementSpace > 0) {
@@ -449,7 +450,7 @@ namespace CSharpMath {
       float subscriptShiftDown = 0;
       display.HasScript = true;
       if (!(display is TextLineDisplay<TFont, TGlyph>)) {
-        float scriptFontSize = GetStyleSize(_scriptStyle, _font);
+        float scriptFontSize = _mathTable.GetStyleSize(_scriptStyle, _font);
         TFont scriptFont = _context.MathFontCloner.Invoke(_font, scriptFontSize);
         superscriptShiftUp = display.Ascent - _context.MathTable.SuperscriptShiftUp(scriptFont);
         subscriptShiftDown = display.Descent + _context.MathTable.SubscriptBaselineDropMin(scriptFont);
@@ -531,6 +532,7 @@ namespace CSharpMath {
     private void AddInterElementSpace(IMathAtom prevNode, MathAtomType currentType) {
       float space = 0;
       if (prevNode != null) {
+        if (!prevNode.AllowTrailingAutoSpace) return;
         space = GetInterElementSpace(prevNode.AtomType, currentType);
       } else if (_spaced) {
         space = GetInterElementSpace(MathAtomType.Open, currentType);
@@ -618,18 +620,6 @@ namespace CSharpMath {
     }
     private string _ChangeFont(string input, FontStyle style) {
       return _context.ChangeFont(input, style);
-    }
-
-    private float GetStyleSize(LineStyle style, TFont font) {
-      float original = font.PointSize;
-      switch (style) {
-        case LineStyle.Script:
-          return original * _mathTable.ScriptScaleDown(font);
-        case LineStyle.ScriptScript:
-          return original * _mathTable.ScriptScriptScaleDown(font);
-        default:
-          return original;
-      }
     }
 
     private float _radicalVerticalGap(TFont font) => (_style == LineStyle.Display)
