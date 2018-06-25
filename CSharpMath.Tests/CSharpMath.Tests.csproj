@@ -14,6 +14,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\CSharpMath.Apple\Resources\AssemblyExtensions.cs" Link="Resources\AssemblyExtensions.cs" />
+    <Compile Include="..\CSharpMath.Apple\Resources\JTokenLoader.cs" Link="Resources\JTokenLoader.cs" />
+    <Compile Include="..\CSharpMath.Apple\Resources\ManifestResourceProvider.cs" Link="Resources\ManifestResourceProvider.cs" />
     <Compile Include="..\CSharpMath.Apple\Typesetting\JsonMathTable.cs" Link="JsonMathTable.cs" />
   </ItemGroup>
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using CSharpMath.Display;
 using CSharpMath.Display.Text;
-using Newtonsoft.Json.Linq;
 
 namespace CSharpMath.FrontEnd {
 

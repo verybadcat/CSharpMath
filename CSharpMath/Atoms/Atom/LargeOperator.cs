@@ -5,17 +5,23 @@ using System.Text;
 
 namespace CSharpMath.Atoms {
   public class LargeOperator : MathAtom {
-    public bool Limits { get; set; }
+    bool? _limits;
+    public bool? Limits { get => NoLimits ? false : _limits; set => _limits = value; }
 
-    public LargeOperator(string value, bool limits): base(MathAtomType.LargeOperator, value) {
+    //if true, overrides Limits and makes it treated as false
+    public bool NoLimits { get; }
+
+    public LargeOperator(string value, bool? limits, bool noLimits = false): base(MathAtomType.LargeOperator, value) {
       Limits = limits;
+      NoLimits = noLimits;
     }
 
     public LargeOperator(LargeOperator cloneMe, bool finalize): base(cloneMe, finalize) {
-      Limits = cloneMe.Limits;
+      NoLimits = cloneMe.NoLimits;
+      _limits = cloneMe._limits;
     }
 
-    public override string StringValue => base.StringValue + (Limits ? @"\limits" : @"\nolimits");
+    public override string StringValue => base.StringValue + (Limits == true ? @"\limits" : Limits == false && !NoLimits ? @"\nolimits" : string.Empty);
 
     public bool EqualsLargeOperator(LargeOperator obj) =>
       EqualsAtom(obj)

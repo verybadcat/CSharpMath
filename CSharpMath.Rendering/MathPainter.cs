@@ -135,7 +135,7 @@ namespace CSharpMath.Rendering {
         canvas.FillText(ErrorMessage, 0, size, size);
         canvas.Restore();
       }
-      #endregion Methods
     }
+    #endregion Methods
   }
 }

@@ -13,6 +13,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Drawing\AppleGraphicsContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Drawing\AttributedStrings\AppleAttributeDictionaryFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\AppleColorExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Resources\AssemblyExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Resources\JTokenLoader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Resources\ManifestResourceProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Typesetting\AppleGlyphBoundsProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Typesetting\AppleFontMeasurer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Typesetting\AppleGlyphNameProvider.cs" />

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 
 namespace CSharpMath.Atoms {
+  //https://mirror.hmc.edu/ctan/macros/latex/contrib/unicode-math/unimath-symbols.pdf
   public static class MathAtoms {
     private static Dictionary<string, string> _aliases = null;
     public static Dictionary<string, string> Aliases {
@@ -43,7 +44,7 @@ namespace CSharpMath.Atoms {
         case MathAtomType.Inner:
           return new Inner();
         case MathAtomType.LargeOperator:
-          return new LargeOperator(value, true);
+          return new LargeOperator(value, null);
         case MathAtomType.Overline:
           return new Overline();
         case MathAtomType.Underline:
@@ -81,8 +82,8 @@ namespace CSharpMath.Atoms {
           Radicand = PlaceholderList
         };
 
-    public static LargeOperator Operator(string name, bool limits)
-      => new LargeOperator(name, limits);
+    public static LargeOperator Operator(string name, bool? limits, bool noLimits = false)
+      => new LargeOperator(name, limits, noLimits);
 
     public static MathAtom ForCharacter(char c) {
       if (char.IsControl(c) || char.IsWhiteSpace(c)) {
@@ -299,56 +300,70 @@ namespace CSharpMath.Atoms {
                      { "amalg", Create(MathAtomType.BinaryOperator, "\u2A3F") },
                      
                      // No limit operators
-                     { "log", Operator("log" , false) },
-                     { "lg", Operator("lg" , false) },
-                     { "ln", Operator("ln" , false) },
-                     { "sin", Operator("sin" , false) },
-                     { "arcsin", Operator("arcsin" , false) },
-                     { "sinh", Operator("sinh" , false) },
-                     { "cos", Operator("cos" , false) },
-                     { "arccos", Operator("arccos" , false) },
-                     { "cosh", Operator("cosh" , false) },
-                     { "tan", Operator("tan" , false) },
-                     { "arctan", Operator("arctan" , false) },
-                     { "tanh", Operator("tanh" , false) },
-                     { "cot", Operator("cot" , false) },
-                     { "coth", Operator("coth" , false) },
-                     { "sec", Operator("sec" , false) },
-                     { "csc", Operator("csc" , false) },
-                     { "arg", Operator("arg" , false) },
-                     { "ker", Operator("ker" , false) },
-                     { "dim", Operator("dim" , false) },
-                     { "hom", Operator("hom" , false) },
-                     { "exp", Operator("exp" , false) },
-                     { "deg", Operator("deg" , false) },
+                     { "log", Operator("log" , false, true) },
+                     { "lg", Operator("lg" , false, true) },
+                     { "ln", Operator("ln" , false, true) },
+                     { "sin", Operator("sin" , false, true) },
+                     { "arcsin", Operator("arcsin" , false, true) },
+                     { "sinh", Operator("sinh" , false, true) },
+                     { "cos", Operator("cos" , false, true) },
+                     { "arccos", Operator("arccos" , false, true) },
+                     { "cosh", Operator("cosh" , false, true) },
+                     { "tan", Operator("tan" , false, true) },
+                     { "arctan", Operator("arctan" , false, true) },
+                     { "tanh", Operator("tanh" , false, true) },
+                     { "cot", Operator("cot" , false, true) },
+                     { "coth", Operator("coth" , false, true) },
+                     { "sec", Operator("sec" , false, true) },
+                     { "csc", Operator("csc" , false, true) },
+                     { "arg", Operator("arg" , false, true) },
+                     { "ker", Operator("ker" , false, true) },
+                     { "dim", Operator("dim" , false, true) },
+                     { "hom", Operator("hom" , false, true) },
+                     { "exp", Operator("exp" , false, true) },
+                     { "deg", Operator("deg" , false, true) },
                      
                      // Limit operators
-                     { "lim", Operator("lim" , true) },
-                     { "limsup", Operator("lim sup" , true) },
-                     { "liminf", Operator("lim inf" , true) },
-                     { "max", Operator("max" , true) },
-                     { "min", Operator("min" , true) },
-                     { "sup", Operator("sup" , true) },
-                     { "inf", Operator("inf" , true) },
-                     { "det", Operator("det" , true) },
-                     { "Pr", Operator("Pr" , true) },
-                     { "gcd", Operator("gcd" , true) },
+                     { "lim", Operator("lim" , null) },
+                     { "limsup", Operator("lim sup" , null) },
+                     { "liminf", Operator("lim inf" , null) },
+                     { "max", Operator("max" , null) },
+                     { "min", Operator("min" , null) },
+                     { "sup", Operator("sup" , null) },
+                     { "inf", Operator("inf" , null) },
+                     { "det", Operator("det" , null) },
+                     { "Pr", Operator("Pr" , null) },
+                     { "gcd", Operator("gcd" , null) },
                      
                      // Large operators
-                     { "prod", Operator("\u220F" , true) },
-                     { "coprod", Operator("\u2210" , true) },
-                     { "sum", Operator("\u2211" , true) },
+                     { "prod", Operator("\u220F" , null) },
+                     { "coprod", Operator("\u2210" , null) },
+                     { "sum", Operator("\u2211" , null) },
                      { "int", Operator("\u222B" , false) },
+                     { "iint", Operator("\u222C", false) }, //not in iosMath
+                     { "iiint", Operator("\u222D", false) }, //not in iosMath
+                     { "iiiint", Operator("\u2A0C", false) }, //not in iosMath
                      { "oint", Operator("\u222E" , false) },
-                     { "bigwedge", Operator("\u22C0" , true) },
-                     { "bigvee", Operator("\u22C1" , true) },
-                     { "bigcap", Operator("\u22C2" , true) },
-                     { "bigcup", Operator("\u22C3" , true) },
-                     { "bigodot", Operator("\u2A00" , true) },
-                     { "bigoplus", Operator("\u2A01" , true) },
-                     { "bigotimes", Operator("\u2A02" , true) },
-                     { "biguplus", Operator("\u2A04" , true) },
-                     { "bigsqcup", Operator("\u2A06" , true) },
+                     { "oiint", Operator("\u222F" , false) }, //not in iosMath
+                     { "oiiint", Operator("\u2230" , false) }, //not in iosMath
+                     { "intclockwise", Operator("\u2231" , false) }, //not in iosMath
+                     { "awint", Operator("\u2A11" , false) }, //not in iosMath
+                     { "varointclockwise", Operator("\u2232" , false) }, //not in iosMath
+                     { "ointctrclockwise", Operator("\u2233" , false) }, //not in iosMath
+                     { "bigwedge", Operator("\u22C0" , null) },
+                     { "bigvee", Operator("\u22C1" , null) },
+                     { "bigcap", Operator("\u22C2" , null) },
+                     { "bigcup", Operator("\u22C3" , null) },
+                     { "bigbot", Operator("\u27D8" , null) }, //not in iosMath
+                     { "bigtop", Operator("\u27D9" , null) }, //not in iosMath
+                     { "bigodot", Operator("\u2A00" , null) },
+                     { "bigoplus", Operator("\u2A01" , null) },
+                     { "bigotimes", Operator("\u2A02" , null) },
+                     { "bigcupdot", Operator("\u2A03" , null) }, //not in iosMath
+                     { "biguplus", Operator("\u2A04" , null) },
+                     { "bigsqcap", Operator("\u2A05" , null) }, //not in iosMath
+                     { "bigsqcup", Operator("\u2A06" , null) },
+                     { "bigtimes", Operator("\u2A09" , null) }, //not in iosMath
                      
                      // Latex command characters
                      { "{", Create(MathAtomType.Open, "{") },
@@ -381,6 +396,9 @@ namespace CSharpMath.Atoms {
                      { "Re", Create(MathAtomType.Ordinary, "\u211C") },
                      { "mho", Create(MathAtomType.Ordinary, "\u2127") },
                      { "aleph", Create(MathAtomType.Ordinary, "\u2135") },
+                     { "beth", Create(MathAtomType.Ordinary, "\u2136") }, //not in iosMath
+                     { "gimel", Create(MathAtomType.Ordinary, "\u2137") }, //not in iosMath
+                     { "daleth", Create(MathAtomType.Ordinary, "\u2138") }, //not in iosMath
                      { "forall", Create(MathAtomType.Ordinary, "\u2200") },
                      { "exists", Create(MathAtomType.Ordinary, "\u2203") },
                      { "emptyset", Create(MathAtomType.Ordinary, "\u2205") },
@@ -412,16 +430,27 @@ namespace CSharpMath.Atoms {
                      { "scriptscriptstyle",  new Style(LineStyle.ScriptScript) },
 
                      // Accents
+                     { "grave" , new Accent("\u0300") },
                      { "acute" , new Accent("\u0301") },
                      { "hat" , new Accent("\u0302") },  // In our implementation hat and widehat behave the same.
-                     { "grave" , new Accent("\u0300") },
                      { "tilde" , new Accent("\u0303") }, // In our implementation tilde and widetilde behave the same.
                      { "bar" , new Accent("\u0304") },
+                     { "overbar", new Accent("\u0305") }, //not in iosMath
                      { "breve" , new Accent("\u0306") },
                      { "dot" , new Accent("\u0307") },
                      { "ddot" , new Accent("\u0308") },
+                     { "ovhook", new Accent("\u0309") }, //not in iosMath
+                     { "ocirc", new Accent("\u030A") }, //not in iosMath
                      { "check" , new Accent("\u030C") },
-                     { "vec" , new Accent("\u20D7") }
+                     { "leftharpoonaccent", new Accent("\u20D0") }, //not in iosMath
+                     { "rightharpoonaccent", new Accent("\u20D1") }, //not in iosMath
+                     { "vertoverlay", new Accent("\u20D2") }, //not in iosMath
+                     { "vec" , new Accent("\u20D7") },
+                     { "dddot", new Accent("\u20DB") }, //not in iosMath
+                     { "ddddot", new Accent("\u20DC") }, //not in iosMath
+                     { "widebridgeabove", new Accent("\u20E9") }, //not in iosMath
+                     { "asteraccent", new Accent("\u20F0") }, //not in iosMath
+                     { "threeunderdot", new Accent("\u20E8") } //not in iosMath
           };
         }
         return _commands;

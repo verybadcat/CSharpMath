@@ -17,8 +17,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="NuGet.Build.Packaging" Version="0.2.2" />
     <PackageReference Include="SkiaSharp" Version="1.60.1" />
-    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
   </ItemGroup>
 
   <ItemGroup>

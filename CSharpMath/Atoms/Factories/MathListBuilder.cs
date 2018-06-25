@@ -490,8 +490,7 @@ namespace CSharpMath.Atoms {
     }
     internal bool ApplyModifier(string modifier, IMathAtom atom) {
       if (modifier == "limits") {
-        if (atom !=null && atom.AtomType == MathAtomType.LargeOperator) {
-          var op = (LargeOperator)atom;
+        if (atom is LargeOperator op) {
           op.Limits = true;
         } else {
           SetError(@"\limits can only be applied to an operator");
@@ -720,10 +719,15 @@ namespace CSharpMath.Atoms {
               LargeOperator originalOperator = (LargeOperator)MathAtoms.ForLatexSymbolName(command);
               builder.Append($@"\{command} ");
               if (originalOperator.Limits != op.Limits) {
-                if (op.Limits) {
-                  builder.Append(@"\limits ");
-                } else {
-                  builder.Append(@"\nolimits ");
+                switch (op.Limits) {
+                  case true:
+                    builder.Append(@"\limits ");
+                    break;
+                  case false:
+                    if (!op.NoLimits) builder.Append(@"\nolimits ");
+                    break;
+                  case null:
+                    break;
                 }
               }
               break;

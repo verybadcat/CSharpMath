@@ -14,19 +14,21 @@
     <AssemblyName>CSharpMath.Ios</AssemblyName>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    
     <PackOnBuild>true</PackOnBuild>
     <PackageId>CSharpMath.Ios</PackageId>
-    <PackageVersion>0.0.0</PackageVersion>
+    <PackageVersion>0.1.0</PackageVersion>
     <Authors>CSharpMath Contributors</Authors>
     <NeutralLanguage>en</NeutralLanguage>
-    <PackageLicenseUrl>https://github.com/verybadcat/CSharpMath</PackageLicenseUrl>
-    <Owners>CSharpMath contributors</Owners>
+    <PackageLicenseUrl>https://github.com/verybadcat/CSharpMath/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/verybadcat/CSharpMath</PackageProjectUrl>
-    <PackageReleaseNotes>initial release</PackageReleaseNotes>
-    <Summary>Ios front end for CSharpMath</Summary>
-    <PackageTags>latex ios xamarin</PackageTags>
+    <PackageReleaseNotes>The 0.1.0 SkiaSharp Update brings the SkiaSharp front end to CSharpMath.</PackageReleaseNotes>
+    <PackageTags>latex ios xamarin math</PackageTags>
     <Title>CSharpMath.Ios</Title>
-    <Description>iOS front end for CSharpMath.</Description>
+    <Description>The iOS front end for CSharpMath.</Description>
+    <Copyright>CSharpMath contributors 2018</Copyright>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/verybadcat/CSharpMath</RepositoryUrl>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -88,8 +90,6 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\NuGet.Build.Packaging.0.2.2\build\NuGet.Build.Packaging.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NuGet.Build.Packaging.0.2.2\build\NuGet.Build.Packaging.props'))" />
     <Error Condition="!Exists('..\packages\NuGet.Build.Packaging.0.2.2\build\NuGet.Build.Packaging.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NuGet.Build.Packaging.0.2.2\build\NuGet.Build.Packaging.targets'))" />
-    <Error Condition="!Exists('..\packages\NETStandard.Library.2.0.1\build\netstandard2.0\NETStandard.Library.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NETStandard.Library.2.0.1\build\netstandard2.0\NETStandard.Library.targets'))" />
   </Target>
   <Import Project="..\packages\NuGet.Build.Packaging.0.2.2\build\NuGet.Build.Packaging.targets" Condition="Exists('..\packages\NuGet.Build.Packaging.0.2.2\build\NuGet.Build.Packaging.targets')" />
-  <Import Project="..\packages\NETStandard.Library.2.0.1\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.1\build\netstandard2.0\NETStandard.Library.targets')" />
 </Project>

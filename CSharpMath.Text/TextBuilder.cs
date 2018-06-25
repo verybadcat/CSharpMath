@@ -23,7 +23,7 @@ namespace CSharpMath.Text {
           }
           return b;
         case var a:
-          throw new TypeAccessException("There should not be an unknown type of TextAtom. However, one with type " + a.GetType().ToString() + " was encountered.");
+          throw new TypeAccessException($"There should not be an unknown type of TextAtom. However, one with type {a.GetType()} was encountered.");
       }
     }
   }

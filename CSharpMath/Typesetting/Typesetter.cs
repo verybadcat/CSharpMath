@@ -1062,7 +1062,7 @@ namespace CSharpMath {
     }
 
     private IDisplay<TFont, TGlyph> MakeLargeOperator(LargeOperator op) {
-      bool limits = op.Limits && _style == LineStyle.Display;
+      bool limits = op.Limits ?? _style == LineStyle.Display;
       float delta = 0;
       if (op.Nucleus.Length == 1) {
         var glyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, 0, op.Nucleus);
@@ -1109,7 +1109,7 @@ namespace CSharpMath {
         _currentPosition.X += display.Width;
         return display;
       }
-      if (op.Limits && _style == LineStyle.Display) {
+      if (op.Limits ?? _style == LineStyle.Display) {
         MathListDisplay<TFont, TGlyph> superscript = null;
         MathListDisplay<TFont, TGlyph> subscript = null;
         if (op.Superscript!=null) {

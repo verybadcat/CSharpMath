@@ -1,19 +1,19 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard1.1</TargetFramework>
+    
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.0.0</Version>
-    <Description>C# LaTeX engine core. Needs a front end to function. Currently, front end exists for iOS.</Description>
+    <Version>0.1.0</Version>
+    <Description>C# LaTeX engine core. Needs a front end to function. Currently, front end exists for iOS and SkiaSharp.</Description>
     <Authors>CSharpMath contributors</Authors>
-    <Company>none</Company>
-    <RepositoryUrl>https://github.com/verybadcat/CSharpMath</RepositoryUrl>
-    <PackageLicenseUrl>https://github.com/verybadcat/CSharpMath</PackageLicenseUrl>
+    <PackageLicenseUrl>https://github.com/verybadcat/CSharpMath/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/verybadcat/CSharpMath</PackageProjectUrl>
-    <Copyright>CSharpMath contributors 2017</Copyright>
-    <PackageReleaseNotes>Initial release</PackageReleaseNotes>
+    <Copyright>CSharpMath contributors 2018</Copyright>
+    <PackageReleaseNotes>The 0.1.0 SkiaSharp Update brings the SkiaSharp front end to CSharpMath.</PackageReleaseNotes>
     <PackageTags>latex math</PackageTags>
     <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/verybadcat/CSharpMath</RepositoryUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -25,8 +25,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="NuGet.Build.Packaging" Version="0.2.2" />
     <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
