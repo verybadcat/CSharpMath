@@ -2,26 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.1</TargetFramework>
+    <LangVersion>latest</LangVersion>
     
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>0.1.0</Version>
-    <Description>C# LaTeX engine core. Needs a front end to function. Currently, front end exists for iOS and SkiaSharp.</Description>
     <Authors>CSharpMath contributors</Authors>
-    <PackageLicenseUrl>https://github.com/verybadcat/CSharpMath/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/verybadcat/CSharpMath</PackageProjectUrl>
-    <Copyright>CSharpMath contributors 2018</Copyright>
+    <Description>C# LaTeX engine core. Needs a front end to function. Currently, front end exists for iOS and SkiaSharp.</Description>
     <PackageReleaseNotes>The 0.1.0 SkiaSharp Update brings the SkiaSharp front end to CSharpMath.</PackageReleaseNotes>
-    <PackageTags>latex math</PackageTags>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/verybadcat/CSharpMath</RepositoryUrl>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <LangVersion>7.3</LangVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <LangVersion>latest</LangVersion>
+    <PackageProjectUrl>https://github.com/verybadcat/CSharpMath</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/verybadcat/CSharpMath/blob/master/LICENSE</PackageLicenseUrl>
+    <Copyright>CSharpMath contributors 2018</Copyright>
+    <PackageTags>latex math</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

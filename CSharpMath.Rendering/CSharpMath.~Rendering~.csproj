@@ -3,11 +3,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.3</TargetFramework>
-    
+    <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RootNamespace>CSharpMath.Rendering</RootNamespace>
     <AssemblyName>CSharpMath.Rendering</AssemblyName>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <!--NuGet Properties-->
     <PackOnBuild>true</PackOnBuild>
     <PackageId>CSharpMath.Rendering</PackageId>
     <PackageVersion>0.1.0</PackageVersion>
@@ -24,14 +26,8 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <LangVersion>latest</LangVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
