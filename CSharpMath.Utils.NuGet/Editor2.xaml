@@ -1,9 +1,9 @@
-﻿<Window x:Class="CSharpMath.Utils.Release.Editor2"
+﻿<Window x:Class="CSharpMath.Utils.NuGet.Editor2"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:CSharpMath.Utils.Release"
+        xmlns:local="clr-namespace:CSharpMath.Utils.NuGet"
         mc:Ignorable="d"
         Title="CSharpMath project NuGet spec editor" Height="450" Width="800">
     <Grid>
@@ -24,21 +24,22 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="*" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="8*" />
+            <RowDefinition Height="10*" />
             <RowDefinition Height="*" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Label>Current project</Label>
-        <ComboBox Grid.Column="1"/>
+        <ComboBox Grid.Column="1" ItemsSource="{Binding Projects}" SelectedItem="{Binding CurrentInfo}" SelectedIndex="0"
+                  HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
         <Label Grid.Row="1">Package Id</Label>
-        <TextBox Grid.Row="1" Grid.Column="1" Name="Id"/>
+        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding PackageId}"/>
         <Label Grid.Row="2">Title</Label>
-        <TextBox Grid.Row="2" Grid.Column="1" Name="Title"/>
+        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Title}"/>
         <Label Grid.Row="3">Description</Label>
-        <TextBox Grid.Row="3" Grid.Column="1" Name="Description"/>
+        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Description}"/>
         <Label Grid.Row="4">Package Tags (Project)</Label>
-        <TextBox Grid.Row="4" Grid.Column="1"/>
-        <Button Grid.Row="5">Reload project spec</Button>
-        <Button Grid.Row="5" Grid.Column="1">Save project spec</Button>
+        <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding PackageTags}"/>
+        <Button Grid.Row="5" Command="{Binding Reload}">Reload this project spec</Button>
+        <Button Grid.Row="5" Grid.Column="1" Command="{Binding Save}">Save this project spec</Button>
     </Grid>
 </Window>

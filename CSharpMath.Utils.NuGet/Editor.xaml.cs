@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,14 +8,15 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CSharpMath.Utils.Release {
+namespace CSharpMath.Utils.NuGet {
   /// <summary>
-  /// Interaction logic for Editor2.xaml
+  /// Interaction logic for MainWindow.xaml
   /// </summary>
-  public partial class Editor2 : Window {
-    public Editor2() {
+  public partial class Editor : Window {
+    public Editor() {
       InitializeComponent();
     }
   }

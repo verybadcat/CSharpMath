@@ -36,7 +36,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.~Rendering~", "C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.~Text~", "CSharpMath.Text\CSharpMath.~Text~.csproj", "{37E57CA5-730B-4B15-921E-FB515E8D2BA8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Utils.Release", "CSharpMath.Utils.Release\CSharpMath.Utils.Release.csproj", "{353BE09C-B369-474F-AB8E-FE68225A16E6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Utils.NuGet", "CSharpMath.Utils.NuGet\CSharpMath.Utils.NuGet.csproj", "{353BE09C-B369-474F-AB8E-FE68225A16E6}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

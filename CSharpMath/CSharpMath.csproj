@@ -1,29 +1,33 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard1.1</TargetFramework>
     <LangVersion>latest</LangVersion>
-    
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.0</Version>
-    <Authors>CSharpMath contributors</Authors>
+    <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie)</Authors>
     <Description>C# LaTeX engine core. Needs a front end to function. Currently, front end exists for iOS and SkiaSharp.</Description>
     <PackageReleaseNotes>The 0.1.0 SkiaSharp Update brings the SkiaSharp front end to CSharpMath.</PackageReleaseNotes>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/verybadcat/CSharpMath</RepositoryUrl>
+    <RepositoryUrl>https://github.com/verybadcat/CSharpMath.git</RepositoryUrl>
     <PackageProjectUrl>https://github.com/verybadcat/CSharpMath</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/verybadcat/CSharpMath/blob/master/LICENSE</PackageLicenseUrl>
-    <Copyright>CSharpMath contributors 2018</Copyright>
-    <PackageTags>latex math</PackageTags>
+    <Copyright>CSharpMath Contributors 2018</Copyright>
+    <PackageTags>latex;math;rendering</PackageTags>
+    <PackageVersion>0.1.0-pre1</PackageVersion>
+    <RepositoryBranch>master</RepositoryBranch>
+    <RepositoryCommit></RepositoryCommit>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageIconUrl></PackageIconUrl>
+    <PackageId>CSharpMath</PackageId>
+    <Title>CSharpMath</Title>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <FileVersion>0.1.0.0</FileVersion>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="NuGet.Build.Packaging" Version="0.2.2" />
     <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
-
   <ItemGroup>
     <Folder Include="RenderedSamples\" />
   </ItemGroup>
+  <Import Project="..\packages\NuGet.Build.Packaging.0.2.2\build\NuGet.Build.Packaging.props" Condition="Exists('..\packages\NuGet.Build.Packaging.0.2.2\build\NuGet.Build.Packaging.props')" />
 </Project>

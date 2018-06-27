@@ -1,0 +1,73 @@
+﻿<Window x:Class="CSharpMath.Utils.NuGet.Editor"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CSharpMath.Utils.NuGet"
+        mc:Ignorable="d"
+        Title="CSharpMath global NuGet spec editor"
+        Height="450"
+        Width="800">
+    <Window.DataContext>
+        <local:ViewModel/>
+    </Window.DataContext>
+    <Grid>
+        <Grid.Resources>
+            <Style TargetType="Label">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+            </Style>
+        </Grid.Resources>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="2.333333333333333333*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0">Generate Package On Build</Label>
+        <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding GeneratePackageOnBuild}" VerticalAlignment="Center"/>
+        <Label Grid.Row="1">Package Version</Label>
+        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding PackageVersion}"/>
+        <Label Grid.Row="2">Authors</Label>
+        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Authors}"/>
+        <Label Grid.Row="3">Package Release Notes</Label>
+        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding PackageReleaseNotes}"/>
+        <Label Grid.Row="4">Repository Type</Label>
+        <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding RepositoryType}" IsReadOnly="True"/>
+        <Label Grid.Row="5">Repository URL</Label>
+        <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding RepositoryUrl}" IsReadOnly="True"/>
+        <Label Grid.Row="6">Repository Branch</Label>
+        <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding RepositoryBranch}"/>
+        <Label Grid.Row="7">Repository Commit</Label>
+        <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding RepositoryCommit}"/>
+        <Label Grid.Row="8">Package Project URL</Label>
+        <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding PackageProjectUrl}" IsReadOnly="True"/>
+        <Label Grid.Row="9">Package Requires License Acceptance</Label>
+        <CheckBox Grid.Row="9" Grid.Column="1" IsChecked="{Binding PackageRequireLicenseAcceptance}" IsEnabled="False" VerticalAlignment="Center"/>
+        <Label Grid.Row="10">Package License URL</Label>
+        <TextBox Grid.Row="10" Grid.Column="1" Text="{Binding PackageLicenseUrl}" IsReadOnly="True"/>
+        <Label Grid.Row="11">Package Icon URL</Label>
+        <TextBox Grid.Row="11" Grid.Column="1" Text="{Binding PackageIconUrl}"/>
+        <Label Grid.Row="12">Copyright</Label>
+        <TextBox Grid.Row="12" Grid.Column="1" Text="{Binding Copyright}"/>
+        <Label Grid.Row="13">Package Tags (Global)</Label>
+        <TextBox Grid.Row="13" Grid.Column="1" Text="{Binding PackageTags}"/>
+        <Button Grid.Row="14" Command="{Binding Reload}">Reload the global spec</Button>
+        <Button Grid.Row="14" Grid.Column="1" Command="{Binding Save}">Save the global spec</Button>
+    </Grid>
+</Window>
