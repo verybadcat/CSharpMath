@@ -10,7 +10,7 @@ using Xamarin.Forms.Xaml;
 
 namespace CSharpMath.Forms.Example
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
+	[XamlCompilation(XamlCompilationOptions.Compile), Android.Runtime.Preserve(AllMembers = true), Foundation.Preserve(AllMembers = true)]
 	public partial class CustomExamplePage : ContentPage
 	{
     Dictionary<string, string> dict = ExamplesPage.AllConstants.ToDictionary(info => info.Name, info => (string)info.GetRawConstantValue());

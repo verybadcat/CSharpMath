@@ -23,9 +23,9 @@
 	<key>MinimumOSVersion</key>
 	<string>8.0</string>
 	<key>CFBundleDisplayName</key>
-	<string>CSharpMath.Forms.Example</string>
+	<string>CSharpMath.Forms.Example.iOS</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.companyname.CSharpMath.Forms.Example</string>
+	<string>CSharpMath.Forms.Example</string>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
 	<key>UILaunchStoryboardName</key>

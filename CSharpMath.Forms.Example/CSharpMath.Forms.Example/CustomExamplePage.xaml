@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:CSharpMath.Forms;assembly=CSharpMath.Forms"
              x:Class="CSharpMath.Forms.Example.CustomExamplePage"
-             Title="Enter your own example">
+             Title="Try">
     <StackLayout>
         <StackLayout Orientation="Horizontal" BackgroundColor="LightGray">
             <Entry x:Name="Entry" HorizontalOptions="FillAndExpand"/>

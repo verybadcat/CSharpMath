@@ -5,8 +5,26 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
+
+//For the Android linker
+namespace Android.Runtime {
+  public sealed class PreserveAttribute : Attribute {
+    public bool AllMembers;
+    public bool Conditional;
+  }
+}
+
+//For the iOS linker
+namespace Foundation {
+  public sealed class PreserveAttribute : Attribute {
+    public bool AllMembers;
+    public bool Conditional;
+  }
+}
 
 namespace CSharpMath.Forms.Example {
+  [XamlCompilation(XamlCompilationOptions.Compile), Android.Runtime.Preserve(AllMembers = true), Foundation.Preserve(AllMembers = true)]
   public partial class ExamplesPage : ContentPage {
     public const string Numbers = @"0123456789";
     public const string Alphabets = @"abcdefghijklmnopqrstuvwxyz";
