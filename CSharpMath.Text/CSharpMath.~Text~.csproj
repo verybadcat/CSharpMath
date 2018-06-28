@@ -1,6 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard1.3</TargetFramework>
+    <LangVersion>latest</LangVersion>
     <RootNamespace>CSharpMath.Text</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageVersion>0.1.0-pre1</PackageVersion>
@@ -19,9 +20,6 @@
     <Title>CSharpMath.Text</Title>
     <Description>A text renderer built on top of the CSharpMath math renderer</Description>
     <PackageTags>latex;math;rendering;text</PackageTags>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\CSharpMath.Rendering\CSharpMath.~Rendering~.csproj" />

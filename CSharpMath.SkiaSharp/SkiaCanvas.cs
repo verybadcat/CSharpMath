@@ -4,14 +4,14 @@ using SkiaSharp;
 namespace CSharpMath.SkiaSharp
 {
   public class SkiaCanvas : ICanvas {
-    public SkiaCanvas(SKCanvas canvas, SKStrokeCap strokeCap) {
+    public SkiaCanvas(SKCanvas canvas, SKStrokeCap strokeCap, bool antiAlias) {
       Canvas = canvas;
-      _paint = new SKPaint { IsAntialias = true };
+      StrokeCap = strokeCap;
+      _paint = new SKPaint { IsAntialias = antiAlias };
       _path = null;
       CurrentStyle = default;
       CurrentColor = default;
       DefaultColor = default;
-      StrokeCap = strokeCap;
     }
     public SKCanvas Canvas { get; }
     public SKStrokeCap StrokeCap { get; set; }
@@ -33,17 +33,23 @@ namespace CSharpMath.SkiaSharp
     private SKPaint Paint => StyledPaint(CurrentStyle);
     private SKColor Color => CurrentColor.ToNative() ?? DefaultColor.ToNative();
 
+    //Path methods
     public void BeginRead(int contourCount) => _path = new SKPath();
-    public void EndRead() => Canvas.DrawPath(_path, Paint);
+    public void EndRead() { Canvas.DrawPath(_path, Paint); _path.Dispose(); }
     public void CloseContour() => _path.Close();
     public void Curve3(float x1, float y1, float x2, float y2) => _path.QuadTo(x1, y1, x2, y2);
     public void Curve4(float x1, float y1, float x2, float y2, float x3, float y3) => _path.CubicTo(x1, y1, x2, y2, x3, y3);
     public void LineTo(float x1, float y1) => _path.LineTo(x1, y1);
     public void MoveTo(float x0, float y0) { _path.Close(); _path.MoveTo(x0, y0); }
 
+    //Canvas methods
     public void StrokeRect(float left, float top, float width, float height) => Canvas.DrawRect(SKRect.Create(left, top, width, height), StyledPaint(PaintStyle.Stroke));
     public void FillColor()  => Canvas.DrawColor(Color, SKBlendMode.Overlay);
-    public void AddLine(float x1, float y1, float x2, float y2, float lineThickness) => Canvas.DrawLine(x1, y1, x2, y2, StyledPaint(PaintStyle.Stroke, lineThickness));
+    public void AddLine(float x1, float y1, float x2, float y2, float lineThickness) {
+      if (CurrentStyle == PaintStyle.Fill)
+        Canvas.DrawLine(x1, y1, x2, y2, StyledPaint(PaintStyle.Stroke, lineThickness));
+      else this.StrokeLineOutline(x1, y1, x2, y2, lineThickness);
+    }
     public void Save() => Canvas.Save();
     public void Translate(float dx, float dy) => Canvas.Translate(dx, dy);
     public void Scale(float sx, float sy) => Canvas.Scale(sx, sy);

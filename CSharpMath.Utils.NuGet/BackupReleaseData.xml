@@ -1,0 +1,69 @@
+﻿<?xml version="1.0"?>
+<ReleaseData>
+  <_Global->
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageVersion>0.1.0-pre1</PackageVersion>
+    <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie)</Authors>
+    <PackageReleaseNotes>The 0.1.0 SkiaSharp Update brings the SkiaSharp front end to CSharpMath.</PackageReleaseNotes>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/verybadcat/CSharpMath.git</RepositoryUrl>
+    <RepositoryBranch>master</RepositoryBranch>
+    <RepositoryCommit>
+    </RepositoryCommit>
+    <PackageProjectUrl>https://github.com/verybadcat/CSharpMath</PackageProjectUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseUrl>https://github.com/verybadcat/CSharpMath/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageIconUrl>
+    </PackageIconUrl>
+    <Copyright>CSharpMath Contributors 2018</Copyright>
+    <PackageTags>latex;math;rendering</PackageTags>
+  </_Global->
+  <_Template->
+    <PackageId>
+    </PackageId>
+    <Title>
+    </Title>
+    <Description>
+    </Description>
+    <PackageTags>
+    </PackageTags>
+  </_Template->
+  <CSharpMath>
+    <PackageId>CSharpMath</PackageId>
+    <Title>CSharpMath</Title>
+    <Description>C# LaTeX engine core. Needs a front end to function. Currently, front end exists for iOS and SkiaSharp.</Description>
+    <PackageTags>
+    </PackageTags>
+  </CSharpMath>
+  <CSharpMath.Rendering>
+    <PackageId>CSharpMath.Rendering</PackageId>
+    <Title>CSharpMath.Rendering</Title>
+    <Description>Rendering interface fror CSharpMath using Typography</Description>
+    <PackageTags>
+    </PackageTags>
+  </CSharpMath.Rendering>
+  <CSharpMath.Text>
+    <PackageId>CSharpMath.Text</PackageId>
+    <Title>CSharpMath.Text</Title>
+    <Description>A text renderer built on top of the CSharpMath math renderer</Description>
+    <PackageTags>text</PackageTags>
+  </CSharpMath.Text>
+  <CSharpMath.Ios>
+    <PackageId>CSharpMath.Ios</PackageId>
+    <Title>CSharpMath.Ios</Title>
+    <Description>The iOS front end for CSharpMath</Description>
+    <PackageTags>ios;xamarin</PackageTags>
+  </CSharpMath.Ios>
+  <CSharpMath.SkiaSharp>
+    <PackageId>CSharpMath.SkiaSharp</PackageId>
+    <Title>CSharpMath.SkiaSharp</Title>
+    <Description>The SkiaSharp front end for CSharpMath</Description>
+    <PackageTags>skiasharp</PackageTags>
+  </CSharpMath.SkiaSharp>
+  <CSharpMath.Forms>
+    <PackageId>CSharpMath.Forms</PackageId>
+    <Title>CSharpMath.Forms</Title>
+    <Description>The Xamarin.Forms front end for CSharpMath</Description>
+    <PackageTags>forms;xamarin.forms;xamarin</PackageTags>
+  </CSharpMath.Forms>
+</ReleaseData>

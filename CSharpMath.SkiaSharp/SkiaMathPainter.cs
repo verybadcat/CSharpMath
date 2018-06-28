@@ -11,9 +11,10 @@ namespace CSharpMath.SkiaSharp {
       : base(width, height, fontSize) { }
     
     public SKStrokeCap StrokeCap { get; set; }
+    public bool AntiAlias { get; set; } = true;
 
     new void Draw(ICanvas _) => throw null;
-    public void Draw(SKCanvas canvas) => base.Draw(new SkiaCanvas(canvas, StrokeCap));
+    public void Draw(SKCanvas canvas) => base.Draw(new SkiaCanvas(canvas, StrokeCap, AntiAlias));
 
     public new SKSize Bounds {
       get => new SKSize(base.Bounds.Width, base.Bounds.Height);
