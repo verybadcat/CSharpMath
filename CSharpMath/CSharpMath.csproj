@@ -1,10 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard1.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie)</Authors>
-    <Description>C# LaTeX engine core. Needs a front end to function. Currently, front end exists for iOS and SkiaSharp.</Description>
+    <Description>C# LaTeX math rendering engine core. Can display beautiful math equations and symbols. Needs a front end to function. Currently, front end exists for iOS and SkiaSharp.</Description>
     <PackageReleaseNotes>The 0.1.0 SkiaSharp Update brings the SkiaSharp front end to CSharpMath.</PackageReleaseNotes>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/verybadcat/CSharpMath.git</RepositoryUrl>
@@ -14,9 +14,9 @@
     <PackageTags>latex;math;rendering</PackageTags>
     <PackageVersion>0.1.0-pre1</PackageVersion>
     <RepositoryBranch>master</RepositoryBranch>
-    <RepositoryCommit></RepositoryCommit>
+    <RepositoryCommit>a998c577aad866a75299d2d18fab1b089c15f84b</RepositoryCommit>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageIconUrl></PackageIconUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/verybadcat/CSharpMath/master/Icon.png</PackageIconUrl>
     <PackageId>CSharpMath</PackageId>
     <Title>CSharpMath</Title>
     <AssemblyVersion>0.1.0.0</AssemblyVersion>
@@ -29,5 +29,5 @@
   <ItemGroup>
     <Folder Include="RenderedSamples\" />
   </ItemGroup>
-  <Import Project="..\packages\NuGet.Build.Packaging.0.2.2\build\NuGet.Build.Packaging.props" Condition="Exists('..\packages\NuGet.Build.Packaging.0.2.2\build\NuGet.Build.Packaging.props')" />
+  <Import Project="..\packages\NuGet.Build.Packaging.0.2.2\build\NuGet.Build.Packaging.targets" Condition="Exists('..\packages\NuGet.Build.Packaging.0.2.2\build\NuGet.Build.Packaging.targets')" />
 </Project>
