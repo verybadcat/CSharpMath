@@ -30,12 +30,7 @@ namespace CSharpMath.Forms.Example {
       const float f = 40f; //font size in points
       const float thicknessAdjust = 2 * f / 3; //thickness adjust of the two circles
       const float θ = 360f / count; //angle to rotate when drawing each digit
-      if (painter == null) painter = new SkiaSharp.SkiaMathPainter(e.Info.Size) {
-        TextAlignment = Rendering.TextAlignment.Center,
-        FontSize = f
-      };
-      else painter.Bounds = e.Info.Size;
-      painter.DisplacementY = -r; //scroll up
+      if (painter == null) painter = new SkiaSharp.SkiaMathPainter(f);
       var cx = e.Info.Width / 2;
       var cy = e.Info.Height / 2;
       var c = e.Surface.Canvas;
@@ -44,12 +39,11 @@ namespace CSharpMath.Forms.Example {
       painter.TextColor = SKColors.White;
       for (int i = 0; i < count; i++) {
         painter.LaTeX = i.ToString();
-        painter.Draw(c);
+        painter.Draw(c, offsetY: -r);
         c.RotateDegrees(θ, cx, cy);
       }
       //draw inner circle
       c.DrawCircle(cx, cy, r - thicknessAdjust, white);
-      painter.DisplacementY = 0; //reset scroll
       painter.TextColor = SKColors.Black;
       painter.LaTeX = @"\raisebox{25mu}{\text{\kern.7222emC\#}\\Math}"; //.7222em is 13/18em
       painter.Draw(c);

@@ -7,7 +7,7 @@ using CSharpMath.Enumerations;
 using Typography.OpenFont;
 
 namespace CSharpMath.Rendering {
-  public interface IPainter<TSource, TColor> {
+  public interface IPainter<TCanvas, TSource, TColor> {
     #region Non-redisplaying properties
     /// <summary>
     /// Unit of measure: points;
@@ -16,17 +16,12 @@ namespace CSharpMath.Rendering {
     float? ErrorFontSize { get; set; }
     bool DisplayErrorInline { get; set; }
     TColor ErrorColor { get; set; }
-    SizeF Bounds { get; set; }
-    Thickness Padding { get; set; }
-    TextAlignment TextAlignment { get; set; }
     TColor TextColor { get; set; }
     TColor BackgroundColor { get; set; }
     PaintStyle PaintStyle { get; set; }
-    float DisplacementX { get; set; }
-    float DisplacementY { get; set; }
     float Magnification { get; set; }
 
-    SizeF? DrawingSize { get; }
+    RectangleF? Measure { get; }
 
     string ErrorMessage { get; }
     #endregion Non-redisplaying properties
@@ -45,7 +40,9 @@ namespace CSharpMath.Rendering {
     #region Methods
     void UpdateDisplay();
 
-    void Draw(ICanvas canvas);
+    void Draw(TCanvas canvas, TextAlignment alignment = TextAlignment.Center, Thickness padding = default, float offsetX = 0, float offsetY = 0);
+    void Draw(TCanvas canvas, float x, float y);
+    void Draw(TCanvas canvas, PointF position);
     #endregion
   }
 }

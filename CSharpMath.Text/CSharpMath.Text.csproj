@@ -22,6 +22,6 @@
     <PackageTags>latex;math;rendering;text</PackageTags>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CSharpMath.Rendering\CSharpMath.~Rendering~.csproj" />
+    <ProjectReference Include="..\CSharpMath.Rendering\CSharpMath.Rendering.csproj" />
   </ItemGroup>
 </Project>

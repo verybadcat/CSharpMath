@@ -4,22 +4,15 @@ using CSharpMath.Rendering;
 using SkiaSharp;
 
 namespace CSharpMath.SkiaSharp {
-  public class SkiaMathPainter : MathPainter, IPainter<MathSource, SKColor> {
-    public SkiaMathPainter(SKSize bounds, float fontSize = 20f)
-      : base(new SizeF(bounds.Width, bounds.Height), fontSize) { }
-    public SkiaMathPainter(float width, float height, float fontSize = 20f)
-      : base(width, height, fontSize) { }
+  public class SkiaMathPainter : MathPainter<SKCanvas>, IPainter<SKCanvas, MathSource, SKColor> {
+    public SkiaMathPainter(float fontSize = 20f, bool antiAlias = true) : base(fontSize) =>
+      AntiAlias = antiAlias;
     
     public SKStrokeCap StrokeCap { get; set; }
-    public bool AntiAlias { get; set; } = true;
+    public bool AntiAlias { get; set; }
 
-    new void Draw(ICanvas _) => throw null;
-    public void Draw(SKCanvas canvas) => base.Draw(new SkiaCanvas(canvas, StrokeCap, AntiAlias));
-
-    public new SKSize Bounds {
-      get => new SKSize(base.Bounds.Width, base.Bounds.Height);
-      set => base.Bounds = new SizeF(value.Width, value.Height);
-    }
+    protected override ICanvas CreateCanvasWrapper(SKCanvas canvas) =>
+      new SkiaCanvas(canvas, StrokeCap, AntiAlias);
 
     public new SKColor TextColor {
       get => base.TextColor.ToNative();

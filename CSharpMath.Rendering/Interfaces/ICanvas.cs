@@ -5,6 +5,8 @@ using CSharpMath.Structures;
 
 namespace CSharpMath.Rendering {
   public interface ICanvas : Typography.OpenFont.IGlyphTranslator {
+    float Width { get; }
+    float Height { get; }
     Color DefaultColor { get; set; }
     Color? CurrentColor { get; set; }
     PaintStyle CurrentStyle { get; set; }

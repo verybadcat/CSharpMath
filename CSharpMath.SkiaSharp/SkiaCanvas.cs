@@ -14,6 +14,8 @@ namespace CSharpMath.SkiaSharp
       DefaultColor = default;
     }
     public SKCanvas Canvas { get; }
+    public float Width => Canvas.LocalClipBounds.Width;
+    public float Height => Canvas.LocalClipBounds.Height;
     public SKStrokeCap StrokeCap { get; set; }
     public Color DefaultColor { get; set; }
     public Color? CurrentColor { get; set; }

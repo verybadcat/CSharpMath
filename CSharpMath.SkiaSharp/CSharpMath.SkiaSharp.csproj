@@ -33,6 +33,6 @@
     <PackageReference Include="SkiaSharp" Version="1.60.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CSharpMath.Rendering\CSharpMath.~Rendering~.csproj" />
+    <ProjectReference Include="..\CSharpMath.Rendering\CSharpMath.Rendering.csproj" />
   </ItemGroup>
 </Project>
