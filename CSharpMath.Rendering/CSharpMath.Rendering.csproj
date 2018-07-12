@@ -23,9 +23,9 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RepositoryUrl>https://github.com/verybadcat/CSharpMath.git</RepositoryUrl>
     <RepositoryBranch>master</RepositoryBranch>
-    <RepositoryCommit></RepositoryCommit>
+    <RepositoryCommit>a998c577aad866a75299d2d18fab1b089c15f84b</RepositoryCommit>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageIconUrl></PackageIconUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/verybadcat/CSharpMath/master/Icon.png</PackageIconUrl>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>
@@ -40,9 +40,9 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CSharpMath\CSharpMath.csproj" />
-    <ProjectReference Include="..\Typography\Build\NetStandard\Typography.OpenFont\Typography.OpenFont.csproj" />
-    <ProjectReference Include="..\Typography\Build\NetStandard\Typography.GlyphLayout\Typography.GlyphLayout.csproj" />
-    <ProjectReference Include="..\Typography\Build\NetStandard\Typography.Contours\Typography.Contours.csproj" />
   </ItemGroup>
-  <Import Project="..\packages\NuGet.Build.Packaging.0.2.2\build\NuGet.Build.Packaging.props" Condition="Exists('..\packages\NuGet.Build.Packaging.0.2.2\build\NuGet.Build.Packaging.props')" />
+  <Import Project="..\Typography\Typography.OpenFont\Typography.OpenFont.projitems" Label="Shared" />
+  <Import Project="..\Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems" Label="Shared" />
+  <Import Project="..\Typography\PixelFarm.NetStandard\PixelFarm.Triangulation\PixelFarm.Triangulation.projitems" Label="Shared" />
+  <Import Project="..\Typography\Typography.Contours\Typography.Contours.projitems" Label="Shared" />
 </Project>

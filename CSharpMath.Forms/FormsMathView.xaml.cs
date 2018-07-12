@@ -15,10 +15,10 @@ namespace CSharpMath.Forms {
   using Thickness = Rendering.Thickness;
 
   [XamlCompilation(XamlCompilationOptions.Compile), ContentProperty(nameof(LaTeX))]
-  public partial class FormsMathView : SKCanvasView, IPainter<MathSource, Color> {
+  public partial class FormsMathView : SKCanvasView, IPainter<SKCanvasView, MathSource, Color> {
     public FormsMathView() {
       InitializeComponent();
-      painter = new SkiaSharp.SkiaMathPainter(CanvasSize);
+      painter = new SkiaSharp.SkiaMathPainter();
       var pinch = new PinchGestureRecognizer();
       pinch.PinchUpdated += OnPinch;
       GestureRecognizers.Add(pinch);
@@ -28,18 +28,14 @@ namespace CSharpMath.Forms {
     protected override void OnPaintSurface(SKPaintSurfaceEventArgs e) {
       base.OnPaintSurface(e);
       e.Surface.Canvas.Clear();
-      painter.Bounds = CanvasSize;
-      painter.Draw(e.Surface.Canvas);
-      DisplacementX = painter.DisplacementX;
-      DisplacementY = painter.DisplacementY;
-      var sz = painter.DrawingSize;
-      if (sz.HasValue) LayoutBounds = new Rectangle(X, Y, sz.Value.Width, sz.Value.Height);
+      painter.Draw(e.Surface.Canvas, TextAlignment, Padding, DisplacementX, DisplacementY);
     }
 
     #region BindableProperties
     static FormsMathView() {
-      var painter = new SkiaSharp.SkiaMathPainter(default);
+      var painter = new SkiaSharp.SkiaMathPainter();
       var thisType = typeof(FormsMathView);
+      var drawMethodParams = typeof(SkiaSharp.SkiaMathPainter).GetMethod(nameof(SkiaSharp.SkiaMathPainter.Draw), new[] { typeof(SKCanvas), typeof(TextAlignment), typeof(Thickness), typeof(float), typeof(float) }).GetParameters();
       SkiaSharp.SkiaMathPainter p(BindableObject b) => ((FormsMathView)b).painter;
       SourceProperty = BindableProperty.Create(nameof(Source), typeof(MathSource), thisType, painter.Source, BindingMode.TwoWay, null, (b, o, n) => { p(b).Source = (MathSource)n; ((FormsMathView)b).ErrorMessage = p(b).ErrorMessage; });
       DisplayErrorInlineProperty = BindableProperty.Create(nameof(DisplayErrorInline), typeof(bool), thisType, painter.DisplayErrorInline, propertyChanged: (b, o, n) => p(b).DisplayErrorInline = (bool)n);
@@ -47,22 +43,22 @@ namespace CSharpMath.Forms {
       ErrorFontSizeProperty = BindableProperty.Create(nameof(ErrorFontSize), typeof(float?), thisType, painter.ErrorFontSize, propertyChanged: (b, o, n) => p(b).ErrorFontSize = (float)n);
       TextColorProperty = BindableProperty.Create(nameof(TextColor), typeof(Color), thisType, painter.TextColor.ToFormsColor(), propertyChanged: (b, o, n) => p(b).TextColor = ((Color)n).ToSKColor());
       ErrorColorProperty = BindableProperty.Create(nameof(ErrorColor), typeof(Color), thisType, painter.ErrorColor.ToFormsColor(), propertyChanged: (b, o, n) => p(b).ErrorColor = ((Color)n).ToSKColor());
-      TextAlignmentProperty = BindableProperty.Create(nameof(TextAlignment), typeof(TextAlignment), thisType, painter.TextAlignment, propertyChanged: (b, o, n) => p(b).TextAlignment = (TextAlignment)n);
-      DisplacementXProperty = BindableProperty.Create(nameof(DisplacementX), typeof(float), thisType, painter.DisplacementX, BindingMode.TwoWay, propertyChanged: (b, o, n) => p(b).DisplacementX = (float)n);
-      DisplacementYProperty = BindableProperty.Create(nameof(DisplacementY), typeof(float), thisType, painter.DisplacementY, BindingMode.TwoWay, propertyChanged: (b, o, n) => p(b).DisplacementY = (float)n);
+      TextAlignmentProperty = BindableProperty.Create(nameof(TextAlignment), typeof(TextAlignment), thisType, drawMethodParams[1].DefaultValue is DBNull ? default(TextAlignment) : drawMethodParams[1].DefaultValue ?? default(TextAlignment));
+      DisplacementXProperty = BindableProperty.Create(nameof(DisplacementX), typeof(float), thisType, drawMethodParams[3].DefaultValue, BindingMode.TwoWay);
+      DisplacementYProperty = BindableProperty.Create(nameof(DisplacementY), typeof(float), thisType, drawMethodParams[4].DefaultValue, BindingMode.TwoWay);
       MagnificationProperty = BindableProperty.Create(nameof(Magnification), typeof(float), thisType, painter.Magnification, propertyChanged: (b, o, n) => p(b).Magnification = (float)n);
       PaintStyleProperty = BindableProperty.Create(nameof(PaintStyle), typeof(PaintStyle), thisType, painter.PaintStyle, propertyChanged: (b, o, n) => p(b).PaintStyle = (PaintStyle)n);
       LineStyleProperty = BindableProperty.Create(nameof(LineStyle), typeof(Enumerations.LineStyle), thisType, painter.LineStyle, propertyChanged: (b, o, n) => p(b).LineStyle = (Enumerations.LineStyle)n);
-      GlyphBoxColorProperty = BindableProperty.Create(nameof(GlyphBoxColor), typeof((Color glyph, Color textRun)?), thisType, painter.GlyphBoxColor.HasValue ? (painter.GlyphBoxColor.Value.glyph.ToNative(), painter.GlyphBoxColor.Value.textRun.ToNative()) : default((Color glyph, Color textRun)?), propertyChanged: (b, o, n) => p(b).GlyphBoxColor = n != null ? ((((Color glyph, Color textRun)?)n).Value.glyph.FromNative(), (((Color glyph, Color textRun)?)n).Value.textRun.FromNative()) : default((Structures.Color glyph, Structures.Color textRun)?));
-      PaddingProperty = BindableProperty.Create(nameof(Padding), typeof(Thickness), thisType, new Thickness(painter.Padding.Left, painter.Padding.Top, painter.Padding.Right, painter.Padding.Bottom), propertyChanged: (b, o, n) => p(b).Padding = new Thickness(((Thickness)n).Left, ((Thickness)n).Top, ((Thickness)n).Right, ((Thickness)n).Bottom));
+      GlyphBoxColorProperty = BindableProperty.Create(nameof(GlyphBoxColor), typeof((Color glyph, Color textRun)?), thisType,
+        defaultValue: painter.GlyphBoxColor.HasValue ? (painter.GlyphBoxColor.Value.glyph.ToNative(), painter.GlyphBoxColor.Value.textRun.ToNative()) : default((Color glyph, Color textRun)?),
+        propertyChanged: (b, o, n) => p(b).GlyphBoxColor = n != null ? ((((Color glyph, Color textRun)?)n).Value.glyph.FromNative(), (((Color glyph, Color textRun)?)n).Value.textRun.FromNative()) : default((Structures.Color glyph, Structures.Color textRun)?));
+      PaddingProperty = BindableProperty.Create(nameof(Padding), typeof(Thickness), thisType, drawMethodParams[2].DefaultValue ?? default(Thickness));
       StrokeCapProperty = BindableProperty.Create(nameof(StrokeCap), typeof(SKStrokeCap), thisType, painter.StrokeCap, propertyChanged: (b, o, n) => p(b).StrokeCap = (SKStrokeCap)n);
       EnableGesturesProperty = BindableProperty.Create(nameof(EnableGestures), typeof(bool), thisType, false);
       ErrorMessagePropertyKey = BindableProperty.CreateReadOnly(nameof(ErrorMessage), typeof(string), thisType, painter.ErrorMessage, BindingMode.OneWayToSource);
       ErrorMessageProperty = ErrorMessagePropertyKey.BindableProperty;
       GestureCountPropertyKey = BindableProperty.CreateReadOnly(nameof(GestureCount), typeof(int), thisType, 0, BindingMode.OneWayToSource);
       GestureCountProperty = GestureCountPropertyKey.BindableProperty;
-      LayoutBoundsPropertyKey = BindableProperty.CreateReadOnly(nameof(LayoutBounds), typeof(Rectangle), thisType, new Rectangle(), BindingMode.OneWayToSource);
-      LayoutBoundsProperty = LayoutBoundsPropertyKey.BindableProperty;
     }
     public static readonly BindableProperty DisplayErrorInlineProperty;
     public static readonly BindableProperty FontSizeProperty;
@@ -84,8 +80,6 @@ namespace CSharpMath.Forms {
     public static readonly BindableProperty ErrorMessageProperty;
     private static readonly BindablePropertyKey GestureCountPropertyKey;
     public static readonly BindableProperty GestureCountProperty;
-    private static readonly BindablePropertyKey LayoutBoundsPropertyKey;
-    public static readonly BindableProperty LayoutBoundsProperty;
     #endregion
 
     SKPoint _origin;
@@ -100,8 +94,8 @@ namespace CSharpMath.Forms {
             break;
           case SKTouchAction.Moved:
             var displacement = e.Location - _origin;
-            painter.DisplacementX += displacement.X;
-            painter.DisplacementY += displacement.Y;
+            DisplacementX += displacement.X;
+            DisplacementY += displacement.Y;
             _origin = e.Location;
             InvalidateSurface();
             e.Handled = true;
@@ -140,8 +134,23 @@ namespace CSharpMath.Forms {
       }
     }
 
-    void IPainter<MathSource, Color>.UpdateDisplay() => painter.UpdateDisplay();
-    void IPainter<MathSource, Color>.Draw(ICanvas canvas) => painter.Draw(canvas);
+    RectangleF? LayoutBounds => painter.Measure;
+    RectangleF? IPainter<SKCanvasView, MathSource, Color>.Measure => painter.Measure;
+    void IPainter<SKCanvasView, MathSource, Color>.UpdateDisplay() => painter.UpdateDisplay();
+    void RegisterCallback(SKCanvasView canvas, Action<SKCanvas> action) {
+      EventHandler<SKPaintSurfaceEventArgs> handler = null;
+      canvas.PaintSurface += handler = (s, e) => {
+        canvas.PaintSurface -= handler;
+        action(e.Surface.Canvas);
+      };
+      canvas.InvalidateSurface();
+    }
+    void IPainter<SKCanvasView, MathSource, Color>.Draw(SKCanvasView canvas, TextAlignment alignment, Thickness padding, float offsetX, float offsetY) =>
+      RegisterCallback(canvas, c => painter.Draw(c, alignment, padding, offsetX, offsetY));
+    void IPainter<SKCanvasView, MathSource, Color>.Draw(SKCanvasView canvas, float x, float y) =>
+      RegisterCallback(canvas, c => painter.Draw(c, x, y));
+    void IPainter<SKCanvasView, MathSource, Color>.Draw(SKCanvasView canvas, PointF position) =>
+      RegisterCallback(canvas, c => painter.Draw(c, position));
 
     public bool EnableGestures { get => (bool)GetValue(EnableGesturesProperty); set => SetValue(EnableGesturesProperty, value); }
     public int GestureCount { get => (int)GetValue(GestureCountProperty); private set => SetValue(GestureCountPropertyKey, value); }
@@ -172,8 +181,6 @@ namespace CSharpMath.Forms {
     public SKStrokeCap StrokeCap { get => (SKStrokeCap)GetValue(StrokeCapProperty); set => SetValue(StrokeCapProperty, value); }
     public ObservableCollection<Typeface> LocalTypefaces => painter.LocalTypefaces;
 
-    public SizeF? DrawingSize => painter.DrawingSize;
-    public Rectangle LayoutBounds { get => (Rectangle)GetValue(LayoutBoundsProperty); private set => SetValue(LayoutBoundsPropertyKey, value); }
-    SizeF IPainter<MathSource, Color>.Bounds { get => new SizeF((float)Bounds.Width, (float)Bounds.Height); set { WidthRequest = value.Width; HeightRequest = value.Height; } }
+    protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint) => painter.Measure is RectangleF r ? new SizeRequest(new Xamarin.Forms.Size(r.Width, r.Height)) : base.OnMeasure(widthConstraint, heightConstraint);
   }
 }

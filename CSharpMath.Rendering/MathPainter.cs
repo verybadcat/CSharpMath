@@ -15,11 +15,9 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
 namespace CSharpMath.Rendering {
-  public class MathPainter : IPainter<MathSource, Color> {
+  public abstract class MathPainter<TCanvas> : IPainter<TCanvas, MathSource, Color> {
     #region Constructors
-    public MathPainter(float width, float height, float fontSize = 20f) : this(new SizeF(width, height), fontSize) { }
-    public MathPainter(SizeF bounds, float fontSize = 20f) {
-      Bounds = bounds;
+    public MathPainter(float fontSize = 20f) {
       FontSize = fontSize;
       LocalTypefaces.CollectionChanged += CollectionChanged;
     }
@@ -30,7 +28,7 @@ namespace CSharpMath.Rendering {
     //_field == private field, __field == property-only field
     protected bool _displayChanged = true;
     protected MathListDisplay<TFonts, Glyph> _displayList;
-    protected GraphicsContext _context = new GraphicsContext();
+    protected readonly GraphicsContext _context = new GraphicsContext();
     #endregion Fields
 
     #region Non-redisplaying properties
@@ -41,20 +39,15 @@ namespace CSharpMath.Rendering {
     public float? ErrorFontSize { get; set; }
     public bool DisplayErrorInline { get; set; } = true;
     public Color ErrorColor { get; set; } = new Color(255, 0, 0);
-    public SizeF Bounds { get; set; }
-    public Thickness Padding { get; set; }
-    public TextAlignment TextAlignment { get; set; } = TextAlignment.Center;
     public Color TextColor { get; set; } = new Color(0, 0, 0);
     public Color BackgroundColor { get; set; } = new Color(0, 0, 0, 0);
     public PaintStyle PaintStyle { get; set; } = PaintStyle.Fill;
-    public float DisplacementX { get; set; }
-    public float DisplacementY { get; set; }
     public float Magnification { get; set; } = 1;
 
-    public SizeF? DrawingSize {
+    public RectangleF? Measure {
       get {
         if (MathList != null && _displayList == null) UpdateDisplay();
-        return _displayList?.ComputeDisplayBounds().Size + new SizeF(Padding.Left + Padding.Right, Padding.Top + Padding.Bottom);
+        return _displayList?.ComputeDisplayBounds();
       }
     }
 
@@ -76,29 +69,31 @@ namespace CSharpMath.Rendering {
     #endregion Redisplaying properties
 
     #region Methods
-    private PointF GetDisplayPosition() {
+    private static PointF GetDisplayPosition(MathListDisplay<TFonts, Glyph> displayList,
+      TextAlignment alignment, float fontSize,
+      float width, float height, Thickness padding, float offsetX, float offsetY) {
       float x, y;
-      float displayWidth = _displayList.Width;
-      if ((TextAlignment & TextAlignment.Left) != 0)
-        x = Padding.Left;
-      else if ((TextAlignment & TextAlignment.Right) != 0)
-        x = Bounds.Width - Padding.Right - displayWidth;
+      float displayWidth = displayList.Width;
+      if ((alignment & TextAlignment.Left) != 0)
+        x = padding.Left;
+      else if ((alignment & TextAlignment.Right) != 0)
+        x = width - padding.Right - displayWidth;
       else
-        x = Padding.Left + (Bounds.Width - Padding.Left - Padding.Right - displayWidth) / 2;
-      float contentHeight = _displayList.Ascent + _displayList.Descent;
-      if (contentHeight < FontSize / 2) {
-        contentHeight = FontSize / 2;
+        x = padding.Left + (width - padding.Left - padding.Right - displayWidth) / 2;
+      float contentHeight = displayList.Ascent + displayList.Descent;
+      if (contentHeight < fontSize / 2) {
+        contentHeight = fontSize / 2;
       }
       //Canvas is inverted!
-      if ((TextAlignment & TextAlignment.Top) != 0)
-        y = Bounds.Height - Padding.Bottom - _displayList.Ascent;
-      else if ((TextAlignment & TextAlignment.Bottom) != 0)
-        y = Padding.Top + _displayList.Descent;
+      if ((alignment & TextAlignment.Top) != 0)
+        y = height - padding.Bottom - displayList.Ascent;
+      else if ((alignment & TextAlignment.Bottom) != 0)
+        y = padding.Top + displayList.Descent;
       else {
-        float availableHeight = Bounds.Height - Padding.Top - Padding.Bottom;
-        y = ((availableHeight - contentHeight) / 2) + Padding.Top + _displayList.Descent;
+        float availableHeight = height - padding.Top - padding.Bottom;
+        y = ((availableHeight - contentHeight) / 2) + padding.Top + displayList.Descent;
       }
-      return new PointF(x, y);
+      return new PointF(x + offsetX, y + offsetY);
     }
 
     public void UpdateDisplay() {
@@ -107,21 +102,39 @@ namespace CSharpMath.Rendering {
       _displayChanged = false;
     }
 
-    public void Draw(ICanvas canvas) {
+    protected abstract ICanvas CreateCanvasWrapper(TCanvas canvas);
+
+    public void Draw(TCanvas canvas, TextAlignment alignment = TextAlignment.Center, Thickness padding = default, float offsetX = 0, float offsetY = 0) {
+      if (MathList == null) return;
+      if (_displayChanged) UpdateDisplay();
+      var c = CreateCanvasWrapper(canvas);
+      //invert y-coordinate as canvas is inverted
+      Draw(c, GetDisplayPosition(_displayList, alignment, FontSize, c.Width, c.Height, padding, offsetX, -offsetY));
+    }
+
+    public void Draw(TCanvas canvas, float x, float y) =>
+      //invert y-coordinate as canvas is inverted
+      Draw(CreateCanvasWrapper(canvas), new PointF(x, -y));
+
+    public void Draw(TCanvas canvas, PointF position) =>
+      throw new NotImplementedException();
+      //invert y-coordinate as canvas is inverted
+      //Draw(CreateCanvasWrapper(canvas), position);
+
+    private void Draw(ICanvas canvas, PointF position) {
       if (MathList != null) {
         canvas.Save();
         //invert the canvas vertically
         canvas.Scale(1, -1);
-        canvas.Translate(0, -Bounds.Height);
+        //canvas is inverted so negate vertical position
+        canvas.Translate(0, -canvas.Height);
         canvas.Scale(Magnification, Magnification);
         canvas.DefaultColor = TextColor;
         canvas.CurrentColor = BackgroundColor;
         canvas.FillColor();
         canvas.CurrentStyle = PaintStyle;
         if (_displayChanged) UpdateDisplay();
-        _displayList.Position = GetDisplayPosition();
-        //canvas is inverted so negate vertical translation
-        canvas.Translate(DisplacementX, -DisplacementY);
+        _displayList.Position = position;
         _context.Canvas = canvas;
         _context.GlyphBoxColor = GlyphBoxColor;
         _displayList.Draw(_context);
