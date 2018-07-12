@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard1.1</TargetFramework>
     <LangVersion>latest</LangVersion>
@@ -12,9 +12,9 @@
     <PackageLicenseUrl>https://github.com/verybadcat/CSharpMath/blob/master/LICENSE</PackageLicenseUrl>
     <Copyright>CSharpMath Contributors 2018</Copyright>
     <PackageTags>latex;math;rendering</PackageTags>
-    <PackageVersion>0.1.0-pre1</PackageVersion>
+    <PackageVersion>0.1.0-pre2</PackageVersion>
     <RepositoryBranch>master</RepositoryBranch>
-    <RepositoryCommit>a998c577aad866a75299d2d18fab1b089c15f84b</RepositoryCommit>
+    <RepositoryCommit> c122a12df5c75e18dc5d95ee762605f90b4cf1eb</RepositoryCommit>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageIconUrl>https://raw.githubusercontent.com/verybadcat/CSharpMath/master/Icon.png</PackageIconUrl>
     <PackageId>CSharpMath</PackageId>
@@ -29,5 +29,4 @@
   <ItemGroup>
     <Folder Include="RenderedSamples\" />
   </ItemGroup>
-  <Import Project="..\packages\NuGet.Build.Packaging.0.2.2\build\NuGet.Build.Packaging.targets" Condition="Exists('..\packages\NuGet.Build.Packaging.0.2.2\build\NuGet.Build.Packaging.targets')" />
 </Project>

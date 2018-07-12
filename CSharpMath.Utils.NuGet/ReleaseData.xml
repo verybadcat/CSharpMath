@@ -2,13 +2,13 @@
 <ReleaseData>
   <_Global->
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageVersion>0.1.0-pre1</PackageVersion>
+    <PackageVersion>0.1.0-pre2</PackageVersion>
     <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie)</Authors>
     <PackageReleaseNotes>The 0.1.0 SkiaSharp Update brings the SkiaSharp front end to CSharpMath.</PackageReleaseNotes>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/verybadcat/CSharpMath.git</RepositoryUrl>
     <RepositoryBranch>master</RepositoryBranch>
-    <RepositoryCommit>a998c577aad866a75299d2d18fab1b089c15f84b</RepositoryCommit>
+    <RepositoryCommit> c122a12df5c75e18dc5d95ee762605f90b4cf1eb</RepositoryCommit>
     <PackageProjectUrl>https://github.com/verybadcat/CSharpMath</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseUrl>https://github.com/verybadcat/CSharpMath/blob/master/LICENSE</PackageLicenseUrl>
