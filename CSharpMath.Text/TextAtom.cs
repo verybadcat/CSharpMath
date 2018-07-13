@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using static System.Linq.Enumerable;
 
@@ -18,62 +19,47 @@ namespace CSharpMath.Text {
       '\u000a', '\u000b', '\u000c', '\u000d', '\u0085', '\u2028', '\u2029'
     });
 
-    private TextAtom() { }
+    private TextAtom(Range range) => Range = range;
+
+    public Range Range { get; }
 
     public abstract IDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts);
 
-    private static IDisplay<MathFonts, Glyph> TextToDisplay(string content, MathFonts fonts, Range range) =>
-        new TextRunDisplay<MathFonts, Glyph>(AttributedGlyphRuns.Create(content, GlyphFinder.Instance.FindGlyphs(fonts, content), fonts, false), range, TypesettingContext.Instance); 
-
     //Concrete types
     public sealed class Text : TextAtom {
-      public Text(string content, Range range) => (Content, Range) = 
-        (content.Any(c => char.IsWhiteSpace(c)) ? throw new ArgumentException("Content contains spaces or newlines.") : content, range);
+      public Text(string content, Range range) : base(range) => Content = content;
 
       public string Content { get; }
 
-      public Range Range { get; set; }
-
-      public override IDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts) => TextToDisplay(Content, fonts, Range);
+      public override IDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts) => 
+        new TextRunDisplay<MathFonts, Glyph>(AttributedGlyphRuns.Create(Content, GlyphFinder.Instance.FindGlyphs(fonts, Content), fonts, false), Range, TypesettingContext.Instance);
     }
     public sealed class Math : TextAtom {
-      public Math(Interfaces.IMathList content, Range range) => (Content, Range) = (content, range);
+      public Math(Interfaces.IMathList content, Range range) : base(range) => Content = content;
 
       public Interfaces.IMathList Content { get; }
-
-      public Range Range { get; }
 
       public override IDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts) =>
         Typesetter<MathFonts, Glyph>.CreateLine(Content, fonts, TypesettingContext.Instance, Enumerations.LineStyle.Text);
     }
-    public sealed class Space : TextAtom {
-      public Space(string content, Range range) => (Content, Range) = 
-        (content.Any(c => !Spaces.Contains(c)) ? throw new ArgumentException("Content contains non-spaces.") : content, range);
-
-      public string Content { get; }
-
-      public Range Range { get; }
-
-      public override IDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts) => TextToDisplay(Content, fonts, Range);
-    }
-    public sealed class Newline : TextAtom {
-      public Newline(string content, Range range) => (Content, Range) = 
-        (content.Any(c => !Newlines.Contains(c)) ? throw new ArgumentException("Content contains non-newlines.") : content, range);
-
-      public string Content { get; }
-
-      public Range Range { get; }
-
-      public override IDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts) => TextToDisplay(Content, fonts, Range);
-    }
     public sealed class List : TextAtom {
-      public List(TextAtom[] content) => Content = content;
+      public List(IReadOnlyList<TextAtom> content, int startAt) : base(new Range(startAt, content.Count)) {
+        Content = content;
+        Offset(startAt);
+      }
 
-      public TextAtom[] Content { get; }
+      private void Offset(int offset) {
+        foreach(var atom in Content) {
+          if (atom is List l) l.Offset(offset);
+          else atom.Range = new Range(atom.Range.Location + offset, atom.Range.Length);
+        }
+      }
+
+      public IReadOnlyList<TextAtom> Content { get; }
 
       public override IDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts) {
-        var displays = new IDisplay<MathFonts, Glyph>[Content.Length];
-        for (int i = 0; i < Content.Length; i++) {
+        var displays = new IDisplay<MathFonts, Glyph>[Content.Count];
+        for (int i = 0; i < Content.Count; i++) {
           displays[i] = Content[i].ToDisplay(fonts);
         }
         return new MathListDisplay<MathFonts, Glyph>(displays);

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard1.3</TargetFramework>
     <LangVersion>latest</LangVersion>
@@ -24,4 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CSharpMath.Rendering\CSharpMath.Rendering.csproj" />
   </ItemGroup>
+  <Import Project="..\Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems" Label="Shared" />
+  <Import Project="..\Typography\Typography.TextFlow\Typography.TextFlow.projitems" Label="Shared" />
+  <Import Project="..\Typography\Typography.TextServices\Typography.TextServices.projitems" Label="Shared" />
 </Project>

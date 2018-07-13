@@ -3,18 +3,26 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 using CSharpMath.Enumerations;
 using CSharpMath.Rendering;
-using CSharpMath.Structures;
 using Typography.OpenFont;
 
-namespace CSharpMath.Text
-{
+namespace CSharpMath.Text {
   public static class TextPainter {
-    public TextPainter<TCanvas, TColor> Create<TCanvas, TSource, TColor>(IPainter<TCanvas, TSource, TColor> painter) =>
-
+    /// <summary>
+    /// Creates a new <see cref="TextPainter{TCanvas, TColor}"/> from a <see cref="MathPainter{TCanvas}"/>
+    /// </summary>
+    /// <typeparam name="TCanvas"></typeparam>
+    /// <typeparam name="TColor"></typeparam>
+    /// <param name="painter"></param>
+    /// <returns></returns>
+    public static TextPainter<TCanvas, TColor> Create<TCanvas, TColor>(IPainter<TCanvas, MathSource, TColor> painter) =>
+#pragma warning disable 618 //Intended
+      new TextPainter<TCanvas, TColor>(painter);
+#pragma warning restore 618
   }
   public class TextPainter<TCanvas, TColor> : IPainter<TCanvas, TextSource, TColor> {
-
-
+    [Obsolete("Use " + nameof(CSharpMath) + "." + nameof(Text) + "." + nameof(TextPainter) + "." + nameof(TextPainter.Create) + " instead." )]
+    public TextPainter(IPainter<TCanvas, MathSource, TColor> painter) => _painter = painter;
+    readonly IPainter<TCanvas, MathSource, TColor> _painter;
 
     public TColor BackgroundColor { get; set; }
     public TColor TextColor { get; set; }
@@ -26,7 +34,10 @@ namespace CSharpMath.Text
 
     public RectangleF? Measure => throw new NotImplementedException();
 
-    public string ErrorMessage => throw new NotImplementedException();
+    /// <summary>
+    /// Always null as there are no errors possible.
+    /// </summary>
+    public string ErrorMessage => null;
 
     public float FontSize { get; set; }
 
@@ -35,9 +46,7 @@ namespace CSharpMath.Text
     public LineStyle LineStyle { get; set; }
     public TextSource Source { get; set; }
 
-    public ICanvas CreateCanvasWrapper(TCanvas canvas) {
-      throw new NotImplementedException();
-    }
+    public ICanvas CreateCanvasWrapper(TCanvas canvas) => _painter.CreateCanvasWrapper(canvas);
 
     public void Draw(TCanvas canvas, TextAlignment alignment = TextAlignment.Center, Thickness padding = default, float offsetX = 0, float offsetY = 0) {
       throw new NotImplementedException();

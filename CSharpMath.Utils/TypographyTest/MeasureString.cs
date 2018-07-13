@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using static Typography.TextLayout.PixelScaleLayoutExtensions;
 
 namespace CSharpMath.DevUtils.TypographyTest {
   static class MeasureString {
