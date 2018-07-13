@@ -11,7 +11,7 @@ namespace CSharpMath.SkiaSharp {
     public SKStrokeCap StrokeCap { get; set; }
     public bool AntiAlias { get; set; }
 
-    protected override ICanvas CreateCanvasWrapper(SKCanvas canvas) =>
+    public override ICanvas CreateCanvasWrapper(SKCanvas canvas) =>
       new SkiaCanvas(canvas, StrokeCap, AntiAlias);
 
     public new SKColor TextColor {

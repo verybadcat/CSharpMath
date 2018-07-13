@@ -102,7 +102,7 @@ namespace CSharpMath.Rendering {
       _displayChanged = false;
     }
 
-    protected abstract ICanvas CreateCanvasWrapper(TCanvas canvas);
+    public abstract ICanvas CreateCanvasWrapper(TCanvas canvas);
 
     public void Draw(TCanvas canvas, TextAlignment alignment = TextAlignment.Center, Thickness padding = default, float offsetX = 0, float offsetY = 0) {
       if (MathList == null) return;

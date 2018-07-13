@@ -134,8 +134,18 @@ namespace CSharpMath.Forms {
       }
     }
 
-    RectangleF? LayoutBounds => painter.Measure;
-    RectangleF? IPainter<SKCanvasView, MathSource, Color>.Measure => painter.Measure;
+    #region Explicit interface implementations
+    ICanvas IPainter<SKCanvasView, MathSource, Color>.CreateCanvasWrapper(SKCanvasView canvas) {
+      throw new NotImplementedException("Why would you need this? (See source for implementation to copy if and only if truly needed)");
+#pragma warning disable 162
+      //Implementation if and only if truly needed; DO NOT CALL FROM UI THREAD (the reason for not having this implementation as default)
+      return System.Threading.Tasks.Task.Run(() => {
+        var source = new System.Threading.Tasks.TaskCompletionSource<ICanvas>();
+        RegisterCallback(canvas, c => source.SetResult(new SkiaSharp.SkiaCanvas(c, StrokeCap, true)));
+        return source.Task;
+      }).GetAwaiter().GetResult();
+#pragma warning restore 162
+    }
     void IPainter<SKCanvasView, MathSource, Color>.UpdateDisplay() => painter.UpdateDisplay();
     void RegisterCallback(SKCanvasView canvas, Action<SKCanvas> action) {
       EventHandler<SKPaintSurfaceEventArgs> handler = null;
@@ -145,12 +155,14 @@ namespace CSharpMath.Forms {
       };
       canvas.InvalidateSurface();
     }
+    //These are not immediately executed, so not in public API
     void IPainter<SKCanvasView, MathSource, Color>.Draw(SKCanvasView canvas, TextAlignment alignment, Thickness padding, float offsetX, float offsetY) =>
       RegisterCallback(canvas, c => painter.Draw(c, alignment, padding, offsetX, offsetY));
     void IPainter<SKCanvasView, MathSource, Color>.Draw(SKCanvasView canvas, float x, float y) =>
       RegisterCallback(canvas, c => painter.Draw(c, x, y));
     void IPainter<SKCanvasView, MathSource, Color>.Draw(SKCanvasView canvas, PointF position) =>
       RegisterCallback(canvas, c => painter.Draw(c, position));
+    #endregion
 
     public bool EnableGestures { get => (bool)GetValue(EnableGesturesProperty); set => SetValue(EnableGesturesProperty, value); }
     public int GestureCount { get => (int)GetValue(GestureCountProperty); private set => SetValue(GestureCountPropertyKey, value); }
@@ -181,6 +193,7 @@ namespace CSharpMath.Forms {
     public SKStrokeCap StrokeCap { get => (SKStrokeCap)GetValue(StrokeCapProperty); set => SetValue(StrokeCapProperty, value); }
     public ObservableCollection<Typeface> LocalTypefaces => painter.LocalTypefaces;
 
+    public new RectangleF? Measure => painter.Measure;
     protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint) => painter.Measure is RectangleF r ? new SizeRequest(new Xamarin.Forms.Size(r.Width, r.Height)) : base.OnMeasure(widthConstraint, heightConstraint);
   }
 }

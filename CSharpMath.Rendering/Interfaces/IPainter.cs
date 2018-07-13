@@ -9,15 +9,15 @@ using Typography.OpenFont;
 namespace CSharpMath.Rendering {
   public interface IPainter<TCanvas, TSource, TColor> {
     #region Non-redisplaying properties
+    TColor BackgroundColor { get; set; }
+    TColor TextColor { get; set; }
+    TColor ErrorColor { get; set; }
     /// <summary>
     /// Unit of measure: points;
     /// Defaults to <see cref="FontSize"/>.
     /// </summary>
     float? ErrorFontSize { get; set; }
     bool DisplayErrorInline { get; set; }
-    TColor ErrorColor { get; set; }
-    TColor TextColor { get; set; }
-    TColor BackgroundColor { get; set; }
     PaintStyle PaintStyle { get; set; }
     float Magnification { get; set; }
 
@@ -40,6 +40,7 @@ namespace CSharpMath.Rendering {
     #region Methods
     void UpdateDisplay();
 
+    ICanvas CreateCanvasWrapper(TCanvas canvas);
     void Draw(TCanvas canvas, TextAlignment alignment = TextAlignment.Center, Thickness padding = default, float offsetX = 0, float offsetY = 0);
     void Draw(TCanvas canvas, float x, float y);
     void Draw(TCanvas canvas, PointF position);
