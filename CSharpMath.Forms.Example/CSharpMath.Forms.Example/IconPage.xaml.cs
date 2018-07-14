@@ -36,11 +36,12 @@ namespace CSharpMath.Forms.Example {
       var c = e.Surface.Canvas;
       //draw outer circle
       c.DrawCircle(cx, cy, r + thicknessAdjust, black);
-      painter.TextColor = SKColors.White;
+      painter.TextColor = SKColors.Orange;
       for (int i = 0; i < count; i++) {
         painter.LaTeX = i.ToString();
         painter.Draw(c, offsetY: -r);
-        c.RotateDegrees(θ, cx, cy);
+        c.DrawCircle(cx, cy, 10, new SKPaint { Style = SKPaintStyle.Fill, Color = SKColors.Green });
+        //c.RotateDegrees(θ, cx, cy);
       }
       //draw inner circle
       c.DrawCircle(cx, cy, r - thicknessAdjust, white);

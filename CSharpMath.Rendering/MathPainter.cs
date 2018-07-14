@@ -116,10 +116,12 @@ namespace CSharpMath.Rendering {
       //invert y-coordinate as canvas is inverted
       Draw(CreateCanvasWrapper(canvas), new PointF(x, -y));
 
-    public void Draw(TCanvas canvas, PointF position) =>
-      throw new NotImplementedException();
+    public void Draw(TCanvas canvas, PointF position)
+    {
+      position.Y *= -1;
       //invert y-coordinate as canvas is inverted
-      //Draw(CreateCanvasWrapper(canvas), position);
+      Draw(CreateCanvasWrapper(canvas), position);
+    }
 
     private void Draw(ICanvas canvas, PointF position) {
       if (MathList != null) {
