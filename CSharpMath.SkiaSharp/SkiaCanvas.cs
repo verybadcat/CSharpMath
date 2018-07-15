@@ -37,7 +37,7 @@ namespace CSharpMath.SkiaSharp
 
     //Path methods
     public void BeginRead(int contourCount) => _path = new SKPath();
-    public void EndRead() { Canvas.DrawPath(_path, Paint); _path.Dispose(); }
+    public void EndRead() { Canvas.DrawPath(_path, Paint); _path.Dispose(); _path = null; }
     public void CloseContour() => _path.Close();
     public void Curve3(float x1, float y1, float x2, float y2) => _path.QuadTo(x1, y1, x2, y2);
     public void Curve4(float x1, float y1, float x2, float y2, float x3, float y3) => _path.CubicTo(x1, y1, x2, y2, x3, y3);
@@ -47,7 +47,7 @@ namespace CSharpMath.SkiaSharp
     //Canvas methods
     public void StrokeRect(float left, float top, float width, float height) => Canvas.DrawRect(SKRect.Create(left, top, width, height), StyledPaint(PaintStyle.Stroke));
     public void FillColor()  => Canvas.DrawColor(Color, SKBlendMode.Overlay);
-    public void AddLine(float x1, float y1, float x2, float y2, float lineThickness) {
+    public void DrawLine(float x1, float y1, float x2, float y2, float lineThickness) {
       if (CurrentStyle == PaintStyle.Fill)
         Canvas.DrawLine(x1, y1, x2, y2, StyledPaint(PaintStyle.Stroke, lineThickness));
       else this.StrokeLineOutline(x1, y1, x2, y2, lineThickness);

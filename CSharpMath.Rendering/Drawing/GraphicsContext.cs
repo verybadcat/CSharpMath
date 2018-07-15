@@ -41,7 +41,7 @@ namespace CSharpMath.Rendering {
 
     public void DrawLine(float x1, float y1, float x2, float y2, float lineThickness, Color? color) {
       Canvas.CurrentColor = color;
-      Canvas.AddLine(x1, y1, x2, y2, lineThickness);
+      Canvas.DrawLine(x1, y1, x2, y2, lineThickness);
     }
 
     public void DrawGlyphRunWithOffset(Display.Text.AttributedGlyphRun<TFonts, Glyph> run, PointF offset, Color? color) {
