@@ -40,7 +40,7 @@ namespace CSharpMath.Rendering {
     #region Methods
     void UpdateDisplay();
 
-    ICanvas CreateCanvasWrapper(TCanvas canvas);
+    ICanvas WrapCanvas(TCanvas canvas);
     void Draw(TCanvas canvas, TextAlignment alignment = TextAlignment.Center, Thickness padding = default, float offsetX = 0, float offsetY = 0);
     void Draw(TCanvas canvas, float x, float y);
     void Draw(TCanvas canvas, PointF position);

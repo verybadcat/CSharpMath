@@ -15,11 +15,14 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
 namespace CSharpMath.Rendering {
-  public abstract class MathPainter<TCanvas> : IPainter<TCanvas, MathSource, Color> {
+  public abstract class MathPainter<TCanvas, TColor> : IPainter<TCanvas, MathSource, TColor> {
     #region Constructors
     public MathPainter(float fontSize = 20f) {
       FontSize = fontSize;
       LocalTypefaces.CollectionChanged += CollectionChanged;
+      ErrorColor = UnwrapColor(new Color(255, 0, 0));
+      TextColor = UnwrapColor(new Color(0, 0, 0));
+      BackgroundColor = UnwrapColor(new Color(0, 0, 0, 0));
     }
     void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) => Redisplay(0);
     #endregion Constructors
@@ -38,9 +41,10 @@ namespace CSharpMath.Rendering {
     /// </summary>
     public float? ErrorFontSize { get; set; }
     public bool DisplayErrorInline { get; set; } = true;
-    public Color ErrorColor { get; set; } = new Color(255, 0, 0);
-    public Color TextColor { get; set; } = new Color(0, 0, 0);
-    public Color BackgroundColor { get; set; } = new Color(0, 0, 0, 0);
+    public TColor ErrorColor { get; set; }
+    public TColor TextColor { get; set; }
+    public TColor BackgroundColor { get; set; }
+    public (TColor glyph, TColor textRun)? GlyphBoxColor { get; set; }
     public PaintStyle PaintStyle { get; set; } = PaintStyle.Fill;
     public float Magnification { get; set; } = 1;
 
@@ -62,7 +66,6 @@ namespace CSharpMath.Rendering {
     public float FontSize { get => __size; set => Redisplay(__size = value); } float __size = 20f;
     public ObservableCollection<Typeface> LocalTypefaces { get; } = new ObservableCollection<Typeface>();
     LineStyle __style = LineStyle.Display; public LineStyle LineStyle { get => __style; set => Redisplay(__style = value); }
-    (Color glyph, Color textRun)? __box; public (Color glyph, Color textRun)? GlyphBoxColor { get => __box; set => Redisplay(__box = value); }
     MathSource __source = new MathSource(); public MathSource Source { get => __source; set => Redisplay(__source = value); }
     public IMathList MathList { get => Source.MathList; set => Source = new MathSource(value); }
     public string LaTeX { get => Source.LaTeX; set => Source = new MathSource(value); }
@@ -102,25 +105,28 @@ namespace CSharpMath.Rendering {
       _displayChanged = false;
     }
 
-    public abstract ICanvas CreateCanvasWrapper(TCanvas canvas);
+    public abstract Color WrapColor(TColor color);
+    public abstract TColor UnwrapColor(Color color);
+
+    public abstract ICanvas WrapCanvas(TCanvas canvas);
 
     public void Draw(TCanvas canvas, TextAlignment alignment = TextAlignment.Center, Thickness padding = default, float offsetX = 0, float offsetY = 0) {
       if (MathList == null) return;
       if (_displayChanged) UpdateDisplay();
-      var c = CreateCanvasWrapper(canvas);
+      var c = WrapCanvas(canvas);
       //invert y-coordinate as canvas is inverted
       Draw(c, GetDisplayPosition(_displayList, alignment, FontSize, c.Width, c.Height, padding, offsetX, -offsetY));
     }
 
     public void Draw(TCanvas canvas, float x, float y) =>
       //invert y-coordinate as canvas is inverted
-      Draw(CreateCanvasWrapper(canvas), new PointF(x, -y));
+      Draw(WrapCanvas(canvas), new PointF(x, -y));
 
     public void Draw(TCanvas canvas, PointF position)
     {
       position.Y *= -1;
       //invert y-coordinate as canvas is inverted
-      Draw(CreateCanvasWrapper(canvas), position);
+      Draw(WrapCanvas(canvas), position);
     }
 
     private void Draw(ICanvas canvas, PointF position) {
@@ -131,22 +137,23 @@ namespace CSharpMath.Rendering {
         //canvas is inverted so negate vertical position
         canvas.Translate(0, -canvas.Height);
         canvas.Scale(Magnification, Magnification);
-        canvas.DefaultColor = TextColor;
-        canvas.CurrentColor = BackgroundColor;
+        canvas.DefaultColor = WrapColor(TextColor);
+        canvas.CurrentColor = WrapColor(BackgroundColor);
         canvas.FillColor();
         canvas.CurrentStyle = PaintStyle;
         if (_displayChanged) UpdateDisplay();
         _displayList.Position = position;
         _context.Canvas = canvas;
-        _context.GlyphBoxColor = GlyphBoxColor;
+        T? Nullable<T>(T nonnull) where T : struct => new T?(nonnull);
+        _context.GlyphBoxColor = GlyphBoxColor.HasValue ? Nullable((WrapColor(GlyphBoxColor.Value.glyph), WrapColor(GlyphBoxColor.Value.textRun))) : null;
         _displayList.Draw(_context);
         canvas.Restore();
       } else if (DisplayErrorInline && ErrorMessage.IsNonEmpty()) {
         canvas.Save();
-        canvas.CurrentColor = BackgroundColor;
+        canvas.CurrentColor = WrapColor(BackgroundColor);
         canvas.FillColor();
         var size = ErrorFontSize ?? FontSize;
-        canvas.CurrentColor = ErrorColor;
+        canvas.CurrentColor = WrapColor(ErrorColor);
         canvas.FillText(ErrorMessage, 0, size, size);
         canvas.Restore();
       }

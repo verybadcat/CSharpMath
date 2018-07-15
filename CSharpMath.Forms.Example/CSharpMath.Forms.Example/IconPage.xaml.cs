@@ -24,13 +24,20 @@ namespace CSharpMath.Forms.Example {
     SkiaSharp.SkiaMathPainter painter;
     readonly SKPaint black = new SKPaint { Color = SKColors.Black };
     readonly SKPaint white = new SKPaint { Color = SKColors.White };
+    void Temp(object sender, SKPaintSurfaceEventArgs e) {
+      for (int i = 0; i < 10; i++) {
+        e.Surface.Canvas.DrawCircle(e.Info.Width / 2, e.Info.Height / 2 - 50,
+            5, new SKPaint { Color = SKColors.Black });
+        e.Surface.Canvas.RotateDegrees(360 / 10, e.Info.Width / 2, e.Info.Height / 2);
+      }
+    }
     private void PaintSurface(object sender, SKPaintSurfaceEventArgs e) {
       const int count = 10; //number of digits in outer circle
       const float r = 100f; //outer circle radius
       const float f = 40f; //font size in points
       const float thicknessAdjust = 2 * f / 3; //thickness adjust of the two circles
       const float θ = 360f / count; //angle to rotate when drawing each digit
-      if (painter == null) painter = new SkiaSharp.SkiaMathPainter(f);
+      if (painter == null) painter = new SkiaSharp.SkiaMathPainter(f) { GlyphBoxColor = (SKColors.Red, SKColors.Red) };
       var cx = e.Info.Width / 2;
       var cy = e.Info.Height / 2;
       var c = e.Surface.Canvas;
@@ -41,10 +48,10 @@ namespace CSharpMath.Forms.Example {
         painter.LaTeX = i.ToString();
         painter.Draw(c, offsetY: -r);
         c.DrawCircle(cx, cy, 10, new SKPaint { Style = SKPaintStyle.Fill, Color = SKColors.Green });
-        //c.RotateDegrees(θ, cx, cy);
+        c.RotateDegrees(θ, cx, cy);
       }
       //draw inner circle
-      c.DrawCircle(cx, cy, r - thicknessAdjust, white);
+      //c.DrawCircle(cx, cy, r - thicknessAdjust, white);
       painter.TextColor = SKColors.Black;
       painter.LaTeX = @"\raisebox{25mu}{\text{\kern.7222emC\#}\\Math}"; //.7222em is 13/18em
       painter.Draw(c);

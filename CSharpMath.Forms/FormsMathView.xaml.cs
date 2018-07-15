@@ -50,8 +50,8 @@ namespace CSharpMath.Forms {
       PaintStyleProperty = BindableProperty.Create(nameof(PaintStyle), typeof(PaintStyle), thisType, painter.PaintStyle, propertyChanged: (b, o, n) => p(b).PaintStyle = (PaintStyle)n);
       LineStyleProperty = BindableProperty.Create(nameof(LineStyle), typeof(Enumerations.LineStyle), thisType, painter.LineStyle, propertyChanged: (b, o, n) => p(b).LineStyle = (Enumerations.LineStyle)n);
       GlyphBoxColorProperty = BindableProperty.Create(nameof(GlyphBoxColor), typeof((Color glyph, Color textRun)?), thisType,
-        defaultValue: painter.GlyphBoxColor.HasValue ? (painter.GlyphBoxColor.Value.glyph.ToNative(), painter.GlyphBoxColor.Value.textRun.ToNative()) : default((Color glyph, Color textRun)?),
-        propertyChanged: (b, o, n) => p(b).GlyphBoxColor = n != null ? ((((Color glyph, Color textRun)?)n).Value.glyph.FromNative(), (((Color glyph, Color textRun)?)n).Value.textRun.FromNative()) : default((Structures.Color glyph, Structures.Color textRun)?));
+        defaultValue: painter.GlyphBoxColor,
+        propertyChanged: (b, o, n) => p(b).GlyphBoxColor = n != null ? ((((Color glyph, Color textRun)?)n).Value.glyph.ToSKColor(), (((Color glyph, Color textRun)?)n).Value.textRun.ToSKColor()) : default((SKColor glyph, SKColor textRun)?));
       PaddingProperty = BindableProperty.Create(nameof(Padding), typeof(Thickness), thisType, drawMethodParams[2].DefaultValue ?? default(Thickness));
       StrokeCapProperty = BindableProperty.Create(nameof(StrokeCap), typeof(SKStrokeCap), thisType, painter.StrokeCap, propertyChanged: (b, o, n) => p(b).StrokeCap = (SKStrokeCap)n);
       EnableGesturesProperty = BindableProperty.Create(nameof(EnableGestures), typeof(bool), thisType, false);
@@ -135,7 +135,7 @@ namespace CSharpMath.Forms {
     }
 
     #region Explicit interface implementations
-    ICanvas IPainter<SKCanvasView, MathSource, Color>.CreateCanvasWrapper(SKCanvasView canvas) {
+    ICanvas IPainter<SKCanvasView, MathSource, Color>.WrapCanvas(SKCanvasView canvas) {
       throw new NotImplementedException("Why would you need this? (See source for implementation to copy if and only if truly needed)");
 #pragma warning disable 162
       //Implementation if and only if truly needed; DO NOT CALL FROM UI THREAD (the reason for not having this implementation as default)

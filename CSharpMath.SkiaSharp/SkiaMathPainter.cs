@@ -1,31 +1,22 @@
 ﻿using System.Drawing;
 using CSharpMath.Rendering;
-
+using CSharpMath.Structures;
 using SkiaSharp;
 
 namespace CSharpMath.SkiaSharp {
-  public class SkiaMathPainter : MathPainter<SKCanvas>, IPainter<SKCanvas, MathSource, SKColor> {
+  public class SkiaMathPainter : MathPainter<SKCanvas, SKColor>, IPainter<SKCanvas, MathSource, SKColor> {
     public SkiaMathPainter(float fontSize = 20f, bool antiAlias = true) : base(fontSize) =>
       AntiAlias = antiAlias;
     
     public SKStrokeCap StrokeCap { get; set; }
     public bool AntiAlias { get; set; }
 
-    public override ICanvas CreateCanvasWrapper(SKCanvas canvas) =>
+    public override SKColor UnwrapColor(Color color) => color.ToNative();
+
+    public override Color WrapColor(SKColor color) => color.FromNative();
+
+    public override ICanvas WrapCanvas(SKCanvas canvas) =>
       new SkiaCanvas(canvas, StrokeCap, AntiAlias);
 
-    public new SKColor TextColor {
-      get => base.TextColor.ToNative();
-      set => base.TextColor = value.FromNative();
-    }
-
-    public new SKColor BackgroundColor {
-      get => base.BackgroundColor.ToNative();
-      set => base.BackgroundColor = value.FromNative();
-    }
-    public new SKColor ErrorColor {
-      get => base.ErrorColor.ToNative();
-      set => base.ErrorColor = value.FromNative();
-    }
   }
 }

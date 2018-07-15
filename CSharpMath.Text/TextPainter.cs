@@ -46,7 +46,7 @@ namespace CSharpMath.Text {
     public LineStyle LineStyle { get; set; }
     public TextSource Source { get; set; }
 
-    public ICanvas CreateCanvasWrapper(TCanvas canvas) => _painter.CreateCanvasWrapper(canvas);
+    public ICanvas WrapCanvas(TCanvas canvas) => _painter.WrapCanvas(canvas);
 
     public void Draw(TCanvas canvas, TextAlignment alignment = TextAlignment.Center, Thickness padding = default, float offsetX = 0, float offsetY = 0) {
       throw new NotImplementedException();
