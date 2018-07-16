@@ -4,7 +4,7 @@ using CSharpMath.Structures;
 using SkiaSharp;
 
 namespace CSharpMath.SkiaSharp {
-  public class SkiaMathPainter : MathPainter<SKCanvas, SKColor>, IPainter<SKCanvas, MathSource, SKColor> {
+  public class SkiaMathPainter : MathPainter<SKCanvas, SKColor>, ICanvasPainter<SKCanvas, MathSource, SKColor> {
     public SkiaMathPainter(float fontSize = 20f, bool antiAlias = true) : base(fontSize) =>
       AntiAlias = antiAlias;
     

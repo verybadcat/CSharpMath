@@ -13,6 +13,15 @@ namespace CSharpMath.Text {
       breaker.BreakWords(text);
       breaker.LoadBreakAtList(breakList);
       bool mathMode = false;
+      /*
+#r "Typography/Build/NetStandard/Typography.TextBreak/bin/Debug/netstandard1.3/Typography.TextBreak.dll"
+using Typography.TextBreak;
+var breaker = new CustomBreaker();  
+var breakList = new List<BreakAtInfo>();
+breaker.BreakWords("Here are some text $1 + 12 \\frac23 \\sqrt4$ $$Display$$ text");
+breaker.LoadBreakAtList(breakList);
+breakList
+       */
       foreach (var info in breakList) {
         if (text[info.breakAt] == '$') {
           mathMode ^= true;

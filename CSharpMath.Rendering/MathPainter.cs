@@ -15,7 +15,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
 namespace CSharpMath.Rendering {
-  public abstract class MathPainter<TCanvas, TColor> : IPainter<TCanvas, MathSource, TColor> {
+  public abstract class MathPainter<TCanvas, TColor> : ICanvasPainter<TCanvas, MathSource, TColor> {
     #region Constructors
     public MathPainter(float fontSize = 20f) {
       FontSize = fontSize;

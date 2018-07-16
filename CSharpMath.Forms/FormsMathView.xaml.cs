@@ -15,7 +15,7 @@ namespace CSharpMath.Forms {
   using Thickness = Rendering.Thickness;
 
   [XamlCompilation(XamlCompilationOptions.Compile), ContentProperty(nameof(LaTeX))]
-  public partial class FormsMathView : SKCanvasView, IPainter<SKCanvasView, MathSource, Color> {
+  public partial class FormsMathView : SKCanvasView, IPainter<MathSource, Color> {
     public FormsMathView() {
       InitializeComponent();
       painter = new SkiaSharp.SkiaMathPainter();
@@ -133,36 +133,6 @@ namespace CSharpMath.Forms {
         }
       }
     }
-
-    #region Explicit interface implementations
-    ICanvas IPainter<SKCanvasView, MathSource, Color>.WrapCanvas(SKCanvasView canvas) {
-      throw new NotImplementedException("Why would you need this? (See source for implementation to copy if and only if truly needed)");
-#pragma warning disable 162
-      //Implementation if and only if truly needed; DO NOT CALL FROM UI THREAD (the reason for not having this implementation as default)
-      return System.Threading.Tasks.Task.Run(() => {
-        var source = new System.Threading.Tasks.TaskCompletionSource<ICanvas>();
-        RegisterCallback(canvas, c => source.SetResult(new SkiaSharp.SkiaCanvas(c, StrokeCap, true)));
-        return source.Task;
-      }).GetAwaiter().GetResult();
-#pragma warning restore 162
-    }
-    void IPainter<SKCanvasView, MathSource, Color>.UpdateDisplay() => painter.UpdateDisplay();
-    void RegisterCallback(SKCanvasView canvas, Action<SKCanvas> action) {
-      EventHandler<SKPaintSurfaceEventArgs> handler = null;
-      canvas.PaintSurface += handler = (s, e) => {
-        canvas.PaintSurface -= handler;
-        action(e.Surface.Canvas);
-      };
-      canvas.InvalidateSurface();
-    }
-    //These are not immediately executed, so not in public API
-    void IPainter<SKCanvasView, MathSource, Color>.Draw(SKCanvasView canvas, TextAlignment alignment, Thickness padding, float offsetX, float offsetY) =>
-      RegisterCallback(canvas, c => painter.Draw(c, alignment, padding, offsetX, offsetY));
-    void IPainter<SKCanvasView, MathSource, Color>.Draw(SKCanvasView canvas, float x, float y) =>
-      RegisterCallback(canvas, c => painter.Draw(c, x, y));
-    void IPainter<SKCanvasView, MathSource, Color>.Draw(SKCanvasView canvas, PointF position) =>
-      RegisterCallback(canvas, c => painter.Draw(c, position));
-    #endregion
 
     public bool EnableGestures { get => (bool)GetValue(EnableGesturesProperty); set => SetValue(EnableGesturesProperty, value); }
     public int GestureCount { get => (int)GetValue(GestureCountProperty); private set => SetValue(GestureCountPropertyKey, value); }
