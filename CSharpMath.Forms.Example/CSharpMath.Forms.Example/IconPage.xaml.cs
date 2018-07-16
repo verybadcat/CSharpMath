@@ -43,15 +43,14 @@ namespace CSharpMath.Forms.Example {
       var c = e.Surface.Canvas;
       //draw outer circle
       c.DrawCircle(cx, cy, r + thicknessAdjust, black);
-      painter.TextColor = SKColors.Orange;
+      painter.TextColor = SKColors.White;
       for (int i = 0; i < count; i++) {
         painter.LaTeX = i.ToString();
-        painter.Draw(c, offsetY: -r);
-        c.DrawCircle(cx, cy, 10, new SKPaint { Style = SKPaintStyle.Fill, Color = SKColors.Green });
+        painter.Draw(c, cx, cy - r * 3 / 4);
         c.RotateDegrees(θ, cx, cy);
       }
       //draw inner circle
-      //c.DrawCircle(cx, cy, r - thicknessAdjust, white);
+      c.DrawCircle(cx, cy, r - thicknessAdjust, white);
       painter.TextColor = SKColors.Black;
       painter.LaTeX = @"\raisebox{25mu}{\text{\kern.7222emC\#}\\Math}"; //.7222em is 13/18em
       painter.Draw(c);

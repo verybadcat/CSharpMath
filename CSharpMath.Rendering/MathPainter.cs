@@ -73,8 +73,9 @@ namespace CSharpMath.Rendering {
 
     #region Methods
     private static PointF GetDisplayPosition(MathListDisplay<TFonts, Glyph> displayList,
-      TextAlignment alignment, float fontSize,
-      float width, float height, Thickness padding, float offsetX, float offsetY) {
+      float fontSize, bool bottomLeftCoords, 
+      float width, float height,
+      TextAlignment alignment, Thickness padding, float offsetX, float offsetY) {
       float x, y;
       float displayWidth = displayList.Width;
       if ((alignment & TextAlignment.Left) != 0)
@@ -87,16 +88,24 @@ namespace CSharpMath.Rendering {
       if (contentHeight < fontSize / 2) {
         contentHeight = fontSize / 2;
       }
-      //Canvas is inverted!
+      if (!bottomLeftCoords) {
+        //Canvas is inverted!
+        if ((alignment & (TextAlignment.Top | TextAlignment.Bottom)) != 0) {
+          alignment ^= TextAlignment.Top;
+          alignment ^= TextAlignment.Bottom;
+        }
+        //invert y-coordinate as canvas is inverted
+        offsetY *= -1;
+      }
       if ((alignment & TextAlignment.Top) != 0)
-        y = height - padding.Bottom - displayList.Ascent;
-      else if ((alignment & TextAlignment.Bottom) != 0)
         y = padding.Top + displayList.Descent;
+      else if ((alignment & TextAlignment.Bottom) != 0)
+        y = height - padding.Bottom - displayList.Ascent;
       else {
         float availableHeight = height - padding.Top - padding.Bottom;
         y = ((availableHeight - contentHeight) / 2) + padding.Top + displayList.Descent;
       }
-      return new PointF(x + offsetX, y + offsetY);
+      return new PointF(x + offsetX, (y + offsetY) - (bottomLeftCoords ? 0 : height));
     }
 
     public void UpdateDisplay() {
@@ -110,32 +119,30 @@ namespace CSharpMath.Rendering {
 
     public abstract ICanvas WrapCanvas(TCanvas canvas);
 
+    protected abstract bool CoordinatesFromBottomLeftInsteadOfTopLeft { get; }
+
     public void Draw(TCanvas canvas, TextAlignment alignment = TextAlignment.Center, Thickness padding = default, float offsetX = 0, float offsetY = 0) {
       if (MathList == null) return;
       if (_displayChanged) UpdateDisplay();
       var c = WrapCanvas(canvas);
-      //invert y-coordinate as canvas is inverted
-      Draw(c, GetDisplayPosition(_displayList, alignment, FontSize, c.Width, c.Height, padding, offsetX, -offsetY));
+      Draw(c, GetDisplayPosition(_displayList, FontSize, CoordinatesFromBottomLeftInsteadOfTopLeft, c.Width, c.Height, alignment, padding, offsetX, offsetY));
     }
 
     public void Draw(TCanvas canvas, float x, float y) =>
-      //invert y-coordinate as canvas is inverted
-      Draw(WrapCanvas(canvas), new PointF(x, -y));
+      Draw(WrapCanvas(canvas), new PointF(x, CoordinatesFromBottomLeftInsteadOfTopLeft ? y : -y));
 
-    public void Draw(TCanvas canvas, PointF position)
-    {
-      position.Y *= -1;
-      //invert y-coordinate as canvas is inverted
+    public void Draw(TCanvas canvas, PointF position) {
+      if (CoordinatesFromBottomLeftInsteadOfTopLeft) position.Y *= -1;
       Draw(WrapCanvas(canvas), position);
     }
 
     private void Draw(ICanvas canvas, PointF position) {
       if (MathList != null) {
         canvas.Save();
-        //invert the canvas vertically
-        canvas.Scale(1, -1);
-        //canvas is inverted so negate vertical position
-        canvas.Translate(0, -canvas.Height);
+        if (!CoordinatesFromBottomLeftInsteadOfTopLeft) {
+          //invert the canvas vertically
+          canvas.Scale(1, -1);
+        }
         canvas.Scale(Magnification, Magnification);
         canvas.DefaultColor = WrapColor(TextColor);
         canvas.CurrentColor = WrapColor(BackgroundColor);

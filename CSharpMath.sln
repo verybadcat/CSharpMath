@@ -48,7 +48,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "zDevelopment utilities", "z
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.NuGetPackageTests.CSharp.UWP", "CSharpMath.NuGetPackageTests.CSharp\CSharpMath.NuGetPackageTests.CSharp.UWP\CSharpMath.NuGetPackageTests.CSharp.UWP.csproj", "{DBB121AA-0271-4719-A709-23AB3B464E8F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.NuGetPackageTests.CSharp", "CSharpMath.NuGetPackageTests.CSharp\CSharpMath.NuGetPackageTests.CSharp\CSharpMath.NuGetPackageTests.CSharp.csproj", "{73C44AA1-69ED-4749-BDBA-62A4416F0081}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.NuGetPackageTests.CSharp", "CSharpMath.NuGetPackageTests.CSharp\CSharpMath.NuGetPackageTests.CSharp\CSharpMath.NuGetPackageTests.CSharp.csproj", "{73C44AA1-69ED-4749-BDBA-62A4416F0081}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "zNuGet package tests", "zNuGet package tests", "{FD179998-539F-43BE-B2A1-89B2B726BC7A}"
 EndProject

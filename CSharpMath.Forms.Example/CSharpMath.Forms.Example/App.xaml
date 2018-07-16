@@ -17,6 +17,7 @@
             <local:ExamplesPage/>
             <local:MoreExamplesPage/>
             <local:CustomExamplePage/>
+            <local:SlidePage/>
             <local:SettingsPage/>
         </TabbedPage>
     </Application.MainPage>

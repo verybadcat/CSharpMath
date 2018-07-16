@@ -10,10 +10,16 @@ namespace CSharpMath.Text {
     public static TextAtom Build(string text) {
       var breaker = new CustomBreaker();
       var breakList = new List<BreakAtInfo>();
+      breaker.BreakWords(text);
       breaker.LoadBreakAtList(breakList);
+      bool mathMode = false;
       foreach (var info in breakList) {
-        info.wordKind == WordKind.
+        if (text[info.breakAt] == '$') {
+          mathMode ^= true;
+        }
+        
       }
+      return null;
     }
     public static StringBuilder Unbuild(TextAtom atom, StringBuilder b) {
       switch (atom) {
