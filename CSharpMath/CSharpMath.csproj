@@ -11,8 +11,8 @@
     <PackageProjectUrl>https://github.com/verybadcat/CSharpMath</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/verybadcat/CSharpMath/blob/master/LICENSE</PackageLicenseUrl>
     <Copyright>CSharpMath Contributors 2018</Copyright>
-    <PackageTags>latex;math;rendering</PackageTags>
-    <PackageVersion>0.1.0-pre2</PackageVersion>
+    <PackageTags>math;mathematics;mathematical;formula;equation;equations;expression;tex;latex;render;rendering;display</PackageTags>
+    <PackageVersion>0.1.0-pre3</PackageVersion>
     <RepositoryBranch>master</RepositoryBranch>
     <RepositoryCommit> c122a12df5c75e18dc5d95ee762605f90b4cf1eb</RepositoryCommit>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>

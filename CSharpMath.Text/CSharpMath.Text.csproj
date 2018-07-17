@@ -1,10 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard1.3</TargetFramework>
     <LangVersion>latest</LangVersion>
     <RootNamespace>CSharpMath.Text</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageVersion>0.1.0-pre2</PackageVersion>
+    <PackageVersion>0.1.0-pre3</PackageVersion>
     <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie)</Authors>
     <PackageReleaseNotes>The 0.1.0 SkiaSharp Update brings the SkiaSharp front end to CSharpMath.</PackageReleaseNotes>
     <RepositoryType>git</RepositoryType>
@@ -19,7 +19,7 @@
     <PackageId>CSharpMath.Text</PackageId>
     <Title>CSharpMath.Text</Title>
     <Description>A text renderer built on top of the CSharpMath math renderer</Description>
-    <PackageTags>latex;math;rendering;text</PackageTags>
+    <PackageTags>math;mathematics;mathematical;formula;equation;equations;expression;tex;latex;render;rendering;display;text</PackageTags>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\CSharpMath.Rendering\CSharpMath.Rendering.csproj" />

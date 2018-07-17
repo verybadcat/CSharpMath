@@ -13,6 +13,6 @@
             <Button x:Name="In" HorizontalOptions="FillAndExpand" Text="Load LaTeX" Clicked="In_Clicked"/>
             <Button x:Name="Out" HorizontalOptions="FillAndExpand" Text="Save LaTeX" Clicked="Out_Clicked"/>
         </StackLayout>
-        <local:FormsMathView x:Name="View" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"/>
+        <local:FormsMathView x:Name="View" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" EnableTouchEvents="True"/>
     </StackLayout>
 </ContentPage>

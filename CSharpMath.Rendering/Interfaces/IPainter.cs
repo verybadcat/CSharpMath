@@ -9,7 +9,7 @@ using Typography.OpenFont;
 namespace CSharpMath.Rendering {
   public interface IPainter<TSource, TColor> {
     #region Non-redisplaying properties
-    TColor BackgroundColor { get; set; }
+    TColor HighlightColor { get; set; }
     TColor TextColor { get; set; }
     TColor ErrorColor { get; set; }
     /// <summary>
@@ -37,12 +37,12 @@ namespace CSharpMath.Rendering {
     TSource Source { get; set; }
     #endregion Redisplaying properties
 
-    Structures.Color WrapColor(TColor color);
-    TColor UnwrapColor(Structures.Color color);
   }
   public interface ICanvasPainter<TCanvas, TSource, TColor> : IPainter<TSource, TColor> {
     #region Methods
     ICanvas WrapCanvas(TCanvas canvas);
+    Structures.Color WrapColor(TColor color);
+    TColor UnwrapColor(Structures.Color color);
 
     void UpdateDisplay();
     

@@ -18,6 +18,7 @@
             </TableSection>
             <TableSection>
                 <EntryCell x:Name="TextColor" Label="Text color" Text="#000000" Completed="TextColor_Completed"/>
+                <EntryCell x:Name="HighlightColor" Label="Highlight color" Text="#ddffdd" Completed="HighlightColor_Completed"/>
                 <EntryCell x:Name="BackColor" Label="Background color" Text="#ddffdd" Completed="BackColor_Completed"/>
             </TableSection>
             <TableSection>

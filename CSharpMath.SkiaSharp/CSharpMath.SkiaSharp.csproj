@@ -3,7 +3,7 @@
     <TargetFramework>netstandard1.3</TargetFramework>
     <LangVersion>latest</LangVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageVersion>0.1.0-pre2</PackageVersion>
+    <PackageVersion>0.1.0-pre3</PackageVersion>
     <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie)</Authors>
     <PackageReleaseNotes>The 0.1.0 SkiaSharp Update brings the SkiaSharp front end to CSharpMath.</PackageReleaseNotes>
     <RepositoryType>git</RepositoryType>
@@ -18,7 +18,7 @@
     <PackageId>CSharpMath.SkiaSharp</PackageId>
     <Title>CSharpMath.SkiaSharp</Title>
     <Description>The SkiaSharp front end for CSharpMath</Description>
-    <PackageTags>latex;math;rendering;skiasharp</PackageTags>
+    <PackageTags>math;mathematics;mathematical;formula;equation;equations;expression;tex;latex;render;rendering;display;skiasharp</PackageTags>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

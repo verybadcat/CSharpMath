@@ -22,7 +22,7 @@ namespace CSharpMath.Rendering {
       LocalTypefaces.CollectionChanged += CollectionChanged;
       ErrorColor = UnwrapColor(new Color(255, 0, 0));
       TextColor = UnwrapColor(new Color(0, 0, 0));
-      BackgroundColor = UnwrapColor(new Color(0, 0, 0, 0));
+      HighlightColor = UnwrapColor(new Color(0, 0, 0, 0));
     }
     void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) => Redisplay(0);
     #endregion Constructors
@@ -43,15 +43,20 @@ namespace CSharpMath.Rendering {
     public bool DisplayErrorInline { get; set; } = true;
     public TColor ErrorColor { get; set; }
     public TColor TextColor { get; set; }
-    public TColor BackgroundColor { get; set; }
+    public TColor HighlightColor { get; set; }
     public (TColor glyph, TColor textRun)? GlyphBoxColor { get; set; }
     public PaintStyle PaintStyle { get; set; } = PaintStyle.Fill;
     public float Magnification { get; set; } = 1;
 
     public RectangleF? Measure {
       get {
-        if (MathList != null && _displayList == null) UpdateDisplay();
-        return _displayList?.ComputeDisplayBounds();
+        //UpdateDisplay() null-refs if MathList == null
+        if (MathList != null && _displayChanged) UpdateDisplay();
+        if (_displayList == null) return null;
+        var bounds = _displayList.ComputeDisplayBounds();
+        bounds.Y =
+          -(CoordinatesFromBottomLeftInsteadOfTopLeft ? _displayList.Ascent : _displayList.Descent);
+        return bounds;
       }
     }
 
@@ -138,6 +143,8 @@ namespace CSharpMath.Rendering {
 
     private void Draw(ICanvas canvas, PointF position) {
       if (MathList != null) {
+        if (_displayChanged) UpdateDisplay();
+        _displayList.Position = position;
         canvas.Save();
         if (!CoordinatesFromBottomLeftInsteadOfTopLeft) {
           //invert the canvas vertically
@@ -145,11 +152,10 @@ namespace CSharpMath.Rendering {
         }
         canvas.Scale(Magnification, Magnification);
         canvas.DefaultColor = WrapColor(TextColor);
-        canvas.CurrentColor = WrapColor(BackgroundColor);
-        canvas.FillColor();
+        canvas.CurrentColor = WrapColor(HighlightColor);
         canvas.CurrentStyle = PaintStyle;
-        if (_displayChanged) UpdateDisplay();
-        _displayList.Position = position;
+        var measure = Measure ?? default;
+        canvas.FillRect(position.X + measure.X, position.Y + measure.Y, measure.Width, measure.Height);
         _context.Canvas = canvas;
         T? Nullable<T>(T nonnull) where T : struct => new T?(nonnull);
         _context.GlyphBoxColor = GlyphBoxColor.HasValue ? Nullable((WrapColor(GlyphBoxColor.Value.glyph), WrapColor(GlyphBoxColor.Value.textRun))) : null;
@@ -157,8 +163,6 @@ namespace CSharpMath.Rendering {
         canvas.Restore();
       } else if (DisplayErrorInline && ErrorMessage.IsNonEmpty()) {
         canvas.Save();
-        canvas.CurrentColor = WrapColor(BackgroundColor);
-        canvas.FillColor();
         var size = ErrorFontSize ?? FontSize;
         canvas.CurrentColor = WrapColor(ErrorColor);
         canvas.FillText(ErrorMessage, 0, size, size);

@@ -12,8 +12,8 @@ namespace CSharpMath.Rendering {
     
     void DrawLine(float x1, float y1, float x2, float y2, float lineThickness);
     void StrokeRect(float left, float top, float width, float height);
+    void FillRect(float left, float top, float width, float height);
     void FillText(string text, float x, float y, float pointSize);
-    void FillColor();
     void Save();
     void Translate(float dx, float dy);
     void Scale(float sx, float sy);

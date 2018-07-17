@@ -21,9 +21,7 @@ namespace CSharpMath.Forms.Example
 
     private void Canvas_PaintSurface(object sender, SKPaintSurfaceEventArgs e) {
       if (reset) { e.Surface.Canvas.Clear(); reset = false; }
-      e.Surface.Canvas.DrawCircle(0f, 0f, 100f, new global::SkiaSharp.SKPaint { Color = new global::SkiaSharp.SKColor(255, 0, 0) });
       painter.Draw(e.Surface.Canvas, (float)x, (float)y);
-      e.Surface.Canvas.DrawCircle(300f, 0f, 100f, new global::SkiaSharp.SKPaint { Color = new global::SkiaSharp.SKColor(255, 255, 0) });
     }
 
     private void Canvas_Touch(object sender, SKTouchEventArgs e) {

@@ -25,7 +25,7 @@ namespace CSharpMath.Text {
     public TextPainter(ICanvasPainter<TCanvas, MathSource, TColor> painter) => _painter = painter;
     readonly ICanvasPainter<TCanvas, MathSource, TColor> _painter;
 
-    public TColor BackgroundColor { get => _painter.BackgroundColor; set => _painter.BackgroundColor = value; }
+    public TColor HighlightColor { get => _painter.HighlightColor; set => _painter.HighlightColor = value; }
     public TColor TextColor { get => _painter.TextColor; set => _painter.TextColor = value; }
     public TColor ErrorColor { get => _painter.ErrorColor; set => _painter.ErrorColor = value; }
     public float? ErrorFontSize { get => _painter.ErrorFontSize; set => _painter.ErrorFontSize = value; }

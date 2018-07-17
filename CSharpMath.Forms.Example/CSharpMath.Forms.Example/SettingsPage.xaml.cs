@@ -37,6 +37,7 @@ namespace CSharpMath.Forms.Example {
 
       DrawGlyphBoxes_OnChanged(this, new ToggledEventArgs(DrawGlyphBoxes.On));
       TextColor_Completed(this, EventArgs.Empty);
+      HighlightColor_Completed(this, EventArgs.Empty);
       BackColor_Completed(this, EventArgs.Empty);
 
       App.AllViews.CollectionChanged += CollectionChanged;
@@ -51,6 +52,7 @@ namespace CSharpMath.Forms.Example {
           v.GlyphBoxColor = DrawGlyphBoxes.On ? (Parse(GlyphBoxColor.Text), Parse(GlyphRunColor.Text)) : default((Color glyph, Color textRun)?);
           v.TextAlignment = (Rendering.TextAlignment)Alignment.SelectedItem;
           v.TextColor = TextColor.LabelColor;
+          v.HighlightColor = HighlightColor.LabelColor;
           v.BackgroundColor = BackColor.LabelColor;
           v.PaintStyle = (PaintStyle)PaintStyle.SelectedItem;
           v.LineStyle = (Enumerations.LineStyle)LineStyle.SelectedItem;
@@ -69,6 +71,14 @@ namespace CSharpMath.Forms.Example {
       TextColor.LabelColor = Parse(TextColor.Text);
       foreach (var v in App.AllViews) {
         v.TextColor = TextColor.LabelColor;
+        v.InvalidateSurface();
+      }
+    }
+
+    private void HighlightColor_Completed(object sender, EventArgs e) {
+      HighlightColor.LabelColor = Parse(HighlightColor.Text);
+      foreach (var v in App.AllViews) {
+        v.HighlightColor = HighlightColor.LabelColor;
         v.InvalidateSurface();
       }
     }

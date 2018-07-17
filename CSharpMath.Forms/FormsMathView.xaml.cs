@@ -10,7 +10,6 @@ using Xamarin.Forms.Xaml;
 
 namespace CSharpMath.Forms {
   using Color = Xamarin.Forms.Color;
-  using Rectangle = Xamarin.Forms.Rectangle;
   using TextAlignment = Rendering.TextAlignment;
   using Thickness = Rendering.Thickness;
 
@@ -19,9 +18,10 @@ namespace CSharpMath.Forms {
     public FormsMathView() {
       InitializeComponent();
       painter = new SkiaSharp.SkiaMathPainter();
-      var pinch = new PinchGestureRecognizer();
+      //Until fixed...
+      /*var pinch = new PinchGestureRecognizer();
       pinch.PinchUpdated += OnPinch;
-      GestureRecognizers.Add(pinch);
+      GestureRecognizers.Add(pinch);*/
     }
 
     protected SkiaSharp.SkiaMathPainter painter;
@@ -42,6 +42,7 @@ namespace CSharpMath.Forms {
       FontSizeProperty = BindableProperty.Create(nameof(FontSize), typeof(float), thisType, painter.FontSize, propertyChanged: (b, o, n) => p(b).FontSize = (float)n);
       ErrorFontSizeProperty = BindableProperty.Create(nameof(ErrorFontSize), typeof(float?), thisType, painter.ErrorFontSize, propertyChanged: (b, o, n) => p(b).ErrorFontSize = (float)n);
       TextColorProperty = BindableProperty.Create(nameof(TextColor), typeof(Color), thisType, painter.TextColor.ToFormsColor(), propertyChanged: (b, o, n) => p(b).TextColor = ((Color)n).ToSKColor());
+      HighlightColorProperty = BindableProperty.Create(nameof(HighlightColor), typeof(Color), thisType, painter.HighlightColor.ToFormsColor(), propertyChanged: (b, o, n) => p(b).HighlightColor = ((Color)n).ToSKColor());
       ErrorColorProperty = BindableProperty.Create(nameof(ErrorColor), typeof(Color), thisType, painter.ErrorColor.ToFormsColor(), propertyChanged: (b, o, n) => p(b).ErrorColor = ((Color)n).ToSKColor());
       TextAlignmentProperty = BindableProperty.Create(nameof(TextAlignment), typeof(TextAlignment), thisType, drawMethodParams[1].DefaultValue is DBNull ? default(TextAlignment) : drawMethodParams[1].DefaultValue ?? default(TextAlignment));
       DisplacementXProperty = BindableProperty.Create(nameof(DisplacementX), typeof(float), thisType, drawMethodParams[3].DefaultValue, BindingMode.TwoWay);
@@ -64,6 +65,7 @@ namespace CSharpMath.Forms {
     public static readonly BindableProperty FontSizeProperty;
     public static readonly BindableProperty ErrorFontSizeProperty;
     public static readonly BindableProperty TextColorProperty;
+    public static readonly BindableProperty HighlightColorProperty;
     public static readonly BindableProperty ErrorColorProperty;
     public static readonly BindableProperty TextAlignmentProperty;
     public static readonly BindableProperty DisplacementXProperty;
@@ -150,6 +152,7 @@ namespace CSharpMath.Forms {
     /// </summary>
     public float? ErrorFontSize { get => (float?)GetValue(ErrorFontSizeProperty); set => SetValue(ErrorFontSizeProperty, value); }
     public Color TextColor { get => (Color)GetValue(TextColorProperty); set => SetValue(TextColorProperty, value); }
+    public Color HighlightColor { get => (Color)GetValue(HighlightColorProperty); set => SetValue(HighlightColorProperty, value); }
     public Color ErrorColor { get => (Color)GetValue(ErrorColorProperty); set => SetValue(ErrorColorProperty, value); }
     public TextAlignment TextAlignment { get => (TextAlignment)GetValue(TextAlignmentProperty); set => SetValue(TextAlignmentProperty, value); }
     public float DisplacementX { get => (float)GetValue(DisplacementXProperty); set => SetValue(DisplacementXProperty, value); }
