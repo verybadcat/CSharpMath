@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using CSharpMath.Interfaces;
 using Builder = CSharpMath.Atoms.MathListBuilder;
@@ -41,7 +41,7 @@ namespace CSharpMath.Atoms.Extension {
       var sb = new StringBuilder();
       while (b.HasCharacters) {
         var ch = b.GetNextCharacter();
-        if (char.IsDigit(ch) || ch == '.' || ch == '-') {
+        if (char.IsDigit(ch) || ch == '.' || ch == '-' || ch == '+') {
           sb.Append(ch);
         } else {
           b.UnlookCharacter();
@@ -63,7 +63,7 @@ namespace CSharpMath.Atoms.Extension {
         return null;
       }
 
-      if(!(float.TryParse(str, out var points))) {
+      if(!(float.TryParse(str, NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture.NumberFormat, out var points))) {
         b.SetError("Invalid length value");
         return null;
       }

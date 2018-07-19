@@ -4,6 +4,7 @@ using numericType = System.Double;
 namespace CSharpMath.Extensions.NumericTypes
 {
   internal static class DoubleExtensions {
+    [System.Obsolete("Is any code using this?")]
     public static numericType TryParse(string s, numericType failValue = numericType.NaN) {
       numericType r = failValue;
       if (s?.Trim() == string.Empty) {

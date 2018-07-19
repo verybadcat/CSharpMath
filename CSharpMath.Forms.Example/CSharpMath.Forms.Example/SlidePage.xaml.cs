@@ -22,6 +22,7 @@ namespace CSharpMath.Forms.Example
     private void Canvas_PaintSurface(object sender, SKPaintSurfaceEventArgs e) {
       if (reset) { e.Surface.Canvas.Clear(); reset = false; }
       painter.Draw(e.Surface.Canvas, (float)x, (float)y);
+      e.Surface.Canvas.DrawRect((float)x + painter.Measure.Value.X, (float)y + painter.Measure.Value.Y, painter.Measure.Value.Width, painter.Measure.Value.Height, new global::SkiaSharp.SKPaint { Color = global::SkiaSharp.SKColors.Orange });
     }
 
     private void Canvas_Touch(object sender, SKTouchEventArgs e) {

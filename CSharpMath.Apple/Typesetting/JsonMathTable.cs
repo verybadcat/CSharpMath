@@ -307,8 +307,8 @@ namespace CSharpMath.Apple {
       } else {
         // If no top accent is defined then it is the center of the advance width.
         var glyphs = new TGlyph[] { glyph };
-        var advances = GlyphBoundsProvider.GetAdvancesForGlyphs(font, glyphs);
-        return advances.Advances[0] / 2;
+        var (Advances, Total) = GlyphBoundsProvider.GetAdvancesForGlyphs(font, glyphs);
+        return Advances[0] / 2;
       }
     }
 

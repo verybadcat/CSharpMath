@@ -21,7 +21,7 @@ namespace CSharpMath.Text {
 
     private TextAtom(Range range) => Range = range;
 
-    public Range Range { get; }
+    public Range Range { get; private set; }
 
     public abstract IDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts);
 

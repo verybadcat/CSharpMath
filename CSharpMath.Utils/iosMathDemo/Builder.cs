@@ -73,7 +73,7 @@ namespace CSharpMath.DevUtils.iosMathDemo {
                 .Append(new StringBuilder(m.Groups["latex"].Value).Replace("\\\n ", "\n ").Replace("\n ", Environment.NewLine + ' ').Replace(@"\\", @"\").Replace("\"", "").ToString().TrimEnd())
                 .AppendLine("\",")
                 .Append("HeightRequest = ")
-                .Append(int.Parse(m.Groups["height"].Value) * scale * viewHeightExtraScale)
+                .Append(int.Parse(m.Groups["height"].Value, System.Globalization.NumberFormatInfo.InvariantInfo) * scale * viewHeightExtraScale)
                 .AppendLine(",")
                 .Append("FontSize = ")
                 .Append(15 * scale)
