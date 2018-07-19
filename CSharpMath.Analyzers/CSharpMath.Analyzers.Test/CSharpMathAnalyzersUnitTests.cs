@@ -71,12 +71,12 @@ namespace CSharpMath.Analyzers.Test
 
         protected override CodeFixProvider GetCSharpCodeFixProvider()
         {
-            return new CSM0001TypographyNotImported_Fix();
+            return new A0001TypographyNotImported_Fix();
         }
 
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
         {
-            return new CSM0001TypographyNotImported();
+            return new A0001TypographyNotImported();
         }
     }
 }

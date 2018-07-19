@@ -13,8 +13,10 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace CSharpMath.Analyzers
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class CSM0001TypographyNotImported : DiagnosticAnalyzer
+    public class A0001TypographyNotImported : DiagnosticAnalyzer
     {
+        public const string Id = "A0001";
+
         /// <summary>
         /// The path of the Typography folder
         /// </summary>
@@ -24,7 +26,7 @@ namespace CSharpMath.Analyzers
             return Path.Combine(L, "Typography");
         }))();
 
-        private static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(nameof(CSM0001TypographyNotImported), "The Typography submodule must be imported.",
+        private static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(Id, "The Typography submodule must be imported.",
             "The Typography submodule was not imported. Execute 'git submodule update' in the platform shell at the CSharpMath repository to import it.",
             "File System", DiagnosticSeverity.Error, isEnabledByDefault: true);
 

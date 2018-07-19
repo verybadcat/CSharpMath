@@ -16,12 +16,12 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace CSharpMath.Analyzers
 {
-    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(CSM0001TypographyNotImported_Fix)), Shared]
-    public class CSM0001TypographyNotImported_Fix : CodeFixProvider
+    [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(A0001TypographyNotImported_Fix)), Shared]
+    public class A0001TypographyNotImported_Fix : CodeFixProvider
     {
         private const string title = "Pull the Typography submodule using git via the platform shell.";
 
-        public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(nameof(CSM0001TypographyNotImported));
+        public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(A0001TypographyNotImported.Id);
 
         public sealed override FixAllProvider GetFixAllProvider()
         {
@@ -45,7 +45,7 @@ namespace CSharpMath.Analyzers
             var tcs = new TaskCompletionSource<Solution>();
 
             var process = new Process {
-                StartInfo = { FileName = "git", Arguments = "submodule update", WorkingDirectory = CSM0001TypographyNotImported.Typography },
+                StartInfo = { FileName = "git", Arguments = "submodule update", WorkingDirectory = A0001TypographyNotImported.Typography },
                 EnableRaisingEvents = true
             };
             process.Exited += (sender, args) =>
