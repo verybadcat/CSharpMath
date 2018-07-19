@@ -32,7 +32,10 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup Condition="true">
-    <Analyzer Include="..\CSharpMath.Analyzers\CSharpMath.Analyzers\bin\Debug\netstandard1.3\CSharpMath.Analyzers.dll" />
+    <ProjectReference Include="..\CSharpMath.Analyzers\CSharpMath.Analyzers\CSharpMath.Analyzers.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <OutputItemType>Analyzer</OutputItemType>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />

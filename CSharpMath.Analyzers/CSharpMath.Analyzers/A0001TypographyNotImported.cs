@@ -27,21 +27,34 @@ namespace CSharpMath.Analyzers
         }))();
 
         private static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(Id, "The Typography submodule must be imported.",
-            "The Typography submodule was not imported. Execute 'git submodule update' in the platform shell at the CSharpMath repository to import it.",
+            "The Typography submodule was not imported. Execute 'git submodule update' in the platform shell at the CSharpMath repository to import it. (Git must be installed)",
             "File System", DiagnosticSeverity.Error, isEnabledByDefault: true);
+        private static readonly DiagnosticDescriptor Rule_ = new DiagnosticDescriptor("A0000", "Test",
+            "This is a sanity check!",
+            "Test", DiagnosticSeverity.Info, isEnabledByDefault: true);
 
         bool _reported = false;
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule, Rule_); } }
 
         public override void Initialize(AnalysisContext context)
         {
-            context.RegisterOperationBlockAction(Analyze);
+            context.RegisterCodeBlockAction(Analyze);
+            context.RegisterCompilationAction(Analyze);
             _reported = false;
         }
 
-        private void Analyze(OperationBlockAnalysisContext context)
+        private void Analyze(CodeBlockAnalysisContext context)
         {
+            context.ReportDiagnostic(Diagnostic.Create(Rule_, null));
+            if (_reported) return;
+            if(!Directory.EnumerateFileSystemEntries(Typography).Any()) context.ReportDiagnostic(Diagnostic.Create(Rule, null));
+            _reported = true;
+        }
+
+        private void Analyze(CompilationAnalysisContext context)
+        {
+            context.ReportDiagnostic(Diagnostic.Create(Rule_, null));
             if (_reported) return;
             if(!Directory.EnumerateFileSystemEntries(Typography).Any()) context.ReportDiagnostic(Diagnostic.Create(Rule, null));
             _reported = true;
