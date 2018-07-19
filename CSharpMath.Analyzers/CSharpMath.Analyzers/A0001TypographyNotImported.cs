@@ -30,20 +30,30 @@ namespace CSharpMath.Analyzers
             "The Typography submodule was not imported. Execute 'git submodule update' in the platform shell at the CSharpMath repository to import it. (Git must be installed)",
             "File System", DiagnosticSeverity.Error, isEnabledByDefault: true);
         private static readonly DiagnosticDescriptor Rule_ = new DiagnosticDescriptor("A0000", "Test",
-            "This is a sanity check!",
-            "Test", DiagnosticSeverity.Info, isEnabledByDefault: true);
+            "This is a sanity check! (Code)",
+            "Test", DiagnosticSeverity.Warning, isEnabledByDefault: true);
+        private static readonly DiagnosticDescriptor Rule__ = new DiagnosticDescriptor("A0002", "Test",
+            "This is a sanity check! (Operation)",
+            "Test", DiagnosticSeverity.Warning, isEnabledByDefault: true);
 
         bool _reported = false;
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule, Rule_); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule, Rule_, Rule__); } }
 
         public override void Initialize(AnalysisContext context)
         {
             context.RegisterCodeBlockAction(Analyze);
             context.RegisterCompilationAction(Analyze);
+            context.RegisterOperationBlockAction(Analyze);
             _reported = false;
         }
 
+        private void Analyze(OperationBlockAnalysisContext context) {
+            context.ReportDiagnostic(Diagnostic.Create(Rule__, Location.Create("ttestt.txt", Microsoft.CodeAnalysis.Text.TextSpan.FromBounds(2, 3), new Microsoft.CodeAnalysis.Text.LinePositionSpan())));
+            if (_reported) return;
+            if (!Directory.EnumerateFileSystemEntries(Typography).Any()) context.ReportDiagnostic(Diagnostic.Create(Rule, null));
+            _reported = true;
+        }
         private void Analyze(CodeBlockAnalysisContext context)
         {
             context.ReportDiagnostic(Diagnostic.Create(Rule_, null));
@@ -52,10 +62,10 @@ namespace CSharpMath.Analyzers
             _reported = true;
         }
 
-        private void Analyze(CompilationAnalysisContext context)
-        {
+        private void Analyze(CompilationAnalysisContext context) {
+      context.ReportDiagnostic(Diagnostic.Create(Rule__, Location.Create("ttestt.txt", Microsoft.CodeAnalysis.Text.TextSpan.FromBounds(2, 3), new Microsoft.CodeAnalysis.Text.LinePositionSpan())));
+      if (_reported) return;
             context.ReportDiagnostic(Diagnostic.Create(Rule_, null));
-            if (_reported) return;
             if(!Directory.EnumerateFileSystemEntries(Typography).Any()) context.ReportDiagnostic(Diagnostic.Create(Rule, null));
             _reported = true;
         }

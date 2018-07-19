@@ -52,11 +52,7 @@ namespace CSharpMath.Rendering {
       get {
         //UpdateDisplay() null-refs if MathList == null
         if (MathList != null && _displayChanged) UpdateDisplay();
-        if (_displayList == null) return null;
-        var bounds = _displayList.ComputeDisplayBounds();
-        bounds.Y =
-          -(CoordinatesFromBottomLeftInsteadOfTopLeft ? _displayList.Ascent : _displayList.Descent);
-        return bounds;
+        return _displayList?.ComputeDisplayBounds();
       }
     }
 
@@ -155,7 +151,8 @@ namespace CSharpMath.Rendering {
         canvas.CurrentColor = WrapColor(HighlightColor);
         canvas.CurrentStyle = PaintStyle;
         var measure = Measure ?? default;
-        canvas.FillRect(position.X + measure.X, position.Y + measure.Y, measure.Width, measure.Height);
+        canvas.FillRect(position.X + measure.X, position.Y - measure.Y, measure.Width, measure.Height);
+        canvas.CurrentColor = null;
         _context.Canvas = canvas;
         T? Nullable<T>(T nonnull) where T : struct => new T?(nonnull);
         _context.GlyphBoxColor = GlyphBoxColor.HasValue ? Nullable((WrapColor(GlyphBoxColor.Value.glyph), WrapColor(GlyphBoxColor.Value.textRun))) : null;
