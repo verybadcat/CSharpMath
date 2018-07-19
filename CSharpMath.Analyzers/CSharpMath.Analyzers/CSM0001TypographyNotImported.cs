@@ -34,13 +34,15 @@ namespace CSharpMath.Analyzers
 
         public override void Initialize(AnalysisContext context)
         {
-            context.RegisterCodeBlockAction(Analyze);
+            context.RegisterOperationBlockAction(Analyze);
             _reported = false;
         }
 
-        private void Analyze(CodeBlockAnalysisContext context)
+        private void Analyze(OperationBlockAnalysisContext context)
         {
-            if (!Directory.Exists(Typography) && !_reported) { context.ReportDiagnostic(Diagnostic.Create(Rule, null)); _reported = true; }
+            if (_reported) return;
+            if(!Directory.EnumerateFileSystemEntries(Typography).Any()) context.ReportDiagnostic(Diagnostic.Create(Rule, null));
+            _reported = true;
         }
     }
 }
