@@ -31,11 +31,14 @@
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
-  <ItemGroup Condition="true">
+  <ItemGroup Condition="false">
     <ProjectReference Include="..\CSharpMath.Analyzers\CSharpMath.Analyzers\CSharpMath.Analyzers.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <OutputItemType>Analyzer</OutputItemType>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="_TypographyExistanceTest.cs" Condition="Exists('..\Typography\Typography.OpenFont\Typography.OpenFont.projitems')" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />

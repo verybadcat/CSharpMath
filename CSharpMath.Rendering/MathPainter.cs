@@ -151,7 +151,9 @@ namespace CSharpMath.Rendering {
         canvas.CurrentColor = WrapColor(HighlightColor);
         canvas.CurrentStyle = PaintStyle;
         var measure = Measure ?? default;
-        canvas.FillRect(position.X + measure.X, position.Y - measure.Y, measure.Width, measure.Height);
+        canvas.FillRect(position.X + measure.X, position.Y - 
+          (CoordinatesFromBottomLeftInsteadOfTopLeft ? _displayList.Ascent : _displayList.Descent),
+          measure.Width, measure.Height);
         canvas.CurrentColor = null;
         _context.Canvas = canvas;
         T? Nullable<T>(T nonnull) where T : struct => new T?(nonnull);
