@@ -42,7 +42,10 @@ namespace CSharpMath.Text {
     public ObservableCollection<Typeface> LocalTypefaces => _painter.LocalTypefaces;
 
     public LineStyle LineStyle { get => _painter.LineStyle; set => _painter.LineStyle = value; }
-    public TextSource Source { get => _painter.Source; set => _painter.Source = value; }
+
+    public TextSource Source { get; set; }
+    public string Text { get => Source.Text; set => Source = new TextSource(Text); }
+    public string Error => Source.Error;
 
     public ICanvas WrapCanvas(TCanvas canvas) => _painter.WrapCanvas(canvas);
 

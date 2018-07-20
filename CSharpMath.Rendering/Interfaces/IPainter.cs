@@ -38,6 +38,43 @@ namespace CSharpMath.Rendering {
     #endregion Redisplaying properties
 
   }
+  public static class IPainterExtensions {
+    public static PointF GetDisplayPosition(Display.MathListDisplay<MathFonts, Glyph> displayList,
+  float fontSize, bool bottomLeftCoords,
+  float width, float height,
+  TextAlignment alignment, Thickness padding, float offsetX, float offsetY) {
+      float x, y;
+      float displayWidth = displayList.Width;
+      if ((alignment & TextAlignment.Left) != 0)
+        x = padding.Left;
+      else if ((alignment & TextAlignment.Right) != 0)
+        x = width - padding.Right - displayWidth;
+      else
+        x = padding.Left + (width - padding.Left - padding.Right - displayWidth) / 2;
+      float contentHeight = displayList.Ascent + displayList.Descent;
+      if (contentHeight < fontSize / 2) {
+        contentHeight = fontSize / 2;
+      }
+      if (!bottomLeftCoords) {
+        //Canvas is inverted!
+        if ((alignment & (TextAlignment.Top | TextAlignment.Bottom)) != 0) {
+          alignment ^= TextAlignment.Top;
+          alignment ^= TextAlignment.Bottom;
+        }
+        //invert y-coordinate as canvas is inverted
+        offsetY *= -1;
+      }
+      if ((alignment & TextAlignment.Top) != 0)
+        y = padding.Top + displayList.Descent;
+      else if ((alignment & TextAlignment.Bottom) != 0)
+        y = height - padding.Bottom - displayList.Ascent;
+      else {
+        float availableHeight = height - padding.Top - padding.Bottom;
+        y = ((availableHeight - contentHeight) / 2) + padding.Top + displayList.Descent;
+      }
+      return new PointF(x + offsetX, (y + offsetY) - (bottomLeftCoords ? 0 : height));
+    }
+  }
   public interface ICanvasPainter<TCanvas, TSource, TColor> : IPainter<TSource, TColor> {
     #region Methods
     ICanvas WrapCanvas(TCanvas canvas);

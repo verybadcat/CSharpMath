@@ -73,42 +73,6 @@ namespace CSharpMath.Rendering {
     #endregion Redisplaying properties
 
     #region Methods
-    private static PointF GetDisplayPosition(MathListDisplay<TFonts, Glyph> displayList,
-      float fontSize, bool bottomLeftCoords, 
-      float width, float height,
-      TextAlignment alignment, Thickness padding, float offsetX, float offsetY) {
-      float x, y;
-      float displayWidth = displayList.Width;
-      if ((alignment & TextAlignment.Left) != 0)
-        x = padding.Left;
-      else if ((alignment & TextAlignment.Right) != 0)
-        x = width - padding.Right - displayWidth;
-      else
-        x = padding.Left + (width - padding.Left - padding.Right - displayWidth) / 2;
-      float contentHeight = displayList.Ascent + displayList.Descent;
-      if (contentHeight < fontSize / 2) {
-        contentHeight = fontSize / 2;
-      }
-      if (!bottomLeftCoords) {
-        //Canvas is inverted!
-        if ((alignment & (TextAlignment.Top | TextAlignment.Bottom)) != 0) {
-          alignment ^= TextAlignment.Top;
-          alignment ^= TextAlignment.Bottom;
-        }
-        //invert y-coordinate as canvas is inverted
-        offsetY *= -1;
-      }
-      if ((alignment & TextAlignment.Top) != 0)
-        y = padding.Top + displayList.Descent;
-      else if ((alignment & TextAlignment.Bottom) != 0)
-        y = height - padding.Bottom - displayList.Ascent;
-      else {
-        float availableHeight = height - padding.Top - padding.Bottom;
-        y = ((availableHeight - contentHeight) / 2) + padding.Top + displayList.Descent;
-      }
-      return new PointF(x + offsetX, (y + offsetY) - (bottomLeftCoords ? 0 : height));
-    }
-
     public void UpdateDisplay() {
       var fonts = new TFonts(LocalTypefaces, FontSize);
       _displayList = TypesettingContext.Instance.CreateLine(MathList, fonts, LineStyle);
@@ -123,10 +87,12 @@ namespace CSharpMath.Rendering {
     protected abstract bool CoordinatesFromBottomLeftInsteadOfTopLeft { get; }
 
     public void Draw(TCanvas canvas, TextAlignment alignment = TextAlignment.Center, Thickness padding = default, float offsetX = 0, float offsetY = 0) {
-      if (MathList == null) return;
-      if (_displayChanged) UpdateDisplay();
       var c = WrapCanvas(canvas);
-      Draw(c, GetDisplayPosition(_displayList, FontSize, CoordinatesFromBottomLeftInsteadOfTopLeft, c.Width, c.Height, alignment, padding, offsetX, offsetY));
+      if (MathList == null) DrawError(c);
+      else {
+        if (_displayChanged) UpdateDisplay();
+        Draw(c, IPainterExtensions.GetDisplayPosition(_displayList, FontSize, CoordinatesFromBottomLeftInsteadOfTopLeft, c.Width, c.Height, alignment, padding, offsetX, offsetY));
+      }
     }
 
     public void Draw(TCanvas canvas, float x, float y) =>
@@ -151,7 +117,7 @@ namespace CSharpMath.Rendering {
         canvas.CurrentColor = WrapColor(HighlightColor);
         canvas.CurrentStyle = PaintStyle;
         var measure = Measure ?? default;
-        canvas.FillRect(position.X + measure.X, position.Y - 
+        canvas.FillRect(position.X + measure.X, position.Y -
           (CoordinatesFromBottomLeftInsteadOfTopLeft ? _displayList.Ascent : _displayList.Descent),
           measure.Width, measure.Height);
         canvas.CurrentColor = null;
@@ -160,7 +126,11 @@ namespace CSharpMath.Rendering {
         _context.GlyphBoxColor = GlyphBoxColor.HasValue ? Nullable((WrapColor(GlyphBoxColor.Value.glyph), WrapColor(GlyphBoxColor.Value.textRun))) : null;
         _displayList.Draw(_context);
         canvas.Restore();
-      } else if (DisplayErrorInline && ErrorMessage.IsNonEmpty()) {
+      } else DrawError(canvas);
+    }
+
+    private void DrawError(ICanvas canvas) {
+      if (DisplayErrorInline && ErrorMessage.IsNonEmpty()) {
         canvas.Save();
         var size = ErrorFontSize ?? FontSize;
         canvas.CurrentColor = WrapColor(ErrorColor);

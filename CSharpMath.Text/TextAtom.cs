@@ -27,7 +27,7 @@ namespace CSharpMath.Text {
 
     //Concrete types
     public sealed class Text : TextAtom {
-      public Text(string content, Range range) : base(range) => Content = content;
+      public Text(string content, int index) : base(new Range(index, content.Length)) => Content = content;
 
       public string Content { get; }
 
@@ -43,9 +43,9 @@ namespace CSharpMath.Text {
         Typesetter<MathFonts, Glyph>.CreateLine(Content, fonts, TypesettingContext.Instance, Enumerations.LineStyle.Text);
     }
     public sealed class List : TextAtom {
-      public List(IReadOnlyList<TextAtom> content, int startAt) : base(new Range(startAt, content.Count)) {
+      public List(IReadOnlyList<TextAtom> content, int index) : base(new Range(index, content.Count)) {
         Content = content;
-        Offset(startAt);
+        Offset(index);
       }
 
       private void Offset(int offset) {
