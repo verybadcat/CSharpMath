@@ -1,7 +1,5 @@
 ﻿using System.Drawing;
 using System.Linq;
-using Typography.OpenFont;
-using static Typography.Contours.MyMath;
 using CSharpMath.Display.Text;
 using CSharpMath.FrontEnd;
 using TFonts = CSharpMath.Rendering.MathFonts;

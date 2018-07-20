@@ -48,7 +48,6 @@ namespace CSharpMath.Utils.NuGet {
         //Add projects here
         "CSharpMath",
         "CSharpMath.Rendering",
-        "CSharpMath.Text",
         "CSharpMath.Ios",
         "CSharpMath.SkiaSharp",
         "CSharpMath.Forms"

@@ -5,7 +5,7 @@ using SkiaSharp;
 
 namespace CSharpMath.SkiaSharp {
   public class SkiaMathPainter : MathPainter<SKCanvas, SKColor>, ICanvasPainter<SKCanvas, MathSource, SKColor> {
-    public SkiaMathPainter(float fontSize = 20f, bool antiAlias = true) : base(fontSize) =>
+    public SkiaMathPainter(float fontSize = DefaultFontSize, bool antiAlias = true) : base(fontSize) =>
       AntiAlias = antiAlias;
     
     public SKStrokeCap StrokeCap { get; set; }

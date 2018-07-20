@@ -12,7 +12,7 @@ namespace CSharpMath.Display {
   /// <summary>
   /// Corresponds to MTMathListDisplay in iosMath.
   /// </summary>
-  public class MathListDisplay<TFont, TGlyph>: IDisplay<TFont, TGlyph>
+  public class MathListDisplay<TFont, TGlyph>: IPositionableDisplay<TFont, TGlyph>
     where TFont : MathFont<TGlyph> {
     public IDisplay<TFont, TGlyph>[] Displays { get; set; }
     public LinePosition MyLinePosition { get; set; }
@@ -38,6 +38,7 @@ namespace CSharpMath.Display {
     public float Ascent => Displays.CollectionAscent();
     public float Descent => Displays.CollectionDescent();
     public PointF Position { get; set; }
+    public void SetPosition(PointF position) => Position = position;
     public RectangleF DisplayBounds => this.ComputeDisplayBounds();
     public Range Range => RangeExtensions.Combine(Displays.Select(d => d.Range));
     public float Width {

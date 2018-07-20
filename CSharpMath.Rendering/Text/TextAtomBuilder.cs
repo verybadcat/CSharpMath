@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CSharpMath.Text
-{
+namespace CSharpMath.Rendering {
+  [Obsolete("The Text classes are not yet usable in this prerelease.", true)]
   public class TextAtomBuilder : IReadOnlyList<TextAtom> {
     List<TextAtom> _list = new List<TextAtom>();
 

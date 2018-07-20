@@ -1,18 +1,18 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard1.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie)</Authors>
-    <Description>C# LaTeX math rendering engine core. Can display beautiful math equations and symbols. Needs a front end to function. Currently, front end exists for iOS and SkiaSharp.</Description>
-    <PackageReleaseNotes>The 0.1.0 SkiaSharp Update brings the SkiaSharp front end to CSharpMath.</PackageReleaseNotes>
+    <Description>C# LaTeX math rendering engine core. Can display beautiful math equations and symbols. Needs a front end to function. Currently, front ends exist for iOS, SkiaSharp and Xamarin.Forms.</Description>
+    <PackageReleaseNotes>The 0.1.0 SkiaSharp Update brings the SkiaSharp and Xamarin.Forms front ends to CSharpMath.</PackageReleaseNotes>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/verybadcat/CSharpMath.git</RepositoryUrl>
     <PackageProjectUrl>https://github.com/verybadcat/CSharpMath</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/verybadcat/CSharpMath/blob/master/LICENSE</PackageLicenseUrl>
     <Copyright>CSharpMath Contributors 2018</Copyright>
     <PackageTags>math;mathematics;mathematical;formula;equation;equations;expression;tex;latex;render;rendering;display</PackageTags>
-    <PackageVersion>0.1.0-pre3</PackageVersion>
+    <PackageVersion>0.1.0-pre4</PackageVersion>
     <RepositoryBranch>master</RepositoryBranch>
     <RepositoryCommit>aff4172bd424bbd66a47e028bdff96c30573bc12</RepositoryCommit>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>

@@ -11,7 +11,7 @@ using System.Text;
 
 namespace CSharpMath.Display {
   /// <summary>Corresponds to MTCTLineDisplay in iOSMath.</summary> 
-  public class TextRunDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph>
+  public class TextRunDisplay<TFont, TGlyph> : IPositionableDisplay<TFont, TGlyph>
       where TFont : MathFont<TGlyph> {
     public AttributedGlyphRun<TFont, TGlyph> Run { get; private set; }
 
@@ -56,6 +56,7 @@ namespace CSharpMath.Display {
     public float Ascent { get; set; }
     public float Descent { get; set; }
     public PointF Position { get; set; }
+    public void SetPosition(PointF position) => Position = position;
     public bool HasScript { get; set; }
     public Color? TextColor { get; set; }
 

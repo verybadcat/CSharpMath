@@ -1,4 +1,5 @@
-﻿namespace CSharpMath.Text {
+﻿namespace CSharpMath.Rendering {
+  [System.Obsolete("The Text classes are not yet usable in this prerelease.", true)]
   public readonly struct TextSource {
     public TextSource(string text) {
       Text = text;

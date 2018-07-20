@@ -3,27 +3,19 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using static System.Linq.Enumerable;
 
-namespace CSharpMath.Text {
+namespace CSharpMath.Rendering {
   using Range = Atoms.Range;
   using Display;
   using Display.Text;
-  using Rendering;
 
+  [Obsolete("The Text classes are not yet usable in this prerelease.", true)]
   //Base type
   public abstract class TextAtom {
-    public static readonly ReadOnlyCollection<char> Spaces = new ReadOnlyCollection<char>(new[] {
-      '\u0020', '\u00a0', '\u1680', '\u2000', '\u2001', '\u2002', '\u2003', '\u2004','\u2005','\u2006','\u2007','\u2008','\u2009','\u200a','\u202f','\u205f','\u3000'
-    });
-
-    public static readonly ReadOnlyCollection<char> Newlines = new ReadOnlyCollection<char>(new[] {
-      '\u000a', '\u000b', '\u000c', '\u000d', '\u0085', '\u2028', '\u2029'
-    });
-
     private TextAtom(Range range) => Range = range;
 
     public Range Range { get; private set; }
 
-    public abstract IDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts);
+    public abstract IPositionableDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts);
 
     //Concrete types
     public sealed class Text : TextAtom {
@@ -31,7 +23,7 @@ namespace CSharpMath.Text {
 
       public string Content { get; }
 
-      public override IDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts) => 
+      public override IPositionableDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts) => 
         new TextRunDisplay<MathFonts, Glyph>(AttributedGlyphRuns.Create(Content, GlyphFinder.Instance.FindGlyphs(fonts, Content), fonts, false), Range, TypesettingContext.Instance);
     }
     public sealed class Math : TextAtom {
@@ -39,7 +31,7 @@ namespace CSharpMath.Text {
 
       public Interfaces.IMathList Content { get; }
 
-      public override IDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts) =>
+      public override IPositionableDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts) =>
         Typesetter<MathFonts, Glyph>.CreateLine(Content, fonts, TypesettingContext.Instance, Enumerations.LineStyle.Text);
     }
     public sealed class List : TextAtom {
@@ -57,7 +49,7 @@ namespace CSharpMath.Text {
 
       public IReadOnlyList<TextAtom> Content { get; }
 
-      public override IDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts) {
+      public override IPositionableDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts) {
         var displays = new IDisplay<MathFonts, Glyph>[Content.Count];
         for (int i = 0; i < Content.Count; i++) {
           displays[i] = Content[i].ToDisplay(fonts);

@@ -5,7 +5,8 @@ using Typography.TextBreak;
 using Typography.TextLayout;
 using Typography.TextServices;
 
-namespace CSharpMath.Text {
+namespace CSharpMath.Rendering {
+  [Obsolete("The Text classes are not yet usable in this prerelease.", true)]
   public static class TextBuilder {
     public static (TextAtom atom, string error) Build(string text) {
       string error = null;
