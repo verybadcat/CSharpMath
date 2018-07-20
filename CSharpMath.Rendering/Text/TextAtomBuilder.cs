@@ -12,7 +12,7 @@ namespace CSharpMath.Rendering {
     public void Add(string text) => Add(new TextAtom.Text(text, text.Length));
     public string Add(string mathLaTeX, bool displayStyle) {
       var mathSource = new Rendering.MathSource(mathLaTeX);
-      if (mathSource.Error.IsNonEmpty()) return mathSource.Error;
+      if (mathSource.ErrorMessage.IsNonEmpty()) return mathSource.ErrorMessage;
       var mathList = mathSource.MathList;
       mathList.Insert(0, new Atoms.Style(displayStyle ? Enumerations.LineStyle.Display : Enumerations.LineStyle.Text));
       Add(new TextAtom.Math(mathList, new Atoms.Range(TextLength, mathLaTeX.Length)));

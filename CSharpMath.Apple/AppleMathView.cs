@@ -32,9 +32,7 @@ namespace CSharpMath.Apple {
     public void SetLatex(string latex)
     {
       Latex = latex;
-      var buildResult = MathLists.BuildResultFromString(latex);
-      _mathList = buildResult.MathList;
-      ErrorMessage = buildResult.Error;
+      (_mathList, ErrorMessage) = MathLists.BuildResultFromString(latex);
       if (_mathList != null)
       {
         _CreateDisplayList();

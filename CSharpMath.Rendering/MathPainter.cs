@@ -11,6 +11,5 @@ namespace CSharpMath.Rendering {
 
     public IMathList MathList { get => Source.MathList; set => Source = new MathSource(value); }
     public string LaTeX { get => Source.LaTeX; set => Source = new MathSource(value); }
-    public override string ErrorMessage => Source.Error;
   }
 }

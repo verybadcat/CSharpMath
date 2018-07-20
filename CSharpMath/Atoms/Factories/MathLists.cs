@@ -23,11 +23,11 @@ namespace CSharpMath.Atoms {
       return r;
     }
 
-    public static MathListBuildResult BuildResultFromString(string str) {
+    public static (IMathList builtList, string error) BuildResultFromString(string str) {
       var builder = new MathListBuilder(str);
       var list = builder.Build();
       var error = builder.Error;
-      return new MathListBuildResult(list, error);
+      return (list, error);
     }
 
     public static IMathList FromString(string str) {

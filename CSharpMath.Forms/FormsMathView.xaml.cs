@@ -18,7 +18,7 @@ namespace CSharpMath.Forms {
     public FormsMathView() {
       InitializeComponent();
       painter = new SkiaSharp.SkiaMathPainter();
-      //Until fixed...
+      //TODO: Until fixed...
       /*var pinch = new PinchGestureRecognizer();
       pinch.PinchUpdated += OnPinch;
       GestureRecognizers.Add(pinch);*/

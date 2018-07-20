@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+#if false
 using Typography.TextBreak;
 using Typography.TextLayout;
 using Typography.TextServices;
+#endif
 
 namespace CSharpMath.Rendering {
   [Obsolete("The Text classes are not yet usable in this prerelease.", true)]
   public static class TextBuilder {
     public static (TextAtom atom, string error) Build(string text) {
+#if false
       string error = null;
       var breaker = new CustomBreaker();
       var breakList = new List<BreakAtInfo> { new BreakAtInfo(0, WordKind.Unknown) };
@@ -90,6 +93,8 @@ breakList.Select(i => (i.breakAt, i.wordKind, text.ElementAtOrDefault(i.breakAt)
         
       }
       return (atoms.Build(), error);
+#endif
+      return (null, null);
     }
     public static StringBuilder Unbuild(TextAtom atom, StringBuilder b) {
       switch (atom) {

@@ -15,7 +15,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
 namespace CSharpMath.Rendering {
-  public abstract class Painter<TCanvas, TSource, TColor> : ICanvasPainter<TCanvas, TSource, TColor> where TSource : struct {
+  public abstract class Painter<TCanvas, TSource, TColor> : ICanvasPainter<TCanvas, TSource, TColor> where TSource : struct, ISource {
     public const float DefaultFontSize = 20f;
     
     #region Constructors
@@ -53,12 +53,13 @@ namespace CSharpMath.Rendering {
     public RectangleF? Measure {
       get {
         //UpdateDisplay() null-refs if MathList == null
-        if (ErrorMessage != null && _displayChanged) UpdateDisplay();
+        if (System.Collections.Generic.EqualityComparer<TSource>.Default.Equals(Source, default)) return null;
+        if (ErrorMessage.IsEmpty() && _displayChanged) UpdateDisplay();
         return _display?.ComputeDisplayBounds();
       }
     }
 
-    public abstract string ErrorMessage { get; }
+    public string ErrorMessage => Source.ErrorMessage;
     #endregion Non-redisplaying properties
 
     #region Redisplaying properties
@@ -69,7 +70,7 @@ namespace CSharpMath.Rendering {
     public float FontSize { get => __size; set => Redisplay(__size = value); } float __size = 20f;
     public ObservableCollection<Typeface> LocalTypefaces { get; } = new ObservableCollection<Typeface>();
     LineStyle __style = LineStyle.Display; public LineStyle LineStyle { get => __style; set => Redisplay(__style = value); }
-    TSource __source = new TSource(); public TSource Source { get => __source; set => Redisplay(__source = value); }
+    TSource __source = default; public TSource Source { get => __source; set => Redisplay(__source = value); }
     #endregion Redisplaying properties
 
     #region Methods
@@ -106,7 +107,7 @@ namespace CSharpMath.Rendering {
     }
 
     private void Draw(ICanvas canvas, PointF position) {
-      if (ErrorMessage.IsNonEmpty()) {
+      if (ErrorMessage.IsEmpty()) {
         if (_displayChanged) UpdateDisplay();
         _display.SetPosition(position);
         canvas.Save();
