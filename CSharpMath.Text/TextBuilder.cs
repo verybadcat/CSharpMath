@@ -14,13 +14,15 @@ namespace CSharpMath.Text {
       breaker.LoadBreakAtList(breakList);
       bool mathMode = false;
       /*
-#r "Typography/Build/NetStandard/Typography.TextBreak/bin/Debug/netstandard1.3/Typography.TextBreak.dll"
+#r "C:/Users/<username>/source/repos/CSharpMath/Typography/Build/NetStandard/Typography.TextBreak/bin/Debug/netstandard1.3/Typography.TextBreak.dll"
 using Typography.TextBreak;
-var breaker = new CustomBreaker();  
+const string text = "Here are some text $1 + 12 \\frac23 \\sqrt4$ $$Display$$ text";
+var breaker = new CustomBreaker();
 var breakList = new List<BreakAtInfo>();
-breaker.BreakWords("Here are some text $1 + 12 \\frac23 \\sqrt4$ $$Display$$ text");
+breaker.BreakWords(text);
 breaker.LoadBreakAtList(breakList);
-breakList
+//index is after the boundary -> last one will be out of range
+breakList.Select(i => (i.breakAt, i.wordKind, text.ElementAtOrDefault(i.breakAt))).ToArray()
        */
       foreach (var info in breakList) {
         if (text[info.breakAt] == '$') {
