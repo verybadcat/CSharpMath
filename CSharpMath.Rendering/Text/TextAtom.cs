@@ -1,21 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using static System.Linq.Enumerable;
+﻿using System.Collections.Generic;
 
 namespace CSharpMath.Rendering {
   using Range = Atoms.Range;
   using Display;
   using Display.Text;
+  using System.Drawing;
 
-  [Obsolete("The Text classes are not yet usable in this prerelease.", true)]
   //Base type
   public abstract class TextAtom {
     private TextAtom(Range range) => Range = range;
 
     public Range Range { get; private set; }
 
-    public abstract IPositionableDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts);
+    public abstract IPositionableDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts, PointF position);
 
     //Concrete types
     public sealed class Text : TextAtom {
@@ -23,16 +20,19 @@ namespace CSharpMath.Rendering {
 
       public string Content { get; }
 
-      public override IPositionableDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts) => 
-        new TextRunDisplay<MathFonts, Glyph>(AttributedGlyphRuns.Create(Content, GlyphFinder.Instance.FindGlyphs(fonts, Content), fonts, false), Range, TypesettingContext.Instance);
+      public override IPositionableDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts, PointF position) => 
+        new TextRunDisplay<MathFonts, Glyph>(AttributedGlyphRuns.Create(Content, GlyphFinder.Instance.FindGlyphs(fonts, Content), fonts, false), Range, TypesettingContext.Instance) { Position = position };
     }
     public sealed class Math : TextAtom {
       public Math(Interfaces.IMathList content, Range range) : base(range) => Content = content;
 
       public Interfaces.IMathList Content { get; }
 
-      public override IPositionableDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts) =>
-        Typesetter<MathFonts, Glyph>.CreateLine(Content, fonts, TypesettingContext.Instance, Enumerations.LineStyle.Text);
+      public override IPositionableDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts, PointF position) {
+        var p = Typesetter<MathFonts, Glyph>.CreateLine(Content, fonts, TypesettingContext.Instance, Enumerations.LineStyle.Text);
+        p.Position = position;
+        return p;
+      }
     }
     public sealed class List : TextAtom {
       public List(IReadOnlyList<TextAtom> content, int index) : base(new Range(index, content.Count)) {
@@ -49,10 +49,11 @@ namespace CSharpMath.Rendering {
 
       public IReadOnlyList<TextAtom> Content { get; }
 
-      public override IPositionableDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts) {
+      public override IPositionableDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts, PointF position) {
         var displays = new IDisplay<MathFonts, Glyph>[Content.Count];
         for (int i = 0; i < Content.Count; i++) {
-          displays[i] = Content[i].ToDisplay(fonts);
+          displays[i] = Content[i].ToDisplay(fonts, position);
+          position.X += displays[i].Width;
         }
         return new MathListDisplay<MathFonts, Glyph>(displays);
       }
