@@ -17,6 +17,5 @@ namespace CSharpMath.Rendering {
     public IMathList MathList { get; }
     public string LaTeX { get; }
     public string ErrorMessage { get; }
-    public bool IsEmpty => MathList == null;
   }
 }

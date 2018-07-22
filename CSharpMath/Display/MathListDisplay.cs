@@ -30,7 +30,7 @@ namespace CSharpMath.Display {
     public int IndexInParent { get; set; }
 
     public MathListDisplay(IDisplay<TFont, TGlyph>[] displays): base() {
-      Displays = displays.ToArray();
+      Displays = displays;
       MyLinePosition = LinePosition.Regular;
       IndexInParent = int.MinValue;
     }

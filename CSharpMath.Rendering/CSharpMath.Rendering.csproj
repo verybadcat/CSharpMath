@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard1.3</TargetFramework>
     <LangVersion>latest</LangVersion>
@@ -54,8 +54,8 @@
   <Import Project="..\Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems" Label="Shared" />
   <Import Project="..\Typography\PixelFarm.NetStandard\PixelFarm.Triangulation\PixelFarm.Triangulation.projitems" Label="Shared" />
   <Import Project="..\Typography\Typography.Contours\Typography.Contours.projitems" Label="Shared" />
-  <!--  <Import Project="..\Typography\Typography.MsdfGen\Typography.MsdfGen.projitems" Label="Shared" />
+  <Import Project="..\Typography\Typography.MsdfGen\Typography.MsdfGen.projitems" Label="Shared" />
   <Import Project="..\Typography\Typography.TextServices\Typography.TextServices.projitems" Label="Shared" />
   <Import Project="..\Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems" Label="Shared" />
-  <Import Project="..\Typography\Typography.TextFlow\Typography.TextFlow.projitems" Label="Shared" />-->
+  <Import Project="..\Typography\Typography.TextFlow\Typography.TextFlow.projitems" Label="Shared" />
 </Project>
