@@ -54,7 +54,7 @@ namespace CSharpMath.Rendering {
       get {
         //UpdateDisplay() null-refs if MathList == null
         if (System.Collections.Generic.EqualityComparer<TSource>.Default.Equals(Source, default)) return null;
-        if (ErrorMessage.IsEmpty() && _displayChanged) UpdateDisplay();
+        if (!Source.IsEmpty && _displayChanged) UpdateDisplay();
         return _display?.ComputeDisplayBounds();
       }
     }
@@ -91,7 +91,7 @@ namespace CSharpMath.Rendering {
 
     public void Draw(TCanvas canvas, TextAlignment alignment = TextAlignment.Center, Thickness padding = default, float offsetX = 0, float offsetY = 0) {
       var c = WrapCanvas(canvas);
-      if (ErrorMessage.IsNonEmpty()) DrawError(c);
+      if (!Source.IsEmpty) DrawError(c);
       else {
         if (_displayChanged) UpdateDisplay();
         Draw(c, IPainterExtensions.GetDisplayPosition(_display, FontSize, CoordinatesFromBottomLeftInsteadOfTopLeft, c.Width, c.Height, alignment, padding, offsetX, offsetY));
@@ -107,7 +107,7 @@ namespace CSharpMath.Rendering {
     }
 
     private void Draw(ICanvas canvas, PointF position) {
-      if (ErrorMessage.IsEmpty()) {
+      if (!Source.IsEmpty) {
         if (_displayChanged) UpdateDisplay();
         _display.SetPosition(position);
         canvas.Save();
