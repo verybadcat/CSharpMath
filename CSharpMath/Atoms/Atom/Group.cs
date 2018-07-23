@@ -11,11 +11,13 @@ namespace CSharpMath.Atoms {
     }
     public Group(Group cloneMe, bool finalize) : base(cloneMe, finalize) {
       InnerList = AtomCloner.Clone(cloneMe.InnerList, finalize);
-      Nucleus = cloneMe.Nucleus;
-      AtomType = MathAtomType.Accent;
     }
-    public override string StringValue => InnerList.StringValue;
+    public override string StringValue => $"{{{InnerList.StringValue}}}";
     public override T Accept<T, THelper>(IMathAtomVisitor<T, THelper> visitor, THelper helper) => visitor.Visit(this, helper);
+    public bool EqualsGroup(Group other) =>
+      EqualsAtom(other) && InnerList.NullCheckingEquals(other.InnerList);
+    public override bool Equals(object obj) => EqualsGroup(obj as Group);
+    public override int GetHashCode() => unchecked(base.GetHashCode() + 307 * (InnerList?.GetHashCode() ?? -1));
     public override string ToString() => StringValue;
   }
 }

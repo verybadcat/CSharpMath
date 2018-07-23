@@ -27,7 +27,7 @@ namespace CSharpMath.Interfaces {
     List<IMathAtom> FusedAtoms { get; }
 
     T Accept<T, THelper>(IMathAtomVisitor<T, THelper> visitor, THelper helper);
-
+#warning Remove this
     bool AllowTrailingAutoSpace { get; set; }
   }
 }

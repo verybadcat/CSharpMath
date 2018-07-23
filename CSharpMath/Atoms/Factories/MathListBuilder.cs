@@ -759,6 +759,7 @@ namespace CSharpMath.Atoms {
               break;
             }
           case MathAtomType.Group:
+#warning Should {} be added?
             builder.Append(MathListToString(((Group)atom).InnerList));
             break;
           default: {

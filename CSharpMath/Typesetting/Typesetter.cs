@@ -175,6 +175,19 @@ namespace CSharpMath {
               MakeScripts(atom, innerDisplay, atom.IndexRange.Location, 0);
             }
             break;
+          case MathAtomType.Group:
+            AddDisplayLine(false);
+            //no inserting space here as group has no inter-element space
+            var group = atom as Group;
+            MathListDisplay<TFont, TGlyph> groupDisplay =
+              _CreateLine(group.InnerList, _font, _context, _style, _cramped);
+            groupDisplay.Position = _currentPosition;
+            _currentPosition.X += groupDisplay.Width;
+            _displayAtoms.Add(groupDisplay);
+            if (atom.Subscript != null || atom.Superscript != null) {
+              MakeScripts(atom, groupDisplay, atom.IndexRange.Location, 0);
+            }
+            break;
           case MathAtomType.Underline:
             AddDisplayLine(false);
             // Underline is considered as Ord in rule 16.
@@ -516,6 +529,8 @@ namespace CSharpMath {
     };
 
     private float GetInterElementSpace(MathAtomType left, MathAtomType right) {
+      //no inter-element space for group
+      if (left == MathAtomType.Group || right == MathAtomType.Group) return 0;
       var leftIndex = GetInterElementSpaceArrayIndexForType(left, true);
       var rightIndex = GetInterElementSpaceArrayIndexForType(right, false);
       var spaces = InterElementSpaces.Spaces;
@@ -532,7 +547,6 @@ namespace CSharpMath {
     private void AddInterElementSpace(IMathAtom prevNode, MathAtomType currentType) {
       float space = 0;
       if (prevNode != null) {
-        if (prevNode.AtomType == MathAtomType.Group) return; //no inter-element space for group
         space = GetInterElementSpace(prevNode.AtomType, currentType);
       } else if (_spaced) {
         space = GetInterElementSpace(MathAtomType.Open, currentType);

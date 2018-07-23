@@ -21,8 +21,6 @@ namespace CSharpMath.Atoms {
 
     public Accent(Accent cloneMe, bool finalize): base(cloneMe, finalize) {
       InnerList = AtomCloner.Clone(cloneMe.InnerList, finalize);
-      Nucleus = cloneMe.Nucleus;
-      AtomType = MathAtomType.Accent;
     }
 
     public bool EqualsAccent(Accent other) =>

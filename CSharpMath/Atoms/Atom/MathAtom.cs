@@ -100,8 +100,8 @@ namespace CSharpMath.Atoms {
       AtomType == otherAtom.AtomType &&
       Superscript.NullCheckingEquals(otherAtom.Superscript) &&
       Subscript.NullCheckingEquals(otherAtom.Subscript) &&
-      IndexRange == otherAtom.IndexRange &&
-      FontStyle == otherAtom.FontStyle &&
+      //IndexRange == otherAtom.IndexRange &&
+      //FontStyle == otherAtom.FontStyle &&
       otherAtom.GetType() == this.GetType();
     
 

@@ -13,5 +13,6 @@
     public string Text { get; }
     public TextAtom Atom { get; }
     public string ErrorMessage { get; }
+    public bool IsValid => Atom != null;
   }
 }
