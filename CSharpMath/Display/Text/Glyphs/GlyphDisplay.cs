@@ -8,27 +8,25 @@ using CSharpMath.FrontEnd;
 using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Display {
-  public class GlyphDisplay<TFont, TGlyph> : IDownshiftableDisplay<TFont, TGlyph> 
+  public class GlyphDisplay<TFont, TGlyph> : IDownshiftableDisplay<TFont, TGlyph>
     where TFont : MathFont<TGlyph> {
-   
+
     public RectangleF DisplayBounds => this.ComputeDisplayBounds();
 
-    public float Ascent  {get;set;}
+    public float Ascent { get; set; }
 
     public float Descent { get; set; }
 
-    public float Width  {get;set;}
+    public float Width { get; set; }
 
-    public Range Range  {get;set;}
+    public Range Range { get; set; }
 
     public PointF Position { get; set; }
-    public void SetPosition(PointF value) =>
-      Position = value;
 
     public bool HasScript { get; set; }
     public float ShiftDown { get; set; }
 
-    public TGlyph Glyph { get; set; } 
+    public TGlyph Glyph { get; set; }
 
     public TFont Font { get; set; }
     public GlyphDisplay(TGlyph glyph, Range range, TFont font) {
@@ -47,7 +45,7 @@ namespace CSharpMath.Display {
     }
     public Color? TextColor { get; set; }
 
-    public void SetTextColor(Color? textColor) {
+    public void SetTextColorRecursive(Color? textColor) {
       TextColor = TextColor ?? textColor;
     }
   }

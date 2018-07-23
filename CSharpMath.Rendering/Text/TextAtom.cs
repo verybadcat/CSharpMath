@@ -12,7 +12,7 @@ namespace CSharpMath.Rendering {
 
     public Range Range { get; private set; }
 
-    public abstract IPositionableDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts, PointF position);
+    public abstract IDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts, PointF position);
 
     //Concrete types
     public sealed class Text : TextAtom {
@@ -20,7 +20,7 @@ namespace CSharpMath.Rendering {
 
       public string Content { get; }
 
-      public override IPositionableDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts, PointF position) => 
+      public override IDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts, PointF position) => 
         new TextRunDisplay<MathFonts, Glyph>(AttributedGlyphRuns.Create(Content, GlyphFinder.Instance.FindGlyphs(fonts, Content), fonts, false), Range, TypesettingContext.Instance) { Position = position };
     }
     public sealed class Math : TextAtom {
@@ -28,7 +28,7 @@ namespace CSharpMath.Rendering {
 
       public Interfaces.IMathList Content { get; }
 
-      public override IPositionableDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts, PointF position) {
+      public override IDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts, PointF position) {
         var p = Typesetter<MathFonts, Glyph>.CreateLine(Content, fonts, TypesettingContext.Instance, Enumerations.LineStyle.Text);
         p.Position = position;
         return p;
@@ -49,7 +49,7 @@ namespace CSharpMath.Rendering {
 
       public IReadOnlyList<TextAtom> Content { get; }
 
-      public override IPositionableDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts, PointF position) {
+      public override IDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts, PointF position) {
         var displays = new IDisplay<MathFonts, Glyph>[Content.Count];
         for (int i = 0; i < Content.Count; i++) {
           displays[i] = Content[i].ToDisplay(fonts, position);

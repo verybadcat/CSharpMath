@@ -10,28 +10,27 @@ namespace CSharpMath.Display {
   public class FractionDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph>
     where TFont : MathFont<TGlyph> {
     private PointF _position;
-    private Range _range;
 
     // A display representing the numerator of the fraction. Its position is relative
     //to the parent and it is not treated as a sub-display.
 
-    public MathListDisplay<TFont, TGlyph> Numerator { get; private set; }
+    public IDisplay<TFont, TGlyph> Numerator { get; private set; }
     // A display representing the numerator of the fraction. Its position is relative
     //to the parent and it is not treated as a sub-display.
-    public MathListDisplay<TFont, TGlyph> Denominator { get; private set; }
+    public IDisplay<TFont, TGlyph> Denominator { get; private set; }
 
     public float NumeratorUp { get; set; }
     public float DenominatorDown { get; set; }
     public float LineThickness { get; set; }
     public float LinePosition { get; set; }
 
-    public Range Range => _range;
+    public Range Range { get; }
 
-    public FractionDisplay(MathListDisplay<TFont, TGlyph> numeratorDisplay, MathListDisplay<TFont, TGlyph> denominatorDisplay, PointF currentPosition, Range range) {
+    public FractionDisplay(IDisplay<TFont, TGlyph> numeratorDisplay, IDisplay<TFont, TGlyph> denominatorDisplay, PointF currentPosition, Range range) {
       Numerator = numeratorDisplay;
       Denominator = denominatorDisplay;
       _position = currentPosition;
-      _range = range;
+      Range = range;
       UpdateNumeratorAndDenominatorPositions();
     }
 
@@ -78,15 +77,15 @@ namespace CSharpMath.Display {
       Numerator.Draw(context);
       Denominator.Draw(context);
       context.SaveState();
-      context.DrawLine(Position.X, Position.Y + LinePosition, Position.X+Width, Position.Y+LinePosition, LineThickness, TextColor);
+      context.DrawLine(Position.X, Position.Y + LinePosition, Position.X + Width, Position.Y + LinePosition, LineThickness, TextColor);
       context.RestoreState();
     }
     public Color? TextColor { get; set; }
 
-    public void SetTextColor(Color? textColor) {
+    public void SetTextColorRecursive(Color? textColor) {
       TextColor = TextColor ?? textColor;
-      ((IDisplay<TFont, TGlyph>)Numerator).SetTextColor(textColor);
-      ((IDisplay<TFont, TGlyph>)Denominator).SetTextColor(textColor);
+      Numerator.SetTextColorRecursive(textColor);
+      Denominator.SetTextColorRecursive(textColor);
     }
   }
 }

@@ -5,22 +5,24 @@ using System.Collections.Generic;
 namespace CSharpMath.Display.Text {
   public class StringAttribute<T> {
     private List<(int index, T t)> _values = new List<(int index, T t)>(); // the integer is the character at which the string starts having the value for the attribute. The list is always kept sorted by index.
-    public T ValueAt(int atIndex) {
-      T r = default;
-      foreach ((int index, T t) in _values) {
-        if (index <= atIndex) {
-          r = t;
-        } else {
-          break;
+    public T this[int index] {
+      get {
+        T r = default;
+        foreach ((int i, T t) in _values) {
+          if (i <= index) {
+            r = t;
+          } else {
+            break;
+          }
         }
+        return r;
       }
-      return r;
     }
     public StringAttribute(T t) {
       _values.Add((0, t));
     }
     public void Set(T value, Range range) {
-      var endValue = ValueAt(range.End);
+      var endValue = this[range.End];
       int n;
       // Remove any stops that are inside the range, and insert the new one.
       for (n = _values.Count; n>=0; n--) {
@@ -48,7 +50,7 @@ namespace CSharpMath.Display.Text {
       }
     }
     public void Append(StringAttribute<T> other, int myLength) {
-      T endValue = ValueAt(myLength);
+      T endValue = this[myLength];
       bool first = false;
       foreach (var (index, t) in other._values) {
         if (first && t.Equals(endValue)) {

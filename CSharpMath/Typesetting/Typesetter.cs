@@ -124,7 +124,7 @@ namespace CSharpMath {
             AddInterElementSpace(prevNode, MathAtomType.Color);
             var color = atom as IColor;
             var colorDisplay = CreateLine(color.InnerList, _font, _context, _style);
-            colorDisplay.SetTextColor(Color.FromHexString(color.ColorString));
+            colorDisplay.SetTextColorRecursive(Color.FromHexString(color.ColorString));
             colorDisplay.Position = _currentPosition;
             _currentPosition.X += colorDisplay.Width;
             _displayAtoms.Add(colorDisplay);
@@ -532,7 +532,7 @@ namespace CSharpMath {
     private void AddInterElementSpace(IMathAtom prevNode, MathAtomType currentType) {
       float space = 0;
       if (prevNode != null) {
-        if (!prevNode.AllowTrailingAutoSpace) return;
+        if (prevNode.AtomType == MathAtomType.Group) return; //no inter-element space for group
         space = GetInterElementSpace(prevNode.AtomType, currentType);
       } else if (_spaced) {
         space = GetInterElementSpace(MathAtomType.Open, currentType);
@@ -773,7 +773,7 @@ namespace CSharpMath {
       var innerGlyphs = new List<IDisplay<TFont, TGlyph>>();
       if (fraction.LeftDelimiter.IsNonEmpty()) {
         var leftGlyph = _FindGlyphForBoundary(fraction.LeftDelimiter, glyphHeight);
-        leftGlyph.SetPosition(position);
+        leftGlyph.Position = position;
         innerGlyphs.Add(leftGlyph);
         position.X += leftGlyph.Width;
       }
@@ -782,7 +782,7 @@ namespace CSharpMath {
       innerGlyphs.Add(display);
       if (fraction.RightDelimiter.IsNonEmpty()) {
         var rightGlyph = _FindGlyphForBoundary(fraction.RightDelimiter, glyphHeight);
-        rightGlyph.SetPosition(position);
+        rightGlyph.Position = position;
         innerGlyphs.Add(rightGlyph);
         position.X += rightGlyph.Width;
       }
@@ -808,7 +808,7 @@ namespace CSharpMath {
       var innerPosition = new PointF();
       if (inner.LeftBoundary != null && inner.LeftBoundary.Nucleus.IsNonEmpty()) {
         var leftGlyph = _FindGlyphForBoundary(inner.LeftBoundary.Nucleus, glyphHeight);
-        leftGlyph.SetPosition(innerPosition);
+        leftGlyph.Position = innerPosition;
         innerPosition.X += leftGlyph.Width;
         innerElements.Add(leftGlyph);
       }
@@ -818,7 +818,7 @@ namespace CSharpMath {
 
       if (inner.RightBoundary != null && inner.RightBoundary.Nucleus.Length > 0) {
         var rightGlyph = _FindGlyphForBoundary(inner.RightBoundary.Nucleus, glyphHeight);
-        rightGlyph.SetPosition(innerPosition);
+        rightGlyph.Position = innerPosition;
         innerPosition.X += rightGlyph.Width;
         innerElements.Add(rightGlyph);
       }
@@ -1103,7 +1103,7 @@ namespace CSharpMath {
       }
     }
 
-    private IPositionableDisplay<TFont, TGlyph> AddLimitsToDisplay(IPositionableDisplay<TFont, TGlyph> display,
+    private IDisplay<TFont, TGlyph> AddLimitsToDisplay(IDisplay<TFont, TGlyph> display,
       LargeOperator op, float delta) {
       if (op.Subscript == null && op.Superscript == null) {
         _currentPosition.X += display.Width;
@@ -1118,8 +1118,9 @@ namespace CSharpMath {
         if (op.Subscript!=null) {
           subscript = _CreateLine(op.Subscript, _font, _context, _scriptStyle, _subscriptCramped);
         }
-        var opsDisplay = new LargeOpLimitsDisplay<TFont, TGlyph>(display, superscript, subscript, delta/2, 0);
-        opsDisplay.SetPosition(_currentPosition);
+        var opsDisplay = new LargeOpLimitsDisplay<TFont, TGlyph>(display, superscript, subscript, delta / 2, 0) {
+          Position = _currentPosition
+        };
         if (superscript!=null) {
           var upperGap = Math.Max(_mathTable.UpperLimitGapMin(_styleFont),
                                   _mathTable.UpperLimitBaselineRiseMin(_styleFont)-superscript.Descent);

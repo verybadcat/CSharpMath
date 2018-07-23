@@ -59,7 +59,8 @@ namespace CSharpMath {
 
     #region Atoms not in iosMath (aka in the Extension)
 
-    RaiseBox = 50,
+    Group = 50,
+    RaiseBox,
 
     #endregion
 

@@ -52,7 +52,7 @@ namespace CSharpMath.Display {
     }
     public Color? TextColor { get; set; }
 
-    public void SetTextColor(Color? textColor) {
+    public void SetTextColorRecursive(Color? textColor) {
       TextColor = TextColor ?? textColor;
     }
   }

@@ -13,10 +13,10 @@ namespace CSharpMath.Display {
   {
     // A display representing the numerator of the fraction. Its position is relative
     // to the parent and it is not treated as a sub-display.
-    public MathListDisplay<TFont, TGlyph> Radicand { get; private set; }
+    public IDisplay<TFont, TGlyph> Radicand { get; private set; }
     // A display representing the numerator of the fraction. Its position is relative
     // to the parent and it is not treated as a sub-display.
-    public MathListDisplay<TFont, TGlyph> Degree { get; private set; }
+    public IDisplay<TFont, TGlyph> Degree { get; private set; }
 
     public float Width { get; set; }
 
@@ -27,15 +27,15 @@ namespace CSharpMath.Display {
     private float _radicalShift;
     private IDisplay<TFont, TGlyph> _radicalGlyph;
 
-    public RadicalDisplay(MathListDisplay<TFont, TGlyph> innerDisplay, IDownshiftableDisplay<TFont, TGlyph> glyph, PointF position, Range range)
+    public RadicalDisplay(IDisplay<TFont, TGlyph> innerDisplay, IDownshiftableDisplay<TFont, TGlyph> glyph, PointF position, Range range)
     {
       Radicand = innerDisplay;
       _radicalGlyph = glyph;
-      SetPosition(position);
+      Position = position;
       Range = range;
     }
 
-    public void SetDegree(MathListDisplay<TFont, TGlyph> degree, TFont degreeFont, FontMathTable<TFont, TGlyph> degreeFontMathTable)
+    public void SetDegree(IDisplay<TFont, TGlyph> degree, TFont degreeFont, FontMathTable<TFont, TGlyph> degreeFontMathTable)
     {
       var kernBefore = degreeFontMathTable.RadicalKernBeforeDegree(degreeFont);
       var kernAfter = degreeFontMathTable.RadicalKernAfterDegree(degreeFont);
@@ -47,9 +47,7 @@ namespace CSharpMath.Display {
         kernBefore -= _radicalShift;
         _radicalShift = 0;
       }
-
-
-
+      
       // Position of degree is relative to parent.
       Degree.Position = new PointF(this.Position.X + kernBefore, this.Position.Y + raise);
       // update the width by the _radicalShift
@@ -68,18 +66,11 @@ namespace CSharpMath.Display {
     public float Ascent { get; set; }
 
     public float Descent { get; set; }
-
-
-
+    
     public Range Range { get; set; }
 
-    public void SetPosition(PointF position)
-    {
-      Position = position;
-      _UpdateRadicandPosition();
-    }
-
-    public PointF Position { get; private set; } // set with SetPosition().
+    PointF _position;
+    public PointF Position { get => _position; set { _position = value; _UpdateRadicandPosition(); } }
     public bool HasScript { get; set; }
     public void Draw(IGraphicsContext<TFont, TGlyph> context)
     {
@@ -102,11 +93,11 @@ namespace CSharpMath.Display {
     }
     public Color? TextColor { get; set; }
 
-    public void SetTextColor(Color? textColor) {
+    public void SetTextColorRecursive(Color? textColor) {
       TextColor = TextColor ?? textColor;
-      _radicalGlyph.SetTextColor(TextColor);
-      ((IDisplay<TFont, TGlyph>)Radicand)?.SetTextColor(textColor);
-      ((IDisplay<TFont, TGlyph>)Degree)?.SetTextColor(textColor);
+      _radicalGlyph.SetTextColorRecursive(TextColor);
+      Radicand?.SetTextColorRecursive(textColor);
+      Degree?.SetTextColorRecursive(textColor);
     }
   }
 }

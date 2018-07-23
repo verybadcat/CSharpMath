@@ -83,6 +83,7 @@ namespace CSharpMath.Tests {
       var list = builder.Build();
       Assert.Null(builder.Error);
 
+      ExpandGroups(list);
       CheckAtomTypes(list, atomTypes);
 
 
@@ -102,6 +103,7 @@ namespace CSharpMath.Tests {
       var builder = new MathListBuilder(input);
       var list = builder.Build();
       Assert.Null(builder.Error);
+      ExpandGroups(list);
       CheckAtomTypes(list, atomTypes[0]);
 
       IMathAtom firstAtom = list[0];
@@ -120,6 +122,17 @@ namespace CSharpMath.Tests {
 
       string latex = MathListBuilder.MathListToString(list);
       Assert.Equal(output, latex);
+    }
+
+    ///<summary>Iteratively expands all groups in the list.</summary>
+    private void ExpandGroups(IMathList list) {
+      for (int i = 0; i < list.Count; i++) {
+        if (list[i].AtomType == MathAtomType.Group) {
+          var group = (Group)list[i];
+          for (int j = group.InnerList.Count - 1; j >= 0; j--) list.Insert(i + 1, group.InnerList[j]);
+          list.RemoveAt(i);
+        }
+      }
     }
 
     /// <summary>Safe to call with a null list. Types cannot be null however.</summary>
@@ -325,6 +338,7 @@ namespace CSharpMath.Tests {
       Assert.NotNull(list);
       Assert.Null(builder.Error);
 
+      ExpandGroups(list);
       CheckAtomTypes(list, expectedOutputTypes);
       var inner = list[innerIndex] as Inner;
       Assert.NotNull(inner);
@@ -368,6 +382,7 @@ namespace CSharpMath.Tests {
       Assert.NotNull(list);
       Assert.Equal(5, list.Count);
       var types = new MathAtomType[] { MathAtomType.Number, MathAtomType.BinaryOperator, MathAtomType.Fraction, MathAtomType.BinaryOperator, MathAtomType.Number };
+      ExpandGroups(list);
       CheckAtomTypes(list, types);
 
       var fraction = list[2] as Fraction;
@@ -420,6 +435,7 @@ namespace CSharpMath.Tests {
         MathAtomType.BinaryOperator,
         MathAtomType.Number
       };
+      ExpandGroups(list);
       CheckAtomTypes(list, types);
       var fraction = list[2] as IFraction;
       CheckAtomTypeAndNucleus(fraction, MathAtomType.Fraction, "");
@@ -832,6 +848,7 @@ namespace CSharpMath.Tests {
       MathAtoms.AddLatexSymbol("lcm", MathAtoms.Operator("lcm", false));
       var builder2 = new MathListBuilder(input);
       var list2 = builder2.Build();
+      ExpandGroups(list2);
       CheckAtomTypes(list2, MathAtomType.LargeOperator, MathAtomType.Open,
         MathAtomType.Variable, MathAtomType.Punctuation, MathAtomType.Variable,
         MathAtomType.Close);
@@ -927,19 +944,19 @@ namespace CSharpMath.Tests {
     }
 
     [Fact]
-    public void TestNoLimits() {
+    public void TestUnspecifiedLimits() {
       var input = @"\sum";
       var list = MathLists.FromString(input);
       Assert.Single(list);
       var op = list[0] as LargeOperator;
       Assert.Equal(MathAtomType.LargeOperator, op.AtomType);
-      Assert.True(op.Limits);
+      Assert.Null(op.Limits);
       var latex = MathListBuilder.MathListToString(list);
       Assert.Equal(@"\sum ", latex);
     }
 
     [Fact]
-    public void TestNoLimits2() {
+    public void TestNoLimits() {
       var input = @"\sum\nolimits";
       var list = MathLists.FromString(input);
       Assert.Single(list);

@@ -28,6 +28,6 @@ namespace CSharpMath.Display {
       }
     }
 
-    public override string ToString() => $"MathFont<TGlyph> {PointSize}";
+    public override string ToString() => $"[{nameof(MathFont<TGlyph>)}<{typeof(TGlyph).Name}>: {nameof(PointSize)}={PointSize}, {nameof(Style)}={Style}]";
   }
 }

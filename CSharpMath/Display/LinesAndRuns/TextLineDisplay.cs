@@ -10,8 +10,7 @@ using System.Linq;
 using System.Text;
 
 namespace CSharpMath.Display {
-  public class TextLineDisplay<TFont, TGlyph> : IPositionableDisplay<TFont, TGlyph>
-    where TFont: MathFont<TGlyph> {
+  public class TextLineDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph> where TFont: MathFont<TGlyph> {
     public TextLineDisplay(List<TextRunDisplay<TFont, TGlyph>> runs,
       IEnumerable<IMathAtom> atoms) {
       Runs = runs;
@@ -42,9 +41,6 @@ namespace CSharpMath.Display {
       context.RestoreState();
     }
     public PointF Position { get; set; }
-    public void SetPosition(PointF position) {
-      Position = position;
-    }
 
     public float Ascent => Runs.CollectionAscent();
     public float Descent => Runs.CollectionDescent();
@@ -53,10 +49,10 @@ namespace CSharpMath.Display {
     public bool HasScript { get; set; }
     public Color? TextColor { get; set; }
 
-    public void SetTextColor(Color? textColor) {
+    public void SetTextColorRecursive(Color? textColor) {
       TextColor = TextColor ?? textColor;
       foreach (var run in Runs) {
-        run.SetTextColor(textColor);
+        run.SetTextColorRecursive(textColor);
       }
     }
   }

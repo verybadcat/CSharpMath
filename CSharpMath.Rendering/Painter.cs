@@ -32,7 +32,7 @@ namespace CSharpMath.Rendering {
     #region Fields
     //_field == private field, __field == property-only field
     protected bool _displayChanged = true;
-    protected IPositionableDisplay<TFonts, Glyph> _display;
+    protected IDisplay<TFonts, Glyph> _display;
     protected readonly GraphicsContext _context = new GraphicsContext();
     #endregion Fields
 
@@ -80,7 +80,7 @@ namespace CSharpMath.Rendering {
       _displayChanged = false;
     }
 
-    protected abstract IPositionableDisplay<TFonts, Glyph> CreateDisplay(TFonts fonts);
+    protected abstract IDisplay<TFonts, Glyph> CreateDisplay(TFonts fonts);
 
     public abstract Color WrapColor(TColor color);
     public abstract TColor UnwrapColor(Color color);
@@ -109,7 +109,7 @@ namespace CSharpMath.Rendering {
     private void Draw(ICanvas canvas, PointF position) {
       if (ErrorMessage.IsNonEmpty()) {
         if (_displayChanged) UpdateDisplay();
-        _display.SetPosition(position);
+        _display.Position = position;
         canvas.Save();
         if (!CoordinatesFromBottomLeftInsteadOfTopLeft) {
           //invert the canvas vertically

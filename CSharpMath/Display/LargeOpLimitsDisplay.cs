@@ -7,13 +7,13 @@ using CSharpMath.FrontEnd;
 using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Display {
-  public class LargeOpLimitsDisplay<TFont, TGlyph> : IPositionableDisplay<TFont, TGlyph>
+  public class LargeOpLimitsDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph>
     where TFont : MathFont<TGlyph> {
-    private IPositionableDisplay<TFont, TGlyph> _nucleusDisplay;
+    private IDisplay<TFont, TGlyph> _nucleusDisplay;
     private readonly float _limitShift;
     private readonly int _extraPadding;
-    private float _upperLimitGap { get; set; }
-    private float _lowerLimitGap { get; set; }
+    private float _upperLimitGap;
+    private float _lowerLimitGap;
 
     public void SetUpperLimitGap(float value) {
       _upperLimitGap = value;
@@ -25,7 +25,7 @@ namespace CSharpMath.Display {
       _UpdateLowerLimitPosition();
     }
 
-    public LargeOpLimitsDisplay(IPositionableDisplay<TFont, TGlyph> nucleusDisplay, MathListDisplay<TFont, TGlyph> upperLimit, MathListDisplay<TFont, TGlyph> lowerLimit, float limitShift, int extraPadding) {
+    public LargeOpLimitsDisplay(IDisplay<TFont, TGlyph> nucleusDisplay, IDisplay<TFont, TGlyph> upperLimit, IDisplay<TFont, TGlyph> lowerLimit, float limitShift, int extraPadding) {
       _nucleusDisplay = nucleusDisplay;
       UpperLimit = upperLimit;
       LowerLimit = lowerLimit;
@@ -41,10 +41,10 @@ namespace CSharpMath.Display {
 
     // A display representing the numerator of the fraction. Its position is relative
     // to the parent and it is not treated as a sub-display.
-    public MathListDisplay<TFont, TGlyph> UpperLimit { get; private set; }
+    public IDisplay<TFont, TGlyph> UpperLimit { get; private set; }
     // A display representing the numerator of the fraction. Its position is relative
     // to the parent and it is not treated as a sub-display.
-    public MathListDisplay<TFont, TGlyph> LowerLimit { get; private set; }
+    public IDisplay<TFont, TGlyph> LowerLimit { get; private set; }
 
     public RectangleF DisplayBounds => this.ComputeDisplayBounds();
 
@@ -84,11 +84,9 @@ namespace CSharpMath.Display {
       }
     }
 
-    public PointF Position { get; private set; }
-    public void SetPosition(PointF position) {
-      Position = position;
-      _UpdateComponentPositions();
-    }
+    PointF _position;
+    public PointF Position { get => _position; set { _position = value; _UpdateComponentPositions(); } }
+
     public bool HasScript { get; set; }
 
     private void _UpdateComponentPositions() {
@@ -114,7 +112,7 @@ namespace CSharpMath.Display {
       var position = new PointF(
         Position.X + (Width - _nucleusDisplay.Width) / 2,
         Position.Y);
-      _nucleusDisplay.SetPosition(position);
+      _nucleusDisplay.Position = position;
     }
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
       UpperLimit?.Draw(context);
@@ -124,10 +122,10 @@ namespace CSharpMath.Display {
 
     public Color? TextColor { get; set; }
 
-    public void SetTextColor(Color? textColor) {
+    public void SetTextColorRecursive(Color? textColor) {
       TextColor = TextColor ?? textColor;
-      ((IDisplay<TFont, TGlyph>)UpperLimit).SetTextColor(textColor);
-      ((IDisplay<TFont, TGlyph>)LowerLimit).SetTextColor(textColor);
+      UpperLimit.SetTextColorRecursive(textColor);
+      LowerLimit.SetTextColorRecursive(textColor);
     }
   }
 }

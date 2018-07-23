@@ -25,11 +25,8 @@ namespace CSharpMath.Atoms {
       AtomType = MathAtomType.Accent;
     }
 
-    public bool EqualsAccent(Accent other) {
-      bool r = this.EqualsAtom(other);
-      r &= InnerList.NullCheckingEquals(other.InnerList);
-      return r;
-    }
+    public bool EqualsAccent(Accent other) =>
+      this.EqualsAtom(other) && InnerList.NullCheckingEquals(other.InnerList);
 
     public override bool Equals(object obj)
       => EqualsAccent(obj as Accent);

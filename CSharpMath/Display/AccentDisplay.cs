@@ -11,30 +11,32 @@ namespace CSharpMath.Display {
     where TFont : MathFont<TGlyph> {
 
 
-    public AccentDisplay(GlyphDisplay<TFont, TGlyph> accentGlyphDisplay, MathListDisplay<TFont, TGlyph> accentee) {
+    public AccentDisplay(GlyphDisplay<TFont, TGlyph> accentGlyphDisplay, IDisplay<TFont, TGlyph> accentee) {
       Accent = accentGlyphDisplay;
       Accentee = accentee;
     }
 
-    public MathListDisplay<TFont, TGlyph> Accentee { get; private set; }
+    // A display representing the inner list that is accented. It's position is relative to the parent is not treated as a sub-display.
+    public IDisplay<TFont, TGlyph> Accentee { get; private set; }
+    // A display representing the accent. It's position is relative to the current display.
     public GlyphDisplay<TFont, TGlyph> Accent { get; private set; }
 
-    public RectangleF DisplayBounds => ((IDisplay<TFont, TGlyph>)Accentee).DisplayBounds;
+    public RectangleF DisplayBounds => Accentee.DisplayBounds;
 
-    public float Ascent => ((IDisplay<TFont, TGlyph>)Accentee).Ascent;
+    public float Ascent => Accentee.Ascent;
 
-    public float Descent => ((IDisplay<TFont, TGlyph>)Accentee).Descent;
+    public float Descent => Accentee.Descent;
 
-    public float Width => ((IDisplay<TFont, TGlyph>)Accentee).Width;
+    public float Width => Accentee.Width;
 
-    public Range Range => ((IDisplay<TFont, TGlyph>)Accentee).Range;
+    public Range Range => Accentee.Range;
 
-    public PointF Position => ((IDisplay<TFont, TGlyph>)Accentee).Position;
+    public PointF Position { get => Accentee.Position; set => Accentee.Position = value; }
     
     public bool HasScript { get; set; }
 
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
-      ((IDisplay<TFont, TGlyph>)Accentee).Draw(context);
+      Accentee.Draw(context);
       context.SaveState();
       context.Translate(Position);
       context.SetTextPosition(new PointF());
@@ -44,10 +46,10 @@ namespace CSharpMath.Display {
 
     public Color? TextColor { get; set; }
 
-    public void SetTextColor(Color? textColor) {
+    public void SetTextColorRecursive(Color? textColor) {
       TextColor = TextColor ?? textColor;
-      ((IDisplay<TFont, TGlyph>)Accentee).SetTextColor(textColor);
-      ((IDisplay<TFont, TGlyph>)Accent).SetTextColor(textColor);
+      Accentee.SetTextColorRecursive(textColor);
+      Accent.SetTextColorRecursive(textColor);
     }
   }
 }

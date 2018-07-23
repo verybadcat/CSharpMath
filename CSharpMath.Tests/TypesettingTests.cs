@@ -33,7 +33,7 @@ namespace CSharpMath.Tests {
       var sub0 = display.Displays[0];
       Assert.True(sub0 is TextLineDisplay<TFont, TGlyph>);
       var line = sub0 as TextLineDisplay<TFont, TGlyph>;
-      //Assert.Single(line.Atoms); // have to think about these; doesn't really work atm
+      Assert.Single(line.Atoms); // have to think about these; doesn't really work atm
 
       Assert.Equal("x", line.StringText());
       Assert.Equal(new PointF(), line.Position);
@@ -311,8 +311,9 @@ namespace CSharpMath.Tests {
       Assert.Equal(new Range(0, 1), subFraction.Range);
       Assert.False(subFraction.HasScript);
       Assertions.ApproximatePoint(10, 0, subFraction.Position, 0.01);
-
-      var numerator = subFraction.Numerator;
+      
+      var numerator = subFraction.Numerator as MathListDisplay<TFont, TGlyph>;
+      Assert.NotNull(numerator);
       Assert.Equal(LinePosition.Regular, numerator.MyLinePosition);
       Assertions.ApproximatePoint(10, 13.54, numerator.Position, 0.01);
       Assert.Single(numerator.Displays);
@@ -326,7 +327,8 @@ namespace CSharpMath.Tests {
       Assert.Equal(new Range(0, 1), subNumerator.Range);
       Assert.False(subNumerator.HasScript);
 
-      var denominator = subFraction.Denominator;
+      var denominator = subFraction.Denominator as MathListDisplay<TFont, TGlyph>;
+      Assert.NotNull(denominator);
       Assert.Equal(LinePosition.Regular, denominator.MyLinePosition);
       Assertions.ApproximatePoint(10, -13.72, denominator.Position, 0.01);
       Assert.Equal(new Range(0, 1), denominator.Range);
@@ -376,7 +378,8 @@ namespace CSharpMath.Tests {
       Assert.Equal(new PointF(), fraction.Position);
       Assert.False(fraction.HasScript);
 
-      var numerator = fraction.Numerator;
+      var numerator = fraction.Numerator as MathListDisplay<TFont, TGlyph>;
+      Assert.NotNull(numerator);
       Assert.Equal(LinePosition.Regular, numerator.MyLinePosition);
       Assertions.ApproximatePoint(0, 13.54, numerator.Position, 0.01);
       Assert.Equal(new Range(0, 1), numerator.Range);
@@ -391,7 +394,8 @@ namespace CSharpMath.Tests {
       Assert.Equal(new Range(0, 1), subNumerator.Range);
       Assert.False(subNumerator.HasScript);
 
-      var denominator = fraction.Denominator;
+      var denominator = fraction.Denominator as MathListDisplay<TFont, TGlyph>;
+      Assert.NotNull(denominator);
       Assert.Equal(LinePosition.Regular, denominator.MyLinePosition);
       Assertions.ApproximatePoint(0, -13.72, denominator.Position, 0.01);
       Assert.Equal(new Range(0, 1), denominator.Range);
@@ -463,7 +467,8 @@ namespace CSharpMath.Tests {
       Assert.False(fraction.HasScript);
       Assert.Equal(new PointF(), fraction.Position);
 
-      var numerator = fraction.Numerator;
+      var numerator = fraction.Numerator as MathListDisplay<TFont, TGlyph>;
+      Assert.NotNull(numerator);
       Assert.Equal(LinePosition.Regular, numerator.MyLinePosition);
       Assert.False(numerator.HasScript);
       Assertions.ApproximatePoint(0, 13.54, numerator.Position, 0.01);
@@ -478,7 +483,8 @@ namespace CSharpMath.Tests {
       Assert.Equal(new Range(0, 1), subNumerator.Range);
       Assert.False(subNumerator.HasScript);
 
-      var denominator = fraction.Denominator;
+      var denominator = fraction.Numerator as MathListDisplay<TFont, TGlyph>;
+      Assert.NotNull(denominator);
       Assert.Equal(LinePosition.Regular, denominator.MyLinePosition);
       Assertions.ApproximatePoint(0, -13.73, denominator.Position, 0.01);
       Assert.Equal(new Range(0, 1), denominator.Range);
@@ -583,7 +589,8 @@ namespace CSharpMath.Tests {
       Assert.NotNull(radical.Radicand);
       Assert.Null(radical.Degree);
 
-      var display2 = radical.Radicand;
+      var display2 = radical.Radicand as MathListDisplay<TFont, TGlyph>;
+      Assert.NotNull(display2);
       Assert.Equal(LinePosition.Regular, display2.MyLinePosition);
       Assertions.ApproximatePoint(10, 0, display2.Position, 0.01);
       Assert.Equal(new Range(0, 1), display2.Range);

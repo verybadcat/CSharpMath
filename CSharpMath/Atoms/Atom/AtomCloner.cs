@@ -13,7 +13,7 @@ namespace CSharpMath.Atoms {
 
     public IMathAtom Visit(Inner target, bool finalize)
   => new Inner(target, finalize);
-
+    public IMathAtom Visit(Group group, bool finalize) => new Group(group, finalize);
     public IMathAtom Visit(LargeOperator target, bool finalize)
       => new LargeOperator(target, finalize);
     public IMathAtom Visit(MathAtom target, bool finalize)

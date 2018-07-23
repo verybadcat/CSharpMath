@@ -6,12 +6,15 @@ namespace CSharpMath.Rendering {
 
     public float LineWidth { get; set; }
 
-    protected override IPositionableDisplay<MathFonts, Glyph> CreateDisplay(MathFonts fonts) {
+    protected override IDisplay<MathFonts, Glyph> CreateDisplay(MathFonts fonts) {
       var displays = Atom.ToDisplay(fonts, default);
-      if(displays is Display.MathListDisplay<MathFonts, Glyph> list)
-         foreach (var display in list.Displays) {
-           if(display is i display.Position.Y >= LineWidth) display.po
-         }
+      float y = 0f, lineHeight = 0f;
+      void AddLineBreaks(IDisplay<MathFonts, Glyph> display) {
+        if (displays is Display.MathListDisplay<MathFonts, Glyph> list)
+          foreach (var d in list.Displays) AddLineBreaks(d);
+        else if (display.Position.X >= LineWidth) y += lineHeight;
+
+      }
       return displays;
     }
 

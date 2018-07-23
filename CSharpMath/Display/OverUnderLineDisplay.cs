@@ -11,7 +11,7 @@ namespace CSharpMath.Display {
   public class OverOrUnderlineDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph>
     where TFont : MathFont<TGlyph> {
 
-    public OverOrUnderlineDisplay(MathListDisplay<TFont, TGlyph> inner, PointF position) {
+    public OverOrUnderlineDisplay(IDisplay<TFont, TGlyph> inner, PointF position) {
       Inner = inner;
       Position = position;
     }
@@ -21,17 +21,17 @@ namespace CSharpMath.Display {
 
     /// <summary>A display representing the inner list that is underlined.
     /// Its position is relative to the parent. </summary>
-    public MathListDisplay<TFont, TGlyph> Inner { get; private set; }
+    public IDisplay<TFont, TGlyph> Inner { get; }
 
-    public RectangleF DisplayBounds => ((IDisplay<TFont, TGlyph>)Inner).DisplayBounds;
+    public RectangleF DisplayBounds => Inner.DisplayBounds;
 
-    public float Ascent => ((IDisplay<TFont, TGlyph>)Inner).Ascent;
+    public float Ascent => Inner.Ascent;
 
-    public float Descent => ((IDisplay<TFont, TGlyph>)Inner).Descent;
+    public float Descent => Inner.Descent;
 
-    public float Width => ((IDisplay<TFont, TGlyph>)Inner).Width;
+    public float Width => Inner.Width;
 
-    public Range Range => ((IDisplay<TFont, TGlyph>)Inner).Range;
+    public Range Range => Inner.Range;
 
     public PointF Position {
       get => Inner.Position;
@@ -41,7 +41,7 @@ namespace CSharpMath.Display {
     public bool HasScript { get; set; }
 
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
-      ((IDisplay<TFont, TGlyph>)Inner).Draw(context);
+      Inner.Draw(context);
       context.SaveState();
       context.DrawLine(Position.X, Position.Y + LineShiftUp, Position.X + Inner.Width, Position.Y + LineShiftUp, LineThickness, TextColor);
       context.RestoreState();
@@ -49,10 +49,9 @@ namespace CSharpMath.Display {
 
     public Color? TextColor { get; set; }
 
-    public void SetTextColor(Color? textColor) {
+    public void SetTextColorRecursive(Color? textColor) {
       TextColor = TextColor ?? textColor;
-      ((IDisplay<TFont, TGlyph>)Inner).SetTextColor(textColor);
+      Inner.SetTextColorRecursive(textColor);
     }
-
   }
 }

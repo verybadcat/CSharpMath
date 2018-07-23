@@ -33,124 +33,8 @@ namespace CSharpMath.Atoms {
         return _aliases;
       }
     }
-    public static MathAtom Create(MathAtomType type, string value) {
-      switch (type) {
-        case MathAtomType.Accent:
-          return new Accent(value);
-        case MathAtomType.Color:
-          return new Color();
-        case MathAtomType.Fraction:
-          return new Fraction();
-        case MathAtomType.Inner:
-          return new Inner();
-        case MathAtomType.LargeOperator:
-          return new LargeOperator(value, null);
-        case MathAtomType.Overline:
-          return new Overline();
-        case MathAtomType.Underline:
-          return new Underline();
-        case MathAtomType.Space:
-          return new Space(0, true);
-        default:
-          return new MathAtom(type, value);
-      }
-    }
-    public static MathAtom Create(MathAtomType type, char value)
-      => Create(type, value.ToString());
-    public static MathAtom Placeholder
-      => Create(MathAtomType.Placeholder, Symbols.WhiteSquare);
-
-    public static MathAtom Times
-      => Create(MathAtomType.BinaryOperator, Symbols.Multiplication);
-
-    public static MathAtom Divide
-      => Create(MathAtomType.BinaryOperator, Symbols.Division);
-
-    private static MathList PlaceholderList => new MathList { Placeholder };
-
-    public static Fraction PlaceholderFraction => new Fraction {
-          Numerator = PlaceholderList,
-          Denominator = PlaceholderList
-        };
-
-    public static Radical PlaceholderRadical => new Radical {
-          Degree = PlaceholderList,
-          Radicand = PlaceholderList
-        };
-
-    public static MathAtom PlaceholderSquareRoot => new Radical {
-          Radicand = PlaceholderList
-        };
-
-    public static LargeOperator Operator(string name, bool? limits, bool noLimits = false)
-      => new LargeOperator(name, limits, noLimits);
-
-    public static MathAtom ForCharacter(char c) {
-      if (char.IsControl(c) || char.IsWhiteSpace(c)) {
-        return null; // skip spaces
-      }
-      if (c >= '0' && c <= '9') {
-        return Create(MathAtomType.Number, c);
-      }
-      if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
-        return Create(MathAtomType.Variable, c);
-      }
-      switch (c) {
-        case '$':
-        case '%':
-        case '#':
-        case '&':
-        case '~':
-        case '\'':
-        case '^':
-        case '_':
-        case '{':
-        case '}':
-        case '\\': // All these are special characters we don't support.
-          return null;
-        case '(':
-        case '[':
-          return Create(MathAtomType.Open, c);
-        case ')':
-        case ']':
-        case '!':
-        case '?':
-          return Create(MathAtomType.Close, c);
-        case ',':
-        case ';':
-          return Create(MathAtomType.Punctuation, c);
-        case '=':
-        case '<':
-        case '>':
-          return Create(MathAtomType.Relation, c);
-        case ':': // Colon is a ratio. Regular colon is \colon
-          return Create(MathAtomType.Relation, "\u2236");
-        case '-': // use the math minus sign
-          return Create(MathAtomType.BinaryOperator, "\u2212");
-        case '+':
-        case '*':
-          return Create(MathAtomType.BinaryOperator, c);
-        case '.':
-          return Create(MathAtomType.Number, c);
-        case '"':
-        case '/':
-        case '@':
-        case '`':
-        case '|':
-        default: //also support non-ascii characters
-          return Create(MathAtomType.Ordinary, c);
-          //throw new NotImplementedException($"Ascii character {c} should have been accounted for.");
-      }
-    }
-
-    internal static FontStyle? FontStyle(string command) {
-      var dict = FontStyleExtensions.FontStyles;
-      FontStyle? r = dict.ContainsKey(command) ? (FontStyle?) dict[command] : null;
-      return r;
-    }
 
     private static BiDictionary<string, MathAtom> _commands;
-
     public static BiDictionary<string, MathAtom> Commands {
       get {
         if (_commands == null) {
@@ -456,6 +340,117 @@ namespace CSharpMath.Atoms {
         return _commands;
       }
     }
+    public static MathAtom Create(MathAtomType type, string value) {
+      switch (type) {
+        case MathAtomType.Accent:
+          return new Accent(value);
+        case MathAtomType.Color:
+          return new Color();
+        case MathAtomType.Fraction:
+          return new Fraction();
+        case MathAtomType.Inner:
+          return new Inner();
+        case MathAtomType.LargeOperator:
+          return new LargeOperator(value, null);
+        case MathAtomType.Overline:
+          return new Overline();
+        case MathAtomType.Underline:
+          return new Underline();
+        case MathAtomType.Space:
+          return new Space(0, true);
+        default:
+          return new MathAtom(type, value);
+      }
+    }
+    public static MathAtom Create(MathAtomType type, char value)
+      => Create(type, value.ToString());
+    public static MathAtom Placeholder
+      => Create(MathAtomType.Placeholder, Symbols.WhiteSquare);
+
+    public static MathAtom Times
+      => Create(MathAtomType.BinaryOperator, Symbols.Multiplication);
+
+    public static MathAtom Divide
+      => Create(MathAtomType.BinaryOperator, Symbols.Division);
+
+    private static MathList PlaceholderList => new MathList { Placeholder };
+
+    public static Fraction PlaceholderFraction => new Fraction {
+          Numerator = PlaceholderList,
+          Denominator = PlaceholderList
+        };
+
+    public static Radical PlaceholderRadical => new Radical {
+          Degree = PlaceholderList,
+          Radicand = PlaceholderList
+        };
+
+    public static MathAtom PlaceholderSquareRoot => new Radical {
+          Radicand = PlaceholderList
+        };
+
+    public static LargeOperator Operator(string name, bool? limits, bool noLimits = false)
+      => new LargeOperator(name, limits, noLimits);
+
+    public static MathAtom ForCharacter(char c) {
+      if (char.IsControl(c) || char.IsWhiteSpace(c)) {
+        return null; // skip spaces
+      }
+      if (c >= '0' && c <= '9') {
+        return Create(MathAtomType.Number, c);
+      }
+      if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
+        return Create(MathAtomType.Variable, c);
+      }
+      switch (c) {
+        case '$':
+        case '%':
+        case '#':
+        case '&':
+        case '~':
+        case '\'':
+        case '^':
+        case '_':
+        case '{':
+        case '}':
+        case '\\': // All these are special characters we don't support.
+          return null;
+        case '(':
+        case '[':
+          return Create(MathAtomType.Open, c);
+        case ')':
+        case ']':
+        case '!':
+        case '?':
+          return Create(MathAtomType.Close, c);
+        case ',':
+        case ';':
+          return Create(MathAtomType.Punctuation, c);
+        case '=':
+        case '<':
+        case '>':
+          return Create(MathAtomType.Relation, c);
+        case ':': // Colon is a ratio. Regular colon is \colon
+          return Create(MathAtomType.Relation, "\u2236");
+        case '-': // use the math minus sign
+          return Create(MathAtomType.BinaryOperator, "\u2212");
+        case '+':
+        case '*':
+          return Create(MathAtomType.BinaryOperator, c);
+        case '.':
+          return Create(MathAtomType.Number, c);
+        case '"':
+        case '/':
+        case '@':
+        case '`':
+        case '|':
+        default: //also support non-ascii characters
+          return Create(MathAtomType.Ordinary, c);
+          //throw new NotImplementedException($"Ascii character {c} should have been accounted for.");
+      }
+    }
+
+    internal static FontStyle? FontStyle(string command) => FontStyleExtensions.FontStyles.TryGetByFirst(command, out var fontStyle) ? fontStyle : default(FontStyle?);
 
     public static MathList MathListForCharacters(string chars) {
       var r = new MathList();
@@ -493,13 +488,13 @@ namespace CSharpMath.Atoms {
       { ")", ")" },
       { "[", "[" },
       { "]", "]" },
+      { "{", "{" },
+      { "}", "}" },
       { "<", "\u2329" },
       { ">", "\u232A" },
       { "/", "/" },
       { "\\", "\\" },
       { "|", "|" },
-      { "lgroup", "\u27EE" },
-      { "rgroup", "\u27EF" },
       { "||", "\u2016" },
       { "Vert", "\u2016" },
       { "vert", "|" },
@@ -510,12 +505,12 @@ namespace CSharpMath.Atoms {
       { "Downarrow", "\u21D3" },
       { "Updownarrow", "\u21D5" },
       { "backslash", "\\" },
-      { "rangle", "\u232A" },
-      { "langle", "\u2329" },
-      { "rbrace", "}" },
-      { "}", "}" },
-      { "{", "{" },
+      { "lgroup", "\u27EE" },
+      { "rgroup", "\u27EF" },
       { "lbrace", "{" },
+      { "rbrace", "}" },
+      { "langle", "\u2329" },
+      { "rangle", "\u232A" },
       { "lceil", "\u2308" },
       { "rceil", "\u2309" },
       { "lfloor", "\u230A" },

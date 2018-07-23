@@ -23,34 +23,9 @@ namespace CSharpMath {
   }
 
   public static class FontStyleExtensions {
-    public static string FontName(this FontStyle style) {
-      switch (style) {
-        case FontStyle.Default:
-          return "mathnormal";
-        case FontStyle.Roman:
-          return "mathrm";
-        case FontStyle.Bold:
-          return "mathbf";
-        case FontStyle.Fraktur:
-          return "mathfrak";
-        case FontStyle.Caligraphic:
-          return "mathcal";
-        case FontStyle.Italic:
-          return "mathit";
-        case FontStyle.SansSerif:
-          return "mathsf";
-        case FontStyle.Blackboard:
-          return "mathbb";
-        case FontStyle.Typewriter:
-          return "mathtt";
-        case FontStyle.BoldItalic:
-          return "bm";
-        default:
-          return null;
-      }
-    }
-    public static Dictionary<string, FontStyle> FontStyles { get; } =
-      new Dictionary<string, FontStyle> {
+    public static string FontName(this FontStyle style) => FontStyles[style][0];
+    public static MultiDictionary<string, FontStyle> FontStyles { get; } =
+      new MultiDictionary<string, FontStyle> {
         {"mathnormal", FontStyle.Default },
         {"mathrm", FontStyle.Roman },
         {"rm", FontStyle.Roman },

@@ -26,7 +26,7 @@ namespace CSharpMath
 
     public TSecond this[TFirst first] => firstToSecond[first];
 
-    public TFirst this[TSecond first] => secondToFirst[first];
+    public TFirst this[TSecond second] => secondToFirst[second];
 
     public bool TryGetByFirst(TFirst first, out TSecond second) =>
       firstToSecond.TryGetValue(first, out second);

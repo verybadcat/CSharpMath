@@ -103,10 +103,11 @@ namespace CSharpMath.Atoms {
               r.Append(sublist);
               return r;
             }
+            //TODO
             //https://phabricator.wikimedia.org/T99369
             //https://phab.wmfusercontent.org/file/data/xsimlcnvo42siudvwuzk/PHID-FILE-bdcqexocj5b57tj2oezn/math_rendering.png
             //dt, \text{d}t, \partial t, \nabla\psi \\ \underline\overline{dy/dx, \text{d}y/\text{d}x, \frac{dy}{dx}, \frac{\text{d}y}{\text{d}x}, \frac{\partial^2}{\partial x_1\partial x_2}y} \\ \prime,
-            atom = new Inner { InnerList = sublist, AllowTrailingAutoSpace = false };
+            atom = new Group { InnerList = sublist };
             break;
           case '}':
             if (oneCharOnly || stopChar != 0) {
@@ -757,6 +758,9 @@ namespace CSharpMath.Atoms {
               builder.Append($@"\color{{{color.ColorString}}}{{{MathListToString(color.InnerList)}}}");
               break;
             }
+          case MathAtomType.Group:
+            builder.Append(MathListToString(((Group)atom).InnerList));
+            break;
           default: {
               var aNucleus = atom.Nucleus;
               if (String.IsNullOrEmpty(aNucleus)) {

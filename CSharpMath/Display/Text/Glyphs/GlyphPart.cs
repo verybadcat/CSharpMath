@@ -13,9 +13,7 @@ namespace CSharpMath.Display {
     /// <summary>If the glyph is an extender, it can be skipped or repeated.</summary>
     public bool IsExtender { get; set; }
 
-    public override string ToString()
-    {
-      return string.Format("[GlyphPart: Glyph={0}, FullAdvance={1}, StartConnectorLength={2}, EndConnectorLength={3}, IsExtender={4}]", Glyph, FullAdvance, StartConnectorLength, EndConnectorLength, IsExtender);
-    }
+    public override string ToString() =>
+      $@"[{nameof(GlyphPart<TGlyph>)}: {nameof(Glyph)}={Glyph}, {nameof(FullAdvance)}={FullAdvance}, {nameof(StartConnectorLength)}={StartConnectorLength}, {nameof(EndConnectorLength)}={EndConnectorLength}, {nameof(IsExtender)}={IsExtender}]";
   }
 }

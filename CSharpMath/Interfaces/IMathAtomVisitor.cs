@@ -8,6 +8,7 @@ namespace CSharpMath.Interfaces {
     T Visit(Accent accent, THelper helper);
     T Visit(Fraction fraction, THelper helper);
     T Visit(Inner inner, THelper helper);
+    T Visit(Group group, THelper helper);
     T Visit(LargeOperator op, THelper helper);
     T Visit(MathAtom atom, THelper helper);
 

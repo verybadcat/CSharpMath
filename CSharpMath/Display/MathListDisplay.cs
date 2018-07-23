@@ -12,17 +12,16 @@ namespace CSharpMath.Display {
   /// <summary>
   /// Corresponds to MTMathListDisplay in iosMath.
   /// </summary>
-  public class MathListDisplay<TFont, TGlyph>: IPositionableDisplay<TFont, TGlyph>
+  public class MathListDisplay<TFont, TGlyph>: IDisplay<TFont, TGlyph>
     where TFont : MathFont<TGlyph> {
     public IDisplay<TFont, TGlyph>[] Displays { get; set; }
     public LinePosition MyLinePosition { get; set; }
     public Color? TextColor { get; set; }
     public bool HasScript { get; set; }
-    /// <summary> Recursively. While translating, we'll keep the iosMath name "setTextColor".</summary> 
-    public void SetTextColor(Color? textColor) {
+    public void SetTextColorRecursive(Color? textColor) {
       TextColor = TextColor ?? textColor;
-      foreach (var atom in Displays) {
-        atom.SetTextColor(textColor);
+      foreach (var display in Displays) {
+        display.SetTextColorRecursive(textColor);
       }
     }
     /// <summary>For a subscript or superscript, this is the index in the
@@ -38,7 +37,6 @@ namespace CSharpMath.Display {
     public float Ascent => Displays.CollectionAscent();
     public float Descent => Displays.CollectionDescent();
     public PointF Position { get; set; }
-    public void SetPosition(PointF position) => Position = position;
     public RectangleF DisplayBounds => this.ComputeDisplayBounds();
     public Range Range => RangeExtensions.Combine(Displays.Select(d => d.Range));
     public float Width {

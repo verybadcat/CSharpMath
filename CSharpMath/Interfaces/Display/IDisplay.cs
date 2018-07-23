@@ -20,9 +20,10 @@ namespace CSharpMath {
     float Width { get; }
     Range Range { get; }
     /// <summary>Position of the display, relative to its parent.</summary> 
-    PointF Position { get; }
+    PointF Position { get; set; }
     Color? TextColor { get; set; }
-    void SetTextColor(Color? textColor);
+    /// <summary> iosMath name is "setTextColor".</summary> 
+    void SetTextColorRecursive(Color? textColor);
     bool HasScript { get; set; }
   }
 
