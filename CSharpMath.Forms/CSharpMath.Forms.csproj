@@ -31,9 +31,4 @@
   <ItemGroup>
     <ProjectReference Include="..\CSharpMath.SkiaSharp\CSharpMath.SkiaSharp.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Update="FormsMathView.xaml.cs">
-      <DependentUpon>FormsMathView.xaml</DependentUpon>
-    </Compile>
-  </ItemGroup>
 </Project>

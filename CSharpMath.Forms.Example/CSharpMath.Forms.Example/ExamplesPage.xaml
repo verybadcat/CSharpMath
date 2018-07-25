@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:CSharpMath.Forms;assembly=CSharpMath.Forms"
+             xmlns:math="clr-namespace:CSharpMath.Forms;assembly=CSharpMath.Forms"
              x:Class="CSharpMath.Forms.Example.ExamplesPage"
              Title="Examples">
     <!--<ScrollView Orientation="Both" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-        <local:FormsMathView x:Name="View"/>
+        <local:MathView x:Name="View"/>
     </ScrollView>-->
-    <local:FormsMathView x:Name="View" EnableTouchEvents="true"/>
+    <math:MathView x:Name="View" EnableTouchEvents="true"/>
 </ContentPage>
 

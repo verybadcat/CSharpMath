@@ -4,8 +4,8 @@ using CSharpMath.Structures;
 using SkiaSharp;
 
 namespace CSharpMath.SkiaSharp {
-  public class SkiaMathPainter : MathPainter<SKCanvas, SKColor>, ICanvasPainter<SKCanvas, MathSource, SKColor> {
-    public SkiaMathPainter(float fontSize = DefaultFontSize, bool antiAlias = true) : base(fontSize) =>
+  public class MathPainter : MathPainter<SKCanvas, SKColor>, ICanvasPainter<SKCanvas, MathSource, SKColor> {
+    public MathPainter(float fontSize = DefaultFontSize, bool antiAlias = true) : base(fontSize) =>
       AntiAlias = antiAlias;
     
     public SKStrokeCap StrokeCap { get; set; }

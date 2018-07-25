@@ -59,15 +59,15 @@ namespace CSharpMath.DevUtils.iosMathDemo {
             .AppendLine("[System.Diagnostics.DebuggerNonUserCode, System.Runtime.CompilerServices.CompilerGenerated]")
             .AppendLine("public static class MoreExamples {")
             .Expand()
-            .AppendLine("public static ReadOnlyCollection<FormsMathView> Views { get; }")
+            .AppendLine("public static ReadOnlyCollection<MathView> Views { get; }")
             .AppendLine("static MoreExamples() {")
             .Expand()
-            .AppendLine("var demoLabels = new Dictionary<byte, FormsMathView>();")
-            .AppendLine("var labels = new Dictionary<byte, FormsMathView>();");
+            .AppendLine("var demoLabels = new Dictionary<byte, MathView>();")
+            .AppendLine("var labels = new Dictionary<byte, MathView>();");
       foreach (var m in regex.Matches(text).AsEnumerable()) {
         if (!string.IsNullOrEmpty(m.Groups["label"].Value))
           writer.Append(m.Groups["label"].Value)
-                .AppendLine("new FormsMathView {")
+                .AppendLine("new MathView {")
                 .Expand()
                 .Append("LaTeX = @\"")
                 .Append(new StringBuilder(m.Groups["latex"].Value).Replace("\\\n ", "\n ").Replace("\n ", Environment.NewLine + ' ').Replace(@"\\", @"\").Replace("\"", "").ToString().TrimEnd())

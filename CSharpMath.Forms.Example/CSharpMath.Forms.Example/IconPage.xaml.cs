@@ -21,7 +21,7 @@ namespace CSharpMath.Forms.Example {
       Content = v;
     }
 
-    SkiaSharp.SkiaMathPainter painter;
+    SkiaSharp.MathPainter painter;
     readonly SKPaint black = new SKPaint { Color = SKColors.Black };
     readonly SKPaint white = new SKPaint { Color = SKColors.White };
     void Temp(object sender, SKPaintSurfaceEventArgs e) {
@@ -37,7 +37,7 @@ namespace CSharpMath.Forms.Example {
       const float f = 40f; //font size in points
       const float thicknessAdjust = 2 * f / 3; //thickness adjust of the two circles
       const float θ = 360f / count; //angle to rotate when drawing each digit
-      if (painter == null) painter = new SkiaSharp.SkiaMathPainter(f) { GlyphBoxColor = (SKColors.Red, SKColors.Red) };
+      if (painter == null) painter = new SkiaSharp.MathPainter(f) { GlyphBoxColor = (SKColors.Red, SKColors.Red) };
       var cx = e.Info.Width / 2;
       var cy = e.Info.Height / 2;
       var c = e.Surface.Canvas;

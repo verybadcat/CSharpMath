@@ -48,7 +48,7 @@ namespace CSharpMath.Forms.Example {
         (global::SkiaSharp.SKColor.TryParse(color, out var c) ? c : global::SkiaSharp.SKColors.Black);
 
     private void CollectionChanged(object sender, Args e) {
-      if (e.NewItems != null) foreach (var v in e.NewItems.Cast<FormsMathView>()) {
+      if (e.NewItems != null) foreach (var v in e.NewItems.Cast<MathView>()) {
           v.GlyphBoxColor = DrawGlyphBoxes.On ? (Parse(GlyphBoxColor.Text), Parse(GlyphRunColor.Text)) : default((Color glyph, Color textRun)?);
           v.TextAlignment = (Rendering.TextAlignment)Alignment.SelectedItem;
           v.TextColor = TextColor.LabelColor;

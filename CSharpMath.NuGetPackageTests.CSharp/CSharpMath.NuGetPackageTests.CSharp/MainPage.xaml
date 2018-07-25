@@ -4,5 +4,5 @@
              xmlns:local="clr-namespace:CSharpMath.NuGetPackageTests.CSharp"
              xmlns:math="clr-namespace:CSharpMath.Forms;assembly=CSharpMath.Forms"
              x:Class="CSharpMath.NuGetPackageTests.CSharp.MainPage">
-    <math:FormsMathView>1+1=2</math:FormsMathView>
+    <math:MathView>1+1=2</math:MathView>
 </ContentPage>

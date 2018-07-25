@@ -13,7 +13,7 @@ namespace CSharpMath.Forms.Example
 {
   [XamlCompilation(XamlCompilationOptions.Compile)]
   public partial class SlidePage : ContentPage {
-    SkiaSharp.SkiaMathPainter painter = new SkiaSharp.SkiaMathPainter { LaTeX = @"\text{Press to clear}" };
+    SkiaSharp.MathPainter painter = new SkiaSharp.MathPainter { LaTeX = @"\text{Press to clear}" };
     bool reset;
     double x, y;
 
