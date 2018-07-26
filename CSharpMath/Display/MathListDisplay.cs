@@ -14,7 +14,7 @@ namespace CSharpMath.Display {
   /// </summary>
   public class MathListDisplay<TFont, TGlyph>: IDisplay<TFont, TGlyph>
     where TFont : MathFont<TGlyph> {
-    public IDisplay<TFont, TGlyph>[] Displays { get; set; }
+    public IReadOnlyList<IDisplay<TFont, TGlyph>> Displays { get; set; }
     public LinePosition MyLinePosition { get; set; }
     public Color? TextColor { get; set; }
     public bool HasScript { get; set; }
@@ -28,7 +28,7 @@ namespace CSharpMath.Display {
     /// parent list. For a regular list, it is int.MinValue.</summary>
     public int IndexInParent { get; set; }
 
-    public MathListDisplay(IDisplay<TFont, TGlyph>[] displays): base() {
+    public MathListDisplay(IReadOnlyList<IDisplay<TFont, TGlyph>> displays): base() {
       Displays = displays;
       MyLinePosition = LinePosition.Regular;
       IndexInParent = int.MinValue;

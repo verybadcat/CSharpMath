@@ -7,7 +7,7 @@ using CSharpMath.Enumerations;
 using Typography.OpenFont;
 
 namespace CSharpMath.Rendering {
-  public interface IPainter<TSource, TColor> {
+  public interface IPainter<TSource, TColor> where TSource : struct, ISource {
     #region Non-redisplaying properties
     TColor HighlightColor { get; set; }
     TColor TextColor { get; set; }
@@ -75,7 +75,7 @@ namespace CSharpMath.Rendering {
       return new PointF(x + offsetX, (y + offsetY) - (bottomLeftCoords ? 0 : height));
     }
   }
-  public interface ICanvasPainter<TCanvas, TSource, TColor> : IPainter<TSource, TColor> {
+  public interface ICanvasPainter<TCanvas, TSource, TColor> : IPainter<TSource, TColor> where TSource : struct, ISource {
     #region Methods
     ICanvas WrapCanvas(TCanvas canvas);
     Structures.Color WrapColor(TColor color);

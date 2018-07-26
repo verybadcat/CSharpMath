@@ -37,7 +37,7 @@ namespace CSharpMath.Rendering {
     public sealed class List : TextAtom {
       public List(IReadOnlyList<TextAtom> content, int index) : base(new Range(index, content.Count)) {
         Content = content;
-        Offset(index);
+        if(index != 0) Offset(index);
       }
 
       private void Offset(int offset) {

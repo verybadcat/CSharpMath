@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Drawing;
+using System.Linq;
 using CSharpMath.Rendering;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
@@ -13,28 +14,35 @@ namespace CSharpMath.Forms {
   using TextAlignment = Rendering.TextAlignment;
   using Thickness = Rendering.Thickness;
 
-  public abstract class BaseView<TPainter, TSource> : SKCanvasView, IPainter<TSource, Color> where TPainter : ICanvasPainter<SKCanvas, TSource, SKColor>, new() {
+  public abstract class BaseView<TPainter, TSource> : SKCanvasView, IPainter<TSource, Color> where TPainter : ICanvasPainter<SKCanvas, TSource, SKColor> where TSource : struct, ISource {
     public BaseView() {
-      painter = new TPainter();
+      Painter = (TPainter)painterCtor.Invoke(ctorParams);
       //TODO: Until fixed...
       /*var pinch = new PinchGestureRecognizer();
       pinch.PinchUpdated += OnPinch;
       GestureRecognizers.Add(pinch);*/
     }
 
-    protected TPainter painter;
+    protected TPainter Painter { get; }
     protected override void OnPaintSurface(SKPaintSurfaceEventArgs e) {
       base.OnPaintSurface(e);
       e.Surface.Canvas.Clear();
-      painter.Draw(e.Surface.Canvas, TextAlignment, Padding, DisplacementX, DisplacementY);
+      Painter.Draw(e.Surface.Canvas, TextAlignment, Padding, DisplacementX, DisplacementY);
     }
+
+    private static readonly System.Reflection.ConstructorInfo painterCtor;
+    private static readonly object[] ctorParams;
 
     #region BindableProperties
     static BaseView() {
-      var painter = new SkiaSharp.MathPainter();
+      var ctors = typeof(TPainter).GetConstructors().Where(c => c.GetParameters().All(param => param.IsOptional));
+      if (ctors.IsEmpty()) throw new ArgumentException($"The supplied generic type parameter for {nameof(TPainter)}, which is {typeof(TPainter)}, does not have any constructors with no parameters nor all optional parameters.");
+      painterCtor = ctors.First();
+      ctorParams = Enumerable.Repeat(Type.Missing, painterCtor.GetParameters().Length).ToArray();
+      var painter = (TPainter)painterCtor.Invoke(ctorParams);
       var thisType = typeof(BaseView<TPainter, TSource>);
       var drawMethodParams = typeof(SkiaSharp.MathPainter).GetMethod(nameof(SkiaSharp.MathPainter.Draw), new[] { typeof(SKCanvas), typeof(TextAlignment), typeof(Thickness), typeof(float), typeof(float) }).GetParameters();
-      TPainter p(BindableObject b) => ((BaseView<TPainter, TSource>)b).painter;
+      TPainter p(BindableObject b) => ((BaseView<TPainter, TSource>)b).Painter;
       SourceProperty = BindableProperty.Create(nameof(Source), typeof(TSource), thisType, painter.Source, BindingMode.TwoWay, null, (b, o, n) => { p(b).Source = (TSource)n; ((BaseView<TPainter, TSource>)b).ErrorMessage = p(b).ErrorMessage; });
       DisplayErrorInlineProperty = BindableProperty.Create(nameof(DisplayErrorInline), typeof(bool), thisType, painter.DisplayErrorInline, propertyChanged: (b, o, n) => p(b).DisplayErrorInline = (bool)n);
       FontSizeProperty = BindableProperty.Create(nameof(FontSize), typeof(float), thisType, painter.FontSize, propertyChanged: (b, o, n) => p(b).FontSize = (float)n);
@@ -67,7 +75,6 @@ namespace CSharpMath.Forms {
     public static readonly BindableProperty MagnificationProperty;
     public static readonly BindableProperty PaintStyleProperty;
     public static readonly BindableProperty LineStyleProperty;
-    public static readonly BindableProperty GlyphBoxColorProperty;
     public static readonly BindableProperty PaddingProperty;
     public static readonly BindableProperty SourceProperty;
     public static readonly BindableProperty EnableGesturesProperty;
@@ -79,7 +86,7 @@ namespace CSharpMath.Forms {
 
     SKPoint _origin;
     protected override void OnTouch(SKTouchEventArgs e) {
-      if (e.InContact) {
+      if (e.InContact && Source.IsValid) {
         switch (e.ActionType) {
           case SKTouchAction.Entered:
             break;
@@ -110,7 +117,7 @@ namespace CSharpMath.Forms {
       base.OnTouch(e);
     }
     protected virtual void OnPinch(object sender, PinchGestureUpdatedEventArgs e) {
-      if (painter.LaTeX.IsNonEmpty()) {
+      if (Source.IsValid) {
         switch (e.Status) {
           case GestureStatus.Started:
             GestureCount++;
@@ -151,12 +158,11 @@ namespace CSharpMath.Forms {
     public float Magnification { get => (float)GetValue(MagnificationProperty); set => SetValue(MagnificationProperty, value); }
     public PaintStyle PaintStyle { get => (PaintStyle)GetValue(PaintStyleProperty); set => SetValue(PaintStyleProperty, value); }
     public Enumerations.LineStyle LineStyle { get => (Enumerations.LineStyle)GetValue(LineStyleProperty); set => SetValue(LineStyleProperty, value); }
-    public (Color glyph, Color textRun)? GlyphBoxColor { get => ((Color glyph, Color textRun)?)GetValue(GlyphBoxColorProperty); set => SetValue(GlyphBoxColorProperty, value); }
     public Thickness Padding { get => (Thickness)GetValue(PaddingProperty); set => SetValue(PaddingProperty, value); }
     public string ErrorMessage { get => (string)GetValue(ErrorMessageProperty); private set => SetValue(ErrorMessagePropertyKey, value); }
-    public ObservableCollection<Typeface> LocalTypefaces => painter.LocalTypefaces;
+    public ObservableCollection<Typeface> LocalTypefaces => Painter.LocalTypefaces;
 
-    public new RectangleF? Measure => painter.Measure;
-    protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint) => painter.Measure is RectangleF r ? new SizeRequest(new Xamarin.Forms.Size(r.Width, r.Height)) : base.OnMeasure(widthConstraint, heightConstraint);
+    public new RectangleF? Measure => Painter.Measure;
+    protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint) => Painter.Measure is RectangleF r ? new SizeRequest(new Xamarin.Forms.Size(r.Width, r.Height)) : base.OnMeasure(widthConstraint, heightConstraint);
   }
 }

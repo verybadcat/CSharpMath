@@ -1,12 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="CSharpMath.Forms.Example.TextPage">
+             x:Class="CSharpMath.Forms.Example.TextPage"
+             xmlns:text="clr-namespace:CSharpMath.Forms;assembly=CSharpMath.Forms"
+             xmlns:local="clr-namespace:CSharpMath.Forms.Example"
+             Title="Text">
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="Welcome to Xamarin.Forms!"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
+            <StackLayout Orientation="Horizontal">
+                <Entry x:Name="Text" HorizontalOptions="FillAndExpand" TextChanged="Text_TextChanged" />
+                <Picker x:Name="Size" HorizontalOptions="Fill" ItemsSource="{x:Static local:CustomExamplePage.FontSizes}" SelectedIndexChanged="Size_SelectedIndexChanged"/>
+            </StackLayout>
+            <text:TextView x:Name="View" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

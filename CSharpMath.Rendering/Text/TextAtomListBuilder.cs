@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace CSharpMath.Rendering {
-  public class TextAtomBuilder : IReadOnlyList<TextAtom> {
+  public class TextAtomListBuilder : IReadOnlyList<TextAtom> {
     List<TextAtom> _list = new List<TextAtom>();
 
     private void Add(TextAtom atom) { _list.Add(atom); TextLength += atom.Range.Length; }
@@ -18,7 +18,7 @@ namespace CSharpMath.Rendering {
       return null;
     }
     public void Add(IReadOnlyList<TextAtom> textAtoms) => Add(new TextAtom.List(textAtoms, TextLength));
-    public TextAtom Build() => new TextAtom.List(this, 0);
+    public TextAtom.List Build() => new TextAtom.List(this, 0);
 
     public int TextLength { get; private set; } = 0;
     public TextAtom this[int index] => _list[index];
