@@ -8,7 +8,7 @@
     <ContentPage.Content>
         <StackLayout>
             <StackLayout Orientation="Horizontal">
-                <Entry x:Name="Text" HorizontalOptions="FillAndExpand" TextChanged="Text_TextChanged" />
+                <Editor x:Name="Text" HorizontalOptions="FillAndExpand" TextChanged="Text_TextChanged" />
                 <Picker x:Name="Size" HorizontalOptions="Fill" ItemsSource="{x:Static local:CustomExamplePage.FontSizes}" SelectedIndexChanged="Size_SelectedIndexChanged"/>
             </StackLayout>
             <text:TextView x:Name="View" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"/>
