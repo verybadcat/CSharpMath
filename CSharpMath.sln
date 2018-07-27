@@ -56,7 +56,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Typography.TextBreak", "Typ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Utils.UWPBuild", "CSharpMath.Utils.UWPBuild\CSharpMath.Utils.UWPBuild.csproj", "{3A17640B-83C6-459F-A046-F954DEA3FDE1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms.Example.WPF", "CSharpMath.Forms.Example.WPF\CSharpMath.Forms.Example.WPF.csproj", "{60549250-61D2-40E0-82C5-7B829193D694}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms.Example.WPF", "CSharpMath.Forms.Example\CSharpMath.Forms.Example.WPF\CSharpMath.Forms.Example.WPF.csproj", "{60549250-61D2-40E0-82C5-7B829193D694}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -249,6 +249,7 @@ Global
 		{664EAD44-C19D-462B-9127-FD1106B4F3C6}.Debug|iPhoneSimulator.Build.0 = Debug|iPhoneSimulator
 		{664EAD44-C19D-462B-9127-FD1106B4F3C6}.Debug|x64.ActiveCfg = Debug|iPhone
 		{664EAD44-C19D-462B-9127-FD1106B4F3C6}.Debug|x86.ActiveCfg = Debug|iPhone
+		{664EAD44-C19D-462B-9127-FD1106B4F3C6}.Debug|x86.Build.0 = Debug|iPhone
 		{664EAD44-C19D-462B-9127-FD1106B4F3C6}.Release|Any CPU.ActiveCfg = Release|iPhone
 		{664EAD44-C19D-462B-9127-FD1106B4F3C6}.Release|Any CPU.Build.0 = Release|iPhone
 		{664EAD44-C19D-462B-9127-FD1106B4F3C6}.Release|ARM.ActiveCfg = Release|iPhoneSimulator
@@ -625,6 +626,7 @@ Global
 		{C5C93C69-E72E-4A87-89DA-1E4718C6306E}.Debug|iPhoneSimulator.Build.0 = Debug|iPhoneSimulator
 		{C5C93C69-E72E-4A87-89DA-1E4718C6306E}.Debug|x64.ActiveCfg = Debug|iPhone
 		{C5C93C69-E72E-4A87-89DA-1E4718C6306E}.Debug|x86.ActiveCfg = Debug|iPhone
+		{C5C93C69-E72E-4A87-89DA-1E4718C6306E}.Debug|x86.Build.0 = Debug|iPhone
 		{C5C93C69-E72E-4A87-89DA-1E4718C6306E}.Release|Any CPU.ActiveCfg = Release|iPhone
 		{C5C93C69-E72E-4A87-89DA-1E4718C6306E}.Release|ARM.ActiveCfg = Release|iPhone
 		{C5C93C69-E72E-4A87-89DA-1E4718C6306E}.Release|iPhone.ActiveCfg = Release|iPhone

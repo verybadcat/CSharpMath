@@ -138,7 +138,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CSharpMath.Forms.Example\CSharpMath.Forms.Example\CSharpMath.Forms.Example.csproj">
+    <ProjectReference Include="..\CSharpMath.Forms.Example\CSharpMath.Forms.Example.csproj">
       <Project>{b3fa77b8-c6e9-4a78-8bd4-9a167da36637}</Project>
       <Name>CSharpMath.Forms.Example</Name>
     </ProjectReference>
