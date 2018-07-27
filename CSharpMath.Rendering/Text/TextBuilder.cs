@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using Typography.TextBreak;
-using Typography.TextLayout;
-using Typography.TextServices;
 
 namespace CSharpMath.Rendering {
   public static class TextBuilder {
@@ -11,7 +9,7 @@ namespace CSharpMath.Rendering {
       string error = null;
       var breaker = new CustomBreaker();
       var breakList = new List<BreakAtInfo> { new BreakAtInfo(0, WordKind.Unknown) };
-      breaker.BreakWords(text);
+      breaker.BreakWords(text, false);
       breaker.LoadBreakAtList(breakList);
       /* //Paste this into the C# Interactive, fill <username> yourself
 #r "C:/Users/<username>/source/repos/CSharpMath/Typography/Build/NetStandard/Typography.TextBreak/bin/Debug/netstandard1.3/Typography.TextBreak.dll"

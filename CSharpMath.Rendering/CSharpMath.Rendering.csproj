@@ -1,8 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard1.3</TargetFramework>
     <LangVersion>latest</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>DEFINE_VECTOR2</DefineConstants>
     <RootNamespace>CSharpMath.Rendering</RootNamespace>
     <AssemblyName>CSharpMath.Rendering</AssemblyName>
     <NeutralLanguage>en</NeutralLanguage>
@@ -10,7 +11,7 @@
     <!--NuGet Properties-->
     <PackOnBuild>true</PackOnBuild>
     <PackageId>CSharpMath.Rendering</PackageId>
-    <PackageVersion>0.1.0-pre4.1</PackageVersion>
+    <PackageVersion>0.1.0-pre5</PackageVersion>
     <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie)</Authors>
     <PackageLicenseUrl>https://github.com/verybadcat/CSharpMath/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/verybadcat/CSharpMath</PackageProjectUrl>
@@ -42,7 +43,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
-    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Font Reference\latinmodern-math.otf" />
@@ -54,8 +54,5 @@
   <Import Project="..\Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems" Label="Shared" />
   <Import Project="..\Typography\PixelFarm.NetStandard\PixelFarm.Triangulation\PixelFarm.Triangulation.projitems" Label="Shared" />
   <Import Project="..\Typography\Typography.Contours\Typography.Contours.projitems" Label="Shared" />
-  <Import Project="..\Typography\Typography.MsdfGen\Typography.MsdfGen.projitems" Label="Shared" />
-  <Import Project="..\Typography\Typography.TextServices\Typography.TextServices.projitems" Label="Shared" />
   <Import Project="..\Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems" Label="Shared" />
-  <Import Project="..\Typography\Typography.TextFlow\Typography.TextFlow.projitems" Label="Shared" />
 </Project>
