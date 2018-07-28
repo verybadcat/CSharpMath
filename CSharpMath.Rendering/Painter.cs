@@ -50,15 +50,6 @@ namespace CSharpMath.Rendering {
     public PaintStyle PaintStyle { get; set; } = PaintStyle.Fill;
     public float Magnification { get; set; } = 1;
 
-    public RectangleF? Measure {
-      get {
-        //UpdateDisplay() null-refs if MathList == null
-        if (System.Collections.Generic.EqualityComparer<TSource>.Default.Equals(Source, default)) return null;
-        if (Source.IsValid && _displayChanged) UpdateDisplay();
-        return _display?.ComputeDisplayBounds();
-      }
-    }
-
     public string ErrorMessage => Source.ErrorMessage;
     #endregion Non-redisplaying properties
 
@@ -73,42 +64,21 @@ namespace CSharpMath.Rendering {
     TSource __source = default; public TSource Source { get => __source; set => Redisplay(__source = value); }
     #endregion Redisplaying properties
 
-    #region Methods
-    public void UpdateDisplay() {
-      var fonts = new TFonts(LocalTypefaces, FontSize);
-      _display = CreateDisplay(fonts);
-      _displayChanged = false;
-    }
+    protected abstract bool CoordinatesFromBottomLeftInsteadOfTopLeft { get; }
 
-    protected abstract IDisplay<TFonts, Glyph> CreateDisplay(TFonts fonts);
+    #region Methods
 
     public abstract Color WrapColor(TColor color);
     public abstract TColor UnwrapColor(Color color);
 
     public abstract ICanvas WrapCanvas(TCanvas canvas);
 
-    protected abstract bool CoordinatesFromBottomLeftInsteadOfTopLeft { get; }
+    protected abstract void UpdateDisplay(float canvasWidth);
+    protected abstract RectangleF? MeasureCore(float canvasWidth);
 
-    public void Draw(TCanvas canvas, TextAlignment alignment = TextAlignment.Center, Thickness padding = default, float offsetX = 0, float offsetY = 0) {
-      var c = WrapCanvas(canvas);
-      if (!Source.IsValid) DrawError(c);
-      else {
-        if (_displayChanged) UpdateDisplay();
-        Draw(c, IPainterExtensions.GetDisplayPosition(_display.Width, _display.Ascent, _display.Descent, FontSize, CoordinatesFromBottomLeftInsteadOfTopLeft, c.Width, c.Height, alignment, padding, offsetX, offsetY));
-      }
-    }
-
-    public void Draw(TCanvas canvas, float x, float y) =>
-      Draw(WrapCanvas(canvas), new PointF(x, CoordinatesFromBottomLeftInsteadOfTopLeft ? y : -y));
-
-    public void Draw(TCanvas canvas, PointF position) {
-      if (CoordinatesFromBottomLeftInsteadOfTopLeft) position.Y *= -1;
-      Draw(WrapCanvas(canvas), position);
-    }
-
-    private void Draw(ICanvas canvas, PointF position) {
+    protected void Draw(ICanvas canvas, PointF position) {
       if (Source.IsValid) {
-        if (_displayChanged) UpdateDisplay();
+        if (_displayChanged) UpdateDisplay(canvas.Width);
         _display.Position = position;
         canvas.Save();
         if (!CoordinatesFromBottomLeftInsteadOfTopLeft) {
@@ -119,7 +89,8 @@ namespace CSharpMath.Rendering {
         canvas.DefaultColor = WrapColor(TextColor);
         canvas.CurrentColor = WrapColor(HighlightColor);
         canvas.CurrentStyle = PaintStyle;
-        var measure = Measure ?? default;
+        var measure = MeasureCore(canvas.Width) ??
+          throw new InvalidOperationException($"{nameof(MeasureCore)} returned null. Any conditions leading to this should have already been checked via {nameof(Source)}.{nameof(Source.IsValid)}.");
         canvas.FillRect(position.X + measure.X, position.Y -
           (CoordinatesFromBottomLeftInsteadOfTopLeft ? _display.Ascent : _display.Descent),
           measure.Width, measure.Height);
@@ -131,8 +102,7 @@ namespace CSharpMath.Rendering {
         canvas.Restore();
       } else DrawError(canvas);
     }
-
-    private void DrawError(ICanvas canvas) {
+    protected void DrawError(ICanvas canvas) {
       if (DisplayErrorInline && ErrorMessage.IsNonEmpty()) {
         canvas.Save();
         var size = ErrorFontSize ?? FontSize;

@@ -1,13 +1,10 @@
-﻿namespace CSharpMath.Rendering {
+﻿using System.Drawing;
+
+namespace CSharpMath.Rendering {
   public abstract class TextPainter<TCanvas, TColor> : Painter<TCanvas, TextSource, TColor> {
     public TextPainter(float fontSize = DefaultFontSize, float lineWidth = DefaultFontSize * 100) : base(fontSize) { }
 
-    /// <summary>
-    /// Defaults to the width of the entire canvas.
-    /// </summary>
-    public float LineWidth { get => __width; set => Redisplay(__width = value); } float __width; 
-
-    protected override IDisplay<MathFonts, Glyph> CreateDisplay(MathFonts fonts) {
+    private (IDisplay<MathFonts, Glyph> display, float height) CreateDisplay(MathFonts fonts, float width) {
       float accumulatedHeight = 0, lineWidth = 0, lineHeight = 0;
       void AddDisplaysWithLineBreaks(TextAtom atom, System.Collections.Generic.List<IDisplay<MathFonts, Glyph>> displayList) {
         IDisplay<MathFonts, Glyph> display;
@@ -25,7 +22,7 @@
             display = atom.ToDisplay(fonts, default);
 #warning This is affected by Painter's Draw method itself to offset to the right.
             display.Position = new System.Drawing.PointF(
-              IPainterExtensions.GetDisplayPosition(display.Width, display.Ascent, display.Descent, fonts.PointSize, false, LineWidth, float.NaN, TextAlignment.Top, default, default, default).X,
+              IPainterExtensions.GetDisplayPosition(display.Width, display.Ascent, display.Descent, fonts.PointSize, false, width, float.NaN, TextAlignment.Top, default, default, default).X,
               display.Position.Y - accumulatedHeight);
             accumulatedHeight += display.Ascent + display.Descent;
             lineWidth = lineHeight = 0;
@@ -34,7 +31,7 @@
           default:
             display = atom.ToDisplay(fonts, default);
             var bounds = display.ComputeDisplayBounds();
-            if (lineWidth + display.Width > LineWidth) {
+            if (lineWidth + display.Width > width) {
               accumulatedHeight += lineHeight;
               //canvas inverted, so minus accumulatedHeight instead of plus
               display.Position = new System.Drawing.PointF(0, display.Position.Y - accumulatedHeight);
@@ -43,7 +40,7 @@
             } else {
               lineHeight = System.Math.Max(lineHeight, bounds.Height);
               //canvas inverted, so negate accumulatedHeight
-              display.Position = new System.Drawing.PointF(lineWidth, -accumulatedHeight);
+              display.Position = new .PointF(lineWidth, -accumulatedHeight);
               lineWidth += bounds.Width;
             }
             displayList.Add(display);
@@ -52,10 +49,18 @@
       }
       var returnList = new System.Collections.Generic.List<IDisplay<MathFonts, Glyph>>();
       AddDisplaysWithLineBreaks(Atom, returnList);
-      return new Display.MathListDisplay<MathFonts, Glyph>(returnList);
+      return (new Display.MathListDisplay<MathFonts, Glyph>(returnList), accumulatedHeight);
     }
 
     public TextAtom Atom { get => Source.Atom; set => Source = new TextSource(value); }
     public string Text { get => Source.Text; set => Source = new TextSource(value); }
+
+    public void Draw(TCanvas canvas) => Draw(WrapCanvas(canvas), default);
+
+    protected override RectangleF? MeasureCore(float canvasWidth) => new RectangleF(0, 0, canvasWidth, CreateDisplay())
+
+    protected override void UpdateDisplay(float canvasWidth) {
+      throw new NotImplementedException();
+    }
   }
 }

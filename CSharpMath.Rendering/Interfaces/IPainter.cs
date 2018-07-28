@@ -21,8 +21,6 @@ namespace CSharpMath.Rendering {
     PaintStyle PaintStyle { get; set; }
     float Magnification { get; set; }
 
-    RectangleF? Measure { get; }
-
     string ErrorMessage { get; }
     #endregion Non-redisplaying properties
 
@@ -76,16 +74,8 @@ namespace CSharpMath.Rendering {
     }
   }
   public interface ICanvasPainter<TCanvas, TSource, TColor> : IPainter<TSource, TColor> where TSource : struct, ISource {
-    #region Methods
     ICanvas WrapCanvas(TCanvas canvas);
     Structures.Color WrapColor(TColor color);
     TColor UnwrapColor(Structures.Color color);
-
-    void UpdateDisplay();
-    
-    void Draw(TCanvas canvas, TextAlignment alignment = TextAlignment.Center, Thickness padding = default, float offsetX = 0, float offsetY = 0);
-    void Draw(TCanvas canvas, float x, float y);
-    void Draw(TCanvas canvas, PointF position);
-    #endregion
   }
 }
