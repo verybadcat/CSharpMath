@@ -32,12 +32,14 @@ namespace CSharpMath.Rendering {
         new TextRunDisplay<MathFonts, Glyph>(AttributedGlyphRuns.Create(Content, GlyphFinder.Instance.FindGlyphs(fonts, Content), fonts, false), Range, TypesettingContext.Instance) { Position = position };
     }
     public sealed class Math : TextAtom {
-      public Math(Interfaces.IMathList content, Range range) : base(range) => Content = content;
+      public Math(Interfaces.IMathList content, bool displayStyle, Range range) : base(range) => (Content, DisplayStyle) = (content, displayStyle);
 
       public Interfaces.IMathList Content { get; }
 
+      public bool DisplayStyle { get; }
+
       public override IDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts, PointF position) {
-        var p = Typesetter<MathFonts, Glyph>.CreateLine(Content, fonts, TypesettingContext.Instance, Enumerations.LineStyle.Text);
+        var p = Typesetter<MathFonts, Glyph>.CreateLine(Content, fonts, TypesettingContext.Instance, DisplayStyle ? Enumerations.LineStyle.Display : Enumerations.LineStyle.Text);
         p.Position = position;
         return p;
       }

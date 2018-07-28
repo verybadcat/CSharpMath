@@ -10,11 +10,9 @@ namespace CSharpMath.Rendering {
     private void Add(TextAtom atom) { _list.Add(atom); TextLength += atom.Range.Length; }
     public void Add(string text) => Add(new TextAtom.Text(text, text.Length));
     public string Add(string mathLaTeX, bool displayStyle) {
-      var mathSource = new Rendering.MathSource(mathLaTeX);
+      var mathSource = new MathSource(mathLaTeX);
       if (mathSource.ErrorMessage.IsNonEmpty()) return mathSource.ErrorMessage;
-      var mathList = mathSource.MathList;
-      mathList.Insert(0, new Atoms.Style(displayStyle ? Enumerations.LineStyle.Display : Enumerations.LineStyle.Text));
-      Add(new TextAtom.Math(mathList, new Atoms.Range(TextLength, mathLaTeX.Length)));
+      Add(new TextAtom.Math(mathSource.MathList, displayStyle, new Atoms.Range(TextLength, mathLaTeX.Length)));
       return null;
     }
     public void Add(IReadOnlyList<TextAtom> textAtoms) => Add(new TextAtom.List(textAtoms, TextLength));

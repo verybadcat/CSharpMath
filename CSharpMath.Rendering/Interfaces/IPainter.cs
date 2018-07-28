@@ -45,14 +45,13 @@ namespace CSharpMath.Rendering {
         float width, float height,
         TextAlignment alignment, Thickness padding, float offsetX, float offsetY) {
       float x, y;
-      float displayWidth = displayList.Width;
       if ((alignment & TextAlignment.Left) != 0)
         x = padding.Left;
       else if ((alignment & TextAlignment.Right) != 0)
         x = width - padding.Right - displayWidth;
       else
         x = padding.Left + (width - padding.Left - padding.Right - displayWidth) / 2;
-      float contentHeight = displayList.Ascent + displayList.Descent;
+      float contentHeight = displayAscent + displayDescent;
       if (contentHeight < fontSize / 2) {
         contentHeight = fontSize / 2;
       }
@@ -66,12 +65,12 @@ namespace CSharpMath.Rendering {
         offsetY *= -1;
       }
       if ((alignment & TextAlignment.Top) != 0)
-        y = padding.Top + displayList.Descent;
+        y = padding.Top + displayDescent;
       else if ((alignment & TextAlignment.Bottom) != 0)
-        y = height - padding.Bottom - displayList.Ascent;
+        y = height - padding.Bottom - displayAscent;
       else {
         float availableHeight = height - padding.Top - padding.Bottom;
-        y = ((availableHeight - contentHeight) / 2) + padding.Top + displayList.Descent;
+        y = ((availableHeight - contentHeight) / 2) + padding.Top + displayDescent;
       }
       return new PointF(x + offsetX, (y + offsetY) - (bottomLeftCoords ? 0 : height));
     }

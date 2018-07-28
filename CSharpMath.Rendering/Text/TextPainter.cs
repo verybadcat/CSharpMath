@@ -5,35 +5,49 @@
     /// <summary>
     /// Defaults to the width of the entire canvas.
     /// </summary>
-    public float? LineWidth { get => __width; set => Redisplay(__width = value); } float? __width; 
+    public float LineWidth { get => __width; set => Redisplay(__width = value); } float __width; 
 
     protected override IDisplay<MathFonts, Glyph> CreateDisplay(MathFonts fonts) {
       float accumulatedHeight = 0, lineWidth = 0, lineHeight = 0;
       void AddDisplaysWithLineBreaks(TextAtom atom, System.Collections.Generic.List<IDisplay<MathFonts, Glyph>> displayList) {
-        if (atom is TextAtom.List list) {
-          foreach (var a in list.Content) AddDisplaysWithLineBreaks(a, displayList);
-        } else if (atom is TextAtom.Newline n) {
+        IDisplay<MathFonts, Glyph> display;
+        switch (atom) {
+          case TextAtom.List list:
+            foreach (var a in list.Content) AddDisplaysWithLineBreaks(a, displayList);
+            break;
+          case TextAtom.Newline n:
             accumulatedHeight += lineHeight;
-            //canvas inverted, so negate accumulatedHeight
-            display.Position = new System.Drawing.PointF(0, -accumulatedHeight);
             lineWidth = lineHeight = 0;
-        }
-        else {
-          var display = atom.ToDisplay(fonts, default);
-          var bounds = display.ComputeDisplayBounds();
-          if (lineWidth + display.Width > LineWidth) {
+            break;
+          case TextAtom.Math m when m.DisplayStyle:
             accumulatedHeight += lineHeight;
-            //canvas inverted, so minus accumulatedHeight instead of plus
-            display.Position = new System.Drawing.PointF(0, display.Position.Y - accumulatedHeight);
-            lineWidth = bounds.Width;
-            lineHeight = bounds.Height;
-          } else {
-            lineHeight = System.Math.Max(lineHeight, bounds.Height);
-            //canvas inverted, so negate accumulatedHeight
-            display.Position = new System.Drawing.PointF(lineWidth, -accumulatedHeight);
-            lineWidth += bounds.Width;
-          }
-          displayList.Add(display);
+            accumulatedHeight += lineHeight;
+            display = atom.ToDisplay(fonts, default);
+#warning This is affected by Painter's Draw method itself to offset to the right.
+            display.Position = new System.Drawing.PointF(
+              IPainterExtensions.GetDisplayPosition(display.Width, display.Ascent, display.Descent, fonts.PointSize, false, LineWidth, float.NaN, TextAlignment.Top, default, default, default).X,
+              display.Position.Y - accumulatedHeight);
+            accumulatedHeight += display.Ascent + display.Descent;
+            lineWidth = lineHeight = 0;
+            displayList.Add(display);
+            break;
+          default:
+            display = atom.ToDisplay(fonts, default);
+            var bounds = display.ComputeDisplayBounds();
+            if (lineWidth + display.Width > LineWidth) {
+              accumulatedHeight += lineHeight;
+              //canvas inverted, so minus accumulatedHeight instead of plus
+              display.Position = new System.Drawing.PointF(0, display.Position.Y - accumulatedHeight);
+              lineWidth = bounds.Width;
+              lineHeight = bounds.Height;
+            } else {
+              lineHeight = System.Math.Max(lineHeight, bounds.Height);
+              //canvas inverted, so negate accumulatedHeight
+              display.Position = new System.Drawing.PointF(lineWidth, -accumulatedHeight);
+              lineWidth += bounds.Width;
+            }
+            displayList.Add(display);
+            break;
         }
       }
       var returnList = new System.Collections.Generic.List<IDisplay<MathFonts, Glyph>>();
