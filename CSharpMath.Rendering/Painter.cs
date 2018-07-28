@@ -94,7 +94,7 @@ namespace CSharpMath.Rendering {
       if (!Source.IsValid) DrawError(c);
       else {
         if (_displayChanged) UpdateDisplay();
-        Draw(c, IPainterExtensions.GetDisplayPosition(_display, FontSize, CoordinatesFromBottomLeftInsteadOfTopLeft, c.Width, c.Height, alignment, padding, offsetX, offsetY));
+        Draw(c, IPainterExtensions.GetDisplayPosition(_display.Width, _display.Ascent, _display.Descent, FontSize, CoordinatesFromBottomLeftInsteadOfTopLeft, c.Width, c.Height, alignment, padding, offsetX, offsetY));
       }
     }
 

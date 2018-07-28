@@ -28,6 +28,7 @@ breakList.Select(i => (i.breakAt, i.wordKind, text.ElementAtOrDefault(i.breakAt)
       int dollarCount = 0;
       var atoms = new TextAtomListBuilder();
       for (int i = 0; i < breakList.Count; i++) {
+#warning No more \0 workarounds; support building TextAtom.Newlines
         var startAt = breakList[i].breakAt; 
         var endAt = i == breakList.Count - 1 ? text.Length : breakList[i + 1].breakAt;
         var endingChar = i == breakList.Count - 1 ? '\0' : text[endAt - 1];
@@ -37,66 +38,117 @@ breakList.Select(i => (i.breakAt, i.wordKind, text.ElementAtOrDefault(i.breakAt)
             dollarCount++;
             continue;
           }
-        }
-        switch (dollarCount) {
-          case 0:
-            break;
-          case 1:
-            dollarCount = 0;
-            switch (displayMath) {
-              case true:
-                return (null, "Cannot close $ with $$");
-              case false:
-                var mathError = atoms.Add(mathLaTeX.ToString(), false);
-                mathLaTeX = null;
-                displayMath = null;
-                if (mathError != null) return (null, mathError);
-                break;
-              case null:
-                mathLaTeX = new StringBuilder();
-                displayMath = false;
-                break;
-            }
-            break;
-          case 2:
-            dollarCount = 0;
-            switch (displayMath) {
-              case true:
-                atoms.Add(mathLaTeX.ToString(), true);
-                mathLaTeX = null;
-                displayMath = null;
-                break;
-              case false:
-                return (null, "Cannot close $$ with $");
-              case null:
-                mathLaTeX = new StringBuilder();
-                displayMath = true;
-                break;
-            }
-            break;
-          default:
-            return (null, "Invalid number of $: " + dollarCount);
-        }
-        switch (endingChar) {
-          case '$':
-            break; //Already dealt with above
-          case '\0':
-            continue; //Don't do anything with the null char
-          case '\\':
-            if (displayMath != null) mathLaTeX.Append('\\'); //don't eat the backslash when parsing math
-            else if (backslashEscape) {
-              atoms.Add("\\");
-            } else {
-              backslashEscape = true;
-              continue;
-            }
-            break;
-          default:
-            var textSection = text.Substring(startAt, endAt - startAt);
-            if (displayMath == null) atoms.Add(textSection);
-            else mathLaTeX.Append(textSection);
-            break;
+        } else {
+          switch (dollarCount) {
+            case 0:
+              break;
+            case 1:
+              dollarCount = 0;
+              switch (displayMath) {
+                case true:
+                  return (null, "Cannot close display math mode with $");
+                case false:
+                  var mathError = atoms.Add(mathLaTeX.ToString(), false);
+                  mathLaTeX = null;
+                  displayMath = null;
+                  if (mathError != null) return (null, mathError);
+                  break;
+                case null:
+                  mathLaTeX = new StringBuilder();
+                  displayMath = false;
+                  break;
+              }
+              break;
+            case 2:
+              dollarCount = 0;
+              switch (displayMath) {
+                case true:
+                  atoms.Add(mathLaTeX.ToString(), true);
+                  mathLaTeX = null;
+                  displayMath = null;
+                  break;
+                case false:
+                  return (null, "Cannot close inline math mode with $$");
+                case null:
+                  mathLaTeX = new StringBuilder();
+                  displayMath = true;
+                  break;
+              }
+              break;
+            default:
+              return (null, "Invalid number of $: " + dollarCount);
           }
+          switch (endingChar) {
+            case '$':
+              break; //Already dealt with above
+            case '\0':
+              continue; //Don't do anything with the null char
+            case '\\':
+              if (displayMath != null) mathLaTeX.Append('\\'); //don't eat the backslash when parsing math
+              else if (backslashEscape) {
+                atoms.Add("\\");
+              } else {
+                backslashEscape = true;
+                continue;
+              }
+              break;
+            case '(' when backslashEscape:
+              switch (displayMath) {
+                case true:
+                  return (null, "Cannot open inline math mode in display math mode");
+                case false:
+                  return (null, "Cannot open inline math mode in inline math mode");
+                case null:
+                  mathLaTeX = new StringBuilder();
+                  displayMath = false;
+                  break;
+              }
+              break;
+            case ')' when backslashEscape:
+              switch (displayMath) {
+                case true:
+                  return (null, "Cannot close inline math mode in display math mode");
+                case false:
+                  atoms.Add(mathLaTeX.ToString(), false);
+                  mathLaTeX = null;
+                  displayMath = null;
+                  break;
+                case null:
+                  return (null, "Cannot close inline math mode in text mode");
+              }
+              break;
+            case '[' when backslashEscape:
+              switch (displayMath) {
+                case true:
+                  return (null, "Cannot open display math mode in display math mode");
+                case false:
+                  return (null, "Cannot open display math mode in inline math mode");
+                case null:
+                  mathLaTeX = new StringBuilder();
+                  displayMath = true;
+                  break;
+              }
+              break;
+            case ']' when backslashEscape:
+              switch (displayMath) {
+                case true:
+                  atoms.Add(mathLaTeX.ToString(), true);
+                  mathLaTeX = null;
+                  displayMath = null;
+                  break;
+                case false:
+                  return (null, "Cannot close display math mode in inline math mode");
+                case null:
+                  return (null, "Cannot close display math mode in text mode");
+              }
+              break;
+            default:
+              var textSection = text.Substring(startAt, endAt - startAt);
+              if (displayMath == null) atoms.Add(textSection);
+              else mathLaTeX.Append(textSection);
+              break;
+          }
+        }
         backslashEscape = false;
       }
       if (displayMath != null) return (null, "Math mode was not terminated");
@@ -106,6 +158,8 @@ breakList.Select(i => (i.breakAt, i.wordKind, text.ElementAtOrDefault(i.breakAt)
       switch (atom) {
         case TextAtom.Text t:
           return b.Append(t.Content);
+        case TextAtom.Newline n:
+          return b.Append(n.Content);
         case TextAtom.Math m:
           return b.Append(Atoms.MathListBuilder.MathListToString(m.Content));
         case TextAtom.List l:

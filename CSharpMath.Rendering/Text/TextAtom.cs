@@ -23,6 +23,14 @@ namespace CSharpMath.Rendering {
       public override IDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts, PointF position) => 
         new TextRunDisplay<MathFonts, Glyph>(AttributedGlyphRuns.Create(Content, GlyphFinder.Instance.FindGlyphs(fonts, Content), fonts, false), Range, TypesettingContext.Instance) { Position = position };
     }
+    public sealed class Newline : TextAtom {
+      public Newline(string content, int index) : base(new Range(index, content.Length)) => Content = content;
+
+      public string Content { get; }
+
+      public override IDisplay<MathFonts, Glyph> ToDisplay(MathFonts fonts, PointF position) => 
+        new TextRunDisplay<MathFonts, Glyph>(AttributedGlyphRuns.Create(Content, GlyphFinder.Instance.FindGlyphs(fonts, Content), fonts, false), Range, TypesettingContext.Instance) { Position = position };
+    }
     public sealed class Math : TextAtom {
       public Math(Interfaces.IMathList content, Range range) : base(range) => Content = content;
 

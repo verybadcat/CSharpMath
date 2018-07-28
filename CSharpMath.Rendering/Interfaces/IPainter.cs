@@ -39,10 +39,11 @@ namespace CSharpMath.Rendering {
 
   }
   public static class IPainterExtensions {
-    public static PointF GetDisplayPosition(IDisplay<MathFonts, Glyph> displayList,
-  float fontSize, bool bottomLeftCoords,
-  float width, float height,
-  TextAlignment alignment, Thickness padding, float offsetX, float offsetY) {
+    public static PointF GetDisplayPosition(
+        float displayWidth, float displayAscent, float displayDescent,
+        float fontSize, bool bottomLeftCoords,
+        float width, float height,
+        TextAlignment alignment, Thickness padding, float offsetX, float offsetY) {
       float x, y;
       float displayWidth = displayList.Width;
       if ((alignment & TextAlignment.Left) != 0)

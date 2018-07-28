@@ -12,7 +12,13 @@
       void AddDisplaysWithLineBreaks(TextAtom atom, System.Collections.Generic.List<IDisplay<MathFonts, Glyph>> displayList) {
         if (atom is TextAtom.List list) {
           foreach (var a in list.Content) AddDisplaysWithLineBreaks(a, displayList);
-        } else {
+        } else if (atom is TextAtom.Newline n) {
+            accumulatedHeight += lineHeight;
+            //canvas inverted, so negate accumulatedHeight
+            display.Position = new System.Drawing.PointF(0, -accumulatedHeight);
+            lineWidth = lineHeight = 0;
+        }
+        else {
           var display = atom.ToDisplay(fonts, default);
           var bounds = display.ComputeDisplayBounds();
           if (lineWidth + display.Width > LineWidth) {
