@@ -29,7 +29,7 @@ namespace CSharpMath.Rendering {
     /// Unit of measure: points
     /// </summary>
     float FontSize { get; set; }
-    ObservableCollection<Typeface> LocalTypefaces { get; }
+    ObservableRangeCollection<Typeface> LocalTypefaces { get; }
     LineStyle LineStyle { get; set; }
     //(Color glyph, Color textRun)? GlyphBoxColor { get; set; }
     TSource Source { get; set; }

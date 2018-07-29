@@ -2,7 +2,7 @@
 using System.Linq;
 using CSharpMath.Display.Text;
 using CSharpMath.FrontEnd;
-using TFonts = CSharpMath.Rendering.MathFonts;
+using TFonts = CSharpMath.Rendering.Fonts;
 
 namespace CSharpMath.Rendering {
   public class GlyphBoundsProvider : IGlyphBoundsProvider<TFonts, Glyph> {

@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Linq;
 using CSharpMath.FrontEnd;
 using CSharpMath.Structures;
-using TFonts = CSharpMath.Rendering.MathFonts;
+using TFonts = CSharpMath.Rendering.Fonts;
 using Typography.OpenFont;
 using Typography.TextLayout;
 

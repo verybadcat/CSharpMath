@@ -7,8 +7,8 @@ using CSharpMath.FrontEnd;
 using Typography.OpenFont;
 
 namespace CSharpMath.Rendering {
-  public class MathFonts : MathFont<Glyph>, IEnumerable<Typeface> {
-    static MathFonts() {
+  public class Fonts : MathFont<Glyph>, IEnumerable<Typeface> {
+    static Fonts() {
       var bytes = Resources.Otf;
       var reader = new OpenFontReader();
       var latinMathTypeface = reader.Read(new MemoryStream(bytes, false));
@@ -18,12 +18,12 @@ namespace CSharpMath.Rendering {
 
     public static Typefaces GlobalTypefaces { get; }
 
-    public MathFonts(IList<Typeface> localTypefaces, float pointSize) : base(pointSize) {
+    public Fonts(IList<Typeface> localTypefaces, float pointSize) : base(pointSize) {
       var typefaces = localTypefaces.Concat(GlobalTypefaces);
       Typefaces = typefaces;
       MathTypeface = typefaces.First(t => t.HasMathTable());
     }
-    public MathFonts(MathFonts cloneMe, float pointSize) : base(pointSize) {
+    public Fonts(Fonts cloneMe, float pointSize) : base(pointSize) {
       Typefaces = cloneMe.Typefaces;
       MathTypeface = cloneMe.MathTypeface;
     }

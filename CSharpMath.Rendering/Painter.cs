@@ -5,7 +5,7 @@ using CSharpMath.Display;
 using CSharpMath.Enumerations;
 using CSharpMath.Rendering;
 using CSharpMath.Interfaces;
-using TFonts = CSharpMath.Rendering.MathFonts;
+using TFonts = CSharpMath.Rendering.Fonts;
 using CSharpMath.FrontEnd;
 using CSharpMath.Structures;
 
@@ -21,12 +21,11 @@ namespace CSharpMath.Rendering {
     #region Constructors
     public Painter(float fontSize = DefaultFontSize) {
       FontSize = fontSize;
-      LocalTypefaces.CollectionChanged += CollectionChanged;
+      LocalTypefaces.CollectionChanged += TypefacesChanged;
       ErrorColor = UnwrapColor(new Color(255, 0, 0));
       TextColor = UnwrapColor(new Color(0, 0, 0));
       HighlightColor = UnwrapColor(new Color(0, 0, 0, 0));
     }
-    void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) => Redisplay(0);
     #endregion Constructors
 
     #region Fields
@@ -55,11 +54,13 @@ namespace CSharpMath.Rendering {
 
     #region Redisplaying properties
     protected void Redisplay<T>(T assignment) => _displayChanged = true;
+    protected TFonts Fonts { get; private set; } = new TFonts(Array.Empty<Typeface>(), DefaultFontSize);
     /// <summary>
     /// Unit of measure: points
     /// </summary>
-    public float FontSize { get => __size; set => Redisplay(__size = value); } float __size = 20f;
-    public ObservableCollection<Typeface> LocalTypefaces { get; } = new ObservableCollection<Typeface>();
+    public float FontSize { get => Fonts.PointSize; set => Redisplay(Fonts = new TFonts(Fonts, value)); }
+    public ObservableRangeCollection<Typeface> LocalTypefaces { get; } = new ObservableRangeCollection<Typeface>();
+    void TypefacesChanged(object sender, NotifyCollectionChangedEventArgs e) => Redisplay(Fonts = new TFonts(LocalTypefaces, FontSize));
     LineStyle __style = LineStyle.Display; public LineStyle LineStyle { get => __style; set => Redisplay(__style = value); }
     TSource __source = default; public TSource Source { get => __source; set => Redisplay(__source = value); }
     #endregion Redisplaying properties
@@ -73,8 +74,18 @@ namespace CSharpMath.Rendering {
 
     public abstract ICanvas WrapCanvas(TCanvas canvas);
 
-    protected abstract void UpdateDisplay(float canvasWidth);
-    protected abstract RectangleF? MeasureCore(float canvasWidth);
+    protected void UpdateDisplay(float canvasWidth) {
+      _display = CreateDisplay(canvasWidth);
+      _displayChanged = false;
+    }
+    protected abstract IDisplay<TFonts, Glyph> CreateDisplay(float canvasWidth);
+
+    protected RectangleF? MeasureCore(float canvasWidth) {
+      //UpdateDisplay() null-refs if MathList == null
+      if (!Source.IsValid) return null;
+      if (Source.IsValid && _displayChanged) UpdateDisplay(canvasWidth);
+      return _display?.ComputeDisplayBounds();
+    }
 
     protected void Draw(ICanvas canvas, PointF position) {
       if (Source.IsValid) {
