@@ -160,9 +160,6 @@ namespace CSharpMath.Forms {
     public Enumerations.LineStyle LineStyle { get => (Enumerations.LineStyle)GetValue(LineStyleProperty); set => SetValue(LineStyleProperty, value); }
     public Thickness Padding { get => (Thickness)GetValue(PaddingProperty); set => SetValue(PaddingProperty, value); }
     public string ErrorMessage { get => (string)GetValue(ErrorMessageProperty); private set => SetValue(ErrorMessagePropertyKey, value); }
-    public ObservableCollection<Typeface> LocalTypefaces => Painter.LocalTypefaces;
-
-    public new RectangleF? Measure => Painter.Measure;
-    protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint) => Painter.Measure is RectangleF r ? new SizeRequest(new Xamarin.Forms.Size(r.Width, r.Height)) : base.OnMeasure(widthConstraint, heightConstraint);
+    public ObservableRangeCollection<Typeface> LocalTypefaces => Painter.LocalTypefaces;
   }
 }

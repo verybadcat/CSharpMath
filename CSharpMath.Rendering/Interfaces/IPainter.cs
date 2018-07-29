@@ -77,5 +77,6 @@ namespace CSharpMath.Rendering {
     ICanvas WrapCanvas(TCanvas canvas);
     Structures.Color WrapColor(TColor color);
     TColor UnwrapColor(Structures.Color color);
+    void Draw(TCanvas canvas, TextAlignment alignment = TextAlignment.Center, Thickness padding = default, float offsetX = 0, float offsetY = 0);
   }
 }

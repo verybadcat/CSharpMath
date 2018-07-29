@@ -3,14 +3,26 @@
 namespace CSharpMath.Rendering {
   public abstract class TextPainter<TCanvas, TColor> : Painter<TCanvas, TextSource, TColor> {
     public TextPainter(float fontSize = DefaultFontSize, float lineWidth = DefaultFontSize * 100) : base(fontSize) { }
-    
-    protected override IDisplay<Fonts, Glyph> CreateDisplay(float canvasWidth) {
+
+    //display maths should always be center-aligned regardless of parameter for Draw()
+    protected Display.MathListDisplay<Fonts, Glyph> _absolutePositionDisplay;
+    protected IDisplay<Fonts, Glyph> _alignedDisplay;
+
+    public TextAtom Atom { get => Source.Atom; set => Source = new TextSource(value); }
+    public string Text { get => Source.Text; set => Source = new TextSource(value); }
+
+    public RectangleF? Measure(float canvasWidth) => MeasureCore(ref _alignedDisplay, canvasWidth);
+
+    protected override void UpdateDisplay(ref IDisplay<Fonts, Glyph> returnDisplay, float canvasWidth) {
+      if (Atom == null) return;
       float accumulatedHeight = 0, lineWidth = 0, lineHeight = 0;
-      void AddDisplaysWithLineBreaks(TextAtom atom, System.Collections.Generic.List<IDisplay<Fonts, Glyph>> displayList) {
+      void AddDisplaysWithLineBreaks(TextAtom atom,
+        System.Collections.Generic.List<IDisplay<Fonts, Glyph>> displayList,
+        System.Collections.Generic.List<IDisplay<Fonts, Glyph>> displayMathList) {
         IDisplay<Fonts, Glyph> display;
         switch (atom) {
           case TextAtom.List list:
-            foreach (var a in list.Content) AddDisplaysWithLineBreaks(a, displayList);
+            foreach (var a in list.Content) AddDisplaysWithLineBreaks(a, displayList, displayMathList);
             break;
           case TextAtom.Newline n:
             accumulatedHeight += lineHeight;
@@ -20,13 +32,12 @@ namespace CSharpMath.Rendering {
             accumulatedHeight += lineHeight;
             accumulatedHeight += lineHeight;
             display = atom.ToDisplay(Fonts, default);
-#warning This is affected by Painter's Draw method itself to offset to the right.
             display.Position = new PointF(
               IPainterExtensions.GetDisplayPosition(display.Width, display.Ascent, display.Descent, Fonts.PointSize, false, canvasWidth, float.NaN, TextAlignment.Top, default, default, default).X,
               display.Position.Y - accumulatedHeight);
             accumulatedHeight += display.Ascent + display.Descent;
             lineWidth = lineHeight = 0;
-            displayList.Add(display);
+            displayMathList.Add(display);
             break;
           default:
             display = atom.ToDisplay(Fonts, default);
@@ -48,15 +59,25 @@ namespace CSharpMath.Rendering {
         }
       }
       var returnList = new System.Collections.Generic.List<IDisplay<Fonts, Glyph>>();
-      AddDisplaysWithLineBreaks(Atom, returnList);
-      return new Display.MathListDisplay<Fonts, Glyph>(returnList);
+      var absolutePositionList = new System.Collections.Generic.List<IDisplay<Fonts, Glyph>>();
+      AddDisplaysWithLineBreaks(Atom, returnList, absolutePositionList);
+      _absolutePositionDisplay = new Display.MathListDisplay<Fonts, Glyph>(absolutePositionList);
+      returnDisplay = new Display.MathListDisplay<Fonts, Glyph>(returnList);
     }
 
-    public TextAtom Atom { get => Source.Atom; set => Source = new TextSource(value); }
-    public string Text { get => Source.Text; set => Source = new TextSource(value); }
-
-    public RectangleF? Measure(float canvasWidth) => MeasureCore(canvasWidth);
-
-    public void Draw(TCanvas canvas) => Draw(WrapCanvas(canvas), default);
+    public void Draw(TCanvas canvas) {
+      var c = WrapCanvas(canvas);
+      UpdateDisplay(ref _alignedDisplay, c.Width);
+      _absolutePositionDisplay = new Display.MathListDisplay<Fonts, Glyph>()
+      Draw(c, _alignedDisplay);
+    }
+    public override void Draw(TCanvas canvas, TextAlignment alignment = TextAlignment.Center, Thickness padding = default, float offsetX = 0, float offsetY = 0) {
+      var c = WrapCanvas(canvas);
+      if (!Source.IsValid) DrawError(c);
+      else {
+        UpdateDisplay(ref _alignedDisplay, c.Width);
+        Draw(c, _display, IPainterExtensions.GetDisplayPosition(_display.Width, _display.Ascent, _display.Descent, FontSize, CoordinatesFromBottomLeftInsteadOfTopLeft, c.Width, c.Height, alignment, padding, offsetX, offsetY));
+      }
+    }
   }
 }

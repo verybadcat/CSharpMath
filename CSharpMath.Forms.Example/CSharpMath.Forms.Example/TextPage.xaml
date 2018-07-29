@@ -6,8 +6,8 @@
              xmlns:local="clr-namespace:CSharpMath.Forms.Example"
              Title="Text">
     <ContentPage.Content>
-        <StackLayout>
-            <StackLayout Orientation="Horizontal">
+        <StackLayout x:Name="outerStack">
+            <StackLayout x:Name="innerStack" Orientation="Horizontal">
                 <Editor x:Name="Text" HorizontalOptions="FillAndExpand" TextChanged="Text_TextChanged" />
                 <Picker x:Name="Size" HorizontalOptions="Fill" ItemsSource="{x:Static local:CustomExamplePage.FontSizes}" SelectedIndexChanged="Size_SelectedIndexChanged"/>
             </StackLayout>

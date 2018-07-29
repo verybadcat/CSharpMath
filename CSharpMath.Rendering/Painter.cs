@@ -28,13 +28,6 @@ namespace CSharpMath.Rendering {
     }
     #endregion Constructors
 
-    #region Fields
-    //_field == private field, __field == property-only field
-    protected bool _displayChanged = true;
-    protected IDisplay<TFonts, Glyph> _display;
-    protected readonly GraphicsContext _context = new GraphicsContext();
-    #endregion Fields
-
     #region Non-redisplaying properties
     /// <summary>
     /// Unit of measure: points;
@@ -53,16 +46,17 @@ namespace CSharpMath.Rendering {
     #endregion Non-redisplaying properties
 
     #region Redisplaying properties
-    protected void Redisplay<T>(T assignment) => _displayChanged = true;
+    //_field == private field, __field == property-only field
+    protected abstract void SetRedisplay();
     protected TFonts Fonts { get; private set; } = new TFonts(Array.Empty<Typeface>(), DefaultFontSize);
     /// <summary>
     /// Unit of measure: points
     /// </summary>
-    public float FontSize { get => Fonts.PointSize; set => Redisplay(Fonts = new TFonts(Fonts, value)); }
+    public float FontSize { get => Fonts.PointSize; set { Fonts = new TFonts(Fonts, value); SetRedisplay(); } }
     public ObservableRangeCollection<Typeface> LocalTypefaces { get; } = new ObservableRangeCollection<Typeface>();
-    void TypefacesChanged(object sender, NotifyCollectionChangedEventArgs e) => Redisplay(Fonts = new TFonts(LocalTypefaces, FontSize));
-    LineStyle __style = LineStyle.Display; public LineStyle LineStyle { get => __style; set => Redisplay(__style = value); }
-    TSource __source = default; public TSource Source { get => __source; set => Redisplay(__source = value); }
+    void TypefacesChanged(object sender, NotifyCollectionChangedEventArgs e) { Fonts = new TFonts(LocalTypefaces, FontSize); SetRedisplay(); }
+    LineStyle __style = LineStyle.Display; public LineStyle LineStyle { get => __style; set { __style = value; SetRedisplay(); } }
+    TSource __source = default; public TSource Source { get => __source; set { __source = value; SetRedisplay(); } }
     #endregion Redisplaying properties
 
     protected abstract bool CoordinatesFromBottomLeftInsteadOfTopLeft { get; }
@@ -74,23 +68,19 @@ namespace CSharpMath.Rendering {
 
     public abstract ICanvas WrapCanvas(TCanvas canvas);
 
-    protected void UpdateDisplay(float canvasWidth) {
-      _display = CreateDisplay(canvasWidth);
-      _displayChanged = false;
-    }
-    protected abstract IDisplay<TFonts, Glyph> CreateDisplay(float canvasWidth);
+    public abstract void Draw(TCanvas canvas, TextAlignment alignment = TextAlignment.Center, Thickness padding = default, float offsetX = 0, float offsetY = 0);
 
-    protected RectangleF? MeasureCore(float canvasWidth) {
+    protected abstract void UpdateDisplay(ref IDisplay<TFonts, Glyph> display, float canvasWidth);
+
+    protected RectangleF? MeasureCore(ref IDisplay<TFonts, Glyph> display, float canvasWidth) {
       //UpdateDisplay() null-refs if MathList == null
-      if (!Source.IsValid) return null;
-      if (Source.IsValid && _displayChanged) UpdateDisplay(canvasWidth);
-      return _display?.ComputeDisplayBounds();
+      UpdateDisplay(ref display, canvasWidth);
+      return display?.ComputeDisplayBounds();
     }
 
-    protected void Draw(ICanvas canvas, PointF position) {
+    protected void Draw(ICanvas canvas, IDisplay<TFonts, Glyph> display, PointF position = default) {
       if (Source.IsValid) {
-        if (_displayChanged) UpdateDisplay(canvas.Width);
-        _display.Position = position;
+        display.Position = position;
         canvas.Save();
         if (!CoordinatesFromBottomLeftInsteadOfTopLeft) {
           //invert the canvas vertically
@@ -100,16 +90,17 @@ namespace CSharpMath.Rendering {
         canvas.DefaultColor = WrapColor(TextColor);
         canvas.CurrentColor = WrapColor(HighlightColor);
         canvas.CurrentStyle = PaintStyle;
-        var measure = MeasureCore(canvas.Width) ??
+        var measure = MeasureCore(ref display, canvas.Width) ??
           throw new InvalidOperationException($"{nameof(MeasureCore)} returned null. Any conditions leading to this should have already been checked via {nameof(Source)}.{nameof(Source.IsValid)}.");
-        canvas.FillRect(position.X + measure.X, position.Y -
-          (CoordinatesFromBottomLeftInsteadOfTopLeft ? _display.Ascent : _display.Descent),
+        canvas.FillRect(display.Position.X + measure.X, display.Position.Y -
+          (CoordinatesFromBottomLeftInsteadOfTopLeft ? display.Ascent : display.Descent),
           measure.Width, measure.Height);
         canvas.CurrentColor = null;
-        _context.Canvas = canvas;
         T? Nullable<T>(T nonnull) where T : struct => new T?(nonnull);
-        _context.GlyphBoxColor = GlyphBoxColor.HasValue ? Nullable((WrapColor(GlyphBoxColor.Value.glyph), WrapColor(GlyphBoxColor.Value.textRun))) : null;
-        _display.Draw(_context);
+        display.Draw(new GraphicsContext {
+          Canvas = canvas,
+          GlyphBoxColor = GlyphBoxColor.HasValue ? Nullable((WrapColor(GlyphBoxColor.Value.glyph), WrapColor(GlyphBoxColor.Value.textRun))) : null
+        });
         canvas.Restore();
       } else DrawError(canvas);
     }

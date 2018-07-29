@@ -18,6 +18,23 @@ namespace CSharpMath.Forms.Example
       //However, it is also not yet complete as in not being able to SeparateThisReallyLongWordWhichIsSoLongThatItSpansAcrossTheEntirePageAndWontStopEvenWhenPartOfItIsOutOfBounds.
     }
 
+    private double width = 0;
+    private double height = 0;
+    protected override void OnSizeAllocated(double width, double height) {
+      base.OnSizeAllocated(width, height);
+      if (width != this.width || height != this.height) {
+        this.width = width;
+        this.height = height;
+        if (width > height) {
+          outerStack.Orientation = StackOrientation.Horizontal;
+          innerStack.Orientation = StackOrientation.Vertical;
+        } else {
+          outerStack.Orientation = StackOrientation.Vertical;
+          innerStack.Orientation = StackOrientation.Horizontal;
+        }
+      }
+    }
+
     private void Size_SelectedIndexChanged(object sender, EventArgs e) {
       View.FontSize = (float)Size.SelectedItem;
       View.InvalidateSurface();

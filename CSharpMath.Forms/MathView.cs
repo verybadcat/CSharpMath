@@ -12,7 +12,7 @@ namespace CSharpMath.Forms {
   using CSharpMath.SkiaSharp;
   using Color = Xamarin.Forms.Color;
 
-  [XamlCompilation(XamlCompilationOptions.Compile), ContentProperty(nameof(LaTeX))]
+  [XamlCompilation(XamlCompilationOptions.Compile)]
   public class MathView : BaseView<MathPainter, MathSource>, IPainter<MathSource, Color> {
     #region BindableProperties
     static MathView() {
@@ -32,5 +32,7 @@ namespace CSharpMath.Forms {
     public (Color glyph, Color textRun)? GlyphBoxColor { get => ((Color glyph, Color textRun)?)GetValue(GlyphBoxColorProperty); set => SetValue(GlyphBoxColorProperty, value); }
     public Interfaces.IMathList MathList { get => Source.MathList; set => Source = new MathSource(value); }
     public string LaTeX { get => Source.LaTeX; set => Source = new MathSource(value); }
+    public new RectangleF? Measure => Painter.Measure;
+    protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint) => Painter.Measure is RectangleF r ? new SizeRequest(new Xamarin.Forms.Size(r.Width, r.Height)) : base.OnMeasure(widthConstraint, heightConstraint);
   }
 }

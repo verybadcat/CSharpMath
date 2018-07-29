@@ -33,7 +33,9 @@ breakList.Select(i => (i.breakAt, i.wordKind, text.ElementAtOrDefault(i.breakAt)
         var endAt = i == breakList.Count - 1 ? text.Length : breakList[i + 1].breakAt;
         var endingChar = i == breakList.Count - 1 ? '\0' : text[endAt - 1];
         if(endingChar == '$') {
-          if (backslashEscape) atoms.Add("$");
+          if (backslashEscape)
+            if (displayMath != null) mathLaTeX.Append('$');
+            else atoms.Add("$");
           else {
             dollarCount++;
             continue;
