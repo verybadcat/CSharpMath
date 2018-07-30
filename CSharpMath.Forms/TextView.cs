@@ -13,10 +13,5 @@
 
     public float? LineWidth { get => (float?)GetValue(LineWidthProperty); set => SetValue(LineWidthProperty, value); }
     public static readonly BindableProperty LineWidthProperty = BindableProperty.Create(nameof(LineWidth), typeof(float?), typeof(TextView));
-
-    protected override void OnPaintSurface(global::SkiaSharp.Views.Forms.SKPaintSurfaceEventArgs e) {
-      Painter.width = LineWidth ?? e.Info.Width;
-      base.OnPaintSurface(e);
-    }
   }
 }

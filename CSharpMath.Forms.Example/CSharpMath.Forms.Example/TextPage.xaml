@@ -6,10 +6,10 @@
              xmlns:local="clr-namespace:CSharpMath.Forms.Example"
              Title="Text">
     <ContentPage.Content>
-        <StackLayout x:Name="outerStack">
-            <StackLayout x:Name="innerStack" Orientation="Horizontal">
-                <Editor x:Name="Text" HorizontalOptions="FillAndExpand" TextChanged="Text_TextChanged" />
-                <Picker x:Name="Size" HorizontalOptions="Fill" ItemsSource="{x:Static local:CustomExamplePage.FontSizes}" SelectedIndexChanged="Size_SelectedIndexChanged"/>
+        <StackLayout x:Name="outerStack" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+            <StackLayout x:Name="innerStack" Orientation="Horizontal" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                <Editor x:Name="Text" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" TextChanged="Text_TextChanged" />
+                <Picker x:Name="Size" HorizontalOptions="Fill" VerticalOptions="Fill" ItemsSource="{x:Static local:CustomExamplePage.FontSizes}" SelectedIndexChanged="Size_SelectedIndexChanged"/>
             </StackLayout>
             <text:TextView x:Name="View" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"/>
         </StackLayout>

@@ -11,7 +11,8 @@ namespace CSharpMath.Rendering {
     public TextAtom Atom { get => Source.Atom; set => Source = new TextSource(value); }
     public string Text { get => Source.Text; set => Source = new TextSource(value); }
 
-    public RectangleF? Measure(float canvasWidth) => MeasureCore(ref _alignedDisplay, canvasWidth);
+    protected override void SetRedisplay() { }
+    public RectangleF? Measure(float canvasWidth) => MeasureCore(ref _alignedDisplay, canvasWidth)?.Union(_absolutePositionDisplay.ComputeDisplayBounds());
 
     protected override void UpdateDisplay(ref IDisplay<Fonts, Glyph> returnDisplay, float canvasWidth) {
       if (Atom == null) return;
@@ -43,6 +44,10 @@ namespace CSharpMath.Rendering {
             display = atom.ToDisplay(Fonts, default);
             var bounds = display.ComputeDisplayBounds();
             if (lineWidth + display.Width > canvasWidth) {
+              //special case: first line's location should be below 0 (result of inverted canvas)
+              if (accumulatedHeight == 0)
+#error WIP: Use returnDisplay instead of _alignedDisplay here (aka refactor away MeasureCore)
+                _absolutePositionDisplay.Position = _alignedDisplay.Position = new PointF(0, -lineHeight);
               accumulatedHeight += lineHeight;
               //canvas inverted, so minus accumulatedHeight instead of plus
               display.Position = new PointF(0, display.Position.Y - accumulatedHeight);
@@ -63,20 +68,24 @@ namespace CSharpMath.Rendering {
       AddDisplaysWithLineBreaks(Atom, returnList, absolutePositionList);
       _absolutePositionDisplay = new Display.MathListDisplay<Fonts, Glyph>(absolutePositionList);
       returnDisplay = new Display.MathListDisplay<Fonts, Glyph>(returnList);
+      //special case: first line's location should be below 0 (result of inverted canvas)
+      if (accumulatedHeight == 0)
+        _absolutePositionDisplay.Position = returnDisplay.Position = new PointF(0, -lineHeight);
     }
 
     public void Draw(TCanvas canvas) {
       var c = WrapCanvas(canvas);
       UpdateDisplay(ref _alignedDisplay, c.Width);
-      _absolutePositionDisplay = new Display.MathListDisplay<Fonts, Glyph>()
-      Draw(c, _alignedDisplay);
+      Draw(c, new Display.MathListDisplay<Fonts, Glyph>(new[] { _alignedDisplay, _absolutePositionDisplay }));
     }
     public override void Draw(TCanvas canvas, TextAlignment alignment = TextAlignment.Center, Thickness padding = default, float offsetX = 0, float offsetY = 0) {
       var c = WrapCanvas(canvas);
       if (!Source.IsValid) DrawError(c);
       else {
         UpdateDisplay(ref _alignedDisplay, c.Width);
-        Draw(c, _display, IPainterExtensions.GetDisplayPosition(_display.Width, _display.Ascent, _display.Descent, FontSize, CoordinatesFromBottomLeftInsteadOfTopLeft, c.Width, c.Height, alignment, padding, offsetX, offsetY));
+        _alignedDisplay.Position = _alignedDisplay.Position.Plus(IPainterExtensions.GetDisplayPosition(
+          _alignedDisplay.Width, _alignedDisplay.Ascent, _alignedDisplay.Descent, FontSize, CoordinatesFromBottomLeftInsteadOfTopLeft, c.Width, c.Height, alignment, padding, offsetX, offsetY));
+        Draw(c, new Display.MathListDisplay<Fonts, Glyph>(new[] { _alignedDisplay, _absolutePositionDisplay }));
       }
     }
   }

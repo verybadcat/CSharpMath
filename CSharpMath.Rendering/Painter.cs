@@ -78,9 +78,9 @@ namespace CSharpMath.Rendering {
       return display?.ComputeDisplayBounds();
     }
 
-    protected void Draw(ICanvas canvas, IDisplay<TFonts, Glyph> display, PointF position = default) {
+    protected void Draw(ICanvas canvas, IDisplay<TFonts, Glyph> display, PointF? position = null) {
       if (Source.IsValid) {
-        display.Position = position;
+        if(position != null) display.Position = position.Value;
         canvas.Save();
         if (!CoordinatesFromBottomLeftInsteadOfTopLeft) {
           //invert the canvas vertically
