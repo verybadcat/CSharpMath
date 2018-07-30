@@ -34,7 +34,7 @@ breakList.Select(i => (i.breakAt, i.wordKind, text.ElementAtOrDefault(i.breakAt)
         var endingChar = i == breakList.Count - 1 ? '\0' : text[endAt - 1];
         if(endingChar == '$') {
           if (backslashEscape)
-            if (displayMath != null) mathLaTeX.Append('$');
+            if (displayMath != null) mathLaTeX.Append(@"\$");
             else atoms.Add("$");
           else {
             dollarCount++;
@@ -50,10 +50,10 @@ breakList.Select(i => (i.breakAt, i.wordKind, text.ElementAtOrDefault(i.breakAt)
                 case true:
                   return (null, "Cannot close display math mode with $");
                 case false:
-                  var mathError = atoms.Add(mathLaTeX.ToString(), false);
+                  if(atoms.Add(mathLaTeX.ToString(), false) is string mathError)
+                    return (null, mathError);
                   mathLaTeX = null;
                   displayMath = null;
-                  if (mathError != null) return (null, mathError);
                   break;
                 case null:
                   mathLaTeX = new StringBuilder();
@@ -65,7 +65,8 @@ breakList.Select(i => (i.breakAt, i.wordKind, text.ElementAtOrDefault(i.breakAt)
               dollarCount = 0;
               switch (displayMath) {
                 case true:
-                  atoms.Add(mathLaTeX.ToString(), true);
+                  if (atoms.Add(mathLaTeX.ToString(), true) is string mathError)
+                    return (null, mathError);
                   mathLaTeX = null;
                   displayMath = null;
                   break;
@@ -111,7 +112,8 @@ breakList.Select(i => (i.breakAt, i.wordKind, text.ElementAtOrDefault(i.breakAt)
                 case true:
                   return (null, "Cannot close inline math mode in display math mode");
                 case false:
-                  atoms.Add(mathLaTeX.ToString(), false);
+                  if (atoms.Add(mathLaTeX.ToString(), false) is string mathError)
+                    return (null, mathError);
                   mathLaTeX = null;
                   displayMath = null;
                   break;
@@ -134,7 +136,8 @@ breakList.Select(i => (i.breakAt, i.wordKind, text.ElementAtOrDefault(i.breakAt)
             case ']' when backslashEscape:
               switch (displayMath) {
                 case true:
-                  atoms.Add(mathLaTeX.ToString(), true);
+                  if (atoms.Add(mathLaTeX.ToString(), true) is string mathError)
+                    return (null, mathError);
                   mathLaTeX = null;
                   displayMath = null;
                   break;

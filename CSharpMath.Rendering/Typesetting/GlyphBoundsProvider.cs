@@ -25,10 +25,13 @@ namespace CSharpMath.Rendering {
 
     public RectangleF[] GetBoundingRectsForGlyphs(TFonts fonts, Glyph[] glyphs) {
       var rects = new RectangleF[glyphs.Length];
+      var glyphLayout = new Typography.TextLayout.GlyphLayout();
       var i = 0;
       foreach (var glyph in glyphs) {
         var scale = glyph.Typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);
         var bounds = glyph.Info.Bounds;
+        glyphLayout.Typeface = glyph.Typeface;
+#warning Use glyphLayout.Layout()
         rects[i] = RectangleF.FromLTRB(bounds.XMin * scale, bounds.YMin * scale, bounds.XMax * scale, bounds.YMax * scale);
         i++;
       }

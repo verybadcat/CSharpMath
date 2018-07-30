@@ -17,10 +17,6 @@ namespace CSharpMath.Forms {
   public abstract class BaseView<TPainter, TSource> : SKCanvasView, IPainter<TSource, Color> where TPainter : ICanvasPainter<SKCanvas, TSource, SKColor> where TSource : struct, ISource {
     public BaseView() {
       Painter = (TPainter)painterCtor.Invoke(ctorParams);
-      //TODO: Until fixed...
-      /*var pinch = new PinchGestureRecognizer();
-      pinch.PinchUpdated += OnPinch;
-      GestureRecognizers.Add(pinch);*/
     }
 
     protected TPainter Painter { get; }
@@ -41,7 +37,7 @@ namespace CSharpMath.Forms {
       ctorParams = Enumerable.Repeat(Type.Missing, painterCtor.GetParameters().Length).ToArray();
       var painter = (TPainter)painterCtor.Invoke(ctorParams);
       var thisType = typeof(BaseView<TPainter, TSource>);
-      var drawMethodParams = typeof(SkiaSharp.MathPainter).GetMethod(nameof(SkiaSharp.MathPainter.Draw), new[] { typeof(SKCanvas), typeof(TextAlignment), typeof(Thickness), typeof(float), typeof(float) }).GetParameters();
+      var drawMethodParams = typeof(TPainter).GetMethod(nameof(ICanvasPainter<int, TSource, int>.Draw), new[] { typeof(SKCanvas), typeof(TextAlignment), typeof(Thickness), typeof(float), typeof(float) }).GetParameters();
       TPainter p(BindableObject b) => ((BaseView<TPainter, TSource>)b).Painter;
       SourceProperty = BindableProperty.Create(nameof(Source), typeof(TSource), thisType, painter.Source, BindingMode.TwoWay, null, (b, o, n) => { p(b).Source = (TSource)n; ((BaseView<TPainter, TSource>)b).ErrorMessage = p(b).ErrorMessage; });
       DisplayErrorInlineProperty = BindableProperty.Create(nameof(DisplayErrorInline), typeof(bool), thisType, painter.DisplayErrorInline, propertyChanged: (b, o, n) => p(b).DisplayErrorInline = (bool)n);
@@ -57,11 +53,8 @@ namespace CSharpMath.Forms {
       PaintStyleProperty = BindableProperty.Create(nameof(PaintStyle), typeof(PaintStyle), thisType, painter.PaintStyle, propertyChanged: (b, o, n) => p(b).PaintStyle = (PaintStyle)n);
       LineStyleProperty = BindableProperty.Create(nameof(LineStyle), typeof(Enumerations.LineStyle), thisType, painter.LineStyle, propertyChanged: (b, o, n) => p(b).LineStyle = (Enumerations.LineStyle)n);
       PaddingProperty = BindableProperty.Create(nameof(Padding), typeof(Thickness), thisType, drawMethodParams[2].DefaultValue ?? default(Thickness));
-      EnableGesturesProperty = BindableProperty.Create(nameof(EnableGestures), typeof(bool), thisType, false);
       ErrorMessagePropertyKey = BindableProperty.CreateReadOnly(nameof(ErrorMessage), typeof(string), thisType, painter.ErrorMessage, BindingMode.OneWayToSource);
       ErrorMessageProperty = ErrorMessagePropertyKey.BindableProperty;
-      GestureCountPropertyKey = BindableProperty.CreateReadOnly(nameof(GestureCount), typeof(int), thisType, 0, BindingMode.OneWayToSource);
-      GestureCountProperty = GestureCountPropertyKey.BindableProperty;
     }
     public static readonly BindableProperty DisplayErrorInlineProperty;
     public static readonly BindableProperty FontSizeProperty;
@@ -77,11 +70,8 @@ namespace CSharpMath.Forms {
     public static readonly BindableProperty LineStyleProperty;
     public static readonly BindableProperty PaddingProperty;
     public static readonly BindableProperty SourceProperty;
-    public static readonly BindableProperty EnableGesturesProperty;
     private static readonly BindablePropertyKey ErrorMessagePropertyKey;
     public static readonly BindableProperty ErrorMessageProperty;
-    private static readonly BindablePropertyKey GestureCountPropertyKey;
-    public static readonly BindableProperty GestureCountProperty;
     #endregion
 
     SKPoint _origin;
@@ -116,28 +106,7 @@ namespace CSharpMath.Forms {
       }
       base.OnTouch(e);
     }
-    protected virtual void OnPinch(object sender, PinchGestureUpdatedEventArgs e) {
-      if (Source.IsValid) {
-        switch (e.Status) {
-          case GestureStatus.Started:
-            GestureCount++;
-            break;
-          case GestureStatus.Running:
-            Magnification *= (float)e.Scale;
-            InvalidateSurface();
-            break;
-          case GestureStatus.Completed:
-          case GestureStatus.Canceled:
-            GestureCount--;
-            break;
-          default:
-            throw new NotImplementedException("A new GestureStatus is in Xamarin.Forms?");
-        }
-      }
-    }
-
-    public bool EnableGestures { get => (bool)GetValue(EnableGesturesProperty); set => SetValue(EnableGesturesProperty, value); }
-    public int GestureCount { get => (int)GetValue(GestureCountProperty); private set => SetValue(GestureCountPropertyKey, value); }
+    
     public TSource Source { get => (TSource)GetValue(SourceProperty); set => SetValue(SourceProperty, value); }
     public bool DisplayErrorInline { get => (bool)GetValue(DisplayErrorInlineProperty); set => SetValue(DisplayErrorInlineProperty, value); }
     /// <summary>

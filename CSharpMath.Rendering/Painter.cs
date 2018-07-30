@@ -68,16 +68,12 @@ namespace CSharpMath.Rendering {
 
     public abstract ICanvas WrapCanvas(TCanvas canvas);
 
-    public abstract void Draw(TCanvas canvas, TextAlignment alignment = TextAlignment.Center, Thickness padding = default, float offsetX = 0, float offsetY = 0);
+    public abstract void Draw(TCanvas canvas, TextAlignment alignment, Thickness padding = default, float offsetX = 0, float offsetY = 0);
 
-    protected abstract void UpdateDisplay(ref IDisplay<TFonts, Glyph> display, float canvasWidth);
+    protected abstract void UpdateDisplay(float canvasWidth);
 
-    protected RectangleF? MeasureCore(ref IDisplay<TFonts, Glyph> display, float canvasWidth) {
-      //UpdateDisplay() null-refs if MathList == null
-      UpdateDisplay(ref display, canvasWidth);
-      return display?.ComputeDisplayBounds();
-    }
-
+    protected abstract RectangleF? MeasureCore(float canvasWidth);
+   
     protected void Draw(ICanvas canvas, IDisplay<TFonts, Glyph> display, PointF? position = null) {
       if (Source.IsValid) {
         if(position != null) display.Position = position.Value;
@@ -90,7 +86,7 @@ namespace CSharpMath.Rendering {
         canvas.DefaultColor = WrapColor(TextColor);
         canvas.CurrentColor = WrapColor(HighlightColor);
         canvas.CurrentStyle = PaintStyle;
-        var measure = MeasureCore(ref display, canvas.Width) ??
+        var measure = MeasureCore(canvas.Width) ??
           throw new InvalidOperationException($"{nameof(MeasureCore)} returned null. Any conditions leading to this should have already been checked via {nameof(Source)}.{nameof(Source.IsValid)}.");
         canvas.FillRect(display.Position.X + measure.X, display.Position.Y -
           (CoordinatesFromBottomLeftInsteadOfTopLeft ? display.Ascent : display.Descent),
