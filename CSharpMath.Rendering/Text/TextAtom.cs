@@ -16,7 +16,8 @@ namespace CSharpMath.Rendering {
 
     //Concrete types
     public sealed class Text : TextAtom {
-      public Text(string content, int index) : base(new Range(index, content.Length)) => Content = content;
+      public Text(string content, int index) : base(new Range(index, content.Length)) =>
+        Content = string.IsNullOrEmpty(content) ? throw new System.ArgumentException("Null or an empty string was provided.") : content;
 
       public string Content { get; }
 

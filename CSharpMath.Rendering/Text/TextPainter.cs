@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Linq;
 
 namespace CSharpMath.Rendering {
   public abstract class TextPainter<TCanvas, TColor> : Painter<TCanvas, TextSource, TColor> {
@@ -7,7 +8,7 @@ namespace CSharpMath.Rendering {
     //display maths should always be center-aligned regardless of parameter for Draw()
     protected Display.MathListDisplay<Fonts, Glyph> _absoluteXCoordDisplay;
     protected Display.MathListDisplay<Fonts, Glyph> _relativeXCoordDisplay;
-    protected Display.MathListDisplay<Fonts, Glyph> _combinedDisplay;
+    protected Typography.TextLayout.GlyphLayout _glyphLayout = new Typography.TextLayout.GlyphLayout();
 
     public TextAtom Atom { get => Source.Atom; set => Source = new TextSource(value); }
     public string Text { get => Source.Text; set => Source = new TextSource(value); }
@@ -47,7 +48,29 @@ namespace CSharpMath.Rendering {
             break;
           default:
             display = atom.ToDisplay(Fonts);
-            var bounds = display.ComputeDisplayBounds();
+            float width, height;
+            switch (atom) {
+              case TextAtom.Text t:
+                var cp = Typography.OpenFont.StringUtils.GetCodepoints(t.Content.ToCharArray());
+                int sameTypefaceStart = 0;
+                Typography.OpenFont.Typeface currTypeface = null;
+                var sameTypeface = new System.Collections.Generic.List<uint>();
+                foreach(var c in cp) {
+                  var g = GlyphFinder.Instance.Lookup(Fonts, c);
+                  currTypeface = currTypeface ?? g.Typeface;
+                  if (!g.Typeface.Equals(currTypeface)) {
+                    _glyphLayout.Typeface = currTypeface;
+                    Typography.TextLayout.PixelScaleLayoutExtensions.LayoutAndMeasureString(_glyphLayout, );
+                    sameTypeface.Clear();
+                  } else sameTypeface.Add(c);
+                }
+                break;
+              default:
+                var bounds = display.ComputeDisplayBounds();
+                width = bounds.Width;
+                height = bounds.Height;
+                break;
+            }
             if (lineWidth + display.Width > canvasWidth) {
               //special case: first line's location should be below 0 (result of inverted canvas)
               if (accumulatedHeight == 0)
@@ -55,13 +78,13 @@ namespace CSharpMath.Rendering {
               accumulatedHeight += lineHeight;
               //canvas inverted, so minus accumulatedHeight instead of plus
               display.Position = new PointF(0, display.Position.Y-accumulatedHeight);
-              lineWidth = bounds.Width;
-              lineHeight = bounds.Height;
+              lineWidth = width;
+              lineHeight = height;
             } else {
-              lineHeight = System.Math.Max(lineHeight, bounds.Height);
+              lineHeight = System.Math.Max(lineHeight, height);
               //canvas inverted, so negate accumulatedHeight
               display.Position = new PointF(lineWidth, display.Position.Y-accumulatedHeight);
-              lineWidth += bounds.Width;
+              lineWidth += width;
             }
             displayList.Add(display);
             break;

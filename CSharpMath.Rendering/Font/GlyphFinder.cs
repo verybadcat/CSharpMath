@@ -7,7 +7,7 @@ namespace CSharpMath.Rendering {
 
     public static GlyphFinder Instance { get; } = new GlyphFinder();
     
-    Glyph Lookup(Fonts fonts, int codepoint) {
+    public Glyph Lookup(Fonts fonts, int codepoint) {
       foreach (var font in fonts) {
         var g = font.Lookup(codepoint);
         if (g.GlyphIndex != 0) return new Glyph(font, g);

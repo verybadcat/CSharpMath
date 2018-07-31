@@ -12,7 +12,7 @@ namespace CSharpMath.Display.Text {
     where TFont : MathFont<TGlyph> {
     public bool Placeholder { get; set; }
 
-    public TGlyph[] Glyphs => KernedGlyphs.Select(g => g.Glyph).ToArray();
+    public IEnumerable<TGlyph> Glyphs => KernedGlyphs.Select(g => g.Glyph);
     public KernedGlyph<TGlyph>[] KernedGlyphs { get; set; }
     public string Text { get; set; }
 
