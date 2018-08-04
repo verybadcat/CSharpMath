@@ -430,9 +430,9 @@ namespace CSharpMath.Atoms {
     internal static Dictionary<string, Pair<string, string>?> fractionCommands = new Dictionary<string, Pair<string, string>?> {
       {"over", null },
       {"atop", null },
-      {"choose", new Pair<string, string>("(", ")") },
-      {"brack", new Pair<string, string>("[", "]") },
-      {"brace", new Pair<string, string>("{", "}") }
+      {"choose", Pair.Create("(", ")") },
+      {"brack", Pair.Create("[", "]") },
+      {"brace", Pair.Create("{", "}") }
     };
 
     internal MathList StopCommand(string command, MathList list, char stopChar) {

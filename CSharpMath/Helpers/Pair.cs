@@ -11,4 +11,9 @@
         public T First { get; }
         public K Second { get; }
     }
+
+    abstract class Pair
+    {
+        public static Pair<T, K> Create<T, K>(T first, K second) => new Pair<T, K>(first, second);
+    }
 }

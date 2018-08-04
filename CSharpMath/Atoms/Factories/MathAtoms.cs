@@ -541,11 +541,11 @@ namespace CSharpMath.Atoms {
     private static Dictionary<string, Pair<string, string>?> _matrixEnvironments { get; } =
       new Dictionary<string, Pair<string, string>?> {
         { "matrix",  null } ,
-        { "pmatrix", new Pair<string, string>("(", ")") } ,
-        { "bmatrix", new Pair<string, string>("[", "]") },
-        { "Bmatrix", new Pair<string, string>("{", "}") },
-        { "vmatrix", new Pair<string, string>("vert", "vert") },
-        { "Vmatrix", new Pair<string, string>("Vert", "Vert") }
+        { "pmatrix", Pair.Create("(", ")") } ,
+        { "bmatrix", Pair.Create("[", "]") },
+        { "Bmatrix", Pair.Create("{", "}") },
+        { "vmatrix", Pair.Create("vert", "vert") },
+        { "Vmatrix", Pair.Create("Vert", "Vert") }
       };
       
 
