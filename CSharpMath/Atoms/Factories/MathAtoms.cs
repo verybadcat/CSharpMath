@@ -1,5 +1,6 @@
 ﻿using CSharpMath.Constants;
 using CSharpMath.Enumerations;
+using CSharpMath.Helpers;
 using CSharpMath.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -537,14 +538,14 @@ namespace CSharpMath.Atoms {
     public static IFraction Fraction(string numerator, string denominator)
       => Fraction(MathListForCharacters(numerator), MathListForCharacters(denominator));
 
-    private static Dictionary<string, (string Left, string Right)?> _matrixEnvironments { get; } =
-      new Dictionary<string, (string Left, string Right)?> {
-        { "matrix", null } ,
-        { "pmatrix", ("(", ")") } ,
-        { "bmatrix", ("[", "]") },
-        { "Bmatrix", ("{", "}") },
-        { "vmatrix", ("vert", "vert") },
-        { "Vmatrix", ("Vert", "Vert") }
+    private static Dictionary<string, Pair<string, string>?> _matrixEnvironments { get; } =
+      new Dictionary<string, Pair<string, string>?> {
+        { "matrix",  null } ,
+        { "pmatrix", new Pair<string, string>("(", ")") } ,
+        { "bmatrix", new Pair<string, string>("[", "]") },
+        { "Bmatrix", new Pair<string, string>("{", "}") },
+        { "vmatrix", new Pair<string, string>("vert", "vert") },
+        { "Vmatrix", new Pair<string, string>("Vert", "Vert") }
       };
       
 
@@ -571,8 +572,8 @@ namespace CSharpMath.Atoms {
 
         if (delimiters != null) {
           var inner = new Inner {
-            LeftBoundary = BoundaryAtom(delimiters.Value.Left),
-            RightBoundary = BoundaryAtom(delimiters.Value.Right),
+            LeftBoundary = BoundaryAtom(delimiters.Value.First),
+            RightBoundary = BoundaryAtom(delimiters.Value.Second),
             InnerList = MathLists.WithAtoms(table)
           };
           r = inner;

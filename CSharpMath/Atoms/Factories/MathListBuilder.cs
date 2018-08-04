@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CSharpMath.Helpers;
 
 namespace CSharpMath.Atoms {
   public class MathListBuilder {
@@ -426,12 +427,12 @@ namespace CSharpMath.Atoms {
       }
     }
 
-    internal static Dictionary<string, (string left, string right)?> fractionCommands = new Dictionary<string, (string left, string right)?> {
+    internal static Dictionary<string, Pair<string, string>?> fractionCommands = new Dictionary<string, Pair<string, string>?> {
       {"over", null },
       {"atop", null },
-      {"choose", ("(", ")") },
-      {"brack", ("[", "]") },
-      {"brace", ("{", "}") }
+      {"choose", new Pair<string, string>("(", ")") },
+      {"brack", new Pair<string, string>("[", "]") },
+      {"brace", new Pair<string, string>("{", "}") }
     };
 
     internal MathList StopCommand(string command, MathList list, char stopChar) {
@@ -449,10 +450,10 @@ namespace CSharpMath.Atoms {
       if (fractionCommands.ContainsKey(command)) {
         bool rule = (command == "over");
         var fraction = new Fraction(rule);
-        (string left, string right)? delimiters = fractionCommands[command];
+        var delimiters = fractionCommands[command];
         if (delimiters != null) {
-          fraction.LeftDelimiter = delimiters.Value.left;
-          fraction.RightDelimiter = delimiters.Value.right;
+          fraction.LeftDelimiter = delimiters.Value.First;
+          fraction.RightDelimiter = delimiters.Value.Second;
         }
         fraction.Numerator = list;
         fraction.Denominator = BuildInternal(false, stopChar);
