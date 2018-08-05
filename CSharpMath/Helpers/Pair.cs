@@ -1,6 +1,7 @@
 ﻿namespace CSharpMath.Helpers
 {
-    readonly struct Pair<T, K> 
+#warning Revoke if https://github.com/dotnet/corert/issues/6179 is fixed
+  readonly struct Pair<T, K> 
     {
         public Pair(T first, K second)
         {

@@ -47,26 +47,26 @@ namespace CSharpMath.Rendering {
             displayMathList.Add(display);
             break;
           default:
-            display = atom.ToDisplay(Fonts);
+            RectangleF bounds;
             float width, height;
             switch (atom) {
               case TextAtom.Text t:
-                var cp = Typography.OpenFont.StringUtils.GetCodepoints(t.Content.ToCharArray());
-                int sameTypefaceStart = 0;
-                Typography.OpenFont.Typeface currTypeface = null;
-                var sameTypeface = new System.Collections.Generic.List<uint>();
-                foreach(var c in cp) {
-                  var g = GlyphFinder.Instance.Lookup(Fonts, c);
-                  currTypeface = currTypeface ?? g.Typeface;
-                  if (!g.Typeface.Equals(currTypeface)) {
-                    _glyphLayout.Typeface = currTypeface;
-                    Typography.TextLayout.PixelScaleLayoutExtensions.LayoutAndMeasureString(_glyphLayout, );
-                    sameTypeface.Clear();
-                  } else sameTypeface.Add(c);
+                var glyphs = GlyphFinder.Instance.FindGlyphs(Fonts, t.Content);
+                float maxLineSpacing = 0;
+#warning Optimise this
+                foreach (var (typeface, _) in glyphs) {
+                  float lineSpacing = Typography.OpenFont.Extensions.TypefaceExtensions.CalculateRecommendLineSpacing(typeface) *
+                    typeface.CalculateScaleToPixelFromPointSize(Fonts.PointSize);
+                  if (lineSpacing > maxLineSpacing) maxLineSpacing = lineSpacing;
                 }
+                display = new Display.TextRunDisplay<Fonts, Glyph>(Display.Text.AttributedGlyphRuns.Create(t.Content, glyphs, Fonts, false), t.Range, TypesettingContext.Instance);
+                bounds = display.ComputeDisplayBounds();
+                width = bounds.Width;
+                height = maxLineSpacing;
                 break;
               default:
-                var bounds = display.ComputeDisplayBounds();
+                display = atom.ToDisplay(Fonts);
+                bounds = display.ComputeDisplayBounds();
                 width = bounds.Width;
                 height = bounds.Height;
                 break;

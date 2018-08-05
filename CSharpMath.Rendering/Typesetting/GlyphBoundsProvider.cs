@@ -31,14 +31,13 @@ namespace CSharpMath.Rendering {
         var scale = glyph.Typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);
         var bounds = glyph.Info.Bounds;
         glyphLayout.Typeface = glyph.Typeface;
-#warning Use glyphLayout.Layout()
         rects[i] = RectangleF.FromLTRB(bounds.XMin * scale, bounds.YMin * scale, bounds.XMax * scale, bounds.YMax * scale);
         i++;
       }
       return rects;
     }
 
-    public float GetTypographicWidth(TFonts fonts, AttributedGlyphRun<TFonts, Glyph> run) => GetAdvancesForGlyphs(fonts, run.Glyphs).Total + run.KernedGlyphs.Sum(g => g.KernAfterGlyph);
+    public float GetTypographicWidth(TFonts fonts, AttributedGlyphRun<TFonts, Glyph> run) => GetAdvancesForGlyphs(fonts, run.Glyphs.ToArray()).Total + run.KernedGlyphs.Sum(g => g.KernAfterGlyph);
   }
 }
 

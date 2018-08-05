@@ -12,7 +12,7 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.17134.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.15063.0</TargetPlatformMinVersion>
+    <TargetPlatformMinVersion>10.0.16299.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -132,6 +132,18 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CSharpMath.Forms\CSharpMath.Forms.csproj">
+      <Project>{9bad6846-0b1d-4446-bf62-fcf85c6e9a9f}</Project>
+      <Name>CSharpMath.Forms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CSharpMath.Rendering\CSharpMath.Rendering.csproj">
+      <Project>{65016a61-2125-4e0c-90e8-a915230c7826}</Project>
+      <Name>CSharpMath.Rendering</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CSharpMath.SkiaSharp\CSharpMath.SkiaSharp.csproj">
+      <Project>{35b4bb5b-2202-436e-9afe-00997ca2cc65}</Project>
+      <Name>CSharpMath.SkiaSharp</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CSharpMath\CSharpMath.csproj">
       <Project>{5157367b-f03e-4acb-83a1-0de414a3bfca}</Project>
       <Name>CSharpMath</Name>
