@@ -123,18 +123,11 @@ namespace CSharpMath
       {
         return GetItalicized(c);
       }
-      if (IsNumber(c) || IsUpperGreek(c))
+      if (IsNumber(c) || IsUpperGreek(c) || c == '.')
       {
         return c;
       }
-      if (c == '.')
-      {
-        return c;
-      }
-      else
-      {
-        throw new InvalidOperationException(@"Illegal character " + c);
-      }
+      return c; //WJWJWJ No longer throws an exception
     }
 
     private TLongChar GetItalicized(TChar c)

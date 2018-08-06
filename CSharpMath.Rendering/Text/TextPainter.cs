@@ -23,14 +23,15 @@ namespace CSharpMath.Rendering {
 
     protected override void UpdateDisplay(float canvasWidth) {
       if (Atom == null) return;
-      float accumulatedHeight = 0, lineWidth = 0, lineHeight = 0, absYCoord = 0, relYCoord = 0;
-      void AddDisplaysWithLineBreaks(TextAtom atom,
+      float accumulatedHeight = 0, lineWidth = 0, lineHeight = 0;
+      void AddDisplaysWithLineBreaks(TextAtom atom, Fonts fonts,
         System.Collections.Generic.List<IDisplay<Fonts, Glyph>> displayList,
-        System.Collections.Generic.List<IDisplay<Fonts, Glyph>> displayMathList) {
+        System.Collections.Generic.List<IDisplay<Fonts, Glyph>> displayMathList,
+        FontStyle style = FontStyle.Roman /*FontStyle.Default is FontStyle.Italic, FontStyle.Roman is no change to characters*/) {
         IDisplay<Fonts, Glyph> display;
         switch (atom) {
           case TextAtom.List list:
-            foreach (var a in list.Content) AddDisplaysWithLineBreaks(a, displayList, displayMathList);
+            foreach (var a in list.Content) AddDisplaysWithLineBreaks(a, fonts, displayList, displayMathList, style);
             break;
           case TextAtom.Newline n:
             accumulatedHeight += lineHeight;
@@ -38,10 +39,10 @@ namespace CSharpMath.Rendering {
             break;
           case TextAtom.Math m when m.DisplayStyle:
             accumulatedHeight += lineHeight;
-            display = atom.ToDisplay(Fonts);
+            display = Typesetter<Fonts, Glyph>.CreateLine(m.Content, fonts, TypesettingContext.Instance, Enumerations.LineStyle.Display);
             display.Position = new PointF(
-              IPainterExtensions.GetDisplayPosition(display.Width, display.Ascent, display.Descent, Fonts.PointSize, false, canvasWidth, float.NaN, TextAlignment.Bottom, default, default, default).X,
-              -display.Ascent + display.Descent - accumulatedHeight);
+              IPainterExtensions.GetDisplayPosition(display.Width, display.Ascent, display.Descent, fonts.PointSize, false, canvasWidth, float.NaN, TextAlignment.Bottom, default, default, default).X,
+              -accumulatedHeight);
             accumulatedHeight += display.Ascent + display.Descent;
             lineWidth = lineHeight = 0;
             displayMathList.Add(display);
@@ -49,32 +50,36 @@ namespace CSharpMath.Rendering {
           default:
             RectangleF bounds;
             float width, height;
+            if (atom is TextAtom.Style st) { AddDisplaysWithLineBreaks(st.Content, fonts, displayList, displayMathList, st.FontStyle); return; }
+            else if (atom is TextAtom.Size sz) { AddDisplaysWithLineBreaks(sz.Content, new Fonts(fonts, sz.PointSize), displayList, displayMathList, style); return; }
             switch (atom) {
               case TextAtom.Text t:
-                var glyphs = GlyphFinder.Instance.FindGlyphs(Fonts, t.Content);
+                var content = UnicodeFontChanger.Instance.ChangeFont(t.Content, style);
+                var glyphs = GlyphFinder.Instance.FindGlyphs(fonts, content);
                 float maxLineSpacing = 0;
 #warning Optimise this
                 foreach (var (typeface, _) in glyphs) {
                   float lineSpacing = Typography.OpenFont.Extensions.TypefaceExtensions.CalculateRecommendLineSpacing(typeface) *
-                    typeface.CalculateScaleToPixelFromPointSize(Fonts.PointSize);
+                    typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);
                   if (lineSpacing > maxLineSpacing) maxLineSpacing = lineSpacing;
                 }
-                display = new Display.TextRunDisplay<Fonts, Glyph>(Display.Text.AttributedGlyphRuns.Create(t.Content, glyphs, Fonts, false), t.Range, TypesettingContext.Instance);
+                display = new Display.TextRunDisplay<Fonts, Glyph>(Display.Text.AttributedGlyphRuns.Create(content, glyphs, fonts, false), t.Range, TypesettingContext.Instance);
                 bounds = display.ComputeDisplayBounds();
                 width = bounds.Width;
                 height = maxLineSpacing;
                 break;
-              default:
-                display = atom.ToDisplay(Fonts);
+              case TextAtom.Math m:
+                display = Typesetter<Fonts, Glyph>.CreateLine(m.Content, fonts, TypesettingContext.Instance, Enumerations.LineStyle.Text);
                 bounds = display.ComputeDisplayBounds();
                 width = bounds.Width;
                 height = bounds.Height;
                 break;
+              case TextAtom.Style _:
+                throw new InvalidCodePathException("StyledText atoms should have been handled above this switch.");
+              case var a:
+                throw new InvalidCodePathException($"There should not be an unknown type of TextAtom. However, one with type {a.GetType()} was encountered.");
             }
             if (lineWidth + display.Width > canvasWidth) {
-              //special case: first line's location should be below 0 (result of inverted canvas)
-              if (accumulatedHeight == 0)
-                absYCoord = relYCoord = -lineHeight;
               accumulatedHeight += lineHeight;
               //canvas inverted, so minus accumulatedHeight instead of plus
               display.Position = new PointF(0, display.Position.Y-accumulatedHeight);
@@ -92,9 +97,9 @@ namespace CSharpMath.Rendering {
       }
       var relativePositionList = new System.Collections.Generic.List<IDisplay<Fonts, Glyph>>();
       var absolutePositionList = new System.Collections.Generic.List<IDisplay<Fonts, Glyph>>();
-      AddDisplaysWithLineBreaks(Atom, relativePositionList, absolutePositionList);
-      _absoluteXCoordDisplay = new Display.MathListDisplay<Fonts, Glyph>(absolutePositionList) { Position = new PointF(0, absYCoord) };
-      _relativeXCoordDisplay = new Display.MathListDisplay<Fonts, Glyph>(relativePositionList) { Position = new PointF(0, relYCoord) };
+      AddDisplaysWithLineBreaks(Atom, Fonts, relativePositionList, absolutePositionList);
+      _absoluteXCoordDisplay = new Display.MathListDisplay<Fonts, Glyph>(absolutePositionList);
+      _relativeXCoordDisplay = new Display.MathListDisplay<Fonts, Glyph>(relativePositionList);
     }
 
     public void Draw(TCanvas canvas) {

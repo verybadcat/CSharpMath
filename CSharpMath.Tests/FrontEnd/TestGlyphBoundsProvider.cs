@@ -28,7 +28,7 @@ namespace CSharpMath.Tests.FrontEnd {
     }
 
     public float GetTypographicWidth(MathFont<char> font, AttributedGlyphRun<TFont, TGlyph> run) {
-      int effectiveLength = GetEffectiveLength(run.Glyphs);
+      int effectiveLength = GetEffectiveLength(run.Glyphs.ToArray());
       float width = font.PointSize * effectiveLength * WidthPerCharacterPerFontSize +
                          run.KernedGlyphs.Sum(g => g.KernAfterGlyph);
       return width;
