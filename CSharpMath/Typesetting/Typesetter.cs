@@ -124,7 +124,7 @@ namespace CSharpMath {
             AddInterElementSpace(prevNode, MathAtomType.Color);
             var color = atom as IColor;
             var colorDisplay = CreateLine(color.InnerList, _font, _context, _style);
-            colorDisplay.SetTextColorRecursive(Color.FromHexString(color.ColorString));
+            colorDisplay.SetTextColorRecursive(Color.Create(color.ColorString));
             colorDisplay.Position = _currentPosition;
             _currentPosition.X += colorDisplay.Width;
             _displayAtoms.Add(colorDisplay);

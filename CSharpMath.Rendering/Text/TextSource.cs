@@ -1,8 +1,10 @@
 ﻿namespace CSharpMath.Rendering {
   public readonly struct TextSource : ISource {
+    public static bool EnhancedColors { get; set; } = true;
+
     public TextSource(string text) {
       Text = text;
-      (Atom, ErrorMessage) = TextBuilder.Build(text);
+      (Atom, ErrorMessage) = TextBuilder.Build(text, EnhancedColors);
     }
     public TextSource(TextAtom atom) {
       Atom = atom;

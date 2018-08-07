@@ -11,6 +11,7 @@ namespace CSharpMath.Rendering {
     public void Add(string text) => Add(new TextAtom.Text(text, TextLength));
     public void Add(TextAtom atom, FontStyle style, int commandLength) => Add(new TextAtom.Style(atom, style, TextLength, commandLength));
     public void Add(TextAtom atom, float fontSize, int commandLength) => Add(new TextAtom.Size(atom, fontSize, TextLength, commandLength));
+    public void Add(TextAtom atom, Structures.Color color, int commandLength) => Add(new TextAtom.Color(atom, color, TextLength, commandLength));
     public string Add(string mathLaTeX, bool displayStyle) {
       var mathSource = new MathSource(mathLaTeX);
       if (mathSource.ErrorMessage.IsNonEmpty()) return mathSource.ErrorMessage;

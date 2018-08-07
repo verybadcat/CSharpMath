@@ -7,6 +7,7 @@ namespace CSharpMath.Rendering {
   using System.Drawing;
   using CSharpMath.Atoms;
 
+#warning Review Ranges; they have an extremely high probability of not working
   //Base type
   public abstract class TextAtom {
     private TextAtom(Range range) => Range = range;
@@ -32,7 +33,8 @@ namespace CSharpMath.Rendering {
     }
     public sealed class Style : TextAtom {
       public Style(TextAtom content, FontStyle style, int index, int commandLength) : base(new Range(index, commandLength + content.Range.Length + 2 /*{ and }*/)) =>
-        (Content, FontStyle) = (content, style == FontStyle.Default ? FontStyle.Roman /*FontStyle.Default is FontStyle.Italic, FontStyle.Roman is no change to characters*/ : style);
+        (Content, FontStyle, content.Range) =
+          (content, style == FontStyle.Default ? FontStyle.Roman /*FontStyle.Default is FontStyle.Italic, FontStyle.Roman is no change to characters*/ : style, new Range(content.Range.Location + commandLength + index + 1/*{*/, content.Range.Length));
 
       public TextAtom Content { get; }
 
@@ -40,11 +42,19 @@ namespace CSharpMath.Rendering {
     }
     public sealed class Size : TextAtom {
       public Size(TextAtom content, float pointSize, int index, int commandLength) : base(new Range(index, commandLength + content.Range.Length + 2 /*{ and }*/)) =>
-        (Content, PointSize) = (content, pointSize);
+        (Content, PointSize, content.Range) = (content, pointSize, new Range(content.Range.Location + commandLength + index + 1/*{*/, content.Range.Length));
 
       public TextAtom Content { get; }
 
       public float PointSize { get; }
+    }
+    public sealed class Color : TextAtom {
+      public Color(TextAtom content, Structures.Color colour, int index, int commandLength) : base(new Range(index, commandLength + content.Range.Length + 2 /*{ and }*/)) =>
+        (Content, Colour, content.Range) = (content, colour, new Range(content.Range.Location + commandLength + index + 1/*{*/, content.Range.Length));
+
+      public TextAtom Content { get; }
+
+      public Structures.Color Colour { get; }
     }
     public sealed class List : TextAtom {
       public List(IReadOnlyList<TextAtom> content, int index) : base(new Range(index, content.Count)) {

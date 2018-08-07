@@ -27,11 +27,21 @@ namespace CSharpMath.Rendering {
       void AddDisplaysWithLineBreaks(TextAtom atom, Fonts fonts,
         System.Collections.Generic.List<IDisplay<Fonts, Glyph>> displayList,
         System.Collections.Generic.List<IDisplay<Fonts, Glyph>> displayMathList,
-        FontStyle style = FontStyle.Roman /*FontStyle.Default is FontStyle.Italic, FontStyle.Roman is no change to characters*/) {
+        FontStyle style = FontStyle.Roman, /*FontStyle.Default is FontStyle.Italic, FontStyle.Roman is no change to characters*/
+        Structures.Color? color = null) {
         IDisplay<Fonts, Glyph> display;
         switch (atom) {
           case TextAtom.List list:
-            foreach (var a in list.Content) AddDisplaysWithLineBreaks(a, fonts, displayList, displayMathList, style);
+            foreach (var a in list.Content) AddDisplaysWithLineBreaks(a, fonts, displayList, displayMathList, style, color);
+            break;
+          case TextAtom.Style st:
+            AddDisplaysWithLineBreaks(st.Content, fonts, displayList, displayMathList, st.FontStyle, color);
+            break;
+          case TextAtom.Size sz:
+            AddDisplaysWithLineBreaks(sz.Content, new Fonts(fonts, sz.PointSize), displayList, displayMathList, style, color);
+            break;
+          case TextAtom.Color c:
+            AddDisplaysWithLineBreaks(c.Content, fonts, displayList, displayMathList, style, c.Colour);
             break;
           case TextAtom.Newline n:
             accumulatedHeight += lineHeight;
@@ -40,6 +50,7 @@ namespace CSharpMath.Rendering {
           case TextAtom.Math m when m.DisplayStyle:
             accumulatedHeight += lineHeight;
             display = Typesetter<Fonts, Glyph>.CreateLine(m.Content, fonts, TypesettingContext.Instance, Enumerations.LineStyle.Display);
+            if (color != null) display.SetTextColorRecursive(color);
             display.Position = new PointF(
               IPainterExtensions.GetDisplayPosition(display.Width, display.Ascent, display.Descent, fonts.PointSize, false, canvasWidth, float.NaN, TextAlignment.Bottom, default, default, default).X,
               -accumulatedHeight);
@@ -50,8 +61,6 @@ namespace CSharpMath.Rendering {
           default:
             RectangleF bounds;
             float width, height;
-            if (atom is TextAtom.Style st) { AddDisplaysWithLineBreaks(st.Content, fonts, displayList, displayMathList, st.FontStyle); return; }
-            else if (atom is TextAtom.Size sz) { AddDisplaysWithLineBreaks(sz.Content, new Fonts(fonts, sz.PointSize), displayList, displayMathList, style); return; }
             switch (atom) {
               case TextAtom.Text t:
                 var content = UnicodeFontChanger.Instance.ChangeFont(t.Content, style);
@@ -69,13 +78,15 @@ namespace CSharpMath.Rendering {
                 height = maxLineSpacing;
                 break;
               case TextAtom.Math m:
+                if (m.DisplayStyle) throw new InvalidCodePathException("Display style maths should have been handled above this switch.");
                 display = Typesetter<Fonts, Glyph>.CreateLine(m.Content, fonts, TypesettingContext.Instance, Enumerations.LineStyle.Text);
                 bounds = display.ComputeDisplayBounds();
                 width = bounds.Width;
                 height = bounds.Height;
                 break;
               case TextAtom.Style _:
-                throw new InvalidCodePathException("StyledText atoms should have been handled above this switch.");
+              case TextAtom.Color _:
+                throw new InvalidCodePathException("Style atoms and Color atoms should have been handled above this switch.");
               case var a:
                 throw new InvalidCodePathException($"There should not be an unknown type of TextAtom. However, one with type {a.GetType()} was encountered.");
             }
@@ -91,6 +102,7 @@ namespace CSharpMath.Rendering {
               display.Position = new PointF(lineWidth, display.Position.Y-accumulatedHeight);
               lineWidth += width;
             }
+            if (color != null) display.SetTextColorRecursive(color);
             displayList.Add(display);
             break;
         }

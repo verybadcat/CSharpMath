@@ -5,7 +5,8 @@ using Typography.TextBreak;
 
 namespace CSharpMath.Rendering {
   public static class TextBuilder {
-    public static (TextAtom atom, string error) Build(string text) {
+    public static (TextAtom atom, string error) Build(string text, bool enhancedColors) {
+#warning Use a new struct called Result<>
       string error = null;
       var breaker = new CustomBreaker();
       var breakList = new List<BreakAtInfo> { new BreakAtInfo(0, WordKind.Unknown) };
@@ -33,10 +34,11 @@ breakList.Select(i => (i.breakAt, i.wordKind, text.ElementAtOrDefault(i.breakAt)
 #warning No more \0 workarounds
         var (startAt, endAt, endingChar) = ObtainRange(i);
         string ReadInsideBrackets() {
+#warning Support single-char arguments
           (startAt, endAt, endingChar) = ObtainRange(++i);
-          if (endingChar != '{') { error = "Expected {"; return null; }
+          if (endingChar != '{') { error = "Missing {"; return null; }
           var endingIndex = text.IndexOf('}', endAt);
-          if (endingIndex == -1) { error = "Expected }"; return null; }
+          if (endingIndex == -1) { error = "Missing }"; return null; }
           var resultText = text.Substring(endAt, endingIndex - endAt);
           while (startAt < endingIndex) (startAt, endAt, endingChar) = ObtainRange(++i);
           return resultText;
@@ -183,6 +185,7 @@ breakList.Select(i => (i.breakAt, i.wordKind, text.ElementAtOrDefault(i.breakAt)
                 case "backslash":
                   atoms.Add(@"\");
                   break;
+#warning Refactor below, too much repitition
                 case "fontsize":
                   var fontSize = ReadInsideBrackets();
                   if (fontSize == null) return (null, error);
@@ -193,15 +196,34 @@ breakList.Select(i => (i.breakAt, i.wordKind, text.ElementAtOrDefault(i.breakAt)
                     return (null, "Invalid font size");
                   var resizedContent = ReadInsideBrackets();
                   if (resizedContent == null) return (null, error);
-                  var resizedResult = Build(resizedContent);
+                  var resizedResult = Build(resizedContent, enhancedColors);
                   if (resizedResult.error != null) return (null, resizedResult.error);
                   if (resizedContent != string.Empty) atoms.Add(resizedResult.atom, parsedResult, "fontsize".Length);
                   break;
-                //case "textbf", "textit", ...
+                case "color":
+                  var colorString = ReadInsideBrackets();
+                  if (colorString == null) return (null, error);
+                  var color = Structures.Color.Create(colorString, enhancedColors);
+                  if (color == null) return (null, "Invalid color");
+                  var toColorize = ReadInsideBrackets();
+                  if (toColorize == null) return (null, error);
+                  var colorized = Build(toColorize, enhancedColors);
+                  if (colorized.error != null) return (null, colorized.error);
+                  if (toColorize != string.Empty) atoms.Add(colorized.atom, color.Value, "color".Length);
+                  break;
+                case var shortColor when enhancedColors && Structures.Color.PredefinedColors.TryGetByFirst(shortColor, out var _):
+                  var toColorizeShort = ReadInsideBrackets();
+                  if (toColorizeShort == null) return (null, error);
+                  var colour = Structures.Color.Create(shortColor, enhancedColors) ?? throw new InvalidCodePathException("This case's condition should have checked the validity of shortColor.");
+                  var colorizedShort = Build(toColorizeShort, enhancedColors);
+                  if (colorizedShort.error != null) return (null, colorizedShort.error);
+                  if (toColorizeShort != string.Empty) atoms.Add(colorizedShort.atom, colour, "color".Length);
+                  break;
+                  //case "textbf", "textit", ...
                 case var command when !command.Contains("math") && FontStyleExtensions.FontStyles.TryGetByFirst(command.Replace("text", "math"), out var fontStyle):
                   var content = ReadInsideBrackets();
                   if (content == null) return (null, error);
-                  var builtResult = Build(content);
+                  var builtResult = Build(content, enhancedColors);
                   if (builtResult.error != null) return (null, builtResult.error);
                   if (content != string.Empty) atoms.Add(builtResult.atom, fontStyle, command.Length);
                   break;
@@ -227,6 +249,9 @@ breakList.Select(i => (i.breakAt, i.wordKind, text.ElementAtOrDefault(i.breakAt)
           return b.Append('\\').Append(m.DisplayStyle ? '[' : '(').Append(Atoms.MathListBuilder.MathListToString(m.Content)).Append('\\').Append(m.DisplayStyle ? ']' : ')');
         case TextAtom.Style t:
           return b.Append('\\').Append(t.FontStyle.FontName()).AppendInBraces(Unbuild(t.Content, new StringBuilder()).ToString(), NullHandling.None);
+        case TextAtom.Size z:
+          return b.Append("\\fontsize").AppendInBraces(z.PointSize.ToString(System.Globalization.CultureInfo.InvariantCulture), NullHandling.EmptyContent)
+                                       .AppendInBraces(Unbuild(z.Content, new StringBuilder()).ToString(), NullHandling.None);
         case TextAtom.List l:
           foreach (var a in l.Content) {
             b.Append(Unbuild(a, b));
