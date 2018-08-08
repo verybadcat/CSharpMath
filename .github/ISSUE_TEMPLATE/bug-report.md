@@ -26,5 +26,8 @@ If applicable, add screenshots to help explain your problem.
  - Package Version or Commit: [e.g. 0.0.0, a2315b4ac6d9cfdf8cf3dc2aaed37ee2f1dad07a]
  - Device: [e.g. iPhone 6, Pixel 2 XL, Xbox One X]
 
+**A Minimal, Complete, and Verifiable example**
+Providing an example where such a bug occurs, and which code cannot be shortened to have this bug still persist, can shorten time needed for the fix for this bug drastically. The CSharpMath contributors strongly recommend you to provide one.
+
 **Additional context**
 Add any other context about the problem here.
