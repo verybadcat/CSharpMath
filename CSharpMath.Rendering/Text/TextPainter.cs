@@ -2,20 +2,26 @@
 using System.Linq;
 
 namespace CSharpMath.Rendering {
+  /// <summary>
+  /// Unlike <see cref="CSharpMath.Typesetter{TFont, TGlyph}"/>, <see cref="TextPainter{TCanvas, TColor}"/>'s coordinates are inverted by default.
+  /// </summary>
+  /// <typeparam name="TCanvas"></typeparam>
+  /// <typeparam name="TColor"></typeparam>
   public abstract class TextPainter<TCanvas, TColor> : Painter<TCanvas, TextSource, TColor> {
     public TextPainter(float fontSize = DefaultFontSize, float lineWidth = DefaultFontSize * 100) : base(fontSize) { }
 
     //display maths should always be center-aligned regardless of parameter for Draw()
-    protected Display.MathListDisplay<Fonts, Glyph> _absoluteXCoordDisplay;
-    protected Display.MathListDisplay<Fonts, Glyph> _relativeXCoordDisplay;
+    public Display.MathListDisplay<Fonts, Glyph> _absoluteXCoordDisplay;
+    public Display.MathListDisplay<Fonts, Glyph> _relativeXCoordDisplay;
     protected Typography.TextLayout.GlyphLayout _glyphLayout = new Typography.TextLayout.GlyphLayout();
 
     public TextAtom Atom { get => Source.Atom; set => Source = new TextSource(value); }
     public string Text { get => Source.Text; set => Source = new TextSource(value); }
 
     protected override void SetRedisplay() { }
+#warning ClampToPositive is a hack to offset Measure to a correct value, tested using Layout page of Forms.Example
     protected override RectangleF? MeasureCore(float canvasWidth) =>
-      _relativeXCoordDisplay?.ComputeDisplayBounds().Union(_absoluteXCoordDisplay.ComputeDisplayBounds());
+      _relativeXCoordDisplay?.ComputeDisplayBounds(CoordinatesFromBottomLeftInsteadOfTopLeft).ClampToPositive().Union(_absoluteXCoordDisplay.ComputeDisplayBounds(CoordinatesFromBottomLeftInsteadOfTopLeft));
     public RectangleF? Measure(float canvasWidth) {
       UpdateDisplay(canvasWidth);
       return MeasureCore(canvasWidth);
@@ -23,7 +29,7 @@ namespace CSharpMath.Rendering {
 
     protected override void UpdateDisplay(float canvasWidth) {
       if (Atom == null) return;
-      float accumulatedHeight = 0, lineWidth = 0, lineHeight = 0;
+      float accumulatedHeight = 0, lineWidth = 0, lineHeight = 0, firstLineAscent = 0;
       void AddDisplaysWithLineBreaks(TextAtom atom, Fonts fonts,
         System.Collections.Generic.List<IDisplay<Fonts, Glyph>> displayList,
         System.Collections.Generic.List<IDisplay<Fonts, Glyph>> displayMathList,
@@ -49,12 +55,15 @@ namespace CSharpMath.Rendering {
             break;
           case TextAtom.Math m when m.DisplayStyle:
             accumulatedHeight += lineHeight;
+#warning Replace 12 with a more appropriate spacing
+            accumulatedHeight += 12;
             display = Typesetter<Fonts, Glyph>.CreateLine(m.Content, fonts, TypesettingContext.Instance, Enumerations.LineStyle.Display);
             if (color != null) display.SetTextColorRecursive(color);
             display.Position = new PointF(
               IPainterExtensions.GetDisplayPosition(display.Width, display.Ascent, display.Descent, fonts.PointSize, false, canvasWidth, float.NaN, TextAlignment.Bottom, default, default, default).X,
               -accumulatedHeight);
             accumulatedHeight += display.Ascent + display.Descent;
+            accumulatedHeight += 12;
             lineWidth = lineHeight = 0;
             displayMathList.Add(display);
             break;
@@ -93,14 +102,16 @@ namespace CSharpMath.Rendering {
             if (lineWidth + display.Width > canvasWidth) {
               accumulatedHeight += lineHeight;
               //canvas inverted, so minus accumulatedHeight instead of plus
-              display.Position = new PointF(0, display.Position.Y-accumulatedHeight);
+              display.Position = new PointF(0, -display.Position.Y-accumulatedHeight);
               lineWidth = width;
               lineHeight = height;
+              if (firstLineAscent >= 0) firstLineAscent = System.Math.Max(firstLineAscent, display.Ascent);
             } else {
               lineHeight = System.Math.Max(lineHeight, height);
               //canvas inverted, so negate accumulatedHeight
-              display.Position = new PointF(lineWidth, display.Position.Y-accumulatedHeight);
+              display.Position = new PointF(lineWidth, -display.Position.Y-accumulatedHeight);
               lineWidth += width;
+              if (firstLineAscent > 0) firstLineAscent *= -1; //negate to freeze its value
             }
             if (color != null) display.SetTextColorRecursive(color);
             displayList.Add(display);
@@ -110,30 +121,28 @@ namespace CSharpMath.Rendering {
       var relativePositionList = new System.Collections.Generic.List<IDisplay<Fonts, Glyph>>();
       var absolutePositionList = new System.Collections.Generic.List<IDisplay<Fonts, Glyph>>();
       AddDisplaysWithLineBreaks(Atom, Fonts, relativePositionList, absolutePositionList);
-      _absoluteXCoordDisplay = new Display.MathListDisplay<Fonts, Glyph>(absolutePositionList);
+      if (firstLineAscent > 0) firstLineAscent *= -1;
+      //Retain positions
       _relativeXCoordDisplay = new Display.MathListDisplay<Fonts, Glyph>(relativePositionList);
+      _absoluteXCoordDisplay = new Display.MathListDisplay<Fonts, Glyph>(absolutePositionList) { Position = new PointF(0, _relativeXCoordDisplay.ComputeDisplayBounds(CoordinatesFromBottomLeftInsteadOfTopLeft).Y) };
     }
 
-    public void Draw(TCanvas canvas) {
-      var c = WrapCanvas(canvas);
-      UpdateDisplay(c.Width);
-      Draw(c, new Display.MathListDisplay<Fonts, Glyph>(new[] { _relativeXCoordDisplay, _absoluteXCoordDisplay }));
-    }
-    public void Draw(TCanvas canvas, PointF position, float width) {
-      var c = WrapCanvas(canvas);
-      if (!CoordinatesFromBottomLeftInsteadOfTopLeft) position.Y *= -1;
-      UpdateDisplay(width);
-      Draw(c, new Display.MathListDisplay<Fonts, Glyph>(new[] { _relativeXCoordDisplay, _absoluteXCoordDisplay }), position);
-    }
-    public override void Draw(TCanvas canvas, TextAlignment alignment = TextAlignment.TopLeft, Thickness padding = default, float offsetX = 0, float offsetY = 0) {
+    public override void Draw(TCanvas canvas, TextAlignment alignment = TextAlignment.TopLeft, Thickness padding = default, float offsetX = 0, float offsetY = 0) =>
+      DrawCore(canvas, null, alignment, padding, offsetX, offsetY);
+    public void Draw(TCanvas canvas, float top, float left, float right) =>
+      DrawCore(canvas, right - left, TextAlignment.TopLeft, default, left, top);
+    public void Draw(TCanvas canvas, PointF position, float width) =>
+      DrawCore(canvas, width, TextAlignment.TopLeft, default, position.X, position.Y);
+    private void DrawCore(TCanvas canvas, float? width, TextAlignment alignment, Thickness padding, float offsetX, float offsetY) {
       var c = WrapCanvas(canvas);
       if (!Source.IsValid) DrawError(c);
       else {
-        UpdateDisplay(c.Width);
+        UpdateDisplay(width ?? c.Width);
         _relativeXCoordDisplay.Position = _relativeXCoordDisplay.Position.Plus(IPainterExtensions.GetDisplayPosition(
-          _relativeXCoordDisplay.Width, _relativeXCoordDisplay.Ascent, _relativeXCoordDisplay.Descent, FontSize, CoordinatesFromBottomLeftInsteadOfTopLeft, c.Width, c.Height, alignment, padding, offsetX, offsetY));
-        _absoluteXCoordDisplay.Position = new PointF(_absoluteXCoordDisplay.Position.X, _relativeXCoordDisplay.Position.Y);
-        Draw(c, new Display.MathListDisplay<Fonts, Glyph>(new[] { _relativeXCoordDisplay, _absoluteXCoordDisplay }));
+          _relativeXCoordDisplay.Width, _relativeXCoordDisplay.Ascent, _relativeXCoordDisplay.Descent, FontSize, CoordinatesFromBottomLeftInsteadOfTopLeft, width ?? c.Width, c.Height, alignment, padding, offsetX, offsetY));
+        //offsetY is already included in _relativeXCoordDisplay.Position, no need to add it again below
+        _absoluteXCoordDisplay.Position = new PointF(_absoluteXCoordDisplay.Position.X + offsetX, _absoluteXCoordDisplay.Position.Y + _relativeXCoordDisplay.Position.Y);
+        DrawCore(c, new Display.MathListDisplay<Fonts, Glyph>(new[] { _relativeXCoordDisplay, _absoluteXCoordDisplay }));
       }
     }
   }

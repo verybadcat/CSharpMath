@@ -37,7 +37,10 @@ breakList.Select(i => (i.breakAt, i.wordKind, text.ElementAtOrDefault(i.breakAt)
 #warning Support single-char arguments
           (startAt, endAt, endingChar) = ObtainRange(++i);
           if (endingChar != '{') { error = "Missing {"; return null; }
-          var endingIndex = text.IndexOf('}', endAt);
+          int numOfBrackets = 0;
+          int endingIndex = -1;
+          //+1 to not start at the { we started at
+          for (int j = startAt + 1; j < text.Length; j++) { if (text[j] == '{') numOfBrackets++; else if (text[j] == '}') if (numOfBrackets > 0) numOfBrackets--; else { endingIndex = j; break; } }
           if (endingIndex == -1) { error = "Missing }"; return null; }
           var resultText = text.Substring(endAt, endingIndex - endAt);
           while (startAt < endingIndex) (startAt, endAt, endingChar) = ObtainRange(++i);

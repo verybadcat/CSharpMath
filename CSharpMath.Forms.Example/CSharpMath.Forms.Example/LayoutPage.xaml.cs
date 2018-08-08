@@ -11,7 +11,22 @@ namespace CSharpMath.Forms.Example
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class LayoutPage : ContentPage {
-    SkiaSharp.TextPainter painter = new SkiaSharp.TextPainter { Text = @"Here are some text. This text is made to be long enough to have the TextPainter of CSharpMath (hopefully) add a line break to this text automatically. To demonstrate the capabilities of the TextPainter, here are some math content: First, a fraction in inline mode: $\frac34$ Next, a summation in inline mode: $\sum_{i=0}^3i^i$ Then, a summation in display mode: $$\sum_{i=0}^3i^i$$ (ah, bugs.) After that, an integral in display mode: $$\int^6_{-56}x\ dx$$ Finally, an escaped dollar sign \$ that represents the start/end of math mode when it is unescaped. Even though colours are currently unsupported, it can be done via math mode with the \\color command with the help of the \\text command. It looks like this: $\color{#F00}{\text{some red text}}$, which is nearly indistinguishable from non-math mode aside from not being able to automatically break up when spaces are inside the coloured text. The SkiaSharp version of this is located at CSharpMath.SkiaSharp.TextPainter; and the Xamarin.Forms version of this is located at CSharpMath.Forms.TextView. Was added in 0.1.0-pre4; working in 0.1.0-pre5." };
+    SkiaSharp.TextPainter painter = new SkiaSharp.TextPainter { Text = @"Here are some text.
+This text is made to be long enough to have the TextPainter of CSharpMath add a line break to this text automatically.
+To demonstrate the capabilities of the TextPainter,
+here are some math content:
+First, a fraction in inline mode: $\frac34$
+Next, a summation in inline mode: $\sum_{i=0}^3i^i$
+Then, a summation in display mode: $$\sum_{i=0}^3i^i$$
+After that, an integral in display mode: $$\int^6_{-56}x\ dx$$
+Finally, an escaped dollar sign \$ that represents the start/end of math mode when it is unescaped.
+Colors can be achieved via \backslash color{color}{content}, or \backslash \textit{color}{content},
+where \textit{color} stands for one of the LaTeX standard colors.
+\red{Colored text in text mode are able to automatically break up when spaces are inside the colored text, which the equivalent in math mode cannot do.}
+\textbf{Styled} \texttt{text} can be achieved via the LaTeX styling commands.
+The SkiaSharp version of this is located at CSharpMath.SkiaSharp.TextPainter;
+and the Xamarin.Forms version of this is located at CSharpMath.Forms.TextView.
+Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6." };
     bool reset;
     double x, y, w;
 
@@ -22,13 +37,26 @@ namespace CSharpMath.Forms.Example
       var measure = painter.Measure((float)w).Value;
       e.Surface.Canvas.Clear();
       e.Surface.Canvas.DrawRect((float)x + measure.X, (float)y + measure.Y, measure.Width, measure.Height, new global::SkiaSharp.SKPaint { Color = global::SkiaSharp.SKColors.Orange });
-      painter.Draw(e.Surface.Canvas, new System.Drawing.PointF((float)x, (float)y), (float)w);
+      /*measure = painter._absoluteXCoordDisplay.ComputeDisplayBounds();
+      e.Surface.Canvas.DrawRect((float)x + measure.X, (float)y + measure.Y, measure.Width, measure.Height, new global::SkiaSharp.SKPaint { Color = global::SkiaSharp.SKColors.Red, IsStroke = true });
+      measure = painter._relativeXCoordDisplay.ComputeDisplayBounds();
+      e.Surface.Canvas.DrawRect((float)x + measure.X, (float)y + measure.Y, measure.Width, measure.Height, new global::SkiaSharp.SKPaint { Color = global::SkiaSharp.SKColors.Blue, IsStroke = true });
+      */painter.Draw(e.Surface.Canvas, new System.Drawing.PointF((float)x, (float)y), (float)w);
     }
 
-    private void SliderX_ValueChanged(object sender, ValueChangedEventArgs e) { x = e.NewValue; SliderW.Maximum = SliderX.Maximum - x; Canvas.InvalidateSurface(); }
+    //Add Epsilon to prevent SliderW.Minimum == SiderW.Maximum == 0
+    private void SliderX_ValueChanged(object sender, ValueChangedEventArgs e) { x = e.NewValue; SliderW.Maximum = SliderX.Maximum - x + float.Epsilon; Canvas.InvalidateSurface(); }
 
     private void SliderY_ValueChanged(object sender, ValueChangedEventArgs e) { y = e.NewValue; Canvas.InvalidateSurface(); }
 
     private void SliderW_ValueChanged(object sender, ValueChangedEventArgs e) { w = e.NewValue; Canvas.InvalidateSurface(); }
+
+    protected override void OnSizeAllocated(double width, double height) {
+      base.OnSizeAllocated(width, height);
+      //+1 to avoid Maximum == Minimum == 0 (which throws) but allow for sliding
+      //Add Epsilon to prevent SliderW.Minimum == SiderW.Maximum == 0
+      (SliderX.Maximum, SliderY.Maximum, SliderW.Maximum) = (Canvas.CanvasSize.Width + 1, Canvas.CanvasSize.Height + 1, Canvas.CanvasSize.Width + 1 - SliderX.Value + float.Epsilon);
+      SliderX.Minimum = SliderY.Minimum = SliderW.Minimum = 0;
+    }
   }
 }

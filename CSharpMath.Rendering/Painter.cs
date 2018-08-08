@@ -73,8 +73,10 @@ namespace CSharpMath.Rendering {
     protected abstract void UpdateDisplay(float canvasWidth);
 
     protected abstract RectangleF? MeasureCore(float canvasWidth);
-   
-    protected void Draw(ICanvas canvas, IDisplay<TFonts, Glyph> display, PointF? position = null) {
+
+    protected RectangleF? InvertRect(RectangleF? r) { if (r.HasValue) return new RectangleF(r.Value.X, r.Value.Y, r.Value.Width, r.Value.Height * -1); return r; }
+
+    protected void DrawCore(ICanvas canvas, IDisplay<TFonts, Glyph> display, PointF? position = null) {
       if (Source.IsValid) {
         if(position != null) display.Position = position.Value;
         canvas.Save();
@@ -87,7 +89,7 @@ namespace CSharpMath.Rendering {
         canvas.CurrentColor = WrapColor(HighlightColor);
         canvas.CurrentStyle = PaintStyle;
         var measure = MeasureCore(canvas.Width) ??
-          throw new InvalidOperationException($"{nameof(MeasureCore)} returned null. Any conditions leading to this should have already been checked via {nameof(Source)}.{nameof(Source.IsValid)}.");
+          throw new InvalidCodePathException($"{nameof(MeasureCore)} returned null. Any conditions leading to this should have already been checked via {nameof(Source)}.{nameof(Source.IsValid)}.");
         canvas.FillRect(display.Position.X + measure.X, display.Position.Y -
           (CoordinatesFromBottomLeftInsteadOfTopLeft ? display.Ascent : display.Descent),
           measure.Width, measure.Height);

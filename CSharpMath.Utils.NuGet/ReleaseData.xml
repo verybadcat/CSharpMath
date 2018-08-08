@@ -2,13 +2,13 @@
 <ReleaseData>
   <_Global->
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageVersion>0.1.0-pre5</PackageVersion>
-    <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie)</Authors>
+    <PackageVersion>0.1.0-pre6</PackageVersion>
+    <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie, FoggyFinder)</Authors>
     <PackageReleaseNotes>The 0.1.0 SkiaSharp Update brings the SkiaSharp and Xamarin.Forms front ends to CSharpMath.</PackageReleaseNotes>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/verybadcat/CSharpMath.git</RepositoryUrl>
     <RepositoryBranch>master</RepositoryBranch>
-    <RepositoryCommit>aff4172bd424bbd66a47e028bdff96c30573bc12</RepositoryCommit>
+    <RepositoryCommit>258769db65d722bb29110896d9356d4a88c60d38</RepositoryCommit>
     <PackageProjectUrl>https://github.com/verybadcat/CSharpMath</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseUrl>https://github.com/verybadcat/CSharpMath/blob/master/LICENSE</PackageLicenseUrl>

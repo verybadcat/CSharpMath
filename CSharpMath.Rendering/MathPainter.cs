@@ -13,7 +13,8 @@ namespace CSharpMath.Rendering {
     public IMathList MathList { get => Source.MathList; set => Source = new MathSource(value); }
     public string LaTeX { get => Source.LaTeX; set => Source = new MathSource(value); }
 
-    protected override RectangleF? MeasureCore(float canvasWidth = float.NaN) => _display?.ComputeDisplayBounds();
+    protected override RectangleF? MeasureCore(float canvasWidth = float.NaN) =>
+      _display?.ComputeDisplayBounds(!CoordinatesFromBottomLeftInsteadOfTopLeft);
     public RectangleF? Measure {
       get {
         UpdateDisplay();
@@ -34,21 +35,9 @@ namespace CSharpMath.Rendering {
       if (!Source.IsValid) DrawError(c);
       else {
         UpdateDisplay(c.Width);
-        Draw(c, _display, IPainterExtensions.GetDisplayPosition(_display.Width, _display.Ascent, _display.Descent, FontSize, CoordinatesFromBottomLeftInsteadOfTopLeft, c.Width, c.Height, alignment, padding, offsetX, offsetY));
+        DrawCore(c, _display, IPainterExtensions.GetDisplayPosition(_display.Width, _display.Ascent, _display.Descent, FontSize, CoordinatesFromBottomLeftInsteadOfTopLeft, c.Width, c.Height, alignment, padding, offsetX, offsetY));
       }
     }
-
-    public void Draw(TCanvas canvas, float x, float y) {
-      var c = WrapCanvas(canvas);
-      UpdateDisplay(c.Width);
-      Draw(c, _display, new PointF(x, CoordinatesFromBottomLeftInsteadOfTopLeft ? y : -y));
-    }
-
-    public void Draw(TCanvas canvas, PointF position) {
-      var c = WrapCanvas(canvas);
-      if (CoordinatesFromBottomLeftInsteadOfTopLeft) position.Y *= -1;
-      UpdateDisplay(c.Width);
-      Draw(c, _display, position);
-    }
+    public void Draw(TCanvas canvas, float x, float y) => Draw(canvas, TextAlignment.TopLeft, default, x, y);
   }
 }

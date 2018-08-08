@@ -28,9 +28,9 @@ namespace CSharpMath {
   }
 
   public static class IDisplayExtensions {
-    public static RectangleF ComputeDisplayBounds<TFont, TGlyph>(this IDisplay<TFont, TGlyph> display)
+    public static RectangleF ComputeDisplayBounds<TFont, TGlyph>(this IDisplay<TFont, TGlyph> display, bool invert = false)
       where TFont : MathFont<TGlyph>
-      => new RectangleF(0, -display.Ascent, display.Width, display.Ascent + display.Descent);
+      => new RectangleF(0, invert ? display.Descent : -display.Ascent, display.Width, display.Ascent + display.Descent);
     /// <summary>Where the display is located, expressed in its parent's coordinate system.</summary>
     public static RectangleF Frame<TFont, TGlyph>(this IDisplay<TFont, TGlyph> display)
       where TFont : MathFont<TGlyph>

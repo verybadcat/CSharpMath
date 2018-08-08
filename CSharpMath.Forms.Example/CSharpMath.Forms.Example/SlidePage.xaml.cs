@@ -32,5 +32,12 @@ namespace CSharpMath.Forms.Example
     private void SliderX_ValueChanged(object sender, ValueChangedEventArgs e) { x = e.NewValue; Canvas.InvalidateSurface(); }
 
     private void SliderY_ValueChanged(object sender, ValueChangedEventArgs e) { y = e.NewValue; Canvas.InvalidateSurface(); }
+
+    protected override void OnSizeAllocated(double width, double height) {
+      base.OnSizeAllocated(width, height);
+      //+1 to avoid Maximum == Minimum == 0 (which throws) but allow for sliding
+      (SliderX.Maximum, SliderY.Maximum) = (Canvas.CanvasSize.Width + 1, Canvas.CanvasSize.Height + 1);
+      SliderX.Minimum = SliderY.Minimum = 0;
+    }
   }
 }
