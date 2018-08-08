@@ -1,14 +1,14 @@
 ---
-name: Feature request
-about: Suggest an idea for CSharpMath
+name: Feature request for Example projects
+about: Suggest a new feature for an Example project
 
 ---
 
 **Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. e.g. I'm always frustrated when [...]
+A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
 
 **Describe the solution you'd like**
-A clear and concise description of what you want to be implemented.
+A clear and concise description of what you want to happen.
 
 **Describe alternatives you've considered**
 A clear and concise description of any alternative solutions or features you've considered.
