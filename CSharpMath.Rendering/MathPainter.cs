@@ -13,8 +13,7 @@ namespace CSharpMath.Rendering {
     public IMathList MathList { get => Source.MathList; set => Source = new MathSource(value); }
     public string LaTeX { get => Source.LaTeX; set => Source = new MathSource(value); }
 
-    protected override RectangleF? MeasureCore(float canvasWidth = float.NaN) =>
-      _display?.ComputeDisplayBounds();
+    protected override RectangleF? MeasureCore(float canvasWidth = float.NaN) => _display?.ComputeDisplayBounds();
     public RectangleF? Measure {
       get {
         UpdateDisplay();

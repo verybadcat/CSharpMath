@@ -121,6 +121,7 @@ namespace CSharpMath.Rendering {
     }
     public void Draw(TCanvas canvas, PointF position, float width) {
       var c = WrapCanvas(canvas);
+      if (!CoordinatesFromBottomLeftInsteadOfTopLeft) position.Y *= -1;
       UpdateDisplay(width);
       Draw(c, new Display.MathListDisplay<Fonts, Glyph>(new[] { _relativeXCoordDisplay, _absoluteXCoordDisplay }), position);
     }

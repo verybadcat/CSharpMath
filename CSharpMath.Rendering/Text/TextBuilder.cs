@@ -219,7 +219,7 @@ breakList.Select(i => (i.breakAt, i.wordKind, text.ElementAtOrDefault(i.breakAt)
                   if (colorizedShort.error != null) return (null, colorizedShort.error);
                   if (toColorizeShort != string.Empty) atoms.Add(colorizedShort.atom, colour, "color".Length);
                   break;
-                  //case "textbf", "textit", ...
+                //case "textbf", "textit", ...
                 case var command when !command.Contains("math") && FontStyleExtensions.FontStyles.TryGetByFirst(command.Replace("text", "math"), out var fontStyle):
                   var content = ReadInsideBrackets();
                   if (content == null) return (null, error);
@@ -257,6 +257,8 @@ breakList.Select(i => (i.breakAt, i.wordKind, text.ElementAtOrDefault(i.breakAt)
             b.Append(Unbuild(a, b));
           }
           return b;
+        case null:
+          throw new InvalidCodePathException("TextAtoms should never be null.");
         case var a:
           throw new InvalidCodePathException($"There should not be an unknown type of TextAtom. However, one with type {a.GetType()} was encountered.");
       }
