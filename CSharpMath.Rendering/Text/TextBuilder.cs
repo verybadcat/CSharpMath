@@ -40,18 +40,18 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
       bool? displayMath = null;
       StringBuilder mathLaTeX = null;
       bool backslashEscape = false;
+      bool afterCommand = false; //ignore spaces after command
       int dollarCount = 0;
       var atoms = new TextAtomListBuilder();
       var breaker = new CustomBreaker();
-      var breakList = new List<BreakAtInfo> { new BreakAtInfo(0, WordKind.Unknown) };
+      var breakList = new List<BreakAtInfo>();
       breaker.BreakWords(text, false);
       breaker.LoadBreakAtList(breakList);
-      (int startAt, int endAt, char endingChar) ObtainRange(int i) =>
-        (breakList[i].breakAt, i == breakList.Count - 1 ? text.Length : breakList[i + 1].breakAt, i == breakList.Count - 1 ? '\0' : text[breakList[i + 1].breakAt - 1]);
-      for (int i = 0; i < breakList.Count; i++) {
-#warning No more \0 workarounds
-        var (startAt, endAt, endingChar) = ObtainRange(i);
-        void SetNextRange() => (startAt, endAt, endingChar) = ObtainRange(++i);
+      (int startAt, int endAt, char endingChar, WordKind wordKind) ObtainRange(int i) =>
+        (i == 0 ? 0 : breakList[i - 1].breakAt, breakList[i].breakAt, text[breakList[i].breakAt - 1], breakList[i].wordKind);
+      for (var (i, (startAt, endAt, endingChar, wordKind)) = (0, ObtainRange(0)); i < breakList.Count; i++) {
+        (startAt, endAt, endingChar, wordKind) = ObtainRange(i);
+        void SetNextRange() => (startAt, endAt, endingChar, wordKind) = ObtainRange(++i);
         string ReadArgument() {
           SetNextRange();
           if (endingChar != '{') {
@@ -124,32 +124,29 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
             default:
               return (null, "Invalid number of $: " + dollarCount);
           }
-          if (!backslashEscape) //Normal unescaped text section, could be in display/inline math mode
+          if (!backslashEscape) { //Normal unescaped text section, could be in display/inline math mode
             switch (endingChar) {
               case '$':
                 throw new InvalidCodePathException("The $ case should have been accounted for.");
-              case '\0':
-                continue; //Don't do anything with the null char
               case '\\':
                 backslashEscape = true;
                 continue;
               case ' ': //Collpase spaces
-                var textSection = " ";
-                goto default;
-              case var c: //Just ordinary text
-                textSection = text.Substring(startAt, endAt - startAt);
-                goto default;
-              default:
+                if (displayMath == null) { if (!afterCommand) atoms.Add(" "); }
+                else mathLaTeX.Append(" ");
+                break;
+              default: //Just ordinary text
+                var textSection = text.Substring(startAt, endAt - startAt);
                 if (displayMath == null) atoms.Add(textSection);
                 else mathLaTeX.Append(textSection);
                 break;
-            } else {
+            }
+            afterCommand = false;
+          } else {
             if (displayMath != null) //Escaped text section but in inline/display math mode
               switch (endingChar) {
                 case '$':
                   throw new InvalidCodePathException("The $ case should have been accounted for.");
-                case '\0':
-                  continue; //Don't do anything with the null char
                 case '(':
                   switch (displayMath) {
                     case true:
@@ -275,6 +272,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                   break;
               }
             backslashEscape = false;
+            afterCommand = true;
           }
         }
       }
