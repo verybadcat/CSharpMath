@@ -1,49 +1,76 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Typography.TextBreak;
 
 namespace CSharpMath.Rendering {
   public static class TextBuilder {
-    public static (TextAtom atom, string error) Build(string text, bool enhancedColors) {
-#warning Use a new struct called Result<>
-      string error = null;
-      var breaker = new CustomBreaker();
-      var breakList = new List<BreakAtInfo> { new BreakAtInfo(0, WordKind.Unknown) };
-      breaker.BreakWords(text, false);
-      breaker.LoadBreakAtList(breakList);
       /* //Paste this into the C# Interactive, fill <username> yourself
 #r "C:/Users/<username>/source/repos/CSharpMath/Typography/Build/NetStandard/Typography.TextBreak/bin/Debug/netstandard1.3/Typography.TextBreak.dll"
 using Typography.TextBreak;
-const string text = @"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text";
-var breaker = new CustomBreaker();
-var breakList = new List<BreakAtInfo>();
-breaker.BreakWords(text);
-breaker.LoadBreakAtList(breakList);
-//index is after the boundary -> last one will be out of range
-breakList.Select(i => (i.breakAt, i.wordKind, text.ElementAtOrDefault(i.breakAt))).ToArray()
+(int, WordKind, char)[] BreakText(string text) {
+  var breaker = new CustomBreaker();
+  var breakList = new List<BreakAtInfo>();
+  breaker.BreakWords(text);
+  breaker.LoadBreakAtList(breakList);
+  //index is after the boundary -> last one will be out of range
+  return breakList.Select(i => (i.breakAt, i.wordKind, text.ElementAtOrDefault(i.breakAt))).ToArray();
+}
+BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
        */
+      /* //Version 2
+#r "C:/Users/<username>/source/repos/CSharpMath/Typography/Build/NetStandard/Typography.TextBreak/bin/Debug/netstandard1.3/Typography.TextBreak.dll"
+using Typography.TextBreak;
+string BreakText(string text, string seperator = "|")
+{
+    var breaker = new CustomBreaker();
+    var breakList = new List<BreakAtInfo>();
+    breaker.BreakWords(text);
+    breaker.LoadBreakAtList(breakList);
+    //reverse to ensure earlier inserts do not affect later ones
+    foreach (var @break in breakList.Select(i => i.breakAt).Reverse())
+        text = text.Insert(@break, seperator);
+    return text;
+}
+BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
+       */
+    public static (TextAtom atom, string error) Build(string text, bool enhancedColors) {
+#warning Use a new struct called Result<>
+      string error = null;
       bool? displayMath = null;
       StringBuilder mathLaTeX = null;
       bool backslashEscape = false;
       int dollarCount = 0;
       var atoms = new TextAtomListBuilder();
+      var breaker = new CustomBreaker();
+      var breakList = new List<BreakAtInfo> { new BreakAtInfo(0, WordKind.Unknown) };
+      breaker.BreakWords(text, false);
+      breaker.LoadBreakAtList(breakList);
       (int startAt, int endAt, char endingChar) ObtainRange(int i) =>
         (breakList[i].breakAt, i == breakList.Count - 1 ? text.Length : breakList[i + 1].breakAt, i == breakList.Count - 1 ? '\0' : text[breakList[i + 1].breakAt - 1]);
       for (int i = 0; i < breakList.Count; i++) {
 #warning No more \0 workarounds
         var (startAt, endAt, endingChar) = ObtainRange(i);
-        string ReadInsideBrackets() {
-#warning Support single-char arguments
-          (startAt, endAt, endingChar) = ObtainRange(++i);
-          if (endingChar != '{') { error = "Missing {"; return null; }
-          int numOfBrackets = 0;
+        void SetNextRange() => (startAt, endAt, endingChar) = ObtainRange(++i);
+        string ReadArgument() {
+          SetNextRange();
+          if (endingChar != '{') {
+            if (startAt == text.Length) { error = "Missing argument"; return null; }
+            var toReturn = text[startAt].ToString();
+            //range contains one char only
+            if (startAt == endAt)
+              SetNextRange();
+            else
+              startAt += 1;
+            return toReturn;
+          }
+          int bracketDepth = 0;
           int endingIndex = -1;
-          //+1 to not start at the { we started at
-          for (int j = startAt + 1; j < text.Length; j++) { if (text[j] == '{') numOfBrackets++; else if (text[j] == '}') if (numOfBrackets > 0) numOfBrackets--; else { endingIndex = j; break; } }
+          //startAt + 1 to not start at the { we started at
+          for (int j = startAt + 1; j < text.Length; j++) { if (text[j] == '{') bracketDepth++; else if (text[j] == '}') if (bracketDepth > 0) bracketDepth--; else { endingIndex = j; break; } }
           if (endingIndex == -1) { error = "Missing }"; return null; }
           var resultText = text.Substring(endAt, endingIndex - endAt);
-          while (startAt < endingIndex) (startAt, endAt, endingChar) = ObtainRange(++i);
+          while (startAt < endingIndex) SetNextRange();
           return resultText;
         }
         atoms.TextLength = startAt;
@@ -106,8 +133,13 @@ breakList.Select(i => (i.breakAt, i.wordKind, text.ElementAtOrDefault(i.breakAt)
               case '\\':
                 backslashEscape = true;
                 continue;
+              case ' ': //Collpase spaces
+                var textSection = " ";
+                goto default;
+              case var c: //Just ordinary text
+                textSection = text.Substring(startAt, endAt - startAt);
+                goto default;
               default:
-                var textSection = text.Substring(startAt, endAt - startAt);
                 if (displayMath == null) atoms.Add(textSection);
                 else mathLaTeX.Append(textSection);
                 break;
@@ -188,34 +220,41 @@ breakList.Select(i => (i.breakAt, i.wordKind, text.ElementAtOrDefault(i.breakAt)
                 case "backslash":
                   atoms.Add(@"\");
                   break;
-#warning Refactor below, too much repitition
+                case "par":
+                  atoms.Break(3);
+#warning Should the newline and space occupy the same range?
+                  atoms.TextLength -= 3;
+                  //1.25em is a rough estimate of the indentation by \par using my eyes - Happypig375
+                  atoms.Add(new Structures.Space(1.25f * 18f, true), 3);
+                  break;
+#warning Refactor fontsize, color and shortColor, too much repitition
                 case "fontsize":
-                  var fontSize = ReadInsideBrackets();
+                  var fontSize = ReadArgument();
                   if (fontSize == null) return (null, error);
                   if (!float.TryParse(fontSize, System.Globalization.NumberStyles.AllowDecimalPoint |
                                                 System.Globalization.NumberStyles.AllowLeadingWhite |
                                                 System.Globalization.NumberStyles.AllowTrailingWhite,
                                                 System.Globalization.CultureInfo.InvariantCulture, out var parsedResult))
                     return (null, "Invalid font size");
-                  var resizedContent = ReadInsideBrackets();
+                  var resizedContent = ReadArgument();
                   if (resizedContent == null) return (null, error);
                   var resizedResult = Build(resizedContent, enhancedColors);
                   if (resizedResult.error != null) return (null, resizedResult.error);
                   if (resizedContent != string.Empty) atoms.Add(resizedResult.atom, parsedResult, "fontsize".Length);
                   break;
                 case "color":
-                  var colorString = ReadInsideBrackets();
+                  var colorString = ReadArgument();
                   if (colorString == null) return (null, error);
                   var color = Structures.Color.Create(colorString, enhancedColors);
                   if (color == null) return (null, "Invalid color");
-                  var toColorize = ReadInsideBrackets();
+                  var toColorize = ReadArgument();
                   if (toColorize == null) return (null, error);
                   var colorized = Build(toColorize, enhancedColors);
                   if (colorized.error != null) return (null, colorized.error);
                   if (toColorize != string.Empty) atoms.Add(colorized.atom, color.Value, "color".Length);
                   break;
                 case var shortColor when enhancedColors && Structures.Color.PredefinedColors.TryGetByFirst(shortColor, out var _):
-                  var toColorizeShort = ReadInsideBrackets();
+                  var toColorizeShort = ReadArgument();
                   if (toColorizeShort == null) return (null, error);
                   var colour = Structures.Color.Create(shortColor, enhancedColors) ?? throw new InvalidCodePathException("This case's condition should have checked the validity of shortColor.");
                   var colorizedShort = Build(toColorizeShort, enhancedColors);
@@ -224,7 +263,7 @@ breakList.Select(i => (i.breakAt, i.wordKind, text.ElementAtOrDefault(i.breakAt)
                   break;
                 //case "textbf", "textit", ...
                 case var command when !command.Contains("math") && FontStyleExtensions.FontStyles.TryGetByFirst(command.Replace("text", "math"), out var fontStyle):
-                  var content = ReadInsideBrackets();
+                  var content = ReadArgument();
                   if (content == null) return (null, error);
                   var builtResult = Build(content, enhancedColors);
                   if (builtResult.error != null) return (null, builtResult.error);
@@ -250,10 +289,12 @@ breakList.Select(i => (i.breakAt, i.wordKind, text.ElementAtOrDefault(i.breakAt)
           return b.Append(@"\\");
         case TextAtom.Math m:
           return b.Append('\\').Append(m.DisplayStyle ? '[' : '(').Append(Atoms.MathListBuilder.MathListToString(m.Content)).Append('\\').Append(m.DisplayStyle ? ']' : ')');
+        case TextAtom.Space s:
+          return b.Append(@"\hspace").AppendInBraces(s.Content.Length.ToStringInvariant(), NullHandling.EmptyContent);
         case TextAtom.Style t:
           return b.Append('\\').Append(t.FontStyle.FontName()).AppendInBraces(Unbuild(t.Content, new StringBuilder()).ToString(), NullHandling.None);
         case TextAtom.Size z:
-          return b.Append("\\fontsize").AppendInBraces(z.PointSize.ToString(System.Globalization.CultureInfo.InvariantCulture), NullHandling.EmptyContent)
+          return b.Append(@"\fontsize").AppendInBraces(z.PointSize.ToStringInvariant(), NullHandling.EmptyContent)
                                        .AppendInBraces(Unbuild(z.Content, new StringBuilder()).ToString(), NullHandling.None);
         case TextAtom.List l:
           foreach (var a in l.Content) {

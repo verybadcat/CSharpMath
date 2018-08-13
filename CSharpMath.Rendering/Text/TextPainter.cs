@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using System.Linq;
 
 namespace CSharpMath.Rendering {
@@ -49,6 +49,9 @@ namespace CSharpMath.Rendering {
           case TextAtom.Color c:
             AddDisplaysWithLineBreaks(c.Content, fonts, displayList, displayMathList, style, c.Colour);
             break;
+          case TextAtom.Space sp:
+            lineWidth += sp.Content.ActualLength(MathTable.Instance, fonts);
+            break;
           case TextAtom.Newline n:
             accumulatedHeight += lineHeight;
             lineWidth = lineHeight = 0;
@@ -65,57 +68,57 @@ namespace CSharpMath.Rendering {
             accumulatedHeight += display.Ascent + display.Descent;
             accumulatedHeight += 12;
             lineWidth = lineHeight = 0;
+            if (color != null) display.SetTextColorRecursive(color);
             displayMathList.Add(display);
             break;
-          default:
+          case TextAtom.Text t:
             RectangleF bounds;
             float width, height;
-            switch (atom) {
-              case TextAtom.Text t:
-                var content = UnicodeFontChanger.Instance.ChangeFont(t.Content, style);
-                var glyphs = GlyphFinder.Instance.FindGlyphs(fonts, content);
-                float maxLineSpacing = 0;
+            void SetInlineAtomPosition() {
+              if (lineWidth + display.Width > canvasWidth) {
+                accumulatedHeight += lineHeight;
+                //canvas inverted, so minus accumulatedHeight instead of plus
+                display.Position = new PointF(0, -display.Position.Y - accumulatedHeight);
+                lineWidth = width;
+                lineHeight = height;
+                if (firstLineAscent >= 0) firstLineAscent = System.Math.Max(firstLineAscent, display.Ascent);
+              } else {
+                lineHeight = System.Math.Max(lineHeight, height);
+                //canvas inverted, so negate accumulatedHeight
+                display.Position = new PointF(lineWidth, -display.Position.Y - accumulatedHeight);
+                lineWidth += width;
+                if (firstLineAscent > 0) firstLineAscent *= -1; //negate to freeze its value
+              }
+            }
+            var content = UnicodeFontChanger.Instance.ChangeFont(t.Content, style);
+            var glyphs = GlyphFinder.Instance.FindGlyphs(fonts, content);
+            float maxLineSpacing = 0;
 #warning Optimise this
-                foreach (var (typeface, _) in glyphs) {
-                  float lineSpacing = Typography.OpenFont.Extensions.TypefaceExtensions.CalculateRecommendLineSpacing(typeface) *
-                    typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);
-                  if (lineSpacing > maxLineSpacing) maxLineSpacing = lineSpacing;
-                }
-                display = new Display.TextRunDisplay<Fonts, Glyph>(Display.Text.AttributedGlyphRuns.Create(content, glyphs, fonts, false), t.Range, TypesettingContext.Instance);
-                bounds = display.ComputeDisplayBounds();
-                width = bounds.Width;
-                height = maxLineSpacing;
-                break;
-              case TextAtom.Math m:
-                if (m.DisplayStyle) throw new InvalidCodePathException("Display style maths should have been handled above this switch.");
-                display = Typesetter<Fonts, Glyph>.CreateLine(m.Content, fonts, TypesettingContext.Instance, Enumerations.LineStyle.Text);
-                bounds = display.ComputeDisplayBounds();
-                width = bounds.Width;
-                height = bounds.Height;
-                break;
-              case TextAtom.Style _:
-              case TextAtom.Color _:
-                throw new InvalidCodePathException("Style atoms and Color atoms should have been handled above this switch.");
-              case var a:
-                throw new InvalidCodePathException($"There should not be an unknown type of TextAtom. However, one with type {a.GetType()} was encountered.");
+            foreach (var (typeface, _) in glyphs) {
+              float lineSpacing = Typography.OpenFont.Extensions.TypefaceExtensions.CalculateRecommendLineSpacing(typeface) *
+                typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);
+              if (lineSpacing > maxLineSpacing) maxLineSpacing = lineSpacing;
             }
-            if (lineWidth + display.Width > canvasWidth) {
-              accumulatedHeight += lineHeight;
-              //canvas inverted, so minus accumulatedHeight instead of plus
-              display.Position = new PointF(0, -display.Position.Y-accumulatedHeight);
-              lineWidth = width;
-              lineHeight = height;
-              if (firstLineAscent >= 0) firstLineAscent = System.Math.Max(firstLineAscent, display.Ascent);
-            } else {
-              lineHeight = System.Math.Max(lineHeight, height);
-              //canvas inverted, so negate accumulatedHeight
-              display.Position = new PointF(lineWidth, -display.Position.Y-accumulatedHeight);
-              lineWidth += width;
-              if (firstLineAscent > 0) firstLineAscent *= -1; //negate to freeze its value
-            }
+            display = new Display.TextRunDisplay<Fonts, Glyph>(Display.Text.AttributedGlyphRuns.Create(content, glyphs, fonts, false), t.Range, TypesettingContext.Instance);
+            bounds = display.ComputeDisplayBounds();
+            width = bounds.Width;
+            height = maxLineSpacing;
+            SetInlineAtomPosition();
             if (color != null) display.SetTextColorRecursive(color);
             displayList.Add(display);
             break;
+          case TextAtom.Math m:
+            if (m.DisplayStyle) throw new InvalidCodePathException("Display style maths should have been handled above this switch.");
+            display = Typesetter<Fonts, Glyph>.CreateLine(m.Content, fonts, TypesettingContext.Instance, Enumerations.LineStyle.Text);
+            bounds = display.ComputeDisplayBounds();
+            width = bounds.Width;
+            height = bounds.Height;
+            SetInlineAtomPosition();
+            if (color != null) display.SetTextColorRecursive(color);
+            displayList.Add(display);
+            break;
+          case var a:
+            throw new InvalidCodePathException($"There should not be an unknown type of TextAtom. However, one with type {a.GetType()} was encountered.");
         }
       }
       var relativePositionList = new System.Collections.Generic.List<IDisplay<Fonts, Glyph>>();

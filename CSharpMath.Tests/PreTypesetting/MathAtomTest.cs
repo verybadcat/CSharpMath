@@ -1,4 +1,4 @@
-﻿using CSharpMath.Atoms;
+using CSharpMath.Atoms;
 using CSharpMath.Enumerations;
 using CSharpMath.Interfaces;
 using System;
@@ -192,7 +192,7 @@ namespace CSharpMath.Tests {
 
     [Fact]
     public void TestCopySpace() {
-      var space = new Space(3, true);
+      var space = MathAtoms.Space(3, true);
       Assert.Equal(MathAtomType.Space, space.AtomType);
 
       var copy = new Space(space, false);

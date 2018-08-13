@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using CSharpMath.Atoms;
 using CSharpMath.Display;
@@ -91,9 +91,6 @@ namespace CSharpMath {
       return line;
     }
 
-    internal float SpaceLength(ISpace space) =>
-      space.IsMu ? space.Length * _mathTable.MuUnit(_font) : space.Length;
-
     private void _CreateDisplayAtoms(List<IMathAtom> preprocessedAtoms) {
       IMathAtom prevNode = null;
       MathAtomType prevType = MathAtomType.MinValue;
@@ -108,7 +105,7 @@ namespace CSharpMath {
           case MathAtomType.Space:
             AddDisplayLine(false);
             var space = atom as ISpace;
-            _currentPosition.X += SpaceLength(space);
+            _currentPosition.X += space.ActualLength(_mathTable, _font);
             continue;
           case MathAtomType.Style:
             // stash the existing layout

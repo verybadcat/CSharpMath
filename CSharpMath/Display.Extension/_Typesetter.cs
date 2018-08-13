@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using CSharpMath.Atoms.Extension;
@@ -14,7 +14,7 @@ namespace CSharpMath.Display.Extension {
           var raiseBox = atom as RaiseBox;
           var raisedDisplay = Typesetter<TFont, TGlyph>.CreateLine(raiseBox.InnerList, t._font, t._context, t._style);
           var raisedPosition =  t._currentPosition;
-          raisedPosition.Y += t.SpaceLength(raiseBox.Raise);
+          raisedPosition.Y += raiseBox.Raise.ActualLength(t._mathTable, t._font);
           raisedDisplay.Position = raisedPosition;
           t._currentPosition.X += raisedDisplay.Width;
           t._displayAtoms.Add(raisedDisplay);

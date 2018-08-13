@@ -1,4 +1,4 @@
-﻿using CSharpMath.Enumerations;
+using CSharpMath.Enumerations;
 using CSharpMath.TableEnvironment;
 using CSharpMath.Interfaces;
 using System;
@@ -28,7 +28,7 @@ namespace CSharpMath.Atoms {
     public IMathList Build() {
       var r = BuildInternal(false);
       if (HasCharacters && _error == null) {
-        SetError("Error; most likely mismatched braces " + new string(_chars));
+        SetError("Error; most likely mismatched braces. The string provided was: " + new string(_chars));
       }
       if (_error != null) {
         return null;

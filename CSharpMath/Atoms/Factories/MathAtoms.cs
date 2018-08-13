@@ -1,4 +1,4 @@
-﻿using CSharpMath.Constants;
+using CSharpMath.Constants;
 using CSharpMath.Enumerations;
 using CSharpMath.Helpers;
 using CSharpMath.Interfaces;
@@ -301,12 +301,12 @@ namespace CSharpMath.Atoms {
                      { "partial", Create(MathAtomType.Ordinary, "\U0001D715") },
                      
                      // Spacing
-                     { ",", new Space(3, true) },
-                     { ":", new Space(4, true) },
-                     { ";", new Space(5, true) },
-                     { "!", new Space(-3, true) },
-                     { "quad", new Space(18, true) },  // quad = 1em = 18mu
-                     { "qquad", new Space(36, true) }, // qquad = 2em
+                     { ",", Space(3, true) },
+                     { ":", Space(4, true) },
+                     { ";", Space(5, true) },
+                     { "!", Space(-3, true) },
+                     { "quad", Space(18, true) },  // quad = 1em = 18mu
+                     { "qquad", Space(36, true) }, // qquad = 2em
                      
                      // Style
                      { "displaystyle", new Style(LineStyle.Display) },
@@ -352,13 +352,17 @@ namespace CSharpMath.Atoms {
         case MathAtomType.Inner:
           return new Inner();
         case MathAtomType.LargeOperator:
-          return new LargeOperator(value, null);
+          throw new InvalidOperationException(
+            "Do not use Create(MathAtomType.LargeOperator, string)." +
+            "Use Operator(string, bool?, bool) instead.");
         case MathAtomType.Overline:
           return new Overline();
         case MathAtomType.Underline:
           return new Underline();
         case MathAtomType.Space:
-          return new Space(0, true);
+          throw new InvalidOperationException(
+            "Do not use Create(MathAtomType.Space, string)." +
+            "Use Space(int, bool) instead.");
         default:
           return new MathAtom(type, value);
       }
@@ -392,6 +396,8 @@ namespace CSharpMath.Atoms {
 
     public static LargeOperator Operator(string name, bool? limits, bool noLimits = false)
       => new LargeOperator(name, limits, noLimits);
+    public static Space Space(int length, bool isMu)
+      => new Space(new Structures.Space(length, isMu));
 
     public static MathAtom ForCharacter(char c) {
       if (char.IsControl(c) || char.IsWhiteSpace(c)) {

@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace CSharpMath {
-  public class AnyType {
+  public static class AnyType {
     public static bool SafeEquals(object obj1, object obj2) {
       if (obj1 == null && obj2 == null) {
         return true;

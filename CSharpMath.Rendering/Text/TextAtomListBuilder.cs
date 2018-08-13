@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -9,6 +9,7 @@ namespace CSharpMath.Rendering {
 
     private void Add(TextAtom atom) { _list.Add(atom); TextLength += atom.Range.Length; }
     public void Add(string text) => Add(new TextAtom.Text(text, TextLength));
+    public void Add(Structures.Space space, int sourceLength) => Add(new TextAtom.Space(space, TextLength, sourceLength));
     public void Add(TextAtom atom, FontStyle style, int commandLength) => Add(new TextAtom.Style(atom, style, TextLength, commandLength));
     public void Add(TextAtom atom, float fontSize, int commandLength) => Add(new TextAtom.Size(atom, fontSize, TextLength, commandLength));
     public void Add(TextAtom atom, Structures.Color color, int commandLength) => Add(new TextAtom.Color(atom, color, TextLength, commandLength));
