@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,7 +6,8 @@ namespace CSharpMath
 {
   /// <summary>
   /// The exception that is thrown when an invalid code path was encountered.
-  /// Contact the CSharpMath maintainers if an instance of this type is thrown.
+  /// If an instance of this type is thrown, you must have encountered a bug.
+  /// Please contact the CSharpMath maintainers.
   /// </summary>
   public class InvalidCodePathException : Exception {
     public InvalidCodePathException(string message) : base(message) { }

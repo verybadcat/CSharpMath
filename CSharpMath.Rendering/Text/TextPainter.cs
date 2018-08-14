@@ -50,6 +50,8 @@ namespace CSharpMath.Rendering {
             AddDisplaysWithLineBreaks(c.Content, fonts, displayList, displayMathList, style, c.Colour);
             break;
           case TextAtom.Space sp:
+            //Allow space at start of line since user explicitly specified its length
+            //Also \par generates this kind of spaces
             lineWidth += sp.Content.ActualLength(MathTable.Instance, fonts);
             break;
           case TextAtom.Newline n:
@@ -74,8 +76,8 @@ namespace CSharpMath.Rendering {
           case TextAtom.Text t:
             RectangleF bounds;
             float width, height;
-            void SetInlineAtomPosition() {
-              if (lineWidth + display.Width > canvasWidth) {
+            void SetInlineAtomPosition(bool forbidAtLineStart = false) {
+              if (lineWidth + display.Width > canvasWidth && !forbidAtLineStart) {
                 accumulatedHeight += lineHeight;
                 //canvas inverted, so minus accumulatedHeight instead of plus
                 display.Position = new PointF(0, -display.Position.Y - accumulatedHeight);
@@ -103,8 +105,8 @@ namespace CSharpMath.Rendering {
             bounds = display.ComputeDisplayBounds();
             width = bounds.Width;
             height = maxLineSpacing;
-            SetInlineAtomPosition();
             if (color != null) display.SetTextColorRecursive(color);
+            SetInlineAtomPosition();
             displayList.Add(display);
             break;
           case TextAtom.Math m:
@@ -113,10 +115,20 @@ namespace CSharpMath.Rendering {
             bounds = display.ComputeDisplayBounds();
             width = bounds.Width;
             height = bounds.Height;
-            SetInlineAtomPosition();
             if (color != null) display.SetTextColorRecursive(color);
+            SetInlineAtomPosition();
             displayList.Add(display);
             break;
+          case TextAtom.ControlSpace cs:
+            display = new Display.TextRunDisplay<Fonts, Glyph>(Display.Text.AttributedGlyphRuns.Create(" ", new[] { GlyphFinder.Instance.Lookup(fonts, ' ') }, fonts, false), cs.Range, TypesettingContext.Instance);
+            bounds = display.ComputeDisplayBounds();
+            width = bounds.Width;
+            height = 0;
+            SetInlineAtomPosition(true); //No spaces at start of line
+            displayList.Add(display);
+            break;
+          case null:
+            throw new System.InvalidOperationException("TextAtoms should never be null. You must have sneaked one in.");
           case var a:
             throw new InvalidCodePathException($"There should not be an unknown type of TextAtom. However, one with type {a.GetType()} was encountered.");
         }

@@ -1,13 +1,17 @@
-﻿using CSharpMath.Rendering;
+using CSharpMath.Rendering;
 using CSharpMath.Structures;
 using SkiaSharp;
 namespace CSharpMath.SkiaSharp
 {
   public class SkiaCanvas : ICanvas {
-    public SkiaCanvas(SKCanvas canvas, SKStrokeCap strokeCap, bool antiAlias) {
+    public SkiaCanvas(SKCanvas canvas, SKStrokeCap strokeCap, bool? antiAliasLevel) {
       Canvas = canvas;
       StrokeCap = strokeCap;
-      _paint = new SKPaint { IsAntialias = antiAlias };
+      _paint = new SKPaint {
+        IsAntialias = antiAliasLevel != null,
+        SubpixelText = antiAliasLevel == true,
+        HintingLevel = SKPaintHinting.Full
+      };
       _path = null;
       CurrentStyle = default;
       CurrentColor = default;

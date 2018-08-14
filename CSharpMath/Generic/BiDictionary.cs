@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,7 +7,7 @@ using System.Linq;
 namespace CSharpMath
 {
   //https://stackoverflow.com/questions/255341/getting-key-of-value-of-a-generic-dictionary/255638#255638
-  public class BiDictionary<TFirst, TSecond> : IEnumerable<KeyValuePair<TFirst, TSecond>> {
+  public class BiDictionary<TFirst, TSecond> : ICollection<KeyValuePair<TFirst, TSecond>> {
     Dictionary<TFirst, TSecond> firstToSecond = new Dictionary<TFirst, TSecond>();
     Dictionary<TSecond, TFirst> secondToFirst = new Dictionary<TSecond, TFirst>();
 
@@ -23,6 +23,10 @@ namespace CSharpMath
     public Dictionary<TFirst, TSecond>.KeyCollection Firsts => firstToSecond.Keys;
 
     public Dictionary<TSecond, TFirst>.KeyCollection Seconds => secondToFirst.Keys;
+
+    public int Count => firstToSecond.Count;
+
+    public bool IsReadOnly => false;
 
     public TSecond this[TFirst first] => firstToSecond[first];
 
@@ -40,6 +44,28 @@ namespace CSharpMath
     IEnumerator IEnumerable.GetEnumerator() => firstToSecond.GetEnumerator();
     IEnumerator<KeyValuePair<TFirst, TSecond>> IEnumerable<KeyValuePair<TFirst, TSecond>>.GetEnumerator() =>
       firstToSecond.GetEnumerator();
+
+    public void Add(KeyValuePair<TFirst, TSecond> item) => Add(item.Key, item.Value);
+
+    public void Clear() {
+      firstToSecond.Clear();
+      secondToFirst.Clear();
+    }
+
+    public bool Contains(KeyValuePair<TFirst, TSecond> item) =>
+      firstToSecond.TryGetValue(item.Key, out var second) && EqualityComparer<TSecond>.Default.Equals(second, item.Value);
+
+    public void CopyTo(KeyValuePair<TFirst, TSecond>[] array, int arrayIndex) {
+      foreach (var pair in firstToSecond)
+        array[arrayIndex++] = pair;
+    }
+
+    public bool Remove(TFirst first, TSecond second) =>
+      firstToSecond.Remove(first) &&
+      secondToFirst.Remove(second);
+    public bool Remove(KeyValuePair<TFirst, TSecond> item) =>
+      firstToSecond.Remove(item.Key) &&
+      secondToFirst.Remove(item.Value);
   }
 
   public class MultiDictionary<TFirst, TSecond> : IEnumerable<KeyValuePair<TFirst, TSecond>> {

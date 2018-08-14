@@ -35,7 +35,8 @@ string BreakText(string text, string seperator = "|")
 BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
        */
     public static (TextAtom atom, string error) Build(string text, bool enhancedColors) {
-#warning Use a new struct called Result<>
+#warning Use a new struct called Result<> and stop using just strings to pass errors
+      if (string.IsNullOrEmpty(text)) return (new TextAtom.List(Array.Empty<TextAtom>(), 0), null);
       string error = null;
       bool? displayMath = null;
       StringBuilder mathLaTeX = null;
@@ -47,12 +48,56 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
       var breakList = new List<BreakAtInfo>();
       breaker.BreakWords(text, false);
       breaker.LoadBreakAtList(breakList);
+      string CheckDollarCount() {
+        switch (dollarCount) {
+          case 0:
+            break;
+          case 1:
+            dollarCount = 0;
+            switch (displayMath) {
+              case true:
+                return "Cannot close display math mode with $";
+              case false:
+                if (atoms.Add(mathLaTeX.ToString(), false) is string mathError)
+                  return "[Math mode error] " + mathError;
+                mathLaTeX = null;
+                displayMath = null;
+                break;
+              case null:
+                mathLaTeX = new StringBuilder();
+                displayMath = false;
+                break;
+            }
+            break;
+          case 2:
+            dollarCount = 0;
+            switch (displayMath) {
+              case true:
+                if (atoms.Add(mathLaTeX.ToString(), true) is string mathError)
+                  return "[Math mode error] " + mathError;
+                mathLaTeX = null;
+                displayMath = null;
+                break;
+              case false:
+                return "Cannot close inline math mode with $$";
+              case null:
+                mathLaTeX = new StringBuilder();
+                displayMath = true;
+                break;
+            }
+            break;
+          default:
+            return "Invalid number of $: " + dollarCount;
+        }
+        return null;
+      }
       (int startAt, int endAt, char endingChar, WordKind wordKind) ObtainRange(int i) =>
         (i == 0 ? 0 : breakList[i - 1].breakAt, breakList[i].breakAt, text[breakList[i].breakAt - 1], breakList[i].wordKind);
       for (var (i, (startAt, endAt, endingChar, wordKind)) = (0, ObtainRange(0)); i < breakList.Count; i++) {
         (startAt, endAt, endingChar, wordKind) = ObtainRange(i);
         void SetNextRange() => (startAt, endAt, endingChar, wordKind) = ObtainRange(++i);
         string ReadArgument() {
+          afterCommand = false;
           SetNextRange();
           if (endingChar != '{') {
             if (startAt == text.Length) { error = "Missing argument"; return null; }
@@ -84,46 +129,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
           }
           backslashEscape = false;
         } else {
-          switch (dollarCount) {
-            case 0:
-              break;
-            case 1:
-              dollarCount = 0;
-              switch (displayMath) {
-                case true:
-                  return (null, "Cannot close display math mode with $");
-                case false:
-                  if (atoms.Add(mathLaTeX.ToString(), false) is string mathError)
-                    return (null, "[Math mode error] " + mathError);
-                  mathLaTeX = null;
-                  displayMath = null;
-                  break;
-                case null:
-                  mathLaTeX = new StringBuilder();
-                  displayMath = false;
-                  break;
-              }
-              break;
-            case 2:
-              dollarCount = 0;
-              switch (displayMath) {
-                case true:
-                  if (atoms.Add(mathLaTeX.ToString(), true) is string mathError)
-                    return (null, "[Math mode error] " + mathError);
-                  mathLaTeX = null;
-                  displayMath = null;
-                  break;
-                case false:
-                  return (null, "Cannot close inline math mode with $$");
-                case null:
-                  mathLaTeX = new StringBuilder();
-                  displayMath = true;
-                  break;
-              }
-              break;
-            default:
-              return (null, "Invalid number of $: " + dollarCount);
-          }
+          if ((error = CheckDollarCount()) != null) return (null, error);
           if (!backslashEscape) { //Normal unescaped text section, could be in display/inline math mode
             switch (endingChar) {
               case '$':
@@ -131,9 +137,13 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
               case '\\':
                 backslashEscape = true;
                 continue;
-              case ' ': //Collpase spaces
-                if (displayMath == null) { if (!afterCommand) atoms.Add(" "); }
-                else mathLaTeX.Append(" ");
+              case var sp when wordKind == WordKind.Whitespace || wordKind == WordKind.NewLine:
+                //Collpase spaces
+                //Consume newlines after commands
+                if (displayMath == null)
+                  if (afterCommand) continue;
+                  else atoms.Add();
+                else mathLaTeX.Append(sp);
                 break;
               default: //Just ordinary text
                 var textSection = text.Substring(startAt, endAt - startAt);
@@ -196,7 +206,8 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                 default:
                   mathLaTeX.Append($@"\{text.Substring(startAt, endAt - startAt)}");
                   break;
-              } else //Escaped text section and not in inline/display math mode
+              } else { //Escaped text section and not in inline/display math mode
+              afterCommand = true;
               switch (text.Substring(startAt, endAt - startAt)) {
                 case "(":
                   mathLaTeX = new StringBuilder();
@@ -211,8 +222,13 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                 case "]":
                   return (null, "Cannot close display math mode outside of math mode");
                 case @"\":
-                  if (displayMath != null) mathLaTeX.Append('\\'); //don't eat the backslash when parsing math
-                  else atoms.Break(1);
+                  atoms.Break(1);
+                  break;
+                case ",":
+                  atoms.Add(new Structures.Space(3, true), 1);
+                  break;
+                case var _ when wordKind == WordKind.Whitespace: //control space
+                  atoms.Add();
                   break;
                 case "backslash":
                   atoms.Add(@"\");
@@ -271,11 +287,13 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                   else return (null, @"Unknown command \" + command);
                   break;
               }
+            }
             backslashEscape = false;
-            afterCommand = true;
           }
         }
       }
+      if ((error = CheckDollarCount()) != null) return (null, error);
+      if (backslashEscape) return (null, @"Unknown command \");
       if (displayMath != null) return (null, "Math mode was not terminated");
       return (atoms.Build(), error);
     }
@@ -289,6 +307,8 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
           return b.Append('\\').Append(m.DisplayStyle ? '[' : '(').Append(Atoms.MathListBuilder.MathListToString(m.Content)).Append('\\').Append(m.DisplayStyle ? ']' : ')');
         case TextAtom.Space s:
           return b.Append(@"\hspace").AppendInBraces(s.Content.Length.ToStringInvariant(), NullHandling.EmptyContent);
+        case TextAtom.ControlSpace c:
+          return b.Append(@"\ ");
         case TextAtom.Style t:
           return b.Append('\\').Append(t.FontStyle.FontName()).AppendInBraces(Unbuild(t.Content, new StringBuilder()).ToString(), NullHandling.None);
         case TextAtom.Size z:
@@ -300,7 +320,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
           }
           return b;
         case null:
-          throw new InvalidCodePathException("TextAtoms should never be null.");
+          throw new ArgumentNullException(nameof(atom), "TextAtoms should never be null. You must have sneaked one in.");
         case var a:
           throw new InvalidCodePathException($"There should not be an unknown type of TextAtom. However, one with type {a.GetType()} was encountered.");
       }

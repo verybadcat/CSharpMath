@@ -28,6 +28,9 @@ namespace CSharpMath.Rendering {
       public Space(Structures.Space space, int index, int length) : base(new Range(index, length)) => Content = space;
       public Structures.Space Content { get; }
     }
+    public sealed class ControlSpace : TextAtom {
+      public ControlSpace(int index) : base(new Range(index, 2)) { } // backslash + whitespace = 2 characters
+    }
     public sealed class Math : TextAtom {
       public Math(Interfaces.IMathList content, bool displayStyle, Range range) : base(range) => (Content, DisplayStyle) = (content, displayStyle);
 

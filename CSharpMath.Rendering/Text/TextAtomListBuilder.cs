@@ -8,6 +8,7 @@ namespace CSharpMath.Rendering {
     List<TextAtom> _list = new List<TextAtom>();
 
     private void Add(TextAtom atom) { _list.Add(atom); TextLength += atom.Range.Length; }
+    public void Add() => Add(new TextAtom.ControlSpace(TextLength));
     public void Add(string text) => Add(new TextAtom.Text(text, TextLength));
     public void Add(Structures.Space space, int sourceLength) => Add(new TextAtom.Space(space, TextLength, sourceLength));
     public void Add(TextAtom atom, FontStyle style, int commandLength) => Add(new TextAtom.Style(atom, style, TextLength, commandLength));
