@@ -68,6 +68,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                 displayMath = false;
                 break;
             }
+            afterCommand = true;
             break;
           case 2:
             dollarCount = 0;
@@ -85,6 +86,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                 displayMath = true;
                 break;
             }
+            afterCommand = true;
             break;
           default:
             return "Invalid number of $: " + dollarCount;
@@ -98,9 +100,9 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
         void SetNextRange() => (startAt, endAt, endingChar, wordKind) = ObtainRange(++i);
         string ReadArgument() {
           afterCommand = false;
+          if (endAt == text.Length) { error = "Missing argument"; return null; }
           SetNextRange();
           if (endingChar != '{') {
-            if (startAt == text.Length) { error = "Missing argument"; return null; }
             var toReturn = text[startAt].ToString();
             //range contains one char only
             if (startAt == endAt)
