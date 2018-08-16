@@ -4,6 +4,8 @@ using System.Text;
 using Typography.TextBreak;
 
 namespace CSharpMath.Rendering {
+  using Structures;
+  using static Structures.Result;
   public static class TextBuilder {
       /* //Paste this into the C# Interactive, fill <username> yourself
 #r "C:/Users/<username>/source/repos/CSharpMath/Typography/Build/NetStandard/Typography.TextBreak/bin/Debug/netstandard1.3/Typography.TextBreak.dll"
@@ -34,10 +36,8 @@ string BreakText(string text, string seperator = "|")
 }
 BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
        */
-    public static (TextAtom atom, string error) Build(string text, bool enhancedColors) {
-#warning Use a new struct called Result<> and stop using just strings to pass errors
-      if (string.IsNullOrEmpty(text)) return (new TextAtom.List(Array.Empty<TextAtom>(), 0), null);
-      string error = null;
+    public static Result<TextAtom> Build(string text, bool enhancedColors) {
+      if (string.IsNullOrEmpty(text)) return new TextAtom.List(Array.Empty<TextAtom>(), 0);
       bool? displayMath = null;
       StringBuilder mathLaTeX = null;
       bool backslashEscape = false;
@@ -48,7 +48,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
       var breakList = new List<BreakAtInfo>();
       breaker.BreakWords(text, false);
       breaker.LoadBreakAtList(breakList);
-      string CheckDollarCount() {
+      Result CheckDollarCount() {
         switch (dollarCount) {
           case 0:
             break;
@@ -58,7 +58,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
               case true:
                 return "Cannot close display math mode with $";
               case false:
-                if (atoms.Add(mathLaTeX.ToString(), false) is string mathError)
+                if (atoms.Add(mathLaTeX.ToString(), false).Error is string mathError)
                   return "[Math mode error] " + mathError;
                 mathLaTeX = null;
                 displayMath = null;
@@ -68,13 +68,12 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                 displayMath = false;
                 break;
             }
-            afterCommand = true;
             break;
           case 2:
             dollarCount = 0;
             switch (displayMath) {
               case true:
-                if (atoms.Add(mathLaTeX.ToString(), true) is string mathError)
+                if (atoms.Add(mathLaTeX.ToString(), true).Error is string mathError)
                   return "[Math mode error] " + mathError;
                 mathLaTeX = null;
                 displayMath = null;
@@ -86,21 +85,20 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                 displayMath = true;
                 break;
             }
-            afterCommand = true;
             break;
           default:
             return "Invalid number of $: " + dollarCount;
         }
-        return null;
+        return Ok();
       }
       (int startAt, int endAt, char endingChar, WordKind wordKind) ObtainRange(int i) =>
         (i == 0 ? 0 : breakList[i - 1].breakAt, breakList[i].breakAt, text[breakList[i].breakAt - 1], breakList[i].wordKind);
       for (var (i, (startAt, endAt, endingChar, wordKind)) = (0, ObtainRange(0)); i < breakList.Count; i++) {
         (startAt, endAt, endingChar, wordKind) = ObtainRange(i);
         void SetNextRange() => (startAt, endAt, endingChar, wordKind) = ObtainRange(++i);
-        string ReadArgument() {
+        Result<string> ReadArgument() {
           afterCommand = false;
-          if (endAt == text.Length) { error = "Missing argument"; return null; }
+          if (endAt == text.Length) return Err("Missing argument");
           SetNextRange();
           if (endingChar != '{') {
             var toReturn = text[startAt].ToString();
@@ -109,16 +107,16 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
               SetNextRange();
             else
               startAt += 1;
-            return toReturn;
+            return Ok(toReturn);
           }
           int bracketDepth = 0;
           int endingIndex = -1;
           //startAt + 1 to not start at the { we started at
           for (int j = startAt + 1; j < text.Length; j++) { if (text[j] == '{') bracketDepth++; else if (text[j] == '}') if (bracketDepth > 0) bracketDepth--; else { endingIndex = j; break; } }
-          if (endingIndex == -1) { error = "Missing }"; return null; }
+          if (endingIndex == -1) return Err("Missing }");
           var resultText = text.Substring(endAt, endingIndex - endAt);
           while (startAt < endingIndex) SetNextRange();
-          return resultText;
+          return Ok(resultText);
         }
         atoms.TextLength = startAt;
         if (endingChar == '$') {
@@ -131,7 +129,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
           }
           backslashEscape = false;
         } else {
-          if ((error = CheckDollarCount()) != null) return (null, error);
+          { if (CheckDollarCount().Error is string error) return error; }
           if (!backslashEscape) { //Normal unescaped text section, could be in display/inline math mode
             switch (endingChar) {
               case '$':
@@ -162,19 +160,19 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                 case '(':
                   switch (displayMath) {
                     case true:
-                      return (null, "Cannot open inline math mode in display math mode");
+                      return "Cannot open inline math mode in display math mode";
                     case false:
-                      return (null, "Cannot open inline math mode in inline math mode");
+                      return "Cannot open inline math mode in inline math mode";
                     default:
                       throw new InvalidCodePathException("displayMath is null. This switch should not be hit.");
                   }
                 case ')':
                   switch (displayMath) {
                     case true:
-                      return (null, "Cannot close inline math mode in display math mode");
+                      return "Cannot close inline math mode in display math mode";
                     case false:
-                      if (atoms.Add(mathLaTeX.ToString(), false) is string mathError)
-                        return (null, "[Math mode error] " + mathError);
+                      if (atoms.Add(mathLaTeX.ToString(), false).Error is string mathError)
+                        return "[Math mode error] " + mathError;
                       mathLaTeX = null;
                       displayMath = null;
                       break;
@@ -185,22 +183,22 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                 case '[':
                   switch (displayMath) {
                     case true:
-                      return (null, "Cannot open display math mode in display math mode");
+                      return "Cannot open display math mode in display math mode";
                     case false:
-                      return (null, "Cannot open display math mode in inline math mode");
+                      return "Cannot open display math mode in inline math mode";
                     default:
                       throw new InvalidCodePathException("displayMath is null. This switch should not be hit.");
                   }
                 case ']':
                   switch (displayMath) {
                     case true:
-                      if (atoms.Add(mathLaTeX.ToString(), true) is string mathError)
-                        return (null, "[Math mode error] " + mathError);
+                      if (atoms.Add(mathLaTeX.ToString(), true).Error is string mathError)
+                        return "[Math mode error] " + mathError;
                       mathLaTeX = null;
                       displayMath = null;
                       break;
                     case false:
-                      return (null, "Cannot close display math mode in inline math mode");
+                      return "Cannot close display math mode in inline math mode";
                     default:
                       throw new InvalidCodePathException("displayMath is null. This switch should not be hit.");
                   }
@@ -216,18 +214,18 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                   displayMath = false;
                   break;
                 case ")":
-                  return (null, "Cannot close inline math mode outside of math mode");
+                  return "Cannot close inline math mode outside of math mode";
                 case "[":
                   mathLaTeX = new StringBuilder();
                   displayMath = true;
                   break;
                 case "]":
-                  return (null, "Cannot close display math mode outside of math mode");
+                  return "Cannot close display math mode outside of math mode";
                 case @"\":
                   atoms.Break(1);
                   break;
                 case ",":
-                  atoms.Add(new Structures.Space(3, true), 1);
+                  atoms.Add(new Space(3, true), 1);
                   break;
                 case var _ when wordKind == WordKind.Whitespace: //control space
                   atoms.Add();
@@ -240,53 +238,62 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
 #warning Should the newline and space occupy the same range?
                   atoms.TextLength -= 3;
                   //1.25em is a rough estimate of the indentation by \par using my eyes - Happypig375
-                  atoms.Add(new Structures.Space(1.25f * 18f, true), 3);
+                  atoms.Add(new Space(1.25f * 18f, true), 3);
                   break;
-#warning Refactor fontsize, color and shortColor, too much repitition
-                case "fontsize":
-                  var fontSize = ReadArgument();
-                  if (fontSize == null) return (null, error);
-                  if (!float.TryParse(fontSize, System.Globalization.NumberStyles.AllowDecimalPoint |
-                                                System.Globalization.NumberStyles.AllowLeadingWhite |
-                                                System.Globalization.NumberStyles.AllowTrailingWhite,
-                                                System.Globalization.CultureInfo.InvariantCulture, out var parsedResult))
-                    return (null, "Invalid font size");
-                  var resizedContent = ReadArgument();
-                  if (resizedContent == null) return (null, error);
-                  var resizedResult = Build(resizedContent, enhancedColors);
-                  if (resizedResult.error != null) return (null, resizedResult.error);
-                  if (resizedContent != string.Empty) atoms.Add(resizedResult.atom, parsedResult, "fontsize".Length);
-                  break;
-                case "color":
-                  var colorString = ReadArgument();
-                  if (colorString == null) return (null, error);
-                  var color = Structures.Color.Create(colorString, enhancedColors);
-                  if (color == null) return (null, "Invalid color");
-                  var toColorize = ReadArgument();
-                  if (toColorize == null) return (null, error);
-                  var colorized = Build(toColorize, enhancedColors);
-                  if (colorized.error != null) return (null, colorized.error);
-                  if (toColorize != string.Empty) atoms.Add(colorized.atom, color.Value, "color".Length);
-                  break;
-                case var shortColor when enhancedColors && Structures.Color.PredefinedColors.TryGetByFirst(shortColor, out var _):
-                  var toColorizeShort = ReadArgument();
-                  if (toColorizeShort == null) return (null, error);
-                  var colour = Structures.Color.Create(shortColor, enhancedColors) ?? throw new InvalidCodePathException("This case's condition should have checked the validity of shortColor.");
-                  var colorizedShort = Build(toColorizeShort, enhancedColors);
-                  if (colorizedShort.error != null) return (null, colorizedShort.error);
-                  if (toColorizeShort != string.Empty) atoms.Add(colorizedShort.atom, colour, "color".Length);
-                  break;
+                case "fontsize": {
+                    if (ReadArgument().Bind(fontSize =>
+                        float.TryParse(fontSize, System.Globalization.NumberStyles.AllowDecimalPoint |
+                                                 System.Globalization.NumberStyles.AllowLeadingWhite |
+                                                 System.Globalization.NumberStyles.AllowTrailingWhite,
+                                                 System.Globalization.CultureInfo.InvariantCulture,
+                                                 out var parsedResult) ?
+                        Ok(parsedResult) :
+                        Err("Invalid font size")
+                      ).Bind(
+                        ReadArgument().Bind(resizedContent => Build(resizedContent, enhancedColors)),
+                        (fontSize, resizedContent) =>
+                          atoms.Add(resizedContent, fontSize, "fontsize".Length)
+                      ).Error is string error
+                    ) return error;
+                    break;
+                  }
+                case "color": {
+                    if (ReadArgument().Bind(color =>
+                        Color.Create(color, enhancedColors) is Color value ?
+                        Ok(value) :
+                        Err("Invalid color")
+                      ).Bind(
+                        ReadArgument().Bind(coloredContent => Build(coloredContent, enhancedColors)),
+                        (color, coloredContent) =>
+                          atoms.Add(coloredContent, color, "color".Length)
+                      ).Error is string error
+                    ) return error;
+                    break;
+                  }
+                case var shortColor when enhancedColors && Color.PredefinedColors.Contains(shortColor): {
+                    if (Ok(Color.Create(shortColor, enhancedColors) ??
+                          throw new InvalidCodePathException(
+                            "This case's condition should have checked the validity of shortColor.")
+                      ).Bind(
+                        ReadArgument().Bind(coloredContent => Build(coloredContent, enhancedColors)),
+                        (color, coloredContent) =>
+                          atoms.Add(coloredContent, color, shortColor.Length)
+                      ).Error is string error
+                    ) return error;
+                    break;
+                  }
                 //case "textbf", "textit", ...
-                case var command when !command.Contains("math") && FontStyleExtensions.FontStyles.TryGetByFirst(command.Replace("text", "math"), out var fontStyle):
-                  var content = ReadArgument();
-                  if (content == null) return (null, error);
-                  var builtResult = Build(content, enhancedColors);
-                  if (builtResult.error != null) return (null, builtResult.error);
-                  if (content != string.Empty) atoms.Add(builtResult.atom, fontStyle, command.Length);
-                  break;
+                case var command when !command.Contains("math") && FontStyleExtensions.FontStyles.TryGetByFirst(command.Replace("text", "math"), out var fontStyle): {
+                    if (ReadArgument()
+                      .Bind(content => Build(content, enhancedColors))
+                      .Bind(builtContent => atoms.Add(builtContent, fontStyle, command.Length))
+                      .Error is string error)
+                      return error;
+                    break;
+                  }
                 case var command:
                   if (displayMath != null) mathLaTeX.Append(command); //don't eat the command when parsing math
-                  else return (null, @"Unknown command \" + command);
+                  else return @"Unknown command \" + command;
                   break;
               }
             }
@@ -294,10 +301,10 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
           }
         }
       }
-      if ((error = CheckDollarCount()) != null) return (null, error);
-      if (backslashEscape) return (null, @"Unknown command \");
-      if (displayMath != null) return (null, "Math mode was not terminated");
-      return (atoms.Build(), error);
+      { if (CheckDollarCount().Error is string error) return error; }
+      if (backslashEscape) return @"Unknown command \";
+      if (displayMath != null) return "Math mode was not terminated";
+      return atoms.Build();
     }
     public static StringBuilder Unbuild(TextAtom atom, StringBuilder b) {
       switch (atom) {

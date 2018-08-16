@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -41,8 +41,8 @@ namespace CSharpMath.Utils.NuGet {
       }
     }
 
-    bool _packOnBuild;
-    public bool GeneratePackageOnBuild { get => _packOnBuild; set => Set(_packOnBuild = value); }
+    bool _packOnBuild_Release;
+    public bool GeneratePackageOnBuild { get => _packOnBuild_Release; set => Set(_packOnBuild_Release = value); }
 
     string _version;
     public string PackageVersion { get => _version; set => Set(_version = value); }
@@ -94,6 +94,7 @@ namespace CSharpMath.Utils.NuGet {
         void SetValue(string name, string value) =>
           ((XmlElement)global.GetElementsByTagName(name)[0]).InnerText = value;
         SetValue(nameof(GeneratePackageOnBuild), GeneratePackageOnBuild.ToString().ToLowerInvariant());
+        ((XmlElement)global.GetElementsByTagName(nameof(GeneratePackageOnBuild))[0]).SetAttribute("Condition", "'$(Configuration)' == 'Release'");
         SetValue(nameof(PackageVersion), PackageVersion);
         SetValue(nameof(Authors), Authors);
         SetValue(nameof(PackageReleaseNotes), PackageReleaseNotes);

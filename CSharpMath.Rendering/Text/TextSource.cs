@@ -1,10 +1,17 @@
-﻿namespace CSharpMath.Rendering {
+namespace CSharpMath.Rendering {
   public readonly struct TextSource : ISource {
     public static bool EnhancedColors { get; set; } = true;
 
     public TextSource(string text) {
       Text = text;
-      (Atom, ErrorMessage) = TextBuilder.Build(text, EnhancedColors);
+      var result = TextBuilder.Build(text, EnhancedColors);
+      if (result.Error != null) {
+        ErrorMessage = result.Error;
+        Atom = null;
+      } else {
+        Atom = result.Value;
+        ErrorMessage = null;
+      }
     }
     public TextSource(TextAtom atom) {
       Atom = atom;

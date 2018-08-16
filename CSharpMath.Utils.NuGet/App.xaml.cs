@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
@@ -58,11 +58,21 @@ namespace CSharpMath.Utils.NuGet {
       }
       foreach (XmlElement e in d.LastChild["_Global-"]) {
         if (e.Name == "PackageTags") tags += e.InnerText + ";";
-        else GetProjectProperty(e.Name).InnerText = e.InnerText;
+        else {
+          GetProjectProperty(e.Name).InnerText = e.InnerText;
+          for (int i = 0; i < e.Attributes.Count; i++) {
+            GetProjectProperty(e.Name).SetAttributeNode((XmlAttribute)e.Attributes[i].CloneNode(true));
+          }
+        }
       }
       foreach (XmlElement e in d.LastChild[project]) {
         if (e.Name == "PackageTags") tags += e.InnerText + ";";
-        else GetProjectProperty(e.Name).InnerText = e.InnerText;
+        else {
+          GetProjectProperty(e.Name).InnerText = e.InnerText;
+          for (int i = 0; i < e.Attributes.Count; i++) {
+            GetProjectProperty(e.Name).SetAttributeNode((XmlAttribute)e.Attributes[i].CloneNode(true));
+          }
+        }
       }
       GetProjectProperty("PackageTags").InnerText = tags.TrimEnd(';');
       ;

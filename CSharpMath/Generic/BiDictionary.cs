@@ -52,8 +52,10 @@ namespace CSharpMath
       secondToFirst.Clear();
     }
 
-    public bool Contains(KeyValuePair<TFirst, TSecond> item) =>
-      firstToSecond.TryGetValue(item.Key, out var second) && EqualityComparer<TSecond>.Default.Equals(second, item.Value);
+    public bool Contains(TFirst first) => firstToSecond.ContainsKey(first);
+    public bool Contains(TSecond second) => secondToFirst.ContainsKey(second);
+    public bool Contains(KeyValuePair<TFirst, TSecond> pair) =>
+      firstToSecond.TryGetValue(pair.Key, out var second) && EqualityComparer<TSecond>.Default.Equals(second, pair.Value);
 
     public void CopyTo(KeyValuePair<TFirst, TSecond>[] array, int arrayIndex) {
       foreach (var pair in firstToSecond)
@@ -63,9 +65,9 @@ namespace CSharpMath
     public bool Remove(TFirst first, TSecond second) =>
       firstToSecond.Remove(first) &&
       secondToFirst.Remove(second);
-    public bool Remove(KeyValuePair<TFirst, TSecond> item) =>
-      firstToSecond.Remove(item.Key) &&
-      secondToFirst.Remove(item.Value);
+    public bool Remove(KeyValuePair<TFirst, TSecond> pair) =>
+      firstToSecond.Remove(pair.Key) &&
+      secondToFirst.Remove(pair.Value);
   }
 
   public class MultiDictionary<TFirst, TSecond> : IEnumerable<KeyValuePair<TFirst, TSecond>> {

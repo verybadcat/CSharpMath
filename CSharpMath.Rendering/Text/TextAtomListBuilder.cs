@@ -14,11 +14,11 @@ namespace CSharpMath.Rendering {
     public void Add(TextAtom atom, FontStyle style, int commandLength) => Add(new TextAtom.Style(atom, style, TextLength, commandLength));
     public void Add(TextAtom atom, float fontSize, int commandLength) => Add(new TextAtom.Size(atom, fontSize, TextLength, commandLength));
     public void Add(TextAtom atom, Structures.Color color, int commandLength) => Add(new TextAtom.Color(atom, color, TextLength, commandLength));
-    public string Add(string mathLaTeX, bool displayStyle) {
+    public Structures.Result Add(string mathLaTeX, bool displayStyle) {
       var mathSource = new MathSource(mathLaTeX);
       if (mathSource.ErrorMessage.IsNonEmpty()) return mathSource.ErrorMessage;
       Add(new TextAtom.Math(mathSource.MathList, displayStyle, new Atoms.Range(TextLength, mathLaTeX.Length)));
-      return null;
+      return Structures.Result.Ok();
     }
     public void Add(IReadOnlyList<TextAtom> textAtoms) => Add(new TextAtom.List(textAtoms, TextLength));
     public void Break(int sourceLength) => Add(new TextAtom.Newline(TextLength, sourceLength));

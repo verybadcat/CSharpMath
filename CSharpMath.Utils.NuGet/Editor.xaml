@@ -39,7 +39,7 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Label Grid.Row="0">Generate Package On Build</Label>
+        <Label Grid.Row="0">Generate Package On Build When Relase Config</Label>
         <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding GeneratePackageOnBuild}" VerticalAlignment="Center"/>
         <Label Grid.Row="1">Package Version</Label>
         <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding PackageVersion}"/>
