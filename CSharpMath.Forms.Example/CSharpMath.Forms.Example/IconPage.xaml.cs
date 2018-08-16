@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -37,7 +37,7 @@ namespace CSharpMath.Forms.Example {
       const float f = 40f; //font size in points
       const float thicknessAdjust = 2 * f / 3; //thickness adjust of the two circles
       const float θ = 360f / count; //angle to rotate when drawing each digit
-      if (painter == null) painter = new SkiaSharp.MathPainter(f) { GlyphBoxColor = (SKColors.Red, SKColors.Red) };
+      if (painter == null) painter = new SkiaSharp.MathPainter(f); //{ GlyphBoxColor = (SKColors.Red, SKColors.Red) };
       var cx = e.Info.Width / 2;
       var cy = e.Info.Height / 2;
       var c = e.Surface.Canvas;
@@ -46,7 +46,8 @@ namespace CSharpMath.Forms.Example {
       painter.TextColor = SKColors.White;
       for (int i = 0; i < count; i++) {
         painter.LaTeX = i.ToString();
-        painter.Draw(c, cx, cy - r * 3 / 4);
+        var m = painter.Measure.Value;
+        painter.Draw(c, cx - m.Width / 2, cy - r - m.Y / 2);
         c.RotateDegrees(θ, cx, cy);
       }
       //draw inner circle
