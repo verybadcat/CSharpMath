@@ -102,7 +102,8 @@ namespace CSharpMath.Rendering {
             display = Typesetter<Fonts, Glyph>.CreateLine(m.Content, fonts, TypesettingContext.Instance, Enumerations.LineStyle.Text);
             if (color != null) display.SetTextColorRecursive(color);
 #warning Hack because canvas is inverted
-            FinalizeInlineAtom(display.Descent, display.Ascent);
+            FinalizeInlineAtom();
+            //FinalizeInlineAtom(display.Descent, display.Ascent);
             break;
           case TextAtom.ControlSpace cs:
             display = new Display.TextRunDisplay<Fonts, Glyph>(Display.Text.AttributedGlyphRuns.Create(" ", new[] { GlyphFinder.Instance.Lookup(fonts, ' ') }, fonts, false), cs.Range, TypesettingContext.Instance);

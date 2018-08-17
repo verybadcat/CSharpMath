@@ -28,7 +28,7 @@ namespace CSharpMath.Rendering {
       for (int i = _queue.Count; i > 0; i--) {
         var display = _queue.Dequeue();
         display.Position =
-        new System.Drawing.PointF(display.Position.X + X, display.Position.Y + Y - Ascent);
+        new System.Drawing.PointF(display.Position.X + X, display.Position.Y + Y);
         forEach(display);
       }
       _widthOffset = Ascent = Descent = Width = 0;

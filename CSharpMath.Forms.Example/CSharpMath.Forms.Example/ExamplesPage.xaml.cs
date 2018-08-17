@@ -101,7 +101,8 @@ namespace CSharpMath.Forms.Example {
     public const string BMartix = @"\begin{bmatrix} x_{11}&x_{12}&x_{13}&.&.&.&.&x_{1n} \end{bmatrix}";
     public const string SolveEquations = @"\text{Solve } \begin{cases} y=x^2-x+3 \\ y=x^2+\sqrt x-\frac2x \end{cases} \text{ using the graphical method.}";
     public const string Abs = @"|x|=\begin{cases} -x, & \text{ if } x < 0 \\ x, & \text{ if } x \geq 0 \end{cases}";
-
+    public const string BigSum = @"\sum^{4^{5^{6^{7^{8^{9^{10^{11^{12^{13}}}}}}}}}}_{i=3_{2_{1_{0_{-1_{-2_{-3}}}}}}}i";
+    //\sum^{a^{s^{c^{e^{n^{d^{i^{n^g}}}}}}}}_{d_{e_{s_{c_{e_{n_{d_{i_{n_g}}}}}}}}}normal
     public ExamplesPage() => InitializeComponent();
 
     public static IEnumerable<FieldInfo> AllConstants { get; } = typeof(ExamplesPage).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly).
