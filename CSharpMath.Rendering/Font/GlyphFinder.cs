@@ -1,9 +1,14 @@
-﻿using System.Linq;
+using System.Linq;
 using CSharpMath.FrontEnd;
 
 namespace CSharpMath.Rendering {
   public class GlyphFinder : IGlyphFinder<Fonts, Glyph> {
     private GlyphFinder() { }
+
+    //http://unicode.org/charts/PDF/U25A0.pdf
+    //U+25A1 WHITE SQUARE may be used to represent a missing ideograph
+    //The glyph of this character is in the Latin Modern Math font
+    public const char GlyphNotFound = '□';
 
     public static GlyphFinder Instance { get; } = new GlyphFinder();
     
@@ -12,7 +17,7 @@ namespace CSharpMath.Rendering {
         var g = font.Lookup(codepoint);
         if (g.GlyphIndex != 0) return new Glyph(font, g);
       }
-      return new Glyph(fonts.MathTypeface, fonts.MathTypeface.Lookup(' '));
+      return new Glyph(fonts.MathTypeface, fonts.MathTypeface.Lookup(GlyphNotFound));
     }
 
     public Glyph FindGlyphForCharacterAtIndex(Fonts fonts, int index, string str) {

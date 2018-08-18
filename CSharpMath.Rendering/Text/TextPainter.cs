@@ -34,10 +34,8 @@ namespace CSharpMath.Rendering {
       TextDisplayLineBuilder line = new TextDisplayLineBuilder();
       void BreakLine(System.Collections.Generic.List<IDisplay<Fonts, Glyph>> displayList) {
         if (firstLineAscent == null) firstLineAscent = line.Ascent;
-        else accumulatedHeight += line.Ascent;
-        line.Y = -accumulatedHeight;
-        line.Clear(displayList.Add);
-        accumulatedHeight += line.Descent;
+        accumulatedHeight += line.Ascent;
+        line.Clear(0, -accumulatedHeight, displayList.Add, () => accumulatedHeight += line.Descent);
       }
       void AddDisplaysWithLineBreaks(TextAtom atom, Fonts fonts,
         System.Collections.Generic.List<IDisplay<Fonts, Glyph>> displayList,
@@ -82,10 +80,11 @@ namespace CSharpMath.Rendering {
             displayMathList.Add(display);
             break;
           case TextAtom.Text t:
-            void FinalizeInlineAtom(float? ascentOverride = null, float? descentOverride = null, bool forbidAtLineStart = false) {
+            void FinalizeInlineAtom(float? ascentOverride = null, bool forbidAtLineStart = false) {
+              if (color != null) display.SetTextColorRecursive(color);
               if (line.Width + display.Width > canvasWidth && !forbidAtLineStart)
                 BreakLine(displayList);
-              line.Add(display, ascentOverride, descentOverride);
+              line.Add(display, ascentOverride);
             }
             var content = UnicodeFontChanger.Instance.ChangeFont(t.Content, style);
             var glyphs = GlyphFinder.Instance.FindGlyphs(fonts, content);
@@ -94,16 +93,12 @@ namespace CSharpMath.Rendering {
               tf.CalculateScaleToPixelFromPointSize(fonts.PointSize)
             ).Max();
             display = new Display.TextRunDisplay<Fonts, Glyph>(Display.Text.AttributedGlyphRuns.Create(content, glyphs, fonts, false), t.Range, TypesettingContext.Instance);
-            if (color != null) display.SetTextColorRecursive(color);
             FinalizeInlineAtom(System.Math.Max(line.Ascent, maxLineSpacing));
             break;
           case TextAtom.Math m:
             if (m.DisplayStyle) throw new InvalidCodePathException("Display style maths should have been handled above this switch.");
             display = Typesetter<Fonts, Glyph>.CreateLine(m.Content, fonts, TypesettingContext.Instance, Enumerations.LineStyle.Text);
-            if (color != null) display.SetTextColorRecursive(color);
-#warning Hack because canvas is inverted
             FinalizeInlineAtom();
-            //FinalizeInlineAtom(display.Descent, display.Ascent);
             break;
           case TextAtom.ControlSpace cs:
             display = new Display.TextRunDisplay<Fonts, Glyph>(Display.Text.AttributedGlyphRuns.Create(" ", new[] { GlyphFinder.Instance.Lookup(fonts, ' ') }, fonts, false), cs.Range, TypesettingContext.Instance);

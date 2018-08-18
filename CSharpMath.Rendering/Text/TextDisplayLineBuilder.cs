@@ -10,27 +10,26 @@ namespace CSharpMath.Rendering {
     public float Ascent { get; private set; }
     public float Descent { get; private set; }
     public float Width { get; private set; }
-    public float X { get; set; }
-    public float Y { get; set; }
     float _widthOffset;
     public void AddSpace(float width) => _widthOffset += width;
 
-    public void Add(Display display, float? ascentOverride = null, float? descentOverride = null) {
+    public void Add(Display display, float? ascentOverride = null) {
       if (display.Ascent > Ascent) Ascent = ascentOverride ?? display.Ascent;
-      if (display.Descent > Descent) Descent = descentOverride ?? display.Descent;
+      if (display.Descent > Descent) Descent = display.Descent;
       display.Position =
         new System.Drawing.PointF(display.Position.X + Width + _widthOffset, display.Position.Y);
       Width += display.Width;
       _queue.Enqueue(display);
     }
 
-    public void Clear(Action<Display> forEach) {
+    public void Clear(float x, float y, Action<Display> forEach, Action end) {
       for (int i = _queue.Count; i > 0; i--) {
         var display = _queue.Dequeue();
         display.Position =
-        new System.Drawing.PointF(display.Position.X + X, display.Position.Y + Y);
+        new System.Drawing.PointF(display.Position.X + x, display.Position.Y + y);
         forEach(display);
       }
+      end();
       _widthOffset = Ascent = Descent = Width = 0;
     }
   }
