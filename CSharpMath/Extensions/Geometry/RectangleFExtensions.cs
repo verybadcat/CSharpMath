@@ -1,16 +1,10 @@
-﻿
+
 using RectangleClass = System.Drawing.RectangleF;
 using PointClass = System.Drawing.PointF;
 using System;
 
 namespace CSharpMath {
   public static class RectangleFExtensions{
-    public static RectangleClass ClampToPositive(this RectangleClass rect) {
-      rect.X = Math.Max(0, rect.X);
-      rect.Y = Math.Max(0, rect.Y);
-      return rect;
-    }
-
     public static RectangleClass Plus(this RectangleClass rect, PointClass vector) {
       PointClass translatedLocation = rect.Location.Plus(vector);
       RectangleClass r = new RectangleClass(translatedLocation, rect.Size);

@@ -13,8 +13,9 @@ namespace CSharpMath.Rendering {
     float _widthOffset;
     public void AddSpace(float width) => _widthOffset += width;
 
-    public void Add(Display display, float? ascentOverride = null) {
-      if (display.Ascent > Ascent) Ascent = ascentOverride ?? display.Ascent;
+    public void Add(Display display, float ascentMin = 0) {
+      var ascent = Math.Max(display.Ascent, ascentMin);
+      if (ascent > Ascent) Ascent = ascent;
       if (display.Descent > Descent) Descent = display.Descent;
       display.Position =
         new System.Drawing.PointF(display.Position.X + Width + _widthOffset, display.Position.Y);

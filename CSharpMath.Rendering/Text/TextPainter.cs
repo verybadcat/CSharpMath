@@ -19,9 +19,8 @@ namespace CSharpMath.Rendering {
     public string Text { get => Source.Text; set => Source = new TextSource(value); }
 
     protected override void SetRedisplay() { }
-#warning ClampToPositive is a hack to offset Measure to a correct value, tested using Layout page of Forms.Example
     protected override RectangleF? MeasureCore(float canvasWidth) =>
-      _relativeXCoordDisplay?.ComputeDisplayBounds(CoordinatesFromBottomLeftInsteadOfTopLeft).ClampToPositive().Union(_absoluteXCoordDisplay.ComputeDisplayBounds(CoordinatesFromBottomLeftInsteadOfTopLeft));
+      _relativeXCoordDisplay?.ComputeDisplayBounds(CoordinatesFromBottomLeftInsteadOfTopLeft).Union(_absoluteXCoordDisplay.ComputeDisplayBounds(CoordinatesFromBottomLeftInsteadOfTopLeft));
     public RectangleF? Measure(float canvasWidth) {
       UpdateDisplay(canvasWidth);
       return MeasureCore(canvasWidth);
@@ -30,10 +29,8 @@ namespace CSharpMath.Rendering {
     protected override void UpdateDisplay(float canvasWidth) {
       if (Atom == null) return;
       float accumulatedHeight = 0;
-      float? firstLineAscent = null;
       TextDisplayLineBuilder line = new TextDisplayLineBuilder();
       void BreakLine(System.Collections.Generic.List<IDisplay<Fonts, Glyph>> displayList) {
-        if (firstLineAscent == null) firstLineAscent = line.Ascent;
         accumulatedHeight += line.Ascent;
         line.Clear(0, -accumulatedHeight, displayList.Add, () => accumulatedHeight += line.Descent);
       }
@@ -71,21 +68,23 @@ namespace CSharpMath.Rendering {
             accumulatedHeight += 12;
             display = Typesetter<Fonts, Glyph>.CreateLine(m.Content, fonts, TypesettingContext.Instance, Enumerations.LineStyle.Display);
             if (color != null) display.SetTextColorRecursive(color);
-            accumulatedHeight += display.Ascent + display.Descent;
+            accumulatedHeight += display.Ascent;
             display.Position = new PointF(
               IPainterExtensions.GetDisplayPosition(display.Width, display.Ascent, display.Descent, fonts.PointSize, false, canvasWidth, float.NaN, TextAlignment.Top, default, default, default).X,
               -accumulatedHeight);
+            accumulatedHeight += display.Descent;
             accumulatedHeight += 12;
             if (color != null) display.SetTextColorRecursive(color);
             displayMathList.Add(display);
             break;
-          case TextAtom.Text t:
-            void FinalizeInlineAtom(float? ascentOverride = null, bool forbidAtLineStart = false) {
+
+            void FinalizeInlineDisplay(float ascentMin = 0, bool forbidAtLineStart = false) {
               if (color != null) display.SetTextColorRecursive(color);
               if (line.Width + display.Width > canvasWidth && !forbidAtLineStart)
                 BreakLine(displayList);
-              line.Add(display, ascentOverride);
+              line.Add(display, ascentMin);
             }
+          case TextAtom.Text t:
             var content = UnicodeFontChanger.Instance.ChangeFont(t.Content, style);
             var glyphs = GlyphFinder.Instance.FindGlyphs(fonts, content);
             float maxLineSpacing = glyphs.Select(g => g.Typeface).Distinct().Select(tf =>
@@ -93,16 +92,16 @@ namespace CSharpMath.Rendering {
               tf.CalculateScaleToPixelFromPointSize(fonts.PointSize)
             ).Max();
             display = new Display.TextRunDisplay<Fonts, Glyph>(Display.Text.AttributedGlyphRuns.Create(content, glyphs, fonts, false), t.Range, TypesettingContext.Instance);
-            FinalizeInlineAtom(System.Math.Max(line.Ascent, maxLineSpacing));
+            FinalizeInlineDisplay(maxLineSpacing);
             break;
           case TextAtom.Math m:
             if (m.DisplayStyle) throw new InvalidCodePathException("Display style maths should have been handled above this switch.");
             display = Typesetter<Fonts, Glyph>.CreateLine(m.Content, fonts, TypesettingContext.Instance, Enumerations.LineStyle.Text);
-            FinalizeInlineAtom();
+            FinalizeInlineDisplay();
             break;
           case TextAtom.ControlSpace cs:
             display = new Display.TextRunDisplay<Fonts, Glyph>(Display.Text.AttributedGlyphRuns.Create(" ", new[] { GlyphFinder.Instance.Lookup(fonts, ' ') }, fonts, false), cs.Range, TypesettingContext.Instance);
-            FinalizeInlineAtom(forbidAtLineStart: true); //No spaces at start of line
+            FinalizeInlineDisplay(forbidAtLineStart: true); //No spaces at start of line
             break;
           case null:
             throw new System.InvalidOperationException("TextAtoms should never be null. You must have sneaked one in.");
@@ -116,7 +115,7 @@ namespace CSharpMath.Rendering {
       BreakLine(relativePositionList);
       //Retain positions
       _relativeXCoordDisplay = new Display.MathListDisplay<Fonts, Glyph>(relativePositionList);
-      _absoluteXCoordDisplay = new Display.MathListDisplay<Fonts, Glyph>(absolutePositionList) { Position = new PointF(0, _relativeXCoordDisplay.ComputeDisplayBounds(CoordinatesFromBottomLeftInsteadOfTopLeft).Y) };
+      _absoluteXCoordDisplay = new Display.MathListDisplay<Fonts, Glyph>(absolutePositionList);
     }
 
     public override void Draw(TCanvas canvas, TextAlignment alignment = TextAlignment.TopLeft, Thickness padding = default, float offsetX = 0, float offsetY = 0) =>
