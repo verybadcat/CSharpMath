@@ -1,11 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using CSharpMath.Interfaces;
 
 namespace CSharpMath.Atoms.Extension {
-  public abstract class _ExtensionAtom<T> : MathAtom where T : _ExtensionAtom<T>, new() {
-    public _ExtensionAtom(MathAtomType type) : base(type, string.Empty) { }
+  internal interface I_ExtensionAtom : IMathAtom { }
+  public abstract class _ExtensionAtom<T> : MathAtom, I_ExtensionAtom where T : _ExtensionAtom<T>, new() {
+    internal _ExtensionAtom(MathAtomType type) : base(type, string.Empty) { }
     //protected _ExtensionAtom(_ExtensionAtom<T> cloneMe, bool finalize) : base(cloneMe, finalize) { }
 
     protected abstract void CopyPropertiesFrom(T oldAtom);

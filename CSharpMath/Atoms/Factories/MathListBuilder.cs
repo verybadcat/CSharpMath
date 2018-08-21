@@ -774,7 +774,10 @@ namespace CSharpMath.Atoms {
               } else {
                 var command = MathAtoms.LatexSymbolNameForAtom((MathAtom)atom);
                 if (command == null) {
-                  builder.Append(aNucleus);
+                  if (atom is Extension.I_ExtensionAtom ext)
+                    builder.Append(Extension._MathListDestructor.MathAtomToString(ext));
+                  else
+                    builder.Append(aNucleus);
                 } else {
                   builder.Append(@"\" + command + " ");
                 }

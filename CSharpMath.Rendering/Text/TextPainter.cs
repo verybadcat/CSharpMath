@@ -87,10 +87,12 @@ namespace CSharpMath.Rendering {
           case TextAtom.Text t:
             var content = UnicodeFontChanger.Instance.ChangeFont(t.Content, style);
             var glyphs = GlyphFinder.Instance.FindGlyphs(fonts, content);
-            float maxLineSpacing = glyphs.Select(g => g.Typeface).Distinct().Select(tf =>
+            //Calling Select(g => g.Typeface).Distinct() speeds up query up to 10 times,
+            //Calling Max(Func<,>) instead of Select(Func<,>).Max() speeds up query 2 times
+            float maxLineSpacing = glyphs.Select(g => g.Typeface).Distinct().Max(tf =>
               Typography.OpenFont.Extensions.TypefaceExtensions.CalculateRecommendLineSpacing(tf) *
               tf.CalculateScaleToPixelFromPointSize(fonts.PointSize)
-            ).Max();
+            );
             display = new Display.TextRunDisplay<Fonts, Glyph>(Display.Text.AttributedGlyphRuns.Create(content, glyphs, fonts, false), t.Range, TypesettingContext.Instance);
             FinalizeInlineDisplay(maxLineSpacing);
             break;

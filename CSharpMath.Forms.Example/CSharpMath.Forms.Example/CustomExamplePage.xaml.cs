@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -29,14 +29,18 @@ namespace CSharpMath.Forms.Example
       base.OnDisappearing();
     }
 
-    static readonly string RefFile = Path.Combine(Environment.CurrentDirectory, "savedLaTeX.txt");
+    static readonly string RefFile = Path.Combine(Environment.CurrentDirectory, "SavedLaTeX.txt");
 
-    private void In_Clicked(object sender, EventArgs e) {
-      Entry.Text = File.ReadAllText(RefFile);
+    private async void In_Clicked(object sender, EventArgs e) {
+      using (var file = File.Open(RefFile, FileMode.OpenOrCreate))
+      using (var reader = new StreamReader(file))
+        Entry.Text = await reader.ReadToEndAsync();
     }
 
-    private void Out_Clicked(object sender, EventArgs e) {
-      File.WriteAllText(RefFile, Entry.Text);
+    private async void Out_Clicked(object sender, EventArgs e) {
+      using (var file = File.Open(RefFile, FileMode.Create))
+      using (var writer = new StreamWriter(file))
+        await writer.WriteAsync(Entry.Text);
     }
   }
 }

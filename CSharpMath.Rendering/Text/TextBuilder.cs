@@ -280,6 +280,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                 ) return error;
                 break;
               }
+            //case "red", "yellow", ...
             case var shortColor when enhancedColors && Color.PredefinedColors.Contains(shortColor): {
                 if (Ok(Color.Create(shortColor, enhancedColors) ??
                       throw new InvalidCodePathException(
