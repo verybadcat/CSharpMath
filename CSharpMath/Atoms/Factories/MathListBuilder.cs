@@ -56,7 +56,7 @@ namespace CSharpMath.Atoms {
         if (_error != null) {
           return null;
         }
-        IMathAtom atom = null;
+        IMathAtom atom;
         var ch = GetNextCharacter();
         if (oneCharOnly) {
           if (ch == '^' || ch == '}' || ch == '_' || ch == '&') {
@@ -164,27 +164,7 @@ namespace CSharpMath.Atoms {
           case '\'': // this case is NOT in iosMath
             int i = 1;
             while (ExpectCharacter('\'')) i++;
-            Append: switch (i) {
-              //glyphs are already superscripted
-              //pick appropriate codepoint depending on number of primes
-              case 1:
-                atom = MathAtoms.Create(MathAtomType.Ordinary, "\u2032");
-                break;
-              case 2:
-                atom = MathAtoms.Create(MathAtomType.Ordinary, "\u2033");
-                break;
-              case 3:
-                atom = MathAtoms.Create(MathAtomType.Ordinary, "\u2034");
-                break;
-              case 4:
-                atom = MathAtoms.Create(MathAtomType.Ordinary, "\u2057");
-                break;
-              default:
-                var atomPart = MathAtoms.Create(MathAtomType.Ordinary, "\u2057");
-                atomPart.AllowTrailingAutoSpace = false;
-                i -= 4;
-                goto Append;
-            }
+            atom = new Prime(i);
             break;
           default:
             if (_textMode && ch == ' ') {
@@ -199,7 +179,7 @@ namespace CSharpMath.Atoms {
             break;
         }
         if (atom == null) {
-          throw new ArgumentNullException("Atom shouldn't be null");
+          throw new InvalidCodePathException("Atom shouldn't be null");
         }
         atom.FontStyle = _currentFontStyle;
         r.Add(atom);
@@ -419,6 +399,9 @@ namespace CSharpMath.Atoms {
             ColorString = ReadColor(),
             InnerList = BuildInternal(true)
           };
+        case "prime":
+          SetError(@"\prime won't be supported as Unicode has no matching character. Use ' instead.");
+          return null;
         default:
           var extResult = Extension._MathListBuilder.AtomForCommand(this, command);
           if (extResult != null) return extResult;
@@ -762,6 +745,9 @@ namespace CSharpMath.Atoms {
           case MathAtomType.Group:
 #warning Should {} be added?
             builder.Append(MathListToString(((Group)atom).InnerList));
+            break;
+          case MathAtomType.Prime:
+            builder.Append('\'', ((Prime)atom).Length);
             break;
           default: {
               var aNucleus = atom.Nucleus;

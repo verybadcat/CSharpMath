@@ -99,9 +99,9 @@ namespace CSharpMath {
           case MathAtomType.Number:
           case MathAtomType.Variable:
           case MathAtomType.UnaryOperator:
-            throw new InvalidOperationException($"Type {atom.AtomType} should have been removed by preprocessing");
+            throw new InvalidCodePathException($"Type {atom.AtomType} should have been removed by preprocessing");
           case MathAtomType.Boundary:
-            throw new InvalidOperationException("A boundary atom should never be inside a mathlist");
+            throw new InvalidCodePathException("A boundary atom should never be inside a mathlist");
           case MathAtomType.Space:
             AddDisplayLine(false);
             var space = atom as ISpace;
@@ -255,7 +255,8 @@ namespace CSharpMath {
           case MathAtomType.Close:
           case MathAtomType.Placeholder:
           case MathAtomType.Punctuation:
-            if (prevNode != null && prevNode.AllowTrailingAutoSpace) {
+          case MathAtomType.Prime:
+            if (prevNode != null) {
               float interElementSpace = GetInterElementSpace(prevNode.AtomType, atom.AtomType);
               if (_currentLine.Length > 0) {
                 if (interElementSpace > 0) {
@@ -295,10 +296,13 @@ namespace CSharpMath {
               }
               MakeScripts(atom, line, atom.IndexRange.End - 1, delta);
             }
+            if (atom.AtomType == MathAtomType.Prime) continue; //preserve spacing of previous atom
+            break;
+          case var _ when atom is Atoms.Extension.I_ExtensionAtom ext:
+            Display.Extension._Typesetter.CreateDisplayAtom(this, ext);
             break;
           default:
-            Display.Extension._Typesetter.CreateDisplayAtom(this, atom);
-            break;
+            throw new InvalidCodePathException("Unknown atom type " + atom.AtomType);
         }
         prevNode = atom;
         prevType = atom.AtomType;
@@ -527,13 +531,15 @@ namespace CSharpMath {
 
     private float GetInterElementSpace(MathAtomType left, MathAtomType right) {
       //no inter-element space for group
-      if (left == MathAtomType.Group || right == MathAtomType.Group) return 0;
+      if (left == MathAtomType.Group || right == MathAtomType.Group || right == MathAtomType.Prime)
+        return 0;
       var leftIndex = GetInterElementSpaceArrayIndexForType(left, true);
       var rightIndex = GetInterElementSpaceArrayIndexForType(right, false);
       var spaces = InterElementSpaces.Spaces;
       var spaceArray = spaces[leftIndex];
       var spaceType = spaceArray[rightIndex];
-      Assertions.Assert(spaceType != InterElementSpaceType.Invalid, $"Invalid space between {left} and {right}");
+      if (spaceType == InterElementSpaceType.Invalid)
+        throw new InvalidCodePathException($"Invalid space between {left} and {right}");
       var multiplier = spaceType.SpacingInMu(_style);
       if (multiplier > 0) {
         return multiplier * _mathTable.MuUnit(_styleFont);
@@ -576,11 +582,11 @@ namespace CSharpMath {
           if (row) {
             return 8;
           }
-          throw new InvalidOperationException("Inter-element space undefined for radical on the right. Treat radical as ordinary.");
+          throw new InvalidCodePathException("Inter-element space undefined for radical on the right. Treat radical as ordinary.");
       }
       var extResult = Display.Extension._Typesetter.GetInterElementSpaceArrayIndexForType(this, atomType);
       if (extResult != -1) return extResult;
-      throw new InvalidOperationException($"Inter-element space undefined for atom type {atomType}");
+      throw new InvalidCodePathException($"Inter-element space undefined for atom type {atomType}");
     }
 
     internal TextLineDisplay<TFont, TGlyph> AddDisplayLine(bool evenIfLengthIsZero) {

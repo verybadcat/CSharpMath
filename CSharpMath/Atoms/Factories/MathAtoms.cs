@@ -273,7 +273,7 @@ namespace CSharpMath.Atoms {
                      { "|", Create(MathAtomType.Ordinary, "\u2016") },
                      { "vert", Create(MathAtomType.Ordinary, "|") },
                      { "ldots", Create(MathAtomType.Ordinary, "\u2026") },
-                     { "prime", Create(MathAtomType.Ordinary, "\u2032") },
+                     // \prime is removed
                      { "hbar", Create(MathAtomType.Ordinary, "\u210F") },
                      { "Im", Create(MathAtomType.Ordinary, "\u2111") },
                      { "ell", Create(MathAtomType.Ordinary, "\u2113") },

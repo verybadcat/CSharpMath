@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using CSharpMath.Enumerations;
@@ -27,7 +27,5 @@ namespace CSharpMath.Interfaces {
     List<IMathAtom> FusedAtoms { get; }
 
     T Accept<T, THelper>(IMathAtomVisitor<T, THelper> visitor, THelper helper);
-#warning Remove this
-    bool AllowTrailingAutoSpace { get; set; }
   }
 }
