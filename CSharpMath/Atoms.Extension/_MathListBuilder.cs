@@ -58,12 +58,13 @@ namespace CSharpMath.Atoms.Extension {
       for (int i = 0; i < 2 && b.HasCharacters; i++) {
         unit[i] = b.GetNextCharacter();
       }
-      var (result, error) = Structures.Space.Create(length, new string(unit), b._textMode);
-      if(result is null) {
+      var result = Structures.Space.Create(length, new string(unit), b._textMode)
+        .Bind(sp => new Space(sp));
+      if(result.Error is string error) {
         b.SetError(error);
         return null;
       }
-      return new Space(result.Value);
+      return result.Value;
     }
   }
 }

@@ -301,12 +301,12 @@ namespace CSharpMath.Atoms {
                      { "partial", Create(MathAtomType.Ordinary, "\U0001D715") },
                      
                      // Spacing
-                     { ",", Space(3, true) },
-                     { ":", Space(4, true) },
-                     { ";", Space(5, true) },
-                     { "!", Space(-3, true) },
-                     { "quad", Space(18, true) },  // quad = 1em = 18mu
-                     { "qquad", Space(36, true) }, // qquad = 2em
+                     { ",", Space(Structures.Space.ShortSpace) },
+                     { ":", Space(Structures.Space.MediumSpace) },
+                     { ";", Space(Structures.Space.LongSpace) },
+                     { "!", Space(-Structures.Space.ShortSpace) },
+                     { "quad", Space(Structures.Space.EmWidth) },
+                     { "qquad", Space(Structures.Space.EmWidth * 2) },
                      
                      // Style
                      { "displaystyle", new Style(LineStyle.Display) },
@@ -396,8 +396,8 @@ namespace CSharpMath.Atoms {
 
     public static LargeOperator Operator(string name, bool? limits, bool noLimits = false)
       => new LargeOperator(name, limits, noLimits);
-    public static Space Space(int length, bool isMu)
-      => new Space(new Structures.Space(length, isMu));
+    public static Space Space(Structures.Space sp)
+      => new Space(sp);
 
     public static MathAtom ForCharacter(char c) {
       if (char.IsControl(c) || char.IsWhiteSpace(c)) {

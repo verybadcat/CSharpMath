@@ -235,7 +235,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
               atoms.Break(1);
               break;
             case ",":
-              atoms.Add(new Space(3, true), 1);
+              atoms.Add(Space.ShortSpace, 1);
               break;
             case var _ when wordKind == WordKind.Whitespace: //control space
               atoms.Add();
@@ -247,8 +247,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
               atoms.Break(3);
 #warning Should the newline and space occupy the same range?
               atoms.TextLength -= 3;
-              //1.25em is a rough estimate of the indentation by \par using my eyes - Happypig375
-              atoms.Add(new Space(1.25f * 18f, true), 3);
+              atoms.Add(Space.ParagraphIndent, 3);
               break;
             case "fontsize": {
                 if (ReadArgument().Bind(fontSize =>

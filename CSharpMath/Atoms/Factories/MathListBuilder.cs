@@ -543,13 +543,13 @@ namespace CSharpMath.Atoms {
 // ^ LaTeX -> Math atoms
 // v Math atoms -> LaTeX
 
-    internal static Dictionary<int, string> SpaceToCommands { get; } = new Dictionary<int, string> {
-      {3, "," },
-      {4, ":" },
-      {5, ";" },
-      {-3, "!" },
-      {18, "quad" },
-      {36, "qquad" }
+    internal static Dictionary<float, string> SpaceToCommands { get; } = new Dictionary<float, string> {
+      {Structures.Space.ShortSpace.Length, "," },
+      {Structures.Space.MediumSpace.Length, ":" },
+      {Structures.Space.LongSpace.Length, ";" },
+      {-Structures.Space.ShortSpace.Length, "!" },
+      {Structures.Space.EmWidth.Length, "quad" },
+      {Structures.Space.EmWidth.Length * 2, "qquad" }
     };
 
     internal static Dictionary<LineStyle, string> StyleToCommands { get; } = new Dictionary<LineStyle, string> {

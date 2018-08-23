@@ -192,7 +192,7 @@ namespace CSharpMath.Tests {
 
     [Fact]
     public void TestCopySpace() {
-      var space = MathAtoms.Space(3, true);
+      var space = MathAtoms.Space(3 * Structures.Space.Point);
       Assert.Equal(MathAtomType.Space, space.AtomType);
 
       var copy = new Space(space, false);
