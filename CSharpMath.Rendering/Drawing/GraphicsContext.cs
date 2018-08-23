@@ -8,9 +8,9 @@ using Typography.OpenFont;
 using Typography.TextLayout;
 
 namespace CSharpMath.Rendering {
-  public class GraphicsContext<TPathWrapper> : IGraphicsContext<TFonts, Glyph> where TPathWrapper : IPath {
+  public class GraphicsContext : IGraphicsContext<TFonts, Glyph> {
     public (Color glyph, Color textRun)? GlyphBoxColor { get; set; }
-    public ICanvas<TPathWrapper> Canvas { get; set; }
+    public ICanvas Canvas { get; set; }
 
 #warning HIGH PRIORITY: Remove (Must have a Mac to test)
     void IGraphicsContext<TFonts, Glyph>.SetTextPosition(PointF position) => Translate(position);

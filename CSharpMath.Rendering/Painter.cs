@@ -15,8 +15,8 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
 namespace CSharpMath.Rendering {
-  public abstract class Painter<TCanvas, TPathWrapper, TSource, TColor> : ICanvasPainter<TCanvas, TPathWrapper, TSource, TColor>
-    where TSource : struct, ISource where TPathWrapper : IPath {
+  public abstract class Painter<TCanvas, TSource, TColor> : ICanvasPainter<TCanvas, TSource, TColor>
+    where TSource : struct, ISource {
     public const float DefaultFontSize = 20f;
     
     #region Constructors
@@ -67,7 +67,7 @@ namespace CSharpMath.Rendering {
     public abstract Color WrapColor(TColor color);
     public abstract TColor UnwrapColor(Color color);
 
-    public abstract ICanvas<TPathWrapper> WrapCanvas(TCanvas canvas);
+    public abstract ICanvas WrapCanvas(TCanvas canvas);
 
     public abstract void Draw(TCanvas canvas, TextAlignment alignment, Thickness padding = default, float offsetX = 0, float offsetY = 0);
 
@@ -75,7 +75,7 @@ namespace CSharpMath.Rendering {
 
     protected abstract RectangleF? MeasureCore(float canvasWidth);
 
-    protected void DrawCore(ICanvas<TPathWrapper> canvas, IDisplay<TFonts, Glyph> display, PointF? position = null) {
+    protected void DrawCore(ICanvas canvas, IDisplay<TFonts, Glyph> display, PointF? position = null) {
       if (Source.IsValid) {
         if(position != null) display.Position = position.Value;
         canvas.Save();
@@ -94,14 +94,14 @@ namespace CSharpMath.Rendering {
           measure.Width, measure.Height);
         canvas.CurrentColor = null;
         T? Nullable<T>(T nonnull) where T : struct => new T?(nonnull);
-        display.Draw(new GraphicsContext<TPathWrapper> {
+        display.Draw(new GraphicsContext {
           Canvas = canvas,
           GlyphBoxColor = GlyphBoxColor.HasValue ? Nullable((WrapColor(GlyphBoxColor.Value.glyph), WrapColor(GlyphBoxColor.Value.textRun))) : null
         });
         canvas.Restore();
       } else DrawError(canvas);
     }
-    protected void DrawError(ICanvas<TPathWrapper> canvas) {
+    protected void DrawError(ICanvas canvas) {
       if (DisplayErrorInline && ErrorMessage.IsNonEmpty()) {
         canvas.Save();
         var size = ErrorFontSize ?? FontSize;

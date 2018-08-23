@@ -3,7 +3,7 @@ using CSharpMath.Structures;
 using SkiaSharp;
 namespace CSharpMath.SkiaSharp
 {
-  public class SkiaCanvas : ICanvas<SkiaPath> {
+  public class SkiaCanvas : ICanvas {
     public SkiaCanvas(SKCanvas canvas, SKStrokeCap strokeCap, bool? antiAliasLevel) {
       Canvas = canvas;
       StrokeCap = strokeCap;
@@ -50,6 +50,6 @@ namespace CSharpMath.SkiaSharp
     public void Restore() => Canvas.Restore();
     public void FillText(string text, float x, float y, float pointSize) => Canvas.DrawText(text, x, y, new SKPaint { Color = Color, TextSize = pointSize, IsAntialias = true });
 
-    public SkiaPath GetPath() => new SkiaPath(this);
+    public IPath GetPath() => new SkiaPath(this);
   }
 }

@@ -14,7 +14,7 @@ namespace CSharpMath.Forms {
   using TextAlignment = Rendering.TextAlignment;
   using Thickness = Rendering.Thickness;
 
-  public abstract class BaseView<TPainter, TSource> : SKCanvasView, IPainter<TSource, Color> where TPainter : ICanvasPainter<SKCanvas, SkiaSharp.SkiaPath, TSource, SKColor> where TSource : struct, ISource {
+  public abstract class BaseView<TPainter, TSource> : SKCanvasView, IPainter<TSource, Color> where TPainter : ICanvasPainter<SKCanvas, TSource, SKColor> where TSource : struct, ISource {
     public BaseView() {
       Painter = (TPainter)painterCtor.Invoke(ctorParams);
     }
@@ -37,7 +37,7 @@ namespace CSharpMath.Forms {
       ctorParams = Enumerable.Repeat(Type.Missing, painterCtor.GetParameters().Length).ToArray();
       var painter = (TPainter)painterCtor.Invoke(ctorParams);
       var thisType = typeof(BaseView<TPainter, TSource>);
-      var drawMethodParams = typeof(TPainter).GetMethod(nameof(ICanvasPainter<SKCanvas, SkiaSharp.SkiaPath, TSource, SKColor>.Draw), new[] { typeof(SKCanvas), typeof(TextAlignment), typeof(Thickness), typeof(float), typeof(float) }).GetParameters();
+      var drawMethodParams = typeof(TPainter).GetMethod(nameof(ICanvasPainter<SKCanvas, TSource, SKColor>.Draw), new[] { typeof(SKCanvas), typeof(TextAlignment), typeof(Thickness), typeof(float), typeof(float) }).GetParameters();
       TPainter p(BindableObject b) => ((BaseView<TPainter, TSource>)b).Painter;
       SourceProperty = BindableProperty.Create(nameof(Source), typeof(TSource), thisType, painter.Source, BindingMode.TwoWay, null, (b, o, n) => { p(b).Source = (TSource)n; ((BaseView<TPainter, TSource>)b).ErrorMessage = p(b).ErrorMessage; });
       DisplayErrorInlineProperty = BindableProperty.Create(nameof(DisplayErrorInline), typeof(bool), thisType, painter.DisplayErrorInline, propertyChanged: (b, o, n) => p(b).DisplayErrorInline = (bool)n);
