@@ -3,11 +3,11 @@ using System.Linq;
 
 namespace CSharpMath.Rendering {
   /// <summary>
-  /// Unlike <see cref="CSharpMath.Typesetter{TFont, TGlyph}"/>, <see cref="TextPainter{TCanvas, TColor}"/>'s coordinates are inverted by default.
+  /// Unlike <see cref="CSharpMath.Typesetter{TFont, TGlyph}"/>, <see cref="TextPainter{TCanvas, TPathWrapper, TColor}"/>'s coordinates are inverted by default.
   /// </summary>
   /// <typeparam name="TCanvas"></typeparam>
   /// <typeparam name="TColor"></typeparam>
-  public abstract class TextPainter<TCanvas, TColor> : Painter<TCanvas, TextSource, TColor> {
+  public abstract class TextPainter<TCanvas, TPathWrapper, TColor> : Painter<TCanvas, TPathWrapper, TextSource, TColor> where TPathWrapper : IPath {
     public TextPainter(float fontSize = DefaultFontSize, float lineWidth = DefaultFontSize * 100) : base(fontSize) { }
 
     //display maths should always be center-aligned regardless of parameter for Draw()

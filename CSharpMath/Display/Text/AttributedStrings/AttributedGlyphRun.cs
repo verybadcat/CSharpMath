@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using CSharpMath.Atoms;
 using System.Diagnostics;
@@ -29,13 +29,10 @@ namespace CSharpMath.Display.Text {
   public static class AttributedGlyphRunExtensions {
     public static bool AttributesMatch<TFont, TGlyph>(this AttributedGlyphRun<TFont, TGlyph> run1, AttributedGlyphRun<TFont, TGlyph> run2)
       where TFont: MathFont<TGlyph> {
-      if (run1==null || run2 == null) {
+      if (run1 is null || run2 is null) {
         return false;
       }
-      if (!AnyType.SafeEquals(run1.Font, run2.Font)) {
-        return false;
-      }
-      return true;
+      return run1.Font.Equals(run2.Font);
     }
   }
 }

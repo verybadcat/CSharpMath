@@ -4,7 +4,7 @@ using CSharpMath.FrontEnd;
 using CSharpMath.Interfaces;
 
 namespace CSharpMath.Rendering {
-  public abstract class MathPainter<TCanvas, TColor> : Painter<TCanvas, MathSource, TColor> {
+  public abstract class MathPainter<TCanvas, TPathWrapper, TColor> : Painter<TCanvas, TPathWrapper, MathSource, TColor> where TPathWrapper : IPath {
     public MathPainter(float fontSize = DefaultFontSize) : base(fontSize) { }
 
     protected IDisplay<Fonts, Glyph> _display;

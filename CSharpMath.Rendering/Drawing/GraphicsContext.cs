@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using CSharpMath.FrontEnd;
@@ -8,9 +8,9 @@ using Typography.OpenFont;
 using Typography.TextLayout;
 
 namespace CSharpMath.Rendering {
-  public class GraphicsContext : IGraphicsContext<TFonts, Glyph> {
+  public class GraphicsContext<TPathWrapper> : IGraphicsContext<TFonts, Glyph> where TPathWrapper : IPath {
     public (Color glyph, Color textRun)? GlyphBoxColor { get; set; }
-    public ICanvas Canvas { get; set; }
+    public ICanvas<TPathWrapper> Canvas { get; set; }
 
 #warning HIGH PRIORITY: Remove (Must have a Mac to test)
     void IGraphicsContext<TFonts, Glyph>.SetTextPosition(PointF position) => Translate(position);
@@ -33,7 +33,7 @@ namespace CSharpMath.Rendering {
         Canvas.Save();
         Canvas.CurrentColor = color;
         Canvas.Translate(points[i].X, points[i].Y);
-        pathBuilder.ReadShapes(Canvas);
+        using(var p = Canvas.GetPath()) pathBuilder.ReadShapes(p);
         Canvas.Restore();
       }
     }
@@ -64,6 +64,7 @@ namespace CSharpMath.Rendering {
       var pointSize = run.Font.PointSize;
       Canvas.Save();
       Canvas.Translate(textPosition.X, textPosition.Y);
+      Canvas.CurrentColor = color;
       for (int i = 0; i < glyphs.Length; i++) {
         var typeface = glyphs[i].Glyph.Typeface;
         layout.Typeface = typeface;
@@ -71,8 +72,7 @@ namespace CSharpMath.Rendering {
         var scale = typeface.CalculateScaleToPixelFromPointSize(pointSize);
         var index = glyphs[i].Glyph.Info.GlyphIndex;
         pathBuilder.BuildFromGlyph(glyphs[i].Glyph.Info, pointSize);
-        Canvas.CurrentColor = color;
-        pathBuilder.ReadShapes(Canvas);
+        using (var p = Canvas.GetPath()) pathBuilder.ReadShapes(p);
         Canvas.Translate(typeface.GetHAdvanceWidthFromGlyphIndex(index) * scale + glyphs[i].KernAfterGlyph, 0);
       }
       Canvas.Restore();

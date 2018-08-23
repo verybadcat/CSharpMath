@@ -352,17 +352,17 @@ namespace CSharpMath.Atoms {
         case MathAtomType.Inner:
           return new Inner();
         case MathAtomType.LargeOperator:
-          throw new InvalidOperationException(
+          throw new ArgumentException(
             "Do not use Create(MathAtomType.LargeOperator, string)." +
-            "Use Operator(string, bool?, bool) instead.");
+            "Use Operator(string, bool?, bool) instead.", nameof(type));
         case MathAtomType.Overline:
           return new Overline();
         case MathAtomType.Underline:
           return new Underline();
         case MathAtomType.Space:
-          throw new InvalidOperationException(
+          throw new ArgumentException(
             "Do not use Create(MathAtomType.Space, string)." +
-            "Use Space(int, bool) instead.");
+            "Use Space(int, bool) instead.", nameof(type));
         default:
           return new MathAtom(type, value);
       }

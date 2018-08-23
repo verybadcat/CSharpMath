@@ -470,8 +470,9 @@ namespace CSharpMath {
         subscriptShiftDown = display.Descent + _context.MathTable.SubscriptBaselineDropMin(scriptFont);
       }
       if (atom.Superscript == null) {
+        if(atom.Subscript == null)
+          throw new InvalidCodePathException($"MakeScripts was called when both supercript and subscript of atom were null.");
         var line = display as TextLineDisplay<TFont, TGlyph>;
-        Assertions.NotNull(atom.Subscript);
         var subscript = _CreateLine(atom.Subscript, _font, _context, _scriptStyle, _subscriptCramped);
         subscript.MyLinePosition = LinePosition.Subscript;
         subscript.IndexInParent = index;

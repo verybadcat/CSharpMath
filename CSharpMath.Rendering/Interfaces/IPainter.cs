@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
@@ -73,8 +73,8 @@ namespace CSharpMath.Rendering {
       return new PointF(x + offsetX, (y + offsetY) - (bottomLeftCoords ? 0 : height));
     }
   }
-  public interface ICanvasPainter<TCanvas, TSource, TColor> : IPainter<TSource, TColor> where TSource : struct, ISource {
-    ICanvas WrapCanvas(TCanvas canvas);
+  public interface ICanvasPainter<TCanvas, TPathWrapper, TSource, TColor> : IPainter<TSource, TColor> where TSource : struct, ISource where TPathWrapper : IPath {
+    ICanvas<TPathWrapper> WrapCanvas(TCanvas canvas);
     Structures.Color WrapColor(TColor color);
     TColor UnwrapColor(Structures.Color color);
     void Draw(TCanvas canvas, TextAlignment alignment, Thickness padding = default, float offsetX = 0, float offsetY = 0);
