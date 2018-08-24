@@ -1,4 +1,5 @@
-﻿using CSharpMath.FrontEnd;
+using CSharpMath.Enumerations;
+using CSharpMath.FrontEnd;
 
 namespace CSharpMath.Tests.FrontEnd
 {

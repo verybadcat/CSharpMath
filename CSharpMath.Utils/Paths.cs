@@ -1,4 +1,4 @@
-﻿using P = System.IO.Path;
+using P = System.IO.Path;
 
 namespace CSharpMath.DevUtils {
   static class Paths {
@@ -14,11 +14,11 @@ namespace CSharpMath.DevUtils {
     /// <summary>
     /// The path of the latinmodern-math.otf file
     /// </summary>
-    public static readonly string LatinModernMath = P.Combine(Global, nameof(CSharpMath) + "." + nameof(Rendering), "Font Reference", "latinmodern-math.otf");
+    public static readonly string LatinModernMathSource = P.Combine(Global, nameof(CSharpMath) + "." + nameof(Rendering), "Font Reference", "latinmodern-math.otf");
     /// <summary>
-    /// The path of the Otf.cs file
+    /// The path of the LatinModernMath.cs file
     /// </summary>
-    public static readonly string OtfFile = P.Combine(Global, nameof(CSharpMath) + "." + nameof(Rendering), "Font Reference", "Otf.cs");
+    public static readonly string LatinModernMathCodeFile = P.Combine(Global, nameof(CSharpMath) + "." + nameof(Rendering), "Font Reference", "LatinModernMath.cs");
     /// <summary>
     /// The path of the MoreExamples.cs file, which stores examples from iosMath
     /// </summary>

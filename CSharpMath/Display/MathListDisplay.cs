@@ -1,4 +1,4 @@
-﻿using CSharpMath.Atoms;
+using CSharpMath.Atoms;
 using Color = CSharpMath.Structures.Color;
 using System;
 using System.Collections.Generic;
@@ -15,7 +15,7 @@ namespace CSharpMath.Display {
   public class MathListDisplay<TFont, TGlyph>: IDisplay<TFont, TGlyph>
     where TFont : MathFont<TGlyph> {
     public IReadOnlyList<IDisplay<TFont, TGlyph>> Displays { get; set; }
-    public LinePosition MyLinePosition { get; set; }
+    public Enumerations.LinePosition MyLinePosition { get; set; }
     public Color? TextColor { get; set; }
     public bool HasScript { get; set; }
     public void SetTextColorRecursive(Color? textColor) {
@@ -30,7 +30,7 @@ namespace CSharpMath.Display {
 
     public MathListDisplay(IReadOnlyList<IDisplay<TFont, TGlyph>> displays): base() {
       Displays = displays;
-      MyLinePosition = LinePosition.Regular;
+      MyLinePosition = Enumerations.LinePosition.Regular;
       IndexInParent = int.MinValue;
     }
 

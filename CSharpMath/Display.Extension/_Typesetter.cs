@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using CSharpMath.Atoms.Extension;
+using CSharpMath.Enumerations;
 using CSharpMath.Interfaces;
 
 namespace CSharpMath.Display.Extension {

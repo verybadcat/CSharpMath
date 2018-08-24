@@ -4,6 +4,7 @@ using System.Text;
 using Typography.TextBreak;
 
 namespace CSharpMath.Rendering {
+  using Enumerations;
   using Structures;
   using static Structures.Result;
   public static class TextBuilder {
@@ -93,29 +94,38 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
       }
       (int startAt, int endAt, char endingChar, WordKind wordKind) ObtainRange(int i) =>
         (i == 0 ? 0 : breakList[i - 1].breakAt, breakList[i].breakAt, text[breakList[i].breakAt - 1], breakList[i].wordKind);
-      for (var (i, (startAt, endAt, endingChar, wordKind)) = (0, ObtainRange(0)); i < breakList.Count; i++) {
-        (startAt, endAt, endingChar, wordKind) = ObtainRange(i);
-        void SetNextRange() => (startAt, endAt, endingChar, wordKind) = ObtainRange(++i);
+      for (var i = 0; i < breakList.Count; i++) {
+        var (startAt, endAt, endingChar, wordKind) = ObtainRange(i);
+        bool SetNextRange() {
+          bool success = ++i < breakList.Count;
+          if(success) (startAt, endAt, endingChar, wordKind) = ObtainRange(++i);
+          return success;
+        }
         Result<string> ReadArgument() {
           afterCommand = false;
-          if (endAt == text.Length) return Err("Missing argument");
-          SetNextRange();
+          if (!SetNextRange()) return Err("Missing argument");
           if (endingChar != '{') {
             var toReturn = text[startAt].ToString();
+#warning Not one char only, should skip spaces then read next char, and it is a possible command
             //range contains one char only
             if (startAt == endAt)
-              SetNextRange();
+              _ = SetNextRange(); //reaching the end does not affect validity of argument
             else
               startAt += 1;
             return Ok(toReturn);
           }
-          int bracketDepth = 0;
           int endingIndex = -1;
           //startAt + 1 to not start at the { we started at
-          for (int j = startAt + 1; j < text.Length; j++) { if (text[j] == '{') bracketDepth++; else if (text[j] == '}') if (bracketDepth > 0) bracketDepth--; else { endingIndex = j; break; } }
+          for (int j = startAt + 1, bracketDepth = 0; j < text.Length; j++) {
+            if (text[j] == '{') bracketDepth++;
+            else if (text[j] == '}')
+              if (bracketDepth > 0) bracketDepth--;
+              else { endingIndex = j; break; }
+          }
           if (endingIndex == -1) return Err("Missing }");
           var resultText = text.Substring(endAt, endingIndex - endAt);
-          while (startAt < endingIndex) SetNextRange();
+          while (startAt < endingIndex)
+            _ = SetNextRange(); //this never fails because the above check
           return Ok(resultText);
         }
         atoms.TextLength = startAt;
@@ -133,6 +143,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
 
           //Normal unescaped text section, could be in display/inline math mode
           if (!backslashEscape) {
+            var textSection = text.Substring(startAt, endAt - startAt);
             switch (endingChar) {
               case '$':
                 throw new InvalidCodePathException("The $ case should have been accounted for.");
@@ -145,16 +156,13 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                 if (displayMath == null)
                   if (afterCommand) continue;
                   else atoms.Add();
-#warning Review possible bug where interference is created here for \text in math mode
-                //Just use sp, math mode consumes reduces space count to one anyway
-                else mathLaTeX.Append(sp);
+                else mathLaTeX.Append(textSection);
                 break;
               case var punc when displayMath == null && wordKind == WordKind.Punc && atoms.Last is TextAtom.Text t:
                 //Append punctuation to text
-                t.Append(text.Substring(startAt, endAt - startAt));
+                t.Append(textSection);
                 break;
               default: //Just ordinary text
-                var textSection = text.Substring(startAt, endAt - startAt);
                 if (displayMath == null) atoms.Add(textSection);
                 else mathLaTeX.Append(textSection);
                 break;

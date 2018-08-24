@@ -9,7 +9,7 @@ using Typography.OpenFont;
 namespace CSharpMath.Rendering {
   public class Fonts : MathFont<Glyph>, IEnumerable<Typeface> {
     static Fonts() {
-      var bytes = Resources.Otf;
+      var bytes = Resources.LatinModernMath;
       var reader = new OpenFontReader();
       var latinMathTypeface = reader.Read(new MemoryStream(bytes, false));
       latinMathTypeface.UpdateAllCffGlyphBounds();

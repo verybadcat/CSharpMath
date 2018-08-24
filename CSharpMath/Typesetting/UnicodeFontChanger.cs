@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using CSharpMath.Enumerations;
 using CSharpMath.FrontEnd;
 using TChar = System.Char;
 using TLongChar = System.Int32;

@@ -1,4 +1,5 @@
-﻿using global::CSharpMath.Interfaces;
+using CSharpMath.Enumerations;
+using global::CSharpMath.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;

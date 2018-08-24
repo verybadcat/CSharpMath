@@ -1,10 +1,10 @@
 namespace CSharpMath.Rendering {
   //Do not modify this file directly. Instead, modify this at
-  //CSharpMath\CSharpMath.Utils\Rendering\OtfCodeBuilder.cs and re-generate
+  //CSharpMath\CSharpMath.Utils\Rendering\LatinModernMathCodeBuilder.cs and re-generate
   //this file by executing the method in that file in the CSharpMath.Utils project.
-  [System.Runtime.CompilerServices.CompilerGenerated]
+  [System.Diagnostics.DebuggerNonUserCode, System.Runtime.CompilerServices.CompilerGenerated]
   internal static partial class Resources {
-    public static byte[] Otf { get; } = new byte[] {
+    public static byte[] LatinModernMath { get; } = new byte[] {
       79, 84, 84, 79, 0, 14, 0, 128, 0, 3, 0, 96, 67, 70, 70, 32, 103, 90, 171, 18, 0, 0, 76, 196, 0, 
       9, 244, 164, 70, 70, 84, 77, 112, 136, 226, 54, 0, 10, 132, 68, 0, 0, 0, 28, 71, 68, 69, 70, 0, 39, 
       18, 200, 0, 10, 65, 104, 0, 0, 0, 30, 71, 80, 79, 83, 109, 145, 116, 137, 0, 10, 132, 36, 0, 0, 0, 

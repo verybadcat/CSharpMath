@@ -2,10 +2,7 @@ using System.Collections.Generic;
 
 namespace CSharpMath.Rendering {
   using Range = Atoms.Range;
-  using Display;
-  using Display.Text;
-  using System.Drawing;
-  using CSharpMath.Atoms;
+  using Enumerations;
 
 #warning Review Ranges; they have an extremely high probability of not working
   //Base type

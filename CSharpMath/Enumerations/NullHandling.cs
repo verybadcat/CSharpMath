@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CSharpMath {
+namespace CSharpMath.Enumerations {
   public enum NullHandling {
     LiteralNull, // the string "null", without the quotes
     EmptyContent, // Change the null to the empty string, then do whatever.

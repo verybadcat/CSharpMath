@@ -1,4 +1,5 @@
-﻿using CSharpMath.Interfaces;
+using CSharpMath.Enumerations;
+using CSharpMath.Interfaces;
 using System.Text;
 
 namespace CSharpMath.Atoms {

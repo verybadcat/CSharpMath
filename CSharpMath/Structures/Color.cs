@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -57,23 +57,43 @@ namespace CSharpMath.Structures {
       else if (PredefinedColors.TryGetByFirst(hexOrName.ToLowerInvariant(), out var predefined)) return predefined;
       else return null;
     }
-    private static byte _fromHex1(string hex, int index) //read one hex char -> byte
-      => (byte)(Convert.ToInt32(hex.Substring(index, 1), 16) * 17);
-    private static byte _fromHex2(string hex, int index) //read two hex chars -> byte
-      => Convert.ToByte(hex.Substring(index, 2), 16);
+    private static byte? _fromHex1(string hex, int index) //read one hex char -> byte
+      => byte.TryParse(hex[index].ToString(), System.Globalization.NumberStyles.AllowHexSpecifier,
+        System.Globalization.CultureInfo.InvariantCulture, out byte b) ? (byte?)(b * 17) : null;
+    private static byte? _fromHex2(string hex, int index) //read two hex chars -> byte
+      => byte.TryParse(hex.Substring(index, 2), System.Globalization.NumberStyles.AllowHexSpecifier,
+        System.Globalization.CultureInfo.InvariantCulture, out byte b) ? b : default(byte?);
     private static Color? FromHexString(string hex) {
       hex = hex.RemovePrefix("#").RemovePrefix("0x");
-#warning Do an actual validity check
       try {
+        byte? r, g, b, a;
         switch (hex.Length) {
           case 3:
-            return new Color(_fromHex1(hex, 0), _fromHex1(hex, 1), _fromHex1(hex, 2));
+            r = _fromHex1(hex, 0);
+            g = _fromHex1(hex, 1);
+            b = _fromHex1(hex, 2);
+            if ((r ^ g ^ b) == null) return null;
+            return new Color(r.Value, g.Value, b.Value);
           case 4:
-            return new Color(_fromHex1(hex, 1), _fromHex1(hex, 2), _fromHex1(hex, 3), _fromHex1(hex, 0));
+            a = _fromHex1(hex, 0);
+            r = _fromHex1(hex, 1);
+            g = _fromHex1(hex, 2);
+            b = _fromHex1(hex, 3);
+            if ((r ^ g ^ b ^ a) == null) return null;
+            return new Color(r.Value, g.Value, b.Value, a.Value);
           case 6:
-            return new Color(_fromHex2(hex, 0), _fromHex2(hex, 2), _fromHex2(hex, 4));
+            r = _fromHex2(hex, 0);
+            g = _fromHex2(hex, 2);
+            b = _fromHex2(hex, 4);
+            if ((r ^ g ^ b) == null) return null;
+            return new Color(r.Value, g.Value, b.Value);
           case 8:
-            return new Color(_fromHex2(hex, 2), _fromHex2(hex, 4), _fromHex2(hex, 6), _fromHex2(hex, 0));
+            a = _fromHex2(hex, 0);
+            r = _fromHex2(hex, 2);
+            g = _fromHex2(hex, 4);
+            b = _fromHex2(hex, 6);
+            if ((r ^ g ^ b ^ a) == null) return null;
+            return new Color(r.Value, g.Value, b.Value, a.Value);
           default:
             return null;
         }

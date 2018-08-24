@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Text;
 
 namespace CSharpMath {
+  using Enumerations;
   public static class MathAtomTypeExtensions {
     public static string ToText(this MathAtomType itemType) {
       // Insert a space before every capital letter other than the first one.

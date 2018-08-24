@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CSharpMath {
+namespace CSharpMath.Enumerations {
   public enum MathAtomType {
     MinValue = 0,
     Ordinary = 1,

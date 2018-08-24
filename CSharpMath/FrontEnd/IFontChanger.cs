@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 namespace CSharpMath.FrontEnd
 {
+  using Enumerations;
   public interface IFontChanger
   {
     /// <summary>Changes glyphs among the various font styles -- italic, regular, etc. If you are

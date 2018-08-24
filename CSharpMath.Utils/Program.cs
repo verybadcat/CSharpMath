@@ -5,14 +5,27 @@ using System.Text;
 namespace CSharpMath.DevUtils {
   class Program {
     static void Main(string[] args) {
-      //Rendering.OtfCodeBuilder.Build();
+      Rendering.LatinModernMathCodeBuilder.Build();
       //Console.WriteLine(new StringBuilder().AppendJoin(", ", TypographyTest.Get.Codepoints("𝑥")).ToString());
       //Console.WriteLine(TypographyTest.MeasureString.Measure("𝑥", 20));
       //var path = Path.Combine(Environment.GetEnvironmentVariable("HOMEPATH"), "Desktop");
       //iosMathDemo.Builder.Build();
       //CSharpMathExamples.MirrorFromIos.Do();
+
+
+
+
+      Console.WriteLine();
+      Console.WriteLine("Finished executing the method(s) requested.");
+      Console.WriteLine("Press Enter to continue...");
+      Console.ReadLine();
+    }
+
+    static async System.Threading.Tasks.Task<string> Crash() {
       try {
-        System.Runtime.Serialization.FormatterServices.GetUninitializedObject(typeof(Type).GetType()).ToString();
+        return await System.Threading.Tasks.Task.Run(() =>
+          System.Runtime.Serialization.FormatterServices.GetUninitializedObject
+            (typeof(Type).GetType()).ToString());
       }
 #pragma warning disable CS0618 //I know this is obsolete but this is just for fun
       catch (ExecutionEngineException) {
@@ -25,10 +38,7 @@ namespace CSharpMath.DevUtils {
       finally {
         Console.WriteLine("Finally?");
       }
-      Console.WriteLine();
-      Console.WriteLine("Finished executing the method(s) requested.");
-      Console.WriteLine("Press Enter to continue...");
-      Console.ReadLine();
+      return "Exception was caught.";
     }
   }
 }

@@ -34,7 +34,7 @@ namespace CSharpMath.SkiaSharp
       return _paint;
     }
     internal SKPaint Paint => StyledPaint(CurrentStyle);
-    private SKColor Color => CurrentColor.ToNative() ?? DefaultColor.ToNative();
+    private SKColor Color => CurrentColor?.ToNative() ?? DefaultColor.ToNative();
 
     //Canvas methods
     public void StrokeRect(float left, float top, float width, float height) => Canvas.DrawRect(SKRect.Create(left, top, width, height), StyledPaint(PaintStyle.Stroke));

@@ -1,4 +1,5 @@
-﻿using CSharpMath.Atoms;
+using CSharpMath.Atoms;
+using CSharpMath.Enumerations;
 using CSharpMath.Interfaces;
 using Xunit;
 

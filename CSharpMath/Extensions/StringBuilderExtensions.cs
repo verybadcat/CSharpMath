@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace CSharpMath {
+  using Enumerations;
   public static class StringBuilderExtensions {
     public static StringBuilder AppendUnlessNull(this StringBuilder builder, string appendMe, string unlessNull) {
       if (unlessNull!=null) {

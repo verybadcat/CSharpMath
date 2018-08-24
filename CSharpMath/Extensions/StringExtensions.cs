@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
 namespace CSharpMath {
+  using Enumerations;
   public static class StringExtensions {
     public static bool IsEmpty(this String str)
       => String.IsNullOrEmpty(str);
