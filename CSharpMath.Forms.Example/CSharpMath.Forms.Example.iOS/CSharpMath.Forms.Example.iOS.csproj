@@ -172,7 +172,7 @@
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\CSharpMath.Forms.Example\CSharpMath.Forms.Example.csproj">
-      <Project>{E438DDBD-A1DF-4244-80A5-B807F8E5760A}</Project>
+      <Project>{B3FA77B8-C6E9-4A78-8BD4-9A167DA36637}</Project>
       <Name>CSharpMath.Forms.Example</Name>
     </ProjectReference>
   </ItemGroup>

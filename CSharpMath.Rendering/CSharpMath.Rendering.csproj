@@ -32,12 +32,6 @@
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
-  <ItemGroup Condition="false">
-    <ProjectReference Include="..\CSharpMath.Analyzers\CSharpMath.Analyzers\CSharpMath.Analyzers.csproj">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <OutputItemType>Analyzer</OutputItemType>
-    </ProjectReference>
-  </ItemGroup>
   <ItemGroup>
     <Compile Remove="_TypographyExistanceTest.cs" Condition="Exists('..\Typography\Typography.OpenFont\Typography.OpenFont.projitems')" />
   </ItemGroup>
@@ -50,9 +44,9 @@
   <ItemGroup>
     <ProjectReference Include="..\CSharpMath\CSharpMath.csproj" />
   </ItemGroup>
+  <Import Project="..\Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems" Label="Shared" Condition="Exists('..\Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems')" />
   <Import Project="..\Typography\Typography.OpenFont\Typography.OpenFont.projitems" Label="Shared" />
   <Import Project="..\Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems" Label="Shared" />
   <Import Project="..\Typography\PixelFarm.NetStandard\PixelFarm.Triangulation\PixelFarm.Triangulation.projitems" Label="Shared" />
   <Import Project="..\Typography\Typography.Contours\Typography.Contours.projitems" Label="Shared" />
-  <Import Project="..\Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems" Label="Shared" />
 </Project>

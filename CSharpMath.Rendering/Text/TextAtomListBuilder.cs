@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CSharpMath.Rendering {
   public class TextAtomListBuilder : IReadOnlyList<TextAtom> {
-    List<TextAtom> _list = new List<TextAtom>();
+    readonly List<TextAtom> _list = new List<TextAtom>();
 
     private void Add(TextAtom atom) { _list.Add(atom); TextLength += atom.Range.Length; }
     public void Add() => Add(new TextAtom.ControlSpace(TextLength));
@@ -25,6 +25,7 @@ namespace CSharpMath.Rendering {
     public TextAtom.List Build() => new TextAtom.List(this, 0);
 
     public int TextLength { get; set; } = 0;
+    public TextAtom Last => Count == 0 ? null : _list[Count - 1];
     public TextAtom this[int index] => _list[index];
     public int Count => _list.Count;
     List<TextAtom>.Enumerator GetEnumerator() => _list.GetEnumerator();

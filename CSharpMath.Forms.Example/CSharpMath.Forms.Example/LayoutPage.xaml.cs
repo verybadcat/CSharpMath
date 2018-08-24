@@ -26,7 +26,7 @@ where \textit{color} stands for one of the LaTeX standard colors.
 \textbf{Styled} \texttt{text} can be achieved via the LaTeX styling commands.
 The SkiaSharp version of this is located at CSharpMath.SkiaSharp.TextPainter;
 and the Xamarin.Forms version of this is located at CSharpMath.Forms.TextView.
-Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6." };
+Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6. \[\frac{Display}{maths} \sqrt\text\mathtt{\ at\ the\ end}^\mathbf{are\ now\ incuded\ in\ Measure!} \]" };
     bool reset;
     double x, y, w;
 

@@ -14,8 +14,15 @@ namespace CSharpMath.Forms.Example
       InitializeComponent();
     }
 
+    int index = -1;
+    void Handle_ChildAdded(object sender, ElementEventArgs e) {
+      index++;
+      if (Device.RuntimePlatform == Device.iOS && e.Element is Page p && !(p is ExamplesPage)) {
+        p.Padding = new Thickness(0, index > 3 ? 90 : 30, 0, 0); //Pages after 4th page have an extra thicc tab bar on iOS
+      }
+    }
 
-		protected override void OnStart ()
+    protected override void OnStart ()
 		{
 			// Handle when your app starts
 		}

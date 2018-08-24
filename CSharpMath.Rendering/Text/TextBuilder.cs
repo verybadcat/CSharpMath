@@ -145,7 +145,13 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                 if (displayMath == null)
                   if (afterCommand) continue;
                   else atoms.Add();
+#warning Review possible bug where interference is created here for \text in math mode
+                //Just use sp, math mode consumes reduces space count to one anyway
                 else mathLaTeX.Append(sp);
+                break;
+              case var punc when displayMath == null && wordKind == WordKind.Punc && atoms.Last is TextAtom.Text t:
+                //Append punctuation to text
+                t.Append(text.Substring(startAt, endAt - startAt));
                 break;
               default: //Just ordinary text
                 var textSection = text.Substring(startAt, endAt - startAt);

@@ -19,7 +19,9 @@ namespace CSharpMath.Rendering {
       public Text(string content, int index) : base(new Range(index, content.Length)) =>
         Content = string.IsNullOrEmpty(content) ? throw new System.ArgumentException("Null or an empty string was provided.") : content;
 
-      public string Content { get; }
+      public string Content { get; private set; }
+
+      internal void Append(string moreText) => Content += moreText;
     }
     public sealed class Newline : TextAtom {
       public Newline(int index, int length) : base(new Range(index, length)) { }

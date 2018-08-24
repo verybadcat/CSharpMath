@@ -106,6 +106,7 @@ namespace CSharpMath.Forms.Example {
     public const string EvalIntegral = @"\int_1^2 x\; dx=\left.\frac{x^2}{2}\right|_1^2=4-\frac{1}{2}=\frac{7}{2}";
 #warning Uncomment when \middle is implemented
     //public const string MiddleDelimiter = @"A = \left\{ \frac{x_i}{i} \middle| i\in \mathcal{I} \right\}";
+    public const string VectorProjection = @"Proj_\vec{v}\vec{u}=|\vec u|\cos\theta\times\frac\vec v{|\vec v|}=|\vec u|\frac{\vec u \cdot \vec v}{|\vec u||\vec v|}\times\frac\vec v{|\vec v|}\\\text{Suppose \mathit{u} and \mathit v are unit vectors, }Proj_\vec v\vec u = (\vec u\cdot\vec v)\vec v";
     
     public ExamplesPage() => InitializeComponent();
 
