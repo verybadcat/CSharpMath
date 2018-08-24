@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2026
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath", "CSharpMath\CSharpMath.csproj", "{5157367B-F03E-4ACB-83A1-0DE414A3BFCA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath", "CSharpMath\CSharpMath.csproj", "{5157367B-F03E-4ACB-83A1-0DE414A3BFCA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath!Tests", "CSharpMath.Tests\CSharpMath!Tests.csproj", "{0830C47F-AA16-4A0E-9CCF-E40835D1430D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath!Tests", "CSharpMath.Tests\CSharpMath!Tests.csproj", "{0830C47F-AA16-4A0E-9CCF-E40835D1430D}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSharpMath.Apple", "CSharpMath.Apple\CSharpMath.Apple.shproj", "{1E62C0F0-B5C9-430E-ADDC-6F6EC6E0BDE1}"
 EndProject
@@ -18,11 +18,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Ios.Example", "C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Ios", "CSharpMath.Ios\CSharpMath.Ios.csproj", "{11D4E6C7-C8E2-449C-A1E7-18BBBCE4E6F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.SkiaSharp", "CSharpMath.SkiaSharp\CSharpMath.SkiaSharp.csproj", "{35B4BB5B-2202-436E-9AFE-00997CA2CC65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.SkiaSharp", "CSharpMath.SkiaSharp\CSharpMath.SkiaSharp.csproj", "{35B4BB5B-2202-436E-9AFE-00997CA2CC65}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Utils", "CSharpMath.Utils\CSharpMath.Utils.csproj", "{20986A1A-BF57-4EA7-92E1-E88D3C70874B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Utils", "CSharpMath.Utils\CSharpMath.Utils.csproj", "{20986A1A-BF57-4EA7-92E1-E88D3C70874B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms", "CSharpMath.Forms\CSharpMath.Forms.csproj", "{9BAD6846-0B1D-4446-BF62-FCF85C6E9A9F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Forms", "CSharpMath.Forms\CSharpMath.Forms.csproj", "{9BAD6846-0B1D-4446-BF62-FCF85C6E9A9F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms.Example.Android", "CSharpMath.Forms.Example\CSharpMath.Forms.Example.Android\CSharpMath.Forms.Example.Android.csproj", "{2A5F3AF6-D922-46D0-9BDA-A3B2A309A850}"
 EndProject
@@ -30,9 +30,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms.Example.iO
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms.Example.UWP", "CSharpMath.Forms.Example\CSharpMath.Forms.Example.UWP\CSharpMath.Forms.Example.UWP.csproj", "{B5C64A34-51EA-4948-80FC-505120BA943C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms.Example", "CSharpMath.Forms.Example\CSharpMath.Forms.Example\CSharpMath.Forms.Example.csproj", "{B3FA77B8-C6E9-4A78-8BD4-9A167DA36637}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Forms.Example", "CSharpMath.Forms.Example\CSharpMath.Forms.Example\CSharpMath.Forms.Example.csproj", "{B3FA77B8-C6E9-4A78-8BD4-9A167DA36637}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Rendering", "CSharpMath.Rendering\CSharpMath.Rendering.csproj", "{65016A61-2125-4E0C-90E8-A915230C7826}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Rendering", "CSharpMath.Rendering\CSharpMath.Rendering.csproj", "{65016A61-2125-4E0C-90E8-A915230C7826}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Utils.NuGet", "CSharpMath.Utils.NuGet\CSharpMath.Utils.NuGet.csproj", "{353BE09C-B369-474F-AB8E-FE68225A16E6}"
 EndProject
@@ -46,7 +46,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "zDevelopment utilities", "z
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.NuGetPackageTests.CSharp.UWP", "CSharpMath.NuGetPackageTests.CSharp\CSharpMath.NuGetPackageTests.CSharp.UWP\CSharpMath.NuGetPackageTests.CSharp.UWP.csproj", "{DBB121AA-0271-4719-A709-23AB3B464E8F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.NuGetPackageTests.CSharp", "CSharpMath.NuGetPackageTests.CSharp\CSharpMath.NuGetPackageTests.CSharp\CSharpMath.NuGetPackageTests.CSharp.csproj", "{73C44AA1-69ED-4749-BDBA-62A4416F0081}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.NuGetPackageTests.CSharp", "CSharpMath.NuGetPackageTests.CSharp\CSharpMath.NuGetPackageTests.CSharp\CSharpMath.NuGetPackageTests.CSharp.csproj", "{73C44AA1-69ED-4749-BDBA-62A4416F0081}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "zNuGet package tests", "zNuGet package tests", "{FD179998-539F-43BE-B2A1-89B2B726BC7A}"
 EndProject
@@ -64,10 +64,20 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "PixelFarm.Triangulation", "
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Typography.TextBreak", "Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.shproj", "{9A99F103-B119-4A4D-8093-6A03BAA6D36B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextBreakTests", "Typography\Typography.TextBreak\Typography.TextBreak.UnitTests\TextBreakTests.csproj", "{2E593FCA-B809-4270-9EB2-93F380AF2D6C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Dependencies", "_Dependencies", "{74FBDC58-E93A-4DCE-B83F-AA936EE57B31}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		CSharpMath.Apple\CSharpMath.Apple.projitems*{11d4e6c7-c8e2-449c-a1e7-18bbbce4e6f3}*SharedItemsImports = 4
+		Typography\Typography.Contours\Typography.Contours.projitems*{16af3672-531e-4e0d-8f23-65285fe56298}*SharedItemsImports = 13
 		CSharpMath.Apple\CSharpMath.Apple.projitems*{1e62c0f0-b5c9-430e-addc-6f6ec6e0bde1}*SharedItemsImports = 13
+		Typography\Typography.OpenFont\Typography.OpenFont.projitems*{235a071b-8d06-40ae-a5c5-b1ce59715ee9}*SharedItemsImports = 13
+		Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems*{2e593fca-b809-4270-9eb2-93f380af2d6c}*SharedItemsImports = 4
+		Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems*{9a99f103-b119-4a4d-8093-6a03baa6d36b}*SharedItemsImports = 13
+		Typography\PixelFarm.NetStandard\PixelFarm.Triangulation\PixelFarm.Triangulation.projitems*{d487dfd2-3da4-4a72-93ed-6048ea8029db}*SharedItemsImports = 13
+		Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems*{d8861cf8-c506-472b-8a57-632bd6ca6496}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Ad-Hoc|Any CPU = Ad-Hoc|Any CPU
@@ -1111,6 +1121,66 @@ Global
 		{60549250-61D2-40E0-82C5-7B829193D694}.Release-iOS|x64.Build.0 = Release|Any CPU
 		{60549250-61D2-40E0-82C5-7B829193D694}.Release-iOS|x86.ActiveCfg = Release|Any CPU
 		{60549250-61D2-40E0-82C5-7B829193D694}.Release-iOS|x86.Build.0 = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Ad-Hoc|Any CPU.ActiveCfg = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Ad-Hoc|Any CPU.Build.0 = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Ad-Hoc|ARM.ActiveCfg = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Ad-Hoc|ARM.Build.0 = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Ad-Hoc|iPhone.ActiveCfg = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Ad-Hoc|iPhone.Build.0 = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Ad-Hoc|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Ad-Hoc|iPhoneSimulator.Build.0 = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Ad-Hoc|x64.ActiveCfg = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Ad-Hoc|x64.Build.0 = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Ad-Hoc|x86.ActiveCfg = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Ad-Hoc|x86.Build.0 = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.AppStore|Any CPU.Build.0 = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.AppStore|ARM.ActiveCfg = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.AppStore|ARM.Build.0 = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.AppStore|iPhone.ActiveCfg = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.AppStore|iPhone.Build.0 = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.AppStore|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.AppStore|iPhoneSimulator.Build.0 = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.AppStore|x64.ActiveCfg = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.AppStore|x64.Build.0 = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.AppStore|x86.ActiveCfg = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.AppStore|x86.Build.0 = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Debug|ARM.Build.0 = Debug|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Debug|x64.Build.0 = Debug|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Debug|x86.Build.0 = Debug|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Release|ARM.ActiveCfg = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Release|ARM.Build.0 = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Release|iPhone.Build.0 = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Release|x64.ActiveCfg = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Release|x64.Build.0 = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Release|x86.ActiveCfg = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Release|x86.Build.0 = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Release-iOS|Any CPU.ActiveCfg = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Release-iOS|Any CPU.Build.0 = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Release-iOS|ARM.ActiveCfg = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Release-iOS|ARM.Build.0 = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Release-iOS|iPhone.ActiveCfg = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Release-iOS|iPhone.Build.0 = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Release-iOS|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Release-iOS|iPhoneSimulator.Build.0 = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Release-iOS|x64.ActiveCfg = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Release-iOS|x64.Build.0 = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Release-iOS|x86.ActiveCfg = Release|Any CPU
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C}.Release-iOS|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1133,11 +1203,12 @@ Global
 		{DBB121AA-0271-4719-A709-23AB3B464E8F} = {FD179998-539F-43BE-B2A1-89B2B726BC7A}
 		{73C44AA1-69ED-4749-BDBA-62A4416F0081} = {FD179998-539F-43BE-B2A1-89B2B726BC7A}
 		{60549250-61D2-40E0-82C5-7B829193D694} = {C365BD30-D4E7-444A-A66D-25AAB9C67038}
-		{235A071B-8D06-40AE-A5C5-B1CE59715EE9} = {125C1FE9-F684-4E87-A9EF-969FD1E2D726}
-		{D8861CF8-C506-472B-8A57-632BD6CA6496} = {125C1FE9-F684-4E87-A9EF-969FD1E2D726}
-		{16AF3672-531E-4E0D-8F23-65285FE56298} = {125C1FE9-F684-4E87-A9EF-969FD1E2D726}
-		{D487DFD2-3DA4-4A72-93ED-6048EA8029DB} = {125C1FE9-F684-4E87-A9EF-969FD1E2D726}
-		{9A99F103-B119-4A4D-8093-6A03BAA6D36B} = {125C1FE9-F684-4E87-A9EF-969FD1E2D726}
+		{235A071B-8D06-40AE-A5C5-B1CE59715EE9} = {74FBDC58-E93A-4DCE-B83F-AA936EE57B31}
+		{D8861CF8-C506-472B-8A57-632BD6CA6496} = {74FBDC58-E93A-4DCE-B83F-AA936EE57B31}
+		{16AF3672-531E-4E0D-8F23-65285FE56298} = {74FBDC58-E93A-4DCE-B83F-AA936EE57B31}
+		{D487DFD2-3DA4-4A72-93ED-6048EA8029DB} = {74FBDC58-E93A-4DCE-B83F-AA936EE57B31}
+		{9A99F103-B119-4A4D-8093-6A03BAA6D36B} = {74FBDC58-E93A-4DCE-B83F-AA936EE57B31}
+		{2E593FCA-B809-4270-9EB2-93F380AF2D6C} = {74FBDC58-E93A-4DCE-B83F-AA936EE57B31}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3C9A56A6-4EA3-4228-B064-E4789B282032}
