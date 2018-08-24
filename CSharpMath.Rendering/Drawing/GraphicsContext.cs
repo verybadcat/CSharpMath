@@ -33,7 +33,7 @@ namespace CSharpMath.Rendering {
         Canvas.Save();
         Canvas.CurrentColor = color;
         Canvas.Translate(points[i].X, points[i].Y);
-        using(var p = Canvas.GetPath()) pathBuilder.ReadShapes(p);
+        pathBuilder.ReadShapes(Canvas.GetPath());
         Canvas.Restore();
       }
     }
@@ -72,7 +72,7 @@ namespace CSharpMath.Rendering {
         var scale = typeface.CalculateScaleToPixelFromPointSize(pointSize);
         var index = glyphs[i].Glyph.Info.GlyphIndex;
         pathBuilder.BuildFromGlyph(glyphs[i].Glyph.Info, pointSize);
-        using (var p = Canvas.GetPath()) pathBuilder.ReadShapes(p);
+        pathBuilder.ReadShapes(Canvas.GetPath());
         Canvas.Translate(typeface.GetHAdvanceWidthFromGlyphIndex(index) * scale + glyphs[i].KernAfterGlyph, 0);
       }
       Canvas.Restore();

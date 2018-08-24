@@ -28,15 +28,14 @@ namespace CSharpMath.Rendering {
       var halfThickness = lineThickness / 2;
       var px = dx / length * halfThickness;
       var py = dy / length * halfThickness;
-      using (var p = c.GetPath()) {
-        p.BeginRead(0);
-        p.MoveTo(x1 - py, y1 + px);
-        p.LineTo(x1 + py, y1 - px);
-        p.LineTo(x2 + py, y2 - px);
-        p.LineTo(x2 - py, y2 + px);
-        p.CloseContour();
-        p.EndRead();
-      }
+      var p = c.GetPath();
+      p.BeginRead(0);
+      p.MoveTo(x1 - py, y1 + px);
+      p.LineTo(x1 + py, y1 - px);
+      p.LineTo(x2 + py, y2 - px);
+      p.LineTo(x2 - py, y2 + px);
+      p.CloseContour();
+      p.EndRead();
     }
   }
 }
