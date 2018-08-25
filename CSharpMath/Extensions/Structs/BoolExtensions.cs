@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace CSharpMath {
   internal static class BoolExtensions {
-    [System.Obsolete("Is any code using this?")]
+    [System.Obsolete("Is any code using this?", true)]
     public static bool TryParse(string encodedValue) {
       bool r;
       string lowercaseEncodedValue = encodedValue.ToLowerInvariant().Trim();

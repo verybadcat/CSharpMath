@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace CSharpMath {
   /// <summary>
   /// Used before the introduction of BiDictionary, currently unused
   /// </summary>
+  [System.Obsolete("Is any code using this?", true)]
   internal static class DictionaryHelpers {
     public static bool ShouldSetValueWhenBuildingDictionary(
       Dictionary<string, string> buildingDictionary,

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Input;
 
 namespace CSharpMath.Utils.NuGet {
@@ -71,17 +71,6 @@ namespace CSharpMath.Utils.NuGet {
     }
 
     /// <summary>
-    /// Defines the method to be called when the command is invoked.
-    /// </summary>
-    /// <param name="parameter">Data used by the command.
-    ///  If the command does not require data to be passed,
-    ///  this object can be set to null.</param>
-    void ICommand.Execute(object parameter) {
-      this.DoExecute(parameter);
-
-    }
-
-    /// <summary>
     /// Occurs when can execute is changed.
     /// </summary>
     public event EventHandler CanExecuteChanged;
@@ -113,10 +102,12 @@ namespace CSharpMath.Utils.NuGet {
     }
 
     /// <summary>
-    /// Executes the command.
+    /// Defines the method to be called when the command is invoked.
     /// </summary>
-    /// <param name="param">The param.</param>
-    public virtual void DoExecute(object param) {
+    /// <param name="parameter">Data used by the command.
+    ///  If the command does not require data to be passed,
+    ///  this object can be set to null.</param>
+    public virtual void Execute(object param) {
       //  Invoke the executing command, allowing the command to be cancelled.
       CancelCommandEventArgs args =
          new CancelCommandEventArgs() { Parameter = param, Cancel = false };

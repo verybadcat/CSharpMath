@@ -564,8 +564,7 @@ namespace CSharpMath.Atoms {
         Cells = rows
       };
       IMathAtom r = null;
-      if (environment!=null && _matrixEnvironments.ContainsKey(environment)) {
-        var delimiters = _matrixEnvironments[environment];
+      if (environment!=null && _matrixEnvironments.TryGetValue(environment, out var delimiters)) {
         table.Environment = "matrix"; // TableEnvironment is set to matrix as delimiters are converted to latex outside the table.
         table.InterColumnSpacing = 18;
 

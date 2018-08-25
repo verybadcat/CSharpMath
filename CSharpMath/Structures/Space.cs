@@ -32,7 +32,7 @@ namespace CSharpMath.Structures {
         switch (unit) {
           case "mu":
             return "The length unit mu is not allowed in text mode";
-          case var _ when PredefinedUnits.TryGetValue(unit, out var space):
+          case var _ when PredefinedLengthUnits.TryGetValue(unit, out var space):
             return space * value;
           default:
             return $"Unsupported length unit {unit}";
@@ -86,7 +86,7 @@ namespace CSharpMath.Structures {
     public static readonly Space LongSpace = 5 * Point;
     //https://github.com/latex3/latex2e/blob/b45b88761d659bfe0a0de4638e82122db2ab8184/base/classes.dtx#L775
     public static readonly Space ParagraphIndent = 1.5f * EmWidth;
-    public static Dictionary<string, Space> PredefinedUnits { get; } =
+    public static Dictionary<string, Space> PredefinedLengthUnits { get; } =
       new Dictionary<string, Space> {
           //https://en.wikibooks.org/wiki/LaTeX/Lengths
           { "pt", Point },
