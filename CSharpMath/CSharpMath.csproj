@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard1.1</TargetFramework>
     <LangVersion>latest</LangVersion>
@@ -12,9 +12,9 @@
     <PackageLicenseUrl>https://github.com/verybadcat/CSharpMath/blob/master/LICENSE</PackageLicenseUrl>
     <Copyright>CSharpMath Contributors 2018</Copyright>
     <PackageTags>math;mathematics;mathematical;formula;equation;equations;expression;tex;latex;render;rendering;display</PackageTags>
-    <PackageVersion>0.1.0-pre7</PackageVersion>
+    <PackageVersion>0.1.0-pre8</PackageVersion>
     <RepositoryBranch>master</RepositoryBranch>
-    <RepositoryCommit>e4d0b8d5b7c2ac29cde1bcc0438b5bf2298691c8</RepositoryCommit>
+    <RepositoryCommit>ab4da5b730a4cbd5667a66f6af33ccd3ce136fae</RepositoryCommit>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageIconUrl>https://raw.githubusercontent.com/verybadcat/CSharpMath/master/Icon.png</PackageIconUrl>
     <PackageId>CSharpMath</PackageId>

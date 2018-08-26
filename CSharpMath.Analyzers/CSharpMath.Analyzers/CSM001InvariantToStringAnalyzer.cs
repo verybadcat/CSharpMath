@@ -10,8 +10,8 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace CSharpMath.Analyzers {
   [DiagnosticAnalyzer(LanguageNames.CSharp)]
-  public class InvariantToStringAnalyzer : DiagnosticAnalyzer {
-    public const string DiagnosticId = "CSM01";
+  public class CSM001InvariantToStringAnalyzer : DiagnosticAnalyzer {
+    public const string DiagnosticId = "CSM001";
 
     // You can change these strings in the Resources.resx file. If you do not want your analyzer to be localize-able, you can use regular strings for Title and MessageFormat.
     // See https://github.com/dotnet/roslyn/blob/master/docs/analyzers/Localizing%20Analyzers.md for more on localization
@@ -34,15 +34,15 @@ namespace CSharpMath.Analyzers {
       var semanticModel = context.SemanticModel;
       // TODO: Replace the following code with your own analysis, generating Diagnostic objects for any issues you find
       var invocationSyntax = (InvocationExpressionSyntax)context.Node;
-      var accessSyntax = (MemberAccessExpressionSyntax)invocationSyntax.Expression;
 
       var iformattable = context.Compilation.GetTypeByMetadataName(typeof(IFormattable).FullName);
       // Find just those named type symbols with names containing lowercase letters.
-      if (accessSyntax.Name.Identifier.ValueText == nameof(IFormattable.ToString) &&
-        semanticModel.GetTypeInfo(accessSyntax.Expression).Type.Interfaces.Contains(iformattable) &&
-        invocationSyntax.ArgumentList.Arguments.Count == 0) {
+      if (invocationSyntax.Expression is MemberAccessExpressionSyntax accessSyntax &&
+          accessSyntax.Name.Identifier.ValueText == nameof(IFormattable.ToString) &&
+          semanticModel.GetTypeInfo(accessSyntax.Expression).Type.Interfaces.Contains(iformattable) &&
+          invocationSyntax.ArgumentList.Arguments.Count == 0) {
         // For all such symbols, produce a diagnostic.
-        var diagnostic = Diagnostic.Create(Rule, invocationSyntax.GetLocation());
+        var diagnostic = Diagnostic.Create(Rule, invocationSyntax.ArgumentList.GetLocation());
 
         context.ReportDiagnostic(diagnostic);
       }

@@ -4,11 +4,10 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using TestHelper;
-using CSharpMath.Analyzers;
 
 namespace CSharpMath.Analyzers.Test {
   [TestClass]
-  public class UnitTest : CodeFixVerifier {
+  public class CSM001InvariantToStringUnitTest : CodeFixVerifier {
 
     //No diagnostics expected to show up
     [TestMethod]
@@ -31,22 +30,18 @@ namespace CSharpMath.Analyzers.Test {
 
     namespace ConsoleApplication1
     {
-        public static class Extensions {
-            public string ToStringInvariant(this int i) =>
-                i.ToString(null, System.Globalization.InvariantCulture);
-        }
         class TypeName
         {
             public string Return() => 123.ToString();
         }
     }";
       var expected = new DiagnosticResult {
-        Id = "CSM01",
+        Id = "CSM001",
         Message = String.Format("A culture-invariant ToString() is available"),
         Severity = DiagnosticSeverity.Warning,
         Locations =
               new[] {
-                            new DiagnosticResultLocation("Test0.cs", 17, 39)
+                            new DiagnosticResultLocation("Test0.cs", 13, 51)
                   }
       };
 
@@ -62,24 +57,53 @@ namespace CSharpMath.Analyzers.Test {
 
     namespace ConsoleApplication1
     {
-        public static class Extensions {
-            public string ToStringInvariant(this int i) =>
-                i.ToString(null, System.Globalization.InvariantCulture);
-        }
         class TypeName
         {
-            public string Return() => 123.ToStringInvariant();
+            public string Return() => 123.ToString(null, System.Globalization.CultureInfo.InvariantCulture);
+        }
+    }";
+      VerifyCSharpFix(test, fixtest);
+    }
+
+    [TestMethod]
+    public void TestMethod3() {
+      var test = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public string Return() => int.Parse(""123"").ToString();
+        }
+    }";
+      var expected = new DiagnosticResult {
+        Id = "CSM001",
+        Message = String.Format("A culture-invariant ToString() is available"),
+        Severity = DiagnosticSeverity.Warning,
+        Locations =
+        new[] {
+                            new DiagnosticResultLocation("Test0.cs", 6, 64)
+            }
+      };
+      VerifyCSharpDiagnostic(test, expected);
+
+
+      var fixtest = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public string Return() => int.Parse(""123"").ToString(null, System.Globalization.CultureInfo.InvariantCulture);
         }
     }";
       VerifyCSharpFix(test, fixtest);
     }
 
     protected override CodeFixProvider GetCSharpCodeFixProvider() {
-      return new InvariantToStringCodeFixProvider();
+      return new CSM001InvariantToStringCodeFixProvider();
     }
 
     protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() {
-      return new InvariantToStringAnalyzer();
+      return new CSM001InvariantToStringAnalyzer();
     }
   }
 }

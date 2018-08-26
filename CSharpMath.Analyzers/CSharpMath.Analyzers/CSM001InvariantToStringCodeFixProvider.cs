@@ -14,12 +14,12 @@ using Microsoft.CodeAnalysis.Rename;
 using Microsoft.CodeAnalysis.Text;
 
 namespace CSharpMath.Analyzers {
-  [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(InvariantToStringCodeFixProvider)), Shared]
-  public class InvariantToStringCodeFixProvider : CodeFixProvider {
+  [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(CSM001InvariantToStringCodeFixProvider)), Shared]
+  public class CSM001InvariantToStringCodeFixProvider : CodeFixProvider {
     private const string title = "Replace culture-sensitive ToString() with an culture-invariant one";
 
     public sealed override ImmutableArray<string> FixableDiagnosticIds {
-      get { return ImmutableArray.Create(InvariantToStringAnalyzer.DiagnosticId); }
+      get { return ImmutableArray.Create(CSM001InvariantToStringAnalyzer.DiagnosticId); }
     }
 
     public sealed override FixAllProvider GetFixAllProvider() {
@@ -35,7 +35,7 @@ namespace CSharpMath.Analyzers {
       var diagnosticSpan = diagnostic.Location.SourceSpan;
 
       // Find the type declaration identified by the diagnostic.
-      var declaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
+      var declaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ArgumentListSyntax>().First();
 
       // Register a code action that will invoke the fix.
       context.RegisterCodeFix(
@@ -46,17 +46,14 @@ namespace CSharpMath.Analyzers {
           diagnostic);
     }
 
-    private async Task<Solution> ReplaceMethodCallAsync(Document document, InvocationExpressionSyntax invocation, CancellationToken cancellationToken) {
-      // Compute new uppercase name.
-      var memberAccess = (MemberAccessExpressionSyntax)invocation.Expression;
-
+    private async Task<Solution> ReplaceMethodCallAsync(Document document, ArgumentListSyntax invocation, CancellationToken cancellationToken) {
       // Get the symbol representing the type to be renamed.
       var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
 
       // Produce a new solution that has all references to that type renamed, including the declaration.
       var originalSolution = document.Project.Solution;
       var optionSet = originalSolution.Workspace.Options;
-      document = document.WithSyntaxRoot(new Rewriter(memberAccess).Visit(await document.GetSyntaxRootAsync()));
+      document = document.WithSyntaxRoot(new Rewriter(invocation).Visit(await document.GetSyntaxRootAsync()));
       var newSolution = document.Project.Solution;
       //var newSolution = await Renamer.RenameSymbolAsync(document.Project.Solution, null, newName, optionSet, cancellationToken).ConfigureAwait(false);
 
@@ -65,11 +62,13 @@ namespace CSharpMath.Analyzers {
     }
 
     class Rewriter : CSharpSyntaxRewriter {
-      public Rewriter(MemberAccessExpressionSyntax replaceNode) =>
+      public Rewriter(ArgumentListSyntax replaceNode) =>
         _replaceNode = replaceNode;
-      MemberAccessExpressionSyntax _replaceNode;
-      public override SyntaxNode VisitMemberAccessExpression(MemberAccessExpressionSyntax node) {
-        return node == _replaceNode ? node.WithName(node.Name.WithIdentifier(SyntaxFactory.Identifier("ToStringInvariant"))) : node;
+      readonly ArgumentListSyntax _replaceNode;
+      public override SyntaxNode VisitArgumentList(ArgumentListSyntax node) {
+        return node.IsEquivalentTo(_replaceNode) ?
+          SyntaxFactory.ParseArgumentList("(null, System.Globalization.CultureInfo.InvariantCulture)")
+          : node;
       }
     }
   }
