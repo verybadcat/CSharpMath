@@ -77,6 +77,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Analyzers", "CSh
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Analyzers.Test", "CSharpMath.Analyzers\CSharpMath.Analyzers.Test\CSharpMath.Analyzers.Test.csproj", "{C28BBB7F-CB75-44BF-9488-C4C37DFC0D98}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSharpMath.Wiki", "wiki\CSharpMath.Wiki.shproj", "{883BCFB1-3AA8-4AB7-8F82-27B849716373}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		CSharpMath.Apple\CSharpMath.Apple.projitems*{11d4e6c7-c8e2-449c-a1e7-18bbbce4e6f3}*SharedItemsImports = 4
@@ -84,6 +86,7 @@ Global
 		CSharpMath.Apple\CSharpMath.Apple.projitems*{1e62c0f0-b5c9-430e-addc-6f6ec6e0bde1}*SharedItemsImports = 13
 		Typography\Typography.OpenFont\Typography.OpenFont.projitems*{235a071b-8d06-40ae-a5c5-b1ce59715ee9}*SharedItemsImports = 13
 		Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems*{2e593fca-b809-4270-9eb2-93f380af2d6c}*SharedItemsImports = 4
+		wiki\CSharpMath.Wiki.projitems*{883bcfb1-3aa8-4ab7-8f82-27b849716373}*SharedItemsImports = 13
 		Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems*{9a99f103-b119-4a4d-8093-6a03baa6d36b}*SharedItemsImports = 13
 		Typography\PixelFarm.NetStandard\PixelFarm.Triangulation\PixelFarm.Triangulation.projitems*{d487dfd2-3da4-4a72-93ed-6048ea8029db}*SharedItemsImports = 13
 		Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems*{d8861cf8-c506-472b-8a57-632bd6ca6496}*SharedItemsImports = 13
@@ -1341,6 +1344,7 @@ Global
 		{2E593FCA-B809-4270-9EB2-93F380AF2D6C} = {74FBDC58-E93A-4DCE-B83F-AA936EE57B31}
 		{B76E873A-FAA0-4198-BEC4-66BD2BBC233F} = {E7CDDECF-B87B-4114-932B-D3FB5E8302F8}
 		{C28BBB7F-CB75-44BF-9488-C4C37DFC0D98} = {E7CDDECF-B87B-4114-932B-D3FB5E8302F8}
+		{883BCFB1-3AA8-4AB7-8F82-27B849716373} = {4095C402-9D46-4F54-9A19-4FA063852135}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3C9A56A6-4EA3-4228-B064-E4789B282032}
