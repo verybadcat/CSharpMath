@@ -98,7 +98,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
         var (startAt, endAt, endingChar, wordKind) = ObtainRange(i);
         bool SetNextRange() {
           bool success = ++i < breakList.Count;
-          if(success) (startAt, endAt, endingChar, wordKind) = ObtainRange(++i);
+          if(success) (startAt, endAt, endingChar, wordKind) = ObtainRange(i);
           return success;
         }
         Result<string> ReadArgument() {

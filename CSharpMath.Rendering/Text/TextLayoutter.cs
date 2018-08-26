@@ -5,6 +5,7 @@ namespace CSharpMath.Rendering {
   using Display;
   using Enumerations;
   using Displays = Display.MathListDisplay<Fonts, Glyph>;
+  using static Typography.OpenFont.Extensions.TypefaceExtensions;
 
   public static class TextLayoutter {
     public static (Displays relative, Displays absolute) Layout(TextAtom input, Fonts inputFont, float canvasWidth) {
@@ -61,7 +62,7 @@ namespace CSharpMath.Rendering {
             displayMathList.Add(display);
             break;
 
-            void FinalizeInlineDisplay(float ascentMin = 0, bool forbidAtLineStart = false) {
+            void FinalizeInlineDisplay(float ascentMin, bool forbidAtLineStart = false) {
               if (color != null) display.SetTextColorRecursive(color);
               if (line.Width + display.Width > canvasWidth && !forbidAtLineStart)
                 BreakLine(displayList);
@@ -73,7 +74,7 @@ namespace CSharpMath.Rendering {
             //Calling Select(g => g.Typeface).Distinct() speeds up query up to 10 times,
             //Calling Max(Func<,>) instead of Select(Func<,>).Max() speeds up query 2 times
             float maxLineSpacing = glyphs.Select(g => g.Typeface).Distinct().Max(tf =>
-              Typography.OpenFont.Extensions.TypefaceExtensions.CalculateRecommendLineSpacing(tf) *
+              tf.CalculateRecommendLineSpacing() *
               tf.CalculateScaleToPixelFromPointSize(fonts.PointSize)
             );
             display = new TextRunDisplay<Fonts, Glyph>(Display.Text.AttributedGlyphRuns.Create(content, glyphs, fonts, false), t.Range, TypesettingContext.Instance);
@@ -82,11 +83,15 @@ namespace CSharpMath.Rendering {
           case TextAtom.Math m:
             if (m.DisplayStyle) throw new InvalidCodePathException("Display style maths should have been handled above this switch.");
             display = Typesetter<Fonts, Glyph>.CreateLine(m.Content, fonts, TypesettingContext.Instance, Enumerations.LineStyle.Text);
-            FinalizeInlineDisplay();
+            FinalizeInlineDisplay(fonts.MathTypeface.CalculateRecommendLineSpacing() *
+              fonts.MathTypeface.CalculateScaleToPixelFromPointSize(fonts.PointSize));
             break;
           case TextAtom.ControlSpace cs:
-            display = new TextRunDisplay<Fonts, Glyph>(Display.Text.AttributedGlyphRuns.Create(" ", new[] { GlyphFinder.Instance.Lookup(fonts, ' ') }, fonts, false), cs.Range, TypesettingContext.Instance);
-            FinalizeInlineDisplay(forbidAtLineStart: true); //No spaces at start of line
+            var spaceGlyph = GlyphFinder.Instance.Lookup(fonts, ' ');
+            display = new TextRunDisplay<Fonts, Glyph>(Display.Text.AttributedGlyphRuns.Create(" ", new[] { spaceGlyph }, fonts, false), cs.Range, TypesettingContext.Instance);
+            FinalizeInlineDisplay(spaceGlyph.Typeface.CalculateRecommendLineSpacing() *
+              spaceGlyph.Typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize),
+              forbidAtLineStart: true); //No spaces at start of line
             break;
           case null:
             throw new InvalidOperationException("TextAtoms should never be null. You must have sneaked one in.");
@@ -97,7 +102,7 @@ namespace CSharpMath.Rendering {
       var relativePositionList = new List<IDisplay<Fonts, Glyph>>();
       var absolutePositionList = new List<IDisplay<Fonts, Glyph>>();
       AddDisplaysWithLineBreaks(input, inputFont, relativePositionList, absolutePositionList);
-      BreakLine(relativePositionList);
+      BreakLine(relativePositionList); //remember to finalize the last line
       return (new Displays(relativePositionList),
               new Displays(absolutePositionList));
 

@@ -198,7 +198,7 @@ namespace CSharpMath.Tests {
       var copy = new Space(space, false);
       CheckClone(space, copy);
       Assert.Equal(3, copy.Length);
-      Assert.True(copy.IsMu);
+      Assert.False(copy.IsMu);
     }
 
     [Fact]

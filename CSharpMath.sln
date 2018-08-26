@@ -9,9 +9,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath!Tests", "CSharpM
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSharpMath.Apple", "CSharpMath.Apple\CSharpMath.Apple.shproj", "{1E62C0F0-B5C9-430E-ADDC-6F6EC6E0BDE1}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "__Config", "__Config", "{4095C402-9D46-4F54-9A19-4FA063852135}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "__GlobalFiles", "__GlobalFiles", "{4095C402-9D46-4F54-9A19-4FA063852135}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		CONTRIBUTING.md = CONTRIBUTING.md
+		LICENSE = LICENSE
+		README.md = README.md
+		ReleaseProcedure.txt = ReleaseProcedure.txt
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Ios.Example", "CSharpMath.Ios.Example\CSharpMath.Ios.Example.csproj", "{664EAD44-C19D-462B-9127-FD1106B4F3C6}"
@@ -68,9 +73,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextBreakTests", "Typograph
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Dependencies", "_Dependencies", "{74FBDC58-E93A-4DCE-B83F-AA936EE57B31}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Analyzers", "CSharpMath.Analyzers\CSharpMath.Analyzers\CSharpMath.Analyzers.csproj", "{B76E873A-FAA0-4198-BEC4-66BD2BBC233F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Analyzers", "CSharpMath.Analyzers\CSharpMath.Analyzers\CSharpMath.Analyzers.csproj", "{B76E873A-FAA0-4198-BEC4-66BD2BBC233F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Analyzers.Test", "CSharpMath.Analyzers\CSharpMath.Analyzers.Test\CSharpMath.Analyzers.Test.csproj", "{C28BBB7F-CB75-44BF-9488-C4C37DFC0D98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Analyzers.Test", "CSharpMath.Analyzers\CSharpMath.Analyzers.Test\CSharpMath.Analyzers.Test.csproj", "{C28BBB7F-CB75-44BF-9488-C4C37DFC0D98}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
