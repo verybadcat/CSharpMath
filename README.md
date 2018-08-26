@@ -13,28 +13,28 @@ Really, any one you like!
 
 [//]: # (Primary platforms)
 
-[SkiaSharp](wiki/_GettingStarted~SkiaSharp.md)
-[Xamarin.Forms](wiki/_GettingStarted~Forms.md)
-[Xamarin.iOS](wiki/_GettingStarted~iOS.md)
+[SkiaSharp](wiki/@GettingStarted~SkiaSharp.md)
+[Xamarin.Forms](wiki/@GettingStarted~Forms.md)
+[Xamarin.iOS](wiki/@GettingStarted~iOS.md)
 
 [//]: # (Through SkiaSharp)
 
-[tvOS](wiki/_GettingStarted~tvOS.md)
-[watchOS](wiki/_GettingStarted~watchOS.md)
-[Xamarin.Android](wiki/_GettingStarted~Android.md)
-[Xamarin.Mac](wiki/_GettingStarted~Mac.md)
-[.NET Core](wiki/_GettingStarted~NetCore.md)
-[Windows Forms](wiki/_GettingStarted~WinForms.md)
-[Windows Presentation Framework](wiki/_GettingStarted~WPF.md)
-[Universal Windows Platform](wiki/_GettingStarted~UWP.md)
-[Gtk#](wiki/_GettingStarted~Gtk.md)
-[Tizen](wiki/_GettingStarted~Tizen.md)
+[tvOS](wiki/@GettingStarted~tvOS.md)
+[watchOS](wiki/@GettingStarted~watchOS.md)
+[Xamarin.Android](wiki/@GettingStarted~Android.md)
+[Xamarin.Mac](wiki/@GettingStarted~Mac.md)
+[.NET Core](wiki/@GettingStarted~NetCore.md)
+[Windows Forms](wiki/@GettingStarted~WinForms.md)
+[Windows Presentation Framework](wiki/@GettingStarted~WPF.md)
+[Universal Windows Platform](wiki/@GettingStarted~UWP.md)
+[Gtk#](wiki/@GettingStarted~Gtk.md)
+[Tizen](wiki/@GettingStarted~Tizen.md)
 
 [//]: # (Future)
 
-[Unity](wiki/_GettingStarted~Unity.md)
-[ASP.NET](wiki/_GettingStarted~ASP.md)
-[Ooui.Wasm](wiki/_GettingStarted~Ooui.md)-->
+[Unity](wiki/@GettingStarted~Unity.md)
+[ASP.NET](wiki/@GettingStarted~ASP.md)
+[Ooui.Wasm](wiki/@GettingStarted~Ooui.md)-->
 
 Ironically enough, the first front end was iOS (CSharpMath.Ios).
 As development continued, Xamarin.Forms (CSharpMath.Forms)<!-- and Windows environments--> is now supported via SkiaSharp (CSharpMath.SkiaSharp) as of 0.1.0.
