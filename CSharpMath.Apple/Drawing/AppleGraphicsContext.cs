@@ -17,12 +17,7 @@ namespace CSharpMath.Apple.Drawing {
 
     public void DrawGlyphsAtPoints(TGlyph[] glyphs, TFont font, PointF[] points, Color? color)
     {
-      var glyphStrings = glyphs.Select(g => ((int)g).ToString()).ToArray();
-      var pointStrings = points.Select(pt => $@"{pt.X} {pt.Y}").ToArray();
-      for (int i = 0; i < glyphs.Count(); i++) {
-        Debug.WriteLine($"    {glyphStrings[i]} {pointStrings[i]}");
-      }
-      Debug.WriteLine($"glyphs {glyphStrings} {pointStrings}");
+      DebugWriteLine(glyphs, points);
       var ctFont = font.CtFont;
       var cgPoints = points.Select(p => (CGPoint)p).ToArray();
       if(color.HasValue) CgContext.SetFillColor(color.Value.ToCgColor());
@@ -30,7 +25,7 @@ namespace CSharpMath.Apple.Drawing {
     }
 
     public void DrawLine(float x1, float y1, float x2, float y2, float lineThickness, Color? color) {
-      Debug.WriteLine($"DrawLine {x1} {y1} {x2} {y2}");
+      DebugWriteLine($"DrawLine {x1} {y1} {x2} {y2}");
       CgContext.SetLineWidth(lineThickness);
       CgContext.SetLineCap(CGLineCap.Round);
       if (color.HasValue) CgContext.SetStrokeColor(color.Value.ToCgColor());
@@ -39,7 +34,7 @@ namespace CSharpMath.Apple.Drawing {
     }
 
     public void DrawGlyphRunWithOffset(AttributedGlyphRun<TFont, TGlyph> run, PointF offset, Color? color) {
-      Debug.WriteLine($"Text {run} {offset.X} {offset.Y}");
+      DebugWriteLine($"Text {run} {offset.X} {offset.Y}");
       var attributedString = run.ToNsAttributedString();
       CgContext.TextPosition = new CGPoint(CgContext.TextPosition.X + offset.X, CgContext.TextPosition.Y + offset.Y);
       if (color.HasValue) CgContext.SetFillColor(color.Value.ToCgColor());
@@ -49,25 +44,38 @@ namespace CSharpMath.Apple.Drawing {
     }
 
     public void RestoreState() {
-      Debug.WriteLine("Restore");
+      DebugWriteLine($"Restore");
       CgContext.RestoreState();
     }
 
     public void SaveState() {
-      Debug.WriteLine("Save");
+      DebugWriteLine($"Save");
       CgContext.SaveState();
     }
 
     public void SetTextPosition(PointF position) {
-      Debug.WriteLine("SetTextPosition " + position.X + " " + position.Y);
+      DebugWriteLine($"SetTextPosition {position.X} {position.Y}");
       CgContext.TextPosition = position;
     }
 
     public void Translate(PointF dxy) {
-      Debug.WriteLine("translate " + dxy.X + " " + dxy.Y);
+      DebugWriteLine($"translate {dxy.X} {dxy.Y}");
       CgContext.TranslateCTM(dxy.X, dxy.Y);
     }
 
+    [Conditional("DEBUG")]
+    public void DebugWriteLine(System.FormattableString text) {
+      Debug.WriteLine(text.ToString());
+    }
+    [Conditional("DEBUG")]
+    public void DebugWriteLine(TGlyph[] glyphs, PointF[] points) {
+      var glyphStrings = glyphs.Select(g => ((int)g).ToString()).ToArray();
+      var pointStrings = points.Select(pt => $@"{pt.X} {pt.Y}").ToArray();
+      for (int i = 0; i < glyphs.Count(); i++) {
+        Debug.WriteLine($"    {glyphStrings[i]} {pointStrings[i]}");
+      }
+      Debug.WriteLine($"glyphs {glyphStrings} {pointStrings}");
 
+    }
   }
 }

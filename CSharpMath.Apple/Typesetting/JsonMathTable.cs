@@ -232,9 +232,8 @@ namespace CSharpMath.Apple {
       var variantGlyphs = variants[glyphName];
       if (!(variantGlyphs is JArray variantGlyphsArray)) {
         var outputGlyph = GlyphNameProvider.GetGlyph(glyphName);
-        // but are they ever different?
-        if (!(outputGlyph.Equals(rawGlyph))) {
-          throw new Exception("Just wanted to see if this ever happens");
+        if (!outputGlyph.Equals(rawGlyph)) {
+          throw new InvalidCodePathException("GlyphNameProvider.GetGlyph(GlyphNameProvider.GetGlyphName(rawGlyph)) != rawGlyph");
         }
         yield return outputGlyph;
       } else {

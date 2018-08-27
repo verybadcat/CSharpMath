@@ -25,5 +25,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Font\AppleFontManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Typesetting\AppleTypesetters.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Typesetting\JsonMathTable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IFontMeasurer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IGlyphNameProvider.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Interfaces\" />
   </ItemGroup>
 </Project>

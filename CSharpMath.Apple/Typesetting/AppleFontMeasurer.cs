@@ -5,11 +5,13 @@ using TGlyph = System.UInt16;
 
 namespace CSharpMath.Apple
 {
-  public class AppleFontMeasurer: IFontMeasurer<AppleMathFont, TGlyph>
+  public class AppleFontMeasurer: FrontEnd.IFontMeasurer<AppleMathFont, TGlyph>
   {
-    public AppleFontMeasurer()
+    private AppleFontMeasurer()
     {
     }
+
+    public static AppleFontMeasurer Instance { get; } = new AppleFontMeasurer();
 
     public int GetUnitsPerEm(AppleMathFont font)
     {

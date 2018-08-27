@@ -1,28 +1,24 @@
-﻿using System;
-using CSharpMath.FrontEnd;
-using CSharpMath.Resources;
-using Foundation;
-using CoreText;
+﻿using CSharpMath.FrontEnd;
 using TGlyph = System.UInt16;
 using CSharpMath.Ios.Resources;
 
 namespace CSharpMath.Apple {
   public static class AppleTypesetters {
-    private static TypesettingContext<AppleMathFont, TGlyph> CreateTypesettingContext(CTFont someCtFontSizeIrrelevant) {
+    private static TypesettingContext<AppleMathFont, TGlyph> CreateTypesettingContext(CoreGraphics.CGFont someCgFontSizeIrrelevant) {
       var boundsProvider = AppleGlyphBoundsProvider.Instance;
       return new TypesettingContext<AppleMathFont, TGlyph>(
         (font, size) => new AppleMathFont(font, size),
         boundsProvider,
         CtFontGlyphFinder.Instance,
         UnicodeFontChanger.Instance,
-        new JsonMathTable<AppleMathFont, TGlyph>(new AppleFontMeasurer(), IosResources.LatinMath, new AppleGlyphNameProvider(someCtFontSizeIrrelevant), boundsProvider)
+        new JsonMathTable<AppleMathFont, TGlyph>(AppleFontMeasurer.Instance, IosResources.LatinMath, new AppleGlyphNameProvider(someCgFontSizeIrrelevant), boundsProvider)
       );
     }
 
     private static TypesettingContext<AppleMathFont, TGlyph> CreateLatinMath() {
       var fontSize = 20;
       var appleFont = AppleFontManager.LatinMath(fontSize);
-      return CreateTypesettingContext(appleFont.CtFont);
+      return CreateTypesettingContext(appleFont.CgFont);
     }
 
     private static TypesettingContext<AppleMathFont, TGlyph> _latinMath;

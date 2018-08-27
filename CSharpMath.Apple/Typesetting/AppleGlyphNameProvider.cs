@@ -1,24 +1,13 @@
-﻿using System;
-using CoreText;
+﻿using CoreGraphics;
 using TGlyph = System.UInt16;
 namespace CSharpMath.Apple
 {
-  public class AppleGlyphNameProvider: IGlyphNameProvider<TGlyph>
+  public class AppleGlyphNameProvider: FrontEnd.IGlyphNameProvider<TGlyph>
   {
-    private readonly CTFont _ctFont;
+    private readonly CGFont _cgFont;
 
-    public AppleGlyphNameProvider(CTFont ctFont) {
-      _ctFont = ctFont;
-    }
-    public TGlyph GetGlyph(string glyphName)
-    {
-      return _ctFont.GetGlyphWithName(glyphName);
-    }
-
-    public string GetGlyphName(TGlyph glyph)
-    {
-      var cgFont = _ctFont.ToCGFont();
-      return cgFont.GlyphNameForGlyph(glyph);
-    }
+    public AppleGlyphNameProvider(CGFont cgFont) => _cgFont = cgFont;
+    public TGlyph GetGlyph(string glyphName) => _cgFont.GetGlyphWithGlyphName(glyphName);
+    public string GetGlyphName(TGlyph glyph) => _cgFont.GlyphNameForGlyph(glyph);
   }
 }
