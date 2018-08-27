@@ -1,7 +1,19 @@
-Additional front ends are highly desired. Creating one would involve writing an implementation of the various files in the FrontEnd folder.
+Usability, platform support and transparency are the core values of CSharpMath.
 
-https://github.com/verybadcat/CSharpMath/tree/master/CSharpMath/FrontEnd
+Usability
+---------
+New users should be able to figure out the API without looking at the Wiki.
+Following good design patterns is one way to achieve this.
 
-Primarily, this means a TypesettingContext object that the core will use when it needs to know how much space to allow for something, and a GraphicsContext object it will use for the actual drawing.
+Platform support
+----------------
+As a contributor, you should have knowledge of news around the .NET community
+and suggest new platforms with future potentials for CSharpMath to support.
+Never get slowed down by dying platforms (e.g. Silverlight).
 
-You will also eventually need a json file to keep track of the spacings around various glyphs. For an example, see https://github.com/verybadcat/CSharpMath/blob/master/CSharpMath.Ios/Resources/latinmodern-math.json. This particular file was created by converting the corresponding plist file in the iosMath project. https://github.com/kostub/iosMath
+Transparency
+------------
+New issues and pull requests should be responded in a short time.
+Use appropriate status labels when needed.
+Avoid having stale open issues without status labels.
+Always label resolutions to closed issues so future readers can know what happened.
