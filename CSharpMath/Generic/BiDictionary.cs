@@ -8,8 +8,8 @@ namespace CSharpMath
 {
   //https://stackoverflow.com/questions/255341/getting-key-of-value-of-a-generic-dictionary/255638#255638
   public class BiDictionary<TFirst, TSecond> : ICollection<KeyValuePair<TFirst, TSecond>> {
-    Dictionary<TFirst, TSecond> firstToSecond = new Dictionary<TFirst, TSecond>();
-    Dictionary<TSecond, TFirst> secondToFirst = new Dictionary<TSecond, TFirst>();
+    readonly Dictionary<TFirst, TSecond> firstToSecond = new Dictionary<TFirst, TSecond>();
+    readonly Dictionary<TSecond, TFirst> secondToFirst = new Dictionary<TSecond, TFirst>();
 
     public void Add(TFirst first, TSecond second) {
       if (firstToSecond.ContainsKey(first))

@@ -27,7 +27,7 @@ namespace CSharpMath.FrontEnd {
         case LineStyle.ScriptScript:
           return originalSize * ScriptScriptScaleDown(font);
         default:
-          throw new NotImplementedException();
+          throw new ArgumentOutOfRangeException(nameof(style), style, "Style is out of range.");
       }
     }
 

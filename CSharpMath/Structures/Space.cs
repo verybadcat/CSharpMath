@@ -51,7 +51,7 @@ namespace CSharpMath.Structures {
       else return false;
     }
 
-    public override bool Equals(object obj) => obj is Space s ? this == s : false;
+    public override bool Equals(object obj) => obj is Space s && this == s;
     public bool Equals(Space otherSpace) => this == otherSpace;
     public override int GetHashCode() =>
       unchecked(73 * Length.GetHashCode() + 277 * IsMu.GetHashCode());
@@ -102,7 +102,7 @@ namespace CSharpMath.Structures {
           { "sp", Point / 65536 },
           { "em", EmWidth },
           { "ex", ExHeight },
-          { "mu", MathUnit },
+          { "mu", MathUnit }
       };
   }
 }

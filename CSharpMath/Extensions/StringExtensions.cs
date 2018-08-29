@@ -21,8 +21,9 @@ namespace CSharpMath {
           case NullHandling.LiteralNull:
             return "null";
           case NullHandling.None:
-          default:
             return null;
+          default:
+            goto case NullHandling.None;
         }
       }
       return str;

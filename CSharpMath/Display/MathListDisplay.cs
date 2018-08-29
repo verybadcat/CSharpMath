@@ -28,7 +28,7 @@ namespace CSharpMath.Display {
     /// parent list. For a regular list, it is int.MinValue.</summary>
     public int IndexInParent { get; set; }
 
-    public MathListDisplay(IReadOnlyList<IDisplay<TFont, TGlyph>> displays): base() {
+    public MathListDisplay(IReadOnlyList<IDisplay<TFont, TGlyph>> displays) {
       Displays = displays;
       MyLinePosition = Enumerations.LinePosition.Regular;
       IndexInParent = int.MinValue;

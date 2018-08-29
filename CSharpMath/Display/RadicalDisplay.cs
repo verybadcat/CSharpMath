@@ -25,9 +25,9 @@ namespace CSharpMath.Display {
     public float LineThickness { get; set; } // the thickness of the top bar of the radical.
 
     private float _radicalShift;
-    private IDisplay<TFont, TGlyph> _radicalGlyph;
+    private readonly IDisplay<TFont, TGlyph> _radicalGlyph;
 
-    public RadicalDisplay(IDisplay<TFont, TGlyph> innerDisplay, IDownshiftableDisplay<TFont, TGlyph> glyph, PointF position, Range range)
+        public RadicalDisplay(IDisplay<TFont, TGlyph> innerDisplay, IDownshiftableDisplay<TFont, TGlyph> glyph, PointF position, Range range)
     {
       Radicand = innerDisplay;
       _radicalGlyph = glyph;

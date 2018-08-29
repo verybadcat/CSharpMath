@@ -585,7 +585,7 @@ namespace CSharpMath {
           }
           throw new InvalidCodePathException("Inter-element space undefined for radical on the right. Treat radical as ordinary.");
       }
-      var extResult = Display.Extension._Typesetter.GetInterElementSpaceArrayIndexForType(this, atomType);
+      var extResult = Display.Extension._Typesetter.GetInterElementSpaceArrayIndexForType(atomType);
       if (extResult != -1) return extResult;
       throw new InvalidCodePathException($"Inter-element space undefined for atom type {atomType}");
     }
@@ -908,7 +908,7 @@ namespace CSharpMath {
     }
 
     private float _ConstructGlyphWithParts(GlyphPart<TGlyph>[] parts, float glyphHeight, List<TGlyph> glyphs, List<float> offsets) {
-      for (int nExtenders = 0; true; nExtenders++) {
+      for (int nExtenders = 0; ; nExtenders++) {
         glyphs.Clear();
         offsets.Clear();
         GlyphPart<TGlyph> prevPart = null;

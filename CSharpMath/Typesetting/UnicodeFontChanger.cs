@@ -349,8 +349,6 @@ namespace CSharpMath
           return 0x211D;   // Reals
         case 'Z':
           return 0x2124;   // Integers
-        default:
-          break;
       }
       if (IsUpperEn(c))
       {

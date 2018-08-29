@@ -4,8 +4,8 @@ using System.Collections.Generic;
 
 namespace CSharpMath.Display.Text {
   public class StringAttribute<T> {
-    private List<(int index, T t)> _values = new List<(int index, T t)>(); // the integer is the character at which the string starts having the value for the attribute. The list is always kept sorted by index.
-    public T this[int index] {
+    private readonly List<(int index, T t)> _values = new List<(int index, T t)>(); // the integer is the character at which the string starts having the value for the attribute. The list is always kept sorted by index.
+        public T this[int index] {
       get {
         T r = default;
         foreach ((int i, T t) in _values) {

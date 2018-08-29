@@ -8,7 +8,7 @@ using System.Collections.Generic;
 namespace CSharpMath.Atoms {
   //https://mirror.hmc.edu/ctan/macros/latex/contrib/unicode-math/unimath-symbols.pdf
   public static class MathAtoms {
-    private static Dictionary<string, string> _aliases = null;
+    private static Dictionary<string, string> _aliases;
     public static Dictionary<string, string> Aliases {
       get {
         if (_aliases == null) {
@@ -28,7 +28,7 @@ namespace CSharpMath.Atoms {
             { "AA", "angstrom" },
             { ">", ":" },
             { "widehat" , "hat" },
-            { "widetilde" , "tilde" },
+            { "widetilde" , "tilde" }
           };
         }
         return _aliases;
@@ -451,6 +451,7 @@ namespace CSharpMath.Atoms {
         case '@':
         case '`':
         case '|':
+          return Create(MathAtomType.Ordinary, c);
         default: //also support non-ascii characters
           return Create(MathAtomType.Ordinary, c);
           //throw new NotImplementedException($"Ascii character {c} should have been accounted for.");

@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
+   <PropertyGroup>
     <TargetFramework>netstandard1.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
@@ -23,12 +23,15 @@
     <FileVersion>0.1.0.0</FileVersion>
     <Configurations>Debug;Release;Release-iOS</Configurations>
   </PropertyGroup>
-  <ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.1'">
     <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
-    <Analyzer Include="..\CSharpMath.Analyzers\CSharpMath.Analyzers\bin\Debug\netstandard1.3\CSharpMath.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CSharpMath.Analyzers\CSharpMath.Analyzers.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <OutputItemType>Analyzer</OutputItemType>
+    </ProjectReference>
     <Folder Include="RenderedSamples\" />
   </ItemGroup>
   <Import Project="..\packages\NuGet.Build.Packaging.0.2.2\build\NuGet.Build.Packaging.targets" Condition="Exists('..\packages\NuGet.Build.Packaging.0.2.2\build\NuGet.Build.Packaging.targets') And '$(Configuration)' == 'Release-iOS'" />

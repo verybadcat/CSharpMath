@@ -20,9 +20,6 @@ namespace CSharpMath.Display.Text {
     public TFont Font { get; set; }
 
     public override string ToString() => $"AttributedGlyphRun {KernedGlyphs.Length} glyphs";
-
-    public AttributedGlyphRun() {
-    }
   }
 
  

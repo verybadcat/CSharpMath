@@ -23,8 +23,7 @@ namespace CSharpMath.Display.Extension {
       }
     }
 
-    internal static int GetInterElementSpaceArrayIndexForType<TFont, TGlyph>(Typesetter<TFont, TGlyph> t, MathAtomType atomType)
-            where TFont : MathFont<TGlyph> {
+    internal static int GetInterElementSpaceArrayIndexForType(MathAtomType atomType) {
       switch (atomType) {
         case MathAtomType.RaiseBox: return 0; //Same as Color
       }

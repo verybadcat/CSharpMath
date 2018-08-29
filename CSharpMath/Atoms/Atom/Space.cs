@@ -6,7 +6,7 @@ using System.Text;
 
 namespace CSharpMath.Atoms {
   public class Space : MathAtom, IMathAtom, ISpace {
-    private Structures.Space _space;
+    private readonly Structures.Space _space;
 
     public float Length => _space.Length;
 
@@ -23,7 +23,7 @@ namespace CSharpMath.Atoms {
 
     public override string StringValue => " ";
 
-    public override bool Equals(object obj) => obj is Space s ? EqualsSpace(s) : false;
+    public override bool Equals(object obj) => obj is Space s && EqualsSpace(s);
 
     public bool EqualsSpace(Space otherSpace) =>
       EqualsAtom(otherSpace)

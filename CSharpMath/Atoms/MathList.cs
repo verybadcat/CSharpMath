@@ -127,7 +127,8 @@ namespace CSharpMath.Atoms {
     private void ThrowInvalid(IMathAtom item) {
       if (item == null) {
         throw new InvalidOperationException("MathList cannot contain null.");
-      } else if (item.AtomType == MathAtomType.Boundary) {
+      }
+      if (item.AtomType == MathAtomType.Boundary) {
         throw new InvalidOperationException("MathList cannot contain items of type " + item.AtomType);
       }
     }
