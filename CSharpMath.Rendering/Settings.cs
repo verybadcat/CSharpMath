@@ -5,6 +5,10 @@ namespace CSharpMath {
       get => Rendering.TextSource.NoEnhancedColors;
       set => Rendering.TextSource.NoEnhancedColors = value;
     }
+    public static bool DisableWarnings {
+      get => WarningException.DisableWarnings;
+      set => WarningException.DisableWarnings = value;
+    }
     public static Rendering.Typefaces GlobalTypefaces => Rendering.Fonts.GlobalTypefaces;
 
     public static BiDictionary<string, Structures.Color> PredefinedColors =>

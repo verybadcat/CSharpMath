@@ -10,28 +10,32 @@ namespace CSharpMath.Rendering {
     public float Ascent { get; private set; }
     public float Descent { get; private set; }
     public float Width { get; private set; }
+    public float GapAfterLine { get; private set; }
     float _widthOffset;
     public void AddSpace(float width) => _widthOffset += width;
 
-    public void Add(Display display, float ascentMin = 0) {
-      var ascent = Math.Max(display.Ascent, ascentMin);
-      if (ascent > Ascent) Ascent = ascent;
-      if (display.Descent > Descent) Descent = display.Descent;
+    public void Add(Display display, float ascender, float descender, float gapAfterLine) {
+      float Max(float x, float y, float z) => x < y ? (y < z ? z : y) : (x < z ? z : x);
+      Ascent = Max(Ascent, display.Ascent, ascender);
+      Descent = Max(Descent, display.Descent, descender);
+      GapAfterLine = gapAfterLine > GapAfterLine ? gapAfterLine : GapAfterLine;
       display.Position =
         new System.Drawing.PointF(display.Position.X + Width + _widthOffset, display.Position.Y);
       Width += display.Width;
       _queue.Enqueue(display);
     }
 
-    public void Clear(float x, float y, Action<Display> forEach, Action end) {
+    public void Clear(float x, float y, ICollection<Display> accumulator, ref float verticalAdvance, bool appendLineGap) {
+      verticalAdvance += Ascent;
       for (int i = _queue.Count; i > 0; i--) {
         var display = _queue.Dequeue();
-        display.Position =
-        new System.Drawing.PointF(display.Position.X + x, display.Position.Y + y);
-        forEach(display);
+        //display.Position is display's bottom-left point, so minus Ascent
+        display.Position = new System.Drawing.PointF(display.Position.X + x, display.Position.Y + y - Ascent);
+        accumulator.Add(display);
       }
-      end();
-      _widthOffset = Ascent = Descent = Width = 0;
+      verticalAdvance += Descent;
+      if(appendLineGap) verticalAdvance += GapAfterLine;
+      _widthOffset = Ascent = Descent = Width = GapAfterLine = 0;
     }
   }
 }

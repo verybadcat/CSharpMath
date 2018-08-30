@@ -5,7 +5,6 @@ namespace CSharpMath.Rendering {
   using Display;
   using Enumerations;
   using Displays = Display.MathListDisplay<Fonts, Glyph>;
-  using static Typography.OpenFont.Extensions.TypefaceExtensions;
 
   public static class TextLayoutter {
     public static (Displays relative, Displays absolute) Layout(TextAtom input, Fonts inputFont, float canvasWidth) {
@@ -14,10 +13,8 @@ namespace CSharpMath.Rendering {
            new Displays(Array.Empty<IDisplay<Fonts, Glyph>>()));
       float accumulatedHeight = 0;
       TextDisplayLineBuilder line = new TextDisplayLineBuilder();
-      void BreakLine(List<IDisplay<Fonts, Glyph>> displayList) {
-        accumulatedHeight += line.Ascent;
-        line.Clear(0, -accumulatedHeight, displayList.Add, () => accumulatedHeight += line.Descent);
-      }
+      void BreakLine(List<IDisplay<Fonts, Glyph>> displayList, bool appendLineGap = true) =>
+        line.Clear(0, -accumulatedHeight, displayList, ref accumulatedHeight, appendLineGap);
       void AddDisplaysWithLineBreaks(TextAtom atom, Fonts fonts,
         List<IDisplay<Fonts, Glyph>> displayList,
         List<IDisplay<Fonts, Glyph>> displayMathList,
@@ -51,7 +48,6 @@ namespace CSharpMath.Rendering {
 #warning Replace 12 with a more appropriate spacing
             accumulatedHeight += 12;
             display = Typesetter<Fonts, Glyph>.CreateLine(m.Content, fonts, TypesettingContext.Instance, LineStyle.Display);
-            if (color != null) display.SetTextColorRecursive(color);
             accumulatedHeight += display.Ascent;
             display.Position = new System.Drawing.PointF(
               IPainterExtensions.GetDisplayPosition(display.Width, display.Ascent, display.Descent, fonts.PointSize, false, canvasWidth, float.NaN, TextAlignment.Top, default, default, default).X,
@@ -62,35 +58,40 @@ namespace CSharpMath.Rendering {
             displayMathList.Add(display);
             break;
 
-            void FinalizeInlineDisplay(float ascentMin, bool forbidAtLineStart = false) {
+            void FinalizeInlineDisplay(float ascender, float rawDescender, float lineGap, bool forbidAtLineStart = false) {
               if (color != null) display.SetTextColorRecursive(color);
               if (line.Width + display.Width > canvasWidth && !forbidAtLineStart)
                 BreakLine(displayList);
-              line.Add(display, ascentMin);
+              //rawDescender is taken directly from font file and is negative, while IDisplay.Descender is positive
+              line.Add(display, ascender, -rawDescender, lineGap);
             }
           case TextAtom.Text t:
             var content = UnicodeFontChanger.Instance.ChangeFont(t.Content, style);
             var glyphs = GlyphFinder.Instance.FindGlyphs(fonts, content);
             //Calling Select(g => g.Typeface).Distinct() speeds up query up to 10 times,
             //Calling Max(Func<,>) instead of Select(Func<,>).Max() speeds up query 2 times
-            float maxLineSpacing = glyphs.Select(g => g.Typeface).Distinct().Max(tf =>
-              tf.CalculateRecommendLineSpacing() *
-              tf.CalculateScaleToPixelFromPointSize(fonts.PointSize)
-            );
+            var typefaces = glyphs.Select(g => g.Typeface).Distinct();
+            WarningException.WarnIf(typefaces,
+              tf => !Typography.OpenFont.Extensions.TypefaceExtensions.RecommendToUseTypoMetricsForLineSpacing(tf),
+              "This font file is too old. Only font files that support standard typographical metrics are supported.");
             display = new TextRunDisplay<Fonts, Glyph>(Display.Text.AttributedGlyphRuns.Create(content, glyphs, fonts, false), t.Range, TypesettingContext.Instance);
-            FinalizeInlineDisplay(maxLineSpacing);
+            FinalizeInlineDisplay(
+              typefaces.Max(tf => tf.Ascender * tf.CalculateScaleToPixelFromPointSize(fonts.PointSize)),
+              typefaces.Min(tf => tf.Descender * tf.CalculateScaleToPixelFromPointSize(fonts.PointSize)),
+              typefaces.Max(tf => tf.LineGap * tf.CalculateScaleToPixelFromPointSize(fonts.PointSize))
+            );
             break;
           case TextAtom.Math m:
             if (m.DisplayStyle) throw new InvalidCodePathException("Display style maths should have been handled above this switch.");
-            display = Typesetter<Fonts, Glyph>.CreateLine(m.Content, fonts, TypesettingContext.Instance, Enumerations.LineStyle.Text);
-            FinalizeInlineDisplay(fonts.MathTypeface.CalculateRecommendLineSpacing() *
-              fonts.MathTypeface.CalculateScaleToPixelFromPointSize(fonts.PointSize));
+            display = Typesetter<Fonts, Glyph>.CreateLine(m.Content, fonts, TypesettingContext.Instance, LineStyle.Text);
+            var scale = fonts.MathTypeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);
+            FinalizeInlineDisplay(fonts.MathTypeface.Ascender * scale, fonts.MathTypeface.Descender * scale, fonts.MathTypeface.LineGap * scale);
             break;
           case TextAtom.ControlSpace cs:
             var spaceGlyph = GlyphFinder.Instance.Lookup(fonts, ' ');
             display = new TextRunDisplay<Fonts, Glyph>(Display.Text.AttributedGlyphRuns.Create(" ", new[] { spaceGlyph }, fonts, false), cs.Range, TypesettingContext.Instance);
-            FinalizeInlineDisplay(spaceGlyph.Typeface.CalculateRecommendLineSpacing() *
-              spaceGlyph.Typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize),
+            scale = spaceGlyph.Typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);
+            FinalizeInlineDisplay(spaceGlyph.Typeface.Ascender * scale, spaceGlyph.Typeface.Descender * scale, spaceGlyph.Typeface.LineGap * scale,
               forbidAtLineStart: true); //No spaces at start of line
             break;
           case null:
