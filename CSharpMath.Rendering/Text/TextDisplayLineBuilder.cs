@@ -25,7 +25,7 @@ namespace CSharpMath.Rendering {
       _queue.Enqueue(display);
     }
 
-    public void Clear(float x, float y, ICollection<Display> accumulator, ref float verticalAdvance, bool appendLineGap) {
+    public void Clear(float x, float y, ICollection<Display> accumulator, ref float verticalAdvance, bool appendLineGap, float additionalLineSpacing) {
       verticalAdvance += Ascent;
       for (int i = _queue.Count; i > 0; i--) {
         var display = _queue.Dequeue();
@@ -34,7 +34,7 @@ namespace CSharpMath.Rendering {
         accumulator.Add(display);
       }
       verticalAdvance += Descent;
-      if(appendLineGap) verticalAdvance += GapAfterLine;
+      if(appendLineGap) verticalAdvance += GapAfterLine + additionalLineSpacing;
       _widthOffset = Ascent = Descent = Width = GapAfterLine = 0;
     }
   }

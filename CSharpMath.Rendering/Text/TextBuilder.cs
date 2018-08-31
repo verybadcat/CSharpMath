@@ -8,37 +8,38 @@ namespace CSharpMath.Rendering {
   using Structures;
   using static Structures.Result;
   public static class TextBuilder {
-      /* //Paste this into the C# Interactive, fill <username> yourself
+    /* //Paste this into the C# Interactive, fill <username> yourself
 #r "C:/Users/<username>/source/repos/CSharpMath/Typography/Build/NetStandard/Typography.TextBreak/bin/Debug/netstandard1.3/Typography.TextBreak.dll"
 using Typography.TextBreak;
 (int, WordKind, char)[] BreakText(string text) {
-  var breaker = new CustomBreaker();
-  var breakList = new List<BreakAtInfo>();
-  breaker.BreakWords(text);
-  breaker.LoadBreakAtList(breakList);
-  //index is after the boundary -> last one will be out of range
-  return breakList.Select(i => (i.breakAt, i.wordKind, text.ElementAtOrDefault(i.breakAt))).ToArray();
+var breaker = new CustomBreaker();
+var breakList = new List<BreakAtInfo>();
+breaker.BreakWords(text);
+breaker.LoadBreakAtList(breakList);
+//index is after the boundary -> last one will be out of range
+return breakList.Select(i => (i.breakAt, i.wordKind, text.ElementAtOrDefault(i.breakAt))).ToArray();
 }
 BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
-       */
-      /* //Version 2
+     */
+    /* //Version 2
 #r "C:/Users/<username>/source/repos/CSharpMath/Typography/Build/NetStandard/Typography.TextBreak/bin/Debug/netstandard1.3/Typography.TextBreak.dll"
 using Typography.TextBreak;
 string BreakText(string text, string seperator = "|")
 {
-    var breaker = new CustomBreaker();
-    var breakList = new List<BreakAtInfo>();
-    breaker.BreakWords(text);
-    breaker.LoadBreakAtList(breakList);
-    //reverse to ensure earlier inserts do not affect later ones
-    foreach (var @break in breakList.Select(i => i.breakAt).Reverse())
-        text = text.Insert(@break, seperator);
-    return text;
+  var breaker = new CustomBreaker();
+  var breakList = new List<BreakAtInfo>();
+  breaker.BreakWords(text);
+  breaker.LoadBreakAtList(breakList);
+  //reverse to ensure earlier inserts do not affect later ones
+  foreach (var @break in breakList.Select(i => i.breakAt).Reverse())
+      text = text.Insert(@break, seperator);
+  return text;
 }
 BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
-       */
-    public static Result<TextAtom> Build(string text, bool enhancedColors) {
-      if (string.IsNullOrEmpty(text)) return new TextAtom.List(Array.Empty<TextAtom>(), 0);
+     */
+    public static bool NoEnhancedColors { get; set; }
+    public static Result<TextAtom> Build(string latex) {
+      if (string.IsNullOrEmpty(latex)) return new TextAtom.List(Array.Empty<TextAtom>(), 0);
       bool? displayMath = null;
       StringBuilder mathLaTeX = null;
       bool backslashEscape = false;
@@ -47,7 +48,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
       var atoms = new TextAtomListBuilder();
       var breaker = new CustomBreaker();
       var breakList = new List<BreakAtInfo>();
-      breaker.BreakWords(text, false);
+      breaker.BreakWords(latex, false);
       breaker.LoadBreakAtList(breakList);
       Result CheckDollarCount() {
         switch (dollarCount) {
@@ -93,7 +94,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
         return Ok();
       }
       (int startAt, int endAt, char endingChar, WordKind wordKind) ObtainRange(int i) =>
-        (i == 0 ? 0 : breakList[i - 1].breakAt, breakList[i].breakAt, text[breakList[i].breakAt - 1], breakList[i].wordKind);
+        (i == 0 ? 0 : breakList[i - 1].breakAt, breakList[i].breakAt, latex[breakList[i].breakAt - 1], breakList[i].wordKind);
       for (var i = 0; i < breakList.Count; i++) {
         var (startAt, endAt, endingChar, wordKind) = ObtainRange(i);
         bool SetNextRange() {
@@ -105,7 +106,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
           afterCommand = false;
           if (!SetNextRange()) return Err("Missing argument");
           if (endingChar != '{') {
-            var toReturn = text[startAt].ToString();
+            var toReturn = latex[startAt].ToString();
 #warning Not one char only, should skip spaces then read next char, and it is a possible command
             //range contains one char only
             if (startAt == endAt)
@@ -116,14 +117,14 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
           }
           int endingIndex = -1;
           //startAt + 1 to not start at the { we started at
-          for (int j = startAt + 1, bracketDepth = 0; j < text.Length; j++) {
-            if (text[j] == '{') bracketDepth++;
-            else if (text[j] == '}')
+          for (int j = startAt + 1, bracketDepth = 0; j < latex.Length; j++) {
+            if (latex[j] == '{') bracketDepth++;
+            else if (latex[j] == '}')
               if (bracketDepth > 0) bracketDepth--;
               else { endingIndex = j; break; }
           }
           if (endingIndex == -1) return Err("Missing }");
-          var resultText = text.Substring(endAt, endingIndex - endAt);
+          var resultText = latex.Substring(endAt, endingIndex - endAt);
           while (startAt < endingIndex)
             _ = SetNextRange(); //this never fails because the above check
           return Ok(resultText);
@@ -143,7 +144,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
 
           //Normal unescaped text section, could be in display/inline math mode
           if (!backslashEscape) {
-            var textSection = text.Substring(startAt, endAt - startAt);
+            var textSection = latex.Substring(startAt, endAt - startAt);
             switch (endingChar) {
               case '$':
                 throw new InvalidCodePathException("The $ case should have been accounted for.");
@@ -223,7 +224,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                 }
                 break;
               default:
-                mathLaTeX.Append($@"\{text.Substring(startAt, endAt - startAt)}");
+                mathLaTeX.Append($@"\{latex.Substring(startAt, endAt - startAt)}");
                 break;
             }
             backslashEscape = false;
@@ -232,7 +233,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
 
           //Escaped text section and not in inline/display math mode
           afterCommand = true;
-          switch (text.Substring(startAt, endAt - startAt)) {
+          switch (latex.Substring(startAt, endAt - startAt)) {
             case "(":
               mathLaTeX = new StringBuilder();
               displayMath = false;
@@ -273,7 +274,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     Ok(parsedResult) :
                     Err("Invalid font size")
                   ).Bind(
-                    ReadArgument().Bind(resizedContent => Build(resizedContent, enhancedColors)),
+                    ReadArgument().Bind(Build),
                     (fontSize, resizedContent) =>
                       atoms.Add(resizedContent, fontSize, "fontsize".Length)
                   ).Error is string error
@@ -282,11 +283,11 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
               }
             case "color": {
                 if (ReadArgument().Bind(color =>
-                    Color.Create(color, enhancedColors) is Color value ?
+                    Color.Create(color, !NoEnhancedColors) is Color value ?
                     Ok(value) :
                     Err("Invalid color")
                   ).Bind(
-                    ReadArgument().Bind(coloredContent => Build(coloredContent, enhancedColors)),
+                    ReadArgument().Bind(Build),
                     (color, coloredContent) =>
                       atoms.Add(coloredContent, color, "color".Length)
                   ).Error is string error
@@ -294,12 +295,12 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                 break;
               }
             //case "red", "yellow", ...
-            case var shortColor when enhancedColors && Color.PredefinedColors.Contains(shortColor): {
-                if (Ok(Color.Create(shortColor, enhancedColors) ??
+            case var shortColor when !NoEnhancedColors && Color.PredefinedColors.Contains(shortColor): {
+                if (Ok(Color.Create(shortColor, !NoEnhancedColors) ??
                       throw new InvalidCodePathException(
                         "This case's condition should have checked the validity of shortColor.")
                   ).Bind(
-                    ReadArgument().Bind(coloredContent => Build(coloredContent, enhancedColors)),
+                    ReadArgument().Bind(Build),
                     (color, coloredContent) =>
                       atoms.Add(coloredContent, color, shortColor.Length)
                   ).Error is string error
@@ -309,7 +310,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
             //case "textbf", "textit", ...
             case var command when !command.Contains("math") && FontStyleExtensions.FontStyles.TryGetByFirst(command.Replace("text", "math"), out var fontStyle): {
                 if (ReadArgument()
-                  .Bind(content => Build(content, enhancedColors))
+                  .Bind(Build)
                   .Bind(builtContent => atoms.Add(builtContent, fontStyle, command.Length))
                   .Error is string error)
                   return error;

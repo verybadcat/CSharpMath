@@ -1,10 +1,8 @@
 namespace CSharpMath.Rendering {
   public readonly struct TextSource : ISource {
-    public static bool NoEnhancedColors { get; set; } = false;
-
-    public TextSource(string text) {
-      Text = text;
-      var result = TextBuilder.Build(text, !NoEnhancedColors);
+    public TextSource(string latex) {
+      LaTeX = latex;
+      var result = TextBuilder.Build(latex);
       if (result.Error != null) {
         ErrorMessage = result.Error;
         Atom = null;
@@ -15,11 +13,11 @@ namespace CSharpMath.Rendering {
     }
     public TextSource(TextAtom atom) {
       Atom = atom;
-      Text = TextBuilder.Unbuild(atom, new System.Text.StringBuilder()).ToString();
+      LaTeX = TextBuilder.Unbuild(atom, new System.Text.StringBuilder()).ToString();
       ErrorMessage = null;
     }
 
-    public string Text { get; }
+    public string LaTeX { get; }
     public TextAtom Atom { get; }
     public string ErrorMessage { get; }
     public bool IsValid => Atom != null;

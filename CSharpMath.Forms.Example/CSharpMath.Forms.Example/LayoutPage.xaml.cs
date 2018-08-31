@@ -41,7 +41,8 @@ Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6. \[\f
       e.Surface.Canvas.DrawRect((float)x + measure.X, (float)y + measure.Y, measure.Width, measure.Height, new global::SkiaSharp.SKPaint { Color = global::SkiaSharp.SKColors.Red, IsStroke = true });
       measure = painter._relativeXCoordDisplay.ComputeDisplayBounds();
       e.Surface.Canvas.DrawRect((float)x + measure.X, (float)y + measure.Y, measure.Width, measure.Height, new global::SkiaSharp.SKPaint { Color = global::SkiaSharp.SKColors.Blue, IsStroke = true });
-      */painter.Draw(e.Surface.Canvas, new System.Drawing.PointF((float)x, (float)y), (float)w);
+      *///painter.Draw(e.Surface.Canvas, new System.Drawing.PointF((float)x, (float)y), (float)w);
+      painter.DrawOneLine(e.Surface.Canvas, (float)x, (float)y);
     }
 
     //Add Epsilon to prevent SliderW.Minimum == SiderW.Maximum == 0

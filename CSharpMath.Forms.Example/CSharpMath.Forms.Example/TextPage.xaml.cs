@@ -41,7 +41,7 @@ namespace CSharpMath.Forms.Example
     }
 
     private void Text_TextChanged(object sender, TextChangedEventArgs e) {
-      View.Text = e.NewTextValue;
+      View.LaTeX = e.NewTextValue;
       View.InvalidateSurface();
     }
   }

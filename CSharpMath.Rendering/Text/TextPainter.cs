@@ -16,7 +16,8 @@ namespace CSharpMath.Rendering {
     protected Typography.TextLayout.GlyphLayout _glyphLayout = new Typography.TextLayout.GlyphLayout();
 
     public TextAtom Atom { get => Source.Atom; set => Source = new TextSource(value); }
-    public string Text { get => Source.Text; set => Source = new TextSource(value); }
+    public string Text { get => Source.LaTeX; set => Source = new TextSource(value); }
+    public float AdditionalLineSpacing { get; set; }
 
     protected override void SetRedisplay() { }
     protected override RectangleF? MeasureCore(float canvasWidth) =>
@@ -28,7 +29,7 @@ namespace CSharpMath.Rendering {
 
     protected override void UpdateDisplay(float canvasWidth) =>
       (_relativeXCoordDisplay, _absoluteXCoordDisplay) =
-        TextLayoutter.Layout(Atom, Fonts, canvasWidth);
+        TextLayoutter.Layout(Atom, Fonts, canvasWidth, AdditionalLineSpacing);
 
     public override void Draw(TCanvas canvas, TextAlignment alignment = TextAlignment.TopLeft, Thickness padding = default, float offsetX = 0, float offsetY = 0) =>
       DrawCore(canvas, null, alignment, padding, offsetX, offsetY);
@@ -36,6 +37,8 @@ namespace CSharpMath.Rendering {
       DrawCore(canvas, right - left, TextAlignment.TopLeft, default, left, top);
     public void Draw(TCanvas canvas, PointF position, float width) =>
       DrawCore(canvas, width, TextAlignment.TopLeft, default, position.X, position.Y);
+    public void DrawOneLine(TCanvas canvas, float x, float y) =>
+      DrawCore(canvas, float.PositiveInfinity, TextAlignment.TopLeft, default, x, y);
     private void DrawCore(TCanvas canvas, float? width, TextAlignment alignment, Thickness padding, float offsetX, float offsetY) {
       var c = WrapCanvas(canvas);
       if (!Source.IsValid) DrawError(c);

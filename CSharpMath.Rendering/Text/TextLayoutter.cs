@@ -7,19 +7,22 @@ namespace CSharpMath.Rendering {
   using Displays = Display.MathListDisplay<Fonts, Glyph>;
 
   public static class TextLayoutter {
-    public static (Displays relative, Displays absolute) Layout(TextAtom input, Fonts inputFont, float canvasWidth) {
+    public static (Displays relative, Displays absolute) Layout(TextAtom input, Fonts inputFont, float canvasWidth, float additionalLineSpacing) {
       if (input == null) return
           (new Displays(Array.Empty<IDisplay<Fonts, Glyph>>()),
            new Displays(Array.Empty<IDisplay<Fonts, Glyph>>()));
       float accumulatedHeight = 0;
       TextDisplayLineBuilder line = new TextDisplayLineBuilder();
       void BreakLine(List<IDisplay<Fonts, Glyph>> displayList, bool appendLineGap = true) =>
-        line.Clear(0, -accumulatedHeight, displayList, ref accumulatedHeight, appendLineGap);
-      void AddDisplaysWithLineBreaks(TextAtom atom, Fonts fonts,
+        line.Clear(0, -accumulatedHeight, displayList, ref accumulatedHeight, appendLineGap, additionalLineSpacing);
+      void AddDisplaysWithLineBreaks(
+        TextAtom atom,
+        Fonts fonts,
         List<IDisplay<Fonts, Glyph>> displayList,
         List<IDisplay<Fonts, Glyph>> displayMathList,
-        FontStyle style = FontStyle.Roman, /*FontStyle.Default is FontStyle.Italic, FontStyle.Roman is no change to characters*/
-        Structures.Color? color = null) {
+        FontStyle style,
+        Structures.Color? color
+      ) {
 
         IDisplay<Fonts, Glyph> display;
         switch (atom) {
@@ -44,7 +47,7 @@ namespace CSharpMath.Rendering {
             BreakLine(displayList);
             break;
           case TextAtom.Math m when m.DisplayStyle:
-            BreakLine(displayList);
+            BreakLine(displayList, false);
 #warning Replace 12 with a more appropriate spacing
             accumulatedHeight += 12;
             display = Typesetter<Fonts, Glyph>.CreateLine(m.Content, fonts, TypesettingContext.Instance, LineStyle.Display);
@@ -71,7 +74,7 @@ namespace CSharpMath.Rendering {
             //Calling Select(g => g.Typeface).Distinct() speeds up query up to 10 times,
             //Calling Max(Func<,>) instead of Select(Func<,>).Max() speeds up query 2 times
             var typefaces = glyphs.Select(g => g.Typeface).Distinct();
-            WarningException.WarnIf(typefaces,
+            WarningException.WarnIfAny(typefaces,
               tf => !Typography.OpenFont.Extensions.TypefaceExtensions.RecommendToUseTypoMetricsForLineSpacing(tf),
               "This font file is too old. Only font files that support standard typographical metrics are supported.");
             display = new TextRunDisplay<Fonts, Glyph>(Display.Text.AttributedGlyphRuns.Create(content, glyphs, fonts, false), t.Range, TypesettingContext.Instance);
@@ -102,7 +105,14 @@ namespace CSharpMath.Rendering {
       }
       var relativePositionList = new List<IDisplay<Fonts, Glyph>>();
       var absolutePositionList = new List<IDisplay<Fonts, Glyph>>();
-      AddDisplaysWithLineBreaks(input, inputFont, relativePositionList, absolutePositionList);
+      AddDisplaysWithLineBreaks(
+        input,
+        inputFont,
+        relativePositionList,
+        absolutePositionList,
+        FontStyle.Roman /*FontStyle.Default is FontStyle.Italic, FontStyle.Roman is no change to characters*/,
+        null
+      );
       BreakLine(relativePositionList); //remember to finalize the last line
       return (new Displays(relativePositionList),
               new Displays(absolutePositionList));
