@@ -1,6 +1,6 @@
 namespace CSharpMath.Rendering {
   //Do not modify this file directly. Instead, modify this at
-  //CSharpMath\CSharpMath.Utils\Rendering\LatinModernMathCodeBuilder.cs and re-generate
+  //CSharpMath\CSharpMath.Utils\Rendering\FontReferenceCodeBuilder.cs and re-generate
   //this file by executing the method in that file in the CSharpMath.Utils project.
   [System.Diagnostics.DebuggerNonUserCode, System.Runtime.CompilerServices.CompilerGenerated]
   internal static partial class Resources {

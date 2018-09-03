@@ -9,11 +9,14 @@ using Typography.OpenFont;
 namespace CSharpMath.Rendering {
   public class Fonts : MathFont<Glyph>, IEnumerable<Typeface> {
     static Fonts() {
-      var bytes = Resources.LatinModernMath;
       var reader = new OpenFontReader();
-      var latinMathTypeface = reader.Read(new MemoryStream(bytes, false));
+      var latinMathTypeface = reader.Read(new MemoryStream(Resources.LatinModernMath, false));
       latinMathTypeface.UpdateAllCffGlyphBounds();
       GlobalTypefaces = new Typefaces(latinMathTypeface);
+
+      var amsBlackboardBoldTypeface = reader.Read(new MemoryStream(Resources.AMSCapitalBlackboardBold, false));
+      amsBlackboardBoldTypeface.UpdateAllCffGlyphBounds();
+      GlobalTypefaces.AddStart(amsBlackboardBoldTypeface);
     }
 
     public static Typefaces GlobalTypefaces { get; }

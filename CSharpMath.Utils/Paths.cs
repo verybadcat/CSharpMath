@@ -12,13 +12,9 @@ namespace CSharpMath.DevUtils {
     }))();
 
     /// <summary>
-    /// The path of the latinmodern-math.otf file
+    /// The path of Font Reference folder
     /// </summary>
-    public static readonly string LatinModernMathSource = P.Combine(Global, nameof(CSharpMath) + "." + nameof(Rendering), "Font Reference", "latinmodern-math.otf");
-    /// <summary>
-    /// The path of the LatinModernMath.cs file
-    /// </summary>
-    public static readonly string LatinModernMathCodeFile = P.Combine(Global, nameof(CSharpMath) + "." + nameof(Rendering), "Font Reference", "LatinModernMath.cs");
+    public static readonly string FontReferenceFolder = P.Combine(Global, nameof(CSharpMath) + "." + nameof(Rendering), "Font Reference");
     /// <summary>
     /// The path of the MoreExamples.cs file, which stores examples from iosMath
     /// </summary>
