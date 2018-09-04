@@ -26,7 +26,8 @@ where \textit{color} stands for one of the LaTeX standard colors.
 \textbf{Styled} \texttt{text} can be achieved via the LaTeX styling commands.
 The SkiaSharp version of this is located at CSharpMath.SkiaSharp.TextPainter;
 and the Xamarin.Forms version of this is located at CSharpMath.Forms.TextView.
-Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6. \[\frac{Display}{maths} \sqrt\text\mathtt{\ at\ the\ end}^\mathbf{are\ now\ incuded\ in\ Measure!} \]" };
+Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6. \[\frac{Display}{maths} \sqrt\text\mathtt{\ at\ the\ end}^\mathbf{are\ now\ incuded\ in\ Measure!} \]"
+.Remove(0) + @"display maths skipping: here is abovedisplayskip\[Maths\]shortskip".Remove(0) + @"Maths on the baseline $\rightarrow\int^6_4 x dx$" };
     bool reset;
     double x, y, w;
 

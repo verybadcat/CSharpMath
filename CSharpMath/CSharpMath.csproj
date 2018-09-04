@@ -28,10 +28,8 @@
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CSharpMath.Analyzers\CSharpMath.Analyzers.csproj">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <OutputItemType>Analyzer</OutputItemType>
-    </ProjectReference>
+    <!--Cannot use project reference as analyzer like in CSharpMath.Rendering here because this targets netstandard1.1 which is < netstandard1.3, a requirement of an Analyzer project.-->
+    <Analyzer Include="..\CSharpMath.Analyzers\CSharpMath.Analyzers\bin\Debug\netstandard1.3\CSharpMath.Analyzers.dll" />
     <Folder Include="RenderedSamples\" />
   </ItemGroup>
   <Import Project="..\packages\NuGet.Build.Packaging.0.2.2\build\NuGet.Build.Packaging.targets" Condition="Exists('..\packages\NuGet.Build.Packaging.0.2.2\build\NuGet.Build.Packaging.targets') And '$(Configuration)' == 'Release-iOS'" />

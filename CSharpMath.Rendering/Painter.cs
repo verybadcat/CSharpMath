@@ -70,9 +70,7 @@ namespace CSharpMath.Rendering {
     public abstract ICanvas WrapCanvas(TCanvas canvas);
 
     public abstract void Draw(TCanvas canvas, TextAlignment alignment, Thickness padding = default, float offsetX = 0, float offsetY = 0);
-
-    protected abstract void UpdateDisplay(float canvasWidth);
-
+    
     protected abstract RectangleF? MeasureCore(float canvasWidth);
 
     protected void DrawCore(ICanvas canvas, IDisplay<TFonts, Glyph> display, PointF? position = null) {

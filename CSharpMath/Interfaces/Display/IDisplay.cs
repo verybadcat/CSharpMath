@@ -1,4 +1,4 @@
-﻿using CSharpMath.Atoms;
+using CSharpMath.Atoms;
 using System.Drawing;
 using CSharpMath.Display;
 using CSharpMath.FrontEnd;
@@ -32,8 +32,8 @@ namespace CSharpMath {
       where TFont : MathFont<TGlyph>
       => new RectangleF(0, invert ? display.Descent : -display.Ascent, display.Width, display.Ascent + display.Descent);
     /// <summary>Where the display is located, expressed in its parent's coordinate system.</summary>
-    public static RectangleF Frame<TFont, TGlyph>(this IDisplay<TFont, TGlyph> display)
+    public static RectangleF Frame<TFont, TGlyph>(this IDisplay<TFont, TGlyph> display, bool invert = false)
       where TFont : MathFont<TGlyph>
-      => display.DisplayBounds.Plus(display.Position);
+      => display.ComputeDisplayBounds(invert).Plus(display.Position);
   }
 }

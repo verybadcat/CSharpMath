@@ -8,13 +8,21 @@ namespace CSharpMath.Rendering {
 
   public static class TextLayoutter {
     public static (Displays relative, Displays absolute) Layout(TextAtom input, Fonts inputFont, float canvasWidth, float additionalLineSpacing) {
+#warning Multiply these constants by resolution
+      const float abovedisplayskip = 12, abovedisplayshortskip = 0, belowdisplayskip = 12, belowdisplayshortskip = 7;
       if (input == null) return
           (new Displays(Array.Empty<IDisplay<Fonts, Glyph>>()),
            new Displays(Array.Empty<IDisplay<Fonts, Glyph>>()));
       float accumulatedHeight = 0;
+      bool afterDisplayMaths = false; //indicator of the need to apply belowdisplay(short)skip when line break
       TextDisplayLineBuilder line = new TextDisplayLineBuilder();
-      void BreakLine(List<IDisplay<Fonts, Glyph>> displayList, bool appendLineGap = true) =>
+      void BreakLine(List<IDisplay<Fonts, Glyph>> displayList, List<IDisplay<Fonts, Glyph>> displayMathList, bool appendLineGap = true) {
+        if (afterDisplayMaths) {
+          accumulatedHeight += line.Width > displayMathList.Last().Position.X ? belowdisplayskip : belowdisplayshortskip;
+          afterDisplayMaths = false;
+        }
         line.Clear(0, -accumulatedHeight, displayList, ref accumulatedHeight, appendLineGap, additionalLineSpacing);
+      }
       void AddDisplaysWithLineBreaks(
         TextAtom atom,
         Fonts fonts,
@@ -44,19 +52,20 @@ namespace CSharpMath.Rendering {
             line.AddSpace(sp.Content.ActualLength(MathTable.Instance, fonts));
             break;
           case TextAtom.Newline n:
-            BreakLine(displayList);
+            BreakLine(displayList, displayMathList);
             break;
           case TextAtom.Math m when m.DisplayStyle:
-            BreakLine(displayList, false);
-#warning Replace 12 with a more appropriate spacing
-            accumulatedHeight += 12;
+            var lastLineWidth = line.Width;
+            BreakLine(displayList, displayMathList, false);
             display = Typesetter<Fonts, Glyph>.CreateLine(m.Content, fonts, TypesettingContext.Instance, LineStyle.Display);
+            var displayX = IPainterExtensions.GetDisplayPosition(display.Width, display.Ascent, display.Descent, fonts.PointSize, false, canvasWidth, float.NaN, TextAlignment.Top, default, default, default).X;
+            //\because When displayList.LastOrDefault() is null, the false condition is selected
+            //\therefore Append abovedisplayshortskip which defaults to 0 when nothing is above the display-style maths
+            accumulatedHeight += lastLineWidth > displayX ? abovedisplayskip : abovedisplayshortskip;
             accumulatedHeight += display.Ascent;
-            display.Position = new System.Drawing.PointF(
-              IPainterExtensions.GetDisplayPosition(display.Width, display.Ascent, display.Descent, fonts.PointSize, false, canvasWidth, float.NaN, TextAlignment.Top, default, default, default).X,
-              -accumulatedHeight);
+            display.Position = new System.Drawing.PointF(displayX, -accumulatedHeight);
             accumulatedHeight += display.Descent;
-            accumulatedHeight += 12;
+            afterDisplayMaths = true;
             if (color != null) display.SetTextColorRecursive(color);
             displayMathList.Add(display);
             break;
@@ -64,7 +73,7 @@ namespace CSharpMath.Rendering {
             void FinalizeInlineDisplay(float ascender, float rawDescender, float lineGap, bool forbidAtLineStart = false) {
               if (color != null) display.SetTextColorRecursive(color);
               if (line.Width + display.Width > canvasWidth && !forbidAtLineStart)
-                BreakLine(displayList);
+                BreakLine(displayList, displayMathList);
               //rawDescender is taken directly from font file and is negative, while IDisplay.Descender is positive
               line.Add(display, ascender, -rawDescender, lineGap);
             }
@@ -113,7 +122,7 @@ namespace CSharpMath.Rendering {
         FontStyle.Roman /*FontStyle.Default is FontStyle.Italic, FontStyle.Roman is no change to characters*/,
         null
       );
-      BreakLine(relativePositionList); //remember to finalize the last line
+      BreakLine(relativePositionList, absolutePositionList); //remember to finalize the last line
       return (new Displays(relativePositionList),
               new Displays(absolutePositionList));
 

@@ -37,7 +37,7 @@ namespace CSharpMath.Analyzers.Test {
     }";
       var expected = new DiagnosticResult {
         Id = "CSM001",
-        Message = String.Format("A culture-invariant ToString() is available"),
+        Message = string.Format("A culture-invariant ToString() is available"),
         Severity = DiagnosticSeverity.Warning,
         Locations =
               new[] {
@@ -77,7 +77,7 @@ namespace CSharpMath.Analyzers.Test {
     }";
       var expected = new DiagnosticResult {
         Id = "CSM001",
-        Message = String.Format("A culture-invariant ToString() is available"),
+        Message = string.Format("A culture-invariant ToString() is available"),
         Severity = DiagnosticSeverity.Warning,
         Locations =
         new[] {
@@ -93,6 +93,39 @@ namespace CSharpMath.Analyzers.Test {
         class TypeName
         {
             public string Return() => int.Parse(""123"").ToString(null, System.Globalization.CultureInfo.InvariantCulture);
+        }
+    }";
+      VerifyCSharpFix(test, fixtest);
+    }
+
+    [TestMethod]
+    public void TestMethod4() {
+      var test = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public string Return() => int.Parse(""123"").ToString() + "" "";
+        }
+    }";
+      var expected = new DiagnosticResult {
+        Id = "CSM001",
+        Message = string.Format("A culture-invariant ToString() is available"),
+        Severity = DiagnosticSeverity.Warning,
+        Locations =
+        new[] {
+                            new DiagnosticResultLocation("Test0.cs", 6, 64)
+            }
+      };
+      VerifyCSharpDiagnostic(test, expected);
+
+
+      var fixtest = @"
+    namespace ConsoleApplication1
+    {
+        class TypeName
+        {
+            public string Return() => int.Parse(""123"").ToString(null, System.Globalization.CultureInfo.InvariantCulture) + "" "";
         }
     }";
       VerifyCSharpFix(test, fixtest);

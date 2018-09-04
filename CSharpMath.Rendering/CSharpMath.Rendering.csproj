@@ -43,7 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CSharpMath\CSharpMath.csproj" />
-    <ProjectReference Include="..\CSharpMath.Analyzers\CSharpMath.Analyzers.csproj">
+    <ProjectReference Include="..\CSharpMath.Analyzers\CSharpMath.Analyzers\CSharpMath.Analyzers.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <OutputItemType>Analyzer</OutputItemType>
     </ProjectReference>

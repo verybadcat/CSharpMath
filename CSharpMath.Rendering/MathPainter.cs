@@ -23,7 +23,7 @@ namespace CSharpMath.Rendering {
     }
 
     protected override void SetRedisplay() => _displayChanged = true;
-    protected override void UpdateDisplay(float canvasWidth = float.NaN) {
+    protected void UpdateDisplay() {
       if (_displayChanged && MathList != null) {
         _display = TypesettingContext.Instance.CreateLine(MathList, Fonts, LineStyle);
         _displayChanged = false;
@@ -34,21 +34,21 @@ namespace CSharpMath.Rendering {
       var c = WrapCanvas(canvas);
       if (!Source.IsValid) DrawError(c);
       else {
-        UpdateDisplay(c.Width);
+        UpdateDisplay();
         DrawCore(c, _display, IPainterExtensions.GetDisplayPosition(_display.Width, _display.Ascent, _display.Descent, FontSize, CoordinatesFromBottomLeftInsteadOfTopLeft, c.Width, c.Height, alignment, padding, offsetX, offsetY));
       }
     }
 
     public void Draw(TCanvas canvas, float x, float y) {
       var c = WrapCanvas(canvas);
-      UpdateDisplay(c.Width);
+      UpdateDisplay();
       DrawCore(c, _display, new PointF(x, CoordinatesFromBottomLeftInsteadOfTopLeft ? y : -y));
     }
 
     public void Draw(TCanvas canvas, PointF position) {
       var c = WrapCanvas(canvas);
       if (CoordinatesFromBottomLeftInsteadOfTopLeft) position.Y *= -1;
-      UpdateDisplay(c.Width);
+      UpdateDisplay();
       DrawCore(c, _display, position);
     }
   }

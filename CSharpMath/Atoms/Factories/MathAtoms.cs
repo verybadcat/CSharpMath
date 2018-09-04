@@ -286,6 +286,8 @@ namespace CSharpMath.Atoms {
                      { "daleth", Create(MathAtomType.Ordinary, "\u2138") }, //not in iosMath
                      { "forall", Create(MathAtomType.Ordinary, "\u2200") },
                      { "exists", Create(MathAtomType.Ordinary, "\u2203") },
+                     { "because", Create(MathAtomType.Ordinary, "\u2235") }, //not in iosMath
+                     { "therefore", Create(MathAtomType.Ordinary, "\u2234") }, //not in iosMath
                      { "emptyset", Create(MathAtomType.Ordinary, "\u2205") },
                      { "nabla", Create(MathAtomType.Ordinary, "\u2207") },
                      { "infty", Create(MathAtomType.Ordinary, "\u221E") },

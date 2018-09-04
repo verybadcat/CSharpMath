@@ -29,7 +29,7 @@ namespace CSharpMath.Analyzers {
 
     public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context) {
       var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-
+      
       // TODO: Replace the following code with your own analysis, generating a CodeAction for each fix to suggest
       var diagnostic = context.Diagnostics.First();
       var diagnosticSpan = diagnostic.Location.SourceSpan;
@@ -46,14 +46,14 @@ namespace CSharpMath.Analyzers {
           diagnostic);
     }
 
-    private async Task<Solution> ReplaceMethodCallAsync(Document document, ArgumentListSyntax invocation, CancellationToken cancellationToken) {
+    private async Task<Solution> ReplaceMethodCallAsync(Document document, ArgumentListSyntax argList, CancellationToken cancellationToken) {
       // Get the symbol representing the type to be renamed.
       var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
-
       // Produce a new solution that has all references to that type renamed, including the declaration.
       var originalSolution = document.Project.Solution;
       var optionSet = originalSolution.Workspace.Options;
-      document = document.WithSyntaxRoot(new Rewriter(invocation).Visit(await document.GetSyntaxRootAsync()));
+      
+      document = document.WithSyntaxRoot(new Rewriter(argList).Visit(await document.GetSyntaxRootAsync()));
       var newSolution = document.Project.Solution;
       //var newSolution = await Renamer.RenameSymbolAsync(document.Project.Solution, null, newName, optionSet, cancellationToken).ConfigureAwait(false);
 
@@ -66,8 +66,25 @@ namespace CSharpMath.Analyzers {
         _replaceNode = replaceNode;
       readonly ArgumentListSyntax _replaceNode;
       public override SyntaxNode VisitArgumentList(ArgumentListSyntax node) {
+      /*MemberAccessExpressionSyntax GenerateMemberAccess(params string[] identifiers) =>
+          identifiers.Skip(2).Aggregate(
+            SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.IdentifierName(identifiers[0]), SyntaxFactory.IdentifierName(identifiers[1])),
+            (acc, curr) => SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, acc, SyntaxFactory.IdentifierName(curr)));*/
         return node.IsEquivalentTo(_replaceNode) ?
-          SyntaxFactory.ParseArgumentList("(null, System.Globalization.CultureInfo.InvariantCulture)")
+          node.WithArguments(SyntaxFactory.SeparatedList(new[] {
+            SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression)),
+            SyntaxFactory.Argument(
+              SyntaxFactory.MemberAccessExpression(
+                SyntaxKind.SimpleMemberAccessExpression,
+                SyntaxFactory.MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    SyntaxFactory.MemberAccessExpression(
+                        SyntaxKind.SimpleMemberAccessExpression,
+                            SyntaxFactory.IdentifierName(nameof(System)),
+                        SyntaxFactory.IdentifierName(nameof(System.Globalization))),
+                    SyntaxFactory.IdentifierName(nameof(System.Globalization.CultureInfo))),
+                SyntaxFactory.IdentifierName(nameof(System.Globalization.CultureInfo.InvariantCulture))))
+          }))
           : node;
       }
     }
