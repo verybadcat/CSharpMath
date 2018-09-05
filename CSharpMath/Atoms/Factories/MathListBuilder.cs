@@ -515,7 +515,7 @@ namespace CSharpMath.Atoms {
         }
       }
       while (HasCharacters && !(_currentEnvironment.Ended)) {
-        var list = BuildInternal(false, stopChar); 
+        var list = BuildInternal(false, stopChar);
         if (list == null) {
           return null;
         }
@@ -531,32 +531,32 @@ namespace CSharpMath.Atoms {
         SetError(@"Missing \end");
         return null;
       }
-      IMathAtom table = MathAtoms.Table(_currentEnvironment.Name, rows, out string errorMessage);
-      if (table == null && errorMessage != null) {
-        SetError(errorMessage);
+      var tableResult = MathAtoms.Table(_currentEnvironment.Name, rows);
+      if (tableResult.Error is string error) {
+        SetError(error);
         return null;
       }
       _currentEnvironment = oldEnv;
-      return table;
+      return tableResult.Value;
     }
 
 // ^ LaTeX -> Math atoms
 // v Math atoms -> LaTeX
 
     internal static Dictionary<float, string> SpaceToCommands { get; } = new Dictionary<float, string> {
-      {Structures.Space.ShortSpace.Length, "," },
-      {Structures.Space.MediumSpace.Length, ":" },
-      {Structures.Space.LongSpace.Length, ";" },
-      {-Structures.Space.ShortSpace.Length, "!" },
-      {Structures.Space.EmWidth.Length, "quad" },
-      {Structures.Space.EmWidth.Length * 2, "qquad" }
+      { Structures.Space.ShortSpace.Length, "," },
+      { Structures.Space.MediumSpace.Length, ":" },
+      { Structures.Space.LongSpace.Length, ";" },
+      { -Structures.Space.ShortSpace.Length, "!" },
+      { Structures.Space.EmWidth.Length, "quad" },
+      { Structures.Space.EmWidth.Length * 2, "qquad" }
     };
 
     internal static Dictionary<LineStyle, string> StyleToCommands { get; } = new Dictionary<LineStyle, string> {
-      {LineStyle.Display, "displaystyle" },
-      {LineStyle.Text, "textstyle" },
-      {LineStyle.Script, "scriptstyle" },
-      {LineStyle.ScriptScript, "scriptscriptstyle" }
+      { LineStyle.Display, "displaystyle" },
+      { LineStyle.Text, "textstyle" },
+      { LineStyle.Script, "scriptstyle" },
+      { LineStyle.ScriptScript, "scriptscriptstyle" }
     };
 
     public static string DelimiterToString(IMathAtom delimiter) {

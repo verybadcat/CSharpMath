@@ -255,9 +255,6 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
             case var _ when wordKind == WordKind.Whitespace: //control space
               atoms.Add();
               break;
-            case "backslash":
-              atoms.Add(@"\");
-              break;
             case "par":
               atoms.Break(3);
 #warning Should the newline and space occupy the same range?
@@ -316,6 +313,13 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                   return error;
                 break;
               }
+            case var alias when TextAtoms.PredefinedReplacementAliases.TryGetValue(alias, out var aliasResult):
+              string replaceResult = TextAtoms.PredefinedReplacements[first: aliasResult];
+              atoms.Add(replaceResult);
+              break;
+            case var replace when TextAtoms.PredefinedReplacements.TryGetByFirst(replace, out replaceResult):
+              atoms.Add(replaceResult);
+              break;
             case var command:
               if (displayMath != null) mathLaTeX.Append(command); //don't eat the command when parsing math
               else return @"Unknown command \" + command;

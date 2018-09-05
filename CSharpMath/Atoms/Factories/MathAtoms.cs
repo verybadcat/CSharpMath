@@ -558,111 +558,104 @@ namespace CSharpMath.Atoms {
       };
       
 
-    public static IMathAtom Table(
+    public static Structures.Result<IMathAtom> Table(
       string environment,
-      List<List<IMathList>> rows,
-      out string errorMessage) {
-      errorMessage = null;
+      List<List<IMathList>> rows) {
+      Style style;
       var table = new Table(environment) {
         Cells = rows
       };
-      IMathAtom r = null;
-      if (environment!=null && _matrixEnvironments.TryGetValue(environment, out var delimiters)) {
-        table.Environment = "matrix"; // TableEnvironment is set to matrix as delimiters are converted to latex outside the table.
-        table.InterColumnSpacing = 18;
-
-        var style = new Style(LineStyle.Text);
-        foreach (var row in table.Cells) {
-          foreach (var cell in row) {
-            cell.Insert(0, style);
-          }
-        }
-
-        if (delimiters != null) {
-          var inner = new Inner {
-            LeftBoundary = BoundaryAtom(delimiters.Value.First),
-            RightBoundary = BoundaryAtom(delimiters.Value.Second),
-            InnerList = MathLists.WithAtoms(table)
-          };
-          r = inner;
-        } else {
-          r = table;
-        }
-      }
-      else if (environment == null) {
-        table.InterRowAdditionalSpacing = 1;
-        for (int i=0; i<table.NColumns; i++) {
-          table.SetAlignment(ColumnAlignment.Left, i);
-        }
-        r = table;
-      }
-      else if (environment == "eqalign" || environment == "split" || environment == "aligned") {
-        if (table.NColumns!=2) {
-          errorMessage = environment + " environment can have only 2 columns";
-        } else {
-          // add a spacer before each of the second column elements, in order to create the correct spacing for "=" and other relations.
-          var spacer = Create(MathAtomType.Ordinary, string.Empty);
-          foreach (var row in table.Cells) {
-            if (row.Count > 1) {
-              row[1].Insert(0, spacer);
-            }
-          }
+      switch (environment) {
+        case null:
           table.InterRowAdditionalSpacing = 1;
-          table.SetAlignment(ColumnAlignment.Right, 0);
-          table.SetAlignment(ColumnAlignment.Left, 1);
-          r = table;
-        }
-      }
-      else if (environment == "displaylines" || environment == "gather") {
-        if (table.NColumns !=1) {
-          errorMessage = environment + " environment can only have 1 column.";
-          return null;
-        }
-        table.InterRowAdditionalSpacing = 1;
-        table.InterColumnSpacing = 0;
-        table.SetAlignment(ColumnAlignment.Center, 0);
-        r = table;
-      }
-      else if (environment == "eqnarray") {
-        if (table.NColumns!=3) {
-          errorMessage = environment + " must have exactly 3 columns.";
-        } else {
-          table.InterRowAdditionalSpacing = 1;
+          for (int i = 0; i < table.NColumns; i++) {
+            table.SetAlignment(ColumnAlignment.Left, i);
+          }
+          return table;
+        case var _ when _matrixEnvironments.TryGetValue(environment, out var delimiters):
+          table.Environment = "matrix"; // TableEnvironment is set to matrix as delimiters are converted to latex outside the table.
           table.InterColumnSpacing = 18;
-          table.SetAlignment(ColumnAlignment.Right, 0);
-          table.SetAlignment(ColumnAlignment.Center, 1);
-          table.SetAlignment(ColumnAlignment.Left, 2);
-          r = table;
-        }
-      }
-      else if (environment == "cases") {
-        if (table.NColumns < 1 || table.NColumns > 2) {
-          errorMessage = "cases environment must have 1 to 2 columns";
-        } else {
-          table.InterColumnSpacing = 18;
-          table.SetAlignment(ColumnAlignment.Left, 0);
-          if(table.NColumns == 2) table.SetAlignment(ColumnAlignment.Left, 1);
-          var style = new Style(LineStyle.Text);
+
+          style = new Style(LineStyle.Text);
           foreach (var row in table.Cells) {
             foreach (var cell in row) {
               cell.Insert(0, style);
             }
           }
-          // add delimiters
-          var inner = new Inner {
-            LeftBoundary = BoundaryAtom("{"),
-            RightBoundary = BoundaryAtom(".")
-          };
-          var space = ForLatexSymbolName(",");
-          inner.InnerList = MathLists.WithAtoms(space, table);
-          r = inner;
-        }
 
+          if (delimiters != null) {
+            var inner = new Inner {
+              LeftBoundary = BoundaryAtom(delimiters.Value.First),
+              RightBoundary = BoundaryAtom(delimiters.Value.Second),
+              InnerList = MathLists.WithAtoms(table)
+            };
+            return inner;
+          } else {
+            return table;
+          }
+        case "eqalign":
+        case "split":
+        case "aligned":
+          if (table.NColumns != 2) {
+            return environment + " environment can have only 2 columns";
+          } else {
+            // add a spacer before each of the second column elements, in order to create the correct spacing for "=" and other relations.
+            var spacer = Create(MathAtomType.Ordinary, string.Empty);
+            foreach (var row in table.Cells) {
+              if (row.Count > 1) {
+                row[1].Insert(0, spacer);
+              }
+            }
+            table.InterRowAdditionalSpacing = 1;
+            table.SetAlignment(ColumnAlignment.Right, 0);
+            table.SetAlignment(ColumnAlignment.Left, 1);
+            return table;
+          }
+        case "displaylines":
+        case "gather":
+          if (table.NColumns != 1) {
+            return environment + " environment can only have 1 column.";
+          }
+          table.InterRowAdditionalSpacing = 1;
+          table.InterColumnSpacing = 0;
+          table.SetAlignment(ColumnAlignment.Center, 0);
+          return table;
+        case "eqnarray":
+          if (table.NColumns != 3) {
+            return environment + " must have exactly 3 columns.";
+          } else {
+            table.InterRowAdditionalSpacing = 1;
+            table.InterColumnSpacing = 18;
+            table.SetAlignment(ColumnAlignment.Right, 0);
+            table.SetAlignment(ColumnAlignment.Center, 1);
+            table.SetAlignment(ColumnAlignment.Left, 2);
+            return table;
+          }
+        case "cases":
+          if (table.NColumns < 1 || table.NColumns > 2) {
+            return "cases environment must have 1 to 2 columns";
+          } else {
+            table.InterColumnSpacing = 18;
+            table.SetAlignment(ColumnAlignment.Left, 0);
+            if (table.NColumns == 2) table.SetAlignment(ColumnAlignment.Left, 1);
+            style = new Style(LineStyle.Text);
+            foreach (var row in table.Cells) {
+              foreach (var cell in row) {
+                cell.Insert(0, style);
+              }
+            }
+            // add delimiters
+            var inner = new Inner {
+              LeftBoundary = BoundaryAtom("{"),
+              RightBoundary = BoundaryAtom(".")
+            };
+            var space = ForLatexSymbolName(",");
+            inner.InnerList = MathLists.WithAtoms(space, table);
+            return inner;
+          }
+        default:
+          return "Unknown environment " + environment;
       }
-      return r;
-
     }
-   
-
   }
 }
