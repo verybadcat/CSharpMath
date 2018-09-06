@@ -109,6 +109,7 @@ namespace CSharpMath.Forms.Example {
     public const string VectorProjection = @"Proj_\vec{v}\vec{u}=|\vec u|\cos\theta\times\frac\vec v{|\vec v|}=|\vec u|\frac{\vec u \cdot \vec v}{|\vec u||\vec v|}\times\frac\vec v{|\vec v|}\\\text{Suppose \mathit{u} and \mathit v are unit vectors, }Proj_\vec v\vec u = (\vec u\cdot\vec v)\vec v";
     public const string SimpleShortProof = @"\begin{aligned}&\because x+3=5\\&\therefore x=2\end{aligned}";
     public const string FunctionDomainCodomain = @"f\colon\mathbb N\rightarrow\mathbb N";
+    public const string LnEquation = @"\ln(P) = a_0 - \frac{a_1}{a_2 + T}";
 
     public ExamplesPage() => InitializeComponent();
 
