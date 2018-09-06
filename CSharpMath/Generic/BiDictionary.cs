@@ -6,16 +6,96 @@ using System.Linq;
 
 namespace CSharpMath
 {
+  public class AliasDictionary<K, V> : ICollection<KeyValuePair<K, V>> {
+    public AliasDictionary() {
+      aliases = new Dictionary<K, V>();
+      main = new BiDictionary<K, V>();
+    }
+    public AliasDictionary(int capacity) {
+      aliases = new Dictionary<K, V>(capacity);
+      main = new BiDictionary<K, V>(capacity);
+    }
+
+    readonly Dictionary<K, V> aliases;
+    readonly BiDictionary<K, V> main;
+
+    public void Add(V value, params K[] keys) {
+      if (main.Contains(value))
+        foreach (var key in keys)
+          aliases.Add(key, value);
+      else if(keys.Length > 0) {
+        main.Add(keys[0], value);
+        foreach (var key in keys.Skip(1))
+          aliases.Add(key, value);
+      }
+    }
+
+    public IEnumerable<K> Keys => aliases.Keys.Concat(main.Firsts);
+    public IEnumerable<V> Values => main.Seconds;
+
+    public int Count => aliases.Keys.Count + main.Firsts.Count;
+
+    public bool IsReadOnly => false;
+
+    public V this[K key] => main.TryGetByFirst(key, out var second) ? second : aliases[key];
+
+    public K this[V value] => main[value];
+
+    public bool TryGetValue(K first, out V value) =>
+      main.TryGetByFirst(first, out value) || aliases.TryGetValue(first, out value);
+
+    public bool TryGetKey(V second, out K key) =>
+      main.TryGetBySecond(second, out key);
+
+    public IEnumerator<KeyValuePair<K, V>> GetEnumerator() =>
+      main.Concat(aliases).GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator() => main.Concat(aliases).GetEnumerator();
+    IEnumerator<KeyValuePair<K, V>> IEnumerable<KeyValuePair<K, V>>.GetEnumerator() =>
+      main.Concat(aliases).GetEnumerator();
+
+    void ICollection<KeyValuePair<K, V>>.Add(KeyValuePair<K, V> item) => Add(item.Value, item.Key);
+
+    public void Clear() {
+      main.Clear();
+      aliases.Clear();
+    }
+
+    public bool Contains(K first) => main.Contains(first) || aliases.ContainsKey(first);
+    public bool Contains(V second) => main.Contains(second);
+    public bool Contains(KeyValuePair<K, V> pair) =>
+      (main.TryGetByFirst(pair.Key, out var second) || aliases.TryGetValue(pair.Key, out second)) && EqualityComparer<V>.Default.Equals(second, pair.Value);
+
+    public void CopyTo(KeyValuePair<K, V>[] array, int arrayIndex) {
+      foreach (var pair in main.Concat(aliases))
+        array[arrayIndex++] = pair;
+    }
+
+    public bool Remove(K first, V second) =>
+      main.Remove(first, second) || aliases.Remove(first);
+    public bool Remove(KeyValuePair<K, V> pair) =>
+      main.Remove(pair) || aliases.Remove(pair.Key);
+  }
+
   //https://stackoverflow.com/questions/255341/getting-key-of-value-of-a-generic-dictionary/255638#255638
   public class BiDictionary<TFirst, TSecond> : ICollection<KeyValuePair<TFirst, TSecond>> {
-    readonly Dictionary<TFirst, TSecond> firstToSecond = new Dictionary<TFirst, TSecond>();
-    readonly Dictionary<TSecond, TFirst> secondToFirst = new Dictionary<TSecond, TFirst>();
+    public BiDictionary() : base() {
+      firstToSecond = new Dictionary<TFirst, TSecond>();
+      secondToFirst = new Dictionary<TSecond, TFirst>();
+    }
+    public BiDictionary(int capacity) {
+      firstToSecond = new Dictionary<TFirst, TSecond>(capacity);
+      secondToFirst = new Dictionary<TSecond, TFirst>(capacity);
+    }
+
+    readonly Dictionary<TFirst, TSecond> firstToSecond;
+    readonly Dictionary<TSecond, TFirst> secondToFirst;
 
     public void Add(TFirst first, TSecond second) {
       if (firstToSecond.ContainsKey(first))
-        throw new ArgumentException("Duplicate first");
+        throw new ArgumentException("Duplicate first", nameof(first));
       else if (secondToFirst.ContainsKey(second))
-        throw new ArgumentException("Duplicate second");
+        throw new ArgumentException("Duplicate second", nameof(second));
       firstToSecond.Add(first, second);
       secondToFirst.Add(second, first);
     }
@@ -71,8 +151,16 @@ namespace CSharpMath
   }
 
   public class MultiDictionary<TFirst, TSecond> : IEnumerable<KeyValuePair<TFirst, TSecond>> {
-    Dictionary<TFirst, IList<TSecond>> firstToSecond = new Dictionary<TFirst, IList<TSecond>>();
-    Dictionary<TSecond, IList<TFirst>> secondToFirst = new Dictionary<TSecond, IList<TFirst>>();
+    public MultiDictionary() : base() {
+      firstToSecond = new Dictionary<TFirst, IList<TSecond>>();
+      secondToFirst = new Dictionary<TSecond, IList<TFirst>>();
+    }
+    public MultiDictionary(int capacity) {
+      firstToSecond = new Dictionary<TFirst, IList<TSecond>>(capacity);
+      secondToFirst = new Dictionary<TSecond, IList<TFirst>>(capacity);
+    }
+    Dictionary<TFirst, IList<TSecond>> firstToSecond;
+    Dictionary<TSecond, IList<TFirst>> secondToFirst;
 
     private static readonly ReadOnlyCollection<TFirst> EmptyFirstList =
       new ReadOnlyCollection<TFirst>(new TFirst[0]);
@@ -132,6 +220,5 @@ namespace CSharpMath
       firstToSecond.SelectMany(p => p.Value.Select(i => new KeyValuePair<TFirst, TSecond>(p.Key, i))).GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
   }
 }

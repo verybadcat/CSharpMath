@@ -305,19 +305,25 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                 break;
               }
             //case "textbf", "textit", ...
-            case var command when !command.Contains("math") && FontStyleExtensions.FontStyles.TryGetByFirst(command.Replace("text", "math"), out var fontStyle): {
+            case var textStyle when !textStyle.Contains("math") && FontStyleExtensions.FontStyles.TryGetByFirst(textStyle.Replace("text", "math"), out var fontStyle): {
                 if (ReadArgument()
                   .Bind(Build)
-                  .Bind(builtContent => atoms.Add(builtContent, fontStyle, command.Length))
+                  .Bind(builtContent => atoms.Add(builtContent, fontStyle, textStyle.Length))
                   .Error is string error)
                   return error;
                 break;
               }
-            case var alias when TextAtoms.PredefinedReplacementAliases.TryGetValue(alias, out var aliasResult):
-              string replaceResult = TextAtoms.PredefinedReplacements[first: aliasResult];
-              atoms.Add(replaceResult);
-              break;
-            case var replace when TextAtoms.PredefinedReplacements.TryGetByFirst(replace, out replaceResult):
+            //case "^", "\"", ...
+            case var textAccent when TextAtoms.PredefinedAccents.TryGetByFirst(textAccent[0], out var accent): {
+                if (ReadArgument()
+                  .Bind(Build)
+                  .Bind(builtContent => atoms.Add(builtContent, accent, textAccent.Length))
+                  .Error is string error)
+                  return error;
+                break;
+              }
+            //case "textasciicircum", "textless", ...
+            case var textSymbol when TextAtoms.PredefinedTextSymbols.TryGetValue(textSymbol, out var replaceResult):
               atoms.Add(replaceResult);
               break;
             case var command:

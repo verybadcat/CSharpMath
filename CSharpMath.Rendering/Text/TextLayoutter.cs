@@ -106,6 +106,45 @@ namespace CSharpMath.Rendering {
             FinalizeInlineDisplay(spaceGlyph.Typeface.Ascender * scale, spaceGlyph.Typeface.Descender * scale, spaceGlyph.Typeface.LineGap * scale,
               forbidAtLineStart: true); //No spaces at start of line
             break;
+#warning ___WIP___
+#if false
+          case TextAtom.Accent a:
+            float _GetSkew(IAccent accent, float accenteeWidth, TGlyph accentGlyph) {
+              if (accent.Nucleus.Length == 0) {
+                // no accent
+                return 0;
+              }
+              float accentAdjustment = _mathTable.GetTopAccentAdjustment(_styleFont, accentGlyph);
+              float accenteeAdjustment = 0;
+              if (!_IsSingleCharAccent(accent)) {
+                accenteeAdjustment = accenteeWidth / 2;
+              } else {
+                var innerAtom = accent.InnerList.Atoms[0];
+                var accenteeGlyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, innerAtom.Nucleus.Length - 1, innerAtom.Nucleus);
+                accenteeAdjustment = _context.MathTable.GetTopAccentAdjustment(_styleFont, accenteeGlyph);
+              }
+              return accenteeAdjustment - accentAdjustment;
+            }
+            var (relative, absolute) = Layout(a.Content, fonts, canvasWidth, additionalLineSpacing);
+            var accentee = new MathListDisplay<Fonts, Glyph>(new[] { relative, absolute });
+            var rawAccentGlyph = GlyphFinder.Instance.Lookup(fonts, a.AccentChar);
+            var accenteeWidth = accentee.Width;
+            scale = rawAccentGlyph.Typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);
+            var accentGlyph = _FindVariantGlyph(rawAccentGlyph, accenteeWidth, out float glyphAscent, out float glyphDescent, out float glyphWidth);
+            var delta = Math.Min(accentee.Ascent, fonts.MathConsts.AccentBaseHeight.Value * scale);
+            float skew = _GetSkew(accent, accenteeWidth, accentGlyph);
+            var height = accentee.Ascent - delta;
+            var accentPosition = new System.Drawing.PointF(skew, height);
+            display = new GlyphDisplay<Fonts, Glyph>(accentGlyph, a.Range, fonts) {
+              Ascent = glyphAscent,
+              Descent = glyphDescent,
+              Width = glyphWidth,
+              Position = accentPosition
+            };
+            display = new AccentDisplay<Fonts, Glyph>(new GlyphDisplay<Fonts, Glyph>(accentGlyph, a.Range, fonts), new MathListDisplay<Fonts, Glyph>(new[] { relative, absolute }));
+            FinalizeInlineDisplay(accentGlyph.Typeface.Ascender * scale, accentGlyph.Typeface.Descender * scale, accentGlyph.Typeface.LineGap * scale);
+            break;
+#endif
           case null:
             throw new InvalidOperationException("TextAtoms should never be null. You must have sneaked one in.");
           case var a:

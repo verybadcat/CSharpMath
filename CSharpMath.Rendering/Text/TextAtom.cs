@@ -30,6 +30,15 @@ namespace CSharpMath.Rendering {
     public sealed class ControlSpace : TextAtom {
       public ControlSpace(int index) : base(new Range(index, 2)) { } // backslash + whitespace = 2 characters
     }
+    public sealed class Accent : TextAtom {
+      public Accent(TextAtom content, char accent, int index, int commandLength) : base(new Range(index, commandLength + content.Range.Length + 2 /*{ and }*/)) =>
+        (Content, AccentChar, content.Range) =
+          (content, accent, new Range(content.Range.Location + commandLength + index + 1/*{*/, content.Range.Length));
+
+      public TextAtom Content { get; }
+
+      public char AccentChar { get; }
+    }
     public sealed class Math : TextAtom {
       public Math(Interfaces.IMathList content, bool displayStyle, Range range) : base(range) => (Content, DisplayStyle) = (content, displayStyle);
 
