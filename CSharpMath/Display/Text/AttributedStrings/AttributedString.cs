@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -44,10 +44,14 @@ namespace CSharpMath.Display.Text {
       TryFuseRunAt(_Runs.Count - 1);
     }
 
+    public void Clear() => _Runs.Clear();
+
     public override string ToString() => "AttributedString " + Text;
   }
 
+  [Obsolete("Is any code using this?", true)]
   public static class AttributedStringExtensions {
+    [Obsolete("Is any code using this?", true)]
     public static AttributedString<TFont, TGlyph> Combine<TFont, TGlyph>(AttributedString<TFont, TGlyph> attr1, AttributedString<TFont, TGlyph> attr2) 
         where TFont: MathFont<TGlyph> {
       if (attr1 == null) {
@@ -59,10 +63,13 @@ namespace CSharpMath.Display.Text {
       attr1.AppendAttributedString(attr2);
       return attr1;
     }
+
+    [Obsolete("Is any code using this?", true)]
     public static AttributedString<TFont, TGlyph> Combine<TFont, TGlyph>(AttributedGlyphRun<TFont, TGlyph> run1, AttributedGlyphRun<TFont, TGlyph> run2)
       where TFont: MathFont<TGlyph>
       => AttributedStrings.FromGlyphRuns(run1, run2);
 
+    [Obsolete("Is any code using this?", true)]
     public static AttributedString<TFont, TGlyph> Combine<TFont, TGlyph>(AttributedString<TFont, TGlyph> aStr, AttributedGlyphRun<TFont, TGlyph> run) 
       where TFont: MathFont<TGlyph> {
       if (aStr == null) {
