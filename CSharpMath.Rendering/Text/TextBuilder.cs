@@ -314,7 +314,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                 break;
               }
             //case "^", "\"", ...
-            case var textAccent when TextAtoms.PredefinedAccents.TryGetByFirst(textAccent[0], out var accent): {
+            case var textAccent when TextAtoms.PredefinedAccents.TryGetByFirst(textAccent, out var accent): {
                 if (ReadArgument()
                   .Bind(Build)
                   .Bind(builtContent => atoms.Add(builtContent, accent, textAccent.Length))

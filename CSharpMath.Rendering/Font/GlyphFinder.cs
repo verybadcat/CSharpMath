@@ -29,5 +29,7 @@ namespace CSharpMath.Rendering {
       Typography.OpenFont.StringUtils.GetCodepoints(str.ToCharArray()).Select(c => Lookup(fonts, c)).ToArray();
 
     public bool GlyphIsEmpty(Glyph glyph) => glyph.IsEmpty;
+
+    public Glyph EmptyGlyph => Glyph.Empty;
   }
 }

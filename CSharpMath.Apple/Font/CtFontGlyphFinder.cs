@@ -1,4 +1,4 @@
-﻿using CSharpMath.FrontEnd;
+using CSharpMath.FrontEnd;
 using TFont = CSharpMath.Apple.AppleMathFont;
 using TGlyph = System.UInt16;
 using System.Globalization;
@@ -49,6 +49,8 @@ namespace CSharpMath.Apple {
 
     public bool GlyphIsEmpty(TGlyph glyph)
       => glyph == 0;
+
+    public TGlyph EmptyGlyph => 0;
 
     public TGlyph FindGlyphForCharacterAtIndex(TFont font, int index, string str) {
 

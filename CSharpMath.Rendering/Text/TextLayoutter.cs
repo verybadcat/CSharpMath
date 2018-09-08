@@ -7,7 +7,7 @@ namespace CSharpMath.Rendering {
   using Displays = Display.MathListDisplay<Fonts, Glyph>;
 
   public static class TextLayoutter {
-    public static (Displays relative, Displays absolute) Layout(TextAtom input, Fonts inputFont, float canvasWidth, float additionalLineSpacing) {
+    public static (Displays relative, Displays absolute) Layout(TextAtom input, Fonts inputFont, float canvasWidth, float additionalLineSpacing, bool fillTextGaps = true) {
 #warning Multiply these constants by resolution
       const float abovedisplayskip = 12, abovedisplayshortskip = 0, belowdisplayskip = 12, belowdisplayshortskip = 7;
       if (input == null) return
@@ -75,7 +75,8 @@ namespace CSharpMath.Rendering {
               if (line.Width + display.Width > canvasWidth && !forbidAtLineStart)
                 BreakLine(displayList, displayMathList);
               //rawDescender is taken directly from font file and is negative, while IDisplay.Descender is positive
-              line.Add(display, ascender, -rawDescender, lineGap);
+              if (fillTextGaps) line.Add(display, ascender, -rawDescender, lineGap);
+              else line.Add(display, float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
             }
           case TextAtom.Text t:
             var content = UnicodeFontChanger.Instance.ChangeFont(t.Content, style);
@@ -107,8 +108,15 @@ namespace CSharpMath.Rendering {
               forbidAtLineStart: true); //No spaces at start of line
             break;
           case TextAtom.Accent a:
-            //display = new AccentDisplay<Fonts, Glyph>(new GlyphDisplay<Fonts, Glyph>(accentGlyph, a.Range, fonts), new MathListDisplay<Fonts, Glyph>(new[] { relative, absolute }));
-            //FinalizeInlineDisplay(accentGlyph.Typeface.Ascender * scale, accentGlyph.Typeface.Descender * scale, accentGlyph.Typeface.LineGap * scale);
+            var (accentee, invalidDisplayMaths) = Layout(a.Content, fonts, canvasWidth, additionalLineSpacing, false);
+            WarningException.WarnIf(invalidDisplayMaths.Displays.Count > 0, "Display maths inside an accentee is unsupported -- ignoring display maths");
+            var accentGlyph = GlyphFinder.Instance.FindGlyphForCharacterAtIndex(fonts, a.AccentChar.Length - 1, a.AccentChar);
+            var accenteeLastGlyph = a.Content is TextAtom.IText txt ? GlyphFinder.Instance.FindGlyphForCharacterAtIndex(fonts, txt.Text.Length - 1, txt.Text) : GlyphFinder.Instance.EmptyGlyph;
+            var accentDisplay = Typesetter<Fonts, Glyph>.CreateAccentGlyphDisplay(accentee, accenteeLastGlyph, accentGlyph, TypesettingContext.Instance, fonts, fonts, a.Range);
+            
+            display = new AccentDisplay<Fonts, Glyph>(accentDisplay, accentee);
+            scale = accentGlyph.Typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);
+            FinalizeInlineDisplay(accentGlyph.Typeface.Ascender * scale, accentGlyph.Typeface.Descender * scale, accentGlyph.Typeface.LineGap * scale);
             break;
           case null:
             throw new InvalidOperationException("TextAtoms should never be null. You must have sneaked one in.");

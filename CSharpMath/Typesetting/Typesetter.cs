@@ -346,13 +346,16 @@ namespace CSharpMath {
         return accentee;
       }
       
-      var innerAtom = accent.InnerList.Atoms[0];
-      var accenteeLastGlyph = innerAtom.Nucleus.Length > 0 ? _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, innerAtom.Nucleus.Length - 1, innerAtom.Nucleus) : default;
-
+      TGlyph accenteeSingleGlyph;
+      GlyphDisplay<TFont, TGlyph> accentGlyphDisplay;
       var isSingleCharAccent = _IsSingleCharAccent(accent);
-      var accentGlyphDisplay = CreateAccentDisplay(accentee, accenteeLastGlyph, accent.Nucleus, isSingleCharAccent, _context, _font, _styleFont, accent.IndexRange);
-
-      if (isSingleCharAccent && (accent.Subscript!=null || accent.Superscript!=null)) {
+      if (isSingleCharAccent) {
+        var innerNucleus = accent.InnerList.Atoms[0].Nucleus;
+        accenteeSingleGlyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, innerNucleus.Length - 1, innerNucleus);
+      } else accenteeSingleGlyph = _context.GlyphFinder.EmptyGlyph;
+      accentGlyphDisplay = CreateAccentGlyphDisplay(accentee, accenteeSingleGlyph, _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, accent.Nucleus.Length - 1, accent.Nucleus), _context, _font, _styleFont, accent.IndexRange);
+      if (isSingleCharAccent && (accent.Subscript != null || accent.Superscript != null)) {
+        var innerAtom = accent.InnerList.Atoms[0];
         // Attach the super/subscripts to the accentee instead of the accent.
         innerAtom.Subscript = accent.Subscript;
         innerAtom.Superscript = accent.Superscript;
@@ -367,21 +370,15 @@ namespace CSharpMath {
       var display = new AccentDisplay<TFont, TGlyph>(accentGlyphDisplay, accentee);
       // WJWJWJ -- In the display, the position is the Accentee position. Is that correct, or should we be
       // setting it here? (Happypig375 edit: That should be correct but _currentPosition should have been added like below.)
-      accentee.Position = accentee.Position.Plus(_currentPosition);
+      display.Position = display.Position.Plus(_currentPosition);
       return display;
     }
 
-    public static GlyphDisplay<TFont, TGlyph> CreateAccentDisplay(MathListDisplay<TFont, TGlyph> accentee, TGlyph accenteeLastGlyph, string accent, bool isSingleChar, TypesettingContext<TFont, TGlyph> context, TFont normalFont, TFont styleFont, Range atomRange) {
-      if (string.IsNullOrEmpty(accent)) {
-        // no accent
-        return null;
-      }
-
-      var rawAccentGlyph = context.GlyphFinder.FindGlyphForCharacterAtIndex(normalFont, accent.Length - 1, accent);
+    public static GlyphDisplay<TFont, TGlyph> CreateAccentGlyphDisplay(MathListDisplay<TFont, TGlyph> accentee, TGlyph accenteeSingleGlyph, TGlyph accent, TypesettingContext<TFont, TGlyph> context, TFont normalFont, TFont styleFont, Range atomRange) {
       var accenteeWidth = accentee.Width;
-      TGlyph accentGlyph = _FindVariantGlyph(context.MathTable, context.GlyphBoundsProvider, styleFont, rawAccentGlyph, accenteeWidth, out float glyphAscent, out float glyphDescent, out float glyphWidth);
+      TGlyph accentGlyph = _FindVariantGlyph(context.MathTable, context.GlyphBoundsProvider, styleFont, accent, accenteeWidth, out float glyphAscent, out float glyphDescent, out float glyphWidth);
       var delta = Math.Min(accentee.Ascent, context.MathTable.AccentBaseHeight(styleFont));
-      float skew = _GetSkew(context.MathTable, context.GlyphFinder, normalFont, styleFont, isSingleChar, accenteeWidth, accentGlyph, accenteeLastGlyph);
+      float skew = _GetSkew(context.MathTable, context.GlyphFinder, normalFont, styleFont, accenteeWidth, accentGlyph, accenteeSingleGlyph);
       var height = accentee.Ascent - delta;
       var accentPosition = new PointF(skew, height);
       return new GlyphDisplay<TFont, TGlyph>(accentGlyph, atomRange, styleFont) {
@@ -393,14 +390,14 @@ namespace CSharpMath {
     }
 
 
-    private static float _GetSkew(FontMathTable<TFont, TGlyph> mathTable, IGlyphFinder<TFont, TGlyph> glyphFinder, TFont normalFont, TFont styleFont, bool isSingleChar, float accenteeWidth, TGlyph accentGlyph, TGlyph accenteeLastGlyph) {
+    private static float _GetSkew(FontMathTable<TFont, TGlyph> mathTable, IGlyphFinder<TFont, TGlyph> glyphFinder, TFont normalFont, TFont styleFont, float accenteeWidth, TGlyph accentGlyph, TGlyph accenteeSingleGlyph) {
       float accentAdjustment = mathTable.GetTopAccentAdjustment(styleFont, accentGlyph);
-      float accenteeAdjustment = 0;
-      if (!isSingleChar) {
+      float accenteeAdjustment;
+      if (glyphFinder.GlyphIsEmpty(accenteeSingleGlyph)) {
         accenteeAdjustment = accenteeWidth / 2;
       }
       else {
-        accenteeAdjustment = mathTable.GetTopAccentAdjustment(styleFont, accenteeLastGlyph);
+        accenteeAdjustment = mathTable.GetTopAccentAdjustment(styleFont, accenteeSingleGlyph);
       }
       return accenteeAdjustment - accentAdjustment;
     }
@@ -877,7 +874,7 @@ namespace CSharpMath {
     }
 
     private IDownshiftableDisplay<TFont, TGlyph> _GetRadicalGlyph(float radicalHeight) {
-      TGlyph radicalGlyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, 0, "\u221A");
+      TGlyph radicalGlyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, 0, Constants.Symbols.SquareRoot);
       TGlyph glyph = _FindGlyph(radicalGlyph, radicalHeight, out float glyphAscent, out float glyphDescent, out float glyphWidth);
 
       IDownshiftableDisplay<TFont, TGlyph> glyphDisplay = null;

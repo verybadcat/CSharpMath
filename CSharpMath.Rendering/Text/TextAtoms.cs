@@ -52,34 +52,30 @@ namespace CSharpMath.Rendering {
       { "␣", "textvisiblespace" },
       { ">", "textgreater" },
     };
-    [System.Obsolete("Work in progress. Don't use because it won't work anyway.")]
-    public static BiDictionary<char, char> PredefinedAccents { get; } = new BiDictionary<char, char> {
-#warning ___WIP___
-#if false
+    public static BiDictionary<string, string> PredefinedAccents { get; } = new BiDictionary<string, string> {
       //textsuperscript, textsubscript
       //textcircled
-      { '`' , '\u0300' }, //grave
-                     { '\'' , '\u0301' }, //acute
-                     { '^' , '\u0302' },  //circumflex
-                     { '"' , '\u0308' }, //umlaut, trema or dieresis
-                     { '~' , '\u0303' }, //tilde
-                     { '.' , '\u0307' }, //dot
-                     { 't', '\u20E9' }, //tie
-                                        /*{ 'bar' , '\u0304' },
-                                        { 'overbar', '\u0305' }, //not in iosMath
-                                        { 'breve' , '\u0306' },
-                                        { 'ovhook', '\u0309' }, //not in iosMath
-                                        { 'ocirc', '\u030A' }, //not in iosMath
-                                        { 'check' , '\u030C' },
-                                        { 'leftharpoonaccent', '\u20D0' }, //not in iosMath
-                                        { 'rightharpoonaccent', '\u20D1' }, //not in iosMath
-                                        { 'vertoverlay', '\u20D2' }, //not in iosMath
-                                        { 'vec' , '\u20D7' },
-                                        { 'dddot', '\u20DB' }, //not in iosMath
-                                        { 'ddddot', '\u20DC' }, //not in iosMath
-                                        { 'asteraccent', '\u20F0' }, //not in iosMath
-                                        { 'threeunderdot', '\u20E8' } //not in iosMath*/
-#endif
+      { "`" , "\u0300" }, //grave
+                     { "'" , "\u0301" }, //acute
+                     { "^" , "\u0302" },  //circumflex
+                     { "\"" , "\u0308" }, //umlaut, trema or dieresis
+                     { "~" , "\u0303" }, //tilde
+                     { "." , "\u0307" }, //dot
+                     { "t", "\u20E9" }, //tie
+                                        /*{ "bar" , "\u0304" },
+                                        { "overbar", "\u0305" }, //not in iosMath
+                                        { "breve" , "\u0306" },
+                                        { "ovhook", "\u0309" }, //not in iosMath
+                                        { "ocirc", "\u030A" }, //not in iosMath
+                                        { "check" , "\u030C" },
+                                        { "leftharpoonaccent", "\u20D0" }, //not in iosMath
+                                        { "rightharpoonaccent", "\u20D1" }, //not in iosMath
+                                        { "vertoverlay", "\u20D2" }, //not in iosMath
+                                        { "vec" , "\u20D7" },
+                                        { "dddot", "\u20DB" }, //not in iosMath
+                                        { "ddddot", "\u20DC" }, //not in iosMath
+                                        { "asteraccent", "\u20F0" }, //not in iosMath
+                                        { "threeunderdot", "\u20E8" } //not in iosMath*/
     };
 
   }

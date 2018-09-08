@@ -9,7 +9,7 @@ namespace CSharpMath.Rendering {
 
     private void Add(TextAtom atom) { _list.Add(atom); TextLength += atom.Range.Length; }
     public void Add() => Add(new TextAtom.ControlSpace(TextLength));
-    public void Add(TextAtom atom, char accent, int sourceLength) => Add(new TextAtom.Accent(atom, accent, TextLength, sourceLength));
+    public void Add(TextAtom atom, string accent, int sourceLength) => Add(new TextAtom.Accent(atom, accent, TextLength, sourceLength));
     public void Add(string text) => Add(new TextAtom.Text(text, TextLength));
     public void Add(Structures.Space space, int sourceLength) => Add(new TextAtom.Space(space, TextLength, sourceLength));
     public void Add(TextAtom atom, Enumerations.FontStyle style, int commandLength) => Add(new TextAtom.Style(atom, style, TextLength, commandLength));

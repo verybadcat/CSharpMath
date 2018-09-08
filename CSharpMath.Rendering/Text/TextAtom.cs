@@ -11,33 +11,45 @@ namespace CSharpMath.Rendering {
 
     public Range Range { get; private set; }
 
+    //Text interface for accents
+    public interface IText {
+      string Text { get; }
+    }
+
     //Concrete types
-    public sealed class Text : TextAtom {
+    public sealed class Text : TextAtom, IText {
       public Text(string content, int index) : base(new Range(index, content.Length)) =>
-        Content = string.IsNullOrEmpty(content) ? throw new System.ArgumentException("Null or an empty string was provided.") : content;
+        Content = string.IsNullOrWhiteSpace(content) ? throw new System.ArgumentException("Null, an empty string or whitespace was provided.") : content;
 
       public string Content { get; private set; }
+
+      string IText.Text => Content;
 
       internal void Append(string moreText) => Content += moreText;
     }
     public sealed class Newline : TextAtom {
       public Newline(int index, int length) : base(new Range(index, length)) { }
     }
-    public sealed class Space : TextAtom {
+    public sealed class Space : TextAtom, IText {
       public Space(Structures.Space space, int index, int length) : base(new Range(index, length)) => Content = space;
       public Structures.Space Content { get; }
-    }
-    public sealed class ControlSpace : TextAtom {
+
+       string IText.Text => " ";
+  }
+    public sealed class ControlSpace : TextAtom, IText {
       public ControlSpace(int index) : base(new Range(index, 2)) { } // backslash + whitespace = 2 characters
+      string IText.Text => " ";
     }
-    public sealed class Accent : TextAtom {
-      public Accent(TextAtom content, char accent, int index, int commandLength) : base(new Range(index, commandLength + content.Range.Length + 2 /*{ and }*/)) =>
+    public sealed class Accent : TextAtom, IText {
+      public Accent(TextAtom content, string accent, int index, int commandLength) : base(new Range(index, commandLength + content.Range.Length + 2 /*{ and }*/)) =>
         (Content, AccentChar, content.Range) =
           (content, accent, new Range(content.Range.Location + commandLength + index + 1/*{*/, content.Range.Length));
 
       public TextAtom Content { get; }
 
-      public char AccentChar { get; }
+      public string AccentChar { get; }
+
+      string IText.Text => AccentChar.ToString();
     }
     public sealed class Math : TextAtom {
       public Math(Interfaces.IMathList content, bool displayStyle, Range range) : base(range) => (Content, DisplayStyle) = (content, displayStyle);

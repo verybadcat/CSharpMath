@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -7,6 +7,7 @@ namespace CSharpMath.FrontEnd {
   public interface IGlyphFinder<TFont, TGlyph> where TFont : Display.MathFont<TGlyph> {
     TGlyph FindGlyphForCharacterAtIndex(TFont font, int index, string str);
     TGlyph[] FindGlyphs(TFont font, string str);
+    TGlyph EmptyGlyph { get; }
     bool GlyphIsEmpty(TGlyph glyph);
   }
 }

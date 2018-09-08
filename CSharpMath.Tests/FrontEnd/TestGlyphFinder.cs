@@ -1,4 +1,4 @@
-﻿using CSharpMath.Display;
+using CSharpMath.Display;
 using CSharpMath.FrontEnd;
 using System;
 using System.Collections.Generic;
@@ -17,6 +17,7 @@ namespace CSharpMath.Tests.FrontEnd
 
     public string FindStringDebugPurposesOnly(char[] glyphs) => new string(glyphs);
     public bool GlyphIsEmpty(char glyph)
-      => glyph == 0;
+      => glyph == '\0';
+    public char EmptyGlyph => '\0';
   }
 }
