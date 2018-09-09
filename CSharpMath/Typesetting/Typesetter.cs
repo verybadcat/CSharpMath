@@ -404,7 +404,7 @@ namespace CSharpMath {
 
     private static TGlyph _FindVariantGlyph(FontMathTable<TFont, TGlyph> mathTable, IGlyphBoundsProvider<TFont, TGlyph> boundsProvider, TFont styleFont, TGlyph rawGlyph, float targetWidth, out float glyphAscent, out float glyphDescent, out float glyphWidth) {
       var glyphs = mathTable.GetHorizontalVariantsForGlyph(rawGlyph);
-      int nGlyphs = glyphs.Count();
+      int nGlyphs = glyphs.Length;
       if (nGlyphs == 0) {
         throw new ArgumentException("There should always be at least one variant -- the glyph itself");
       }

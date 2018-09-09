@@ -124,6 +124,7 @@ namespace CSharpMath.Rendering {
               Typesetter<Fonts, Glyph>.UnicodeLengthIsOne(txt.Text) ?
               GlyphFinder.Instance.FindGlyphForCharacterAtIndex(fonts, txt.Text.Length - 1, txt.Text):
               GlyphFinder.Instance.EmptyGlyph;
+#warning WIP: More effective way than IText (IText can't recurse)
             if (a.Content is TextAtom.IText txt1)
               accenteeSingleGlyph = FindGlyphForText(txt1);
             else if (a.Content is TextAtom.List accenteeList && accenteeList.Content.Count == 1 && accenteeList.Content[0] is TextAtom.IText txt2)
