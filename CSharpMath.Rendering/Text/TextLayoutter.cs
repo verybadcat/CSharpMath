@@ -7,7 +7,7 @@ namespace CSharpMath.Rendering {
   using Displays = Display.MathListDisplay<Fonts, Glyph>;
 
   public static class TextLayoutter {
-    public static (Displays relative, Displays absolute) Layout(TextAtom input, Fonts inputFont, float canvasWidth, float additionalLineSpacing, bool fillTextGaps = true) {
+    public static (Displays relative, Displays absolute) Layout(TextAtom input, Fonts inputFont, float canvasWidth, float additionalLineSpacing) {
 #warning Multiply these constants by resolution
       const float abovedisplayskip = 12, abovedisplayshortskip = 0, belowdisplayskip = 12, belowdisplayshortskip = 7;
       if (input == null) return
@@ -29,7 +29,8 @@ namespace CSharpMath.Rendering {
         List<IDisplay<Fonts, Glyph>> displayList,
         List<IDisplay<Fonts, Glyph>> displayMathList,
         FontStyle style,
-        Structures.Color? color
+        Structures.Color? color,
+        bool fillTextGaps = true
       ) {
 
         IDisplay<Fonts, Glyph> display;
@@ -108,11 +109,17 @@ namespace CSharpMath.Rendering {
               forbidAtLineStart: true); //No spaces at start of line
             break;
           case TextAtom.Accent a:
-            var (accentee, invalidDisplayMaths) = Layout(a.Content, fonts, canvasWidth, additionalLineSpacing, false);
-            WarningException.WarnIf(invalidDisplayMaths.Displays.Count > 0, "Display maths inside an accentee is unsupported -- ignoring display maths");
+            var accenteeAtomList = new List<IDisplay<Fonts, Glyph>>();
+            var invalidDisplayMaths = new List<IDisplay<Fonts, Glyph>>();
+            AddDisplaysWithLineBreaks(a.Content, fonts, accenteeAtomList, invalidDisplayMaths, style, color, false);
+            WarningException.WarnIf(invalidDisplayMaths.Count > 0, "Display maths inside an accentee is unsupported -- ignoring display maths");
+            var accentee = new Displays(accenteeAtomList);
             var accentGlyph = GlyphFinder.Instance.FindGlyphForCharacterAtIndex(fonts, a.AccentChar.Length - 1, a.AccentChar);
-            var accenteeLastGlyph = a.Content is TextAtom.IText txt ? GlyphFinder.Instance.FindGlyphForCharacterAtIndex(fonts, txt.Text.Length - 1, txt.Text) : GlyphFinder.Instance.EmptyGlyph;
-            var accentDisplay = Typesetter<Fonts, Glyph>.CreateAccentGlyphDisplay(accentee, accenteeLastGlyph, accentGlyph, TypesettingContext.Instance, fonts, fonts, a.Range);
+            var accenteeSingleGlyph =
+              a.Content is TextAtom.IText txt && Typesetter<Fonts, Glyph>.UnicodeLengthIsOne(txt.Text) ?
+              GlyphFinder.Instance.FindGlyphForCharacterAtIndex(fonts, txt.Text.Length - 1, txt.Text) :
+              GlyphFinder.Instance.EmptyGlyph;
+            var accentDisplay = Typesetter<Fonts, Glyph>.CreateAccentGlyphDisplay(accentee, accenteeSingleGlyph, accentGlyph, TypesettingContext.Instance, fonts, fonts, a.Range);
             
             display = new AccentDisplay<Fonts, Glyph>(accentDisplay, accentee);
             scale = accentGlyph.Typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);

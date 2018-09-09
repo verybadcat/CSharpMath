@@ -443,24 +443,17 @@ namespace CSharpMath {
       return currentGlyph;
     }
 
+    public static bool UnicodeLengthIsOne(string str) =>
+      (str.Length == 1) || (str.Length == 2 && char.IsHighSurrogate(str[0]) && char.IsLowSurrogate(str[1]));
+
     private static bool _IsSingleCharAccent(IAccent accent) {
-      bool UnicodeLengthNotOne(string str) {
-        if (str.Length == 1) return false;
-        if (str.Length == 2 && char.IsHighSurrogate(str[0]) && char.IsLowSurrogate(str[1])) return false;
-        return true;
-      }
       if (accent.InnerList.Atoms.Count!=1) {
         return false;
       }
       var innerAtom = accent.InnerList.Atoms[0];
-      // WJWJWJ (Happypig375 edit): This is the only usage of iosMath/lib/MTUnicode.h and iosMath/lib/MTUnicode.m
-      if (UnicodeLengthNotOne(innerAtom.Nucleus)) {
-        return false;
-      }
-      if (innerAtom.Superscript!=null || innerAtom.Subscript!=null) {
-        return false;
-      }
-      return true;
+      // WJWJWJ (Happypig375 edit): This is the only usage of iosMath/lib/MTUnicode.h and iosMath/lib/MTUnicode.m,
+      //                            I converted it into a static method named UnicodeLengthIsOne
+      return UnicodeLengthIsOne(innerAtom.Nucleus) && innerAtom.Superscript is null && innerAtom.Subscript is null;
     }
 
     private void MakeScripts(IMathAtom atom, IDisplay<TFont, TGlyph> display, int index, float delta) {
