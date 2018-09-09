@@ -6,8 +6,7 @@ namespace CSharpMath.Rendering {
   using Display = IDisplay<Fonts, Glyph>;
   public class TextDisplayLineBuilder {
     readonly Queue<Display> _queue = new Queue<Display>();
-
-    public bool IgnoreTypographicMetrics { get; set; }
+    
     public float Ascent { get; private set; }
     public float Descent { get; private set; }
     public float Width { get; private set; }
@@ -16,14 +15,10 @@ namespace CSharpMath.Rendering {
     public void AddSpace(float width) => _widthOffset += width;
 
     public void Add(Display display, float ascender, float descender, float gapAfterLine) {
-      if (IgnoreTypographicMetrics) {
-        Ascent = Math.Max(Ascent, display.Ascent);
-        Descent = Math.Max(Descent, display.Descent);
-      } else {
-        float Max(float x, float y, float z) => x < y ? (y < z ? z : y) : (x < z ? z : x);
-        Ascent = Max(Ascent, display.Ascent, ascender);
-        Descent = Max(Descent, display.Descent, descender);
-      }
+      float Max(float x, float y, float z) => x < y ? (y < z ? z : y) : (x < z ? z : x);
+      Ascent = Max(Ascent, display.Ascent, ascender);
+      Descent = Max(Descent, display.Descent, descender);
+
       GapAfterLine = gapAfterLine > GapAfterLine ? gapAfterLine : GapAfterLine;
       display.Position =
         new System.Drawing.PointF(display.Position.X + Width + _widthOffset, display.Position.Y);

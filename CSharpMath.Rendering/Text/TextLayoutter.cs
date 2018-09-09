@@ -112,7 +112,7 @@ namespace CSharpMath.Rendering {
             scale = accentGlyph.Typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);
             var accenteeDisplayList = new List<IDisplay<Fonts, Glyph>>();
             var invalidDisplayMaths = new List<IDisplay<Fonts, Glyph>>();
-            var accentDisplayLine = new TextDisplayLineBuilder { IgnoreTypographicMetrics = false };
+            var accentDisplayLine = new TextDisplayLineBuilder();
             AddDisplaysWithLineBreaks(a.Content, fonts, accentDisplayLine, accenteeDisplayList, invalidDisplayMaths, style, color);
             float _ = default;
             accentDisplayLine.Clear(0, 0, accenteeDisplayList, ref _, false, false, additionalLineSpacing);
