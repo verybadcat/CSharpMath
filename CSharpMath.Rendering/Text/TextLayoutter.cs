@@ -15,37 +15,37 @@ namespace CSharpMath.Rendering {
            new Displays(Array.Empty<IDisplay<Fonts, Glyph>>()));
       float accumulatedHeight = 0;
       bool afterDisplayMaths = false; //indicator of the need to apply belowdisplay(short)skip when line break
-      TextDisplayLineBuilder line = new TextDisplayLineBuilder();
-      void BreakLine(List<IDisplay<Fonts, Glyph>> displayList, List<IDisplay<Fonts, Glyph>> displayMathList, bool appendLineGap = true) {
+      void BreakLine(TextDisplayLineBuilder line, List<IDisplay<Fonts, Glyph>> displayList, List<IDisplay<Fonts, Glyph>> displayMathList, bool appendLineGap = true) {
         if (afterDisplayMaths) {
           accumulatedHeight += line.Width > displayMathList.Last().Position.X ? belowdisplayskip : belowdisplayshortskip;
           afterDisplayMaths = false;
         }
-        line.Clear(0, -accumulatedHeight, displayList, ref accumulatedHeight, appendLineGap, additionalLineSpacing);
+        line.Clear(0, -accumulatedHeight, displayList, ref accumulatedHeight, true, appendLineGap, additionalLineSpacing);
       }
+      //variables captured by this method are currently unchangable by TextAtoms
       void AddDisplaysWithLineBreaks(
         TextAtom atom,
         Fonts fonts,
+        TextDisplayLineBuilder line,
         List<IDisplay<Fonts, Glyph>> displayList,
         List<IDisplay<Fonts, Glyph>> displayMathList,
         FontStyle style,
-        Structures.Color? color,
-        bool fillTextGaps = true
+        Structures.Color? color
       ) {
 
         IDisplay<Fonts, Glyph> display;
         switch (atom) {
           case TextAtom.List list:
-            foreach (var a in list.Content) AddDisplaysWithLineBreaks(a, fonts, displayList, displayMathList, style, color);
+            foreach (var a in list.Content) AddDisplaysWithLineBreaks(a, fonts, line, displayList, displayMathList, style, color);
             break;
           case TextAtom.Style st:
-            AddDisplaysWithLineBreaks(st.Content, fonts, displayList, displayMathList, st.FontStyle, color);
+            AddDisplaysWithLineBreaks(st.Content, fonts, line, displayList, displayMathList, st.FontStyle, color);
             break;
           case TextAtom.Size sz:
-            AddDisplaysWithLineBreaks(sz.Content, new Fonts(fonts, sz.PointSize), displayList, displayMathList, style, color);
+            AddDisplaysWithLineBreaks(sz.Content, new Fonts(fonts, sz.PointSize), line, displayList, displayMathList, style, color);
             break;
           case TextAtom.Color c:
-            AddDisplaysWithLineBreaks(c.Content, fonts, displayList, displayMathList, style, c.Colour);
+            AddDisplaysWithLineBreaks(c.Content, fonts, line, displayList, displayMathList, style, c.Colour);
             break;
           case TextAtom.Space sp:
             //Allow space at start of line since user explicitly specified its length
@@ -53,11 +53,11 @@ namespace CSharpMath.Rendering {
             line.AddSpace(sp.Content.ActualLength(MathTable.Instance, fonts));
             break;
           case TextAtom.Newline n:
-            BreakLine(displayList, displayMathList);
+            BreakLine(line, displayList, displayMathList);
             break;
           case TextAtom.Math m when m.DisplayStyle:
             var lastLineWidth = line.Width;
-            BreakLine(displayList, displayMathList, false);
+            BreakLine(line, displayList, displayMathList, false);
             display = Typesetter<Fonts, Glyph>.CreateLine(m.Content, fonts, TypesettingContext.Instance, LineStyle.Display);
             var displayX = IPainterExtensions.GetDisplayPosition(display.Width, display.Ascent, display.Descent, fonts.PointSize, false, canvasWidth, float.NaN, TextAlignment.Top, default, default, default).X;
             //\because When displayList.LastOrDefault() is null, the false condition is selected
@@ -74,10 +74,9 @@ namespace CSharpMath.Rendering {
             void FinalizeInlineDisplay(float ascender, float rawDescender, float lineGap, bool forbidAtLineStart = false) {
               if (color != null) display.SetTextColorRecursive(color);
               if (line.Width + display.Width > canvasWidth && !forbidAtLineStart)
-                BreakLine(displayList, displayMathList);
+                BreakLine(line, displayList, displayMathList);
               //rawDescender is taken directly from font file and is negative, while IDisplay.Descender is positive
-              if (fillTextGaps) line.Add(display, ascender, -rawDescender, lineGap);
-              else line.Add(display, float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
+              line.Add(display, ascender, -rawDescender, lineGap);
             }
           case TextAtom.Text t:
             var content = UnicodeFontChanger.Instance.ChangeFont(t.Content, style);
@@ -109,20 +108,30 @@ namespace CSharpMath.Rendering {
               forbidAtLineStart: true); //No spaces at start of line
             break;
           case TextAtom.Accent a:
-            var accenteeAtomList = new List<IDisplay<Fonts, Glyph>>();
-            var invalidDisplayMaths = new List<IDisplay<Fonts, Glyph>>();
-            AddDisplaysWithLineBreaks(a.Content, fonts, accenteeAtomList, invalidDisplayMaths, style, color, false);
-            WarningException.WarnIf(invalidDisplayMaths.Count > 0, "Display maths inside an accentee is unsupported -- ignoring display maths");
-            var accentee = new Displays(accenteeAtomList);
             var accentGlyph = GlyphFinder.Instance.FindGlyphForCharacterAtIndex(fonts, a.AccentChar.Length - 1, a.AccentChar);
-            var accenteeSingleGlyph =
-              a.Content is TextAtom.IText txt && Typesetter<Fonts, Glyph>.UnicodeLengthIsOne(txt.Text) ?
-              GlyphFinder.Instance.FindGlyphForCharacterAtIndex(fonts, txt.Text.Length - 1, txt.Text) :
-              GlyphFinder.Instance.EmptyGlyph;
-            var accentDisplay = Typesetter<Fonts, Glyph>.CreateAccentGlyphDisplay(accentee, accenteeSingleGlyph, accentGlyph, TypesettingContext.Instance, fonts, fonts, a.Range);
-            
-            display = new AccentDisplay<Fonts, Glyph>(accentDisplay, accentee);
             scale = accentGlyph.Typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);
+            var accenteeDisplayList = new List<IDisplay<Fonts, Glyph>>();
+            var invalidDisplayMaths = new List<IDisplay<Fonts, Glyph>>();
+            var accentDisplayLine = new TextDisplayLineBuilder { IgnoreTypographicMetrics = false };
+            AddDisplaysWithLineBreaks(a.Content, fonts, accentDisplayLine, accenteeDisplayList, invalidDisplayMaths, style, color);
+            float _ = default;
+            accentDisplayLine.Clear(0, 0, accenteeDisplayList, ref _, false, false, additionalLineSpacing);
+            WarningException.WarnIf(invalidDisplayMaths.Count > 0, "Display maths inside an accentee is unsupported -- ignoring display maths");
+            var accentee = new Displays(accenteeDisplayList);
+
+            Glyph accenteeSingleGlyph;
+            Glyph FindGlyphForText(TextAtom.IText txt) =>
+              Typesetter<Fonts, Glyph>.UnicodeLengthIsOne(txt.Text) ?
+              GlyphFinder.Instance.FindGlyphForCharacterAtIndex(fonts, txt.Text.Length - 1, txt.Text):
+              GlyphFinder.Instance.EmptyGlyph;
+            if (a.Content is TextAtom.IText txt1)
+              accenteeSingleGlyph = FindGlyphForText(txt1);
+            else if (a.Content is TextAtom.List accenteeList && accenteeList.Content.Count == 1 && accenteeList.Content[0] is TextAtom.IText txt2)
+              accenteeSingleGlyph = FindGlyphForText(txt2);
+            else accenteeSingleGlyph = GlyphFinder.Instance.EmptyGlyph;
+            
+            var accentDisplay = Typesetter<Fonts, Glyph>.CreateAccentGlyphDisplay(accentee, accenteeSingleGlyph, accentGlyph, TypesettingContext.Instance, fonts, fonts, a.Range);
+            display = new AccentDisplay<Fonts, Glyph>(accentDisplay, accentee);
             FinalizeInlineDisplay(accentGlyph.Typeface.Ascender * scale, accentGlyph.Typeface.Descender * scale, accentGlyph.Typeface.LineGap * scale);
             break;
           case null:
@@ -133,15 +142,17 @@ namespace CSharpMath.Rendering {
       }
       var relativePositionList = new List<IDisplay<Fonts, Glyph>>();
       var absolutePositionList = new List<IDisplay<Fonts, Glyph>>();
+      var globalLine = new TextDisplayLineBuilder();
       AddDisplaysWithLineBreaks(
         input,
         inputFont,
+        globalLine,
         relativePositionList,
         absolutePositionList,
         FontStyle.Roman /*FontStyle.Default is FontStyle.Italic, FontStyle.Roman is no change to characters*/,
         null
       );
-      BreakLine(relativePositionList, absolutePositionList); //remember to finalize the last line
+      BreakLine(globalLine, relativePositionList, absolutePositionList); //remember to finalize the last line
       return (new Displays(relativePositionList),
               new Displays(absolutePositionList));
 
