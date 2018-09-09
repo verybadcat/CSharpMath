@@ -110,6 +110,8 @@ namespace CSharpMath.Forms.Example {
     public const string SimpleShortProof = @"\begin{aligned}&\because x+3=5\\&\therefore x=2\end{aligned}";
     public const string FunctionDomainCodomain = @"f\colon\mathbb N\rightarrow\mathbb N";
     public const string LnEquation = @"\ln(P) = a_0 - \frac{a_1}{a_2 + T}";
+    public const string ArcsinSin = @"\arcsin(\sin x)=x\quad\rm{for}\quad|x|\le\frac\pi2";
+    public const string TangentPeriodShift = @"\tan(\theta\pm\frac\pi4)=\frac{\tan\theta\pm1}{1\mp\tan\theta}";
 
     public ExamplesPage() => InitializeComponent();
 
