@@ -633,6 +633,7 @@ namespace CSharpMath {
       }
       return r;
     }
+    [Obsolete("Is any code using this?", true)]
     private string _ChangeFont(string input, FontStyle style) {
       return _context.ChangeFont(input, style);
     }

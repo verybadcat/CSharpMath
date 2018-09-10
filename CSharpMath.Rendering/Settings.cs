@@ -17,10 +17,14 @@ namespace CSharpMath {
       Atoms.MathAtoms.BoundaryDelimiters;
     public static MultiDictionary<string, Enumerations.FontStyle> PredefinedFontStyles =>
       Enumerations.FontStyleExtensions.FontStyles;
-    public static BiDictionary<string, Atoms.MathAtom> PredefinedLaTeXSymbols =>
+    public static BiDictionary<string, Atoms.MathAtom> PredefinedLaTeXMathSymbols =>
       Atoms.MathAtoms.Commands;
-    public static Dictionary<string, string> PredefinedLaTeXSymbolAliases =>
+    public static Dictionary<string, string> PredefinedLaTeXMathSymbolAliases =>
       Atoms.MathAtoms.Aliases;
+    public static BiDictionary<string, string> PredefinedLaTeXTextAccents =>
+      Rendering.TextAtoms.PredefinedAccents;
+    public static AliasDictionary<string, string> PredefinedLaTeXTextSymbols =>
+      Rendering.TextAtoms.PredefinedTextSymbols;
     public static Dictionary<string, Structures.Space> PredefinedLengthUnits =>
       Structures.Space.PredefinedLengthUnits;
   }

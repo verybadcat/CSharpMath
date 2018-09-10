@@ -46,9 +46,9 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
       bool afterCommand = false; //ignore spaces after command
       int dollarCount = 0;
       var atoms = new TextAtomListBuilder();
-      var breaker = new CustomBreaker();
+      var breaker = new CustomBreaker { BreakNumberAfterText = true, ThrowIfCharOutOfRange = false };
       var breakList = new List<BreakAtInfo>();
-      breaker.BreakWords(latex, false);
+      breaker.BreakWords(latex);
       breaker.LoadBreakAtList(breakList);
       Result CheckDollarCount() {
         switch (dollarCount) {

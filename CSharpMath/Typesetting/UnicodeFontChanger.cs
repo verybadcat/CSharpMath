@@ -365,12 +365,16 @@ namespace CSharpMath
       return GetDefaultStyle(c);
     }
 
-    private TLongChar ToLittleEndian(TLongChar c) => BitConverter.IsLittleEndian ? c :
-      (c & 0b11110000) >> 4 + (c & 0b00001111) << 4;
+    private TLongChar ToLittleEndian(TLongChar c) => c;
+    //BitConverter.IsLittleEndian ? c : (c & 0b11110000) >> 4 + (c & 0b00001111) << 4;
+
+    public int ChangeFont(int c, FontStyle outputFontStyle) =>
+      c <= char.MaxValue && c >= char.MinValue ? StyleCharacter((char)c, outputFontStyle) : c;
 
     public string ChangeFont(char c, FontStyle outputFontStyle)
     {
       TLongChar unicode = StyleCharacter(c, outputFontStyle);
+#warning Is endianness really needed here...? It might be relevant in Obj-C but not in C#, as C# is endianness-invariant
       unicode = ToLittleEndian(unicode);
       string utf32String = char.ConvertFromUtf32(unicode);
       return utf32String;

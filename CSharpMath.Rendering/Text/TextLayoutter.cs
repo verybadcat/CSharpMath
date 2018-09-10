@@ -118,18 +118,8 @@ namespace CSharpMath.Rendering {
             accentDisplayLine.Clear(0, 0, accenteeDisplayList, ref _, false, false, additionalLineSpacing);
             WarningException.WarnIf(invalidDisplayMaths.Count > 0, "Display maths inside an accentee is unsupported -- ignoring display maths");
             var accentee = new Displays(accenteeDisplayList);
-
-            Glyph accenteeSingleGlyph;
-            Glyph FindGlyphForText(TextAtom.IText txt) =>
-              Typesetter<Fonts, Glyph>.UnicodeLengthIsOne(txt.Text) ?
-              GlyphFinder.Instance.FindGlyphForCharacterAtIndex(fonts, txt.Text.Length - 1, txt.Text):
-              GlyphFinder.Instance.EmptyGlyph;
-#warning WIP: More effective way than IText (IText can't recurse)
-            if (a.Content is TextAtom.IText txt1)
-              accenteeSingleGlyph = FindGlyphForText(txt1);
-            else if (a.Content is TextAtom.List accenteeList && accenteeList.Content.Count == 1 && accenteeList.Content[0] is TextAtom.IText txt2)
-              accenteeSingleGlyph = FindGlyphForText(txt2);
-            else accenteeSingleGlyph = GlyphFinder.Instance.EmptyGlyph;
+            var accenteeCodepoint = a.Content.SingleChar(style);
+            Glyph accenteeSingleGlyph = accenteeCodepoint.HasValue ? GlyphFinder.Instance.Lookup(fonts, accenteeCodepoint.Value) : GlyphFinder.Instance.EmptyGlyph;
             
             var accentDisplay = Typesetter<Fonts, Glyph>.CreateAccentGlyphDisplay(accentee, accenteeSingleGlyph, accentGlyph, TypesettingContext.Instance, fonts, fonts, a.Range);
             display = new AccentDisplay<Fonts, Glyph>(accentDisplay, accentee);

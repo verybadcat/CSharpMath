@@ -20,9 +20,10 @@ namespace CSharpMath.Rendering {
       return new Glyph(fonts.MathTypeface, fonts.MathTypeface.Lookup(GlyphNotFound));
     }
 
+    public int GetCodepoint(string str, int index) => char.ConvertToUtf32(str, index - (char.IsLowSurrogate(str[index]) ? 1 : 0));
+
     public Glyph FindGlyphForCharacterAtIndex(Fonts fonts, int index, string str) {
-      var codepoint = char.ConvertToUtf32(str, index - (char.IsLowSurrogate(str[index]) ? 1 : 0));
-      return Lookup(fonts, codepoint);
+      return Lookup(fonts, GetCodepoint(str, index));
     }
 
     public Glyph[] FindGlyphs(Fonts fonts, string str) =>
