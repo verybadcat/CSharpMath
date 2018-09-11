@@ -121,9 +121,12 @@ namespace CSharpMath.Rendering {
             var accenteeCodepoint = a.Content.SingleChar(style);
             Glyph accenteeSingleGlyph = accenteeCodepoint.HasValue ? GlyphFinder.Instance.Lookup(fonts, accenteeCodepoint.Value) : GlyphFinder.Instance.EmptyGlyph;
             
-            var accentDisplay = Typesetter<Fonts, Glyph>.CreateAccentGlyphDisplay(accentee, accenteeSingleGlyph, accentGlyph, TypesettingContext.Instance, fonts, fonts, a.Range);
-            display = new AccentDisplay<Fonts, Glyph>(accentDisplay, accentee);
-            FinalizeInlineDisplay(accentGlyph.Typeface.Ascender * scale, accentGlyph.Typeface.Descender * scale, accentGlyph.Typeface.LineGap * scale);
+            var accentDisplay = new AccentDisplay<Fonts, Glyph>(
+              Typesetter<Fonts, Glyph>.CreateAccentGlyphDisplay(accentee, accenteeSingleGlyph, accentGlyph, TypesettingContext.Instance, fonts, fonts, a.Range),
+              accentee);
+            display = accentDisplay;
+            //accentDisplay.Ascent does not take account of accent glyph's extra height -> accent will be out of bounds if it is on the first line
+            FinalizeInlineDisplay(Math.Max(accentGlyph.Typeface.Ascender * scale, accentDisplay.Accent.Position.Y + accentDisplay.Ascent), accentGlyph.Typeface.Descender * scale, accentGlyph.Typeface.LineGap * scale);
             break;
           case null:
             throw new InvalidOperationException("TextAtoms should never be null. You must have sneaked one in.");
