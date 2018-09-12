@@ -94,9 +94,9 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
         return Ok();
       }
       Result<int> BuildBreakList(TextAtomListBuilder atoms, int i, bool oneCharOnly) {
-        (int startAt, int endAt, char endingChar, WordKind wordKind) ObtainRange(int index) =>
-          (index == 0 ? 0 : breakList[index - 1].breakAt, breakList[index].breakAt, latex[breakList[index].breakAt - 1], breakList[index].wordKind);
         for (; i < breakList.Count; i++) {
+          (int startAt, int endAt, char endingChar, WordKind wordKind) ObtainRange(int index) =>
+            (index == 0 ? 0 : breakList[index - 1].breakAt, breakList[index].breakAt, latex[breakList[index].breakAt - 1], breakList[index].wordKind);
           var (startAt, endAt, endingChar, wordKind) = ObtainRange(i);
           bool SetNextRange() {
             bool success = ++i < breakList.Count;
@@ -167,7 +167,14 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                   t.Append(textSection);
                   break;
                 default: //Just ordinary text
-                  if (displayMath == null) atoms.Add(textSection);
+                  if (displayMath == null)
+                    if (oneCharOnly) {
+                      if (breakList[i].breakAt < latex.Length) { //don't re-read if we reached the end
+                        breakList[i] = new BreakAtInfo(breakList[i].breakAt + 1, breakList[i].wordKind);
+                        i--;
+                      }
+                      atoms.Add(textSection[0].ToString());
+                    } else atoms.Add(textSection);
                   else mathLaTeX.Append(textSection);
                   break;
               }
