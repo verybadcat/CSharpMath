@@ -174,6 +174,21 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                   case "\\":
                     backslashEscape = true;
                     continue;
+                  case "#":
+                    return "Unexpected command argument reference character # outside of new command definition (currently unsupported)";
+                  case "^":
+                  case "_":
+                    return $"Unexpected script indicator {textSection} outside of math mode";
+                  case "&":
+                    return $"Unexpected alignment tab character & outside of table environments";
+                  case "~":
+                    atoms.Add();
+                    break;
+                  case "%":
+                    var comment = new StringBuilder();
+                    while (SetNextRange() && wordKind != WordKind.NewLine) comment.Append(textSection);
+                    atoms.Comment(comment.ToString());
+                    break;
                   case "{":
                     if(BuildBreakList(atoms, ++i, false, '}').Bind(index => i = index).Error is string error) return error;
                     break;
@@ -196,7 +211,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     if (afterCommand) continue;
                     else atoms.Add();
                     break;
-                  case var punc when displayMath == null && wordKind == WordKind.Punc && atoms.Last is TextAtom.Text t:
+                  case var punc when wordKind == WordKind.Punc && atoms.Last is TextAtom.Text t:
                     //Append punctuation to text
                     t.Append(textSection);
                     break;
@@ -372,7 +387,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
           if (oneCharOnly) return Ok(i);
         }
         if (backslashEscape) return @"Unknown command \";
-        if (stopChar > 0) return $@"Expected {stopChar}";
+        if (stopChar > 0) return stopChar == '}' ? "Expected }, unbalanced braces" : $@"Expected {stopChar}";
         return Ok(i);
       }
       { if (BuildBreakList(globalAtoms, 0, false, '\0').Error is string error) return error; }

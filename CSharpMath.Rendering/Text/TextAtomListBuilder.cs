@@ -23,6 +23,7 @@ namespace CSharpMath.Rendering {
     }
     public void Add(IReadOnlyList<TextAtom> textAtoms) => Add(new TextAtom.List(textAtoms, TextLength));
     public void Break(int sourceLength) => Add(new TextAtom.Newline(TextLength, sourceLength));
+    public void Comment(string comment) => Add(new TextAtom.Comment(comment, TextLength));
     public TextAtom.List Build() => new TextAtom.List(this, 0);
 
     public int TextLength { get; set; } = 0;

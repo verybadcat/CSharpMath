@@ -239,12 +239,14 @@ namespace CSharpMath
           return 0x2133;   // Script M (M-matrix)
         case 'R':
           return 0x211B;   // Script R (Riemann integral)
+          /*// Latin modern math doesn't have lower case caligraphic characters
         case 'e':
           return 0x212F;   // Script e (Natural exponent)
         case 'g':
           return 0x210A;   // Script g (real number)
         case 'o':
           return 0x2134;   // Script o (order)
+          */
       }
       TLongChar r;
       if (IsUpperEn(c))
@@ -376,7 +378,7 @@ namespace CSharpMath
       TLongChar unicode = StyleCharacter(c, outputFontStyle);
 #warning Is endianness really needed here...? It might be relevant in Obj-C but not in C#, as C# is endianness-invariant
       unicode = ToLittleEndian(unicode);
-      string utf32String = char.ConvertFromUtf32(unicode);
+      string utf32String = char.IsSurrogate((char)unicode) ? ((char)unicode).ToString() : char.ConvertFromUtf32(unicode);
       return utf32String;
     }
 

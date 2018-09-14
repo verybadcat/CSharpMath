@@ -48,7 +48,7 @@ namespace CSharpMath.Apple {
     private IMathList _mathList;
 
     public string Latex { get; private set; }
-    private MathListDisplay<TFont, TGlyph> _displayList { get; set; }
+    private ListDisplay<TFont, TGlyph> _displayList { get; set; }
 
     public bool DisplayErrorInline { get; set; } = true;
     public NColor TextColor { get; set; }

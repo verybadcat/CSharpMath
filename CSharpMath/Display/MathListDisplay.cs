@@ -12,7 +12,7 @@ namespace CSharpMath.Display {
   /// <summary>
   /// Corresponds to MTMathListDisplay in iosMath.
   /// </summary>
-  public class MathListDisplay<TFont, TGlyph>: IDisplay<TFont, TGlyph>
+  public class ListDisplay<TFont, TGlyph>: IDisplay<TFont, TGlyph>
     where TFont : MathFont<TGlyph> {
     public IReadOnlyList<IDisplay<TFont, TGlyph>> Displays { get; set; }
     public Enumerations.LinePosition MyLinePosition { get; set; }
@@ -28,7 +28,7 @@ namespace CSharpMath.Display {
     /// parent list. For a regular list, it is int.MinValue.</summary>
     public int IndexInParent { get; set; }
 
-    public MathListDisplay(IReadOnlyList<IDisplay<TFont, TGlyph>> displays) {
+    public ListDisplay(IReadOnlyList<IDisplay<TFont, TGlyph>> displays) {
       Displays = displays;
       MyLinePosition = Enumerations.LinePosition.Regular;
       IndexInParent = int.MinValue;

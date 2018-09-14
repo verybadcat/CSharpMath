@@ -4,7 +4,7 @@ namespace CSharpMath.Rendering {
   using System.Linq;
   using Display;
   using Enumerations;
-  using Displays = Display.MathListDisplay<Fonts, Glyph>;
+  using Displays = Display.ListDisplay<Fonts, Glyph>;
 
   public static class TextLayoutter {
     public static (Displays relative, Displays absolute) Layout(TextAtom input, Fonts inputFont, float canvasWidth, float additionalLineSpacing) {
@@ -127,6 +127,8 @@ namespace CSharpMath.Rendering {
             display = accentDisplay;
             //accentDisplay.Ascent does not take account of accent glyph's extra height -> accent will be out of bounds if it is on the first line
             FinalizeInlineDisplay(Math.Max(accentGlyph.Typeface.Ascender * scale, accentDisplay.Accent.Position.Y + accentDisplay.Ascent), accentGlyph.Typeface.Descender * scale, accentGlyph.Typeface.LineGap * scale);
+            break;
+          case TextAtom.Comment _:
             break;
           case null:
             throw new InvalidOperationException("TextAtoms should never be null. You must have sneaked one in.");

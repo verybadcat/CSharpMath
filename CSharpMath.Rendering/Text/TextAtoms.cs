@@ -28,6 +28,13 @@ namespace CSharpMath.Rendering {
       { "Ø", "O" }, //slashed O (O with stroke)
       { "ı", "i" }, //dotless i
       { "ȷ", "j" }, //dotless j
+      { "æ", "ae" },
+      { "Æ", "AE" },
+      { "œ", "oe" },
+      { "Œ", "OE" },
+      { "ß", "ss" },
+      { "å", "aa" },
+      { "Å", "AA" },
 
       //http://tug.ctan.org/info/symbols/comprehensive/symbols-a4.pdf page 14 (2 Body-text symbols)
       { "%", "%" },

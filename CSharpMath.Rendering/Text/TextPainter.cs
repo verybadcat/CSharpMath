@@ -11,8 +11,8 @@ namespace CSharpMath.Rendering {
     public TextPainter(float fontSize = DefaultFontSize, float lineWidth = DefaultFontSize * 100) : base(fontSize) { }
 
     //display maths should always be center-aligned regardless of parameter for Draw()
-    public Display.MathListDisplay<Fonts, Glyph> _absoluteXCoordDisplay;
-    public Display.MathListDisplay<Fonts, Glyph> _relativeXCoordDisplay;
+    public Display.ListDisplay<Fonts, Glyph> _absoluteXCoordDisplay;
+    public Display.ListDisplay<Fonts, Glyph> _relativeXCoordDisplay;
     protected Typography.TextLayout.GlyphLayout _glyphLayout = new Typography.TextLayout.GlyphLayout();
 
     public TextAtom Atom { get => Source.Atom; set => Source = new TextSource(value); }
@@ -45,7 +45,7 @@ namespace CSharpMath.Rendering {
           _relativeXCoordDisplay.Width, _relativeXCoordDisplay.Ascent, _relativeXCoordDisplay.Descent, FontSize, CoordinatesFromBottomLeftInsteadOfTopLeft, width ?? c.Width, c.Height, alignment, padding, offsetX, offsetY));
         //offsetY is already included in _relativeXCoordDisplay.Position, no need to add it again below
         _absoluteXCoordDisplay.Position = new PointF(_absoluteXCoordDisplay.Position.X + offsetX, _absoluteXCoordDisplay.Position.Y + _relativeXCoordDisplay.Position.Y);
-        DrawCore(c, new Display.MathListDisplay<Fonts, Glyph>(new[] { _relativeXCoordDisplay, _absoluteXCoordDisplay }));
+        DrawCore(c, new Display.ListDisplay<Fonts, Glyph>(new[] { _relativeXCoordDisplay, _absoluteXCoordDisplay }));
       }
     }
     /// <summary>
@@ -56,11 +56,14 @@ namespace CSharpMath.Rendering {
       if (!Source.IsValid) DrawError(c);
       else {
         UpdateDisplay(float.PositiveInfinity);
-        if (!CoordinatesFromBottomLeftInsteadOfTopLeft) { y -= _relativeXCoordDisplay.Descent; y *= -1; } else y -= _relativeXCoordDisplay.Ascent;
+        if (!CoordinatesFromBottomLeftInsteadOfTopLeft) {
+          y -= _relativeXCoordDisplay.Displays.Max(dp => dp.Ascent);
+          y *= -1;
+        } else y -= _relativeXCoordDisplay.Displays.Max(dp => dp.Descent);
         _relativeXCoordDisplay.Position = new PointF(_relativeXCoordDisplay.Position.X + x, _relativeXCoordDisplay.Position.Y + y);
         //y is already included in _relativeXCoordDisplay.Position, no need to add it again below
         _absoluteXCoordDisplay.Position = new PointF(_absoluteXCoordDisplay.Position.X + x, _relativeXCoordDisplay.Position.Y);
-        DrawCore(c, new Display.MathListDisplay<Fonts, Glyph>(new[] { _relativeXCoordDisplay, _absoluteXCoordDisplay }));
+        DrawCore(c, new Display.ListDisplay<Fonts, Glyph>(new[] { _relativeXCoordDisplay, _absoluteXCoordDisplay }));
       }
     }
   }

@@ -76,18 +76,18 @@ namespace CSharpMath {
       _currentLine = new AttributedString<TFont, TGlyph>();
     }
 
-    public static MathListDisplay<TFont, TGlyph> CreateLine(IMathList list, TFont font, TypesettingContext<TFont, TGlyph> context, LineStyle style) {
+    public static ListDisplay<TFont, TGlyph> CreateLine(IMathList list, TFont font, TypesettingContext<TFont, TGlyph> context, LineStyle style) {
       var finalized = list.FinalizedList();
       return _CreateLine(finalized, font, context, style, false);
     }
 
-    private static MathListDisplay<TFont, TGlyph> _CreateLine(
+    private static ListDisplay<TFont, TGlyph> _CreateLine(
       IMathList list, TFont font, TypesettingContext<TFont, TGlyph> context,
       LineStyle style, bool cramped, bool spaced = false) {
       var preprocessedAtoms = _PreprocessMathList(list, context);
       var typesetter = new Typesetter<TFont, TGlyph>(font, context, style, cramped, spaced);
       typesetter._CreateDisplayAtoms(preprocessedAtoms);
-      var line = new MathListDisplay<TFont, TGlyph>(typesetter._displayAtoms.ToArray());
+      var line = new ListDisplay<TFont, TGlyph>(typesetter._displayAtoms.ToArray());
       return line;
     }
 
@@ -159,7 +159,7 @@ namespace CSharpMath {
             AddDisplayLine(false);
             AddInterElementSpace(prevNode, atom.AtomType);
             var inner = atom as IMathInner;
-            MathListDisplay<TFont, TGlyph> innerDisplay;
+            ListDisplay<TFont, TGlyph> innerDisplay;
             if (inner.LeftBoundary != null || inner.RightBoundary != null) {
               innerDisplay = _MakeLeftRight(inner);
             } else {
@@ -176,7 +176,7 @@ namespace CSharpMath {
             AddDisplayLine(false);
             //no inserting space here as group has no inter-element space
             var group = atom as Group;
-            MathListDisplay<TFont, TGlyph> groupDisplay =
+            ListDisplay<TFont, TGlyph> groupDisplay =
               _CreateLine(group.InnerList, _font, _context, _style, _cramped);
             groupDisplay.Position = _currentPosition;
             _currentPosition.X += groupDisplay.Width;
@@ -374,7 +374,7 @@ namespace CSharpMath {
       return display;
     }
 
-    public static GlyphDisplay<TFont, TGlyph> CreateAccentGlyphDisplay(MathListDisplay<TFont, TGlyph> accentee, TGlyph accenteeSingleGlyph, TGlyph accent, TypesettingContext<TFont, TGlyph> context, TFont normalFont, TFont styleFont, Range atomRange) {
+    public static GlyphDisplay<TFont, TGlyph> CreateAccentGlyphDisplay(ListDisplay<TFont, TGlyph> accentee, TGlyph accenteeSingleGlyph, TGlyph accent, TypesettingContext<TFont, TGlyph> context, TFont normalFont, TFont styleFont, Range atomRange) {
       var accenteeWidth = accentee.Width;
       TGlyph accentGlyph = _FindVariantGlyph(context.MathTable, context.GlyphBoundsProvider, styleFont, accent, accenteeWidth, out float glyphAscent, out float glyphDescent, out float glyphWidth);
       var delta = Math.Min(accentee.Ascent, context.MathTable.AccentBaseHeight(styleFont));
@@ -782,7 +782,7 @@ namespace CSharpMath {
       return _AddDelimitersToFractionDisplay(display, fraction);
     }
 
-    private MathListDisplay<TFont, TGlyph> _AddDelimitersToFractionDisplay(FractionDisplay<TFont, TGlyph> display, IFraction fraction) {
+    private ListDisplay<TFont, TGlyph> _AddDelimitersToFractionDisplay(FractionDisplay<TFont, TGlyph> display, IFraction fraction) {
       var glyphHeight = _FractionDelimiterHeight;
       var position = new PointF();
       var innerGlyphs = new List<IDisplay<TFont, TGlyph>>();
@@ -801,13 +801,13 @@ namespace CSharpMath {
         innerGlyphs.Add(rightGlyph);
         position.X += rightGlyph.Width;
       }
-      var innerDisplay = new MathListDisplay<TFont, TGlyph>(innerGlyphs.ToArray()) {
+      var innerDisplay = new ListDisplay<TFont, TGlyph>(innerGlyphs.ToArray()) {
         Position = _currentPosition
       };
       return innerDisplay;
     }
 
-    private MathListDisplay<TFont, TGlyph> _MakeLeftRight(IMathInner inner) {
+    private ListDisplay<TFont, TGlyph> _MakeLeftRight(IMathInner inner) {
       if (inner.LeftBoundary == null && inner.RightBoundary == null) {
         throw new InvalidOperationException("Inner should have a boundary to call this function.");
       }
@@ -837,7 +837,7 @@ namespace CSharpMath {
         innerPosition.X += rightGlyph.Width;
         innerElements.Add(rightGlyph);
       }
-      var innerArrayDisplay = new MathListDisplay<TFont, TGlyph>(innerElements.ToArray());
+      var innerArrayDisplay = new ListDisplay<TFont, TGlyph>(innerElements.ToArray());
       return innerArrayDisplay;
     }
 
@@ -977,10 +977,10 @@ namespace CSharpMath {
       } while (i < nVariants);
       return variants.Last();
     }
-    private List<List<MathListDisplay<TFont, TGlyph>>> TypesetCells(Table table, float[] columnWidths) {
-      var r = new List<List<MathListDisplay<TFont, TGlyph>>>();
+    private List<List<ListDisplay<TFont, TGlyph>>> TypesetCells(Table table, float[] columnWidths) {
+      var r = new List<List<ListDisplay<TFont, TGlyph>>>();
       foreach(var row in table.Cells) {
-        var colDispalys = new List<MathListDisplay<TFont, TGlyph>>();
+        var colDispalys = new List<ListDisplay<TFont, TGlyph>>();
         r.Add(colDispalys);
         for (int i=0; i<row.Count; i++) {
           var disp = Typesetter<TFont, TGlyph>.CreateLine(row[i], _font, _context, _style);
@@ -994,13 +994,13 @@ namespace CSharpMath {
       int nColumns = table.NColumns;
       if (nColumns == 0 || table.NRows == 0) {
         //Empty table
-        MathListDisplay<TFont, TGlyph> emptyTable = new MathListDisplay<TFont, TGlyph>(new IDisplay<TFont, TGlyph>[0]) {
+        ListDisplay<TFont, TGlyph> emptyTable = new ListDisplay<TFont, TGlyph>(new IDisplay<TFont, TGlyph>[0]) {
         };
         return emptyTable;
       }
       var columnWidths = new float[nColumns];
       var displays = TypesetCells(table, columnWidths);
-      var rowDisplays = new List<MathListDisplay<TFont, TGlyph>>();
+      var rowDisplays = new List<ListDisplay<TFont, TGlyph>>();
       foreach (var row in displays) {
         var rowDisplay = MakeRowWithColumns(row, table, columnWidths);
         rowDisplays.Add(rowDisplay);
@@ -1008,13 +1008,13 @@ namespace CSharpMath {
 
       // position all the rows
       PositionRows(rowDisplays, table);
-      return new MathListDisplay<TFont, TGlyph>(rowDisplays.ToArray()) {
+      return new ListDisplay<TFont, TGlyph>(rowDisplays.ToArray()) {
         // Range is set here in the objective C code.
         Position = _currentPosition
       };
     }
 
-    private MathListDisplay<TFont, TGlyph> MakeRowWithColumns(List<MathListDisplay<TFont, TGlyph>> row, Table table, float[] columnWidths) {
+    private ListDisplay<TFont, TGlyph> MakeRowWithColumns(List<ListDisplay<TFont, TGlyph>> row, Table table, float[] columnWidths) {
       float columnStart = 0;
       Range rowRange = Ranges.NotFound;
       for (int i=0; i<row.Count; i++) {
@@ -1034,7 +1034,7 @@ namespace CSharpMath {
         rowRange = Ranges.Union(rowRange, entry.Range);
         columnStart += (columnWidth + table.InterColumnSpacing * _mathTable.MuUnit(_styleFont));
       }
-      return new MathListDisplay<TFont, TGlyph>(row.ToArray());
+      return new ListDisplay<TFont, TGlyph>(row.ToArray());
     }
 
     private const float jotMultiplier = 0.3f;
@@ -1042,7 +1042,7 @@ namespace CSharpMath {
     private const float lineSkipLimitMultiplier = 0;
     private const float baseLineSkipMultiplier = 1.2f;
 
-    private void PositionRows(List<MathListDisplay<TFont, TGlyph>> rows, Table table) {
+    private void PositionRows(List<ListDisplay<TFont, TGlyph>> rows, Table table) {
       float currPos = 0;
       float openUp = table.InterRowAdditionalSpacing * jotMultiplier * _styleFont.PointSize;
       float baselineSkip = openUp + baseLineSkipMultiplier * _styleFont.PointSize;
@@ -1125,8 +1125,8 @@ namespace CSharpMath {
         return display;
       }
       if (op.Limits ?? _style == LineStyle.Display) {
-        MathListDisplay<TFont, TGlyph> superscript = null;
-        MathListDisplay<TFont, TGlyph> subscript = null;
+        ListDisplay<TFont, TGlyph> superscript = null;
+        ListDisplay<TFont, TGlyph> subscript = null;
         if (op.Superscript!=null) {
           superscript = _CreateLine(op.Superscript, _font, _context, _scriptStyle, _superscriptCramped);
         }

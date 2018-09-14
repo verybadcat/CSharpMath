@@ -9,7 +9,8 @@ namespace CSharpMath.Rendering {
   public abstract class TextAtom {
     private TextAtom(Range range) => Range = range;
 
-    public Range Range { get; private set; }
+    //internal for now, not ready for public use
+    internal Range Range { get; private set; }
 
     public abstract int? SingleChar(FontStyle style);
 
@@ -105,6 +106,14 @@ namespace CSharpMath.Rendering {
       public IReadOnlyList<TextAtom> Content { get; }
 
       public override int? SingleChar(FontStyle style) => Content.Count == 1 ? Content[0].SingleChar(style) : null;
+    }
+    public sealed class Comment : TextAtom {
+      public Comment(string comment, int index) : base(new Range(index, comment.Length)) =>
+        Content = comment;
+
+      public string Content { get; }
+
+      public override int? SingleChar(FontStyle style) => null;
     }
   }
 }
