@@ -1,4 +1,4 @@
-﻿using CSharpMath.Atoms;
+using CSharpMath.Atoms;
 using CSharpMath.Display;
 using CSharpMath.Display.Text;
 using CSharpMath.Enumerations;
@@ -65,7 +65,7 @@ namespace CSharpMath.Tests {
       var subDisplay = display.Displays[0];
       var line = subDisplay as TextLineDisplay<TFont, TGlyph>;
       Assert.NotNull(line);
-      Assert.Equal(4, line.Atoms.Count);
+      Assert.Equal(4, line.Atoms.Length);
 
       Assert.Equal("xyzw", line.StringText());
       Assert.Equal(new PointF(), line.Position);
@@ -96,7 +96,7 @@ namespace CSharpMath.Tests {
       var sub0 = display.Displays[0];
       var line = sub0 as TextLineDisplay<TFont, TGlyph>;
       Assert.NotNull(line);
-      Assert.Equal(4, line.Atoms.Count);
+      Assert.Equal(4, line.Atoms.Length);
       Assert.Equal("xy2w", line.StringText());
       Assert.Equal(new PointF(), line.Position);
       Assert.Equal(new Range(0, 4), line.Range);
@@ -300,7 +300,7 @@ namespace CSharpMath.Tests {
       Assert.Equal(new Range(0, 1), display.Range);
       Assert.False(display0.HasScript);
       Assert.Equal(Range.UndefinedInt, display0.IndexInParent);
-      Assert.Equal(3, display0.Displays.Count());
+      Assert.Equal(3, display0.Displays.Count);
 
       var glyph = display0.Displays[0] as GlyphDisplay<TFont, TGlyph>;
       Assert.Equal(new PointF(), glyph.Position);
@@ -426,7 +426,7 @@ namespace CSharpMath.Tests {
       Assert.Single(display.Displays);
 
       var line = display.Displays[0] as TextLineDisplay<TFont, TGlyph>;
-      Assert.Equal(6, line.Atoms.Count);
+      Assert.Equal(6, line.Atoms.Length);
       Assert.Equal("2x+3=y", line.StringText());
       Assert.Equal(new PointF(), line.Position);
       Assert.Equal(new Range(0, 6), line.Range);
@@ -483,7 +483,7 @@ namespace CSharpMath.Tests {
       Assert.Equal(new Range(0, 1), subNumerator.Range);
       Assert.False(subNumerator.HasScript);
 
-      var denominator = fraction.Numerator as ListDisplay<TFont, TGlyph>;
+      var denominator = fraction.Denominator as ListDisplay<TFont, TGlyph>;
       Assert.NotNull(denominator);
       Assert.Equal(LinePosition.Regular, denominator.MyLinePosition);
       Assertions.ApproximatePoint(0, -13.73, denominator.Position, 0.01);
@@ -529,7 +529,7 @@ namespace CSharpMath.Tests {
       Assert.Equal(new Range(0, 1), display2.Range);
       Assert.False(display2.HasScript);
       Assert.Equal(Range.UndefinedInt, display2.IndexInParent);
-      Assert.Equal(3, display2.Displays.Count());
+      Assert.Equal(3, display2.Displays.Count);
 
       var glyph = display2.Displays[0] as GlyphDisplay<TFont, TGlyph>;
       Assert.Equal(new PointF(), glyph.Position);
@@ -608,6 +608,43 @@ namespace CSharpMath.Tests {
       Assertions.ApproximatelyEqual(18.56, display.Ascent, 0.01);
       Assertions.ApproximatelyEqual(4, display.Descent, 0.01);
       Assertions.ApproximatelyEqual(20, display.Width, 0.01);
+    }
+
+    [Fact]
+    public void TestRaiseBox() {
+      var mathList = new MathList {
+        new Atoms.Extension.RaiseBox {
+          InnerList = new MathList{
+            MathAtoms.ForCharacter('r')
+          },
+          Raise = new Space(3 * Structures.Space.Point)
+        }
+      };
+      
+      var display = Typesetter<TFont, TGlyph>.CreateLine(mathList, _font, _context, LineStyle.Display);
+      Assert.Equal(LinePosition.Regular, display.MyLinePosition);
+      Assert.Equal(new Range(0, 1), display.Range);
+      Assert.False(display.HasScript);
+      Assert.Equal(Range.UndefinedInt, display.IndexInParent);
+      Assert.Single(display.Displays);
+
+      var display2 = display.Displays[0] as ListDisplay<TFont, TGlyph>;
+      Assert.Equal(LinePosition.Regular, display2.MyLinePosition);
+      Assert.Equal(new PointF(0, 3), display2.Position);
+      Assert.Equal(new Range(0, 1), display2.Range);
+      Assert.False(display2.HasScript);
+      Assert.Equal(Range.UndefinedInt, display2.IndexInParent);
+      Assert.Equal(1, display2.Displays.Count);
+      
+      var line = display2.Displays[0] as TextLineDisplay<TFont, TGlyph>;
+      Assert.Single(line.Atoms);
+      Assert.Equal("r", line.StringText());
+      Assert.Equal(new PointF(), line.Position);
+      Assert.False(line.HasScript);
+
+      Assertions.ApproximatelyEqual(17, display.Ascent, 0.01);
+      Assertions.ApproximatelyEqual(1, display.Descent, 0.01);
+      Assertions.ApproximatelyEqual(10, display.Width, 0.01);
     }
   }
 }
