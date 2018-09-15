@@ -17,7 +17,7 @@ namespace CSharpMath.Tests.FrontEnd
 
     public string FindStringDebugPurposesOnly(char[] glyphs) => new string(glyphs);
     public bool GlyphIsEmpty(char glyph)
-      => glyph == '\0';
+      => glyph is '\0';
     public char EmptyGlyph => '\0';
   }
 }
