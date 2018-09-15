@@ -214,7 +214,7 @@ namespace CSharpMath.Atoms {
     }
 
     internal string ReadColor() {
-      if (!(ExpectCharacter('{'))) {
+      if (!ExpectCharacter('{')) {
         SetError("Missing {");
         return null;
       }
@@ -222,7 +222,7 @@ namespace CSharpMath.Atoms {
       var builder = new StringBuilder();
       while (HasCharacters) {
         var ch = GetNextCharacter();
-        if (ch == '#' || (ch >= 'A' && ch <= 'F') || (ch >= 'A' && ch <= 'f') || (ch >= '0' && ch <= '9')) {
+        if (char.IsLetterOrDigit(ch) || ch == '#') {
           builder.Append(ch);
         } else {
           // we went too far

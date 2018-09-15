@@ -13,13 +13,13 @@ namespace CSharpMath.Display.Text {
     public bool Placeholder { get; set; }
 
     public IEnumerable<TGlyph> Glyphs => KernedGlyphs.Select(g => g.Glyph);
-    public KernedGlyph<TGlyph>[] KernedGlyphs { get; set; }
-    public string Text { get; set; }
+    public List<KernedGlyph<TGlyph>> KernedGlyphs { get; set; }
+    public System.Text.StringBuilder Text { get; set; }
 
-    public int Length => KernedGlyphs.Length;
+    public int Length => KernedGlyphs.Count;
     public TFont Font { get; set; }
 
-    public override string ToString() => $"AttributedGlyphRun {KernedGlyphs.Length} glyphs";
+    public override string ToString() => $"AttributedGlyphRun {KernedGlyphs.Count} glyphs";
   }
 
  

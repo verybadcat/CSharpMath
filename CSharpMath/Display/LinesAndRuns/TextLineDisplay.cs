@@ -1,4 +1,4 @@
-﻿using CSharpMath.Atoms;
+using CSharpMath.Atoms;
 using CSharpMath.Display.Text;
 using CSharpMath.FrontEnd;
 using CSharpMath.Interfaces;
@@ -11,23 +11,15 @@ using System.Text;
 
 namespace CSharpMath.Display {
   public class TextLineDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph> where TFont: MathFont<TGlyph> {
-    public TextLineDisplay(List<TextRunDisplay<TFont, TGlyph>> runs,
-      IEnumerable<IMathAtom> atoms) {
+    public TextLineDisplay(List<TextRunDisplay<TFont, TGlyph>> runs, IEnumerable<IMathAtom> atoms) {
       Runs = runs;
       Atoms = atoms.ToList();
     }
     // We don't implement count as it's not clear if it would refer to runs or atoms.
     public List<TextRunDisplay<TFont, TGlyph>> Runs { get; }
     public List<IMathAtom> Atoms { get; }
-    public List<TGlyph> Text {
-      get {
-        List<TGlyph> r = new List<TGlyph>();
-        foreach (var run in Runs) {
-          r.AddRange(run.Run.KernedGlyphs.Select(g => g.Glyph).ToArray());
-        }
-        return r;
-      }
-    }
+    public IEnumerable<TGlyph> Text =>
+      Runs.SelectMany(run => run.Run.KernedGlyphs.Select(g => g.Glyph));
 
     public RectangleF DisplayBounds
       => this.ComputeDisplayBounds();

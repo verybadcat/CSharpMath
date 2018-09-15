@@ -27,8 +27,8 @@ namespace CSharpMath.Display.Text {
     }
     public bool TryFuseRunAt(int index) {
       if (index > 0 && _Runs[index].AttributesMatch(_Runs[index - 1])) {
-        _Runs[index - 1].KernedGlyphs = _Runs[index - 1].KernedGlyphs.Concat(_Runs[index].KernedGlyphs).ToArray();
-        _Runs[index - 1].Text = _Runs[index - 1].Text + _Runs[index].Text;
+        _Runs[index - 1].KernedGlyphs.AddRange(_Runs[index].KernedGlyphs);
+        _Runs[index - 1].Text.Append(_Runs[index].Text);
         _Runs.RemoveAt(index);
         return true;
       }

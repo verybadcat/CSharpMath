@@ -20,14 +20,14 @@ namespace CSharpMath.Rendering {
       return new Glyph(fonts.MathTypeface, fonts.MathTypeface.Lookup(GlyphNotFound));
     }
 
-    public int GetCodepoint(string str, int index) => char.ConvertToUtf32(str, index - (char.IsLowSurrogate(str[index]) ? 1 : 0));
+    public int GetCodepoint(string str, int index) =>
+      char.ConvertToUtf32(str, index - (char.IsLowSurrogate(str[index]) ? 1 : 0));
 
-    public Glyph FindGlyphForCharacterAtIndex(Fonts fonts, int index, string str) {
-      return Lookup(fonts, GetCodepoint(str, index));
-    }
+    public Glyph FindGlyphForCharacterAtIndex(Fonts fonts, int index, string str) =>
+      Lookup(fonts, GetCodepoint(str, index));
 
-    public Glyph[] FindGlyphs(Fonts fonts, string str) =>
-      Typography.OpenFont.StringUtils.GetCodepoints(str.ToCharArray()).Select(c => Lookup(fonts, c)).ToArray();
+    public System.Collections.Generic.IEnumerable<Glyph> FindGlyphs(Fonts fonts, string str) =>
+      Typography.OpenFont.StringUtils.GetCodepoints(str.ToCharArray()).Select(c => Lookup(fonts, c));
 
     public bool GlyphIsEmpty(Glyph glyph) => glyph.IsEmpty;
 

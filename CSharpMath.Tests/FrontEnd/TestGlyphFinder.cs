@@ -13,7 +13,7 @@ namespace CSharpMath.Tests.FrontEnd
       return str[index];
     }
 
-    public char[] FindGlyphs(MathFont<char> font, string str) => str.ToArray();
+    public IEnumerable<char> FindGlyphs(MathFont<char> font, string str) => str;
 
     public string FindStringDebugPurposesOnly(char[] glyphs) => new string(glyphs);
     public bool GlyphIsEmpty(char glyph)

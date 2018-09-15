@@ -38,7 +38,7 @@ namespace CSharpMath.Apple {
       return r;
     }
 
-    private IEnumerable<ushort> FindGlyphsInternal(TFont font, string str) {
+    public IEnumerable<ushort> FindGlyphs(TFont font, string str) {
       // not completely sure this is correct. Need an actual
       // example of a composed character sequence coming from LaTeX.
       var unicodeIndexes = StringInfo.ParseCombiningCharacters(str);
@@ -71,9 +71,5 @@ namespace CSharpMath.Apple {
       font.CtFont.GetGlyphsForCharacters(chars, glyphs, length);
       return glyphs[0];
     }
-
-    public TGlyph[] FindGlyphs(TFont font, string str)
-      => FindGlyphsInternal(font, str).ToArray();
-
   }
 }

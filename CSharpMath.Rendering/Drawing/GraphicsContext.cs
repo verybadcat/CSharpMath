@@ -65,7 +65,7 @@ namespace CSharpMath.Rendering {
       Canvas.Save();
       Canvas.Translate(textPosition.X, textPosition.Y);
       Canvas.CurrentColor = color;
-      for (int i = 0; i < glyphs.Length; i++) {
+      for (int i = 0; i < glyphs.Count; i++) {
         var typeface = glyphs[i].Glyph.Typeface;
         layout.Typeface = typeface;
         var pathBuilder = new GlyphPathBuilder(typeface);

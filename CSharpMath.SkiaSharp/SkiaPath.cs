@@ -13,6 +13,7 @@ namespace CSharpMath.SkiaSharp {
       _owner.Canvas.DrawPath(_path, _owner.Paint);
       _path.Dispose();
       _path = null;
+      _owner = null;
     }
     public void CloseContour() => _path.Close();
     public void Curve3(float x1, float y1, float x2, float y2) => _path.QuadTo(x1, y1, x2, y2);

@@ -6,7 +6,7 @@ namespace CSharpMath.FrontEnd {
   /// <remarks>For changing a string into glyphs which will appear on the page. </remarks>
   public interface IGlyphFinder<TFont, TGlyph> where TFont : Display.MathFont<TGlyph> {
     TGlyph FindGlyphForCharacterAtIndex(TFont font, int index, string str);
-    TGlyph[] FindGlyphs(TFont font, string str);
+    IEnumerable<TGlyph> FindGlyphs(TFont font, string str);
     TGlyph EmptyGlyph { get; }
     bool GlyphIsEmpty(TGlyph glyph);
   }

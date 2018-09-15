@@ -51,7 +51,7 @@ namespace CSharpMath.Display {
       context.Translate(this.Position);
       context.SetTextPosition(new PointF());
       foreach (var displayAtom in Displays) {
-        displayAtom.Draw(context);
+        if(displayAtom != null) displayAtom.Draw(context);
       }
       context.RestoreState();
     }

@@ -6,8 +6,8 @@ namespace CSharpMath {
       set => Rendering.TextBuilder.NoEnhancedColors = value;
     }
     public static bool DisableWarnings {
-      get => WarningException.DisableWarnings;
-      set => WarningException.DisableWarnings = value;
+      get => Warnings.DisableWarnings;
+      set => Warnings.DisableWarnings = value;
     }
     public static Rendering.Typefaces GlobalTypefaces => Rendering.Fonts.GlobalTypefaces;
 

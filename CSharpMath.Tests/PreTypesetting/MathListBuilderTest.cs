@@ -300,9 +300,9 @@ namespace CSharpMath.Tests {
       // nested
       yield return (@"\left[ 2 + \left|\frac{-x}{2}\right| \right]", singletonList, 0, new MathAtomType[] { MathAtomType.Number, MathAtomType.BinaryOperator, MathAtomType.Inner }, @"[", @"]", @"\left[ 2+\left| \frac{-x}{2}\right| \right] ");
       // With scripts
-      yield return (@"\left( 2 \right)^2", singletonList, 0, singletonNumber, @"(", @")", @"\left( 2\right) ^{2}");
+      yield return (@"\left( 2 \right)^2", singletonList, 0, singletonNumber, @"(", @")", @"\left( 2\right) ^2");
       // Scripts on left
-      yield return (@"\left(^2 \right )", singletonList, 0, new MathAtomType[] { MathAtomType.Ordinary }, @"(", @")", @"\left( {}^{2}\right) ");
+      yield return (@"\left(^2 \right )", singletonList, 0, new MathAtomType[] { MathAtomType.Ordinary }, @"(", @")", @"\left( {}^2\right) ");
       // Dot
       yield return (@"\left( 2 \right.", singletonList, 0, singletonNumber, @"(", @"", @"\left( 2\right. ");
 

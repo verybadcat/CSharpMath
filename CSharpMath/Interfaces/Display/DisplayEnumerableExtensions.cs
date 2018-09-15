@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +9,7 @@ namespace CSharpMath.Display {
       where TFont : MathFont<TGlyph> {
       float r = 0;
       foreach (var display in displays) {
-        r = Math.Max(r, display.Ascent + display.Position.Y);
+        if (display != null) r = Math.Max(r, display.Ascent + display.Position.Y);
       }
       return r;
     }
@@ -17,7 +17,7 @@ namespace CSharpMath.Display {
       where TFont : MathFont<TGlyph> {
       float r = 0;
       foreach (var display in displays) {
-        r = Math.Max(r, display.Descent - display.Position.Y);
+        if(display != null) r = Math.Max(r, display.Descent - display.Position.Y);
       }
       return r;
     }

@@ -1,4 +1,4 @@
-﻿using CSharpMath.Display;
+using CSharpMath.Display;
 using CSharpMath.Tests.FrontEnd;
 using System;
 using System.Drawing;
@@ -18,7 +18,7 @@ namespace CSharpMath.Tests {
       var glyphRun = new AttributedGlyphRun<MathFont<TGlyph>, TGlyph>
       {
         Font = font,
-        KernedGlyphs = hello.ToCharArray().Select(c => new KernedGlyph<char>(c)).ToArray(),
+        KernedGlyphs = hello.Select(c => new KernedGlyph<char>(c)).ToList(),
       };
       var width = provider.GetTypographicWidth(font, glyphRun);
       Assertions.ApproximatelyEqual(width, 25,  0.01);
@@ -32,7 +32,7 @@ namespace CSharpMath.Tests {
       var glyphRun = new AttributedGlyphRun<MathFont<TGlyph>, TGlyph>
       {
         Font = font,
-        KernedGlyphs = america.ToCharArray().Select(c => new KernedGlyph<char>(c)).ToArray(),
+        KernedGlyphs = america.Select(c => new KernedGlyph<char>(c)).ToList(),
       };
       var width = provider.GetTypographicWidth(font, glyphRun);
       Assertions.ApproximatelyEqual(width, 40, 0.01);
