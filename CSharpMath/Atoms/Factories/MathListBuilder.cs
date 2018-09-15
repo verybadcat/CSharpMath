@@ -743,8 +743,7 @@ namespace CSharpMath.Atoms {
               break;
             }
           case MathAtomType.Group:
-#warning Should {} be added?
-            builder.Append(MathListToString(((Group)atom).InnerList));
+            builder.AppendInBraces(MathListToString(((Group)atom).InnerList), NullHandling.EmptyContent);
             break;
           case MathAtomType.Prime:
             builder.Append('\'', ((Prime)atom).Length);
@@ -773,10 +772,12 @@ namespace CSharpMath.Atoms {
 
         }
         if (atom.Superscript != null) {
-          builder.Append(@"^{" + MathListToString(atom.Superscript) + "}");
+          var scriptString = MathListToString(atom.Superscript);
+          builder.Append(scriptString.Length == 1 ? $"^{scriptString}" : $"^{{{scriptString}}}");
         }
         if (atom.Subscript!=null) {
-          builder.Append(@"_{" + MathListToString(atom.Subscript) + "}");
+          var scriptString = MathListToString(atom.Subscript);
+          builder.Append(scriptString.Length == 1 ? $"_{scriptString}" : $"_{{{scriptString}}}");
         }
       }
       if (currentFontStyle!=FontStyle.Default) {

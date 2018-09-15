@@ -74,6 +74,31 @@ namespace CSharpMath.Atoms {
       }
 
     }
+    
+    ///<summary>Iteratively expands all groups in this list.</summary>
+    public void ExpandGroups() {
+      for (int i = 0; i < Count; i++) {
+        if (Atoms[i].AtomType == MathAtomType.Group) {
+          var group = (Group)Atoms[i];
+          var initial = group.InnerList.Count - 1;
+          var scriptsExpanded = false;
+          for (int j = initial; j >= 0; j--) {
+            Atoms.Insert(i + 1, group.InnerList[j]);
+            if (!scriptsExpanded) {
+              Atoms[i + 1].Superscript = group.Superscript;
+              Atoms[i + 1].Subscript = group.Subscript;
+              scriptsExpanded = true;
+            }
+          }
+          if (!scriptsExpanded)
+            Atoms.Insert(i + 1, new MathAtom(MathAtomType.Ordinary, "") {
+              Superscript = group.Superscript,
+              Subscript = group.Subscript
+            });
+          Atoms.RemoveAt(i);
+        }
+      }
+    }
 
     public int Count => Atoms.Count;
 

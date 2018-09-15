@@ -32,7 +32,7 @@ namespace CSharpMath {
       if (str == null && handling == NullHandling.EmptyString) {
         return string.Empty;
       } else {
-        return "{" + str.NullToNull(handling) + "}";
+        return $"{{{str.NullToNull(handling)}}}";
       }
     }
 
@@ -40,7 +40,7 @@ namespace CSharpMath {
       if (str == null && handling == NullHandling.EmptyString) {
         return string.Empty;
       } else {
-        return "(" + str.NullToNull(handling) + ")";
+        return $"({str.NullToNull(handling)})";
       }
     }
 
@@ -48,7 +48,7 @@ namespace CSharpMath {
       if (str == null && handling == NullHandling.EmptyString) {
         return string.Empty;
       } else {
-        return "(" + str.NullToNull(handling) + ")";
+        return $"[{str.NullToNull(handling)}]";
       }
     }
 

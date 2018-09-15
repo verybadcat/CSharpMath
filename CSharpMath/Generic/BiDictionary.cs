@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -19,16 +20,108 @@ namespace CSharpMath
     readonly Dictionary<K, V> aliases;
     readonly BiDictionary<K, V> main;
 
-    public void Add(V value, params K[] keys) {
+    #region AliasDictionary<K, V>.Add
+    public void Add(IEnumerable<K> keys, V value) {
       if (main.Contains(value))
         foreach (var key in keys)
           aliases.Add(key, value);
-      else if(keys.Length > 0) {
-        main.Add(keys[0], value);
+      else if(keys.Any()) {
+        main.Add(keys.First(), value);
         foreach (var key in keys.Skip(1))
           aliases.Add(key, value);
       }
     }
+    public void Add(K mainKey, V value) {
+      var array = ArrayPool<K>.Shared.Rent(1);
+      array[0] = mainKey;
+      Add(array, value);
+      ArrayPool<K>.Shared.Return(array);
+    }
+    public void Add(K mainKey, K aliasKey, V value) {
+      var array = ArrayPool<K>.Shared.Rent(2);
+      array[0] = mainKey;
+      array[1] = aliasKey;
+      Add(array, value);
+      ArrayPool<K>.Shared.Return(array);
+    }
+    public void Add(K mainKey, K aliasKey1, K aliasKey2, V value) {
+      var array = ArrayPool<K>.Shared.Rent(3);
+      array[0] = mainKey;
+      array[1] = aliasKey1;
+      array[2] = aliasKey2;
+      Add(array, value);
+      ArrayPool<K>.Shared.Return(array);
+    }
+    public void Add(K mainKey, K aliasKey1, K aliasKey2, K aliasKey3, V value) {
+      var array = ArrayPool<K>.Shared.Rent(4);
+      array[0] = mainKey;
+      array[1] = aliasKey1;
+      array[2] = aliasKey2;
+      array[3] = aliasKey3;
+      Add(array, value);
+      ArrayPool<K>.Shared.Return(array);
+    }
+    public void Add(K mainKey, K aliasKey1, K aliasKey2, K aliasKey3, K aliasKey4, V value) {
+      var array = ArrayPool<K>.Shared.Rent(5);
+      array[0] = mainKey;
+      array[1] = aliasKey1;
+      array[2] = aliasKey2;
+      array[3] = aliasKey3;
+      array[4] = aliasKey4;
+      Add(array, value);
+      ArrayPool<K>.Shared.Return(array);
+    }
+    public void Add(K mainKey, K aliasKey1, K aliasKey2, K aliasKey3, K aliasKey4, K aliasKey5, V value) {
+      var array = ArrayPool<K>.Shared.Rent(6);
+      array[0] = mainKey;
+      array[1] = aliasKey1;
+      array[2] = aliasKey2;
+      array[3] = aliasKey3;
+      array[4] = aliasKey4;
+      array[5] = aliasKey5;
+      Add(array, value);
+      ArrayPool<K>.Shared.Return(array);
+    }
+    public void Add(K mainKey, K aliasKey1, K aliasKey2, K aliasKey3, K aliasKey4, K aliasKey5, K aliasKey6, V value) {
+      var array = ArrayPool<K>.Shared.Rent(7);
+      array[0] = mainKey;
+      array[1] = aliasKey1;
+      array[2] = aliasKey2;
+      array[3] = aliasKey3;
+      array[4] = aliasKey4;
+      array[5] = aliasKey5;
+      array[6] = aliasKey6;
+      Add(array, value);
+      ArrayPool<K>.Shared.Return(array);
+    }
+    public void Add(K mainKey, K aliasKey1, K aliasKey2, K aliasKey3, K aliasKey4, K aliasKey5, K aliasKey6, K aliasKey7, V value) {
+      var array = ArrayPool<K>.Shared.Rent(8);
+      array[0] = mainKey;
+      array[1] = aliasKey1;
+      array[2] = aliasKey2;
+      array[3] = aliasKey3;
+      array[4] = aliasKey4;
+      array[5] = aliasKey5;
+      array[6] = aliasKey6;
+      array[7] = aliasKey7;
+      Add(array, value);
+      ArrayPool<K>.Shared.Return(array);
+    }
+    public void Add(K mainKey, K aliasKey1, K aliasKey2, K aliasKey3, K aliasKey4, K aliasKey5, K aliasKey6, K aliasKey7, K aliasKey8, V value) {
+      var array = ArrayPool<K>.Shared.Rent(9);
+      array[0] = mainKey;
+      array[1] = aliasKey1;
+      array[2] = aliasKey2;
+      array[3] = aliasKey3;
+      array[4] = aliasKey4;
+      array[5] = aliasKey5;
+      array[6] = aliasKey6;
+      array[7] = aliasKey7;
+      array[8] = aliasKey8;
+      Add(array, value);
+      ArrayPool<K>.Shared.Return(array);
+    }
+    #endregion AliasDictionary<K, V>.Add
 
     public IEnumerable<K> Keys => aliases.Keys.Concat(main.Firsts);
     public IEnumerable<V> Values => main.Seconds;
@@ -54,7 +147,7 @@ namespace CSharpMath
     IEnumerator<KeyValuePair<K, V>> IEnumerable<KeyValuePair<K, V>>.GetEnumerator() =>
       main.Concat(aliases).GetEnumerator();
 
-    void ICollection<KeyValuePair<K, V>>.Add(KeyValuePair<K, V> item) => Add(item.Value, item.Key);
+    void ICollection<KeyValuePair<K, V>>.Add(KeyValuePair<K, V> item) => Add(item.Key, item.Value);
 
     public void Clear() {
       main.Clear();

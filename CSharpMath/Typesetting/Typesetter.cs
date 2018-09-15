@@ -809,7 +809,7 @@ namespace CSharpMath {
 
     private ListDisplay<TFont, TGlyph> _MakeLeftRight(IMathInner inner) {
       if (inner.LeftBoundary == null && inner.RightBoundary == null) {
-        throw new InvalidOperationException("Inner should have a boundary to call this function.");
+        throw new InvalidCodePathException("Inner should have a boundary to call this function.");
       }
       var innerListDisplay = _CreateLine(inner.InnerList, _font, _context, _style, _cramped, true);
       float axisHeight = _mathTable.AxisHeight(_styleFont);

@@ -7,14 +7,7 @@ using System.Text;
 namespace CSharpMath.Atoms {
   public class MathAtom : IMathAtom {
 
-    public virtual string StringValue {
-      get {
-        StringBuilder builder = new StringBuilder(Nucleus);
-        builder.AppendInBraces(Superscript, NullHandling.EmptyString);
-        builder.AppendInBraces(Subscript, NullHandling.EmptyString);
-        return builder.ToString();
-      }
-    }
+    public virtual string StringValue => new StringBuilder(Nucleus).AppendScripts(this).ToString();
     public MathAtomType AtomType { get; set; }
     public string Nucleus { get; set; }
     private IMathList _Superscript;
@@ -92,7 +85,7 @@ namespace CSharpMath.Atoms {
     public override string ToString() =>
       AtomType.ToText() + " " + StringValue;
 
-    public bool EqualsAtom(MathAtom otherAtom) =>
+    public bool EqualsAtom(IMathAtom otherAtom) =>
       otherAtom != null &&
       Nucleus == otherAtom.Nucleus &&
       AtomType == otherAtom.AtomType &&
@@ -101,11 +94,9 @@ namespace CSharpMath.Atoms {
       //IndexRange == otherAtom.IndexRange &&
       //FontStyle == otherAtom.FontStyle &&
       otherAtom.GetType() == this.GetType();
-    
-
     public override bool Equals (object obj) {
-      if (obj is MathAtom) {
-        return this.EqualsAtom((MathAtom)obj);
+      if (obj is IMathAtom) {
+        return EqualsAtom((IMathAtom)obj);
       }
       return false;
     }

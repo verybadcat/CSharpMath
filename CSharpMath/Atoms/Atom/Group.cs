@@ -13,7 +13,8 @@ namespace CSharpMath.Atoms {
     public Group(Group cloneMe, bool finalize) : base(cloneMe, finalize) {
       InnerList = AtomCloner.Clone(cloneMe.InnerList, finalize);
     }
-    public override string StringValue => $"{{{InnerList.StringValue}}}";
+    public override string StringValue =>
+      $"{{{InnerList.StringValue}}}{(Superscript != null ? $"^{{{Superscript.StringValue}}}" : null)}{(Subscript != null ? $"_{{{Subscript.StringValue}}}" : null)}";
     public override T Accept<T, THelper>(IMathAtomVisitor<T, THelper> visitor, THelper helper) => visitor.Visit(this, helper);
     public bool EqualsGroup(Group other) =>
       EqualsAtom(other) && InnerList.NullCheckingEquals(other.InnerList);

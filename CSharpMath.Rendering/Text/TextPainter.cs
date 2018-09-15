@@ -45,7 +45,11 @@ namespace CSharpMath.Rendering {
           _relativeXCoordDisplay.Width, _relativeXCoordDisplay.Ascent, _relativeXCoordDisplay.Descent, FontSize, CoordinatesFromBottomLeftInsteadOfTopLeft, width ?? c.Width, c.Height, alignment, padding, offsetX, offsetY));
         //offsetY is already included in _relativeXCoordDisplay.Position, no need to add it again below
         _absoluteXCoordDisplay.Position = new PointF(_absoluteXCoordDisplay.Position.X + offsetX, _absoluteXCoordDisplay.Position.Y + _relativeXCoordDisplay.Position.Y);
-        DrawCore(c, new Display.ListDisplay<Fonts, Glyph>(new[] { _relativeXCoordDisplay, _absoluteXCoordDisplay }));
+        var array = System.Buffers.ArrayPool<IDisplay<Fonts, Glyph>>.Shared.Rent(2);
+        array[0] = _relativeXCoordDisplay;
+        array[1] = _absoluteXCoordDisplay;
+        DrawCore(c, new Display.ListDisplay<Fonts, Glyph>(array));
+        System.Buffers.ArrayPool<IDisplay<Fonts, Glyph>>.Shared.Return(array);
       }
     }
     /// <summary>
@@ -63,7 +67,11 @@ namespace CSharpMath.Rendering {
         _relativeXCoordDisplay.Position = new PointF(_relativeXCoordDisplay.Position.X + x, _relativeXCoordDisplay.Position.Y + y);
         //y is already included in _relativeXCoordDisplay.Position, no need to add it again below
         _absoluteXCoordDisplay.Position = new PointF(_absoluteXCoordDisplay.Position.X + x, _relativeXCoordDisplay.Position.Y);
-        DrawCore(c, new Display.ListDisplay<Fonts, Glyph>(new[] { _relativeXCoordDisplay, _absoluteXCoordDisplay }));
+        var array = System.Buffers.ArrayPool<IDisplay<Fonts, Glyph>>.Shared.Rent(2);
+        array[0] = _relativeXCoordDisplay;
+        array[1] = _absoluteXCoordDisplay;
+        DrawCore(c, new Display.ListDisplay<Fonts, Glyph>(array));
+        System.Buffers.ArrayPool<IDisplay<Fonts, Glyph>>.Shared.Return(array);
       }
     }
   }

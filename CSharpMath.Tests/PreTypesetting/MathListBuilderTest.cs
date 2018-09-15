@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -37,22 +37,22 @@ namespace CSharpMath.Tests {
     }
 
     public static IEnumerable<(string, MathAtomType[][], string)> RawSuperscriptTestData() {
-      yield return ("x^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Variable }, new MathAtomType[] { MathAtomType.Number } }, "x^{2}");
-      yield return ("x^23", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Variable, MathAtomType.Number }, new MathAtomType[] { MathAtomType.Number } }, "x^{2}3");
+      yield return ("x^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Variable }, new MathAtomType[] { MathAtomType.Number } }, "x^2");
+      yield return ("x^23", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Variable, MathAtomType.Number }, new MathAtomType[] { MathAtomType.Number } }, "x^23");
       yield return ("x^{23}", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Variable }, new MathAtomType[] { MathAtomType.Number, MathAtomType.Number } }, "x^{23}");
-      yield return ("x^2^3", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Variable, MathAtomType.Ordinary }, new MathAtomType[] { MathAtomType.Number } }, "x^{2}{}^{3}");
+      yield return ("x^2^3", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Variable, MathAtomType.Ordinary }, new MathAtomType[] { MathAtomType.Number } }, "x^2{}^3");
       yield return ("x^{2^3}", new MathAtomType[][] { new MathAtomType[] {MathAtomType.Variable},
         new MathAtomType[] { MathAtomType.Number },
-      new MathAtomType[]{MathAtomType.Number} }, "x^{2^{3}}");
+      new MathAtomType[]{MathAtomType.Number} }, "x^{2^3}");
       yield return ("x^{^2*}", new MathAtomType[][] {
         new MathAtomType[]{MathAtomType.Variable },
         new MathAtomType[]{MathAtomType.Ordinary, MathAtomType.BinaryOperator },
         new MathAtomType[]{MathAtomType.Number } },
-        "x^{{}^{2}*}");
-      yield return ("^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Ordinary }, new MathAtomType[] { MathAtomType.Number } }, "{}^{2}");
-      yield return ("{}^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Ordinary }, new MathAtomType[] { MathAtomType.Number } }, "{}^{2}");
-      yield return ("x^^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Variable, MathAtomType.Ordinary }, new MathAtomType[] { } }, "x^{}{}^{2}");
-      yield return ("5{x}^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Number, MathAtomType.Variable }, new MathAtomType[] { } }, "5x^{2}");
+        "x^{{}^2*}");
+      yield return ("^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Ordinary }, new MathAtomType[] { MathAtomType.Number } }, "{}^2");
+      yield return ("{}^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Ordinary }, new MathAtomType[] { MathAtomType.Number } }, "{}^2");
+      yield return ("x^^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Variable, MathAtomType.Ordinary }, new MathAtomType[] { } }, "x^{}{}^2");
+      yield return ("5{x}^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Number, MathAtomType.Variable }, new MathAtomType[] { } }, "5{x}^2");
     }
 
     public static IEnumerable<object[]> SuperscriptTestData() {
@@ -83,7 +83,7 @@ namespace CSharpMath.Tests {
       var list = builder.Build();
       Assert.Null(builder.Error);
 
-      ExpandGroups(list);
+      list.ExpandGroups();
       CheckAtomTypes(list, atomTypes);
 
 
@@ -103,10 +103,12 @@ namespace CSharpMath.Tests {
       var builder = new MathListBuilder(input);
       var list = builder.Build();
       Assert.Null(builder.Error);
-      ExpandGroups(list);
-      CheckAtomTypes(list, atomTypes[0]);
 
-      IMathAtom firstAtom = list[0];
+      var expandedList = new MathList(list, false);
+      expandedList.ExpandGroups();
+      CheckAtomTypes(expandedList, atomTypes[0]);
+
+      IMathAtom firstAtom = expandedList[0];
       var types = atomTypes[1];
       if (types.Count() > 0) {
         Assert.NotNull(scriptGetter(firstAtom));
@@ -123,18 +125,7 @@ namespace CSharpMath.Tests {
       string latex = MathListBuilder.MathListToString(list);
       Assert.Equal(output, latex);
     }
-
-    ///<summary>Iteratively expands all groups in the list.</summary>
-    private void ExpandGroups(IMathList list) {
-      for (int i = 0; i < list.Count; i++) {
-        if (list[i].AtomType == MathAtomType.Group) {
-          var group = (Group)list[i];
-          for (int j = group.InnerList.Count - 1; j >= 0; j--) list.Insert(i + 1, group.InnerList[j]);
-          list.RemoveAt(i);
-        }
-      }
-    }
-
+    
     /// <summary>Safe to call with a null list. Types cannot be null however.</summary>
     private void CheckAtomTypes(IMathList list, params MathAtomType[] types) {
       int atomCount = (list == null) ? 0 : list.Atoms.Count;
@@ -338,7 +329,7 @@ namespace CSharpMath.Tests {
       Assert.NotNull(list);
       Assert.Null(builder.Error);
 
-      ExpandGroups(list);
+      list.ExpandGroups();
       CheckAtomTypes(list, expectedOutputTypes);
       var inner = list[innerIndex] as Inner;
       Assert.NotNull(inner);
@@ -382,7 +373,7 @@ namespace CSharpMath.Tests {
       Assert.NotNull(list);
       Assert.Equal(5, list.Count);
       var types = new MathAtomType[] { MathAtomType.Number, MathAtomType.BinaryOperator, MathAtomType.Fraction, MathAtomType.BinaryOperator, MathAtomType.Number };
-      ExpandGroups(list);
+      list.ExpandGroups();
       CheckAtomTypes(list, types);
 
       var fraction = list[2] as Fraction;
@@ -435,7 +426,7 @@ namespace CSharpMath.Tests {
         MathAtomType.BinaryOperator,
         MathAtomType.Number
       };
-      ExpandGroups(list);
+      list.ExpandGroups();
       CheckAtomTypes(list, types);
       var fraction = list[2] as IFraction;
       CheckAtomTypeAndNucleus(fraction, MathAtomType.Fraction, "");
@@ -848,7 +839,7 @@ namespace CSharpMath.Tests {
       MathAtoms.AddLatexSymbol("lcm", MathAtoms.Operator("lcm", false));
       var builder2 = new MathListBuilder(input);
       var list2 = builder2.Build();
-      ExpandGroups(list2);
+      list2.ExpandGroups();
       CheckAtomTypes(list2, MathAtomType.LargeOperator, MathAtomType.Open,
         MathAtomType.Variable, MathAtomType.Punctuation, MathAtomType.Variable,
         MathAtomType.Close);

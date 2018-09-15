@@ -18,65 +18,65 @@ namespace CSharpMath.Rendering {
        \ \textbackslash
       */
       //https://en.wikibooks.org/wiki/LaTeX/Special_Characters
-      { "€", "euro" },
-      { "°", "textdegree" },
-      { "℃", "celsius" },
+      { "euro" , "€" },
+      { "textdegree" , "°" },
+      { "celsius" , "℃" },
 
-      { "ł", "l" }, //barred l (l with stroke)
-      { "Ł", "L" }, //barred L (L with stroke)
-      { "ø", "o" }, //slashed o (o with stroke)
-      { "Ø", "O" }, //slashed O (O with stroke)
-      { "ı", "i" }, //dotless i
-      { "ȷ", "j" }, //dotless j
-      { "æ", "ae" },
-      { "Æ", "AE" },
-      { "œ", "oe" },
-      { "Œ", "OE" },
-      { "ß", "ss" },
-      { "å", "aa" },
-      { "Å", "AA" },
+      { "l" , "ł" }, //barred l (l with stroke)
+      { "L" , "Ł" }, //barred L (L with stroke)
+      { "o" , "ø" }, //slashed o (o with stroke)
+      { "O" , "Ø" }, //slashed O (O with stroke)
+      { "i" , "ı" }, //dotless i
+      { "j" , "ȷ" }, //dotless j
+      { "ae" , "æ" },
+      { "AE" , "Æ" },
+      { "oe" , "œ" },
+      { "OE" , "Œ" },
+      { "ss" , "ß" },
+      { "aa" , "å" },
+      { "AA" , "Å" },
 
       //http://tug.ctan.org/info/symbols/comprehensive/symbols-a4.pdf page 14 (2 Body-text symbols)
-      { "%", "%" },
-      { "&", "&" },
-      { "#", "#" },
-      { "^", "textasciicircum" },
-      { "<", "textless" },
-      { "˜", "textasciitilde" }, //˜ is the accent
-      { "ª", "textordfeminine" },
-      { "∗", "textasteriskcentered" },
-      { "º", "textordmasculine" },
-      { "∖", "textbackslash" },
-      { "¶", "P", "textparagraph" },
-      { "|", "textbar" },
-      { "·", "textperiodcentered" },
-      { "‖", "textbardbl" },
-      { "‱", "textpertenthousand" },
-      { "○", "textbigcircle" },
-      { "‰", "textperthousand" },
-      { "{", "{", "textbraceleft" },
-      { "¿", "textquestiondown" },
-      { "}", "}", "textbraceright" },
-      { "“", "textquotedblleft" },
-      { "•", "textbullet" },
-      { "”", "textquotedblright" },
-      { "©", "copyright", "textcopyright" },
-      { "‘", "textquoteleft" },
-      { "†", "dag", "textdagger" },
-      { "’", "textquoteright" },
-      { "‡", "ddag", "textdaggerdbl" },
-      { "®", "textregistered" },
-      { "$", "$", "textdollar" },
-      { "§", "S", "textsection" },
-      { "…", "textellipsis" },
-      { "£", "pounds", "textsterling" },
-      { "—", "textemdash" },
-      { "™", "texttrademark" },
-      { "–", "textendash" },
-      { "_", "_", "textunderscore" },
-      { "¡", "textexclamdown" },
-      { "␣", "textvisiblespace" },
-      { ">", "textgreater" },
+      { "%" , "%" },
+      { "&" , "&" },
+      { "#" , "#" },
+      { "textasciicircum" , "^" },
+      { "textless" , "<" },
+      { "textasciitilde" , "˜" }, //˜ is the accent
+      { "textordfeminine" , "ª" },
+      { "textasteriskcentered" , "∗" },
+      { "textordmasculine" , "º" },
+      { "textbackslash" , "∖" },
+      { "P", "textparagraph" , "¶" },
+      { "textbar" , "|" },
+      { "textperiodcentered" , "·" },
+      { "textbardbl" , "‖" },
+      { "textpertenthousand" , "‱" },
+      { "textbigcircle" , "○" },
+      { "textperthousand" , "‰" },
+      { "{", "textbraceleft" , "{" },
+      { "textquestiondown" , "¿" },
+      { "}", "textbraceright", "}" },
+      { "textquotedblleft" , "“" },
+      { "textbullet" , "•" },
+      { "textquotedblright" , "”" },
+      { "copyright", "textcopyright" , "©" },
+      { "textquoteleft" , "‘" },
+      { "dag", "textdagger" , "†" },
+      { "textquoteright" , "’" },
+      { "ddag", "textdaggerdbl" , "‡" },
+      { "textregistered" , "®" },
+      { "$", "textdollar" , "$" },
+      { "S", "textsection" , "§" },
+      { "textellipsis" , "…" },
+      { "pounds", "textsterling" , "£" },
+      { "textemdash" , "—" },
+      { "texttrademark" , "™" },
+      { "textendash" , "–" },
+      { "_", "textunderscore" , "_" },
+      { "textexclamdown" , "¡" },
+      { "textvisiblespace" , "␣" },
+      { "textgreater" , ">" },
     };
     public static BiDictionary<string, string> PredefinedAccents { get; } = new BiDictionary<string, string> {
       //textsuperscript, textsubscript

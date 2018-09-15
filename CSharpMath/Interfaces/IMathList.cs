@@ -1,4 +1,4 @@
-﻿using CSharpMath.Atoms;
+using CSharpMath.Atoms;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,8 +13,9 @@ namespace CSharpMath.Interfaces {
     void Append(IMathList list);
     void RemoveLastAtom();
     void RemoveAtoms(Range inRange);
-    
 
+    ///<summary>Iteratively expands all groups in this list.</summary>
+    void ExpandGroups();
 
 
     IMathList FinalizedList();

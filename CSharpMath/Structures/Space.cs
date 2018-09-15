@@ -52,7 +52,8 @@ namespace CSharpMath.Structures {
     }
 
     public override bool Equals(object obj) => obj is Space s && this == s;
-    public bool Equals(Space otherSpace) => this == otherSpace;
+    public bool EqualsSpace(Space otherSpace) => this == otherSpace;
+    bool IEquatable<Space>.Equals(Space other) => EqualsSpace(other);
     public override int GetHashCode() =>
       unchecked(73 * Length.GetHashCode() + 277 * IsMu.GetHashCode());
     public static bool operator ==(Space left, Space right) =>
