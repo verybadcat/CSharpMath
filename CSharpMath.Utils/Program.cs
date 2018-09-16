@@ -12,7 +12,8 @@ namespace CSharpMath.DevUtils {
       //CSharpMathExamples.MirrorFromIos.Do();
 
       //Rendering.FontReferenceCodeBuilder.Build();
-      unsafe { new Span<byte>(new byte[6]).CopyTo(new byte[3]); }
+      Type.GetType("System.ThrowHelper").GetMethod("ThrowArgumentException_OverlapAlignmentMismatch", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static).Invoke(null, new object[0]);
+      //unsafe { new Span<Guid>((void*)3456, 10).Overlaps(new Span<byte>((void*)3456, 10)); }
 
 
       Console.WriteLine();
