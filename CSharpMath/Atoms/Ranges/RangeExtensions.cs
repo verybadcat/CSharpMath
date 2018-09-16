@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,8 +11,8 @@ namespace CSharpMath.Atoms {
     /// <param name="ranges"></param>
     /// <returns></returns>
     public static Range Combine(IEnumerable<Range> ranges) {
-      var trimRanges = ranges.Where(r => !(r.IsNotFound()));
-      if (trimRanges.IsEmpty()) {
+      var trimRanges = ranges.Where(r => !r.IsNotFound()).ToList();
+      if (trimRanges.Count == 0) {
         return Ranges.NotFound;
       }
       int start = trimRanges.Min(r => r.Location);

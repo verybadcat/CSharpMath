@@ -11,7 +11,9 @@ namespace CSharpMath.DevUtils {
       //iosMathDemo.Builder.Build();
       //CSharpMathExamples.MirrorFromIos.Do();
 
-      Rendering.FontReferenceCodeBuilder.Build();
+      //Rendering.FontReferenceCodeBuilder.Build();
+      unsafe { new Span<byte>(new byte[6]).CopyTo(new byte[3]); }
+
 
       Console.WriteLine();
       Console.WriteLine("Finished executing the method(s) requested.");
