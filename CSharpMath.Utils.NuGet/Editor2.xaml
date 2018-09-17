@@ -36,7 +36,7 @@
         <Label Grid.Row="2">Title</Label>
         <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Title}"/>
         <Label Grid.Row="3">Description</Label>
-        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Description}"/>
+        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Description}" TextWrapping="Wrap"/>
         <Label Grid.Row="4">Package Tags (Project)</Label>
         <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding PackageTags}"/>
         <Button Grid.Row="5" Command="{Binding Reload}">Reload this project spec</Button>

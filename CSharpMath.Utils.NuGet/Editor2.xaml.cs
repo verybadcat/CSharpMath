@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,8 +16,7 @@ namespace CSharpMath.Utils.NuGet {
   /// Interaction logic for Editor2.xaml
   /// </summary>
   public partial class Editor2 : Window {
-    public Editor2() {
+    public Editor2() =>
       InitializeComponent();
-    }
   }
 }
