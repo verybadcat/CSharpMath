@@ -16,7 +16,7 @@ namespace CSharpMath.Structures {
     }
 
     public float ActualLength<TFont, TGlyph>(FrontEnd.FontMathTable<TFont, TGlyph> mathTable, TFont font)
-      where TFont : Display.MathFont<TGlyph> =>
+      where TFont : Display.IMathFont<TGlyph> =>
       IsMu ? Length * mathTable.MuUnit(font) : Length;
 
     public static Result<Space> Create(string length, string unit, bool useTextUnits) {

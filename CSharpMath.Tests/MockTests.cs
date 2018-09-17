@@ -13,9 +13,9 @@ namespace CSharpMath.Tests {
     [Fact]
     public void TestGlyphBoundsWithoutM() {
       string hello = "Hello";
-      MathFont<TGlyph> font = new MathFont<TGlyph>(10);
+      TestMathFont font = new TestMathFont(10);
       var provider = new TestGlyphBoundsProvider();
-      var glyphRun = new AttributedGlyphRun<MathFont<TGlyph>, TGlyph>
+      var glyphRun = new AttributedGlyphRun<TestMathFont, TGlyph>
       {
         Font = font,
         KernedGlyphs = hello.Select(c => new KernedGlyph<char>(c)).ToList(),
@@ -27,9 +27,9 @@ namespace CSharpMath.Tests {
     [Fact]
     public void TestGlyphBoundsWithM() {
       string america = "America";
-      MathFont<TGlyph> font = new MathFont<TGlyph>(10);
+      TestMathFont font = new TestMathFont(10);
       var provider = new TestGlyphBoundsProvider();
-      var glyphRun = new AttributedGlyphRun<MathFont<TGlyph>, TGlyph>
+      var glyphRun = new AttributedGlyphRun<TestMathFont, TGlyph>
       {
         Font = font,
         KernedGlyphs = america.Select(c => new KernedGlyph<char>(c)).ToList(),

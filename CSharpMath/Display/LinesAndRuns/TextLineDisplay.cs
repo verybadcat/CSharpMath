@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 
 namespace CSharpMath.Display {
-  public class TextLineDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph> where TFont: MathFont<TGlyph> {
+  public class TextLineDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph> where TFont: IMathFont<TGlyph> {
     public TextLineDisplay(List<TextRunDisplay<TFont, TGlyph>> runs, List<IMathAtom> atoms) {
       Runs = runs;
       Atoms = new IMathAtom[atoms.Count];

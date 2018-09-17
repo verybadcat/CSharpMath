@@ -8,7 +8,7 @@ using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Display {
   public class FractionDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph>
-    where TFont : MathFont<TGlyph> {
+    where TFont : IMathFont<TGlyph> {
     private PointF _position;
 
     // A display representing the numerator of the fraction. Its position is relative

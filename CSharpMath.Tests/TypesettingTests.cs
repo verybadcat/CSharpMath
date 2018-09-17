@@ -8,7 +8,7 @@ using System.Drawing;
 using System.Linq;
 using Xunit;
 using TGlyph = System.Char;
-using TFont = CSharpMath.Display.MathFont<System.Char>;
+using TFont = CSharpMath.Tests.FrontEnd.TestMathFont;
 
 namespace CSharpMath.Tests {
   public class TypesettingTests {

@@ -9,7 +9,7 @@ using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Display {
   public class RadicalDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph>
-    where TFont : MathFont<TGlyph>
+    where TFont : IMathFont<TGlyph>
   {
     // A display representing the numerator of the fraction. Its position is relative
     // to the parent and it is not treated as a sub-display.

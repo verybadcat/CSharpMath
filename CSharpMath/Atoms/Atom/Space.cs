@@ -19,7 +19,7 @@ namespace CSharpMath.Atoms {
       _space = cloneMe._space;
 
     public float ActualLength<TFont, TGlyph>(FrontEnd.FontMathTable<TFont, TGlyph> mathTable, TFont font)
-      where TFont : Display.MathFont<TGlyph> => _space.ActualLength(mathTable, font);
+      where TFont : Display.IMathFont<TGlyph> => _space.ActualLength(mathTable, font);
 
     public override string StringValue => " ";
 

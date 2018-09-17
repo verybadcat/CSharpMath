@@ -6,14 +6,14 @@ using CSharpMath.Tests.Resources;
 
 namespace CSharpMath.Tests.FrontEnd {
   public static class TestTypesettingContexts {
-    public static TypesettingContext<MathFont<char>, char> Create() {
+    public static TypesettingContext<TestMathFont, char> Create() {
       var boundsProvider = new TestGlyphBoundsProvider();
-      return new TypesettingContext<MathFont<char>, char>(
-        (font, size) => new MathFont<char>(size, font.Style),
+      return new TypesettingContext<TestMathFont, char>(
+        (font, size) => new TestMathFont(size),
         boundsProvider,
         new TestGlyphFinder(),
         new DoNothingFontChanger(),
-        new Apple.JsonMathTable<MathFont<char>, char>(new TestFontMeasurer(), TestResources.LatinMath, new TestGlyphNameProvider(), boundsProvider)
+        new Apple.JsonMathTable<TestMathFont, char>(new TestFontMeasurer(), TestResources.LatinMath, new TestGlyphNameProvider(), boundsProvider)
     );
     }
   }
