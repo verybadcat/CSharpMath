@@ -1,4 +1,4 @@
-﻿using CSharpMath.Atoms;
+using CSharpMath.Atoms;
 using CSharpMath.Display.Text;
 using CSharpMath.FrontEnd;
 using CSharpMath.Interfaces;
@@ -10,27 +10,20 @@ using System.Linq;
 using System.Text;
 
 namespace CSharpMath.Display {
-  public class TextLineDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph> where TFont: MathFont<TGlyph> {
-    public TextLineDisplay(List<TextRunDisplay<TFont, TGlyph>> runs,
-      IEnumerable<IMathAtom> atoms) {
+  public class TextLineDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph> where TFont: IMathFont<TGlyph> {
+    public TextLineDisplay(List<TextRunDisplay<TFont, TGlyph>> runs, List<IMathAtom> atoms) {
       Runs = runs;
-      Atoms = atoms.ToList();
+      Atoms = new IMathAtom[atoms.Count];
+      atoms.CopyTo(Atoms);
     }
     // We don't implement count as it's not clear if it would refer to runs or atoms.
     public List<TextRunDisplay<TFont, TGlyph>> Runs { get; }
-    public List<IMathAtom> Atoms { get; }
-    public List<TGlyph> Text {
-      get {
-        List<TGlyph> r = new List<TGlyph>();
-        foreach (var run in Runs) {
-          r.AddRange(run.Run.KernedGlyphs.Select(g => g.Glyph).ToArray());
-        }
-        return r;
-      }
-    }
+    public IMathAtom[] Atoms { get; }
+    public IEnumerable<TGlyph> Text =>
+      Runs.SelectMany(run => run.Run.KernedGlyphs.Select(g => g.Glyph));
 
-    public RectangleF DisplayBounds
-      => this.ComputeDisplayBounds();
+    public RectangleF DisplayBounds =>
+      this.ComputeDisplayBounds();
 
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
       context.SaveState();

@@ -108,8 +108,9 @@ namespace CSharpMath.Atoms {
         AtomType.GetHashCode()
         + 3 * ((Superscript == null) ? 0 : Superscript.GetHashCode())
         + 5 * ((Subscript == null) ? 0 : Subscript.GetHashCode())
-        + 7 * IndexRange.GetHashCode()
-        + 13 * FontStyle.GetHashCode();
+        //+ 7 * IndexRange.GetHashCode()
+        //+ 13 * FontStyle.GetHashCode()
+        + 307 * Nucleus.GetHashCode();
       }
     }
   }

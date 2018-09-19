@@ -104,7 +104,7 @@ namespace CSharpMath.Atoms {
               r.Append(sublist);
               return r;
             }
-            //TODO
+#warning TODO Example
             //https://phabricator.wikimedia.org/T99369
             //https://phab.wmfusercontent.org/file/data/xsimlcnvo42siudvwuzk/PHID-FILE-bdcqexocj5b57tj2oezn/math_rendering.png
             //dt, \text{d}t, \partial t, \nabla\psi \\ \underline\overline{dy/dx, \text{d}y/\text{d}x, \frac{dy}{dx}, \frac{\text{d}y}{\text{d}x}, \frac{\partial^2}{\partial x_1\partial x_2}y} \\ \prime,
@@ -112,7 +112,7 @@ namespace CSharpMath.Atoms {
             break;
           case '}':
             if (oneCharOnly || stopChar != 0) {
-              throw new InvalidOperationException("This should have been handled before.");
+              throw new InvalidCodePathException("This should have been handled before.");
             }
             SetError("Missing opening brace");
             return null;
@@ -214,7 +214,7 @@ namespace CSharpMath.Atoms {
     }
 
     internal string ReadColor() {
-      if (!(ExpectCharacter('{'))) {
+      if (!ExpectCharacter('{')) {
         SetError("Missing {");
         return null;
       }
@@ -222,7 +222,7 @@ namespace CSharpMath.Atoms {
       var builder = new StringBuilder();
       while (HasCharacters) {
         var ch = GetNextCharacter();
-        if (ch == '#' || (ch >= 'A' && ch <= 'F') || (ch >= 'A' && ch <= 'f') || (ch >= '0' && ch <= '9')) {
+        if (char.IsLetterOrDigit(ch) || ch == '#') {
           builder.Append(ch);
         } else {
           // we went too far

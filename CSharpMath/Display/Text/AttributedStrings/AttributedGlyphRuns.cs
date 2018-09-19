@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -9,14 +9,14 @@ namespace CSharpMath.Display.Text
 {
   public static class AttributedGlyphRuns
   {
-    public static AttributedGlyphRun<TFont, TGlyph> Create<TFont, TGlyph>(string text, TGlyph[] glyphs, TFont font, bool isPlaceHolder)
-      where TFont : MathFont<TGlyph>
+    public static AttributedGlyphRun<TFont, TGlyph> Create<TFont, TGlyph>(string text, IEnumerable<TGlyph> glyphs, TFont font, bool isPlaceHolder)
+      where TFont : IMathFont<TGlyph>
     {
-      var kernedGlyphs = glyphs.Select(g => new KernedGlyph<TGlyph>(g)).ToArray();
+      var kernedGlyphs = glyphs.Select(g => new KernedGlyph<TGlyph>(g)).ToList();
       return new AttributedGlyphRun<TFont, TGlyph>
       {
         Placeholder = isPlaceHolder,
-        Text = text,
+        Text = new StringBuilder(text),
         KernedGlyphs = kernedGlyphs,
         Font = font
       };

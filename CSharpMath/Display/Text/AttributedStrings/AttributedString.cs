@@ -6,7 +6,7 @@ using System.Text;
 
 namespace CSharpMath.Display.Text {
   public class AttributedString<TFont, TGlyph>
-    where TFont: MathFont<TGlyph> {
+    where TFont: IMathFont<TGlyph> {
     private List<AttributedGlyphRun<TFont, TGlyph>> _Runs { get; }
     public AttributedString(IEnumerable<AttributedGlyphRun<TFont, TGlyph>> runs = null) {
       _Runs = runs?.ToList() ?? new List<AttributedGlyphRun<TFont, TGlyph>>();
@@ -27,8 +27,8 @@ namespace CSharpMath.Display.Text {
     }
     public bool TryFuseRunAt(int index) {
       if (index > 0 && _Runs[index].AttributesMatch(_Runs[index - 1])) {
-        _Runs[index - 1].KernedGlyphs = _Runs[index - 1].KernedGlyphs.Concat(_Runs[index].KernedGlyphs).ToArray();
-        _Runs[index - 1].Text = _Runs[index - 1].Text + _Runs[index].Text;
+        _Runs[index - 1].KernedGlyphs.AddRange(_Runs[index].KernedGlyphs);
+        _Runs[index - 1].Text.Append(_Runs[index].Text);
         _Runs.RemoveAt(index);
         return true;
       }
@@ -53,7 +53,7 @@ namespace CSharpMath.Display.Text {
   public static class AttributedStringExtensions {
     [Obsolete("Is any code using this?", true)]
     public static AttributedString<TFont, TGlyph> Combine<TFont, TGlyph>(AttributedString<TFont, TGlyph> attr1, AttributedString<TFont, TGlyph> attr2) 
-        where TFont: MathFont<TGlyph> {
+        where TFont: IMathFont<TGlyph> {
       if (attr1 == null) {
         return attr2;
       }
@@ -66,12 +66,12 @@ namespace CSharpMath.Display.Text {
 
     [Obsolete("Is any code using this?", true)]
     public static AttributedString<TFont, TGlyph> Combine<TFont, TGlyph>(AttributedGlyphRun<TFont, TGlyph> run1, AttributedGlyphRun<TFont, TGlyph> run2)
-      where TFont: MathFont<TGlyph>
+      where TFont: IMathFont<TGlyph>
       => AttributedStrings.FromGlyphRuns(run1, run2);
 
     [Obsolete("Is any code using this?", true)]
     public static AttributedString<TFont, TGlyph> Combine<TFont, TGlyph>(AttributedString<TFont, TGlyph> aStr, AttributedGlyphRun<TFont, TGlyph> run) 
-      where TFont: MathFont<TGlyph> {
+      where TFont: IMathFont<TGlyph> {
       if (aStr == null) {
         return AttributedStrings.FromGlyphRuns(run);
       } else {

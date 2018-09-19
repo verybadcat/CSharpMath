@@ -83,9 +83,9 @@ namespace CSharpMath.Rendering {
             var glyphs = GlyphFinder.Instance.FindGlyphs(fonts, content);
             //Calling Select(g => g.Typeface).Distinct() speeds up query up to 10 times,
             //Calling Max(Func<,>) instead of Select(Func<,>).Max() speeds up query 2 times
-            var typefaces = glyphs.Select(g => g.Typeface).Distinct();
-            WarningException.WarnIfAny(typefaces,
-              tf => !Typography.OpenFont.Extensions.TypefaceExtensions.RecommendToUseTypoMetricsForLineSpacing(tf),
+            var typefaces = glyphs.Select(g => g.Typeface).Distinct().ToList();
+            Warnings.AssertAll(typefaces,
+              tf => Typography.OpenFont.Extensions.TypefaceExtensions.RecommendToUseTypoMetricsForLineSpacing(tf),
               "This font file is too old. Only font files that support standard typographical metrics are supported.");
             display = new TextRunDisplay<Fonts, Glyph>(Display.Text.AttributedGlyphRuns.Create(content, glyphs, fonts, false), t.Range, TypesettingContext.Instance);
             FinalizeInlineDisplay(
@@ -116,7 +116,7 @@ namespace CSharpMath.Rendering {
             AddDisplaysWithLineBreaks(a.Content, fonts, accentDisplayLine, accenteeDisplayList, invalidDisplayMaths, style, color);
             float _ = default;
             accentDisplayLine.Clear(0, 0, accenteeDisplayList, ref _, false, false, additionalLineSpacing);
-            WarningException.WarnIf(invalidDisplayMaths.Count > 0, "Display maths inside an accentee is unsupported -- ignoring display maths");
+            Warnings.Assert(invalidDisplayMaths.Count == 0, "Display maths inside an accentee is unsupported -- ignoring display maths");
             var accentee = new Displays(accenteeDisplayList);
             var accenteeCodepoint = a.Content.SingleChar(style);
             Glyph accenteeSingleGlyph = accenteeCodepoint.HasValue ? GlyphFinder.Instance.Lookup(fonts, accenteeCodepoint.Value) : GlyphFinder.Instance.EmptyGlyph;

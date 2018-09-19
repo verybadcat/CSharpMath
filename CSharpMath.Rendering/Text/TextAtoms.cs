@@ -46,7 +46,7 @@ namespace CSharpMath.Rendering {
       { "textordfeminine" , "ª" },
       { "textasteriskcentered" , "∗" },
       { "textordmasculine" , "º" },
-      { "textbackslash" , "∖" },
+      { "textbackslash" , "\\" }, //originally was ∖
       { "P", "textparagraph" , "¶" },
       { "textbar" , "|" },
       { "textperiodcentered" , "·" },

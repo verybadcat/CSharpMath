@@ -7,7 +7,7 @@ using CSharpMath.Structures;
 namespace CSharpMath.FrontEnd {
   /// <summary>Represents a front-end graphics context. Used for drawing.</summary>
   public interface IGraphicsContext<TFont, TGlyph>
-    where TFont: MathFont<TGlyph> {
+    where TFont: IMathFont<TGlyph> {
     void DrawLine(float x1, float y1, float x2, float y2, float strokeWidth, Color? color);
     void DrawGlyphRunWithOffset(AttributedGlyphRun<TFont, TGlyph> text, PointF point, Color? color);
     void DrawGlyphsAtPoints(TGlyph[] glyph, TFont font, PointF[] points, Color? color);

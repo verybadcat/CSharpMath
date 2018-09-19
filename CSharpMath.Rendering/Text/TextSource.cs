@@ -1,4 +1,5 @@
 namespace CSharpMath.Rendering {
+  
   public readonly struct TextSource : ISource {
     public TextSource(string latex) {
       LaTeX = latex;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -16,8 +16,7 @@ namespace CSharpMath.Utils.NuGet {
   /// Interaction logic for MainWindow.xaml
   /// </summary>
   public partial class Editor : Window {
-    public Editor() {
+    public Editor() =>
       InitializeComponent();
-    }
   }
 }

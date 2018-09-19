@@ -1,4 +1,4 @@
-﻿using CSharpMath.Atoms;
+using CSharpMath.Atoms;
 using CSharpMath.Display.Text;
 using CSharpMath.FrontEnd;
 using CSharpMath.Interfaces;
@@ -13,9 +13,9 @@ namespace CSharpMath.Display {
       AttributedString<TFont, TGlyph> text,
       Range range,
       TypesettingContext<TFont, TGlyph> context,
-      IEnumerable<IMathAtom> atoms
+      List<IMathAtom> atoms
       )
-      where TFont: MathFont<TGlyph> {
+      where TFont: IMathFont<TGlyph> {
       int index = range.Location;
       List<TextRunDisplay<TFont, TGlyph>> textRuns = new List<TextRunDisplay<TFont, TGlyph>>();
       foreach (var run in text.Runs) {

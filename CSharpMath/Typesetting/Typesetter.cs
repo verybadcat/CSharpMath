@@ -13,7 +13,7 @@ using CSharpMath.TypesetterInternal;
 
 namespace CSharpMath {
   public class Typesetter<TFont, TGlyph>
-    where TFont: MathFont<TGlyph> {
+    where TFont: IMathFont<TGlyph> {
     internal readonly TFont _font;
     internal readonly TypesettingContext<TFont, TGlyph> _context;
     internal FontMathTable<TFont, TGlyph> _mathTable => _context.MathTable;
@@ -745,7 +745,7 @@ namespace CSharpMath {
       var numeratorShiftUp = _NumeratorShiftUp(fraction.HasRule);
       var denominatorShiftDown = _DenominatorShiftDown(fraction.HasRule);
       var barLocation = _mathTable.AxisHeight(_styleFont);
-      var barThickness = (fraction.HasRule) ? _mathTable.FractionRuleThickness(_styleFont) : 0;
+      var barThickness = fraction.HasRule ? _mathTable.FractionRuleThickness(_styleFont) : 0;
 
       if (fraction.HasRule) {
         // this is the difference between the lowest portion of the numerator and the top edge of the fraction bar.

@@ -50,7 +50,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
       var breaker = new CustomBreaker { BreakNumberAfterText = true, ThrowIfCharOutOfRange = false };
       var breakList = new List<BreakAtInfo>();
       breaker.BreakWords(latex);
-      breaker.LoadBreakAtList(breakList);
+      breaker.CopyBreakResults(breakList);
       Result CheckDollarCount(TextAtomListBuilder atoms) {
         switch (dollarCount) {
           case 0:

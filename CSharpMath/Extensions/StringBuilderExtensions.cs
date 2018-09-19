@@ -5,6 +5,11 @@ using System.Text;
 namespace CSharpMath {
   using Enumerations;
   public static class StringBuilderExtensions {
+    public static StringBuilder Append(this StringBuilder sb1, StringBuilder sb2) {
+      sb1.EnsureCapacity(sb1.Length + sb2.Length);
+      for (int i = 0; i < sb2.Length; i++) sb1.Append(sb2[i]);
+      return sb1;
+    }
     public static StringBuilder AppendUnlessNull(this StringBuilder builder, string appendMe, string unlessNull) {
       if (unlessNull!=null) {
         return builder.Append(appendMe);
