@@ -23,26 +23,19 @@ namespace CSharpMath.Enumerations {
   }
 
   public static class FontStyleExtensions {
-    public static string FontName(this FontStyle style) => FontStyles[style][0];
-    public static MultiDictionary<string, FontStyle> FontStyles { get; } =
-      new MultiDictionary<string, FontStyle> {
-        {"mathnormal", FontStyle.Default },
-        {"mathrm", FontStyle.Roman },
-        {"rm", FontStyle.Roman },
-        {"mathbf", FontStyle.Bold },
-        {"bf", FontStyle.Bold },
-        {"mathcal", FontStyle.Caligraphic },
-        {"cal", FontStyle.Caligraphic },
-        {"mathtt", FontStyle.Typewriter },
-        {"mathit", FontStyle.Italic },
-        {"mit", FontStyle.Italic },
-        {"mathsf", FontStyle.SansSerif },
-        {"mathfrak", FontStyle.Fraktur },
-        {"frak", FontStyle.Fraktur },
-        {"mathbb", FontStyle.Blackboard },
-        {"mathbfit", FontStyle.BoldItalic },
-        {"bm", FontStyle.BoldItalic },
-        {"text", FontStyle.Roman }
+    public static string FontName(this FontStyle style) => FontStyles[style];
+    public static AliasDictionary<string, FontStyle> FontStyles { get; } =
+      new AliasDictionary<string, FontStyle> {
+        { "mathnormal", FontStyle.Default },
+        { "mathrm", "rm", "text", FontStyle.Roman },
+        { "mathbf", "bf", FontStyle.Bold },
+        { "mathcal", "cal", FontStyle.Caligraphic },
+        { "mathtt", FontStyle.Typewriter },
+        { "mathit", "mit", FontStyle.Italic },
+        { "mathsf", FontStyle.SansSerif },
+        { "mathfrak", "frak", FontStyle.Fraktur },
+        { "mathbb", FontStyle.Blackboard },
+        { "mathbfit", "bm", FontStyle.BoldItalic },
       };
   }
 }

@@ -356,7 +356,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     break;
                   }
                 //case "textbf", "textit", ...
-                case var textStyle when !textStyle.Contains("math") && FontStyleExtensions.FontStyles.TryGetByFirst(textStyle.Replace("text", "math"), out var fontStyle): {
+                case var textStyle when !textStyle.Contains("math") && FontStyleExtensions.FontStyles.TryGetValue(textStyle.Replace("text", "math"), out var fontStyle): {
                     if (ReadArgumentAtom()
                       .Bind(builtContent => atoms.Add(builtContent, fontStyle, textStyle.Length))
                       .Error is string error)
