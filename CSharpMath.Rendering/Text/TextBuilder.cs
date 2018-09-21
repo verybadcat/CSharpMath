@@ -140,8 +140,8 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
             return Ok(resultText);
           }
 
+          //Nothing should be before dollar sign checking -- dollar sign checking uses continue;
           atoms.TextLength = startAt;
-          if (stopChar > 0 && textSection[0] == stopChar) return Ok(i);
           if (textSection == "$") {
             if (backslashEscape)
               if (displayMath != null) mathLaTeX.Append(@"\$");
@@ -153,7 +153,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
             backslashEscape = false;
           } else {
             { if (CheckDollarCount(atoms).Error is string error) return error; }
-
+            if (stopChar > 0 && textSection[0] == stopChar) return Ok(i);
             if (!backslashEscape) {
             //Unescaped text section, inside display/inline math mode
               if(displayMath != null)

@@ -23,14 +23,12 @@ namespace CSharpMath.Structures {
     public static implicit operator Result(ImplicitError error) => new Result(error.error);
   }
   public readonly struct Result<T> {
-    public Result(T value) {
-      _value = value;
-      Error = null;
-    }
-    public Result(string error) {
-      _value = default;
-      Error = error ?? throw new ArgumentNullException(nameof(error), "There is no error.");
-    }
+    public Result(T value) =>
+      (_value, Error) = (value, null);
+
+    public Result(string error) =>
+      (_value, Error) = (default, error ??
+        throw new ArgumentNullException(nameof(error), "There is no error."));
 
     private readonly T _value;
     public T Value => Error != null ? throw new InvalidOperationException(Error) : _value;
