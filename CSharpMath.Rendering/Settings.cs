@@ -13,14 +13,12 @@ namespace CSharpMath {
 
     public static BiDictionary<string, Structures.Color> PredefinedColors =>
       Structures.Color.PredefinedColors;
-    public static MultiDictionary<string, string> PredefinedBoundaryDelimiters =>
+    public static AliasDictionary<string, string> PredefinedBoundaryDelimiters =>
       Atoms.MathAtoms.BoundaryDelimiters;
-    public static MultiDictionary<string, Enumerations.FontStyle> PredefinedFontStyles =>
+    public static AliasDictionary<string, Enumerations.FontStyle> PredefinedFontStyles =>
       Enumerations.FontStyleExtensions.FontStyles;
-    public static BiDictionary<string, Atoms.MathAtom> PredefinedLaTeXMathSymbols =>
+    public static AliasDictionary<string, Atoms.MathAtom> PredefinedLaTeXMathSymbols =>
       Atoms.MathAtoms.Commands;
-    public static Dictionary<string, string> PredefinedLaTeXMathSymbolAliases =>
-      Atoms.MathAtoms.Aliases;
     public static BiDictionary<string, string> PredefinedLaTeXTextAccents =>
       Rendering.TextAtoms.PredefinedAccents;
     public static AliasDictionary<string, string> PredefinedLaTeXTextSymbols =>

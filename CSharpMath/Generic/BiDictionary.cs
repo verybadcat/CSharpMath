@@ -125,7 +125,7 @@ namespace CSharpMath
     }
     #endregion AliasDictionary<K, V>.Add
 
-    public IEnumerable<K> Keys => aliases.Keys.Concat(main.Firsts);
+    public IEnumerable<K> Keys => main.Firsts.Concat(aliases.Keys);
     public IEnumerable<V> Values => main.Seconds;
 
     public int Count => aliases.Keys.Count + main.Firsts.Count;
@@ -136,11 +136,11 @@ namespace CSharpMath
 
     public K this[V value] => main[value];
 
-    public bool TryGetValue(K first, out V value) =>
-      main.TryGetByFirst(first, out value) || aliases.TryGetValue(first, out value);
+    public bool TryGetValue(K key, out V value) =>
+      main.TryGetByFirst(key, out value) || aliases.TryGetValue(key, out value);
 
-    public bool TryGetKey(V second, out K key) =>
-      main.TryGetBySecond(second, out key);
+    public bool TryGetKey(V value, out K key) =>
+      main.TryGetBySecond(value, out key);
 
     public IEnumerator<KeyValuePair<K, V>> GetEnumerator() =>
       main.Concat(aliases).GetEnumerator();
@@ -156,8 +156,8 @@ namespace CSharpMath
       aliases.Clear();
     }
 
-    public bool Contains(K first) => main.Contains(first) || aliases.ContainsKey(first);
-    public bool Contains(V second) => main.Contains(second);
+    public bool ContainsKey(K key) => main.Contains(key) || aliases.ContainsKey(key);
+    public bool ContainsValue(V value) => main.Contains(value);
     public bool Contains(KeyValuePair<K, V> pair) =>
       (main.TryGetByFirst(pair.Key, out var second) || aliases.TryGetValue(pair.Key, out second)) && EqualityComparer<V>.Default.Equals(second, pair.Value);
 
