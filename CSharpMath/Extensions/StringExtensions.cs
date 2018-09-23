@@ -52,13 +52,13 @@ namespace CSharpMath {
       }
     }
 
-    public static bool StartsWithInvariant(this string str, string prefix) {
-      return str.StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
+    public static bool StartsWithInvariant(this ReadOnlySpan<char> str, string prefix) {
+      return str.StartsWith(prefix.AsSpan(), StringComparison.OrdinalIgnoreCase);
     }
 
-    public static string RemovePrefix(this string str, string prefix, StringComparison compare = StringComparison.OrdinalIgnoreCase) {
-      if (str.StartsWith(prefix, compare)) {
-        return str.Substring(prefix.Length);
+    public static ReadOnlySpan<char> RemovePrefix(this ReadOnlySpan<char> str, string prefix, StringComparison compare = StringComparison.OrdinalIgnoreCase) {
+      if (str.StartsWith(prefix.AsSpan(), compare)) {
+        return str.Slice(prefix.Length);
       }
       return str;
     }

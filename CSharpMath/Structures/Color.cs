@@ -51,7 +51,7 @@ namespace CSharpMath.Structures {
       return $"#{ToString(A)}{ToString(R)}{ToString(G)}{ToString(B)}";
     }
 
-    public static Color? Create(string hexOrName, bool extraSweet = true) {
+    public static Color? Create(ReadOnlySpan<char> hexOrName, bool extraSweet = true) {
       if (hexOrName == null) return null;
       if (extraSweet && (hexOrName.StartsWithInvariant("#") || hexOrName.StartsWithInvariant("0x"))) return FromHexString(hexOrName);
       else if (PredefinedColors.TryGetByFirst(hexOrName.ToLowerInvariant(), out var predefined)) return predefined;

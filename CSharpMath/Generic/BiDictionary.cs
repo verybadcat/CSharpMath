@@ -7,28 +7,24 @@ using System.Linq;
 
 namespace CSharpMath
 {
-  public class AliasDictionary<K, V> : ICollection<KeyValuePair<K, V>> {
+  public class AliasDictionary<K, V> : ICollection<KeyValuePair<K, V>>, IDictionary<K, V> {
     public AliasDictionary() {
-      aliases = new Dictionary<K, V>();
-      main = new BiDictionary<K, V>();
-    }
-    public AliasDictionary(int capacity) {
-      aliases = new Dictionary<K, V>(capacity);
-      main = new BiDictionary<K, V>(capacity);
+      k2v = new Dictionary<K, V>();
+      v2k = new Dictionary<V, K>();
     }
 
-    readonly Dictionary<K, V> aliases;
-    readonly BiDictionary<K, V> main;
+    readonly Dictionary<K, V> k2v;
+    readonly Dictionary<V, K> v2k;
 
     #region AliasDictionary<K, V>.Add
     public void Add(Span<K> keys, V value) {
-      if (main.Contains(value)) {
+      if (v2k.ContainsKey(value)) {
         foreach (var key in keys)
-          aliases.Add(key, value);
+          k2v.Add(key, value);
       } else if (!keys.IsEmpty) {
-        main.Add(keys[0], value);
+        v2k.Add(value, keys[0]);
         foreach (var key in keys.Slice(1))
-          aliases.Add(key, value);
+          k2v.Add(key, value);
       }
     }
     //Array renting may result in larger arrays than normal -> the unused slots are nulls.
@@ -125,51 +121,65 @@ namespace CSharpMath
     }
     #endregion AliasDictionary<K, V>.Add
 
-    public IEnumerable<K> Keys => main.Firsts.Concat(aliases.Keys);
-    public IEnumerable<V> Values => main.Seconds;
+    public Dictionary<K, V>.KeyCollection Keys => k2v.Keys;
+    public Dictionary<V, K>.KeyCollection Values => v2k.Keys;
+    ICollection<K> IDictionary<K, V>.Keys => k2v.Keys;
+    ICollection<V> IDictionary<K, V>.Values => v2k.Keys;
 
-    public int Count => aliases.Keys.Count + main.Firsts.Count;
+    public int Count => k2v.Count;
 
     public bool IsReadOnly => false;
 
-    public V this[K key] => main.TryGetByFirst(key, out var second) ? second : aliases[key];
+    public V this[K key] { get => k2v[key]; set { k2v[key] = value; v2k[value] = key; } }
 
-    public K this[V value] => main[value];
+    public K this[V Value] { get => v2k[Value]; set { v2k[Value] = value; k2v[value] = Value; } }
 
-    public bool TryGetValue(K key, out V value) =>
-      main.TryGetByFirst(key, out value) || aliases.TryGetValue(key, out value);
+    public bool TryGetValue(K key, out V value) => k2v.TryGetValue(key, out value);
 
-    public bool TryGetKey(V value, out K key) =>
-      main.TryGetBySecond(value, out key);
+    public bool TryGetKey(V value, out K key) => v2k.TryGetValue(value, out key);
 
-    public IEnumerator<KeyValuePair<K, V>> GetEnumerator() =>
-      main.Concat(aliases).GetEnumerator();
-
-    IEnumerator IEnumerable.GetEnumerator() => main.Concat(aliases).GetEnumerator();
-    IEnumerator<KeyValuePair<K, V>> IEnumerable<KeyValuePair<K, V>>.GetEnumerator() =>
-      main.Concat(aliases).GetEnumerator();
+    public Dictionary<K, V>.Enumerator GetEnumerator() => k2v.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => k2v.GetEnumerator();
+    IEnumerator<KeyValuePair<K, V>> IEnumerable<KeyValuePair<K, V>>.GetEnumerator() => k2v.GetEnumerator();
 
     void ICollection<KeyValuePair<K, V>>.Add(KeyValuePair<K, V> item) => Add(item.Key, item.Value);
 
     public void Clear() {
-      main.Clear();
-      aliases.Clear();
+      k2v.Clear();
+      v2k.Clear();
     }
 
-    public bool ContainsKey(K key) => main.Contains(key) || aliases.ContainsKey(key);
-    public bool ContainsValue(V value) => main.Contains(value);
+    public bool ContainsKey(K key) => k2v.ContainsKey(key);
+    public bool ContainsValue(V value) => v2k.ContainsKey(value);
     public bool Contains(KeyValuePair<K, V> pair) =>
-      (main.TryGetByFirst(pair.Key, out var second) || aliases.TryGetValue(pair.Key, out second)) && EqualityComparer<V>.Default.Equals(second, pair.Value);
+      k2v.TryGetValue(pair.Key, out var value) && EqualityComparer<V>.Default.Equals(value, pair.Value);
 
-    public void CopyTo(KeyValuePair<K, V>[] array, int arrayIndex) {
-      foreach (var pair in main.Concat(aliases))
-        array[arrayIndex++] = pair;
+    public void CopyTo(KeyValuePair<K, V>[] array, int arrayIndex) =>
+      ((ICollection<KeyValuePair<K, V>>)k2v).CopyTo(array, arrayIndex);
+
+    public bool Remove(V value) {
+      if (!v2k.Remove(value)) return false;
+      foreach (var pair in k2v.Where(p => EqualityComparer<V>.Default.Equals(p.Value, value)))
+        k2v.Remove(pair.Key);
+      return true;
     }
-
-    public bool Remove(K first, V second) =>
-      main.Remove(first, second) || aliases.Remove(first);
-    public bool Remove(KeyValuePair<K, V> pair) =>
-      main.Remove(pair) || aliases.Remove(pair.Key);
+    public bool Remove(K key) => Remove(key, k2v[key]);
+    public bool Remove(KeyValuePair<K, V> pair) => Remove(pair.Key, pair.Value);
+    public bool Remove(K key, V value) {
+      var valueMatches = k2v.Where(p => EqualityComparer<V>.Default.Equals(p.Value, value)).ToList();
+      if (valueMatches.Count == 0) return false;
+      if (valueMatches.Count == 1) {
+        if (!EqualityComparer<K>.Default.Equals(valueMatches[0].Key, key)) return false;
+        k2v.Remove(key);
+        v2k.Remove(value);
+        return true;
+      }
+      if (!valueMatches.Any(p => EqualityComparer<K>.Default.Equals(p.Key, key))) return false;
+      k2v.Remove(key);
+      if (EqualityComparer<K>.Default.Equals(v2k[value], key))
+        v2k[value] = valueMatches.First(p => !EqualityComparer<K>.Default.Equals(p.Key, key)).Key;
+      return true;
+    }
   }
 
   //https://stackoverflow.com/questions/255341/getting-key-of-value-of-a-generic-dictionary/255638#255638

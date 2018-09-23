@@ -445,6 +445,8 @@ namespace CSharpMath {
 
     public static bool UnicodeLengthIsOne(string str) =>
       (str.Length == 1) || (str.Length == 2 && char.IsHighSurrogate(str[0]) && char.IsLowSurrogate(str[1]));
+    public static bool UnicodeLengthIsOne(System.Text.StringBuilder str) =>
+      (str.Length == 1) || (str.Length == 2 && char.IsHighSurrogate(str[0]) && char.IsLowSurrogate(str[1]));
 
     private static bool _IsSingleCharAccent(IAccent accent) {
       if (accent.InnerList.Atoms.Count!=1) {
