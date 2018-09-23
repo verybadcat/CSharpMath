@@ -18,14 +18,9 @@ namespace CSharpMath
 
     #region AliasDictionary<K, V>.Add
     public void Add(Span<K> keys, V value) {
-      if (v2k.ContainsKey(value)) {
-        foreach (var key in keys)
-          k2v.Add(key, value);
-      } else if (!keys.IsEmpty) {
-        v2k.Add(value, keys[0]);
-        foreach (var key in keys.Slice(1))
-          k2v.Add(key, value);
-      }
+      if (!v2k.ContainsKey(value) && !keys.IsEmpty) v2k.Add(value, keys[0]);
+      foreach (var key in keys)
+        k2v.Add(key, value);
     }
     //Array renting may result in larger arrays than normal -> the unused slots are nulls.
     //Therefore, slicing prevents nulls from propagating through.

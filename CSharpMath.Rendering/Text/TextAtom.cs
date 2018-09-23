@@ -16,15 +16,15 @@ namespace CSharpMath.Rendering {
 
     //Concrete types
     public sealed class Text : TextAtom {
-      public Text(System.Text.StringBuilder content, int index) : base(new Range(index, content.Length)) =>
-        Content = content ?? throw new System.ArgumentNullException(nameof(content), "Content cannot be null.");
+      public Text(string content, int index) : base(new Range(index, content.Length)) =>
+        Content = string.IsNullOrWhiteSpace(content) ? throw new System.ArgumentException("Null, an empty string or whitespace was provided.") : content;
 
-      public System.Text.StringBuilder Content { get; private set; }
+      public string Content { get; private set; }
 
       public override int? SingleChar(FontStyle style) =>
         Typesetter<Fonts, Glyph>.UnicodeLengthIsOne(Content) ? UnicodeFontChanger.Instance.ChangeFont(GlyphFinder.Instance.GetCodepoint(Content, 0), style) : new int?();
 
-      internal void Append(System.ReadOnlySpan<char> moreText) => Content.Append(moreText);
+      internal void Append(System.ReadOnlySpan<char> moreText) => Content += moreText.ToString();
     }
     public sealed class Newline : TextAtom {
       public Newline(int index, int length) : base(new Range(index, length)) { }

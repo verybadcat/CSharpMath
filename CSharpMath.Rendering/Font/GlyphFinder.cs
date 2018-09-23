@@ -19,9 +19,18 @@ namespace CSharpMath.Rendering {
       }
       return new Glyph(fonts.MathTypeface, fonts.MathTypeface.Lookup(GlyphNotFound));
     }
-
+    public int GetCodepoint(System.Text.StringBuilder str, int index) =>
+      index + 1 < str.Length && char.IsHighSurrogate(str[index]) && char.IsLowSurrogate(str[index + 1]) ?
+        char.ConvertToUtf32(str[index], str[index + 1]) :
+      index > 0 && char.IsHighSurrogate(str[index - 1]) && char.IsLowSurrogate(str[index]) ?
+        char.ConvertToUtf32(str[index - 1], str[index]) :
+      str[index];
     public int GetCodepoint(string str, int index) =>
-      char.ConvertToUtf32(str, index - (char.IsLowSurrogate(str[index]) ? 1 : 0));
+      index + 1 < str.Length && char.IsHighSurrogate(str[index]) && char.IsLowSurrogate(str[index + 1]) ?
+        char.ConvertToUtf32(str[index], str[index + 1]) :
+      index > 0 && char.IsHighSurrogate(str[index - 1]) && char.IsLowSurrogate(str[index]) ?
+        char.ConvertToUtf32(str[index - 1], str[index]) :
+      str[index];
 
     public Glyph FindGlyphForCharacterAtIndex(Fonts fonts, int index, string str) =>
       Lookup(fonts, GetCodepoint(str, index));

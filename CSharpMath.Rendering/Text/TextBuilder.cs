@@ -37,6 +37,7 @@ string BreakText(string text, string seperator = "|")
 }
 BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
      */
+    public const int StringArgumentLimit = 50;
     public static bool NoEnhancedColors { get; set; }
     public static Result<TextAtom> Build(ReadOnlySpan<char> latexSource) {
       if (latexSource.IsEmpty) return new TextAtom.List(Array.Empty<TextAtom>(), 0);
@@ -221,8 +222,9 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                         i--;
                         breakList[i] = new BreakAtInfo(breakList[i].breakAt + 1, breakList[i].wordKind);
                       }
-                      atoms.Add(textSection.Slice(0, 1).ToStringBuilder());
-                    } else atoms.Add(textSection.ToStringBuilder());
+                      //Need to allocate in the end :(
+                      atoms.Add(textSection[0].ToString());
+                    } else atoms.Add(textSection.ToString());
                     break;
                 }
               afterCommand = false;
@@ -313,27 +315,31 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                   ParagraphBreak();
                   break;
                 case var _ when textSection.Is("fontsize"): {
-                    if (ReadArgumentString(latex, ref textSection).Bind(fontSize =>
-                        System.Buffers.Text.Utf8Parser.TryParse(
-                        float.TryParse(fontSize, System.Globalization.NumberStyles.AllowDecimalPoint |
-                                                 System.Globalization.NumberStyles.AllowLeadingWhite |
-                                                 System.Globalization.NumberStyles.AllowTrailingWhite,
-                                                 System.Globalization.CultureInfo.InvariantCulture,
-                                                 out var parsedResult) ?
+                    if (ReadArgumentString(latex, ref textSection).Bind(fontSize => {
+                      if (fontSize.Length > StringArgumentLimit)
+                        return Err($"Length of font size has over {StringArgumentLimit} characters. Please shorten it.");
+                      Span<byte> charBytes = stackalloc byte[fontSize.Length];
+                      for (int j = 0; j < fontSize.Length; j++) {
+                        if (fontSize[j] > 127) return Err("Invalid font size");
+                        charBytes[j] = (byte)fontSize[j];
+                      }
+                      return System.Buffers.Text.Utf8Parser.TryParse(charBytes, out float parsedResult, out _, 'f') ?
                         Ok(parsedResult) :
-                        Err("Invalid font size")
-                      ).Bind(
-                        ReadArgumentAtom(),
-                        (fontSize, resizedContent) =>
-                          atoms.Add(resizedContent, fontSize, "fontsize".Length)
+                        Err("Invalid font size");
+                    }).Bind(
+                      ReadArgumentAtom(latex),
+                      (fontSize, resizedContent) =>
+                        atoms.Add(resizedContent, fontSize, "fontsize".Length)
                       ).Error is string error
                     ) return error;
                     break;
                   }
                 case var _ when textSection.Is("color"): {
                     if (ReadArgumentString(latex, ref textSection).Bind(color =>
+                        color.Length > StringArgumentLimit ?
+                          Err($"Length of color has over {StringArgumentLimit} characters. Please shorten it.") :
                         Color.Create(color, !NoEnhancedColors) is Color value ?
-                        Ok(value) :
+                          Ok(value) :
                         Err("Invalid color")
                       ).Bind(
                         ReadArgumentAtom(latex),
@@ -345,8 +351,9 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                   }
                 //case "red", "yellow", ...
                 case var shortColor when !NoEnhancedColors && shortColor.TryAccessDictionary(Color.PredefinedColors, out var color): {
+                    int tmp_commandLength = shortColor.Length;
                     if (ReadArgumentAtom(latex).Bind(
-                        coloredContent => atoms.Add(coloredContent, color, shortColor.Length)
+                        coloredContent => atoms.Add(coloredContent, color, tmp_commandLength)
                       ).Error is string error
                     ) return error;
                     break;
@@ -379,23 +386,25 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     return false;
                 }
                 case var textStyle when ValidTextStyle(textStyle, out var fontStyle): {
+                    int tmp_commandLength = textStyle.Length;
                     if (ReadArgumentAtom(latex)
-                      .Bind(builtContent => atoms.Add(builtContent, fontStyle, textStyle.Length))
+                      .Bind(builtContent => atoms.Add(builtContent, fontStyle, tmp_commandLength))
                       .Error is string error)
                       return error;
                     break;
                   }
                 //case "^", "\"", ...
                 case var textAccent when textAccent.TryAccessDictionary(TextAtoms.PredefinedAccents, out var accent): {
+                    int tmp_commandLength = textAccent.Length;
                     if (ReadArgumentAtom(latex)
-                      .Bind(builtContent => atoms.Add(builtContent, accent, textAccent.Length))
+                      .Bind(builtContent => atoms.Add(builtContent, accent, tmp_commandLength))
                       .Error is string error)
                       return error;
                     break;
                   }
                 //case "textasciicircum", "textless", ...
-                case var textSymbol when TextAtoms.PredefinedTextSymbols.TryGetValue(textSymbol, out var replaceResult):
-                  atoms.Add(new StringBuilder(replaceResult));
+                case var textSymbol when textSymbol.TryAccessDictionary(TextAtoms.PredefinedTextSymbols, out var replaceResult):
+                  atoms.Add(replaceResult);
                   break;
                 case var command:
                   if (displayMath != null) mathLaTeX.Append(command); //don't eat the command when parsing math

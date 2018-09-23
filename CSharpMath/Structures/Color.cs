@@ -54,54 +54,60 @@ namespace CSharpMath.Structures {
     public static Color? Create(ReadOnlySpan<char> hexOrName, bool extraSweet = true) {
       if (hexOrName == null) return null;
       if (extraSweet && (hexOrName.StartsWithInvariant("#") || hexOrName.StartsWithInvariant("0x"))) return FromHexString(hexOrName);
-      else if (PredefinedColors.TryGetByFirst(hexOrName.ToLowerInvariant(), out var predefined)) return predefined;
-      else return null;
+      if (hexOrName.Length <= 100) { //Never gonna spill the stack
+        Span<char> loweredName = stackalloc char[hexOrName.Length];
+        hexOrName.ToLowerInvariant(loweredName);
+        if (((ReadOnlySpan<char>)loweredName).TryAccessDictionary(PredefinedColors, out var predefined)) return predefined;
+      }
+      return null;
     }
-    private static byte? _fromHex1(string hex, int index) //read one hex char -> byte
-      => byte.TryParse(hex[index].ToString(), System.Globalization.NumberStyles.AllowHexSpecifier,
-        System.Globalization.CultureInfo.InvariantCulture, out byte b) ? (byte?)(b * 17) : null;
-    private static byte? _fromHex2(string hex, int index) //read two hex chars -> byte
-      => byte.TryParse(hex.Substring(index, 2), System.Globalization.NumberStyles.AllowHexSpecifier,
-        System.Globalization.CultureInfo.InvariantCulture, out byte b) ? b : default(byte?);
-    private static Color? FromHexString(string hex) {
+    private static int? _charToByte(char c) =>
+      c >= '0' && c <= '9' ? c - '0' :
+      c >= 'A' && c <= 'F' ? c - 'A' + 10 :
+      c >= 'a' && c <= 'f' ? c - 'a' + 10 :
+      new int?();
+    private static byte? _fromHex1(ReadOnlySpan<char> hex, int index) => //read one hex char -> byte
+      (byte?)(_charToByte(hex[index]) * 17);
+    private static byte? _fromHex2(ReadOnlySpan<char> hex, int index) => //read two hex chars -> byte
+      (byte?)(_charToByte(hex[index]) * 16 + _charToByte(hex[index + 1]));
+    private static Color? FromHexString(ReadOnlySpan<char> hex) {
       hex = hex.RemovePrefix("#").RemovePrefix("0x");
-      try {
-        byte? r, g, b, a;
-        switch (hex.Length) {
-          case 3:
-            r = _fromHex1(hex, 0);
-            g = _fromHex1(hex, 1);
-            b = _fromHex1(hex, 2);
-            if ((r ^ g ^ b) == null) return null;
-            return new Color(r.Value, g.Value, b.Value);
-          case 4:
-            a = _fromHex1(hex, 0);
-            r = _fromHex1(hex, 1);
-            g = _fromHex1(hex, 2);
-            b = _fromHex1(hex, 3);
-            if ((r ^ g ^ b ^ a) == null) return null;
-            return new Color(r.Value, g.Value, b.Value, a.Value);
-          case 6:
-            r = _fromHex2(hex, 0);
-            g = _fromHex2(hex, 2);
-            b = _fromHex2(hex, 4);
-            if ((r ^ g ^ b) == null) return null;
-            return new Color(r.Value, g.Value, b.Value);
-          case 8:
-            a = _fromHex2(hex, 0);
-            r = _fromHex2(hex, 2);
-            g = _fromHex2(hex, 4);
-            b = _fromHex2(hex, 6);
-            if ((r ^ g ^ b ^ a) == null) return null;
-            return new Color(r.Value, g.Value, b.Value, a.Value);
-          default:
-            return null;
-        }
-      } catch (FormatException) {
-        return null;
+      byte? r, g, b, a;
+      switch (hex.Length) {
+        case 3:
+          r = _fromHex1(hex, 0);
+          g = _fromHex1(hex, 1);
+          b = _fromHex1(hex, 2);
+          if ((r ^ g ^ b) == null) return null;
+          return new Color(r.Value, g.Value, b.Value);
+        case 4:
+          a = _fromHex1(hex, 0);
+          r = _fromHex1(hex, 1);
+          g = _fromHex1(hex, 2);
+          b = _fromHex1(hex, 3);
+          if ((r ^ g ^ b ^ a) == null) return null;
+          return new Color(r.Value, g.Value, b.Value, a.Value);
+        case 6:
+          r = _fromHex2(hex, 0);
+          g = _fromHex2(hex, 2);
+          b = _fromHex2(hex, 4);
+          if ((r ^ g ^ b) == null) return null;
+          return new Color(r.Value, g.Value, b.Value);
+        case 8:
+          a = _fromHex2(hex, 0);
+          r = _fromHex2(hex, 2);
+          g = _fromHex2(hex, 4);
+          b = _fromHex2(hex, 6);
+          if ((r ^ g ^ b ^ a) == null) return null;
+          return new Color(r.Value, g.Value, b.Value, a.Value);
+        default:
+          return null;
       }
     }
     //https://en.wikibooks.org/wiki/LaTeX/Colors#Predefined_colors
+    /// <summary>
+    /// Names containing non-English characters or longer than 100 characters will be IGNORED.
+    /// </summary>
     public static BiDictionary<string, Color> PredefinedColors { get; } = new BiDictionary<string, Color> {
       { "black", new Color(0, 0, 0) },
       { "blue", new Color(0, 0, 255) },

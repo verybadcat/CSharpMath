@@ -3,7 +3,7 @@ namespace CSharpMath.Rendering {
   public readonly struct TextSource : ISource {
     public TextSource(string latex) {
       LaTeX = latex;
-      var result = TextBuilder.Build(latex);
+      var result = TextBuilder.Build(System.MemoryExtensions.AsSpan(latex));
       if (result.Error != null) {
         ErrorMessage = result.Error;
         Atom = null;
