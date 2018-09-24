@@ -9,6 +9,12 @@ namespace CSharpMath {
     public static bool IsEmpty(this string str) => string.IsNullOrEmpty(str);
     public static bool IsNonEmpty(this string str) => !IsEmpty(str);
 
+    public static bool Contains(this string str, char c) {
+      for (int i = 0; i < str.Length; i++)
+        if (str[i] == c) return true;
+      return false;
+    }
+
     /// <summary>If the input is null, returns "null". Otherwise, returns the input.</summary>
     public static string NullToNull(this string str, NullHandling handling) {
       if (str == null) {

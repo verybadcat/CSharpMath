@@ -37,8 +37,10 @@ string BreakText(string text, string seperator = "|")
 }
 BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
      */
-    public const int StringArgumentLimit = 50;
+    public const int StringArgumentLimit = 25;
     public static bool NoEnhancedColors { get; set; }
+    private static CustomBreaker breaker = new CustomBreaker { BreakNumberAfterText = true, ThrowIfCharOutOfRange = false };
+    private const string SpecialChars = @"#$%&\^_{}~";
     public static Result<TextAtom> Build(ReadOnlySpan<char> latexSource) {
       if (latexSource.IsEmpty) return new TextAtom.List(Array.Empty<TextAtom>(), 0);
       bool? displayMath = null;
@@ -48,7 +50,6 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
       bool afterNewline = false;
       int dollarCount = 0;
       var globalAtoms = new TextAtomListBuilder();
-      var breaker = new CustomBreaker { BreakNumberAfterText = true, ThrowIfCharOutOfRange = false };
       var breakList = new List<BreakAtInfo>();
       breaker.BreakWords(latexSource, breakList);
       Result CheckDollarCount(TextAtomListBuilder atoms) {
@@ -108,6 +109,11 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
             kind = breakList[index].wordKind;
           }
           ObtainRange(latex, i, out var startAt, out var endAt, out var textSection, out var wordKind);
+          bool SetPrevRange(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section) {
+            bool success = i-- > 0;
+            if (success) ObtainRange(latexInput, i, out startAt, out endAt, out section, out wordKind);
+            return success;
+          }
           bool SetNextRange(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section) {
             bool success = ++i < breakList.Count;
             if (success) ObtainRange(latexInput, i, out startAt, out endAt, out section, out wordKind);
@@ -140,13 +146,22 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
               _ = SetNextRange(latexInput, ref section); //this never fails because the above check
             return Ok(resultText);
           }
-
+          ReadOnlySpan<char> LookAheadForPunc(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section) {
+            int start = endAt;
+            while (SetNextRange(latexInput, ref section))
+              if (wordKind != WordKind.Punc || SpecialChars.Contains(section[0])) {
+                //We have overlooked by one
+                SetPrevRange(latexInput, ref section);
+                break;
+              }
+            return latexInput.Slice(start, endAt - start);
+          }
           //Nothing should be before dollar sign checking -- dollar sign checking uses continue;
           atoms.TextLength = startAt;
           if (textSection.Is('$')) {
             if (backslashEscape)
               if (displayMath != null) mathLaTeX.Append(@"\$");
-              else atoms.Add("$");
+              else atoms.Add("$", LookAheadForPunc(latex, ref textSection));
             else {
               dollarCount++;
               continue;
@@ -212,10 +227,6 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     if (afterCommand) continue;
                     else atoms.Add();
                     break;
-                  case var punc when wordKind == WordKind.Punc && atoms.Last is TextAtom.Text t:
-                    //Append punctuation to text
-                    t.Append(textSection);
-                    break;
                   default: //Just ordinary text
                     if (oneCharOnly) {
                       if (startAt + 1 < endAt) { //Only re-read if current break span is more than 1 long
@@ -223,8 +234,8 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                         breakList[i] = new BreakAtInfo(breakList[i].breakAt + 1, breakList[i].wordKind);
                       }
                       //Need to allocate in the end :(
-                      atoms.Add(textSection[0].ToString());
-                    } else atoms.Add(textSection.ToString());
+                      atoms.Add(textSection[0].ToString(), LookAheadForPunc(latex, ref textSection));
+                    } else atoms.Add(textSection.ToString(), LookAheadForPunc(latex, ref textSection));
                     break;
                 }
               afterCommand = false;
@@ -404,7 +415,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                   }
                 //case "textasciicircum", "textless", ...
                 case var textSymbol when textSymbol.TryAccessDictionary(TextAtoms.PredefinedTextSymbols, out var replaceResult):
-                  atoms.Add(replaceResult);
+                  atoms.Add(replaceResult, LookAheadForPunc(latex, ref textSection));
                   break;
                 case var command:
                   if (displayMath != null) mathLaTeX.Append(command); //don't eat the command when parsing math

@@ -22,14 +22,9 @@ namespace CSharpMath.Display.Text {
     public override string ToString() => $"AttributedGlyphRun {KernedGlyphs.Count} glyphs";
   }
 
- 
+
   public static class AttributedGlyphRunExtensions {
     public static bool AttributesMatch<TFont, TGlyph>(this AttributedGlyphRun<TFont, TGlyph> run1, AttributedGlyphRun<TFont, TGlyph> run2)
-      where TFont: IMathFont<TGlyph> {
-      if (run1 is null || run2 is null) {
-        return false;
-      }
-      return run1.Font.Equals(run2.Font);
-    }
+      where TFont : IMathFont<TGlyph> => (run1 is null || run2 is null) ? false : run1.Font.Equals(run2.Font);
   }
 }
