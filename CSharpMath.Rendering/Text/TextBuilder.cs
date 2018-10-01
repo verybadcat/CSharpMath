@@ -169,7 +169,6 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
             backslashEscape = false;
           } else {
             { if (CheckDollarCount(atoms).Error is string error) return error; }
-            if (stopChar > 0 && textSection[0] == stopChar) return Ok(i);
             if (!backslashEscape) {
             //Unescaped text section, inside display/inline math mode
               if(displayMath != null)
@@ -185,6 +184,8 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                 }
               //Unescaped text section, not inside display/inline math mode
               else switch (textSection) {
+                  case var _ when stopChar > 0 && textSection[0] == stopChar:
+                    return Ok(i);
                   case var _ when textSection.Is('$'):
                     throw new InvalidCodePathException("The $ case should have been accounted for.");
                   case var _ when textSection.Is('\\'):

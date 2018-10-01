@@ -14,7 +14,7 @@
     <NuGetPackageImportStamp></NuGetPackageImportStamp>
     <PackOnBuild>true</PackOnBuild>
     <PackageId>CSharpMath.Ios</PackageId>
-    <PackageVersion>0.1.0-rc.2</PackageVersion>
+    <PackageVersion>0.1.0-rc.3</PackageVersion>
     <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie, FoggyFinder)</Authors>
     <NeutralLanguage>en</NeutralLanguage>
     <PackageLicenseUrl>https://github.com/verybadcat/CSharpMath/blob/master/LICENSE</PackageLicenseUrl>
@@ -28,7 +28,7 @@
     <RepositoryUrl>https://github.com/verybadcat/CSharpMath.git</RepositoryUrl>
     <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
     <RepositoryBranch>master</RepositoryBranch>
-    <RepositoryCommit>6690a33d4f406f237652baf5199d0a2984185b3d</RepositoryCommit>
+    <RepositoryCommit>8e79d5312b4c60056684f40866acde1dfa9fdd84</RepositoryCommit>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageIconUrl>https://raw.githubusercontent.com/verybadcat/CSharpMath/master/Icon.png</PackageIconUrl>
   </PropertyGroup>
