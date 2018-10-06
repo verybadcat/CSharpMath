@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2026
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath", "CSharpMath\CSharpMath.csproj", "{5157367B-F03E-4ACB-83A1-0DE414A3BFCA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath", "CSharpMath\CSharpMath.csproj", "{5157367B-F03E-4ACB-83A1-0DE414A3BFCA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath!Tests", "CSharpMath.Tests\CSharpMath!Tests.csproj", "{0830C47F-AA16-4A0E-9CCF-E40835D1430D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath!Tests", "CSharpMath.Tests\CSharpMath!Tests.csproj", "{0830C47F-AA16-4A0E-9CCF-E40835D1430D}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSharpMath.Apple", "CSharpMath.Apple\CSharpMath.Apple.shproj", "{1E62C0F0-B5C9-430E-ADDC-6F6EC6E0BDE1}"
 EndProject
@@ -23,11 +23,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Ios.Example", "C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Ios", "CSharpMath.Ios\CSharpMath.Ios.csproj", "{11D4E6C7-C8E2-449C-A1E7-18BBBCE4E6F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.SkiaSharp", "CSharpMath.SkiaSharp\CSharpMath.SkiaSharp.csproj", "{35B4BB5B-2202-436E-9AFE-00997CA2CC65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.SkiaSharp", "CSharpMath.SkiaSharp\CSharpMath.SkiaSharp.csproj", "{35B4BB5B-2202-436E-9AFE-00997CA2CC65}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Utils", "CSharpMath.Utils\CSharpMath.Utils.csproj", "{20986A1A-BF57-4EA7-92E1-E88D3C70874B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Utils", "CSharpMath.Utils\CSharpMath.Utils.csproj", "{20986A1A-BF57-4EA7-92E1-E88D3C70874B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms", "CSharpMath.Forms\CSharpMath.Forms.csproj", "{9BAD6846-0B1D-4446-BF62-FCF85C6E9A9F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Forms", "CSharpMath.Forms\CSharpMath.Forms.csproj", "{9BAD6846-0B1D-4446-BF62-FCF85C6E9A9F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms.Example.Android", "CSharpMath.Forms.Example\CSharpMath.Forms.Example.Android\CSharpMath.Forms.Example.Android.csproj", "{2A5F3AF6-D922-46D0-9BDA-A3B2A309A850}"
 EndProject
@@ -35,9 +35,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms.Example.iO
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms.Example.UWP", "CSharpMath.Forms.Example\CSharpMath.Forms.Example.UWP\CSharpMath.Forms.Example.UWP.csproj", "{B5C64A34-51EA-4948-80FC-505120BA943C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms.Example", "CSharpMath.Forms.Example\CSharpMath.Forms.Example\CSharpMath.Forms.Example.csproj", "{B3FA77B8-C6E9-4A78-8BD4-9A167DA36637}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Forms.Example", "CSharpMath.Forms.Example\CSharpMath.Forms.Example\CSharpMath.Forms.Example.csproj", "{B3FA77B8-C6E9-4A78-8BD4-9A167DA36637}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Rendering", "CSharpMath.Rendering\CSharpMath.Rendering.csproj", "{65016A61-2125-4E0C-90E8-A915230C7826}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Rendering", "CSharpMath.Rendering\CSharpMath.Rendering.csproj", "{65016A61-2125-4E0C-90E8-A915230C7826}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Utils.NuGet", "CSharpMath.Utils.NuGet\CSharpMath.Utils.NuGet.csproj", "{353BE09C-B369-474F-AB8E-FE68225A16E6}"
 EndProject
@@ -51,7 +51,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Utils", "_Utils", "{E7CDDE
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.NuGetPackageTests.CSharp.UWP", "CSharpMath.NuGetPackageTests.CSharp\CSharpMath.NuGetPackageTests.CSharp.UWP\CSharpMath.NuGetPackageTests.CSharp.UWP.csproj", "{DBB121AA-0271-4719-A709-23AB3B464E8F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.NuGetPackageTests.CSharp", "CSharpMath.NuGetPackageTests.CSharp\CSharpMath.NuGetPackageTests.CSharp\CSharpMath.NuGetPackageTests.CSharp.csproj", "{73C44AA1-69ED-4749-BDBA-62A4416F0081}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.NuGetPackageTests.CSharp", "CSharpMath.NuGetPackageTests.CSharp\CSharpMath.NuGetPackageTests.CSharp\CSharpMath.NuGetPackageTests.CSharp.csproj", "{73C44AA1-69ED-4749-BDBA-62A4416F0081}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet package tests", "NuGet package tests", "{FD179998-539F-43BE-B2A1-89B2B726BC7A}"
 EndProject
@@ -73,11 +73,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextBreakTests", "Typograph
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Dependencies", "_Dependencies", "{74FBDC58-E93A-4DCE-B83F-AA936EE57B31}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Analyzers", "CSharpMath.Analyzers\CSharpMath.Analyzers\CSharpMath.Analyzers.csproj", "{B76E873A-FAA0-4198-BEC4-66BD2BBC233F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Analyzers", "CSharpMath.Analyzers\CSharpMath.Analyzers\CSharpMath.Analyzers.csproj", "{B76E873A-FAA0-4198-BEC4-66BD2BBC233F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Analyzers.Test", "CSharpMath.Analyzers\CSharpMath.Analyzers.Test\CSharpMath.Analyzers.Test.csproj", "{C28BBB7F-CB75-44BF-9488-C4C37DFC0D98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Analyzers.Test", "CSharpMath.Analyzers\CSharpMath.Analyzers.Test\CSharpMath.Analyzers.Test.csproj", "{C28BBB7F-CB75-44BF-9488-C4C37DFC0D98}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSharpMath.Wiki", "wiki\CSharpMath.Wiki.shproj", "{883BCFB1-3AA8-4AB7-8F82-27B849716373}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Editor", "CSharpMath.Editor\CSharpMath.Editor.csproj", "{38F58489-EDE4-4289-8ACF-A9756977A7A6}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -1313,6 +1315,66 @@ Global
 		{C28BBB7F-CB75-44BF-9488-C4C37DFC0D98}.Release-iOS|x64.Build.0 = Release|Any CPU
 		{C28BBB7F-CB75-44BF-9488-C4C37DFC0D98}.Release-iOS|x86.ActiveCfg = Release|Any CPU
 		{C28BBB7F-CB75-44BF-9488-C4C37DFC0D98}.Release-iOS|x86.Build.0 = Release|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Ad-Hoc|Any CPU.ActiveCfg = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Ad-Hoc|Any CPU.Build.0 = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Ad-Hoc|ARM.ActiveCfg = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Ad-Hoc|ARM.Build.0 = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Ad-Hoc|iPhone.ActiveCfg = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Ad-Hoc|iPhone.Build.0 = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Ad-Hoc|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Ad-Hoc|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Ad-Hoc|x64.ActiveCfg = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Ad-Hoc|x64.Build.0 = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Ad-Hoc|x86.ActiveCfg = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Ad-Hoc|x86.Build.0 = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.AppStore|Any CPU.ActiveCfg = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.AppStore|Any CPU.Build.0 = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.AppStore|ARM.ActiveCfg = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.AppStore|ARM.Build.0 = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.AppStore|iPhone.ActiveCfg = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.AppStore|iPhone.Build.0 = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.AppStore|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.AppStore|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.AppStore|x64.ActiveCfg = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.AppStore|x64.Build.0 = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.AppStore|x86.ActiveCfg = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.AppStore|x86.Build.0 = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Debug|ARM.Build.0 = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Debug|x64.Build.0 = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Debug|x86.Build.0 = Debug|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Release|ARM.ActiveCfg = Release|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Release|ARM.Build.0 = Release|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Release|iPhone.Build.0 = Release|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Release|x64.ActiveCfg = Release|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Release|x64.Build.0 = Release|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Release|x86.ActiveCfg = Release|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Release|x86.Build.0 = Release|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Release-iOS|Any CPU.ActiveCfg = Release|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Release-iOS|Any CPU.Build.0 = Release|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Release-iOS|ARM.ActiveCfg = Release|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Release-iOS|ARM.Build.0 = Release|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Release-iOS|iPhone.ActiveCfg = Release|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Release-iOS|iPhone.Build.0 = Release|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Release-iOS|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Release-iOS|iPhoneSimulator.Build.0 = Release|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Release-iOS|x64.ActiveCfg = Release|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Release-iOS|x64.Build.0 = Release|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Release-iOS|x86.ActiveCfg = Release|Any CPU
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6}.Release-iOS|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1345,6 +1407,7 @@ Global
 		{B76E873A-FAA0-4198-BEC4-66BD2BBC233F} = {E7CDDECF-B87B-4114-932B-D3FB5E8302F8}
 		{C28BBB7F-CB75-44BF-9488-C4C37DFC0D98} = {E7CDDECF-B87B-4114-932B-D3FB5E8302F8}
 		{883BCFB1-3AA8-4AB7-8F82-27B849716373} = {4095C402-9D46-4F54-9A19-4FA063852135}
+		{38F58489-EDE4-4289-8ACF-A9756977A7A6} = {125C1FE9-F684-4E87-A9EF-969FD1E2D726}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3C9A56A6-4EA3-4228-B064-E4789B282032}
