@@ -46,7 +46,7 @@ namespace CSharpMath.Editor {
   interface IMathListIndex<TSelf> where TSelf : IMathListIndex<TSelf> {
 
     /// The index of the associated atom.
-    uint AtomIndex { get; }
+    int AtomIndex { get; }
     /// The type of subindex, e.g. superscript, numerator etc.
     MathListSubIndexType SubIndexType { get; }
     /// The index into the sublist.

@@ -38,7 +38,7 @@ namespace CSharpMath.Display {
     public float Ascent => Runs.CollectionAscent();
     public float Descent => Runs.CollectionDescent();
     public float Width => Runs.CollectionWidth();
-    public Range Range => RangeExtensions.Combine(Runs.Select(r => r.Range));
+    public Range Range => Range.Combine(Runs.Select(r => r.Range));
     public bool HasScript { get; set; }
     public Color? TextColor { get; set; }
 

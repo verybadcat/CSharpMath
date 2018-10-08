@@ -304,7 +304,7 @@ namespace CSharpMath.Tests {
 
       var glyph = display0.Displays[0] as GlyphDisplay<TFont, TGlyph>;
       Assert.Equal(new PointF(), glyph.Position);
-      Assert.Equal(Ranges.NotFound, glyph.Range);
+      Assert.Equal(Range.NotFound, glyph.Range);
       Assert.False(glyph.HasScript);
 
       var subFraction = display0.Displays[1] as FractionDisplay<TFont, TGlyph>;
@@ -345,7 +345,7 @@ namespace CSharpMath.Tests {
 
       var subRight = display0.Displays[2] as GlyphDisplay<TFont, TGlyph>;
       Assert.False(subRight.HasScript);
-      Assert.Equal(Range.NotFoundRange, subRight.Range);
+      Assert.Equal(Range.NotFound, subRight.Range);
       Assertions.ApproximatePoint(20, 0, subRight.Position, 0.01);
       Assertions.ApproximatelyEqual(27.54, display.Ascent, 0.01);
       Assertions.ApproximatelyEqual(17.72, display.Descent, 0.01);
@@ -533,7 +533,7 @@ namespace CSharpMath.Tests {
 
       var glyph = display2.Displays[0] as GlyphDisplay<TFont, TGlyph>;
       Assert.Equal(new PointF(), glyph.Position);
-      Assert.Equal(Range.NotFoundRange, glyph.Range);
+      Assert.Equal(Range.NotFound, glyph.Range);
       Assert.False(glyph.HasScript);
 
       var display3 = display2.Displays[1] as ListDisplay<TFont, TGlyph>;
@@ -552,7 +552,7 @@ namespace CSharpMath.Tests {
 
       var glyph2 = display2.Displays[2] as GlyphDisplay<TFont, TGlyph>;
       Assertions.ApproximatePoint(20, 0, glyph2.Position, 0.01);
-      Assert.Equal(Range.NotFoundRange, glyph2.Range);
+      Assert.Equal(Range.NotFound, glyph2.Range);
       Assert.False(glyph2.HasScript);
 
       Assert.Equal(display.Ascent, display2.Ascent);

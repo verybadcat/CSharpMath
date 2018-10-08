@@ -24,7 +24,7 @@ namespace CSharpMath {
     internal readonly List<IDisplay<TFont, TGlyph>> _displayAtoms = new List<IDisplay<TFont, TGlyph>>();
     internal PointF _currentPosition; // the Y axis is NOT inverted in the typesetter.
     internal readonly AttributedString<TFont, TGlyph> _currentLine;
-    internal Range _currentLineIndexRange = Range.NotFoundRange;
+    internal Range _currentLineIndexRange = Range.NotFound;
     internal readonly List<IMathAtom> _currentAtoms = new List<IMathAtom>();
     internal const int _delimiterFactor = 901;
     internal const int _delimiterShortfallPoints = 5;
@@ -272,17 +272,15 @@ namespace CSharpMath {
             var glyphs = _context.GlyphFinder.FindGlyphs(_font, nucleusText);
             current = AttributedGlyphRuns.Create(nucleusText, glyphs, _font, atom.AtomType == MathAtomType.Placeholder);
             _currentLine.AppendGlyphRun(current);
-            if (_currentLineIndexRange.Location == Range.UndefinedInt) {
+            if (_currentLineIndexRange.Location == Range.UndefinedInt)
               _currentLineIndexRange = atom.IndexRange;
-            } else {
-              _currentLineIndexRange.Length += atom.IndexRange.Length;
-            }
+            else
+              _currentLineIndexRange = new Range(_currentLineIndexRange.Location, _currentLineIndexRange.Length + atom.IndexRange.Length);
             // add the fused atoms
-            if (atom.FusedAtoms != null) {
+            if (atom.FusedAtoms != null) 
               _currentAtoms.AddRange(atom.FusedAtoms);
-            } else {
+            else 
               _currentAtoms.Add(atom);
-            }
             if (atom.Subscript != null || atom.Superscript != null) {
               var line = AddDisplayLine(true);
               float delta = 0;
@@ -290,10 +288,9 @@ namespace CSharpMath {
                 TGlyph glyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, atom.Nucleus.Length - 1, atom.Nucleus);
                 delta = _context.MathTable.GetItalicCorrection(_styleFont, glyph);
               }
-              if (delta > 0 && atom.Subscript == null) {
+              if (delta > 0 && atom.Subscript == null)
                 // add a kern of delta
                 _currentPosition.X += delta;
-              }
               MakeScripts(atom, line, atom.IndexRange.End - 1, delta);
             }
             if (atom.AtomType == MathAtomType.Prime) continue; //preserve spacing of previous atom
@@ -392,34 +389,26 @@ namespace CSharpMath {
 
     private static float _GetSkew(FontMathTable<TFont, TGlyph> mathTable, IGlyphFinder<TFont, TGlyph> glyphFinder, TFont normalFont, TFont styleFont, float accenteeWidth, TGlyph accentGlyph, TGlyph accenteeSingleGlyph) {
       float accentAdjustment = mathTable.GetTopAccentAdjustment(styleFont, accentGlyph);
-      float accenteeAdjustment;
-      if (glyphFinder.GlyphIsEmpty(accenteeSingleGlyph)) {
-        accenteeAdjustment = accenteeWidth / 2;
-      }
-      else {
-        accenteeAdjustment = mathTable.GetTopAccentAdjustment(styleFont, accenteeSingleGlyph);
-      }
+      float accenteeAdjustment = glyphFinder.GlyphIsEmpty(accenteeSingleGlyph) ? accenteeWidth / 2 : mathTable.GetTopAccentAdjustment(styleFont, accenteeSingleGlyph);
       return accenteeAdjustment - accentAdjustment;
     }
 
     private static TGlyph _FindVariantGlyph(FontMathTable<TFont, TGlyph> mathTable, IGlyphBoundsProvider<TFont, TGlyph> boundsProvider, TFont styleFont, TGlyph rawGlyph, float targetWidth, out float glyphAscent, out float glyphDescent, out float glyphWidth) {
       var glyphs = mathTable.GetHorizontalVariantsForGlyph(rawGlyph);
       int nGlyphs = glyphs.Length;
-      if (nGlyphs == 0) {
+      if (nGlyphs == 0)
         throw new ArgumentException("There should always be at least one variant -- the glyph itself");
-      }
       var currentGlyph = glyphs[0];
 
       var boundingBoxes = boundsProvider.GetBoundingRectsForGlyphs(styleFont, glyphs);
-      var (Advances, _) = boundsProvider.GetAdvancesForGlyphs(styleFont, glyphs);
-
-
+      var (advances, _) = boundsProvider.GetAdvancesForGlyphs(styleFont, glyphs);
+      
       glyphAscent = float.NaN;  // These NaN values should never be returned. We have to set them to keep the compiler happy.
       glyphDescent = float.NaN;
       glyphWidth = float.NaN;
       for (int i = 0; i < nGlyphs; i++) {
         var bounds = boundingBoxes[i];
-        var advance = Advances[i];
+        var advance = advances[i];
         bounds.GetAscentDescentWidth(out float ascent, out float descent, out float _);
         var width = bounds.Right;
         if (width > targetWidth) {
@@ -598,7 +587,7 @@ namespace CSharpMath {
         _currentPosition.X += displayAtom.Width;
         _currentLine.Clear();
         _currentAtoms.Clear();
-        _currentLineIndexRange = Ranges.NotFound;
+        _currentLineIndexRange = Range.NotFound;
         return displayAtom;
       }
       return null;
@@ -857,7 +846,7 @@ namespace CSharpMath {
         glyphDisplay = _ConstructGlyph(leftGlyph, glyphHeight);
       }
       if (glyphDisplay == null) {
-        glyphDisplay = new GlyphDisplay<TFont, TGlyph>(glyph, Range.NotFoundRange, _styleFont) {
+        glyphDisplay = new GlyphDisplay<TFont, TGlyph>(glyph, Range.NotFound, _styleFont) {
           Ascent = glyphAscent, // 26
           Descent = glyphDescent,// 18
           Width = glyphWidth
@@ -879,7 +868,7 @@ namespace CSharpMath {
         glyphDisplay = _ConstructGlyph(radicalGlyph, radicalHeight);
       }
       if (glyphDisplay == null) {
-        glyphDisplay = new GlyphDisplay<TFont, TGlyph>(glyph, Range.NotFoundRange, _styleFont) {
+        glyphDisplay = new GlyphDisplay<TFont, TGlyph>(glyph, Range.NotFound, _styleFont) {
           Ascent = glyphAscent,
           Descent = glyphDescent,
           Width = glyphWidth
@@ -1018,7 +1007,7 @@ namespace CSharpMath {
 
     private ListDisplay<TFont, TGlyph> MakeRowWithColumns(List<ListDisplay<TFont, TGlyph>> row, Table table, float[] columnWidths) {
       float columnStart = 0;
-      Range rowRange = Ranges.NotFound;
+      Range rowRange = Range.NotFound;
       for (int i=0; i<row.Count; i++) {
         var entry = row[i];
         float columnWidth = columnWidths[i];
@@ -1033,7 +1022,7 @@ namespace CSharpMath {
             break;
         }
         entry.Position = new PointF(cellPosition, 0);
-        rowRange = Ranges.Union(rowRange, entry.Range);
+        rowRange = rowRange + entry.Range;
         columnStart += (columnWidth + table.InterColumnSpacing * _mathTable.MuUnit(_styleFont));
       }
       return new ListDisplay<TFont, TGlyph>(row.ToArray());

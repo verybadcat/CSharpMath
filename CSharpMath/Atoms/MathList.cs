@@ -42,7 +42,7 @@ namespace CSharpMath.Atoms {
         IMathAtom prevNode = null;
         foreach (IMathAtom atom in cloneMe.Atoms) {
           var newNode = AtomCloner.Clone(atom, finalize);
-          if (atom.IndexRange == Ranges.Zero) {
+          if (atom.IndexRange == Range.Zero) {
             int prevIndex = (prevNode == null) ? 0 : prevNode.IndexRange.Location + prevNode.IndexRange.Length;
             newNode.IndexRange = new Range(prevIndex, 1);
           }

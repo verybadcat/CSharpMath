@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
@@ -75,10 +75,10 @@ namespace CSharpMath.Display {
       get {
         var r = _nucleusDisplay.Range;
         if (UpperLimit!=null) {
-          r = RangeExtensions.Combine(r, UpperLimit.Range);
+          r += UpperLimit.Range;
         }
         if (LowerLimit!=null) {
-          r = RangeExtensions.Combine(r, LowerLimit.Range);
+          r += LowerLimit.Range;
         }
         return r;
       }

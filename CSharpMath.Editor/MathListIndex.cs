@@ -5,17 +5,17 @@ using System.Text;
 namespace CSharpMath.Editor {
 
   public class MathListIndex : IMathListIndex<MathListIndex> {
-    public uint AtomIndex { get; set; }
+    public int AtomIndex { get; set; }
     public MathListSubIndexType SubIndexType { get; set; }
     [NullableReference]
     public MathListIndex SubIndex { get; set; }
 
-    public static MathListIndex Level0Index(uint index) =>
+    public static MathListIndex Level0Index(int index) =>
         new MathListIndex {
           AtomIndex = index
         };
 
-    public static MathListIndex IndexAtLocation(uint location, [NullableReference]MathListIndex subIndex, MathListSubIndexType type) {
+    public static MathListIndex IndexAtLocation(int location, [NullableReference]MathListIndex subIndex, MathListSubIndexType type) {
       var index = Level0Index(location);
       index.SubIndexType = type;
       index.SubIndex = subIndex;
@@ -99,7 +99,7 @@ namespace CSharpMath.Editor {
       return true;
     }
 
-    public uint FinalIndex {
+    public int FinalIndex {
       get {
         if (SubIndexType == MathListSubIndexType.None || SubIndex == null) {
           return AtomIndex;
@@ -144,7 +144,7 @@ namespace CSharpMath.Editor {
       return EqualsToIndex(index);
     }
     public override int GetHashCode() =>
-      unchecked(((int)AtomIndex * 31 + (int)SubIndexType) * 31 + SubIndex.GetHashCode());
+      unchecked((AtomIndex * 31 + (int)SubIndexType) * 31 + SubIndex.GetHashCode());
   }
 
 }
