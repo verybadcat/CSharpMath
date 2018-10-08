@@ -38,7 +38,7 @@ namespace CSharpMath.Display {
     public float Descent => Displays.CollectionDescent();
     public PointF Position { get; set; }
     public RectangleF DisplayBounds => this.ComputeDisplayBounds();
-    public Range Range => RangeExtensions.Combine(Displays.Select(d => d.Range));
+    public Range Range => Range.Combine(Displays.Select(d => d.Range));
     public float Width {
       get {
         var x = Displays.CollectionX();
