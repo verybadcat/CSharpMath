@@ -8,7 +8,7 @@ using System.Linq;
 namespace CSharpMath.FrontEnd {
   /// <summary>Holds lots of constants for spacing between various visible elements.</summary>
   public abstract class FontMathTable<TFont, TGlyph>
-    where TFont : IMathFont<TGlyph> {
+    where TFont : IFont<TGlyph> {
 
 
     public float MuUnit(TFont font) => font.PointSize / 18f;

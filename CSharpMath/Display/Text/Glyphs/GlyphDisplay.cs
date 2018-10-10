@@ -9,7 +9,7 @@ using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Display {
   public class GlyphDisplay<TFont, TGlyph> : IDownshiftableDisplay<TFont, TGlyph>
-    where TFont : IMathFont<TGlyph> {
+    where TFont : IFont<TGlyph> {
 
     public RectangleF DisplayBounds => this.ComputeDisplayBounds();
 

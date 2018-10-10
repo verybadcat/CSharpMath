@@ -8,7 +8,7 @@ using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Display {
   public class LargeOpLimitsDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph>
-    where TFont : IMathFont<TGlyph> {
+    where TFont : IFont<TGlyph> {
     private IDisplay<TFont, TGlyph> _nucleusDisplay;
     private readonly float _limitShift;
     private readonly int _extraPadding;

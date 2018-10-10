@@ -8,7 +8,7 @@ using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Display {
   public class AccentDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph>
-    where TFont : IMathFont<TGlyph> {
+    where TFont : IFont<TGlyph> {
 
 
     public AccentDisplay(GlyphDisplay<TFont, TGlyph> accentGlyphDisplay, IDisplay<TFont, TGlyph> accentee) {

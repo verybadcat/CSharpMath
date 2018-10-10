@@ -8,7 +8,7 @@ using System;
 namespace CSharpMath.Apple
 {
   /// <remarks>Corresponds to MTFont in iosMath.</remarks>
-  public struct AppleMathFont: IMathFont<TGlyph> {
+  public struct AppleMathFont: IFont<TGlyph> {
     public float PointSize { get; }
     public CGFont CgFont { get; private set; }
     public CTFont CtFont { get; private set; }

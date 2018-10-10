@@ -15,7 +15,7 @@ namespace CSharpMath.Display {
       TypesettingContext<TFont, TGlyph> context,
       List<IMathAtom> atoms
       )
-      where TFont: IMathFont<TGlyph> {
+      where TFont: IFont<TGlyph> {
       int index = range.Location;
       List<TextRunDisplay<TFont, TGlyph>> textRuns = new List<TextRunDisplay<TFont, TGlyph>>();
       foreach (var run in text.Runs) {

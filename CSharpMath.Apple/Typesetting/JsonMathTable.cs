@@ -8,7 +8,7 @@ using System.Linq;
 namespace CSharpMath.Apple {
   /// <summary>Holds lots of constants for spacing between various visible elements by reading a JSON file.</summary>
   public class JsonMathTable<TFont, TGlyph> : FontMathTable<TFont, TGlyph>
-    where TFont : IMathFont<TGlyph> {
+    where TFont : IFont<TGlyph> {
     /// <summary>Dictionary object containing a zillion constants,
     /// typically loaded from a .json file.</summary>
     private readonly JToken _mathTable;
