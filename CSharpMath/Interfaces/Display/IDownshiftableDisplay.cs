@@ -5,6 +5,6 @@ using CSharpMath.Display;
 
 namespace CSharpMath {
   public interface IDownshiftableDisplay<TFont, TGlyph>: IDisplay<TFont, TGlyph>, IDownShift 
-    where TFont : IMathFont<TGlyph>{
+    where TFont : IFont<TGlyph>{
   }
 }

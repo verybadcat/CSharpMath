@@ -7,7 +7,7 @@ namespace CSharpMath.FrontEnd {
   /// <summary>A wrapper class holding everything the core needs to have in order
   /// layout the LaTeX.</summary>
   public class TypesettingContext<TFont, TGlyph>
-    where TFont: IMathFont<TGlyph> {
+    where TFont: IFont<TGlyph> {
     public IGlyphBoundsProvider<TFont, TGlyph> GlyphBoundsProvider { get; }
     public IGlyphFinder<TFont, TGlyph> GlyphFinder { get; }
     

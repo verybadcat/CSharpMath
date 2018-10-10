@@ -8,7 +8,7 @@ using CSharpMath.Interfaces;
 namespace CSharpMath.Display.Extension {
   internal static class _Typesetter {
     internal static void CreateDisplayAtom<TFont, TGlyph>(Typesetter<TFont, TGlyph> t, I_ExtensionAtom atom)
-      where TFont : IMathFont<TGlyph> {
+      where TFont : IFont<TGlyph> {
       switch (atom.AtomType) {
         case MathAtomType.RaiseBox:
           t.AddDisplayLine(false);

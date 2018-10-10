@@ -7,7 +7,7 @@ using CSharpMath.FrontEnd;
 using Typography.OpenFont;
 
 namespace CSharpMath.Rendering {
-  public struct Fonts : IMathFont<Glyph>, IEnumerable<Typeface> {
+  public struct Fonts : IFont<Glyph>, IEnumerable<Typeface> {
     static Fonts() {
       var reader = new OpenFontReader();
       var latinMathTypeface = reader.Read(new MemoryStream(Resources.LatinModernMath, false));

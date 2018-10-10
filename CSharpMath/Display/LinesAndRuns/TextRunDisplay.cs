@@ -11,7 +11,7 @@ using System.Text;
 
 namespace CSharpMath.Display {
   /// <summary>Corresponds to MTCTLineDisplay in iOSMath.</summary> 
-  public class TextRunDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph> where TFont : IMathFont<TGlyph> {
+  public class TextRunDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph> where TFont : IFont<TGlyph> {
     public AttributedGlyphRun<TFont, TGlyph> Run { get; private set; }
 
     public TextRunDisplay(

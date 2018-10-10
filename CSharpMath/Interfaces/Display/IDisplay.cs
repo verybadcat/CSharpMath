@@ -6,7 +6,7 @@ using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath {
   public interface IDisplay<TFont, TGlyph>
-    where TFont : IMathFont<TGlyph> {
+    where TFont : IFont<TGlyph> {
     void Draw(IGraphicsContext<TFont, TGlyph> context);
     /// <summary>The display's bounds, in its own coordinate system.</summary> 
     RectangleF DisplayBounds { get; }
@@ -29,11 +29,11 @@ namespace CSharpMath {
 
   public static class IDisplayExtensions {
     public static RectangleF ComputeDisplayBounds<TFont, TGlyph>(this IDisplay<TFont, TGlyph> display, bool invert = false)
-      where TFont : IMathFont<TGlyph>
+      where TFont : IFont<TGlyph>
       => new RectangleF(0, invert ? display.Descent : -display.Ascent, display.Width, display.Ascent + display.Descent);
     /// <summary>Where the display is located, expressed in its parent's coordinate system.</summary>
     public static RectangleF Frame<TFont, TGlyph>(this IDisplay<TFont, TGlyph> display, bool invert = false)
-      where TFont : IMathFont<TGlyph>
+      where TFont : IFont<TGlyph>
       => display.ComputeDisplayBounds(invert).Plus(display.Position);
   }
 }
