@@ -235,7 +235,8 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                         breakList[i] = new BreakAtInfo(breakList[i].breakAt + 1, breakList[i].wordKind);
                       }
                       //Need to allocate in the end :(
-                      atoms.Add(textSection[0].ToString(), LookAheadForPunc(latex, ref textSection));
+                      //Don't look ahead for punc; we are looking for one char only
+                      atoms.Add(textSection[0].ToString(), default(ReadOnlySpan<char>));
                     } else atoms.Add(textSection.ToString(), LookAheadForPunc(latex, ref textSection));
                     break;
                 }
@@ -390,12 +391,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                       copy[2] = 't';
                       copy[3] = 'h';
                     }
-                    foreach (var item in FontStyleExtensions.FontStyles)
-                      if(textStyle.Is(item.Key)) {
-                        fontStyle = item.Value;
-                        return true;
-                      }
-                    return false;
+                    return ((ReadOnlySpan<char>)copy).TryAccessDictionary(FontStyleExtensions.FontStyles, out fontStyle);
                 }
                 case var textStyle when ValidTextStyle(textStyle, out var fontStyle): {
                     int tmp_commandLength = textStyle.Length;

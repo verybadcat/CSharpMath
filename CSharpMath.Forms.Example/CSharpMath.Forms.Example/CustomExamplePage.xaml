@@ -10,10 +10,6 @@
             <Entry x:Name="Entry" HorizontalOptions="FillAndExpand"/>
             <Picker x:Name="Size" HorizontalOptions="Fill" ItemsSource="{x:Static local:CustomExamplePage.FontSizes}"/>
         </StackLayout>
-        <StackLayout Orientation="Horizontal">
-            <Button x:Name="In" HorizontalOptions="FillAndExpand" Text="Load LaTeX" Clicked="In_Clicked"/>
-            <Button x:Name="Out" HorizontalOptions="FillAndExpand" Text="Save LaTeX" Clicked="Out_Clicked"/>
-        </StackLayout>
         <math:MathView x:Name="View" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" EnableTouchEvents="True"/>
     </StackLayout>
 </ContentPage>

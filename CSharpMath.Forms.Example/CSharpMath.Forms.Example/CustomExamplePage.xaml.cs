@@ -28,19 +28,5 @@ namespace CSharpMath.Forms.Example
       //App.AllViews.Remove(View);
       base.OnDisappearing();
     }
-
-    static readonly string RefFile = Path.Combine(Environment.CurrentDirectory, "SavedLaTeX.txt");
-
-    private async void In_Clicked(object sender, EventArgs e) {
-      using (var file = File.Open(RefFile, FileMode.OpenOrCreate))
-      using (var reader = new StreamReader(file))
-        Entry.Text = await reader.ReadToEndAsync();
-    }
-
-    private async void Out_Clicked(object sender, EventArgs e) {
-      using (var file = File.Open(RefFile, FileMode.Create))
-      using (var writer = new StreamWriter(file))
-        await writer.WriteAsync(Entry.Text);
-    }
   }
 }
