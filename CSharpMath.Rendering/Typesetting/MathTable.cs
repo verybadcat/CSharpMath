@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using CSharpMath.Display;
 using CSharpMath.FrontEnd;
 using Typography.OpenFont;
@@ -37,20 +38,18 @@ namespace CSharpMath.Rendering {
     public override float FractionNumeratorShiftUp(Fonts fonts) => ReadRecord(fonts.MathConsts.FractionNumeratorShiftUp, fonts);
 
     public override float FractionRuleThickness(Fonts fonts) => ReadRecord(fonts.MathConsts.FractionRuleThickness, fonts);
-    
-    Glyph[] GetVariants(Typeface typeface, MathGlyphConstruction glyphs) {
-      if (glyphs == null) return null;
-      var records = glyphs.glyphVariantRecords;
+
+    (IEnumerable<Glyph> variants, int count)? GetVariants(Typeface typeface, MathGlyphConstruction glyphs) {
+      var records = glyphs?.glyphVariantRecords;
       if (records == null) return null;
-      var variants = new Glyph[records.Length];
-      for (int i = 0; i < records.Length; i++) {
-        variants[i] = new Glyph(typeface, typeface.GetGlyphByIndex(records[i].VariantGlyph));
-      }
-      return variants;
+      return (records.Select(record => new Glyph(typeface, typeface.GetGlyphByIndex(record.VariantGlyph))), records.Length);
     }
 
-    public override Glyph[] GetHorizontalVariantsForGlyph(Glyph rawGlyph) =>
-      GetVariants(rawGlyph.Typeface, rawGlyph.Info.MathGlyphInfo?.HoriGlyphConstruction) ?? new[] { rawGlyph };
+    public override (IEnumerable<Glyph> variants, int count) GetHorizontalVariantsForGlyph(Glyph rawGlyph) =>
+      GetVariants(rawGlyph.Typeface, rawGlyph.Info.MathGlyphInfo?.HoriGlyphConstruction) ?? (new[] { rawGlyph }, 1);
+
+    public override (IEnumerable<Glyph> variants, int count) GetVerticalVariantsForGlyph(Glyph rawGlyph) =>
+      GetVariants(rawGlyph.Typeface, rawGlyph.Info.MathGlyphInfo?.VertGlyphConstruction) ?? (new[] { rawGlyph }, 1);
 
     public override float GetItalicCorrection(Fonts fonts, Glyph glyph) =>
       glyph.Info.MathGlyphInfo?.ItalicCorrection?.Value * glyph.Typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize) ?? 0;
@@ -69,22 +68,17 @@ namespace CSharpMath.Rendering {
       return glyph;
     }
 
-    public override GlyphPart<Glyph>[] GetVerticalGlyphAssembly(Glyph rawGlyph, Fonts fonts) {
-      var records = rawGlyph.Info.MathGlyphInfo.VertGlyphConstruction.GlyphAsm_GlyphPartRecords;
+    public override IEnumerable<GlyphPart<Glyph>> GetVerticalGlyphAssembly(Glyph rawGlyph, Fonts fonts) {
       var scale = rawGlyph.Typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);
-      var parts = new GlyphPart<Glyph>[records.Length];
-      for (int i = 0; i < records.Length; i++) parts[i] = new GlyphPart<Glyph> {
-        EndConnectorLength = records[i].EndConnectorLength * scale,
-        FullAdvance = records[i].FullAdvance * scale,
-        Glyph = new Glyph(rawGlyph.Typeface, rawGlyph.Typeface.GetGlyphByIndex(records[i].GlyphId)),
-        IsExtender = records[i].IsExtender,
-        StartConnectorLength = records[i].StartConnectorLength * scale
-      };
-      return parts;
+      return rawGlyph.Info.MathGlyphInfo?.VertGlyphConstruction?.GlyphAsm_GlyphPartRecords?.Select(record =>
+        new GlyphPart<Glyph> {
+          EndConnectorLength = record.EndConnectorLength * scale,
+          FullAdvance = record.FullAdvance * scale,
+          Glyph = new Glyph(rawGlyph.Typeface, rawGlyph.Typeface.GetGlyphByIndex(record.GlyphId)),
+          IsExtender = record.IsExtender,
+          StartConnectorLength = record.StartConnectorLength * scale
+        });
     }
-
-    public override Glyph[] GetVerticalVariantsForGlyph(Glyph rawGlyph) =>
-      GetVariants(rawGlyph.Typeface, rawGlyph.Info.MathGlyphInfo?.VertGlyphConstruction) ?? new[] { rawGlyph };
 
     public override float LowerLimitBaselineDropMin(Fonts fonts) => ReadRecord(fonts.MathConsts.LowerLimitBaselineDropMin, fonts);
 

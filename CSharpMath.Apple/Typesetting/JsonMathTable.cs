@@ -1,4 +1,4 @@
-﻿using CSharpMath.Display;
+using CSharpMath.Display;
 using CSharpMath.FrontEnd;
 using Newtonsoft.Json.Linq;
 using System;
@@ -184,66 +184,41 @@ namespace CSharpMath.Apple {
     private const string _startConnectorKey = "startConnector";
     private const string _extenderKey = "extender";
     private const string _glyphKey = "glyph";
-    public override GlyphPart<TGlyph>[] GetVerticalGlyphAssembly(TGlyph rawGlyph, TFont font) {
-      var glyphName = GlyphNameProvider.GetGlyphName(rawGlyph);
-      var glyphAssemblyInfo = _assemblyTable[glyphName];
-      if (glyphAssemblyInfo == null) {
-        return null;
-      }
-      if (!(glyphAssemblyInfo[_assemblyPartsKey] is JArray parts)) {
-        // Should have been defined, but let's return null
-        return null;
-      }
-      List<GlyphPart<TGlyph>> r = new List<GlyphPart<TGlyph>>();
-      foreach (JToken partInfo in parts) {
-        var innerGlyphName = partInfo[_glyphKey];
-        var endConnectorLength = _FontUnitsToPt(font, partInfo[_endConnectorKey].Value<int>());
-        var startConnectorLength = _FontUnitsToPt(font, partInfo[_startConnectorKey].Value<int>());
-        var fullAdvance = _FontUnitsToPt(font, partInfo[_advanceKey].Value<int>());
-        var glyphPartName = partInfo[_glyphKey].Value<string>();
-        r.Add(new GlyphPart<TGlyph> {
-          EndConnectorLength = endConnectorLength,
-          StartConnectorLength = startConnectorLength,
-          FullAdvance = fullAdvance,
+    public override IEnumerable<GlyphPart<TGlyph>> GetVerticalGlyphAssembly(TGlyph rawGlyph, TFont font) =>
+      _assemblyTable[GlyphNameProvider.GetGlyphName(rawGlyph)]?[_assemblyPartsKey] is JArray parts ?
+      parts.Select(partInfo =>
+        new GlyphPart<TGlyph> {
+          StartConnectorLength = _FontUnitsToPt(font, partInfo[_startConnectorKey].Value<int>()),
+          EndConnectorLength = _FontUnitsToPt(font, partInfo[_endConnectorKey].Value<int>()),
+          FullAdvance = _FontUnitsToPt(font, partInfo[_advanceKey].Value<int>()),
           IsExtender = partInfo[_extenderKey].Value<bool>(),
-          Glyph = GlyphNameProvider.GetGlyph(glyphPartName)
-        });
-      }
-      return r.ToArray();
-    }
-    public override float MinConnectorOverlap(TFont font)
-    => _ConstantFromTable(font, nameof(MinConnectorOverlap));
+          Glyph = GlyphNameProvider.GetGlyph(partInfo[_glyphKey].Value<string>())
+        }) :
+      // Should have been defined, but let's return null
+      null;
+    public override float MinConnectorOverlap(TFont font) => _ConstantFromTable(font, nameof(MinConnectorOverlap));
 
 
     private const string VerticalVariantsKey = "v_variants";
     private const string HorizontalVariantsKey = "h_variants";
-    public override TGlyph[] GetVerticalVariantsForGlyph(TGlyph rawGlyph) {
-      var variants = _mathTable[VerticalVariantsKey];
-      return GetVariantsForGlyph(rawGlyph, variants).ToArray();
-    }
+    public override (IEnumerable<TGlyph> variants, int count) GetVerticalVariantsForGlyph(TGlyph rawGlyph) =>
+      GetVariantsForGlyph(rawGlyph, _mathTable[VerticalVariantsKey]);
 
-    public override TGlyph[] GetHorizontalVariantsForGlyph(TGlyph rawGlyph) {
-      var variants = _mathTable[HorizontalVariantsKey];
-      return GetVariantsForGlyph(rawGlyph, variants).ToArray();
-    }
+    public override (IEnumerable<TGlyph> variants, int count) GetHorizontalVariantsForGlyph(TGlyph rawGlyph) =>
+      GetVariantsForGlyph(rawGlyph, _mathTable[HorizontalVariantsKey]);
 
-    private IEnumerable<TGlyph> GetVariantsForGlyph(TGlyph rawGlyph, JToken variants) {
+    private (IEnumerable<TGlyph> variants, int count) GetVariantsForGlyph(TGlyph rawGlyph, JToken variants) {
       var glyphName = GlyphNameProvider.GetGlyphName(rawGlyph);
       var variantGlyphs = variants[glyphName];
       if (!(variantGlyphs is JArray variantGlyphsArray)) {
         var outputGlyph = GlyphNameProvider.GetGlyph(glyphName);
-        if (!outputGlyph.Equals(rawGlyph)) {
+        if (!outputGlyph.Equals(rawGlyph))
           throw new InvalidCodePathException("GlyphNameProvider.GetGlyph(GlyphNameProvider.GetGlyphName(rawGlyph)) != rawGlyph");
-        }
-        yield return outputGlyph;
-      } else {
-        foreach (var variantObj in variantGlyphsArray) {
-          var variantValue = variantObj as JValue;
-          var variantName = variantValue.ToString();
-          var aGlyph = GlyphNameProvider.GetGlyph(variantName);
-          yield return aGlyph;
-        }
-      }
+        return (new TGlyph[] { outputGlyph }, 1);
+      } else
+        return
+          (variantGlyphsArray.Select(variantObj => GlyphNameProvider.GetGlyph(((JValue)variantObj).ToString())),
+          variantGlyphsArray.Count);
     }
 
     public override TGlyph GetLargerGlyph(TFont font, TGlyph glyph) {
@@ -305,9 +280,11 @@ namespace CSharpMath.Apple {
         return _FontUnitsToPt(font, intValue);
       } else {
         // If no top accent is defined then it is the center of the advance width.
-        var glyphs = new TGlyph[] { glyph };
-        var (Advances, Total) = GlyphBoundsProvider.GetAdvancesForGlyphs(font, glyphs);
-        return Advances[0] / 2;
+        var glyphs = System.Buffers.ArrayPool<TGlyph>.Shared.Rent(1);
+        glyphs[0] = glyph;
+        var (_, Total) = GlyphBoundsProvider.GetAdvancesForGlyphs(font, glyphs, 1);
+        System.Buffers.ArrayPool<TGlyph>.Shared.Return(glyphs);
+        return Total / 2;
       }
     }
 

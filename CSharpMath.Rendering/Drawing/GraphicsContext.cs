@@ -17,10 +17,8 @@ namespace CSharpMath.Rendering {
 
     public void DrawGlyphsAtPoints(Glyph[] glyphs, TFonts font, PointF[] points, Color? color) {
       if (GlyphBoxColor != null) {
-        var rects = GlyphBoundsProvider.Instance.GetBoundingRectsForGlyphs(font, glyphs);
-        for (int i = 0; i < rects.Length; i++) {
-          var rect = rects[i];
-          var point = points[i];
+        var rects = GlyphBoundsProvider.Instance.GetBoundingRectsForGlyphs(font, glyphs, glyphs.Length);
+        foreach(var (rect, point) in rects.Zip(points, System.ValueTuple.Create)) {
           Canvas.CurrentColor = GlyphBoxColor?.glyph;
           Canvas.StrokeRect(point.X + rect.X, point.Y + rect.Y, rect.Width, rect.Height);
         }

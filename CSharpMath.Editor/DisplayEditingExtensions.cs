@@ -48,6 +48,7 @@ namespace CSharpMath.Editor {
     public static MathListIndex ClosestIndexToParent<TFont, TGlyph>(this TextRunDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, PointF point) where TFont : IFont<TGlyph> {
       // Convert the point to the reference of the CTLine
       var relativePoint = new PointF(point.X - self.Position.X, point.Y - self.Position.Y);
+      context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(self.Run.Font, self.Run.gl)
       context.GlyphBoundsProvider.GetBoundingRectsForGlyphs
     }
   }

@@ -394,39 +394,33 @@ namespace CSharpMath {
     }
 
     private static TGlyph _FindVariantGlyph(FontMathTable<TFont, TGlyph> mathTable, IGlyphBoundsProvider<TFont, TGlyph> boundsProvider, TFont styleFont, TGlyph rawGlyph, float targetWidth, out float glyphAscent, out float glyphDescent, out float glyphWidth) {
-      var glyphs = mathTable.GetHorizontalVariantsForGlyph(rawGlyph);
-      int nGlyphs = glyphs.Length;
+      var (glyphs, nGlyphs) = mathTable.GetHorizontalVariantsForGlyph(rawGlyph);
       if (nGlyphs == 0)
         throw new ArgumentException("There should always be at least one variant -- the glyph itself");
-      var currentGlyph = glyphs[0];
 
-      var boundingBoxes = boundsProvider.GetBoundingRectsForGlyphs(styleFont, glyphs);
-      var (advances, _) = boundsProvider.GetAdvancesForGlyphs(styleFont, glyphs);
-      
+      var boundingBoxes = boundsProvider.GetBoundingRectsForGlyphs(styleFont, glyphs, nGlyphs);
+      var (advances, _) = boundsProvider.GetAdvancesForGlyphs(styleFont, glyphs, nGlyphs);
+      TGlyph currentGlyph = default;
       glyphAscent = float.NaN;  // These NaN values should never be returned. We have to set them to keep the compiler happy.
       glyphDescent = float.NaN;
       glyphWidth = float.NaN;
-      for (int i = 0; i < nGlyphs; i++) {
-        var bounds = boundingBoxes[i];
-        var advance = advances[i];
+      foreach (var (advance, bounds, glyph) in advances.Zip(boundingBoxes, glyphs, ValueTuple.Create)) {
         bounds.GetAscentDescentWidth(out float ascent, out float descent, out float _);
         var width = bounds.Right;
         if (width > targetWidth) {
-
-          if (i == 0) {
+          if (glyphAscent is float.NaN) {
             // glyph dimensions are not yet set
             glyphWidth = advance;
             glyphAscent = ascent;
             glyphDescent = descent;
           }
-          return currentGlyph;
+          return glyph;
         }
         else {
-          currentGlyph = glyphs[i];
+          currentGlyph = glyph;
           glyphWidth = advance;
           glyphAscent = ascent;
           glyphDescent = descent;
-
         }
       }
       return currentGlyph;
@@ -878,15 +872,16 @@ namespace CSharpMath {
     }
 
     private GlyphConstructionDisplay<TFont, TGlyph> _ConstructGlyph(TGlyph glyph, float glyphHeight) {
-      GlyphPart<TGlyph>[] parts = _mathTable.GetVerticalGlyphAssembly(glyph, _styleFont);
-      if (parts.IsEmpty()) {
-        return null;
-      }
+      var parts = _mathTable.GetVerticalGlyphAssembly(glyph, _styleFont);
+      if (parts.IsEmpty()) return null;
       List<TGlyph> glyphs = new List<TGlyph>();
       List<float> offsets = new List<float>();
       float height = _ConstructGlyphWithParts(parts, glyphHeight, glyphs, offsets);
       TGlyph firstGlyph = glyphs[0];
-      float width = _context.GlyphBoundsProvider.GetAdvancesForGlyphs(_styleFont, new TGlyph[] { firstGlyph }).Total;
+      var singleArray = System.Buffers.ArrayPool<TGlyph>.Shared.Rent(1);
+      singleArray[0] = firstGlyph;
+      float width = _context.GlyphBoundsProvider.GetAdvancesForGlyphs(_styleFont, singleArray, 1).Total;
+      System.Buffers.ArrayPool<TGlyph>.Shared.Return(singleArray);
       var display = new GlyphConstructionDisplay<TFont, TGlyph>(glyphs, offsets, _styleFont) {
         Width = width,
         Ascent = height,
@@ -895,7 +890,7 @@ namespace CSharpMath {
       return display;
     }
 
-    private float _ConstructGlyphWithParts(GlyphPart<TGlyph>[] parts, float glyphHeight, List<TGlyph> glyphs, List<float> offsets) {
+    private float _ConstructGlyphWithParts(IEnumerable<GlyphPart<TGlyph>> parts, float glyphHeight, List<TGlyph> glyphs, List<float> offsets) {
       for (int nExtenders = 0; ; nExtenders++) {
         glyphs.Clear();
         offsets.Clear();
@@ -951,21 +946,19 @@ namespace CSharpMath {
     private TGlyph _FindGlyph(TGlyph rawGlyph, float height,
       out float glyphAscent, out float glyphDescent, out float glyphWidth) {
       // in iosMath.
-      TGlyph[] variants = _mathTable.GetVerticalVariantsForGlyph(rawGlyph);
-      var nVariants = variants.Length;
-      var glyph = rawGlyph;
-      var rects = _context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(_styleFont, variants);
-      var advances = _context.GlyphBoundsProvider.GetAdvancesForGlyphs(_styleFont, variants).Advances;
-      int i = 0;
-      do {
-        var rect = rects[i];
+      glyphAscent = glyphDescent = glyphWidth = float.NaN;
+      var (variants, nVariants) = _mathTable.GetVerticalVariantsForGlyph(rawGlyph);
+      var rects = _context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(_styleFont, variants, nVariants);
+      var advances = _context.GlyphBoundsProvider.GetAdvancesForGlyphs(_styleFont, variants, nVariants).Advances;
+      foreach (var (rect, advance, variant) in rects.Zip(advances, variants, ValueTuple.Create)) {
         rect.GetAscentDescentWidth(out glyphAscent, out glyphDescent, out glyphWidth);
         if (glyphAscent + glyphDescent >= height) {
-          glyphWidth = advances[i];
-          return variants[i];
+          glyphWidth = advance;
+          return variant;
         }
-        i++;
-      } while (i < nVariants);
+      }
+      if (glyphAscent is float.NaN || glyphDescent is float.NaN || glyphWidth is float.NaN)
+        throw new InvalidCodePathException("glyphAscent, glyphDescent or glyphWidth is NaN.");
       return variants.Last();
     }
     private List<List<ListDisplay<TFont, TGlyph>>> TypesetCells(Table table, float[] columnWidths) {
@@ -1077,10 +1070,11 @@ namespace CSharpMath {
           glyph = _mathTable.GetLargerGlyph(_styleFont, glyph);
         }
         delta = _mathTable.GetItalicCorrection(_styleFont, glyph);
-        var glyphArray = new TGlyph[] { glyph };
-        var boundingBoxArray = _context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(_styleFont, glyphArray);
-        var boundingBox = boundingBoxArray[0];
-        var width = _context.GlyphBoundsProvider.GetAdvancesForGlyphs(_styleFont, glyphArray).Advances[0];
+        var glyphArray = System.Buffers.ArrayPool<TGlyph>.Shared.Rent(1);
+        glyphArray[0] = glyph;
+        var boundingBox = _context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(_styleFont, glyphArray, 1).Single();
+        var width = _context.GlyphBoundsProvider.GetAdvancesForGlyphs(_styleFont, glyphArray, 1).Total;
+        System.Buffers.ArrayPool<TGlyph>.Shared.Return(glyphArray);
         boundingBox.GetAscentDescentWidth(out float ascent, out float descent, out float _);
         var shiftDown = 0.5 * (ascent - descent) - _mathTable.AxisHeight(_styleFont);
         var glyphDisplay = new GlyphDisplay<TFont, TGlyph>(glyph, op.IndexRange, _styleFont) {
