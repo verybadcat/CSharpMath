@@ -15,30 +15,33 @@ namespace CSharpMath.Tests.FrontEnd {
     private const float AscentPerFontSize = 0.7f;
     private const float DescentPerFontSize = 0.2f; // all constants were chosen to bear some resemblance to a real font.
 
-    private int GetEffectiveLength(TGlyph glyph)
-    => GetEffectiveLength(new TGlyph[] { glyph });
+    private int GetEffectiveLength(IEnumerable<TGlyph> enumerable) {
+      int length = 0;
+      foreach (var c in enumerable)
+        if (c is 'M' || c is 'm') length += 2;
+        else length++;
+      return length;
+    }
 
-    private int GetEffectiveLength(TGlyph[] glyphs) {
-      string glyphString = new string(glyphs);
-      int length = glyphs.Length;
-      int extraLength = glyphString.ToLower().ToArray().Count(x => x == 'm');
-      int effectiveLength = length + extraLength;
-      return effectiveLength;
+    private int GetEffectiveLength(ReadOnlySpan<TGlyph> span) {
+      int length = 0;
+      for(int i = 0; i < span.Length; i++)
+        if (span[i] is 'M' || span[i] is 'm') length += 2;
+        else length++;
+      return length;
     }
 
     public float GetTypographicWidth(TestMathFont font, AttributedGlyphRun<TestMathFont, TGlyph> run) {
-      int effectiveLength = GetEffectiveLength(run.Glyphs.ToArray());
+      int effectiveLength = GetEffectiveLength(run.Glyphs);
       float width = font.PointSize * effectiveLength * WidthPerCharacterPerFontSize +
                          run.KernedGlyphs.Sum(g => g.KernAfterGlyph);
       return width;
     }
 
-    public RectangleF[] GetBoundingRectsForGlyphs(TestMathFont font, TGlyph[] glyphs) {
+    public IEnumerable<RectangleF> GetBoundingRectsForGlyphs(TestMathFont font, IEnumerable<TGlyph> glyphs, int nGlyphs) {
       RectangleF[] r = new RectangleF[glyphs.Length];
-      for (int i = 0; i < glyphs.Length; i++) {
-        var glyph = glyphs[i];
-        TGlyph[] singleGlyph = { glyph };
-        int effectiveLength = GetEffectiveLength(singleGlyph);
+      foreach(var glyph in glyphs) {
+        int effectiveLength = GetEffectiveLength(stackalloc[] { glyph });
         float width = font.PointSize * effectiveLength * WidthPerCharacterPerFontSize;
         float ascent = font.PointSize * AscentPerFontSize;
         float descent = font.PointSize * DescentPerFontSize;
