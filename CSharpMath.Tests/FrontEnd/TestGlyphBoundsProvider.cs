@@ -31,31 +31,27 @@ namespace CSharpMath.Tests.FrontEnd {
       return length;
     }
 
-    public float GetTypographicWidth(TestMathFont font, AttributedGlyphRun<TestMathFont, TGlyph> run) {
-      int effectiveLength = GetEffectiveLength(run.Glyphs);
-      float width = font.PointSize * effectiveLength * WidthPerCharacterPerFontSize +
-                         run.KernedGlyphs.Sum(g => g.KernAfterGlyph);
-      return width;
-    }
+    public float GetTypographicWidth(TestMathFont font, AttributedGlyphRun<TestMathFont, TGlyph> run) =>
+      font.PointSize * GetEffectiveLength(run.Glyphs) * WidthPerCharacterPerFontSize + run.KernedGlyphs.Sum(g => g.KernAfterGlyph);
 
-    public IEnumerable<RectangleF> GetBoundingRectsForGlyphs(TestMathFont font, IEnumerable<TGlyph> glyphs, int nGlyphs) {
-      RectangleF[] r = new RectangleF[glyphs.Length];
-      foreach(var glyph in glyphs) {
-        int effectiveLength = GetEffectiveLength(stackalloc[] { glyph });
-        float width = font.PointSize * effectiveLength * WidthPerCharacterPerFontSize;
+    public IEnumerable<RectangleF> GetBoundingRectsForGlyphs(TestMathFont font, IEnumerable<TGlyph> glyphs, int nGlyphs) =>
+      glyphs.Select(glyph => {
+        ReadOnlySpan<TGlyph> span = stackalloc[] { glyph };
+        float width = font.PointSize * GetEffectiveLength(span) * WidthPerCharacterPerFontSize;
         float ascent = font.PointSize * AscentPerFontSize;
         float descent = font.PointSize * DescentPerFontSize;
         //  The y axis is NOT inverted. So our y coordinate is minus the descent, i.e. the rect bottom is the descent below the axis.
-        r[i] = new RectangleF(0, -descent, width, ascent + descent);
-      }
-      return r;
-    }
+        return new RectangleF(0, -descent, width, ascent + descent);
+      });
 
-    public (float[] Advances, float Total) GetAdvancesForGlyphs(TestMathFont font, TGlyph[] glyphs) {
-      var r = new float[glyphs.Length];
+    public (IEnumerable<float> Advances, float Total) GetAdvancesForGlyphs(TestMathFont font, IEnumerable<TGlyph> glyphs, int nGlyphs) {
+      var r = new float[nGlyphs];
       var total = 0f;
-      for (int i = 0; i < glyphs.Length; i++) {
-        total += r[i] = GetEffectiveLength(glyphs[i]) * font.PointSize * WidthPerCharacterPerFontSize;
+      int i = 0;
+      foreach(var glyph in glyphs) {
+        ReadOnlySpan<TGlyph> span = stackalloc[] { glyph };
+        total += r[i] = GetEffectiveLength(span) * font.PointSize * WidthPerCharacterPerFontSize;
+        i++;
       }
       return (r, total);
     }
