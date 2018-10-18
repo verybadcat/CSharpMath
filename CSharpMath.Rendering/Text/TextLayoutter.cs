@@ -87,7 +87,7 @@ namespace CSharpMath.Rendering {
             Warnings.AssertAll(typefaces,
               tf => Typography.OpenFont.Extensions.TypefaceExtensions.RecommendToUseTypoMetricsForLineSpacing(tf),
               "This font file is too old. Only font files that support standard typographical metrics are supported.");
-            display = new TextRunDisplay<Fonts, Glyph>(Display.Text.AttributedGlyphRuns.Create(content, glyphs, fonts, false), t.Range, TypesettingContext.Instance);
+            display = new TextRunDisplay<Fonts, Glyph>(new Display.Text.AttributedGlyphRun<Fonts, Glyph>(content, glyphs, fonts), t.Range, TypesettingContext.Instance);
             FinalizeInlineDisplay(
               typefaces.Max(tf => tf.Ascender * tf.CalculateScaleToPixelFromPointSize(fonts.PointSize)),
               typefaces.Min(tf => tf.Descender * tf.CalculateScaleToPixelFromPointSize(fonts.PointSize)),
@@ -102,7 +102,7 @@ namespace CSharpMath.Rendering {
             break;
           case TextAtom.ControlSpace cs:
             var spaceGlyph = GlyphFinder.Instance.Lookup(fonts, ' ');
-            display = new TextRunDisplay<Fonts, Glyph>(Display.Text.AttributedGlyphRuns.Create(" ", new[] { spaceGlyph }, fonts, false), cs.Range, TypesettingContext.Instance);
+            display = new TextRunDisplay<Fonts, Glyph>(new Display.Text.AttributedGlyphRun<Fonts, Glyph>(" ", new[] { spaceGlyph }, fonts), cs.Range, TypesettingContext.Instance);
             scale = spaceGlyph.Typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);
             FinalizeInlineDisplay(spaceGlyph.Typeface.Ascender * scale, spaceGlyph.Typeface.Descender * scale, spaceGlyph.Typeface.LineGap * scale,
               forbidAtLineStart: true); //No spaces at start of line

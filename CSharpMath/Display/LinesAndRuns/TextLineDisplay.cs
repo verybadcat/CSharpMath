@@ -11,6 +11,14 @@ using System.Text;
 
 namespace CSharpMath.Display {
   public class TextLineDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph> where TFont: IFont<TGlyph> {
+    public TextLineDisplay(
+      AttributedString<TFont, TGlyph> text,
+      Range range,
+      TypesettingContext<TFont, TGlyph> context,
+      List<IMathAtom> atoms) : this(
+        text.Runs.Select(
+          run => new TextRunDisplay<TFont, TGlyph>(run, new Range(range.Location, run.Length), context)
+        ).ToList(), atoms) { }
     public TextLineDisplay(List<TextRunDisplay<TFont, TGlyph>> runs, List<IMathAtom> atoms) {
       Runs = runs;
       Atoms = new IMathAtom[atoms.Count];

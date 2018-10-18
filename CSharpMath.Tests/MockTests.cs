@@ -15,11 +15,7 @@ namespace CSharpMath.Tests {
       string hello = "Hello";
       TestMathFont font = new TestMathFont(10);
       var provider = new TestGlyphBoundsProvider();
-      var glyphRun = new AttributedGlyphRun<TestMathFont, TGlyph>
-      {
-        Font = font,
-        KernedGlyphs = hello.Select(c => new KernedGlyph<char>(c)).ToList(),
-      };
+      var glyphRun = new AttributedGlyphRun<TestMathFont, TGlyph>(hello, hello, font);
       var width = provider.GetTypographicWidth(font, glyphRun);
       Assertions.ApproximatelyEqual(width, 25,  0.01);
     }
@@ -29,11 +25,7 @@ namespace CSharpMath.Tests {
       string america = "America";
       TestMathFont font = new TestMathFont(10);
       var provider = new TestGlyphBoundsProvider();
-      var glyphRun = new AttributedGlyphRun<TestMathFont, TGlyph>
-      {
-        Font = font,
-        KernedGlyphs = america.Select(c => new KernedGlyph<char>(c)).ToList(),
-      };
+      var glyphRun = new AttributedGlyphRun<TestMathFont, TGlyph>(america, america, font);
       var width = provider.GetTypographicWidth(font, glyphRun);
       Assertions.ApproximatelyEqual(width, 40, 0.01);
     }

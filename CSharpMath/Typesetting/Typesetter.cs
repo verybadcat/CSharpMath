@@ -270,7 +270,7 @@ namespace CSharpMath {
             AttributedGlyphRun<TFont, TGlyph> current = null;
             var nucleusText = atom.Nucleus;
             var glyphs = _context.GlyphFinder.FindGlyphs(_font, nucleusText);
-            current = AttributedGlyphRuns.Create(nucleusText, glyphs, _font, atom.AtomType == MathAtomType.Placeholder);
+            current = new AttributedGlyphRun<TFont, TGlyph>(nucleusText, glyphs, _font, isPlaceHolder: atom.AtomType == MathAtomType.Placeholder);
             _currentLine.AppendGlyphRun(current);
             if (_currentLineIndexRange.Location == Range.UndefinedInt)
               _currentLineIndexRange = atom.IndexRange;
@@ -575,8 +575,9 @@ namespace CSharpMath {
     internal TextLineDisplay<TFont, TGlyph> AddDisplayLine(bool evenIfLengthIsZero) {
       if (evenIfLengthIsZero || (_currentLine != null && _currentLine.Length > 0)) {
         _currentLine.SetFont(_styleFont);
-        var displayAtom = TextLineDisplays.Create(_currentLine, _currentLineIndexRange, _context, _currentAtoms);
-        displayAtom.Position = _currentPosition;
+        var displayAtom = new TextLineDisplay<TFont, TGlyph>(_currentLine, _currentLineIndexRange, _context, _currentAtoms) {
+          Position = _currentPosition
+        };
         _displayAtoms.Add(displayAtom);
         _currentPosition.X += displayAtom.Width;
         _currentLine.Clear();
@@ -1092,9 +1093,9 @@ namespace CSharpMath {
       } else {
         // create a regular node.
         var glyphs = _context.GlyphFinder.FindGlyphs(_font, op.Nucleus);
-        var glyphRun = AttributedGlyphRuns.Create(op.Nucleus, glyphs, _styleFont, false);
+        var glyphRun = new AttributedGlyphRun<TFont, TGlyph>(op.Nucleus, glyphs, _styleFont);
         var run = new TextRunDisplay<TFont, TGlyph>(glyphRun, op.IndexRange, _context);
-        var runs = new List<TextRunDisplay<TFont, TGlyph>>{ run };
+        var runs = new List<TextRunDisplay<TFont, TGlyph>> { run };
         var atoms = new List<IMathAtom> { op };
         var line = new TextLineDisplay<TFont, TGlyph>(runs, atoms) {
           Position = _currentPosition

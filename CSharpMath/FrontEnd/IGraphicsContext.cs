@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using CSharpMath.Display;
 using CSharpMath.Display.Text;

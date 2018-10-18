@@ -12,7 +12,7 @@ using System.Text;
 namespace CSharpMath.Display {
   /// <summary>Corresponds to MTCTLineDisplay in iOSMath.</summary> 
   public class TextRunDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph> where TFont : IFont<TGlyph> {
-    public AttributedGlyphRun<TFont, TGlyph> Run { get; private set; }
+    public AttributedGlyphRun<TFont, TGlyph> Run { get; }
 
     public TextRunDisplay(
       AttributedGlyphRun<TFont, TGlyph> run, 
@@ -40,14 +40,13 @@ namespace CSharpMath.Display {
       Ascent = ascent;
       Descent = descent;
     }
-    public RectangleF DisplayBounds
-      => this.ComputeDisplayBounds();
+    public RectangleF DisplayBounds => this.ComputeDisplayBounds();
 
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
       context.SaveState();
       var text = Run.Text;
       var font = Run.Font;
-      context.DrawGlyphRunWithOffset(Run, Position, TextColor);
+      context.DrawGlyphRunWithOffset(Run, Position, Run.Foreground ?? TextColor);
       context.RestoreState();
     }
     public Range Range { get; set; }
@@ -58,8 +57,7 @@ namespace CSharpMath.Display {
     public bool HasScript { get; set; }
     public Color? TextColor { get; set; }
 
-    public void SetTextColorRecursive(Color? textColor) {
+    public void SetTextColorRecursive(Color? textColor) =>
       TextColor = TextColor ?? textColor;
-    }
   }
 }
