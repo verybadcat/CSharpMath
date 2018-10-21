@@ -15,12 +15,12 @@
     </NuGetPackageImportStamp>
     <PackOnBuild>true</PackOnBuild>
     <PackageId>CSharpMath.Ios</PackageId>
-    <PackageVersion>0.1.1</PackageVersion>
+    <PackageVersion>0.1.2</PackageVersion>
     <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie, FoggyFinder)</Authors>
     <NeutralLanguage>en</NeutralLanguage>
     <PackageLicenseUrl>https://github.com/verybadcat/CSharpMath/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/verybadcat/CSharpMath</PackageProjectUrl>
-    <PackageReleaseNotes>The 0.1.1 SkiaSharp Update fixes text-style commands not working in TextPainter, and removes Load/Save LaTeX commands in Forms.Example.</PackageReleaseNotes>
+    <PackageReleaseNotes>The 0.1.2 SkiaSharp Update fixes \par-style spaces not being accounted for line width, and renames CSharpMath.Display.IMathFont to CSharpMath.Display.IFont.</PackageReleaseNotes>
     <PackageTags>math;mathematics;mathematical;formula;equation;equations;expression;tex;latex;render;rendering;display;ios;xamarin</PackageTags>
     <Title>CSharpMath.Ios</Title>
     <Description>The iOS front end for CSharpMath.</Description>
@@ -29,7 +29,7 @@
     <RepositoryUrl>https://github.com/verybadcat/CSharpMath.git</RepositoryUrl>
     <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
     <RepositoryBranch>master</RepositoryBranch>
-    <RepositoryCommit>e49ffe8dff5ce90e941ab6fe10ad3439974655cd</RepositoryCommit>
+    <RepositoryCommit>6a873e77e625511ac428fe6e6e91897c7ac58778</RepositoryCommit>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageIconUrl>https://raw.githubusercontent.com/verybadcat/CSharpMath/master/Icon.png</PackageIconUrl>
   </PropertyGroup>

@@ -46,7 +46,7 @@
         <Label Grid.Row="2">Authors</Label>
         <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Authors}"/>
         <Label Grid.Row="3">Package Release Notes</Label>
-        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding PackageReleaseNotes}"/>
+        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding PackageReleaseNotes}" TextWrapping="Wrap"/>
         <Label Grid.Row="4">Repository Type</Label>
         <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding RepositoryType}" IsReadOnly="True"/>
         <Label Grid.Row="5">Repository URL</Label>
