@@ -141,7 +141,17 @@ namespace CSharpMath.Editor {
           throw ArgOutOfRange(nameof(index), index, $"The index {index} is not in the range {self.Range}.");
         var strIndex = self.MathListIndexToStringIndex(index.AtomIndex - self.Range.Location);
         int i = 0;
-        offset = self.Runs.First(run => run.)XOffsetForStringIndex(context, strIndex);
+        var currentRun = self.Runs.First(d => (i += d.Run.Text.Length) > strIndex);
+        //i is now the next index after current run
+        /* //Quick test in C# Interactive
+const int strIndex = 5; //offset for target char if all strings in array are fused together
+var ss = new[] { "abcde", "fgh", "i", "f", "g" };
+var i = 0;
+var c = ss.First(s => (i += s.Length) > strIndex);
+return c.Length - (i - strIndex); //offset for target char in its containing string
+*/
+        offset = currentRun.Position.X +
+          currentRun.Run.XOffsetForStringIndex(context, currentRun.Run.Length - (i - strIndex));
       }
       return self.Position.Plus(new PointF(offset, 0));
     }
