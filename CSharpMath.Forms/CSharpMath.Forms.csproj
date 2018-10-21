@@ -3,13 +3,13 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
-    <PackageVersion>0.1.1</PackageVersion>
+    <PackageVersion>0.1.2</PackageVersion>
     <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie, FoggyFinder)</Authors>
-    <PackageReleaseNotes>The 0.1.1 SkiaSharp Update fixes text-style commands not working in TextPainter, and removes Load/Save LaTeX commands in Forms.Example.</PackageReleaseNotes>
+    <PackageReleaseNotes>The 0.1.2 SkiaSharp Update fixes \par-style spaces not being accounted for line width, and renames CSharpMath.Display.IMathFont to CSharpMath.Display.IFont.</PackageReleaseNotes>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/verybadcat/CSharpMath.git</RepositoryUrl>
     <RepositoryBranch>master</RepositoryBranch>
-    <RepositoryCommit>e49ffe8dff5ce90e941ab6fe10ad3439974655cd</RepositoryCommit>
+    <RepositoryCommit>6a873e77e625511ac428fe6e6e91897c7ac58778</RepositoryCommit>
     <PackageProjectUrl>https://github.com/verybadcat/CSharpMath</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseUrl>https://github.com/verybadcat/CSharpMath/blob/master/LICENSE</PackageLicenseUrl>
