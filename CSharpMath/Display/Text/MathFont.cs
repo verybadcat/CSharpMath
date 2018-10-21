@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace CSharpMath.Display {
-  public interface IMathFont<TGlyph> {
+  public interface IFont<TGlyph> {
     float PointSize { get; }
   }
 }

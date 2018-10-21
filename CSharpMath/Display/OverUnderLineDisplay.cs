@@ -9,7 +9,7 @@ using Color = CSharpMath.Structures.Color;
 namespace CSharpMath.Display {
   /// <summary>Corresponds to MTLineDisplay in iosMath.</summary> 
   public class OverOrUnderlineDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph>
-    where TFont : IMathFont<TGlyph> {
+    where TFont : IFont<TGlyph> {
 
     public OverOrUnderlineDisplay(IDisplay<TFont, TGlyph> inner, PointF position) {
       Inner = inner;

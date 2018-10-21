@@ -7,7 +7,7 @@ namespace CSharpMath.Display.Text {
   [Obsolete("Is any code using this?", true)]
   public static class AttributedStrings {
     public static AttributedString<TFont, TGlyph> FromGlyphRuns<TFont, TGlyph>(params AttributedGlyphRun<TFont, TGlyph>[] runs)
-      where TFont: IMathFont<TGlyph>
+      where TFont: IFont<TGlyph>
     => new AttributedString<TFont, TGlyph>(runs);
   }
 }

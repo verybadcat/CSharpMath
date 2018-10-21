@@ -13,7 +13,7 @@ using CSharpMath.TypesetterInternal;
 
 namespace CSharpMath {
   public class Typesetter<TFont, TGlyph>
-    where TFont: IMathFont<TGlyph> {
+    where TFont: IFont<TGlyph> {
     internal readonly TFont _font;
     internal readonly TypesettingContext<TFont, TGlyph> _context;
     internal FontMathTable<TFont, TGlyph> _mathTable => _context.MathTable;

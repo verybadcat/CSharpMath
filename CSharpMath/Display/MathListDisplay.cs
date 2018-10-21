@@ -13,7 +13,7 @@ namespace CSharpMath.Display {
   /// Corresponds to MTMathListDisplay in iosMath.
   /// </summary>
   public class ListDisplay<TFont, TGlyph>: IDisplay<TFont, TGlyph>
-    where TFont : IMathFont<TGlyph> {
+    where TFont : IFont<TGlyph> {
     public IReadOnlyList<IDisplay<TFont, TGlyph>> Displays { get; set; }
     public Enumerations.LinePosition MyLinePosition { get; set; }
     public Color? TextColor { get; set; }

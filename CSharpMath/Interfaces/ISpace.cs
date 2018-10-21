@@ -7,6 +7,6 @@ namespace CSharpMath.Interfaces {
     float Length { get; }
     bool IsMu { get; }
     float ActualLength<TFont, TGlyph>(FrontEnd.FontMathTable<TFont, TGlyph> mathTable, TFont font)
-      where TFont : Display.IMathFont<TGlyph>;
+      where TFont : Display.IFont<TGlyph>;
   }
 }

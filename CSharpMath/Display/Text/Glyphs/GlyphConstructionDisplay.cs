@@ -10,7 +10,7 @@ using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Display {
   class GlyphConstructionDisplay<TFont, TGlyph> : IDownshiftableDisplay<TFont, TGlyph> 
-    where TFont : IMathFont<TGlyph> {
+    where TFont : IFont<TGlyph> {
 
     private TGlyph[] _glyphs;
     private readonly PointF[] _glyphPositions;
