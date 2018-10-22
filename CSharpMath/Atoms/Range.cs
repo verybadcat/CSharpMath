@@ -37,6 +37,7 @@ namespace CSharpMath.Atoms {
     public override int GetHashCode() => unchecked(13 * Length.GetHashCode() + Location.GetHashCode());
     public override string ToString() => $@"{{{Location}, {Length}}}";
     public bool Contains(int i) => i >= Location && i <= End;
+    public Range Slice(int start, int length) => new Range(Location + start, length);
 
     public static Range Combine(IEnumerable<Range> ranges) {
       var trimRanges = ranges.Where(r => !r.IsNotFound).ToList();

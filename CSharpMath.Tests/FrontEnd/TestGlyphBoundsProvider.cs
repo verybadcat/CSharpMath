@@ -34,8 +34,8 @@ namespace CSharpMath.Tests.FrontEnd {
     public float GetTypographicWidth(TestMathFont font, AttributedGlyphRun<TestMathFont, TGlyph> run) =>
       font.PointSize * GetEffectiveLength(run.Glyphs) * WidthPerCharacterPerFontSize + run.KernedGlyphs.Sum(g => g.KernAfterGlyph);
 
-    public IEnumerable<RectangleF> GetBoundingRectsForGlyphs(TestMathFont font, IEnumerable<TGlyph> glyphs, int nGlyphs) =>
-      glyphs.Select(glyph => {
+    public IEnumerable<RectangleF> GetBoundingRectsForGlyphs(TestMathFont font, ForEach<TGlyph> glyphs, int nGlyphs) =>
+      ForEach<TGlyph>.AllocateNewArrayFor(glyphs).Select(glyph => {
         ReadOnlySpan<TGlyph> span = stackalloc[] { glyph };
         float width = font.PointSize * GetEffectiveLength(span) * WidthPerCharacterPerFontSize;
         float ascent = font.PointSize * AscentPerFontSize;
@@ -44,7 +44,7 @@ namespace CSharpMath.Tests.FrontEnd {
         return new RectangleF(0, -descent, width, ascent + descent);
       });
 
-    public (IEnumerable<float> Advances, float Total) GetAdvancesForGlyphs(TestMathFont font, IEnumerable<TGlyph> glyphs, int nGlyphs) {
+    public (IEnumerable<float> Advances, float Total) GetAdvancesForGlyphs(TestMathFont font, ForEach<TGlyph> glyphs, int nGlyphs) {
       var r = new float[nGlyphs];
       var total = 0f;
       int i = 0;

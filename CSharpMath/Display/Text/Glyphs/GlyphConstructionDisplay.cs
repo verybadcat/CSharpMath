@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -9,13 +9,10 @@ using CSharpMath.FrontEnd;
 using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Display {
-  class GlyphConstructionDisplay<TFont, TGlyph> : IDownshiftableDisplay<TFont, TGlyph> 
-    where TFont : IFont<TGlyph> {
-
-    private TGlyph[] _glyphs;
-    private readonly PointF[] _glyphPositions;
+  public class GlyphConstructionDisplay<TFont, TGlyph> : IDownshiftableDisplay<TFont, TGlyph> where TFont : IFont<TGlyph> {
+    private readonly IEnumerable<TGlyph> _glyphs;
+    private readonly IEnumerable<PointF> _glyphPositions;
     private readonly TFont _mathFont;
-    private int _nGlyphs => _glyphs.Length;
 
     public float ShiftDown { get; set; }
     public RectangleF DisplayBounds => this.ComputeDisplayBounds();
@@ -37,8 +34,8 @@ namespace CSharpMath.Display {
     public bool HasScript { get; set; }
 
     public GlyphConstructionDisplay(IEnumerable<TGlyph> glyphs, IEnumerable<float> offsets, TFont font) {
-      _glyphs = glyphs.ToArray();
-      _glyphPositions = offsets.Select(x => new PointF(0, x)).ToArray();
+      _glyphs = glyphs;
+      _glyphPositions = offsets.Select(x => new PointF(0, x));
       _mathFont = font;
     }
 
@@ -47,7 +44,7 @@ namespace CSharpMath.Display {
       PointF delta = new PointF(Position.X, Position.Y - ShiftDown);
       context.Translate(delta);
       context.SetTextPosition(new PointF());
-      context.DrawGlyphsAtPoints(_glyphs, _mathFont, _glyphPositions, TextColor);
+      context.DrawGlyphsAtPoints(_glyphs.AsForEach(), _mathFont, _glyphPositions.AsForEach(), TextColor);
       context.RestoreState();
     }
     public Color? TextColor { get; set; }

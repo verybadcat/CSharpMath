@@ -15,9 +15,9 @@ namespace CSharpMath.Rendering {
 #warning HIGH PRIORITY: Remove (Must have a Mac to test)
     void IGraphicsContext<TFonts, Glyph>.SetTextPosition(PointF position) => Translate(position);
 
-    public void DrawGlyphsAtPoints(Glyph[] glyphs, TFonts font, PointF[] points, Color? color) {
+    public void DrawGlyphsAtPoints(ForEach<Glyph> glyphs, TFonts font, ForEach<PointF> points, Color? color) {
       if (GlyphBoxColor != null) {
-        var rects = GlyphBoundsProvider.Instance.GetBoundingRectsForGlyphs(font, glyphs, glyphs.Length);
+        var rects = GlyphBoundsProvider.Instance.GetBoundingRectsForGlyphs(font, glyphs, glyphs);
         foreach(var (rect, point) in rects.Zip(points, System.ValueTuple.Create)) {
           Canvas.CurrentColor = GlyphBoxColor?.glyph;
           Canvas.StrokeRect(point.X + rect.X, point.Y + rect.Y, rect.Width, rect.Height);

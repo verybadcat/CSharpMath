@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
@@ -36,12 +36,14 @@ namespace CSharpMath.Display {
     }
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
       context.SaveState();
-      TGlyph[] glyphArray = { Glyph };
-      PointF[] positions = { new PointF() };
+      var glyphs = new RentedArray<TGlyph>(Glyph);
+      var positions = new RentedArray<PointF>(new PointF());
       context.Translate(new PointF(Position.X, Position.Y - ShiftDown));
       context.SetTextPosition(new PointF());
-      context.DrawGlyphsAtPoints(glyphArray, Font, positions, TextColor);
+      context.DrawGlyphsAtPoints(glyphs.Result, Font, positions.Result, TextColor);
       context.RestoreState();
+      glyphs.Return();
+      positions.Return();
     }
     public Color? TextColor { get; set; }
 

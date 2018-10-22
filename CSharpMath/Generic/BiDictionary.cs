@@ -17,7 +17,7 @@ namespace CSharpMath
     readonly Dictionary<V, K> v2k;
 
     #region AliasDictionary<K, V>.Add
-    public void Add(Span<K> keys, V value) {
+    public void Add(ReadOnlySpan<K> keys, V value) {
       if (!v2k.ContainsKey(value) && !keys.IsEmpty) v2k.Add(value, keys[0]);
       foreach (var key in keys)
         k2v.Add(key, value);
@@ -27,14 +27,14 @@ namespace CSharpMath
     public void Add(K mainKey, V value) {
       var array = ArrayPool<K>.Shared.Rent(1);
       array[0] = mainKey;
-      Add(new Span<K>(array, 0, 1), value);
+      Add(new ReadOnlySpan<K>(array, 0, 1), value);
       ArrayPool<K>.Shared.Return(array);
     }
     public void Add(K mainKey, K aliasKey, V value) {
       var array = ArrayPool<K>.Shared.Rent(2);
       array[0] = mainKey;
       array[1] = aliasKey;
-      Add(new Span<K>(array, 0, 2), value);
+      Add(new ReadOnlySpan<K>(array, 0, 2), value);
       ArrayPool<K>.Shared.Return(array);
     }
     public void Add(K mainKey, K aliasKey1, K aliasKey2, V value) {
@@ -42,7 +42,7 @@ namespace CSharpMath
       array[0] = mainKey;
       array[1] = aliasKey1;
       array[2] = aliasKey2;
-      Add(new Span<K>(array, 0, 3), value);
+      Add(new ReadOnlySpan<K>(array, 0, 3), value);
       ArrayPool<K>.Shared.Return(array);
     }
     public void Add(K mainKey, K aliasKey1, K aliasKey2, K aliasKey3, V value) {
@@ -51,7 +51,7 @@ namespace CSharpMath
       array[1] = aliasKey1;
       array[2] = aliasKey2;
       array[3] = aliasKey3;
-      Add(new Span<K>(array, 0, 4), value);
+      Add(new ReadOnlySpan<K>(array, 0, 4), value);
       ArrayPool<K>.Shared.Return(array);
     }
     public void Add(K mainKey, K aliasKey1, K aliasKey2, K aliasKey3, K aliasKey4, V value) {
@@ -61,7 +61,7 @@ namespace CSharpMath
       array[2] = aliasKey2;
       array[3] = aliasKey3;
       array[4] = aliasKey4;
-      Add(new Span<K>(array, 0, 5), value);
+      Add(new ReadOnlySpan<K>(array, 0, 5), value);
       ArrayPool<K>.Shared.Return(array);
     }
     public void Add(K mainKey, K aliasKey1, K aliasKey2, K aliasKey3, K aliasKey4, K aliasKey5, V value) {
@@ -72,7 +72,7 @@ namespace CSharpMath
       array[3] = aliasKey3;
       array[4] = aliasKey4;
       array[5] = aliasKey5;
-      Add(new Span<K>(array, 0, 6), value);
+      Add(new ReadOnlySpan<K>(array, 0, 6), value);
       ArrayPool<K>.Shared.Return(array);
     }
     public void Add(K mainKey, K aliasKey1, K aliasKey2, K aliasKey3, K aliasKey4, K aliasKey5, K aliasKey6, V value) {
@@ -84,7 +84,7 @@ namespace CSharpMath
       array[4] = aliasKey4;
       array[5] = aliasKey5;
       array[6] = aliasKey6;
-      Add(new Span<K>(array, 0, 7), value);
+      Add(new ReadOnlySpan<K>(array, 0, 7), value);
       ArrayPool<K>.Shared.Return(array);
     }
     public void Add(K mainKey, K aliasKey1, K aliasKey2, K aliasKey3, K aliasKey4, K aliasKey5, K aliasKey6, K aliasKey7, V value) {
@@ -97,7 +97,7 @@ namespace CSharpMath
       array[5] = aliasKey5;
       array[6] = aliasKey6;
       array[7] = aliasKey7;
-      Add(new Span<K>(array, 0, 8), value);
+      Add(new ReadOnlySpan<K>(array, 0, 8), value);
       ArrayPool<K>.Shared.Return(array);
     }
     public void Add(K mainKey, K aliasKey1, K aliasKey2, K aliasKey3, K aliasKey4, K aliasKey5, K aliasKey6, K aliasKey7, K aliasKey8, V value) {
@@ -111,7 +111,7 @@ namespace CSharpMath
       array[6] = aliasKey6;
       array[7] = aliasKey7;
       array[8] = aliasKey8;
-      Add(new Span<K>(array, 0, 9), value);
+      Add(new ReadOnlySpan<K>(array, 0, 9), value);
       ArrayPool<K>.Shared.Return(array);
     }
     #endregion AliasDictionary<K, V>.Add

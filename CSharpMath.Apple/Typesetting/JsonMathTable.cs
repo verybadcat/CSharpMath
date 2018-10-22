@@ -280,10 +280,9 @@ namespace CSharpMath.Apple {
         return _FontUnitsToPt(font, intValue);
       } else {
         // If no top accent is defined then it is the center of the advance width.
-        var glyphs = System.Buffers.ArrayPool<TGlyph>.Shared.Rent(1);
-        glyphs[0] = glyph;
-        var (_, Total) = GlyphBoundsProvider.GetAdvancesForGlyphs(font, glyphs, 1);
-        System.Buffers.ArrayPool<TGlyph>.Shared.Return(glyphs);
+        var glyphs = new RentedArray<TGlyph>(glyph);
+        var (_, Total) = GlyphBoundsProvider.GetAdvancesForGlyphs(font, glyphs.Result, 1);
+        glyphs.Return();
         return Total / 2;
       }
     }

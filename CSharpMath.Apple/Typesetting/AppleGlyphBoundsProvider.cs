@@ -21,7 +21,7 @@ namespace CSharpMath.Apple {
 
     public static AppleGlyphBoundsProvider Instance { get; } = new AppleGlyphBoundsProvider();
 
-    public (IEnumerable<float> Advances, float Total) GetAdvancesForGlyphs(TFont font, IEnumerable<TGlyph> glyphs, int nGlyphs) {
+    public (IEnumerable<float> Advances, float Total) GetAdvancesForGlyphs(TFont font, ForEach<TGlyph> glyphs, int nGlyphs) {
       var glyphArray = ArrayPool<TGlyph>.Shared.Rent(nGlyphs);
       glyphs.CopyTo(glyphArray);
       var advanceSizes = new CGSize[nGlyphs];
@@ -30,7 +30,7 @@ namespace CSharpMath.Apple {
       return (advanceSizes.Select(advance => (float)advance.Width), (float)combinedAdvance);
     }
 
-    public IEnumerable<RectangleF> GetBoundingRectsForGlyphs(TFont font, IEnumerable<TGlyph> glyphs, int nVariants) {
+    public IEnumerable<RectangleF> GetBoundingRectsForGlyphs(TFont font, ForEach<TGlyph> glyphs, int nVariants) {
       var glyphArray = ArrayPool<TGlyph>.Shared.Rent(nVariants);
       glyphs.CopyTo(glyphArray);
       var rects = new CGRect[nVariants];
