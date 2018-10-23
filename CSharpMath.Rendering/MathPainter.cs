@@ -51,5 +51,9 @@ namespace CSharpMath.Rendering {
       UpdateDisplay();
       DrawCore(c, _display, position);
     }
+
+    private static ListDisplay<Fonts, Glyph> Compile(string s) =>
+      TypesettingContext.Instance.CreateLine(Atoms.MathLists.FromString(s), new Fonts(System.Array.Empty<Typography.OpenFont.Typeface>(), 24), Enumerations.LineStyle.Display);
+    private static string Sub(string s, Atoms.Range r) => s.Substring(r.Location, r.Length - 1);
   }
 }

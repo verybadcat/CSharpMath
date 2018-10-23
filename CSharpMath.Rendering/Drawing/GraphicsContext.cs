@@ -16,21 +16,21 @@ namespace CSharpMath.Rendering {
     void IGraphicsContext<TFonts, Glyph>.SetTextPosition(PointF position) => Translate(position);
 
     public void DrawGlyphsAtPoints(ForEach<Glyph> glyphs, TFonts font, ForEach<PointF> points, Color? color) {
-      if (GlyphBoxColor != null) {
-        var rects = GlyphBoundsProvider.Instance.GetBoundingRectsForGlyphs(font, glyphs, glyphs);
-        foreach(var (rect, point) in rects.Zip(points, System.ValueTuple.Create)) {
+      foreach(var (glyph, point) in glyphs.Zip(points)) {
+        if (GlyphBoxColor != null) {
+          var rentedArray = new RentedArray<Glyph>(glyph);
+          var rect = GlyphBoundsProvider.Instance.GetBoundingRectsForGlyphs(font, rentedArray.Result, 1).Single();
           Canvas.CurrentColor = GlyphBoxColor?.glyph;
           Canvas.StrokeRect(point.X + rect.X, point.Y + rect.Y, rect.Width, rect.Height);
+          rentedArray.Return();
         }
-      }
-      for (int i = 0; i < glyphs.Length; i++) {
-        var typeface = glyphs[i].Typeface;
+        var typeface = glyph.Typeface;
         var scale = typeface.CalculateScaleToPixelFromPointSize(font.PointSize);
         var pathBuilder = new GlyphPathBuilder(typeface);
-        pathBuilder.BuildFromGlyph(glyphs[i].Info, font.PointSize);
+        pathBuilder.BuildFromGlyph(glyph.Info, font.PointSize);
         Canvas.Save();
         Canvas.CurrentColor = color;
-        Canvas.Translate(points[i].X, points[i].Y);
+        Canvas.Translate(point.X, point.Y);
         pathBuilder.ReadShapes(Canvas.GetPath());
         Canvas.Restore();
       }

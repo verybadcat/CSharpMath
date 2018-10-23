@@ -76,7 +76,19 @@ namespace CSharpMath {
           array[i++] = item;
       }
     }
-    public int Length;
+    public List<(T, TOther)> Zip<TOther>(ForEach<TOther> otherForEach, int sizeGuess = -1) {
+      var list = sizeGuess is -1 ? new List<(T, TOther)>() : new List<(T, TOther)>(sizeGuess);
+      var thisEnumerator = GetEnumerator();
+      var thatEnumerator = otherForEach.GetEnumerator();
+      try {
+        while (thisEnumerator.MoveNext() && thatEnumerator.MoveNext())
+          list.Add((thisEnumerator.Current, thatEnumerator.Current));
+      } finally {
+        thisEnumerator.Dispose();
+        thatEnumerator.Dispose();
+      }
+      return list;
+    }
     public override string ToString() => enumerable is null ? span.ToString() : enumerable.ToString();
     public Enumerator GetEnumerator() => new Enumerator(enumerable, span);
 
@@ -89,12 +101,16 @@ namespace CSharpMath {
       }
 
       private readonly IEnumerator<T> enumerator;
-      private readonly ReadOnlySpan<T> span;
       private int spanIndex;
+      private readonly ReadOnlySpan<T> span;
 
       [MethodImpl(Impl.AggressiveInlining)]
       public bool MoveNext() => enumerator is null ? ++spanIndex < span.Length : enumerator.MoveNext();
       public T Current { [MethodImpl(Impl.AggressiveInlining)] get => enumerator is null ? span[spanIndex] : enumerator.Current; }
+      [MethodImpl(Impl.AggressiveInlining)]
+      public void Dispose() => enumerator?.Dispose();
+      [MethodImpl(Impl.AggressiveInlining)]
+      public void Reset() { if (enumerator is null) spanIndex = -1; else enumerator.Reset(); }
     }
   }
 }

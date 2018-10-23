@@ -166,7 +166,7 @@ return c.Length + strIndex; //offset for target char in its containing string
       return self.Position.Plus(new PointF(offset, 0));
     }
 
-    public static void HighlightCharacterAt<TFont, TGlyph>(this TextLineDisplay<TFont, TGlyph> self, MathListIndex index, Color color) where TFont : IFont<TGlyph> {
+    public static void HighlightCharacterAt<TFont, TGlyph>(this TextLineDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, MathListIndex index, Color color) where TFont : IFont<TGlyph> {
       if (!self.Range.Contains(index.AtomIndex))
         throw ArgOutOfRange($"The index is not in the range {self.Range}.", index, nameof(index));
       if (index.SubIndexType is MathListSubIndexType.None)
@@ -177,7 +177,7 @@ return c.Length + strIndex; //offset for target char in its containing string
       var (run, charIndex) = self.GetRunAndCharIndexFromCodepointIndex(index.AtomIndex - self.Range.Location);
       var runIndex = self.Runs.IndexOf(run);
       if (runIndex is -1) throw new InvalidCodePathException("run must be in self.Runs.");
-      self.Runs[runIndex] = new TextRunDisplay<TFont, TGlyph>(run, run.Range.Slice(0, ))
+      self.Runs[runIndex] = new TextRunDisplay<TFont, TGlyph>
       run.Run.Foreground = color;
     }
   }

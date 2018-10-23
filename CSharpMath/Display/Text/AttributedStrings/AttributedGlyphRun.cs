@@ -13,7 +13,7 @@ namespace CSharpMath.Display.Text {
     where TFont : IFont<TGlyph> {
     public AttributedGlyphRun(string text, IEnumerable<TGlyph> glyphs, TFont font, Color? foreground = null, bool isPlaceHolder = false) {
       Text = new StringBuilder(text);
-      KernedGlyphs = glyphs.Select(g => new KernedGlyph<TGlyph>(g)).ToList();
+      KernedGlyphs = glyphs.Select(g => new GlyphWithInfo<TGlyph>(g)).ToList();
       Font = font;
       Foreground = foreground;
       Placeholder = isPlaceHolder;
@@ -26,7 +26,7 @@ namespace CSharpMath.Display.Text {
 
     //Text
     public StringBuilder Text { get; }
-    public List<KernedGlyph<TGlyph>> KernedGlyphs { get; }
+    public List<GlyphWithInfo<TGlyph>> KernedGlyphs { get; }
     public IEnumerable<TGlyph> Glyphs => KernedGlyphs.Select(g => g.Glyph);
     public int Length => KernedGlyphs.Count;
     
