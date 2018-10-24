@@ -65,21 +65,21 @@ namespace CSharpMath {
     public static T[] AllocateNewArrayFor(ForEach<T> forEach) =>
       forEach.enumerable is null ? forEach.span.ToArray() : System.Linq.Enumerable.ToArray(forEach.enumerable);
 
-    public void CopyTo(T[] array) {
+    public void CopyTo(T[] array, int startIndex = 0) {
       if (enumerable is null)
-        span.CopyTo(array);
+        span.CopyTo(array.AsSpan(startIndex));
       else if (enumerable is ICollection<T> c)
-        c.CopyTo(array, 0);
+        c.CopyTo(array, startIndex);
       else if (enumerable is System.Collections.ICollection cc)
-        cc.CopyTo(array, 0);
+        cc.CopyTo(array, startIndex);
       else {
-        int i = 0;
+        int i = startIndex;
         foreach (var item in enumerable)
           array[i++] = item;
       }
     }
     public List<TResult> Select<TResult>(Func<T, TResult> selector, int sizeGuess = -1) {
-      var list = sizeGuess is -1 ? new List<TResult>() : new List<TResult>(sizeGuess);
+      var list = sizeGuess >= 0 ? new List<TResult>() : new List<TResult>(sizeGuess);
       var enumerator = GetEnumerator();
       try {
         while (enumerator.MoveNext())

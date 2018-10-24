@@ -22,12 +22,12 @@ namespace CSharpMath.Apple.Drawing
       var attributedString = new NSMutableAttributedString(text, attributes);
       var kernedGlyphs = glyphRun.GlyphInfos;
       for (int i = 0; i < kernedGlyphs.Count; i++) {
-        var kern = kernedGlyphs[i].KernAfterGlyph;
-        if (kern!=0) {
-          var endIndex = (i < unicodeIndexes.Length - 1) ? unicodeIndexes[i + 1] : text.Length;
-          var range = new NSRange(unicodeIndexes[i], endIndex - unicodeIndexes[i]);
+        var endIndex = (i < unicodeIndexes.Length - 1) ? unicodeIndexes[i + 1] : text.Length;
+        var range = new NSRange(unicodeIndexes[i], endIndex - unicodeIndexes[i]);
+        if (kernedGlyphs[i].KernAfterGlyph is var kern && !(kern is 0))
           attributedString.AddAttribute(CTStringAttributeKey.KerningAdjustment, new NSNumber(kern), range);
-        }
+        if (kernedGlyphs[i].Foreground is Structures.Color foreground)
+          attributedString.AddAttribute(CTStringAttributeKey.ForegroundColor, ObjCRuntime.Runtime.GetNSObject(foreground.ToCgColor().Handle), range);
       }
       return attributedString;
     }

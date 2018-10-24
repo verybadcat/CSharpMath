@@ -41,12 +41,10 @@ namespace CSharpMath.Apple.Drawing {
 
     public void DrawGlyphRunWithOffset(AttributedGlyphRun<TFont, TGlyph> run, PointF offset, Color? color) {
       DebugWriteLine($"Text {run} {offset.X} {offset.Y}");
-      var attributedString = run.ToNsAttributedString();
       CgContext.TextPosition = new CGPoint(CgContext.TextPosition.X + offset.X, CgContext.TextPosition.Y + offset.Y);
       if (color.HasValue) CgContext.SetFillColor(color.Value.ToCgColor());
-      using (var textLine = new CTLine(attributedString)) {
+      using (var textLine = new CTLine(run.ToNsAttributedString()))
         textLine.Draw(CgContext);
-      }
     }
 
     public void RestoreState() {

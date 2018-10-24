@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using TFont = CSharpMath.Apple.AppleMathFont;
@@ -9,6 +9,7 @@ using CoreText;
 using CSharpMath.Structures;
 
 namespace CSharpMath.Apple.Drawing {
+  [Obsolete("Is any code using this?", true)]
   public class AppleAttributeDictionaryFactory {
     public static UIStringAttributes FromAttributedGlyphRun(AttributedGlyphRun<TFont, TGlyph> glyphRun, Color color) {
       return new UIStringAttributes {

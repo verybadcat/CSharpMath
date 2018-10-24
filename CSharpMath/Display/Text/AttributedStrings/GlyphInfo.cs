@@ -10,5 +10,7 @@ namespace CSharpMath.Display.Text
     public TGlyph Glyph { get; }
     public float KernAfterGlyph { get; set; }
     public Structures.Color? Foreground { get; set; }
+    public void Deconstruct(out TGlyph glyph, out float kernAfter, out Structures.Color? foreground) =>
+      (glyph, kernAfter, foreground) = (Glyph, KernAfterGlyph, Foreground);
   }
 }

@@ -46,32 +46,29 @@ namespace CSharpMath.Rendering {
       if (GlyphBoxColor != null) {
         Bounds bounds;
         float advance, scale, width = 0, ascent = 0, descent = 0;
-        foreach (var glyph in run.GlyphInfos) {
-          bounds = glyph.Glyph.Info.Bounds;
-          advance = glyph.Glyph.Typeface.GetHAdvanceWidthFromGlyphIndex(glyph.Glyph.Info.GlyphIndex);
-          scale = glyph.Glyph.Typeface.CalculateScaleToPixelFromPointSize(run.Font.PointSize);
-          width += advance * scale + glyph.KernAfterGlyph;
+        foreach (var (glyph, kernAfter, _) in run.GlyphInfos) {
+          bounds = glyph.Info.Bounds;
+          advance = glyph.Typeface.GetHAdvanceWidthFromGlyphIndex(glyph.Info.GlyphIndex);
+          scale = glyph.Typeface.CalculateScaleToPixelFromPointSize(run.Font.PointSize);
+          width += advance * scale + kernAfter;
           ascent = System.Math.Max(ascent, bounds.YMax * scale);
           descent = System.Math.Min(descent, bounds.YMin * scale);
         }
         Canvas.CurrentColor = GlyphBoxColor?.textRun;
         Canvas.StrokeRect(textPosition.X, textPosition.Y + descent, width, ascent - descent);
       }
-      var layout = new GlyphLayout();
-      var glyphs = run.GlyphInfos;
       var pointSize = run.Font.PointSize;
       Canvas.Save();
       Canvas.Translate(textPosition.X, textPosition.Y);
       Canvas.CurrentColor = color;
-      for (int i = 0; i < glyphs.Count; i++) {
-        var typeface = glyphs[i].Glyph.Typeface;
-        layout.Typeface = typeface;
+      foreach(var (glyph, kernAfter, foreground) in run.GlyphInfos) {
+        var typeface = glyph.Typeface;
         var pathBuilder = new GlyphPathBuilder(typeface);
         var scale = typeface.CalculateScaleToPixelFromPointSize(pointSize);
-        var index = glyphs[i].Glyph.Info.GlyphIndex;
-        pathBuilder.BuildFromGlyph(glyphs[i].Glyph.Info, pointSize);
+        var index = glyph.Info.GlyphIndex;
+        pathBuilder.BuildFromGlyph(glyph.Info, pointSize);
         pathBuilder.ReadShapes(Canvas.GetPath());
-        Canvas.Translate(typeface.GetHAdvanceWidthFromGlyphIndex(index) * scale + glyphs[i].KernAfterGlyph, 0);
+        Canvas.Translate(typeface.GetHAdvanceWidthFromGlyphIndex(index) * scale + kernAfter, 0);
       }
       Canvas.Restore();
     }

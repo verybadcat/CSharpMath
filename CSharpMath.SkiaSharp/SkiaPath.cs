@@ -3,14 +3,22 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace CSharpMath.SkiaSharp {
+  using Structures;
   public class SkiaPath : Rendering.IPath {
     public SkiaPath(SkiaCanvas owner) => _owner = owner;
 
+    public Color? Foreground { private get; set; }
     private SkiaCanvas _owner;
     private global::SkiaSharp.SKPath _path = new global::SkiaSharp.SKPath();
     public void BeginRead(int contourCount) { }
     public void EndRead() {
-      _owner.Canvas.DrawPath(_path, _owner.Paint);
+      if (Foreground is Color foreground)
+        using (var paint = _owner.Paint.Clone()) {
+          paint.Color = foreground.ToNative();
+          _owner.Canvas.DrawPath(_path, paint);
+        }
+      else
+        _owner.Canvas.DrawPath(_path, _owner.Paint);
       _path.Dispose();
       _path = null;
       _owner = null;
