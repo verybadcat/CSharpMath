@@ -71,14 +71,21 @@ namespace CSharpMath.Editor {
     }
 
     /// <summary>
-    /// Finds the index in the mathlist before which a new character should be inserted.
+    /// Finds the index in the mathlist before which a new character should be inserted.Returns null if it cannot find the index.
     /// </summary>
     /// <returns>Null if it cannot find the index.</returns>
     [NullableReference]
-    public static MathListIndex ClosestIndexToPoint<TFont, TGlyph>(this IDisplay<TFont, TGlyph> display, PointF point) where TFont : Display.IFont<TGlyph> {
+    public static MathListIndex IndexForPoint<TFont, TGlyph>(this IDisplay<TFont, TGlyph> display, FrontEnd.TypesettingContext<TFont, TGlyph> context, PointF point) where TFont : IFont<TGlyph> {
       switch (display) {
-        case 
+        case TextLineDisplay<TFont, TGlyph> text:
+          return text.IndexForPoint(context, point);
+        case FractionDisplay<TFont, TGlyph> frac:
+          return frac.IndexForPoint(context, point);
+        default:
+          return null;
       }
     }
+    // The bounds of the display indicated by the given index
+
   }
 }
