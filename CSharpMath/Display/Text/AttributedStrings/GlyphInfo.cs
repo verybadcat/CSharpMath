@@ -1,14 +1,14 @@
 using System;
 namespace CSharpMath.Display.Text
 {
-  public class GlyphWithInfo<TGlyph>
+  public class GlyphInfo<TGlyph>
   {
-    public GlyphWithInfo(TGlyph glyph, float kern = 0) {
+    public GlyphInfo(TGlyph glyph, float kern = 0) {
       Glyph = glyph;
       KernAfterGlyph = kern;
     }
     public TGlyph Glyph { get; }
     public float KernAfterGlyph { get; set; }
-    public Structures.Color Foreground { get; set; }
+    public Structures.Color? Foreground { get; set; }
   }
 }

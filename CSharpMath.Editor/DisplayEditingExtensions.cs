@@ -73,7 +73,7 @@ namespace CSharpMath.Editor {
       int i = 0;
       float x = 0;
       var rects = context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(line.Font, line.Glyphs.AsForEach(), line.Length);
-      foreach (var (bounds, kernAfter) in rects.Zip(line.KernedGlyphs.Select(g => g.KernAfterGlyph), ValueTuple.Create))
+      foreach (var (bounds, kernAfter) in rects.Zip(line.GlyphInfos.Select(g => g.KernAfterGlyph), ValueTuple.Create))
         if (bounds.Plus(new PointF(x, 0)).Contains(point))
           return i;
         else {
@@ -89,7 +89,7 @@ namespace CSharpMath.Editor {
       int i = 0;
       float x = 0;
       var rects = context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(line.Font, line.Glyphs.AsForEach(), line.Length);
-      foreach (var (bounds, kernAfter) in rects.Zip(line.KernedGlyphs.Select(g => g.KernAfterGlyph), ValueTuple.Create))
+      foreach (var (bounds, kernAfter) in rects.Zip(line.GlyphInfos.Select(g => g.KernAfterGlyph), ValueTuple.Create))
         if (i++ >= index)
           return x;
         else
@@ -175,10 +175,7 @@ return c.Length + strIndex; //offset for target char in its containing string
         throw Arg("Nucleus highlighting is not supported.", nameof(index));
       // index is in unicode code points, while attrString is not
       var (run, charIndex) = self.GetRunAndCharIndexFromCodepointIndex(index.AtomIndex - self.Range.Location);
-      var runIndex = self.Runs.IndexOf(run);
-      if (runIndex is -1) throw new InvalidCodePathException("run must be in self.Runs.");
-      self.Runs[runIndex] = new TextRunDisplay<TFont, TGlyph>
-      run.Run.Foreground = color;
+      run.Run.GlyphInfos[charIndex].Foreground = color;
     }
   }
 }

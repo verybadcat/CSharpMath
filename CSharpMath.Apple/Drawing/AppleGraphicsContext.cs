@@ -15,13 +15,19 @@ namespace CSharpMath.Apple.Drawing {
     
     public CGContext CgContext { get; set; }
 
-    public void DrawGlyphsAtPoints(TGlyph[] glyphs, TFont font, PointF[] points, Color? color)
+    public void DrawGlyphsAtPoints(ForEach<TGlyph> glyphs, TFont font, ForEach<PointF> points, Color? color)
     {
       DebugWriteLine(glyphs, points);
+      var cgPoints = points.Select(p => (CGPoint)p);
+      var cgArray = new RentedArray<CGPoint>(cgPoints.Count);
+      cgPoints.CopyTo(cgArray.Array);
+      var glyphArray = new RentedArray<TGlyph>(cgPoints.Count);
+      glyphs.CopyTo(glyphArray.Array);
       var ctFont = font.CtFont;
-      var cgPoints = points.Select(p => (CGPoint)p).ToArray();
       if(color.HasValue) CgContext.SetFillColor(color.Value.ToCgColor());
-      ctFont.DrawGlyphs(CgContext, glyphs, cgPoints);
+      ctFont.DrawGlyphs(CgContext, glyphArray.Array, cgArray.Array);
+      cgArray.Return();
+      glyphArray.Return();
     }
 
     public void DrawLine(float x1, float y1, float x2, float y2, float lineThickness, Color? color) {
@@ -68,14 +74,12 @@ namespace CSharpMath.Apple.Drawing {
       Debug.WriteLine(text.ToString());
     }
     [Conditional("DEBUG")]
-    public void DebugWriteLine(TGlyph[] glyphs, PointF[] points) {
-      var glyphStrings = glyphs.Select(g => ((int)g).ToString()).ToArray();
-      var pointStrings = points.Select(pt => $@"{pt.X} {pt.Y}").ToArray();
-      for (int i = 0; i < glyphs.Count(); i++) {
+    public void DebugWriteLine(ForEach<TGlyph> glyphs, ForEach<PointF> points) {
+      var glyphStrings = glyphs.Select(g => ((int)g).ToString());
+      var pointStrings = points.Select(pt => $@"{pt.X} {pt.Y}");
+      for (int i = 0; i < glyphStrings.Count; i++)
         Debug.WriteLine($"    {glyphStrings[i]} {pointStrings[i]}");
-      }
       Debug.WriteLine($"glyphs {glyphStrings} {pointStrings}");
-
     }
   }
 }

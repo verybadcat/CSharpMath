@@ -29,7 +29,7 @@ namespace CSharpMath.Rendering {
     }
 
     public float GetTypographicWidth(TFonts fonts, AttributedGlyphRun<TFonts, Glyph> run) =>
-      GetAdvancesForGlyphs(fonts, run.Glyphs.AsForEach(), run.KernedGlyphs.Count).Total + run.KernedGlyphs.Sum(g => g.KernAfterGlyph);
+      GetAdvancesForGlyphs(fonts, run.Glyphs.AsForEach(), run.GlyphInfos.Count).Total + run.GlyphInfos.Sum(g => g.KernAfterGlyph);
   }
 }
 

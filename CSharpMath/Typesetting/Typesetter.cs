@@ -261,7 +261,7 @@ namespace CSharpMath {
               if (_currentLine.Length > 0) {
                 if (interElementSpace > 0) {
                   var run = _currentLine.Runs.Last();
-                  run.KernedGlyphs.Last().KernAfterGlyph = interElementSpace;
+                  run.GlyphInfos.Last().KernAfterGlyph = interElementSpace;
                 }
               } else {
                 _currentPosition.X += interElementSpace;

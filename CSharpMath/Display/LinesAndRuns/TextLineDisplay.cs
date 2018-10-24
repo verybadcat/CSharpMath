@@ -28,7 +28,7 @@ namespace CSharpMath.Display {
     public List<TextRunDisplay<TFont, TGlyph>> Runs { get; }
     public IMathAtom[] Atoms { get; }
     public IEnumerable<TGlyph> Text =>
-      Runs.SelectMany(run => run.Run.KernedGlyphs.Select(g => g.Glyph));
+      Runs.SelectMany(run => run.Run.GlyphInfos.Select(g => g.Glyph));
 
     public RectangleF DisplayBounds =>
       this.ComputeDisplayBounds();

@@ -70,11 +70,24 @@ namespace CSharpMath {
         span.CopyTo(array);
       else if (enumerable is ICollection<T> c)
         c.CopyTo(array, 0);
+      else if (enumerable is System.Collections.ICollection cc)
+        cc.CopyTo(array, 0);
       else {
         int i = 0;
         foreach (var item in enumerable)
           array[i++] = item;
       }
+    }
+    public List<TResult> Select<TResult>(Func<T, TResult> selector, int sizeGuess = -1) {
+      var list = sizeGuess is -1 ? new List<TResult>() : new List<TResult>(sizeGuess);
+      var enumerator = GetEnumerator();
+      try {
+        while (enumerator.MoveNext())
+          list.Add(selector(enumerator.Current));
+      } finally {
+        enumerator.Dispose();
+      }
+      return list;
     }
     public List<(T, TOther)> Zip<TOther>(ForEach<TOther> otherForEach, int sizeGuess = -1) {
       var list = sizeGuess is -1 ? new List<(T, TOther)>() : new List<(T, TOther)>(sizeGuess);

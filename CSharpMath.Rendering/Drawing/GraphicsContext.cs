@@ -46,7 +46,7 @@ namespace CSharpMath.Rendering {
       if (GlyphBoxColor != null) {
         Bounds bounds;
         float advance, scale, width = 0, ascent = 0, descent = 0;
-        foreach (var glyph in run.KernedGlyphs) {
+        foreach (var glyph in run.GlyphInfos) {
           bounds = glyph.Glyph.Info.Bounds;
           advance = glyph.Glyph.Typeface.GetHAdvanceWidthFromGlyphIndex(glyph.Glyph.Info.GlyphIndex);
           scale = glyph.Glyph.Typeface.CalculateScaleToPixelFromPointSize(run.Font.PointSize);
@@ -58,7 +58,7 @@ namespace CSharpMath.Rendering {
         Canvas.StrokeRect(textPosition.X, textPosition.Y + descent, width, ascent - descent);
       }
       var layout = new GlyphLayout();
-      var glyphs = run.KernedGlyphs;
+      var glyphs = run.GlyphInfos;
       var pointSize = run.Font.PointSize;
       Canvas.Save();
       Canvas.Translate(textPosition.X, textPosition.Y);

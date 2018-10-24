@@ -32,7 +32,7 @@ namespace CSharpMath.Tests.FrontEnd {
     }
 
     public float GetTypographicWidth(TestMathFont font, AttributedGlyphRun<TestMathFont, TGlyph> run) =>
-      font.PointSize * GetEffectiveLength(run.Glyphs) * WidthPerCharacterPerFontSize + run.KernedGlyphs.Sum(g => g.KernAfterGlyph);
+      font.PointSize * GetEffectiveLength(run.Glyphs) * WidthPerCharacterPerFontSize + run.GlyphInfos.Sum(g => g.KernAfterGlyph);
 
     public IEnumerable<RectangleF> GetBoundingRectsForGlyphs(TestMathFont font, ForEach<TGlyph> glyphs, int nGlyphs) =>
       ForEach<TGlyph>.AllocateNewArrayFor(glyphs).Select(glyph => {

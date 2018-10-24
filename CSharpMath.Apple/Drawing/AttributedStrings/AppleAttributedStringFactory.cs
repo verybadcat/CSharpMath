@@ -20,7 +20,7 @@ namespace CSharpMath.Apple.Drawing
         Font = font.CtFont
       };
       var attributedString = new NSMutableAttributedString(text, attributes);
-      var kernedGlyphs = glyphRun.KernedGlyphs;
+      var kernedGlyphs = glyphRun.GlyphInfos;
       for (int i = 0; i < kernedGlyphs.Count; i++) {
         var kern = kernedGlyphs[i].KernAfterGlyph;
         if (kern!=0) {
