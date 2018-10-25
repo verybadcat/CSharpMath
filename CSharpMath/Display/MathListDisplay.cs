@@ -14,15 +14,14 @@ namespace CSharpMath.Display {
   /// </summary>
   public class ListDisplay<TFont, TGlyph>: IDisplay<TFont, TGlyph>
     where TFont : IFont<TGlyph> {
-    public IReadOnlyList<IDisplay<TFont, TGlyph>> Displays { get; set; }
-    public Enumerations.LinePosition MyLinePosition { get; set; }
+    public IReadOnlyList<IDisplay<TFont, TGlyph>> Displays { get; }
+    public Enumerations.LinePosition LinePosition { get; set; }
     public Color? TextColor { get; set; }
     public bool HasScript { get; set; }
     public void SetTextColorRecursive(Color? textColor) {
       TextColor = TextColor ?? textColor;
-      foreach (var display in Displays) {
+      foreach (var display in Displays)
         display.SetTextColorRecursive(textColor);
-      }
     }
     /// <summary>For a subscript or superscript, this is the index in the
     /// parent list. For a regular list, it is int.MinValue.</summary>
@@ -30,7 +29,7 @@ namespace CSharpMath.Display {
 
     public ListDisplay(IReadOnlyList<IDisplay<TFont, TGlyph>> displays) {
       Displays = displays;
-      MyLinePosition = Enumerations.LinePosition.Regular;
+      LinePosition = Enumerations.LinePosition.Regular;
       IndexInParent = int.MinValue;
     }
 
@@ -39,13 +38,7 @@ namespace CSharpMath.Display {
     public PointF Position { get; set; }
     public RectangleF DisplayBounds => this.ComputeDisplayBounds();
     public Range Range => Range.Combine(Displays.Select(d => d.Range));
-    public float Width {
-      get {
-        var x = Displays.CollectionX();
-        var maxX = Displays.CollectionMaxX();
-        return maxX - x;
-      }
-    }
+    public float Width => Displays.CollectionMaxX() - Displays.CollectionX();
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
       context.SaveState();
       context.Translate(this.Position);

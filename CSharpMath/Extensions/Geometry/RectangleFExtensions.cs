@@ -20,6 +20,10 @@ namespace CSharpMath {
     }
 
     /// <summary>Because we are NOT inverting our y axis, the properties "Top" and "Bottom" have misleading names.</summary>
+    public static float YMin(this RectangleClass rect)
+      => rect.Top;
+
+    /// <summary>Because we are NOT inverting our y axis, the properties "Top" and "Bottom" have misleading names.</summary>
     public static float YMax(this RectangleClass rect)
       => rect.Bottom;
 

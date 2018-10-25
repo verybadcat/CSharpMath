@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
@@ -13,10 +13,10 @@ namespace CSharpMath.Display {
   {
     // A display representing the numerator of the fraction. Its position is relative
     // to the parent and it is not treated as a sub-display.
-    public IDisplay<TFont, TGlyph> Radicand { get; private set; }
+    public ListDisplay<TFont, TGlyph> Radicand { get; private set; }
     // A display representing the numerator of the fraction. Its position is relative
     // to the parent and it is not treated as a sub-display.
-    public IDisplay<TFont, TGlyph> Degree { get; private set; }
+    public ListDisplay<TFont, TGlyph> Degree { get; private set; }
 
     public float Width { get; set; }
 
@@ -27,7 +27,7 @@ namespace CSharpMath.Display {
     private float _radicalShift;
     private readonly IDisplay<TFont, TGlyph> _radicalGlyph;
 
-        public RadicalDisplay(IDisplay<TFont, TGlyph> innerDisplay, IDownshiftableDisplay<TFont, TGlyph> glyph, PointF position, Range range)
+    public RadicalDisplay(ListDisplay<TFont, TGlyph> innerDisplay, IDownshiftableDisplay<TFont, TGlyph> glyph, PointF position, Range range)
     {
       Radicand = innerDisplay;
       _radicalGlyph = glyph;
@@ -35,7 +35,7 @@ namespace CSharpMath.Display {
       Range = range;
     }
 
-    public void SetDegree(IDisplay<TFont, TGlyph> degree, TFont degreeFont, FontMathTable<TFont, TGlyph> degreeFontMathTable)
+    public void SetDegree(ListDisplay<TFont, TGlyph> degree, TFont degreeFont, FontMathTable<TFont, TGlyph> degreeFontMathTable)
     {
       var kernBefore = degreeFontMathTable.RadicalKernBeforeDegree(degreeFont);
       var kernAfter = degreeFontMathTable.RadicalKernAfterDegree(degreeFont);

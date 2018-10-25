@@ -81,11 +81,64 @@ namespace CSharpMath.Editor {
           return text.IndexForPoint(context, point);
         case FractionDisplay<TFont, TGlyph> frac:
           return frac.IndexForPoint(context, point);
+        case RadicalDisplay<TFont, TGlyph> radical:
+          return radical.IndexForPoint(context, point);
+        case ListDisplay<TFont, TGlyph> list:
+          return list.IndexForPoint(context, point);
         default:
           return null;
       }
     }
-    // The bounds of the display indicated by the given index
-
+    ///<summary>The bounds of the display indicated by the given index</summary>
+    public static PointF? PointForIndex<TFont, TGlyph>(this IDisplay<TFont, TGlyph> display, FrontEnd.TypesettingContext<TFont, TGlyph> context, MathListIndex index) where TFont : IFont<TGlyph> {
+      switch (display) {
+        case TextLineDisplay<TFont, TGlyph> text:
+          return text.PointForIndex(context, index);
+        case FractionDisplay<TFont, TGlyph> frac:
+          return frac.PointForIndex(context, index);
+        case RadicalDisplay<TFont, TGlyph> radical:
+          return radical.PointForIndex(context, index);
+        case ListDisplay<TFont, TGlyph> list:
+          return list.PointForIndex(context, index);
+        default:
+          return null;
+      }
+    }
+    public static void HighlightCharacterAt<TFont, TGlyph>(this IDisplay<TFont, TGlyph> display, MathListIndex index, Structures.Color color) where TFont : IFont<TGlyph> {
+      switch (display) {
+        case TextLineDisplay<TFont, TGlyph> text:
+          text.HighlightCharacterAt(index, color);
+          break;
+        case FractionDisplay<TFont, TGlyph> frac:
+          frac.HighlightCharacterAt(index, color);
+          break;
+        case RadicalDisplay<TFont, TGlyph> radical:
+          radical.HighlightCharacterAt(index, color);
+          break;
+        case ListDisplay<TFont, TGlyph> list:
+          list.HighlightCharacterAt(index, color);
+          break;
+        default:
+          break;
+      }
+    }
+    public static void Highlight<TFont, TGlyph>(this IDisplay<TFont, TGlyph> display, Structures.Color color) where TFont : IFont<TGlyph> {
+      switch (display) {
+        case TextLineDisplay<TFont, TGlyph> text:
+          text.Highlight(color);
+          break;
+        case FractionDisplay<TFont, TGlyph> frac:
+          frac.Highlight(color);
+          break;
+        case RadicalDisplay<TFont, TGlyph> radical:
+          radical.Highlight(color);
+          break;
+        case ListDisplay<TFont, TGlyph> list:
+          list.Highlight(color);
+          break;
+        default:
+          break;
+      }
+    }
   }
 }

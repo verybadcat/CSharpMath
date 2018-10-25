@@ -26,6 +26,7 @@ namespace CSharpMath.Editor {
       else
         return MathListIndex.IndexAtLocation(self.Range.Location, self.Denominator.IndexForPoint(context, point), MathListSubIndexType.Denominator);
     }
+
     ///<summary>Seems never used</summary>
     public static PointF? PointForIndex<TFont, TGlyph>(this FractionDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, MathListIndex index) where TFont : IFont<TGlyph> {
       if (index.SubIndexType != MathListSubIndexType.None)
@@ -33,7 +34,27 @@ namespace CSharpMath.Editor {
       // draw a caret before the fraction
       return self.Position;
     }
-    public static void HighlightCharacterAt<TFont, TGlyph>(this TextLineDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, MathListIndex index, Color color) where TFont : IFont<TGlyph> {
+
+    public static void HighlightCharacterAt<TFont, TGlyph>(this FractionDisplay<TFont, TGlyph> self, MathListIndex index, Color color) where TFont : IFont<TGlyph> {
+      if (index.SubIndexType != MathListSubIndexType.None)
+        throw Arg("The subindex must be none to get the highlight a character in it.", nameof(index));
+      self.Highlight(color);
     }
+
+    public static void Highlight<TFont, TGlyph>(this FractionDisplay<TFont, TGlyph> self, Color color) where TFont : IFont<TGlyph> {
+      self.Numerator.Highlight(color);
+      self.Denominator.Highlight(color);
     }
+
+    public static ListDisplay<TFont, TGlyph> SubListForIndexType<TFont, TGlyph>(this FractionDisplay<TFont, TGlyph> self, MathListSubIndexType type) where TFont : IFont<TGlyph> {
+      switch (type) {
+        case MathListSubIndexType.Numerator:
+          return self.Numerator;
+        case MathListSubIndexType.Denominator:
+          return self.Denominator;
+        default:
+          throw ArgOutOfRange("Subindex type is not a fraction subtype.", type, nameof(type));
+      }
+    }
+  }
 }

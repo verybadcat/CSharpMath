@@ -24,7 +24,7 @@ namespace CSharpMath.Tests {
       };
       var display = _context.CreateLine(list, _font, LineStyle.Display);
       Assert.NotNull(display);
-      Assert.Equal(LinePosition.Regular, display.MyLinePosition);
+      Assert.Equal(LinePosition.Regular, display.LinePosition);
       Assert.Equal(new PointF(), display.Position);
       Assert.Equal(new Range(0, 1), display.Range);
       Assert.False(display.HasScript);
@@ -55,7 +55,7 @@ namespace CSharpMath.Tests {
 
       Assert.NotNull(display);
 
-      Assert.Equal(LinePosition.Regular, display.MyLinePosition);
+      Assert.Equal(LinePosition.Regular, display.LinePosition);
       Assert.Equal(new PointF(), display.Position);
       Assert.Equal(new Range(0, 4), display.Range);
       Assert.False(display.HasScript);
@@ -86,7 +86,7 @@ namespace CSharpMath.Tests {
 
       var display = Typesetter<TFont, TGlyph>.CreateLine(mathList, _font, _context, LineStyle.Display);
       Assert.NotNull(display);
-      Assert.Equal(LinePosition.Regular, display.MyLinePosition);
+      Assert.Equal(LinePosition.Regular, display.LinePosition);
       Assert.Equal(new PointF(), display.Position);
       Assert.Equal(new Range(0, 4), display.Range);
       Assert.False(display.HasScript);
@@ -123,7 +123,7 @@ namespace CSharpMath.Tests {
       var display = Typesetter<TFont, TGlyph>.CreateLine(mathList, _font, _context, LineStyle.Display);
       Assert.NotNull(display);
 
-      Assert.Equal(LinePosition.Regular, display.MyLinePosition);
+      Assert.Equal(LinePosition.Regular, display.LinePosition);
       Assert.Equal(new PointF(), display.Position);
       Assert.Equal(new Range(0, 1), display.Range);
       Assert.False(display.HasScript);
@@ -140,7 +140,7 @@ namespace CSharpMath.Tests {
 
       var super1 = display.Displays[1] as ListDisplay<TFont, TGlyph>;
       Assert.NotNull(super1);
-      Assert.Equal(LinePosition.Supersript, super1.MyLinePosition);
+      Assert.Equal(LinePosition.Superscript, super1.LinePosition);
       var super1Position = super1.Position;
       Assertions.ApproximatePoint(10.32, 7.26, super1Position, 0.01); // may change as we implement more details?
       Assert.Equal(new Range(0, 1), super1.Range);
@@ -171,7 +171,7 @@ namespace CSharpMath.Tests {
       var display = Typesetter<TFont, TGlyph>.CreateLine(mathList, _font, _context, LineStyle.Display);
       Assert.NotNull(display);
 
-      Assert.Equal(LinePosition.Regular, display.MyLinePosition);
+      Assert.Equal(LinePosition.Regular, display.LinePosition);
       Assert.Equal(new PointF(), display.Position);
       Assert.Equal(new Range(0, 1), display.Range);
       Assert.False(display.HasScript);
@@ -187,7 +187,7 @@ namespace CSharpMath.Tests {
       Assert.True(line.HasScript);
       var sub1 = display.Displays[1] as ListDisplay<TFont, TGlyph>;
       Assert.NotNull(sub1);
-      Assert.Equal(LinePosition.Subscript, sub1.MyLinePosition);
+      Assert.Equal(LinePosition.Subscript, sub1.LinePosition);
       var sub1Position = sub1.Position;
       Assertions.ApproximatePoint(10, -4.94, sub1Position, 0.01); // may change as we implement more details?
       Assert.Equal(new Range(0, 1), sub1.Range);
@@ -221,7 +221,7 @@ namespace CSharpMath.Tests {
 
       var display = Typesetter<TFont, TGlyph>.CreateLine(mathList, _font, _context, LineStyle.Display);
       Assert.NotNull(display);
-      Assert.Equal(LinePosition.Regular, display.MyLinePosition);
+      Assert.Equal(LinePosition.Regular, display.LinePosition);
       Assert.Equal(new PointF(), display.Position);
       Assert.Equal(new Range(0, 1), display.Range);
       Assert.False(display.HasScript);
@@ -235,7 +235,7 @@ namespace CSharpMath.Tests {
       Assert.True(line.HasScript);
 
       var display2 = display.Displays[1] as ListDisplay<TFont, TGlyph>;
-      Assert.Equal(LinePosition.Supersript, display2.MyLinePosition);
+      Assert.Equal(LinePosition.Superscript, display2.LinePosition);
       Assertions.ApproximatePoint(10.32, 9.68, display2.Position, 0.01);
       Assert.Equal(new Range(0, 1), display2.Range);
       Assert.False(display2.HasScript);
@@ -249,7 +249,7 @@ namespace CSharpMath.Tests {
       Assert.False(line2.HasScript);
 
       var display3 = display.Displays[2] as ListDisplay<TFont, TGlyph>;
-      Assert.Equal(LinePosition.Subscript, display3.MyLinePosition);
+      Assert.Equal(LinePosition.Subscript, display3.LinePosition);
 
       // Because both subscript and superscript are present, coords are
       // different from the subscript-only case.
@@ -287,7 +287,7 @@ namespace CSharpMath.Tests {
       list.Add(fraction);
 
       var display = Typesetter<TFont, TGlyph>.CreateLine(list, _font, _context, LineStyle.Display);
-      Assert.Equal(LinePosition.Regular, display.MyLinePosition);
+      Assert.Equal(LinePosition.Regular, display.LinePosition);
       Assert.Equal(new PointF(), display.Position);
       Assert.Equal(new Range(0, 1), display.Range);
       Assert.False(display.HasScript);
@@ -295,7 +295,7 @@ namespace CSharpMath.Tests {
       Assert.Single(display.Displays);
 
       var display0 = display.Displays[0] as ListDisplay<TFont, TGlyph>;
-      Assert.Equal(LinePosition.Regular, display0.MyLinePosition);
+      Assert.Equal(LinePosition.Regular, display0.LinePosition);
       Assert.Equal(new PointF(), display0.Position);
       Assert.Equal(new Range(0, 1), display.Range);
       Assert.False(display0.HasScript);
@@ -314,7 +314,7 @@ namespace CSharpMath.Tests {
       
       var numerator = subFraction.Numerator as ListDisplay<TFont, TGlyph>;
       Assert.NotNull(numerator);
-      Assert.Equal(LinePosition.Regular, numerator.MyLinePosition);
+      Assert.Equal(LinePosition.Regular, numerator.LinePosition);
       Assertions.ApproximatePoint(10, 13.54, numerator.Position, 0.01);
       Assert.Single(numerator.Displays);
       Assert.Equal(Range.UndefinedInt, numerator.IndexInParent);
@@ -329,7 +329,7 @@ namespace CSharpMath.Tests {
 
       var denominator = subFraction.Denominator as ListDisplay<TFont, TGlyph>;
       Assert.NotNull(denominator);
-      Assert.Equal(LinePosition.Regular, denominator.MyLinePosition);
+      Assert.Equal(LinePosition.Regular, denominator.LinePosition);
       Assertions.ApproximatePoint(10, -13.72, denominator.Position, 0.01);
       Assert.Equal(new Range(0, 1), denominator.Range);
       Assert.False(denominator.HasScript);
@@ -366,7 +366,7 @@ namespace CSharpMath.Tests {
       };
 
       var display = Typesetter<TFont, TGlyph>.CreateLine(mathList, _font, _context, LineStyle.Display);
-      Assert.Equal(LinePosition.Regular, display.MyLinePosition);
+      Assert.Equal(LinePosition.Regular, display.LinePosition);
       Assert.Equal(new PointF(), display.Position);
       Assert.Equal(new Range(0, 1), display.Range);
       Assert.False(display.HasScript);
@@ -380,7 +380,7 @@ namespace CSharpMath.Tests {
 
       var numerator = fraction.Numerator as ListDisplay<TFont, TGlyph>;
       Assert.NotNull(numerator);
-      Assert.Equal(LinePosition.Regular, numerator.MyLinePosition);
+      Assert.Equal(LinePosition.Regular, numerator.LinePosition);
       Assertions.ApproximatePoint(0, 13.54, numerator.Position, 0.01);
       Assert.Equal(new Range(0, 1), numerator.Range);
       Assert.False(numerator.HasScript);
@@ -396,7 +396,7 @@ namespace CSharpMath.Tests {
 
       var denominator = fraction.Denominator as ListDisplay<TFont, TGlyph>;
       Assert.NotNull(denominator);
-      Assert.Equal(LinePosition.Regular, denominator.MyLinePosition);
+      Assert.Equal(LinePosition.Regular, denominator.LinePosition);
       Assertions.ApproximatePoint(0, -13.72, denominator.Position, 0.01);
       Assert.Equal(new Range(0, 1), denominator.Range);
       Assert.False(denominator.HasScript);
@@ -419,7 +419,7 @@ namespace CSharpMath.Tests {
     public void TestEquationWithOperatorsAndRelations() {
       var mathList = MathLists.FromString("2x+3=y");
       var display = Typesetter<TFont, TGlyph>.CreateLine(mathList, _font, _context, LineStyle.Display);
-      Assert.Equal(LinePosition.Regular, display.MyLinePosition);
+      Assert.Equal(LinePosition.Regular, display.LinePosition);
       Assert.Equal(new Range(0, 6), display.Range);
       Assert.False(display.HasScript);
       Assert.Equal(Range.UndefinedInt, display.IndexInParent);
@@ -455,7 +455,7 @@ namespace CSharpMath.Tests {
       };
 
       var display = Typesetter<TFont, TGlyph>.CreateLine(mathList, _font, _context, LineStyle.Display);
-      Assert.Equal(LinePosition.Regular, display.MyLinePosition);
+      Assert.Equal(LinePosition.Regular, display.LinePosition);
       Assert.Equal(new PointF(), display.Position);
       Assert.Equal(new Range(0, 1), display.Range);
       Assert.False(display.HasScript);
@@ -469,7 +469,7 @@ namespace CSharpMath.Tests {
 
       var numerator = fraction.Numerator as ListDisplay<TFont, TGlyph>;
       Assert.NotNull(numerator);
-      Assert.Equal(LinePosition.Regular, numerator.MyLinePosition);
+      Assert.Equal(LinePosition.Regular, numerator.LinePosition);
       Assert.False(numerator.HasScript);
       Assertions.ApproximatePoint(0, 13.54, numerator.Position, 0.01);
       Assert.Equal(new Range(0, 1), numerator.Range);
@@ -485,7 +485,7 @@ namespace CSharpMath.Tests {
 
       var denominator = fraction.Denominator as ListDisplay<TFont, TGlyph>;
       Assert.NotNull(denominator);
-      Assert.Equal(LinePosition.Regular, denominator.MyLinePosition);
+      Assert.Equal(LinePosition.Regular, denominator.LinePosition);
       Assertions.ApproximatePoint(0, -13.73, denominator.Position, 0.01);
       Assert.Equal(new Range(0, 1), denominator.Range);
       Assert.False(denominator.HasScript);
@@ -517,14 +517,14 @@ namespace CSharpMath.Tests {
       };
 
       var display = Typesetter<TFont, TGlyph>.CreateLine(mathList, _font, _context, LineStyle.Display);
-      Assert.Equal(LinePosition.Regular, display.MyLinePosition);
+      Assert.Equal(LinePosition.Regular, display.LinePosition);
       Assert.Equal(new Range(0, 1), display.Range);
       Assert.False(display.HasScript);
       Assert.Equal(Range.UndefinedInt, display.IndexInParent);
       Assert.Single(display.Displays);
 
       var display2 = display.Displays[0] as ListDisplay<TFont, TGlyph>;
-      Assert.Equal(LinePosition.Regular, display2.MyLinePosition);
+      Assert.Equal(LinePosition.Regular, display2.LinePosition);
       Assert.Equal(new PointF(), display2.Position);
       Assert.Equal(new Range(0, 1), display2.Range);
       Assert.False(display2.HasScript);
@@ -537,7 +537,7 @@ namespace CSharpMath.Tests {
       Assert.False(glyph.HasScript);
 
       var display3 = display2.Displays[1] as ListDisplay<TFont, TGlyph>;
-      Assert.Equal(LinePosition.Regular, display3.MyLinePosition);
+      Assert.Equal(LinePosition.Regular, display3.LinePosition);
       Assertions.ApproximatePoint(10, 0, display3.Position, 0.01);
       Assert.Equal(new Range(0, 1), display3.Range);
       Assert.False(display3.HasScript);
@@ -575,7 +575,7 @@ namespace CSharpMath.Tests {
       };
 
       var display = Typesetter<TFont, TGlyph>.CreateLine(mathList, _font, _context, LineStyle.Display);
-      Assert.Equal(LinePosition.Regular, display.MyLinePosition);
+      Assert.Equal(LinePosition.Regular, display.LinePosition);
       Assert.Equal(new PointF(), display.Position);
       Assert.Equal(new Range(0, 1), display.Range);
       Assert.False(display.HasScript);
@@ -591,7 +591,7 @@ namespace CSharpMath.Tests {
 
       var display2 = radical.Radicand as ListDisplay<TFont, TGlyph>;
       Assert.NotNull(display2);
-      Assert.Equal(LinePosition.Regular, display2.MyLinePosition);
+      Assert.Equal(LinePosition.Regular, display2.LinePosition);
       Assertions.ApproximatePoint(10, 0, display2.Position, 0.01);
       Assert.Equal(new Range(0, 1), display2.Range);
       Assert.False(display2.HasScript);
@@ -622,14 +622,14 @@ namespace CSharpMath.Tests {
       };
       
       var display = Typesetter<TFont, TGlyph>.CreateLine(mathList, _font, _context, LineStyle.Display);
-      Assert.Equal(LinePosition.Regular, display.MyLinePosition);
+      Assert.Equal(LinePosition.Regular, display.LinePosition);
       Assert.Equal(new Range(0, 1), display.Range);
       Assert.False(display.HasScript);
       Assert.Equal(Range.UndefinedInt, display.IndexInParent);
       Assert.Single(display.Displays);
 
       var display2 = display.Displays[0] as ListDisplay<TFont, TGlyph>;
-      Assert.Equal(LinePosition.Regular, display2.MyLinePosition);
+      Assert.Equal(LinePosition.Regular, display2.LinePosition);
       Assert.Equal(new PointF(0, 3), display2.Position);
       Assert.Equal(new Range(0, 1), display2.Range);
       Assert.False(display2.HasScript);

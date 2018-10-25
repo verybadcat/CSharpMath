@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
@@ -14,10 +14,10 @@ namespace CSharpMath.Display {
     // A display representing the numerator of the fraction. Its position is relative
     //to the parent and it is not treated as a sub-display.
 
-    public IDisplay<TFont, TGlyph> Numerator { get; private set; }
+    public ListDisplay<TFont, TGlyph> Numerator { get; private set; }
     // A display representing the numerator of the fraction. Its position is relative
     //to the parent and it is not treated as a sub-display.
-    public IDisplay<TFont, TGlyph> Denominator { get; private set; }
+    public ListDisplay<TFont, TGlyph> Denominator { get; private set; }
 
     public float NumeratorUp { get; set; }
     public float DenominatorDown { get; set; }
@@ -26,7 +26,7 @@ namespace CSharpMath.Display {
 
     public Range Range { get; }
 
-    public FractionDisplay(IDisplay<TFont, TGlyph> numeratorDisplay, IDisplay<TFont, TGlyph> denominatorDisplay, PointF currentPosition, Range range) {
+    public FractionDisplay(ListDisplay<TFont, TGlyph> numeratorDisplay, ListDisplay<TFont, TGlyph> denominatorDisplay, PointF currentPosition, Range range) {
       Numerator = numeratorDisplay;
       Denominator = denominatorDisplay;
       _position = currentPosition;

@@ -456,7 +456,7 @@ namespace CSharpMath {
           throw new InvalidCodePathException($"MakeScripts was called when both supercript and subscript of atom were null.");
         var line = display as TextLineDisplay<TFont, TGlyph>;
         var subscript = _CreateLine(atom.Subscript, _font, _context, _scriptStyle, _subscriptCramped);
-        subscript.MyLinePosition = LinePosition.Subscript;
+        subscript.LinePosition = LinePosition.Subscript;
         subscript.IndexInParent = index;
         subscriptShiftDown = Math.Max(subscriptShiftDown, _mathTable.SubscriptShiftDown(_styleFont));
         subscriptShiftDown = Math.Max(subscriptShiftDown, subscript.Ascent - _mathTable.SubscriptTopMax(_styleFont));
@@ -468,7 +468,7 @@ namespace CSharpMath {
 
       // If we get here, superscript is not null
       var superscript = _CreateLine(atom.Superscript, _font, _context, _scriptStyle, _superscriptCramped);
-      superscript.MyLinePosition = LinePosition.Supersript;
+      superscript.LinePosition = LinePosition.Superscript;
       superscript.IndexInParent = index;
       superscriptShiftUp = Math.Max(superscriptShiftUp, _superscriptShiftUp);
       superscriptShiftUp = Math.Max(superscriptShiftUp, superscript.Descent + _mathTable.SuperscriptBottomMin(_styleFont));
@@ -480,7 +480,7 @@ namespace CSharpMath {
       }
       // If we get here, we have both a superscript and a subscript.
       var subscriptB = _CreateLine(atom.Subscript, _font, _context, _scriptStyle, _subscriptCramped);
-      subscriptB.MyLinePosition = LinePosition.Subscript;
+      subscriptB.LinePosition = LinePosition.Subscript;
       subscriptB.IndexInParent = index;
       subscriptShiftDown = Math.Max(subscriptShiftDown, _mathTable.SubscriptShiftDown(_styleFont));
 

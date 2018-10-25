@@ -50,6 +50,7 @@ namespace CSharpMath.Editor {
         throw new InvalidCodePathException("StrIndex should not be more than the len covered");
       return self.Atoms.Length;
     }
+
     public static int MathListIndexToStringIndex<TFont, TGlyph>(this TextLineDisplay<TFont, TGlyph> self, int mlIndex) where TFont : IFont<TGlyph> {
       if (mlIndex >= self.Atoms.Length)
         throw ArgOutOfRange($"The index is not in the range {self.Atoms.Length}", mlIndex, nameof(mlIndex));
@@ -105,7 +106,7 @@ return c.Length + strIndex; //offset for target char in its containing string
       return self.Position.Plus(new PointF(offset, 0));
     }
 
-    public static void HighlightCharacterAt<TFont, TGlyph>(this TextLineDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, MathListIndex index, Color color) where TFont : IFont<TGlyph> {
+    public static void HighlightCharacterAt<TFont, TGlyph>(this TextLineDisplay<TFont, TGlyph> self, MathListIndex index, Color color) where TFont : IFont<TGlyph> {
       if (!self.Range.Contains(index.AtomIndex))
         throw ArgOutOfRange($"The index is not in the range {self.Range}.", index, nameof(index));
       if (index.SubIndexType is MathListSubIndexType.None)
@@ -116,7 +117,8 @@ return c.Length + strIndex; //offset for target char in its containing string
       var (run, charIndex) = self.GetRunAndCharIndexFromCodepointIndex(index.AtomIndex - self.Range.Location);
       run.Run.GlyphInfos[charIndex].Foreground = color;
     }
-    public static void HighlightWithColor<TFont, TGlyph>(this TextLineDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, Color color) where TFont : IFont<TGlyph> {
+
+    public static void Highlight<TFont, TGlyph>(this TextLineDisplay<TFont, TGlyph> self, Color color) where TFont : IFont<TGlyph> {
       var iMax = self.Runs.Count;
       for (int i = 0; i < iMax; i++) {
         var run = self.Runs[i].Run;
@@ -124,6 +126,5 @@ return c.Length + strIndex; //offset for target char in its containing string
           run.GlyphInfos[j].Foreground = color;
       }
     }
-
   }
 }
