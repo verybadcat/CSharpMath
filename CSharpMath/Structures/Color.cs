@@ -11,8 +11,8 @@ namespace CSharpMath.Structures {
       B = b;
       A = a;
     }
-    public Color(float r, float g, float b, float a = 1f)
-      : this((byte)(r * 255f), (byte)(g * 255f), (byte)(b * 255f), (byte)(a * 255f)) { }
+    public Color(float rf, float gf, float bf, float af = 1f)
+      : this((byte)(rf * 255f), (byte)(gf * 255f), (byte)(bf * 255f), (byte)(af * 255f)) { }
 
     public byte R { get; }
     public byte G { get; }
@@ -32,14 +32,14 @@ namespace CSharpMath.Structures {
       Deconstruct(out r, out g, out b);
       a = A;
     }
-    public void Deconstruct(out float r, out float g, out float b) {
-      r = Rf;
-      g = Gf;
-      b = Bf;
+    public void Deconstruct(out float rf, out float gf, out float bf) {
+      rf = Rf;
+      gf = Gf;
+      bf = Bf;
     }
-    public void Deconstruct(out float r, out float g, out float b, out float a) {
-      Deconstruct(out r, out g, out b);
-      a = Af;
+    public void Deconstruct(out float rf, out float gf, out float bf, out float af) {
+      Deconstruct(out rf, out gf, out bf);
+      af = Af;
     }
 
     public bool Equals(Color other) => R == other.R && G == other.G && B == other.B && A == other.A;
@@ -78,28 +78,28 @@ namespace CSharpMath.Structures {
           r = _fromHex1(hex, 0);
           g = _fromHex1(hex, 1);
           b = _fromHex1(hex, 2);
-          if ((r ^ g ^ b) == null) return null;
-          return new Color(r.Value, g.Value, b.Value);
+          if ((r ^ g ^ b) is null) return null;
+          return new Color(r.GetValueOrDefault(), g.GetValueOrDefault(), b.GetValueOrDefault());
         case 4:
           a = _fromHex1(hex, 0);
           r = _fromHex1(hex, 1);
           g = _fromHex1(hex, 2);
           b = _fromHex1(hex, 3);
-          if ((r ^ g ^ b ^ a) == null) return null;
-          return new Color(r.Value, g.Value, b.Value, a.Value);
+          if ((r ^ g ^ b ^ a) is null) return null;
+          return new Color(r.GetValueOrDefault(), g.GetValueOrDefault(), b.GetValueOrDefault(), a.GetValueOrDefault());
         case 6:
           r = _fromHex2(hex, 0);
           g = _fromHex2(hex, 2);
           b = _fromHex2(hex, 4);
-          if ((r ^ g ^ b) == null) return null;
-          return new Color(r.Value, g.Value, b.Value);
+          if ((r ^ g ^ b) is null) return null;
+          return new Color(r.GetValueOrDefault(), g.GetValueOrDefault(), b.GetValueOrDefault());
         case 8:
           a = _fromHex2(hex, 0);
           r = _fromHex2(hex, 2);
           g = _fromHex2(hex, 4);
           b = _fromHex2(hex, 6);
-          if ((r ^ g ^ b ^ a) == null) return null;
-          return new Color(r.Value, g.Value, b.Value, a.Value);
+          if ((r ^ g ^ b ^ a) is null) return null;
+          return new Color(r.GetValueOrDefault(), g.GetValueOrDefault(), b.GetValueOrDefault(), a.GetValueOrDefault());
         default:
           return null;
       }

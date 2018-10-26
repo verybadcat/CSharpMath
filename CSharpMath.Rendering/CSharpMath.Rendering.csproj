@@ -42,11 +42,11 @@
     <EmbeddedResource Include="Font Reference\latinmodern-math.otf" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CSharpMath\CSharpMath.csproj" />
     <ProjectReference Include="..\CSharpMath.Analyzers\CSharpMath.Analyzers\CSharpMath.Analyzers.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <OutputItemType>Analyzer</OutputItemType>
     </ProjectReference>
+    <ProjectReference Include="..\CSharpMath.Editor\CSharpMath.Editor.csproj" />
   </ItemGroup>
   <Import Project="..\Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems" Label="Shared" Condition="Exists('..\Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems')" />
   <Import Project="..\Typography\Typography.OpenFont\Typography.OpenFont.projitems" Label="Shared" />
