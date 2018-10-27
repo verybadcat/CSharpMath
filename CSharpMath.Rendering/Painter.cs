@@ -97,6 +97,7 @@ namespace CSharpMath.Rendering {
           GlyphBoxColor = GlyphBoxColor.HasValue ? Nullable((WrapColor(GlyphBoxColor.Value.glyph), WrapColor(GlyphBoxColor.Value.textRun))) : null
         });
         canvas.Restore();
+        DrawAfterSuccess(canvas);
       } else DrawError(canvas);
     }
     protected void DrawError(ICanvas canvas) {
@@ -108,6 +109,7 @@ namespace CSharpMath.Rendering {
         canvas.Restore();
       }
     }
+    protected virtual void DrawAfterSuccess(ICanvas c) { }
     #endregion Methods
   }
 }
