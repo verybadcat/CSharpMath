@@ -17,6 +17,21 @@ namespace CSharpMath.Rendering {
 
     protected override void DrawAfterSuccess(ICanvas c) {
       base.DrawAfterSuccess(c);
+      var path = c.GetPath();
+      var point = caretView.handle.InitialPoint;
+      path.BeginRead(1);
+      path.Foreground = caretView.handle.ActualColor;
+      path.MoveTo(point.X, point.Y);
+      point = caretView.handle.NextPoint1;
+      path.LineTo(point.X, point.Y);
+      point = caretView.handle.NextPoint2;
+      path.LineTo(point.X, point.Y);
+      point = caretView.handle.NextPoint3;
+      path.LineTo(point.X, point.Y);
+      point = caretView.handle.FinalPoint;
+      path.LineTo(point.X, point.Y);
+      path.CloseContour();
+      path.EndRead();
     }
   }
 }

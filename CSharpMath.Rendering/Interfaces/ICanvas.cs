@@ -29,7 +29,7 @@ namespace CSharpMath.Rendering {
       var px = dx / length * halfThickness;
       var py = dy / length * halfThickness;
       var p = c.GetPath();
-      p.BeginRead(0);
+      p.BeginRead(1);
       p.MoveTo(x1 - py, y1 + px);
       p.LineTo(x1 + py, y1 - px);
       p.LineTo(x2 + py, y2 - px);
