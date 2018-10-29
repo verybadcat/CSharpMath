@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.Drawing;
 
 namespace CSharpMath.Editor {
-  public class MathKeyboardView<TButton, TTextView> where TButton : IButton where TTextView : ITextView {
+  public class MathKeyboardView<TButton, TTextView> where TButton : IButton where TTextView : class, ITextView {
     public MathKeyboardView(TButton fractionButton, TButton multiplyButton, TButton equalsButton, TButton divisionButton, TButton exponentButton, TButton lessEqualsButton, TButton greaterEqualsButton, TButton shiftButton, TButton squareRootButton, TButton radicalButton, TTextView textView, TButton[] numbers, TButton[] variables, TButton[] operators, TButton[] relations, TButton[] letters, TButton[] greekLetters, TButton alphaRho, TButton deltaOmega, TButton sigmaPhi, TButton muNu, TButton lambdaBeta) {
       _currentTab = NumbersTab;
       _currentTab.Selected = true;
@@ -33,17 +33,14 @@ namespace CSharpMath.Editor {
     }
     public Atoms.MathList MathList { get; set; }
 
-    public void clear();
+    public void StartedEditing(TTextView label) {
+      foreach (var tab in Tabs)
+        tab.textView = label;
+    }
 
-    public void highlightCharacterAtIndex(MathListIndex index);
-    public void clearHighlights();
-    public void moveCaretToPoint(PointF point);
-    public void startEditing();
-    public void enableTap(bool enable);
-
-    // Insert a list at a given point.
-    public void insertMathList(Atoms.MathList list, PointF point);
-
-    public RectangleF mathDisplaySize { get; }
+    public void FinishedEditing(TTextView label) {
+      foreach (var tab in Tabs)
+        tab.textView = null;
+    }
   }
 }
