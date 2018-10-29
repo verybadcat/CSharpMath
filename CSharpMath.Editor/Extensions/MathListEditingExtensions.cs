@@ -6,7 +6,7 @@ namespace CSharpMath.Editor {
   using Atoms;
   using Interfaces;
   public static class MathListEditingExtensions {
-    public static void Insert(this IMathList self, MathListIndex index, MathAtom atom) {
+    public static void Insert(this IMathList self, MathListIndex index, IMathAtom atom) {
       index = index ?? new MathListIndex { AtomIndex = 0, SubIndex = null, SubIndexType = MathListSubIndexType.None };
       if (index.AtomIndex > self.Atoms.Count)
         throw new IndexOutOfRangeException($"Index {index.AtomIndex} is out of bounds for list of size {self.Atoms.Count}");

@@ -119,6 +119,7 @@ namespace CSharpMath.Editor {
         foreach (var button in numbers) button.Enabled = value;
       }
     }
+
     bool _operatorsEnabled;
     public bool OperatorsEnabled {
       get => _operatorsEnabled;
@@ -127,8 +128,8 @@ namespace CSharpMath.Editor {
         foreach (var button in operators) button.Enabled = value;
       }
     }
-    bool _variablesEnabled;
 
+    bool _variablesEnabled;
     public bool VariablesEnabled {
       get => _variablesEnabled;
       set {
@@ -136,6 +137,7 @@ namespace CSharpMath.Editor {
         foreach (var button in variables) button.Enabled = value;
       }
     }
+
     public bool FractionEnabled {
       get => fractionButton.Enabled;
       set => fractionButton.Enabled = value;
