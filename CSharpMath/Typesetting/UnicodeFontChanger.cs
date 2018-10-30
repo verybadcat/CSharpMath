@@ -13,10 +13,10 @@ namespace CSharpMath
   public class UnicodeFontChanger : IFontChanger
   {
 
-    private const TChar UnicodeGreekLowerStart = '\x03B1';
-    private const TChar UnicodeGreekLowerEnd = '\x03C9';
-    private const TChar UnicodeGreekUpperStart = '\x0391';
-    private const TChar UnicodeGreekUpperEnd = '\x03A9';
+    public const TChar UnicodeGreekLowerStart = '\x03B1';
+    public const TChar UnicodeGreekLowerEnd = '\x03C9';
+    public const TChar UnicodeGreekUpperStart = '\x0391';
+    public const TChar UnicodeGreekUpperEnd = '\x03A9';
 
     private const TLongChar UnicodeMathCapitalBoldStart = 0x1D400;
     private const TLongChar UnicodeMathLowerBoldStart = 0x1D41A;

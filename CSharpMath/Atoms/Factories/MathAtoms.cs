@@ -310,6 +310,10 @@ namespace CSharpMath.Atoms {
          { "asteraccent", new Accent("\u20F0") }, //not in iosMath
          { "threeunderdot", new Accent("\u20E8") } //not in iosMath
       });
+    
+    public static LargeOperator Operator(string name, bool? limits, bool noLimits = false) => new LargeOperator(name, limits, noLimits);
+    public static Space Space(Structures.Space sp) => new Space(sp);
+    public static MathAtom Create(MathAtomType type, char value) => Create(type, value.ToString());
     public static MathAtom Create(MathAtomType type, string value) {
       switch (type) {
         case MathAtomType.Accent:
@@ -336,37 +340,15 @@ namespace CSharpMath.Atoms {
           return new MathAtom(type, value);
       }
     }
-    public static MathAtom Create(MathAtomType type, char value)
-      => Create(type, value.ToString());
-    public static MathAtom Placeholder
-      => Create(MathAtomType.Placeholder, Symbols.WhiteSquare);
 
-    public static MathAtom Times
-      => Create(MathAtomType.BinaryOperator, Symbols.Multiplication);
+    public static MathAtom Times => Create(MathAtomType.BinaryOperator, Symbols.Multiplication);
+    public static MathAtom Divide => Create(MathAtomType.BinaryOperator, Symbols.Division);
 
-    public static MathAtom Divide
-      => Create(MathAtomType.BinaryOperator, Symbols.Division);
-
-    private static MathList PlaceholderList => new MathList { Placeholder };
-
-    public static Fraction PlaceholderFraction => new Fraction {
-          Numerator = PlaceholderList,
-          Denominator = PlaceholderList
-        };
-
-    public static Radical PlaceholderRadical => new Radical {
-          Degree = PlaceholderList,
-          Radicand = PlaceholderList
-        };
-
-    public static MathAtom PlaceholderSquareRoot => new Radical {
-          Radicand = PlaceholderList
-        };
-
-    public static LargeOperator Operator(string name, bool? limits, bool noLimits = false)
-      => new LargeOperator(name, limits, noLimits);
-    public static Space Space(Structures.Space sp)
-      => new Space(sp);
+    public static MathAtom Placeholder => Create(MathAtomType.Placeholder, Symbols.WhiteSquare);
+    public static MathList PlaceholderList => new MathList { Placeholder };
+    public static Fraction PlaceholderFraction => new Fraction { Numerator = PlaceholderList, Denominator = PlaceholderList };
+    public static Radical PlaceholderRadical => new Radical { Degree = PlaceholderList,  Radicand = PlaceholderList };
+    public static Radical PlaceholderSquareRoot => new Radical { Radicand = PlaceholderList };
 
     public static MathAtom ForCharacter(char c) {
       if (char.IsControl(c) || char.IsWhiteSpace(c)) {
@@ -431,9 +413,8 @@ namespace CSharpMath.Atoms {
 
     public static MathList MathListForCharacters(string chars) {
       var r = new MathList();
-      foreach (char c in chars) {
+      foreach (char c in chars)
         r.Add(ForCharacter(c));
-      }
       return r;
     }
 
@@ -477,21 +458,13 @@ namespace CSharpMath.Atoms {
     };
 
     public static IMathAtom BoundaryAtom(string delimiterName) =>
-      BoundaryDelimiters.TryGetValue(delimiterName, out var value) ?
-        Create(MathAtomType.Boundary, value) : null;
+      BoundaryDelimiters.TryGetValue(delimiterName, out var value) ? Create(MathAtomType.Boundary, value) : null;
 
     public static string DelimiterName(IMathAtom boundaryAtom) =>
-      boundaryAtom.AtomType == MathAtomType.Boundary &&
-      BoundaryDelimiters.TryGetKey(boundaryAtom.Nucleus, out var name) ?
-        name : null;
+      boundaryAtom.AtomType is MathAtomType.Boundary && BoundaryDelimiters.TryGetKey(boundaryAtom.Nucleus, out var name) ? name : null;
 
-    public static IFraction Fraction(IMathList numerator, IMathList denominator) {
-      var fraction = new Fraction {
-        Numerator = numerator,
-        Denominator = denominator
-      };
-      return fraction;
-    }
+    public static IFraction Fraction(IMathList numerator, IMathList denominator) =>
+      new Fraction { Numerator = numerator, Denominator = denominator };
 
     public static IFraction Fraction(string numerator, string denominator)
       => Fraction(MathListForCharacters(numerator), MathListForCharacters(denominator));
@@ -507,9 +480,7 @@ namespace CSharpMath.Atoms {
       };
       
 
-    public static Structures.Result<IMathAtom> Table(
-      string environment,
-      List<List<IMathList>> rows) {
+    public static Structures.Result<IMathAtom> Table( string environment, List<List<IMathList>> rows) {
       Style style;
       var table = new Table(environment) {
         Cells = rows
