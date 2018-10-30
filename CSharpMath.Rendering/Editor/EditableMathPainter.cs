@@ -10,7 +10,7 @@ namespace CSharpMath.Rendering {
   using Enumerations;
   using Interfaces;
   public abstract class EditableMathPainter<TCanvas, TColor, TButton, TTextView> : MathPainter<TCanvas, TColor> where TButton : IButton where TTextView : class, ITextView {
-    public EditableMathPainter(float fontSize = DefaultFontSize * 3 / 2) : base(fontSize) { }
+    protected EditableMathPainter(float fontSize = DefaultFontSize * 3 / 2) : base(fontSize) { }
 
     readonly CaretView<Fonts, Glyph> caretView;
     readonly List<MathListIndex> highlighted;
@@ -20,7 +20,7 @@ namespace CSharpMath.Rendering {
     protected override void SetRedisplay() {
       base.SetRedisplay();
       insertionIndex = MathListIndex.Level0Index(MathList.Atoms.Count);
-      insertionPointChanged();
+      InsertionPointChanged();
     }
 
     protected override void DrawAfterSuccess(ICanvas c) {
@@ -43,6 +43,9 @@ namespace CSharpMath.Rendering {
       path.EndRead();
     }
 
+    public bool HasText => MathList.Atoms.Count > 0;
+    public Structures.Color SelectColor { get; set; }
+
     bool isEditing;
     public void StartEditing() {
       if (isEditing) return;
@@ -50,19 +53,20 @@ namespace CSharpMath.Rendering {
       if (insertionIndex is null)
         insertionIndex = MathListIndex.Level0Index(MathList.Atoms.Count);
       keyboard.StartedEditing(textView);
-      insertionPointChanged();
+      InsertionPointChanged();
       BeginEditing?.Invoke(this, EventArgs.Empty);
     }
     public void FinishEditing() {
       if (!isEditing) return;
       isEditing = false;
       keyboard.FinishedEditing(textView);
-      insertionPointChanged();
+      InsertionPointChanged();
       EndEditing?.Invoke(this, EventArgs.Empty);
     }
 
     public event EventHandler BeginEditing;
     public event EventHandler EndEditing;
+    public event EventHandler TextModified;
 
     public void Tap(PointF point) {
       if (!isEditing) {
@@ -74,7 +78,7 @@ namespace CSharpMath.Rendering {
         insertionIndex = ClosestIndexToPoint(point) ??
           MathListIndex.Level0Index(MathList.Atoms.Count);
         caretView.showHandle = false;
-        insertionPointChanged();
+        InsertionPointChanged();
       }
     }
 
@@ -88,13 +92,13 @@ namespace CSharpMath.Rendering {
 
     public void Clear() {
       MathList = new MathList();
-      insertionPointChanged();
+      InsertionPointChanged();
     }
 
     public void MoveCaretToPoint(PointF point){
       insertionIndex = ClosestIndexToPoint(point);
       caretView.showHandle = false;
-      insertionPointChanged();
+      InsertionPointChanged();
     }
 
     public PointF? CaretRectForIndex(MathListIndex index){
@@ -126,7 +130,7 @@ namespace CSharpMath.Rendering {
     /// <summary>
     /// Helper method to update caretView when insertion point/selection changes.
     /// </summary>
-    public void insertionPointChanged() {
+    public void InsertionPointChanged() {
       // If not in editing mode, we don't show the caret.
       if (!isEditing) {
 #warning INCOMPLETE: REVISIT
@@ -210,7 +214,7 @@ namespace CSharpMath.Rendering {
         index = index.Next;
       }
       insertionIndex = index; // move the index to the end of the new list.
-      insertionPointChanged();
+      InsertionPointChanged();
     }
 
     ///<summary>If the index is in a radical, subscript, or exponent, fetches the next index after the root atom.</summary>
@@ -221,7 +225,7 @@ namespace CSharpMath.Rendering {
       return index.Next;
     }
 
-    public void RemovePlaceholderIfPresent(IMathAtom atom) {
+    public void RemovePlaceholderIfPresent() {
       var current = MathList.AtomAt(insertionIndex);
       if (current.AtomType is MathAtomType.Placeholder)
         // Remove this element - the inserted text replaces the placeholder
@@ -421,17 +425,126 @@ namespace CSharpMath.Rendering {
         insertionIndex = current.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Radicand);
       }
     }
-
-    public void InsertText(string str) {
-      if (str is null || str is "\n")
-        return;
-      if(str.Length is 0)
+    public void InsertParans(){
+      MathList.Insert(insertionIndex, AtomForCharacter('('));
+      insertionIndex = insertionIndex.Next;
+      MathList.Insert(insertionIndex, AtomForCharacter(')'));
+      // Don't go to the next insertion index, to start inserting before the close parens.
+    }
+    public void InsertAbsValue() {
+      MathList.Insert(insertionIndex, AtomForCharacter('|'));
+      insertionIndex = insertionIndex.Next;
+      MathList.Insert(insertionIndex, AtomForCharacter('|'));
+      // Don't go to the next insertion index, to start inserting before the second absolute value
     }
 
-    public void highlightCharacterAtIndex(MathListIndex index);
-    public void clearHighlights();
-    public void enableTap(bool enable);
+    public void InsertText(string str) {
+      if (str is null || str is "" || str is "\n")
+        return;
+      /*
+          if ([str isEqualToString:@"\n"]) {
+        if ([self.delegate respondsToSelector:@selector(returnPressed:)]) {
+            [self.delegate returnPressed:self];
+        }
+        return;
+    }*/
+      var ch = str[0];
+      var atom = str.Length > 1 ? MathAtoms.ForLatexSymbolName(str) : AtomForCharacter(ch);
+      if (insertionIndex.SubIndexType is MathListSubIndexType.Denominator && atom.AtomType is MathAtomType.Relation)
+        // pull the insertion index out
+        insertionIndex = insertionIndex.LevelDown().Next;
+      switch(ch){
+        case '^':
+          // Special ^ handling - adds an exponent
+          HandleExponentButton();
+          break;
+        case Symbols.SquareRoot:
+          HandleRadical(false);
+          break;
+        case Symbols.CubeRoot:
+          HandleRadical(true);
+          break;
+        case '_':
+          HandleSubscriptButton();
+          break;
+        case '/':
+          HandleSlashButton();
+          break;
+        case var _ when str is "()":
+          RemovePlaceholderIfPresent();
+          InsertParans();
+          break;
+        case var _ when str is "||":
+          RemovePlaceholderIfPresent();
+          InsertAbsValue();
+          break;
+        case var _ when atom is IMathAtom a:
+          if (!UpdatePlaceholderIfPresent(a))
+            // If a placeholder wasn't updated then insert the new element.
+            MathList.Insert(insertionIndex, a);
+          if (atom.AtomType is MathAtomType.Fraction)
+            // go to the numerator
+            insertionIndex = insertionIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Numerator);
+          else
+            insertionIndex = insertionIndex.Next;
+          break;
+      }
+      InsertionPointChanged();
 
-    public RectangleF mathDisplaySize { get; }
+      // If trig function, insert parens after
+      switch (str){
+        case "sin":
+        case "cos":
+        case "tan":
+        case "sec":
+        case "csc":
+        case "cot":
+          InsertParans();
+          break;
+      }
+      TextModified?.Invoke(this, EventArgs.Empty);
+    }
+    public void DeleteBackwards() {
+      // delete the last atom from the list
+      var prevIndex = insertionIndex.Previous;
+      if (HasText && !(prevIndex is null)){
+        MathList.RemoveAt(prevIndex);
+        if(prevIndex.FinalSubIndexType is MathListSubIndexType.Nucleus){
+          // it was in the nucleus and we removed it, get out of the nucleus and get in the nucleus of the previous one.
+          var downIndex = prevIndex.LevelDown();
+          prevIndex = downIndex.Previous is MathListIndex downPrev
+            ? downPrev.LevelUpWithSubIndex(MathListIndex.Level0Index(1), MathListSubIndexType.Nucleus)
+            : downIndex;
+        }
+        insertionIndex = prevIndex;
+        if(insertionIndex.AtBeginningOfLine && insertionIndex.SubIndexType != MathListSubIndexType.None){
+          // We have deleted to the beginning of the line and it is not the outermost line
+          var atom = MathList.AtomAt(insertionIndex);
+          if(atom is null){
+            // add a placeholder if we deleted everything in the list
+            atom = MathAtoms.Placeholder;
+            // mark the placeholder as selected since that is the current insertion point.
+            atom.Nucleus = Symbols.BlackSquare.ToString();
+            MathList.Insert(insertionIndex, atom);
+          }
+        }
+
+        InsertionPointChanged();
+        TextModified?.Invoke(this, EventArgs.Empty);
+      }
+    }
+
+    public void SelectCharacterAtIndex(MathListIndex index){
+      UpdateDisplay();
+      if (_display is null)
+        // no mathlist so we can't figure it out.
+        return;
+      // setup highlights before drawing the MTLine
+      _display.HighlightCharacterAt(index, SelectColor);
+    }
+    public void ClearHighlights() { 
+      _displayChanged = true; 
+      UpdateDisplay();
+    }
   }
 }

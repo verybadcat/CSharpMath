@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string msgid="3698378085901466129" name="mr_button_content_description">"ปุ่ม \"แคสต์\""</string>
+    <string msgid="5088427771788648085" name="mr_cast_button_connected">"ปุ่ม \"แคสต์\" เชื่อมต่อแล้ว"</string>
+    <string msgid="2187642765091873834" name="mr_cast_button_connecting">"ปุ่ม \"แคสต์\" กำลังเชื่อมต่อ"</string>
+    <string msgid="816305490427819240" name="mr_cast_button_disconnected">"ปุ่ม \"แคสต์\" ยกเลิกการเชื่อมต่อ"</string>
+    <string msgid="6349900579507521956" name="mr_chooser_searching">"กำลังค้นหาอุปกรณ์"</string>
+    <string msgid="414301941546135990" name="mr_chooser_title">"แคสต์ไปยัง"</string>
+    <string msgid="6422801843540543585" name="mr_controller_album_art">"ปกอัลบั้ม"</string>
+    <string msgid="4868457957151124867" name="mr_controller_casting_screen">"กำลังแคสต์หน้าจอ"</string>
+    <string msgid="7333862312480583260" name="mr_controller_close_description">"ปิด"</string>
+    <string msgid="7924809056904240926" name="mr_controller_collapse_group">"ยุบ"</string>
+    <string msgid="1227264889412989580" name="mr_controller_disconnect">"ยกเลิกการเชื่อมต่อ"</string>
+    <string msgid="8062427022744266907" name="mr_controller_expand_group">"ขยาย"</string>
+    <string msgid="5585418471741142924" name="mr_controller_no_info_available">"ไม่มีข้อมูล"</string>
+    <string msgid="6547130360349182381" name="mr_controller_no_media_selected">"ไม่ได้เลือกสื่อไว้"</string>
+    <string msgid="5451884435510905406" name="mr_controller_pause">"หยุดชั่วคราว"</string>
+    <string msgid="683634565969987458" name="mr_controller_play">"เล่น"</string>
+    <string msgid="735874641921425123" name="mr_controller_stop">"หยุด"</string>
+    <string msgid="8857886794086583226" name="mr_controller_stop_casting">"หยุดแคสต์"</string>
+    <string msgid="2361785992211841709" name="mr_controller_volume_slider">"แถบเลื่อนปรับระดับเสียง"</string>
+    <string msgid="5441529851481176817" name="mr_system_route_name">"ระบบ"</string>
+    <string msgid="7498112907524977311" name="mr_user_route_category_name">"อุปกรณ์"</string>
+</resources>

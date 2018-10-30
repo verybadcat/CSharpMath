@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string msgid="3698378085901466129" name="mr_button_content_description">"ကာစ်တ်လုပ်ရန် ခလုတ်"</string>
+    <string msgid="5088427771788648085" name="mr_cast_button_connected">"ကာစ်ခလုတ်။ ချိတ်ဆက်ထားသည်"</string>
+    <string msgid="2187642765091873834" name="mr_cast_button_connecting">"ကာစ်ခလုတ်။ ချိတ်ဆက်နေသည်"</string>
+    <string msgid="816305490427819240" name="mr_cast_button_disconnected">"ကာစ်ခလုတ်။ ချိတ်ဆက်မထားပါ"</string>
+    <string msgid="6349900579507521956" name="mr_chooser_searching">"စက်ပစ္စည်းများ ရှာဖွေခြင်း"</string>
+    <string msgid="414301941546135990" name="mr_chooser_title">"ကာစ်လုပ်ရန် စက်"</string>
+    <string msgid="6422801843540543585" name="mr_controller_album_art">"အယ်လ်ဘမ်ပုံ"</string>
+    <string msgid="4868457957151124867" name="mr_controller_casting_screen">"တည်းဖြတ်ရေး မျက်နှာပြင်"</string>
+    <string msgid="7333862312480583260" name="mr_controller_close_description">"ပိတ်ရန်"</string>
+    <string msgid="7924809056904240926" name="mr_controller_collapse_group">"ခေါက်သိမ်းရန်..."</string>
+    <string msgid="1227264889412989580" name="mr_controller_disconnect">"ဆက်သွယ်မှု ဖြတ်ရန်"</string>
+    <string msgid="8062427022744266907" name="mr_controller_expand_group">"ဖြန့်ချရန်၃"</string>
+    <string msgid="5585418471741142924" name="mr_controller_no_info_available">"အချက်အလက် မရရှိနိုင်ပါ"</string>
+    <string msgid="6547130360349182381" name="mr_controller_no_media_selected">"မည်သည့်မီဒီမှ မရွေးချယ်ထားပါ"</string>
+    <string msgid="5451884435510905406" name="mr_controller_pause">"ခဏရပ်ရန်"</string>
+    <string msgid="683634565969987458" name="mr_controller_play">"ဖွင့်ရန်"</string>
+    <string msgid="735874641921425123" name="mr_controller_stop">"ရပ်ရန်"</string>
+    <string msgid="8857886794086583226" name="mr_controller_stop_casting">"ကာစ်လုပ်ခြင်း ရပ်ရန်"</string>
+    <string msgid="2361785992211841709" name="mr_controller_volume_slider">"အသံအတိုးအကျယ်ချိန်သည့် ဆလိုက်ဒါ"</string>
+    <string msgid="5441529851481176817" name="mr_system_route_name">"စနစ်"</string>
+    <string msgid="7498112907524977311" name="mr_user_route_category_name">"စက်ပစ္စည်းများ"</string>
+</resources>

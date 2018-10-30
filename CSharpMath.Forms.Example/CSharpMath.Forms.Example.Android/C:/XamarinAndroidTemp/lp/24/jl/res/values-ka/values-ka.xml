@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string msgid="3698378085901466129" name="mr_button_content_description">"ტრანსლირების ღილაკი"</string>
+    <string msgid="5088427771788648085" name="mr_cast_button_connected">"ტრანსლირების ღილაკი. დაკავშირებული"</string>
+    <string msgid="2187642765091873834" name="mr_cast_button_connecting">"ტრანსლირების ღილაკი. მიმდინარეობს დაკავშირება"</string>
+    <string msgid="816305490427819240" name="mr_cast_button_disconnected">"ტრანსლირების ღილაკი. გათიშული"</string>
+    <string msgid="6349900579507521956" name="mr_chooser_searching">"მოწყობილობების მოძიება..."</string>
+    <string msgid="414301941546135990" name="mr_chooser_title">"ტრანსლირება:"</string>
+    <string msgid="6422801843540543585" name="mr_controller_album_art">"ალბომის გარეკანი"</string>
+    <string msgid="4868457957151124867" name="mr_controller_casting_screen">"მიმდინარეობს ეკრანის გადაცემა"</string>
+    <string msgid="7333862312480583260" name="mr_controller_close_description">"დახურვა"</string>
+    <string msgid="7924809056904240926" name="mr_controller_collapse_group">"ჩაკეცვა"</string>
+    <string msgid="1227264889412989580" name="mr_controller_disconnect">"კავშირის გაწყვეტა"</string>
+    <string msgid="8062427022744266907" name="mr_controller_expand_group">"გაშლა"</string>
+    <string msgid="5585418471741142924" name="mr_controller_no_info_available">"ინფორმაცია არ არის ხელმისაწვდომი"</string>
+    <string msgid="6547130360349182381" name="mr_controller_no_media_selected">"მედია არჩეული არ არის"</string>
+    <string msgid="5451884435510905406" name="mr_controller_pause">"პაუზა"</string>
+    <string msgid="683634565969987458" name="mr_controller_play">"დაკვრა"</string>
+    <string msgid="735874641921425123" name="mr_controller_stop">"შეწყვეტა"</string>
+    <string msgid="8857886794086583226" name="mr_controller_stop_casting">"ტრანსლირების შეწყვეტა"</string>
+    <string msgid="2361785992211841709" name="mr_controller_volume_slider">"ხმის სლაიდერი"</string>
+    <string msgid="5441529851481176817" name="mr_system_route_name">"სისტემა"</string>
+    <string msgid="7498112907524977311" name="mr_user_route_category_name">"მოწყობილობები"</string>
+</resources>

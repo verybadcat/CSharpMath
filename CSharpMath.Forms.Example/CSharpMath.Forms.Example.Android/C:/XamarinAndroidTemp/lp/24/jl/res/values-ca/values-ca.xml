@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string msgid="3698378085901466129" name="mr_button_content_description">"Botó d\'emetre"</string>
+    <string msgid="5088427771788648085" name="mr_cast_button_connected">"Botó Emet. Connectat."</string>
+    <string msgid="2187642765091873834" name="mr_cast_button_connecting">"Botó Emet. S\'està connectant."</string>
+    <string msgid="816305490427819240" name="mr_cast_button_disconnected">"Botó Emet. Desconnectat."</string>
+    <string msgid="6349900579507521956" name="mr_chooser_searching">"S\'estan cercant dispositius"</string>
+    <string msgid="414301941546135990" name="mr_chooser_title">"Emet a"</string>
+    <string msgid="6422801843540543585" name="mr_controller_album_art">"Imatge de l\'àlbum"</string>
+    <string msgid="4868457957151124867" name="mr_controller_casting_screen">"Emissió de pantalla"</string>
+    <string msgid="7333862312480583260" name="mr_controller_close_description">"Tanca"</string>
+    <string msgid="7924809056904240926" name="mr_controller_collapse_group">"Replega"</string>
+    <string msgid="1227264889412989580" name="mr_controller_disconnect">"Desconnecta"</string>
+    <string msgid="8062427022744266907" name="mr_controller_expand_group">"Desplega"</string>
+    <string msgid="5585418471741142924" name="mr_controller_no_info_available">"No hi ha informació disponible"</string>
+    <string msgid="6547130360349182381" name="mr_controller_no_media_selected">"No s\'ha seleccionat cap fitxer multimèdia"</string>
+    <string msgid="5451884435510905406" name="mr_controller_pause">"Posa en pausa"</string>
+    <string msgid="683634565969987458" name="mr_controller_play">"Reprodueix"</string>
+    <string msgid="735874641921425123" name="mr_controller_stop">"Atura"</string>
+    <string msgid="8857886794086583226" name="mr_controller_stop_casting">"Atura l\'emissió"</string>
+    <string msgid="2361785992211841709" name="mr_controller_volume_slider">"Control lliscant de volum"</string>
+    <string msgid="5441529851481176817" name="mr_system_route_name">"Sistema"</string>
+    <string msgid="7498112907524977311" name="mr_user_route_category_name">"Dispositius"</string>
+</resources>

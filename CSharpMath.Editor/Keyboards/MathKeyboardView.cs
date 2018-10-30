@@ -52,6 +52,7 @@ namespace CSharpMath.Editor {
           tab.EqualsEnabled = value;
         }
       }
+    }
 
       bool _numbersAllowed;
     public bool NumbersAllowed {

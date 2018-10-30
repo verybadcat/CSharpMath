@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string msgid="3698378085901466129" name="mr_button_content_description">"திரையிடு பட்டன்"</string>
+    <string msgid="5088427771788648085" name="mr_cast_button_connected">"அனுப்புதல் பொத்தான். இணைக்கப்பட்டது"</string>
+    <string msgid="2187642765091873834" name="mr_cast_button_connecting">"அனுப்புதல் பொத்தான். இணைக்கிறது"</string>
+    <string msgid="816305490427819240" name="mr_cast_button_disconnected">"அனுப்புதல் பொத்தான். துண்டிக்கப்பட்டது"</string>
+    <string msgid="6349900579507521956" name="mr_chooser_searching">"சாதனங்களைத் தேடுகிறது"</string>
+    <string msgid="414301941546135990" name="mr_chooser_title">"இதில் திரையிடு"</string>
+    <string msgid="6422801843540543585" name="mr_controller_album_art">"ஆல்பம் ஆர்ட்"</string>
+    <string msgid="4868457957151124867" name="mr_controller_casting_screen">"திரையை அனுப்புகிறீர்கள்"</string>
+    <string msgid="7333862312480583260" name="mr_controller_close_description">"மூடும்"</string>
+    <string msgid="7924809056904240926" name="mr_controller_collapse_group">"சுருக்கு"</string>
+    <string msgid="1227264889412989580" name="mr_controller_disconnect">"தொடர்பைத் துண்டி"</string>
+    <string msgid="8062427022744266907" name="mr_controller_expand_group">"விரிவாக்கு"</string>
+    <string msgid="5585418471741142924" name="mr_controller_no_info_available">"தகவல் எதுவுமில்லை"</string>
+    <string msgid="6547130360349182381" name="mr_controller_no_media_selected">"மீடியா எதுவும் தேர்ந்தெடுக்கப்படவில்லை"</string>
+    <string msgid="5451884435510905406" name="mr_controller_pause">"இடைநிறுத்தும்"</string>
+    <string msgid="683634565969987458" name="mr_controller_play">"இயக்கும்"</string>
+    <string msgid="735874641921425123" name="mr_controller_stop">"நிறுத்துவதற்கான பொத்தான்"</string>
+    <string msgid="8857886794086583226" name="mr_controller_stop_casting">"அனுப்புவதை நிறுத்து"</string>
+    <string msgid="2361785992211841709" name="mr_controller_volume_slider">"ஒலியளவு ஸ்லைடர்"</string>
+    <string msgid="5441529851481176817" name="mr_system_route_name">"சிஸ்டம்"</string>
+    <string msgid="7498112907524977311" name="mr_user_route_category_name">"சாதனங்கள்"</string>
+</resources>
