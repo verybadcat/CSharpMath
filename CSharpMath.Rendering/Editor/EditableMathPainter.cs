@@ -9,6 +9,8 @@ namespace CSharpMath.Rendering {
   using Editor;
   using Enumerations;
   using Interfaces;
+  using Color = Structures.Color;
+
   public abstract class EditableMathPainter<TCanvas, TColor, TButton, TTextView> : MathPainter<TCanvas, TColor> where TButton : IButton where TTextView : class, ITextView {
     protected EditableMathPainter(float fontSize = DefaultFontSize * 3 / 2) : base(fontSize) { }
 
@@ -44,7 +46,7 @@ namespace CSharpMath.Rendering {
     }
 
     public bool HasText => MathList.Atoms.Count > 0;
-    public Structures.Color SelectColor { get; set; }
+    public Color SelectColor { get; set; }
 
     bool isEditing;
     public void StartEditing() {

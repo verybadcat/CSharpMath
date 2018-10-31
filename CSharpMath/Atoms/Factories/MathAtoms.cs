@@ -482,9 +482,7 @@ namespace CSharpMath.Atoms {
 
     public static Structures.Result<IMathAtom> Table( string environment, List<List<IMathList>> rows) {
       Style style;
-      var table = new Table(environment) {
-        Cells = rows
-      };
+      var table = new Table(environment) { Cells = rows };
       switch (environment) {
         case null:
           table.InterRowAdditionalSpacing = 1;

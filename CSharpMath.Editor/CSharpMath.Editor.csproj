@@ -8,8 +8,4 @@
   <ItemGroup>
     <ProjectReference Include="..\CSharpMath\CSharpMath.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Keyboards\" />
-  </ItemGroup>
 </Project>

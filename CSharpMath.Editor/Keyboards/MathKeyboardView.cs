@@ -1,9 +1,9 @@
 using System;
 using System.Collections.ObjectModel;
-using System.Drawing;
 
 namespace CSharpMath.Editor {
-  public class MathKeyboardView<TButton, TTextView> where TButton : IButton where TTextView : class, ITextView {
+
+  public partial class MathKeyboardView<TButton, TTextView> where TButton : IButton where TTextView : class, ITextView {
     public MathKeyboardView(TButton fractionButton, TButton multiplyButton, TButton equalsButton, TButton divisionButton, TButton exponentButton, TButton lessEqualsButton, TButton greaterEqualsButton, TButton shiftButton, TButton squareRootButton, TButton radicalButton, TTextView textView, TButton[] numbers, TButton[] variables, TButton[] operators, TButton[] relations, TButton[] letters, TButton[] greekLetters, TButton alphaRho, TButton deltaOmega, TButton sigmaPhi, TButton muNu, TButton lambdaBeta) {
       _currentTab = NumbersTab;
       _currentTab.Selected = true;

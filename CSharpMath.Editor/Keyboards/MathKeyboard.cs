@@ -1,14 +1,15 @@
 using System;
 using System.Text;
 namespace CSharpMath.Editor {
-  public class MathKeyboard<TButton, TTextView> where TButton : IButton where TTextView : class, ITextView {
-    public MathKeyboard(TButton fractionButton, TButton multiplyButton, TButton equalsButton, TButton divisionButton, TButton exponentButton, TButton lessEqualsButton, TButton greaterEqualsButton, TButton shiftButton, TButton squareRootButton, TButton radicalButton, TTextView textView, TButton[] numbers, TButton[] variables, TButton[] operators, TButton[] relations, TButton[] letters, TButton[] greekLetters, TButton alphaRho, TButton deltaOmega, TButton sigmaPhi, TButton muNu, TButton lambdaBeta) {
-      this.fractionButton = fractionButton;
-      this.multiplyButton = multiplyButton;
-      this.equalsButton = equalsButton;
-      this.divisionButton = divisionButton;
-      this.exponentButton = exponentButton;
-      this.lessEqualsButton = lessEqualsButton;
+  using Constants;
+  public class MathKeyboard<TButton> where TButton : IButton {
+    public MathKeyboard(Action<TButton, EventHandler> registerPressed, TButton fractionButton, TButton multiplyButton, TButton equalsButton, TButton divisionButton, TButton exponentButton, TButton lessEqualsButton, TButton greaterEqualsButton, TButton shiftButton, TButton squareRootButton, TButton radicalButton, TTextView textView, TButton[] numbers, TButton[] variables, TButton[] operators, TButton[] relations, TButton[] letters, TButton[] greekLetters, TButton alphaRho, TButton deltaOmega, TButton sigmaPhi, TButton muNu, TButton lambdaBeta) {
+      registerPressed(fractionButton, delegate { fractionPressed(); });
+      registerPressed(multiplyButton, delegate { keyPressed(Symbols.Multiplication); });
+      registerPressed(equalsButton, delegate { keyPressed('='); });
+      registerPressed(divisionButton, delegate { keyPressed(Symbols.Division); });
+      registerPressed(exponentButton, delegate { exponentPressed(); });
+      registerPressed(lessEqualsButton, delegate { keyPressed(Symbols.LessEqual); });
       this.greaterEqualsButton = greaterEqualsButton;
       this.shiftButton = shiftButton;
       this.squareRootButton = squareRootButton;
@@ -38,7 +39,7 @@ namespace CSharpMath.Editor {
     public TButton squareRootButton; //(weak)
     public TButton radicalButton; //(weak)
 
-    public TTextView textView; //(weak)
+    public readonly StringBuilder textView = new StringBuilder(); //(weak)
     public int cursorPosition;
     public TButton[] numbers;
     public TButton[] variables;
@@ -53,29 +54,28 @@ namespace CSharpMath.Editor {
     public TButton _muNu; //(weak)
     public TButton _lambdaBeta; //(weak)
 
+    public void keyPressed(char key) =>
+      textView.Insert(cursorPosition++, key);
     public void keyPressed(string key) {
-      if (textView is null) return;
       textView.Insert(cursorPosition, key);
       cursorPosition += key.Length;
     }
     public void backspacePressed() =>
-      textView?.Remove(--cursorPosition);
+      textView.Remove(--cursorPosition, 1);
     public void enterPressed() =>
-      textView?.Insert(cursorPosition++, '\n');
+      textView.Insert(cursorPosition++, '\n');
     public event EventHandler dismissPressed;
     public void fractionPressed() =>
-      textView?.Insert(cursorPosition++, Constants.Symbols.FractionSlash);
+      textView.Insert(cursorPosition++, Constants.Symbols.FractionSlash);
     public void exponentPressed() =>
-      textView?.Insert(cursorPosition++, '^');
+      textView.Insert(cursorPosition++, '^');
     public void parensPressed() {
-      if (textView is null) return;
       textView.Insert(cursorPosition++, '(');
       textView.Insert(cursorPosition++, ')');
     }
     public void subscriptPressed() =>
-      textView?.Insert(cursorPosition++, '_');
+      textView.Insert(cursorPosition++, '_');
     public void absValuePressed() {
-      if (textView is null) return;
       textView.Insert(cursorPosition++, '|');
       textView.Insert(cursorPosition++, '|');
     }
@@ -100,11 +100,10 @@ namespace CSharpMath.Editor {
       }
     }
     public void squareRootPressed() =>
-      textView?.Insert(cursorPosition++, Constants.Symbols.SquareRoot);
+      textView.Insert(cursorPosition++, Constants.Symbols.SquareRoot);
     public void rootWithPowerPressed() =>
-      textView?.Insert(cursorPosition++, Constants.Symbols.CubeRoot);
+      textView.Insert(cursorPosition++, Constants.Symbols.CubeRoot);
     public void logWithBasePressed() {
-      if (textView is null) return;
       textView.Insert(cursorPosition++, 'l');
       textView.Insert(cursorPosition++, 'o');
       textView.Insert(cursorPosition++, 'g');
