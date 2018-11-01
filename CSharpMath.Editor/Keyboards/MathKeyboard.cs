@@ -1,20 +1,39 @@
 using System;
+using System.Linq;
 using System.Text;
 namespace CSharpMath.Editor {
   using Constants;
   public class MathKeyboard<TButton> where TButton : IButton {
-    public MathKeyboard(Action<TButton, EventHandler> registerPressed, TButton fractionButton, TButton multiplyButton, TButton equalsButton, TButton divisionButton, TButton exponentButton, TButton lessEqualsButton, TButton greaterEqualsButton, TButton shiftButton, TButton squareRootButton, TButton radicalButton, TTextView textView, TButton[] numbers, TButton[] variables, TButton[] operators, TButton[] relations, TButton[] letters, TButton[] greekLetters, TButton alphaRho, TButton deltaOmega, TButton sigmaPhi, TButton muNu, TButton lambdaBeta) {
+    public MathKeyboard(Action<TButton, EventHandler> registerPressed, TButton fractionButton, TButton multiplyButton, TButton equalsButton, TButton divisionButton, TButton exponentButton, TButton lessEqualsButton, TButton greaterEqualsButton, TButton shiftButton, TButton squareRootButton, TButton radicalButton, StringBuilder text, Box<int> textPosition, TButton[] numbers, TButton[] variables, TButton[] operators, TButton[] relations, TButton[] letters, TButton[] greekLetters, TButton alphaRho, TButton deltaOmega, TButton sigmaPhi, TButton muNu, TButton lambdaBeta) {
+      textView = text;
       registerPressed(fractionButton, delegate { fractionPressed(); });
       registerPressed(multiplyButton, delegate { keyPressed(Symbols.Multiplication); });
       registerPressed(equalsButton, delegate { keyPressed('='); });
       registerPressed(divisionButton, delegate { keyPressed(Symbols.Division); });
       registerPressed(exponentButton, delegate { exponentPressed(); });
       registerPressed(lessEqualsButton, delegate { keyPressed(Symbols.LessEqual); });
+      registerPressed(greaterEqualsButton, delegate { keyPressed(Symbols.GreaterEqual); });
+      registerPressed(shiftButton, delegate { shiftPressed(); });
+      registerPressed(squareRootButton, delegate { squareRootPressed(); });
+      registerPressed(radicalButton, delegate { rootWithPowerPressed(); });
+      foreach (var button in numbers.Concat(variables).Concat(operators).Concat(relations).Concat(letters).Concat(greekLetters))
+        registerPressed(button, delegate { keyPressed(button.Text); });
+      registerPressed(alphaRho, delegate { keyPressed(alphaRho.Text); });
+      registerPressed(deltaOmega, delegate { keyPressed(deltaOmega.Text); });
+      registerPressed(sigmaPhi, delegate { keyPressed(sigmaPhi.Text); });
+      registerPressed(muNu, delegate { keyPressed(muNu.Text); });
+      registerPressed(lambdaBeta, delegate { keyPressed(lambdaBeta.Text); });
+
+      this.fractionButton = fractionButton;
+      this.multiplyButton = multiplyButton;
+      this.equalsButton = equalsButton;
+      this.divisionButton = divisionButton;
+      this.exponentButton = exponentButton;
+      this.lessEqualsButton = lessEqualsButton;
       this.greaterEqualsButton = greaterEqualsButton;
       this.shiftButton = shiftButton;
       this.squareRootButton = squareRootButton;
       this.radicalButton = radicalButton;
-      this.textView = textView;
       this.numbers = numbers;
       this.variables = variables;
       this.operators = operators;
@@ -39,8 +58,8 @@ namespace CSharpMath.Editor {
     public TButton squareRootButton; //(weak)
     public TButton radicalButton; //(weak)
 
-    public readonly StringBuilder textView = new StringBuilder(); //(weak)
-    public int cursorPosition;
+    public readonly StringBuilder textView; //(weak)
+    public Box<int> cursorPosition;
     public TButton[] numbers;
     public TButton[] variables;
     public TButton[] operators;
@@ -55,29 +74,29 @@ namespace CSharpMath.Editor {
     public TButton _lambdaBeta; //(weak)
 
     public void keyPressed(char key) =>
-      textView.Insert(cursorPosition++, key);
+      textView.Insert(cursorPosition.Content++, key);
     public void keyPressed(string key) {
-      textView.Insert(cursorPosition, key);
-      cursorPosition += key.Length;
+      textView.Insert(cursorPosition.Content, key);
+      cursorPosition.Content += key.Length;
     }
     public void backspacePressed() =>
-      textView.Remove(--cursorPosition, 1);
+      textView.Remove(--cursorPosition.Content, 1);
     public void enterPressed() =>
-      textView.Insert(cursorPosition++, '\n');
+      textView.Insert(cursorPosition.Content++, '\n');
     public event EventHandler dismissPressed;
     public void fractionPressed() =>
-      textView.Insert(cursorPosition++, Constants.Symbols.FractionSlash);
+      textView.Insert(cursorPosition.Content++, Symbols.FractionSlash);
     public void exponentPressed() =>
-      textView.Insert(cursorPosition++, '^');
+      textView.Insert(cursorPosition.Content++, '^');
     public void parensPressed() {
-      textView.Insert(cursorPosition++, '(');
-      textView.Insert(cursorPosition++, ')');
+      textView.Insert(cursorPosition.Content++, '(');
+      textView.Insert(cursorPosition.Content++, ')');
     }
     public void subscriptPressed() =>
-      textView.Insert(cursorPosition++, '_');
+      textView.Insert(cursorPosition.Content++, '_');
     public void absValuePressed() {
-      textView.Insert(cursorPosition++, '|');
-      textView.Insert(cursorPosition++, '|');
+      textView.Insert(cursorPosition.Content++, '|');
+      textView.Insert(cursorPosition.Content++, '|');
     }
     public void shiftPressed() {
       Shifted ^= true;
@@ -100,14 +119,14 @@ namespace CSharpMath.Editor {
       }
     }
     public void squareRootPressed() =>
-      textView.Insert(cursorPosition++, Constants.Symbols.SquareRoot);
+      textView.Insert(cursorPosition.Content++, Symbols.SquareRoot);
     public void rootWithPowerPressed() =>
-      textView.Insert(cursorPosition++, Constants.Symbols.CubeRoot);
+      textView.Insert(cursorPosition.Content++, Symbols.CubeRoot);
     public void logWithBasePressed() {
-      textView.Insert(cursorPosition++, 'l');
-      textView.Insert(cursorPosition++, 'o');
-      textView.Insert(cursorPosition++, 'g');
-      textView.Insert(cursorPosition++, '_');
+      textView.Insert(cursorPosition.Content++, 'l');
+      textView.Insert(cursorPosition.Content++, 'o');
+      textView.Insert(cursorPosition.Content++, 'g');
+      textView.Insert(cursorPosition.Content++, '_');
     }
 
     bool _numbersEnabled;

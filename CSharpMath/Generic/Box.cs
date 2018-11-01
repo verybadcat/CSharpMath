@@ -1,0 +1,1 @@
+namespace CSharpMath { public class Box<T> where T : struct { public T Content; } }
