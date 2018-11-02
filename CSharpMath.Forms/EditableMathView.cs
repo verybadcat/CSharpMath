@@ -13,31 +13,12 @@ namespace CSharpMath.Forms {
     public bool Enabled { get => Content.IsEnabled; set => Content.IsEnabled = value; }
     public bool Selected { get => throw null; set => throw null; }
   }
-  public class Label : Editor.ITextView{
-    public Xamarin.Forms.Label Content { get; set; }
-
-    public void Insert(int position, char value) {
-      var s = Content.Text;
-
-      var newString = new char[s.Length + 1];
-      s.CopyTo(0, newString, 0, s.Length);
-      for (int i = newString.Length - 1; i >= 0 && i > position; i--)
-        newString[i] = newString[i - 1];
-      newString[position] = value;
-
-      Content.Text = new string(newString);
-    }
-
-    public void Insert(int position, string value) => Content.Text = Content.Text.Insert(position, value);
-
-    public void Remove(int position) => Content.Text = Content.Text.Remove(position, 1);
-  }
-  public class EditableMathView : BaseView<SkiaSharp.EditableMathPainter<Button, Label>, MathSource>, IPainter<MathSource, Color> {
+  public class EditableMathView : BaseView<SkiaSharp.EditableMathPainter<Button>, MathSource>, IPainter<MathSource, Color> {
     #region BindableProperties
-  static EditableMathView() {
-      var painter = new SkiaSharp.EditableMathPainter<Button, Label>();
+    static EditableMathView() {
+      var painter = new SkiaSharp.EditableMathPainter<Button>(null);
       var thisType = typeof(MathView);
-      SkiaSharp.EditableMathPainter<Button, Label> p(BindableObject b) => ((EditableMathView)b).Painter;
+      SkiaSharp.EditableMathPainter<Button> p(BindableObject b) => ((EditableMathView)b).Painter;
       StrokeCapProperty = BindableProperty.Create(nameof(StrokeCap), typeof(SKStrokeCap), thisType, painter.StrokeCap, propertyChanged: (b, o, n) => p(b).StrokeCap = (SKStrokeCap)n);
       GlyphBoxColorProperty = BindableProperty.Create(nameof(GlyphBoxColor), typeof((Color glyph, Color textRun)?), thisType,
         defaultValue: painter.GlyphBoxColor,
@@ -54,5 +35,7 @@ namespace CSharpMath.Forms {
     public new RectangleF? Measure => Painter.Measure;
     protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint) => Painter.Measure is RectangleF r ? new SizeRequest(new Xamarin.Forms.Size(r.Width, r.Height)) : base.OnMeasure(widthConstraint, heightConstraint);
 
+    public ContentView Default =>
+      Painter.
   }
 }

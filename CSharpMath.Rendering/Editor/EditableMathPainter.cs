@@ -11,13 +11,12 @@ namespace CSharpMath.Rendering {
   using Interfaces;
   using Color = Structures.Color;
 
-  public abstract class EditableMathPainter<TCanvas, TColor, TButton, TTextView> : MathPainter<TCanvas, TColor> where TButton : IButton where TTextView : class, ITextView {
-    protected EditableMathPainter(float fontSize = DefaultFontSize * 3 / 2) : base(fontSize) { }
+  public abstract class EditableMathPainter<TCanvas, TColor, TButton> : MathPainter<TCanvas, TColor> where TButton : class, IButton {
+    protected EditableMathPainter(MathKeyboardView<TButton> keyboard, float fontSize = DefaultFontSize * 3 / 2) : base(fontSize) => this.keyboard = keyboard;
 
     readonly CaretView<Fonts, Glyph> caretView;
     readonly List<MathListIndex> highlighted;
-    readonly MathKeyboardView<TButton, TTextView> keyboard;
-    TTextView textView;
+    readonly MathKeyboardView<TButton> keyboard;
     MathListIndex insertionIndex;
     protected override void SetRedisplay() {
       base.SetRedisplay();
@@ -54,14 +53,14 @@ namespace CSharpMath.Rendering {
       isEditing = true;
       if (insertionIndex is null)
         insertionIndex = MathListIndex.Level0Index(MathList.Atoms.Count);
-      keyboard.StartedEditing(textView);
+      //keyboard.StartedEditing(textView);
       InsertionPointChanged();
       BeginEditing?.Invoke(this, EventArgs.Empty);
     }
     public void FinishEditing() {
       if (!isEditing) return;
       isEditing = false;
-      keyboard.FinishedEditing(textView);
+      //keyboard.FinishedEditing(textView);
       InsertionPointChanged();
       EndEditing?.Invoke(this, EventArgs.Empty);
     }

@@ -4,10 +4,11 @@ using CSharpMath.Structures;
 using SkiaSharp;
 
 namespace CSharpMath.SkiaSharp {
-  public class EditableMathPainter<TButton, TTextView> : EditableMathPainter<SKCanvas, SKColor, TButton, TTextView> where TButton : Editor.IButton where TTextView : class, Editor.ITextView {
+  public class EditableMathPainter<TButton> : EditableMathPainter<SKCanvas, SKColor, TButton> where TButton : class, Editor.IButton {
     public const bool DefaultAntiAlias = true;
 
-    public EditableMathPainter(float fontSize = DefaultFontSize * 3 / 2, bool antiAlias = DefaultAntiAlias) : base(fontSize) =>
+    public EditableMathPainter(Editor.MathKeyboardView<TButton> keyboard, float fontSize = DefaultFontSize * 3 / 2, bool antiAlias = DefaultAntiAlias)
+      : base(keyboard, fontSize) =>
       AntiAlias = antiAlias;
 
     public SKStrokeCap StrokeCap { get; set; }

@@ -14,7 +14,11 @@ namespace CSharpMath.Forms {
   using TextAlignment = Rendering.TextAlignment;
   using Thickness = Rendering.Thickness;
 
-  public abstract class BaseView<TPainter, TSource> : SKCanvasView, IPainter<TSource, Color> where TPainter : ICanvasPainter<SKCanvas, TSource, SKColor> where TSource : struct, ISource {
+  internal interface IPainterSupplier<TSource, TPainter> where TPainter : ICanvasPainter<SKCanvas, TSource, SKColor> where TSource : struct, ISource {
+    TPainter Default { get; }
+  }
+
+  public abstract class BaseView<TPainter, TSource, TPainterSupplier> : SKCanvasView, IPainter<TSource, Color> where TPainter : ICanvasPainter<SKCanvas, TSource, SKColor> where TSource : struct, ISource {
     public BaseView() {
       Painter = (TPainter)painterCtor.Invoke(ctorParams);
     }
@@ -31,6 +35,9 @@ namespace CSharpMath.Forms {
 
     #region BindableProperties
     static BaseView() {
+      TPainter painter;
+      if(typeof(TPainter) == typeof(EditableMathPainter<,,>)) //Special case
+        painter = new EditableMathPainter<SkiaSharp.SkiaCanvas, Color, >
       var ctors = typeof(TPainter).GetConstructors().Where(c => c.GetParameters().All(param => param.IsOptional));
       if (ctors.IsEmpty()) throw new ArgumentException($"The supplied generic type parameter for {nameof(TPainter)}, which is {typeof(TPainter)}, does not have any constructors with no parameters nor all optional parameters.");
       painterCtor = ctors.First();

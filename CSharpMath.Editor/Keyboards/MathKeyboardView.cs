@@ -3,21 +3,21 @@ using System.Collections.ObjectModel;
 
 namespace CSharpMath.Editor {
 
-  public partial class MathKeyboardView<TButton, TTextView> where TButton : IButton {
-    public MathKeyboardView(MathKeyboard<TButton> numbers, MathKeyboard<TButton> letters, MathKeyboard<TButton> functions, MathKeyboard<TButton> operations) {
+  public partial class MathKeyboardView<TButton> where TButton : class, IButton {
+    public MathKeyboardView(MathKeyboard<TButton> numbers, MathKeyboard<TButton> operations, MathKeyboard<TButton> functions, MathKeyboard<TButton> letters) {
       _currentTab = NumbersTab;
       _currentTab.Selected = true;
       var text = new System.Text.StringBuilder();
       var textPosition = new Box<int>();
-      Tabs = new ReadOnlyCollection<MathKeyboard<TButton>>(new[] { numbers, letters, functions, operations });
+      Tabs = new ReadOnlyCollection<MathKeyboard<TButton>>(new[] { numbers, operations, functions, letters });
     }
     //public static readonly MathKeyboardView<TButton, TTextView> Instance = new MathKeyboardView<TButton, TTextView>();
 
     public ReadOnlyCollection<MathKeyboard<TButton>> Tabs { get; }
     public MathKeyboard<TButton> NumbersTab => Tabs[0];
-    public MathKeyboard<TButton> LettersTab => Tabs[1];
+    public MathKeyboard<TButton> OperationsTab => Tabs[1];
     public MathKeyboard<TButton> FunctionsTab => Tabs[2];
-    public MathKeyboard<TButton> OperationsTab => Tabs[3];
+    public MathKeyboard<TButton> LettersTab => Tabs[3];
     private MathKeyboard<TButton> _currentTab;
     public MathKeyboard<TButton> CurrentTab {
       get => _currentTab;
