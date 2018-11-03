@@ -13,10 +13,13 @@ namespace CSharpMath.Forms {
   using Color = Xamarin.Forms.Color;
 
   [XamlCompilation(XamlCompilationOptions.Compile)]
-  public class MathView : BaseView<MathPainter, MathSource>, IPainter<MathSource, Color> {
+  public class MathView : BaseView<MathPainter, MathSource, MathView.PainterSupplier>, IPainter<MathSource, Color> {
+    public struct PainterSupplier : IPainterSupplier<MathPainter> {
+      public MathPainter Default => new MathPainter();
+    }
     #region BindableProperties
     static MathView() {
-      var painter = new MathPainter();
+      var painter = default(PainterSupplier).Default;
       var thisType = typeof(MathView);
       MathPainter p(BindableObject b) => ((MathView)b).Painter;
       StrokeCapProperty = BindableProperty.Create(nameof(StrokeCap), typeof(SKStrokeCap), thisType, painter.StrokeCap, propertyChanged: (b, o, n) => p(b).StrokeCap = (SKStrokeCap)n);

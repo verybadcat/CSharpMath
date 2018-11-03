@@ -6,8 +6,10 @@ namespace CSharpMath.Forms
   using Xamarin.Forms.Xaml;
 
   [ContentProperty(nameof(LaTeX)), XamlCompilation(XamlCompilationOptions.Compile)]
-	public class TextView : BaseView<TextPainter, TextSource>
-	{
+	public class TextView : BaseView<TextPainter, TextSource, TextView.PainterSupplier> {
+    public struct PainterSupplier : IPainterSupplier<TextPainter> {
+      public TextPainter Default => new TextPainter();
+    }
     public TextAtom Atom { get => Source.Atom; set => Source = new TextSource(value); }
     public string LaTeX { get => Source.LaTeX; set => Source = new TextSource(value); }
 

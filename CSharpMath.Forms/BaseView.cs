@@ -14,11 +14,11 @@ namespace CSharpMath.Forms {
   using TextAlignment = Rendering.TextAlignment;
   using Thickness = Rendering.Thickness;
 
-  internal interface IPainterSupplier<TSource, TPainter> where TPainter : ICanvasPainter<SKCanvas, TSource, SKColor> where TSource : struct, ISource {
+  public interface IPainterSupplier<TPainter> {
     TPainter Default { get; }
   }
 
-  public abstract class BaseView<TPainter, TSource, TPainterSupplier> : SKCanvasView, IPainter<TSource, Color> where TPainter : ICanvasPainter<SKCanvas, TSource, SKColor> where TSource : struct, ISource {
+  public abstract class BaseView<TPainter, TSource, TPainterSupplier> : SKCanvasView, IPainter<TSource, Color> where TPainter : ICanvasPainter<SKCanvas, TSource, SKColor> where TSource : struct, ISource where TPainterSupplier : struct, IPainterSupplier<TPainter> {
     public BaseView() {
       Painter = (TPainter)painterCtor.Invoke(ctorParams);
     }
@@ -30,22 +30,12 @@ namespace CSharpMath.Forms {
       Painter.Draw(e.Surface.Canvas, TextAlignment, Padding, DisplacementX, DisplacementY);
     }
 
-    private static readonly System.Reflection.ConstructorInfo painterCtor;
-    private static readonly object[] ctorParams;
-
     #region BindableProperties
     static BaseView() {
-      TPainter painter;
-      if(typeof(TPainter) == typeof(EditableMathPainter<,,>)) //Special case
-        painter = new EditableMathPainter<SkiaSharp.SkiaCanvas, Color, >
-      var ctors = typeof(TPainter).GetConstructors().Where(c => c.GetParameters().All(param => param.IsOptional));
-      if (ctors.IsEmpty()) throw new ArgumentException($"The supplied generic type parameter for {nameof(TPainter)}, which is {typeof(TPainter)}, does not have any constructors with no parameters nor all optional parameters.");
-      painterCtor = ctors.First();
-      ctorParams = Enumerable.Repeat(Type.Missing, painterCtor.GetParameters().Length).ToArray();
-      var painter = (TPainter)painterCtor.Invoke(ctorParams);
-      var thisType = typeof(BaseView<TPainter, TSource>);
+      var painter = default(TPainterSupplier).Default;
+      var thisType = typeof(BaseView<TPainter, TSource, TPainterSupplier>);
       var drawMethodParams = typeof(TPainter).GetMethod(nameof(ICanvasPainter<SKCanvas, TSource, SKColor>.Draw), new[] { typeof(SKCanvas), typeof(TextAlignment), typeof(Thickness), typeof(float), typeof(float) }).GetParameters();
-      TPainter p(BindableObject b) => ((BaseView<TPainter, TSource>)b).Painter;
+      TPainter p(BindableObject b) => ((BaseView<TPainter, TSource, TPainterSupplier>)b).Painter;
       SourceProperty = BindableProperty.Create(nameof(Source), typeof(TSource), thisType, painter.Source, BindingMode.TwoWay, null, (b, o, n) => { p(b).Source = (TSource)n; ((BaseView<TPainter, TSource>)b).ErrorMessage = p(b).ErrorMessage; });
       DisplayErrorInlineProperty = BindableProperty.Create(nameof(DisplayErrorInline), typeof(bool), thisType, painter.DisplayErrorInline, propertyChanged: (b, o, n) => p(b).DisplayErrorInline = (bool)n);
       FontSizeProperty = BindableProperty.Create(nameof(FontSize), typeof(float), thisType, painter.FontSize, propertyChanged: (b, o, n) => p(b).FontSize = (float)n);
