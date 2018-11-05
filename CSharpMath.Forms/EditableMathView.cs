@@ -7,9 +7,10 @@ using Color = Xamarin.Forms.Color;
 using C = CSharpMath.Structures.Color;
 using static SkiaSharp.Views.Forms.Extensions;
 using CSharpMath.SkiaSharp;
+using SkiaSharp.Views.Forms;
 
 namespace CSharpMath.Forms {
-  public class EditableMathView : BaseView<EditableMathPainter<EditableMathView.Button, EditableMathView.ButtonLayout>, MathSource, EditableMathView.PainterSupplier>, IPainter<MathSource, Color> {
+  public class EditableMathView : BaseView<EditableMathPainter<EditableMathView.Button, EditableMathView.ButtonLayout>, EditableMathSource, EditableMathView.PainterSupplier>, IPainter<EditableMathSource, Color> {
     public class Button : Editor.IButton {
       public Xamarin.Forms.Button Content { get; set; }
       public string Text { get => Content.Text; set => Content.Text = value; }
@@ -30,7 +31,9 @@ namespace CSharpMath.Forms {
     public struct PainterSupplier : IPainterSupplier<EditableMathPainter<Button, ButtonLayout>> {
       public EditableMathPainter<Button, ButtonLayout> Default => new EditableMathPainter<Button, ButtonLayout>(null);
     }
-    public EditableMathView(EditableMathPainter<Button, ButtonLayout> painter) : base(painter) { }
+    public EditableMathView(EditableMathPainter<Button, ButtonLayout> painter) : base(painter) {
+      painter.TextModified += delegate { base.InvalidateSurface(); };
+    }
     #region BindableProperties
     static EditableMathView() {
       var painter = default(PainterSupplier).Default;
@@ -46,10 +49,14 @@ namespace CSharpMath.Forms {
     
     public SKStrokeCap StrokeCap { get => (SKStrokeCap)GetValue(StrokeCapProperty); set => SetValue(StrokeCapProperty, value); }
     public (Color glyph, Color textRun)? GlyphBoxColor { get => ((Color glyph, Color textRun)?)GetValue(GlyphBoxColorProperty); set => SetValue(GlyphBoxColorProperty, value); }
-    public Interfaces.IMathList MathList { get => Source.MathList; set => Source = new MathSource(value); }
-    public string LaTeX { get => Source.LaTeX; set => Source = new MathSource(value); }
-    public new RectangleF? Measure => Painter.Measure;
-    protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint) => Painter.Measure is RectangleF r ? new SizeRequest(new Xamarin.Forms.Size(r.Width, r.Height)) : base.OnMeasure(widthConstraint, heightConstraint);
+    public Atoms.MathList MathList => Painter.MathList;
+
+    protected override void OnTouch(SKTouchEventArgs e) {
+      base.OnTouch(e);
+      if (e.ActionType != SKTouchAction.Pressed) return;
+      Painter.Tap(new PointF(e.Location.X, e.Location.Y));
+      e.Handled = true;
+    }
 
     public static (EditableMathView view, Layout keyboard) Default {
       get {
@@ -74,7 +81,7 @@ namespace CSharpMath.Forms {
         var keyboard = view.layout;
         keyboard.Content.WidthRequest = keyboard.Bounds.Width;
         keyboard.Content.HeightRequest = keyboard.Bounds.Height;
-        return (new EditableMathView (new EditableMathPainter<Button, ButtonLayout>(view)), keyboard.Content);
+        return (new EditableMathView (new EditableMathPainter<Button, ButtonLayout>(view)){ WidthRequest = view.layout.Bounds.Width, HeightRequest = view.layout.Bounds.Height }, keyboard.Content);
       }
     }
   }

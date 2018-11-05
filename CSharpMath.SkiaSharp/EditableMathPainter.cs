@@ -8,13 +8,12 @@ namespace CSharpMath.SkiaSharp {
     public const bool DefaultAntiAlias = true;
 
     public EditableMathPainter(Editor.MathKeyboardView<TButton, TLayout> keyboard, float fontSize = DefaultFontSize * 3 / 2, bool antiAlias = DefaultAntiAlias)
-      : base(keyboard, fontSize) =>
+      : base(keyboard, fontSize) {
       AntiAlias = antiAlias;
+    }
 
     public SKStrokeCap StrokeCap { get; set; }
     public bool AntiAlias { get; set; }
-
-    public void Draw(SKCanvas canvas, SKPoint point) => Draw(canvas, point.X, point.Y);
 
     protected override bool CoordinatesFromBottomLeftInsteadOfTopLeft => false;
 
@@ -24,5 +23,6 @@ namespace CSharpMath.SkiaSharp {
 
     public override ICanvas WrapCanvas(SKCanvas canvas) =>
       new SkiaCanvas(canvas, StrokeCap, AntiAlias);
+
   }
 }
