@@ -19,9 +19,7 @@ namespace CSharpMath.Forms {
   }
 
   public abstract class BaseView<TPainter, TSource, TPainterSupplier> : SKCanvasView, IPainter<TSource, Color> where TPainter : ICanvasPainter<SKCanvas, TSource, SKColor> where TSource : struct, ISource where TPainterSupplier : struct, IPainterSupplier<TPainter> {
-    public BaseView() {
-      Painter = (TPainter)painterCtor.Invoke(ctorParams);
-    }
+    public BaseView(TPainter painter) => Painter = painter;
 
     protected TPainter Painter { get; }
     protected override void OnPaintSurface(SKPaintSurfaceEventArgs e) {
@@ -36,7 +34,7 @@ namespace CSharpMath.Forms {
       var thisType = typeof(BaseView<TPainter, TSource, TPainterSupplier>);
       var drawMethodParams = typeof(TPainter).GetMethod(nameof(ICanvasPainter<SKCanvas, TSource, SKColor>.Draw), new[] { typeof(SKCanvas), typeof(TextAlignment), typeof(Thickness), typeof(float), typeof(float) }).GetParameters();
       TPainter p(BindableObject b) => ((BaseView<TPainter, TSource, TPainterSupplier>)b).Painter;
-      SourceProperty = BindableProperty.Create(nameof(Source), typeof(TSource), thisType, painter.Source, BindingMode.TwoWay, null, (b, o, n) => { p(b).Source = (TSource)n; ((BaseView<TPainter, TSource>)b).ErrorMessage = p(b).ErrorMessage; });
+      SourceProperty = BindableProperty.Create(nameof(Source), typeof(TSource), thisType, painter.Source, BindingMode.TwoWay, null, (b, o, n) => { p(b).Source = (TSource)n; ((BaseView<TPainter, TSource, TPainterSupplier>)b).ErrorMessage = p(b).ErrorMessage; });
       DisplayErrorInlineProperty = BindableProperty.Create(nameof(DisplayErrorInline), typeof(bool), thisType, painter.DisplayErrorInline, propertyChanged: (b, o, n) => p(b).DisplayErrorInline = (bool)n);
       FontSizeProperty = BindableProperty.Create(nameof(FontSize), typeof(float), thisType, painter.FontSize, propertyChanged: (b, o, n) => p(b).FontSize = (float)n);
       ErrorFontSizeProperty = BindableProperty.Create(nameof(ErrorFontSize), typeof(float?), thisType, painter.ErrorFontSize, propertyChanged: (b, o, n) => p(b).ErrorFontSize = (float)n);

@@ -13,6 +13,7 @@
             <local:ExamplesPage/>
             <local:MoreExamplesPage/>
             <local:CustomExamplePage/>
+            <local:EditorPage/>
             <local:SlidePage/>
             <local:TextPage/>
             <local:LayoutPage/>

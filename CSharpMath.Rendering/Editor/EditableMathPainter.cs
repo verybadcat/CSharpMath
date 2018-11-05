@@ -11,16 +11,27 @@ namespace CSharpMath.Rendering {
   using Interfaces;
   using Color = Structures.Color;
 
-  public abstract class EditableMathPainter<TCanvas, TColor, TButton> : MathPainter<TCanvas, TColor> where TButton : class, IButton {
-    protected EditableMathPainter(MathKeyboardView<TButton> keyboard, float fontSize = DefaultFontSize * 3 / 2) : base(fontSize) => this.keyboard = keyboard;
+  public abstract class EditableMathPainter<TCanvas, TColor, TButton, TLayout> : MathPainter<TCanvas, TColor> where TButton : class, IButton where TLayout : IButtonLayout<TButton, TLayout> {
+    protected EditableMathPainter(MathKeyboardView<TButton, TLayout> keyboard, float fontSize = DefaultFontSize * 3 / 2) : base(fontSize) {
+      this.keyboard = keyboard;
+      caretView = new CaretView<Fonts, Glyph>(fontSize);
+      MathList = new MathList();
+      if(keyboard?.Tabs != null)
+      foreach(var tab in keyboard.Tabs)
+      {
+        tab.insertText = InsertText;
+        tab.delete = DeleteBackwards;
+      }
+    }
 
     readonly CaretView<Fonts, Glyph> caretView;
     readonly List<MathListIndex> highlighted;
-    readonly MathKeyboardView<TButton> keyboard;
+    readonly MathKeyboardView<TButton, TLayout> keyboard;
     MathListIndex insertionIndex;
     protected override void SetRedisplay() {
       base.SetRedisplay();
-      insertionIndex = MathListIndex.Level0Index(MathList.Atoms.Count);
+      //EditableMathView.PainterSupplier sets MathList.Atoms to null
+      insertionIndex = MathListIndex.Level0Index(MathList?.Atoms.Count ?? 0);
       InsertionPointChanged();
     }
 
@@ -44,7 +55,7 @@ namespace CSharpMath.Rendering {
       path.EndRead();
     }
 
-    public bool HasText => MathList.Atoms.Count > 0;
+    public bool HasText => MathList?.Atoms?.Count > 0;
     public Color SelectColor { get; set; }
 
     bool isEditing;
@@ -236,7 +247,7 @@ namespace CSharpMath.Rendering {
     /// <returns>True if updated</returns>
     public bool UpdatePlaceholderIfPresent(IMathAtom atom) {
       var current = MathList.AtomAt(insertionIndex);
-      if(current.AtomType is MathAtomType.Placeholder) {
+      if(current?.AtomType is MathAtomType.Placeholder) {
         if (current.Superscript is IMathList super)
           atom.Superscript = super;
         if (current.Subscript is IMathList sub)

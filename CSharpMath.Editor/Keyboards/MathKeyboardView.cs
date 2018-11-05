@@ -2,32 +2,55 @@ using System;
 using System.Collections.ObjectModel;
 
 namespace CSharpMath.Editor {
-
-  public partial class MathKeyboardView<TButton> where TButton : class, IButton {
-    public MathKeyboardView(MathKeyboard<TButton> numbers, MathKeyboard<TButton> operations, MathKeyboard<TButton> functions, MathKeyboard<TButton> letters) {
-      _currentTab = NumbersTab;
+  using Color = Structures.Color;
+  public partial class MathKeyboardView<TButton, TLayout> where TButton : class, IButton where TLayout : IButtonLayout<TButton, TLayout> {
+    public MathKeyboardView(Func<TLayout> layoutCtor, Action<TButton, EventHandler> registerPressed, System.Drawing.RectangleF bounds,
+        MathKeyboard<TButton, TLayout> numbers, TButton numbersBtn,
+        MathKeyboard<TButton, TLayout> operations, TButton operationsBtn,
+        MathKeyboard<TButton, TLayout> functions, TButton functionsBtn,
+        MathKeyboard<TButton, TLayout> letters, TButton lettersBtn) {
+      //MathList = new Atoms.MathList();
+      Tabs = new ReadOnlyCollection<MathKeyboard<TButton, TLayout>>(new[] { numbers, operations, functions, letters });
+      foreach (var tab in Tabs) tab.layout.Visible = false;
+      _currentTab = numbers;
       _currentTab.Selected = true;
+      _currentTab.layout.Visible = true;
       var text = new System.Text.StringBuilder();
       var textPosition = new Box<int>();
-      Tabs = new ReadOnlyCollection<MathKeyboard<TButton>>(new[] { numbers, operations, functions, letters });
+      registerPressed(numbersBtn, delegate { CurrentTab = NumbersTab; });
+      registerPressed(operationsBtn, delegate { CurrentTab = OperationsTab; });
+      registerPressed(functionsBtn, delegate { CurrentTab = FunctionsTab; });
+      registerPressed(lettersBtn, delegate { CurrentTab = LettersTab; });
+      layout = layoutCtor();
+      layout.Add(numbersBtn);
+      layout.Add(operationsBtn);
+      layout.Add(functionsBtn);
+      layout.Add(lettersBtn);
+      foreach (var tab in Tabs)
+        layout.Add(tab.layout);
+      layout.Bounds = bounds;
+
     }
+
+    public readonly TLayout layout;
     //public static readonly MathKeyboardView<TButton, TTextView> Instance = new MathKeyboardView<TButton, TTextView>();
 
-    public ReadOnlyCollection<MathKeyboard<TButton>> Tabs { get; }
-    public MathKeyboard<TButton> NumbersTab => Tabs[0];
-    public MathKeyboard<TButton> OperationsTab => Tabs[1];
-    public MathKeyboard<TButton> FunctionsTab => Tabs[2];
-    public MathKeyboard<TButton> LettersTab => Tabs[3];
-    private MathKeyboard<TButton> _currentTab;
-    public MathKeyboard<TButton> CurrentTab {
+    public ReadOnlyCollection<MathKeyboard<TButton, TLayout>> Tabs { get; }
+    public MathKeyboard<TButton, TLayout> NumbersTab => Tabs[0];
+    public MathKeyboard<TButton, TLayout> OperationsTab => Tabs[1];
+    public MathKeyboard<TButton, TLayout> FunctionsTab => Tabs[2];
+    public MathKeyboard<TButton, TLayout> LettersTab => Tabs[3];
+    private MathKeyboard<TButton, TLayout> _currentTab;
+    public MathKeyboard<TButton, TLayout> CurrentTab {
       get => _currentTab;
       set {
         _currentTab.Selected = false;
+        _currentTab.layout.Visible = false;
         _currentTab = value;
+        value.layout.Visible = true;
         value.Selected = true;
       }
     }
-    public Atoms.MathList MathList { get; set; }
 
 
     //public void StartedEditing(System.Text.StringBuilder label) {
@@ -51,7 +74,7 @@ namespace CSharpMath.Editor {
       }
     }
 
-      bool _numbersAllowed;
+    bool _numbersAllowed;
     public bool NumbersAllowed {
       get => _numbersAllowed;
       set {

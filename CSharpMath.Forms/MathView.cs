@@ -17,6 +17,7 @@ namespace CSharpMath.Forms {
     public struct PainterSupplier : IPainterSupplier<MathPainter> {
       public MathPainter Default => new MathPainter();
     }
+    public MathView() : base(default(PainterSupplier).Default) { }
     #region BindableProperties
     static MathView() {
       var painter = default(PainterSupplier).Default;
