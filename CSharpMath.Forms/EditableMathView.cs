@@ -32,7 +32,8 @@ namespace CSharpMath.Forms {
       public EditableMathPainter<Button, ButtonLayout> Default => new EditableMathPainter<Button, ButtonLayout>(null);
     }
     public EditableMathView(EditableMathPainter<Button, ButtonLayout> painter) : base(painter) {
-      painter.TextModified += delegate { base.InvalidateSurface(); };
+      painter.TextModified += delegate { InvalidateSurface(); };
+      EnableTouchEvents = true;
     }
     #region BindableProperties
     static EditableMathView() {
@@ -50,7 +51,7 @@ namespace CSharpMath.Forms {
     public SKStrokeCap StrokeCap { get => (SKStrokeCap)GetValue(StrokeCapProperty); set => SetValue(StrokeCapProperty, value); }
     public (Color glyph, Color textRun)? GlyphBoxColor { get => ((Color glyph, Color textRun)?)GetValue(GlyphBoxColorProperty); set => SetValue(GlyphBoxColorProperty, value); }
     public Atoms.MathList MathList => Painter.MathList;
-
+   
     protected override void OnTouch(SKTouchEventArgs e) {
       base.OnTouch(e);
       if (e.ActionType != SKTouchAction.Pressed) return;

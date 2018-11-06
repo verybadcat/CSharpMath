@@ -41,6 +41,7 @@ namespace CSharpMath.Editor {
     public CaretView(float fontSize) {
       scale = fontSize / CaretHandle.CaretFontSize;
       handle = new CaretHandle {
+        Color = new Color(0, 0, 0),
         Frame = new RectangleF(
           -(CaretHandle.CaretHandleWidth - CaretHandle.CaretWidth) * scale / 2,
           (CaretHandle.CaretHeight + CaretHandle.CaretHandleDescent) * scale,

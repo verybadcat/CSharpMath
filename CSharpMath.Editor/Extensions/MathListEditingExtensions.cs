@@ -7,7 +7,7 @@ namespace CSharpMath.Editor {
   using Interfaces;
   public static class MathListEditingExtensions {
     public static void Insert(this IMathList self, MathListIndex index, IMathAtom atom) {
-      index = index ?? new MathListIndex { AtomIndex = 0, SubIndex = null, SubIndexType = MathListSubIndexType.None };
+      index = index ?? MathListIndex.Level0Index(0);
       if (index.AtomIndex > self.Atoms.Count)
         throw new IndexOutOfRangeException($"Index {index.AtomIndex} is out of bounds for list of size {self.Atoms.Count}");
       switch (index.SubIndexType) {
@@ -58,7 +58,7 @@ namespace CSharpMath.Editor {
     }
 
     public static void RemoveAt(this IMathList self, MathListIndex index) {
-      index = index ?? new MathListIndex { AtomIndex = 0, SubIndex = null, SubIndexType = MathListSubIndexType.None };
+      index = index ?? MathListIndex.Level0Index(0);
       if (index.AtomIndex > self.Atoms.Count)
         throw new IndexOutOfRangeException($"Index {index.AtomIndex} is out of bounds for list of size {self.Atoms.Count}");
       switch (index.SubIndexType) {

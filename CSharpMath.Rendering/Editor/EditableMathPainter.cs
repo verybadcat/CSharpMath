@@ -14,7 +14,7 @@ namespace CSharpMath.Rendering {
   public abstract class EditableMathPainter<TCanvas, TColor, TButton, TLayout> : Painter<TCanvas, EditableMathSource, TColor> where TButton : class, IButton where TLayout : IButtonLayout<TButton, TLayout> {
     protected EditableMathPainter(MathKeyboardView<TButton, TLayout> keyboard, float fontSize = DefaultFontSize * 3 / 2) : base(fontSize) {
       this.keyboard = keyboard;
-      caretView = new CaretView<Fonts, Glyph>(fontSize);
+      caretView = new CaretView<Fonts, Glyph>(fontSize) { showHandle = true };
       Source = new EditableMathSource(new MathList());
       if (keyboard?.Tabs != null)
         foreach (var tab in keyboard.Tabs) {
@@ -50,17 +50,20 @@ namespace CSharpMath.Rendering {
       base.DrawAfterSuccess(c);
       if (!caretView.showHandle) return;
       var path = c.GetPath();
-      var point = caretView.handle.InitialPoint;
+      if (!(_display.PointForIndex(TypesettingContext.Instance, InsertionIndex) is PointF cursorPosition))
+          return;
+      cursorPosition.Y *= -1; //inverted canvas, blah blah
+      var point = caretView.handle.InitialPoint.Plus(cursorPosition);
       path.BeginRead(1);
       path.Foreground = caretView.handle.ActualColor;
       path.MoveTo(point.X, point.Y);
-      point = caretView.handle.NextPoint1;
+      point = caretView.handle.NextPoint1.Plus(cursorPosition);
       path.LineTo(point.X, point.Y);
-      point = caretView.handle.NextPoint2;
+      point = caretView.handle.NextPoint2.Plus(cursorPosition);
       path.LineTo(point.X, point.Y);
-      point = caretView.handle.NextPoint3;
+      point = caretView.handle.NextPoint3.Plus(cursorPosition);
       path.LineTo(point.X, point.Y);
-      point = caretView.handle.FinalPoint;
+      point = caretView.handle.FinalPoint.Plus(cursorPosition);
       path.LineTo(point.X, point.Y);
       path.CloseContour();
       path.EndRead();
@@ -136,7 +139,7 @@ namespace CSharpMath.Rendering {
     }
 
     public static void ClearPlaceholders(Interfaces.IMathList mathList) {
-      foreach (var atom in mathList.Atoms) {
+      foreach (var atom in (IList<IMathAtom>)mathList?.Atoms ?? Array.Empty<IMathAtom>()) {
         if (atom.AtomType is Enumerations.MathAtomType.Placeholder)
           atom.Nucleus = Constants.Symbols.WhiteSquare.ToString();
         if (atom.Superscript is Interfaces.IMathList super)
@@ -169,8 +172,8 @@ namespace CSharpMath.Rendering {
       }
       ClearPlaceholders(MathList);
       var atom = MathList.AtomAt(InsertionIndex);
-      if (atom.AtomType is Enumerations.MathAtomType.Placeholder) {
-        atom.Nucleus = Constants.Symbols.BlackSquare.ToString();
+      if (atom?.AtomType is MathAtomType.Placeholder) {
+        atom.Nucleus = Symbols.BlackSquare.ToString();
         if (InsertionIndex.FinalSubIndexType is MathListSubIndexType.Nucleus) {
           // If the insertion index is inside a placeholder, move it out.
           InsertionIndex = InsertionIndex.LevelDown();
@@ -179,10 +182,10 @@ namespace CSharpMath.Rendering {
       } else {
         var previousIndex = InsertionIndex.Previous;
         atom = MathList.AtomAt(InsertionIndex);
-        if (atom.AtomType is Enumerations.MathAtomType.Placeholder &&
-           atom.Superscript is null && atom.Subscript is null) {
+        if (atom?.AtomType is MathAtomType.Placeholder &&
+           atom?.Superscript is null && atom?.Subscript is null) {
           InsertionIndex = previousIndex;
-          atom.Nucleus = Constants.Symbols.BlackSquare.ToString();
+          atom.Nucleus = Symbols.BlackSquare.ToString();
           // TODO - disable caret
         }
       }
@@ -193,11 +196,12 @@ namespace CSharpMath.Rendering {
              Find the insert point rect and create a caretView to draw the caret at this position.
              */
 
-      // Check tht we were returned a valid position before displaying a caret there.
+      // Check that we were returned a valid position before displaying a caret there.
       if (!(CaretRectForIndex(InsertionIndex) is PointF caretPosition))
         return;
 
 #warning INCOMPLETE: REVISIT
+
       /*
     // caretFrame is in the flipped coordinate system, flip it back
     _caretView.position = CGPointApplyAffineTransform(caretPosition, _flipTransform);
@@ -254,7 +258,7 @@ namespace CSharpMath.Rendering {
 
     public void RemovePlaceholderIfPresent() {
       var current = MathList.AtomAt(InsertionIndex);
-      if (current.AtomType is MathAtomType.Placeholder)
+      if (current?.AtomType is MathAtomType.Placeholder)
         // Remove this element - the inserted text replaces the placeholder
         MathList.RemoveAt(InsertionIndex);
     }

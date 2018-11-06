@@ -1,8 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
     <TargetFramework>netstandard1.3</TargetFramework>
     <LangVersion>latest</LangVersion>
+    <PackageVersion>0.2.0-alpha</PackageVersion>
+    <PackageReleaseNotes>The 0.2.0 Editor Update brings an editor interface to CSharpMath.</PackageReleaseNotes>
+    <Description>An editor interface for CSharpMath.</Description>
+    <PackageId>CSharpMath.Editor</PackageId>
+    <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie, FoggyFinder)</Authors>
+    <PackageTags>math;mathematics;mathematical;formula;equation;equations;expression;tex;latex;render;rendering;display</PackageTags>
+    <PackageProjectUrl>https://github.com/verybadcat/CSharpMath</PackageProjectUrl>
+    <Title>CSharpMath.Editor</Title>
+    <PackageIconUrl>https://raw.githubusercontent.com/verybadcat/CSharpMath/master/Icon.png</PackageIconUrl>
+    <PackageLicenseUrl>https://github.com/verybadcat/CSharpMath/blob/master/LICENSE</PackageLicenseUrl>
   </PropertyGroup>
 
   <ItemGroup>

@@ -5,6 +5,8 @@ using System.Text;
 namespace CSharpMath.Editor {
 
   public class MathListIndex : IMathListIndex<MathListIndex> {
+    private MathListIndex() { }
+
     public int AtomIndex { get; set; }
     public MathListSubIndexType SubIndexType { get; set; }
     [NullableReference]

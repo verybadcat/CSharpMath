@@ -4,7 +4,7 @@ using System.Text;
 namespace CSharpMath.Editor {
   using Constants;
   public class MathKeyboard<TButton, TLayout> where TButton : class, IButton where TLayout : IButtonLayout<TButton, TLayout> {
-    public MathKeyboard(Func<TLayout> layoutCtor, Action<TButton, EventHandler> registerPressed, System.Drawing.RectangleF bounds, TButton fractionButton, TButton multiplyButton, TButton equalsButton, TButton divisionButton, TButton exponentButton, TButton shiftButton, TButton squareRootButton, TButton radicalButton, TButton[] numbers, TButton[] variables, TButton[] operators, TButton[] relations, TButton[] letters, TButton[] greekLetters, TButton alphaRho, TButton deltaOmega, TButton sigmaPhi, TButton muNu, TButton lambdaBeta, TButton backspace, TButton dismiss, TButton enter) {
+    public MathKeyboard(Func<TLayout> layoutCtor, Action<TButton, EventHandler> registerPressed, System.Drawing.RectangleF bounds, TButton fractionButton, TButton multiplyButton, TButton equalsButton, TButton divisionButton, TButton exponentButton, TButton subscriptButton, TButton shiftButton, TButton squareRootButton, TButton radicalButton, TButton logBaseButton, TButton absButton, TButton[] numbers, TButton[] variables, TButton[] operators, TButton[] relations, TButton[] letters, TButton[] greekLetters, TButton alphaRho, TButton deltaOmega, TButton sigmaPhi, TButton muNu, TButton lambdaBeta, TButton backspace, TButton dismiss, TButton enter) {
       layout = layoutCtor();
       layout.Bounds = bounds;
       if (fractionButton != null) {
@@ -27,6 +27,10 @@ namespace CSharpMath.Editor {
         registerPressed(exponentButton, delegate { keyPressed('^'); });
         layout.Add(exponentButton);
       }
+      if(subscriptButton != null){
+        registerPressed(subscriptButton, delegate { keyPressed('_'); });
+        layout.Add(subscriptButton);
+      }
       if (shiftButton != null) {
         registerPressed(shiftButton, delegate { shiftPressed(); });
         layout.Add(shiftButton);
@@ -38,6 +42,14 @@ namespace CSharpMath.Editor {
       if (radicalButton != null) {
         registerPressed(radicalButton, delegate { keyPressed(Symbols.CubeRoot); });
         layout.Add(radicalButton);
+      }
+      if (logBaseButton != null) {
+        registerPressed(logBaseButton, delegate { keyPressed("log_"); });
+        layout.Add(logBaseButton);
+      }
+      if(absButton != null){
+        registerPressed(absButton, delegate { keyPressed("|"); });
+        layout.Add(absButton);
       }
       foreach (var button in (numbers ?? Array.Empty<TButton>()).Concat(variables ?? Array.Empty<TButton>()).Concat(operators ?? Array.Empty<TButton>()).Concat(relations ?? Array.Empty<TButton>()).Concat(letters ?? Array.Empty<TButton>()).Concat(greekLetters ?? Array.Empty<TButton>()) ?? Array.Empty<TButton>()) {
         registerPressed(button, delegate { keyPressed(button.Text); });
@@ -65,17 +77,14 @@ namespace CSharpMath.Editor {
       }
       if (backspace != null) {
         registerPressed(backspace, delegate { backspacePressed(); });
-        
         layout.Add(backspace);
       }
       if (dismiss != null) {
         registerPressed(dismiss, dismissPressed);
-        
         layout.Add(dismiss);
       }
       if (enter != null) {
         registerPressed(enter, delegate { keyPressed('\n'); });
-        
         layout.Add(enter);
       }
 
@@ -84,6 +93,7 @@ namespace CSharpMath.Editor {
       this.equalsButton = equalsButton;
       this.divisionButton = divisionButton;
       this.exponentButton = exponentButton;
+      this.subscriptButton = subscriptButton;
       this.shiftButton = shiftButton;
       this.squareRootButton = squareRootButton;
       this.radicalButton = radicalButton;
@@ -108,9 +118,12 @@ namespace CSharpMath.Editor {
     public TButton equalsButton; //(weak)
     public TButton divisionButton; //(weak)
     public TButton exponentButton; //(weak)
+    public TButton subscriptButton;
     public TButton shiftButton; //(weak)
     public TButton squareRootButton; //(weak)
     public TButton radicalButton; //(weak)
+    public TButton logBaseButton;
+    public TButton absButton;
 
     public TButton[] numbers;
     public TButton[] variables;
@@ -193,24 +206,24 @@ namespace CSharpMath.Editor {
     }
 
     public bool FractionEnabled {
-      get => fractionButton.Enabled;
-      set => fractionButton.Enabled = value;
+      get => fractionButton?.Enabled ?? false;
+      set { if (fractionButton != null) fractionButton.Enabled = value; }
     }
     public bool EqualsEnabled {
-      get => equalsButton.Enabled;
-      set => equalsButton.Enabled = value;
+      get => equalsButton?.Enabled ?? false;
+      set { if (equalsButton != null) equalsButton.Enabled = value; }
     }
     public bool ExponentHighlighted {
-      get => exponentButton.Selected;
-      set => exponentButton.Selected = value;
+      get => exponentButton?.Selected ?? false;
+      set { if (exponentButton != null) exponentButton.Selected = value; }
     }
     public bool SquareRootHighlighted {
-      get => squareRootButton.Selected;
-      set => squareRootButton.Selected = value;
+      get => squareRootButton?.Selected ?? false;
+      set { if (squareRootButton != null) squareRootButton.Selected = value; }
     }
     public bool RadicalHighlighted {
-      get => radicalButton.Selected;
-      set => radicalButton.Selected = value;
+      get => radicalButton?.Selected ?? false;
+      set { if (radicalButton != null) radicalButton.Selected = value; }
     }
     public bool Shifted { get; set; }
     public bool Selected { get; set; }
