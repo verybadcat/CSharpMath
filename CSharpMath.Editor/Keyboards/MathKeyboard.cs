@@ -44,11 +44,11 @@ namespace CSharpMath.Editor {
         layout.Add(radicalButton);
       }
       if (logBaseButton != null) {
-        registerPressed(logBaseButton, delegate { keyPressed("log_"); });
+        registerPressed(logBaseButton, delegate { keyPressed("log"); keyPressed("_"); });
         layout.Add(logBaseButton);
       }
       if(absButton != null){
-        registerPressed(absButton, delegate { keyPressed("|"); });
+        registerPressed(absButton, delegate { keyPressed("||"); });
         layout.Add(absButton);
       }
       foreach (var button in (numbers ?? Array.Empty<TButton>()).Concat(variables ?? Array.Empty<TButton>()).Concat(operators ?? Array.Empty<TButton>()).Concat(relations ?? Array.Empty<TButton>()).Concat(letters ?? Array.Empty<TButton>()).Concat(greekLetters ?? Array.Empty<TButton>()) ?? Array.Empty<TButton>()) {
@@ -150,11 +150,6 @@ namespace CSharpMath.Editor {
       delete();
     public void parensPressed() =>
       insertText("()");
-    public void subscriptPressed() =>
-    insertText("_");
-
-    public void absValuePressed() =>
-    insertText("||");
     public void shiftPressed() {
       Shifted ^= true;
       if (Shifted) {
@@ -175,8 +170,6 @@ namespace CSharpMath.Editor {
         _lambdaBeta.Text = "λ";
       }
     }
-    public void logWithBasePressed() =>
-    insertText("log_");
 
     bool _numbersEnabled;
     public bool NumbersEnabled {

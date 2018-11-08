@@ -97,6 +97,7 @@ namespace CSharpMath.Rendering {
     public event EventHandler BeginEditing;
     public event EventHandler EndEditing;
     public event EventHandler TextModified;
+    public event EventHandler ReturnPressed;
 
     public void Tap(PointF point) {
       if (!isEditing) {
@@ -116,8 +117,11 @@ namespace CSharpMath.Rendering {
       UpdateDisplay();
       // no mathlist, so can't figure it out.
       if (MathList is null) return null;
-      var displayPoint = new PointF(point.X - _display.Position.X, point.Y - _display.Position.Y);
-      return _display.IndexForPoint(TypesettingContext.Instance, displayPoint);
+      if(!(_display.PointForIndex(TypesettingContext.Instance, MathListIndex.Level0Index(0)) is PointF zerothPosition))
+         return null;
+      point.X -= zerothPosition.X;
+      point.Y -= zerothPosition.Y;
+      return _display.IndexForPoint(TypesettingContext.Instance, point);
     }
 
     public void Clear() {
@@ -472,13 +476,10 @@ namespace CSharpMath.Rendering {
     public void InsertText(string str) {
       if (str is null || str is "" || str is "\n")
         return;
-      /*
-          if ([str isEqualToString:@"\n"]) {
-        if ([self.delegate respondsToSelector:@selector(returnPressed:)]) {
-            [self.delegate returnPressed:self];
-        }
+      if(str is "\n") {
+        ReturnPressed?.Invoke(this, EventArgs.Empty);
         return;
-    }*/
+      }
       var ch = str[0];
       var atom = str.Length > 1 ? MathAtoms.ForLatexSymbolName(str) : AtomForCharacter(ch);
       if (InsertionIndex.SubIndexType is MathListSubIndexType.Denominator && atom.AtomType is MathAtomType.Relation)
