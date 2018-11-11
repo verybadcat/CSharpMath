@@ -155,7 +155,7 @@ namespace CSharpMath.Editor {
     
     [NullableReference]
     public static IMathAtom AtomAt(this IMathList self, MathListIndex index) {
-      if (index.AtomIndex >= self.Atoms.Count) return null;
+      if (index is null || index.AtomIndex >= self.Atoms.Count) return null;
       var atom = self.Atoms[index.AtomIndex];
       switch (index.SubIndexType) {
         case MathListSubIndexType.None:

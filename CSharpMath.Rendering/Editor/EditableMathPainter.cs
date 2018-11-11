@@ -26,8 +26,11 @@ namespace CSharpMath.Rendering {
     public MathList MathList => Source.MathList;
 
     protected IDisplay<Fonts, Glyph> _display;
-    protected void UpdateDisplay() =>
+    protected void UpdateDisplay() {
+      var position = _display?.Position ?? default;
       _display = FrontEnd.TypesettingContextExtensions.CreateLine(TypesettingContext.Instance, MathList, Fonts, LineStyle);
+      _display.Position = position;
+    }
     readonly CaretView<Fonts, Glyph> caretView;
     readonly List<MathListIndex> highlighted;
     readonly MathKeyboardView<TButton, TLayout> keyboard;
@@ -100,6 +103,7 @@ namespace CSharpMath.Rendering {
     public event EventHandler ReturnPressed;
 
     public void Tap(PointF point) {
+      point.Y *= -1; //inverted canvas, blah blah
       if (!isEditing) {
         InsertionIndex = null;
         caretView.showHandle = true;
@@ -117,10 +121,6 @@ namespace CSharpMath.Rendering {
       UpdateDisplay();
       // no mathlist, so can't figure it out.
       if (MathList is null) return null;
-      if(!(_display.PointForIndex(TypesettingContext.Instance, MathListIndex.Level0Index(0)) is PointF zerothPosition))
-         return null;
-      point.X -= zerothPosition.X;
-      point.Y -= zerothPosition.Y;
       return _display.IndexForPoint(TypesettingContext.Instance, point);
     }
 
@@ -185,9 +185,9 @@ namespace CSharpMath.Rendering {
         // TODO - disable caret
       } else {
         var previousIndex = InsertionIndex.Previous;
-        atom = MathList.AtomAt(InsertionIndex);
-        if (atom?.AtomType is MathAtomType.Placeholder &&
-           atom?.Superscript is null && atom?.Subscript is null) {
+        atom = MathList.AtomAt(previousIndex);
+        if (atom != null && atom.AtomType is MathAtomType.Placeholder &&
+           atom.Superscript is null && atom.Subscript is null) {
           InsertionIndex = previousIndex;
           atom.Nucleus = Symbols.BlackSquare.ToString();
           // TODO - disable caret

@@ -69,7 +69,7 @@ namespace CSharpMath.Editor {
         return MathListIndex.IndexAtLocation(closestLine.IndexInParent, index, indexType);
       } else if (displayWithPoint.HasScript)
         //The display list has a subscript or a superscript. If the index is at the end of the atom, then we need to put it before the sub/super script rather than after.
-        if (index.AtomIndex == displayWithPoint.Range.End)
+        if (index?.AtomIndex == displayWithPoint.Range.End)
           return MathListIndex.IndexAtLocation(index.AtomIndex - 1, MathListIndex.Level0Index(1), MathListSubIndexType.Nucleus);
       return index;
     }
@@ -148,16 +148,14 @@ namespace CSharpMath.Editor {
               case MathListSubIndexType.Radicand:
                 if (display is RadicalDisplay<TFont, TGlyph> radical)
                   return radical.SubListForIndexType(index.SubIndexType);
-                else
-                  throw Arg($"No radical found at index {index.AtomIndex}", nameof(self));
-
+                //Log($"No radical found at index {index.AtomIndex}");
+                break;
               case MathListSubIndexType.Numerator:
               case MathListSubIndexType.Denominator:
                 if (display is FractionDisplay<TFont, TGlyph> fraction)
                   return fraction.SubListForIndexType(index.SubIndexType);
-                else
-                  throw Arg($"No radical found at index {index.AtomIndex}", nameof(self));
-
+                //Log($"No fraction found at index {index.AtomIndex}");
+                break;
               case MathListSubIndexType.Superscript:
               case MathListSubIndexType.Subscript:
               default:

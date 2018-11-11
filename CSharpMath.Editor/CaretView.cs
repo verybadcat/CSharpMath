@@ -52,6 +52,6 @@ namespace CSharpMath.Editor {
     }
     public readonly CaretHandle handle;
     public readonly float scale;
-    public bool showHandle;
+    public bool showHandle = true;
   }
 }
