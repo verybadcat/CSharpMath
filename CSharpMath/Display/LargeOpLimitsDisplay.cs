@@ -63,11 +63,10 @@ namespace CSharpMath.Display {
         if (LowerLimit == null) {
           return _nucleusDisplay.Descent;
         }
-        return _nucleusDisplay.Descent + _extraPadding + LowerLimit.Descent
+        return _nucleusDisplay.Descent + _extraPadding + LowerLimit.Ascent
           + _lowerLimitGap + LowerLimit.Descent;
       }
     }
-
 
     public float Width { get; set; }
 

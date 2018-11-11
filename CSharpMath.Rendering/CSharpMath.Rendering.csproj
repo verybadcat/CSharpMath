@@ -20,11 +20,12 @@
     <Title>CSharpMath.Rendering</Title>
     <Description>Rendering interface fror CSharpMath using the Typography library.</Description>
     <RepositoryType>git</RepositoryType>
-    <Copyright>CSharpMath Contributors 2018</Copyright>
+    <Copyright>© CSharpMath Contributors 2018</Copyright>
     <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
     <RepositoryUrl>https://github.com/verybadcat/CSharpMath.git</RepositoryUrl>
     <RepositoryBranch>master</RepositoryBranch>
-    <RepositoryCommit>6a873e77e625511ac428fe6e6e91897c7ac58778</RepositoryCommit>
+    <RepositoryCommit>0ef9dc610592f064c3e8d22b8ea345170125e2e1</RepositoryCommit>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageIconUrl>https://raw.githubusercontent.com/verybadcat/CSharpMath/master/Icon.png</PackageIconUrl>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
