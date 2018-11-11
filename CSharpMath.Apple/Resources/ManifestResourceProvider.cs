@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -16,8 +16,7 @@ namespace CSharpMath.Resources {
       Assembly a = _resourceAssembly;
       var prefix = a.ManifestResourcePrefix();
       var path = prefix + resourceName;
-      var stream = a.GetManifestResourceStream(path);
-      return stream;
+      return a.GetManifestResourceStream(path);
     }
     public byte[] ManifestContents(string resourceName) {
       var stream = ManifestStream(resourceName);
@@ -32,8 +31,7 @@ namespace CSharpMath.Resources {
     public string ManifestString(string resourceName) {
       var stream = ManifestStream(resourceName);
       var reader = new StreamReader(stream);
-      var r = reader.ReadToEnd();
-      return r;
+      return reader.ReadToEnd();
     }
 
     private static byte[] _Buffer(Stream input) {

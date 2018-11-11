@@ -5,17 +5,10 @@ namespace CSharpMath.Tests.FrontEnd
 {
   internal class DoNothingFontChanger : IFontChanger
   {
-    public DoNothingFontChanger()
-    {
-    }
+    DoNothingFontChanger() { }
+    public static DoNothingFontChanger Instance { get; } = new DoNothingFontChanger();
 
-    public string ChangeFont(string inputString, FontStyle outputFontStyle) {
-      return inputString;
-    }
-
-    public string ChangeGlyphs (string inputGlyphs, FontStyle outputFontStyle)
-    {
-      return inputGlyphs;
-    }
+    public string ChangeFont(string inputString, FontStyle outputFontStyle) => inputString;
+    public string ChangeGlyphs(string inputGlyphs, FontStyle outputFontStyle) => inputGlyphs;
   }
 }

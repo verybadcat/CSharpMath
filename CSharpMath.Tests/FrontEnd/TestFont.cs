@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using CSharpMath.Enumerations;
 
 namespace CSharpMath.Tests.FrontEnd {
-  public struct TestMathFont : Display.IFont<char> {
-    public TestMathFont(float pointSize) => PointSize = pointSize;
+  public readonly struct TestFont : Display.IFont<char> {
+    public TestFont(float pointSize) => PointSize = pointSize;
     public float PointSize { get; }
   }
 }

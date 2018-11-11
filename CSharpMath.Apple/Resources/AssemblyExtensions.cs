@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,17 +6,13 @@ using System.Reflection;
 
 namespace CSharpMath {
   internal static class AssemblyExtensions {
-    public static string ShortName(this Assembly This) {
-      string fullName = This.FullName;
-      string r = fullName.Split(",".ToCharArray()).First();
-      return r;
-    }
+    public static string ShortName(this Assembly @this) =>
+      @this.FullName.Split(',').First();
     public static string ManifestResourcePrefix(this Assembly assembly) {
       string r = null;
-      string resourceString = ".Resources.";
+      const string resourceString = ".Resources.";
       int resourcesStringLength = resourceString.Length;
-      string[] names = assembly.GetManifestResourceNames();
-      foreach (string name in names) {
+      foreach (string name in assembly.GetManifestResourceNames()) {
         int resIndex = name.LastIndexOf(resourceString, StringComparison.OrdinalIgnoreCase);
         if (resIndex > 0) {
           int resEndIndex = resIndex + resourcesStringLength;
@@ -29,8 +25,7 @@ namespace CSharpMath {
     public static string AssemblyPath(this Assembly assembly) {
       Module m = assembly.ManifestModule;
       ;
-      string r = m?.FullyQualifiedName;
-      return r;
+      return m?.FullyQualifiedName;
     }
     public static List<string> ManifestEntriesWithPrefix(this Assembly assembly, string prefix
 #if DEBUG
@@ -69,7 +64,7 @@ namespace CSharpMath {
               }
             }
             if (length == 1) {
-              throw new IOException("No matches found, even of the first character");
+              throw new FileNotFoundException("No matches found, even of the first character", prefix);
             }
           }
         }

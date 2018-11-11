@@ -8,7 +8,7 @@ using CSharpMath.Display.Text;
 
 namespace CSharpMath.Tests {
   public static class IDisplayTestExtensions {
-    public static string StringText(this TextLineDisplay<FrontEnd.TestMathFont, char> display)
+    public static string StringText(this TextLineDisplay<FrontEnd.TestFont, char> display)
       => new string(display.Text.ToArray());
   }
 }

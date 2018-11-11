@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\CSharpMath.Apple\Interfaces\IFontMeasurer.cs" Link="Interfaces\IFontMeasurer.cs" />
+    <Compile Include="..\CSharpMath.Apple\Interfaces\IGlyphNameProvider.cs" Link="Interfaces\IGlyphNameProvider.cs" />
+    <Compile Include="..\CSharpMath.Apple\Resources\AssemblyExtensions.cs" Link="Resources\AssemblyExtensions.cs" />
+    <Compile Include="..\CSharpMath.Apple\Resources\JTokenLoader.cs" Link="Resources\JTokenLoader.cs" />
+    <Compile Include="..\CSharpMath.Apple\Resources\ManifestResourceProvider.cs" Link="Resources\ManifestResourceProvider.cs" />
+    <Compile Include="..\CSharpMath.Apple\Typesetting\JsonMathTable.cs" Link="FrontEnd\JsonMathTable.cs" />
+    <Compile Include="..\CSharpMath.Tests\FrontEnd\DoNothingFontChanger.cs" Link="FrontEnd\DoNothingFontChanger.cs" />
+    <Compile Include="..\CSharpMath.Tests\FrontEnd\TestFont.cs" Link="FrontEnd\TestFont.cs" />
+    <Compile Include="..\CSharpMath.Tests\FrontEnd\TestFontMeasurer.cs" Link="FrontEnd\TestFontMeasurer.cs" />
+    <Compile Include="..\CSharpMath.Tests\FrontEnd\TestGlyphBoundsProvider.cs" Link="FrontEnd\TestGlyphBoundsProvider.cs" />
+    <Compile Include="..\CSharpMath.Tests\FrontEnd\TestGlyphFinder.cs" Link="FrontEnd\TestGlyphFinder.cs" />
+    <Compile Include="..\CSharpMath.Tests\FrontEnd\TestGlyphNameProvider.cs" Link="FrontEnd\TestGlyphNameProvider.cs" />
+    <Compile Include="..\CSharpMath.Tests\FrontEnd\TestTypesettingContext.cs" Link="FrontEnd\TestTypesettingContext.cs" />
+    <Compile Include="..\CSharpMath.Tests\Resources\TestResourceProviders.cs" Link="Resources\TestResourceProviders.cs" />
+    <Compile Include="..\CSharpMath.Tests\Resources\TestResources.cs" Link="Resources\TestResources.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\CSharpMath.Tests\Resources\latinmodern-math.json" Link="Resources\latinmodern-math.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CSharpMath.Editor\CSharpMath.Editor.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="FrontEnd\" />
+    <Folder Include="Interfaces\" />
+  </ItemGroup>
+
+</Project>

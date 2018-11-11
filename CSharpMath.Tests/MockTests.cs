@@ -13,9 +13,9 @@ namespace CSharpMath.Tests {
     [Fact]
     public void TestGlyphBoundsWithoutM() {
       string hello = "Hello";
-      TestMathFont font = new TestMathFont(10);
+      TestFont font = new TestFont(10);
       var provider = new TestGlyphBoundsProvider();
-      var glyphRun = new AttributedGlyphRun<TestMathFont, TGlyph>(hello, hello, font);
+      var glyphRun = new AttributedGlyphRun<TestFont, TGlyph>(hello, hello, font);
       var width = provider.GetTypographicWidth(font, glyphRun);
       Assertions.ApproximatelyEqual(width, 25,  0.01);
     }
@@ -23,9 +23,9 @@ namespace CSharpMath.Tests {
     [Fact]
     public void TestGlyphBoundsWithM() {
       string america = "America";
-      TestMathFont font = new TestMathFont(10);
+      TestFont font = new TestFont(10);
       var provider = new TestGlyphBoundsProvider();
-      var glyphRun = new AttributedGlyphRun<TestMathFont, TGlyph>(america, america, font);
+      var glyphRun = new AttributedGlyphRun<TestFont, TGlyph>(america, america, font);
       var width = provider.GetTypographicWidth(font, glyphRun);
       Assertions.ApproximatelyEqual(width, 40, 0.01);
     }

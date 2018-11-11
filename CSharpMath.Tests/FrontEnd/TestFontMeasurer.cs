@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 using CSharpMath.Display;
 
 namespace CSharpMath.Tests.FrontEnd {
-  public class TestFontMeasurer : IFontMeasurer<TestMathFont, char> {
-    public int GetUnitsPerEm(TestMathFont font) => 1000;
+  public class TestFontMeasurer : IFontMeasurer<TestFont, char> {
+    TestFontMeasurer() { }
+    public static TestFontMeasurer Instance { get; } = new TestFontMeasurer();
+
+    public int GetUnitsPerEm(TestFont font) => 1000;
   }
 }

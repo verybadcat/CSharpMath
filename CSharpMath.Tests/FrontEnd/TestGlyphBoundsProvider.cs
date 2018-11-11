@@ -10,10 +10,13 @@ using TGlyph = System.Char;
 using CSharpMath.Display.Text;
 
 namespace CSharpMath.Tests.FrontEnd {
-  public class TestGlyphBoundsProvider : IGlyphBoundsProvider<TestMathFont, TGlyph> {
+  public class TestGlyphBoundsProvider : IGlyphBoundsProvider<TestFont, TGlyph> {
     private const float WidthPerCharacterPerFontSize = 0.5f; // "m" and "M" get double width.
     private const float AscentPerFontSize = 0.7f;
     private const float DescentPerFontSize = 0.2f; // all constants were chosen to bear some resemblance to a real font.
+
+    TestGlyphBoundsProvider() { }
+    public static TestGlyphBoundsProvider Instance { get; } = new TestGlyphBoundsProvider();
 
     private int GetEffectiveLength(IEnumerable<TGlyph> enumerable) {
       int length = 0;
@@ -31,10 +34,10 @@ namespace CSharpMath.Tests.FrontEnd {
       return length;
     }
 
-    public float GetTypographicWidth(TestMathFont font, AttributedGlyphRun<TestMathFont, TGlyph> run) =>
+    public float GetTypographicWidth(TestFont font, AttributedGlyphRun<TestFont, TGlyph> run) =>
       font.PointSize * GetEffectiveLength(run.Glyphs) * WidthPerCharacterPerFontSize + run.GlyphInfos.Sum(g => g.KernAfterGlyph);
 
-    public IEnumerable<RectangleF> GetBoundingRectsForGlyphs(TestMathFont font, ForEach<TGlyph> glyphs, int nGlyphs) =>
+    public IEnumerable<RectangleF> GetBoundingRectsForGlyphs(TestFont font, ForEach<TGlyph> glyphs, int nGlyphs) =>
       ForEach<TGlyph>.AllocateNewArrayFor(glyphs).Select(glyph => {
         ReadOnlySpan<TGlyph> span = stackalloc[] { glyph };
         float width = font.PointSize * GetEffectiveLength(span) * WidthPerCharacterPerFontSize;
@@ -44,7 +47,7 @@ namespace CSharpMath.Tests.FrontEnd {
         return new RectangleF(0, -descent, width, ascent + descent);
       });
 
-    public (IEnumerable<float> Advances, float Total) GetAdvancesForGlyphs(TestMathFont font, ForEach<TGlyph> glyphs, int nGlyphs) {
+    public (IEnumerable<float> Advances, float Total) GetAdvancesForGlyphs(TestFont font, ForEach<TGlyph> glyphs, int nGlyphs) {
       var r = new float[nGlyphs];
       var total = 0f;
       int i = 0;

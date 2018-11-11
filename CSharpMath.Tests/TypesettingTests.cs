@@ -8,7 +8,7 @@ using System.Drawing;
 using System.Linq;
 using Xunit;
 using TGlyph = System.Char;
-using TFont = CSharpMath.Tests.FrontEnd.TestMathFont;
+using TFont = CSharpMath.Tests.FrontEnd.TestFont;
 
 namespace CSharpMath.Tests {
   public class TypesettingTests {
@@ -16,7 +16,7 @@ namespace CSharpMath.Tests {
 
     }
     private TFont _font { get; } = new TFont(20);
-    private TypesettingContext<TFont, char> _context { get; } = TestTypesettingContexts.Create();
+    private TypesettingContext<TFont, char> _context { get; } = TestTypesettingContexts.Instance;
     [Fact]
     public void TestSimpleVariable() {
       var list = new MathList {
