@@ -8,22 +8,33 @@ using CSharpMath.Editor;
 using CSharpMath.Enumerations;
 using CSharpMath.FrontEnd;
 using CSharpMath.Tests.FrontEnd;
+using ListDisplay = CSharpMath.Display.ListDisplay<CSharpMath.Tests.FrontEnd.TestFont, char>;
+using TestData = Xunit.TheoryData<System.Drawing.PointF, CSharpMath.Editor.MathListIndex>;
 
 public class DisplayEditingTests {
+  class EqualsException : Xunit.Sdk.EqualException {
+    public EqualsException(object expected, object actual, string message) : base(expected, actual) =>
+      UserMessage = message;
+    public override string Message =>
+      UserMessage + $"\nExpected: {Expected?.ToString() ?? "(null)"}\nActual: {Actual?.ToString() ?? "(null)"}";
+  }
+
   public const float FontSize = 20;
   public static readonly TestFont Font = new TestFont(FontSize);
   private static readonly TypesettingContext<TestFont, char> context = TestTypesettingContexts.Instance;
 
-  void TestClosestPointForExpression(string expr, Dictionary<PointF, MathListIndex> testData) {
-    var ml = MathLists.FromString(expr);
-    var displayList = Typesetter<TestFont, char>.CreateLine(ml, Font, context, LineStyle.Display);
+  static ListDisplay CreateDisplay(string expr) => 
+    Typesetter<TestFont, char>.CreateLine(MathLists.FromString(expr), Font, context, LineStyle.Display);
 
-    foreach (var (point, expected) in testData)
-      Assert.Equal(expected, displayList.IndexForPoint(context, point));
+  void TestClosestPointForExpression(ListDisplay displayList, PointF point, MathListIndex expected) {
+    var index = displayList.IndexForPoint(context, point);
+    if (!expected.EqualsToIndex(index))
+      //Xunit disallows custom user messages
+      throw new EqualsException(expected, index, $"Point: {point}");
   }
 
-  public static Dictionary<PointF, MathListIndex> FractionTestData =>
-    new Dictionary<PointF, MathListIndex> {
+  public static TestData FractionTestData =>
+    new TestData {
       { new PointF(-10, 8), MathListIndex.Level0Index(0) },
       { new PointF(-10, 0), MathListIndex.Level0Index(0) },
       { new PointF(-10, 40), MathListIndex.Level0Index(0) },
@@ -59,12 +70,14 @@ public class DisplayEditingTests {
       { new PointF(20, -20), MathListIndex.Level0Index(1) }
    };
 
-  [Fact]
-  public void TestClosestPointForFraction() =>
-    TestClosestPointForExpression(@"\frac32", FractionTestData);
+  static readonly ListDisplay Fraction = CreateDisplay(@"\frac32");
 
-  static Dictionary<PointF, MathListIndex> RegularTestData =>
-    new Dictionary<PointF, MathListIndex> {
+  [Theory, MemberData(nameof(FractionTestData))]
+  public void TestClosestPointForFraction(PointF point, MathListIndex expected) =>
+    TestClosestPointForExpression(Fraction, point, expected);
+
+  public static TestData RegularTestData =>
+    new TestData {
       { new PointF(-10, 8), MathListIndex.Level0Index(0) },
       { new PointF(-10, 0), MathListIndex.Level0Index(0) },
       { new PointF(-10, 40), MathListIndex.Level0Index(0) },
@@ -99,12 +112,14 @@ public class DisplayEditingTests {
       { new PointF(55, -20), MathListIndex.Level0Index(3) }
     };
 
-  [Fact]
-  public void TestClosestPointRegular() =>
-    TestClosestPointForExpression(@"\frac32", RegularTestData);
+  static readonly ListDisplay Regular = CreateDisplay(@"4+2");
 
-  static Dictionary<PointF, MathListIndex> RegularPlusFractionTestData =>
-    new Dictionary<PointF, MathListIndex> {
+  [Theory, MemberData(nameof(RegularTestData))]
+  public void TestClosestPointRegular(PointF point, MathListIndex expected) =>
+    TestClosestPointForExpression(Regular, point, expected);
+
+  public static TestData RegularPlusFractionTestData =>
+    new TestData {
       { new PointF(30, 0), MathListIndex.Level0Index(2) },
       { new PointF(30, 8), MathListIndex.Level0Index(2) },
       { new PointF(30, 40), MathListIndex.Level0Index(2) },
@@ -123,12 +138,14 @@ public class DisplayEditingTests {
       { new PointF(35, -20), MathListIndex.IndexAtLocation(2, MathListIndex.Level0Index(0), MathListSubIndexType.Denominator) }
     };
 
-  [Fact]
-  public void TestClosestPointRegularPlusFraction() =>
-      TestClosestPointForExpression(@"1+\frac{3}{2}", RegularPlusFractionTestData);
+  static readonly ListDisplay RegularPlusFraction = CreateDisplay(@"1+\frac{3}{2}");
 
-  static Dictionary<PointF, MathListIndex> FractionPlusRegularTestData =>
-    new Dictionary<PointF, MathListIndex> {
+  [Theory, MemberData(nameof(RegularPlusFractionTestData))]
+  public void TestClosestPointRegularPlusFraction(PointF point, MathListIndex expected) =>
+      TestClosestPointForExpression(RegularPlusFraction, point, expected);
+
+  public static TestData FractionPlusRegularTestData =>
+    new TestData {
       { new PointF(15, 0), MathListIndex.Level0Index(1) },
       { new PointF(15, 8), MathListIndex.Level0Index(1) },
       { new PointF(15, 40), MathListIndex.Level0Index(1) },
@@ -147,12 +164,15 @@ public class DisplayEditingTests {
       { new PointF(9, -20) , MathListIndex.IndexAtLocation(0, MathListIndex.Level0Index(1), MathListSubIndexType.Denominator) }
     };
 
-  [Fact]
-  public void TestClosestPointFractionPlusRegular() =>
-    TestClosestPointForExpression(@"\frac32+1", FractionPlusRegularTestData);
+  static readonly ListDisplay FractionPlusRegular = CreateDisplay(@"\frac32+1");
 
-  static Dictionary<PointF, MathListIndex> ExponentTestData =>
-    new Dictionary<PointF, MathListIndex> { { new PointF(-10, 8), MathListIndex.Level0Index(0) },
+  [Theory, MemberData(nameof(FractionPlusRegularTestData))]
+  public void TestClosestPointFractionPlusRegular(PointF point, MathListIndex expected) =>
+    TestClosestPointForExpression(FractionPlusRegular, point, expected);
+
+  public static TestData ExponentTestData =>
+    new TestData {
+      { new PointF(-10, 8), MathListIndex.Level0Index(0) },
       { new PointF(-10, 0), MathListIndex.Level0Index(0) },
       { new PointF(-10, 40), MathListIndex.Level0Index(0) },
       { new PointF(-10, -20), MathListIndex.Level0Index(0) },
@@ -184,7 +204,9 @@ public class DisplayEditingTests {
       { new PointF(30, -20), MathListIndex.Level0Index(1) },
     };
 
-  [Fact]
-  public void TestClosestPointExponent() =>
-    TestClosestPointForExpression("2^3", ExponentTestData);
+  static readonly ListDisplay Exponent = CreateDisplay("2^3");
+
+  [Theory, MemberData(nameof(ExponentTestData))]
+  public void TestClosestPointExponent(PointF point, MathListIndex expected) =>
+    TestClosestPointForExpression(Exponent, point, expected);
 }

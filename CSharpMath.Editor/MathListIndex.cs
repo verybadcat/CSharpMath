@@ -129,6 +129,8 @@ namespace CSharpMath.Editor {
     }
 
     public bool EqualsToIndex(MathListIndex index) {
+      if (index is null)
+        return false;
       if (AtomIndex != index.AtomIndex || SubIndexType != index.SubIndexType) {
         return false;
       }
@@ -139,12 +141,8 @@ namespace CSharpMath.Editor {
       }
     }
 
-    public override bool Equals(object anObject) {
-      if (anObject is null || !(anObject is MathListIndex index)) {
-        return false;
-      }
-      return EqualsToIndex(index);
-    }
+    public override bool Equals(object anObject) =>
+      anObject is MathListIndex index ? EqualsToIndex(index) : false;
     public override int GetHashCode() =>
       unchecked((AtomIndex * 31 + (int)SubIndexType) * 31 + SubIndex.GetHashCode());
   }

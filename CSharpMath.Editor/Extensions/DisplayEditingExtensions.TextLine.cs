@@ -64,7 +64,7 @@ namespace CSharpMath.Editor {
     public static MathListIndex IndexForPoint<TFont, TGlyph>(this TextLineDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, PointF point) where TFont : IFont<TGlyph> {
       // Convert the point to the reference of the CTLine
       var relativePoint = new PointF(point.X - self.Position.X, point.Y - self.Position.Y);
-      var indices = self.Runs.Select(run => run.Run.StringIndexForPosition(context, point.Plus(run.Position))).Where(x => x.HasValue);
+      var indices = self.Runs.Select(run => run.Run.StringIndexForPosition(context, relativePoint.Plus(run.Position))).Where(x => x.HasValue);
       if (indices.IsEmpty())
         return null;
       var index = indices.Single().GetValueOrDefault();

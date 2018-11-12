@@ -27,10 +27,10 @@ namespace CSharpMath.Editor {
           minDistance = distance;
         }
       }
-      IDisplay<TFont, TGlyph> displayWithPoint = null;
+      IDisplay<TFont, TGlyph> displayWithPoint;
       switch (xbounds.Count) {
         case 0:
-          if (translatedPoint.X <= PixelDelta)
+          if (translatedPoint.X <= -PixelDelta)
             // All the way to the left
             return MathListIndex.Level0Index(self.Range.Location);
           else if (translatedPoint.X >= self.Width + PixelDelta)
