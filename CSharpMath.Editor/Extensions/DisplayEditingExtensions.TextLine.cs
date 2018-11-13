@@ -9,12 +9,12 @@ namespace CSharpMath.Editor {
   using Color = Structures.Color;
 
   partial class DisplayEditingExtensions {
-    public static int? StringIndexForPosition<TFont, TGlyph>(this AttributedGlyphRun<TFont, TGlyph> line, TypesettingContext<TFont, TGlyph> context, PointF point) where TFont : IFont<TGlyph> {
+    public static int? StringIndexForXOffset<TFont, TGlyph>(this AttributedGlyphRun<TFont, TGlyph> line, TypesettingContext<TFont, TGlyph> context, float offset) where TFont : IFont<TGlyph> {
       int i = 0;
       float x = 0;
       var rects = context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(line.Font, line.Glyphs.AsForEach(), line.Length);
       foreach (var (bounds, kernAfter) in rects.Zip(line.GlyphInfos.Select(g => g.KernAfterGlyph), ValueTuple.Create))
-        if (bounds.Plus(new PointF(x, 0)).Contains(point))
+        if (bounds.Left + x <= offset && offset <= bounds.Right + x)
           return i;
         else {
           x += bounds.Width + kernAfter;
@@ -64,7 +64,7 @@ namespace CSharpMath.Editor {
     public static MathListIndex IndexForPoint<TFont, TGlyph>(this TextLineDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, PointF point) where TFont : IFont<TGlyph> {
       // Convert the point to the reference of the CTLine
       var relativePoint = new PointF(point.X - self.Position.X, point.Y - self.Position.Y);
-      var indices = self.Runs.Select(run => run.Run.StringIndexForPosition(context, relativePoint.Plus(run.Position))).Where(x => x.HasValue);
+      var indices = self.Runs.Select(run => run.Run.StringIndexForXOffset(context, relativePoint.Plus(run.Position).X)).Where(x => x.HasValue);
       if (indices.IsEmpty())
         return null;
       var index = indices.Single().GetValueOrDefault();
