@@ -5,7 +5,7 @@ using CSharpMath.Structures;
 
 namespace CSharpMath.Rendering {
   public class InvertedCanvas : ICanvas {
-    public InvertedCanvas(ICanvas canvas) => _canvas = canvas;
+    public InvertedCanvas(ICanvas canvas) => _canvas = canvas ?? throw new ArgumentNullException(nameof(canvas), "The supplied canvas cannot be null.");
     private readonly ICanvas _canvas;
     float Invert(float origY) => origY * -1 + _canvas.Height;
     public float Width => _canvas.Width;
