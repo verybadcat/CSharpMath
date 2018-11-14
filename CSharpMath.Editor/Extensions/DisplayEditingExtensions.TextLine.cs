@@ -10,15 +10,18 @@ namespace CSharpMath.Editor {
 
   partial class DisplayEditingExtensions {
     public static int? StringIndexForXOffset<TFont, TGlyph>(this AttributedGlyphRun<TFont, TGlyph> line, TypesettingContext<TFont, TGlyph> context, float offset) where TFont : IFont<TGlyph> {
+      if(offset < 0) return 0; //Move cursor to index 0
       int i = 0;
       float x = 0;
       var rects = context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(line.Font, line.Glyphs.AsForEach(), line.Length);
       foreach (var (bounds, kernAfter) in rects.Zip(line.GlyphInfos.Select(g => g.KernAfterGlyph), ValueTuple.Create))
-        if (bounds.Left + x <= offset && offset <= bounds.Right + x)
+        if (x <= offset && offset < bounds.Width + x)
           return i;
         else {
           x += bounds.Width + kernAfter;
           i++;
+          if (offset < x) //If the point is in the kern after this, then the index is the one after this
+            return i;
         }
       return null;
     }

@@ -73,7 +73,7 @@ public class DisplayEditingTests {
   static readonly ListDisplay Fraction = CreateDisplay(@"\frac32");
 
   [Theory, MemberData(nameof(FractionTestData))]
-  public void TestClosestPointForFraction(PointF point, MathListIndex expected) =>
+  public void TestClosestPointFraction(PointF point, MathListIndex expected) =>
     TestClosestPointForExpression(Fraction, point, expected);
 
   public static TestData RegularTestData =>

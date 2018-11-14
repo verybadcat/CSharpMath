@@ -56,17 +56,15 @@ namespace CSharpMath.Editor {
     ///<summary>Calculates the manhattan distance from a point to the nearest boundary of the rectangle.</summary>
     public static float DistanceFromPointToRect(PointF point, RectangleF rect) {
       float distance = 0;
-      if (point.X < rect.X) {
+      if (point.X < rect.X)
         distance += rect.X - point.X;
-      } else if (point.X > rect.Right) {
+      else if (point.X > rect.Right)
         distance += point.X - rect.Right;
-      }
 
-      if (point.Y < rect.Y) {
-        distance += (rect.Y - point.Y);
-      } else if (point.Y > rect.YMax()) {
+      if (point.Y < rect.Y)
+        distance += rect.Y - point.Y;
+      else if (point.Y > rect.YMax())
         distance += point.Y - rect.YMax();
-      }
       return distance;
     }
 
