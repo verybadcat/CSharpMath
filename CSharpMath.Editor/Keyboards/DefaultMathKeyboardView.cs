@@ -12,15 +12,15 @@ namespace CSharpMath.Editor {
     public static readonly Color ToBeReplacedWithImage = new Color(0.2f, 0.2f, 0.2f);
     public static readonly Color DefaultHighlight = new Color(1f, 1f, 1f);
     public static readonly Color DefaultDisabled = new Color(2f / 3f, 2f / 3f, 2f / 3f);
+    public static readonly Color DefaultTitleBar = new Color(0.76862745099999996f, 0.76862745099999996f, 0.76862745099999996f);
     public const float DefaultFontSize = 20;
 
     public static MathKeyboardView<TButton, TLayout> Default(ButtonCtor ctor, Func<TLayout> layoutCtor, Action<TButton, EventHandler> registerPressed) {
-      var text = new StringBuilder();
-      var textPosition = new Box<int>();
       return new MathKeyboardView<TButton, TLayout>(
         layoutCtor,
         registerPressed,
         new RectangleF(0, 0, 320, 225),
+        ctor(new RectangleF(0, 0, 40, 45), "◄", DefaultFontSize, DefaultTitleBar, DefaultShadow, DefaultHighlight, null),
         new MathKeyboard<TButton, TLayout>(layoutCtor,
           registerPressed,
            new RectangleF(0, 45, 320, 180),
@@ -69,7 +69,7 @@ namespace CSharpMath.Editor {
             ctor(new RectangleF(248.5f, 135, 71.5f, 45), "Dms", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
             ctor(new RectangleF(248.5f, 45, 71.5f, 90), "Enter", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null)
         ),
-        ctor(new RectangleF(0, 0, 80, 45), "123", DefaultFontSize, new Color(.76862745098039209f, .76862745098039209f, .76862745098039209f), DefaultShadow, DefaultHighlight, null),
+        ctor(new RectangleF(40, 0, 60, 45), "123", DefaultFontSize, DefaultTitleBar, DefaultShadow, DefaultHighlight, null),
         new MathKeyboard<TButton, TLayout>(layoutCtor,
           registerPressed,
             new RectangleF(0, 45, 320, 180),
@@ -119,7 +119,7 @@ namespace CSharpMath.Editor {
             ctor(new RectangleF(249, 135, 71, 45), "Dms", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
             ctor(new RectangleF(249, 45, 71, 90), "Enter", 18, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null)
       ),
-        ctor(new RectangleF(80, 0, 80, 45), "()<>", DefaultFontSize, new Color(0.76862745099999996f, 0.76862745099999996f, 0.76862745099999996f), DefaultShadow, DefaultHighlight, null),
+        ctor(new RectangleF(100, 0, 60, 45), "()<>", DefaultFontSize, DefaultTitleBar, DefaultShadow, DefaultHighlight, null),
       new MathKeyboard<TButton, TLayout>(layoutCtor,
         registerPressed,
            new RectangleF(0, 45, 320, 180),
@@ -168,7 +168,7 @@ namespace CSharpMath.Editor {
                  ctor(new RectangleF(249, 135, 71, 45), "Dms", DefaultFontSize, ToBeReplacedWithImage, DefaultTitle, ToBeReplacedWithImage, null),
                  ctor(new RectangleF(249, 45, 71, 90), "Enter", DefaultFontSize, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null)
       ),
-        ctor(new RectangleF(160, 0, 80, 45), "f(x)", DefaultFontSize, new Color(0.76862745099999996f, 0.76862745099999996f, 0.76862745099999996f), DefaultShadow, DefaultHighlight, null),
+        ctor(new RectangleF(160, 0, 60, 45), "f(x)", DefaultFontSize, DefaultTitleBar, DefaultShadow, DefaultHighlight, null),
         new MathKeyboard<TButton, TLayout>(layoutCtor,
           registerPressed,
           new RectangleF(0, 45, 320, 180),
@@ -225,7 +225,8 @@ namespace CSharpMath.Editor {
           ctor(new RectangleF(0, 135, 80, 45), "Dms", 27, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null),
           ctor(new RectangleF(239, 135, 81, 45), "Enter", 27, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null)
         ),
-        ctor(new RectangleF(240, 0, 80, 45), "abc", DefaultFontSize, new Color(0.76862745099999996f, 0.76862745099999996f, 0.76862745099999996f), DefaultShadow, DefaultHighlight, null)
+        ctor(new RectangleF(220, 0, 60, 45), "abc", DefaultFontSize, DefaultTitleBar, DefaultShadow, DefaultHighlight, null),
+        ctor(new RectangleF(280, 0, 40, 45), "►", DefaultFontSize, DefaultTitleBar, DefaultShadow, DefaultHighlight, null)
       );
     }
   }

@@ -82,7 +82,10 @@ namespace CSharpMath.Forms {
         var keyboard = view.layout;
         keyboard.Content.WidthRequest = keyboard.Bounds.Width;
         keyboard.Content.HeightRequest = keyboard.Bounds.Height;
-        return (new EditableMathView (new EditableMathPainter<Button, ButtonLayout>(view)){ WidthRequest = view.layout.Bounds.Width, HeightRequest = view.layout.Bounds.Height }, keyboard.Content);
+        var painter = new EditableMathPainter<Button, ButtonLayout>(view);
+        var @return = new EditableMathView(painter) { WidthRequest = view.layout.Bounds.Width, HeightRequest = view.layout.Bounds.Height };
+        painter.RedrawRequested += @return.InvalidateSurface;
+        return (@return, keyboard.Content);
       }
     }
   }

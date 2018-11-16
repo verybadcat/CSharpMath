@@ -14,6 +14,10 @@ namespace CSharpMath.Rendering {
   public abstract class EditableMathPainter<TCanvas, TColor, TButton, TLayout> : Painter<TCanvas, EditableMathSource, TColor> where TButton : class, IButton where TLayout : IButtonLayout<TButton, TLayout> {
     protected EditableMathPainter(MathKeyboardView<TButton, TLayout> keyboard, float fontSize = DefaultFontSize * 3 / 2) : base(fontSize) {
       this.keyboard = keyboard;
+      if (keyboard != null) {
+        keyboard.leftPressed += MoveCursorLeft;
+        keyboard.rightPressed += MoveCursorRight;
+      }
       caretView = new CaretView<Fonts, Glyph>(fontSize) { showHandle = true };
       Source = new EditableMathSource(new MathList());
       if (keyboard?.Tabs != null)
@@ -24,7 +28,7 @@ namespace CSharpMath.Rendering {
     }
 
     public MathList MathList => Source.MathList;
-
+    public event Action RedrawRequested;
     protected IDisplay<Fonts, Glyph> _display;
     protected void UpdateDisplay() {
       var position = _display?.Position ?? default;
@@ -53,6 +57,8 @@ namespace CSharpMath.Rendering {
       base.DrawAfterSuccess(c);
       if (!caretView.showHandle) return;
       var path = c.GetPath();
+      PointF? Point(int index) =>
+        _display.PointForIndex(TypesettingContext.Instance, MathListIndex.Level0Index(index));
       if (!(_display.PointForIndex(TypesettingContext.Instance, InsertionIndex) is PointF cursorPosition))
           return;
       cursorPosition.Y *= -1; //inverted canvas, blah blah
@@ -221,6 +227,7 @@ namespace CSharpMath.Rendering {
     [_caretView delayBlink];
     [self.label setNeedsLayout];
       */
+      RedrawRequested?.Invoke();
     }
     public void SetKeyboardMode() {
       keyboard.RadicalHighlighted = keyboard.ExponentHighlighted = keyboard.SquareRootHighlighted = false;
@@ -328,100 +335,7 @@ namespace CSharpMath.Rendering {
     }
 
     public static bool IsNumeric(char c) => c is '.' || (c >= '0' && c <= '9');
-
-    public void HandleExponentButton() {
-      if (InsertionIndex.HasSubIndexOfType(MathListSubIndexType.Superscript))
-        // The index is currently inside an exponent. The exponent button gets it out of the exponent and move forward.
-        InsertionIndex = GetIndexAfterSpecialStructure(InsertionIndex, MathListSubIndexType.Superscript);
-      else {
-        //Not in an exponent. Add one.
-        if (!InsertionIndex.AtBeginningOfLine) {
-          var atom = MathList.AtomAt(InsertionIndex.Previous);
-          if (atom.Superscript is null) {
-            atom.Superscript = MathAtoms.PlaceholderList;
-            InsertionIndex = InsertionIndex.Previous.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Superscript);
-          } else if (InsertionIndex.FinalSubIndexType is MathListSubIndexType.Nucleus)
-            // If we are already inside the nucleus, then we come out and go up to the superscript
-            InsertionIndex = InsertionIndex.LevelDown().LevelUpWithSubIndex(MathListIndex.Level0Index(atom.Superscript.Atoms.Count), MathListSubIndexType.Superscript);
-          else
-            InsertionIndex = InsertionIndex.Previous.LevelUpWithSubIndex(MathListIndex.Level0Index(atom.Superscript.Atoms.Count), MathListSubIndexType.Superscript);
-        } else {
-          // Create an empty atom and move the insertion index up.
-          var emptyAtom = MathAtoms.Placeholder;
-          emptyAtom.Superscript = MathAtoms.PlaceholderList;
-          if (!UpdatePlaceholderIfPresent(emptyAtom))
-            // If the placeholder hasn't been updated then insert it.
-            MathList.Insert(InsertionIndex, emptyAtom);
-          InsertionIndex = InsertionIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Superscript);
-        }
-      }
-    }
-
-    public void HandleSubscriptButton() {
-      if (InsertionIndex.HasSubIndexOfType(MathListSubIndexType.Subscript))
-        // The index is currently inside an subscript. The subscript button gets it out of the subscript and move forward.
-        InsertionIndex = GetIndexAfterSpecialStructure(InsertionIndex, MathListSubIndexType.Subscript);
-      else {
-        //Not in a subscript. Add one.
-        if (!InsertionIndex.AtBeginningOfLine) {
-          var atom = MathList.AtomAt(InsertionIndex.Previous);
-          if (atom.Subscript is null) {
-            atom.Subscript = MathAtoms.PlaceholderList;
-            InsertionIndex = InsertionIndex.Previous.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Subscript);
-          } else if (InsertionIndex.FinalSubIndexType is MathListSubIndexType.Nucleus)
-            // If we are already inside the nucleus, then we come out and go down to the subscript
-            InsertionIndex = InsertionIndex.LevelDown().LevelUpWithSubIndex(MathListIndex.Level0Index(atom.Subscript.Atoms.Count), MathListSubIndexType.Subscript);
-          else
-            InsertionIndex = InsertionIndex.Previous.LevelUpWithSubIndex(MathListIndex.Level0Index(atom.Subscript.Atoms.Count), MathListSubIndexType.Subscript);
-        } else {
-          // Create an empty atom and move the insertion index up.
-          var emptyAtom = MathAtoms.Placeholder;
-          emptyAtom.Subscript = MathAtoms.PlaceholderList;
-          if (!UpdatePlaceholderIfPresent(emptyAtom))
-            // If the placeholder hasn't been updated then insert it.
-            MathList.Insert(InsertionIndex, emptyAtom);
-          InsertionIndex = InsertionIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Subscript);
-        }
-      }
-    }
-
-    public void HandleSlashButton() {
-      // special / handling - makes the thing a fraction
-      var numerator = new MathList();
-      var current = InsertionIndex;
-      for (; !current.AtBeginningOfLine; current = current.Previous) {
-        var atom = MathList.AtomAt(current.Previous);
-        if (atom.AtomType != Enumerations.MathAtomType.Number && atom.AtomType != Enumerations.MathAtomType.Variable)
-          //We don't put this atom on the fraction
-          break;
-        else
-          //Add the number to the beginning of the list
-          numerator.Insert(0, atom);
-      }
-      if (current.AtomIndex == InsertionIndex.AtomIndex) {
-        // so we didn't really find any numbers before this, so make the numerator 1
-        numerator.Add(AtomForCharacter('1'));
-        if (!current.AtBeginningOfLine) {
-          var prevAtom = MathList.AtomAt(current.Previous);
-          if (prevAtom.AtomType is MathAtomType.Fraction) {
-            //Add a times symbol
-            MathList.Insert(current, MathAtoms.Times);
-            current = current.Next;
-          }
-        }
-      } else
-        // delete stuff in the Mathlist from current to insertionIndex
-        MathList.RemoveAtoms(new MathListRange(current, InsertionIndex.AtomIndex - current.AtomIndex));
-
-      //Create the fraction
-      var frac = new Fraction { Numerator = numerator, Denominator = MathAtoms.PlaceholderList };
-
-      //Insert it
-      MathList.Insert(current, frac);
-      //Update the insertion index to go the denominator
-      InsertionIndex = current.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Denominator);
-    }
-
+    
     public MathListIndex GetOutOfRadical(MathListIndex index) {
       if (index.HasSubIndexOfType(MathListSubIndexType.Degree))
         index = GetIndexAfterSpecialStructure(index, MathListSubIndexType.Degree);
@@ -429,51 +343,144 @@ namespace CSharpMath.Rendering {
         index = GetIndexAfterSpecialStructure(index, MathListSubIndexType.Radicand);
       return index;
     }
-
-    public void HandleRadical(bool degreeButtonPressed) {
-      var current = InsertionIndex;
-
-      if ((current.HasSubIndexOfType(MathListSubIndexType.Degree) || current.HasSubIndexOfType(MathListSubIndexType.Radicand)) && MathList.Atoms[current.AtomIndex] is Radical rad)
-        if (degreeButtonPressed)
-          if (rad.Degree is null) {
-            rad.Degree = MathAtoms.PlaceholderList;
-            InsertionIndex = current.LevelDown().LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Degree);
-          } else if (current.HasSubIndexOfType(MathListSubIndexType.Radicand))
-            // The radical the cursor is at has a degree. If the cursor is in the radicand, move the cursor to the degree
-            InsertionIndex = current.LevelDown().LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Degree);
-          else
-            // If the cursor is at the degree, get out of the radical
-            InsertionIndex = GetOutOfRadical(current);
-        else if (current.HasSubIndexOfType(MathListSubIndexType.Degree))
-          // If the radical the cursor at has a degree, and the cursor is at the degree, move the cursor to the radicand.
-          InsertionIndex = current.LevelDown().LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Radicand);
-        else
-          // If the cursor is at the radicand, get out of the radical.
-          InsertionIndex = GetOutOfRadical(current);
-      else if (degreeButtonPressed) {
-        rad = MathAtoms.PlaceholderRadical;
-        MathList.Insert(current, rad);
-        InsertionIndex = current.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Degree);
-      } else {
-        rad = MathAtoms.PlaceholderSquareRoot;
-        MathList.Insert(current, rad);
-        InsertionIndex = current.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Radicand);
-      }
-    }
-    public void InsertParens() {
-      MathList.Insert(InsertionIndex, AtomForCharacter('('));
-      InsertionIndex = InsertionIndex.Next;
-      MathList.Insert(InsertionIndex, AtomForCharacter(')'));
-      // Don't go to the next insertion index, to start inserting before the close parens.
-    }
-    public void InsertAbsValue() {
-      MathList.Insert(InsertionIndex, AtomForCharacter('|'));
-      InsertionIndex = InsertionIndex.Next;
-      MathList.Insert(InsertionIndex, AtomForCharacter('|'));
-      // Don't go to the next insertion index, to start inserting before the second absolute value
-    }
-
+    
     public void InsertText(string str) {
+      void HandleExponentButton() {
+        if (InsertionIndex.HasSubIndexOfType(MathListSubIndexType.Superscript))
+          // The index is currently inside an exponent. The exponent button gets it out of the exponent and move forward.
+          InsertionIndex = GetIndexAfterSpecialStructure(InsertionIndex, MathListSubIndexType.Superscript);
+        else {
+          //Not in an exponent. Add one.
+          if (!InsertionIndex.AtBeginningOfLine) {
+            var a = MathList.AtomAt(InsertionIndex.Previous);
+            if (a.Superscript is null) {
+              a.Superscript = MathAtoms.PlaceholderList;
+              InsertionIndex = InsertionIndex.Previous.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Superscript);
+            } else if (InsertionIndex.FinalSubIndexType is MathListSubIndexType.Nucleus)
+              // If we are already inside the nucleus, then we come out and go up to the superscript
+              InsertionIndex = InsertionIndex.LevelDown().LevelUpWithSubIndex(MathListIndex.Level0Index(a.Superscript.Atoms.Count), MathListSubIndexType.Superscript);
+            else
+              InsertionIndex = InsertionIndex.Previous.LevelUpWithSubIndex(MathListIndex.Level0Index(a.Superscript.Atoms.Count), MathListSubIndexType.Superscript);
+          } else {
+            // Create an empty atom and move the insertion index up.
+            var emptyAtom = MathAtoms.Placeholder;
+            emptyAtom.Superscript = MathAtoms.PlaceholderList;
+            if (!UpdatePlaceholderIfPresent(emptyAtom))
+              // If the placeholder hasn't been updated then insert it.
+              MathList.Insert(InsertionIndex, emptyAtom);
+            InsertionIndex = InsertionIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Superscript);
+          }
+        }
+      }
+
+      void HandleRadical(bool degreeButtonPressed) {
+        var current = InsertionIndex;
+        if ((current.HasSubIndexOfType(MathListSubIndexType.Degree) || current.HasSubIndexOfType(MathListSubIndexType.Radicand)) && MathList.Atoms[current.AtomIndex] is Radical rad)
+          if (degreeButtonPressed)
+            if (rad.Degree is null) {
+              rad.Degree = MathAtoms.PlaceholderList;
+              InsertionIndex = current.LevelDown().LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Degree);
+            } else if (current.HasSubIndexOfType(MathListSubIndexType.Radicand))
+              // The radical the cursor is at has a degree. If the cursor is in the radicand, move the cursor to the degree
+              InsertionIndex = current.LevelDown().LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Degree);
+            else
+              // If the cursor is at the degree, get out of the radical
+              InsertionIndex = GetOutOfRadical(current);
+          else if (current.HasSubIndexOfType(MathListSubIndexType.Degree))
+            // If the radical the cursor at has a degree, and the cursor is at the degree, move the cursor to the radicand.
+            InsertionIndex = current.LevelDown().LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Radicand);
+          else
+            // If the cursor is at the radicand, get out of the radical.
+            InsertionIndex = GetOutOfRadical(current);
+        else if (degreeButtonPressed) {
+          rad = MathAtoms.PlaceholderRadical;
+          MathList.Insert(current, rad);
+          InsertionIndex = current.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Degree);
+        } else {
+          rad = MathAtoms.PlaceholderSquareRoot;
+          MathList.Insert(current, rad);
+          InsertionIndex = current.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Radicand);
+        }
+      }
+
+      void HandleSubscriptButton() {
+        if (InsertionIndex.HasSubIndexOfType(MathListSubIndexType.Subscript))
+          // The index is currently inside an subscript. The subscript button gets it out of the subscript and move forward.
+          InsertionIndex = GetIndexAfterSpecialStructure(InsertionIndex, MathListSubIndexType.Subscript);
+        else {
+          //Not in a subscript. Add one.
+          if (!InsertionIndex.AtBeginningOfLine) {
+            var a = MathList.AtomAt(InsertionIndex.Previous);
+            if (a.Subscript is null) {
+              a.Subscript = MathAtoms.PlaceholderList;
+              InsertionIndex = InsertionIndex.Previous.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Subscript);
+            } else if (InsertionIndex.FinalSubIndexType is MathListSubIndexType.Nucleus)
+              // If we are already inside the nucleus, then we come out and go down to the subscript
+              InsertionIndex = InsertionIndex.LevelDown().LevelUpWithSubIndex(MathListIndex.Level0Index(a.Subscript.Atoms.Count), MathListSubIndexType.Subscript);
+            else
+              InsertionIndex = InsertionIndex.Previous.LevelUpWithSubIndex(MathListIndex.Level0Index(a.Subscript.Atoms.Count), MathListSubIndexType.Subscript);
+          } else {
+            // Create an empty atom and move the insertion index up.
+            var emptyAtom = MathAtoms.Placeholder;
+            emptyAtom.Subscript = MathAtoms.PlaceholderList;
+            if (!UpdatePlaceholderIfPresent(emptyAtom))
+              // If the placeholder hasn't been updated then insert it.
+              MathList.Insert(InsertionIndex, emptyAtom);
+            InsertionIndex = InsertionIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Subscript);
+          }
+        }
+      }
+
+      void HandleSlashButton() {
+        // special / handling - makes the thing a fraction
+        var numerator = new MathList();
+        var current = InsertionIndex;
+        for (; !current.AtBeginningOfLine; current = current.Previous) {
+          var a = MathList.AtomAt(current.Previous);
+          if (a.AtomType != Enumerations.MathAtomType.Number && a.AtomType != Enumerations.MathAtomType.Variable)
+            //We don't put this atom on the fraction
+            break;
+          else
+            //Add the number to the beginning of the list
+            numerator.Insert(0, a);
+        }
+        if (current.AtomIndex == InsertionIndex.AtomIndex) {
+          // so we didn't really find any numbers before this, so make the numerator 1
+          numerator.Add(AtomForCharacter('1'));
+          if (!current.AtBeginningOfLine) {
+            var prevAtom = MathList.AtomAt(current.Previous);
+            if (prevAtom.AtomType is MathAtomType.Fraction) {
+              //Add a times symbol
+              MathList.Insert(current, MathAtoms.Times);
+              current = current.Next;
+            }
+          }
+        } else
+          // delete stuff in the Mathlist from current to insertionIndex
+          MathList.RemoveAtoms(new MathListRange(current, InsertionIndex.AtomIndex - current.AtomIndex));
+
+        //Create the fraction
+        var frac = new Fraction { Numerator = numerator, Denominator = MathAtoms.PlaceholderList };
+
+        //Insert it
+        MathList.Insert(current, frac);
+        //Update the insertion index to go the denominator
+        InsertionIndex = current.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Denominator);
+      }
+
+      void InsertParens() {
+        MathList.Insert(InsertionIndex, AtomForCharacter('('));
+        InsertionIndex = InsertionIndex.Next;
+        MathList.Insert(InsertionIndex, AtomForCharacter(')'));
+        // Don't go to the next insertion index, to start inserting before the close parens.
+      }
+      void InsertAbsValue() {
+        MathList.Insert(InsertionIndex, AtomForCharacter('|'));
+        InsertionIndex = InsertionIndex.Next;
+        MathList.Insert(InsertionIndex, AtomForCharacter('|'));
+        // Don't go to the next insertion index, to start inserting before the second absolute value
+      }
+
       if (str is null || str is "" || str is "\n")
         return;
       if(str is "\n") {
@@ -536,6 +543,7 @@ namespace CSharpMath.Rendering {
       }
       TextModified?.Invoke(this, EventArgs.Empty);
     }
+
     public void DeleteBackwards() {
       // delete the last atom from the list
       var prevIndex = InsertionIndex.Previous;
@@ -576,6 +584,32 @@ namespace CSharpMath.Rendering {
     }
     public void ClearHighlights() {
       UpdateDisplay();
+    }
+
+    public void MoveCursorLeft(object sender, EventArgs e) {
+      if (InsertionIndex is null) {
+        InsertionIndex = MathListIndex.Level0Index(MathList?.Atoms?.Count ?? 0);
+        return;
+      }
+      var newIndex = InsertionIndex.Previous ?? InsertionIndex.LevelDown();
+      if (!(newIndex is null))
+        InsertionIndex = newIndex;
+      InsertionPointChanged();
+      RedrawRequested?.Invoke();
+    }
+
+    public void MoveCursorRight(object sender, EventArgs e) {
+      if (InsertionIndex is null) {
+        InsertionIndex = MathListIndex.Level0Index(MathList?.Atoms?.Count ?? 0);
+        return;
+      }
+      var newIndex = InsertionIndex.Next;
+      if (MathList.AtomAt(newIndex) is null)
+        newIndex = InsertionIndex.LevelDown();
+      if (!(newIndex is null))
+        InsertionIndex = newIndex;
+      InsertionPointChanged();
+      RedrawRequested?.Invoke();
     }
   }
 }

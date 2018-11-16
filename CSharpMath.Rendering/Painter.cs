@@ -21,7 +21,7 @@ namespace CSharpMath.Rendering {
     
     #region Constructors
     public Painter(float fontSize = DefaultFontSize) {
-      FontSize = fontSize;
+      Fonts = new TFonts(Array.Empty<Typeface>(), fontSize);
       LocalTypefaces.CollectionChanged += TypefacesChanged;
       ErrorColor = UnwrapColor(new Color(255, 0, 0));
       TextColor = UnwrapColor(new Color(0, 0, 0));
@@ -49,7 +49,7 @@ namespace CSharpMath.Rendering {
     #region Redisplaying properties
     //_field == private field, __field == property-only field
     protected abstract void SetRedisplay();
-    protected TFonts Fonts { get; private set; } = new TFonts(Array.Empty<Typeface>(), DefaultFontSize);
+    protected TFonts Fonts { get; private set; }
     /// <summary>
     /// Unit of measure: points
     /// </summary>
