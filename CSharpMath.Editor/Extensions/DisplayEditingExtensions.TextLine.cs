@@ -13,12 +13,12 @@ namespace CSharpMath.Editor {
       if(offset < 0) return 0; //Move cursor to index 0
       int i = 0;
       float x = 0;
-      var rects = context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(line.Font, line.Glyphs.AsForEach(), line.Length);
-      foreach (var (bounds, kernAfter) in rects.Zip(line.GlyphInfos.Select(g => g.KernAfterGlyph), ValueTuple.Create))
-        if (x <= offset && offset < bounds.Width + x)
+      var advances = context.GlyphBoundsProvider.GetAdvancesForGlyphs(line.Font, line.Glyphs.AsForEach(), line.Length).Advances;
+      foreach (var (advance, kernAfter) in advances.Zip(line.GlyphInfos.Select(g => g.KernAfterGlyph), ValueTuple.Create))
+        if (x <= offset && offset < advance + x)
           return i;
         else {
-          x += bounds.Width + kernAfter;
+          x += advance + kernAfter;
           i++;
           if (offset < x) //If the point is in the kern after this, then the index is the one after this
             return i;
@@ -31,12 +31,12 @@ namespace CSharpMath.Editor {
         throw ArgOutOfRange("The index is negative.", index, nameof(index));
       int i = 0;
       float x = 0;
-      var rects = context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(line.Font, line.Glyphs.AsForEach(), line.Length);
-      foreach (var (bounds, kernAfter) in rects.Zip(line.GlyphInfos.Select(g => g.KernAfterGlyph), ValueTuple.Create))
+      var advances = context.GlyphBoundsProvider.GetAdvancesForGlyphs(line.Font, line.Glyphs.AsForEach(), line.Length).Advances;
+      foreach (var (advance, kernAfter) in advances.Zip(line.GlyphInfos.Select(g => g.KernAfterGlyph), ValueTuple.Create))
         if (i++ >= index)
           return x;
         else
-          x += bounds.Width + kernAfter;
+          x += advance + kernAfter;
       throw ArgOutOfRange("The index is beyond the end of the string.", index, nameof(index));
     }
 

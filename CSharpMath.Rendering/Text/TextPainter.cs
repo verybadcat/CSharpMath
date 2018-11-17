@@ -10,6 +10,8 @@ namespace CSharpMath.Rendering {
   public abstract class TextPainter<TCanvas, TColor> : Painter<TCanvas, TextSource, TColor> {
     public TextPainter(float fontSize = DefaultFontSize, float lineWidth = DefaultFontSize * 100) : base(fontSize) { }
 
+    public override IDisplay<Fonts, Glyph> Display => new Display.ListDisplay<Fonts, Glyph>(new[] { _relativeXCoordDisplay, _absoluteXCoordDisplay });
+
     //display maths should always be center-aligned regardless of parameter for Draw()
     public Display.ListDisplay<Fonts, Glyph> _absoluteXCoordDisplay;
     public Display.ListDisplay<Fonts, Glyph> _relativeXCoordDisplay;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -12,6 +12,18 @@ using System.Windows.Input;
 
 namespace CSharpMath.Utils.NuGet {
   public class ViewModel2 : INotifyPropertyChanged {
+    public static string[] ProjectNames { get; } =
+      new[] {
+        //Add projects here
+        "CSharpMath",
+        "CSharpMath.Editor",
+        "CSharpMath.Rendering",
+        "CSharpMath.Ios",
+        "CSharpMath.SkiaSharp",
+        "CSharpMath.Forms"
+        //NOTE: When a new project is added, first save project spec, NOT global spec
+      };
+
     public event PropertyChangedEventHandler PropertyChanged;
     private void Set<T>(T assignment, [CallerMemberName] string propertyName = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -42,17 +54,6 @@ namespace CSharpMath.Utils.NuGet {
         info.PackageTags = GetValue(nameof(info.PackageTags));
       }
     }
-
-    public static string[] ProjectNames { get; } =
-      new[] {
-        //Add projects here
-        "CSharpMath",
-        "CSharpMath.Rendering",
-        "CSharpMath.Ios",
-        "CSharpMath.SkiaSharp",
-        "CSharpMath.Forms"
-        //NOTE: When a new project is added, first save project spec, NOT global spec
-      };
     
     public ReadOnlyCollection<ProjectInfo> Projects { get; } =
       ProjectNames.Select(p => new ProjectInfo(p)).ToList().AsReadOnly();

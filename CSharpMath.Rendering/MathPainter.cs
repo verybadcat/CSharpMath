@@ -10,6 +10,7 @@ namespace CSharpMath.Rendering {
     protected IDisplay<Fonts, Glyph> _display;
     protected bool _displayChanged = true;
 
+    public override IDisplay<Fonts, Glyph> Display => _display;
     public IMathList MathList { get => Source.MathList; set => Source = new MathSource(value); }
     public string LaTeX { get => Source.LaTeX; set => Source = new MathSource(value); }
 

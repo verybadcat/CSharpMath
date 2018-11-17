@@ -26,11 +26,11 @@ namespace CSharpMath.Editor {
     public PointF Position { get => Frame.Location; set => Frame = new RectangleF(value, Frame.Size); }
 
     public Color ActualColor => new Color(Color.R, Color.G, Color.B, (byte)(Color.A * 3 / 5));
-    public PointF InitialPoint => new PointF(Bounds.Width / 2, 0);
-    public PointF NextPoint1 => new PointF(Bounds.Width, Bounds.Height / 4);
-    public PointF NextPoint2 => new PointF(Bounds.Width, Bounds.Height);
-    public PointF NextPoint3 => new PointF(0, Bounds.Height);
-    public PointF FinalPoint => new PointF(0, Bounds.Height / 4);
+    public PointF InitialPoint => new PointF(0, 0);
+    public PointF NextPoint1 => new PointF(Bounds.Width / 2, Bounds.Height / 4);
+    public PointF NextPoint2 => new PointF(Bounds.Width / 2, Bounds.Height);
+    public PointF NextPoint3 => new PointF(-Bounds.Width / 2, Bounds.Height);
+    public PointF FinalPoint => new PointF(-Bounds.Width / 2, Bounds.Height / 4);
 
     public bool PointInside(PointF point) =>
       // Create a hit area around the center.

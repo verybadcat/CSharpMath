@@ -44,6 +44,7 @@ namespace CSharpMath.Rendering {
     public float Magnification { get; set; } = 1;
 
     public string ErrorMessage => Source.ErrorMessage;
+    public abstract IDisplay<TFonts, Glyph> Display { get; }
     #endregion Non-redisplaying properties
 
     #region Redisplaying properties

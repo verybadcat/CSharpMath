@@ -27,6 +27,7 @@ namespace CSharpMath.Rendering {
         }
     }
 
+    public override IDisplay<Fonts, Glyph> Display => _display;
     public MathList MathList => Source.MathList;
     public event Action RedrawRequested;
     protected IDisplay<Fonts, Glyph> _display;
