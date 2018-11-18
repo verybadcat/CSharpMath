@@ -19,7 +19,7 @@ namespace CSharpMath.Editor {
         return MathListIndex.Level0Index(self.Range.End);
 
       //We can be either near the degree or the radicand
-      var degreeDistance = DistanceFromPointToRect(point, self.Degree.DisplayBounds);
+      var degreeDistance = DistanceFromPointToRect(point, self.Degree?.DisplayBounds ?? default);
       var radicandDistance = DistanceFromPointToRect(point, self.Radicand.DisplayBounds);
       if (degreeDistance < radicandDistance)
         return MathListIndex.IndexAtLocation(self.Range.Location, self.Degree.IndexForPoint(context, point), MathListSubIndexType.Numerator);

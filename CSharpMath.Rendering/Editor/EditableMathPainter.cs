@@ -592,9 +592,36 @@ namespace CSharpMath.Rendering {
         InsertionIndex = MathListIndex.Level0Index(MathList?.Atoms?.Count ?? 0);
         return;
       }
-      var newIndex = InsertionIndex.Previous ?? InsertionIndex.LevelDown();
-      if (!(newIndex is null))
-        InsertionIndex = newIndex;
+      MathListIndex newIndex =
+        InsertionIndex.AtBeginningOfLine ?
+        InsertionIndex.LevelDown() :
+        InsertionIndex.Previous;
+      if (newIndex is null)
+        return;
+      if(InsertionIndex.AtBeginningOfLine)
+        switch(InsertionIndex.FinalSubIndexType) {
+          case MathListSubIndexType.Degree:
+            
+            break;
+          case Radical r:
+            InsertionIndex = newIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(r.Radicand.Count), MathListSubIndexType.Radicand);
+            break;
+          default:
+            InsertionIndex = newIndex;
+            break;
+        }
+      else
+        switch(MathList.AtomAt(newIndex)) {
+          case Fraction f:
+            InsertionIndex = newIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(f.Denominator.Count), MathListSubIndexType.Denominator);
+            break;
+          case Radical r:
+            InsertionIndex = newIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(r.Radicand.Count), MathListSubIndexType.Radicand);
+            break;
+          default:
+            InsertionIndex = newIndex;
+            break;
+        }
       InsertionPointChanged();
       RedrawRequested?.Invoke();
     }

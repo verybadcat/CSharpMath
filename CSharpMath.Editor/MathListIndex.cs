@@ -101,32 +101,20 @@ namespace CSharpMath.Editor {
       return true;
     }
 
-    public int FinalIndex {
-      get {
-        if (SubIndexType == MathListSubIndexType.None || SubIndex == null) {
-          return AtomIndex;
-        } else {
-          return SubIndex.FinalIndex;
-        }
-      }
-    }
+    public int FinalIndex =>
+      SubIndexType is MathListSubIndexType.None || SubIndex is null ?
+      AtomIndex :
+      SubIndex.FinalIndex;
 
-    public MathListSubIndexType FinalSubIndexType {
-      get {
-        if (SubIndex != null && SubIndex.SubIndex != null) {
-          return SubIndex.FinalSubIndexType;
-        } else {
-          return SubIndexType;
-        }
-      }
-    }
+    public MathListSubIndexType FinalSubIndexType =>
+      SubIndex is null || SubIndex.SubIndex is null ?
+      SubIndexType :
+      SubIndex.FinalSubIndexType;
 
-    public override string ToString() {
-      if (SubIndex != null) {
-        return $@"[{AtomIndex}, {SubIndexType}:{SubIndex}]";
-      }
-      return $@"[{AtomIndex}]";
-    }
+    public override string ToString() =>
+      SubIndex is null ?
+      $@"[{AtomIndex}]" :
+      $@"[{AtomIndex}, {SubIndexType}:{SubIndex}]";
 
     public bool EqualsToIndex(MathListIndex index) {
       if (index is null)
