@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace CSharpMath.Editor {
 
   public class MathListIndex : IMathListIndex<MathListIndex> {
@@ -37,12 +33,7 @@ namespace CSharpMath.Editor {
         return null;
       }
       // recurse
-      var subIndexDown = SubIndex?.LevelDown();
-      if (subIndexDown != null) {
-        return IndexAtLocation(AtomIndex, subIndexDown, SubIndexType);
-      } else {
-        return Level0Index(AtomIndex);
-      }
+      return SubIndex?.LevelDown() is MathListIndex subIndex ? IndexAtLocation(AtomIndex, subIndex, SubIndexType) : Level0Index(AtomIndex);
     }
 
     [NullableReference]
@@ -107,9 +98,14 @@ namespace CSharpMath.Editor {
       SubIndex.FinalIndex;
 
     public MathListSubIndexType FinalSubIndexType =>
-      SubIndex is null || SubIndex.SubIndex is null ?
+      SubIndex?.SubIndex is null ?
       SubIndexType :
       SubIndex.FinalSubIndexType;
+
+    public MathListIndex FinalSubIndexParent =>
+      SubIndex?.SubIndex is null ?
+      this :
+      SubIndex.FinalSubIndexParent;
 
     public override string ToString() =>
       SubIndex is null ?
@@ -134,5 +130,4 @@ namespace CSharpMath.Editor {
     public override int GetHashCode() =>
       unchecked((AtomIndex * 31 + (int)SubIndexType) * 31 + SubIndex.GetHashCode());
   }
-
 }

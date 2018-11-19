@@ -8,9 +8,9 @@ namespace CSharpMath.Editor {
   using FrontEnd;
   using Color = Structures.Color;
 
-  partial class DisplayEditingExtensions {
+  public partial class DisplayEditingExtensions {
     public static int? StringIndexForXOffset<TFont, TGlyph>(this AttributedGlyphRun<TFont, TGlyph> line, TypesettingContext<TFont, TGlyph> context, float offset) where TFont : IFont<TGlyph> {
-      if(offset < 0) return 0; //Move cursor to index 0
+      if (offset < 0) return 0; //Move cursor to index 0
       int i = 0;
       float x = 0;
       var advances = context.GlyphBoundsProvider.GetAdvancesForGlyphs(line.Font, line.Glyphs.AsForEach(), line.Length).Advances;
@@ -76,7 +76,7 @@ namespace CSharpMath.Editor {
       // Convert the code point index to an index into the mathlist
       var mlIndex = self.StringIndexToMathListIndex(index);
       // index will be between 0 and _range.length inclusive
-      if(mlIndex < 0 || mlIndex > self.Range.Length)
+      if (mlIndex < 0 || mlIndex > self.Range.Length)
         throw new InvalidCodePathException($"Returned index out of range: {index}, range ({self.Range.Location}, {self.Range.Length})");
       // translate to the current index
       return MathListIndex.Level0Index(self.Range.Location + mlIndex);
