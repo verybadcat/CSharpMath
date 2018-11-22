@@ -9,7 +9,7 @@ namespace CSharpMath.Editor {
   using Color = Structures.Color;
 
   public partial class DisplayEditingExtensions {
-    public static int? StringIndexForXOffset<TFont, TGlyph>(this AttributedGlyphRun<TFont, TGlyph> line, TypesettingContext<TFont, TGlyph> context, float offset) where TFont : IFont<TGlyph> {
+    public static int? GlyphIndexForXOffset<TFont, TGlyph>(this AttributedGlyphRun<TFont, TGlyph> line, TypesettingContext<TFont, TGlyph> context, float offset) where TFont : IFont<TGlyph> {
       if (offset < 0) return 0; //Move cursor to index 0
       int i = 0;
       float x = 0;
@@ -26,7 +26,7 @@ namespace CSharpMath.Editor {
       return null;
     }
 
-    public static float XOffsetForStringIndex<TFont, TGlyph>(this AttributedGlyphRun<TFont, TGlyph> line, TypesettingContext<TFont, TGlyph> context, int index) where TFont : IFont<TGlyph> {
+    public static float XOffsetForGlyphIndex<TFont, TGlyph>(this AttributedGlyphRun<TFont, TGlyph> line, TypesettingContext<TFont, TGlyph> context, int index) where TFont : IFont<TGlyph> {
       if (index < 0)
         throw ArgOutOfRange("The index is negative.", index, nameof(index));
       int i = 0;
@@ -67,7 +67,7 @@ namespace CSharpMath.Editor {
     public static MathListIndex IndexForPoint<TFont, TGlyph>(this TextLineDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, PointF point) where TFont : IFont<TGlyph> {
       // Convert the point to the reference of the CTLine
       var relativePoint = new PointF(point.X - self.Position.X, point.Y - self.Position.Y);
-      var indices = self.Runs.Select(run => run.Run.StringIndexForXOffset(context, relativePoint.Plus(run.Position).X)).Where(x => x.HasValue);
+      var indices = self.Runs.Select(run => run.Run.GlyphIndexForXOffset(context, relativePoint.Plus(run.Position).X)).Where(x => x.HasValue);
       if (indices.IsEmpty())
         return null;
       var index = indices.Single().GetValueOrDefault();
@@ -95,7 +95,7 @@ return c.Length + strIndex; //offset for target char in its containing string
 
     public static (TextRunDisplay<TFont, TGlyph> run, int charIndex) GetRunAndCharIndexFromCodepointIndex<TFont, TGlyph>(this TextLineDisplay<TFont, TGlyph> self, int lineCharIndex) where TFont : IFont<TGlyph> {
       var currentRun = self.Runs.First(s => (lineCharIndex -= CountCodepoints(s.Run.Text)) < 0);
-      return (currentRun, currentRun.Run.Length + lineCharIndex); //offset for target char in its containing string
+      return (currentRun, CountCodepoints(currentRun.Run.Text) + lineCharIndex); //offset for target char in its containing string
     }
 
     public static PointF? PointForIndex<TFont, TGlyph>(this TextLineDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, MathListIndex index) where TFont : IFont<TGlyph> {
@@ -109,7 +109,7 @@ return c.Length + strIndex; //offset for target char in its containing string
           throw ArgOutOfRange($"The index is not in the range {self.Range}.", index, nameof(index));
         var strIndex = self.MathListIndexToStringIndex(index.AtomIndex - self.Range.Location);
         var (run, charIndex) = self.GetRunAndCharIndexFromStringIndex(strIndex);
-        offset = run.Position.X + run.Run.XOffsetForStringIndex(context, charIndex);
+        offset = run.Position.X + run.Run.XOffsetForGlyphIndex(context, StringIndexToCodepointIndex(run.Run.Text, charIndex));
       }
       return self.Position.Plus(new PointF(offset, 0));
     }

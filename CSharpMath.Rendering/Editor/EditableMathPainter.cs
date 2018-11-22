@@ -584,10 +584,8 @@ namespace CSharpMath.Rendering {
     }
 
     public void MoveCursorLeft(object sender, EventArgs e) {
-      if (InsertionIndex is null) {
-        InsertionIndex = MathListIndex.Level0Index(MathList?.Atoms?.Count ?? 0);
-        return;
-      }
+      if (InsertionIndex is null)
+        throw new InvalidOperationException($"{nameof(InsertionIndex)} is null.");
       if (InsertionIndex.AtBeginningOfLine)
         switch (InsertionIndex.FinalSubIndexType) {
           case MathListSubIndexType.Degree:
@@ -618,6 +616,10 @@ namespace CSharpMath.Rendering {
         }
       else if(InsertionIndex.Previous is MathListIndex prev)
         switch (MathList.AtomAt(prev)) {
+          case null:
+          default:
+            InsertionIndex = prev;
+            break;
           case var a when a.Subscript != null:
             InsertionIndex = prev.LevelUpWithSubIndex(MathListIndex.Level0Index(a.Subscript.Count), MathListSubIndexType.Subscript);
             break;
@@ -630,22 +632,18 @@ namespace CSharpMath.Rendering {
           case IFraction frac:
             InsertionIndex = prev.LevelUpWithSubIndex(MathListIndex.Level0Index(frac.Denominator.Count), MathListSubIndexType.Denominator);
             break;
-          default:
-            InsertionIndex = prev;
-            break;
         }
+      if (InsertionIndex is null)
+        throw new InvalidOperationException($"{nameof(InsertionIndex)} is null.");
       InsertionPointChanged();
       RedrawRequested?.Invoke();
     }
 
     public void MoveCursorRight(object sender, EventArgs e) {
-      if (InsertionIndex is null) {
-        InsertionIndex = MathListIndex.Level0Index(MathList?.Atoms?.Count ?? 0);
-        return;
-      }
-      var next = InsertionIndex.Next;
-      switch (MathList.AtomAt(next)) {
-        case null:
+      if (InsertionIndex is null)
+        throw new InvalidOperationException($"{nameof(InsertionIndex)} is null.");
+      switch (MathList.AtomAt(InsertionIndex)) {
+        case null when MathList.AtomAt(InsertionIndex) is null: //After Count
           switch (InsertionIndex.FinalSubIndexType) {
             case MathListSubIndexType.Radicand:
             case MathListSubIndexType.Denominator:
@@ -671,25 +669,28 @@ namespace CSharpMath.Rendering {
               break;
           }
           break;
+        case null:
+        default:
+          InsertionIndex = InsertionIndex.Next;
+          break;
         case IFraction frac:
-          InsertionIndex = next.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Numerator);
+          InsertionIndex = InsertionIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Numerator);
           break;
         case IRadical rad:
           if(rad.Degree is IMathList)
-            InsertionIndex = next.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Degree);
+            InsertionIndex = InsertionIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Degree);
           else
-            InsertionIndex = next.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Radicand);
+            InsertionIndex = InsertionIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Radicand);
           break;
         case var a when a.Superscript != null:
-          InsertionIndex = next.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Superscript);
+          InsertionIndex = InsertionIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Superscript);
           break;
         case var a when a.Subscript != null:
-          InsertionIndex = next.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Subscript);
-          break;
-        default:
-          InsertionIndex = next;
+          InsertionIndex = InsertionIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Subscript);
           break;
       }
+      if (InsertionIndex is null)
+        throw new InvalidOperationException($"{nameof(InsertionIndex)} is null.");
       InsertionPointChanged();
       RedrawRequested?.Invoke();
     }

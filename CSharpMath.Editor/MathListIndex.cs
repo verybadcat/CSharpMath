@@ -21,11 +21,10 @@ namespace CSharpMath.Editor {
     }
 
     public MathListIndex LevelUpWithSubIndex([NullableReference]MathListIndex subIndex, MathListSubIndexType type) {
-      if (SubIndexType == MathListSubIndexType.None) {
+      if (SubIndexType == MathListSubIndexType.None)
         return IndexAtLocation(AtomIndex, subIndex, type);
-      }
       // we have to recurse
-      return IndexAtLocation(AtomIndex, subIndex.LevelUpWithSubIndex(subIndex, type), SubIndexType);
+      return IndexAtLocation(AtomIndex, SubIndex.LevelUpWithSubIndex(subIndex, type), SubIndexType);
     }
     [NullableReference]
     public MathListIndex LevelDown() {
@@ -73,7 +72,7 @@ namespace CSharpMath.Editor {
       } else return false;
     }
 
-    public bool AtBeginningOfLine => FinalIndex == 0;
+    public bool AtBeginningOfLine => FinalIndex is 0;
 
 
     public bool AtSameLevel(MathListIndex other) {
