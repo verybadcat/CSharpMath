@@ -11,6 +11,8 @@ namespace CSharpMath.Rendering {
   using Color = Structures.Color;
 
   public abstract class EditableMathPainter<TCanvas, TColor, TButton, TLayout> : Painter<TCanvas, EditableMathSource, TColor> where TButton : class, IButton where TLayout : IButtonLayout<TButton, TLayout> {
+    public static bool ForbidMultipleRadicals { get; set; }
+
     protected EditableMathPainter(MathKeyboardView<TButton, TLayout> keyboard, float fontSize = DefaultFontSize * 3 / 2) : base(fontSize) {
       this.keyboard = keyboard;
       if (keyboard != null) {
@@ -372,7 +374,7 @@ namespace CSharpMath.Rendering {
 
       void HandleRadical(bool degreeButtonPressed) {
         var current = InsertionIndex;
-        if ((current.HasSubIndexOfType(MathListSubIndexType.Degree) || current.HasSubIndexOfType(MathListSubIndexType.Radicand)) && MathList.Atoms[current.AtomIndex] is Radical rad)
+        if (ForbidMultipleRadicals && (current.HasSubIndexOfType(MathListSubIndexType.Degree) || current.HasSubIndexOfType(MathListSubIndexType.Radicand)) && MathList.Atoms[current.AtomIndex] is Radical rad)
           if (degreeButtonPressed)
             if (rad.Degree is null) {
               rad.Degree = MathAtoms.PlaceholderList;
