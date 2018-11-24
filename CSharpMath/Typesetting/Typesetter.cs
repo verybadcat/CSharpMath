@@ -855,7 +855,7 @@ namespace CSharpMath {
 
     private IDownshiftableDisplay<TFont, TGlyph> _GetRadicalGlyph(float radicalHeight) {
 #warning GlyphFinder.FindGlyph
-      TGlyph radicalGlyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, 0, Constants.Symbols.SquareRoot.ToString());
+      TGlyph radicalGlyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, 0, Constants.Symbols.SquareRoot);
       TGlyph glyph = _FindGlyph(radicalGlyph, radicalHeight, out float glyphAscent, out float glyphDescent, out float glyphWidth);
 
       IDownshiftableDisplay<TFont, TGlyph> glyphDisplay = null;

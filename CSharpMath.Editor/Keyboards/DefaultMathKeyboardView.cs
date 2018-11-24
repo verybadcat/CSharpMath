@@ -20,17 +20,17 @@ namespace CSharpMath.Editor {
         layoutCtor,
         registerPressed,
         new RectangleF(0, 0, 320, 225),
-        ctor(new RectangleF(0, 0, 40, 45), "◄", DefaultFontSize, DefaultTitleBar, DefaultShadow, DefaultHighlight, null),
+        ctor(new RectangleF(0, 0, 40, 45), Constants.KeyboardSymbols.Left, DefaultFontSize, DefaultTitleBar, DefaultShadow, DefaultHighlight, null),
         new MathKeyboard<TButton, TLayout>(layoutCtor,
           registerPressed,
           new RectangleF(0, 45, 320, 180),
-#warning Replace "⸋⁄□" with image
-          ctor(new RectangleF(0, 90, 49.5f, 45), "⸋⁄□", 18, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null),
-          ctor(new RectangleF(199, 45, 49, 45), Constants.Symbols.Multiplication.ToString(), DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
+#warning Replace Constants.KeyboardSymbols.Fraction with image
+          ctor(new RectangleF(0, 90, 49.5f, 45), Constants.KeyboardSymbols.Fraction, 18, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null),
+          ctor(new RectangleF(199, 45, 49, 45), Constants.Symbols.Multiplication, DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
           ctor(new RectangleF(149, 135, 50, 45), "=", 25, DefaultTitle, DefaultShadow, DefaultHighlight, DefaultDisabled),
-          ctor(new RectangleF(199, 0, 49, 45), Constants.Symbols.Division.ToString(), DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
-#warning Replace "⬜⸋" with image
-          ctor(new RectangleF(0, 135, 50, 45), "⬜⸋", 18, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null),
+          ctor(new RectangleF(199, 0, 49, 45), Constants.Symbols.Division, DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
+#warning Replace Constants.KeyboardSymbols.Exponent with image
+          ctor(new RectangleF(0, 135, 50, 45), Constants.KeyboardSymbols.Exponent, 18, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null),
           null,
           null,
           null,
@@ -65,26 +65,26 @@ namespace CSharpMath.Editor {
           null,
           null,
           null,
-          ctor(new RectangleF(248.5f, 0, 71.5f, 45), "🔙", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
-          ctor(new RectangleF(248.5f, 135, 71.5f, 45), "🚫", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
-          ctor(new RectangleF(248.5f, 45, 71.5f, 90), "⏎", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null)
+          ctor(new RectangleF(248.5f, 0, 71.5f, 45), Constants.KeyboardSymbols.Back, DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
+          ctor(new RectangleF(248.5f, 135, 71.5f, 45), Constants.KeyboardSymbols.Dismiss, DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
+          ctor(new RectangleF(248.5f, 45, 71.5f, 90), Constants.KeyboardSymbols.Enter, DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null)
         ),
         ctor(new RectangleF(40, 0, 60, 45), "123", DefaultFontSize, DefaultTitleBar, DefaultShadow, DefaultHighlight, null),
         new MathKeyboard<TButton, TLayout>(layoutCtor,
           registerPressed,
           new RectangleF(0, 45, 320, 180),
-          ctor(new RectangleF(0, 90, 50, 45), "⸋⁄□", 18, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null),
+          ctor(new RectangleF(0, 90, 50, 45), Constants.KeyboardSymbols.Fraction, 18, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null),
           null,
           null,
           null,
-#warning Replace "⬜⸋" with image
-          ctor(new RectangleF(0, 135, 50, 45), "⬜⸋", 18, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null),
+#warning Replace Constants.KeyboardSymbols.Exponent with image
+          ctor(new RectangleF(0, 135, 50, 45), Constants.KeyboardSymbols.Exponent, 18, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null),
           null,
           null,
           null,
           null,
           null,
-            ctor(new RectangleF(150, 90, 49, 45), $"|⬜|", 24, DefaultTitle, DefaultShadow, DefaultHighlight, null),
+            ctor(new RectangleF(150, 90, 49, 45), Constants.KeyboardSymbols.Absolute, 24, DefaultTitle, DefaultShadow, DefaultHighlight, null),
           null,
           new[] {
             ctor(new RectangleF(0, 0, 50, 45), "x", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
@@ -94,14 +94,14 @@ namespace CSharpMath.Editor {
           new[] {
             ctor(new RectangleF(50, 90, 50, 45), "{", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
             ctor(new RectangleF(100, 45, 50, 45), "]", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
-            ctor(new RectangleF(150, 45, 49, 45), Constants.Symbols.LessEqual.ToString(), DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
+            ctor(new RectangleF(150, 45, 49, 45), Constants.Symbols.LessEqual, DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
             ctor(new RectangleF(50, 0, 50, 45), "(", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
             ctor(new RectangleF(100, 0, 50, 45), ")", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
             ctor(new RectangleF(150, 0, 49, 45), "<", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
-            ctor(new RectangleF(100, 135, 50, 45), Constants.Symbols.Infinity.ToString(), DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
+            ctor(new RectangleF(100, 135, 50, 45), Constants.Symbols.Infinity, DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
             ctor(new RectangleF(50, 135, 50, 45), "!", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
             ctor(new RectangleF(199, 90, 50, 45), "%", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
-            ctor(new RectangleF(199, 45, 50, 45), Constants.Symbols.GreaterEqual.ToString(), DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
+            ctor(new RectangleF(199, 45, 50, 45), Constants.Symbols.GreaterEqual, DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
             ctor(new RectangleF(199, 0, 50, 45), ">", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
             ctor(new RectangleF(150, 135, 49, 45), ":", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
             ctor(new RectangleF(199, 135, 50, 45), ",", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
@@ -115,24 +115,24 @@ namespace CSharpMath.Editor {
           null,
           null,
           null,
-          ctor(new RectangleF(249, 0, 71, 45), "🔙", 18, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null),
-          ctor(new RectangleF(249, 135, 71, 45), "🚫", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
-          ctor(new RectangleF(249, 45, 71, 90), "⏎", 18, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null)
+          ctor(new RectangleF(249, 0, 71, 45), Constants.KeyboardSymbols.Back, 18, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null),
+          ctor(new RectangleF(249, 135, 71, 45), Constants.KeyboardSymbols.Dismiss, DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
+          ctor(new RectangleF(249, 45, 71, 90), Constants.KeyboardSymbols.Enter, 18, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null)
         ),
         ctor(new RectangleF(100, 0, 60, 45), "()<>", DefaultFontSize, DefaultTitleBar, DefaultShadow, DefaultHighlight, null),
         new MathKeyboard<TButton, TLayout>(layoutCtor,
           registerPressed,
           new RectangleF(0, 45, 320, 180),
-          ctor(new RectangleF(0, 90, 49.5f, 45), "⸋⁄□", 18, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null),
+          ctor(new RectangleF(0, 90, 49.5f, 45), Constants.KeyboardSymbols.Fraction, 18, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null),
           null,
           null,
           null,
-          ctor(new RectangleF(0, 135, 50, 45), "⬜⸋", 18, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null),
-          ctor(new RectangleF(50, 135, 50, 45), "⎵", DefaultFontSize, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null),
+          ctor(new RectangleF(0, 135, 50, 45), Constants.KeyboardSymbols.Exponent, 18, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null),
+          ctor(new RectangleF(50, 135, 50, 45), Constants.KeyboardSymbols.Subscript, DefaultFontSize, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null),
           null,
-          ctor(new RectangleF(100, 135, 50, 45), "√⬜", DefaultFontSize, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null),
-          ctor(new RectangleF(150, 135, 49, 45), "⸋√⬜", DefaultFontSize, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, DefaultDisabled),
-          ctor(new RectangleF(150, 90, 49, 45), "ˡᵒᵍ▫", DefaultFontSize, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null),
+          ctor(new RectangleF(100, 135, 50, 45), Constants.KeyboardSymbols.SquareRoot, DefaultFontSize, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null),
+          ctor(new RectangleF(150, 135, 49, 45), Constants.KeyboardSymbols.NthRoot, DefaultFontSize, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, DefaultDisabled),
+          ctor(new RectangleF(150, 90, 49, 45), Constants.KeyboardSymbols.LogBase, DefaultFontSize, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null),
           null,
           null,
           new[] {
@@ -164,9 +164,9 @@ namespace CSharpMath.Editor {
           null,
           null,
           null,
-          ctor(new RectangleF(249, 0, 71, 45), "🔙", DefaultFontSize, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null),
-          ctor(new RectangleF(249, 135, 71, 45), "🚫", DefaultFontSize, ToBeReplacedWithImage, DefaultTitle, ToBeReplacedWithImage, null),
-          ctor(new RectangleF(249, 45, 71, 90), "⏎", DefaultFontSize, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null)
+          ctor(new RectangleF(249, 0, 71, 45), Constants.KeyboardSymbols.Back, DefaultFontSize, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null),
+          ctor(new RectangleF(249, 135, 71, 45), Constants.KeyboardSymbols.Dismiss, DefaultFontSize, ToBeReplacedWithImage, DefaultTitle, ToBeReplacedWithImage, null),
+          ctor(new RectangleF(249, 45, 71, 90), Constants.KeyboardSymbols.Enter, DefaultFontSize, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null)
         ),
         ctor(new RectangleF(160, 0, 60, 45), "f(x)", DefaultFontSize, DefaultTitleBar, DefaultShadow, DefaultHighlight, null),
         new MathKeyboard<TButton, TLayout>(layoutCtor,
@@ -221,12 +221,12 @@ namespace CSharpMath.Editor {
           ctor(new RectangleF(144, 135, 32, 45), "σ", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
           ctor(new RectangleF(176, 135, 32, 45), "μ", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
           ctor(new RectangleF(208, 135, 32, 45), "λ", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
-          ctor(new RectangleF(272, 90, 48, 45), "🔙", 27, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null),
-          ctor(new RectangleF(0, 135, 80, 45), "🚫", 27, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null),
-          ctor(new RectangleF(239, 135, 81, 45), "⏎", 27, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null)
+          ctor(new RectangleF(272, 90, 48, 45), Constants.KeyboardSymbols.Back, 27, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null),
+          ctor(new RectangleF(0, 135, 80, 45), Constants.KeyboardSymbols.Dismiss, 27, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null),
+          ctor(new RectangleF(239, 135, 81, 45), Constants.KeyboardSymbols.Enter, 27, ToBeReplacedWithImage, DefaultShadow, ToBeReplacedWithImage, null)
         ),
         ctor(new RectangleF(220, 0, 60, 45), "abc", DefaultFontSize, DefaultTitleBar, DefaultShadow, DefaultHighlight, null),
-        ctor(new RectangleF(280, 0, 40, 45), "►", DefaultFontSize, DefaultTitleBar, DefaultShadow, DefaultHighlight, null)
+        ctor(new RectangleF(280, 0, 40, 45), Constants.KeyboardSymbols.Right, DefaultFontSize, DefaultTitleBar, DefaultShadow, DefaultHighlight, null)
       );
     }
   }
