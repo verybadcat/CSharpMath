@@ -142,9 +142,9 @@ namespace CSharpMath.Editor {
           new[] {
             ctor(new RectangleF(50,90,50,45), "log", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
             ctor(new RectangleF(100, 90, 50, 45), "ln", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
-            ctor(new RectangleF(50,45,50,45),"sec", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
-            ctor(new RectangleF(100,45,50,45),"csc", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
-            ctor(new RectangleF(150,45,49,45),"cot", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
+            ctor(new RectangleF(50,45,50,45), "sec", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
+            ctor(new RectangleF(100,45,50,45), "csc", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
+            ctor(new RectangleF(150,45,49,45), "cot", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
             ctor(new RectangleF(50, 0, 50, 45), "sin", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
             ctor(new RectangleF(100, 0, 50, 45), "cos", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),
             ctor(new RectangleF(150, 0, 49, 45), "tan", DefaultFontSize, DefaultTitle, DefaultShadow, DefaultHighlight, null),

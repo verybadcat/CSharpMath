@@ -29,6 +29,7 @@ namespace CSharpMath.Rendering {
     }
     
     public bool HasText => MathList?.Atoms?.Count > 0;
+    public Lazy<string> LaTeX => Source.LaTeX;
     public Color SelectColor { get; set; }
     public MathListIndex InsertionIndex { get; set; }
     public override IDisplay<Fonts, Glyph> Display => _display;
@@ -201,9 +202,7 @@ namespace CSharpMath.Rendering {
 
       SetKeyboardMode();
 
-      /*
-             Find the insert point rect and create a caretView to draw the caret at this position.
-             */
+      /* Find the insert point rect and create a caretView to draw the caret at this position. */
 
       // Check that we were returned a valid position before displaying a caret there.
       if (!(CaretRectForIndex(InsertionIndex) is PointF caretPosition))
