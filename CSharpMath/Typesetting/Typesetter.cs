@@ -134,7 +134,7 @@ namespace CSharpMath {
             var displayRad = MakeRadical(rad.Radicand, rad.IndexRange);
             if (rad.Degree != null) {
               // add the degree to the radical
-              var degree = CreateLine(rad.Degree, _font, _context, LineStyle.Script);
+              var degree = CreateLine(rad.Degree, _styleFont, _context, LineStyle.Script);
               displayRad.SetDegree(degree, _styleFont, _mathTable);
             }
             _displayAtoms.Add(displayRad);
