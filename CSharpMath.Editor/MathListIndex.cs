@@ -125,8 +125,8 @@ namespace CSharpMath.Editor {
       }
     }
 
-    public override bool Equals(object anObject) =>
-      anObject is MathListIndex index ? EqualsToIndex(index) : false;
+    public override bool Equals(object obj) =>
+      obj is MathListIndex index && EqualsToIndex(index);
     public override int GetHashCode() =>
       unchecked((AtomIndex * 31 + (int)SubIndexType) * 31 + SubIndex.GetHashCode());
   }
