@@ -12,9 +12,9 @@
     <PackageLicenseUrl>https://github.com/verybadcat/CSharpMath/blob/master/LICENSE</PackageLicenseUrl>
     <Copyright>© CSharpMath Contributors 2018</Copyright>
     <PackageTags>math;mathematics;mathematical;formula;equation;equations;expression;tex;latex;render;rendering;display</PackageTags>
-    <PackageVersion>0.2.0-alpha2</PackageVersion>
+    <PackageVersion>0.2.0-alpha3</PackageVersion>
     <RepositoryBranch>master</RepositoryBranch>
-    <RepositoryCommit>f7790129228ab88cb4af2ebcfd725383488bd527</RepositoryCommit>
+    <RepositoryCommit>5751094f494526c7463a7aaef8f531dcc44ef213</RepositoryCommit>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageIconUrl>https://raw.githubusercontent.com/verybadcat/CSharpMath/master/Icon.png</PackageIconUrl>
     <PackageId>CSharpMath</PackageId>
@@ -38,6 +38,7 @@
   <ItemGroup>
     <PackageReference Include="System.Buffers" Version="4.5.0" />
     <PackageReference Include="System.Memory" Version="4.5.1" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.2" />
   </ItemGroup>
   <Import Project="..\packages\NuGet.Build.Packaging.0.2.2\build\NuGet.Build.Packaging.targets" Condition="Exists('..\packages\NuGet.Build.Packaging.0.2.2\build\NuGet.Build.Packaging.targets') And '$(Configuration)' == 'Release-iOS'" />
 </Project>

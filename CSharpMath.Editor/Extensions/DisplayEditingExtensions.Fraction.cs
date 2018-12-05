@@ -26,13 +26,12 @@ namespace CSharpMath.Editor {
       else
         return MathListIndex.IndexAtLocation(self.Range.Location, self.Denominator.IndexForPoint(context, point), MathListSubIndexType.Denominator);
     }
-
-    ///<summary>Seems never used</summary>
+    
     public static PointF? PointForIndex<TFont, TGlyph>(this FractionDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, MathListIndex index) where TFont : IFont<TGlyph> {
       if (index.SubIndexType != MathListSubIndexType.None)
         throw Arg("The subindex must be none to get the closest point for it.", nameof(index));
-      // draw a caret before the fraction
-      return self.Position;
+      // draw a caret after the fraction
+      return new PointF(self.DisplayBounds.Right, self.Position.Y);
     }
 
     public static void HighlightCharacterAt<TFont, TGlyph>(this FractionDisplay<TFont, TGlyph> self, MathListIndex index, Color color) where TFont : IFont<TGlyph> {

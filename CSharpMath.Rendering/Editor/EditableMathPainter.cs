@@ -11,6 +11,8 @@ namespace CSharpMath.Rendering {
   using Color = Structures.Color;
 
   public abstract class EditableMathPainter<TCanvas, TColor, TButton, TLayout> : Painter<TCanvas, EditableMathSource, TColor> where TButton : class, IButton where TLayout : IButtonLayout<TButton, TLayout> {
+    public static bool ForbidMultipleRadicals { get; set; }
+
     protected EditableMathPainter(MathKeyboardView<TButton, TLayout> keyboard, float fontSize = DefaultFontSize * 3 / 2) : base(fontSize) {
       this.keyboard = keyboard;
       if (keyboard != null) {
@@ -21,12 +23,13 @@ namespace CSharpMath.Rendering {
       Source = new EditableMathSource(new MathList());
       if (keyboard?.Tabs != null)
         foreach (var tab in keyboard.Tabs) {
-          tab.insertText = InsertText;
-          tab.delete = DeleteBackwards;
+          tab.InsertText += InsertText;
+          tab.Delete += DeleteBackwards;
         }
     }
     
     public bool HasText => MathList?.Atoms?.Count > 0;
+    public Lazy<string> LaTeX => Source.LaTeX;
     public Color SelectColor { get; set; }
     public MathListIndex InsertionIndex { get; set; }
     public override IDisplay<Fonts, Glyph> Display => _display;
@@ -148,7 +151,7 @@ namespace CSharpMath.Rendering {
     public static void ClearPlaceholders(Interfaces.IMathList mathList) {
       foreach (var atom in (IList<IMathAtom>)mathList?.Atoms ?? Array.Empty<IMathAtom>()) {
         if (atom.AtomType is Enumerations.MathAtomType.Placeholder)
-          atom.Nucleus = Constants.Symbols.WhiteSquare.ToString();
+          atom.Nucleus = Constants.Symbols.WhiteSquare;
         if (atom.Superscript is Interfaces.IMathList super)
           ClearPlaceholders(super);
         if (atom.Subscript is Interfaces.IMathList sub)
@@ -180,7 +183,7 @@ namespace CSharpMath.Rendering {
       ClearPlaceholders(MathList);
       var atom = MathList.AtomAt(InsertionIndex);
       if (atom?.AtomType is MathAtomType.Placeholder) {
-        atom.Nucleus = Symbols.BlackSquare.ToString();
+        atom.Nucleus = Symbols.BlackSquare;
         if (InsertionIndex.FinalSubIndexType is MathListSubIndexType.Nucleus) {
           // If the insertion index is inside a placeholder, move it out.
           InsertionIndex = InsertionIndex.LevelDown();
@@ -192,16 +195,14 @@ namespace CSharpMath.Rendering {
         if (atom != null && atom.AtomType is MathAtomType.Placeholder &&
            atom.Superscript is null && atom.Subscript is null) {
           InsertionIndex = previousIndex;
-          atom.Nucleus = Symbols.BlackSquare.ToString();
+          atom.Nucleus = Symbols.BlackSquare;
           // TODO - disable caret
         }
       }
 
       SetKeyboardMode();
 
-      /*
-             Find the insert point rect and create a caretView to draw the caret at this position.
-             */
+      /* Find the insert point rect and create a caretView to draw the caret at this position. */
 
       // Check that we were returned a valid position before displaying a caret there.
       if (!(CaretRectForIndex(InsertionIndex) is PointF caretPosition))
@@ -287,12 +288,13 @@ namespace CSharpMath.Rendering {
       return false;
     }
 
-    public static MathAtom AtomForCharacter(char c) {
+    public static MathAtom AtomForCharacter(string firstChar) {
+      var c = firstChar[0];
       // Get the basic conversion from MathAtoms, and then special case unicode characters and latex special characters.
-      switch (c) {
+      switch (firstChar) {
         //https://github.com/kostub/MathEditor/blob/61f67c6224000c224e252f6eeba483003f11d3d5/mathEditor/editor/MTEditableMathLabel.m#L414
         case Symbols.Multiplication:
-        case '*':
+        case "*":
           return MathAtoms.Times;
         case Symbols.SquareRoot:
           return MathAtoms.PlaceholderSquareRoot;
@@ -301,13 +303,13 @@ namespace CSharpMath.Rendering {
         case Symbols.Angle:
           return MathAtoms.Create(MathAtomType.Ordinary, c);
         case Symbols.Division:
-        case '/':
+        case "/":
           return MathAtoms.Divide;
         case Symbols.FractionSlash:
           return MathAtoms.PlaceholderFraction;
-        case '{':
+        case "{":
           return MathAtoms.Create(MathAtomType.Open, c);
-        case '}':
+        case "}":
           return MathAtoms.Create(MathAtomType.Close, c);
         case Symbols.GreaterEqual:
         case Symbols.LessEqual:
@@ -319,8 +321,8 @@ namespace CSharpMath.Rendering {
           // Including capital greek letters
           return MathAtoms.Create(MathAtomType.Variable, c);
         case var _ when c < '\x21' || c > '\x7E':
-        case '\'':
-        case '~':
+        case "'":
+        case "~":
           // Not ascii
           return null;
         case var _ when MathAtoms.ForCharacter(c) is MathAtom atom:
@@ -372,7 +374,7 @@ namespace CSharpMath.Rendering {
 
       void HandleRadical(bool degreeButtonPressed) {
         var current = InsertionIndex;
-        if ((current.HasSubIndexOfType(MathListSubIndexType.Degree) || current.HasSubIndexOfType(MathListSubIndexType.Radicand)) && MathList.Atoms[current.AtomIndex] is Radical rad)
+        if (ForbidMultipleRadicals && (current.HasSubIndexOfType(MathListSubIndexType.Degree) || current.HasSubIndexOfType(MathListSubIndexType.Radicand)) && MathList.Atoms[current.AtomIndex] is Radical rad)
           if (degreeButtonPressed)
             if (rad.Degree is null) {
               rad.Degree = MathAtoms.PlaceholderList;
@@ -443,7 +445,7 @@ namespace CSharpMath.Rendering {
         }
         if (current.AtomIndex == InsertionIndex.AtomIndex) {
           // so we didn't really find any numbers before this, so make the numerator 1
-          numerator.Add(AtomForCharacter('1'));
+          numerator.Add(AtomForCharacter("1"));
           if (!current.AtBeginningOfLine) {
             var prevAtom = MathList.AtomAt(current.Previous);
             if (prevAtom.AtomType is MathAtomType.Fraction) {
@@ -466,15 +468,15 @@ namespace CSharpMath.Rendering {
       }
 
       void InsertParens() {
-        MathList.Insert(InsertionIndex, AtomForCharacter('('));
+        MathList.Insert(InsertionIndex, AtomForCharacter("("));
         InsertionIndex = InsertionIndex.Next;
-        MathList.Insert(InsertionIndex, AtomForCharacter(')'));
+        MathList.Insert(InsertionIndex, AtomForCharacter(")"));
         // Don't go to the next insertion index, to start inserting before the close parens.
       }
       void InsertAbsValue() {
-        MathList.Insert(InsertionIndex, AtomForCharacter('|'));
+        MathList.Insert(InsertionIndex, AtomForCharacter("|"));
         InsertionIndex = InsertionIndex.Next;
-        MathList.Insert(InsertionIndex, AtomForCharacter('|'));
+        MathList.Insert(InsertionIndex, AtomForCharacter("|"));
         // Don't go to the next insertion index, to start inserting before the second absolute value
       }
 
@@ -484,13 +486,12 @@ namespace CSharpMath.Rendering {
         ReturnPressed?.Invoke(this, EventArgs.Empty);
         return;
       }
-      var ch = str[0];
-      var atom = str.Length > 1 ? MathAtoms.ForLatexSymbolName(str) : AtomForCharacter(ch);
+      var atom = str.Length > 1 ? MathAtoms.ForLatexSymbolName(str) : AtomForCharacter(str);
       if (InsertionIndex.SubIndexType is MathListSubIndexType.Denominator && atom.AtomType is MathAtomType.Relation)
         // pull the insertion index out
         InsertionIndex = InsertionIndex.LevelDown().Next;
-      switch (ch) {
-        case '^':
+      switch (str) {
+        case "^":
           // Special ^ handling - adds an exponent
           HandleExponentButton();
           break;
@@ -500,17 +501,17 @@ namespace CSharpMath.Rendering {
         case Symbols.CubeRoot:
           HandleRadical(true);
           break;
-        case '_':
+        case "_":
           HandleSubscriptButton();
           break;
-        case '/':
+        case "/":
           HandleSlashButton();
           break;
-        case var _ when str is "()":
+        case "()":
           RemovePlaceholderIfPresent();
           InsertParens();
           break;
-        case var _ when str is "||":
+        case "||":
           RemovePlaceholderIfPresent();
           InsertAbsValue();
           break;
@@ -584,10 +585,8 @@ namespace CSharpMath.Rendering {
     }
 
     public void MoveCursorLeft(object sender, EventArgs e) {
-      if (InsertionIndex is null) {
-        InsertionIndex = MathListIndex.Level0Index(MathList?.Atoms?.Count ?? 0);
-        return;
-      }
+      if (InsertionIndex is null)
+        throw new InvalidOperationException($"{nameof(InsertionIndex)} is null.");
       if (InsertionIndex.AtBeginningOfLine)
         switch (InsertionIndex.FinalSubIndexType) {
           case MathListSubIndexType.Degree:
@@ -618,6 +617,10 @@ namespace CSharpMath.Rendering {
         }
       else if(InsertionIndex.Previous is MathListIndex prev)
         switch (MathList.AtomAt(prev)) {
+          case null:
+          default:
+            InsertionIndex = prev;
+            break;
           case var a when a.Subscript != null:
             InsertionIndex = prev.LevelUpWithSubIndex(MathListIndex.Level0Index(a.Subscript.Count), MathListSubIndexType.Subscript);
             break;
@@ -630,22 +633,18 @@ namespace CSharpMath.Rendering {
           case IFraction frac:
             InsertionIndex = prev.LevelUpWithSubIndex(MathListIndex.Level0Index(frac.Denominator.Count), MathListSubIndexType.Denominator);
             break;
-          default:
-            InsertionIndex = prev;
-            break;
         }
+      if (InsertionIndex is null)
+        throw new InvalidOperationException($"{nameof(InsertionIndex)} is null.");
       InsertionPointChanged();
       RedrawRequested?.Invoke();
     }
 
     public void MoveCursorRight(object sender, EventArgs e) {
-      if (InsertionIndex is null) {
-        InsertionIndex = MathListIndex.Level0Index(MathList?.Atoms?.Count ?? 0);
-        return;
-      }
-      var next = InsertionIndex.Next;
-      switch (MathList.AtomAt(next)) {
-        case null:
+      if (InsertionIndex is null)
+        throw new InvalidOperationException($"{nameof(InsertionIndex)} is null.");
+      switch (MathList.AtomAt(InsertionIndex)) {
+        case null when MathList.AtomAt(InsertionIndex) is null: //After Count
           switch (InsertionIndex.FinalSubIndexType) {
             case MathListSubIndexType.Radicand:
             case MathListSubIndexType.Denominator:
@@ -671,25 +670,28 @@ namespace CSharpMath.Rendering {
               break;
           }
           break;
+        case null:
+        default:
+          InsertionIndex = InsertionIndex.Next;
+          break;
         case IFraction frac:
-          InsertionIndex = next.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Numerator);
+          InsertionIndex = InsertionIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Numerator);
           break;
         case IRadical rad:
           if(rad.Degree is IMathList)
-            InsertionIndex = next.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Degree);
+            InsertionIndex = InsertionIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Degree);
           else
-            InsertionIndex = next.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Radicand);
+            InsertionIndex = InsertionIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Radicand);
           break;
         case var a when a.Superscript != null:
-          InsertionIndex = next.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Superscript);
+          InsertionIndex = InsertionIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Superscript);
           break;
         case var a when a.Subscript != null:
-          InsertionIndex = next.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Subscript);
-          break;
-        default:
-          InsertionIndex = next;
+          InsertionIndex = InsertionIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Subscript);
           break;
       }
+      if (InsertionIndex is null)
+        throw new InvalidOperationException($"{nameof(InsertionIndex)} is null.");
       InsertionPointChanged();
       RedrawRequested?.Invoke();
     }

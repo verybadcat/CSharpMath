@@ -8,83 +8,83 @@ namespace CSharpMath.Editor {
       layout = layoutCtor();
       layout.Bounds = bounds;
       if (fractionButton != null) {
-        registerPressed(fractionButton, delegate { keyPressed(Symbols.FractionSlash); });
+        registerPressed(fractionButton, delegate { KeyPressed(Symbols.FractionSlash); });
         layout.Add(fractionButton);
       }
       if (multiplyButton != null) {
-        registerPressed(multiplyButton, delegate { keyPressed(Symbols.Multiplication); });
+        registerPressed(multiplyButton, delegate { KeyPressed(Symbols.Multiplication); });
         layout.Add(multiplyButton);
       }
       if (equalsButton != null) {
-        registerPressed(equalsButton, delegate { keyPressed('='); });
+        registerPressed(equalsButton, delegate { KeyPressed("="); });
         layout.Add(equalsButton);
       }
       if (divisionButton != null) {
-        registerPressed(divisionButton, delegate { keyPressed(Symbols.Division); });
+        registerPressed(divisionButton, delegate { KeyPressed(Symbols.Division); });
         layout.Add(divisionButton);
       }
       if (exponentButton != null) {
-        registerPressed(exponentButton, delegate { keyPressed('^'); });
+        registerPressed(exponentButton, delegate { KeyPressed("^"); });
         layout.Add(exponentButton);
       }
       if(subscriptButton != null){
-        registerPressed(subscriptButton, delegate { keyPressed('_'); });
+        registerPressed(subscriptButton, delegate { KeyPressed("_"); });
         layout.Add(subscriptButton);
       }
       if (shiftButton != null) {
-        registerPressed(shiftButton, delegate { shiftPressed(); });
+        registerPressed(shiftButton, delegate { ShiftPressed(); });
         layout.Add(shiftButton);
       }
       if (squareRootButton != null) {
-        registerPressed(squareRootButton, delegate { keyPressed(Symbols.SquareRoot); });
+        registerPressed(squareRootButton, delegate { KeyPressed(Symbols.SquareRoot); });
         layout.Add(squareRootButton);
       }
       if (radicalButton != null) {
-        registerPressed(radicalButton, delegate { keyPressed(Symbols.CubeRoot); });
+        registerPressed(radicalButton, delegate { KeyPressed(Symbols.CubeRoot); });
         layout.Add(radicalButton);
       }
       if (logBaseButton != null) {
-        registerPressed(logBaseButton, delegate { keyPressed("log"); keyPressed("_"); });
+        registerPressed(logBaseButton, delegate { KeyPressed("log"); KeyPressed("_"); });
         layout.Add(logBaseButton);
       }
       if(absButton != null){
-        registerPressed(absButton, delegate { keyPressed("||"); });
+        registerPressed(absButton, delegate { KeyPressed("||"); });
         layout.Add(absButton);
       }
       foreach (var button in (numbers ?? Array.Empty<TButton>()).Concat(variables ?? Array.Empty<TButton>()).Concat(operators ?? Array.Empty<TButton>()).Concat(relations ?? Array.Empty<TButton>()).Concat(letters ?? Array.Empty<TButton>()).Concat(greekLetters ?? Array.Empty<TButton>()) ?? Array.Empty<TButton>()) {
-        registerPressed(button, delegate { keyPressed(button.Text); });
+        registerPressed(button, delegate { KeyPressed(button.Text); });
         layout.Add(button);
       }
       if (alphaRho != null) {
-        registerPressed(alphaRho, delegate { keyPressed(alphaRho.Text); });
+        registerPressed(alphaRho, delegate { KeyPressed(alphaRho.Text); });
         layout.Add(alphaRho);
       }
       if (deltaOmega != null) {
-        registerPressed(deltaOmega, delegate { keyPressed(deltaOmega.Text); });
+        registerPressed(deltaOmega, delegate { KeyPressed(deltaOmega.Text); });
         layout.Add(deltaOmega);
       }
       if (sigmaPhi != null) {
-        registerPressed(sigmaPhi, delegate { keyPressed(sigmaPhi.Text); });
+        registerPressed(sigmaPhi, delegate { KeyPressed(sigmaPhi.Text); });
         layout.Add(sigmaPhi);
       }
       if (muNu != null) {
-        registerPressed(muNu, delegate { keyPressed(muNu.Text); });
+        registerPressed(muNu, delegate { KeyPressed(muNu.Text); });
         layout.Add(muNu);
       }
       if (lambdaBeta != null) {
-        registerPressed(lambdaBeta, delegate { keyPressed(lambdaBeta.Text); });
+        registerPressed(lambdaBeta, delegate { KeyPressed(lambdaBeta.Text); });
         layout.Add(lambdaBeta);
       }
       if (backspace != null) {
-        registerPressed(backspace, delegate { backspacePressed(); });
+        registerPressed(backspace, delegate { BackspacePressed(); });
         layout.Add(backspace);
       }
       if (dismiss != null) {
-        registerPressed(dismiss, dismissPressed);
+        registerPressed(dismiss, DismissPressed);
         layout.Add(dismiss);
       }
       if (enter != null) {
-        registerPressed(enter, delegate { keyPressed('\n'); });
+        registerPressed(enter, delegate { KeyPressed("\n"); });
         layout.Add(enter);
       }
 
@@ -111,8 +111,9 @@ namespace CSharpMath.Editor {
     }
     public readonly TLayout layout;
 
-    public Action<string> insertText;
-    public Action delete;
+    public event Action<string> InsertText;
+    public event Action Delete;
+    public event EventHandler DismissPressed = delegate { };
     public TButton fractionButton; //(weak)
     public TButton multiplyButton; //(weak)
     public TButton equalsButton; //(weak)
@@ -137,20 +138,14 @@ namespace CSharpMath.Editor {
     public TButton _sigmaPhi; //(weak)
     public TButton _muNu; //(weak)
     public TButton _lambdaBeta; //(weak)
-
-    public event EventHandler textChanged = delegate { };
-    public event EventHandler dismissPressed = delegate { };
-
-    public void keyPressed(char key) =>
-      insertText(key.ToString());
-
-    public void keyPressed(string key) =>
-      insertText(key);
-    public void backspacePressed() =>
-      delete();
-    public void parensPressed() =>
-      insertText("()");
-    public void shiftPressed() {
+    
+    public void KeyPressed(string key) =>
+      InsertText?.Invoke(key);
+    public void BackspacePressed() =>
+      Delete?.Invoke();
+    public void ParensPressed() =>
+      KeyPressed("()");
+    public void ShiftPressed() {
       Shifted ^= true;
       if (Shifted) {
         foreach (var button in letters)

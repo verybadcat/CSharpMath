@@ -3,31 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace CSharpMath.Editor {
-  /**
-   @typedef MTMathListSubIndexType
-   @brief The type of the subindex.
-   
-   The type of the subindex denotes what branch the path to the atom that this index points to takes.
-   */
-  public enum MathListSubIndexType : byte {
-    /// The index denotes the whole atom, subIndex is nil.
-    None = 0,
-    /// The position in the subindex is an index into the nucleus
-    Nucleus,
-    /// The subindex indexes into the superscript.
-    Superscript,
-    /// The subindex indexes into the subscript
-    Subscript,
-    /// The subindex indexes into the numerator (only valid for fractions)
-    Numerator,
-    /// The subindex indexes into the denominator (only valid for fractions)
-    Denominator,
-    /// The subindex indexes into the radicand (only valid for radicals)
-    Radicand,
-    /// The subindex indexes into the degree (only valid for radicals)
-    Degree
-  }
-
   /** 
 * An index that points to a particular character in the MTMathList. The index is a LinkedList that represents
 * a path from the beginning of the MTMathList to reach a particular atom in the list. The next node of the path

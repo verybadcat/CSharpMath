@@ -1,4 +1,28 @@
 namespace CSharpMath.Editor {
+  /**
+   @typedef MTMathListSubIndexType
+   @brief The type of the subindex.
+   
+   The type of the subindex denotes what branch the path to the atom that this index points to takes.
+   */
+  public enum MathListSubIndexType : byte {
+    /// The index denotes the whole atom, subIndex is nil.
+    None = 0,
+    /// The position in the subindex is an index into the nucleus
+    Nucleus,
+    /// The subindex indexes into the superscript.
+    Superscript,
+    /// The subindex indexes into the subscript
+    Subscript,
+    /// The subindex indexes into the numerator (only valid for fractions)
+    Numerator,
+    /// The subindex indexes into the denominator (only valid for fractions)
+    Denominator,
+    /// The subindex indexes into the radicand (only valid for radicals)
+    Radicand,
+    /// The subindex indexes into the degree (only valid for radicals)
+    Degree
+  }
 
   public class MathListIndex : IMathListIndex<MathListIndex> {
     private MathListIndex() { }
@@ -8,28 +32,19 @@ namespace CSharpMath.Editor {
     [NullableReference]
     public MathListIndex SubIndex { get; set; }
 
-    public static MathListIndex Level0Index(int index) =>
-        new MathListIndex {
-          AtomIndex = index
-        };
-
-    public static MathListIndex IndexAtLocation(int location, [NullableReference]MathListIndex subIndex, MathListSubIndexType type) {
-      var index = Level0Index(location);
-      index.SubIndexType = type;
-      index.SubIndex = subIndex;
-      return index;
-    }
+    public static MathListIndex Level0Index(int index) => new MathListIndex { AtomIndex = index };
+    public static MathListIndex IndexAtLocation(int location, [NullableReference]MathListIndex subIndex, MathListSubIndexType type) =>
+      new MathListIndex { AtomIndex = location, SubIndexType = type, SubIndex = subIndex };
 
     public MathListIndex LevelUpWithSubIndex([NullableReference]MathListIndex subIndex, MathListSubIndexType type) {
-      if (SubIndexType == MathListSubIndexType.None) {
+      if (SubIndexType is MathListSubIndexType.None)
         return IndexAtLocation(AtomIndex, subIndex, type);
-      }
       // we have to recurse
-      return IndexAtLocation(AtomIndex, subIndex.LevelUpWithSubIndex(subIndex, type), SubIndexType);
+      return IndexAtLocation(AtomIndex, SubIndex.LevelUpWithSubIndex(subIndex, type), SubIndexType);
     }
     [NullableReference]
     public MathListIndex LevelDown() {
-      if (SubIndexType == MathListSubIndexType.None) {
+      if (SubIndexType is MathListSubIndexType.None) {
         return null;
       }
       // recurse
@@ -73,9 +88,8 @@ namespace CSharpMath.Editor {
       } else return false;
     }
 
-    public bool AtBeginningOfLine => FinalIndex == 0;
-
-
+    public bool AtBeginningOfLine => FinalIndex is 0;
+    
     public bool AtSameLevel(MathListIndex other) {
       if (SubIndexType != other.SubIndexType) {
         return false;

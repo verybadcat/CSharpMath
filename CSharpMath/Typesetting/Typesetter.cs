@@ -134,7 +134,7 @@ namespace CSharpMath {
             var displayRad = MakeRadical(rad.Radicand, rad.IndexRange);
             if (rad.Degree != null) {
               // add the degree to the radical
-              var degree = CreateLine(rad.Degree, _font, _context, LineStyle.Script);
+              var degree = CreateLine(rad.Degree, _styleFont, _context, LineStyle.Script);
               displayRad.SetDegree(degree, _styleFont, _mathTable);
             }
             _displayAtoms.Add(displayRad);
@@ -855,7 +855,7 @@ namespace CSharpMath {
 
     private IDownshiftableDisplay<TFont, TGlyph> _GetRadicalGlyph(float radicalHeight) {
 #warning GlyphFinder.FindGlyph
-      TGlyph radicalGlyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, 0, Constants.Symbols.SquareRoot.ToString());
+      TGlyph radicalGlyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, 0, Constants.Symbols.SquareRoot);
       TGlyph glyph = _FindGlyph(radicalGlyph, radicalHeight, out float glyphAscent, out float glyphDescent, out float glyphWidth);
 
       IDownshiftableDisplay<TFont, TGlyph> glyphDisplay = null;
