@@ -14,14 +14,22 @@ namespace CSharpMath.Editor {
     J = 'j', K = 'k', L = 'l', M = 'm', N = 'n', O = 'o', P = 'p', Q = 'q', R = 'r',
     S = 's', T = 't', U = 'u', V = 'v', W = 'w', X = 'x', Y = 'y', Z = 'z',
     
-    LowerA = 'a', LowerB = 'b', LowerC = 'c', LowerD = 'd', LowerE = 'e', LowerF = 'f', LowerG = 'g', LowerH = 'h', LowerI = 'i',
-    LowerJ = 'j', LowerK = 'k', LowerL = 'l', LowerM = 'm', LowerN = 'n', LowerO = 'o', LowerP = 'p', LowerQ = 'q', LowerR = 'r',
-    LowerS = 's', LowerT = 't', LowerU = 'u', LowerV = 'v', LowerW = 'w', LowerX = 'x', LowerY = 'y', LowerZ = 'z',
+    LowerA = 'a', LowerB = 'b', LowerC = 'c', LowerD = 'd', LowerE = 'e',
+    LowerF = 'f', LowerG = 'g', LowerH = 'h', LowerI = 'i', LowerJ = 'j',
+    LowerK = 'k', LowerL = 'l', LowerM = 'm', LowerN = 'n', LowerO = 'o',
+    LowerP = 'p', LowerQ = 'q', LowerR = 'r', LowerS = 's', LowerT = 't',
+    LowerU = 'u', LowerV = 'v', LowerW = 'w', LowerX = 'x', LowerY = 'y', LowerZ = 'z',
 
-    Α = 'Α', α = 'α', Β = 'Β', β = 'β', Γ = 'Γ', γ = 'γ', Δ = 'Δ', δ = 'δ', Ε = 'Ε', ε = 'ε', Ζ = 'Ζ', ζ = 'ζ',
-    Η = 'Η', η = 'η', Θ = 'Θ', θ = 'θ', Ι = 'Ι', ι = 'ι', Κ = 'Κ', κ = 'κ', Λ = 'Λ', λ = 'λ', Μ = 'Μ', μ = 'μ',
-    Ν = 'Ν', ν = 'ν', Ξ = 'Ξ', ξ = 'ξ', Ο = 'Ο', ο = 'ο', Π = 'Π', π = 'π', Ρ = 'Ρ', ρ = 'ρ', Σ = 'Σ', σ = 'σ',
-    ς = 'ς', Τ = 'Τ', τ = 'τ', Υ = 'Υ', υ = 'υ', Φ = 'Φ', φ = 'φ', Χ = 'Χ', χ = 'χ', Ω = 'Ω', ω = 'ω',
+    Alpha = 'Α', Beta = 'Β', Gamma = 'Γ', Delta = 'Δ', Epsilon = 'Ε', Zeta = 'Ζ',
+    Eta = 'Η', Theta = 'Θ', Iota = 'Ι', Kappa = 'Κ', Lambda = 'Λ', Mu = 'Μ', Nu = 'Ν',
+    Xi = 'Ξ', Omicron = 'Ο', Pi = 'Π', Rho = 'Ρ', Sigma = 'Σ', Tau = 'Τ', Upsilon = 'Υ',
+    Phi = 'Φ', Chi = 'Χ', Omega = 'Ω',
+
+    LowerAlpha = 'α', LowerBeta = 'β', LowerGamma = 'γ', LowerDelta = 'δ', LowerEpsilon = 'ε',
+    LowerZeta = 'ζ', LowerEta = 'η', LowerTheta = 'θ', LowerIota = 'ι', LowerKappa = 'κ',
+    LowerLambda = 'λ', LowerMu = 'μ', LowerNu = 'ν', LowerXi = 'ξ', LowerOmicron = 'ο',
+    LowerPi = 'π', LowerRho = 'ρ', LowerSigma = 'σ', LowerSigma2 = 'ς', LowerTau = 'τ',
+    LowerUpsilon = 'υ', LowerPhi = 'φ', LowerChi = 'χ', LowerOmega = 'ω',
 
 
   }
