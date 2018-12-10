@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CSharpMath.Editor {
   public enum KeyboardInput {
-    Up = '↑', Down = '↓', Left = '←', Right = '→', Backspace = '⌫', Clear = '⎚',
+    Up = '⏶', Down = '⏷', Left = '⏴', Right = '⏵', Backspace = '⌫', Clear = '⎚',
 
     LeftBracket = '(', RightBracket = ')',
     D0 = '0', D1 = '1', D2 = '2', D3 = '3', D4 = '4', D5 = '5', D6 = '6', D7 = '7', D8 = '8', D9 = '9',
@@ -31,6 +31,17 @@ namespace CSharpMath.Editor {
     LowerPi = 'π', LowerRho = 'ρ', LowerSigma = 'σ', LowerSigma2 = 'ς', LowerTau = 'τ',
     LowerUpsilon = 'υ', LowerPhi = 'φ', LowerChi = 'χ', LowerOmega = 'ω',
 
+    Sine = '␖', Cosine = '℅', Tangent = '␘', Cotangent = '␄', Secant = '␎', Cosecant = '␛',
+    ArcSine = '◜', ArcCosine = '◝', ArcTangent = '◟',
+    ArcCotangent = '◞', ArcSecant = '◠', ArcCosecant = '◡',
 
+    Power = '^', SquareRoot = '√', CubeRoot = '∛', NthRoot = '∜', Absolute = '|',
+
+    HyperbolicSine = '◐', HyperbolicCosine = '◑', HyperbolicTangent = '◓',
+    HyperbolicCotangent = '◒', HyperbolicSecant = '◔', HyperbolicCosecant = '◕',
+    AreaHyperbolicSine = '◴', AreaHyperbolicCosine = '◷', AreaHyperbolicTangent = '◵',
+    AreaHyperbolicCotangent = '◶', AreaHyperbolicSecant = '⚆', AreaHyperbolicCosecant = '⚇',
+
+    BaseEPower = 'ℯ', Logarithm = '㏒', NaturalLog = '㏑', Factorial = '!'
   }
 }
