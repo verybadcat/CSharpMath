@@ -4,15 +4,15 @@ using System.Text;
 
 namespace CSharpMath.Editor {
   public enum KeyboardInput {
-    Up = '⏶', Down = '⏷', Left = '⏴', Right = '⏵', Backspace = '⌫', Clear = '⎚',
+    Up = '⏶', Down = '⏷', Left = '⏴', Right = '⏵', Backspace = '⌫', Clear = '⎚', Return = '\n',
 
     LeftBracket = '(', RightBracket = ')',
     D0 = '0', D1 = '1', D2 = '2', D3 = '3', D4 = '4', D5 = '5', D6 = '6', D7 = '7', D8 = '8', D9 = '9',
     Decimal = '.', Plus = '+', Minus = '−', Multiply = '×', Divide = '÷', 
 
-    A = 'a', B = 'b', C = 'c', D = 'd', E = 'e', F = 'f', G = 'g', H = 'h', I = 'i',
-    J = 'j', K = 'k', L = 'l', M = 'm', N = 'n', O = 'o', P = 'p', Q = 'q', R = 'r',
-    S = 's', T = 't', U = 'u', V = 'v', W = 'w', X = 'x', Y = 'y', Z = 'z',
+    A = 'A', B = 'B', C = 'C', D = 'D', E = 'E', F = 'F', G = 'G', H = 'H', I = 'I',
+    J = 'J', K = 'K', L = 'L', M = 'M', N = 'N', O = 'O', P = 'P', Q = 'Q', R = 'R',
+    S = 'S', T = 'T', U = 'U', V = 'V', W = 'W', X = 'X', Y = 'Y', Z = 'Z',
     
     LowerA = 'a', LowerB = 'b', LowerC = 'c', LowerD = 'd', LowerE = 'e',
     LowerF = 'f', LowerG = 'g', LowerH = 'h', LowerI = 'i', LowerJ = 'j',
