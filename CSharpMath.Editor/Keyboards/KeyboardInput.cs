@@ -4,44 +4,67 @@ using System.Text;
 
 namespace CSharpMath.Editor {
   public enum KeyboardInput {
-    Up = '⏶', Down = '⏷', Left = '⏴', Right = '⏵', Backspace = '⌫', Clear = '⎚', Return = '\n',
+    //Navigation
+    Up = '⏶', Down = '⏷', Left = '⏴', Right = '⏵',
+    Backspace = '⌫', Clear = '⎚', Return = '\n', Dismiss = '❌',
 
-    LeftBracket = '(', RightBracket = ')',
-    D0 = '0', D1 = '1', D2 = '2', D3 = '3', D4 = '4', D5 = '5', D6 = '6', D7 = '7', D8 = '8', D9 = '9',
-    Decimal = '.', Plus = '+', Minus = '−', Multiply = '×', Divide = '÷', 
+    //Brackets
+    LeftRoundBracket = '(', RightRoundBracket = ')', BothRoundBrackets = '㈾',
+    LeftSquareBracket = '[', RightSquareBracket = ']',
+    LeftCurlyBracket = '{', RightCurlyBracket = '}',
 
+    //Decimals
+    D0 = '0', D1 = '1', D2 = '2', D3 = '3', D4 = '4',
+    D5 = '5', D6 = '6', D7 = '7', D8 = '8', D9 = '9', Decimal = '.',
+
+    //Basic operators
+    Plus = '+', Minus = '−', Minus_ = '-', Multiply = '×', Multiply_ = '*',
+    Divide = '÷',  Slash = '/', Fraction = '⁄', Ratio = '∶', Ratio_ = ':',
+    Percentage = '%', Comma = ',', Factorial = '!', Infinity = '∞', Angle = '∠', Degree = '°',
+
+    //More complicated operators
+    Power = '^', Subscript = '_', SquareRoot = '√', CubeRoot = '∛', NthRoot = '∜',
+    VerticalBar = '|', Absolute = '‖',
+    BaseEPower = 'ℯ', Logarithm = '㏒', NaturalLogarithm = '㏑', LogarithmWithBase = '㏐',
+
+    //Relations
+    Equals = '=', NotEquals = '≠',
+    LessThan = '<', LessOrEquals = '≤', GreaterThan = '>', GreaterOrEquals = '≥',
+
+    //Capital English alphabets
     A = 'A', B = 'B', C = 'C', D = 'D', E = 'E', F = 'F', G = 'G', H = 'H', I = 'I',
     J = 'J', K = 'K', L = 'L', M = 'M', N = 'N', O = 'O', P = 'P', Q = 'Q', R = 'R',
     S = 'S', T = 'T', U = 'U', V = 'V', W = 'W', X = 'X', Y = 'Y', Z = 'Z',
-    
-    LowerA = 'a', LowerB = 'b', LowerC = 'c', LowerD = 'd', LowerE = 'e',
-    LowerF = 'f', LowerG = 'g', LowerH = 'h', LowerI = 'i', LowerJ = 'j',
-    LowerK = 'k', LowerL = 'l', LowerM = 'm', LowerN = 'n', LowerO = 'o',
-    LowerP = 'p', LowerQ = 'q', LowerR = 'r', LowerS = 's', LowerT = 't',
-    LowerU = 'u', LowerV = 'v', LowerW = 'w', LowerX = 'x', LowerY = 'y', LowerZ = 'z',
 
+    //Small English alphabets
+    SmallA = 'a', SmallB = 'b', SmallC = 'c', SmallD = 'd', SmallE = 'e',
+    SmallF = 'f', SmallG = 'g', SmallH = 'h', SmallI = 'i', SmallJ = 'j',
+    SmallK = 'k', SmallL = 'l', SmallM = 'm', SmallN = 'n', SmallO = 'o',
+    SmallP = 'p', SmallQ = 'q', SmallR = 'r', SmallS = 's', SmallT = 't',
+    SmallU = 'u', SmallV = 'v', SmallW = 'w', SmallX = 'x', SmallY = 'y', SmallZ = 'z',
+
+    //Capital Greek alphabets
     Alpha = 'Α', Beta = 'Β', Gamma = 'Γ', Delta = 'Δ', Epsilon = 'Ε', Zeta = 'Ζ',
     Eta = 'Η', Theta = 'Θ', Iota = 'Ι', Kappa = 'Κ', Lambda = 'Λ', Mu = 'Μ', Nu = 'Ν',
     Xi = 'Ξ', Omicron = 'Ο', Pi = 'Π', Rho = 'Ρ', Sigma = 'Σ', Tau = 'Τ', Upsilon = 'Υ',
     Phi = 'Φ', Chi = 'Χ', Omega = 'Ω',
 
-    LowerAlpha = 'α', LowerBeta = 'β', LowerGamma = 'γ', LowerDelta = 'δ', LowerEpsilon = 'ε',
-    LowerZeta = 'ζ', LowerEta = 'η', LowerTheta = 'θ', LowerIota = 'ι', LowerKappa = 'κ',
-    LowerLambda = 'λ', LowerMu = 'μ', LowerNu = 'ν', LowerXi = 'ξ', LowerOmicron = 'ο',
-    LowerPi = 'π', LowerRho = 'ρ', LowerSigma = 'σ', LowerSigma2 = 'ς', LowerTau = 'τ',
-    LowerUpsilon = 'υ', LowerPhi = 'φ', LowerChi = 'χ', LowerOmega = 'ω',
+    //Small Greek alphabets
+    SmallAlpha = 'α', SmallBeta = 'β', SmallGamma = 'γ', SmallDelta = 'δ', SmallEpsilon = 'ε',
+    SmallZeta = 'ζ', SmallEta = 'η', SmallTheta = 'θ', SmallIota = 'ι', SmallKappa = 'κ',
+    SmallLambda = 'λ', SmallMu = 'μ', SmallNu = 'ν', SmallXi = 'ξ', SmallOmicron = 'ο',
+    SmallPi = 'π', SmallRho = 'ρ', SmallSigma = 'σ', SmallSigma2 = 'ς', SmallTau = 'τ',
+    SmallUpsilon = 'υ', SmallPhi = 'φ', SmallChi = 'χ', SmallOmega = 'ω',
 
+    //Trigonometric functions
     Sine = '␖', Cosine = '℅', Tangent = '␘', Cotangent = '␄', Secant = '␎', Cosecant = '␛',
     ArcSine = '◜', ArcCosine = '◝', ArcTangent = '◟',
     ArcCotangent = '◞', ArcSecant = '◠', ArcCosecant = '◡',
-
-    Power = '^', SquareRoot = '√', CubeRoot = '∛', NthRoot = '∜', Absolute = '|',
-
+    
+    //Hyperbolic functions
     HyperbolicSine = '◐', HyperbolicCosine = '◑', HyperbolicTangent = '◓',
     HyperbolicCotangent = '◒', HyperbolicSecant = '◔', HyperbolicCosecant = '◕',
     AreaHyperbolicSine = '◴', AreaHyperbolicCosine = '◷', AreaHyperbolicTangent = '◵',
     AreaHyperbolicCotangent = '◶', AreaHyperbolicSecant = '⚆', AreaHyperbolicCosecant = '⚇',
-
-    BaseEPower = 'ℯ', Logarithm = '㏒', NaturalLog = '㏑', Factorial = '!'
   }
 }

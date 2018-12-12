@@ -389,12 +389,16 @@ namespace CSharpMath.Atoms {
         case '>':
           return Create(MathAtomType.Relation, c);
         case ':': // Colon is a ratio. Regular colon is \colon
+        case '\u2236':
           return Create(MathAtomType.Relation, "\u2236");
         case '-': // use the math minus sign
+        case '\u2212':
           return Create(MathAtomType.BinaryOperator, "\u2212");
         case '+':
-        case '*':
           return Create(MathAtomType.BinaryOperator, c);
+        case '*':
+        case '×':
+          return Times;
         case '.':
           return Create(MathAtomType.Number, c);
         case '"':

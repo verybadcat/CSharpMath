@@ -254,21 +254,9 @@ namespace CSharpMath.Rendering {
       InsertionIndex = index; // move the index to the end of the new list.
       InsertionPointChanged();
     }
-
-
-    public void RemovePlaceholderIfPresent() {
-      var current = MathList.AtomAt(InsertionIndex);
-      if (current?.AtomType is MathAtomType.Placeholder)
-        // Remove this element - the inserted text replaces the placeholder
-        MathList.RemoveAt(InsertionIndex);
-    }
-
-
-
+    
     public static bool IsNumeric(char c) => c is '.' || (c >= '0' && c <= '9');
-
-
-
+    
     public void SelectCharacterAtIndex(MathListIndex index) {
       UpdateDisplay();
       if (_display is null)
@@ -280,6 +268,5 @@ namespace CSharpMath.Rendering {
     public void ClearHighlights() {
       UpdateDisplay();
     }
-
   }
 }
