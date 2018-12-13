@@ -12,7 +12,7 @@ namespace CSharpMath.Forms.Example {
   public partial class EditorPage : ContentPage {
     public EditorPage() {
       InitializeComponent();
-      var (view, keyboard) = EditableMathView.Default;
+      var (view, keyboard) = MathKeyboard.Default;
       Content = new StackLayout { Children = { view, keyboard, new BoxView{HeightRequest = 50, WidthRequest = 50, Color = Color.Black} } };
     }
   }

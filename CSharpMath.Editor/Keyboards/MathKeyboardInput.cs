@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace CSharpMath.Editor {
-  public enum KeyboardInput {
+  public enum MathKeyboardInput {
     //Navigation
     Up = '⏶', Down = '⏷', Left = '⏴', Right = '⏵',
     Backspace = '⌫', Clear = '⎚', Return = '\n', Dismiss = '❌',

@@ -10,37 +10,17 @@ using CSharpMath.SkiaSharp;
 using SkiaSharp.Views.Forms;
 
 namespace CSharpMath.Forms {
-  public class EditableMathView : BaseView<EditableMathPainter<EditableMathView.Button, EditableMathView.ButtonLayout>, EditableMathSource, EditableMathView.PainterSupplier>, IPainter<EditableMathSource, Color> {
-    public class Button : Editor.IButton {
-      public Xamarin.Forms.Button Content { get; set; }
-      public string Text { get => Content.Text; set => Content.Text = value; }
-      public bool Enabled { get => Content.IsEnabled; set => Content.IsEnabled = value; }
-      public bool Selected { get => false; set => new int(); }
-      public bool Visible { get => Content.IsVisible; set => Content.IsVisible = value; }
-      public RectangleF Bounds { get; set; }
-    }
-    public class ButtonLayout : Editor.IButtonLayout<Button, ButtonLayout> {
-      public AbsoluteLayout Content { get; set; } = new AbsoluteLayout();
-      public RectangleF Bounds { get; set; }
-      public bool Visible { get => Content.IsVisible; set => Content.IsVisible = value; }
-      public void Add(Button button) =>
-        Content.Children.Add(button.Content, new Xamarin.Forms.Rectangle(button.Bounds.X, button.Bounds.Y, button.Bounds.Width, button.Bounds.Height));
-      public void Add(ButtonLayout button) =>
-        Content.Children.Add(button.Content, new Xamarin.Forms.Rectangle(button.Bounds.X, button.Bounds.Y, button.Bounds.Width, button.Bounds.Height));
-    }
-    public struct PainterSupplier : IPainterSupplier<EditableMathPainter<Button, ButtonLayout>> {
-      public EditableMathPainter<Button, ButtonLayout> Default => new EditableMathPainter<Button, ButtonLayout>(null);
-    }
-    public EditableMathView(EditableMathPainter<Button, ButtonLayout> painter) : base(painter) {
+  public class MathKeyboard : ContentView {
+    public MathKeyboard(EditableMathPainter<Button, ButtonLayout> painter) : base(painter) {
       painter.TextModified += delegate { InvalidateSurface(); };
       painter.RedrawRequested += InvalidateSurface;
       EnableTouchEvents = true;
     }
     #region BindableProperties
-    static EditableMathView() {
+    static MathKeyboard() {
       var painter = default(PainterSupplier).Default;
-      var thisType = typeof(EditableMathView);
-      SkiaSharp.EditableMathPainter<Button, ButtonLayout> p(BindableObject b) => ((EditableMathView)b).Painter;
+      var thisType = typeof(MathKeyboard);
+      SkiaSharp.EditableMathPainter<Button, ButtonLayout> p(BindableObject b) => ((MathKeyboard)b).Painter;
       StrokeCapProperty = BindableProperty.Create(nameof(StrokeCap), typeof(SKStrokeCap), thisType, painter.StrokeCap, propertyChanged: (b, o, n) => p(b).StrokeCap = (SKStrokeCap)n);
       GlyphBoxColorProperty = BindableProperty.Create(nameof(GlyphBoxColor), typeof((Color glyph, Color textRun)?), thisType, painter.GlyphBoxColor,
         propertyChanged: (b, o, n) => p(b).GlyphBoxColor = n != null ? ((((Color glyph, Color textRun)?)n).Value.glyph.ToSKColor(), (((Color glyph, Color textRun)?)n).Value.textRun.ToSKColor()) : default((SKColor glyph, SKColor textRun)?));
@@ -61,7 +41,7 @@ namespace CSharpMath.Forms {
       e.Handled = true;
     }
 
-    public static (EditableMathView view, Layout keyboard) Default {
+    public static (MathKeyboard view, Layout keyboard) Default {
       get {
         var view = Editor.MathKeyboardView<Button, ButtonLayout>.Default(
           (RectangleF frame, string text, float textPtSize, C title, C titleShadow, C highlightedTitle, C? disabled) => {
@@ -84,7 +64,7 @@ namespace CSharpMath.Forms {
         var keyboard = view.layout;
         keyboard.Content.WidthRequest = keyboard.Bounds.Width;
         keyboard.Content.HeightRequest = keyboard.Bounds.Height;
-        var @return = new EditableMathView(new EditableMathPainter<Button, ButtonLayout>(view)) { WidthRequest = view.layout.Bounds.Width, HeightRequest = view.layout.Bounds.Height };
+        var @return = new MathKeyboard(new EditableMathPainter<Button, ButtonLayout>(view)) { WidthRequest = view.layout.Bounds.Width, HeightRequest = view.layout.Bounds.Height };
         return (@return, keyboard.Content);
       }
     }

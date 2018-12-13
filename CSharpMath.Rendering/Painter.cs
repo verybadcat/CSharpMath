@@ -15,9 +15,12 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
 namespace CSharpMath.Rendering {
+  public static class PainterConstants {
+    public const float DefaultFontSize = 20f;
+  }
   public abstract class Painter<TCanvas, TSource, TColor> : ICanvasPainter<TCanvas, TSource, TColor>
     where TSource : struct, ISource {
-    public const float DefaultFontSize = 20f;
+    public const float DefaultFontSize = PainterConstants.DefaultFontSize;
     
     #region Constructors
     public Painter(float fontSize = DefaultFontSize) {
