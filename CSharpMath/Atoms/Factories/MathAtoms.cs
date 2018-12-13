@@ -162,16 +162,27 @@ namespace CSharpMath.Atoms {
          { "sin", Operator("sin" , false, true) },
          { "arcsin", Operator("arcsin" , false, true) },
          { "sinh", Operator("sinh" , false, true) },
+         { "arsinh", Operator("arsinh" , false, true) }, //not in iosMath
          { "cos", Operator("cos" , false, true) },
          { "arccos", Operator("arccos" , false, true) },
          { "cosh", Operator("cosh" , false, true) },
+         { "arcosh", Operator("arcosh" , false, true) }, //not in iosMath
          { "tan", Operator("tan" , false, true) },
          { "arctan", Operator("arctan" , false, true) },
          { "tanh", Operator("tanh" , false, true) },
+         { "artanh", Operator("artanh", false, true) },  //not in iosMath
          { "cot", Operator("cot" , false, true) },
+         { "arccot", Operator("arccot", false, true) },  //not in iosMath
          { "coth", Operator("coth" , false, true) },
+         { "arcoth", Operator("arcoth", false, true) },  //not in iosMath
          { "sec", Operator("sec" , false, true) },
+         { "arcsec", Operator("arcsec", false, true) },  //not in iosMath
+         { "sech", Operator("sech", false, true) },  //not in iosMath
+         { "arsech", Operator("arsech", false, true) },  //not in iosMath
          { "csc", Operator("csc" , false, true) },
+         { "arccsc", Operator("arccsc", false, true) },  //not in iosMath
+         { "csch", Operator("csch", false, true) },  //not in iosMath
+         { "arcsch", Operator("arcsch", false, true) },  //not in iosMath
          { "arg", Operator("arg" , false, true) },
          { "ker", Operator("ker" , false, true) },
          { "dim", Operator("dim" , false, true) },

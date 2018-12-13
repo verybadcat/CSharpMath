@@ -6,6 +6,20 @@ using System.Text;
 namespace CSharpMath.Editor {
   using Structures;
   public struct CaretHandle {
+    public CaretHandle(float fontSize, PointF midPoint) {
+      var scale = fontSize / CaretHandle.CaretFontSize;
+      this = new CaretHandle {
+        Color = new Color(0, 0, 0),
+        Frame = new RectangleF(
+          -(CaretHandle.CaretHandleWidth - CaretHandle.CaretWidth) * scale / 2,
+          (CaretHandle.CaretHeight + CaretHandle.CaretHandleDescent) * scale,
+          CaretHandle.CaretHandleWidth * scale,
+          CaretHandle.CaretHandleHeight * scale
+        ).Plus(midPoint)
+      };
+
+    }
+
     public static readonly TimeSpan InitialBlinkDelay = TimeSpan.FromSeconds(0.7);
     public static readonly TimeSpan BlinkRate = TimeSpan.FromSeconds(0.5);
     // The settings below make sense for the given font size. They are scaled appropriately when the fontsize changes.
@@ -36,22 +50,5 @@ namespace CSharpMath.Editor {
       // Create a hit area around the center.
       new RectangleF((Bounds.Width - CaretHandleHitAreaSize) / 2, (Bounds.Height - CaretHandleHitAreaSize) / 2, CaretHandleHitAreaSize, CaretHandleHitAreaSize)
         .Contains(point);
-  }
-  public class CaretView<TFont, TGlyph> where TFont : Display.IFont<TGlyph> {
-    public CaretView(float fontSize) {
-      scale = fontSize / CaretHandle.CaretFontSize;
-      handle = new CaretHandle {
-        Color = new Color(0, 0, 0),
-        Frame = new RectangleF(
-          -(CaretHandle.CaretHandleWidth - CaretHandle.CaretWidth) * scale / 2,
-          (CaretHandle.CaretHeight + CaretHandle.CaretHandleDescent) * scale,
-          CaretHandle.CaretHandleWidth * scale,
-          CaretHandle.CaretHandleHeight * scale
-        )
-      };
-    }
-    public readonly CaretHandle handle;
-    public readonly float scale;
-    public bool showHandle = true;
   }
 }
