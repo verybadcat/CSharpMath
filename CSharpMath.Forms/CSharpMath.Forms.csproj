@@ -31,4 +31,9 @@
   <ItemGroup>
     <ProjectReference Include="..\CSharpMath.SkiaSharp\CSharpMath.SkiaSharp.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="MathKeyboard.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>
