@@ -25,6 +25,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Interfaces\IButtonControl.cs" />
+    <Compile Remove="Keyboards\DefaultMathKeyboardView.cs" />
     <Compile Remove="Keyboards\MathKeyboardOld.cs" />
     <Compile Remove="Keyboards\MathKeyboardView.cs" />
   </ItemGroup>
