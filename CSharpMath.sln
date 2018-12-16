@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.27130.2026
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath", "CSharpMath\CSharpMath.csproj", "{5157367B-F03E-4ACB-83A1-0DE414A3BFCA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B76E873A-FAA0-4198-BEC4-66BD2BBC233F} = {B76E873A-FAA0-4198-BEC4-66BD2BBC233F}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath!Tests", "CSharpMath.Tests\CSharpMath!Tests.csproj", "{0830C47F-AA16-4A0E-9CCF-E40835D1430D}"
 EndProject
@@ -89,7 +92,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms.EditorUnit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms.EditorUnitTests.UWP", "CSharpMath.Forms.EditorUnitTests\CSharpMath.Forms.EditorUnitTests.UWP\CSharpMath.Forms.EditorUnitTests.UWP.csproj", "{0B4F17EE-278F-4E40-A1AD-C5FCD52C788E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms.EditorUnitTests", "CSharpMath.Forms.EditorUnitTests\CSharpMath.Forms.EditorUnitTests\CSharpMath.Forms.EditorUnitTests.csproj", "{3327D85F-A0C4-41FC-B8C1-097080BCBE1D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Forms.EditorUnitTests", "CSharpMath.Forms.EditorUnitTests\CSharpMath.Forms.EditorUnitTests\CSharpMath.Forms.EditorUnitTests.csproj", "{3327D85F-A0C4-41FC-B8C1-097080BCBE1D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EditorUnitTests", "EditorUnitTests", "{B67304FF-6538-404D-B9F0-42E03C4D1BDD}"
 EndProject
