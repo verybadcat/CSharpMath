@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -44,7 +44,8 @@ namespace SkiaLeakMinProject
 
         private void GLMathView_Button_Click(object sender, EventArgs e)
         {
-            Loop(() => new GLMathView(), "math GL view");
+            GLMathView CreateGLMathView() => new GLMathView();
+            Loop(CreateGLMathView , "math GL view");
         }
 
         private void MathViewCanvasButton_Click(object sender, EventArgs e)

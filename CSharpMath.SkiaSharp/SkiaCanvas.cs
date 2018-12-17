@@ -4,6 +4,8 @@ using SkiaSharp;
 namespace CSharpMath.SkiaSharp
 {
   public class SkiaCanvas : ICanvas {
+    void Log([System.Runtime.CompilerServices.CallerMemberName] string s = null) =>
+      System.Diagnostics.Debug.WriteLine(s);
     public SkiaCanvas(SKCanvas canvas, SKStrokeCap strokeCap, bool? antiAliasLevel) {
       Canvas = canvas;
       StrokeCap = strokeCap;
