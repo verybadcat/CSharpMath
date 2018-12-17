@@ -3,9 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:i="clr-namespace:CSharpMath.Forms.MathKeyboardMarkupExtensions"
              x:Class="CSharpMath.Forms.MathKeyboard">
+    <ContentView.Style>
+        <Style TargetType="VisualElement">
+            <Setter Property="AbsoluteLayout.LayoutFlags" Value="All"/>
+        </Style>
+    </ContentView.Style>
     <AbsoluteLayout>
-        <AbsoluteLayout>
-            <Button Text="A"  Command="{i:MathInput Keyboard={Reference Keyboard}, Input=A}"/>
+        <Button AbsoluteLayout.LayoutBounds="0, 0, 0.125, 0.2" Command=""/>
+        <AbsoluteLayout x:Name="Numbers">
+            <Button Text="A" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=A}"/>
         </AbsoluteLayout>
     </AbsoluteLayout>
 </ContentView>
