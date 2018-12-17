@@ -1,6 +1,9 @@
 ---
 name: Bug report for Example projects
 about: Create a report to help us improve
+title: ''
+labels: Type/Bug
+assignees: ''
 
 ---
 
