@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SkiaLeakMinProject.MainView">
+    <ContentPage.Content>
+        <StackLayout>
+            <Label x:Name="infoLabel" Text="Click One"></Label>
+            <StackLayout Orientation="Horizontal">
+                <Button Text="GL View Mathview" HeightRequest="32" Clicked="GLMathView_Button_Click"/>
+                <Button Text="Blank GL View"    HeightRequest="32" Clicked="BlankGLView_Button_Click" />
+                <Button Text="Canvas View Mathview" HeightRequest="32" Clicked="MathViewCanvasButton_Click"/>
+                <Button Text="Blank Canvas View"    HeightRequest="32" Clicked="BlankCanvas_Button_Click"/>
+                <Button Text="Label Test" HeightRequest="32" Clicked="LabelTest_Button_Click"/>
+                <Button Text="Clear+Collect Garbage" HeightRequest="32" Clicked="Clear_Button_Clicked"/>
+             </StackLayout>
+             <StackLayout x:Name="container" VerticalOptions="FillAndExpand">
+              
+            </StackLayout>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
