@@ -17,7 +17,7 @@ namespace CSharpMath.Forms.MathKeyboardMarkupExtensions {
     object IMarkupExtension.ProvideValue(IServiceProvider _) => ProvideValue(_);
   }
 
-  [AcceptEmptyServiceProvider]
+  [AcceptEmptyServiceProvider, ContentProperty(nameof(Target))]
   public class ToggleVisibilityExtension : IMarkupExtension<Command> {
     public VisualElement Target { get; set; }
 
