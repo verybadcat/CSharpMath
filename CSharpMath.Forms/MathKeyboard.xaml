@@ -16,16 +16,7 @@
         <Style TargetType="Button">
             <Setter Property="FontSize" Value="20"/>
         </Style>
-        <Style TargetType="Button" Class="Fraction">
-            <Setter Property="Text" Value="⸋⁄□"/>
-            <Setter Property="AbsoluteLayout.LayoutBounds" Value="0, 0.5, 0.15625, 0.25"/>
-            <Setter Property="Command" Value="{i:MathInput Keyboard={Reference Keyboard}, Input=Fraction}"/>
-        </Style>
-        <Style TargetType="Button" Class="Power">
-            <Setter Property="Text" Value="⬜⸋"/>
-            <Setter Property="AbsoluteLayout.LayoutBounds" Value="0, 0.75, 0.15625, 0.25"/>
-            <Setter Property="Command" Value="{i:MathInput Keyboard={Reference Keyboard}, Input=Power}"/>
-        </Style>
+        <!--Left row of first 3 tabs-->
         <Style TargetType="Button" Class="x">
             <Setter Property="Text" Value="𝑥"/>
             <Setter Property="AbsoluteLayout.LayoutBounds" Value="0, 0, 0.15625, 0.25"/>
@@ -36,53 +27,118 @@
             <Setter Property="AbsoluteLayout.LayoutBounds" Value="0, 0.25, 0.15625, 0.25"/>
             <Setter Property="Command" Value="{i:MathInput Keyboard={Reference Keyboard}, Input=SmallY}"/>
         </Style>
+        <Style TargetType="Button" Class="Fraction">
+            <Setter Property="Text" Value="⸋⁄□"/>
+            <Setter Property="AbsoluteLayout.LayoutBounds" Value="0, 0.5, 0.15625, 0.25"/>
+            <Setter Property="Command" Value="{i:MathInput Keyboard={Reference Keyboard}, Input=Fraction}"/>
+        </Style>
+        <Style TargetType="Button" Class="Power">
+            <Setter Property="Text" Value="⬜⸋"/>
+            <Setter Property="AbsoluteLayout.LayoutBounds" Value="0, 0.75, 0.15625, 0.25"/>
+            <Setter Property="Command" Value="{i:MathInput Keyboard={Reference Keyboard}, Input=Power}"/>
+        </Style>
+        <!--/Left row of first 3 tabs-->
+        <!--Right row of first 3 tabs-->
         <Style TargetType="Button" Class="Back">
             <Setter Property="Text" Value="🔙"/>
             <Setter Property="AbsoluteLayout.LayoutBounds" Value="0.7875, 0, 0.225, 0.25"/>
             <Setter Property="Command" Value="{i:MathInput Keyboard={Reference Keyboard}, Input=Backspace}"/>
-        </Style>
-        <Style TargetType="Button" Class="Dismiss">
-            <Setter Property="Text" Value="❌"/> <!--🚫-->
-            <Setter Property="AbsoluteLayout.LayoutBounds" Value="0.7875, 0.75, 0.225, 0.25"/>
-            <Setter Property="Command" Value="{i:MathInput Keyboard={Reference Keyboard}, Input=Dismiss}"/>
         </Style>
         <Style TargetType="Button" Class="Enter">
             <Setter Property="Text" Value="⏎"/>
             <Setter Property="AbsoluteLayout.LayoutBounds" Value="0.7875, 0.25, 0.225, 0.5"/>
             <Setter Property="Command" Value="{i:MathInput Keyboard={Reference Keyboard}, Input=Return}"/>
         </Style>
+        <Style TargetType="Button" Class="Dismiss">
+            <Setter Property="Text" Value="❌"/> <!--🚫-->
+            <Setter Property="AbsoluteLayout.LayoutBounds" Value="0.7875, 0.75, 0.225, 0.25"/>
+            <Setter Property="Command" Value="{i:MathInput Keyboard={Reference Keyboard}, Input=Dismiss}"/>
+        </Style>
+        <!--/Right row of first 3 tabs-->
     </ContentView.Resources>
     <AbsoluteLayout>
         <Button Text="◄" AbsoluteLayout.LayoutBounds="0, 0, 0.125, 0.2" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=Left}"/>
         <Button Text="123" AbsoluteLayout.LayoutBounds="0.1875, 0, 0.1875, 0.25" Command="{i:ToggleVisibility {Reference Numbers}}"/>
-        <AbsoluteLayout x:Name="Numbers" AbsoluteLayout.LayoutBounds="0, 0.2, 1, 0.8">
+        <AbsoluteLayout x:Name="Numbers" StyleClass="Tab">
+            <Button StyleClass="x"/>
+            <Button StyleClass="y"/>
             <Button StyleClass="Fraction"/>
-            <Button Text="×" AbsoluteLayout.LayoutBounds="0.625, 0.25, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=Multiply}"/>
-            <Button Text="=" AbsoluteLayout.LayoutBounds="0.46875, 0.75, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=Equals}"/>
-            <Button Text="÷" AbsoluteLayout.LayoutBounds="0.625, 0, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=Divide}"/>
             <Button StyleClass="Power"/>
-            <Button Text="0" AbsoluteLayout.LayoutBounds="0.15625, 0.75, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=D0}"/>
-            <Button Text="1" AbsoluteLayout.LayoutBounds="0.15625, 0.5, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=D1}"/>
-            <Button Text="2" AbsoluteLayout.LayoutBounds="0.3125, 0.5, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=D2}"/>
-            <Button Text="3" AbsoluteLayout.LayoutBounds="0.46875, 0.5, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=D3}"/>
-            <Button Text="4" AbsoluteLayout.LayoutBounds="0.15625, 0.25, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=D4}"/>
-            <Button Text="5" AbsoluteLayout.LayoutBounds="0.3125, 0.25, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=D5}"/>
-            <Button Text="6" AbsoluteLayout.LayoutBounds="0.46875, 0.25, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=D6}"/>
             <Button Text="7" AbsoluteLayout.LayoutBounds="0.15625, 0, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=D7}"/>
             <Button Text="8" AbsoluteLayout.LayoutBounds="0.3125, 0, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=D8}"/>
             <Button Text="9" AbsoluteLayout.LayoutBounds="0.46875, 0, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=D9}"/>
-            <Button Text="." AbsoluteLayout.LayoutBounds="0.3125, 0.75, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=Decimal}"/>
-            <Button Text="+" AbsoluteLayout.LayoutBounds="0.625, 0.75, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=Plus}"/>
+            <Button Text="÷" AbsoluteLayout.LayoutBounds="0.625, 0, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=Divide}"/>
+            <Button Text="4" AbsoluteLayout.LayoutBounds="0.15625, 0.25, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=D4}"/>
+            <Button Text="5" AbsoluteLayout.LayoutBounds="0.3125, 0.25, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=D5}"/>
+            <Button Text="6" AbsoluteLayout.LayoutBounds="0.46875, 0.25, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=D6}"/>
+            <Button Text="×" AbsoluteLayout.LayoutBounds="0.625, 0.25, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=Multiply}"/>
+            <Button Text="1" AbsoluteLayout.LayoutBounds="0.15625, 0.5, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=D1}"/>
+            <Button Text="2" AbsoluteLayout.LayoutBounds="0.3125, 0.5, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=D2}"/>
+            <Button Text="3" AbsoluteLayout.LayoutBounds="0.46875, 0.5, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=D3}"/>
             <Button Text="−" AbsoluteLayout.LayoutBounds="0.625, 0.5, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=Minus}"/>
-            <Button StyleClass="x"/>
-            <Button StyleClass="y"/>
+            <Button Text="0" AbsoluteLayout.LayoutBounds="0.15625, 0.75, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=D0}"/>
+            <Button Text="." AbsoluteLayout.LayoutBounds="0.3125, 0.75, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=Decimal}"/>
+            <Button Text="=" AbsoluteLayout.LayoutBounds="0.46875, 0.75, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=Equals}"/>
+            <Button Text="+" AbsoluteLayout.LayoutBounds="0.625, 0.75, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=Plus}"/>
             <Button StyleClass="Back"/>
             <Button StyleClass="Dismiss"/>
             <Button StyleClass="Enter"/>
         </AbsoluteLayout>
-        <Button Text="()<>" AbsoluteLayout.LayoutBounds="0.375, 0, 0.1875, 0.25" Command="{i:ToggleVisibility {Reference Operations}}"/>
-        <AbsoluteLayout x:Name="Operations" AbsoluteLayout.LayoutBounds="0, 0.2, 1, 0.8">
-            
+        <Button Text="()&lt;&gt;" AbsoluteLayout.LayoutBounds="0.375, 0, 0.1875, 0.25" Command="{i:ToggleVisibility {Reference Operations}}"/>
+        <AbsoluteLayout x:Name="Operations" StyleClass="Tab">
+            <Button StyleClass="x"/>
+            <Button StyleClass="y"/>
+            <Button StyleClass="Fraction"/>
+            <Button StyleClass="Power"/>
+            <Button Text="(" AbsoluteLayout.LayoutBounds="0.15625, 0, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=LeftRoundBracket}"/>
+            <Button Text=")" AbsoluteLayout.LayoutBounds="0.3125, 0, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=RightRoundBracket}"/>
+            <Button Text="&lt;" AbsoluteLayout.LayoutBounds="0.46875, 0, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=LessThan}"/>
+            <Button Text="&gt;" AbsoluteLayout.LayoutBounds="0.625, 0, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=GreaterThan}"/>
+            <Button Text="[" AbsoluteLayout.LayoutBounds="0.15625, 0.25, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=LeftSquareBracket}"/>
+            <Button Text="]" AbsoluteLayout.LayoutBounds="0.3125, 0.25, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=RightSquareBracket}"/>
+            <Button Text="≤" AbsoluteLayout.LayoutBounds="0.46875, 0.25, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=LessOrEquals}"/>
+            <Button Text="≥" AbsoluteLayout.LayoutBounds="0.625, 0.25, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=GreaterOrEquals}"/>
+            <Button Text="{}{" AbsoluteLayout.LayoutBounds="0.15625, 0.5, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=LeftCurlyBracket}"/>
+            <Button Text="}" AbsoluteLayout.LayoutBounds="0.3125, 0.5, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=RightCurlyBracket}"/>
+            <Button Text="|⬜|" AbsoluteLayout.LayoutBounds="0.46875, 0.5, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=Absolute}"/>
+            <Button Text="%" AbsoluteLayout.LayoutBounds="0.625, 0.5, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=Percentage}"/>
+            <Button Text="!" AbsoluteLayout.LayoutBounds="0.15625, 0.75, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=D0}"/>
+            <Button Text="∞" AbsoluteLayout.LayoutBounds="0.3125, 0.75, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=Decimal}"/>
+            <Button Text="∶" AbsoluteLayout.LayoutBounds="0.46875, 0.75, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=Ratio}"/>
+            <Button Text="," AbsoluteLayout.LayoutBounds="0.625, 0.75, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=}"/>
+            <Button StyleClass="Back"/>
+            <Button StyleClass="Dismiss"/>
+            <Button StyleClass="Enter"/>
         </AbsoluteLayout>
+        <Button Text="f(x)" AbsoluteLayout.LayoutBounds="0.375, 0, 0.1875, 0.25" Command="{i:ToggleVisibility {Reference Functions}}"/>
+        <AbsoluteLayout x:Name="Functions" StyleClass="Tab">
+            <Button StyleClass="x"/>
+            <Button StyleClass="y"/>
+            <Button StyleClass="Fraction"/>
+            <Button StyleClass="Power"/>
+            <Button Text="sin" AbsoluteLayout.LayoutBounds="0.15625, 0, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=}"/>
+            <Button Text="cos" AbsoluteLayout.LayoutBounds="0.3125, 0, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=}"/>
+            <Button Text="tan" AbsoluteLayout.LayoutBounds="0.46875, 0, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=}"/>
+            <Button Text="θ" AbsoluteLayout.LayoutBounds="0.625, 0, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=}"/>
+            <Button Text="sec" AbsoluteLayout.LayoutBounds="0.15625, 0.25, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=}"/>
+            <Button Text="csc" AbsoluteLayout.LayoutBounds="0.3125, 0.25, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=}"/>
+            <Button Text="cot" AbsoluteLayout.LayoutBounds="0.46875, 0.25, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=}"/>
+            <Button Text="π" AbsoluteLayout.LayoutBounds="0.625, 0.25, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=}"/>
+            <Button Text="log" AbsoluteLayout.LayoutBounds="0.15625, 0.5, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=}"/>
+            <Button Text="ln" AbsoluteLayout.LayoutBounds="0.3125, 0.5, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=}"/>
+            <Button Text="log▖" AbsoluteLayout.LayoutBounds="0.46875, 0.5, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=}"/>
+            <Button Text="∠" AbsoluteLayout.LayoutBounds="0.625, 0.5, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=}"/>
+            <Button Text="⬜▖" AbsoluteLayout.LayoutBounds="0.15625, 0.75, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=}"/>
+            <Button Text="√⬜" AbsoluteLayout.LayoutBounds="0.3125, 0.75, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=}"/>
+            <Button Text="⸋√⬜" AbsoluteLayout.LayoutBounds="0.46875, 0.75, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=}"/>
+            <Button Text="°" AbsoluteLayout.LayoutBounds="0.625, 0.75, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=}"/>
+            <Button StyleClass="Back"/>
+            <Button StyleClass="Dismiss"/>
+            <Button StyleClass="Enter"/>
+        </AbsoluteLayout>
+        <Button Text="abc" AbsoluteLayout.LayoutBounds="0.375, 0, 0.1875, 0.25" Command="{i:ToggleVisibility {Reference Operations}}"/>
+        <AbsoluteLayout x:Name="Operations" StyleClass="Tab">
+        </AbsoluteLayout>
+        <Button Text="►" AbsoluteLayout.LayoutBounds="0.8, 0, 0.125, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=Right}"/>
     </AbsoluteLayout>
 </ContentView>

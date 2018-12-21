@@ -26,7 +26,7 @@ namespace CSharpMath.Forms.MathKeyboardMarkupExtensions {
       new Command(() => Target.IsVisible ^= true);
     object IMarkupExtension.ProvideValue(IServiceProvider _) => ProvideValue(_);
   }
-  
+
   [AcceptEmptyServiceProvider, ContentProperty(nameof(Base))]
   public class MultiplyExtension : IMarkupExtension<double> {
     public double Base { get; set; }
