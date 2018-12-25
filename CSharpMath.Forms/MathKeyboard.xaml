@@ -138,6 +138,7 @@
         </AbsoluteLayout>
         <Button Text="abc" AbsoluteLayout.LayoutBounds="0.6875, 0, 0.1875, 0.25" Command="{i:ToggleVisibility {Reference Operations}}"/>
         <AbsoluteLayout x:Name="Operations" StyleClass="Tab">
+            <Button AbsoluteLayout.LayoutBounds="0.15625, 0, 0.15625, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=}"/>
         </AbsoluteLayout>
         <Button Text="►" AbsoluteLayout.LayoutBounds="0.875, 0, 0.125, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=Right}"/>
     </AbsoluteLayout>
