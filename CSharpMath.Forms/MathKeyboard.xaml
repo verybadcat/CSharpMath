@@ -58,7 +58,7 @@
     </ContentView.Resources>
     <AbsoluteLayout>
         <Button Text="◄" AbsoluteLayout.LayoutBounds="0, 0, 0.125, 0.2" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=Left}"/>
-        <Button Text="123" AbsoluteLayout.LayoutBounds="0.1875, 0, 0.1875, 0.25" Command="{i:ToggleVisibility {Reference Numbers}}"/>
+        <Button Text="123" AbsoluteLayout.LayoutBounds="0.125, 0, 0.1875, 0.25" Command="{i:ToggleVisibility {Reference Numbers}}"/>
         <AbsoluteLayout x:Name="Numbers" StyleClass="Tab">
             <Button StyleClass="x"/>
             <Button StyleClass="y"/>
@@ -84,7 +84,7 @@
             <Button StyleClass="Dismiss"/>
             <Button StyleClass="Enter"/>
         </AbsoluteLayout>
-        <Button Text="()&lt;&gt;" AbsoluteLayout.LayoutBounds="0.375, 0, 0.1875, 0.25" Command="{i:ToggleVisibility {Reference Operations}}"/>
+        <Button Text="()&lt;&gt;" AbsoluteLayout.LayoutBounds="0.3125, 0, 0.1875, 0.25" Command="{i:ToggleVisibility {Reference Operations}}"/>
         <AbsoluteLayout x:Name="Operations" StyleClass="Tab">
             <Button StyleClass="x"/>
             <Button StyleClass="y"/>
@@ -110,7 +110,7 @@
             <Button StyleClass="Dismiss"/>
             <Button StyleClass="Enter"/>
         </AbsoluteLayout>
-        <Button Text="f(x)" AbsoluteLayout.LayoutBounds="0.375, 0, 0.1875, 0.25" Command="{i:ToggleVisibility {Reference Functions}}"/>
+        <Button Text="f(x)" AbsoluteLayout.LayoutBounds="0.5, 0, 0.1875, 0.25" Command="{i:ToggleVisibility {Reference Functions}}"/>
         <AbsoluteLayout x:Name="Functions" StyleClass="Tab">
             <Button StyleClass="x"/>
             <Button StyleClass="y"/>
@@ -136,9 +136,9 @@
             <Button StyleClass="Dismiss"/>
             <Button StyleClass="Enter"/>
         </AbsoluteLayout>
-        <Button Text="abc" AbsoluteLayout.LayoutBounds="0.375, 0, 0.1875, 0.25" Command="{i:ToggleVisibility {Reference Operations}}"/>
+        <Button Text="abc" AbsoluteLayout.LayoutBounds="0.6875, 0, 0.1875, 0.25" Command="{i:ToggleVisibility {Reference Operations}}"/>
         <AbsoluteLayout x:Name="Operations" StyleClass="Tab">
         </AbsoluteLayout>
-        <Button Text="►" AbsoluteLayout.LayoutBounds="0.8, 0, 0.125, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=Right}"/>
+        <Button Text="►" AbsoluteLayout.LayoutBounds="0.875, 0, 0.125, 0.25" Command="{i:MathInput Keyboard={Reference Keyboard}, Input=Right}"/>
     </AbsoluteLayout>
 </ContentView>
