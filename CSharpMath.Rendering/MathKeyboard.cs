@@ -5,8 +5,7 @@ namespace CSharpMath.Rendering {
   using Editor;
 
   public class MathKeyboard : MathKeyboard<Fonts, Glyph> {
-    public MathKeyboard(float fontSize = PainterConstants.DefaultFontSize * 3 / 2)
-      : base(TypesettingContext.Instance) { }
+    public MathKeyboard() : base(TypesettingContext.Instance) { }
     
     public void DrawCaret(ICanvas c) {
       if (!(Caret is CaretHandle caret)) return;

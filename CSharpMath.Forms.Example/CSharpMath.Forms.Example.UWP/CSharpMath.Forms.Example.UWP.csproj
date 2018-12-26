@@ -176,6 +176,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\CSharpMath.Editor\CSharpMath.Editor.csproj">
+      <Project>{38f58489-ede4-4289-8acf-a9756977a7a6}</Project>
+      <Name>CSharpMath.Editor</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CSharpMath.Forms.Example\CSharpMath.Forms.Example.csproj">
       <Project>{E438DDBD-A1DF-4244-80A5-B807F8E5760A}</Project>
       <Name>CSharpMath.Forms.Example</Name>

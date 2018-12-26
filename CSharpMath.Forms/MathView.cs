@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using CSharpMath.Rendering;
@@ -38,5 +38,6 @@ namespace CSharpMath.Forms {
     public string LaTeX { get => Source.LaTeX; set => Source = new MathSource(value); }
     public new RectangleF? Measure => Painter.Measure;
     protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint) => Painter.Measure is RectangleF r ? new SizeRequest(new Xamarin.Forms.Size(r.Width, r.Height)) : base.OnMeasure(widthConstraint, heightConstraint);
+
   }
 }

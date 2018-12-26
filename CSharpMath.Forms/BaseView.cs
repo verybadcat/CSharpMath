@@ -21,7 +21,7 @@ namespace CSharpMath.Forms {
   public abstract class BaseView<TPainter, TSource, TPainterSupplier> : SKCanvasView, IPainter<TSource, Color> where TPainter : ICanvasPainter<SKCanvas, TSource, SKColor> where TSource : struct, ISource where TPainterSupplier : struct, IPainterSupplier<TPainter> {
     public BaseView(TPainter painter) => Painter = painter;
 
-    protected TPainter Painter { get; }
+    public TPainter Painter { get; }
     protected override void OnPaintSurface(SKPaintSurfaceEventArgs e) {
       base.OnPaintSurface(e);
       e.Surface.Canvas.Clear();

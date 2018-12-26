@@ -12,9 +12,21 @@ namespace CSharpMath.Forms.Example {
   public partial class EditorPage : ContentPage {
     public EditorPage() {
       InitializeComponent();
-#warning WIPWIPWIPWIPWIPWIWPIWPIP
-      //var (view, keyboard) = MathKeyboard.Default;
-      //Content = new StackLayout { Children = { view, keyboard, new BoxView{HeightRequest = 50, WidthRequest = 50, Color = Color.Black} } };
+      var view = new global::SkiaSharp.Views.Forms.SKCanvasView();
+      var painter = new SkiaSharp.MathPainter();
+      var keyboard = new MathKeyboard();
+      keyboard.RedrawRequested += (_, __) => view.InvalidateSurface();
+      view.PaintSurface +=
+        (sender, e) => SkiaSharp.MathPainter.DrawDisplay(painter, keyboard.Display, e.Surface.Canvas);
+      Content = new StackLayout {
+        Children = {
+          view,
+          keyboard,
+          new BoxView {
+            HeightRequest = 50, WidthRequest = 50, Color = Color.Black
+          }
+        }
+      };
     }
   }
 }
