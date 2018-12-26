@@ -5,7 +5,11 @@ namespace CSharpMath.Rendering {
   using Editor;
 
   public class MathKeyboard : MathKeyboard<Fonts, Glyph> {
-    public MathKeyboard() : base(TypesettingContext.Instance) { }
+    public MathKeyboard() : this(PainterConstants.DefaultFontSize * 3 / 2) { }
+    public MathKeyboard(float fontSize = PainterConstants.DefaultFontSize * 3 / 2)
+      : base(TypesettingContext.Instance) {
+      Font = new Fonts(Array.Empty<Typography.OpenFont.Typeface>(), fontSize);
+    }
     
     public void DrawCaret(ICanvas c) {
       if (!(Caret is CaretHandle caret)) return;

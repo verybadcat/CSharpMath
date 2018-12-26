@@ -35,9 +35,7 @@ namespace CSharpMath.Forms {
     }
     public IDisplay<Rendering.Fonts, Rendering.Glyph> Display => Keyboard.Display;
 
-    public Rendering.MathKeyboard Keyboard = new Rendering.MathKeyboard();
-
-    private Command SwitchTab;
+    private Command SwitchTab { get; }
 
     private void Shift_Clicked(object sender, EventArgs e) {
       Letters.IsVisible ^= true;

@@ -14,7 +14,7 @@ namespace CSharpMath.Editor {
     public MathKeyboard(TypesettingContext<TFont, TGlyph> context) => _context = context;
 
     private TypesettingContext<TFont, TGlyph> _context;
-    private MathListIndex _insertionIndex;
+    private MathListIndex _insertionIndex = MathListIndex.Level0Index(0);
     protected CaretHandle? _caret;
     protected IDisplay<TFont, TGlyph> _display;
     //private readonly List<MathListIndex> highlighted;
