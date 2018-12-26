@@ -12,8 +12,8 @@ namespace CSharpMath.Forms.Example {
   public partial class EditorPage : ContentPage {
     public EditorPage() {
       InitializeComponent();
-      var view = new global::SkiaSharp.Views.Forms.SKCanvasView();
-      var painter = new SkiaSharp.MathPainter();
+      var view = new global::SkiaSharp.Views.Forms.SKCanvasView { WidthRequest = 320, HeightRequest = 225 };
+      var painter = new SkiaSharp.MathPainter { TextColor = global::SkiaSharp.SKColors.Black };
       var keyboard = new MathKeyboard();
       keyboard.RedrawRequested += (_, __) => view.InvalidateSurface();
       view.PaintSurface +=
