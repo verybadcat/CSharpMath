@@ -82,9 +82,9 @@ namespace CSharpMath.Structures {
     public static readonly Space EmWidth = new Space(18, true);
     public static readonly Space ExHeight = new Space(9, true);
     public static readonly Space MathUnit = new Space(1, true);
-    public static readonly Space ShortSpace = 3 * Point;
-    public static readonly Space MediumSpace = 4 * Point;
-    public static readonly Space LongSpace = 5 * Point;
+    public static readonly Space ShortSpace = 3 * MathUnit;
+    public static readonly Space MediumSpace = 4 * MathUnit;
+    public static readonly Space LongSpace = 5 * MathUnit;
     //https://github.com/latex3/latex2e/blob/b45b88761d659bfe0a0de4638e82122db2ab8184/base/classes.dtx#L775
     public static readonly Space ParagraphIndent = 1.5f * EmWidth;
     public static Dictionary<string, Space> PredefinedLengthUnits { get; } =
