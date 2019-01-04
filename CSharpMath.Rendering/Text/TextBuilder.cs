@@ -321,6 +321,15 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                 case var _ when textSection.Is(','):
                   atoms.Add(Space.ShortSpace, 1);
                   break;
+                case var _ when textSection.Is(':') || textSection.Is('>'):
+                  atoms.Add(Space.MediumSpace, 1);
+                  break;
+                case var _ when textSection.Is(';'):
+                  atoms.Add(Space.LongSpace, 1);
+                  break;
+                case var _ when textSection.Is('!'):
+                  atoms.Add(-Space.ShortSpace, 1);
+                  break;
                 case var _ when wordKind == WordKind.Whitespace: //control space
                   atoms.Add();
                   break;

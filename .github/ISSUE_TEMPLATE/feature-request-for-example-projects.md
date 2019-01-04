@@ -1,6 +1,9 @@
 ---
 name: Feature request for Example projects
 about: Suggest a new feature for an Example project
+title: ''
+labels: Type/Enhancement
+assignees: ''
 
 ---
 

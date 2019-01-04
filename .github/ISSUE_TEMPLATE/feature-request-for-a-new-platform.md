@@ -1,6 +1,9 @@
 ---
 name: Feature request for a new platform
 about: Suggest a new platform for CSharpMath
+title: ''
+labels: Type/Enhancement (Epic)
+assignees: ''
 
 ---
 
