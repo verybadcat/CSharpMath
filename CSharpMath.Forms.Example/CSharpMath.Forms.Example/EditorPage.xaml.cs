@@ -17,16 +17,12 @@ namespace CSharpMath.Forms.Example {
       var keyboard = new MathKeyboard();
       keyboard.RedrawRequested += (_, __) => view.InvalidateSurface();
       view.PaintSurface +=
-        (sender, e) => SkiaSharp.MathPainter.DrawDisplay(painter, keyboard.Display, e.Surface.Canvas);
-      Content = new StackLayout {
-        Children = {
-          view,
-          keyboard,
-          new BoxView {
-            HeightRequest = 50, WidthRequest = 50, Color = Color.Black
-          }
-        }
-      };
+        (sender, e) => {
+          e.Surface.Canvas.Clear();
+          SkiaSharp.MathPainter.DrawDisplay(painter, keyboard.Display, e.Surface.Canvas);
+          keyboard.DrawCaret(e.Surface.Canvas, Rendering.CaretShape.IBeam);
+        };
+      Content = new StackLayout { Children = { view, keyboard } };
     }
   }
 }

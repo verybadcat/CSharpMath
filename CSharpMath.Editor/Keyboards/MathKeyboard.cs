@@ -1,5 +1,5 @@
 #define UNUSED_KEYBOARD_FEATURES
-//#undef UNUSED_KEYBOARD_FEATURES
+#undef UNUSED_KEYBOARD_FEATURES
 namespace CSharpMath.Editor {
   using System;
   using System.Collections.Generic;
@@ -54,7 +54,6 @@ namespace CSharpMath.Editor {
     public void KeyPress(MathKeyboardInput input) {
       /// <summary>Returns whether to set the position of the cursor to null.</summary>
       bool Inner() {
-#if UNUSED_KEYBOARD_FEATURES
         /// <returns>True if updated</returns>
         bool UpdatePlaceholderIfPresent(IMathAtom emptyAtom) {
           var current = MathList.AtomAt(_insertionIndex);
@@ -70,6 +69,7 @@ namespace CSharpMath.Editor {
           }
           return false;
         }
+#if UNUSED_KEYBOARD_FEATURES
         ///<summary>If the index is in a radical, subscript, or exponent, fetches the next index after the root atom.</summary>
         MathListIndex GetIndexAfterSpecialStructure(MathListIndex index, MathListSubIndexType type) {
           while (index.HasSubIndexOfType(type))
@@ -187,8 +187,10 @@ namespace CSharpMath.Editor {
               // If the cursor is at the radicand, get out of the radical.
               _insertionIndex = GetOutOfRadical(current);
           else
+#else
+          Radical rad;
 #endif
-        if (placeholderDegree) {
+          if (placeholderDegree) {
             rad = MathAtoms.PlaceholderRadical;
             MathList.Insert(current, rad);
             _insertionIndex = current.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Degree);
@@ -201,11 +203,13 @@ namespace CSharpMath.Editor {
         }
 
         void HandleSubscriptButton() {
+#if UNUSED_KEYBHOARD_FEATURES
           if (_insertionIndex.HasSubIndexOfType(MathListSubIndexType.Subscript))
             // The index is currently inside an subscript. The subscript button gets it out of the subscript and move forward.
             _insertionIndex = GetIndexAfterSpecialStructure(_insertionIndex, MathListSubIndexType.Subscript);
           else {
             //Not in a subscript. Add one.
+#endif
             if (!_insertionIndex.AtBeginningOfLine) {
               var a = MathList.AtomAt(_insertionIndex.Previous);
               if (a.Subscript is null) {
@@ -225,7 +229,9 @@ namespace CSharpMath.Editor {
                 MathList.Insert(_insertionIndex, emptyAtom);
               _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Subscript);
             }
+#if UNUSED_KEYBOARD_FEATURES
           }
+#endif
         }
 
         void HandleSlashButton() {

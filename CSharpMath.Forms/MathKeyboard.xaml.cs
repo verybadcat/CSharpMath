@@ -8,12 +8,15 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 namespace CSharpMath.Forms {
+  using Rendering;
   [XamlCompilation(XamlCompilationOptions.Compile)]
   public partial class MathKeyboard : ContentView {
     public MathKeyboard() {
       InitializeComponent();
     }
 
+    public void DrawCaret(global::SkiaSharp.SKCanvas canvas, CaretShape shape = CaretShape.UpArrow) =>
+      Keyboard.DrawCaret(new SkiaSharp.SkiaCanvas(canvas, global::SkiaSharp.SKStrokeCap.Butt, false), shape);
     public event EventHandler RedrawRequested {
       add => Keyboard.RedrawRequested += value;
       remove => Keyboard.RedrawRequested -= value;
