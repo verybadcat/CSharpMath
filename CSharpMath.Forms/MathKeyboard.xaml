@@ -11,214 +11,296 @@
            WriteLine((R(a, R(c, 2)) / 320f, R(b, R(d, 3)) / 180f, R(c, 2) / 320f, R(d, 3) / 180f).ToString().Trim('(', ')')); -->
     <ContentView.Resources>
         <r:MathKeyboard x:Key="Keyboard" x:Name="Keyboard"/>
-        <Style TargetType="AbsoluteLayout">
-            <Setter Property="AbsoluteLayout.LayoutFlags" Value="All"/>
-        </Style>
-        <Style TargetType="AbsoluteLayout" Class="Tab">
-            <Setter Property="AbsoluteLayout.LayoutBounds" Value="0, 0.2, 1, 0.8"/>
+        <Style TargetType="Grid" Class="Tab" x:Key="Tab">
+            <Setter Property="Grid.Row" Value="1"/>
+            <Setter Property="Grid.Column" Value="0"/>
+            <Setter Property="Grid.ColumnSpan" Value="6"/>
             <Setter Property="IsVisible" Value="False"/>
             <Setter Property="BackgroundColor" Value="Lime"/>
+            <Setter Property="RowDefinitions">
+                <Setter.Value>
+                    <RowDefinitionCollection>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </RowDefinitionCollection>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ColumnDefinitions">
+                <Setter.Value>
+                    <ColumnDefinitionCollection>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="1.4*"/>
+                    </ColumnDefinitionCollection>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="Grid" Class="Tab_Letters" BasedOn="{StaticResource Tab}">
+            <Setter Property="RowDefinitions">
+                <Setter.Value>
+                    <RowDefinitionCollection>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </RowDefinitionCollection>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ColumnDefinitions">
+                <Setter.Value>
+                    <ColumnDefinitionCollection>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </ColumnDefinitionCollection>
+                </Setter.Value>
+            </Setter>
         </Style>
         <Style TargetType="Button">
-            <Setter Property="AbsoluteLayout.LayoutFlags" Value="All"/>
             <Setter Property="FontSize" Value="20"/>
         </Style>
         <!--Left row of first 3 tabs-->
         <Style TargetType="Button" Class="x">
             <Setter Property="Text" Value="𝑥"/>
-            <Setter Property="AbsoluteLayout.LayoutBounds" Value="0, 0, 0.15625, 0.25"/>
+            <Setter Property="Grid.Row" Value="0"/>
+            <Setter Property="Grid.Column" Value="0"/>
             <Setter Property="Command" Value="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallX}"/>
         </Style>
         <Style TargetType="Button" Class="y">
             <Setter Property="Text" Value="𝑦"/>
-            <Setter Property="AbsoluteLayout.LayoutBounds" Value="0, 0.25, 0.15625, 0.25"/>
+            <Setter Property="Grid.Column" Value="0"/>
+            <Setter Property="Grid.Row" Value="1"/>
             <Setter Property="Command" Value="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallY}"/>
         </Style>
         <Style TargetType="Button" Class="Fraction">
             <Setter Property="Text" Value="⸋⁄□"/>
-            <Setter Property="AbsoluteLayout.LayoutBounds" Value="0, 0.5, 0.15625, 0.25"/>
+            <Setter Property="Grid.Column" Value="0"/>
+            <Setter Property="Grid.Row" Value="2"/>
             <Setter Property="Command" Value="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Fraction}"/>
         </Style>
         <Style TargetType="Button" Class="Power">
             <Setter Property="Text" Value="⬜⸋"/>
-            <Setter Property="AbsoluteLayout.LayoutBounds" Value="0, 0.75, 0.15625, 0.25"/>
+            <Setter Property="Grid.Column" Value="0"/>
+            <Setter Property="Grid.Row" Value="3"/>
             <Setter Property="Command" Value="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Power}"/>
         </Style>
         <!--/Left row of first 3 tabs-->
         <!--Right row of first 3 tabs-->
         <Style TargetType="Button" Class="Back">
             <Setter Property="Text" Value="🔙"/>
-            <Setter Property="AbsoluteLayout.LayoutBounds" Value="0.7875, 0, 0.225, 0.25"/>
+            <Setter Property="Grid.Column" Value="5"/>
+            <Setter Property="Grid.Row" Value="0"/>
             <Setter Property="Command" Value="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Backspace}"/>
         </Style>
         <Style TargetType="Button" Class="Enter">
             <Setter Property="Text" Value="⏎"/>
-            <Setter Property="AbsoluteLayout.LayoutBounds" Value="0.7875, 0.25, 0.225, 0.5"/>
+            <Setter Property="Grid.Column" Value="5"/>
+            <Setter Property="Grid.Row" Value="1"/>
+            <Setter Property="Grid.RowSpan" Value="2"/>
             <Setter Property="Command" Value="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Return}"/>
         </Style>
         <Style TargetType="Button" Class="Dismiss">
             <Setter Property="Text" Value="❌"/>
             <!--🚫-->
-            <Setter Property="AbsoluteLayout.LayoutBounds" Value="0.7875, 0.75, 0.225, 0.25"/>
+            <Setter Property="Grid.Column" Value="5"/>
+            <Setter Property="Grid.Row" Value="3"/>
             <Setter Property="Command" Value="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Dismiss}"/>
         </Style>
         <!--/Right row of first 3 tabs-->
     </ContentView.Resources>
-    <AbsoluteLayout BackgroundColor="Aqua">
-        <Button Text="◄" AbsoluteLayout.LayoutBounds="0, 0, 0.125, 0.2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Left}"/>
-        <Button x:Name="NumbersButton" Text="123" AbsoluteLayout.LayoutBounds="0.125, 0, 0.1875, 0.25" Command="{x:Binding SwitchTab}" CommandParameter="{Reference Numbers}"/>
-        <AbsoluteLayout x:Name="Numbers" StyleClass="Tab" IsVisible="True">
+    <Grid BackgroundColor="Aqua">
+        <Grid.RowDefinitions>
+            <RowDefinitionCollection>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="4*"/>
+            </RowDefinitionCollection>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinitionCollection>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="1.5*"/>
+                <ColumnDefinition Width="1.5*"/>
+                <ColumnDefinition Width="1.5*"/>
+                <ColumnDefinition Width="1.5*"/>
+                <ColumnDefinition Width="*"/>
+            </ColumnDefinitionCollection>
+        </Grid.ColumnDefinitions>
+        <Button Text="◄" Grid.Column="0" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Left}"/>
+        <Button x:Name="NumbersButton" Text="123" Grid.Column="1" Clicked="NumbersButton_Clicked"/>
+        <Grid x:Name="Numbers" StyleClass="Tab" IsVisible="True">
             <Button StyleClass="x"/>
             <Button StyleClass="y"/>
             <Button StyleClass="Fraction"/>
             <Button StyleClass="Power"/>
-            <Button Text="7" AbsoluteLayout.LayoutBounds="0.15625, 0, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=D7}"/>
-            <Button Text="8" AbsoluteLayout.LayoutBounds="0.3125, 0, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=D8}"/>
-            <Button Text="9" AbsoluteLayout.LayoutBounds="0.46875, 0, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=D9}"/>
-            <Button Text="÷" AbsoluteLayout.LayoutBounds="0.625, 0, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Divide}"/>
-            <Button Text="4" AbsoluteLayout.LayoutBounds="0.15625, 0.25, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=D4}"/>
-            <Button Text="5" AbsoluteLayout.LayoutBounds="0.3125, 0.25, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=D5}"/>
-            <Button Text="6" AbsoluteLayout.LayoutBounds="0.46875, 0.25, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=D6}"/>
-            <Button Text="×" AbsoluteLayout.LayoutBounds="0.625, 0.25, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Multiply}"/>
-            <Button Text="1" AbsoluteLayout.LayoutBounds="0.15625, 0.5, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=D1}"/>
-            <Button Text="2" AbsoluteLayout.LayoutBounds="0.3125, 0.5, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=D2}"/>
-            <Button Text="3" AbsoluteLayout.LayoutBounds="0.46875, 0.5, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=D3}"/>
-            <Button Text="−" AbsoluteLayout.LayoutBounds="0.625, 0.5, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Minus}"/>
-            <Button Text="0" AbsoluteLayout.LayoutBounds="0.15625, 0.75, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=D0}"/>
-            <Button Text="." AbsoluteLayout.LayoutBounds="0.3125, 0.75, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Decimal}"/>
-            <Button Text="=" AbsoluteLayout.LayoutBounds="0.46875, 0.75, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Equals}"/>
-            <Button Text="+" AbsoluteLayout.LayoutBounds="0.625, 0.75, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Plus}"/>
+            <Button Text="7" Grid.Row="0" Grid.Column="1" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=D7}"/>
+            <Button Text="8" Grid.Row="0" Grid.Column="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=D8}"/>
+            <Button Text="9" Grid.Row="0" Grid.Column="3" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=D9}"/>
+            <Button Text="÷" Grid.Row="0" Grid.Column="4" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Divide}"/>
+            <Button Text="4" Grid.Row="1" Grid.Column="1" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=D4}"/>
+            <Button Text="5" Grid.Row="1" Grid.Column="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=D5}"/>
+            <Button Text="6" Grid.Row="1" Grid.Column="3" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=D6}"/>
+            <Button Text="×" Grid.Row="1" Grid.Column="4" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Multiply}"/>
+            <Button Text="1" Grid.Row="2" Grid.Column="1" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=D1}"/>
+            <Button Text="2" Grid.Row="2" Grid.Column="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=D2}"/>
+            <Button Text="3" Grid.Row="2" Grid.Column="3" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=D3}"/>
+            <Button Text="−" Grid.Row="2" Grid.Column="4" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Minus}"/>
+            <Button Text="0" Grid.Row="3" Grid.Column="1" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=D0}"/>
+            <Button Text="." Grid.Row="3" Grid.Column="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Decimal}"/>
+            <Button Text="=" Grid.Row="3" Grid.Column="3" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Equals}"/>
+            <Button Text="+" Grid.Row="3" Grid.Column="4" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Plus}"/>
             <Button StyleClass="Back"/>
             <Button StyleClass="Dismiss"/>
             <Button StyleClass="Enter"/>
-        </AbsoluteLayout>
-        <Button x:Name="OperationsButton" Text="()&lt;&gt;" AbsoluteLayout.LayoutBounds="0.3125, 0, 0.1875, 0.25" Command="{x:Binding SwitchTab}" CommandParameter="{Reference Operations}"/>
-        <AbsoluteLayout x:Name="Operations" StyleClass="Tab">
+        </Grid>
+        <Button x:Name="OperationsButton" Text="()&lt;&gt;" Grid.Column="2" Clicked="OperationsButton_Clicked"/>
+        <Grid x:Name="Operations" StyleClass="Tab">
             <Button StyleClass="x"/>
             <Button StyleClass="y"/>
             <Button StyleClass="Fraction"/>
             <Button StyleClass="Power"/>
-            <Button Text="(" AbsoluteLayout.LayoutBounds="0.15625, 0, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=LeftRoundBracket}"/>
-            <Button Text=")" AbsoluteLayout.LayoutBounds="0.3125, 0, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=RightRoundBracket}"/>
-            <Button Text="&lt;" AbsoluteLayout.LayoutBounds="0.46875, 0, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=LessThan}"/>
-            <Button Text="&gt;" AbsoluteLayout.LayoutBounds="0.625, 0, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=GreaterThan}"/>
-            <Button Text="[" AbsoluteLayout.LayoutBounds="0.15625, 0.25, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=LeftSquareBracket}"/>
-            <Button Text="]" AbsoluteLayout.LayoutBounds="0.3125, 0.25, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=RightSquareBracket}"/>
-            <Button Text="≤" AbsoluteLayout.LayoutBounds="0.46875, 0.25, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=LessOrEquals}"/>
-            <Button Text="≥" AbsoluteLayout.LayoutBounds="0.625, 0.25, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=GreaterOrEquals}"/>
-            <Button Text="{}{" AbsoluteLayout.LayoutBounds="0.15625, 0.5, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=LeftCurlyBracket}"/>
-            <Button Text="}" AbsoluteLayout.LayoutBounds="0.3125, 0.5, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=RightCurlyBracket}"/>
-            <Button Text="|⬜|" AbsoluteLayout.LayoutBounds="0.46875, 0.5, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Absolute}"/>
-            <Button Text="%" AbsoluteLayout.LayoutBounds="0.625, 0.5, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Percentage}"/>
-            <Button Text="!" AbsoluteLayout.LayoutBounds="0.15625, 0.75, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Factorial}"/>
-            <Button Text="∞" AbsoluteLayout.LayoutBounds="0.3125, 0.75, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Infinity}"/>
-            <Button Text="∶" AbsoluteLayout.LayoutBounds="0.46875, 0.75, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Ratio}"/>
-            <Button Text="," AbsoluteLayout.LayoutBounds="0.625, 0.75, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Comma}"/>
+            <Button Text="(" Grid.Row="0" Grid.Column="1" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=LeftRoundBracket}"/>
+            <Button Text=")" Grid.Row="0" Grid.Column="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=RightRoundBracket}"/>
+            <Button Text="&lt;" Grid.Row="0" Grid.Column="3" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=LessThan}"/>
+            <Button Text="&gt;" Grid.Row="0" Grid.Column="4" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=GreaterThan}"/>
+            <Button Text="[" Grid.Row="1" Grid.Column="1" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=LeftSquareBracket}"/>
+            <Button Text="]" Grid.Row="1" Grid.Column="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=RightSquareBracket}"/>
+            <Button Text="≤" Grid.Row="1" Grid.Column="3" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=LessOrEquals}"/>
+            <Button Text="≥" Grid.Row="1" Grid.Column="4" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=GreaterOrEquals}"/>
+            <Button Text="{}{" Grid.Row="2" Grid.Column="1" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=LeftCurlyBracket}"/>
+            <Button Text="}" Grid.Row="2" Grid.Column="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=RightCurlyBracket}"/>
+            <Button Text="|⬜|" Grid.Row="2" Grid.Column="3" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Absolute}"/>
+            <Button Text="%" Grid.Row="2" Grid.Column="4" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Percentage}"/>
+            <Button Text="!" Grid.Row="3" Grid.Column="1" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Factorial}"/>
+            <Button Text="∞" Grid.Row="3" Grid.Column="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Infinity}"/>
+            <Button Text="∶" Grid.Row="3" Grid.Column="3" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Ratio}"/>
+            <Button Text="," Grid.Row="3" Grid.Column="4" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Comma}"/>
             <Button StyleClass="Back"/>
             <Button StyleClass="Dismiss"/>
             <Button StyleClass="Enter"/>
-        </AbsoluteLayout>
-        <Button x:Name="FunctionsButton" Text="f(x)" AbsoluteLayout.LayoutBounds="0.5, 0, 0.1875, 0.25" Command="{x:Binding SwitchTab}" CommandParameter="{Reference Functions}"/>
-        <AbsoluteLayout x:Name="Functions" StyleClass="Tab">
+        </Grid>
+        <Button x:Name="FunctionsButton" Text="f(x)" Grid.Column="3" Clicked="FunctionsButton_Clicked"/>
+        <Grid x:Name="Functions" StyleClass="Tab">
             <Button StyleClass="x"/>
             <Button StyleClass="y"/>
             <Button StyleClass="Fraction"/>
             <Button StyleClass="Power"/>
-            <Button Text="sin" AbsoluteLayout.LayoutBounds="0.15625, 0, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Sine}"/>
-            <Button Text="cos" AbsoluteLayout.LayoutBounds="0.3125, 0, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Cosine}"/>
-            <Button Text="tan" AbsoluteLayout.LayoutBounds="0.46875, 0, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Tangent}"/>
-            <Button Text="θ" AbsoluteLayout.LayoutBounds="0.625, 0, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallTheta}"/>
-            <Button Text="sec" AbsoluteLayout.LayoutBounds="0.15625, 0.25, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Secant}"/>
-            <Button Text="csc" AbsoluteLayout.LayoutBounds="0.3125, 0.25, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Cosecant}"/>
-            <Button Text="cot" AbsoluteLayout.LayoutBounds="0.46875, 0.25, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Cotangent}"/>
-            <Button Text="π" AbsoluteLayout.LayoutBounds="0.625, 0.25, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallPi}"/>
-            <Button Text="log" AbsoluteLayout.LayoutBounds="0.15625, 0.5, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Logarithm}"/>
-            <Button Text="ln" AbsoluteLayout.LayoutBounds="0.3125, 0.5, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=NaturalLogarithm}"/>
-            <Button Text="log▖" AbsoluteLayout.LayoutBounds="0.46875, 0.5, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=LogarithmWithBase}"/>
-            <Button Text="∠" AbsoluteLayout.LayoutBounds="0.625, 0.5, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Angle}"/>
-            <Button Text="⬜▖" AbsoluteLayout.LayoutBounds="0.15625, 0.75, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Subscript}"/>
-            <Button Text="√⬜" AbsoluteLayout.LayoutBounds="0.3125, 0.75, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SquareRoot}"/>
-            <Button Text="⸋√⬜" AbsoluteLayout.LayoutBounds="0.46875, 0.75, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=NthRoot}"/>
-            <Button Text="°" AbsoluteLayout.LayoutBounds="0.625, 0.75, 0.15625, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Degree}"/>
+            <Button Text="sin" Grid.Row="0" Grid.Column="1" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Sine}"/>
+            <Button Text="cos" Grid.Row="0" Grid.Column="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Cosine}"/>
+            <Button Text="tan" Grid.Row="0" Grid.Column="3" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Tangent}"/>
+            <Button Text="θ" Grid.Row="0" Grid.Column="4" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallTheta}"/>
+            <Button Text="sec" Grid.Row="1" Grid.Column="1" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Secant}"/>
+            <Button Text="csc" Grid.Row="1" Grid.Column="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Cosecant}"/>
+            <Button Text="cot" Grid.Row="1" Grid.Column="3" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Cotangent}"/>
+            <Button Text="π" Grid.Row="1" Grid.Column="4" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallPi}"/>
+            <Button Text="log" Grid.Row="2" Grid.Column="1" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Logarithm}"/>
+            <Button Text="ln" Grid.Row="2" Grid.Column="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=NaturalLogarithm}"/>
+            <Button Text="log▖" Grid.Row="2" Grid.Column="3" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=LogarithmWithBase}"/>
+            <Button Text="∠" Grid.Row="2" Grid.Column="4" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Angle}"/>
+            <Button Text="⬜▖" Grid.Row="3" Grid.Column="1" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Subscript}"/>
+            <Button Text="√⬜" Grid.Row="3" Grid.Column="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SquareRoot}"/>
+            <Button Text="⸋√⬜" Grid.Row="3" Grid.Column="3" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=NthRoot}"/>
+            <Button Text="°" Grid.Row="3" Grid.Column="4" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Degree}"/>
             <Button StyleClass="Back"/>
             <Button StyleClass="Dismiss"/>
             <Button StyleClass="Enter"/>
-        </AbsoluteLayout>
-        <Button x:Name="LettersButton" Text="abc" AbsoluteLayout.LayoutBounds="0.6875, 0, 0.1875, 0.25" Command="{x:Binding SwitchTab}" CommandParameter="{Reference Letters}"/>
-        <AbsoluteLayout x:Name="Letters" StyleClass="Tab">
-            <Button Text="q" AbsoluteLayout.LayoutBounds="0.00, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallQ}"/>
-            <Button Text="w" AbsoluteLayout.LayoutBounds="0.10, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallW}"/>
-            <Button Text="e" AbsoluteLayout.LayoutBounds="0.20, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallE}"/>
-            <Button Text="r" AbsoluteLayout.LayoutBounds="0.30, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallR}"/>
-            <Button Text="t" AbsoluteLayout.LayoutBounds="0.40, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallT}"/>
-            <Button Text="y" AbsoluteLayout.LayoutBounds="0.50, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallY}"/>
-            <Button Text="u" AbsoluteLayout.LayoutBounds="0.60, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallU}"/>
-            <Button Text="i" AbsoluteLayout.LayoutBounds="0.70, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallI}"/>
-            <Button Text="o" AbsoluteLayout.LayoutBounds="0.80, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallO}"/>
-            <Button Text="p" AbsoluteLayout.LayoutBounds="0.90, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallP}"/>
-            <Button Text="a" AbsoluteLayout.LayoutBounds="0.05, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallA}"/>
-            <Button Text="s" AbsoluteLayout.LayoutBounds="0.15, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallS}"/>
-            <Button Text="d" AbsoluteLayout.LayoutBounds="0.25, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallD}"/>
-            <Button Text="f" AbsoluteLayout.LayoutBounds="0.35, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallF}"/>
-            <Button Text="g" AbsoluteLayout.LayoutBounds="0.45, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallG}"/>
-            <Button Text="h" AbsoluteLayout.LayoutBounds="0.55, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallH}"/>
-            <Button Text="j" AbsoluteLayout.LayoutBounds="0.65, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallJ}"/>
-            <Button Text="k" AbsoluteLayout.LayoutBounds="0.75, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallK}"/>
-            <Button Text="l" AbsoluteLayout.LayoutBounds="0.85, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallL}"/>
-            <Button Text="z" AbsoluteLayout.LayoutBounds="0.20, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallZ}"/>
-            <Button Text="x" AbsoluteLayout.LayoutBounds="0.30, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallX}"/>
-            <Button Text="c" AbsoluteLayout.LayoutBounds="0.40, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallC}"/>
-            <Button Text="v" AbsoluteLayout.LayoutBounds="0.50, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallV}"/>
-            <Button Text="b" AbsoluteLayout.LayoutBounds="0.60, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallB}"/>
-            <Button Text="n" AbsoluteLayout.LayoutBounds="0.70, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallN}"/>
-            <Button Text="m" AbsoluteLayout.LayoutBounds="0.80, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallM}"/>
-            <Button Text="α" AbsoluteLayout.LayoutBounds="0.25, 0.75, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallAlpha}"/>
-            <Button Text="Δ" AbsoluteLayout.LayoutBounds="0.35, 0.75, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallDelta}"/>
-            <Button Text="σ" AbsoluteLayout.LayoutBounds="0.45, 0.75, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallSigma}"/>
-            <Button Text="μ" AbsoluteLayout.LayoutBounds="0.55, 0.75, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallMu}"/>
-            <Button Text="λ" AbsoluteLayout.LayoutBounds="0.65, 0.75, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallDelta}"/>
-            <Button Text="⇧" AbsoluteLayout.LayoutBounds="0.00, 0.5, 0.15, 0.25" Clicked="Shift_Clicked"/>
-            <Button StyleClass="Back" AbsoluteLayout.LayoutBounds="0.85, 0.5, 0.15, 0.25"/>
-            <Button StyleClass="Dismiss" AbsoluteLayout.LayoutBounds="0, 0.75, 0.25, 0.25"/>
-            <Button StyleClass="Enter" AbsoluteLayout.LayoutBounds="0.75, 0.75, 0.25, 0.25"/>
-        </AbsoluteLayout>
-        <AbsoluteLayout x:Name="Letters2" StyleClass="Tab">
-            <Button Text="Q" AbsoluteLayout.LayoutBounds="0.00, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Q}"/>
-            <Button Text="W" AbsoluteLayout.LayoutBounds="0.10, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=W}"/>
-            <Button Text="E" AbsoluteLayout.LayoutBounds="0.20, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=E}"/>
-            <Button Text="R" AbsoluteLayout.LayoutBounds="0.30, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=R}"/>
-            <Button Text="T" AbsoluteLayout.LayoutBounds="0.40, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=T}"/>
-            <Button Text="Y" AbsoluteLayout.LayoutBounds="0.50, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Y}"/>
-            <Button Text="U" AbsoluteLayout.LayoutBounds="0.60, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=U}"/>
-            <Button Text="I" AbsoluteLayout.LayoutBounds="0.70, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=I}"/>
-            <Button Text="O" AbsoluteLayout.LayoutBounds="0.80, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=O}"/>
-            <Button Text="P" AbsoluteLayout.LayoutBounds="0.90, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=P}"/>
-            <Button Text="A" AbsoluteLayout.LayoutBounds="0.05, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=A}"/>
-            <Button Text="S" AbsoluteLayout.LayoutBounds="0.15, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=S}"/>
-            <Button Text="D" AbsoluteLayout.LayoutBounds="0.25, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=D}"/>
-            <Button Text="F" AbsoluteLayout.LayoutBounds="0.35, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=F}"/>
-            <Button Text="G" AbsoluteLayout.LayoutBounds="0.45, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=G}"/>
-            <Button Text="H" AbsoluteLayout.LayoutBounds="0.55, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=H}"/>
-            <Button Text="J" AbsoluteLayout.LayoutBounds="0.65, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=J}"/>
-            <Button Text="K" AbsoluteLayout.LayoutBounds="0.75, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=K}"/>
-            <Button Text="L" AbsoluteLayout.LayoutBounds="0.85, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=L}"/>
-            <Button Text="Z" AbsoluteLayout.LayoutBounds="0.20, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Z}"/>
-            <Button Text="X" AbsoluteLayout.LayoutBounds="0.30, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=X}"/>
-            <Button Text="C" AbsoluteLayout.LayoutBounds="0.40, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=C}"/>
-            <Button Text="V" AbsoluteLayout.LayoutBounds="0.50, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=V}"/>
-            <Button Text="B" AbsoluteLayout.LayoutBounds="0.60, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=B}"/>
-            <Button Text="N" AbsoluteLayout.LayoutBounds="0.70, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=N}"/>
-            <Button Text="M" AbsoluteLayout.LayoutBounds="0.80, 0, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=M}"/>
-            <Button Text="ρ" AbsoluteLayout.LayoutBounds="0.25, 0.75, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallRho}"/>
-            <Button Text="ω" AbsoluteLayout.LayoutBounds="0.35, 0.75, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallOmega}"/>
-            <Button Text="Φ" AbsoluteLayout.LayoutBounds="0.45, 0.75, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallPhi}"/>
-            <Button Text="ν" AbsoluteLayout.LayoutBounds="0.55, 0.75, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallNu}"/>
-            <Button Text="β" AbsoluteLayout.LayoutBounds="0.65, 0.75, 0.1, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallBeta}"/>
-            <Button Text="⇧" AbsoluteLayout.LayoutBounds="0.00, 0.5, 0.15, 0.25" Clicked="Shift_Clicked"/>
-            <Button StyleClass="Back" AbsoluteLayout.LayoutBounds="0.85, 0.5, 0.15, 0.25"/>
-            <Button StyleClass="Dismiss" AbsoluteLayout.LayoutBounds="0, 0.75, 0.25, 0.25"/>
-            <Button StyleClass="Enter" AbsoluteLayout.LayoutBounds="0.75, 0.75, 0.25, 0.25"/>
-        </AbsoluteLayout>
-        <Button Text="►" AbsoluteLayout.LayoutBounds="0.875, 0, 0.125, 0.25" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Right}"/>
-    </AbsoluteLayout>
+        </Grid>
+        <Button x:Name="LettersButton" Text="abc" Grid.Column="4" Clicked="LettersButton_Clicked"/>
+        <Grid x:Name="Letters" StyleClass="Tab_Letters">
+            <Button Text="q" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallQ}"/>
+            <Button Text="w" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallW}"/>
+            <Button Text="e" Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallE}"/>
+            <Button Text="r" Grid.Row="0" Grid.Column="6" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallR}"/>
+            <Button Text="t" Grid.Row="0" Grid.Column="8" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallT}"/>
+            <Button Text="y" Grid.Row="0" Grid.Column="10" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallY}"/>
+            <Button Text="u" Grid.Row="0" Grid.Column="12" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallU}"/>
+            <Button Text="i" Grid.Row="0" Grid.Column="14" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallI}"/>
+            <Button Text="o" Grid.Row="0" Grid.Column="16" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallO}"/>
+            <Button Text="p" Grid.Row="0" Grid.Column="18" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallP}"/>
+            <Button Text="a" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallA}"/>
+            <Button Text="s" Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallS}"/>
+            <Button Text="d" Grid.Row="1" Grid.Column="5" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallD}"/>
+            <Button Text="f" Grid.Row="1" Grid.Column="7" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallF}"/>
+            <Button Text="g" Grid.Row="1" Grid.Column="9" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallG}"/>
+            <Button Text="h" Grid.Row="1" Grid.Column="11" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallH}"/>
+            <Button Text="j" Grid.Row="1" Grid.Column="13" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallJ}"/>
+            <Button Text="k" Grid.Row="1" Grid.Column="15" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallK}"/>
+            <Button Text="l" Grid.Row="1" Grid.Column="17" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallL}"/>
+            <Button Text="z" Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallZ}"/>
+            <Button Text="x" Grid.Row="2" Grid.Column="5" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallX}"/>
+            <Button Text="c" Grid.Row="2" Grid.Column="7" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallC}"/>
+            <Button Text="v" Grid.Row="2" Grid.Column="9" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallV}"/>
+            <Button Text="b" Grid.Row="2" Grid.Column="11" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallB}"/>
+            <Button Text="n" Grid.Row="2" Grid.Column="13" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallN}"/>
+            <Button Text="m" Grid.Row="2" Grid.Column="15" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallM}"/>
+            <Button Text="α" Grid.Row="3" Grid.Column="5" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallAlpha}"/>
+            <Button Text="Δ" Grid.Row="3" Grid.Column="7" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallDelta}"/>
+            <Button Text="σ" Grid.Row="3" Grid.Column="9" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallSigma}"/>
+            <Button Text="μ" Grid.Row="3" Grid.Column="11" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallMu}"/>
+            <Button Text="λ" Grid.Row="3" Grid.Column="13" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallDelta}"/>
+            <Button Text="⇧" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Clicked="Shift_Clicked"/>
+            <Button StyleClass="Back" Grid.Row="2" Grid.Column="17" Grid.ColumnSpan="3"/>
+            <Button StyleClass="Dismiss" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="5"/>
+            <Button StyleClass="Enter" Grid.Row="3" Grid.Column="15" Grid.ColumnSpan="5"/>
+        </Grid>
+        <Grid x:Name="Letters2" StyleClass="Tab_Letters">
+            <Button Text="Q" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Q}"/>
+            <Button Text="W" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=W}"/>
+            <Button Text="E" Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=E}"/>
+            <Button Text="R" Grid.Row="0" Grid.Column="6" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=R}"/>
+            <Button Text="T" Grid.Row="0" Grid.Column="8" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=T}"/>
+            <Button Text="Y" Grid.Row="0" Grid.Column="10" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Y}"/>
+            <Button Text="U" Grid.Row="0" Grid.Column="12" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=U}"/>
+            <Button Text="I" Grid.Row="0" Grid.Column="14" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=I}"/>
+            <Button Text="O" Grid.Row="0" Grid.Column="16" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=O}"/>
+            <Button Text="P" Grid.Row="0" Grid.Column="18" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=P}"/>
+            <Button Text="A" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=A}"/>
+            <Button Text="S" Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=S}"/>
+            <Button Text="D" Grid.Row="1" Grid.Column="5" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=D}"/>
+            <Button Text="F" Grid.Row="1" Grid.Column="7" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=F}"/>
+            <Button Text="G" Grid.Row="1" Grid.Column="9" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=G}"/>
+            <Button Text="H" Grid.Row="1" Grid.Column="11" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=H}"/>
+            <Button Text="J" Grid.Row="1" Grid.Column="13" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=J}"/>
+            <Button Text="K" Grid.Row="1" Grid.Column="15" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=K}"/>
+            <Button Text="L" Grid.Row="1" Grid.Column="17" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=L}"/>
+            <Button Text="Z" Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Z}"/>
+            <Button Text="X" Grid.Row="2" Grid.Column="5" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=X}"/>
+            <Button Text="C" Grid.Row="2" Grid.Column="7" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=C}"/>
+            <Button Text="V" Grid.Row="2" Grid.Column="9" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=V}"/>
+            <Button Text="B" Grid.Row="2" Grid.Column="11" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=B}"/>
+            <Button Text="N" Grid.Row="2" Grid.Column="13" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=N}"/>
+            <Button Text="M" Grid.Row="2" Grid.Column="15" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=M}"/>
+            <Button Text="ρ" Grid.Row="3" Grid.Column="5" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallRho}"/>
+            <Button Text="ω" Grid.Row="3" Grid.Column="7" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallOmega}"/>
+            <Button Text="Φ" Grid.Row="3" Grid.Column="9" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallPhi}"/>
+            <Button Text="ν" Grid.Row="3" Grid.Column="11" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallNu}"/>
+            <Button Text="β" Grid.Row="3" Grid.Column="13" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallBeta}"/>
+            <Button Text="⇧" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Clicked="Shift_Clicked"/>
+            <Button StyleClass="Back" Grid.Row="2" Grid.Column="17" Grid.ColumnSpan="3"/>
+            <Button StyleClass="Dismiss" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="5"/>
+            <Button StyleClass="Enter" Grid.Row="3" Grid.Column="15" Grid.ColumnSpan="5"/>
+        </Grid>
+        <Button Text="►" Grid.Column="5" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Right}"/>
+    </Grid>
 </ContentView>
