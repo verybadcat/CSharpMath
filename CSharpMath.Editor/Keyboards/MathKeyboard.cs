@@ -461,6 +461,7 @@ namespace CSharpMath.Editor {
             break;
           case MathKeyboardInput.Clear:
             MathList.Clear();
+            InsertionIndex = MathListIndex.Level0Index(0);
             break;
           case MathKeyboardInput.Return:
             ReturnPressed?.Invoke(this, EventArgs.Empty);

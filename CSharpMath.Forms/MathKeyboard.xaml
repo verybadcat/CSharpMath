@@ -113,11 +113,16 @@
             <Setter Property="Grid.Row" Value="0"/>
             <Setter Property="Command" Value="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Backspace}"/>
         </Style>
+        <Style TargetType="Button" Class="Clear">
+            <Setter Property="Text" Value="⎚"/>
+            <Setter Property="Grid.Column" Value="5"/>
+            <Setter Property="Grid.Row" Value="1"/>
+            <Setter Property="Command" Value="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Clear}"/>
+        </Style>
         <Style TargetType="Button" Class="Enter">
             <Setter Property="Text" Value="⏎"/>
             <Setter Property="Grid.Column" Value="5"/>
-            <Setter Property="Grid.Row" Value="1"/>
-            <Setter Property="Grid.RowSpan" Value="2"/>
+            <Setter Property="Grid.Row" Value="2"/>
             <Setter Property="Command" Value="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Return}"/>
         </Style>
         <Style TargetType="Button" Class="Dismiss">
@@ -170,6 +175,7 @@
             <Button Text="=" Grid.Row="3" Grid.Column="3" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Equals}"/>
             <Button Text="+" Grid.Row="3" Grid.Column="4" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Plus}"/>
             <Button StyleClass="Back"/>
+            <Button StyleClass="Clear"/>
             <Button StyleClass="Dismiss"/>
             <Button StyleClass="Enter"/>
         </Grid>
@@ -196,6 +202,7 @@
             <Button Text="∶" Grid.Row="3" Grid.Column="3" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Ratio}"/>
             <Button Text="," Grid.Row="3" Grid.Column="4" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Comma}"/>
             <Button StyleClass="Back"/>
+            <Button StyleClass="Clear"/>
             <Button StyleClass="Dismiss"/>
             <Button StyleClass="Enter"/>
         </Grid>
@@ -222,6 +229,7 @@
             <Button Text="⸋√⬜" Grid.Row="3" Grid.Column="3" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=NthRoot}"/>
             <Button Text="°" Grid.Row="3" Grid.Column="4" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Degree}"/>
             <Button StyleClass="Back"/>
+            <Button StyleClass="Clear"/>
             <Button StyleClass="Dismiss"/>
             <Button StyleClass="Enter"/>
         </Grid>
@@ -254,10 +262,10 @@
             <Button Text="n" Grid.Row="2" Grid.Column="13" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallN}"/>
             <Button Text="m" Grid.Row="2" Grid.Column="15" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallM}"/>
             <Button Text="α" Grid.Row="3" Grid.Column="5" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallAlpha}"/>
-            <Button Text="Δ" Grid.Row="3" Grid.Column="7" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallDelta}"/>
+            <Button Text="Δ" Grid.Row="3" Grid.Column="7" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=Delta}"/>
             <Button Text="σ" Grid.Row="3" Grid.Column="9" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallSigma}"/>
             <Button Text="μ" Grid.Row="3" Grid.Column="11" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallMu}"/>
-            <Button Text="λ" Grid.Row="3" Grid.Column="13" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallDelta}"/>
+            <Button Text="λ" Grid.Row="3" Grid.Column="13" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallLambda}"/>
             <Button Text="⇧" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Clicked="Shift_Clicked"/>
             <Button StyleClass="Back" Grid.Row="2" Grid.Column="17" Grid.ColumnSpan="3"/>
             <Button StyleClass="Dismiss" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="5"/>
@@ -296,7 +304,7 @@
             <Button Text="ν" Grid.Row="3" Grid.Column="11" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallNu}"/>
             <Button Text="β" Grid.Row="3" Grid.Column="13" Grid.ColumnSpan="2" Command="{i:MathInput Keyboard={StaticResource Keyboard}, Input=SmallBeta}"/>
             <Button Text="⇧" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Clicked="Shift_Clicked"/>
-            <Button StyleClass="Back" Grid.Row="2" Grid.Column="17" Grid.ColumnSpan="3"/>
+            <Button StyleClass="Clear" Grid.Row="2" Grid.Column="17" Grid.ColumnSpan="3"/>
             <Button StyleClass="Dismiss" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="5"/>
             <Button StyleClass="Enter" Grid.Row="3" Grid.Column="15" Grid.RowSpan="1" Grid.ColumnSpan="5"/>
         </Grid>

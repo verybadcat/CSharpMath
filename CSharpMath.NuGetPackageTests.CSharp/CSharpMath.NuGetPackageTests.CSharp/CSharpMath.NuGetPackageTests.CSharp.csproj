@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CSharpMath.Forms" Version="0.1.4" />
+    <PackageReference Include="CSharpMath.Forms" Version="0.2.0-beta1" />
     <PackageReference Include="Xamarin.Forms" Version="3.4.0.1008975" />
   </ItemGroup>
 </Project>
