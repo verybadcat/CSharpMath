@@ -4,7 +4,7 @@
 
 CSharpMath is a C# port of the wonderful [iosMath LaTeX engine](https://github.com/kostub/iosMath).
 
-Current stable version|Current pre-release version|Commits since last version
+Current release|Current pre-release|Commits since last version
 -|-|-
 NuGet: ![NuGet Release shield](https://img.shields.io/nuget/v/CSharpMath.svg)<br/> GitHub: ![GitHub Releases shield](https://img.shields.io/github/release/verybadcat/CSharpMath.svg)<br/>Date: ![GitHub Release date shield](https://img.shields.io/github/release-date/verybadcat/CSharpMath.svg)|NuGet: ![NuGet pre-release shield](https://img.shields.io/nuget/vpre/CSharpMath.svg)<br/> GitHub: ![GitHub Pre-releases shield](https://img.shields.io/github/release-pre/verybadcat/CSharpMath.svg)<br/>Date: ![GitHub Pre-release date shield](https://img.shields.io/github/release-date-pre/verybadcat/CSharpMath.svg)|![GitHub commits since last version shield](https://img.shields.io/github/commits-since/verybadcat/CSharpMath/latest.svg)
  <!--
