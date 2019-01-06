@@ -6,7 +6,7 @@
              xmlns:skia="clr-namespace:SkiaSharp.Views.Forms;assembly=SkiaSharp.Views.Forms"
              x:Class="CSharpMath.NuGetPackageTests.CSharp.MainPage">
     <StackLayout>
-        <skia:SKCanvasView x:Name="canvas"/>
-        <Button x:Name="b"/>
+        <skia:SKCanvasView x:Name="canvas" VerticalOptions="FillAndExpand"/>
+        <math:MathKeyboard x:Name="b"/>
     </StackLayout>
 </ContentPage>
