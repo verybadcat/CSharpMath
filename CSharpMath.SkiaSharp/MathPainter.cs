@@ -25,67 +25,38 @@ namespace CSharpMath.SkiaSharp {
       new SkiaCanvas(canvas, StrokeCap, AntiAlias);
 
     static readonly MathSource staticValidSource = new MathSource(Atoms.MathLists.WithAtoms());
+  
     /// <summary>
     /// Ignores the MathList and LaTeX of the <see cref="MathPainter"/> provided. Repositions the <paramref name="display"/>.
     /// </summary>
     /// <param name="settings"></param>
     /// <param name="display"></param>
-    public static void DrawDisplay(MathPainter settings, IDisplay<Fonts, Glyph> display, SKCanvas canvas, PointF position) {
-      if (display is null) return;
-      var original = settings._display;
-      var originalChanged = settings._displayChanged;
-      var source = settings.Source;
-      settings.Source = staticValidSource;
-      settings._display = display;
-      settings._displayChanged = false;
-      settings.Draw(canvas, position);
-      settings.Source = source;
-      settings._display = original;
-      settings._displayChanged = originalChanged;
-    }
+    public static void DrawDisplay(MathPainter settings, IDisplay<Fonts, Glyph> display, SKCanvas canvas, PointF position) =>
+        DrawDisplay(settings, display, canvas, _ => _.Draw(canvas, position));
     /// <summary>
     /// Ignores the MathList and LaTeX of the <see cref="MathPainter"/> provided. Repositions the <paramref name="display"/>.
     /// </summary>
     /// <param name="settings"></param>
     /// <param name="display"></param>
-    public static void DrawDisplay(MathPainter settings, IDisplay<Fonts, Glyph> display, SKCanvas canvas, SKPoint position) {
-      if (display is null) return;
-      var original = settings._display;
-      var originalChanged = settings._displayChanged;
-      var source = settings.Source;
-      settings.Source = staticValidSource;
-      settings._display = display;
-      settings._displayChanged = false;
-      settings.Draw(canvas, position);
-      settings.Source = source;
-      settings._display = original;
-      settings._displayChanged = originalChanged;
-    }
+    public static void DrawDisplay(MathPainter settings, IDisplay<Fonts, Glyph> display, SKCanvas canvas, SKPoint position) =>
+        DrawDisplay(settings, display, canvas, _ => _.Draw(canvas, position));
     /// <summary>
     /// Ignores the MathList and LaTeX of the <see cref="MathPainter"/> provided. Repositions the <paramref name="display"/>.
     /// </summary>
     /// <param name="settings"></param>
     /// <param name="display"></param>
-    public static void DrawDisplay(MathPainter settings, IDisplay<Fonts, Glyph> display, SKCanvas canvas, float x, float y) {
-      if (display is null) return;
-      var original = settings._display;
-      var originalChanged = settings._displayChanged;
-      var source = settings.Source;
-      settings.Source = staticValidSource;
-      settings._display = display;
-      settings._displayChanged = false;
-      settings.Draw(canvas, x, y);
-      settings.Source = source;
-      settings._display = original;
-      settings._displayChanged = originalChanged;
-    }
+    public static void DrawDisplay(MathPainter settings, IDisplay<Fonts, Glyph> display, SKCanvas canvas, float x, float y) =>
+        DrawDisplay(settings, display, canvas, _ => _.Draw(canvas, x, y));
     /// <summary>
     /// Ignores the MathList and LaTeX of the <see cref="MathPainter"/> provided. Repositions the <paramref name="display"/>.
     /// </summary>
     /// <param name="settings"></param>
     /// <param name="display"></param>
     public static void DrawDisplay(MathPainter settings, IDisplay<Fonts, Glyph> display, SKCanvas canvas,
-      TextAlignment textAlignment = TextAlignment.Center, Thickness padding = default, float offsetX = 0, float offsetY = 0) {
+      TextAlignment textAlignment = TextAlignment.Center, Thickness padding = default, float offsetX = 0, float offsetY = 0) =>
+          DrawDisplay(settings, display, canvas, _ => _.Draw(canvas, textAlignment, padding, offsetX, offsetY));
+    
+    private static void DrawDisplay(MathPainter settings, IDisplay<Fonts, Glyph> display, SKCanvas canvas, Action<MathPainter> draw) {
       if (display is null) return;
       var original = settings._display;
       var originalChanged = settings._displayChanged;
@@ -93,7 +64,7 @@ namespace CSharpMath.SkiaSharp {
       settings.Source = staticValidSource;
       settings._display = display;
       settings._displayChanged = false;
-      settings.Draw(canvas, textAlignment, padding, offsetX, offsetY);
+      draw(settings);
       settings.Source = source;
       settings._display = original;
       settings._displayChanged = originalChanged;
