@@ -1,0 +1,37 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:pages="clr-namespace:CSharpMath.Avalonia.Example.Pages"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="CSharpMath.Avalonia.Example.MainView"
+             Background="{DynamicResource ThemeBackgroundBrush}"
+             Foreground="{DynamicResource ThemeForegroundBrush}"
+             FontSize="{DynamicResource FontSizeNormal}">
+
+    <Grid>
+
+        <DropDown x:Name="Themes"
+                  SelectedIndex="0"
+                  Width="100"
+                  Margin="8"
+                  HorizontalAlignment="Right"
+                  VerticalAlignment="Bottom">
+
+            <DropDownItem>Light</DropDownItem>
+            <DropDownItem>Dark</DropDownItem>
+
+        </DropDown>
+
+        <TabControl Classes="sidebar" Name="Sidebar">
+
+            <TabItem Header="MathBlock">
+                <pages:MathBlockPage/>
+            </TabItem>
+
+            <TabItem Header="TextBlock">
+                <pages:TextBlockPage/>
+            </TabItem>
+
+        </TabControl>
+
+    </Grid>
+
+</UserControl>
