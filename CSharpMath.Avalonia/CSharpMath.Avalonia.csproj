@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
+    <PackageVersion>0.2.0</PackageVersion>
+    <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie, FoggyFinder)</Authors>
+    <PackageReleaseNotes>The 0.2.0 Editor Update brings an editor interface to CSharpMath.</PackageReleaseNotes>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/verybadcat/CSharpMath.git</RepositoryUrl>
+    <RepositoryBranch>master</RepositoryBranch>
+    <RepositoryCommit>5610427533fc4ed9f1fd86b07dda36dca6c65f67</RepositoryCommit>
+    <PackageProjectUrl>https://github.com/verybadcat/CSharpMath</PackageProjectUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseUrl>https://github.com/verybadcat/CSharpMath/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/verybadcat/CSharpMath/master/Icon.png</PackageIconUrl>
+    <Copyright>© CSharpMath Contributors 2018</Copyright>
+    <PackageId>CSharpMath.Avalonia</PackageId>
+    <Title>CSharpMath.Avalonia</Title>
+    <Description>The Avalonia front end for CSharpMath.</Description>
+    <PackageTags>math;mathematics;mathematical;formula;equation;equations;expression;tex;latex;render;rendering;display;avalonia</PackageTags>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>false</Optimize>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Update="**\*.xaml.cs" DependentUpon="%(Filename)" />
+    <AvaloniaResource Include="**\*.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="0.7.1-cibuild0001356-beta" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CSharpMath.Rendering\CSharpMath.Rendering.csproj" />
+  </ItemGroup>
+</Project>
