@@ -5,8 +5,12 @@
     <Application.MainPage>
         <TabbedPage xmlns:local="clr-namespace:CSharpMath.Forms.Example"
                     xmlns:android="clr-namespace:Xamarin.Forms.PlatformConfiguration.AndroidSpecific;assembly=Xamarin.Forms.Core"
+                    xmlns:math="clr-namespace:CSharpMath.Forms;assembly=CSharpMath.Forms"
                     android:TabbedPage.IsSwipePagingEnabled="False"
                     ChildAdded="Handle_ChildAdded">
+            <!--<ContentPage x:Name="ContentPage">
+                <math:MathView LaTeX="{Binding .LaTeX}"/>
+            </ContentPage>-->
             <local:IconPage/>
             <local:ExamplePage/>
             <local:ExamplesPage/>

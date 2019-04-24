@@ -15,7 +15,7 @@
     <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie, FoggyFinder)</Authors>
     <PackageLicenseUrl>https://github.com/verybadcat/CSharpMath/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/verybadcat/CSharpMath</PackageProjectUrl>
-    <PackageReleaseNotes>The 0.2.0 Editor Update brings an editor interface to CSharpMath.</PackageReleaseNotes>
+    <PackageReleaseNotes>The 0.2.1 LaTeX Binding Update brings a bindable LaTeX property to MathView and TextView.</PackageReleaseNotes>
     <PackageTags>math;mathematics;mathematical;formula;equation;equations;expression;tex;latex;render;rendering;display</PackageTags>
     <Title>CSharpMath.Rendering</Title>
     <Description>Rendering interface fror CSharpMath using the Typography library.</Description>

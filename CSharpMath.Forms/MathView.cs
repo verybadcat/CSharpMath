@@ -14,8 +14,14 @@ namespace CSharpMath.Forms {
 
   [XamlCompilation(XamlCompilationOptions.Compile)]
   public class MathView : BaseView<MathPainter, MathSource, MathView.PainterSupplier>, IPainter<MathSource, Color> {
-    public struct PainterSupplier : IPainterSupplier<MathPainter> {
+    public struct PainterSupplier : IPainterAndSourceSupplier<MathPainter, MathSource> {
       public MathPainter Default => new MathPainter();
+
+      public string DefaultLaTeX(MathPainter painter) => painter.LaTeX;
+
+      public string LaTeXFromSource(MathSource source) => source.LaTeX;
+
+      public MathSource SourceFromLaTeX(string latex) => new MathSource(latex);
     }
     public MathView() : base(default(PainterSupplier).Default) { }
     #region BindableProperties
@@ -35,7 +41,6 @@ namespace CSharpMath.Forms {
     public SKStrokeCap StrokeCap { get => (SKStrokeCap)GetValue(StrokeCapProperty); set => SetValue(StrokeCapProperty, value); }
     public (Color glyph, Color textRun)? GlyphBoxColor { get => ((Color glyph, Color textRun)?)GetValue(GlyphBoxColorProperty); set => SetValue(GlyphBoxColorProperty, value); }
     public Interfaces.IMathList MathList { get => Source.MathList; set => Source = new MathSource(value); }
-    public string LaTeX { get => Source.LaTeX; set => Source = new MathSource(value); }
     public new RectangleF? Measure => Painter.Measure;
     protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint) => Painter.Measure is RectangleF r ? new SizeRequest(new Xamarin.Forms.Size(r.Width, r.Height)) : base.OnMeasure(widthConstraint, heightConstraint);
 

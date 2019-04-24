@@ -4,7 +4,7 @@
     <TargetFramework>netstandard1.3</TargetFramework>
     <LangVersion>latest</LangVersion>
     <PackageVersion>0.2.0</PackageVersion>
-    <PackageReleaseNotes>The 0.2.0 Editor Update brings an editor interface to CSharpMath.</PackageReleaseNotes>
+    <PackageReleaseNotes>The 0.2.1 LaTeX Binding Update brings a bindable LaTeX property to MathView and TextView.</PackageReleaseNotes>
     <Description>The base code for a What You See Is What You Get math editor.</Description>
     <PackageId>CSharpMath.Editor</PackageId>
     <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie, FoggyFinder)</Authors>

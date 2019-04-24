@@ -14,11 +14,14 @@ namespace CSharpMath.Forms {
   using TextAlignment = Rendering.TextAlignment;
   using Thickness = Rendering.Thickness;
 
-  public interface IPainterSupplier<TPainter> {
+  public interface IPainterAndSourceSupplier<TPainter, TSource> {
     TPainter Default { get; }
+    TSource SourceFromLaTeX(string latex);
+    string LaTeXFromSource(TSource source);
+    string DefaultLaTeX(TPainter painter);
   }
 
-  public abstract class BaseView<TPainter, TSource, TPainterSupplier> : SKCanvasView, IPainter<TSource, Color> where TPainter : ICanvasPainter<SKCanvas, TSource, SKColor> where TSource : struct, ISource where TPainterSupplier : struct, IPainterSupplier<TPainter> {
+  public abstract class BaseView<TPainter, TSource, TPainterAndSourceSupplier> : SKCanvasView, IPainter<TSource, Color> where TPainter : ICanvasPainter<SKCanvas, TSource, SKColor> where TSource : struct, ISource where TPainterAndSourceSupplier : struct, IPainterAndSourceSupplier<TPainter, TSource> {
     public BaseView(TPainter painter) => Painter = painter;
 
     public TPainter Painter { get; }
@@ -30,11 +33,14 @@ namespace CSharpMath.Forms {
 
     #region BindableProperties
     static BaseView() {
-      var painter = default(TPainterSupplier).Default;
-      var thisType = typeof(BaseView<TPainter, TSource, TPainterSupplier>);
+      var supplier = default(TPainterAndSourceSupplier);
+      var painter = supplier.Default;
+      var thisType = typeof(BaseView<TPainter, TSource, TPainterAndSourceSupplier>);
+      BaseView<TPainter, TSource, TPainterAndSourceSupplier> Actual(BindableObject b) => (BaseView<TPainter, TSource, TPainterAndSourceSupplier>)b;
       var drawMethodParams = typeof(TPainter).GetMethod(nameof(ICanvasPainter<SKCanvas, TSource, SKColor>.Draw), new[] { typeof(SKCanvas), typeof(TextAlignment), typeof(Thickness), typeof(float), typeof(float) }).GetParameters();
-      TPainter p(BindableObject b) => ((BaseView<TPainter, TSource, TPainterSupplier>)b).Painter;
-      SourceProperty = BindableProperty.Create(nameof(Source), typeof(TSource), thisType, painter.Source, BindingMode.TwoWay, null, (b, o, n) => { p(b).Source = (TSource)n; ((BaseView<TPainter, TSource, TPainterSupplier>)b).ErrorMessage = p(b).ErrorMessage; });
+      TPainter p(BindableObject b) => ((BaseView<TPainter, TSource, TPainterAndSourceSupplier>)b).Painter;
+      SourceProperty = BindableProperty.Create(nameof(Source), typeof(TSource), thisType, painter.Source, BindingMode.TwoWay, null,
+        (b, o, n) => { p(b).Source = (TSource)n; Actual(b).ErrorMessage = p(b).ErrorMessage; Actual(b).LaTeX = supplier.LaTeXFromSource((TSource)n); });
       DisplayErrorInlineProperty = BindableProperty.Create(nameof(DisplayErrorInline), typeof(bool), thisType, painter.DisplayErrorInline, propertyChanged: (b, o, n) => p(b).DisplayErrorInline = (bool)n);
       FontSizeProperty = BindableProperty.Create(nameof(FontSize), typeof(float), thisType, painter.FontSize, propertyChanged: (b, o, n) => p(b).FontSize = (float)n);
       ErrorFontSizeProperty = BindableProperty.Create(nameof(ErrorFontSize), typeof(float?), thisType, painter.ErrorFontSize, propertyChanged: (b, o, n) => p(b).ErrorFontSize = (float)n);
@@ -50,6 +56,8 @@ namespace CSharpMath.Forms {
       PaddingProperty = BindableProperty.Create(nameof(Padding), typeof(Thickness), thisType, drawMethodParams[2].DefaultValue ?? default(Thickness));
       ErrorMessagePropertyKey = BindableProperty.CreateReadOnly(nameof(ErrorMessage), typeof(string), thisType, painter.ErrorMessage, BindingMode.OneWayToSource);
       ErrorMessageProperty = ErrorMessagePropertyKey.BindableProperty;
+      LaTeXProperty = BindableProperty.Create(nameof(LaTeX), typeof(string), thisType, supplier.DefaultLaTeX(painter),
+        propertyChanged: (b, o, n) => Actual(b).Source = supplier.SourceFromLaTeX((string)n));
     }
     public static readonly BindableProperty DisplayErrorInlineProperty;
     public static readonly BindableProperty FontSizeProperty;
@@ -67,6 +75,7 @@ namespace CSharpMath.Forms {
     public static readonly BindableProperty SourceProperty;
     private static readonly BindablePropertyKey ErrorMessagePropertyKey;
     public static readonly BindableProperty ErrorMessageProperty;
+    public static readonly BindableProperty LaTeXProperty;
     #endregion
 
     SKPoint _origin;
@@ -125,5 +134,6 @@ namespace CSharpMath.Forms {
     public Thickness Padding { get => (Thickness)GetValue(PaddingProperty); set => SetValue(PaddingProperty, value); }
     public string ErrorMessage { get => (string)GetValue(ErrorMessageProperty); private set => SetValue(ErrorMessagePropertyKey, value); }
     public ObservableRangeCollection<Typeface> LocalTypefaces => Painter.LocalTypefaces;
+    public string LaTeX { get => default(TPainterAndSourceSupplier).LaTeXFromSource(Source); set => Source = default(TPainterAndSourceSupplier).SourceFromLaTeX(value); }
   }
 }
