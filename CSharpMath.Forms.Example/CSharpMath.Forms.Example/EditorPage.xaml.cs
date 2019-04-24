@@ -20,7 +20,7 @@ namespace CSharpMath.Forms.Example {
         (sender, e) => {
           e.Surface.Canvas.Clear();
           SkiaSharp.MathPainter.DrawDisplay(painter, keyboard.Display, e.Surface.Canvas);
-          keyboard.DrawCaret(e.Surface.Canvas, Rendering.CaretShape.IBeam);
+          keyboard.DrawCaret(e.Surface.Canvas, Rendering.CaretShape.UpArrow);
         };
       Content = new StackLayout { Children = { view, keyboard } };
     }
