@@ -18,5 +18,8 @@ namespace CSharpMath.Rendering {
     public string LaTeX { get; }
     public string ErrorMessage { get; }
     public bool IsValid => MathList != null;
+
+    //Lazy and inefficient implementation...
+    public override bool Equals(object obj) => obj is MathSource other ? LaTeX == other.LaTeX : false;
   }
 }
