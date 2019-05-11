@@ -40,7 +40,7 @@ namespace CSharpMath.Forms {
       var drawMethodParams = typeof(TPainter).GetMethod(nameof(ICanvasPainter<SKCanvas, TSource, SKColor>.Draw), new[] { typeof(SKCanvas), typeof(TextAlignment), typeof(Thickness), typeof(float), typeof(float) }).GetParameters();
       TPainter p(BindableObject b) => ((BaseView<TPainter, TSource, TPainterAndSourceSupplier>)b).Painter;
       SourceProperty = BindableProperty.Create(nameof(Source), typeof(TSource), thisType, painter.Source, BindingMode.TwoWay, null,
-        (b, o, n) => { p(b).Source = (TSource)n; Actual(b).ErrorMessage = p(b).ErrorMessage; Actual(b).LaTeX = supplier.LaTeXFromSource((TSource)n); });
+        (b, o, n) => { p(b).Source = (TSource)n; Actual(b).ErrorMessage = p(b).ErrorMessage; var latex = supplier.LaTeXFromSource((TSource)n); if(Actual(b).LaTeX != latex || false/*get rid of warning for redundant check*/) Actual(b).LaTeX = latex; });
       DisplayErrorInlineProperty = BindableProperty.Create(nameof(DisplayErrorInline), typeof(bool), thisType, painter.DisplayErrorInline, propertyChanged: (b, o, n) => p(b).DisplayErrorInline = (bool)n);
       FontSizeProperty = BindableProperty.Create(nameof(FontSize), typeof(float), thisType, painter.FontSize, propertyChanged: (b, o, n) => p(b).FontSize = (float)n);
       ErrorFontSizeProperty = BindableProperty.Create(nameof(ErrorFontSize), typeof(float?), thisType, painter.ErrorFontSize, propertyChanged: (b, o, n) => p(b).ErrorFontSize = (float)n);
@@ -57,7 +57,7 @@ namespace CSharpMath.Forms {
       ErrorMessagePropertyKey = BindableProperty.CreateReadOnly(nameof(ErrorMessage), typeof(string), thisType, painter.ErrorMessage, BindingMode.OneWayToSource);
       ErrorMessageProperty = ErrorMessagePropertyKey.BindableProperty;
       LaTeXProperty = BindableProperty.Create(nameof(LaTeX), typeof(string), thisType, supplier.DefaultLaTeX(painter),
-        propertyChanged: (b, o, n) => Actual(b).Source = supplier.SourceFromLaTeX((string)n));
+        propertyChanged: (b, o, n) => { var ss = supplier.SourceFromLaTeX((string)n); Actual(b).Source = ss; });
     }
     public static readonly BindableProperty DisplayErrorInlineProperty;
     public static readonly BindableProperty FontSizeProperty;
