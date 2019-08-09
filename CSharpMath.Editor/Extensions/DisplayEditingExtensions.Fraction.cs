@@ -31,7 +31,7 @@ namespace CSharpMath.Editor {
       if (index.SubIndexType != MathListSubIndexType.None)
         throw Arg("The subindex must be none to get the closest point for it.", nameof(index));
       // draw a caret after the fraction
-      return new PointF(self.DisplayBounds.Right, self.Position.Y);
+      return new PointF(self.DisplayBounds.Left, self.Position.Y);
     }
 
     public static void HighlightCharacterAt<TFont, TGlyph>(this FractionDisplay<TFont, TGlyph> self, MathListIndex index, Color color) where TFont : IFont<TGlyph> {

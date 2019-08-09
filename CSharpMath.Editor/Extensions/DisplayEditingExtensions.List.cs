@@ -58,9 +58,6 @@ namespace CSharpMath.Editor {
         return null;
 
       var index = displayWithPoint.IndexForPoint(context, translatedPoint);
-      if (index == null)
-        // not sure whether it safe on 100% or not
-        index = MathListIndex.IndexAtLocation(displayWithPoint.Range.End, MathListIndex.Level0Index(1), MathListSubIndexType.Nucleus);
       if (displayWithPoint is ListDisplay<TFont, TGlyph> closestLine) {
         if (closestLine.LinePosition is Enumerations.LinePosition.Regular)
           throw Arg($"{nameof(ListDisplay<TFont, TGlyph>)} {nameof(ListDisplay<TFont, TGlyph>.LinePosition)} {nameof(Enumerations.LinePosition.Regular)} " +
