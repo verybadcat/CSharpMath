@@ -67,7 +67,9 @@ namespace CSharpMath.Editor {
         distance += point.Y - rect.YMax();
       return distance;
     }
-
+    public static float DistanceBetweenY(PointF p1, PointF p2) {
+      return (p1.Y - p2.Y) * (p1.Y - p2.Y);
+    }
     /// <summary>
     /// Finds the index in the mathlist before which a new character should be inserted.Returns null if it cannot find the index.
     /// </summary>

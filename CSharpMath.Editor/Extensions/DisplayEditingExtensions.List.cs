@@ -21,7 +21,8 @@ namespace CSharpMath.Editor {
         var maxBoundsX = bounds.Right;
         if (bounds.X - PixelDelta <= translatedPoint.X && translatedPoint.X <= maxBoundsX + PixelDelta)
           xbounds.Add(display);
-        var distance = DistanceFromPointToRect(translatedPoint, bounds);
+        var rect = new RectangleF(display.Position, bounds.Size);
+        var distance = DistanceFromPointToRect(translatedPoint, rect);
         if (distance < minDistance) {
           closest = display;
           minDistance = distance;
@@ -35,7 +36,7 @@ namespace CSharpMath.Editor {
             return MathListIndex.Level0Index(self.Range.Location);
           else if (translatedPoint.X >= self.Width + PixelDelta)
             // All the way to the right
-            return MathListIndex.Level0Index(self.Range.End);
+            return self.Range.End < 0 ? null : MathListIndex.Level0Index(self.Range.End);
           else
             // It is within the ListDisplay but not within the X bounds of any sublist. Use the closest in that case.
             displayWithPoint = closest;
@@ -57,6 +58,9 @@ namespace CSharpMath.Editor {
         return null;
 
       var index = displayWithPoint.IndexForPoint(context, translatedPoint);
+      if (index == null)
+        // not sure whether it safe on 100% or not
+        index = MathListIndex.IndexAtLocation(displayWithPoint.Range.End, MathListIndex.Level0Index(1), MathListSubIndexType.Nucleus);
       if (displayWithPoint is ListDisplay<TFont, TGlyph> closestLine) {
         if (closestLine.LinePosition is Enumerations.LinePosition.Regular)
           throw Arg($"{nameof(ListDisplay<TFont, TGlyph>)} {nameof(ListDisplay<TFont, TGlyph>.LinePosition)} {nameof(Enumerations.LinePosition.Regular)} " +

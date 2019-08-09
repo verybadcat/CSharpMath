@@ -15,9 +15,11 @@ namespace CSharpMath.Editor {
       float x = 0;
       var advances = context.GlyphBoundsProvider.GetAdvancesForGlyphs(line.Font, line.Glyphs.AsForEach(), line.Length).Advances;
       foreach (var (advance, kernAfter) in advances.Zip(line.GlyphInfos.Select(g => g.KernAfterGlyph), ValueTuple.Create))
-        if (x <= offset && offset < advance + x)
-          return i;
-        else {
+        if (x <= offset && offset < advance + x) {
+          if (Math.Abs(offset - x) < Math.Abs(advance + x - offset))
+            return i;
+          return i + 1;
+        } else {
           x += advance + kernAfter;
           i++;
           if (offset < x) //If the point is in the kern after this, then the index is the one after this
@@ -71,10 +73,13 @@ namespace CSharpMath.Editor {
       if (indices.IsEmpty())
         return null;
       var index = indices.Single().GetValueOrDefault();
+      var mlIndex = index;
+      
       // The index returned is in UTF-16, translate to codepoint index.
       // NSUInteger codePointIndex = stringIndexToCodePointIndex(self.attributedString.string, index);
       // Convert the code point index to an index into the mathlist
-      var mlIndex = self.StringIndexToMathListIndex(index);
+      // self.StringIndexToMathListIndex(index);
+
       // index will be between 0 and _range.length inclusive
       if (mlIndex < 0 || mlIndex > self.Range.Length)
         throw new InvalidCodePathException($"Returned index out of range: {index}, range ({self.Range.Location}, {self.Range.Length})");

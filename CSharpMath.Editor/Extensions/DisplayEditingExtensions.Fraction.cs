@@ -19,8 +19,8 @@ namespace CSharpMath.Editor {
         return MathListIndex.Level0Index(self.Range.End);
 
       //We can be either near the numerator or denominator
-      var numeratorDistance = DistanceFromPointToRect(point, self.Numerator.DisplayBounds);
-      var denominatorDistance = DistanceFromPointToRect(point, self.Denominator.DisplayBounds);
+      var numeratorDistance = DistanceBetweenY(point, self.Numerator.Position);
+      var denominatorDistance = DistanceBetweenY(point, self.Denominator.Position);
       if (numeratorDistance < denominatorDistance)
         return MathListIndex.IndexAtLocation(self.Range.Location, self.Numerator.IndexForPoint(context, point), MathListSubIndexType.Numerator);
       else
