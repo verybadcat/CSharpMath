@@ -69,22 +69,16 @@ namespace CSharpMath.Editor {
     public static MathListIndex IndexForPoint<TFont, TGlyph>(this TextLineDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, PointF point) where TFont : IFont<TGlyph> {
       // Convert the point to the reference of the CTLine
       var relativePoint = new PointF(point.X - self.Position.X, point.Y - self.Position.Y);
-      var indices = self.Runs.Select(run => run.Run.GlyphIndexForXOffset(context, relativePoint.Plus(run.Position).X)).Where(x => x.HasValue);
-      if (indices.IsEmpty())
+      var indices = self.Runs.Select(run => run.Run.GlyphIndexForXOffset(context, relativePoint.Plus(run.Position).X)).Where(x => x.HasValue).ToArray();
+      if (indices.Length == 0)
         return null;
       var index = indices.Single().GetValueOrDefault();
-      var mlIndex = index;
       
-      // The index returned is in UTF-16, translate to codepoint index.
-      // NSUInteger codePointIndex = stringIndexToCodePointIndex(self.attributedString.string, index);
-      // Convert the code point index to an index into the mathlist
-      // self.StringIndexToMathListIndex(index);
-
       // index will be between 0 and _range.length inclusive
-      if (mlIndex < 0 || mlIndex > self.Range.Length)
+      if (index < 0 || index > self.Range.Length)
         throw new InvalidCodePathException($"Returned index out of range: {index}, range ({self.Range.Location}, {self.Range.Length})");
       // translate to the current index
-      return MathListIndex.Level0Index(self.Range.Location + mlIndex);
+      return MathListIndex.Level0Index(self.Range.Location + index);
     }
 
     public static (TextRunDisplay<TFont, TGlyph> run, int charIndex) GetRunAndCharIndexFromStringIndex<TFont, TGlyph>(this TextLineDisplay<TFont, TGlyph> self, int lineCharIndex) where TFont : IFont<TGlyph> {
