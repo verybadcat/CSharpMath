@@ -2,7 +2,7 @@ namespace CSharpMath.Editor {
   using System;
   using System.Collections.Generic;
   using System.Drawing;
-
+  using System.Linq;
   using Display;
   using Display.Text;
   using FrontEnd;
@@ -34,10 +34,18 @@ namespace CSharpMath.Editor {
           if (translatedPoint.X <= -PixelDelta)
             // All the way to the left
             return MathListIndex.Level0Index(self.Range.Location);
-          else if (translatedPoint.X >= self.Width + PixelDelta)
+          else if (translatedPoint.X >= self.Width + PixelDelta) {
+            // All the way to the right
+            var closer =
+              self.Displays
+              .OrderBy(d => DistanceFromPointToRect(translatedPoint, new RectangleF(d.Position, d.DisplayBounds.Size)))
+              .FirstOrDefault();
+            if (closer != null) {
+              return MathListIndex.Level0Index(closer.Range.End);
+            }
             // All the way to the right
             return self.Range.End < 0 ? null : MathListIndex.Level0Index(self.Range.End);
-          else
+          } else
             // It is within the ListDisplay but not within the X bounds of any sublist. Use the closest in that case.
             displayWithPoint = closest;
           break;
@@ -89,7 +97,19 @@ namespace CSharpMath.Editor {
             position = display.PointForIndex(context, MathListIndex.Level0Index(nucleusPosition));
             break;
           case MathListSubIndexType.None:
-            position = display.PointForIndex(context, index);
+            if (!display.HasScript) {
+              position = display.PointForIndex(context, index);
+            } else {
+              var mainPosition = display.PointForIndex(context, index);
+              var scripted = self.Displays.SingleOrDefault(d =>
+                d is ListDisplay<TFont, TGlyph> ld &&
+                    ld.IndexInParent == index.AtomIndex - 1
+                  );
+              if (scripted != null && mainPosition != null) {
+                position = new PointF(mainPosition.Value.X + scripted.Width, 0);
+              } else
+                position = mainPosition;
+            }
             break;
           default:
             // Recurse
