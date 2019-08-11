@@ -25,12 +25,11 @@ namespace CSharpMath.Forms.Example {
     public EditorView() {
       keyboard = new MathKeyboard();
 
-      var view = new global::SkiaSharp.Views.Forms.SKCanvasView { WidthRequest = 320, HeightRequest = 225, EnableTouchEvents = true };
+      var view = new SKCanvasView { WidthRequest = 320, HeightRequest = 225, EnableTouchEvents = true };
       view.Touch +=
         (sender, e) => {
           if (e.ActionType == SKTouchAction.Pressed) {
-            var location = e.Location.ToFormsPoint();
-            keyboard.Tap(new System.Drawing.PointF((float)location.X, (float)location.Y));
+            keyboard.Tap(new System.Drawing.PointF(e.Location.X, e.Location.Y));
           }
         };
 

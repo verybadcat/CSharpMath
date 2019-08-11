@@ -34,7 +34,7 @@ namespace CSharpMath.Forms {
       remove => Keyboard.DismissPressed -= value;
     }
 
-    public IDisplay<Rendering.Fonts, Rendering.Glyph> Display => Keyboard.Display;
+    public IDisplay<Fonts, Glyph> Display => Keyboard.Display;
 
     private void SwitchTab(Grid tab) {
       tab.IsVisible = true;
