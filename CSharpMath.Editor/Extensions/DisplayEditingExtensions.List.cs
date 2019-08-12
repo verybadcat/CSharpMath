@@ -36,12 +36,8 @@ namespace CSharpMath.Editor {
             return MathListIndex.Level0Index(self.Range.Location);
           else if (translatedPoint.X >= self.Width + PixelDelta) {
             // All the way to the right
-            var closer =
-              self.Displays
-              .OrderBy(d => DistanceFromPointToRect(translatedPoint, new RectangleF(d.Position, d.DisplayBounds.Size)))
-              .FirstOrDefault();
-            if (closer != null) {
-              return MathListIndex.Level0Index(closer.Range.End);
+            if (closest != null) {
+              return MathListIndex.Level0Index(closest.Range.End);
             }
             // All the way to the right
             return self.Range.End < 0 ? null : MathListIndex.Level0Index(self.Range.End);
