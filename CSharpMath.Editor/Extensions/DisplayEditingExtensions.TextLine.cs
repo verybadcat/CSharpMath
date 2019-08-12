@@ -26,7 +26,7 @@ namespace CSharpMath.Editor {
           if (offset < x) // If the point is in the kern after this, then the index is the one after this
             return i;
         }
-      return null;
+      return i;
     }
 
     public static float XOffsetForGlyphIndex<TFont, TGlyph>(this AttributedGlyphRun<TFont, TGlyph> line, TypesettingContext<TFont, TGlyph> context, int index) where TFont : IFont<TGlyph> {
