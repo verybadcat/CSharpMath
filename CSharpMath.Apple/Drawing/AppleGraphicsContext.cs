@@ -5,7 +5,7 @@ using CoreGraphics;
 using CoreText;
 using CSharpMath.Display.Text;
 using CSharpMath.FrontEnd;
-using CSharpMath.Structures;
+using Color = CSharpMath.Structures.Color;
 using UIKit;
 using TFont = CSharpMath.Apple.AppleMathFont;
 using TGlyph = System.UInt16;
