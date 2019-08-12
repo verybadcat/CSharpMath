@@ -10,7 +10,8 @@ namespace CSharpMath.Editor {
 
   public partial class DisplayEditingExtensions {
     public static int? GlyphIndexForXOffset<TFont, TGlyph>(this AttributedGlyphRun<TFont, TGlyph> line, TypesettingContext<TFont, TGlyph> context, float offset) where TFont : IFont<TGlyph> {
-      if (offset < 0) return 0; //Move cursor to index 0
+      if (offset < 0) return 0; // Move cursor to index 0
+      if (line.Placeholder) return 0;
       int i = 0;
       float x = 0;
       var advances = context.GlyphBoundsProvider.GetAdvancesForGlyphs(line.Font, line.Glyphs.AsForEach(), line.Length).Advances;
@@ -22,7 +23,7 @@ namespace CSharpMath.Editor {
         } else {
           x += advance + kernAfter;
           i++;
-          if (offset < x) //If the point is in the kern after this, then the index is the one after this
+          if (offset < x) // If the point is in the kern after this, then the index is the one after this
             return i;
         }
       return null;
