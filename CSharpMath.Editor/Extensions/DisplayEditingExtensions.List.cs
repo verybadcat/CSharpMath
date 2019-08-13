@@ -18,10 +18,10 @@ namespace CSharpMath.Editor {
       float minDistance = float.MaxValue;
       foreach (var display in self.Displays) {
         var bounds = display.DisplayBounds;
-        var maxBoundsX = bounds.Right;
+        var rect = new RectangleF(display.Position, bounds.Size);
+        var maxBoundsX = rect.Right;
         if (bounds.X - PixelDelta <= translatedPoint.X && translatedPoint.X <= maxBoundsX + PixelDelta)
           xbounds.Add(display);
-        var rect = new RectangleF(display.Position, bounds.Size);
         var distance = DistanceFromPointToRect(translatedPoint, rect);
         if (distance < minDistance) {
           closest = display;
@@ -47,9 +47,10 @@ namespace CSharpMath.Editor {
           break;
         case 1:
           displayWithPoint = xbounds[0];
+          var rect = new RectangleF(displayWithPoint.Position, displayWithPoint.DisplayBounds.Size);
           if (translatedPoint.X >= self.Width - PixelDelta)
             //The point is close to the end. Only use the selected X bounds if the Y is within range.
-            if (translatedPoint.Y <= displayWithPoint.DisplayBounds.YMin() - PixelDelta)
+            if (translatedPoint.Y <= rect.YMin() - PixelDelta)
               //The point is less than the Y including the delta. Move the cursor to the end rather than in this atom.
               return MathListIndex.Level0Index(self.Range.End);
           break;
