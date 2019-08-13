@@ -18,13 +18,14 @@ namespace CSharpMath.Editor {
         //We are after the fraction
         return MathListIndex.Level0Index(self.Range.End);
 
-      //We can be either near the numerator or denominator
-      var numeratorDistance = DistanceBetweenY(point, self.Numerator.Position);
-      var denominatorDistance = DistanceBetweenY(point, self.Denominator.Position);
-      if (numeratorDistance < denominatorDistance)
+      if (point.Y > self.LinePosition + PixelDelta)
         return MathListIndex.IndexAtLocation(self.Range.Location, self.Numerator.IndexForPoint(context, point), MathListSubIndexType.Numerator);
-      else
+      else if (point.Y < self.LinePosition - PixelDelta)
         return MathListIndex.IndexAtLocation(self.Range.Location, self.Denominator.IndexForPoint(context, point), MathListSubIndexType.Denominator);
+      if (point.X > self.Position.X + self.Width / 2)
+        return MathListIndex.Level0Index(self.Range.End);
+
+      return MathListIndex.Level0Index(self.Range.Location);
     }
     
     public static PointF? PointForIndex<TFont, TGlyph>(this FractionDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, MathListIndex index) where TFont : IFont<TGlyph> {
