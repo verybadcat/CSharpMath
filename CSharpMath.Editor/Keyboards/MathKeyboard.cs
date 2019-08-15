@@ -247,7 +247,7 @@ namespace CSharpMath.Editor {
               //Add the number to the beginning of the list
               numerator.Insert(0, a);
           }
-          if (current.AtomIndex == _insertionIndex.AtomIndex) {
+          if (numerator.Count == 0) {
             // so we didn't really find any numbers before this, so make the numerator 1
             numerator.Add(MathAtoms.ForCharacter('1'));
             if (!current.AtBeginningOfLine) {
@@ -259,9 +259,8 @@ namespace CSharpMath.Editor {
               }
             }
           } else
-            // delete stuff in the Mathlist from current to insertionIndex
-            MathList.RemoveAtoms(
-              new MathListRange(current, _insertionIndex.AtomIndex - current.AtomIndex));
+            // delete stuff in the Mathlist
+            MathList.RemoveAtoms(new MathListRange(current, numerator.Count));
 
           //Create the fraction
           var frac = new Fraction { Numerator = numerator, Denominator = MathAtoms.PlaceholderList };
