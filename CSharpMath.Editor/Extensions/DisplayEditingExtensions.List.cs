@@ -20,7 +20,7 @@ namespace CSharpMath.Editor {
         var bounds = display.DisplayBounds;
         var rect = new RectangleF(display.Position, bounds.Size);
         var maxBoundsX = rect.Right;
-        if (bounds.X - PixelDelta <= translatedPoint.X && translatedPoint.X <= maxBoundsX + PixelDelta)
+        if (rect.X - PixelDelta <= translatedPoint.X && translatedPoint.X <= maxBoundsX + PixelDelta)
           xbounds.Add(display);
         var distance = DistanceFromPointToRect(translatedPoint, rect);
         if (distance < minDistance) {
