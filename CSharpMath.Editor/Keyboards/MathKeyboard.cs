@@ -13,11 +13,10 @@ namespace CSharpMath.Editor {
 
     private TypesettingContext<TFont, TGlyph> _context;
     private MathListIndex _insertionIndex = MathListIndex.Level0Index(0);
-    protected CaretHandle? _caret;
     protected IDisplay<TFont, TGlyph> _display;
     //private readonly List<MathListIndex> highlighted;
 
-    public CaretHandle? Caret => _caret;
+    public CaretHandle? Caret { get; protected set; }
     public MathList MathList { get; } = new MathList();
     public string LaTeX => MathListBuilder.MathListToString(MathList);
     public MathListIndex InsertionIndex
@@ -397,11 +396,11 @@ namespace CSharpMath.Editor {
           break;
         case MathKeyboardInput.Return:
           ReturnPressed?.Invoke(this, EventArgs.Empty);
-          _caret = null;
+          Caret = null;
           return;
         case MathKeyboardInput.Dismiss:
           DismissPressed?.Invoke(this, EventArgs.Empty);
-          _caret = null;
+          Caret = null;
           return;
         case MathKeyboardInput.BothRoundBrackets:
           InsertParens();
@@ -697,7 +696,7 @@ namespace CSharpMath.Editor {
 
       // Check that we were returned a valid position before displaying a caret there.
       if (CaretRectForIndex(_insertionIndex) is PointF point)
-        _caret = new CaretHandle(Font.PointSize, point);
+        Caret = new CaretHandle(Font.PointSize, point);
       RedrawRequested?.Invoke(this, EventArgs.Empty);
     }
 
@@ -747,7 +746,7 @@ namespace CSharpMath.Editor {
       InsertionIndex = ClosestIndexToPoint(point) ??
         MathListIndex.Level0Index(MathList.Atoms.Count);
       if (CaretRectForIndex(InsertionIndex) is PointF p)
-        _caret = new CaretHandle(Font.PointSize, p);
+        Caret = new CaretHandle(Font.PointSize, p);
       InsertionPointChanged();
     }
   }
