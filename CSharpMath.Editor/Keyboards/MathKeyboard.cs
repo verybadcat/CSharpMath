@@ -1,5 +1,3 @@
-#define UNUSED_KEYBOARD_FEATURES
-#undef UNUSED_KEYBOARD_FEATURES
 namespace CSharpMath.Editor {
   using System;
   using System.Collections.Generic;
@@ -69,22 +67,6 @@ namespace CSharpMath.Editor {
           }
           return false;
         }
-#if UNUSED_KEYBOARD_FEATURES
-        ///<summary>If the index is in a radical, subscript, or exponent, fetches the next index after the root atom.</summary>
-        MathListIndex GetIndexAfterSpecialStructure(MathListIndex index, MathListSubIndexType type) {
-          while (index.HasSubIndexOfType(type))
-            index = index.LevelDown();
-          //Point to just after this node.
-          return index.Next;
-        }
-        MathListIndex GetOutOfRadical(MathListIndex index) {
-          if (index.HasSubIndexOfType(MathListSubIndexType.Degree))
-            index = GetIndexAfterSpecialStructure(index, MathListSubIndexType.Degree);
-          if (index.HasSubIndexOfType(MathListSubIndexType.Radicand))
-            index = GetIndexAfterSpecialStructure(index, MathListSubIndexType.Radicand);
-          return index;
-        }
-#endif
         MathAtom AtomForKeyPress(MathKeyboardInput i) {
           var c = (char)i;
           // Get the basic conversion from MathAtoms, and then special case unicode characters and latex special characters.
@@ -121,11 +103,6 @@ namespace CSharpMath.Editor {
             case var _ when c >= UnicodeFontChanger.UnicodeGreekUpperStart && c <= UnicodeFontChanger.UnicodeGreekUpperEnd:
               // Including capital greek letters
               return MathAtoms.Create(MathAtomType.Variable, c);
-#if UNUSED_KEYBOARD_FEATURES
-            case var _ when c < '\x21' || c > '\x7E' || c is '\'' || c is '~':
-              // Not ascii
-              return null;
-#endif
             case var _ when MathAtoms.ForCharacter(c) is MathAtom a:
               return a;
             default:
@@ -135,13 +112,6 @@ namespace CSharpMath.Editor {
         }
 
         void HandleExponentButton() {
-#if UNUSED_KEYBOARD_FEATURES
-          if (_insertionIndex.HasSubIndexOfType(MathListSubIndexType.Superscript))
-            // The index is currently inside an exponent. The exponent button gets it out of the exponent and move forward.
-            _insertionIndex = GetIndexAfterSpecialStructure(_insertionIndex, MathListSubIndexType.Superscript);
-          else {
-            //Not in an exponent. Add one.
-#endif
             if (!_insertionIndex.AtBeginningOfLine) {
               var a = MathList.AtomAt(_insertionIndex.Previous);
               if (a.Superscript is null) {
@@ -161,35 +131,11 @@ namespace CSharpMath.Editor {
                 MathList.Insert(_insertionIndex, emptyAtom);
               _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Superscript);
             }
-#if UNUSED_KEYBOARD_FEATURES
-          }
-#endif
         }
 
         void HandleRadical(bool placeholderDegree, bool degreeIs3) {
           var current = _insertionIndex;
-#if UNUSED_KEYBOARD_FEATURES
-          if ((current.HasSubIndexOfType(MathListSubIndexType.Degree) || current.HasSubIndexOfType(MathListSubIndexType.Radicand)) && MathList.Atoms[current.AtomIndex] is Radical rad)
-            if (placeholderDegree)
-              if (rad.Degree is null) {
-                rad.Degree = MathAtoms.PlaceholderList;
-                _insertionIndex = current.LevelDown().LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Degree);
-              } else if (current.HasSubIndexOfType(MathListSubIndexType.Radicand))
-                // The radical the cursor is at has a degree. If the cursor is in the radicand, move the cursor to the degree
-                _insertionIndex = current.LevelDown().LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Degree);
-              else
-                // If the cursor is at the degree, get out of the radical
-                _insertionIndex = GetOutOfRadical(current);
-            else if (current.HasSubIndexOfType(MathListSubIndexType.Degree))
-              // If the radical the cursor at has a degree, and the cursor is at the degree, move the cursor to the radicand.
-              _insertionIndex = current.LevelDown().LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Radicand);
-            else
-              // If the cursor is at the radicand, get out of the radical.
-              _insertionIndex = GetOutOfRadical(current);
-          else
-#else
           Radical rad;
-#endif
           if (placeholderDegree) {
             rad = MathAtoms.PlaceholderRadical;
             MathList.Insert(current, rad);
@@ -203,13 +149,6 @@ namespace CSharpMath.Editor {
         }
 
         void HandleSubscriptButton() {
-#if UNUSED_KEYBHOARD_FEATURES
-          if (_insertionIndex.HasSubIndexOfType(MathListSubIndexType.Subscript))
-            // The index is currently inside an subscript. The subscript button gets it out of the subscript and move forward.
-            _insertionIndex = GetIndexAfterSpecialStructure(_insertionIndex, MathListSubIndexType.Subscript);
-          else {
-            //Not in a subscript. Add one.
-#endif
             if (!_insertionIndex.AtBeginningOfLine) {
               var a = MathList.AtomAt(_insertionIndex.Previous);
               if (a.Subscript is null) {
@@ -229,9 +168,6 @@ namespace CSharpMath.Editor {
                 MathList.Insert(_insertionIndex, emptyAtom);
               _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Subscript);
             }
-#if UNUSED_KEYBOARD_FEATURES
-          }
-#endif
         }
 
         void HandleSlashButton() {
@@ -262,11 +198,10 @@ namespace CSharpMath.Editor {
             // delete stuff in the Mathlist
             MathList.RemoveAtoms(new MathListRange(current, numerator.Count));
 
-          //Create the fraction
-          var frac = new Fraction { Numerator = numerator, Denominator = MathAtoms.PlaceholderList };
-
-          //Insert it
-          MathList.Insert(current, frac);
+          MathList.Insert(current, new Fraction {
+            Numerator = numerator,
+            Denominator = MathAtoms.PlaceholderList
+          });
           //Update the insertion index to go the denominator
           _insertionIndex = current.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Denominator);
         }
@@ -725,19 +660,6 @@ namespace CSharpMath.Editor {
           default:
             break;
         }
-#if UNUSED_KEYBOARD_FEATURES
-        // If trig function, insert parens after
-        switch (input) {
-          case MathKeyboardInput.Sine:
-          case MathKeyboardInput.Cosine:
-          case MathKeyboardInput.Tangent:
-          case MathKeyboardInput.Cotangent:
-          case MathKeyboardInput.Secant:
-          case MathKeyboardInput.Cosecant:
-            InsertParens();
-            break;
-        }
-#endif
         InsertionPointChanged();
         return false;
       }
@@ -747,18 +669,6 @@ namespace CSharpMath.Editor {
     /// <summary>Helper method to update caretView when insertion point/selection changes.</summary>
     private void InsertionPointChanged() {
       PointF? Inner() {
-#if UNUSED_KEYBOARD_FEATURES
-        // If not in editing mode, we don't show the caret.
-        bool isEditing = new int().GetHashCode() == new int().GetHashCode();
-        if (!isEditing) {
-#warning INCOMPLETE: REVISIT
-          /*
-          [_caretView removeFromSuperview];
-          self.cancelImage.hidden = YES;
-          */
-          return null;
-        }
-#endif
         void ClearPlaceholders(IMathList mathList) {
           foreach (var mathAtom in (IList<IMathAtom>)mathList?.Atoms ?? Array.Empty<IMathAtom>()) {
             if (mathAtom.AtomType is MathAtomType.Placeholder)
@@ -786,46 +696,10 @@ namespace CSharpMath.Editor {
           }
           // TODO - disable caret
         }
-#if UNUSED_KEYBOARD_FEATURES
-      else {
-          var previousIndex = _insertionIndex.Previous;
-          atom = MathList.AtomAt(previousIndex);
-          if (atom != null && atom.AtomType is MathAtomType.Placeholder &&
-             atom.Superscript is null && atom.Subscript is null) {
-            _insertionIndex = previousIndex;
-            atom.Nucleus = Symbols.BlackSquare;
-            // TODO - disable caret
-          }
-        }
-#endif
-        //SetKeyboardMode();
-
         /* Find the insert point rect and create a caretView to draw the caret at this position. */
 
         // Check that we were returned a valid position before displaying a caret there.
         return CaretRectForIndex(_insertionIndex);
-
-
-
-#warning INCOMPLETE: REVISIT
-
-        /*
-      //if caretPosition isnt null then.....
-       
-      // caretFrame is in the flipped coordinate system, flip it back
-      _caretView.position = CGPointApplyAffineTransform(caretPosition, _flipTransform);
-      if (_caretView.superview == nil) {
-          [self addSubview:_caretView];
-          [self setNeedsDisplay];
-      }
-
-      // when a caret is displayed, the X symbol should be as well
-      self.cancelImage.hidden = NO;
-
-      // Set up a timer to "blink" the caret.
-      [_caretView delayBlink];
-      [self.label setNeedsLayout];
-        */
       }
       if(Inner() is PointF point) _caret = new CaretHandle(Font.PointSize, point);
       RedrawRequested?.Invoke(this, EventArgs.Empty);
@@ -833,16 +707,12 @@ namespace CSharpMath.Editor {
 
     public PointF? CaretRectForIndex(MathListIndex index) {
       UpdateDisplay();
-      // no mathlist so we can't figure it out.
-      if (_display is null) return null;
-      return _display.PointForIndex(_context, index);
+      return _display?.PointForIndex(_context, index);
     }
 
     public MathListIndex ClosestIndexToPoint(PointF point) {
       UpdateDisplay();
-      // no mathlist, so can't figure it out.
-      if (_display is null) return null;
-      return _display.IndexForPoint(_context, point);
+      return _display?.IndexForPoint(_context, point);
     }
 
     public void Clear() {
@@ -852,7 +722,6 @@ namespace CSharpMath.Editor {
 
     public void MoveCaretToPoint(PointF point) {
       _insertionIndex = ClosestIndexToPoint(point);
-      _caret = null;
       InsertionPointChanged();
     }
 
@@ -871,72 +740,19 @@ namespace CSharpMath.Editor {
 
     public void SelectCharacterAtIndex(MathListIndex index, Structures.Color color) {
       UpdateDisplay();
-      if (_display is null)
-        // no mathlist so we can't figure it out.
-        return;
       // setup highlights before drawing the MTLine
-      _display.HighlightCharacterAt(index, color);
+      _display?.HighlightCharacterAt(index, color);
     }
 
     public void ClearHighlights() => UpdateDisplay();
 
     public void Tap(PointF point) {
       point.Y *= -1; //inverted canvas, blah blah
-#if false && UNUSED_KEYBOARD_FEATURES
-      if (!isEditing) {
-        InsertionIndex = null;
-        caretView.showHandle = true;
-        StartEditing();
-      } else {
-        // If already editing move the cursor and show handle
-#endif
-        InsertionIndex = ClosestIndexToPoint(point) ??
-          MathListIndex.Level0Index(MathList.Atoms.Count);
-        if (CaretRectForIndex(InsertionIndex) is PointF p)
-          _caret = new CaretHandle(Font.PointSize, p);
-        InsertionPointChanged();
-#if false && UNUSED_KEYBOARD_FEATURES
-      }
-#endif
-    }
-
-#if false && UNUSED_KEYBOARD_FEATURES
-    public static bool IsNumeric(char c) => c is '.' || (c >= '0' && c <= '9');
-
-    private bool isEditing;
-    public void StartEditing() {
-      if (isEditing) return;
-      isEditing = true;
-      if (InsertionIndex is null)
-        InsertionIndex = MathListIndex.Level0Index(MathList.Atoms.Count);
-      //keyboard.StartedEditing(textView);
+      InsertionIndex = ClosestIndexToPoint(point) ??
+        MathListIndex.Level0Index(MathList.Atoms.Count);
+      if (CaretRectForIndex(InsertionIndex) is PointF p)
+        _caret = new CaretHandle(Font.PointSize, p);
       InsertionPointChanged();
-      BeginEditing?.Invoke(this, EventArgs.Empty);
     }
-    public void FinishEditing() {
-      if (!isEditing) return;
-      isEditing = false;
-      //keyboard.FinishedEditing(textView);
-      InsertionPointChanged();
-      EndEditing?.Invoke(this, EventArgs.Empty);
-    }
-
-    public void SetKeyboardMode() {
-      keyboard.RadicalHighlighted = keyboard.ExponentHighlighted = keyboard.SquareRootHighlighted = false;
-      if (InsertionIndex.HasSubIndexOfType(MathListSubIndexType.Superscript))
-        keyboard.EqualsAllowed = !(keyboard.ExponentHighlighted = true);
-
-      if (InsertionIndex.SubIndexType is MathListSubIndexType.Numerator ||
-        InsertionIndex.SubIndexType is MathListSubIndexType.Denominator)
-        keyboard.EqualsAllowed = false;
-#warning Review
-      //keyboard.FractionsAllowed = false;???
-
-      if (InsertionIndex.SubIndexType is MathListSubIndexType.Degree)
-        keyboard.RadicalHighlighted = true;
-      else if (InsertionIndex.SubIndexType is MathListSubIndexType.Radicand)
-        keyboard.SquareRootHighlighted = true;
-    }
-#endif
   }
 }
