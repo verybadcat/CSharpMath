@@ -24,6 +24,16 @@ namespace CSharpMath.SkiaSharp {
     public override ICanvas WrapCanvas(SKCanvas canvas) =>
       new SkiaCanvas(canvas, StrokeCap, AntiAlias);
 
+    //public void BindKeyboard(MathKeyboard keyboard) {
+    //  keyboard.RedrawRequested += (_, __) => view.InvalidateSurface();
+    //  view.PaintSurface +=
+    //    (sender, e) => {
+    //      e.Surface.Canvas.Clear();
+    //      SkiaSharp.MathPainter.DrawDisplay(painter, keyboard.Display, e.Surface.Canvas);
+    //      keyboard.DrawCaret(e.Surface.Canvas, Rendering.CaretShape.IBeam);
+    //    };
+    //}
+
     static readonly MathSource staticValidSource = new MathSource(Atoms.MathLists.WithAtoms());
   
     /// <summary>

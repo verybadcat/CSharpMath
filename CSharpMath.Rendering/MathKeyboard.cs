@@ -20,26 +20,27 @@ namespace CSharpMath.Rendering {
       if (!(Display.PointForIndex(TypesettingContext.Instance, InsertionIndex) is PointF cursorPosition))
         return;
       cursorPosition.Y *= -1; //inverted canvas, blah blah
-      var point = caret.InitialPoint.Plus(cursorPosition);
       path.BeginRead(1);
-      path.Foreground = caret.ActualColor;
-      path.MoveTo(point.X, point.Y);
+      path.Foreground = caret.Color;
+      path.MoveTo(cursorPosition.X, cursorPosition.Y);
       switch (shape) {
         default:
         case CaretShape.UpArrow:
           ReadOnlySpan<PointF> s = stackalloc PointF[4] {
-            caret.NextPoint1, caret.NextPoint2,
-            caret.NextPoint3, caret.FinalPoint
+            new PointF(caret.Width / 2, caret.Height / 4),
+            new PointF(caret.Width / 2, caret.Height),
+            new PointF(-caret.Width / 2, caret.Height),
+            new PointF(-caret.Width / 2, caret.Height / 4)
           };
           foreach (var p in s)
             path.LineTo(p.X + cursorPosition.X, p.Y + cursorPosition.Y);
           break;
         case CaretShape.IBeam:
           s = stackalloc PointF[4] {
-            new PointF(caret.Bounds.Width / 16, 0),
-            new PointF(caret.Bounds.Width / 16, -caret.Bounds.Height),
-            new PointF(-caret.Bounds.Width / 16, -caret.Bounds.Height),
-            new PointF(-caret.Bounds.Width / 16, 0),
+            new PointF(caret.Width / 16, 0),
+            new PointF(caret.Width / 16, -caret.Height),
+            new PointF(-caret.Width / 16, -caret.Height),
+            new PointF(-caret.Width / 16, 0),
           };
           foreach (var p in s)
             path.LineTo(p.X + cursorPosition.X, p.Y + cursorPosition.Y);

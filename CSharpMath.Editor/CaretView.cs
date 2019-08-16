@@ -9,12 +9,12 @@ namespace CSharpMath.Editor {
     public CaretHandle(float fontSize, PointF midPoint) {
       var scale = fontSize / CaretHandle.CaretFontSize;
       this = new CaretHandle {
-        Color = new Color(0, 0, 0),
-        Frame = new RectangleF(
+        Color = new Color(0, 0, 0, 153),
+        Width = CaretHandleWidth * scale,
+        Height = CaretHandleHeight * scale,
+        Position = new PointF(
           -(CaretHandle.CaretHandleWidth - CaretHandle.CaretWidth) * scale / 2,
-          (CaretHandle.CaretHeight + CaretHandle.CaretHandleDescent) * scale,
-          CaretHandle.CaretHandleWidth * scale,
-          CaretHandle.CaretHandleHeight * scale
+          (CaretHandle.CaretHeight + CaretHandle.CaretHandleDescent) * scale
         ).Plus(midPoint)
       };
 
@@ -35,20 +35,8 @@ namespace CSharpMath.Editor {
     public const int CaretHeight = CaretAscent + CaretDescent;
 
     public Color Color { get; set; }
-    public RectangleF Frame { get; set; }
-    public SizeF Bounds { get => Frame.Size; set => Frame = new RectangleF(Frame.Location, value); }
-    public PointF Position { get => Frame.Location; set => Frame = new RectangleF(value, Frame.Size); }
-
-    public Color ActualColor => new Color(Color.R, Color.G, Color.B, (byte)(Color.A * 3 / 5));
-    public PointF InitialPoint => new PointF(0, 0);
-    public PointF NextPoint1 => new PointF(Bounds.Width / 2, Bounds.Height / 4);
-    public PointF NextPoint2 => new PointF(Bounds.Width / 2, Bounds.Height);
-    public PointF NextPoint3 => new PointF(-Bounds.Width / 2, Bounds.Height);
-    public PointF FinalPoint => new PointF(-Bounds.Width / 2, Bounds.Height / 4);
-
-    public bool PointInside(PointF point) =>
-      // Create a hit area around the center.
-      new RectangleF((Bounds.Width - CaretHandleHitAreaSize) / 2, (Bounds.Height - CaretHandleHitAreaSize) / 2, CaretHandleHitAreaSize, CaretHandleHitAreaSize)
-        .Contains(point);
+    public float Width { get; set; }
+    public float Height { get; set; }
+    public PointF Position { get; set; }
   }
 }
