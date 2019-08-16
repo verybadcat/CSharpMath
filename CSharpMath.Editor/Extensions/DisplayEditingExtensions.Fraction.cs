@@ -18,20 +18,24 @@ namespace CSharpMath.Editor {
         //We are after the fraction
         return MathListIndex.Level0Index(self.Range.End);
 
-      //We can be either near the numerator or denominator
-      var numeratorDistance = DistanceFromPointToRect(point, self.Numerator.DisplayBounds);
-      var denominatorDistance = DistanceFromPointToRect(point, self.Denominator.DisplayBounds);
-      if (numeratorDistance < denominatorDistance)
+      if (point.Y > self.LinePosition + PixelDelta)
         return MathListIndex.IndexAtLocation(self.Range.Location, self.Numerator.IndexForPoint(context, point), MathListSubIndexType.Numerator);
-      else
+      else if (point.Y < self.LinePosition - PixelDelta)
         return MathListIndex.IndexAtLocation(self.Range.Location, self.Denominator.IndexForPoint(context, point), MathListSubIndexType.Denominator);
+      if (point.X > self.Position.X + self.Width / 2)
+        return MathListIndex.Level0Index(self.Range.End);
+
+      return MathListIndex.Level0Index(self.Range.Location);
     }
     
     public static PointF? PointForIndex<TFont, TGlyph>(this FractionDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, MathListIndex index) where TFont : IFont<TGlyph> {
       if (index.SubIndexType != MathListSubIndexType.None)
         throw Arg("The subindex must be none to get the closest point for it.", nameof(index));
-      // draw a caret after the fraction
-      return new PointF(self.DisplayBounds.Right, self.Position.Y);
+      if (index.AtomIndex == self.Range.End)
+        // draw a caret after the fraction
+        return new PointF(self.DisplayBounds.Right, self.Position.Y);
+      // draw a caret before the fraction
+      return new PointF(self.DisplayBounds.Left, self.Position.Y);
     }
 
     public static void HighlightCharacterAt<TFont, TGlyph>(this FractionDisplay<TFont, TGlyph> self, MathListIndex index, Color color) where TFont : IFont<TGlyph> {

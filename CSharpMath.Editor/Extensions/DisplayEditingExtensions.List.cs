@@ -2,7 +2,7 @@ namespace CSharpMath.Editor {
   using System;
   using System.Collections.Generic;
   using System.Drawing;
-
+  using System.Linq;
   using Display;
   using Display.Text;
   using FrontEnd;
@@ -18,10 +18,11 @@ namespace CSharpMath.Editor {
       float minDistance = float.MaxValue;
       foreach (var display in self.Displays) {
         var bounds = display.DisplayBounds;
-        var maxBoundsX = bounds.Right;
-        if (bounds.X - PixelDelta <= translatedPoint.X && translatedPoint.X <= maxBoundsX + PixelDelta)
+        var rect = new RectangleF(display.Position, bounds.Size);
+        var maxBoundsX = rect.Right;
+        if (rect.X - PixelDelta <= translatedPoint.X && translatedPoint.X <= maxBoundsX + PixelDelta)
           xbounds.Add(display);
-        var distance = DistanceFromPointToRect(translatedPoint, bounds);
+        var distance = DistanceFromPointToRect(translatedPoint, rect);
         if (distance < minDistance) {
           closest = display;
           minDistance = distance;
@@ -33,18 +34,23 @@ namespace CSharpMath.Editor {
           if (translatedPoint.X <= -PixelDelta)
             // All the way to the left
             return MathListIndex.Level0Index(self.Range.Location);
-          else if (translatedPoint.X >= self.Width + PixelDelta)
+          else if (translatedPoint.X >= self.Width + PixelDelta) {
             // All the way to the right
-            return MathListIndex.Level0Index(self.Range.End);
-          else
+            if (closest != null) {
+              return MathListIndex.Level0Index(closest.Range.End);
+            }
+            // All the way to the right
+            return self.Range.End < 0 ? null : MathListIndex.Level0Index(self.Range.End);
+          } else
             // It is within the ListDisplay but not within the X bounds of any sublist. Use the closest in that case.
             displayWithPoint = closest;
           break;
         case 1:
           displayWithPoint = xbounds[0];
+          var rect = new RectangleF(displayWithPoint.Position, displayWithPoint.DisplayBounds.Size);
           if (translatedPoint.X >= self.Width - PixelDelta)
             //The point is close to the end. Only use the selected X bounds if the Y is within range.
-            if (translatedPoint.Y <= displayWithPoint.DisplayBounds.YMin() - PixelDelta)
+            if (translatedPoint.Y <= rect.YMin() - PixelDelta)
               //The point is less than the Y including the delta. Move the cursor to the end rather than in this atom.
               return MathListIndex.Level0Index(self.Range.End);
           break;
@@ -88,7 +94,19 @@ namespace CSharpMath.Editor {
             position = display.PointForIndex(context, MathListIndex.Level0Index(nucleusPosition));
             break;
           case MathListSubIndexType.None:
-            position = display.PointForIndex(context, index);
+            if (!display.HasScript) {
+              position = display.PointForIndex(context, index);
+            } else {
+              var mainPosition = display.PointForIndex(context, index);
+              var scripted = self.Displays.SingleOrDefault(d =>
+                d is ListDisplay<TFont, TGlyph> ld &&
+                    ld.IndexInParent == index.AtomIndex - 1
+                  );
+              if (scripted != null && mainPosition != null) {
+                position = new PointF(mainPosition.Value.X + scripted.Width, 0);
+              } else
+                position = mainPosition;
+            }
             break;
           default:
             // Recurse

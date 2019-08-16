@@ -10,20 +10,23 @@ namespace CSharpMath.Editor {
 
   public partial class DisplayEditingExtensions {
     public static int? GlyphIndexForXOffset<TFont, TGlyph>(this AttributedGlyphRun<TFont, TGlyph> line, TypesettingContext<TFont, TGlyph> context, float offset) where TFont : IFont<TGlyph> {
-      if (offset < 0) return 0; //Move cursor to index 0
+      if (offset < 0) return 0; // Move cursor to index 0
+      if (line.Placeholder) return 0;
       int i = 0;
       float x = 0;
       var advances = context.GlyphBoundsProvider.GetAdvancesForGlyphs(line.Font, line.Glyphs.AsForEach(), line.Length).Advances;
       foreach (var (advance, kernAfter) in advances.Zip(line.GlyphInfos.Select(g => g.KernAfterGlyph), ValueTuple.Create))
-        if (x <= offset && offset < advance + x)
-          return i;
-        else {
+        if (x <= offset && offset < advance + x) {
+          if (Math.Abs(offset - x) < Math.Abs(advance + x - offset))
+            return i;
+          return i + 1;
+        } else {
           x += advance + kernAfter;
           i++;
-          if (offset < x) //If the point is in the kern after this, then the index is the one after this
+          if (offset < x) // If the point is in the kern after this, then the index is the one after this
             return i;
         }
-      return null;
+      return i;
     }
 
     public static float XOffsetForGlyphIndex<TFont, TGlyph>(this AttributedGlyphRun<TFont, TGlyph> line, TypesettingContext<TFont, TGlyph> context, int index) where TFont : IFont<TGlyph> {
@@ -67,19 +70,16 @@ namespace CSharpMath.Editor {
     public static MathListIndex IndexForPoint<TFont, TGlyph>(this TextLineDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, PointF point) where TFont : IFont<TGlyph> {
       // Convert the point to the reference of the CTLine
       var relativePoint = new PointF(point.X - self.Position.X, point.Y - self.Position.Y);
-      var indices = self.Runs.Select(run => run.Run.GlyphIndexForXOffset(context, relativePoint.Plus(run.Position).X)).Where(x => x.HasValue);
-      if (indices.IsEmpty())
+      var indices = self.Runs.Select(run => run.Run.GlyphIndexForXOffset(context, relativePoint.Plus(run.Position).X)).Where(x => x.HasValue).ToArray();
+      if (indices.Length == 0)
         return null;
       var index = indices.Single().GetValueOrDefault();
-      // The index returned is in UTF-16, translate to codepoint index.
-      // NSUInteger codePointIndex = stringIndexToCodePointIndex(self.attributedString.string, index);
-      // Convert the code point index to an index into the mathlist
-      var mlIndex = self.StringIndexToMathListIndex(index);
+      
       // index will be between 0 and _range.length inclusive
-      if (mlIndex < 0 || mlIndex > self.Range.Length)
+      if (index < 0 || index > self.Range.Length)
         throw new InvalidCodePathException($"Returned index out of range: {index}, range ({self.Range.Location}, {self.Range.Length})");
       // translate to the current index
-      return MathListIndex.Level0Index(self.Range.Location + mlIndex);
+      return MathListIndex.Level0Index(self.Range.Location + index);
     }
 
     public static (TextRunDisplay<TFont, TGlyph> run, int charIndex) GetRunAndCharIndexFromStringIndex<TFont, TGlyph>(this TextLineDisplay<TFont, TGlyph> self, int lineCharIndex) where TFont : IFont<TGlyph> {
