@@ -1,14 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SkiaSharp;
+using SkiaSharp.Views.Forms;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 namespace CSharpMath.Forms {
-  using CSharpMath.Editor;
   using Rendering;
   [XamlCompilation(XamlCompilationOptions.Compile)]
   public partial class MathKeyboard : ContentView {
@@ -16,11 +13,28 @@ namespace CSharpMath.Forms {
       InitializeComponent();
     }
 
+    public void BindTo(SKCanvasView view, SkiaSharp.MathPainter settings, CaretShape shape = CaretShape.IBeam, SKStrokeCap cap = SKStrokeCap.Butt) {
+      view.Touch +=
+        (sender, e) => {
+          if (e.ActionType == SKTouchAction.Pressed) {
+            Keyboard.Tap(new System.Drawing.PointF(e.Location.X, e.Location.Y));
+          }
+        };
+
+      Keyboard.RedrawRequested += (_, __) => view.InvalidateSurface();
+      view.PaintSurface +=
+        (sender, e) => {
+          var c = e.Surface.Canvas;
+          c.Clear();
+          SkiaSharp.MathPainter.DrawDisplay(settings, Keyboard.Display, c);
+          Keyboard.DrawCaret(new SkiaSharp.SkiaCanvas(c, cap, false), shape);
+        };
+      var m = new MathView();
+      
+    }
 
     public void Tap(System.Drawing.PointF point) => Keyboard.Tap(point);
 
-    public void DrawCaret(global::SkiaSharp.SKCanvas canvas, CaretShape shape = CaretShape.UpArrow) =>
-      Keyboard.DrawCaret(new SkiaSharp.SkiaCanvas(canvas, global::SkiaSharp.SKStrokeCap.Butt, false), shape);
     public event EventHandler RedrawRequested {
       add => Keyboard.RedrawRequested += value;
       remove => Keyboard.RedrawRequested -= value;

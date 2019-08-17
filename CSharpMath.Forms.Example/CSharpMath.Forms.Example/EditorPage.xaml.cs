@@ -25,22 +25,10 @@ namespace CSharpMath.Forms.Example {
     public EditorView() {
       keyboard = new MathKeyboard();
 
-      var view = new SKCanvasView { WidthRequest = 320, HeightRequest = 225, EnableTouchEvents = true };
-      view.Touch +=
-        (sender, e) => {
-          if (e.ActionType == SKTouchAction.Pressed) {
-            keyboard.Tap(new System.Drawing.PointF(e.Location.X, e.Location.Y));
-          }
-        };
 
+      var view = new SKCanvasView { WidthRequest = 320, HeightRequest = 225, EnableTouchEvents = true };
       var painter = new SkiaSharp.MathPainter { TextColor = global::SkiaSharp.SKColors.Black };
-      keyboard.RedrawRequested += (_, __) => view.InvalidateSurface();
-      view.PaintSurface +=
-        (sender, e) => {
-          e.Surface.Canvas.Clear();
-          SkiaSharp.MathPainter.DrawDisplay(painter, keyboard.Display, e.Surface.Canvas);
-          keyboard.DrawCaret(e.Surface.Canvas, Rendering.CaretShape.IBeam);
-        };
+      keyboard.BindTo(view, painter);
       Content = new StackLayout { Children = { view, keyboard } };
     }
   }
