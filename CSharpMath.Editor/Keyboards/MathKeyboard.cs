@@ -695,8 +695,7 @@ namespace CSharpMath.Editor {
       /* Find the insert point rect and create a caretView to draw the caret at this position. */
 
       // Check that we were returned a valid position before displaying a caret there.
-      if (CaretRectForIndex(_insertionIndex) is PointF point)
-        Caret = new CaretHandle(Font.PointSize, point);
+      Caret = new CaretHandle(Font.PointSize);
       RedrawRequested?.Invoke(this, EventArgs.Empty);
     }
 
@@ -745,8 +744,7 @@ namespace CSharpMath.Editor {
       point.Y *= -1; //inverted canvas, blah blah
       InsertionIndex = ClosestIndexToPoint(point) ??
         MathListIndex.Level0Index(MathList.Atoms.Count);
-      if (CaretRectForIndex(InsertionIndex) is PointF p)
-        Caret = new CaretHandle(Font.PointSize, p);
+      Caret = new CaretHandle(Font.PointSize);
       InsertionPointChanged();
     }
   }

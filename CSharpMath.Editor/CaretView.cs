@@ -6,15 +6,11 @@ using System.Text;
 namespace CSharpMath.Editor {
   using Structures;
   public readonly struct CaretHandle {
-    public CaretHandle(float fontSize, PointF midPoint) {
+    public CaretHandle(float fontSize) {
       var scale = fontSize / CaretHandle.CaretFontSize;
       Color = new Color(0, 0, 0, 153);
       Width = CaretHandleWidth * scale;
       Height = CaretHandleHeight * scale;
-      Position = new PointF(
-        -(CaretHandle.CaretHandleWidth - CaretHandle.CaretWidth) * scale / 2,
-        (CaretHandle.CaretHeight + CaretHandle.CaretHandleDescent) * scale
-      ).Plus(midPoint);
     }
 
     public static readonly TimeSpan InitialBlinkDelay = TimeSpan.FromSeconds(0.7);
@@ -34,6 +30,5 @@ namespace CSharpMath.Editor {
     public Color Color { get; }
     public float Width { get; }
     public float Height { get; }
-    public PointF Position { get; }
   }
 }

@@ -20,15 +20,12 @@ namespace CSharpMath.Forms.Example {
   }
 
   public class EditorView : ContentView {
-    private MathKeyboard keyboard;
-
     public EditorView() {
-      keyboard = new MathKeyboard();
-
-
-      var view = new SKCanvasView { WidthRequest = 320, HeightRequest = 225, EnableTouchEvents = true };
-      var painter = new SkiaSharp.MathPainter { TextColor = global::SkiaSharp.SKColors.Black };
-      keyboard.BindTo(view, painter);
+      var view = new SKCanvasView();
+      var keyboard = new MathKeyboard();
+      keyboard.BindDisplay(view, new SkiaSharp.MathPainter {
+        TextColor = global::SkiaSharp.SKColors.Black
+      });
       Content = new StackLayout { Children = { view, keyboard } };
     }
   }

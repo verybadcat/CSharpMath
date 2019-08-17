@@ -44,15 +44,15 @@ namespace CSharpMath.Forms.Example {
       @"$4+4^{4-4}$",
       @"$4+\frac{4+4}{4}$",
       @"$\frac{44}{4}-4$",
-      @"$\sqrt{4}\times4$",
+      @"$\sqrt{4}^{4-\frac{4}{4}}$",
       @"$\:\:(4-\frac{4}{4})^{\sqrt{4}}$",
       @"$\frac{44-4}{4}$",
-      @"$\frac{4!}{\sqrt4}-\frac{4}{4}$"
+      @"$\frac{4!}{\sqrt{4}}-\frac{4}{4}$"
     };
 
     public ClockPage() {
       InitializeComponent();
-      Device.StartTimer(TimeSpan.FromSeconds(1), () => {
+      Device.StartTimer(TimeSpan.FromMilliseconds(20), () => {
         canvasView.InvalidateSurface();
         return true;
       });
@@ -112,7 +112,7 @@ namespace CSharpMath.Forms.Example {
 
       // S
       canvas.Save();
-      float seconds = dateTime.Second;// + dateTime.Millisecond / 1000f;
+      float seconds = dateTime.Second + dateTime.Millisecond / 1000f;
       canvas.RotateDegrees(6f * seconds);
       redStrokePaint.StrokeWidth = 2;
       canvas.DrawLine(0, 0, 0, -75, redStrokePaint);

@@ -13,14 +13,13 @@ namespace CSharpMath.Forms {
       InitializeComponent();
     }
 
-    public void BindTo(SKCanvasView view, SkiaSharp.MathPainter settings, CaretShape shape = CaretShape.IBeam, SKStrokeCap cap = SKStrokeCap.Butt) {
+    public void BindDisplay(SKCanvasView view, SkiaSharp.MathPainter settings, CaretShape shape = CaretShape.IBeam, SKStrokeCap cap = SKStrokeCap.Butt) {
+      view.EnableTouchEvents = true;
       view.Touch +=
         (sender, e) => {
-          if (e.ActionType == SKTouchAction.Pressed) {
+          if (e.ActionType == SKTouchAction.Pressed)
             Keyboard.Tap(new System.Drawing.PointF(e.Location.X, e.Location.Y));
-          }
         };
-
       Keyboard.RedrawRequested += (_, __) => view.InvalidateSurface();
       view.PaintSurface +=
         (sender, e) => {
@@ -29,8 +28,6 @@ namespace CSharpMath.Forms {
           SkiaSharp.MathPainter.DrawDisplay(settings, Keyboard.Display, c);
           Keyboard.DrawCaret(new SkiaSharp.SkiaCanvas(c, cap, false), shape);
         };
-      var m = new MathView();
-      
     }
 
     public void Tap(System.Drawing.PointF point) => Keyboard.Tap(point);
