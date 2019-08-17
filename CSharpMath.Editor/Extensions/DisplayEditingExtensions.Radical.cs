@@ -19,19 +19,27 @@ namespace CSharpMath.Editor {
         return MathListIndex.Level0Index(self.Range.End);
 
       //We can be either near the degree or the radicand
-      var degreeDistance = DistanceFromPointToRect(point, self.Degree?.DisplayBounds ?? default);
-      var radicandDistance = DistanceFromPointToRect(point, self.Radicand.DisplayBounds);
-      if (degreeDistance < radicandDistance)
-        return MathListIndex.IndexAtLocation(self.Range.Location, self.Degree.IndexForPoint(context, point), MathListSubIndexType.Numerator);
-      else
-        return MathListIndex.IndexAtLocation(self.Range.Location, self.Radicand.IndexForPoint(context, point), MathListSubIndexType.Denominator);
+      var degreeRect = self.Degree != null ? new RectangleF(self.Degree.Position, self.Degree.DisplayBounds.Size) : default;
+      var radicandRect = new RectangleF(self.Radicand.Position, self.Radicand.DisplayBounds.Size);
+      var degreeDistance = DistanceFromPointToRect(point, degreeRect);
+      var radicandDistance = DistanceFromPointToRect(point, radicandRect);
+      if (degreeDistance < radicandDistance) {
+        if (self.Degree != null)
+          return MathListIndex.IndexAtLocation(self.Range.Location, self.Degree.IndexForPoint(context, point), MathListSubIndexType.Degree);
+        return MathListIndex.Level0Index(self.Range.Location);
+      } else
+        return MathListIndex.IndexAtLocation(self.Range.Location, self.Radicand.IndexForPoint(context, point), MathListSubIndexType.Radicand);
     }
     
     public static PointF? PointForIndex<TFont, TGlyph>(this RadicalDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, MathListIndex index) where TFont : IFont<TGlyph> {
       if (index.SubIndexType != MathListSubIndexType.None)
         throw Arg("The subindex must be none to get the closest point for it.", nameof(index));
-      // draw a caret after the radical
-      return new PointF(self.DisplayBounds.Right, self.Position.Y);
+
+      if (index.AtomIndex == self.Range.End)
+        // draw a caret after the radical
+        return new PointF(self.DisplayBounds.Right, self.Position.Y);
+
+      return new PointF(self.DisplayBounds.Left, self.Position.Y);
     }
 
     public static void HighlightCharacterAt<TFont, TGlyph>(this RadicalDisplay<TFont, TGlyph> self, MathListIndex index, Color color) where TFont : IFont<TGlyph> {
