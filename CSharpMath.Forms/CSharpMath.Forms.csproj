@@ -27,11 +27,20 @@
   <ItemGroup>
     <PackageReference Include="SkiaSharp.Views.Forms" Version="1.68.0" />
     <PackageReference Include="Xamarin.Forms" Version="3.4.0.1008975" />
+    <PackageReference Include="SkiaSharp.Svg" Version="1.60.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CSharpMath.SkiaSharp\CSharpMath.SkiaSharp.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="SVGs\" />
+    <EmbeddedResource Include="SVGs\Exponent.svg" />
+    <EmbeddedResource Include="SVGs\Backspace.svg" />
+    <EmbeddedResource Include="SVGs\Fraction.svg" />
+    <EmbeddedResource Include="SVGs\KeyboardDown.svg" />
+    <EmbeddedResource Include="SVGs\Sqrt.svg" />
+    <EmbeddedResource Include="SVGs\SqrtPower.svg" />
+    <EmbeddedResource Include="SVGs\Subscript.svg" />
     <EmbeddedResource Update="MathKeyboard.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>

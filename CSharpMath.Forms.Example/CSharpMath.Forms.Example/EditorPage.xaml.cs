@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CSharpMath.Editor;
+using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -14,7 +9,7 @@ namespace CSharpMath.Forms.Example {
 
     public EditorPage() {
       InitializeComponent();
-      this.Content = new EditorView();
+      Content = new EditorView();
     }
 
   }
@@ -24,8 +19,8 @@ namespace CSharpMath.Forms.Example {
       var view = new SKCanvasView();
       var keyboard = new MathKeyboard();
       keyboard.BindDisplay(view, new SkiaSharp.MathPainter {
-        TextColor = global::SkiaSharp.SKColors.Black
-      });
+        TextColor = SKColors.Black
+      }, new SKColor(0, 0, 0, 153));
       Content = new StackLayout { Children = { view, keyboard } };
     }
   }

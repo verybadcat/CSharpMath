@@ -7,13 +7,15 @@ using Xamarin.Forms.Xaml;
 
 namespace CSharpMath.Forms {
   using Rendering;
+  using static SkiaSharp.SkiaColorExtensions;
   [XamlCompilation(XamlCompilationOptions.Compile)]
   public partial class MathKeyboard : ContentView {
     public MathKeyboard() {
       InitializeComponent();
+      
     }
 
-    public void BindDisplay(SKCanvasView view, SkiaSharp.MathPainter settings, CaretShape shape = CaretShape.IBeam, SKStrokeCap cap = SKStrokeCap.Butt) {
+    public void BindDisplay(SKCanvasView view, SkiaSharp.MathPainter settings, SKColor caretColor, CaretShape caretShape = CaretShape.IBeam, SKStrokeCap cap = SKStrokeCap.Butt) {
       view.EnableTouchEvents = true;
       view.Touch +=
         (sender, e) => {
@@ -26,7 +28,7 @@ namespace CSharpMath.Forms {
           var c = e.Surface.Canvas;
           c.Clear();
           SkiaSharp.MathPainter.DrawDisplay(settings, Keyboard.Display, c);
-          Keyboard.DrawCaret(new SkiaSharp.SkiaCanvas(c, cap, false), shape);
+          Keyboard.DrawCaret(new SkiaSharp.SkiaCanvas(c, cap, false), caretColor.FromNative(), caretShape);
         };
     }
 

@@ -1,14 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
 
 namespace CSharpMath.Editor {
   using Structures;
   public readonly struct CaretHandle {
     public CaretHandle(float fontSize) {
-      var scale = fontSize / CaretHandle.CaretFontSize;
-      Color = new Color(0, 0, 0, 153);
+      var scale = fontSize / CaretFontSize;
       Width = CaretHandleWidth * scale;
       Height = CaretHandleHeight * scale;
     }
@@ -17,8 +13,8 @@ namespace CSharpMath.Editor {
     public static readonly TimeSpan BlinkRate = TimeSpan.FromSeconds(0.5);
     // The settings below make sense for the given font size. They are scaled appropriately when the fontsize changes.
     public const float CaretFontSize = 30;
-    public const int CaretAscent = 25;  // How much should te caret be above the baseline
     public const int CaretWidth = 3;
+    public const int CaretAscent = 25;  // How much should te caret be above the baseline
     public const int CaretDescent = 7;  // How much should the caret be below the baseline
     public const int CaretHandleWidth = 15;
     public const int CaretHandleDescent = 8;
@@ -27,7 +23,6 @@ namespace CSharpMath.Editor {
 
     public const int CaretHeight = CaretAscent + CaretDescent;
 
-    public Color Color { get; }
     public float Width { get; }
     public float Height { get; }
   }

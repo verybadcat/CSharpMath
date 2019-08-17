@@ -35,4 +35,13 @@ namespace CSharpMath.Forms.MathKeyboardMarkupExtensions {
     public double ProvideValue(IServiceProvider _) => Base * By;
     object IMarkupExtension.ProvideValue(IServiceProvider _) => ProvideValue(_);
   }
+
+  [AcceptEmptyServiceProvider, ContentProperty(nameof(Path))]
+  public class EmbeddedSVGExtension : IMarkupExtension<ImageSource> {
+    public string Path { get; set; }
+
+    public ImageSource ProvideValue(IServiceProvider _) =>
+      ImageSource.FromStream(() => GetType().Assembly.GetManifestResourceStream("CSharpMath.Forms.SVGs." + Path + ".svg"));
+    object IMarkupExtension.ProvideValue(IServiceProvider _) => ProvideValue(_);
+  }
 }

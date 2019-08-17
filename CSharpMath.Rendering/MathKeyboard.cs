@@ -14,16 +14,16 @@ namespace CSharpMath.Rendering {
       Font = new Fonts(Array.Empty<Typography.OpenFont.Typeface>(), fontSize);
     }
     
-    public void DrawCaret(ICanvas c, CaretShape shape) {
+    public void DrawCaret(ICanvas canvas, Structures.Color color, CaretShape shape) {
       if (!(Caret is CaretHandle caret))
         return;
       UpdateDisplay();
       if (!(Display.PointForIndex(TypesettingContext.Instance, InsertionIndex) is PointF cursorPosition))
         return;
       cursorPosition.Y *= -1; //inverted canvas, blah blah
-      var path = c.GetPath();
+      var path = canvas.GetPath();
       path.BeginRead(1);
-      path.Foreground = caret.Color;
+      path.Foreground = color;
       path.MoveTo(cursorPosition.X, cursorPosition.Y);
       switch (shape) {
         default:
