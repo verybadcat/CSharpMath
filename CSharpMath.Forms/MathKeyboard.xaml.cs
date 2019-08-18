@@ -14,7 +14,7 @@ namespace CSharpMath.Forms {
       InitializeComponent();
     }
 
-    public void BindDisplay(SKCanvasView view, SkiaSharp.MathPainter settings, SKColor caretColor, CaretShape caretShape = CaretShape.IBeam, SKStrokeCap cap = SKStrokeCap.Butt, bool autoSize = true) {
+    public void BindDisplay(SKCanvasView view, SkiaSharp.MathPainter settings, SKColor caretColor, CaretShape caretShape = CaretShape.IBeam, SKStrokeCap cap = SKStrokeCap.Butt) {
       view.EnableTouchEvents = true;
       view.Touch +=
         (sender, e) => {
@@ -24,7 +24,6 @@ namespace CSharpMath.Forms {
       Keyboard.RedrawRequested += (_, __) => view.InvalidateSurface();
       view.PaintSurface +=
         (sender, e) => {
-          //if (autoSize) view.HeightRequest = Keyboard.Display?.DisplayBounds.Height ?? AbsoluteLayout.AutoSize;
           var c = e.Surface.Canvas;
           c.Clear();
           SkiaSharp.MathPainter.DrawDisplay(settings, Keyboard.Display, c);

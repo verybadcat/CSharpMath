@@ -660,7 +660,6 @@ namespace CSharpMath.Editor {
           break;
       }
       InsertionPointChanged();
-      return;
     }
 
     /// <summary>Helper method to update caretView when insertion point/selection changes.</summary>
@@ -700,15 +699,11 @@ namespace CSharpMath.Editor {
       RedrawRequested?.Invoke(this, EventArgs.Empty);
     }
 
-    public PointF? CaretRectForIndex(MathListIndex index) {
-      UpdateDisplay();
-      return _display?.PointForIndex(_context, index);
-    }
+    public PointF? CaretRectForIndex(MathListIndex index) =>
+      _display?.PointForIndex(_context, index);
 
-    public MathListIndex ClosestIndexToPoint(PointF point) {
-      UpdateDisplay();
-      return _display?.IndexForPoint(_context, point);
-    }
+    public MathListIndex ClosestIndexToPoint(PointF point) =>
+      _display?.IndexForPoint(_context, point);
 
     public void Clear() {
       MathList.Clear();
@@ -733,14 +728,15 @@ namespace CSharpMath.Editor {
       InsertionPointChanged();
     }
 
-    public void SelectCharacterAtIndex(MathListIndex index, Structures.Color color) {
-      UpdateDisplay();
+    public void HighlightCharacterAt(MathListIndex index, Structures.Color color) {
       // setup highlights before drawing the MTLine
       _display?.HighlightCharacterAt(index, color);
+      RedrawRequested?.Invoke(this, EventArgs.Empty);
     }
 
     public void ClearHighlights() {
       UpdateDisplay();
+      RedrawRequested?.Invoke(this, EventArgs.Empty);
     }
 
     public void Tap(PointF point) {

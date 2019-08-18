@@ -11,7 +11,7 @@
                 <Editor x:Name="Text" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" TextChanged="Text_TextChanged" />
                 <Picker x:Name="Size" HorizontalOptions="Fill" VerticalOptions="Fill" ItemsSource="{x:Static local:CustomExamplePage.FontSizes}" SelectedIndexChanged="Size_SelectedIndexChanged"/>
             </StackLayout>
-            <text:TextView x:Name="View" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"/>
+            <text:TextView x:Name="View" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" EnableTouchEvents="true"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

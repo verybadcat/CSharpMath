@@ -58,6 +58,7 @@ namespace CSharpMath.Forms {
       ErrorMessageProperty = ErrorMessagePropertyKey.BindableProperty;
       LaTeXProperty = BindableProperty.Create(nameof(LaTeX), typeof(string), thisType, supplier.DefaultLaTeX(painter),
         propertyChanged: (b, o, n) => { var ss = supplier.SourceFromLaTeX((string)n); Actual(b).Source = ss; });
+      DisablePanningProperty = BindableProperty.Create(nameof(DisablePanning), typeof(bool), thisType, false);
     }
     public static readonly BindableProperty DisplayErrorInlineProperty;
     public static readonly BindableProperty FontSizeProperty;
@@ -76,11 +77,12 @@ namespace CSharpMath.Forms {
     private static readonly BindablePropertyKey ErrorMessagePropertyKey;
     public static readonly BindableProperty ErrorMessageProperty;
     public static readonly BindableProperty LaTeXProperty;
+    public static readonly BindableProperty DisablePanningProperty;
     #endregion
 
     SKPoint _origin;
     protected override void OnTouch(SKTouchEventArgs e) {
-      if (e.InContact && Source.IsValid) {
+      if (e.InContact && Source.IsValid && !DisablePanning) {
         switch (e.ActionType) {
           case SKTouchAction.Entered:
             break;
@@ -135,5 +137,7 @@ namespace CSharpMath.Forms {
     public string ErrorMessage { get => (string)GetValue(ErrorMessageProperty); private set => SetValue(ErrorMessagePropertyKey, value); }
     public ObservableRangeCollection<Typeface> LocalTypefaces => Painter.LocalTypefaces;
     public string LaTeX { get => default(TPainterAndSourceSupplier).LaTeXFromSource(Source); set => Source = default(TPainterAndSourceSupplier).SourceFromLaTeX(value); }
+    /// <summary>Panning is enabled by default when <see cref="SKCanvasView.EnableTouchEvents"/> is set to true.</summary>
+    public bool DisablePanning { get => (bool)GetValue(DisablePanningProperty); set => SetValue(DisablePanningProperty, value); }
   }
 }
