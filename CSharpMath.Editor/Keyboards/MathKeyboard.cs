@@ -696,6 +696,7 @@ namespace CSharpMath.Editor {
 
       // Check that we were returned a valid position before displaying a caret there.
       Caret = new CaretHandle(Font.PointSize);
+      UpdateDisplay();
       RedrawRequested?.Invoke(this, EventArgs.Empty);
     }
 
@@ -738,7 +739,9 @@ namespace CSharpMath.Editor {
       _display?.HighlightCharacterAt(index, color);
     }
 
-    public void ClearHighlights() => UpdateDisplay();
+    public void ClearHighlights() {
+      UpdateDisplay();
+    }
 
     public void Tap(PointF point) {
       point.Y *= -1; //inverted canvas, blah blah
