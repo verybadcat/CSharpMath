@@ -1,117 +1,155 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
-"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-
-
-<!-- Page 1 -->
 <svg x="0" y="0" width="105" height="67" viewBox="0 0 105 67" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
 style="display: block;margin-left: auto;margin-right: auto;">
-<defs>
-<clipPath id="c_1"><path d="M0,0H105V67H0Z"/></clipPath>
-<clipPath id="c0"><path d="M22.7,22.2V17.1h5.2v5.1Z"/></clipPath>
-<clipPath id="c1"><path d="M31.1,22.2V17.1h5.2v5.1Z"/></clipPath>
-<clipPath id="c2"><path d="M38.9,22.2V17.1H44v5.1Z"/></clipPath>
-<clipPath id="c3"><path d="M46.6,22.2V17.1h5.1v5.1Z"/></clipPath>
-<clipPath id="c4"><path d="M54.3,22.2V17.1h5.2v5.1Z"/></clipPath>
-<clipPath id="c5"><path d="M62.1,22.2V17.1h5.1v5.1Z"/></clipPath>
-<clipPath id="c6"><path d="M69.8,22.2V17.1h5.1v5.1Z"/></clipPath>
-<clipPath id="c7"><path d="M77.5,22.2V17.1h5.2v5.1Z"/></clipPath>
-<clipPath id="c8"><path d="M26.6,30V24.8h5.2V30Z"/></clipPath>
-<clipPath id="c9"><path d="M35,30V24.8h5.1V30Z"/></clipPath>
-<clipPath id="ca"><path d="M42.7,30V24.8h5.2V30Z"/></clipPath>
-<clipPath id="cb"><path d="M50.5,30V24.8h5.1V30Z"/></clipPath>
-<clipPath id="cc"><path d="M58.2,30V24.8h5.1V30Z"/></clipPath>
-<clipPath id="cd"><path d="M65.9,30V24.8h5.2V30Z"/></clipPath>
-<clipPath id="ce"><path d="M73.7,30V24.8h5.1V30Z"/></clipPath>
-<clipPath id="cf"><path d="M31.1,37.7V32.5h5.2v5.2Z"/></clipPath>
-<clipPath id="cg"><path d="M38.9,37.7V32.5H44v5.2Z"/></clipPath>
-<clipPath id="ch"><path d="M46.6,37.7V32.5h5.1v5.2Z"/></clipPath>
-<clipPath id="ci"><path d="M54.3,37.7V32.5h5.2v5.2Z"/></clipPath>
-<clipPath id="cj"><path d="M62.1,37.7V32.5h5.1v5.2Z"/></clipPath>
-<clipPath id="ck"><path d="M69.8,37.7V32.5h5.1v5.2Z"/></clipPath>
-<clipPath id="cl"><path d="M52.7,53.2L43.5,44.3H61.9l-9.2,8.9Z"/></clipPath>
+  <defs>
+    <clipPath id="c_1">
+      <path d="M0,0H105V67H0Z"/>
+    </clipPath>
+    <clipPath id="c0">
+      <path d="M22.7,22.2V17.1h5.2v5.1Z"/>
+    </clipPath>
+    <clipPath id="c1">
+      <path d="M31.1,22.2V17.1h5.2v5.1Z"/>
+    </clipPath>
+    <clipPath id="c2">
+      <path d="M38.9,22.2V17.1H44v5.1Z"/>
+    </clipPath>
+    <clipPath id="c3">
+      <path d="M46.6,22.2V17.1h5.1v5.1Z"/>
+    </clipPath>
+    <clipPath id="c4">
+      <path d="M54.3,22.2V17.1h5.2v5.1Z"/>
+    </clipPath>
+    <clipPath id="c5">
+      <path d="M62.1,22.2V17.1h5.1v5.1Z"/>
+    </clipPath>
+    <clipPath id="c6">
+      <path d="M69.8,22.2V17.1h5.1v5.1Z"/>
+    </clipPath>
+    <clipPath id="c7">
+      <path d="M77.5,22.2V17.1h5.2v5.1Z"/>
+    </clipPath>
+    <clipPath id="c8">
+      <path d="M26.6,30V24.8h5.2V30Z"/>
+    </clipPath>
+    <clipPath id="c9">
+      <path d="M35,30V24.8h5.1V30Z"/>
+    </clipPath>
+    <clipPath id="ca">
+      <path d="M42.7,30V24.8h5.2V30Z"/>
+    </clipPath>
+    <clipPath id="cb">
+      <path d="M50.5,30V24.8h5.1V30Z"/>
+    </clipPath>
+    <clipPath id="cc">
+      <path d="M58.2,30V24.8h5.1V30Z"/>
+    </clipPath>
+    <clipPath id="cd">
+      <path d="M65.9,30V24.8h5.2V30Z"/>
+    </clipPath>
+    <clipPath id="ce">
+      <path d="M73.7,30V24.8h5.1V30Z"/>
+    </clipPath>
+    <clipPath id="cf">
+      <path d="M31.1,37.7V32.5h5.2v5.2Z"/>
+    </clipPath>
+    <clipPath id="cg">
+      <path d="M38.9,37.7V32.5H44v5.2Z"/>
+    </clipPath>
+    <clipPath id="ch">
+      <path d="M46.6,37.7V32.5h5.1v5.2Z"/>
+    </clipPath>
+    <clipPath id="ci">
+      <path d="M54.3,37.7V32.5h5.2v5.2Z"/>
+    </clipPath>
+    <clipPath id="cj">
+      <path d="M62.1,37.7V32.5h5.1v5.2Z"/>
+    </clipPath>
+    <clipPath id="ck">
+      <path d="M69.8,37.7V32.5h5.1v5.2Z"/>
+    </clipPath>
+    <clipPath id="cl">
+      <path d="M52.7,53.2L43.5,44.3H61.9l-9.2,8.9Z"/>
+    </clipPath>
 
-<style type="text/css"><![CDATA[
+    <style type="text/css">
+      <![CDATA[
 
-.g0{
-fill: #FFFFFF;
-}
+        .g0 {
+         fill: #FFFFFF;
+        }
 
-]]></style>
+      ]]>
+    </style>
 
-</defs>
-<g clip-path="url(#c_1)">
-<path d="M0,0
-L0,67
-L105,67
-L105,0 Z " 
-fill="#FFFFFF" stroke="none"/>
-<g clip-path="url(#c0)">
-<path d="M15.1,9.4H35.5V29.9H15.1Z" class="g0"/>
-</g>
-<g clip-path="url(#c1)">
-<path d="M23.5,9.4H43.9V29.9H23.5Z" class="g0"/>
-</g>
-<g clip-path="url(#c2)">
-<path d="M31.2,9.4H51.6V29.9H31.2Z" class="g0"/>
-</g>
-<g clip-path="url(#c3)">
-<path d="M38.9,9.4H59.4V29.9H38.9Z" class="g0"/>
-</g>
-<g clip-path="url(#c4)">
-<path d="M46.7,9.4H67.1V29.9H46.7Z" class="g0"/>
-</g>
-<g clip-path="url(#c5)">
-<path d="M54.4,9.4H74.8V29.9H54.4Z" class="g0"/>
-</g>
-<g clip-path="url(#c6)">
-<path d="M62.1,9.4H82.6V29.9H62.1Z" class="g0"/>
-</g>
-<g clip-path="url(#c7)">
-<path d="M69.9,9.4H90.3V29.9H69.9Z" class="g0"/>
-</g>
-<g clip-path="url(#c8)">
-<path d="M19,17.2H39.4V37.6H19Z" class="g0"/>
-</g>
-<g clip-path="url(#c9)">
-<path d="M27.3,17.2H47.8V37.6H27.3Z" class="g0"/>
-</g>
-<g clip-path="url(#ca)">
-<path d="M35.1,17.2H55.5V37.6H35.1Z" class="g0"/>
-</g>
-<g clip-path="url(#cb)">
-<path d="M42.8,17.2H63.2V37.6H42.8Z" class="g0"/>
-</g>
-<g clip-path="url(#cc)">
-<path d="M50.5,17.2H71V37.6H50.5Z" class="g0"/>
-</g>
-<g clip-path="url(#cd)">
-<path d="M58.3,17.2H78.7V37.6H58.3Z" class="g0"/>
-</g>
-<g clip-path="url(#ce)">
-<path d="M66,17.2H86.4V37.6H66Z" class="g0"/>
-</g>
-<g clip-path="url(#cf)">
-<path d="M23.5,24.9H43.9V45.3H23.5Z" class="g0"/>
-</g>
-<g clip-path="url(#cg)">
-<path d="M31.2,24.9H51.6V45.3H31.2Z" class="g0"/>
-</g>
-<g clip-path="url(#ch)">
-<path d="M38.9,24.9H59.4V45.3H38.9Z" class="g0"/>
-</g>
-<g clip-path="url(#ci)">
-<path d="M46.7,24.9H67.1V45.3H46.7Z" class="g0"/>
-</g>
-<g clip-path="url(#cj)">
-<path d="M54.4,24.9H74.8V45.3H54.4Z" class="g0"/>
-</g>
-<g clip-path="url(#ck)">
-<path d="M62.1,24.9H82.6V45.3H62.1Z" class="g0"/>
-</g>
-<g clip-path="url(#cl)">
-<path d="M35.9,36.7H69.5V60.8H35.9Z" class="g0"/>
-</g>
+  </defs>
+  <g clip-path="url(#c_1)">
+    <g clip-path="url(#c0)">
+      <path d="M15.1,9.4H35.5V29.9H15.1Z" class="g0"/>
+    </g>
+    <g clip-path="url(#c1)">
+      <path d="M23.5,9.4H43.9V29.9H23.5Z" class="g0"/>
+    </g>
+    <g clip-path="url(#c2)">
+      <path d="M31.2,9.4H51.6V29.9H31.2Z" class="g0"/>
+    </g>
+    <g clip-path="url(#c3)">
+      <path d="M38.9,9.4H59.4V29.9H38.9Z" class="g0"/>
+    </g>
+    <g clip-path="url(#c4)">
+      <path d="M46.7,9.4H67.1V29.9H46.7Z" class="g0"/>
+    </g>
+    <g clip-path="url(#c5)">
+      <path d="M54.4,9.4H74.8V29.9H54.4Z" class="g0"/>
+    </g>
+    <g clip-path="url(#c6)">
+      <path d="M62.1,9.4H82.6V29.9H62.1Z" class="g0"/>
+    </g>
+    <g clip-path="url(#c7)">
+      <path d="M69.9,9.4H90.3V29.9H69.9Z" class="g0"/>
+    </g>
+    <g clip-path="url(#c8)">
+      <path d="M19,17.2H39.4V37.6H19Z" class="g0"/>
+    </g>
+    <g clip-path="url(#c9)">
+      <path d="M27.3,17.2H47.8V37.6H27.3Z" class="g0"/>
+    </g>
+    <g clip-path="url(#ca)">
+      <path d="M35.1,17.2H55.5V37.6H35.1Z" class="g0"/>
+    </g>
+    <g clip-path="url(#cb)">
+      <path d="M42.8,17.2H63.2V37.6H42.8Z" class="g0"/>
+    </g>
+    <g clip-path="url(#cc)">
+      <path d="M50.5,17.2H71V37.6H50.5Z" class="g0"/>
+    </g>
+    <g clip-path="url(#cd)">
+      <path d="M58.3,17.2H78.7V37.6H58.3Z" class="g0"/>
+    </g>
+    <g clip-path="url(#ce)">
+      <path d="M66,17.2H86.4V37.6H66Z" class="g0"/>
+    </g>
+    <g clip-path="url(#cf)">
+      <path d="M23.5,24.9H43.9V45.3H23.5Z" class="g0"/>
+    </g>
+    <g clip-path="url(#cg)">
+      <path d="M31.2,24.9H51.6V45.3H31.2Z" class="g0"/>
+    </g>
+    <g clip-path="url(#ch)">
+      <path d="M38.9,24.9H59.4V45.3H38.9Z" class="g0"/>
+    </g>
+    <g clip-path="url(#ci)">
+      <path d="M46.7,24.9H67.1V45.3H46.7Z" class="g0"/>
+    </g>
+    <g clip-path="url(#cj)">
+      <path d="M54.4,24.9H74.8V45.3H54.4Z" class="g0"/>
+    </g>
+    <g clip-path="url(#ck)">
+      <path d="M62.1,24.9H82.6V45.3H62.1Z" class="g0"/>
+    </g>
+    <g clip-path="url(#cl)">
+      <path d="M35.9,36.7H69.5V60.8H35.9Z" class="g0"/>
+    </g>
 
-</g>
+  </g>
 </svg>

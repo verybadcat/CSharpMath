@@ -1,38 +1,36 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
-"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-
-
-<!-- Page 1 -->
 <svg x="0" y="0" width="76" height="67" viewBox="0 0 76 67" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
 style="display: block;margin-left: auto;margin-right: auto;">
-<defs>
-<clipPath id="c_1"><path d="M0,0H76V67H0Z"/></clipPath>
-<clipPath id="c0"><path d="M15.4,48.5v-26H41.5v26Z"/></clipPath>
+  <defs>
+    <clipPath id="c_1">
+      <path d="M0,0H76V67H0Z"/>
+    </clipPath>
+    <clipPath id="c0">
+      <path d="M15.4,48.5v-26H41.5v26Z"/>
+    </clipPath>
 
-<style type="text/css"><![CDATA[
+    <style type="text/css">
+      <![CDATA[
 
-.g0{
-fill: none;
-stroke: #FFFFFF;
-stroke-width: 3.055;
-stroke-linecap: butt;
-stroke-linejoin: miter;
-}
+        .g0 {
+          fill: none;
+          stroke: #94A1A9;
+          stroke-width: 3.055;
+          stroke-linecap: butt;
+          stroke-linejoin: miter;
+        }
 
-]]></style>
+      ]]>
+    </style>
 
-</defs>
-<g clip-path="url(#c_1)">
-<path d="M0,0
-L0,67
-L76,67
-L76,0 Z " 
-fill="#FFFFFF" stroke="none"/>
-<g clip-path="url(#c0)">
-<path d="M15.4,22.5H41.5v26H15.4v-26Z" class="g0"/>
-</g>
-<path d="M44.8,14.9H60V30.1H44.8V14.9Z" class="g0"/>
+  </defs>
+  <g clip-path="url(#c_1)">
+    <path d="M0,0L0,67L76,67L76,0 Z "
+    fill="none" stroke="none"/>
+    <g clip-path="url(#c0)">
+      <path d="M15.4,22.5H41.5v26H15.4v-26Z" class="g0"/>
+    </g>
+    <path d="M44.8,14.9H60V30.1H44.8V14.9Z" class="g0"/>
 
-</g>
+  </g>
 </svg>

@@ -6,17 +6,15 @@ using Xamarin.Forms.Xaml;
 namespace CSharpMath.Forms.Example {
   [XamlCompilation(XamlCompilationOptions.Compile)]
   public partial class EditorPage : ContentPage {
-
     public EditorPage() {
       InitializeComponent();
       Content = new EditorView();
     }
-
   }
 
   public class EditorView : ContentView {
     public EditorView() {
-      var view = new SKCanvasView();
+      var view = new SKCanvasView { HeightRequest = 225 };
       var keyboard = new MathKeyboard();
       keyboard.BindDisplay(view, new SkiaSharp.MathPainter {
         TextColor = SKColors.Black

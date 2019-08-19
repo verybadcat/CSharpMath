@@ -1,6 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
+using SkiaSharp.Views.Forms;
+using SKSvg = SkiaSharp.Extended.Svg.SKSvg;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -38,10 +38,15 @@ namespace CSharpMath.Forms.MathKeyboardMarkupExtensions {
 
   [AcceptEmptyServiceProvider, ContentProperty(nameof(Path))]
   public class EmbeddedSVGExtension : IMarkupExtension<ImageSource> {
+    private static readonly SKSvg svg = new SKSvg();
     public string Path { get; set; }
-
-    public ImageSource ProvideValue(IServiceProvider _) =>
-      ImageSource.FromStream(() => GetType().Assembly.GetManifestResourceStream("CSharpMath.Forms.SVGs." + Path + ".svg"));
+    public ImageSource ProvideValue(IServiceProvider _) {
+      svg.Load(GetType().Assembly.GetManifestResourceStream("CSharpMath.Forms.SVGs." + Path + ".svg"));
+      return new SKPictureImageSource {
+        Picture = svg.Picture,
+        Dimensions = svg.CanvasSize.ToSizeI()
+      };
+    }
     object IMarkupExtension.ProvideValue(IServiceProvider _) => ProvideValue(_);
   }
 }
