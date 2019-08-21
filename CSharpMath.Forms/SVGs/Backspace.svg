@@ -15,8 +15,8 @@ style="display: block;margin-left: auto;margin-right: auto;">
         }
         .g1 {
           fill: none;
-          stroke: #94A1A9;
-          stroke-width: 1.527;
+          stroke: #FFFFFF;
+          stroke-width: 2.527;
           stroke-linecap: butt;
           stroke-linejoin: miter;
         }
@@ -27,6 +27,6 @@ style="display: block;margin-left: auto;margin-right: auto;">
     <g clip-path="url(#c0)">
       <path d="M22.9,15.3h55V51.9h-55Z" class="g0"/>
     </g>
-    <path d="M47.7,26.9L61.7,41m0,-14.1L47.7,41" class="g1" fill="#94A1A9"/>
+    <path d="M47.7,26.9L61.7,41m0,-14.1L47.7,41" class="g1"/>
   </g>
 </svg>

@@ -67,4 +67,9 @@ namespace CSharpMath.Forms {
     private void FunctionsButton_Clicked(object sender, EventArgs e) => SwitchTab(Functions);
     private void LettersButton_Clicked(object sender, EventArgs e) => SwitchTab(Letters);
   }
+  public static class Svg {
+    public static readonly BindableProperty NameProperty = BindableProperty.CreateAttached("Name", typeof(string), typeof(Svg), null);
+    public static string GetName(BindableObject obj) => (string)obj.GetValue(NameProperty);
+    public static void SetName(BindableObject obj, string name) => obj.SetValue(NameProperty, name);
+  }
 }

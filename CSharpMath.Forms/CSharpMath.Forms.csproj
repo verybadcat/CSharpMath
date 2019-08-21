@@ -25,6 +25,9 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="SVGs\Clear.svg" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="SkiaSharp.Views.Forms" Version="1.68.0" />
     <PackageReference Include="Xamarin.Forms" Version="4.0.0.425677" />
   </ItemGroup>
@@ -33,7 +36,7 @@
     <ProjectReference Include="..\SkiaSharp.Extended\SkiaSharp.Extended.Svg\source\SkiaSharp.Extended.Svg.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="SVGs\" />
+    <EmbeddedResource Include="SVGs\Clear.svg" />
     <EmbeddedResource Include="SVGs\Exponent.svg" />
     <EmbeddedResource Include="SVGs\Backspace.svg" />
     <EmbeddedResource Include="SVGs\Fraction.svg" />

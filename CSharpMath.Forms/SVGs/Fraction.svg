@@ -10,14 +10,15 @@ style="display: block;margin-left: auto;margin-right: auto;">
 
         .g0 {
           fill: none;
-          stroke: #FFFFFF;
+          stroke: #000;
           stroke-width: 3.055;
           stroke-linecap: butt;
           stroke-linejoin: miter;
         }
         .g1 {
           fill: none;
-          stroke: #FFFFFF;
+          stroke: #000;
+          stroke-width: 1.527;
           stroke-linecap: butt;
           stroke-linejoin: miter;
         }
@@ -28,7 +29,6 @@ style="display: block;margin-left: auto;margin-right: auto;">
   </defs>
   <g clip-path="url(#c_1)">
     <path d="M29,10.7H46.3V28H29V10.7ZM29,38.2H46.3V55.5H29V38.2Z" class="g0"/>
-    <path d="M21.4,32.8H54.9" class="g1" stroke-width="1.527"/>
-
+    <path d="M21.4,32.8H54.9" class="g1"/>
   </g>
 </svg>

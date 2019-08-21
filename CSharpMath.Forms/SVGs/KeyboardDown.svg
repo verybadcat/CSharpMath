@@ -2,6 +2,15 @@
 <svg x="0" y="0" width="105" height="67" viewBox="0 0 105 67" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
 style="display: block;margin-left: auto;margin-right: auto;">
   <defs>
+    <style type="text/css">
+      <![CDATA[
+
+        .g0 {
+         fill: #000;
+        }
+
+      ]]>
+    </style>
     <clipPath id="c_1">
       <path d="M0,0H105V67H0Z"/>
     </clipPath>
@@ -71,17 +80,6 @@ style="display: block;margin-left: auto;margin-right: auto;">
     <clipPath id="cl">
       <path d="M52.7,53.2L43.5,44.3H61.9l-9.2,8.9Z"/>
     </clipPath>
-
-    <style type="text/css">
-      <![CDATA[
-
-        .g0 {
-         fill: #FFFFFF;
-        }
-
-      ]]>
-    </style>
-
   </defs>
   <g clip-path="url(#c_1)">
     <g clip-path="url(#c0)">

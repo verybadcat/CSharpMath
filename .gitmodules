@@ -6,4 +6,4 @@
 	url = https://github.com/verybadcat/CSharpMath.wiki.git
 [submodule "SkiaSharp.Extended"]
 	path = SkiaSharp.Extended
-	url = https://github.com/mono/SkiaSharp.Extended
+	url = https://github.com/Happypig375/SkiaSharp.Extended

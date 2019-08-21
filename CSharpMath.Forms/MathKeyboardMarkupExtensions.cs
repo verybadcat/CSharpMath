@@ -37,16 +37,11 @@ namespace CSharpMath.Forms.MathKeyboardMarkupExtensions {
   }
 
   [AcceptEmptyServiceProvider, ContentProperty(nameof(Path))]
-  public class EmbeddedSVGExtension : IMarkupExtension<ImageSource> {
-    private static readonly SKSvg svg = new SKSvg();
+  public class CSharpMathSVGExtension : IMarkupExtension<System.IO.Stream> {
     public string Path { get; set; }
-    public ImageSource ProvideValue(IServiceProvider _) {
-      svg.Load(GetType().Assembly.GetManifestResourceStream("CSharpMath.Forms.SVGs." + Path + ".svg"));
-      return new SKPictureImageSource {
-        Picture = svg.Picture,
-        Dimensions = svg.CanvasSize.ToSizeI()
-      };
-    }
+    public double Height { get; set; }
+    public System.IO.Stream ProvideValue(IServiceProvider _) =>
+      GetType().Assembly.GetManifestResourceStream("CSharpMath.Forms.SVGs." + Path + ".svg");
     object IMarkupExtension.ProvideValue(IServiceProvider _) => ProvideValue(_);
   }
 }
