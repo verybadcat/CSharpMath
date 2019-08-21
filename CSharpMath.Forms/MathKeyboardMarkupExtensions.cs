@@ -1,10 +1,9 @@
 using System;
-using SkiaSharp.Views.Forms;
-using SKSvg = SkiaSharp.Extended.Svg.SKSvg;
+using Stream = System.IO.Stream;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace CSharpMath.Forms.MathKeyboardMarkupExtensions {
+namespace CSharpMath.Forms {
   [AcceptEmptyServiceProvider]
   public class MathInputExtension : IMarkupExtension<Command> {
     public Editor.MathKeyboardInput Input { get; set; }
@@ -16,31 +15,23 @@ namespace CSharpMath.Forms.MathKeyboardMarkupExtensions {
       new Command(() => Keyboard.KeyPress(Input));
     object IMarkupExtension.ProvideValue(IServiceProvider _) => ProvideValue(_);
   }
-
-  [AcceptEmptyServiceProvider, ContentProperty(nameof(Target))]
-  public class ToggleVisibilityExtension : IMarkupExtension<Command> {
-    public VisualElement Target { get; set; }
+  [AcceptEmptyServiceProvider]
+  public class SwitchToTabExtension : IMarkupExtension<Command> {
+    public MathKeyboard.Tab Target { get; set; }
+    public MathKeyboard Self { get; set; }
 
     public Command ProvideValue(IServiceProvider _) =>
-      Target is null ? throw new ArgumentNullException(nameof(Target)) :
-      new Command(() => Target.IsVisible ^= true);
-    object IMarkupExtension.ProvideValue(IServiceProvider _) => ProvideValue(_);
-  }
-
-  [AcceptEmptyServiceProvider, ContentProperty(nameof(Base))]
-  public class MultiplyExtension : IMarkupExtension<double> {
-    public double Base { get; set; }
-    public double By { get; set; }
-
-    public double ProvideValue(IServiceProvider _) => Base * By;
+      Target is 0 ? throw new ArgumentNullException(nameof(Target)) :
+      Self is null ? throw new ArgumentNullException(nameof(Self)) :
+      new Command(() => Self.CurrentTab = Target);
     object IMarkupExtension.ProvideValue(IServiceProvider _) => ProvideValue(_);
   }
 
   [AcceptEmptyServiceProvider, ContentProperty(nameof(Path))]
-  public class CSharpMathSVGExtension : IMarkupExtension<System.IO.Stream> {
+  public class CSharpMathSVGExtension : IMarkupExtension<Stream> {
     public string Path { get; set; }
-    public double Height { get; set; }
-    public System.IO.Stream ProvideValue(IServiceProvider _) =>
+    public Stream ProvideValue(IServiceProvider _) =>
+      Path is null ? throw new ArgumentNullException(nameof(Path)) :
       GetType().Assembly.GetManifestResourceStream("CSharpMath.Forms.SVGs." + Path + ".svg");
     object IMarkupExtension.ProvideValue(IServiceProvider _) => ProvideValue(_);
   }

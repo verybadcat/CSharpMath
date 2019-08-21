@@ -26,6 +26,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="SVGs\Clear.svg" />
+    <None Remove="SVGs\LogBase.svg" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="SkiaSharp.Views.Forms" Version="1.68.0" />
@@ -41,6 +42,7 @@
     <EmbeddedResource Include="SVGs\Backspace.svg" />
     <EmbeddedResource Include="SVGs\Fraction.svg" />
     <EmbeddedResource Include="SVGs\KeyboardDown.svg" />
+    <EmbeddedResource Include="SVGs\LogBase.svg" />
     <EmbeddedResource Include="SVGs\Sqrt.svg" />
     <EmbeddedResource Include="SVGs\SqrtPower.svg" />
     <EmbeddedResource Include="SVGs\Subscript.svg" />
