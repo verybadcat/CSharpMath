@@ -3,7 +3,7 @@ using Stream = System.IO.Stream;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace CSharpMath.Forms {
+namespace CSharpMath.Forms.Example {
   [AcceptEmptyServiceProvider]
   public class MathInputExtension : IMarkupExtension<Command> {
     public Editor.MathKeyboardInput Input { get; set; }
@@ -32,7 +32,8 @@ namespace CSharpMath.Forms {
     public string Path { get; set; }
     public Stream ProvideValue(IServiceProvider _) =>
       Path is null ? throw new ArgumentNullException(nameof(Path)) :
-      GetType().Assembly.GetManifestResourceStream("CSharpMath.Forms.SVGs." + Path + ".svg");
+      GetType().Assembly.GetManifestResourceStream(
+        $"{nameof(CSharpMath)}.{nameof(Forms)}.{nameof(Example)}.SVGs.{Path}.svg");
     object IMarkupExtension.ProvideValue(IServiceProvider _) => ProvideValue(_);
   }
 }

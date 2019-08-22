@@ -25,27 +25,12 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="SVGs\Clear.svg" />
-    <None Remove="SVGs\LogBase.svg" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="SkiaSharp.Views.Forms" Version="1.68.0" />
-    <PackageReference Include="Xamarin.Forms" Version="4.0.0.425677" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CSharpMath.SkiaSharp\CSharpMath.SkiaSharp.csproj" />
-    <ProjectReference Include="..\SkiaSharp.Extended\SkiaSharp.Extended.Svg\source\SkiaSharp.Extended.Svg.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="SVGs\Clear.svg" />
-    <EmbeddedResource Include="SVGs\Exponent.svg" />
-    <EmbeddedResource Include="SVGs\Backspace.svg" />
-    <EmbeddedResource Include="SVGs\Fraction.svg" />
-    <EmbeddedResource Include="SVGs\KeyboardDown.svg" />
-    <EmbeddedResource Include="SVGs\LogBase.svg" />
-    <EmbeddedResource Include="SVGs\Sqrt.svg" />
-    <EmbeddedResource Include="SVGs\SqrtPower.svg" />
-    <EmbeddedResource Include="SVGs\Subscript.svg" />
     <EmbeddedResource Update="MathKeyboard.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>

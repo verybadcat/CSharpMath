@@ -5,7 +5,7 @@ using SkiaSharp.Views.Forms;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace CSharpMath.Forms {
+namespace CSharpMath.Forms.Example {
   using Rendering;
   using static SkiaSharp.SkiaColorExtensions;
   [XamlCompilation(XamlCompilationOptions.Compile)]

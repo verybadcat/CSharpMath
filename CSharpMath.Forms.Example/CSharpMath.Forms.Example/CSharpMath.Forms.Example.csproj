@@ -2,32 +2,42 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <LangVersion>latest</LangVersion>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="SVGs\Backspace.svg" />
+    <EmbeddedResource Include="SVGs\Clear.svg" />
+    <EmbeddedResource Include="SVGs\Exponent.svg" />
+    <EmbeddedResource Include="SVGs\Fraction.svg" />
+    <EmbeddedResource Include="SVGs\KeyboardDown.svg" />
+    <EmbeddedResource Include="SVGs\LogBase.svg" />
+    <EmbeddedResource Include="SVGs\Sqrt.svg" />
+    <EmbeddedResource Include="SVGs\SqrtPower.svg" />
+    <EmbeddedResource Include="SVGs\Subscript.svg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Xamarin.Forms" Version="4.0.0.425677" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\CSharpMath.Forms\CSharpMath.Forms.csproj" />
+    <ProjectReference Include="..\..\SkiaSharp.Extended\SkiaSharp.Extended.Svg\source\SkiaSharp.Extended.Svg.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Controls\MathKeyboard.xaml.cs">
+      <DependentUpon>MathKeyboard.xaml</DependentUpon>
+    </Compile>
     <Compile Update="ExamplesPage.xaml.cs">
       <DependentUpon>ExamplesPage.xaml</DependentUpon>
     </Compile>
     <Compile Update="CustomExamplePage.xaml.cs">
       <DependentUpon>CustomExamplePage.xaml</DependentUpon>
     </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Update="ClockPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>

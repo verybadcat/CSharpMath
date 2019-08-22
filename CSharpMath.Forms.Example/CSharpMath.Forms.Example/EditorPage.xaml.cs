@@ -29,7 +29,7 @@ namespace CSharpMath.Forms.Example {
           case nameof(Entry.Text):
             var input = entry.Text.Split(' ')[1];
             foreach (var c in input)
-              keyboard.KeyPress((Editor.MathKeyboardInput)c);
+              keyboard.KeyPress((Editor.MathKeyboardInput)(int)c);
             entry.Text = Text;
             // Setting text also sets the cursor to the end
             entry.CursorPosition = CursorPosition;
