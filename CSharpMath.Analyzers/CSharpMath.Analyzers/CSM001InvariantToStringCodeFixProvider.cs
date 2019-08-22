@@ -52,6 +52,7 @@ namespace CSharpMath.Analyzers {
       // Produce a new solution that has all references to that type renamed, including the declaration.
       var originalSolution = document.Project.Solution;
       var optionSet = originalSolution.Workspace.Options;
+      _ = (semanticModel, optionSet);
       
       document = document.WithSyntaxRoot(new Rewriter(argList).Visit(await document.GetSyntaxRootAsync()));
       var newSolution = document.Project.Solution;

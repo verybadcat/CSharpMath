@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.CodeDom.Compiler;
 using static System.Linq.Enumerable;
 using System.IO;
@@ -128,6 +128,7 @@ namespace CSharpMath.DevUtils.iosMathDemo {
       if (writer.Indent != 0)
         throw new InvalidOperationException("Indents are not balanced.");
       File.WriteAllText(Paths.iosMathExamplesFile, sb.ToString());
+      writer.Dispose();
     }
   }
 }

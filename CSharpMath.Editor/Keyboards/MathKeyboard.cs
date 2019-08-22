@@ -9,29 +9,28 @@ namespace CSharpMath.Editor {
   using FrontEnd;
   using Interfaces;
   public class MathKeyboard<TFont, TGlyph> where TFont : IFont<TGlyph> {
-    public MathKeyboard(TypesettingContext<TFont, TGlyph> context) => _context = context;
-
-    private TypesettingContext<TFont, TGlyph> _context;
-    private MathListIndex _insertionIndex = MathListIndex.Level0Index(0);
-    protected IDisplay<TFont, TGlyph> _display;
+    public MathKeyboard(TypesettingContext<TFont, TGlyph> context) => Context = context;
     //private readonly List<MathListIndex> highlighted;
 
+    public TypesettingContext<TFont, TGlyph> Context { get; }
+
     public CaretHandle? Caret { get; protected set; }
+    public IDisplay<TFont, TGlyph> Display { get; protected set; }
     public MathList MathList { get; } = new MathList();
     public string LaTeX => MathListBuilder.MathListToString(MathList);
+    private MathListIndex _insertionIndex = MathListIndex.Level0Index(0);
     public MathListIndex InsertionIndex
       { get => _insertionIndex; set { _insertionIndex = value; InsertionPointChanged(); } }
     public TFont Font { get; set; }
     public LineStyle LineStyle { get; set; }
     public Color SelectColor { get; set; }
-    public IDisplay<TFont, TGlyph> Display => _display;
     public RectangleF Measure => Display.DisplayBounds;
     public bool HasText => MathList?.Atoms?.Count > 0;
 
     public void UpdateDisplay() {
-      var position = _display?.Position ?? default;
-      _display = _context.CreateLine(MathList, Font, LineStyle);
-      _display.Position = position;
+      var position = Display?.Position ?? default;
+      Display = Context.CreateLine(MathList, Font, LineStyle);
+      Display.Position = position;
     }
 
     /// <summary>Keyboard should now be hidden and input be discarded.</summary>
@@ -48,8 +47,8 @@ namespace CSharpMath.Editor {
              placeholder.Superscript is null && placeholder.Subscript is null;
     }
     
-    public PointF? ClosestPointToIndex(MathListIndex index) => _display?.PointForIndex(_context, index);
-    public MathListIndex ClosestIndexToPoint(PointF point) => _display?.IndexForPoint(_context, point);
+    public PointF? ClosestPointToIndex(MathListIndex index) => Display?.PointForIndex(Context, index);
+    public MathListIndex ClosestIndexToPoint(PointF point) => Display?.IndexForPoint(Context, point);
 
     public void KeyPress(MathKeyboardInput input) {
       /// <returns>True if updated</returns>
@@ -133,10 +132,10 @@ namespace CSharpMath.Editor {
         }
       }
 
-      void HandleRadical(bool placeholderDegree, bool degreeIs3) {
+      void HandleRadical(bool degreeIsPlaceholder, bool degreeIs3) {
         var current = _insertionIndex;
         Radical rad;
-        if (placeholderDegree) {
+        if (degreeIsPlaceholder) {
           rad = MathAtoms.PlaceholderRadical;
           MathList.Insert(current, rad);
           _insertionIndex = current.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Degree);
@@ -251,7 +250,8 @@ namespace CSharpMath.Editor {
               else
                 throw new InvalidCodePathException($"Fraction not found at {fracIndex}");
               break;
-          } else if (_insertionIndex.Previous is MathListIndex prev)
+          }
+        else if (_insertionIndex.Previous is MathListIndex prev)
           switch (MathList.AtomAt(prev)) {
             case null:
             default:
@@ -307,7 +307,7 @@ namespace CSharpMath.Editor {
           default:
             _insertionIndex = _insertionIndex.Next;
             break;
-          case IFraction frac:
+          case IFraction _:
             _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Numerator);
             break;
           case IRadical rad:
@@ -730,7 +730,7 @@ namespace CSharpMath.Editor {
 
     public void HighlightCharacterAt(MathListIndex index, Structures.Color color) {
       // setup highlights before drawing the MTLine
-      _display?.HighlightCharacterAt(index, color);
+      Display?.HighlightCharacterAt(index, color);
       RedrawRequested?.Invoke(this, EventArgs.Empty);
     }
 

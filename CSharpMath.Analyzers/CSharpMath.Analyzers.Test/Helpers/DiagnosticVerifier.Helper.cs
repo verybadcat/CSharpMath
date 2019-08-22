@@ -32,8 +32,8 @@ namespace TestHelper {
     /// <param name="language">The language the source classes are in</param>
     /// <param name="analyzer">The analyzer to be run on the sources</param>
     /// <returns>An IEnumerable of Diagnostics that surfaced in the source code, sorted by Location</returns>
-    private static Diagnostic[] GetSortedDiagnostics(string[] sources, string language, DiagnosticAnalyzer analyzer) {
-      return GetSortedDiagnosticsFromDocuments(analyzer, GetDocuments(sources, language));
+    private static Diagnostic[] GetSortedDiagnostics(Workspace workspace, string[] sources, string language, DiagnosticAnalyzer analyzer) {
+      return GetSortedDiagnosticsFromDocuments(analyzer, GetDocuments(workspace, sources, language));
     }
 
     /// <summary>
@@ -91,12 +91,12 @@ namespace TestHelper {
     /// <param name="sources">Classes in the form of strings</param>
     /// <param name="language">The language the source code is in</param>
     /// <returns>A Tuple containing the Documents produced from the sources and their TextSpans if relevant</returns>
-    private static Document[] GetDocuments(string[] sources, string language) {
+    private static Document[] GetDocuments(Workspace workspace, string[] sources, string language) {
       if (language != LanguageNames.CSharp && language != LanguageNames.VisualBasic) {
         throw new ArgumentException("Unsupported Language");
       }
 
-      var project = CreateProject(sources, language);
+      var project = CreateProject(workspace, sources, language);
       var documents = project.Documents.ToArray();
 
       if (sources.Length != documents.Length) {
@@ -112,8 +112,8 @@ namespace TestHelper {
     /// <param name="source">Classes in the form of a string</param>
     /// <param name="language">The language the source code is in</param>
     /// <returns>A Document created from the source string</returns>
-    protected static Document CreateDocument(string source, string language = LanguageNames.CSharp) {
-      return CreateProject(new[] { source }, language).Documents.First();
+    protected static Document CreateDocument(Workspace workspace, string source, string language = LanguageNames.CSharp) {
+      return CreateProject(workspace, new[] { source }, language).Documents.First();
     }
 
     /// <summary>
@@ -122,13 +122,13 @@ namespace TestHelper {
     /// <param name="sources">Classes in the form of strings</param>
     /// <param name="language">The language the source code is in</param>
     /// <returns>A Project created out of the Documents created from the source strings</returns>
-    private static Project CreateProject(string[] sources, string language = LanguageNames.CSharp) {
+    private static Project CreateProject(Workspace workspace, string[] sources, string language = LanguageNames.CSharp) {
       string fileNamePrefix = DefaultFilePathPrefix;
       string fileExt = language == LanguageNames.CSharp ? CSharpDefaultFileExt : VisualBasicDefaultExt;
 
       var projectId = ProjectId.CreateNewId(debugName: TestProjectName);
 
-      var solution = new AdhocWorkspace()
+      var solution = workspace
           .CurrentSolution
           .AddProject(projectId, TestProjectName, TestProjectName, language)
           .AddMetadataReference(projectId, CorlibReference)
