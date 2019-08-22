@@ -12,7 +12,7 @@ namespace CSharpMath.Editor {
     public MathKeyboard(TypesettingContext<TFont, TGlyph> context) => Context = context;
     //private readonly List<MathListIndex> highlighted;
 
-    public TypesettingContext<TFont, TGlyph> Context { get; }
+    protected TypesettingContext<TFont, TGlyph> Context { get; }
 
     public CaretHandle? Caret { get; protected set; }
     public IDisplay<TFont, TGlyph> Display { get; protected set; }
@@ -27,7 +27,7 @@ namespace CSharpMath.Editor {
     public RectangleF Measure => Display.DisplayBounds;
     public bool HasText => MathList?.Atoms?.Count > 0;
 
-    public void UpdateDisplay() {
+    public void RecreateDisplayFromMathList() {
       var position = Display?.Position ?? default;
       Display = Context.CreateLine(MathList, Font, LineStyle);
       Display.Position = position;
@@ -40,9 +40,10 @@ namespace CSharpMath.Editor {
     /// <summary><see cref="Display"/> should be redrawn.</summary>
     public event EventHandler RedrawRequested;
 
-    private bool IndexAtEmptyPlaceholder(out IMathAtom placeholder) {
-      placeholder = MathList.AtomAt(_insertionIndex) ??
-        MathList.AtomAt(_insertionIndex?.Previous); //Might be at end of MathList
+    private bool IndexAtEmptyPlaceholder(out IMathAtom placeholder, out bool atEndOfMathList) {
+      placeholder = MathList.AtomAt(_insertionIndex);
+      if (atEndOfMathList = placeholder is null)
+        placeholder = MathList.AtomAt(_insertionIndex?.Previous);
       return placeholder != null && placeholder.AtomType is MathAtomType.Placeholder &&
              placeholder.Superscript is null && placeholder.Subscript is null;
     }
@@ -50,6 +51,59 @@ namespace CSharpMath.Editor {
     public PointF? ClosestPointToIndex(MathListIndex index) => Display?.PointForIndex(Context, index);
     public MathListIndex ClosestIndexToPoint(PointF point) => Display?.IndexForPoint(Context, point);
 
+    private void MoveCursorRightWithoutUpdatingInsertionPoint() {
+      if (_insertionIndex is null)
+        throw new InvalidOperationException($"{nameof(_insertionIndex)} is null.");
+      switch (MathList.AtomAt(_insertionIndex)) {
+        case null when MathList.AtomAt(_insertionIndex) is null: //After Count
+          switch (_insertionIndex.FinalSubIndexType) {
+            case MathListSubIndexType.Radicand:
+            case MathListSubIndexType.Denominator:
+            case MathListSubIndexType.Nucleus:
+            case MathListSubIndexType.Superscript:
+            case MathListSubIndexType.Subscript:
+            default:
+              _insertionIndex = _insertionIndex.LevelDown()?.Next ?? _insertionIndex;
+              break;
+            case MathListSubIndexType.Degree:
+              var radicalIndex = _insertionIndex.LevelDown();
+              if (MathList.AtomAt(radicalIndex) is IRadical)
+                _insertionIndex = radicalIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Radicand);
+              else
+                throw new InvalidCodePathException($"Radical not found at {radicalIndex}");
+              break;
+            case MathListSubIndexType.Numerator:
+              var fracIndex = _insertionIndex.LevelDown();
+              if (MathList.AtomAt(fracIndex) is IFraction)
+                _insertionIndex = fracIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Denominator);
+              else
+                throw new InvalidCodePathException($"Fraction not found at {fracIndex}");
+              break;
+          }
+          break;
+        case null:
+        default:
+          _insertionIndex = _insertionIndex.Next;
+          break;
+        case IFraction _:
+          _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Numerator);
+          break;
+        case IRadical rad:
+          if (rad.Degree is IMathList)
+            _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Degree);
+          else
+            _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Radicand);
+          break;
+        case var a when a.Superscript != null:
+          _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Superscript);
+          break;
+        case var a when a.Subscript != null:
+          _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Subscript);
+          break;
+      }
+      if (_insertionIndex is null)
+        throw new InvalidOperationException($"{nameof(_insertionIndex)} is null.");
+    }
     public void KeyPress(MathKeyboardInput input) {
       /// <returns>True if updated</returns>
       bool UpdatePlaceholderIfPresent(IMathAtom emptyAtom) {
@@ -273,59 +327,6 @@ namespace CSharpMath.Editor {
         if (_insertionIndex is null)
           throw new InvalidOperationException($"{nameof(_insertionIndex)} is null.");
       }
-      void MoveCursorRight() {
-        if (_insertionIndex is null)
-          throw new InvalidOperationException($"{nameof(_insertionIndex)} is null.");
-        switch (MathList.AtomAt(_insertionIndex)) {
-          case null when MathList.AtomAt(_insertionIndex) is null: //After Count
-            switch (_insertionIndex.FinalSubIndexType) {
-              case MathListSubIndexType.Radicand:
-              case MathListSubIndexType.Denominator:
-              case MathListSubIndexType.Nucleus:
-              case MathListSubIndexType.Superscript:
-              case MathListSubIndexType.Subscript:
-              default:
-                _insertionIndex = _insertionIndex.LevelDown()?.Next ?? _insertionIndex;
-                break;
-              case MathListSubIndexType.Degree:
-                var radicalIndex = _insertionIndex.LevelDown();
-                if (MathList.AtomAt(radicalIndex) is IRadical)
-                  _insertionIndex = radicalIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Radicand);
-                else
-                  throw new InvalidCodePathException($"Radical not found at {radicalIndex}");
-                break;
-              case MathListSubIndexType.Numerator:
-                var fracIndex = _insertionIndex.LevelDown();
-                if (MathList.AtomAt(fracIndex) is IFraction)
-                  _insertionIndex = fracIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Denominator);
-                else
-                  throw new InvalidCodePathException($"Fraction not found at {fracIndex}");
-                break;
-            }
-            break;
-          case null:
-          default:
-            _insertionIndex = _insertionIndex.Next;
-            break;
-          case IFraction _:
-            _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Numerator);
-            break;
-          case IRadical rad:
-            if (rad.Degree is IMathList)
-              _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Degree);
-            else
-              _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Radicand);
-            break;
-          case var a when a.Superscript != null:
-            _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Superscript);
-            break;
-          case var a when a.Subscript != null:
-            _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListIndex.Level0Index(0), MathListSubIndexType.Subscript);
-            break;
-        }
-        if (_insertionIndex is null)
-          throw new InvalidOperationException($"{nameof(_insertionIndex)} is null.");
-      }
 
       void DeleteBackwards() {
         // delete the last atom from the list
@@ -368,7 +369,7 @@ namespace CSharpMath.Editor {
       void InsertSymbolName(string s) => InsertAtom(MathAtoms.ForLatexSymbolName(s));
 
       void RemovePlaceholderIfPresent() {
-        if (IndexAtEmptyPlaceholder(out var placeholder))
+        if (IndexAtEmptyPlaceholder(out var placeholder, out _))
           // Remove this element - the inserted text replaces the placeholder
           MathList.Remove(placeholder);
       }
@@ -388,7 +389,7 @@ namespace CSharpMath.Editor {
           MoveCursorLeft();
           break;
         case MathKeyboardInput.Right:
-          MoveCursorRight();
+          MoveCursorRightWithoutUpdatingInsertionPoint();
           break;
         case MathKeyboardInput.Backspace:
           DeleteBackwards();
@@ -645,7 +646,7 @@ namespace CSharpMath.Editor {
           InsertSymbolName("arsinh");
           break;
         case MathKeyboardInput.AreaHyperbolicCosine:
-          InsertSymbolName("arconh");
+          InsertSymbolName("arcosh");
           break;
         case MathKeyboardInput.AreaHyperbolicTangent:
           InsertSymbolName("artanh");
@@ -670,49 +671,47 @@ namespace CSharpMath.Editor {
       InsertionIndex = ClosestIndexToPoint(point) ??
         MathListIndex.Level0Index(MathList.Atoms.Count);
       Caret = new CaretHandle(Font.PointSize);
-      InsertionPointChanged();
     }
 
     /// <summary>Helper method to update caretView when insertion point/selection changes.</summary>
     private void InsertionPointChanged() {
-      void ClearPlaceholders(IMathList mathList) {
+      void VisualizePlaceholders(IMathList mathList) {
         foreach (var mathAtom in (IList<IMathAtom>)mathList?.Atoms ?? Array.Empty<IMathAtom>()) {
           if (mathAtom.AtomType is MathAtomType.Placeholder)
             mathAtom.Nucleus = Symbols.WhiteSquare;
           if (mathAtom.Superscript is IMathList super)
-            ClearPlaceholders(super);
+            VisualizePlaceholders(super);
           if (mathAtom.Subscript is IMathList sub)
-            ClearPlaceholders(sub);
+            VisualizePlaceholders(sub);
           if (mathAtom is Radical rad) {
-            ClearPlaceholders(rad.Degree);
-            ClearPlaceholders(rad.Radicand);
+            VisualizePlaceholders(rad.Degree);
+            VisualizePlaceholders(rad.Radicand);
           }
           if (mathAtom is Fraction frac) {
-            ClearPlaceholders(frac.Numerator);
-            ClearPlaceholders(frac.Denominator);
+            VisualizePlaceholders(frac.Numerator);
+            VisualizePlaceholders(frac.Denominator);
           }
         }
       }
-      ClearPlaceholders(MathList);
-      if (IndexAtEmptyPlaceholder(out var atom)) {
-        atom.Nucleus = Symbols.BlackSquare;
-        if (_insertionIndex.FinalSubIndexType is MathListSubIndexType.Nucleus) {
+      VisualizePlaceholders(MathList);
+      if (IndexAtEmptyPlaceholder(out var atom, out var atEndOfMathList)) {
+        if (atEndOfMathList)
           // If the insertion index is inside a placeholder, move it out.
-          _insertionIndex = _insertionIndex.LevelDown();
-        }
+          MoveCursorRightWithoutUpdatingInsertionPoint();
+        else atom.Nucleus = Symbols.BlackSquare;
         // TODO - disable caret
       }
       /* Find the insert point rect and create a caretView to draw the caret at this position. */
 
       // Check that we were returned a valid position before displaying a caret there.
       Caret = new CaretHandle(Font.PointSize);
-      UpdateDisplay();
+      RecreateDisplayFromMathList();
       RedrawRequested?.Invoke(this, EventArgs.Empty);
     }
     
     public void Clear() {
       MathList.Clear();
-      InsertionPointChanged();
+      InsertionIndex = null;
     }
 
     // Insert a list at a given point.
@@ -724,8 +723,7 @@ namespace CSharpMath.Editor {
         MathList.Insert(index, atom);
         index = index.Next;
       }
-      _insertionIndex = index; // move the index to the end of the new list.
-      InsertionPointChanged();
+      InsertionIndex = index; // move the index to the end of the new list.
     }
 
     public void HighlightCharacterAt(MathListIndex index, Structures.Color color) {
@@ -735,7 +733,7 @@ namespace CSharpMath.Editor {
     }
 
     public void ClearHighlights() {
-      UpdateDisplay();
+      RecreateDisplayFromMathList();
       RedrawRequested?.Invoke(this, EventArgs.Empty);
     }
   }
