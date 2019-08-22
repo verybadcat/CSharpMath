@@ -36,9 +36,8 @@ namespace CSharpMath.Editor {
             return MathListIndex.Level0Index(self.Range.Location);
           else if (translatedPoint.X >= self.Width + PixelDelta) {
             // All the way to the right
-            if (closest != null) {
-              return MathListIndex.Level0Index(closest.Range.End);
-            }
+            if (closest != null)
+              return MathListIndex.Level0Index(self.Range.End);
             // All the way to the right
             return self.Range.End < 0 ? null : MathListIndex.Level0Index(self.Range.End);
           } else
