@@ -24,6 +24,7 @@ namespace CSharpMath.Forms.Example {
       entry.TextChanged += (sender, e) => {
           entry.Text = "";
           foreach (var c in e.NewTextValue)
+            // The (int) extra conversion seems to be required by Android or a crash occurs
             keyboard.ViewModel.KeyPress((Editor.MathKeyboardInput)(int)c);
       };
       Content = new StackLayout { Children = { view, keyboard, entry } };
