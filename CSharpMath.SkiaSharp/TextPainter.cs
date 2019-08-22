@@ -15,6 +15,6 @@ namespace CSharpMath.SkiaSharp
 
     public override SKColor UnwrapColor(Color color) => color.ToNative();
 
-    public override ICanvas WrapCanvas(SKCanvas canvas) => new SkiaCanvas(canvas, SKStrokeCap.Butt, true);
+    public override ICanvas WrapCanvas(SKCanvas canvas) => new SkiaCanvas(canvas, SKStrokeCap.Butt, MathPainter.DefaultAntiAlias);
   }
 }

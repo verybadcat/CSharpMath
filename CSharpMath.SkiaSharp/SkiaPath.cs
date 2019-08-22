@@ -1,6 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
+using SKPath = SkiaSharp.SKPath;
 
 namespace CSharpMath.SkiaSharp {
   using Structures;
@@ -9,7 +7,7 @@ namespace CSharpMath.SkiaSharp {
 
     public Color? Foreground { private get; set; }
     private SkiaCanvas _owner;
-    private global::SkiaSharp.SKPath _path = new global::SkiaSharp.SKPath();
+    private SKPath _path = new SKPath();
     public void BeginRead(int contourCount) { }
     public void EndRead() {
       if (Foreground is Color foreground)

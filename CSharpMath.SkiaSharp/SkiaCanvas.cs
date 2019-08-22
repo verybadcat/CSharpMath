@@ -3,13 +3,14 @@ using CSharpMath.Structures;
 using SkiaSharp;
 namespace CSharpMath.SkiaSharp
 {
+  public enum AntiAlias { Disable, Enable, WithSubpixelText }
   public class SkiaCanvas : ICanvas {
-    public SkiaCanvas(SKCanvas canvas, SKStrokeCap strokeCap, bool? antiAliasLevel) {
+    public SkiaCanvas(SKCanvas canvas, SKStrokeCap strokeCap, AntiAlias antiAliasLevel) {
       Canvas = canvas;
       StrokeCap = strokeCap;
       _paint = new SKPaint {
-        IsAntialias = antiAliasLevel != null,
-        SubpixelText = antiAliasLevel == true,
+        IsAntialias = antiAliasLevel != AntiAlias.Disable,
+        SubpixelText = antiAliasLevel == AntiAlias.WithSubpixelText,
         HintingLevel = SKPaintHinting.Full
       };
       CurrentStyle = default;
