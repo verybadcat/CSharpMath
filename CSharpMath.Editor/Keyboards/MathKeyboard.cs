@@ -47,6 +47,9 @@ namespace CSharpMath.Editor {
       return placeholder != null && placeholder.AtomType is MathAtomType.Placeholder &&
              placeholder.Superscript is null && placeholder.Subscript is null;
     }
+    
+    public PointF? ClosestPointToIndex(MathListIndex index) => _display?.PointForIndex(_context, index);
+    public MathListIndex ClosestIndexToPoint(PointF point) => _display?.IndexForPoint(_context, point);
 
     public void KeyPress(MathKeyboardInput input) {
       /// <returns>True if updated</returns>
@@ -662,6 +665,14 @@ namespace CSharpMath.Editor {
       InsertionPointChanged();
     }
 
+    public void MoveCaretToPoint(PointF point) {
+      point.Y *= -1; //inverted canvas, blah blah
+      InsertionIndex = ClosestIndexToPoint(point) ??
+        MathListIndex.Level0Index(MathList.Atoms.Count);
+      Caret = new CaretHandle(Font.PointSize);
+      InsertionPointChanged();
+    }
+
     /// <summary>Helper method to update caretView when insertion point/selection changes.</summary>
     private void InsertionPointChanged() {
       void ClearPlaceholders(IMathList mathList) {
@@ -698,20 +709,9 @@ namespace CSharpMath.Editor {
       UpdateDisplay();
       RedrawRequested?.Invoke(this, EventArgs.Empty);
     }
-
-    public PointF? CaretRectForIndex(MathListIndex index) =>
-      _display?.PointForIndex(_context, index);
-
-    public MathListIndex ClosestIndexToPoint(PointF point) =>
-      _display?.IndexForPoint(_context, point);
-
+    
     public void Clear() {
       MathList.Clear();
-      InsertionPointChanged();
-    }
-
-    public void MoveCaretToPoint(PointF point) {
-      _insertionIndex = ClosestIndexToPoint(point);
       InsertionPointChanged();
     }
 
@@ -737,14 +737,6 @@ namespace CSharpMath.Editor {
     public void ClearHighlights() {
       UpdateDisplay();
       RedrawRequested?.Invoke(this, EventArgs.Empty);
-    }
-
-    public void Tap(PointF point) {
-      point.Y *= -1; //inverted canvas, blah blah
-      InsertionIndex = ClosestIndexToPoint(point) ??
-        MathListIndex.Level0Index(MathList.Atoms.Count);
-      Caret = new CaretHandle(Font.PointSize);
-      InsertionPointChanged();
     }
   }
 }

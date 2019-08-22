@@ -48,5 +48,7 @@ namespace CSharpMath.Display {
       }
       context.RestoreState();
     }
+    /// <summary>The string returned is NOT real TeX! It's for debugging purposes only.</summary>
+    public override string ToString() => string.Concat(Displays);
   }
 }

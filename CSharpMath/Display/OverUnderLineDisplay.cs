@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
@@ -53,5 +53,6 @@ namespace CSharpMath.Display {
       TextColor = TextColor ?? textColor;
       Inner.SetTextColorRecursive(textColor);
     }
+    public override string ToString() => $@"\shiftup{{{LineShiftUp}}}{{{Inner}}}";
   }
 }

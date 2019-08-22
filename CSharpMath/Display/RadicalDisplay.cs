@@ -99,5 +99,7 @@ namespace CSharpMath.Display {
       Radicand?.SetTextColorRecursive(textColor);
       Degree?.SetTextColorRecursive(textColor);
     }
+
+    public override string ToString() => $@"\sqrt[{Radicand}]{{{Degree}}}";
   }
 }

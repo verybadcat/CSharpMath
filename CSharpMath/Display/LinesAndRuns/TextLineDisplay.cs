@@ -56,6 +56,8 @@ namespace CSharpMath.Display {
         run.SetTextColorRecursive(textColor);
       }
     }
+
+    public override string ToString() => string.Concat(Runs);
   }
 }
 

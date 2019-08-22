@@ -51,5 +51,7 @@ namespace CSharpMath.Display {
       Accentee.SetTextColorRecursive(textColor);
       Accent.SetTextColorRecursive(textColor);
     }
+
+    public override string ToString() => $@"\accent{{{Accent}}}{{{Accentee}}}";
   }
 }

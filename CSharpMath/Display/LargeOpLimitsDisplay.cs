@@ -126,5 +126,7 @@ namespace CSharpMath.Display {
       UpperLimit.SetTextColorRecursive(textColor);
       LowerLimit.SetTextColorRecursive(textColor);
     }
+
+    public override string ToString() => $@"{{{_nucleusDisplay}}}^{{{UpperLimit}}}_{{{LowerLimit}}}";
   }
 }

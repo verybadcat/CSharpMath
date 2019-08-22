@@ -44,9 +44,7 @@ namespace CSharpMath.Display {
 
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
       context.SaveState();
-      var text = Run.Text;
-      var font = Run.Font;
-      context.DrawGlyphRunWithOffset(Run, Position,  TextColor);
+      context.DrawGlyphRunWithOffset(Run, Position, TextColor);
       context.RestoreState();
     }
     public Range Range { get; set; }
@@ -59,5 +57,7 @@ namespace CSharpMath.Display {
 
     public void SetTextColorRecursive(Color? textColor) =>
       TextColor = TextColor ?? textColor;
+
+    public override string ToString() => Run.Text.ToString();
   }
 }

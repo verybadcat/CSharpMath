@@ -87,5 +87,7 @@ namespace CSharpMath.Display {
       Numerator.SetTextColorRecursive(textColor);
       Denominator.SetTextColorRecursive(textColor);
     }
+
+    public override string ToString() => $@"\frac{{{Numerator}}}{{{Denominator}}}";
   }
 }

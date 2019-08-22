@@ -11,7 +11,7 @@ namespace CSharpMath.Forms {
       view.Touch +=
         (sender, e) => {
           if (e.ActionType == SKTouchAction.Pressed)
-            keyboard.Tap(new System.Drawing.PointF(e.Location.X, e.Location.Y));
+            keyboard.MoveCaretToPoint(new System.Drawing.PointF(e.Location.X, e.Location.Y));
         };
       keyboard.RedrawRequested += (_, __) => view.InvalidateSurface();
       view.PaintSurface +=
