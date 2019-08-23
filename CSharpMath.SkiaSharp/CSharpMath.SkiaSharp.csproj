@@ -3,18 +3,18 @@
     <TargetFramework>netstandard1.3</TargetFramework>
     <LangVersion>latest</LangVersion>
     <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
-    <PackageVersion>0.2.0</PackageVersion>
+    <PackageVersion>0.3.0-alpha</PackageVersion>
     <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie, FoggyFinder)</Authors>
-    <PackageReleaseNotes>The 0.2.1 LaTeX Binding Update brings a bindable LaTeX property to MathView and TextView.</PackageReleaseNotes>
+    <PackageReleaseNotes>The 0.3.0 Clickity Update brings a clickable math editor!</PackageReleaseNotes>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/verybadcat/CSharpMath.git</RepositoryUrl>
     <RepositoryBranch>master</RepositoryBranch>
-    <RepositoryCommit>5610427533fc4ed9f1fd86b07dda36dca6c65f67</RepositoryCommit>
+    <RepositoryCommit>bc5d040f1a1356583cf60f64cfa79104469ea52a</RepositoryCommit>
     <PackageProjectUrl>https://github.com/verybadcat/CSharpMath</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseUrl>https://github.com/verybadcat/CSharpMath/blob/master/LICENSE</PackageLicenseUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/verybadcat/CSharpMath/master/Icon.png</PackageIconUrl>
-    <Copyright>© CSharpMath Contributors 2018</Copyright>
+    <Copyright>© CSharpMath Contributors 2019</Copyright>
     <PackageId>CSharpMath.SkiaSharp</PackageId>
     <Title>CSharpMath.SkiaSharp</Title>
     <Description>The SkiaSharp front end for CSharpMath.</Description>

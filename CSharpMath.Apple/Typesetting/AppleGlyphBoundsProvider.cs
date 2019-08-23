@@ -22,20 +22,18 @@ namespace CSharpMath.Apple {
     public static AppleGlyphBoundsProvider Instance { get; } = new AppleGlyphBoundsProvider();
 
     public (IEnumerable<float> Advances, float Total) GetAdvancesForGlyphs(TFont font, ForEach<TGlyph> glyphs, int nGlyphs) {
-      var glyphArray = ArrayPool<TGlyph>.Shared.Rent(nGlyphs);
+      var glyphArray = new TGlyph[nGlyphs];
       glyphs.CopyTo(glyphArray);
       var advanceSizes = new CGSize[nGlyphs];
       var combinedAdvance = font.CtFont.GetAdvancesForGlyphs(CTFontOrientation.Default, glyphArray, advanceSizes, nGlyphs);
-      ArrayPool<TGlyph>.Shared.Return(glyphArray);
       return (advanceSizes.Select(advance => (float)advance.Width), (float)combinedAdvance);
     }
 
     public IEnumerable<RectangleF> GetBoundingRectsForGlyphs(TFont font, ForEach<TGlyph> glyphs, int nVariants) {
-      var glyphArray = ArrayPool<TGlyph>.Shared.Rent(nVariants);
+      var glyphArray = new TGlyph[nVariants];
       glyphs.CopyTo(glyphArray);
       var rects = new CGRect[nVariants];
       font.CtFont.GetBoundingRects(CTFontOrientation.Horizontal, glyphArray, rects, nVariants);
-      ArrayPool<TGlyph>.Shared.Return(glyphArray);
       return rects.Select(rect => (RectangleF)rect);
     }
 

@@ -695,10 +695,11 @@ namespace CSharpMath.Editor {
       }
       VisualizePlaceholders(MathList);
       if (IndexAtEmptyPlaceholder(out var atom, out var atEndOfMathList)) {
-        if (atEndOfMathList)
-          // If the insertion index is inside a placeholder, move it out.
-          MoveCursorRightWithoutUpdatingInsertionPoint();
-        else atom.Nucleus = Symbols.BlackSquare;
+        // if (atEndOfMathList)
+        //   // If the insertion index is inside a placeholder, move it out.
+        //   MoveCursorRightWithoutUpdatingInsertionPoint();
+        // else
+          atom.Nucleus = Symbols.BlackSquare;
         // TODO - disable caret
       }
       /* Find the insert point rect and create a caretView to draw the caret at this position. */

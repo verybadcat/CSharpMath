@@ -3,8 +3,8 @@
     <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
     <TargetFramework>netstandard1.3</TargetFramework>
     <LangVersion>latest</LangVersion>
-    <PackageVersion>0.2.0</PackageVersion>
-    <PackageReleaseNotes>The 0.2.1 LaTeX Binding Update brings a bindable LaTeX property to MathView and TextView.</PackageReleaseNotes>
+    <PackageVersion>0.3.0-alpha</PackageVersion>
+    <PackageReleaseNotes>The 0.3.0 Clickity Update brings a clickable math editor!</PackageReleaseNotes>
     <Description>The base code for a What You See Is What You Get math editor.</Description>
     <PackageId>CSharpMath.Editor</PackageId>
     <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie, FoggyFinder)</Authors>
@@ -16,9 +16,9 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/verybadcat/CSharpMath.git</RepositoryUrl>
     <RepositoryBranch>master</RepositoryBranch>
-    <RepositoryCommit>5610427533fc4ed9f1fd86b07dda36dca6c65f67</RepositoryCommit>
+    <RepositoryCommit>bc5d040f1a1356583cf60f64cfa79104469ea52a</RepositoryCommit>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Copyright>© CSharpMath Contributors 2018</Copyright>
+    <Copyright>© CSharpMath Contributors 2019</Copyright>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\CSharpMath\CSharpMath.csproj" />
