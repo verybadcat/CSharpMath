@@ -35,9 +35,25 @@ namespace CSharpMath.Editor {
             // All the way to the left
             return MathListIndex.Level0Index(self.Range.Location);
           else if (translatedPoint.X >= self.Width + PixelDelta) {
-            // All the way to the right
-            if (closest != null)
-              return MathListIndex.Level0Index(self.Range.End);
+            // Check if self contains a script
+            var hasScript = self.Displays.Any(d => d.HasScript);
+            // if so try to find a parent
+            if (hasScript) {
+              var parent =
+                self.Displays
+                    .Where(d => d.HasScript)
+                    .OrderBy(d => d.Position.X)
+                    .FirstOrDefault();
+
+              // if we really near to a script
+              if (closest is ListDisplay<TFont, TGlyph> ld
+                && ld.LinePosition != Enumerations.LinePosition.Regular
+                && parent != null
+                ) {
+                return MathListIndex.Level0Index(parent.Range.End);
+              }
+
+            }
             // All the way to the right
             return self.Range.End < 0 ? null : MathListIndex.Level0Index(self.Range.End);
           } else
