@@ -3,6 +3,7 @@
 ![icon](Icon.png)
 
 CSharpMath is a C# port of the wonderful [iosMath LaTeX engine](https://github.com/kostub/iosMath).
+_The icon's text and numbers are generated with this library itself._
 
 Current release|Current pre-release|Commits since last version|Number of contributors
 -|-|-|-
