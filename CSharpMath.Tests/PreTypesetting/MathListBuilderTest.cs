@@ -9,72 +9,56 @@ using CSharpMath.Enumerations;
 namespace CSharpMath.Tests {
 
   public class MathListBuilderTest {
-    public static IEnumerable<(string, MathAtomType[], string)> RawTestData() {
-      yield return ("x", new MathAtomType[] { MathAtomType.Variable }, "x");
-      yield return ("1", new MathAtomType[] { MathAtomType.Number }, "1");
-      yield return ("*", new MathAtomType[] { MathAtomType.BinaryOperator }, "*");
-      yield return ("+", new MathAtomType[] { MathAtomType.BinaryOperator }, "+");
-      yield return (".", new MathAtomType[] { MathAtomType.Number }, ".");
-      yield return ("(", new MathAtomType[] { MathAtomType.Open }, "(");
-      yield return (")", new MathAtomType[] { MathAtomType.Close }, ")");
-      yield return (",", new MathAtomType[] { MathAtomType.Punctuation }, ",");
-      yield return ("!", new MathAtomType[] { MathAtomType.Close }, "!");
-      yield return ("=", new MathAtomType[] { MathAtomType.Relation }, "=");
-      yield return ("x+2", new MathAtomType[] { MathAtomType.Variable, MathAtomType.BinaryOperator, MathAtomType.Number }, "x+2");
-      yield return ("(2.3 * 8)", new MathAtomType[] { MathAtomType.Open, MathAtomType.Number, MathAtomType.Number, MathAtomType.Number, MathAtomType.BinaryOperator, MathAtomType.Number, MathAtomType.Close }, "(2.3*8)");
-      yield return ("5{3+4}", new MathAtomType[] { MathAtomType.Number, MathAtomType.Number, MathAtomType.BinaryOperator, MathAtomType.Number }, "53+4"); // braces are just for grouping
+    public static IEnumerable<(string, MathAtomType[], string)> RawTestData() => new[] {
+      ("x", new[] { MathAtomType.Variable }, "x"),
+      ("1", new[] { MathAtomType.Number }, "1"),
+      ("*", new[] { MathAtomType.BinaryOperator }, "*"),
+      ("+", new[] { MathAtomType.BinaryOperator }, "+"),
+      (".", new[] { MathAtomType.Number }, "."),
+      ("(", new[] { MathAtomType.Open }, "("),
+      (")", new[] { MathAtomType.Close }, ")"),
+      (",", new[] { MathAtomType.Punctuation }, ","),
+      ("!", new[] { MathAtomType.Close }, "!"),
+      ("=", new[] { MathAtomType.Relation }, "="),
+      ("x+2", new[] { MathAtomType.Variable, MathAtomType.BinaryOperator, MathAtomType.Number }, "x+2"),
+      ("(2.3 * 8)", new[] { MathAtomType.Open, MathAtomType.Number, MathAtomType.Number, MathAtomType.Number, MathAtomType.BinaryOperator, MathAtomType.Number, MathAtomType.Close }, "(2.3*8)"),
+      ("5{3+4}", new[] { MathAtomType.Number, MathAtomType.Number, MathAtomType.BinaryOperator, MathAtomType.Number }, "53+4"), // braces are just for grouping
       // commands
-      yield return (@"\pi+\theta\geq 3", new MathAtomType[] { MathAtomType.Variable, MathAtomType.BinaryOperator, MathAtomType.Variable, MathAtomType.Relation, MathAtomType.Number }, @"\pi +\theta \geq 3");
-      //aliases
-      yield return (@"\pi\ne 5 \land 3", new MathAtomType[] { MathAtomType.Variable, MathAtomType.Relation, MathAtomType.Number, MathAtomType.BinaryOperator, MathAtomType.Number }, @"\pi \neq 5\wedge 3");
+      (@"\pi+\theta\geq 3", new[] { MathAtomType.Variable, MathAtomType.BinaryOperator, MathAtomType.Variable, MathAtomType.Relation, MathAtomType.Number }, @"\pi +\theta \geq 3"),
+      // aliases
+      (@"\pi\ne 5 \land 3", new[] { MathAtomType.Variable, MathAtomType.Relation, MathAtomType.Number, MathAtomType.BinaryOperator, MathAtomType.Number }, @"\pi \neq 5\wedge 3"),
       // control space
-      yield return (@"x \ y", new MathAtomType[] { MathAtomType.Variable, MathAtomType.Ordinary, MathAtomType.Variable }, @"x\  y");
+      (@"x \ y", new[] { MathAtomType.Variable, MathAtomType.Ordinary, MathAtomType.Variable }, @"x\  y"),
       // spacing
-      yield return (@"x \quad y \; z \! q", new MathAtomType[]
-      {MathAtomType.Variable, MathAtomType.Space, MathAtomType.Variable,
-        MathAtomType.Space, MathAtomType.Variable,
-      MathAtomType.Space, MathAtomType.Variable}, @"x\quad y\; z\! q");
-    }
+      (@"x \quad y \; z \! q", new[] { MathAtomType.Variable, MathAtomType.Space, MathAtomType.Variable, MathAtomType.Space, MathAtomType.Variable, MathAtomType.Space, MathAtomType.Variable}, @"x\quad y\; z\! q")
+    };
 
-    public static IEnumerable<(string, MathAtomType[][], string)> RawSuperscriptTestData() {
-      yield return ("x^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Variable }, new MathAtomType[] { MathAtomType.Number } }, "x^2");
-      yield return ("x^23", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Variable, MathAtomType.Number }, new MathAtomType[] { MathAtomType.Number } }, "x^23");
-      yield return ("x^{23}", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Variable }, new MathAtomType[] { MathAtomType.Number, MathAtomType.Number } }, "x^{23}");
-      yield return ("x^2^3", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Variable, MathAtomType.Ordinary }, new MathAtomType[] { MathAtomType.Number } }, "x^2{}^3");
-      yield return ("x^{2^3}", new MathAtomType[][] { new MathAtomType[] {MathAtomType.Variable},
-        new MathAtomType[] { MathAtomType.Number },
-      new MathAtomType[]{MathAtomType.Number} }, "x^{2^3}");
-      yield return ("x^{^2*}", new MathAtomType[][] {
-        new MathAtomType[]{MathAtomType.Variable },
-        new MathAtomType[]{MathAtomType.Ordinary, MathAtomType.BinaryOperator },
-        new MathAtomType[]{MathAtomType.Number } },
-        "x^{{}^2*}");
-      yield return ("^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Ordinary }, new MathAtomType[] { MathAtomType.Number } }, "{}^2");
-      yield return ("{}^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Ordinary }, new MathAtomType[] { MathAtomType.Number } }, "{}^2");
-      yield return ("x^^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Variable, MathAtomType.Ordinary }, new MathAtomType[] { } }, "x^{}{}^2");
-      yield return ("5{x}^2", new MathAtomType[][] { new MathAtomType[] { MathAtomType.Number, MathAtomType.Variable }, new MathAtomType[] { } }, "5{x}^2");
-    }
+    public static IEnumerable<(string, MathAtomType[][], string)> RawSuperscriptTestData() => new[] {
+      ("x^2", new[] { new[] { MathAtomType.Variable }, new[] { MathAtomType.Number } }, "x^2"),
+      ("x^23", new[] { new[] { MathAtomType.Variable, MathAtomType.Number }, new[] { MathAtomType.Number } }, "x^23"),
+      ("x^{23}", new[] { new[] { MathAtomType.Variable }, new[] { MathAtomType.Number, MathAtomType.Number } }, "x^{23}"),
+      ("x^2^3", new[] { new[] { MathAtomType.Variable, MathAtomType.Ordinary }, new[] { MathAtomType.Number } }, "x^2{}^3"),
+      ("x^{2^3}", new[] { new[] { MathAtomType.Variable}, new[] { MathAtomType.Number }, new[] {MathAtomType.Number} }, "x^{2^3}"),
+      ("x^{^2*}", new[] { new[] { MathAtomType.Variable }, new[] { MathAtomType.Ordinary, MathAtomType.BinaryOperator }, new[] { MathAtomType.Number } }, "x^{{}^2*}"),
+      ("^2", new[] { new[] { MathAtomType.Ordinary }, new[] { MathAtomType.Number } }, "{}^2"),
+      ("{}^2", new[] { new[] { MathAtomType.Ordinary }, new[] { MathAtomType.Number } }, "{}^2"),
+      ("x^^2", new[] { new[] { MathAtomType.Variable, MathAtomType.Ordinary }, new MathAtomType[] { } }, "x^{}{}^2"),
+      ("5{x}^2", new[] { new[] { MathAtomType.Number, MathAtomType.Variable }, new MathAtomType[] { } }, "5{x}^2")
+    };
 
     public static IEnumerable<object[]> SuperscriptTestData() {
-      foreach (var tuple in RawSuperscriptTestData()) {
-        yield return new object[] { tuple.Item1, tuple.Item2, tuple.Item3 };
-      }
+      foreach (var (i1, i2, i3) in RawSuperscriptTestData())
+        yield return new object[] { i1, i2, i3 };
     }
 
     public static IEnumerable<object[]> SubscriptTestData() {
-      foreach (var tuple in RawSuperscriptTestData()) {
-        yield return new object[] {
-          tuple.Item1.Replace('^', '_'),
-          tuple.Item2,
-          tuple.Item3.Replace('^', '_')
-        };
-      }
+      foreach (var (i1, i2, i3) in RawSuperscriptTestData())
+        yield return new object[] { i1.Replace('^', '_'), i2, i3.Replace('^', '_') };
     }
 
     public static IEnumerable<object[]> TestData() {
-      foreach (var tuple in RawTestData()) {
-        yield return new object[] { tuple.Item1, tuple.Item2, tuple.Item3 };
-      }
+      foreach (var (i1, i2, i3) in RawTestData())
+        yield return new object[] { i1, i2, i3 };
     }
 
     [Theory, MemberData(nameof(TestData))]
@@ -86,18 +70,17 @@ namespace CSharpMath.Tests {
       list.ExpandGroups();
       CheckAtomTypes(list, atomTypes);
 
-
       var latex = MathListBuilder.MathListToString(list);
       Assert.Equal(output, latex);
     }
 
     [Theory, MemberData(nameof(SuperscriptTestData))]
-    public void TestSuperscript(string input, MathAtomType[][] atomTypes, string output)
-     => RunScriptTest(input, atom => atom.Superscript, atomTypes, output);
+    public void TestSuperscript(string input, MathAtomType[][] atomTypes, string output) =>
+      RunScriptTest(input, atom => atom.Superscript, atomTypes, output);
 
     [Theory, MemberData(nameof(SubscriptTestData))]
-    public void TestSubscript(string input, MathAtomType[][] atomTypes, string output)
-     => RunScriptTest(input, atom => atom.Subscript, atomTypes, output);
+    public void TestSubscript(string input, MathAtomType[][] atomTypes, string output) =>
+      RunScriptTest(input, atom => atom.Subscript, atomTypes, output);
 
     private void RunScriptTest(string input, Func<IMathAtom, IMathList> scriptGetter, MathAtomType[][] atomTypes, string output) {
       var builder = new MathListBuilder(input);
@@ -108,11 +91,11 @@ namespace CSharpMath.Tests {
       expandedList.ExpandGroups();
       CheckAtomTypes(expandedList, atomTypes[0]);
 
-      IMathAtom firstAtom = expandedList[0];
+      var firstAtom = expandedList[0];
       var types = atomTypes[1];
-      if (types.Count() > 0) {
+      if (types.Count() > 0)
         Assert.NotNull(scriptGetter(firstAtom));
-      }
+
       var scriptList = scriptGetter(firstAtom);
       CheckAtomTypes(scriptList, atomTypes[1]);
       if (atomTypes.Count() == 3) {
@@ -163,7 +146,7 @@ namespace CSharpMath.Tests {
     }
 
     [Fact]
-    void TestFraction() {
+    public void TestFraction() {
       var input = @"\frac1c";
       var list = MathLists.FromString(input);
       Assert.NotNull(list);
@@ -281,37 +264,37 @@ namespace CSharpMath.Tests {
     }
 
     public static IEnumerable<(string, MathAtomType[], int, MathAtomType[], string, string, string)> RawTestDataLeftRight() {
-      var singletonList = new MathAtomType[] { MathAtomType.Inner };
-      var singletonNumber = new MathAtomType[] { MathAtomType.Number };
-      var singletonVariable = new MathAtomType[] { MathAtomType.Variable };
-      yield return (@"\left( 2 \right)", singletonList, 0, singletonNumber, @"(", @")", @"\left( 2\right) ");
-      // spacing
-      yield return (@"\left ( 2 \right )", singletonList, 0, singletonNumber, @"(", @")", @"\left( 2\right) ");
-      // commands
-      yield return (@"\left\{ 2 \right\}", singletonList, 0, singletonNumber, @"{", @"}", @"\left\{ 2\right\} ");
-      // complex commands
-      yield return (@"\left\langle x \right\rangle", singletonList, 0, singletonVariable, "\u2329", "\u232A", @"\left< x\right> ");
-      // bars
-      yield return (@"\left| x \right\|", singletonList, 0, singletonVariable, @"|", "\u2016", @"\left| x\right\| ");
-      // inner in between
-      yield return (@"5 + \left( 2 \right) - 2", new MathAtomType[] { MathAtomType.Number, MathAtomType.BinaryOperator, MathAtomType.Inner, MathAtomType.BinaryOperator, MathAtomType.Number }, 2, singletonNumber, @"(", @")", @"5+\left( 2\right) -2");
-      // long inner
-      yield return (@"\left( 2 + \frac12\right)", singletonList, 0, new MathAtomType[] { MathAtomType.Number, MathAtomType.BinaryOperator, MathAtomType.Fraction }, @"(", @")", @"\left( 2+\frac{1}{2}\right) ");
-      // nested
-      yield return (@"\left[ 2 + \left|\frac{-x}{2}\right| \right]", singletonList, 0, new MathAtomType[] { MathAtomType.Number, MathAtomType.BinaryOperator, MathAtomType.Inner }, @"[", @"]", @"\left[ 2+\left| \frac{-x}{2}\right| \right] ");
-      // With scripts
-      yield return (@"\left( 2 \right)^2", singletonList, 0, singletonNumber, @"(", @")", @"\left( 2\right) ^2");
-      // Scripts on left
-      yield return (@"\left(^2 \right )", singletonList, 0, new MathAtomType[] { MathAtomType.Ordinary }, @"(", @")", @"\left( {}^2\right) ");
-      // Dot
-      yield return (@"\left( 2 \right.", singletonList, 0, singletonNumber, @"(", @"", @"\left( 2\right. ");
-
+      var singletonList = new[] { MathAtomType.Inner };
+      var singletonNumber = new[] { MathAtomType.Number };
+      var singletonVariable = new[] { MathAtomType.Variable };
+      return new[] {
+        (@"\left( 2 \right)", singletonList, 0, singletonNumber, @"(", @")", @"\left( 2\right) "),
+        // spacing
+        (@"\left ( 2 \right )", singletonList, 0, singletonNumber, @"(", @")", @"\left( 2\right) "),
+        // commands
+        (@"\left\{ 2 \right\}", singletonList, 0, singletonNumber, @"{", @"}", @"\left\{ 2\right\} "),
+        // complex commands
+        (@"\left\langle x \right\rangle", singletonList, 0, singletonVariable, "\u2329", "\u232A", @"\left< x\right> "),
+        // bars
+        (@"\left| x \right\|", singletonList, 0, singletonVariable, @"|", "\u2016", @"\left| x\right\| "),
+        // inner in between
+        (@"5 + \left( 2 \right) - 2", new[] { MathAtomType.Number, MathAtomType.BinaryOperator, MathAtomType.Inner, MathAtomType.BinaryOperator, MathAtomType.Number }, 2, singletonNumber, @"(", @")", @"5+\left( 2\right) -2"),
+        // long inner
+        (@"\left( 2 + \frac12\right)", singletonList, 0, new[] { MathAtomType.Number, MathAtomType.BinaryOperator, MathAtomType.Fraction }, @"(", @")", @"\left( 2+\frac{1}{2}\right) "),
+        // nested
+        (@"\left[ 2 + \left|\frac{-x}{2}\right| \right]", singletonList, 0, new[] { MathAtomType.Number, MathAtomType.BinaryOperator, MathAtomType.Inner }, @"[", @"]", @"\left[ 2+\left| \frac{-x}{2}\right| \right] "),
+        // With scripts
+        (@"\left( 2 \right)^2", singletonList, 0, singletonNumber, @"(", @")", @"\left( 2\right) ^2"),
+        // Scripts on left
+        (@"\left(^2 \right )", singletonList, 0, new[] { MathAtomType.Ordinary }, @"(", @")", @"\left( {}^2\right) "),
+        // Dot
+        (@"\left( 2 \right.", singletonList, 0, singletonNumber, @"(", @"", @"\left( 2\right. ")
+      };
     }
 
     public static IEnumerable<object[]> TestDataLeftRight() {
-      foreach (var tuple in RawTestDataLeftRight()) {
-        yield return new object[] { tuple.Item1, tuple.Item2, tuple.Item3, tuple.Item4, tuple.Item5, tuple.Item6, tuple.Item7 };
-      }
+      foreach (var (i1, i2, i3, i4, i5, i6, i7) in RawTestDataLeftRight())
+        yield return new object[] { i1, i2, i3, i4, i5, i6, i7 };
     }
 
     [Theory, MemberData(nameof(TestDataLeftRight))]

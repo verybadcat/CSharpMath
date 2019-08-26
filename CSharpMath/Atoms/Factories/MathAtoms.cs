@@ -406,10 +406,12 @@ namespace CSharpMath.Atoms {
         case '\u2212':
           return Create(MathAtomType.BinaryOperator, "\u2212");
         case '+':
+        case '*': // Star operator, not times symbol
           return Create(MathAtomType.BinaryOperator, c);
-        case '*':
         case '×':
           return Times;
+        case '÷':
+          return Divide;
         case '.':
           return Create(MathAtomType.Number, c);
         case '"':
