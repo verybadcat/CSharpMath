@@ -15,7 +15,7 @@ public class DisplayEditingTests {
   class EqualsException : Xunit.Sdk.EqualException {
     public EqualsException(object expected, object actual, string message) : base(expected, actual) =>
       UserMessage = message;
-    public override string Message =>
+    public override string Message =>  
       UserMessage + $"\nExpected: {Expected?.ToString() ?? "(null)"}\nActual: {Actual?.ToString() ?? "(null)"}";
   }
 

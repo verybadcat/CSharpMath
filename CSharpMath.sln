@@ -8,7 +8,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath", "CSharpMath\CS
 		{B76E873A-FAA0-4198-BEC4-66BD2BBC233F} = {B76E873A-FAA0-4198-BEC4-66BD2BBC233F}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath!Tests", "CSharpMath.Tests\CSharpMath!Tests.csproj", "{0830C47F-AA16-4A0E-9CCF-E40835D1430D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath Tests", "CSharpMath.Tests\CSharpMath Tests.csproj", "{0830C47F-AA16-4A0E-9CCF-E40835D1430D}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSharpMath.Apple", "CSharpMath.Apple\CSharpMath.Apple.shproj", "{1E62C0F0-B5C9-430E-ADDC-6F6EC6E0BDE1}"
 EndProject
@@ -84,7 +84,7 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSharpMath.Wiki", "wiki\CSh
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Editor", "CSharpMath.Editor\CSharpMath.Editor.csproj", "{38F58489-EDE4-4289-8ACF-A9756977A7A6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Editor!Tests", "CSharpMath.Editor.Tests\CSharpMath.Editor!Tests.csproj", "{BA1ECF0E-134A-49C2-BA4D-1D28C6A8494A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Editor Tests", "CSharpMath.Editor.Tests\CSharpMath.Editor Tests.csproj", "{BA1ECF0E-134A-49C2-BA4D-1D28C6A8494A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkiaSharp.Extended.Svg", "SkiaSharp.Extended\SkiaSharp.Extended.Svg\source\SkiaSharp.Extended.Svg.csproj", "{A51854AA-4645-4596-B0F5-CB8BDBDDCDC5}"
 EndProject
