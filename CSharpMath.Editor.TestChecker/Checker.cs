@@ -15,7 +15,7 @@ namespace CSharpMath.Editor.TestChecker {
           Console.Write(message);
           input = Console.ReadLine();
           value = Tests.DisplayEditingTests.CreateDisplay(input);
-        } while (input is null);
+        } while (value is null);
         return value;
       }
       int ReadInt(string message) {
@@ -29,9 +29,18 @@ namespace CSharpMath.Editor.TestChecker {
       }
 
       var context = new GraphicsContext();
+      Console.SetBufferSize(10000, 100); // We need lots of horizontal space, vertical not so much
       while (true) {
         try {
           Console.Clear();
+          Console.ResetColor();
+          Console.WriteLine("Welcome to the CSharpMath.Editor Test Checker!");
+          Console.WriteLine();
+          Console.WriteLine("Usage:");
+          Console.WriteLine("Input the test expression in LaTeX below, and input the click position.");
+          Console.WriteLine("You can visualize the test case by looking at the cursor position.");
+          Console.WriteLine("Once you're done, you can press any key to move on to another test case.");
+          Console.WriteLine("");
           var latex = ReadLaTeX("Input LaTeX: ");
           var x = ReadInt("Input Touch X (integer): ");
           var y = ReadInt("Input Touch Y (integer): ");
@@ -46,53 +55,58 @@ namespace CSharpMath.Editor.TestChecker {
         }
       }
     }
-    static ConsoleColor ClosestConsoleColor(byte r, byte g, byte b) {
-      ConsoleColor ret = 0;
-      double rr = r, gg = g, bb = b, delta = double.MaxValue;
+    public static void SetConsoleColor(Structures.Color? col) {
+      if (col is Structures.Color color) {
+        ConsoleColor ret = 0;
+        double rr = color.R, gg = color.G, bb = color.B, delta = double.MaxValue;
 
-      foreach (ConsoleColor cc in Enum.GetValues(typeof(ConsoleColor))) {
-        var n = Enum.GetName(typeof(ConsoleColor), cc);
-        var c = Color.FromName(n == "DarkYellow" ? "Orange" : n); // bug fix
-        var t = Math.Pow(c.R - rr, 2.0) + Math.Pow(c.G - gg, 2.0) + Math.Pow(c.B - bb, 2.0);
-        if (t == 0.0)
-          return cc;
-        if (t < delta) {
-          delta = t;
-          ret = cc;
+        foreach (ConsoleColor cc in Enum.GetValues(typeof(ConsoleColor))) {
+          var n = Enum.GetName(typeof(ConsoleColor), cc);
+          var c = Color.FromName(n == "DarkYellow" ? "Orange" : n); // bug fix
+          var t = Math.Pow(c.R - rr, 2.0) + Math.Pow(c.G - gg, 2.0) + Math.Pow(c.B - bb, 2.0);
+          if (t < delta) {
+            delta = t;
+            ret = cc;
+          }
         }
+
+        Console.ForegroundColor = ret;
       }
-      return ret;
+      else Console.ResetColor();
     }
     // Because CSharpMath uses the "normal mathematical" coordinate system internally, subtract p.Y
-    public static Point Adjust(Point p) => new Point(p.X, Console.WindowHeight - p.Y);
-    public static void ConsoleDrawRectangle(int width, int height, Point location, char tag = '\0', Structures.Color? borderColor = null) {
+    // + 10 to create an "out of range" area
+    static Point Adjust(Point p) {
+      var (x, y) = (p.X + 10, Console.WindowHeight - p.Y);
+      return new Point(x < 0 ? 0 : x, y < 0 ? 0 : y);
+    }
+    public static void ConsoleDrawRectangle(int width, int height, Point location, char glyph, Structures.Color? color) {
       location = Adjust(location);
 
-      width -= 2; // Exclude borders
-      height -= 2;
+      var innerRectWidth = width - 2;
+      var innerRectHeight = height - 2;
 
-      if (borderColor is Structures.Color c)
-        Console.ForegroundColor = ClosestConsoleColor(c.R, c.G, c.B);
+      SetConsoleColor(color);
       Console.SetCursorPosition(location.X, location.Y);
       Console.Write('╔');
-      for (var i = 0; i < width; i++)
+      for (var i = 0; i < innerRectWidth; i++)
         Console.Write('═');
       Console.Write('╗');
-      for (var y = location.Y + 1; y < location.Y + height; y++) {
+      for (var y = location.Y + 1; y < location.Y + innerRectHeight; y++) {
         Console.SetCursorPosition(location.X, y);
         Console.Write('║');
-        Console.SetCursorPosition(location.X + width + 1, y);
+        Console.SetCursorPosition(location.X + innerRectWidth + 1, y);
         Console.Write('║');
       }
-      Console.SetCursorPosition(location.X, location.Y + height);
+      Console.SetCursorPosition(location.X, location.Y + innerRectHeight);
       Console.Write('╚');
-      for (var i = 0; i < width; i++)
+      for (var i = 0; i < innerRectWidth; i++)
         Console.Write('═');
       Console.Write('╝');
 
-      if (tag != '\0') {
-        Console.SetCursorPosition(location.X + width / 2, location.Y + height / 2);
-        Console.Write(tag);
+      if (glyph != '\0') {
+        Console.SetCursorPosition(location.X + width / 2, location.Y + innerRectHeight / 2);
+        Console.Write(glyph);
       }
 
       Console.ResetColor();

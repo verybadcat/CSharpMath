@@ -15,11 +15,11 @@ namespace CSharpMath.Editor.TestChecker {
 
     public void DrawGlyphRunWithOffset(AttributedGlyphRun<TestFont, char> text, PointF point, Structures.Color? color) {
       var advance = 0.0;
-      foreach (var (glyph, bounds) in text.GlyphInfos.Zip(
+      foreach (var ((glyph, kernAfter, foreground), bounds) in text.GlyphInfos.Zip(
         TestTypesettingContexts.Instance.GlyphBoundsProvider.GetBoundingRectsForGlyphs(text.Font, text.Glyphs.AsForEach(), text.Length),
         ValueTuple.Create)) {
-        Checker.ConsoleDrawRectangle((int)bounds.Width, (int)bounds.Height, new Point((int)(point.X + trans.X + advance), (int)(point.Y + trans.Y)), glyph.Glyph, glyph.Foreground);
-        advance += bounds.Width + glyph.KernAfterGlyph;
+        Checker.ConsoleDrawRectangle((int)bounds.Width, (int)bounds.Height, new Point((int)(point.X + trans.X + advance), (int)(point.Y + trans.Y)), glyph, foreground ?? color);
+        advance += bounds.Width + kernAfter;
       }
     }
 
@@ -31,8 +31,15 @@ namespace CSharpMath.Editor.TestChecker {
       }
     }
 
-#warning Needs implementation
-    public void DrawLine(float x1, float y1, float x2, float y2, float strokeWidth, Structures.Color? color) { } // Nothing for now
+    public void DrawLine(float x1, float y1, float x2, float y2, float strokeWidth, Structures.Color? color) {
+      if (y1 != y2) throw new NotImplementedException("Non-horizontal lines currently not supported");
+      Checker.SetConsoleColor(color);
+      for (int i = 1; i <= strokeWidth; i++) {
+        Console.SetCursorPosition((int)x1, (int)(y1 - strokeWidth / 2) + i);
+        for (int ii = 0; ii < x2 - x1; ii++)
+          Console.Write('═');
+      }
+    }
 
     public void RestoreState() => trans = stack.Pop();
     public void SaveState() => stack.Push(trans);

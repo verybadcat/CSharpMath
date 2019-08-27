@@ -12,6 +12,7 @@ using ListDisplay = CSharpMath.Display.ListDisplay<CSharpMath.Tests.FrontEnd.Tes
 using TestData = Xunit.TheoryData<System.Drawing.PointF, CSharpMath.Editor.MathListIndex>;
 
 namespace CSharpMath.Editor.Tests {
+  // Use the "CSharpMath.Editor Test Checker" project in the _Utils folder to visualize the test cases
   public class DisplayEditingTests {
     class EqualsException : Xunit.Sdk.EqualException {
       public EqualsException(object expected, object actual, string message) : base(expected, actual) =>
@@ -20,8 +21,7 @@ namespace CSharpMath.Editor.Tests {
         UserMessage + $"\nExpected: {Expected?.ToString() ?? "(null)"}\nActual: {Actual?.ToString() ?? "(null)"}";
     }
 
-    public const float FontSize = 20;
-    public static readonly TestFont Font = new TestFont(FontSize);
+    public static readonly TestFont Font = new TestFont(20);
     private static readonly TypesettingContext<TestFont, char> context = TestTypesettingContexts.Instance;
 
     public static ListDisplay CreateDisplay(string expr) =>
