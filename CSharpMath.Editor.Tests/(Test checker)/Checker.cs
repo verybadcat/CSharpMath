@@ -6,8 +6,8 @@ using SkiaSharp;
 
 namespace CSharpMath.Editor.Tests.TestChecker {
   public class Checker {
-    public void Main() {
-
+    public static void Main() {
+      Console.WriteLine("Hi");
     }
 
     // https://stackoverflow.com/questions/33538527/display-a-image-in-a-console-application
@@ -16,8 +16,8 @@ namespace CSharpMath.Editor.Tests.TestChecker {
 
     public static void ConsoleWritePixel(SKColor cValue) {
       SKColor[] cTable = cColors.Select(x => new SKColor(0xFF000000 + x)).ToArray();
-      char[] rList = new char[] { (char)9617, (char)9618, (char)9619, (char)9608 }; // 1/4, 2/4, 3/4, 4/4
-      int[] bestHit = new int[] { 0, 0, 4, int.MaxValue }; //ForeColor, BackColor, Symbol, Score
+      var rList = new[] { '\u2591', '\u2592', '\u2593', '\u2588' }; // 1/4, 2/4, 3/4, 4/4
+      var bestHit = new[] { 0, 0, 4, int.MaxValue }; //ForeColor, BackColor, Symbol, Score
 
       for (int rChar = rList.Length; rChar > 0; rChar--) {
         for (int cFore = 0; cFore < cTable.Length; cFore++) {
@@ -47,15 +47,15 @@ namespace CSharpMath.Editor.Tests.TestChecker {
     public static void ConsoleWriteImage(SKBitmap source) {
       int sMax = 39;
       decimal percent = Math.Min(decimal.Divide(sMax, source.Width), decimal.Divide(sMax, source.Height));
-      var dSize = new SKSize((int)(source.Width * percent), (int)(source.Height * percent));
-      var bmpMax = new SKBitmap(source, dSize.Width * 2, dSize.Height);
-      for (int i = 0; i < dSize.Height; i++) {
-        for (int j = 0; j < dSize.Width; j++) {
-          ConsoleWritePixel(bmpMax.GetPixel(j * 2, i));
-          ConsoleWritePixel(bmpMax.GetPixel(j * 2 + 1, i));
+      var dSize = new SKSizeI((int)(source.Width * percent), (int)(source.Height * percent));
+      using (var bmpMax = source.Resize(new SKImageInfo(dSize.Width * 2, dSize.Height), SKFilterQuality.High))
+        for (int i = 0; i < dSize.Height; i++) {
+          for (int j = 0; j < dSize.Width; j++) {
+            ConsoleWritePixel(bmpMax.GetPixel(j * 2, i));
+            ConsoleWritePixel(bmpMax.GetPixel(j * 2 + 1, i));
+          }
+          Console.WriteLine();
         }
-        System.Console.WriteLine();
-      }
       Console.ResetColor();
     }
   }
