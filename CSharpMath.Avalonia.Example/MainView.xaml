@@ -8,17 +8,17 @@
 
     <Grid>
 
-        <DropDown x:Name="Themes"
+        <ComboBox x:Name="Themes"
                   SelectedIndex="0"
                   Width="100"
                   Margin="8"
                   HorizontalAlignment="Right"
                   VerticalAlignment="Bottom">
 
-            <DropDownItem>Light</DropDownItem>
-            <DropDownItem>Dark</DropDownItem>
+          <ComboBoxItem>Light</ComboBoxItem>
+          <ComboBoxItem>Dark</ComboBoxItem>
 
-        </DropDown>
+        </ComboBox>
 
         <TabControl Classes="sidebar" Name="Sidebar">
 

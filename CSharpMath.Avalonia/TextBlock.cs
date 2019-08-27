@@ -1,5 +1,5 @@
 using System;
-
+using System.Linq;
 using Avalonia;
 using Avalonia.Media;
 using AvaloniaTextBlock = Avalonia.Controls.TextBlock;
@@ -25,15 +25,8 @@ namespace CSharpMath.Avalonia {
     public override void Render(DrawingContext context) =>
         _painter.Draw(new AvaloniaCanvas(context, Bounds.Size));
 
-    protected override Size MeasureOverride(Size availableSize) {
-      var measure = _painter.Measure((float)availableSize.Width);
-
-      if (measure.HasValue) {
-        return new Size(measure.Value.Width, measure.Value.Height);
-      }
-
-      return default;
-    }
+    protected override Size MeasureOverride(Size availableSize) =>
+      _painter.Measure((float)availableSize.Width) is System.Drawing.RectangleF r ? new Size(r.Width, r.Height) : default;
 
     private void UpdateTypeface(FontFamily obj) {
       //throw new NotImplementedException();
