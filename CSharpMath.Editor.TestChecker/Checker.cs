@@ -37,7 +37,8 @@ namespace CSharpMath.Editor.TestChecker {
           var y = ReadInt("Input Touch Y (integer): ");
           Console.Clear();
           latex.Draw(context);
-          Console.SetCursorPosition(x, y);
+          var pos = Adjust(new Point(x, y));
+          Console.SetCursorPosition(pos.X, pos.Y);
           Console.ReadKey();
         } catch (Exception e) {
           Console.Write(e);
@@ -62,7 +63,11 @@ namespace CSharpMath.Editor.TestChecker {
       }
       return ret;
     }
+    // Because CSharpMath uses the "normal mathematical" coordinate system internally, subtract p.Y
+    public static Point Adjust(Point p) => new Point(p.X, Console.WindowHeight - p.Y);
     public static void ConsoleDrawRectangle(int width, int height, Point location, char tag = '\0', Structures.Color? borderColor = null) {
+      location = Adjust(location);
+
       width -= 2; // Exclude borders
       height -= 2;
 
