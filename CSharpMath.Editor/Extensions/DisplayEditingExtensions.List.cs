@@ -71,11 +71,11 @@ namespace CSharpMath.Editor {
         // The index of the atom this denotes.
         if (closestLine.IndexInParent is int.MinValue)
           throw Arg($"Index was not set for a {indexType} in the {nameof(ListDisplay<TFont, TGlyph>)}.", nameof(self));
-        return MathListIndex.IndexAtLocation(closestLine.IndexInParent, index, indexType);
+        return MathListIndex.IndexAtLocation(closestLine.IndexInParent, indexType, index);
       } else if (displayWithPoint.HasScript)
         //The display list has a subscript or a superscript. If the index is at the end of the atom, then we need to put it before the sub/super script rather than after.
         if (index?.AtomIndex == displayWithPoint.Range.End)
-          return MathListIndex.IndexAtLocation(index.AtomIndex - 1, MathListIndex.Level0Index(1), MathListSubIndexType.Nucleus);
+          return MathListIndex.IndexAtLocation(index.AtomIndex - 1, MathListSubIndexType.Nucleus, MathListIndex.Level0Index(1));
       return index;
     }
     

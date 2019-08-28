@@ -33,14 +33,14 @@ namespace CSharpMath.Editor {
     public MathListIndex SubIndex { get; set; }
 
     public static MathListIndex Level0Index(int index) => new MathListIndex { AtomIndex = index };
-    public static MathListIndex IndexAtLocation(int location, [NullableReference]MathListIndex subIndex, MathListSubIndexType type) =>
+    public static MathListIndex IndexAtLocation(int location, MathListSubIndexType type, [NullableReference]MathListIndex subIndex) =>
       new MathListIndex { AtomIndex = location, SubIndexType = type, SubIndex = subIndex };
 
-    public MathListIndex LevelUpWithSubIndex([NullableReference]MathListIndex subIndex, MathListSubIndexType type) {
+    public MathListIndex LevelUpWithSubIndex(MathListSubIndexType type, [NullableReference]MathListIndex subIndex) {
       if (SubIndexType is MathListSubIndexType.None)
-        return IndexAtLocation(AtomIndex, subIndex, type);
+        return IndexAtLocation(AtomIndex, type, subIndex);
       // we have to recurse
-      return IndexAtLocation(AtomIndex, SubIndex.LevelUpWithSubIndex(subIndex, type), SubIndexType);
+      return IndexAtLocation(AtomIndex, SubIndexType, SubIndex.LevelUpWithSubIndex(type, subIndex));
     }
     [NullableReference]
     public MathListIndex LevelDown() {
@@ -48,7 +48,7 @@ namespace CSharpMath.Editor {
         return null;
       }
       // recurse
-      return SubIndex?.LevelDown() is MathListIndex subIndex ? IndexAtLocation(AtomIndex, subIndex, SubIndexType) : Level0Index(AtomIndex);
+      return SubIndex?.LevelDown() is MathListIndex subIndex ? IndexAtLocation(AtomIndex, SubIndexType, subIndex) : Level0Index(AtomIndex);
     }
 
     [NullableReference]
@@ -61,7 +61,7 @@ namespace CSharpMath.Editor {
         } else {
           var prevSubIndex = SubIndex?.Previous;
           if (prevSubIndex != null) {
-            return IndexAtLocation(AtomIndex, prevSubIndex, SubIndexType);
+            return IndexAtLocation(AtomIndex, SubIndexType, prevSubIndex);
           }
         }
         return null;
@@ -73,9 +73,9 @@ namespace CSharpMath.Editor {
         if (SubIndexType == MathListSubIndexType.None) {
           return Level0Index(AtomIndex + 1);
         } else if (SubIndexType == MathListSubIndexType.Nucleus) {
-          return IndexAtLocation(AtomIndex + 1, SubIndex, SubIndexType);
+          return IndexAtLocation(AtomIndex + 1, SubIndexType, SubIndex);
         } else {
-          return IndexAtLocation(AtomIndex, SubIndex?.Next, SubIndexType);
+          return IndexAtLocation(AtomIndex, SubIndexType, SubIndex?.Next);
         }
       }
     }
