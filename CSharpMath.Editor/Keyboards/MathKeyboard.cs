@@ -40,14 +40,6 @@ namespace CSharpMath.Editor {
     /// <summary><see cref="Display"/> should be redrawn.</summary>
     public event EventHandler RedrawRequested;
 
-    private bool IndexAtEmptyPlaceholder(out IMathAtom placeholder, out bool atEndOfMathList) {
-      placeholder = MathList.AtomAt(_insertionIndex);
-      if (atEndOfMathList = placeholder is null)
-        placeholder = MathList.AtomAt(_insertionIndex?.Previous);
-      return placeholder != null && placeholder.AtomType is MathAtomType.Placeholder &&
-             placeholder.Superscript is null && placeholder.Subscript is null;
-    }
-    
     public PointF? ClosestPointToIndex(MathListIndex index) => Display?.PointForIndex(Context, index);
     public MathListIndex ClosestIndexToPoint(PointF point) => Display?.IndexForPoint(Context, point);
 
@@ -367,9 +359,13 @@ namespace CSharpMath.Editor {
       }
       void InsertCharacterKey(MathKeyboardInput i) => InsertAtom(AtomForKeyPress(i));
       void InsertSymbolName(string s) => InsertAtom(MathAtoms.ForLatexSymbolName(s));
-
+      bool IndexAtEmptyPlaceholder(out IMathAtom placeholder) {
+        placeholder = MathList.AtomAt(_insertionIndex) ?? MathList.AtomAt(_insertionIndex?.Previous);
+        return placeholder != null && placeholder.AtomType is MathAtomType.Placeholder &&
+               placeholder.Superscript is null && placeholder.Subscript is null;
+      }
       void RemovePlaceholderIfPresent() {
-        if (IndexAtEmptyPlaceholder(out var placeholder, out _))
+        if (IndexAtEmptyPlaceholder(out var placeholder))
           // Remove this element - the inserted text replaces the placeholder
           MathList.Remove(placeholder);
       }

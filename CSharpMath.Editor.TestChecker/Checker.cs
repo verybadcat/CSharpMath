@@ -17,7 +17,7 @@ namespace CSharpMath.Editor.TestChecker {
         do {
           Console.Write(message);
           input = Console.ReadLine();
-          value = Tests.DisplayEditingTests.CreateDisplay(input);
+          value = Tests.ClosestPointTests.CreateDisplay(input);
         } while (value is null);
         return value;
       }
@@ -52,7 +52,7 @@ namespace CSharpMath.Editor.TestChecker {
           var x = ReadInt("Input Touch X (integer): ");
           var y = ReadInt("Input Touch Y (integer): ");
           Console.Clear();
-          ConsoleDrawRectangle(Rectangle.Empty, 'O', Structures.Color.PredefinedColors["yellow"]); // Origin
+          // ConsoleDrawRectangle(Rectangle.Empty, 'O', Structures.Color.PredefinedColors["yellow"]); // Origin
           latex.Draw(context);
           var pos = Adjust(new Rectangle(x, y, 0, 0));
           Console.SetCursorPosition(pos.X, pos.Y);
