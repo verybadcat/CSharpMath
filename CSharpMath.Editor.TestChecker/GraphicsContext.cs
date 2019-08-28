@@ -18,7 +18,7 @@ namespace CSharpMath.Editor.TestChecker {
       foreach (var ((glyph, kernAfter, foreground), bounds) in text.GlyphInfos.Zip(
         TestTypesettingContexts.Instance.GlyphBoundsProvider.GetBoundingRectsForGlyphs(text.Font, text.Glyphs.AsForEach(), text.Length),
         ValueTuple.Create)) {
-        Checker.ConsoleDrawRectangle((int)bounds.Width, (int)bounds.Height, new Point((int)(point.X + trans.X + advance), (int)(point.Y + trans.Y)), glyph, foreground ?? color);
+        Checker.ConsoleDrawRectangle(new Rectangle((int)(point.X + trans.X + advance), (int)(point.Y + trans.Y), (int)bounds.Width, (int)bounds.Height), glyph, foreground ?? color);
         advance += bounds.Width + kernAfter;
       }
     }
@@ -27,18 +27,15 @@ namespace CSharpMath.Editor.TestChecker {
       var zipped = glyphs.Zip(points);
       var bounds = TestTypesettingContexts.Instance.GlyphBoundsProvider.GetBoundingRectsForGlyphs(font, glyphs, zipped.Count);
       foreach (var ((glyph, point), bound) in zipped.Zip(bounds, ValueTuple.Create)) {
-        Checker.ConsoleDrawRectangle((int)bound.Width, (int)bound.Height, new Point((int)(point.X + trans.X), (int)(point.Y + trans.Y)), glyph, color);
+        Checker.ConsoleDrawRectangle(new Rectangle((int)(point.X + trans.X), (int)(point.Y + trans.Y), (int)bound.Width, (int)bound.Height), glyph, color);
       }
     }
 
     public void DrawLine(float x1, float y1, float x2, float y2, float strokeWidth, Structures.Color? color) {
       if (y1 != y2) throw new NotImplementedException("Non-horizontal lines currently not supported");
-      Checker.SetConsoleColor(color);
-      for (int i = 1; i <= strokeWidth; i++) {
-        Console.SetCursorPosition((int)x1, (int)(y1 - strokeWidth / 2) + i);
-        for (int ii = 0; ii < x2 - x1; ii++)
-          Console.Write('═');
-      }
+      if (!Checker.OutputLines) return;
+      Checker.ConsoleDrawHorizontal((int)(x1 + trans.X), (int)(y1 + trans.Y), (int)(x2 + trans.X),
+        (int)MathF.Round(strokeWidth) /* e.g. for \frac, strokeWidth = 0.8 */, color);
     }
 
     public void RestoreState() => trans = stack.Pop();

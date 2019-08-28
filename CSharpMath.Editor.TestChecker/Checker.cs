@@ -7,6 +7,9 @@ using ListDisplay = CSharpMath.Display.ListDisplay<CSharpMath.Tests.FrontEnd.Tes
 
 namespace CSharpMath.Editor.TestChecker {
   public class Checker {
+    /// <summary>Whether you want to view e.g. fraction lines and radical lines despite viewing character positions with less clarity.</summary>
+    public static readonly bool OutputLines = false;
+
     public static void Main() {
       ListDisplay ReadLaTeX(string message) {
         string input;
@@ -29,7 +32,11 @@ namespace CSharpMath.Editor.TestChecker {
       }
 
       var context = new GraphicsContext();
-      Console.SetBufferSize(10000, 100); // We need lots of horizontal space, vertical not so much
+      Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
+      // We need lots of horizontal space, vertical not so much
+      Console.SetBufferSize(10000, 500);
+      // We need to output heavy box drawing characters, because the vertical light line displays as green lines at font size 16
+      Console.OutputEncoding = Encoding.UTF8;
       while (true) {
         try {
           Console.Clear();
@@ -45,8 +52,9 @@ namespace CSharpMath.Editor.TestChecker {
           var x = ReadInt("Input Touch X (integer): ");
           var y = ReadInt("Input Touch Y (integer): ");
           Console.Clear();
+          ConsoleDrawRectangle(Rectangle.Empty, 'O', Structures.Color.PredefinedColors["yellow"]); // Origin
           latex.Draw(context);
-          var pos = Adjust(new Point(x, y));
+          var pos = Adjust(new Rectangle(x, y, 0, 0));
           Console.SetCursorPosition(pos.X, pos.Y);
           Console.ReadKey();
         } catch (Exception e) {
@@ -62,7 +70,7 @@ namespace CSharpMath.Editor.TestChecker {
 
         foreach (ConsoleColor cc in Enum.GetValues(typeof(ConsoleColor))) {
           var n = Enum.GetName(typeof(ConsoleColor), cc);
-          var c = Color.FromName(n == "DarkYellow" ? "Orange" : n); // bug fix
+          var c = cc is ConsoleColor.DarkYellow ? Color.Orange : Color.FromName(n); // There's no "DarkYellow" in System.Drawing.Color
           var t = Math.Pow(c.R - rr, 2.0) + Math.Pow(c.G - gg, 2.0) + Math.Pow(c.B - bb, 2.0);
           if (t < delta) {
             delta = t;
@@ -74,42 +82,54 @@ namespace CSharpMath.Editor.TestChecker {
       }
       else Console.ResetColor();
     }
-    // Because CSharpMath uses the "normal mathematical" coordinate system internally, subtract p.Y
-    // + 10 to create an "out of range" area
-    static Point Adjust(Point p) {
-      var (x, y) = (p.X + 10, Console.WindowHeight - p.Y);
-      return new Point(x < 0 ? 0 : x, y < 0 ? 0 : y);
-    }
-    public static void ConsoleDrawRectangle(int width, int height, Point location, char glyph, Structures.Color? color) {
-      location = Adjust(location);
+    static Rectangle Adjust(Rectangle rect) =>
+      new Rectangle(
+        Math.Clamp(rect.Left + 10 /* Out of range area */, 0, Console.BufferWidth),
+        /* Convert from CSharpMath internal "normal mathematical" coordinate system -> subtract bottom */
+        Math.Clamp(Console.BufferHeight / 2 - rect.Bottom, 0, Console.BufferHeight),
+        rect.Width,
+        rect.Height);
+    public static void ConsoleDrawRectangle(Rectangle rect, char glyph, Structures.Color? color) {
+      rect = Adjust(rect);
 
-      var innerRectWidth = width - 2;
-      var innerRectHeight = height - 2;
+      var innerRectWidth = rect.Width - 2;
+      var innerRectHeight = rect.Height - 2;
 
       SetConsoleColor(color);
-      Console.SetCursorPosition(location.X, location.Y);
-      Console.Write('╔');
-      for (var i = 0; i < innerRectWidth; i++)
-        Console.Write('═');
-      Console.Write('╗');
-      for (var y = location.Y + 1; y < location.Y + innerRectHeight; y++) {
-        Console.SetCursorPosition(location.X, y);
-        Console.Write('║');
-        Console.SetCursorPosition(location.X + innerRectWidth + 1, y);
-        Console.Write('║');
+      Console.SetCursorPosition(rect.X, rect.Y);
+      if (rect.Width > 1 && rect.Height > 1) {
+        Console.Write('┏');
+        for (var i = 0; i < innerRectWidth; i++)
+          Console.Write('━');
+        Console.Write('┓');
+        for (var y = rect.Y + 1; y < rect.Y + innerRectHeight; y++) {
+          Console.SetCursorPosition(rect.X, y);
+          Console.Write('┃');
+          Console.SetCursorPosition(rect.X + innerRectWidth + 1, y);
+          Console.Write('┃');
+        }
+        Console.SetCursorPosition(rect.X, rect.Y + innerRectHeight);
+        Console.Write('┗');
+        for (var i = 0; i < innerRectWidth; i++)
+          Console.Write('━');
+        Console.Write('┛');
       }
-      Console.SetCursorPosition(location.X, location.Y + innerRectHeight);
-      Console.Write('╚');
-      for (var i = 0; i < innerRectWidth; i++)
-        Console.Write('═');
-      Console.Write('╝');
 
       if (glyph != '\0') {
-        Console.SetCursorPosition(location.X + width / 2, location.Y + innerRectHeight / 2);
+        Console.SetCursorPosition(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
         Console.Write(glyph);
       }
 
       Console.ResetColor();
+    }
+    public static void ConsoleDrawHorizontal(int x1_, int y_, int x2_, int thickness, Structures.Color? color) {
+      var rect = Adjust(Rectangle.FromLTRB(x1_, y_ - thickness / 2, x2_, y_ + thickness / 2));
+      SetConsoleColor(color);
+      for (int i = 0; i < thickness; i++) {
+        Console.SetCursorPosition(rect.Left, rect.Top + i);
+        for (int ii = 0; ii < rect.Width; ii++)
+          Console.Write('━');
+      }
     }
   }
 }
