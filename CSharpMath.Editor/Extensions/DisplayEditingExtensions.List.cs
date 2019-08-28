@@ -165,14 +165,12 @@ namespace CSharpMath.Editor {
               case MathListSubIndexType.Radicand:
                 if (display is RadicalDisplay<TFont, TGlyph> radical)
                   return radical.SubListForIndexType(index.SubIndexType);
-                //Log($"No radical found at index {index.AtomIndex}");
-                break;
+                else throw new SubIndexTypeMismatchException($"No radical found at index {index.AtomIndex}");
               case MathListSubIndexType.Numerator:
               case MathListSubIndexType.Denominator:
                 if (display is FractionDisplay<TFont, TGlyph> fraction)
                   return fraction.SubListForIndexType(index.SubIndexType);
-                //Log($"No fraction found at index {index.AtomIndex}");
-                break;
+                else throw new SubIndexTypeMismatchException($"No fraction found at index {index.AtomIndex}");
               case MathListSubIndexType.Superscript:
               case MathListSubIndexType.Subscript:
               default:

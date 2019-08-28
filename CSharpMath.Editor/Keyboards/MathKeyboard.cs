@@ -242,14 +242,14 @@ namespace CSharpMath.Editor {
                   else
                     goto default;
                 else
-                  throw new InvalidCodePathException($"Radical not found at {radicalIndex}");
+                  throw new SubIndexTypeMismatchException($"Radical not found at {radicalIndex}");
                 break;
               case MathListSubIndexType.Denominator:
                 var fracIndex = _insertionIndex.LevelDown();
                 if (MathList.AtomAt(fracIndex) is IFraction frac)
                   _insertionIndex = fracIndex.LevelUpWithSubIndex(MathListSubIndexType.Numerator, MathListIndex.Level0Index(frac.Numerator.Count));
                 else
-                  throw new InvalidCodePathException($"Fraction not found at {fracIndex}");
+                  throw new SubIndexTypeMismatchException($"Fraction not found at {fracIndex}");
                 break;
               case MathListSubIndexType.Degree:
               case MathListSubIndexType.Numerator:
@@ -295,14 +295,14 @@ namespace CSharpMath.Editor {
                 if (MathList.AtomAt(radicalIndex) is IRadical)
                   _insertionIndex = radicalIndex.LevelUpWithSubIndex(MathListSubIndexType.Radicand, MathListIndex.Level0Index(0));
                 else
-                  throw new InvalidCodePathException($"Radical not found at {radicalIndex}");
+                  throw new SubIndexTypeMismatchException($"Radical not found at {radicalIndex}");
                 break;
               case MathListSubIndexType.Numerator:
                 var fracIndex = _insertionIndex.LevelDown();
                 if (MathList.AtomAt(fracIndex) is IFraction)
                   _insertionIndex = fracIndex.LevelUpWithSubIndex(MathListSubIndexType.Denominator, MathListIndex.Level0Index(0));
                 else
-                  throw new InvalidCodePathException($"Fraction not found at {fracIndex}");
+                  throw new SubIndexTypeMismatchException($"Fraction not found at {fracIndex}");
                 break;
               case MathListSubIndexType.Radicand:
               case MathListSubIndexType.Denominator:

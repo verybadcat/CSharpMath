@@ -25,7 +25,13 @@ namespace CSharpMath.Editor.Tests {
       T(@"□^{□^{□^■}}", K.Power, K.Power, K.Power),
       T(@"e^{\square }", K.Power, K.Left, K.SmallE, K.Right),
       T(@"e^■", K.Power, K.Left, K.SmallE, K.Left),
-      T(@"e^■", K.BaseEPower)
+      T(@"e^■", K.SmallE, K.Power),
+      T(@"e^■", K.BaseEPower),
+      T(@"\vert x\vert \vert y\vert ", K.Absolute, K.SmallX, K.Right, K.VerticalBar, K.SmallY, K.VerticalBar),
+      T(@"(1)(2)", K.BothRoundBrackets, K.D1, K.Right, K.LeftRoundBracket, K.D2, K.RightRoundBracket),
+      T(@"\sqrt{3}", K.SquareRoot, K.D3),
+      T(@"\sqrt[3]{3}", K.CubeRoot, K.D3),
+      T(@"\sqrt{\sqrt[4]{3}}", K.SquareRoot, K.NthRoot, K.D4, K.Right, K.D3)
     ]
     public void KeyPressTests(string latex, params K[] inputs) {
       var keyboard = new MathKeyboard<TestFont, char>(context);
