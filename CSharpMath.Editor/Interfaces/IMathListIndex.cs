@@ -46,7 +46,7 @@ namespace CSharpMath.Editor {
     bool HasSubIndexOfType(MathListSubIndexType subIndexType);
 
     /** Creates a new index by attaching this index at the end of the current one. */
-    TSelf LevelUpWithSubIndex([NullableReference] TSelf subIndex, MathListSubIndexType type);
+    TSelf LevelUpWithSubIndex(MathListSubIndexType type, [NullableReference] TSelf subIndex);
     /** Creates a new index by removing the last index item. If this is the last one, then returns nil. */
     [NullableReference] TSelf LevelDown();
 

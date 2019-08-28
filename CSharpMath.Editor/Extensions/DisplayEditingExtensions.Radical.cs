@@ -25,10 +25,10 @@ namespace CSharpMath.Editor {
       var radicandDistance = DistanceFromPointToRect(point, radicandRect);
       if (degreeDistance < radicandDistance) {
         if (self.Degree != null)
-          return MathListIndex.IndexAtLocation(self.Range.Location, self.Degree.IndexForPoint(context, point), MathListSubIndexType.Degree);
+          return MathListIndex.IndexAtLocation(self.Range.Location, MathListSubIndexType.Degree, self.Degree.IndexForPoint(context, point));
         return MathListIndex.Level0Index(self.Range.Location);
       } else
-        return MathListIndex.IndexAtLocation(self.Range.Location, self.Radicand.IndexForPoint(context, point), MathListSubIndexType.Radicand);
+        return MathListIndex.IndexAtLocation(self.Range.Location, MathListSubIndexType.Radicand, self.Radicand.IndexForPoint(context, point));
     }
     
     public static PointF? PointForIndex<TFont, TGlyph>(this RadicalDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, MathListIndex index) where TFont : IFont<TGlyph> {

@@ -19,9 +19,9 @@ namespace CSharpMath.Editor {
         return MathListIndex.Level0Index(self.Range.End);
 
       if (point.Y > self.LinePosition + PixelDelta)
-        return MathListIndex.IndexAtLocation(self.Range.Location, self.Numerator.IndexForPoint(context, point), MathListSubIndexType.Numerator);
+        return MathListIndex.IndexAtLocation(self.Range.Location, MathListSubIndexType.Numerator, self.Numerator.IndexForPoint(context, point));
       else if (point.Y < self.LinePosition - PixelDelta)
-        return MathListIndex.IndexAtLocation(self.Range.Location, self.Denominator.IndexForPoint(context, point), MathListSubIndexType.Denominator);
+        return MathListIndex.IndexAtLocation(self.Range.Location, MathListSubIndexType.Denominator, self.Denominator.IndexForPoint(context, point));
       if (point.X > self.Position.X + self.Width / 2)
         return MathListIndex.Level0Index(self.Range.End);
 
