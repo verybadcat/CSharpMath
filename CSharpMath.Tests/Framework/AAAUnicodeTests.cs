@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Xunit;
 
-namespace CSharpMath.Tests {
+namespace CSharpMath.Tests.Framework {
   public class UnicodeTests {
     [Fact]
     public void TestPi() {
@@ -23,7 +23,7 @@ namespace CSharpMath.Tests {
       Assert.Equal(input, output);
     }
 
-    private IEnumerable<UInt16> ToUintEnumerable(byte[] bytes) {
+    private IEnumerable<ushort> ToUintEnumerable(byte[] bytes) {
       for (int i=0; i<bytes.Length; i+=2) {
         if (i == bytes.Length - 1) {
           yield return bytes[i];
@@ -33,11 +33,11 @@ namespace CSharpMath.Tests {
       }
     }
 
-    public UInt16[] ToUintArray(byte[] bytes) {
+    public ushort[] ToUintArray(byte[] bytes) {
       return ToUintEnumerable(bytes).ToArray();
     }
 
-    public byte[] ToByteArray(UInt16[] uints) {
+    public byte[] ToByteArray(ushort[] uints) {
       byte[] r = new byte[uints.Length * 2];
       for (int i=0; i<uints.Length; i++) {
         byte[] localBytes = BitConverter.GetBytes(uints[i]);
@@ -61,14 +61,12 @@ namespace CSharpMath.Tests {
       }
     }
 
-
-
     [Fact]
     public void TestUtf32()
     {
       var input = 0x0001D45A; // mathematical italic small m
 
-      var stringified = Char.ConvertFromUtf32(input);
+      var stringified = char.ConvertFromUtf32(input);
       var chars = stringified.ToCharArray();
       var char0 = chars[0];
       var char1 = chars[1];

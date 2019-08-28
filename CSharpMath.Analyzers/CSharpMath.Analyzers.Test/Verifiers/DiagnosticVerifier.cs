@@ -29,6 +29,7 @@ namespace TestHelper {
 
     #region Verifier wrappers
 
+    protected readonly Workspace workspace = new AdhocWorkspace();
     /// <summary>
     /// Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source
     /// Note: input a DiagnosticResult for each Diagnostic expected
@@ -78,10 +79,8 @@ namespace TestHelper {
     /// <param name="analyzer">The analyzer to be run on the source code</param>
     /// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
     private void VerifyDiagnostics(string[] sources, string language, DiagnosticAnalyzer analyzer, params DiagnosticResult[] expected) {
-      using (var workspace = new AdhocWorkspace()) {
-        var diagnostics = GetSortedDiagnostics(workspace, sources, language, analyzer);
-        VerifyDiagnosticResults(diagnostics, analyzer, expected);
-      }
+      var diagnostics = GetSortedDiagnostics(workspace, sources, language, analyzer);
+      VerifyDiagnosticResults(diagnostics, analyzer, expected);
     }
 
     #endregion

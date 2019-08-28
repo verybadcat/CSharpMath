@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net461</TargetFramework>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\CSharpMath.Apple\Typesetting\JsonMathTable.cs" Link="_Helpers\FrontEnd\JsonMathTable.cs" />
+    <Compile Include="..\CSharpMath.Apple\Interfaces\IFontMeasurer.cs" Link="_Helpers\Interfaces\IFontMeasurer.cs" />
+    <Compile Include="..\CSharpMath.Apple\Interfaces\IGlyphNameProvider.cs" Link="_Helpers\Interfaces\IGlyphNameProvider.cs" />
+    <Compile Include="..\CSharpMath.Apple\Resources\AssemblyExtensions.cs" Link="_Helpers\Resources\AssemblyExtensions.cs" />
+    <Compile Include="..\CSharpMath.Apple\Resources\JTokenLoader.cs" Link="_Helpers\Resources\JTokenLoader.cs" />
+    <Compile Include="..\CSharpMath.Apple\Resources\ManifestResourceProvider.cs" Link="_Helpers\Resources\ManifestResourceProvider.cs" />
+    <EmbeddedResource Include="_Helpers\Resources\latinmodern-math.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
+    <PackageReference Include="NETStandard.Library" Version="2.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <ProjectReference Include="..\CSharpMath\CSharpMath.csproj" />
+  </ItemGroup>
+</Project>

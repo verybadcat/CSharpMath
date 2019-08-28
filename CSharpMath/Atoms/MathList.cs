@@ -27,9 +27,7 @@ namespace CSharpMath.Atoms {
 
     public MathList() { }
 
-    public bool IsAtomAllowed(IMathAtom atom) {
-      return atom != null && atom.AtomType != MathAtomType.Boundary;
-    }
+    public bool IsAtomAllowed(IMathAtom atom) => atom != null && atom.AtomType != MathAtomType.Boundary;
 
     public MathList(IMathList cloneMe, bool finalize) : this() {
       if (!finalize) {

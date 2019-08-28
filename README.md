@@ -4,6 +4,8 @@
 
 CSharpMath is a C# port of the wonderful [iosMath LaTeX engine](https://github.com/kostub/iosMath).
 
+_The icon's text and numbers are generated with this library itself._
+
 Current release|Current pre-release|Commits since last version|Number of contributors
 -|-|-|-
 NuGet: ![NuGet Release shield](https://img.shields.io/nuget/v/CSharpMath.svg)<br/> GitHub: ![GitHub Releases shield](https://img.shields.io/github/release/verybadcat/CSharpMath.svg)<br/>Date: ![GitHub Release date shield](https://img.shields.io/github/release-date/verybadcat/CSharpMath.svg)|NuGet: ![NuGet pre-release shield](https://img.shields.io/nuget/vpre/CSharpMath.svg)<br/> GitHub: ![GitHub Pre-releases shield](https://img.shields.io/github/release-pre/verybadcat/CSharpMath.svg)<br/>Date: ![GitHub Pre-release date shield](https://img.shields.io/github/release-date-pre/verybadcat/CSharpMath.svg)|![GitHub commits since last version shield](https://img.shields.io/github/commits-since/verybadcat/CSharpMath/latest.svg)|![GitHub Contributors shield](https://img.shields.io/github/contributors/verybadcat/CSharpMath.svg)
@@ -88,7 +90,7 @@ iOS | Android | Windows UWP
 ----|---------|------------
 ![1/2](https://user-images.githubusercontent.com/19922066/40612166-fd6c5b38-62ab-11e8-9cb1-b2b7eb6883be.png) | ![1+1](https://user-images.githubusercontent.com/19922066/40575043-183a6970-6110-11e8-887f-820e14efc588.jpeg) | ![Panning a view](https://user-images.githubusercontent.com/19922066/40731183-18a09b68-6463-11e8-8095-1a4cc9df9eae.gif) ![Colors!](https://user-images.githubusercontent.com/19922066/40972206-8abc247c-68f2-11e8-8684-561b5e833c21.png)
 
-# [Documentation](https://github.com/verybadcat/CSharpMath/wiki/Documentation-of-public-facing-APIs-of-CSharpMath.Rendering,-CSharpMath.SkiaSharp-and-CSharpMath.Forms)
+# [Documentation](https://github.com/verybadcat/CSharpMath/wiki/Documentation-of-public-facing-APIs-of-CSharpMath.Rendering,-CSharpMath.SkiaSharp-and-CSharpMath.Forms-MathViews)
 
 # Extending to more platforms
 

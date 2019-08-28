@@ -67,6 +67,7 @@ namespace CSharpMath.Rendering {
         var scale = typeface.CalculateScaleToPixelFromPointSize(pointSize);
         var index = glyph.Info.GlyphIndex;
         pathBuilder.BuildFromGlyph(glyph.Info, pointSize);
+        Canvas.CurrentColor = foreground ?? color;
         pathBuilder.ReadShapes(Canvas.GetPath());
         Canvas.Translate(typeface.GetHAdvanceWidthFromGlyphIndex(index) * scale + kernAfter, 0);
       }
