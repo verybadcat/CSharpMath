@@ -199,5 +199,7 @@ namespace CSharpMath.Editor.Tests {
     static readonly ListDisplay Exponent = CreateDisplay("2^3");
     [Theory, MemberData(nameof(ExponentData))]
     public void ExponentTest(PointF point, MathListIndex expected) => Test(Exponent, point, expected);
+
+    // \frac a\frac bc\frac\frac123\sqrt d^e\sqrt[5]6\sqrt[6f]7_8\overline9\underline0
   }
 }
