@@ -200,6 +200,30 @@ namespace CSharpMath.Editor.Tests {
     [Theory, MemberData(nameof(ExponentData))]
     public void ExponentTest(PointF point, MathListIndex expected) => Test(Exponent, point, expected);
 
+    // https://github.com/verybadcat/CSharpMath/issues/49
+    public static TestData Exponent2Data =>
+      new TestData {
+        { new PointF(55, 0), MathListIndex.Level0Index(1) },
+        { new PointF(55, 20), MathListIndex.Level0Index(1) },
+        { new PointF(55, 40), MathListIndex.Level0Index(1) },
+  };
+    static readonly ListDisplay Exponent2 = CreateDisplay("2^{x+y-4}");
+    [Theory, MemberData(nameof(Exponent2Data))]
+    public void Exponent2Test(PointF point, MathListIndex expected) => Test(Exponent2, point, expected);
+
+    // https://github.com/verybadcat/CSharpMath/issues/46
+    public static TestData Issue46Data =>
+      new TestData {
+        { new PointF(50, 10), MathListIndex.Level0Index(4) },
+        { new PointF(90, 0), MathListIndex.Level0Index(5) },
+        { new PointF(90, 20), MathListIndex.Level0Index(5) },
+        { new PointF(90, 40), MathListIndex.Level0Index(5) },
+  };
+    static readonly ListDisplay Issue46 = CreateDisplay("2+x+x^y");
+    [Theory, MemberData(nameof(Issue46Data))]
+    public void ComplexTest(PointF point, MathListIndex expected) => Test(Issue46, point, expected);
+
+
     // \frac a\frac bc\frac\frac123\sqrt d^e\sqrt[5]6\sqrt[6f]7_8\overline9\underline0
   }
 }
