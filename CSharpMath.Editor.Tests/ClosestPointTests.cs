@@ -203,6 +203,43 @@ namespace CSharpMath.Editor.Tests {
     [Theory, MemberData(nameof(ExponentData))]
     public void ExponentTest(float x, float y, MathListIndex expected) => Test(Exponent, x, y, expected);
 
-    // \frac a\frac bc\frac\frac123\sqrt d^e\sqrt[5]6\sqrt[6f]7_8\overline9\underline0
+    public static TestData ComplexData =>
+      new TestData {
+        { -10, -20, Level0Index(0) },
+        { -10, 0, Level0Index(0) },
+        { -10, 8, Level0Index(0) },
+        { -10, 40, Level0Index(0) },
+        // \frac a\frac bc
+        { 0, -20, IndexAtLocation(0, Type.Denominator, IndexAtLocation(0, Type.Denominator, Level0Index(0))) },
+        { 0, 0, IndexAtLocation(0, Type.Denominator, IndexAtLocation(0, Type.Numerator, Level0Index(0))) },
+        { 0, 8, IndexAtLocation(0, Type.Numerator, Level0Index(0)) },
+        { 0, 40, IndexAtLocation(0, Type.Numerator, Level0Index(0)) },
+        { 9, -20, IndexAtLocation(0, Type.Denominator, Level0Index(1)) },
+        { 9, 0, IndexAtLocation(0, Type.Denominator, IndexAtLocation(0, Type.Numerator, Level0Index(1))) },
+        { 9, 8, IndexAtLocation(0, Type.Numerator, Level0Index(1)) },
+        { 9, 40, IndexAtLocation(0, Type.Numerator, Level0Index(1)) },
+        // v WIP!! Fails currently
+        { 10, -20, IndexAtLocation(0, Type.Nucleus, Level0Index(1)) },
+        { 10, 0, IndexAtLocation(0, Type.Nucleus, Level0Index(1)) },
+        // The nucleus is closer and the touch boundaries overlap
+        { 10, 8, IndexAtLocation(0, Type.Nucleus, Level0Index(1)) },
+        { 10, 40, IndexAtLocation(0, Type.Superscript, Level0Index(0)) },
+        { 11, -20, IndexAtLocation(0, Type.Nucleus, Level0Index(1)) },
+        { 11, 0, IndexAtLocation(0, Type.Nucleus, Level0Index(1)) },
+        { 11, 8, IndexAtLocation(0, Type.Superscript, Level0Index(0)) },
+        { 11, 40, IndexAtLocation(0, Type.Superscript, Level0Index(0)) },
+        { 17, -20, Level0Index(1) },
+        { 17, 0, Level0Index(1) },
+        { 17, 8, IndexAtLocation(0, Type.Superscript, Level0Index(1)) },
+        { 17, 40, IndexAtLocation(0, Type.Superscript, Level0Index(1)) },
+        { 30, -20, Level0Index(1) },
+        { 30, 0, Level0Index(1) },
+        { 30, 8, Level0Index(1) },
+        { 30, 40, Level0Index(1) },
+      };
+    static readonly ListDisplay Complex =
+      CreateDisplay(@"\frac a\frac bc\frac\frac123\sqrt d^e\sqrt[5]6\sqrt[6f]7_8\overline9\underline0");
+    [Theory, MemberData(nameof(ComplexData))]
+    public void ComplexTest(float x, float y, MathListIndex expected) => Test(Complex, x, y, expected);
   }
 }
