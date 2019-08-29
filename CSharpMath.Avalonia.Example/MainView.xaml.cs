@@ -9,7 +9,7 @@ namespace CSharpMath.Avalonia.Example {
 
       var light = AvaloniaXamlLoader.Parse<StyleInclude>(@"<StyleInclude xmlns='https://github.com/avaloniaui' Source='avares://Avalonia.Themes.Default/Accents/BaseLight.xaml'/>");
       var dark = AvaloniaXamlLoader.Parse<StyleInclude>(@"<StyleInclude xmlns='https://github.com/avaloniaui' Source='avares://Avalonia.Themes.Default/Accents/BaseDark.xaml'/>");
-      var themes = this.Find<DropDown>("Themes");
+      var themes = this.Find<ComboBox>("Themes");
       themes.SelectionChanged += (sender, e) => {
         switch (themes.SelectedIndex) {
           case 0:

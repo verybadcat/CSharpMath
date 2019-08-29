@@ -1,40 +1,65 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:csmath="clr-namespace:CSharpMath.Avalonia;assembly=CSharpMath.Avalonia"
              x:Class="CSharpMath.Avalonia.Example.Pages.MathBlockPage">
 
-    <StackPanel Spacing="24">
+    <ScrollViewer Margin="0, 8">
 
-        <StackPanel Spacing="4">
+        <StackPanel Spacing="24">
 
-            <TextBlock Classes="h1"
-                       Text="MathBlock" />
+            <StackPanel Spacing="4">
 
-            <TextBlock Classes="h2"
-                       Text="Displays math" />
+                <TextBlock Classes="h1"
+                           Text="MathBlock" />
+
+                <TextBlock Classes="h2"
+                           Text="Displays math" />
+
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal"
+                        Spacing="8">
+
+                <TextBlock VerticalAlignment="Center"
+                           Text="Font size:" />
+            
+                <ComboBox Name="size"
+                          VerticalAlignment="Center"
+                          SelectedIndex="0">
+                    <sys:Int32>12</sys:Int32>
+                    <sys:Int32>16</sys:Int32>
+                    <sys:Int32>20</sys:Int32>
+                    <sys:Int32>24</sys:Int32>
+                    <sys:Int32>36</sys:Int32>
+                    <sys:Int32>48</sys:Int32>
+                    <sys:Int32>72</sys:Int32>
+                </ComboBox>
+
+            </StackPanel>
+      
+            <StackPanel Spacing="16">
+
+                <TextBlock Classes="h1"
+                           Text="Taylor" />
+
+                <csmath:MathBlock FontSize="{Binding #size.SelectedItem}"
+                                  Source="{StaticResource Taylor}" />
+
+            </StackPanel>
+
+            <StackPanel Spacing="16">
+
+                <TextBlock Classes="h1"
+                           Text="EvalIntegral" />
+
+                <csmath:MathBlock FontSize="{Binding #size.SelectedItem}"
+                                  Source="{StaticResource EvalIntegral}" />
+
+            </StackPanel>
 
         </StackPanel>
-
-        <StackPanel Spacing="16">
-
-            <TextBlock Classes="h1"
-                       Text="Taylor" />
-
-            <csmath:MathBlock HorizontalAlignment="Left"
-                              Text="{StaticResource Taylor}" />
-
-        </StackPanel>
-
-        <StackPanel Spacing="16">
-
-            <TextBlock Classes="h1"
-                       Text="EvalIntegral" />
-
-            <csmath:MathBlock HorizontalAlignment="Left"
-                              Text="{StaticResource EvalIntegral}" />
-
-        </StackPanel>
-
-    </StackPanel>
+      
+    </ScrollViewer>
 
 </UserControl>

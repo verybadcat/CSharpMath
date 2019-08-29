@@ -6,32 +6,32 @@
              Foreground="{DynamicResource ThemeForegroundBrush}"
              FontSize="{DynamicResource FontSizeNormal}">
 
-    <Grid>
+      <TabControl x:Name="Sidebar"
+                  Classes="sidebar">
 
-        <DropDown x:Name="Themes"
-                  SelectedIndex="0"
-                  Width="100"
-                  Margin="8"
-                  HorizontalAlignment="Right"
-                  VerticalAlignment="Bottom">
+          <TabControl.Tag>
+          
+              <ComboBox x:Name="Themes"
+                        DockPanel.Dock="Bottom"
+                        SelectedIndex="0"
+                        Width="100"
+                        Margin="8">
 
-            <DropDownItem>Light</DropDownItem>
-            <DropDownItem>Dark</DropDownItem>
+                  <ComboBoxItem>Light</ComboBoxItem>
+                  <ComboBoxItem>Dark</ComboBoxItem>
 
-        </DropDown>
+              </ComboBox>
 
-        <TabControl Classes="sidebar" Name="Sidebar">
+          </TabControl.Tag>
 
-            <TabItem Header="MathBlock">
-                <pages:MathBlockPage/>
-            </TabItem>
+          <TabItem Header="MathBlock">
+              <pages:MathBlockPage/>
+          </TabItem>
 
-            <TabItem Header="TextBlock">
-                <pages:TextBlockPage/>
-            </TabItem>
+          <TabItem Header="TextBlock">
+              <pages:TextBlockPage/>
+          </TabItem>
 
-        </TabControl>
-
-    </Grid>
+      </TabControl>
 
 </UserControl>
