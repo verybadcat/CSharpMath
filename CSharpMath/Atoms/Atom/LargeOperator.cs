@@ -7,9 +7,14 @@ using System.Text;
 namespace CSharpMath.Atoms {
   public class LargeOperator : MathAtom {
     bool? _limits;
+    /// <summary>
+    /// True: \limits
+    /// False: \nolimits
+    /// Null: (unset, depends on line style)
+    /// </summary>
     public bool? Limits { get => NoLimits ? false : _limits; set => _limits = value; }
 
-    //if true, overrides Limits and makes it treated as false
+    ///<summary>If true, overrides Limits and makes it treated as false</summary>
     public bool NoLimits { get; }
 
     public LargeOperator(string value, bool? limits, bool noLimits = false): base(MathAtomType.LargeOperator, value) {
