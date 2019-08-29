@@ -203,6 +203,29 @@ namespace CSharpMath.Editor.Tests {
     [Theory, MemberData(nameof(ExponentData))]
     public void ExponentTest(float x, float y, MathListIndex expected) => Test(Exponent, x, y, expected);
 
+    // https://github.com/verybadcat/CSharpMath/issues/49
+    public static TestData Exponent2Data =>
+      new TestData {
+        { 55, 0, Level0Index(1) },
+        { 55, 20, Level0Index(1) },
+        { 55, 40, Level0Index(1) },
+  };
+    static readonly ListDisplay Exponent2 = CreateDisplay("2^{x+y-4}");
+    [Theory, MemberData(nameof(Exponent2Data))]
+    public void Exponent2Test(float x, float y, MathListIndex expected) => Test(Exponent2, x, y, expected);
+
+    // https://github.com/verybadcat/CSharpMath/issues/46
+    public static TestData Issue46Data =>
+      new TestData {
+        { 50, 10, Level0Index(4) },
+        { 90, 0, Level0Index(5) },
+        { 90, 20, Level0Index(5) },
+        { 90, 40, Level0Index(5) },
+  };
+    static readonly ListDisplay Issue46 = CreateDisplay("2+x+x^y");
+    [Theory, MemberData(nameof(Issue46Data))]
+    public void Issue46Test(float x, float y, MathListIndex expected) => Test(Issue46, x, y, expected);
+
     public static TestData ComplexData =>
       new TestData {
         { -10, -20, Level0Index(0) },

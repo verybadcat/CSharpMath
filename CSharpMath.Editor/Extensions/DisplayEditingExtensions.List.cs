@@ -33,11 +33,19 @@ namespace CSharpMath.Editor {
         case 0:
           if (translatedPoint.X <= -PixelDelta)
             // All the way to the left
-            return MathListIndex.Level0Index(self.Range.Location);
+            return self.Range.Location < 0 ? null : MathListIndex.Level0Index(self.Range.Location);
           else if (translatedPoint.X >= self.Width + PixelDelta) {
-            // All the way to the right
-            if (closest != null)
-              return MathListIndex.Level0Index(self.Range.End);
+            // if closest is a script
+            if (closest != null && closest is ListDisplay<TFont, TGlyph> ld
+                && ld.LinePosition != Enumerations.LinePosition.Regular) {
+              // then we try to find its parent
+              var parent = self.Displays.FirstOrDefault(d => d.HasScript && d.Range.Contains(ld.IndexInParent));
+
+              if (parent != null) {
+                return MathListIndex.Level0Index(parent.Range.End);
+              }
+
+            }
             // All the way to the right
             return self.Range.End < 0 ? null : MathListIndex.Level0Index(self.Range.End);
           } else
