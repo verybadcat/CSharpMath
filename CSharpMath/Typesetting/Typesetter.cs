@@ -875,19 +875,20 @@ namespace CSharpMath {
 
     private GlyphConstructionDisplay<TFont, TGlyph> _ConstructGlyph(TGlyph glyph, float glyphHeight) {
       var parts = _mathTable.GetVerticalGlyphAssembly(glyph, _styleFont);
-      if (parts.IsEmpty()) return null;
-      List<TGlyph> glyphs = new List<TGlyph>();
-      List<float> offsets = new List<float>();
-      float height = _ConstructGlyphWithParts(parts, glyphHeight, glyphs, offsets);
-      TGlyph firstGlyph = glyphs[0];
-      var singleGlyph = new RentedArray<TGlyph>(firstGlyph);
-      float width = _context.GlyphBoundsProvider.GetAdvancesForGlyphs(_styleFont, singleGlyph.Result, 1).Total;
-      singleGlyph.Return();
-      return new GlyphConstructionDisplay<TFont, TGlyph>(glyphs, offsets, _styleFont) {
-        Width = width,
-        Ascent = height,
-        Descent = 0 // it's up to the rendering to adjust the display glyph up or down
-      };
+      if (parts.Any()) {
+        List<TGlyph> glyphs = new List<TGlyph>();
+        List<float> offsets = new List<float>();
+        float height = _ConstructGlyphWithParts(parts, glyphHeight, glyphs, offsets);
+        TGlyph firstGlyph = glyphs[0];
+        var singleGlyph = new RentedArray<TGlyph>(firstGlyph);
+        float width = _context.GlyphBoundsProvider.GetAdvancesForGlyphs(_styleFont, singleGlyph.Result, 1).Total;
+        singleGlyph.Return();
+        return new GlyphConstructionDisplay<TFont, TGlyph>(glyphs, offsets, _styleFont) {
+          Width = width,
+          Ascent = height,
+          Descent = 0 // it's up to the rendering to adjust the display glyph up or down
+        };
+      } else return null;
     }
 
     private float _ConstructGlyphWithParts(IEnumerable<GlyphPart<TGlyph>> parts, float glyphHeight, List<TGlyph> glyphs, List<float> offsets) {
@@ -1055,51 +1056,48 @@ namespace CSharpMath {
       float descent = -currPos + prevRowDescent;
       float shiftDown = 0.5f * (ascent - descent) - _mathTable.AxisHeight(_styleFont);
 
-      foreach (var display in rows) {
+      foreach (var display in rows)
         display.Position = new PointF(display.Position.X, display.Position.Y - shiftDown);
-      }
     }
 
     private IDisplay<TFont, TGlyph> MakeLargeOperator(LargeOperator op) {
       switch (op.Nucleus.Length) {
         case 1:
-            var glyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, 0, op.Nucleus);
-            if (_style == LineStyle.Display && !(_context.GlyphFinder.GlyphIsEmpty(glyph))) {
-              // Enlarge the character in display style.
-              glyph = _mathTable.GetLargerGlyph(_styleFont, glyph);
-            }
-            var delta = _mathTable.GetItalicCorrection(_styleFont, glyph);
-            var glyphsArray = new RentedArray<TGlyph>(glyph);
-            var boundingBox = _context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(_styleFont, glyphsArray.Result, 1).Single();
-            var width = _context.GlyphBoundsProvider.GetAdvancesForGlyphs(_styleFont, glyphsArray.Result, 1).Total;
-            glyphsArray.Return();
-            boundingBox.GetAscentDescentWidth(out float ascent, out float descent, out _);
-            var shiftDown = 0.5 * (ascent - descent) - _mathTable.AxisHeight(_styleFont);
-            var glyphDisplay = new GlyphDisplay<TFont, TGlyph>(glyph, op.IndexRange, _styleFont) {
-              Ascent = ascent,
-              Descent = descent,
-              Width = width
-            };
-            if (op.Subscript != null && !(op.Limits ?? _style == LineStyle.Display)) {
-              // remove italic correction in this case
-              glyphDisplay.Width -= delta;
-            }
-            glyphDisplay.ShiftDown = (float)shiftDown;
-            glyphDisplay.Position = _currentPosition;
-            return AddLimitsToDisplay(glyphDisplay, op, delta);
+          var glyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, 0, op.Nucleus);
+          if (_style == LineStyle.Display && !_context.GlyphFinder.GlyphIsEmpty(glyph))
+            // Enlarge the character in display style.
+            glyph = _mathTable.GetLargerGlyph(_styleFont, glyph);
+          var delta = _mathTable.GetItalicCorrection(_styleFont, glyph);
+          var glyphsArray = new RentedArray<TGlyph>(glyph);
+          var boundingBox = _context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(_styleFont, glyphsArray.Result, 1).Single();
+          var width = _context.GlyphBoundsProvider.GetAdvancesForGlyphs(_styleFont, glyphsArray.Result, 1).Total;
+          glyphsArray.Return();
+          boundingBox.GetAscentDescentWidth(out float ascent, out float descent, out _);
+          var shiftDown = 0.5 * (ascent - descent) - _mathTable.AxisHeight(_styleFont);
+          var glyphDisplay = new GlyphDisplay<TFont, TGlyph>(glyph, op.IndexRange, _styleFont) {
+            Ascent = ascent,
+            Descent = descent,
+            Width = width
+          };
+          if (op.Subscript != null && !(op.Limits ?? _style == LineStyle.Display))
+            // remove italic correction in this case
+            glyphDisplay.Width -= delta;
+          glyphDisplay.ShiftDown = (float)shiftDown;
+          glyphDisplay.Position = _currentPosition;
+          return AddLimitsToDisplay(glyphDisplay, op, delta);
 
         default:
-            // create a regular node.
-            var glyphs = _context.GlyphFinder.FindGlyphs(_font, op.Nucleus);
-            var glyphRun = new AttributedGlyphRun<TFont, TGlyph>(op.Nucleus, glyphs, _styleFont);
-            var run = new TextRunDisplay<TFont, TGlyph>(glyphRun, op.IndexRange, _context);
-            var runs = new List<TextRunDisplay<TFont, TGlyph>> { run };
-            var atoms = new List<IMathAtom> { op };
-            var line = new TextLineDisplay<TFont, TGlyph>(runs, atoms) {
-              Position = _currentPosition
-            };
-            return AddLimitsToDisplay(line, op, 0);
-          
+          // create a regular node.
+          var glyphs = _context.GlyphFinder.FindGlyphs(_font, op.Nucleus);
+          var glyphRun = new AttributedGlyphRun<TFont, TGlyph>(op.Nucleus, glyphs, _styleFont);
+          var run = new TextRunDisplay<TFont, TGlyph>(glyphRun, op.IndexRange, _context);
+          var runs = new List<TextRunDisplay<TFont, TGlyph>> { run };
+          var atoms = new List<IMathAtom> { op };
+          var line = new TextLineDisplay<TFont, TGlyph>(runs, atoms) {
+            Position = _currentPosition
+          };
+          return AddLimitsToDisplay(line, op, 0);
+
       }
     }
 
@@ -1122,14 +1120,14 @@ namespace CSharpMath {
           Position = _currentPosition
         };
         if (superscript!=null) {
-          var upperGap = Math.Max(_mathTable.UpperLimitGapMin(_styleFont),
-                                  _mathTable.UpperLimitBaselineRiseMin(_styleFont)-superscript.Descent);
-          opsDisplay.SetUpperLimitGap(upperGap);
+          opsDisplay.SetUpperLimitGap(
+            Math.Max(_mathTable.UpperLimitGapMin(_styleFont),
+                     _mathTable.UpperLimitBaselineRiseMin(_styleFont) - superscript.Descent));
         }
         if (subscript!=null) {
-          var lowerGap = Math.Max(_mathTable.LowerLimitGapMin(_styleFont), 
-                                  _mathTable.LowerLimitBaselineDropMin(_styleFont) - subscript.Ascent);
-          opsDisplay.SetLowerLimitGap(lowerGap);
+          opsDisplay.SetLowerLimitGap(
+            Math.Max(_mathTable.LowerLimitGapMin(_styleFont),
+                     _mathTable.LowerLimitBaselineDropMin(_styleFont) - subscript.Ascent));
         }
         _currentPosition.X += opsDisplay.Width;
         return opsDisplay;

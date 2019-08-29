@@ -43,9 +43,9 @@ namespace CSharpMath.Display {
       context.SaveState();
       context.Translate(this.Position);
       context.SetTextPosition(new PointF());
-      foreach (var displayAtom in Displays) {
-        if(displayAtom != null) displayAtom.Draw(context);
-      }
+      foreach (var displayAtom in Displays)
+        if(displayAtom != null)
+          displayAtom.Draw(context);
       context.RestoreState();
     }
     /// <summary>The string returned is NOT real TeX! It's for debugging purposes only.</summary>

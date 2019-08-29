@@ -9,7 +9,7 @@ using Color = CSharpMath.Structures.Color;
 namespace CSharpMath.Display {
   public class LargeOpLimitsDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph>
     where TFont : IFont<TGlyph> {
-    private IDisplay<TFont, TGlyph> _nucleusDisplay;
+    private readonly IDisplay<TFont, TGlyph> _nucleusDisplay;
     private readonly float _limitShift;
     private readonly int _extraPadding;
     private float _upperLimitGap;
@@ -31,11 +31,10 @@ namespace CSharpMath.Display {
       LowerLimit = lowerLimit;
       _limitShift = limitShift;
       _extraPadding = extraPadding; // corresponds to \xi_13 in TeX.
-      var upperWidth = upperLimit?.Width ?? 0f;
-      var lowerWidth = lowerLimit?.Width ?? 0f;
-      var nucleusWidth = nucleusDisplay?.Width ?? 0f;
-      var maxWidth = Math.Max(nucleusWidth, Math.Max(upperWidth, lowerWidth));
-      Width = maxWidth;
+      Width =
+        Math.Max(nucleusDisplay?.Width ?? 0f,
+        Math.Max(upperLimit?.Width ?? 0f,
+                 lowerLimit?.Width ?? 0f));
       _UpdateComponentPositions();
     }
 
@@ -48,40 +47,18 @@ namespace CSharpMath.Display {
 
     public RectangleF DisplayBounds => this.ComputeDisplayBounds();
 
-    public float Ascent {
-      get {
-        if (UpperLimit == null) {
-          return _nucleusDisplay.Ascent;
-        }
-        return _nucleusDisplay.Ascent + _extraPadding + UpperLimit.Ascent
-          + _upperLimitGap + UpperLimit.Descent;
-      }
-    }
+    public float Ascent =>
+      _nucleusDisplay.Ascent +
+      (UpperLimit == null ? 0 : _extraPadding + UpperLimit.Ascent + _upperLimitGap + UpperLimit.Descent);
 
-    public float Descent {
-      get {
-        if (LowerLimit == null) {
-          return _nucleusDisplay.Descent;
-        }
-        return _nucleusDisplay.Descent + _extraPadding + LowerLimit.Ascent
-          + _lowerLimitGap + LowerLimit.Descent;
-      }
-    }
+    public float Descent =>
+      _nucleusDisplay.Descent +
+      (LowerLimit == null ? 0 : _extraPadding + LowerLimit.Ascent + _lowerLimitGap + LowerLimit.Descent);
 
     public float Width { get; set; }
 
-    public Range Range {
-      get {
-        var r = _nucleusDisplay.Range;
-        if (UpperLimit!=null) {
-          r += UpperLimit.Range;
-        }
-        if (LowerLimit!=null) {
-          r += LowerLimit.Range;
-        }
-        return r;
-      }
-    }
+    public Range Range =>
+      _nucleusDisplay.Range + UpperLimit?.Range ?? Range.NotFound + LowerLimit?.Range ?? Range.NotFound;
 
     PointF _position;
     public PointF Position { get => _position; set { _position = value; _UpdateComponentPositions(); } }
@@ -107,12 +84,8 @@ namespace CSharpMath.Display {
           Position.Y + _nucleusDisplay.Ascent + _upperLimitGap + UpperLimit.Descent);
       }
     }
-    private void _UpdateNucleusPosition() {
-      var position = new PointF(
-        Position.X + (Width - _nucleusDisplay.Width) / 2,
-        Position.Y);
-      _nucleusDisplay.Position = position;
-    }
+    private void _UpdateNucleusPosition() =>
+      _nucleusDisplay.Position = new PointF(Position.X + (Width - _nucleusDisplay.Width) / 2, Position.Y);
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
       UpperLimit?.Draw(context);
       LowerLimit?.Draw(context);

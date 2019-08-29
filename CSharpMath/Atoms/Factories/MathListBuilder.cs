@@ -443,8 +443,7 @@ namespace CSharpMath.Atoms {
         if (_error != null) {
           return null;
         }
-        var fracList = MathLists.WithAtoms(fraction);
-        return fracList;
+        return MathLists.WithAtoms(fraction);
       } else if (command == "\\" || command == "cr") {
         if (_currentEnvironment == null) {
           var table = BuildTable(null, list, true, stopChar); 
