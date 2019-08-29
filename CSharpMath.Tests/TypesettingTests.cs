@@ -281,10 +281,10 @@ namespace CSharpMath.Tests {
         })(radical.Radicand);
       });
 
-    [Fact]
-    public void TestRaiseBox() =>
-      TestOuter("\\text\\raisebox{3pt}r", 1, 17, 1, 10,
-        TestList(1, 14, 4, 10, 0, 3, LinePosition.Regular, Range.UndefinedInt,
+    [Theory, InlineData(3), InlineData(-3), InlineData(0.1), InlineData(-0.1)]
+    public void TestRaiseBox(double height) =>
+      TestOuter($@"\text\raisebox{{{height}pt}}r", 1, 14 + height, 4 - height, 10,
+        TestList(1, 14, 4, 10, 0, height, LinePosition.Regular, Range.UndefinedInt,
           d => {
             var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
             Assert.Single(line.Atoms);
