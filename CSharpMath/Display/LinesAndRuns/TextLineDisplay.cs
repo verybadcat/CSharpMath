@@ -27,8 +27,7 @@ namespace CSharpMath.Display {
     // We don't implement count as it's not clear if it would refer to runs or atoms.
     public List<TextRunDisplay<TFont, TGlyph>> Runs { get; }
     public IMathAtom[] Atoms { get; }
-    public IEnumerable<TGlyph> Text =>
-      Runs.SelectMany(run => run.Run.GlyphInfos.Select(g => g.Glyph));
+    public IEnumerable<TGlyph> Text => Runs.SelectMany(run => run.Run.Glyphs);
 
     public RectangleF DisplayBounds =>
       this.ComputeDisplayBounds();

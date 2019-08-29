@@ -17,7 +17,7 @@ namespace CSharpMath.Tests.Mocks {
       var provider = TestGlyphBoundsProvider.Instance;
       var glyphRun = new AttributedGlyphRun<TestFont, TGlyph>(hello, hello, font);
       var width = provider.GetTypographicWidth(font, glyphRun);
-      Assertions.ApproximatelyEqual(width, 25,  0.01);
+      Approximately.Equal(width, 25,  0.01);
     }
 
     [Fact]
@@ -27,7 +27,7 @@ namespace CSharpMath.Tests.Mocks {
       var provider = TestGlyphBoundsProvider.Instance;
       var glyphRun = new AttributedGlyphRun<TestFont, TGlyph>(america, america, font);
       var width = provider.GetTypographicWidth(font, glyphRun);
-      Assertions.ApproximatelyEqual(width, 40, 0.01);
+      Approximately.Equal(width, 40, 0.01);
     }
   }
 }

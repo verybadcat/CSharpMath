@@ -50,5 +50,7 @@ namespace CSharpMath.Display {
     public void SetTextColorRecursive(Color? textColor) {
       TextColor = TextColor ?? textColor;
     }
+
+    public override string ToString() => Glyph.ToString();
   }
 }
