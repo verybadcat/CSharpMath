@@ -137,9 +137,9 @@ namespace CSharpMath.Tests {
             Assert.False(line3.HasScript);
             Approximately.Equal(8.92, line3.Descent - (-6.12));
           }));
-    [Fact]
-    public void TestBinomial() =>
-      TestOuter("\\binom13", 1, 27.54, 17.72, 30,
+    [Theory, InlineData("\\binom13"), InlineData("1\\choose3")]
+    public void TestBinomial(string latex) =>
+      TestOuter(latex, 1, 27.54, 17.72, 30,
         TestList(1, 27.54, 17.72, 30, 0, 0, LinePosition.Regular, Range.UndefinedInt,
           d => {
             var glyph = Assert.IsType<GlyphDisplay<TFont, TGlyph>>(d);
@@ -209,13 +209,13 @@ namespace CSharpMath.Tests {
               Assert.False(subDenominator.HasScript);
             })(fraction.Denominator);
         });
-    [Fact]
-    public void TestEquationWithOperatorsAndRelations() =>
-      TestOuter("2x+3=y", 6, 14, 4, 80, d => {
+    [Theory, InlineData("2x+3=y"), InlineData("y=3+2x")]
+    public void TestEquationWithOperatorsAndRelations(string latex) =>
+      TestOuter(latex, 6, 14, 4, 80, d => {
         var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
 
         Assert.Equal(6, line.Atoms.Length);
-        AssertText("2x+3=y", line);
+        AssertText(latex, line);
         Assert.Equal(new PointF(), line.Position);
         Assert.Equal(new Range(0, 6), line.Range);
         Assert.False(line.HasScript);
@@ -225,15 +225,16 @@ namespace CSharpMath.Tests {
         Assert.Equal(80, line.Width);
       });
 
-    [Fact]
-    public void TestInner() =>
-      TestOuter("\\left(x\\right)", 1, 14, 4, 30,
+    [Theory, InlineData('[', ']'), InlineData('(', '}'), InlineData('{', ']')] // Using ) confuses the test explorer...
+    public void TestInner(char left, char right) =>
+      TestOuter($@"\left{left}x\right{right}", 1, 14, 4, 30,
         TestList(1, 14, 4, 30, 0, 0, LinePosition.Regular, Range.UndefinedInt,
           d => {
             var glyph = Assert.IsType<GlyphDisplay<TFont, TGlyph>>(d);
             Assert.Equal(new PointF(), glyph.Position);
             Assert.Equal(Range.NotFound, glyph.Range);
             Assert.False(glyph.HasScript);
+            Assert.Equal(left, glyph.Glyph);
           },
           TestList(1, 14, 4, 10, 10, 0, LinePosition.Regular, Range.UndefinedInt,
             d => {
@@ -248,21 +249,32 @@ namespace CSharpMath.Tests {
             Approximately.At(20, 0, glyph2.Position);
             Assert.Equal(Range.NotFound, glyph2.Range);
             Assert.False(glyph2.HasScript);
+            Assert.Equal(right, glyph2.Glyph);
           }));
-    [Fact]
-    public void TestRadical() =>
-      TestOuter("\\sqrt1", 1, 18.56, 4, 20, d => {
+    [Theory, InlineData("\\sqrt2", null, "2"), InlineData("\\sqrt[3]2", "3", "2")]
+    public void TestRadical(string latex, string degree, string radicand) =>
+      TestOuter(latex, 1, 18.56, 4, degree is null ? 20 : 21.44, d => {
         var radical = Assert.IsType<RadicalDisplay<TFont, TGlyph>>(d);
         Assert.Equal(new Range(0, 1), radical.Range);
         Assert.False(radical.HasScript);
         Assert.Equal(new PointF(), radical.Position);
         Assert.NotNull(radical.Radicand);
-        Assert.Null(radical.Degree);
 
-        TestList(1, 14, 4, 10, 10, 0, LinePosition.Regular, Range.UndefinedInt, dd => {
+        if (degree != null)
+          TestList(1, 9.8, 2.8, 7, 5.56, 8.736, LinePosition.Regular, Range.UndefinedInt, dd => {
+            var line3 = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(dd);
+            Assert.Single(line3.Atoms);
+            AssertText(degree, line3);
+            Assert.Equal(new PointF(), line3.Position);
+            Assert.Equal(new Range(0, 1), line3.Range);
+            Assert.False(line3.HasScript);
+          })(radical.Degree);
+        else Assert.Null(radical.Degree);
+
+        TestList(1, 14, 4, 10, degree is null ? 10 : 11.44, 0, LinePosition.Regular, Range.UndefinedInt, dd => {
           var line2 = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(dd);
           Assert.Single(line2.Atoms);
-          AssertText("1", line2);
+          AssertText(radicand, line2);
           Assert.Equal(new PointF(), line2.Position);
           Assert.Equal(new Range(0, 1), line2.Range);
           Assert.False(line2.HasScript);
