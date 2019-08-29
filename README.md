@@ -55,7 +55,7 @@ latexView.Frame = new CoreGraphics.CGRect(0, 20, size.Width, size.Height);
 someSuperview.Add(latexView);
 ```
 
-[See an example project](CSharpMath.IosExample)
+[See an example project](CSharpMath.Ios.Example)
       
 ![Quadratic Formula](CSharpMath/RenderedSamples/Quadratic%20Formula.png)
 
@@ -124,7 +124,7 @@ You can use this library on other appleOSes by making use of [AppleMathView](CSh
 We need more contributors! Maybe you can contribute something to this repository. Whether they are bug reports, feature proposals or pull requests, you are welcome to send them to us. We are sure that we will take a look at them!
 
 Here is an idea list if you cannot think of anything right now:
-- A new example for the Exmple projects (please open pull requests straight away)
+- A new example for the Example projects (please open pull requests straight away)
 - A new LaTeX command (please link documentation of it)
 - A new front end (please describe what it is and why should it be supported)
 - A new math syntax (please describe what it is and why should it be supported)
