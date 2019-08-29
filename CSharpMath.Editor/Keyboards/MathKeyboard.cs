@@ -261,7 +261,7 @@ namespace CSharpMath.Editor {
                 break;
             }
             if (MathList.AtomAt(_insertionIndex) is null &&
-              MathList.AtomAt(_insertionIndex.Previous).AtomType is MathAtomType.Placeholder)
+              MathList.AtomAt(_insertionIndex?.Previous)?.AtomType is MathAtomType.Placeholder)
               _insertionIndex = _insertionIndex.Previous; // Skip right side of placeholders when end of line
             break;
           case var a when a.Subscript != null:
