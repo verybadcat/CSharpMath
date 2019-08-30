@@ -25,7 +25,6 @@ namespace CSharpMath.Rendering {
       path.Foreground = color;
       path.MoveTo(cursorPosition.X, cursorPosition.Y);
       switch (shape) {
-        default:
         case CaretShape.IBeam:
           ReadOnlySpan<PointF> s = stackalloc PointF[4] {
             new PointF(caret.Width / 16, 0),

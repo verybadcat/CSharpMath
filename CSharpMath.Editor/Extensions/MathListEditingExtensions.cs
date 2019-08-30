@@ -6,12 +6,12 @@ namespace CSharpMath.Editor {
   using Atoms;
   using Interfaces;
   public static class MathListEditingExtensions {
-    /// <returns>true if placeholder is replaced</returns>
+    /// <returns>false if placeholder is replaced</returns>
     static bool InsertOrReplacePlaceholder(this IMathList self, int index, IMathAtom atom) {
       if (index < 0 || index > self.Count)
         throw new IndexOutOfRangeException($"Index {index} is out of bounds for list of size {self.Atoms.Count}");
 
-      /// <returns>true if placeholder is replaced</returns>
+      /// <returns>false if placeholder is replaced</returns>
       bool KillIfPlaceholder(IMathAtom placeholder) {
         if (placeholder?.AtomType is Enumerations.MathAtomType.Placeholder) {
           if (placeholder.Superscript is IMathList super) {
@@ -23,17 +23,16 @@ namespace CSharpMath.Editor {
             atom.Subscript = sub;
           }
           self.Remove(placeholder);
-          return true;
-        } return false;
+          return false;
+        } return true;
       }
-      if ((index > 0 && index == self.Count && KillIfPlaceholder(self[index - 1])) ||
-          (index < self.Count && KillIfPlaceholder(self[index]))) return true;
+      if ((index > 0 && index == self.Count && !KillIfPlaceholder(self[index - 1])) ||
+          (index < self.Count && !KillIfPlaceholder(self[index]))) return false;
       self.Insert(index, atom);
-      return false;
+      return true;
     }
-    /// <returns>true if placeholder is replaced</returns>
-    [Obsolete("WIP. Expect bugs.")]
-    public static bool Insert(this IMathList self, MathListIndex index, IMathAtom atom) {
+    /// <returns>false if placeholder is replaced</returns>
+    static bool Insert(this IMathList self, MathListIndex index, IMathAtom atom) {
       index = index ?? MathListIndex.Level0Index(0);
       if (index.AtomIndex > self.Atoms.Count)
         throw new IndexOutOfRangeException($"Index {index.AtomIndex} is out of bounds for list of size {self.Atoms.Count}");
@@ -80,9 +79,26 @@ namespace CSharpMath.Editor {
       }
     }
 
-    /// <summary>Modifies the parameter <paramref name="index"/> to advance to the next position.</summary>
-    public static void InsertAndAdvance(this IMathList self, MathListIndex index, IMathAtom atom) {
-      
+    /// <summary>Modifies <paramref name="index"/> to advance to the next position. Stays if placeholder is replaced.</summary>
+    public static void InsertAndAdvance(this IMathList self, ref MathListIndex index, IMathAtom atom, MathListSubIndexType nextType) {
+      if (self.Insert(index, atom))
+        switch (nextType) {
+          case MathListSubIndexType.None:
+            index = index.Next;
+            break;
+          default:
+            index = index.LevelUpWithSubIndex(nextType, MathListIndex.Level0Index(0));
+            break;
+        }
+      else
+        switch (nextType) {
+          case MathListSubIndexType.None:
+            // Don't go to next
+            break;
+          default:
+            index = index.LevelUpWithSubIndex(nextType, MathListIndex.Level0Index(0));
+            break;
+        }
     }
 
     public static void RemoveAt(this IMathList self, MathListIndex index) {

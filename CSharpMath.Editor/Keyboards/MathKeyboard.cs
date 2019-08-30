@@ -106,23 +106,19 @@ namespace CSharpMath.Editor {
           // Create an empty atom and move the insertion index up.
           var emptyAtom = MathAtoms.Placeholder;
           emptyAtom.Superscript = MathAtoms.PlaceholderList;
-          MathList.Insert(_insertionIndex, emptyAtom);
-          _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListSubIndexType.Superscript, MathListIndex.Level0Index(0));
+          MathList.InsertAndAdvance(ref _insertionIndex, emptyAtom, MathListSubIndexType.Superscript);
         }
       }
 
       void HandleRadical(bool degreeIsPlaceholder, bool degreeIs3) {
-        var current = _insertionIndex;
         Radical rad;
         if (degreeIsPlaceholder) {
           rad = MathAtoms.PlaceholderRadical;
-          MathList.Insert(current, rad);
-          _insertionIndex = current.LevelUpWithSubIndex(MathListSubIndexType.Degree, MathListIndex.Level0Index(0));
+          MathList.InsertAndAdvance(ref _insertionIndex, rad, MathListSubIndexType.Degree);
         } else {
           rad = MathAtoms.PlaceholderSquareRoot;
           if (degreeIs3) rad.Degree = MathLists.WithAtoms(MathAtoms.ForCharacter('3'));
-          MathList.Insert(current, rad);
-          _insertionIndex = current.LevelUpWithSubIndex(MathListSubIndexType.Radicand, MathListIndex.Level0Index(0));
+          MathList.InsertAndAdvance(ref _insertionIndex, rad, MathListSubIndexType.Radicand);
         }
       }
 
@@ -141,8 +137,7 @@ namespace CSharpMath.Editor {
           // Create an empty atom and move the insertion index up.
           var emptyAtom = MathAtoms.Placeholder;
           emptyAtom.Subscript = MathAtoms.PlaceholderList;
-          MathList.Insert(_insertionIndex, emptyAtom);
-          _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListSubIndexType.Subscript, MathListIndex.Level0Index(0));
+          MathList.InsertAndAdvance(ref _insertionIndex, emptyAtom, MathListSubIndexType.Subscript);
         }
       }
 
@@ -166,32 +161,29 @@ namespace CSharpMath.Editor {
             var prevAtom = MathList.AtomAt(current.Previous);
             if (prevAtom.AtomType is MathAtomType.Fraction) {
               //Add a times symbol
-              MathList.Insert(current, MathAtoms.Times);
-              current = current.Next;
+              MathList.InsertAndAdvance(ref current, MathAtoms.Times, MathListSubIndexType.None);
             }
           }
         } else
           // delete stuff in the Mathlist
           MathList.RemoveAtoms(new MathListRange(current, numerator.Count));
 
-        MathList.Insert(current, new Fraction {
+        MathList.InsertAndAdvance(ref current, new Fraction {
           Numerator = numerator,
           Denominator = MathAtoms.PlaceholderList
-        });
-        //Update the insertion index to go the denominator
-        _insertionIndex = current.LevelUpWithSubIndex(MathListSubIndexType.Denominator, MathListIndex.Level0Index(0));
+        }, MathListSubIndexType.Denominator);
       }
       void InsertParens() {
-        MathList.Insert(_insertionIndex, MathAtoms.ForCharacter('('));
-        _insertionIndex = _insertionIndex.Next;
-        MathList.Insert(_insertionIndex, MathAtoms.ForCharacter(')'));
+        MathList.InsertAndAdvance(ref _insertionIndex, MathAtoms.ForCharacter('('), MathListSubIndexType.None);
+        MathList.InsertAndAdvance(ref _insertionIndex, MathAtoms.ForCharacter(')'), MathListSubIndexType.None);
         // Don't go to the next insertion index, to start inserting before the close parens.
+        _insertionIndex = _insertionIndex.Previous;
       }
       void InsertAbsValue() {
-        MathList.Insert(_insertionIndex, MathAtoms.ForCharacter('|'));
-        _insertionIndex = _insertionIndex.Next;
-        MathList.Insert(_insertionIndex, MathAtoms.ForCharacter('|'));
-        // Don't go to the next insertion index, to start inserting before the second absolute value
+        MathList.InsertAndAdvance(ref _insertionIndex, MathAtoms.ForCharacter('|'), MathListSubIndexType.None);
+        MathList.InsertAndAdvance(ref _insertionIndex, MathAtoms.ForCharacter('|'), MathListSubIndexType.None);
+        // Don't go to the next insertion index, to start inserting before the close parens.
+        _insertionIndex = _insertionIndex.Previous;
       }
 
       void MoveCursorLeft() {
@@ -325,20 +317,20 @@ namespace CSharpMath.Editor {
               // add a placeholder if we deleted everything in the list
               insertionAtom = MathAtoms.Placeholder;
               // mark the placeholder as selected since that is the current insertion point.
-              insertionAtom.Nucleus = Symbols.BlackSquare.ToString();
-              MathList.Insert(_insertionIndex, insertionAtom);
+              insertionAtom.Nucleus = Symbols.BlackSquare;
+#warning Refactor pls
+              MathList.InsertAndAdvance(ref _insertionIndex, insertionAtom, MathListSubIndexType.None);
+              _insertionIndex = _insertionIndex.Previous;
             }
           }
         }
       }
 
       void InsertAtom(IMathAtom a) {
-        MathList.Insert(_insertionIndex, a);
-        if (a.AtomType is MathAtomType.Fraction)
-          // go to the numerator
-          _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListSubIndexType.Numerator, MathListIndex.Level0Index(0));
-        else
-          _insertionIndex = _insertionIndex.Next;
+        MathList.InsertAndAdvance(ref _insertionIndex, a,
+          a.AtomType is MathAtomType.Fraction ?
+          MathListSubIndexType.Numerator :
+          MathListSubIndexType.None);
       }
       void InsertCharacterKey(MathKeyboardInput i) => InsertAtom(AtomForKeyPress(i));
       void InsertSymbolName(string s) => InsertAtom(MathAtoms.ForLatexSymbolName(s));
@@ -685,8 +677,7 @@ namespace CSharpMath.Editor {
       // insert at the given index - but don't consider sublevels at this point
       var index = MathListIndex.Level0Index(detailedIndex.AtomIndex);
       foreach (var atom in list.Atoms) {
-        MathList.Insert(index, atom);
-        index = index.Next;
+        MathList.InsertAndAdvance(ref index, atom, MathListSubIndexType.None);
       }
       InsertionIndex = index; // move the index to the end of the new list.
     }
