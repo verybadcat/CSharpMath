@@ -11,7 +11,6 @@ namespace CSharpMath.Interfaces {
     List<IMathAtom> Atoms { get; }
 
     void Append(IMathList list);
-    void RemoveLastAtom();
     void RemoveAtoms(Range inRange);
 
     ///<summary>Iteratively expands all groups in this list.</summary>

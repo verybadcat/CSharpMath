@@ -40,12 +40,6 @@ namespace CSharpMath.Editor {
     /// <summary><see cref="Display"/> should be redrawn.</summary>
     public event EventHandler RedrawRequested;
 
-    private bool IndexAtPlaceholder(out IMathAtom placeholder) {
-      placeholder = MathList.AtomAt(_insertionIndex) ?? MathList.AtomAt(_insertionIndex?.Previous);
-      return placeholder != null && placeholder.AtomType is MathAtomType.Placeholder &&
-             placeholder.Superscript is null && placeholder.Subscript is null;
-    }
-    
     public PointF? ClosestPointToIndex(MathListIndex index) => Display?.PointForIndex(Context, index);
     public MathListIndex ClosestIndexToPoint(PointF point) => Display?.IndexForPoint(Context, point);
 
@@ -53,21 +47,6 @@ namespace CSharpMath.Editor {
       foreach (var input in inputs) KeyPress(input);
     }
     public void KeyPress(MathKeyboardInput input) {
-      /// <returns>True if updated</returns>
-      bool UpdatePlaceholderIfPresent(IMathAtom newAtom) {
-        var current = MathList.AtomAt(_insertionIndex);
-        if (current?.AtomType is MathAtomType.Placeholder) {
-          if (current.Superscript is IMathList super)
-            newAtom.Superscript = super;
-          if (current.Subscript is IMathList sub)
-            newAtom.Subscript = sub;
-          //Remove the placeholder and replace with emptyAtom.
-          MathList.RemoveAt(_insertionIndex);
-          MathList.Insert(_insertionIndex, newAtom);
-          return true;
-        }
-        return false;
-      }
       MathAtom AtomForKeyPress(MathKeyboardInput i) {
         var c = (char)i;
         // Get the basic conversion from MathAtoms, and then special case unicode characters and latex special characters.
@@ -127,9 +106,7 @@ namespace CSharpMath.Editor {
           // Create an empty atom and move the insertion index up.
           var emptyAtom = MathAtoms.Placeholder;
           emptyAtom.Superscript = MathAtoms.PlaceholderList;
-          if (!UpdatePlaceholderIfPresent(emptyAtom))
-            // If the placeholder hasn't been updated then insert it.
-            MathList.Insert(_insertionIndex, emptyAtom);
+          MathList.Insert(_insertionIndex, emptyAtom);
           _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListSubIndexType.Superscript, MathListIndex.Level0Index(0));
         }
       }
@@ -164,9 +141,7 @@ namespace CSharpMath.Editor {
           // Create an empty atom and move the insertion index up.
           var emptyAtom = MathAtoms.Placeholder;
           emptyAtom.Subscript = MathAtoms.PlaceholderList;
-          if (!UpdatePlaceholderIfPresent(emptyAtom))
-            // If the placeholder hasn't been updated then insert it.
-            MathList.Insert(_insertionIndex, emptyAtom);
+          MathList.Insert(_insertionIndex, emptyAtom);
           _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListSubIndexType.Subscript, MathListIndex.Level0Index(0));
         }
       }
@@ -206,21 +181,13 @@ namespace CSharpMath.Editor {
         //Update the insertion index to go the denominator
         _insertionIndex = current.LevelUpWithSubIndex(MathListSubIndexType.Denominator, MathListIndex.Level0Index(0));
       }
-
-      void RemovePlaceholderIfPresent() {
-        if (IndexAtPlaceholder(out var placeholder))
-          // Remove this element - the inserted text replaces the placeholder
-          MathList.Remove(placeholder);
-      }
       void InsertParens() {
-        RemovePlaceholderIfPresent();
         MathList.Insert(_insertionIndex, MathAtoms.ForCharacter('('));
         _insertionIndex = _insertionIndex.Next;
         MathList.Insert(_insertionIndex, MathAtoms.ForCharacter(')'));
         // Don't go to the next insertion index, to start inserting before the close parens.
       }
       void InsertAbsValue() {
-        RemovePlaceholderIfPresent();
         MathList.Insert(_insertionIndex, MathAtoms.ForCharacter('|'));
         _insertionIndex = _insertionIndex.Next;
         MathList.Insert(_insertionIndex, MathAtoms.ForCharacter('|'));
@@ -366,9 +333,7 @@ namespace CSharpMath.Editor {
       }
 
       void InsertAtom(IMathAtom a) {
-        if (!UpdatePlaceholderIfPresent(a))
-          // If a placeholder wasn't updated then insert the new element.
-          MathList.Insert(_insertionIndex, a);
+        MathList.Insert(_insertionIndex, a);
         if (a.AtomType is MathAtomType.Fraction)
           // go to the numerator
           _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListSubIndexType.Numerator, MathListIndex.Level0Index(0));
@@ -698,7 +663,8 @@ namespace CSharpMath.Editor {
         }
       }
       VisualizePlaceholders(MathList);
-      if (IndexAtPlaceholder(out var atom))
+      if((MathList.AtomAt(_insertionIndex) ?? MathList.AtomAt(_insertionIndex?.Previous)) is IMathAtom atom
+        && atom.AtomType is MathAtomType.Placeholder)
         atom.Nucleus = Symbols.BlackSquare;
       /* Find the insert point rect and create a caretView to draw the caret at this position. */
 

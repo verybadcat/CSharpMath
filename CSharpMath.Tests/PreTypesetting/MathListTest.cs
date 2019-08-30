@@ -116,25 +116,6 @@ namespace CSharpMath.Tests {
     }
 
     [Fact]
-    public void TestRemoveLast() {
-      var list = new MathList();
-      var atom = MathAtoms.Placeholder;
-      list.Add(atom);
-      Assert.Single(list);
-      list.RemoveLastAtom();
-      Assert.Empty(list);
-      list.RemoveLastAtom(); // should not throw; just noop in this case
-      Assert.Empty(list);
-      var atom2 = MathAtoms.Times;
-      list.Add(atom);
-      list.Add(atom2);
-      Assert.Equal(2, list.Count);
-      list.RemoveLastAtom();
-      Assert.Single(list);
-      Assert.Equal(atom, list[0]);
-    }
-
-    [Fact]
     public void TestRemoveAtomAtIndex() {
       var list = new MathList();
       var atom = MathAtoms.Placeholder;

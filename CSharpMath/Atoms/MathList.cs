@@ -118,11 +118,6 @@ namespace CSharpMath.Atoms {
     public IMathList DeepCopy() => AtomCloner.Clone(this, false);
     public IMathList FinalizedList() => AtomCloner.Clone(this, true);
     public void RemoveAtoms(Range inRange) => Atoms.RemoveRange(inRange.Location, inRange.Length);
-    public void RemoveLastAtom() {
-      if (Atoms.Count > 0) {
-        Atoms.RemoveAt(Atoms.Count - 1);
-      }
-    }
     public bool EqualsList(MathList otherList) {
       if (otherList == null) {
         return false;
