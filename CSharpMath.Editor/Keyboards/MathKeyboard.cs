@@ -40,7 +40,7 @@ namespace CSharpMath.Editor {
     /// <summary><see cref="Display"/> should be redrawn.</summary>
     public event EventHandler RedrawRequested;
 
-    private bool IndexAtEmptyPlaceholder(out IMathAtom placeholder) {
+    private bool IndexAtPlaceholder(out IMathAtom placeholder) {
       placeholder = MathList.AtomAt(_insertionIndex) ?? MathList.AtomAt(_insertionIndex?.Previous);
       return placeholder != null && placeholder.AtomType is MathAtomType.Placeholder &&
              placeholder.Superscript is null && placeholder.Subscript is null;
@@ -54,16 +54,16 @@ namespace CSharpMath.Editor {
     }
     public void KeyPress(MathKeyboardInput input) {
       /// <returns>True if updated</returns>
-      bool UpdatePlaceholderIfPresent(IMathAtom emptyAtom) {
+      bool UpdatePlaceholderIfPresent(IMathAtom newAtom) {
         var current = MathList.AtomAt(_insertionIndex);
         if (current?.AtomType is MathAtomType.Placeholder) {
           if (current.Superscript is IMathList super)
-            emptyAtom.Superscript = super;
+            newAtom.Superscript = super;
           if (current.Subscript is IMathList sub)
-            emptyAtom.Subscript = sub;
+            newAtom.Subscript = sub;
           //Remove the placeholder and replace with emptyAtom.
           MathList.RemoveAt(_insertionIndex);
-          MathList.Insert(_insertionIndex, emptyAtom);
+          MathList.Insert(_insertionIndex, newAtom);
           return true;
         }
         return false;
@@ -208,7 +208,7 @@ namespace CSharpMath.Editor {
       }
 
       void RemovePlaceholderIfPresent() {
-        if (IndexAtEmptyPlaceholder(out var placeholder))
+        if (IndexAtPlaceholder(out var placeholder))
           // Remove this element - the inserted text replaces the placeholder
           MathList.Remove(placeholder);
       }
@@ -698,7 +698,7 @@ namespace CSharpMath.Editor {
         }
       }
       VisualizePlaceholders(MathList);
-      if (IndexAtEmptyPlaceholder(out var atom))
+      if (IndexAtPlaceholder(out var atom))
         atom.Nucleus = Symbols.BlackSquare;
       /* Find the insert point rect and create a caretView to draw the caret at this position. */
 

@@ -8,7 +8,6 @@ using CSharpMath.Editor;
 using CSharpMath.Enumerations;
 using CSharpMath.FrontEnd;
 using CSharpMath.Tests.FrontEnd;
-using ListDisplay = CSharpMath.Display.ListDisplay<CSharpMath.Tests.FrontEnd.TestFont, char>;
 
 namespace CSharpMath.Editor.Tests {
   // Use the "CSharpMath.Editor Test Checker" project in the _Utils folder to visualize the test cases
@@ -19,37 +18,36 @@ namespace CSharpMath.Editor.Tests {
       // Format of test data
       public void Add((double x, double y) point,
         int index, params (SubIndex subType, int subIndex)[] subIndexRecursive) {
-        MathListIndex mathListIndex;
-        if (subIndexRecursive.Length == 0)
-          mathListIndex = MathListIndex.Level0Index(index);
-        else {
-          mathListIndex = MathListIndex.Level0Index(subIndexRecursive[subIndexRecursive.Length - 1].subIndex);
-          for (var i = subIndexRecursive.Length - 2; i >= 0; i--)
-            mathListIndex = MathListIndex.IndexAtLocation(subIndexRecursive[i].subIndex, 
-              subIndexRecursive[subIndexRecursive.Length + 1].subType, mathListIndex);
-          mathListIndex = MathListIndex.IndexAtLocation(index, subIndexRecursive[0].subType, mathListIndex);
+        switch (subIndexRecursive.Length) {
+          case 0:
+            var mathListIndex = MathListIndex.Level0Index(index);
+            goto default;
+          case var _:
+            mathListIndex = MathListIndex.Level0Index(subIndexRecursive[subIndexRecursive.Length - 1].subIndex);
+            for (var i = subIndexRecursive.Length - 2; i >= 0; i--)
+              mathListIndex = MathListIndex.IndexAtLocation(
+                subIndexRecursive[i].subIndex, subIndexRecursive[i + 1].subType, mathListIndex);
+            mathListIndex = MathListIndex.IndexAtLocation(index, subIndexRecursive[0].subType, mathListIndex);
+            goto default;
+          default:
+            AddRow(new PointF((float)point.x, (float)point.y), mathListIndex);
+            break;
         }
-        AddRow(new PointF((float)point.x, (float)point.y), mathListIndex);
       }
     }
-    public static readonly TestFont Font = new TestFont(20);
-    private static readonly TypesettingContext<TestFont, char> context = TestTypesettingContexts.Instance;
-    
-    public static ListDisplay CreateDisplay(string expr) =>
-      MathLists.FromString(expr) is Interfaces.IMathList l ?
-      Typesetter<TestFont, char>.CreateLine(l, Font, context, LineStyle.Display) :
-      null;
+    public static Display.ListDisplay<TestFont, char> CreateDisplay(string latex) =>
+      MathLists.FromString(latex) is Interfaces.IMathList mathList ?
+        Typesetter<TestFont, char>.CreateLine(
+          mathList, new TestFont(20), TestTypesettingContexts.Instance, LineStyle.Display) :
+        null;
 
-    void Test(ListDisplay displayList, PointF point, MathListIndex expected) {
-      var actual = displayList.IndexForPoint(context, point);
-      if (!expected.EqualsToIndex(actual))
-        //Xunit disallows custom user messages
-        Assert.True(expected == actual, $"\nPoint: {point}\n" +
-          $"Expected: {expected?.ToString() ?? "(null)"}\nActual: {actual?.ToString() ?? "(null)"}");
+    void Test(string latex, PointF point, MathListIndex expected) {
+      var display = CreateDisplay(latex);
+      Assert.NotNull(display);
+      var actual = display.IndexForPoint(TestTypesettingContexts.Instance, point);
+      Assert.True(expected.EqualsToIndex(actual), $"Point: {point}\n" +
+        $"ExpectedIndex: {expected?.ToString() ?? "(null)"}\nActualIndex: {actual?.ToString() ?? "(null)"}");
     }
-
-    // ^ Helper functions
-    // v Actual test cases
 
     public static TestData FractionData =>
       new TestData {
@@ -86,9 +84,8 @@ namespace CSharpMath.Editor.Tests {
         { (20, 8), 1 },
         { (20, 40), 1 },
        };
-    static readonly ListDisplay Fraction = CreateDisplay(@"\frac32");
     [Theory, MemberData(nameof(FractionData))]
-    public void FractionTest(PointF point, MathListIndex expected) => Test(Fraction, point, expected);
+    public void Fraction(PointF point, MathListIndex expected) => Test(@"\frac32", point, expected);
 
     public static TestData RegularData =>
       new TestData {
@@ -125,9 +122,8 @@ namespace CSharpMath.Editor.Tests {
         { (55, 8), 3 },
         { (55, 40), 3 },
       };
-    static readonly ListDisplay Regular = CreateDisplay(@"4+2");
     [Theory, MemberData(nameof(RegularData))]
-    public void RegularTest(PointF point, MathListIndex expected) => Test(Regular, point, expected);
+    public void Regular(PointF point, MathListIndex expected) => Test(@"4+2", point, expected);
 
     public static TestData RegularPlusFractionData =>
       new TestData {
@@ -148,10 +144,9 @@ namespace CSharpMath.Editor.Tests {
         { (35, 8), 2, (SubIndex.Numerator, 1) },
         { (35, 40), 2, (SubIndex.Numerator, 1) },
       };
-    static readonly ListDisplay RegularPlusFraction = CreateDisplay(@"1+\frac{3}{2}");
     [Theory, MemberData(nameof(RegularPlusFractionData))]
-    public void RegularPlusFractionTest(PointF point, MathListIndex expected) =>
-      Test(RegularPlusFraction, point, expected);
+    public void RegularPlusFraction(PointF point, MathListIndex expected) =>
+      Test(@"1+\frac{3}{2}", point, expected);
 
     public static TestData FractionPlusRegularData =>
       new TestData {
@@ -172,11 +167,126 @@ namespace CSharpMath.Editor.Tests {
         { (15, 8), 1 },
         { (15, 40), 1 },
       };
-    static readonly ListDisplay FractionPlusRegular = CreateDisplay(@"\frac32+1");
     [Theory, MemberData(nameof(FractionPlusRegularData))]
-    public void FractionPlusRegularTest(PointF point, MathListIndex expected) =>
-      Test(FractionPlusRegular, point, expected);
+    public void FractionPlusRegular(PointF point, MathListIndex expected) =>
+      Test(@"\frac32+1", point, expected);
 
+    public static TestData RadicalData =>
+      new TestData {
+        { (-3, -20), 0 },
+        { (-3, 0), 0 },
+        { (-3, 8), 0 },
+        { (-3, 40), 0 },
+        { (0, -20), 0 },
+        { (0, 0), 0 },
+        { (0, 8), 0 },
+        { (0, 40), 0, (SubIndex.Radicand, 0) },
+        { (4, -20), 0 },
+        { (4, 0), 0 },
+        { (4, 8), 0, (SubIndex.Radicand, 0) },
+        { (4, 40), 0, (SubIndex.Radicand, 0)  },
+        { (9, -20), 0, (SubIndex.Radicand, 0) },
+        { (9, 0), 0, (SubIndex.Radicand, 0) },
+        { (9, 8), 0, (SubIndex.Radicand, 0) },
+        { (9, 40), 0, (SubIndex.Radicand, 0) },
+        { (11, -20), 0, (SubIndex.Radicand, 0) },
+        { (11, 0), 0, (SubIndex.Radicand, 0) },
+        { (11, 8), 0, (SubIndex.Radicand, 0) },
+        { (11, 40), 0, (SubIndex.Radicand, 0) },
+        { (13, -20), 0, (SubIndex.Radicand, 0) },
+        { (13, 0), 0, (SubIndex.Radicand, 0) },
+        { (13, 8), 0, (SubIndex.Radicand, 0) },
+        { (13, 40), 0, (SubIndex.Radicand, 0) },
+        { (15, -20), 0, (SubIndex.Radicand, 1) },
+        { (15, 0), 0, (SubIndex.Radicand, 1) },
+        { (15, 8), 0, (SubIndex.Radicand, 1) },
+        { (15, 40), 0, (SubIndex.Radicand, 1) },
+        { (17, -20), 0, (SubIndex.Radicand, 1) },
+        { (17, 0), 0, (SubIndex.Radicand, 1) },
+        { (17, 8), 0, (SubIndex.Radicand, 1) },
+        { (17, 40), 0, (SubIndex.Radicand, 1) },
+        { (19, -20), 1 },
+        { (19, 0), 0, (SubIndex.Radicand, 1) },
+        { (19, 8), 0, (SubIndex.Radicand, 1) },
+        { (19, 40), 0, (SubIndex.Radicand, 1) },
+        { (21, -20), 1 },
+        { (21, 0), 0, (SubIndex.Radicand, 1) },
+        { (21, 8), 0, (SubIndex.Radicand, 1) },
+        { (21, 40), 0, (SubIndex.Radicand, 1) },
+        { (23, -20), 1 },
+        { (23, 0), 1 },
+        { (23, 8), 1 },
+        { (23, 40), 1 },
+        { (26, -20), 1 },
+        { (26, 0), 1 },
+        { (26, 8), 1 },
+        { (26, 40), 1 },
+        { (35, -20), 1 },
+        { (35, 0), 1 },
+        { (35, 8), 1 },
+        { (35, 40), 1 },
+      };
+    [Theory, MemberData(nameof(RadicalData))]
+    public void Radical(PointF point, MathListIndex expected) =>
+      Test(@"\sqrt2", point, expected);
+    public static TestData RadicalDegreeData =>
+      new TestData {
+        { (-3, -20), 0 },
+        { (-3, 0), 0 },
+        { (-3, 8), 0 },
+        { (-3, 40), 0 },
+        { (0, -20), 0, (SubIndex.Radicand, 0) },
+        { (0, 0), 0, (SubIndex.Radicand, 0) },
+        { (0, 8), 0, (SubIndex.Degree, 0) },
+        { (0, 40), 0, (SubIndex.Degree, 0) },
+        { (4, -20), 0, (SubIndex.Radicand, 0) },
+        { (4, 0), 0, (SubIndex.Radicand, 0) },
+        { (4, 8), 0, (SubIndex.Degree, 0) },
+        { (4, 40), 0, (SubIndex.Degree, 0)  },
+        { (9, -20), 0, (SubIndex.Radicand, 0) },
+        { (9, 0), 0, (SubIndex.Radicand, 0) },
+        { (9, 8), 0, (SubIndex.Degree, 0) },
+        { (9, 40), 0, (SubIndex.Degree, 0) },
+        { (11, -20), 0, (SubIndex.Radicand, 0) },
+        { (11, 0), 0, (SubIndex.Radicand, 0) },
+        { (11, 8), 0, (SubIndex.Radicand, 0) },
+        { (11, 40), 0, (SubIndex.Degree, 1) },
+        { (13, -20), 0, (SubIndex.Radicand, 0) },
+        { (13, 0), 0, (SubIndex.Radicand, 0) },
+        { (13, 8), 0, (SubIndex.Radicand, 0) },
+        { (13, 40), 0, (SubIndex.Degree, 1) },
+        { (15, -20), 0, (SubIndex.Radicand, 0) },
+        { (15, 0), 0, (SubIndex.Radicand, 0) },
+        { (15, 8), 0, (SubIndex.Radicand, 0) },
+        { (15, 40), 0, (SubIndex.Degree, 1) },
+        { (17, -20), 0, (SubIndex.Radicand, 1) },
+        { (17, 0), 0, (SubIndex.Radicand, 1) },
+        { (17, 8), 0, (SubIndex.Radicand, 1) },
+        { (17, 40), 0, (SubIndex.Radicand, 1) },
+        { (19, -20), 0, (SubIndex.Radicand, 1) },
+        { (19, 0), 0, (SubIndex.Radicand, 1) },
+        { (19, 8), 0, (SubIndex.Radicand, 1) },
+        { (19, 40), 0, (SubIndex.Radicand, 1) },
+        { (21, -20), 1 },
+        { (21, 0), 0, (SubIndex.Radicand, 1) },
+        { (21, 8), 0, (SubIndex.Radicand, 1) },
+        { (21, 40), 0, (SubIndex.Radicand, 1) },
+        { (23, -20), 1 },
+        { (23, 0), 0, (SubIndex.Radicand, 1) },
+        { (23, 8), 0, (SubIndex.Radicand, 1) },
+        { (23, 40), 0, (SubIndex.Radicand, 1) },
+        { (26, -20), 1 },
+        { (26, 0), 1 },
+        { (26, 8), 1 },
+        { (26, 40), 1 },
+        { (35, -20), 1 },
+        { (35, 0), 1 },
+        { (35, 8), 1 },
+        { (35, 40), 1 },
+      };
+    [Theory, MemberData(nameof(RadicalDegreeData))]
+    public void RadicalDegree(PointF point, MathListIndex expected) =>
+      Test(@"\sqrt[3]2", point, expected);
     public static TestData ExponentData =>
       new TestData {
         { (-10, -20), 0 },
@@ -210,22 +320,18 @@ namespace CSharpMath.Editor.Tests {
         { (30, 8), 1 },
         { (30, 40), 1 },
       };
-    static readonly ListDisplay Exponent = CreateDisplay("2^3");
     [Theory, MemberData(nameof(ExponentData))]
-    public void ExponentTest(PointF point, MathListIndex expected) => Test(Exponent, point, expected);
+    public void Exponent(PointF point, MathListIndex expected) => Test("2^3", point, expected);
 
-    // https://github.com/verybadcat/CSharpMath/issues/49
     public static TestData Exponent2Data =>
       new TestData {
         { (55, 0), 1 },
         { (55, 20), 1 },
         { (55, 40), 1 },
-  };
-    static readonly ListDisplay Exponent2 = CreateDisplay("2^{x+y-4}");
-    [Theory, MemberData(nameof(Exponent2Data))]
-    public void Exponent2Test(PointF point, MathListIndex expected) => Test(Exponent2, point, expected);
+    };
+    [Theory, MemberData(nameof(Exponent2Data))] // https://github.com/verybadcat/CSharpMath/issues/49
+    public void Exponent2(PointF point, MathListIndex expected) => Test("2^{x+y-4}", point, expected);
 
-    // https://github.com/verybadcat/CSharpMath/issues/46
     public static TestData Issue46Data =>
       new TestData {
         { (50, 10), 4 },
@@ -233,9 +339,8 @@ namespace CSharpMath.Editor.Tests {
         { (90, 20), 5 },
         { (90, 40), 5 },
       };
-    static readonly ListDisplay Issue46 = CreateDisplay("2+x+x^y");
-    [Theory, MemberData(nameof(Issue46Data))]
-    public void Issue46Test(PointF point, MathListIndex expected) => Test(Issue46, point, expected);
+    [Theory, MemberData(nameof(Issue46Data))] // https://github.com/verybadcat/CSharpMath/issues/46
+    public void Issue46(PointF point, MathListIndex expected) => Test("2+x+x^y", point, expected);
 
     public static TestData ComplexData =>
       new TestData {
@@ -248,31 +353,129 @@ namespace CSharpMath.Editor.Tests {
         { (0, 0), 0, (SubIndex.Denominator, 0), (SubIndex.Numerator, 0) },
         { (0, 8), 0, (SubIndex.Numerator, 0) },
         { (0, 40), 0, (SubIndex.Numerator, 0) },
-        { (9, -20), 0, (SubIndex.Denominator, 1) },
-        { (9, 0), 0, (SubIndex.Denominator, 0), (SubIndex.Numerator, 1) },
-        { (9, 8), 0, (SubIndex.Numerator, 1) },
-        { (9, 40), 0, (SubIndex.Numerator, 1) },
-        { (10, -20), 0, (SubIndex.Numerator, 1) },
+        { (6, -20), 0, (SubIndex.Denominator, 0), (SubIndex.Denominator, 1) },
+        { (6, 0), 0, (SubIndex.Denominator, 0), (SubIndex.Numerator, 1) },
+        { (6, 8), 0, (SubIndex.Numerator, 1) },
+        { (6, 40), 0, (SubIndex.Numerator, 1) },
+        { (8, -20), 0, (SubIndex.Denominator, 1) },
+        { (8, 0), 0, (SubIndex.Denominator, 0), (SubIndex.Numerator, 1) },
+        { (8, 8), 0, (SubIndex.Numerator, 1) },
+        { (8, 40), 0, (SubIndex.Numerator, 1) },
+        { (10, -20), 0, (SubIndex.Denominator, 1) },
         { (10, 0), 0, (SubIndex.Denominator, 0), (SubIndex.Numerator, 1) },
         { (10, 8), 0, (SubIndex.Numerator, 1) },
         { (10, 40), 0, (SubIndex.Numerator, 1) },
-        // v WIP!! Fails currently 
-        { (11, -20), 0, (SubIndex.Nucleus, 1) },
-        { (11, 0), 0, (SubIndex.Nucleus, 1) },
-        { (11, 8), 0, (SubIndex.Superscript, 0) },
-        { (11, 40), 0, (SubIndex.Superscript, 0) },
-        { (17, -20), 1 },
-        { (17, 0), 1 },
-        { (17, 8), 0, (SubIndex.Superscript, 1) },
-        { (17, 40), 0, (SubIndex.Superscript, 1) },
-        { (30, -20), 1 },
-        { (30, 0), 1 },
-        { (30, 8), 1 },
-        { (30, 40), 1 },
+        { (11, -20), 0, (SubIndex.Denominator, 1) },
+        { (11, 0), 0, (SubIndex.Denominator, 1) },
+        { (11, 8), 0, (SubIndex.Numerator, 1) },
+        { (11, 40), 0, (SubIndex.Numerator, 1) },
+        // \frac\frac123
+        { (17, -20), 1, (SubIndex.Denominator, 0) },
+        { (17, 0), 1, (SubIndex.Denominator, 0) },
+        { (17, 8), 1, (SubIndex.Numerator, 0), (SubIndex.Denominator, 0) },
+        { (17, 40), 1, (SubIndex.Numerator, 0), (SubIndex.Numerator, 0) },
+        { (23, -20), 1, (SubIndex.Denominator, 1) },
+        { (23, 0), 1, (SubIndex.Denominator, 1) },
+        { (23, 8), 1, (SubIndex.Numerator, 1) },
+        { (23, 40), 1, (SubIndex.Numerator, 0), (SubIndex.Numerator, 1) },
+        // \sqrt d^e
+        { (27, -20), 2, (SubIndex.Radicand, 0) },
+        { (27, 0), 2, (SubIndex.Radicand, 0) },
+        { (27, 8), 2, (SubIndex.Radicand, 0) },
+        { (27, 40), 2, (SubIndex.Radicand, 0) },
+        { (40, -20), 2, (SubIndex.Radicand, 0) },
+        { (40, 0), 2, (SubIndex.Radicand, 0) },
+        { (40, 8), 2, (SubIndex.Radicand, 0) },
+        { (40, 40), 2, (SubIndex.Radicand, 0) },
+        { (45, -20), 2, (SubIndex.Radicand, 1) },
+        { (45, 0), 2, (SubIndex.Radicand, 1) },
+        { (45, 8), 2, (SubIndex.Radicand, 1) },
+        { (45, 40), 2, (SubIndex.Superscript, 0) },
+        { (50, -20), 2, (SubIndex.Superscript, 0) },
+        { (50, 0), 2, (SubIndex.Superscript, 0) },
+        { (50, 8), 2, (SubIndex.Superscript, 0) },
+        { (50, 40), 2, (SubIndex.Superscript, 0) },
+        { (55, -20), 2, (SubIndex.Superscript, 1) },
+        { (55, 0), 2, (SubIndex.Superscript, 1) },
+        { (55, 8), 2, (SubIndex.Superscript, 1) },
+        { (55, 40), 2, (SubIndex.Superscript, 1) },
+        // \sqrt[5]6
+        { (60, -20), 3, (SubIndex.Radicand, 0) },
+        { (60, 0), 3, (SubIndex.Radicand, 0) },
+        { (60, 8), 3, (SubIndex.Degree, 0) },
+        { (60, 40), 3, (SubIndex.Degree, 0) },
+        { (67, -20), 3, (SubIndex.Radicand, 0) },
+        { (67, 0), 3, (SubIndex.Radicand, 0) },
+        { (67, 8), 3, (SubIndex.Degree, 0) },
+        { (67, 40), 3, (SubIndex.Degree, 0) },
+        { (73, -20), 3, (SubIndex.Radicand, 0) },
+        { (73, 0), 3, (SubIndex.Radicand, 0) },
+        { (73, 8), 3, (SubIndex.Radicand, 0) },
+        { (73, 40), 3, (SubIndex.Degree, 1) },
+        { (80, -20), 3, (SubIndex.Radicand, 1) },
+        { (80, 0), 3, (SubIndex.Radicand, 1) },
+        { (80, 8), 3, (SubIndex.Radicand, 1) },
+        { (80, 40), 3, (SubIndex.Radicand, 1) },
+        // \sqrt[f]g^{7_8}_{9^0}
+        { (87, -20), 4, (SubIndex.Radicand, 0) },
+        { (87, 0), 4, (SubIndex.Radicand, 0) },
+        { (87, 8), 4, (SubIndex.Degree, 0) },
+        { (87, 40), 4, (SubIndex.Degree, 0) },
+        { (90, -20), 4, (SubIndex.Radicand, 0) },
+        { (90, 0), 4, (SubIndex.Radicand, 0) },
+        { (90, 8), 4, (SubIndex.Degree, 0) },
+        { (90, 40), 4, (SubIndex.Degree, 0) },
+        { (95, -20), 4, (SubIndex.Radicand, 0) },
+        { (95, 0), 4, (SubIndex.Radicand, 0) },
+        { (95, 8), 4, (SubIndex.Degree, 1) },
+        { (95, 40), 4, (SubIndex.Degree, 1) },
+        { (100, -20), 4, (SubIndex.Radicand, 0) },
+        { (100, 0), 4, (SubIndex.Radicand, 0) },
+        { (100, 8), 4, (SubIndex.Radicand, 0) },
+        { (100, 40), 4, (SubIndex.Degree, 1) },
+        { (105, -20), 4, (SubIndex.Subscript, 0) },
+        { (105, 0), 4, (SubIndex.Radicand, 1) },
+        { (105, 8), 4, (SubIndex.Radicand, 1) },
+        { (105, 40), 4, (SubIndex.Superscript, 0) },
+        { (110, -20), 4, (SubIndex.Subscript, 0) },
+        { (110, 0), 4, (SubIndex.Subscript, 0) },
+        { (110, 8), 4, (SubIndex.Subscript, 0) },
+        { (118, 20), 4, (SubIndex.Superscript, 0), (SubIndex.Subscript, 1) },
+        { (118, 32), 4, (SubIndex.Superscript, 0), (SubIndex.Subscript, 1) },
+        { (110, 40), 4, (SubIndex.Superscript, 0) },
+        { (115, -20), 4, (SubIndex.Subscript, 0), (SubIndex.Nucleus, 1) },
+        { (115, 0), 4, (SubIndex.Subscript, 0), (SubIndex.Superscript, 0) },
+        { (115, 8), 4, (SubIndex.Subscript, 0), (SubIndex.Superscript, 0) },
+        { (118, 20), 4, (SubIndex.Superscript, 0), (SubIndex.Subscript, 1) },
+        { (118, 32), 4, (SubIndex.Superscript, 0), (SubIndex.Subscript, 1) },
+        { (115, 40), 4, (SubIndex.Superscript, 0), (SubIndex.Nucleus, 1) },
+        { (118, -20), 4, (SubIndex.Subscript, 1) },
+        { (118, 0), 4, (SubIndex.Subscript, 0), (SubIndex.Superscript, 1) },
+        { (118, 8), 4, (SubIndex.Subscript, 0), (SubIndex.Superscript, 1) },
+        { (118, 20), 4, (SubIndex.Superscript, 0), (SubIndex.Subscript, 1) },
+        { (118, 32), 4, (SubIndex.Superscript, 0), (SubIndex.Subscript, 1) },
+        { (118, 40), 4, (SubIndex.Superscript, 0), (SubIndex.Subscript, 1) },
+        { (120, -20), 4, (SubIndex.Subscript, 1) },
+        { (120, 0), 4, (SubIndex.Subscript, 0), (SubIndex.Superscript, 1) },
+        { (120, 8), 4, (SubIndex.Subscript, 0), (SubIndex.Superscript, 1) },
+        { (120, 20), 4, (SubIndex.Superscript, 0), (SubIndex.Subscript, 1) },
+        { (120, 32), 4, (SubIndex.Superscript, 0), (SubIndex.Subscript, 1) },
+        { (120, 40), 4, (SubIndex.Superscript, 0), (SubIndex.Subscript, 1) },
+        { (122, -20), 5 },
+        { (122, 0), 5 },
+        { (122, 8), 5 },
+        { (122, 20), 5 },
+        { (122, 32), 5 },
+        { (122, 40), 5 },
+        { (150, -20), 5 },
+        { (150, 0), 5 },
+        { (150, 8), 5 },
+        { (150, 20), 5 },
+        { (150, 32), 5 },
+        { (150, 40), 5 },
       };
-    static readonly ListDisplay Complex =
-      CreateDisplay(@"\frac a\frac bc\frac\frac123\sqrt d^e\sqrt[5]6\sqrt[6]7_8\overline9\underline0");
-    [Theory, MemberData(nameof(ComplexData), Skip = "Not yet done...")]
-    public void ComplexTest(PointF point, MathListIndex expected) => Test(Complex, point, expected);
+    [Theory, MemberData(nameof(ComplexData))]
+    public void Complex(PointF point, MathListIndex expected) => 
+      Test(@"\frac a\frac bc\frac\frac123\sqrt d^e\sqrt[5]6\sqrt[f]g^{7_8}_{9^0}", point, expected);
   }
 }
