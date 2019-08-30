@@ -875,20 +875,19 @@ namespace CSharpMath {
 
     private GlyphConstructionDisplay<TFont, TGlyph> _ConstructGlyph(TGlyph glyph, float glyphHeight) {
       var parts = _mathTable.GetVerticalGlyphAssembly(glyph, _styleFont);
-      if (parts.Any()) {
-        List<TGlyph> glyphs = new List<TGlyph>();
-        List<float> offsets = new List<float>();
-        float height = _ConstructGlyphWithParts(parts, glyphHeight, glyphs, offsets);
-        TGlyph firstGlyph = glyphs[0];
-        var singleGlyph = new RentedArray<TGlyph>(firstGlyph);
-        float width = _context.GlyphBoundsProvider.GetAdvancesForGlyphs(_styleFont, singleGlyph.Result, 1).Total;
-        singleGlyph.Return();
-        return new GlyphConstructionDisplay<TFont, TGlyph>(glyphs, offsets, _styleFont) {
-          Width = width,
-          Ascent = height,
-          Descent = 0 // it's up to the rendering to adjust the display glyph up or down
-        };
-      } else return null;
+      if (parts is null) return null;
+      var glyphs = new List<TGlyph>();
+      var offsets = new List<float>();
+      float height = _ConstructGlyphWithParts(parts, glyphHeight, glyphs, offsets);
+      var firstGlyph = glyphs[0];
+      var singleGlyph = new RentedArray<TGlyph>(firstGlyph);
+      float width = _context.GlyphBoundsProvider.GetAdvancesForGlyphs(_styleFont, singleGlyph.Result, 1).Total;
+      singleGlyph.Return();
+      return new GlyphConstructionDisplay<TFont, TGlyph>(glyphs, offsets, _styleFont) {
+        Width = width,
+        Ascent = height,
+        Descent = 0 // it's up to the rendering to adjust the display glyph up or down
+      };
     }
 
     private float _ConstructGlyphWithParts(IEnumerable<GlyphPart<TGlyph>> parts, float glyphHeight, List<TGlyph> glyphs, List<float> offsets) {
@@ -913,7 +912,7 @@ namespace CSharpMath {
               // the maximum amount we can add to the offset
               float maxOffsetDelta = prevPart.FullAdvance - minDistance;
               maxDelta = Math.Min(maxDelta, maxOffsetDelta - minOffsetDelta);
-              minOffset = minOffset + minOffsetDelta;
+              minOffset += minOffsetDelta;
             }
             offsets.Add(minOffset);
             prevPart = part;

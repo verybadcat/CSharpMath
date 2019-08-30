@@ -9,33 +9,43 @@ using CSharpMath.Enumerations;
 using CSharpMath.FrontEnd;
 using CSharpMath.Tests.FrontEnd;
 using ListDisplay = CSharpMath.Display.ListDisplay<CSharpMath.Tests.FrontEnd.TestFont, char>;
-using TestData = Xunit.TheoryData<float, float, CSharpMath.Editor.MathListIndex>;
 
 namespace CSharpMath.Editor.Tests {
   // Use the "CSharpMath.Editor Test Checker" project in the _Utils folder to visualize the test cases
-  using Type = MathListSubIndexType;
-  using static MathListIndex;
-  public class ClosestPointTests {
-    class NotEqual : Xunit.Sdk.EqualException {
-      public NotEqual(object expected, object actual, string message) : base(expected, actual) => UserMessage = message;
-      public override string Message =>
-        UserMessage + $"\nExpected: {Expected?.ToString() ?? "(null)"}\nActual: {Actual?.ToString() ?? "(null)"}";
-    }
+  using SubIndex = MathListSubIndexType;
 
+  public class ClosestPointTests {
+    public class TestData : TheoryData {
+      // Format of test data
+      public void Add((double x, double y) point,
+        int index, params (SubIndex subType, int subIndex)[] subIndexRecursive) {
+        MathListIndex mathListIndex;
+        if (subIndexRecursive.Length == 0)
+          mathListIndex = MathListIndex.Level0Index(index);
+        else {
+          mathListIndex = MathListIndex.Level0Index(subIndexRecursive[subIndexRecursive.Length - 1].subIndex);
+          for (var i = subIndexRecursive.Length - 2; i >= 0; i--)
+            mathListIndex = MathListIndex.IndexAtLocation(subIndexRecursive[i].subIndex, 
+              subIndexRecursive[subIndexRecursive.Length + 1].subType, mathListIndex);
+          mathListIndex = MathListIndex.IndexAtLocation(index, subIndexRecursive[0].subType, mathListIndex);
+        }
+        AddRow(new PointF((float)point.x, (float)point.y), mathListIndex);
+      }
+    }
     public static readonly TestFont Font = new TestFont(20);
     private static readonly TypesettingContext<TestFont, char> context = TestTypesettingContexts.Instance;
-
+    
     public static ListDisplay CreateDisplay(string expr) =>
       MathLists.FromString(expr) is Interfaces.IMathList l ?
       Typesetter<TestFont, char>.CreateLine(l, Font, context, LineStyle.Display) :
       null;
 
-    void Test(ListDisplay displayList, float x, float y, MathListIndex expected) {
-      var point = new PointF(x, y);
-      var index = displayList.IndexForPoint(context, point);
-      if (!expected.EqualsToIndex(index))
+    void Test(ListDisplay displayList, PointF point, MathListIndex expected) {
+      var actual = displayList.IndexForPoint(context, point);
+      if (!expected.EqualsToIndex(actual))
         //Xunit disallows custom user messages
-        throw new NotEqual(expected, index, $"\nPoint: {point}");
+        Assert.True(expected == actual, $"\nPoint: {point}\n" +
+          $"Expected: {expected?.ToString() ?? "(null)"}\nActual: {actual?.ToString() ?? "(null)"}");
     }
 
     // ^ Helper functions
@@ -43,225 +53,226 @@ namespace CSharpMath.Editor.Tests {
 
     public static TestData FractionData =>
       new TestData {
-        { -10, -20, Level0Index(0) },
-        { -10, 0, Level0Index(0) },
-        { -10, 8, Level0Index(0) },
-        { -10, 40, Level0Index(0) },
-        { -2.5f, -20, Level0Index(0) },
-        { -2.5f, 0, Level0Index(0) },
-        { -2.5f, 8, Level0Index(0) },
-        { -2.5f, 40, Level0Index(0) },
-        { -1, -20, IndexAtLocation(0, Type.Denominator, Level0Index(0)) },
-        { -1, 0, IndexAtLocation(0, Type.Denominator, Level0Index(0)) },
-        { -1, 8, IndexAtLocation(0, Type.Numerator, Level0Index(0)) },
-        { -1, 40, IndexAtLocation(0, Type.Numerator, Level0Index(0)) },
-        { 3, -20, IndexAtLocation(0, Type.Denominator, Level0Index(0)) },
-        { 3, 0, IndexAtLocation(0, Type.Denominator, Level0Index(0)) },
-        { 3, 8, IndexAtLocation(0, Type.Numerator, Level0Index(0)) },
-        { 3, 40, IndexAtLocation(0, Type.Numerator, Level0Index(0)) },
-        { 7, -20, IndexAtLocation(0, Type.Denominator, Level0Index(1)) },
-        { 7, 0, IndexAtLocation(0, Type.Denominator, Level0Index(1)) },
-        { 7, 8, IndexAtLocation(0, Type.Numerator, Level0Index(1)) },
-        { 7, 40, IndexAtLocation(0, Type.Numerator, Level0Index(1)) },
-        { 11, -20, Level0Index(1) },  // because it is below the height of the fraction
-        { 11, 0, IndexAtLocation(0, Type.Denominator, Level0Index(1)) },
-        { 11, 8, IndexAtLocation(0, Type.Numerator, Level0Index(1)) },
-        { 11, 40, IndexAtLocation(0, Type.Numerator, Level0Index(1)) },
-
-        { 12.5f, -20, Level0Index(1) },
-        { 12.5f, 0, Level0Index(1) },
-        { 12.5f, 8, Level0Index(1) },
-        { 12.5f, 40, Level0Index(1) },
-        { 20, -20, Level0Index(1) },
-        { 20, 0, Level0Index(1) },
-        { 20, 8, Level0Index(1) },
-        { 20, 40, Level0Index(1) },
+        { (-10, -20), 0 },
+        { (-10, 0), 0 },
+        { (-10, 8), 0 },
+        { (-10, 40), 0 },
+        { (-2.5, -20), 0 },
+        { (-2.5, 0), 0 },
+        { (-2.5, 8), 0 },
+        { (-2.5, 40), 0 },
+        { (-1, -20), 0, (SubIndex.Denominator, 0) },
+        { (-1, 0), 0, (SubIndex.Denominator, 0) },
+        { (-1, 8), 0, (SubIndex.Numerator, 0) },
+        { (-1, 40), 0, (SubIndex.Numerator, 0) },
+        { (3, -20), 0, (SubIndex.Denominator, 0) },
+        { (3, 0), 0, (SubIndex.Denominator, 0) },
+        { (3, 8), 0, (SubIndex.Numerator, 0) },
+        { (3, 40), 0, (SubIndex.Numerator, 0) },
+        { (7, -20), 0, (SubIndex.Denominator, 1) },
+        { (7, 0), 0, (SubIndex.Denominator, 1) },
+        { (7, 8), 0, (SubIndex.Numerator, 1) },
+        { (7, 40), 0, (SubIndex.Numerator, 1) },
+        { (11, -20), 1 },  // because it is below the height of the fraction
+        { (11, 0), 0, (SubIndex.Denominator, 1) },
+        { (11, 8), 0, (SubIndex.Numerator, 1) },
+        { (11, 40), 0, (SubIndex.Numerator, 1) },
+        { (12.5, -20), 1 },
+        { (12.5, 0), 1 },
+        { (12.5, 8), 1 },
+        { (12.5, 40), 1 },
+        { (20, -20), 1 },
+        { (20, 0), 1 },
+        { (20, 8), 1 },
+        { (20, 40), 1 },
        };
     static readonly ListDisplay Fraction = CreateDisplay(@"\frac32");
     [Theory, MemberData(nameof(FractionData))]
-    public void FractionTest(float x, float y, MathListIndex expected) => Test(Fraction, x, y, expected);
+    public void FractionTest(PointF point, MathListIndex expected) => Test(Fraction, point, expected);
 
     public static TestData RegularData =>
       new TestData {
-        { -10, -20, Level0Index(0) },
-        { -10, 0, Level0Index(0) },
-        { -10, 8, Level0Index(0) },
-        { -10, 40, Level0Index(0) },
-        { 0, -20, Level0Index(0) },
-        { 0, 0, Level0Index(0) },
-        { 0, 8, Level0Index(0) },
-        { 0, 40, Level0Index(0) },
-        { 10, -20, Level0Index(1) },
-        { 10, 0, Level0Index(1) },
-        { 10, 8, Level0Index(1) },
-        { 10, 40, Level0Index(1) },
-        { 15, -20, Level0Index(1) },
-        { 15, 0, Level0Index(1) },
-        { 15, 8, Level0Index(1) },
-        { 15, 40, Level0Index(1) },
-        { 25, -20, Level0Index(2) },
-        { 25, 0, Level0Index(2) },
-        { 25, 8, Level0Index(2) },
-        { 25, 40, Level0Index(2) },
-        { 35, -20, Level0Index(3) },
-        { 35, 0, Level0Index(3) },
-        { 35, 8, Level0Index(3) },
-        { 35, 40, Level0Index(3) },
-        { 45, -20, Level0Index(3) },
-        { 45, 0, Level0Index(3) },
-        { 45, 8, Level0Index(3) },
-        { 45, 40, Level0Index(3) },
-        { 55, -20, Level0Index(3) },
-        { 55, 0, Level0Index(3) },
-        { 55, 8, Level0Index(3) },
-        { 55, 40, Level0Index(3) },
+        { (-10, -20), 0 },
+        { (-10, 0), 0 },
+        { (-10, 8), 0 },
+        { (-10, 40), 0 },
+        { (0, -20), 0 },
+        { (0, 0), 0 },
+        { (0, 8), 0 },
+        { (0, 40), 0 },
+        { (10, -20), 1 },
+        { (10, 0), 1 },
+        { (10, 8), 1 },
+        { (10, 40), 1 },
+        { (15, -20), 1 },
+        { (15, 0), 1 },
+        { (15, 8), 1 },
+        { (15, 40), 1 },
+        { (25, -20), 2 },
+        { (25, 0), 2 },
+        { (25, 8), 2 },
+        { (25, 40), 2 },
+        { (35, -20), 3 },
+        { (35, 0), 3 },
+        { (35, 8), 3 },
+        { (35, 40), 3 },
+        { (45, -20), 3 },
+        { (45, 0), 3 },
+        { (45, 8), 3 },
+        { (45, 40), 3 },
+        { (55, -20), 3 },
+        { (55, 0), 3 },
+        { (55, 8), 3 },
+        { (55, 40), 3 },
       };
     static readonly ListDisplay Regular = CreateDisplay(@"4+2");
     [Theory, MemberData(nameof(RegularData))]
-    public void RegularTest(float x, float y, MathListIndex expected) => Test(Regular, x, y, expected);
+    public void RegularTest(PointF point, MathListIndex expected) => Test(Regular, point, expected);
 
     public static TestData RegularPlusFractionData =>
       new TestData {
-        { 30, -20, Level0Index(2) },
-        { 30, 0, Level0Index(2) },
-        { 30, 8, Level0Index(2) },
-        { 30, 40, Level0Index(2) },
-        { 32, -20, Level0Index(2) },
-        { 32, 0, Level0Index(2) },
-        { 32, 8, Level0Index(2) },
-        { 32, 40, Level0Index(2) },
-        { 33, -20, IndexAtLocation(2, Type.Denominator, Level0Index(0)) },
-        { 33, 0, IndexAtLocation(2, Type.Denominator, Level0Index(0)) },
-        { 33, 8, IndexAtLocation(2, Type.Numerator, Level0Index(0)) },
-        { 33, 40, IndexAtLocation(2, Type.Numerator, Level0Index(0)) },
-        { 35, -20, IndexAtLocation(2, Type.Denominator, Level0Index(1)) },
-        { 35, 0, IndexAtLocation(2, Type.Denominator, Level0Index(1)) },
-        { 35, 8, IndexAtLocation(2, Type.Numerator, Level0Index(1)) },
-        { 35, 40, IndexAtLocation(2, Type.Numerator, Level0Index(1)) },
+        { (26, -20), 2 },
+        { (26, 0), 2 },
+        { (26, 8), 2 },
+        { (26, 40), 2 },
+        { (28, -20), 2, (SubIndex.Denominator, 0) },
+        { (28, 0), 2, (SubIndex.Denominator, 0) },
+        { (28, 8), 2, (SubIndex.Numerator, 0) },
+        { (28, 40), 2, (SubIndex.Numerator, 0) },
+        { (33, -20), 2, (SubIndex.Denominator, 0) },
+        { (33, 0), 2, (SubIndex.Denominator, 0) },
+        { (33, 8), 2, (SubIndex.Numerator, 0) },
+        { (33, 40), 2, (SubIndex.Numerator, 0) },
+        { (35, -20), 2, (SubIndex.Denominator, 1) },
+        { (35, 0), 2, (SubIndex.Denominator, 1) },
+        { (35, 8), 2, (SubIndex.Numerator, 1) },
+        { (35, 40), 2, (SubIndex.Numerator, 1) },
       };
     static readonly ListDisplay RegularPlusFraction = CreateDisplay(@"1+\frac{3}{2}");
     [Theory, MemberData(nameof(RegularPlusFractionData))]
-    public void RegularPlusFractionTest(float x, float y, MathListIndex expected) => Test(RegularPlusFraction, x, y, expected);
+    public void RegularPlusFractionTest(PointF point, MathListIndex expected) =>
+      Test(RegularPlusFraction, point, expected);
 
     public static TestData FractionPlusRegularData =>
       new TestData {
-        { 9, -20, IndexAtLocation(0, Type.Denominator, Level0Index(1)) },
-        { 9, 0, IndexAtLocation(0, Type.Denominator, Level0Index(1)) },
-        { 9, 8, IndexAtLocation(0, Type.Numerator, Level0Index(1)) },
-        { 9, 40, IndexAtLocation(0, Type.Numerator, Level0Index(1)) },
-        { 11, -20, IndexAtLocation(0, Type.Denominator, Level0Index(1)) },
-        { 11, 0, IndexAtLocation(0, Type.Denominator, Level0Index(1)) },
-        { 11, 8, IndexAtLocation(0, Type.Numerator, Level0Index(1)) },
-        { 11, 40, IndexAtLocation(0, Type.Numerator, Level0Index(1)) },
-        { 13, -20, Level0Index(1) },
-        { 13, 0, Level0Index(1) },
-        { 13, 8, Level0Index(1) },
-        { 13, 40, Level0Index(1) },
-        { 15, -20, Level0Index(1) },
-        { 15, 0, Level0Index(1) },
-        { 15, 8, Level0Index(1) },
-        { 15, 40, Level0Index(1) },
+        { (9, -20), 0, (SubIndex.Denominator, 1) },
+        { (9, 0), 0, (SubIndex.Denominator, 1) },
+        { (9, 8), 0, (SubIndex.Numerator, 1) },
+        { (9, 40), 0, (SubIndex.Numerator, 1) },
+        { (11, -20), 0, (SubIndex.Denominator, 1) },
+        { (11, 0), 0, (SubIndex.Denominator, 1) },
+        { (11, 8), 0, (SubIndex.Numerator, 1) },
+        { (11, 40), 0, (SubIndex.Numerator, 1) },
+        { (13, -20), 1 },
+        { (13, 0), 1 },
+        { (13, 8), 1 },
+        { (13, 40), 1 },
+        { (15, -20), 1 },
+        { (15, 0), 1 },
+        { (15, 8), 1 },
+        { (15, 40), 1 },
       };
     static readonly ListDisplay FractionPlusRegular = CreateDisplay(@"\frac32+1");
     [Theory, MemberData(nameof(FractionPlusRegularData))]
-    public void FractionPlusRegularTest(float x, float y, MathListIndex expected) => Test(FractionPlusRegular, x, y, expected);
+    public void FractionPlusRegularTest(PointF point, MathListIndex expected) =>
+      Test(FractionPlusRegular, point, expected);
 
     public static TestData ExponentData =>
       new TestData {
-        { -10, -20, Level0Index(0) },
-        { -10, 0, Level0Index(0) },
-        { -10, 8, Level0Index(0) },
-        { -10, 40, Level0Index(0) },
-        { 0, -20, Level0Index(0) },
-        { 0, 0, Level0Index(0) },
-        { 0, 8, Level0Index(0) },
-        { 0, 40, Level0Index(0) },
-        { 9, -20, IndexAtLocation(0, Type.Nucleus, Level0Index(1)) },
-        { 9, 0, IndexAtLocation(0, Type.Nucleus, Level0Index(1)) },
-        { 9, 8, IndexAtLocation(0, Type.Nucleus, Level0Index(1)) },
+        { (-10, -20), 0 },
+        { (-10, 0), 0 },
+        { (-10, 8), 0 },
+        { (-10, 40), 0 },
+        { (0, -20), 0 },
+        { (0, 0), 0 },
+        { (0, 8), 0 },
+        { (0, 40), 0 },
+        { (9, -20), 0, (SubIndex.Nucleus, 1) },
+        { (9, 0), 0, (SubIndex.Nucleus, 1) },
+        { (9, 8), 0, (SubIndex.Nucleus, 1) },
         // The superscript is closer than the nucleus (and the touch boundaries overlap)
-        { 9, 40, IndexAtLocation(0, Type.Superscript, Level0Index(0)) },
-        { 10, -20, IndexAtLocation(0, Type.Nucleus, Level0Index(1)) },
-        { 10, 0, IndexAtLocation(0, Type.Nucleus, Level0Index(1)) },
+        { (9, 40), 0, (SubIndex.Superscript, 0) },
+        { (10, -20), 0, (SubIndex.Nucleus, 1) },
+        { (10, 0), 0, (SubIndex.Nucleus, 1) },
         // The nucleus is closer and the touch boundaries overlap
-        { 10, 8, IndexAtLocation(0, Type.Nucleus, Level0Index(1)) },
-        { 10, 40, IndexAtLocation(0, Type.Superscript, Level0Index(0)) },
-        { 11, -20, IndexAtLocation(0, Type.Nucleus, Level0Index(1)) },
-        { 11, 0, IndexAtLocation(0, Type.Nucleus, Level0Index(1)) },
-        { 11, 8, IndexAtLocation(0, Type.Superscript, Level0Index(0)) },
-        { 11, 40, IndexAtLocation(0, Type.Superscript, Level0Index(0)) },
-        { 17, -20, Level0Index(1) },
-        { 17, 0, Level0Index(1) },
-        { 17, 8, IndexAtLocation(0, Type.Superscript, Level0Index(1)) },
-        { 17, 40, IndexAtLocation(0, Type.Superscript, Level0Index(1)) },
-        { 30, -20, Level0Index(1) },
-        { 30, 0, Level0Index(1) },
-        { 30, 8, Level0Index(1) },
-        { 30, 40, Level0Index(1) },
+        { (10, 8), 0, (SubIndex.Nucleus, 1) },
+        { (10, 40), 0, (SubIndex.Superscript, 0) },
+        { (11, -20), 0, (SubIndex.Nucleus, 1) },
+        { (11, 0), 0, (SubIndex.Nucleus, 1) },
+        { (11, 8), 0, (SubIndex.Superscript, 0) },
+        { (11, 40), 0, (SubIndex.Superscript, 0) },
+        { (17, -20), 1 },
+        { (17, 0), 1 },
+        { (17, 8), 0, (SubIndex.Superscript, 1) },
+        { (17, 40), 0, (SubIndex.Superscript, 1) },
+        { (30, -20), 1 },
+        { (30, 0), 1 },
+        { (30, 8), 1 },
+        { (30, 40), 1 },
       };
     static readonly ListDisplay Exponent = CreateDisplay("2^3");
     [Theory, MemberData(nameof(ExponentData))]
-    public void ExponentTest(float x, float y, MathListIndex expected) => Test(Exponent, x, y, expected);
+    public void ExponentTest(PointF point, MathListIndex expected) => Test(Exponent, point, expected);
 
     // https://github.com/verybadcat/CSharpMath/issues/49
     public static TestData Exponent2Data =>
       new TestData {
-        { 55, 0, Level0Index(1) },
-        { 55, 20, Level0Index(1) },
-        { 55, 40, Level0Index(1) },
+        { (55, 0), 1 },
+        { (55, 20), 1 },
+        { (55, 40), 1 },
   };
     static readonly ListDisplay Exponent2 = CreateDisplay("2^{x+y-4}");
     [Theory, MemberData(nameof(Exponent2Data))]
-    public void Exponent2Test(float x, float y, MathListIndex expected) => Test(Exponent2, x, y, expected);
+    public void Exponent2Test(PointF point, MathListIndex expected) => Test(Exponent2, point, expected);
 
     // https://github.com/verybadcat/CSharpMath/issues/46
     public static TestData Issue46Data =>
       new TestData {
-        { 50, 10, Level0Index(4) },
-        { 90, 0, Level0Index(5) },
-        { 90, 20, Level0Index(5) },
-        { 90, 40, Level0Index(5) },
-  };
+        { (50, 10), 4 },
+        { (90, 0), 5 },
+        { (90, 20), 5 },
+        { (90, 40), 5 },
+      };
     static readonly ListDisplay Issue46 = CreateDisplay("2+x+x^y");
     [Theory, MemberData(nameof(Issue46Data))]
-    public void Issue46Test(float x, float y, MathListIndex expected) => Test(Issue46, x, y, expected);
+    public void Issue46Test(PointF point, MathListIndex expected) => Test(Issue46, point, expected);
 
     public static TestData ComplexData =>
       new TestData {
-        { -10, -20, Level0Index(0) },
-        { -10, 0, Level0Index(0) },
-        { -10, 8, Level0Index(0) },
-        { -10, 40, Level0Index(0) },
+        { (-10, -20), 0 },
+        { (-10, 0), 0 },
+        { (-10, 8), 0 },
+        { (-10, 40), 0 },
         // \frac a\frac bc
-        { 0, -20, IndexAtLocation(0, Type.Denominator, IndexAtLocation(0, Type.Denominator, Level0Index(0))) },
-        { 0, 0, IndexAtLocation(0, Type.Denominator, IndexAtLocation(0, Type.Numerator, Level0Index(0))) },
-        { 0, 8, IndexAtLocation(0, Type.Numerator, Level0Index(0)) },
-        { 0, 40, IndexAtLocation(0, Type.Numerator, Level0Index(0)) },
-        { 9, -20, IndexAtLocation(0, Type.Denominator, Level0Index(1)) },
-        { 9, 0, IndexAtLocation(0, Type.Denominator, IndexAtLocation(0, Type.Numerator, Level0Index(1))) },
-        { 9, 8, IndexAtLocation(0, Type.Numerator, Level0Index(1)) },
-        { 9, 40, IndexAtLocation(0, Type.Numerator, Level0Index(1)) },
-        { 10, -20, IndexAtLocation(0, Type.Numerator, Level0Index(1)) },
-        { 10, 0, IndexAtLocation(0, Type.Denominator, IndexAtLocation(0, Type.Numerator, Level0Index(1))) },
-        { 10, 8, IndexAtLocation(0, Type.Numerator, Level0Index(1)) },
-        { 10, 40, IndexAtLocation(0, Type.Numerator, Level0Index(1)) },
+        { (0, -20), 0, (SubIndex.Denominator, 0), (SubIndex.Denominator, 0) },
+        { (0, 0), 0, (SubIndex.Denominator, 0), (SubIndex.Numerator, 0) },
+        { (0, 8), 0, (SubIndex.Numerator, 0) },
+        { (0, 40), 0, (SubIndex.Numerator, 0) },
+        { (9, -20), 0, (SubIndex.Denominator, 1) },
+        { (9, 0), 0, (SubIndex.Denominator, 0), (SubIndex.Numerator, 1) },
+        { (9, 8), 0, (SubIndex.Numerator, 1) },
+        { (9, 40), 0, (SubIndex.Numerator, 1) },
+        { (10, -20), 0, (SubIndex.Numerator, 1) },
+        { (10, 0), 0, (SubIndex.Denominator, 0), (SubIndex.Numerator, 1) },
+        { (10, 8), 0, (SubIndex.Numerator, 1) },
+        { (10, 40), 0, (SubIndex.Numerator, 1) },
         // v WIP!! Fails currently 
-        { 11, -20, IndexAtLocation(0, Type.Nucleus, Level0Index(1)) },
-        { 11, 0, IndexAtLocation(0, Type.Nucleus, Level0Index(1)) },
-        { 11, 8, IndexAtLocation(0, Type.Superscript, Level0Index(0)) },
-        { 11, 40, IndexAtLocation(0, Type.Superscript, Level0Index(0)) },
-        { 17, -20, Level0Index(1) },
-        { 17, 0, Level0Index(1) },
-        { 17, 8, IndexAtLocation(0, Type.Superscript, Level0Index(1)) },
-        { 17, 40, IndexAtLocation(0, Type.Superscript, Level0Index(1)) },
-        { 30, -20, Level0Index(1) },
-        { 30, 0, Level0Index(1) },
-        { 30, 8, Level0Index(1) },
-        { 30, 40, Level0Index(1) },
+        { (11, -20), 0, (SubIndex.Nucleus, 1) },
+        { (11, 0), 0, (SubIndex.Nucleus, 1) },
+        { (11, 8), 0, (SubIndex.Superscript, 0) },
+        { (11, 40), 0, (SubIndex.Superscript, 0) },
+        { (17, -20), 1 },
+        { (17, 0), 1 },
+        { (17, 8), 0, (SubIndex.Superscript, 1) },
+        { (17, 40), 0, (SubIndex.Superscript, 1) },
+        { (30, -20), 1 },
+        { (30, 0), 1 },
+        { (30, 8), 1 },
+        { (30, 40), 1 },
       };
     static readonly ListDisplay Complex =
-      CreateDisplay(@"\frac a\frac bc\frac\frac123\sqrt d^e\sqrt[5]6\sqrt[6f]7_8\overline9\underline0");
+      CreateDisplay(@"\frac a\frac bc\frac\frac123\sqrt d^e\sqrt[5]6\sqrt[6]7_8\overline9\underline0");
     [Theory, MemberData(nameof(ComplexData), Skip = "Not yet done...")]
-    public void ComplexTest(float x, float y, MathListIndex expected) => Test(Complex, x, y, expected);
+    public void ComplexTest(PointF point, MathListIndex expected) => Test(Complex, point, expected);
   }
 }
