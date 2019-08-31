@@ -37,7 +37,7 @@ namespace CSharpMath.Editor.Tests {
       T(@"\sqrt{3}", K.SquareRoot, K.D3),
       T(@"\sqrt[3]{3}", K.CubeRoot, K.D3),
     ]
-    public void ContinuousInput(string latex, params K[] inputs) => Test(latex, inputs);
+    public void AtomInput(string latex, params K[] inputs) => Test(latex, inputs);
 
     [
       Theory,
@@ -50,8 +50,11 @@ namespace CSharpMath.Editor.Tests {
       T(@"\vert x\vert \vert y\vert ", K.Absolute, K.SmallX, K.Right, K.VerticalBar, K.SmallY, K.VerticalBar),
       T(@"(1)(2)", K.BothRoundBrackets, K.D1, K.Right, K.LeftRoundBracket, K.D2, K.RightRoundBracket),
       T(@"\sqrt{\sqrt[4]{3}}", K.SquareRoot, K.NthRoot, K.D4, K.Right, K.D3),
+      T(@"23^{\square }", K.D2, K.Power, K.Left, K.D3),
+      T(@"2^{\square }4", K.D2, K.Power, K.Left, K.D3),
+      T(@"\sin Π^2", K.Sine, K.Power, K.D2, K.Left, K.Left, K.Pi),
     ]
-    public void ArrowNavigation(string latex, params K[] inputs) => Test(latex, inputs);
+    public void LeftRightNavigation(string latex, params K[] inputs) => Test(latex, inputs);
 
     [
       Theory,
@@ -66,5 +69,12 @@ namespace CSharpMath.Editor.Tests {
         K.Backspace, K.Backspace),
     ]
     public void Backspace(string latex, params K[] inputs) => Test(latex, inputs);
+
+    [
+      Theory,
+      T(@"", K.Left, K.Left, K.Backspace, K.Backspace, K.Right, K.Right, K.Backspace, K.Backspace, K.Left),
+      T(@"\frac{\square }{3}", K.Slash, K.D3, K.Left, K.Left, K.Backspace, K.Left),
+    ]
+    public void LeftRightBackspace(string latex, params K[] inputs) => Test(latex, inputs);
   }
 }

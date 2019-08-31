@@ -35,7 +35,7 @@ namespace CSharpMath.Editor {
         }
       }
     }
-    /// <summary>Modifies <paramref name="index"/> to advance to the next position.</summary>
+    /// <summary>Inserts <paramref name="atom"/> and modifies <paramref name="index"/> to advance to the next position.</summary>
     public static void InsertAndAdvance(this IMathList self, ref MathListIndex index, IMathAtom atom, MathListSubIndexType advanceType) {
       index = index ?? MathListIndex.Level0Index(0);
       if (index.AtomIndex > self.Atoms.Count)
@@ -192,8 +192,10 @@ namespace CSharpMath.Editor {
       var atom = self.Atoms[index.AtomIndex];
       switch (index.SubIndexType) {
         case MathListSubIndexType.None:
-        case MathListSubIndexType.BetweenBaseAndScripts:
+        case MathListSubIndexType.BetweenBaseAndScripts when index.AtomIndex == 1:
           return atom;
+        case MathListSubIndexType.BetweenBaseAndScripts:
+          return null;
         case MathListSubIndexType.Subscript:
           return atom.Subscript.AtomAt(index.SubIndex);
         case MathListSubIndexType.Superscript:

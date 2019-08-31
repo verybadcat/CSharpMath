@@ -477,5 +477,19 @@ namespace CSharpMath.Editor.Tests {
     [Theory, MemberData(nameof(ComplexData))]
     public void Complex(PointF point, MathListIndex expected) => 
       Test(@"\frac a\frac bc\frac\frac123\sqrt d^e\sqrt[5]6\sqrt[f]g^{7_8}_{9^0}", point, expected);
+    public static TestData SineData =>
+      new TestData {
+        { (-10, 10), 0 },
+        { (1, 10), 0 },
+        { (9, 10), 0 },
+        { (16, 10), 1 },
+        { (20, 10), 1 },
+        { (28, 10), 1 },
+        { (35, 10), 1 },
+        { (42, 10), 2 },
+        { (69, 10), 2 },
+    };
+    [Theory, MemberData(nameof(SineData))]
+    public void Sine(PointF point, MathListIndex expected) => Test(@"\sin\pi", point, expected);
   }
 }
