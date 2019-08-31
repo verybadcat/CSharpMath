@@ -9,10 +9,12 @@ namespace CSharpMath.Editor {
     static void InsertAtAtomIndexAndAdvance(this IMathList self, int atomIndex, IMathAtom atom, ref MathListIndex advance, MathListSubIndexType advanceType) {
       if (atomIndex < 0 || atomIndex > self.Count)
         throw new IndexOutOfRangeException($"Index {atomIndex} is out of bounds for list of size {self.Atoms.Count}");
-      /// <returns>Whether placeholder was replaced.</returns>
-      bool RemovePlaceholder(int placeholderIndex) {
-        var placeholder = self[placeholderIndex];
-        if (placeholder?.AtomType is Enumerations.MathAtomType.Placeholder) {
+      if (atomIndex > 0 && atomIndex == self.Count && self[atomIndex - 1].AtomType is Enumerations.MathAtomType.Placeholder)
+        throw new InvalidOperationException("InsertionIndex is to the right of a placeholder. How did this happen?");
+      else {
+        // Test for placeholder to the right of index, e.g. \sqrt{‸■} -> \sqrt{2‸}
+        if (atomIndex < self.Count && self[atomIndex] is MathAtom placeholder &&
+            placeholder?.AtomType is Enumerations.MathAtomType.Placeholder) {
           if (placeholder.Superscript is IMathList super) {
             if (atom.Superscript != null) super.Append(atom.Superscript);
             atom.Superscript = super;
@@ -21,27 +23,8 @@ namespace CSharpMath.Editor {
             if (atom.Subscript != null) sub.Append(atom.Subscript);
             atom.Subscript = sub;
           }
-          self.Remove(placeholder);
-          return true;
-        } else return false;
-      }
-      if (atomIndex > 0 && atomIndex == self.Count && RemovePlaceholder(atomIndex - 1)) {
-        // placeholder is before index
-        // e.g. \sqrt{■‸} -> \sqrt{2‸}
-        self.Insert(atomIndex - 1, atom);
-        switch (advanceType) {
-          case MathListSubIndexType.None:
-            break;
-          default:
-            advance = advance.Previous.LevelUpWithSubIndex(advanceType, MathListIndex.Level0Index(0));
-            break;
-        }
-      } else {
-        // placeholder is after index
-        // e.g. \sqrt{‸■} -> \sqrt{2‸} or \sqrt{‸2} -> \sqrt{2‸2}
-        if (atomIndex < self.Count)
-          RemovePlaceholder(atomIndex);
-        self.Insert(atomIndex, atom);
+          self[atomIndex] = atom;
+        } else self.Insert(atomIndex, atom);
         switch (advanceType) {
           case MathListSubIndexType.None:
             advance = advance.Next;
@@ -58,7 +41,8 @@ namespace CSharpMath.Editor {
       if (index.AtomIndex > self.Atoms.Count)
         throw new IndexOutOfRangeException($"Index {index.AtomIndex} is out of bounds for list of size {self.Atoms.Count}");
       switch (index.SubIndexType) {
-        case MathListSubIndexType.None:          self.InsertAtAtomIndexAndAdvance(index.AtomIndex, atom, ref index, advanceType);
+        case MathListSubIndexType.None:
+          self.InsertAtAtomIndexAndAdvance(index.AtomIndex, atom, ref index, advanceType);
           break;
         case MathListSubIndexType.BetweenBaseAndScripts:
           var currentAtom = self.Atoms[index.AtomIndex];
@@ -69,36 +53,41 @@ namespace CSharpMath.Editor {
           atom.Subscript = currentAtom.Subscript;
           atom.Superscript = currentAtom.Superscript;
           currentAtom.Subscript = null;
-          currentAtom.Superscript = null;          self.InsertAtAtomIndexAndAdvance(index.AtomIndex + index.SubIndex?.AtomIndex ?? 0, atom, ref index, advanceType);
+          currentAtom.Superscript = null;
+          self.InsertAtAtomIndexAndAdvance(index.AtomIndex + index.SubIndex?.AtomIndex ?? 0, atom, ref index, advanceType);
           break;
         case MathListSubIndexType.Degree:
         case MathListSubIndexType.Radicand:
           if (!(self.Atoms[index.AtomIndex] is Radical radical && radical.AtomType == Enumerations.MathAtomType.Radical))
             throw new SubIndexTypeMismatchException($"No radical found at index {index.AtomIndex}");
-          if (index.SubIndexType == MathListSubIndexType.Degree)            radical.Degree.InsertAndAdvance(ref index.SubIndex, atom, advanceType);
-          else            radical.Radicand.InsertAndAdvance(ref index.SubIndex, atom, advanceType);
+          if (index.SubIndexType == MathListSubIndexType.Degree)
+            radical.Degree.InsertAndAdvance(ref index.SubIndex, atom, advanceType);
+          else
+            radical.Radicand.InsertAndAdvance(ref index.SubIndex, atom, advanceType);
             break;
         case MathListSubIndexType.Numerator:
         case MathListSubIndexType.Denominator:
           if (!(self.Atoms[index.AtomIndex] is Fraction frac && frac.AtomType == Enumerations.MathAtomType.Fraction))
             throw new SubIndexTypeMismatchException($"No fraction found at index {index.AtomIndex}");
-          if (index.SubIndexType == MathListSubIndexType.Numerator)            frac.Numerator.InsertAndAdvance(ref index.SubIndex, atom, advanceType);
-          else            frac.Denominator.InsertAndAdvance(ref index.SubIndex, atom, advanceType);
+          if (index.SubIndexType == MathListSubIndexType.Numerator)
+            frac.Numerator.InsertAndAdvance(ref index.SubIndex, atom, advanceType);
+          else
+            frac.Denominator.InsertAndAdvance(ref index.SubIndex, atom, advanceType);
             break;
         case MathListSubIndexType.Subscript:
           var current = self.Atoms[index.AtomIndex];
-          if (current.Subscript == null) throw new SubIndexTypeMismatchException($"No subscript for atom at index {index.AtomIndex}");          current.Subscript.InsertAndAdvance(ref index.SubIndex, atom, advanceType);
+          if (current.Subscript == null) throw new SubIndexTypeMismatchException($"No subscript for atom at index {index.AtomIndex}");
+          current.Subscript.InsertAndAdvance(ref index.SubIndex, atom, advanceType);
           break;
         case MathListSubIndexType.Superscript:
           current = self.Atoms[index.AtomIndex];
-          if (current.Superscript == null) throw new SubIndexTypeMismatchException($"No superscript for atom at index {index.AtomIndex}");          current.Superscript.InsertAndAdvance(ref index.SubIndex, atom, advanceType);
+          if (current.Superscript == null) throw new SubIndexTypeMismatchException($"No superscript for atom at index {index.AtomIndex}");
+          current.Superscript.InsertAndAdvance(ref index.SubIndex, atom, advanceType);
           break;
         default:
           throw new SubIndexTypeMismatchException("Invalid subindex type.");
       }
     }
-
-
 
     public static void RemoveAt(this IMathList self, MathListIndex index) {
       index = index ?? MathListIndex.Level0Index(0);
@@ -152,12 +141,13 @@ namespace CSharpMath.Editor {
           if (current.Superscript == null) throw new SubIndexTypeMismatchException($"No superscript for atom at index {index.AtomIndex}");
           current.Superscript.RemoveAt(index.SubIndex);
           break;
+        default:
+          throw new SubIndexTypeMismatchException("Invalid subindex type.");
       }
     }
 
     public static void RemoveAtoms(this IMathList self, MathListRange? nullableRange) {
-      if (!nullableRange.HasValue) return;
-      var range = nullableRange.GetValueOrDefault();
+      if (!(nullableRange is MathListRange range)) return;
       var start = range.Start;
       switch (start.SubIndexType) {
         case MathListSubIndexType.None:
@@ -210,24 +200,20 @@ namespace CSharpMath.Editor {
           return atom.Superscript.AtomAt(index.SubIndex);
         case MathListSubIndexType.Radicand:
         case MathListSubIndexType.Degree:
-          if (atom is Radical radical && radical.AtomType == Enumerations.MathAtomType.Radical)
-            if (index.SubIndexType == MathListSubIndexType.Degree)
-              return radical.Degree.AtomAt(index.SubIndex);
-            else
-              return radical.Radicand.AtomAt(index.SubIndex);
-          else
-            return null;
+          return atom is Radical radical && radical.AtomType == Enumerations.MathAtomType.Radical ?
+              index.SubIndexType == MathListSubIndexType.Degree ?
+              radical.Degree.AtomAt(index.SubIndex) :
+            radical.Radicand.AtomAt(index.SubIndex) :
+            null;
         case MathListSubIndexType.Numerator:
         case MathListSubIndexType.Denominator:
-          if (atom is Fraction frac && frac.AtomType == Enumerations.MathAtomType.Fraction)
-            if (index.SubIndexType == MathListSubIndexType.Denominator)
-              return frac.Denominator.AtomAt(index.SubIndex);
-            else
-              return frac.Numerator.AtomAt(index.SubIndex);
-          else
-            return null;
+          return atom is Fraction frac && frac.AtomType == Enumerations.MathAtomType.Fraction ?
+            index.SubIndexType == MathListSubIndexType.Denominator ?
+              frac.Denominator.AtomAt(index.SubIndex) :
+              frac.Numerator.AtomAt(index.SubIndex) :
+            null;
         default:
-          return null;
+          throw new SubIndexTypeMismatchException("Invalid subindex type.");
       }
     }
   }
