@@ -83,7 +83,7 @@ namespace CSharpMath.Editor {
       } else if (displayWithPoint.HasScript)
         //The display list has a subscript or a superscript. If the index is at the end of the atom, then we need to put it before the sub/super script rather than after.
         if (index?.AtomIndex == displayWithPoint.Range.End)
-          return MathListIndex.IndexAtLocation(index.AtomIndex - 1, MathListSubIndexType.Nucleus, MathListIndex.Level0Index(1));
+          return MathListIndex.IndexAtLocation(index.AtomIndex - 1, MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1));
       return index;
     }
     
@@ -96,7 +96,7 @@ namespace CSharpMath.Editor {
         position = new PointF(self.Width, 0);
       else if (self.Range.Contains(index.AtomIndex) && self.SubDisplayForIndex(index) is IDisplay<TFont, TGlyph> display)
         switch (index.SubIndexType) {
-          case MathListSubIndexType.Nucleus:
+          case MathListSubIndexType.BetweenBaseAndScripts:
             var nucleusPosition = index.AtomIndex + index.SubIndex.AtomIndex;
             position = display.PointForIndex(context, MathListIndex.Level0Index(nucleusPosition));
             break;
@@ -138,7 +138,7 @@ namespace CSharpMath.Editor {
     public static void HighlightCharacterAt<TFont, TGlyph>(this ListDisplay<TFont, TGlyph> self, MathListIndex index, Color color) where TFont : IFont<TGlyph> {
       if (index is null) return;
       if (self.Range.Contains(index.AtomIndex) && self.SubDisplayForIndex(index) is IDisplay<TFont, TGlyph> display)
-        if (index.SubIndexType is MathListSubIndexType.Nucleus || index.SubIndexType is MathListSubIndexType.None)
+        if (index.SubIndexType is MathListSubIndexType.BetweenBaseAndScripts || index.SubIndexType is MathListSubIndexType.None)
           display.HighlightCharacterAt(index, color);
         else
           // Recurse
@@ -166,7 +166,7 @@ namespace CSharpMath.Editor {
             //not a subscript/superscript and ... jackpot, the the index is in the range of this atom.
             switch (index.SubIndexType) {
               case MathListSubIndexType.None:
-              case MathListSubIndexType.Nucleus:
+              case MathListSubIndexType.BetweenBaseAndScripts:
                 return display;
 
               case MathListSubIndexType.Degree:

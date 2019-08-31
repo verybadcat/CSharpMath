@@ -60,7 +60,7 @@ namespace CSharpMath.Editor {
       switch (index.SubIndexType) {
         case MathListSubIndexType.None:          self.InsertAtAtomIndexAndAdvance(index.AtomIndex, atom, ref index, advanceType);
           break;
-        case MathListSubIndexType.Nucleus:
+        case MathListSubIndexType.BetweenBaseAndScripts:
           var currentAtom = self.Atoms[index.AtomIndex];
           if (currentAtom.Subscript == null && currentAtom.Superscript == null)
             throw new SubIndexTypeMismatchException("Nuclear fusion is not supported if there are neither subscripts nor superscripts in the current atom.");
@@ -108,7 +108,7 @@ namespace CSharpMath.Editor {
         case MathListSubIndexType.None:
           self.RemoveAt(index.AtomIndex);
           break;
-        case MathListSubIndexType.Nucleus:
+        case MathListSubIndexType.BetweenBaseAndScripts:
           var currentAtom = self.Atoms[index.AtomIndex];
           if (currentAtom.Subscript == null && currentAtom.Superscript == null)
             throw new SubIndexTypeMismatchException("Nuclear fission is not supported if there are no subscripts or superscripts.");
@@ -163,7 +163,7 @@ namespace CSharpMath.Editor {
         case MathListSubIndexType.None:
           self.RemoveAtoms(new Range(start.AtomIndex, range.Length));
           break;
-        case MathListSubIndexType.Nucleus:
+        case MathListSubIndexType.BetweenBaseAndScripts:
           throw new NotSupportedException("Nuclear fission is not supported");
         case MathListSubIndexType.Radicand:
         case MathListSubIndexType.Degree:
@@ -202,7 +202,7 @@ namespace CSharpMath.Editor {
       var atom = self.Atoms[index.AtomIndex];
       switch (index.SubIndexType) {
         case MathListSubIndexType.None:
-        case MathListSubIndexType.Nucleus:
+        case MathListSubIndexType.BetweenBaseAndScripts:
           return atom;
         case MathListSubIndexType.Subscript:
           return atom.Subscript.AtomAt(index.SubIndex);
