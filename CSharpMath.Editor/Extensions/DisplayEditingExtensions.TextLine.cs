@@ -70,16 +70,24 @@ namespace CSharpMath.Editor {
     public static MathListIndex IndexForPoint<TFont, TGlyph>(this TextLineDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, PointF point) where TFont : IFont<TGlyph> {
       // Convert the point to the reference of the CTLine
       var relativePoint = new PointF(point.X - self.Position.X, point.Y - self.Position.Y);
-      var indices = self.Runs.Select(run => run.Run.GlyphIndexForXOffset(context, relativePoint.Plus(run.Position).X)).Where(x => x.HasValue).ToArray();
+      var indices =
+        self.Runs
+        .Select(run => ValueTuple.Create(run, run.Run.GlyphIndexForXOffset(context, relativePoint.Plus(run.Position).X)))
+        .Where(x => x.Item2.HasValue)
+        .ToArray();
       if (indices.Length == 0)
         return null;
-      var index = indices.Single().GetValueOrDefault();
-      
-      // index will be between 0 and _range.length inclusive
-      if (index < 0 || index > self.Range.Length)
+      var (r, nindex) = indices.Single();
+      var index = nindex.GetValueOrDefault();
+      var diffLng = r.Run.Length != r.Range.Length;
+      if (index < 0 || (!diffLng && index > self.Range.Length) || (diffLng && index > r.Run.Length))
         throw new InvalidCodePathException($"Returned index out of range: {index}, range ({self.Range.Location}, {self.Range.Length})");
-      // translate to the current index
-      return MathListIndex.Level0Index(self.Range.Location + index);
+      if (!diffLng)
+        return MathListIndex.Level0Index(self.Range.Location + index);
+      if (index > r.Run.Length / 2)
+        return MathListIndex.Level0Index(self.Range.End);
+
+      return MathListIndex.Level0Index(self.Range.Location);
     }
 
     public static (TextRunDisplay<TFont, TGlyph> run, int charIndex) GetRunAndCharIndexFromStringIndex<TFont, TGlyph>(this TextLineDisplay<TFont, TGlyph> self, int lineCharIndex) where TFont : IFont<TGlyph> {
