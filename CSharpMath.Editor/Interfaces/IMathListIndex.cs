@@ -25,7 +25,7 @@ namespace CSharpMath.Editor {
     /// The type of subindex, e.g. superscript, numerator etc.
     MathListSubIndexType SubIndexType { get; }
     /// The index into the sublist.
-    [NullableReference] TSelf SubIndex { get; }
+    //[NullableReference] TSelf SubIndex { get; }
 
     /// Returns the previous index if present. Returns `nil` if there is no previous index.
     [NullableReference] TSelf Previous { get; }

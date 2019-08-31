@@ -144,9 +144,8 @@ namespace CSharpMath.Editor {
       void HandleSlashButton() {
         // special / handling - makes the thing a fraction
         var numerator = new MathList();
-        var current = _insertionIndex;
-        for (; !current.AtBeginningOfLine; current = current.Previous) {
-          var a = MathList.AtomAt(current.Previous);
+        for (; !_insertionIndex.AtBeginningOfLine; _insertionIndex = _insertionIndex.Previous) {
+          var a = MathList.AtomAt(_insertionIndex.Previous);
           if (a.AtomType != MathAtomType.Number && a.AtomType != MathAtomType.Variable)
             //We don't put this atom on the fraction
             break;
@@ -154,21 +153,21 @@ namespace CSharpMath.Editor {
             //Add the number to the beginning of the list
             numerator.Insert(0, a);
         }
+        // delete stuff in the Mathlist
+        MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count));
         if (numerator.Count == 0) {
           // so we didn't really find any numbers before this, so make the numerator 1
           numerator.Add(MathAtoms.ForCharacter('1'));
-          if (!current.AtBeginningOfLine) {
-            var prevAtom = MathList.AtomAt(current.Previous);
+          if (!_insertionIndex.AtBeginningOfLine) {
+            var prevAtom = MathList.AtomAt(_insertionIndex.Previous);
             if (prevAtom.AtomType is MathAtomType.Fraction) {
               //Add a times symbol
-              MathList.InsertAndAdvance(ref current, MathAtoms.Times, MathListSubIndexType.None);
+              MathList.InsertAndAdvance(ref _insertionIndex, MathAtoms.Times, MathListSubIndexType.None);
             }
           }
-        } else
-          // delete stuff in the Mathlist
-          MathList.RemoveAtoms(new MathListRange(current, numerator.Count));
+        }
 
-        MathList.InsertAndAdvance(ref current, new Fraction {
+        MathList.InsertAndAdvance(ref _insertionIndex, new Fraction {
           Numerator = numerator,
           Denominator = MathAtoms.PlaceholderList
         }, MathListSubIndexType.Denominator);
@@ -326,12 +325,11 @@ namespace CSharpMath.Editor {
         }
       }
 
-      void InsertAtom(IMathAtom a) {
+      void InsertAtom(IMathAtom a) =>
         MathList.InsertAndAdvance(ref _insertionIndex, a,
           a.AtomType is MathAtomType.Fraction ?
           MathListSubIndexType.Numerator :
           MathListSubIndexType.None);
-      }
       void InsertCharacterKey(MathKeyboardInput i) => InsertAtom(AtomForKeyPress(i));
       void InsertSymbolName(string s) => InsertAtom(MathAtoms.ForLatexSymbolName(s));
 
@@ -371,40 +369,6 @@ namespace CSharpMath.Editor {
         case MathKeyboardInput.BothRoundBrackets:
           InsertParens();
           break;
-        case MathKeyboardInput.LeftRoundBracket:
-        case MathKeyboardInput.RightRoundBracket:
-        case MathKeyboardInput.LeftSquareBracket:
-        case MathKeyboardInput.RightSquareBracket:
-        case MathKeyboardInput.LeftCurlyBracket:
-        case MathKeyboardInput.RightCurlyBracket:
-        case MathKeyboardInput.D0:
-        case MathKeyboardInput.D1:
-        case MathKeyboardInput.D2:
-        case MathKeyboardInput.D3:
-        case MathKeyboardInput.D4:
-        case MathKeyboardInput.D5:
-        case MathKeyboardInput.D6:
-        case MathKeyboardInput.D7:
-        case MathKeyboardInput.D8:
-        case MathKeyboardInput.D9:
-        case MathKeyboardInput.Decimal:
-        case MathKeyboardInput.Plus:
-        case MathKeyboardInput.Minus:
-        case MathKeyboardInput.Minus_:
-        case MathKeyboardInput.Multiply:
-        case MathKeyboardInput.Multiply_:
-        case MathKeyboardInput.Divide:
-        case MathKeyboardInput.Fraction:
-        case MathKeyboardInput.Ratio:
-        case MathKeyboardInput.Ratio_:
-        case MathKeyboardInput.Percentage:
-        case MathKeyboardInput.Comma:
-        case MathKeyboardInput.Factorial:
-        case MathKeyboardInput.Infinity:
-        case MathKeyboardInput.Angle:
-        case MathKeyboardInput.Degree:
-          InsertCharacterKey(input);
-          break;
         case MathKeyboardInput.Slash:
           HandleSlashButton();
           break;
@@ -443,6 +407,110 @@ namespace CSharpMath.Editor {
           InsertSymbolName("log");
           HandleSubscriptButton();
           break;
+        case MathKeyboardInput.Sine:
+          InsertSymbolName("sin");
+          break;
+        case MathKeyboardInput.Cosine:
+          InsertSymbolName("cos");
+          break;
+        case MathKeyboardInput.Tangent:
+          InsertSymbolName("tan");
+          break;
+        case MathKeyboardInput.Cotangent:
+          InsertSymbolName("cot");
+          break;
+        case MathKeyboardInput.Secant:
+          InsertSymbolName("sec");
+          break;
+        case MathKeyboardInput.Cosecant:
+          InsertSymbolName("csc");
+          break;
+        case MathKeyboardInput.ArcSine:
+          InsertSymbolName("arcsin");
+          break;
+        case MathKeyboardInput.ArcCosine:
+          InsertSymbolName("arccos");
+          break;
+        case MathKeyboardInput.ArcTangent:
+          InsertSymbolName("arctan");
+          break;
+        case MathKeyboardInput.ArcCotangent:
+          InsertSymbolName("arccot");
+          break;
+        case MathKeyboardInput.ArcSecant:
+          InsertSymbolName("arcsec");
+          break;
+        case MathKeyboardInput.ArcCosecant:
+          InsertSymbolName("arccsc");
+          break;
+        case MathKeyboardInput.HyperbolicSine:
+          InsertSymbolName("sinh");
+          break;
+        case MathKeyboardInput.HyperbolicCosine:
+          InsertSymbolName("cosh");
+          break;
+        case MathKeyboardInput.HyperbolicTangent:
+          InsertSymbolName("tanh");
+          break;
+        case MathKeyboardInput.HyperbolicCotangent:
+          InsertSymbolName("coth");
+          break;
+        case MathKeyboardInput.HyperbolicSecant:
+          InsertSymbolName("sech");
+          break;
+        case MathKeyboardInput.HyperbolicCosecant:
+          InsertSymbolName("csch");
+          break;
+        case MathKeyboardInput.AreaHyperbolicSine:
+          InsertSymbolName("arsinh");
+          break;
+        case MathKeyboardInput.AreaHyperbolicCosine:
+          InsertSymbolName("arcosh");
+          break;
+        case MathKeyboardInput.AreaHyperbolicTangent:
+          InsertSymbolName("artanh");
+          break;
+        case MathKeyboardInput.AreaHyperbolicCotangent:
+          InsertSymbolName("arcoth");
+          break;
+        case MathKeyboardInput.AreaHyperbolicSecant:
+          InsertSymbolName("arsech");
+          break;
+        case MathKeyboardInput.AreaHyperbolicCosecant:
+          InsertSymbolName("arcsch");
+          break;
+        case MathKeyboardInput.LeftRoundBracket:
+        case MathKeyboardInput.RightRoundBracket:
+        case MathKeyboardInput.LeftSquareBracket:
+        case MathKeyboardInput.RightSquareBracket:
+        case MathKeyboardInput.LeftCurlyBracket:
+        case MathKeyboardInput.RightCurlyBracket:
+        case MathKeyboardInput.D0:
+        case MathKeyboardInput.D1:
+        case MathKeyboardInput.D2:
+        case MathKeyboardInput.D3:
+        case MathKeyboardInput.D4:
+        case MathKeyboardInput.D5:
+        case MathKeyboardInput.D6:
+        case MathKeyboardInput.D7:
+        case MathKeyboardInput.D8:
+        case MathKeyboardInput.D9:
+        case MathKeyboardInput.Decimal:
+        case MathKeyboardInput.Plus:
+        case MathKeyboardInput.Minus:
+        case MathKeyboardInput.Minus_:
+        case MathKeyboardInput.Multiply:
+        case MathKeyboardInput.Multiply_:
+        case MathKeyboardInput.Divide:
+        case MathKeyboardInput.Fraction:
+        case MathKeyboardInput.Ratio:
+        case MathKeyboardInput.Ratio_:
+        case MathKeyboardInput.Percentage:
+        case MathKeyboardInput.Comma:
+        case MathKeyboardInput.Factorial:
+        case MathKeyboardInput.Infinity:
+        case MathKeyboardInput.Angle:
+        case MathKeyboardInput.Degree:
         case MathKeyboardInput.Equals:
         case MathKeyboardInput.NotEquals:
         case MathKeyboardInput.LessThan:
@@ -549,78 +617,6 @@ namespace CSharpMath.Editor {
         case MathKeyboardInput.SmallChi:
         case MathKeyboardInput.SmallOmega:
           InsertCharacterKey(input);
-          break;
-        case MathKeyboardInput.Sine:
-          InsertSymbolName("sin");
-          break;
-        case MathKeyboardInput.Cosine:
-          InsertSymbolName("cos");
-          break;
-        case MathKeyboardInput.Tangent:
-          InsertSymbolName("tan");
-          break;
-        case MathKeyboardInput.Cotangent:
-          InsertSymbolName("cot");
-          break;
-        case MathKeyboardInput.Secant:
-          InsertSymbolName("sec");
-          break;
-        case MathKeyboardInput.Cosecant:
-          InsertSymbolName("csc");
-          break;
-        case MathKeyboardInput.ArcSine:
-          InsertSymbolName("arcsin");
-          break;
-        case MathKeyboardInput.ArcCosine:
-          InsertSymbolName("arccos");
-          break;
-        case MathKeyboardInput.ArcTangent:
-          InsertSymbolName("arctan");
-          break;
-        case MathKeyboardInput.ArcCotangent:
-          InsertSymbolName("arccot");
-          break;
-        case MathKeyboardInput.ArcSecant:
-          InsertSymbolName("arcsec");
-          break;
-        case MathKeyboardInput.ArcCosecant:
-          InsertSymbolName("arccsc");
-          break;
-        case MathKeyboardInput.HyperbolicSine:
-          InsertSymbolName("sinh");
-          break;
-        case MathKeyboardInput.HyperbolicCosine:
-          InsertSymbolName("cosh");
-          break;
-        case MathKeyboardInput.HyperbolicTangent:
-          InsertSymbolName("tanh");
-          break;
-        case MathKeyboardInput.HyperbolicCotangent:
-          InsertSymbolName("coth");
-          break;
-        case MathKeyboardInput.HyperbolicSecant:
-          InsertSymbolName("sech");
-          break;
-        case MathKeyboardInput.HyperbolicCosecant:
-          InsertSymbolName("csch");
-          break;
-        case MathKeyboardInput.AreaHyperbolicSine:
-          InsertSymbolName("arsinh");
-          break;
-        case MathKeyboardInput.AreaHyperbolicCosine:
-          InsertSymbolName("arcosh");
-          break;
-        case MathKeyboardInput.AreaHyperbolicTangent:
-          InsertSymbolName("artanh");
-          break;
-        case MathKeyboardInput.AreaHyperbolicCotangent:
-          InsertSymbolName("arcoth");
-          break;
-        case MathKeyboardInput.AreaHyperbolicSecant:
-          InsertSymbolName("arsech");
-          break;
-        case MathKeyboardInput.AreaHyperbolicCosecant:
-          InsertSymbolName("arcsch");
           break;
         default:
           break;

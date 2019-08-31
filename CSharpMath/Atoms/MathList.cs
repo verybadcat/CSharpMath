@@ -114,7 +114,7 @@ namespace CSharpMath.Atoms {
 
     public IMathAtom this[int index] { get => Atoms[index]; set => Atoms[index] = value; }
 
-    public void Append(IMathList list) => this.Atoms.AddRange(list.Atoms);
+    public void Append(IMathList list) => Atoms.AddRange(list.Atoms);
     public IMathList DeepCopy() => AtomCloner.Clone(this, false);
     public IMathList FinalizedList() => AtomCloner.Clone(this, true);
     public void RemoveAtoms(Range inRange) => Atoms.RemoveRange(inRange.Location, inRange.Length);

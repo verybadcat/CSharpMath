@@ -27,12 +27,7 @@ namespace CSharpMath.Atoms {
 
     public override string StringValue {
       get {
-        var builder = new StringBuilder();
-        if (HasRule) {
-          builder.Append(@"\atop");
-        } else {
-          builder.Append(@"\frac");
-        }
+        var builder = new StringBuilder(HasRule ? @"\frac" : @"\atop");
         if (LeftDelimiter!=null || RightDelimiter!=null) {
           builder.Append($@"[{LeftDelimiter.NullToNull(NullHandling.EmptyContent)}][{RightDelimiter.NullToNull(NullHandling.EmptyContent)}]");
         }

@@ -30,7 +30,7 @@ namespace CSharpMath.Editor {
     public int AtomIndex { get; set; }
     public MathListSubIndexType SubIndexType { get; set; }
     [NullableReference]
-    public MathListIndex SubIndex { get; set; }
+    public MathListIndex SubIndex;
 
     public static MathListIndex Level0Index(int index) => new MathListIndex { AtomIndex = index };
     public static MathListIndex IndexAtLocation(int location, MathListSubIndexType type, [NullableReference]MathListIndex subIndex) =>
