@@ -105,14 +105,11 @@ namespace CSharpMath.Editor {
               position = display.PointForIndex(context, index);
             } else {
               var mainPosition = display.PointForIndex(context, index);
-              var scripted = self.Displays.SingleOrDefault(d =>
-                d is ListDisplay<TFont, TGlyph> ld &&
-                    ld.IndexInParent == index.AtomIndex - 1
-                  );
-              if (scripted != null && mainPosition != null) {
-                position = new PointF(mainPosition.Value.X + scripted.Width, 0);
-              } else
-                position = mainPosition;
+              position = self.Displays.SingleOrDefault(d =>
+                  d is ListDisplay<TFont, TGlyph> ld && ld.IndexInParent == index.AtomIndex - 1)
+                is IDisplay<TFont, TGlyph> scripted && mainPosition != null
+                ? (PointF?)new PointF(mainPosition.Value.X + scripted.Width, 0)
+                : mainPosition;
             }
             break;
           default:
