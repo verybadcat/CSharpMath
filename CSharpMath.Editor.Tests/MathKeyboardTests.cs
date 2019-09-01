@@ -24,17 +24,30 @@ namespace CSharpMath.Editor.Tests {
       Theory,
       T(@"1", K.D1),
       T(@"x", K.SmallX),
-      T(@"1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
-        K.D1, K.D2, K.D3, K.D4, K.D5, K.D6, K.D7, K.D8, K.D9, K.D0,
-        K.SmallA, K.SmallB, K.SmallC, K.SmallD, K.SmallE, K.SmallF, K.SmallG, K.SmallH, K.SmallI,
-        K.SmallJ, K.SmallK, K.SmallL, K.SmallM, K.SmallN, K.SmallO, K.SmallP, K.SmallQ, K.SmallR,
-        K.SmallS, K.SmallT, K.SmallU, K.SmallV, K.SmallW, K.SmallX, K.SmallY, K.SmallZ,
-        K.A, K.B, K.C, K.D, K.E, K.F, K.G, K.H, K.I, K.J, K.K, K.L, K.M, K.N, K.O, K.P, K.Q, K.R,
-        K.S, K.T, K.U, K.V, K.W, K.X, K.Y, K.Z),
+      //Brackets
+      T(@"()[]\{ \} ", K.LeftRoundBracket, K.RightRoundBracket, K.LeftSquareBracket, K.RightSquareBracket,
+        K.LeftCurlyBracket, K.RightCurlyBracket),
+      //Decimals
+      T(@"0123456789.", K.D0, K.D1, K.D2, K.D3, K.D4, K.D5, K.D6, K.D7, K.D8, K.D9, K.Decimal),
+      //Basic operators
+      T(@"+--\times \times \div ::\% ,!\infty \angle \degree \vert \log \ln ",
+        K.Plus, K.Minus, K.Minus_, K.Multiply, K.Multiply_, K.Divide, K.Ratio, K.Ratio_, K.Percentage, 
+       K.Comma, K.Factorial, K.Infinity, K.Angle, K.Degree, K.VerticalBar, K.Logarithm, K.NaturalLogarithm),
+      //Relations
+      T(@"=≠<\leq >\geq ", K.Equals, K.NotEquals, K.LessThan, K.LessOrEquals, K.GreaterThan, K.GreaterOrEquals),
+      //Capital English alphabets
+      T(@"ABCDEFGHIJKLMNOPQRSTUVWXYZ", K.A, K.B, K.C, K.D, K.E, K.F, K.G, K.H, K.I, K.J,
+        K.K, K.L, K.M, K.N, K.O, K.P, K.Q, K.R, K.S, K.T, K.U, K.V, K.W, K.X, K.Y, K.Z),
+      //Small English alphabets
+      T(@"abcdefghijklmnopqrstuvwxyz", K.SmallA, K.SmallB, K.SmallC, K.SmallD, K.SmallE, K.SmallF, K.SmallG, 
+        K.SmallH, K.SmallI, K.SmallJ, K.SmallK, K.SmallL, K.SmallM, K.SmallN, K.SmallO, K.SmallP, K.SmallQ, 
+        K.SmallR, K.SmallS, K.SmallT, K.SmallU, K.SmallV, K.SmallW, K.SmallX, K.SmallY, K.SmallZ),
+      //Capital Greek alphabets
       T(@"ΑΒ\Gamma \Delta ΕΖΗ\Theta ΙΚ\Lambda ΜΝ\Xi Ο\Pi Ρ\Sigma Τ\Upsilon \Phi Χ\Omega ",
         K.Alpha, K.Beta, K.Gamma, K.Delta, K.Epsilon, K.Zeta, K.Eta, K.Theta, 
         K.Iota, K.Kappa, K.Lambda, K.Mu, K.Nu, K.Xi, K.Omicron, 
         K.Pi, K.Rho, K.Sigma, K.Tau, K.Upsilon, K.Phi, K.Chi, K.Omega),
+      //Small Greek alphabets
       T(@"\alpha \beta \gamma \delta \varepsilon \zeta \eta \theta \iota \kappa \lambda \mu " +
         @"\nu \xi \omicron \pi \rho \sigma \varsigma \tau \upsilon \varphi \chi \omega ",
         K.SmallAlpha, K.SmallBeta, K.SmallGamma, K.SmallDelta, K.SmallEpsilon,
@@ -42,9 +55,11 @@ namespace CSharpMath.Editor.Tests {
         K.SmallLambda, K.SmallMu, K.SmallNu, K.SmallXi, K.SmallOmicron,
         K.SmallPi, K.SmallRho, K.SmallSigma, K.SmallSigma2, K.SmallTau,
         K.SmallUpsilon, K.SmallPhi, K.SmallChi, K.SmallOmega),
+      //Trigonometric functions
       T(@"\sin \cos \tan \cot \sec \csc \arcsin \arccos \arctan \arccot \arcsec \arccsc ",
         K.Sine, K.Cosine, K.Tangent, K.Cotangent, K.Secant, K.Cosecant,
         K.ArcSine, K.ArcCosine, K.ArcTangent, K.ArcCotangent, K.ArcSecant, K.ArcCosecant),
+      //Hyperbolic functions
       T(@"\sinh \cosh \tanh \coth \sech \csch \arsinh \arcosh \artanh \arcoth \arsech \arcsch ",
         K.HyperbolicSine, K.HyperbolicCosine, K.HyperbolicTangent,
         K.HyperbolicCotangent, K.HyperbolicSecant, K.HyperbolicCosecant,
