@@ -11,16 +11,6 @@ namespace CSharpMath.Editor.TestChecker {
     public static readonly bool OutputLines = false;
 
     public static void Main() {
-      ListDisplay ReadLaTeX(string message) {
-        string input;
-        ListDisplay value;
-        do {
-          Console.Write(message);
-          input = Console.ReadLine();
-          value = Tests.ClosestPointTests.CreateDisplay(input);
-        } while (value is null);
-        return value;
-      }
       int ReadInt(string message) {
         string input;
         int value;
@@ -32,13 +22,14 @@ namespace CSharpMath.Editor.TestChecker {
       }
 
       var context = new GraphicsContext();
-      Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
       // We need lots of horizontal space, vertical not so much
       Console.SetBufferSize(10000, 500);
       // We need to output heavy box drawing characters, because the vertical light line displays as green lines at font size 16
       Console.OutputEncoding = Encoding.UTF8;
+      string latex = null;
       while (true) {
         try {
+          Console.Title = "CSharpMath.Editor Test Checker";
           Console.Clear();
           Console.ResetColor();
           Console.WriteLine("Welcome to the CSharpMath.Editor Test Checker!");
@@ -46,17 +37,44 @@ namespace CSharpMath.Editor.TestChecker {
           Console.WriteLine("Usage:");
           Console.WriteLine("Input the test expression in LaTeX below, and input the click position.");
           Console.WriteLine("You can visualize the test case by looking at the cursor position.");
-          Console.WriteLine("Once you're done, you can press any key to move on to another test case.");
+          Console.WriteLine();
+          Console.WriteLine("Controls:");
+          Console.WriteLine("Arrow keys: Moves the cursor.");
+          Console.WriteLine("Q/W/E/A/D/Z/X/C: Moves the cursor with direction from S to the key.");
+          Console.WriteLine("P: Re-inputs the cursor position.");
+          Console.WriteLine("Enter: Moves on to another test case.");
           Console.WriteLine("");
-          var latex = ReadLaTeX("Input LaTeX: ");
+          
+          ListDisplay display;
+          do {
+            Console.Write("Input LaTeX: ");
+            if (latex is null) latex = Console.ReadLine();
+            else Console.WriteLine(latex);
+            display = Tests.IndexForPointTests.CreateDisplay(latex);
+          } while (display is null);
           var x = ReadInt("Input Touch X (integer): ");
           var y = ReadInt("Input Touch Y (integer): ");
           Console.Clear();
           // ConsoleDrawRectangle(Rectangle.Empty, 'O', Structures.Color.PredefinedColors["yellow"]); // Origin
-          latex.Draw(context);
-          var pos = Adjust(new Rectangle(x, y, 0, 0));
+
+          // ReadKey() overwrites the drawn content, but re-drawing takes too long
+          display.Draw(context);
+moveCursor:var pos = Adjust(new Rectangle(x, y, 0, 0));
+          Console.Title = $"CSharpMath.Editor Test Checker - ({x}, {y}) in {latex}";
           Console.SetCursorPosition(pos.X, pos.Y);
-          Console.ReadKey();
+          switch (Console.ReadKey(true).Key) {
+            case ConsoleKey.Q: x--; y++; goto moveCursor;
+            case ConsoleKey.W: case ConsoleKey.UpArrow: y++; goto moveCursor;
+            case ConsoleKey.E: x++; y++; goto moveCursor;
+            case ConsoleKey.A: case ConsoleKey.LeftArrow: x--; goto moveCursor;
+            case ConsoleKey.D: case ConsoleKey.RightArrow: x++; goto moveCursor;
+            case ConsoleKey.Z: x--; y--; goto moveCursor;
+            case ConsoleKey.X: case ConsoleKey.DownArrow: y--; goto moveCursor;
+            case ConsoleKey.C: x++; y--; goto moveCursor;
+            case ConsoleKey.P: break;
+            case ConsoleKey.Enter: latex = null; break;
+            default: goto moveCursor;
+          }
         } catch (Exception e) {
           Console.Write(e);
           Console.ReadKey();
@@ -84,9 +102,9 @@ namespace CSharpMath.Editor.TestChecker {
     }
     static Rectangle Adjust(Rectangle rect) =>
       new Rectangle(
-        Math.Clamp(rect.Left + 10 /* Out of range area */, 0, Console.BufferWidth),
+        Math.Clamp(rect.Left + 10 /* Out of range area */, 0, Console.BufferWidth - 1),
         /* Convert from CSharpMath internal "normal mathematical" coordinate system -> subtract bottom */
-        Math.Clamp(Console.BufferHeight / 2 - rect.Bottom, 0, Console.BufferHeight),
+        Math.Clamp(Console.BufferHeight / 2 - rect.Bottom, 0, Console.BufferHeight - 1),
         rect.Width,
         rect.Height);
     public static void ConsoleDrawRectangle(Rectangle rect, char glyph, Structures.Color? color) {

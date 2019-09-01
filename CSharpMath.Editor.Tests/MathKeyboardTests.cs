@@ -53,6 +53,18 @@ namespace CSharpMath.Editor.Tests {
       T(@"23^{\square }", K.D2, K.Power, K.Left, K.D3),
       T(@"2^{\square }4", K.D2, K.Power, K.Right, K.D4),
       T(@"\sin Π^2", K.Sine, K.Power, K.D2, K.Left, K.Left, K.Pi),
+      T(@"\frac{23}{4}^5_678", K.Fraction, K.D3, K.Right, K.D4, K.Right, K.Power, K.D5, K.Right, K.Subscript, 
+        K.D6, K.Right, K.D7, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left,
+        K.D2, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.D8),
+      T(@"\sqrt[23]{4}^5_678", K.NthRoot, K.D3, K.Right, K.D4, K.Right, K.Power, K.D5, K.Right, K.Subscript,
+        K.D6, K.Right, K.D7, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left,
+        K.D2, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.D8),
+      T(@"1\frac{\square }{\square }^\square _\square 90", K.Fraction, K.Right, K.Right, K.Power, K.Right,
+        K.Subscript, K.Right, K.D9, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.D1,
+        K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.D0),
+      T(@"1\sqrt[\square ]{\square }^\square _\square 90", K.NthRoot, K.Right, K.Right, K.Power, K.Right,
+        K.Subscript, K.Right, K.D9, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.D1,
+        K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.D0),
     ]
     public void LeftRightNavigation(string latex, params K[] inputs) => Test(latex, inputs);
 

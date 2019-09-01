@@ -12,8 +12,7 @@ using CSharpMath.Tests.FrontEnd;
 namespace CSharpMath.Editor.Tests {
   // Use the "CSharpMath.Editor Test Checker" project in the _Utils folder to visualize the test cases
   using SubIndex = MathListSubIndexType;
-
-  public class ClosestPointTests {
+  public class IndexForPointTests {
     public class TestData : TheoryData {
       // Format of test data
       public void Add((double x, double y) point,

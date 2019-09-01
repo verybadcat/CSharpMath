@@ -14,6 +14,7 @@
     <Compile Include="..\CSharpMath.Apple\Resources\JTokenLoader.cs" Link="_Helpers\Resources\JTokenLoader.cs" />
     <Compile Include="..\CSharpMath.Apple\Resources\ManifestResourceProvider.cs" Link="_Helpers\Resources\ManifestResourceProvider.cs" />
     <Compile Include="..\CSharpMath.Apple\Typesetting\JsonMathTable.cs" Link="_Helpers\FrontEnd\JsonMathTable.cs" />
+    <Compile Include="..\CSharpMath.Tests\_Helpers\ApproximateAssertions.cs" Link="_Helpers\ApproximateAssertions.cs" />
     <Compile Include="..\CSharpMath.Tests\_Helpers\FrontEnd\DoNothingFontChanger.cs" Link="_Helpers\FrontEnd\DoNothingFontChanger.cs" />
     <Compile Include="..\CSharpMath.Tests\_Helpers\FrontEnd\TestFont.cs" Link="_Helpers\FrontEnd\TestFont.cs" />
     <Compile Include="..\CSharpMath.Tests\_Helpers\FrontEnd\TestFontMeasurer.cs" Link="_Helpers\FrontEnd\TestFontMeasurer.cs" />

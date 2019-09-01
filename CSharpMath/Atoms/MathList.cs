@@ -9,22 +9,6 @@ namespace CSharpMath.Atoms {
   public class MathList : IMathList {
 
     public List<IMathAtom> Atoms { get; set; } = new List<IMathAtom>();
-    private static bool IsNotBinaryOperator(IMathAtom prevNode) {
-      if (prevNode == null) {
-        return true;
-      }
-      switch (prevNode.AtomType) {
-        case MathAtomType.BinaryOperator:
-        case MathAtomType.Relation:
-        case MathAtomType.Open:
-        case MathAtomType.Punctuation:
-        case MathAtomType.LargeOperator:
-          return true;
-        default:
-          return false;
-      }
-    }
-
     public MathList() { }
 
     public bool IsAtomAllowed(IMathAtom atom) => atom != null && atom.AtomType != MathAtomType.Boundary;
@@ -38,16 +22,23 @@ namespace CSharpMath.Atoms {
         }
       } else {
         IMathAtom prevNode = null;
-        foreach (IMathAtom atom in cloneMe.Atoms) {
+        foreach (var atom in cloneMe.Atoms) {
           var newNode = AtomCloner.Clone(atom, finalize);
           if (atom.IndexRange == Range.Zero) {
-            int prevIndex = (prevNode == null) ? 0 : prevNode.IndexRange.Location + prevNode.IndexRange.Length;
+            int prevIndex = prevNode is null ? 0 : prevNode.IndexRange.Location + prevNode.IndexRange.Length;
             newNode.IndexRange = new Range(prevIndex, 1);
           }
           switch (newNode.AtomType) {
             case MathAtomType.BinaryOperator:
-              if (IsNotBinaryOperator(prevNode)) {
-                newNode.AtomType = MathAtomType.UnaryOperator;
+              switch (prevNode?.AtomType) {
+                case null:
+                case MathAtomType.BinaryOperator:
+                case MathAtomType.Relation:
+                case MathAtomType.Open:
+                case MathAtomType.Punctuation:
+                case MathAtomType.LargeOperator:
+                  newNode.AtomType = MathAtomType.UnaryOperator;
+                  break;
               }
               break;
             case MathAtomType.Relation:
@@ -100,15 +91,8 @@ namespace CSharpMath.Atoms {
 
     public int Count => Atoms.Count;
 
-    public string StringValue {
-      get {
-        var builder = new StringBuilder();
-        foreach (var atom in Atoms) {
-          builder.Append(atom.StringValue);
-        }
-        return builder.ToString();
-      }
-    }
+    public string StringValue =>
+      string.Concat(System.Linq.Enumerable.Select(Atoms, a => a.StringValue));
 
     public bool IsReadOnly => false;
 

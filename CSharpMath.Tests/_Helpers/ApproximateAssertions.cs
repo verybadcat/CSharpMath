@@ -31,8 +31,14 @@ namespace CSharpMath.Tests {
       }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Equal(PointF expected, PointF actual, double tolerance = DefaultTolerance) => At(expected.X, expected.Y, actual, tolerance);
+    public static void Equal(PointF? expected, PointF? actual, double tolerance = DefaultTolerance) {
+      if (expected is PointF e && actual is PointF a)
+        At(e.X, e.Y, a, tolerance);
+      else {
+        Assert.Null(expected);
+        Assert.Null(actual);
+      }
+    }
 
     public static void Congruent(double x, double y, double width, double height, RectangleF actual, double tolerance = DefaultTolerance) {
       try {
