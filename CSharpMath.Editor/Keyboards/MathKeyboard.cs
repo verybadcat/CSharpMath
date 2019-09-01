@@ -303,7 +303,6 @@ namespace CSharpMath.Editor {
             break;
           default:
             _insertionIndex = _insertionIndex.Next;
-
             break;
         }
         if (_insertionIndex is null)
