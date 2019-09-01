@@ -51,7 +51,7 @@ namespace CSharpMath.Editor.Tests {
       T(@"(1)(2)", K.BothRoundBrackets, K.D1, K.Right, K.LeftRoundBracket, K.D2, K.RightRoundBracket),
       T(@"\sqrt{\sqrt[4]{3}}", K.SquareRoot, K.NthRoot, K.D4, K.Right, K.D3),
       T(@"23^{\square }", K.D2, K.Power, K.Left, K.D3),
-      T(@"2^{\square }4", K.D2, K.Power, K.Left, K.D3),
+      T(@"2^{\square }4", K.D2, K.Power, K.Right, K.D4),
       T(@"\sin Π^2", K.Sine, K.Power, K.D2, K.Left, K.Left, K.Pi),
     ]
     public void LeftRightNavigation(string latex, params K[] inputs) => Test(latex, inputs);
