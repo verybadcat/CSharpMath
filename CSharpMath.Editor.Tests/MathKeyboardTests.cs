@@ -111,6 +111,15 @@ namespace CSharpMath.Editor.Tests {
 
     [
       Theory,
+      T(@"", K.Clear, K.Clear, K.Left, K.Left, K.X, K.Clear, K.Right, K.Right, K.Y, K.Clear),
+      T(@"1", K.D2, K.D3, K.Clear, K.D1),
+      T(@"2", K.Slash, K.Slash, K.Slash, K.Fraction, K.NthRoot, K.CubeRoot, K.Clear, K.Left, K.D2),
+      T(@"3", K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.Clear, K.D3),
+    ]
+    public void Clear(string latex, params K[] inputs) => Test(latex, inputs);
+
+    [
+      Theory,
       T(@"", K.Backspace, K.Backspace, K.Backspace, K.Backspace, K.Backspace),
       T(@"1", K.D1, K.D2, K.Backspace),
       T(@"x^2", K.SmallX, K.Power, K.D2, K.D1, K.Backspace),
