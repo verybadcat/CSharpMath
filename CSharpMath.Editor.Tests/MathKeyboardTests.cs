@@ -1,3 +1,4 @@
+using System;
 using CSharpMath.FrontEnd;
 using CSharpMath.Tests.FrontEnd;
 using Xunit;
@@ -5,12 +6,20 @@ using T = Xunit.InlineDataAttribute; // 'T'est
 using K = CSharpMath.Editor.MathKeyboardInput; // 'K'ey
 
 namespace CSharpMath.Editor.Tests {
+  using EventInteractor = Action<MathKeyboard<TestFont, char>, EventHandler>;
   public class MathKeyboardTests {
     private static readonly TypesettingContext<TestFont, char> context = TestTypesettingContexts.Instance;
     static void Test(string latex, K[] inputs) {
       var keyboard = new MathKeyboard<TestFont, char>(context);
       keyboard.KeyPress(inputs);
       Assert.Equal(latex, keyboard.LaTeX);
+    }
+    static void TestEvent(EventInteractor attach, EventInteractor detach, K[] inputs) {
+      var keyboard = new MathKeyboard<TestFont, char>(context);
+      Assert.Raises<EventArgs>(
+        h => attach(keyboard, new EventHandler(h)),
+        h => detach(keyboard, new EventHandler(h)),
+        () => keyboard.KeyPress(inputs));
     }
 
     // Copy for more test categories
@@ -117,6 +126,27 @@ namespace CSharpMath.Editor.Tests {
       T(@"3", K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.Clear, K.D3),
     ]
     public void Clear(string latex, params K[] inputs) => Test(latex, inputs);
+
+    [
+      Theory,
+      T(K.Dismiss),
+      T(K.Clear, K.Clear, K.Left, K.Left, K.Dismiss, K.X, K.Clear, K.Right, K.Right, K.Y, K.Clear),
+      T(K.Dismiss, K.D2, K.D3, K.Clear, K.D1, K.Dismiss),
+      T(K.Slash, K.Slash, K.Slash, K.Fraction, K.NthRoot, K.CubeRoot, K.Clear, K.Left, K.D2, K.Dismiss),
+      T(K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.Dismiss),
+    ]
+    public void Dismiss(params K[] inputs) =>
+      TestEvent((k, h) => k.DismissPressed += h, (k, h) => k.DismissPressed -= h, inputs);
+    [
+      Theory,
+      T(K.Return),
+      T(K.Clear, K.Clear, K.Left, K.Left, K.Return, K.X, K.Clear, K.Right, K.Right, K.Y, K.Clear),
+      T(K.Return, K.D2, K.D3, K.Clear, K.D1, K.Return),
+      T(K.Slash, K.Slash, K.Slash, K.Fraction, K.NthRoot, K.CubeRoot, K.Clear, K.Left, K.D2, K.Return),
+      T(K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.D1, K.Return),
+    ]
+    public void Return(params K[] inputs) =>
+      TestEvent((k, h) => k.ReturnPressed += h, (k, h) => k.ReturnPressed -= h, inputs);
 
     [
       Theory,
