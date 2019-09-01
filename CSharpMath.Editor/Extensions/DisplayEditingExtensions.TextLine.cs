@@ -70,14 +70,14 @@ namespace CSharpMath.Editor {
     public static MathListIndex IndexForPoint<TFont, TGlyph>(this TextLineDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, PointF point) where TFont : IFont<TGlyph> {
       // Convert the point to the reference of the CTLine
       var relativePoint = new PointF(point.X - self.Position.X, point.Y - self.Position.Y);
-      var indices =
+      var runsAndIndicies =
         self.Runs
         .Select(run => ValueTuple.Create(run, run.Run.GlyphIndexForXOffset(context, relativePoint.Plus(run.Position).X)))
         .Where(x => x.Item2.HasValue)
         .ToArray();
-      if (indices.Length == 0)
+      if (runsAndIndicies.Length == 0)
         return null;
-      var (r, nindex) = indices.Single();
+      var (r, nindex) = runsAndIndicies.Single();
       var index = nindex.GetValueOrDefault();
       var diffLng = r.Run.Length != r.Range.Length;
       if (index < 0 || (!diffLng && index > self.Range.Length) || (diffLng && index > r.Run.Length))
