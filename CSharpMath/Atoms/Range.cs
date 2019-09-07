@@ -19,6 +19,7 @@ namespace CSharpMath.Atoms {
     }
 
     public bool IsNotFound => Location == UndefinedInt || Length == UndefinedInt;
+    /// <summary>The end is exclusive.</summary>
     public int End => IsNotFound ? UndefinedInt : Location + Length;
 
     public static bool operator ==(Range range1, Range range2) => range1.Length == range2.Length && range1.Location == range2.Location;
@@ -36,7 +37,7 @@ namespace CSharpMath.Atoms {
     public override bool Equals(object obj) => obj is Range r && this == r;
     public override int GetHashCode() => unchecked(13 * Length.GetHashCode() + Location.GetHashCode());
     public override string ToString() => $@"{{{Location}, {Length}}}";
-    public bool Contains(int i) => i >= Location && i <= End;
+    public bool Contains(int i) => i >= Location && i < End;
     public Range Slice(int start, int length) => new Range(Location + start, length);
 
     public static Range Combine(IEnumerable<Range> ranges) {

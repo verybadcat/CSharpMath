@@ -166,6 +166,8 @@ namespace CSharpMath.Editor.Tests {
       Theory,
       T(@"", K.Left, K.Left, K.Backspace, K.Backspace, K.Right, K.Right, K.Backspace, K.Backspace, K.Left),
       T(@"\frac{\square }{3}", K.Slash, K.D3, K.Left, K.Left, K.Backspace, K.Left),
+      T(@"1_3", K.D1, K.D2, K.Subscript, K.D3, K.Left, K.Left, K.Backspace),
+      T(@"1^2_3", K.D1, K.D4, K.Subscript, K.D3, K.Left, K.Left, K.Power, K.D2, K.Left, K.Left, K.Backspace)
     ]
     public void LeftRightBackspace(string latex, params K[] inputs) => Test(latex, inputs);
   }
