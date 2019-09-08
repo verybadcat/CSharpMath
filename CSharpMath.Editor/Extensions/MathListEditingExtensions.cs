@@ -103,7 +103,7 @@ namespace CSharpMath.Editor {
             throw new SubIndexTypeMismatchException("Nuclear fission is not supported if there are no subscripts or superscripts.");
           if (index.AtomIndex > 0) {
             var previous = self.Atoms[index.AtomIndex - 1];
-            if (previous.Subscript != null && previous.Superscript != null) {
+            if (previous.Subscript is null && previous.Superscript is null) {
               previous.Superscript = currentAtom.Superscript;
               previous.Subscript = currentAtom.Subscript;
               self.RemoveAt(index.AtomIndex);

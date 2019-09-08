@@ -91,22 +91,35 @@ namespace CSharpMath.Editor {
         }
       }
 
-      void HandleExponentButton() {
-        if (!_insertionIndex.AtBeginningOfLine) {
-          var a = MathList.AtomAt(_insertionIndex.Previous);
-          if (a.Superscript is null) {
-            a.Superscript = MathAtoms.PlaceholderList;
-            _insertionIndex = _insertionIndex.Previous.LevelUpWithSubIndex(MathListSubIndexType.Superscript, MathListIndex.Level0Index(0));
-          } else if (_insertionIndex.FinalSubIndexType is MathListSubIndexType.BetweenBaseAndScripts)
-            // If we are already inside the nucleus, then we come out and go up to the superscript
-            _insertionIndex = _insertionIndex.LevelDown().LevelUpWithSubIndex(MathListSubIndexType.Superscript, MathListIndex.Level0Index(a.Superscript.Atoms.Count));
-          else
-            _insertionIndex = _insertionIndex.Previous.LevelUpWithSubIndex(MathListSubIndexType.Superscript, MathListIndex.Level0Index(a.Superscript.Atoms.Count));
-        } else {
+      void HandleScriptButton(bool isSuperScript) {
+        var subIndexType = isSuperScript ? MathListSubIndexType.Superscript : MathListSubIndexType.Subscript;
+        IMathList GetScript(IMathAtom atom) => isSuperScript ? atom.Superscript : atom.Subscript;
+        void SetScript(IMathAtom atom, IMathList value) { if (isSuperScript) atom.Superscript = value; else atom.Subscript = value; }
+        if (_insertionIndex.AtBeginningOfLine) {
           // Create an empty atom and move the insertion index up.
           var emptyAtom = MathAtoms.Placeholder;
           emptyAtom.Superscript = MathAtoms.PlaceholderList;
-          MathList.InsertAndAdvance(ref _insertionIndex, emptyAtom, MathListSubIndexType.Superscript);
+          MathList.InsertAndAdvance(ref _insertionIndex, emptyAtom, subIndexType);
+        } else {
+          var prevAtom = MathList.AtomAt(_insertionIndex.Previous);
+#warning Simplify to tuple patterns when C# 8 is out
+          switch ((GetScript(prevAtom) is null, _insertionIndex.FinalSubIndexType is MathListSubIndexType.BetweenBaseAndScripts)) {
+            case var t when t == (true, true):
+              SetScript(MathList.AtomAt(_insertionIndex.LevelDown()), MathAtoms.PlaceholderList);
+              _insertionIndex = _insertionIndex.LevelDown().LevelUpWithSubIndex(subIndexType, MathListIndex.Level0Index(0));
+              break;
+            case var t when t == (true, false):
+              SetScript(prevAtom, MathAtoms.PlaceholderList);
+              _insertionIndex = _insertionIndex.Previous.LevelUpWithSubIndex(subIndexType, MathListIndex.Level0Index(0));
+              break;
+            case var t when t == (false, true):
+              // If we are already inside the nucleus, then we come out and go up to the script
+              _insertionIndex = _insertionIndex.LevelDown().LevelUpWithSubIndex(subIndexType, MathListIndex.Level0Index(GetScript(prevAtom).Atoms.Count));
+              break;
+            case var t when t == (false, false):
+              _insertionIndex = _insertionIndex.Previous.LevelUpWithSubIndex(subIndexType, MathListIndex.Level0Index(GetScript(prevAtom).Atoms.Count));
+              break;
+          }
         }
       }
 
@@ -119,25 +132,6 @@ namespace CSharpMath.Editor {
           rad = MathAtoms.PlaceholderSquareRoot;
           if (degreeIs3) rad.Degree = MathLists.WithAtoms(MathAtoms.ForCharacter('3'));
           MathList.InsertAndAdvance(ref _insertionIndex, rad, MathListSubIndexType.Radicand);
-        }
-      }
-
-      void HandleSubscriptButton() {
-        if (_insertionIndex.AtBeginningOfLine) {
-          // Create an empty atom and move the insertion index up.
-          var emptyAtom = MathAtoms.Placeholder;
-          emptyAtom.Subscript = MathAtoms.PlaceholderList;
-          MathList.InsertAndAdvance(ref _insertionIndex, emptyAtom, MathListSubIndexType.Subscript);
-        } else {
-          var a = MathList.AtomAt(_insertionIndex.Previous);
-          if (a.Subscript is null) {
-            a.Subscript = MathAtoms.PlaceholderList;
-            _insertionIndex = _insertionIndex.Previous.LevelUpWithSubIndex(MathListSubIndexType.Subscript, MathListIndex.Level0Index(0));
-          } else if (_insertionIndex.FinalSubIndexType is MathListSubIndexType.BetweenBaseAndScripts)
-            // If we are already inside the nucleus, then we come out and go down to the subscript
-            _insertionIndex = _insertionIndex.LevelDown().LevelUpWithSubIndex(MathListSubIndexType.Subscript, MathListIndex.Level0Index(a.Subscript.Atoms.Count));
-          else
-            _insertionIndex = _insertionIndex.Previous.LevelUpWithSubIndex(MathListSubIndexType.Subscript, MathListIndex.Level0Index(a.Subscript.Atoms.Count));
         }
       }
 
@@ -222,9 +216,6 @@ namespace CSharpMath.Editor {
                 _insertionIndex = _insertionIndex.LevelDown() ?? _insertionIndex;
                 break;
             }
-            if (MathList.AtomAt(_insertionIndex) is null &&
-              MathList.AtomAt(_insertionIndex?.Previous)?.AtomType is MathAtomType.Placeholder)
-              _insertionIndex = _insertionIndex.Previous; // Skip right side of placeholders when end of line
             break;
           case var a when a.Subscript != null:
             _insertionIndex = prev.LevelUpWithSubIndex(MathListSubIndexType.Subscript, MathListIndex.Level0Index(a.Subscript.Count));
@@ -244,13 +235,16 @@ namespace CSharpMath.Editor {
         }
         if (_insertionIndex is null)
           throw new InvalidOperationException($"{nameof(_insertionIndex)} is null.");
+        if (MathList.AtomAt(_insertionIndex) is null &&
+          MathList.AtomAt(_insertionIndex?.Previous)?.AtomType is MathAtomType.Placeholder)
+          _insertionIndex = _insertionIndex.Previous; // Skip right side of placeholders when end of line
       }
       void MoveCursorRight() {
         if (_insertionIndex is null)
           throw new InvalidOperationException($"{nameof(_insertionIndex)} is null.");
         switch (MathList.AtomAt(_insertionIndex)) {
           case null: //After Count
-          case var a when a.AtomType is MathAtomType.Placeholder: // Skip right side of placeholders when end of line
+          case var a when a.AtomType is MathAtomType.Placeholder && MathList.AtomAt(_insertionIndex.Next) is null: // Skip right side of placeholders when end of line
             var levelDown = _insertionIndex.LevelDown();
             switch (_insertionIndex.FinalSubIndexType) {
               case MathListSubIndexType.Degree:
@@ -276,7 +270,9 @@ namespace CSharpMath.Editor {
               case MathListSubIndexType.BetweenBaseAndScripts:
                 if (MathList.AtomAt(levelDown).Superscript != null)
                   _insertionIndex = levelDown.LevelUpWithSubIndex(MathListSubIndexType.Superscript, MathListIndex.Level0Index(0));
-                goto case MathListSubIndexType.Superscript;
+                else
+                  goto case MathListSubIndexType.Superscript;
+                break;
               case MathListSubIndexType.Superscript:
                 if (MathList.AtomAt(levelDown).Subscript != null)
                   _insertionIndex = levelDown.LevelUpWithSubIndex(MathListSubIndexType.Subscript, MathListIndex.Level0Index(0));
@@ -310,6 +306,7 @@ namespace CSharpMath.Editor {
       }
 
       void DeleteBackwards() {
+#warning Refactor pls (include this logic in MathList.RemoveAt)
         // delete the last atom from the list
         var prevIndex = _insertionIndex.Previous;
         if (HasText && !(prevIndex is null)) {
@@ -330,7 +327,6 @@ namespace CSharpMath.Editor {
               insertionAtom = MathAtoms.Placeholder;
               // mark the placeholder as selected since that is the current insertion point.
               insertionAtom.Nucleus = Symbols.BlackSquare;
-#warning Refactor pls
               MathList.InsertAndAdvance(ref _insertionIndex, insertionAtom, MathListSubIndexType.None);
               _insertionIndex = _insertionIndex.Previous;
             }
@@ -380,10 +376,10 @@ namespace CSharpMath.Editor {
           HandleSlashButton();
           break;
         case MathKeyboardInput.Power:
-          HandleExponentButton();
+          HandleScriptButton(true);
           break;
         case MathKeyboardInput.Subscript:
-          HandleSubscriptButton();
+          HandleScriptButton(false);
           break;
         case MathKeyboardInput.SquareRoot:
           HandleRadical(false, false);
@@ -402,7 +398,7 @@ namespace CSharpMath.Editor {
           break;
         case MathKeyboardInput.BaseEPower:
           InsertCharacterKey(MathKeyboardInput.SmallE);
-          HandleExponentButton();
+          HandleScriptButton(true);
           break;
         case MathKeyboardInput.Logarithm:
           InsertSymbolName("log");
@@ -412,7 +408,7 @@ namespace CSharpMath.Editor {
           break;
         case MathKeyboardInput.LogarithmWithBase:
           InsertSymbolName("log");
-          HandleSubscriptButton();
+          HandleScriptButton(false);
           break;
         case MathKeyboardInput.Sine:
           InsertSymbolName("sin");

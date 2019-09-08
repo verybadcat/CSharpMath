@@ -115,6 +115,12 @@ namespace CSharpMath.Editor.Tests {
       T(@"1\sqrt[\square ]{\square }^\square _\square 90", K.NthRoot, K.Right, K.Right, K.Power, K.Right,
         K.Subscript, K.Right, K.D9, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.D1,
         K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.D0),
+      T(@"01\frac{\square }{\square }^\square _\square 90", K.D0, K.Fraction, K.Right, K.Right, K.Power, K.Right,
+        K.Subscript, K.Right, K.D9, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.D1,
+        K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.D0),
+      T(@"01\sqrt[\square ]{\square }^\square _\square 90", K.D0, K.NthRoot, K.Right, K.Right, K.Power, K.Right,
+        K.Subscript, K.Right, K.D9, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.D1,
+        K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.D0),
     ]
     public void LeftRightNavigation(string latex, params K[] inputs) => Test(latex, inputs);
 
@@ -167,7 +173,8 @@ namespace CSharpMath.Editor.Tests {
       T(@"", K.Left, K.Left, K.Backspace, K.Backspace, K.Right, K.Right, K.Backspace, K.Backspace, K.Left),
       T(@"\frac{\square }{3}", K.Slash, K.D3, K.Left, K.Left, K.Backspace, K.Left),
       T(@"1_3", K.D1, K.D2, K.Subscript, K.D3, K.Left, K.Left, K.Backspace),
-      T(@"1^2_3", K.D1, K.D4, K.Subscript, K.D3, K.Left, K.Left, K.Power, K.D2, K.Left, K.Left, K.Backspace)
+      T(@"1^2_3", K.D1, K.D4, K.Subscript, K.D3, K.Left, K.Left, K.Power, K.D2, K.Left, K.Left, K.Backspace),
+      T(@"1^3_2", K.D1, K.D4, K.Power, K.D3, K.Left, K.Left, K.Subscript, K.D2, K.Left, K.Left, K.Left, K.Left, K.Backspace)
     ]
     public void LeftRightBackspace(string latex, params K[] inputs) => Test(latex, inputs);
   }
