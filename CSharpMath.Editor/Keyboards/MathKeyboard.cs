@@ -244,7 +244,6 @@ namespace CSharpMath.Editor {
           throw new InvalidOperationException($"{nameof(_insertionIndex)} is null.");
         switch (MathList.AtomAt(_insertionIndex)) {
           case null: //After Count
-          case var a when a.AtomType is MathAtomType.Placeholder && MathList.AtomAt(_insertionIndex.Next) is null: // Skip right side of placeholders when end of line
             var levelDown = _insertionIndex.LevelDown();
             switch (_insertionIndex.FinalSubIndexType) {
               case MathListSubIndexType.Degree:
@@ -285,18 +284,25 @@ namespace CSharpMath.Editor {
                 break;
             }
             break;
+          case var a when _insertionIndex.FinalSubIndexType is MathListSubIndexType.BetweenBaseAndScripts:
+            _insertionIndex = _insertionIndex.LevelDown().LevelUpWithSubIndex(
+              a.Superscript != null ? MathListSubIndexType.Superscript : MathListSubIndexType.Subscript,
+              MathListIndex.Level0Index(0));
+            break;
           case IFraction _:
             _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListSubIndexType.Numerator, MathListIndex.Level0Index(0));
             break;
           case IRadical rad:
-            if (rad.Degree is IMathList)
-              _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListSubIndexType.Degree, MathListIndex.Level0Index(0));
-            else
-              _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListSubIndexType.Radicand, MathListIndex.Level0Index(0));
+            _insertionIndex = _insertionIndex.LevelUpWithSubIndex(
+              rad.Degree is IMathList ? MathListSubIndexType.Degree : MathListSubIndexType.Radicand,
+              MathListIndex.Level0Index(0));
             break;
           case var a when a.Superscript != null || a.Subscript != null:
             _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1));
             break;
+          case var a when a.AtomType is MathAtomType.Placeholder && MathList.AtomAt(_insertionIndex.Next) is null:
+            // Skip right side of placeholders when end of line
+            goto case null;
           default:
             _insertionIndex = _insertionIndex.Next;
             break;
@@ -654,8 +660,7 @@ namespace CSharpMath.Editor {
         }
       }
       VisualizePlaceholders(MathList);
-      if((MathList.AtomAt(_insertionIndex) ?? MathList.AtomAt(_insertionIndex?.Previous)) is IMathAtom atom
-        && atom.AtomType is MathAtomType.Placeholder)
+      if(MathList.AtomAt(_insertionIndex) is IMathAtom atom && atom.AtomType is MathAtomType.Placeholder)
         atom.Nucleus = Symbols.BlackSquare;
       /* Find the insert point rect and create a caretView to draw the caret at this position. */
 

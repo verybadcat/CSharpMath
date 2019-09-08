@@ -619,11 +619,6 @@ namespace CSharpMath {
       }
       return r;
     }
-    [Obsolete("Is any code using this?", true)]
-    private string _ChangeFont(string input, FontStyle style) {
-      return _context.ChangeFont(input, style);
-    }
-
     private float _radicalVerticalGap(TFont font) =>
       _style == LineStyle.Display ? _mathTable.RadicalDisplayStyleVerticalGap(font) : _mathTable.RadicalVerticalGap(font);
 
@@ -633,7 +628,7 @@ namespace CSharpMath {
       var radicalRuleThickness = _mathTable.RadicalRuleThickness(_styleFont);
       var radicalHeight = innerDisplay.Ascent + innerDisplay.Descent + clearance + radicalRuleThickness;
 
-      IDownshiftableDisplay<TFont, TGlyph> glyph = _GetRadicalGlyph(radicalHeight);
+      var glyph = _GetRadicalGlyph(radicalHeight);
       // Note this is a departure from Latex. Latex assumes that glyphAscent == thickness.
       // Open type math makes no such assumption, and ascent and descent are independent of the thickness.
       // Latex computes delta as descent - (h(inner) + d(inner) + clearance)

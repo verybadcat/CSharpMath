@@ -502,7 +502,7 @@ namespace CSharpMath.Atoms {
       _currentEnvironment = new TableEnvironmentProperties(environment);
       int currentRow = 0;
       int currentColumn = 0;
-      List<List<IMathList>> rows = new List<List<IMathList>> { new List<IMathList>() };
+      var rows = new List<List<IMathList>> { new List<IMathList>() };
       if (firstList != null) {
         rows[currentRow].Add(firstList);
         if (isRow) {
@@ -592,7 +592,7 @@ namespace CSharpMath.Atoms {
         currentFontStyle = atom.FontStyle;
         switch (atom.AtomType) {
           case MathAtomType.Fraction: {
-              IFraction fraction = (IFraction)atom;
+              var fraction = (IFraction)atom;
               var numerator = MathListToString(fraction.Numerator);
               var denominator = MathListToString(fraction.Denominator);
               if (fraction.HasRule) {
@@ -700,7 +700,7 @@ namespace CSharpMath.Atoms {
           case MathAtomType.LargeOperator: {
               var op = (LargeOperator)atom;
               var command = MathAtoms.LatexSymbolNameForAtom(op);
-              LargeOperator originalOperator = (LargeOperator)MathAtoms.ForLatexSymbolName(command);
+              var originalOperator = (LargeOperator)MathAtoms.ForLatexSymbolName(command);
               builder.Append($@"\{command} ");
               if (originalOperator.Limits != op.Limits) {
                 switch (op.Limits) {

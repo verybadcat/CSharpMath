@@ -9,30 +9,26 @@ namespace CSharpMath.Editor {
     static void InsertAtAtomIndexAndAdvance(this IMathList self, int atomIndex, IMathAtom atom, ref MathListIndex advance, MathListSubIndexType advanceType) {
       if (atomIndex < 0 || atomIndex > self.Count)
         throw new IndexOutOfRangeException($"Index {atomIndex} is out of bounds for list of size {self.Atoms.Count}");
-      if (atomIndex > 0 && atomIndex == self.Count && self[atomIndex - 1].AtomType is Enumerations.MathAtomType.Placeholder)
-        throw new InvalidOperationException("InsertionIndex is to the right of a placeholder. How did this happen?");
-      else {
-        // Test for placeholder to the right of index, e.g. \sqrt{‸■} -> \sqrt{2‸}
-        if (atomIndex < self.Count && self[atomIndex] is MathAtom placeholder &&
-            placeholder?.AtomType is Enumerations.MathAtomType.Placeholder) {
-          if (placeholder.Superscript is IMathList super) {
-            if (atom.Superscript != null) super.Append(atom.Superscript);
-            atom.Superscript = super;
-          }
-          if (placeholder.Subscript is IMathList sub) {
-            if (atom.Subscript != null) sub.Append(atom.Subscript);
-            atom.Subscript = sub;
-          }
-          self[atomIndex] = atom;
-        } else self.Insert(atomIndex, atom);
-        switch (advanceType) {
-          case MathListSubIndexType.None:
-            advance = advance.Next;
-            break;
-          default:
-            advance = advance.LevelUpWithSubIndex(advanceType, MathListIndex.Level0Index(0));
-            break;
+      // Test for placeholder to the right of index, e.g. \sqrt{‸■} -> \sqrt{2‸}
+      if (atomIndex < self.Count && self[atomIndex] is MathAtom placeholder &&
+          placeholder?.AtomType is Enumerations.MathAtomType.Placeholder) {
+        if (placeholder.Superscript is IMathList super) {
+          if (atom.Superscript != null) super.Append(atom.Superscript);
+          atom.Superscript = super;
         }
+        if (placeholder.Subscript is IMathList sub) {
+          if (atom.Subscript != null) sub.Append(atom.Subscript);
+          atom.Subscript = sub;
+        }
+        self[atomIndex] = atom;
+      } else self.Insert(atomIndex, atom);
+      switch (advanceType) {
+        case MathListSubIndexType.None:
+          advance = advance.Next;
+          break;
+        default:
+          advance = advance.LevelUpWithSubIndex(advanceType, MathListIndex.Level0Index(0));
+          break;
       }
     }
     /// <summary>Inserts <paramref name="atom"/> and modifies <paramref name="index"/> to advance to the next position.</summary>
