@@ -57,13 +57,9 @@ someSuperview.Add(latexView);
 
 [See an example project](CSharpMath.Ios.Example)
       
-![Quadratic Formula](CSharpMath/RenderedSamples/Quadratic%20Formula.png)
-
-![Power Series](CSharpMath/RenderedSamples/PowerSeries.png)
-
-![Matrix Product](CSharpMath/RenderedSamples/MatrixProduct.png)
-
-![Continued Fraction](CSharpMath/RenderedSamples/ContinuedFraction.png)
+![Quadratic Formula](CSharpMath/RenderedSamples/Quadratic%20Formula.png)|![Power Series](CSharpMath/RenderedSamples/PowerSeries.png)
+------------------------------------------------------------------------|-----------------------------------------------------------
+![Matrix Product](CSharpMath/RenderedSamples/MatrixProduct.png)         |![Continued Fraction](CSharpMath/RenderedSamples/ContinuedFraction.png)
       
 ### 2. CSharpMath.Forms
 
