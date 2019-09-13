@@ -1,6 +1,6 @@
 ---
 name: New platform
-about: Suggest a new platform for CSharpMath
+about: Suggest a new platform for CSharpMath.
 title: ''
 labels: Type/Platform
 assignees: ''

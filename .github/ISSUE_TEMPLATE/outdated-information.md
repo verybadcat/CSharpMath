@@ -1,6 +1,6 @@
 ---
 name: Outdated information
-about: Request an update for outdated information
+about: Request an update for outdated information.
 title: ''
 labels: Type/Info update
 assignees: ''

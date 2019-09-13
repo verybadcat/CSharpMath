@@ -1,6 +1,6 @@
 ---
 name: New feature
-about: Suggest an idea for CSharpMath
+about: Suggest an idea for CSharpMath.
 title: ''
 labels: Type/Enhancement
 assignees: ''
