@@ -12,18 +12,14 @@ A clear and concise description of what the bug is.
 
 **To Reproduce**
 <!--A Minimal, Complete, and Verifiable example: Providing an example where such a bug occurs, and which code cannot be shortened to have this bug still persist, can shorten time needed for the fix for this bug drastically.-->
+<!--Screenshots: If applicable, add screenshots to help explain your problem.-->
 Steps to reproduce the behavior:
 1. Call '...'
 2. Set '....' to true
-3. Call '....'
-4. An InvalidCodePathException is thrown, its stack trace is as follows:
-.....
+3. An InvalidOperationException is thrown with stack trace...
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
-
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
 
 **Environment (please complete the following information):**
  - Platform: [e.g. CSharpMath.SkiaSharp, CSharpMath.Forms]
