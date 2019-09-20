@@ -952,5 +952,26 @@ namespace CSharpMath.Tests {
       var latex = MathListBuilder.MathListToString(list);
       Assert.Equal(@"\color{#F00}{a}", latex);
     }
+
+    [Fact]
+    public void TestSingleColumnArray() {
+      var input = @"\begin{array}{l}a=14\\b=15\end{array}";
+      var list = MathLists.FromString(input);
+
+      Assert.Single(list);
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"\begin{array}{l}a=14\\ b=15\end{array}", latex);
+    }
+
+    [Fact]
+    public void TestDoubleColumnArray() {
+      var input = @"\begin{array}{lr}x^2&\:x<0\\x^3&\:x\geq0\end{array}";
+      var list = MathLists.FromString(input);
+
+      Assert.Single(list);
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"\begin{array}{lr}x^2&\: x<0\\ x^3&\: x\geq 0\end{array}", latex);
+    }
+
   }
 }
