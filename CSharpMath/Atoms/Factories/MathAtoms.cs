@@ -501,6 +501,12 @@ namespace CSharpMath.Atoms {
       Style style;
       var table = new Table(environment) { Cells = rows };
       switch (environment) {
+        case null:
+          table.InterRowAdditionalSpacing = 1;
+          for (int i = 0; i < table.NColumns; i++) {
+            table.SetAlignment(ColumnAlignment.Left, i);
+          }
+          return table;
         case var _ when _matrixEnvironments.TryGetValue(environment, out var delimiters):
           table.Environment = "matrix"; // TableEnvironment is set to matrix as delimiters are converted to latex outside the table.
           table.InterColumnSpacing = 18;
@@ -522,7 +528,6 @@ namespace CSharpMath.Atoms {
           } else {
             return table;
           }
-        case null:
         case "array":
           table.InterRowAdditionalSpacing = 1;
           for (int i = 0; i < table.NColumns; i++) {
