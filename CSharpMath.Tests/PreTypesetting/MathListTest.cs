@@ -2,6 +2,7 @@ using CSharpMath.Atoms;
 using CSharpMath.Enumerations;
 using CSharpMath.Interfaces;
 using System;
+using System.Linq;
 using Xunit;
 
 namespace CSharpMath.Tests {
@@ -158,6 +159,20 @@ namespace CSharpMath.Tests {
 
       var list2 = AtomCloner.Clone(list, false);
       CheckClone(list, list2);
+    }
+
+    [Fact]
+    public void TestListCopyWithFusedItems() {
+      var builder = new MathListBuilder("12+x");
+      var list = builder.Build();
+
+      var finalized = list.FinalizedList();
+      var fusedCount = finalized.Sum(atom => atom.FusedAtoms?.Count ?? 0);
+      Assert.Equal(2, fusedCount);
+
+      var copy = AtomCloner.Clone(finalized, true);
+      var fusedCopyCount = copy.Sum(atom => atom.FusedAtoms?.Count ?? 0);
+      Assert.Equal(2, fusedCopyCount);
     }
   }
 }
