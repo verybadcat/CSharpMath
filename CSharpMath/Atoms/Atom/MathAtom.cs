@@ -47,6 +47,8 @@ namespace CSharpMath.Atoms {
     public MathAtom(MathAtom cloneMe, bool finalize) {
       AtomType = cloneMe.AtomType;
       Nucleus = cloneMe.Nucleus;
+      if (cloneMe.FusedAtoms != null)
+        FusedAtoms = new List<IMathAtom>(cloneMe.FusedAtoms);
       Superscript = AtomCloner.Clone(cloneMe.Superscript, finalize);
       Subscript = AtomCloner.Clone(cloneMe.Subscript, finalize);
       IndexRange = cloneMe.IndexRange;
