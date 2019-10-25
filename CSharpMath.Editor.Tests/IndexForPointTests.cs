@@ -490,5 +490,19 @@ namespace CSharpMath.Editor.Tests {
     };
     [Theory, MemberData(nameof(SineData))]
     public void Sine(PointF point, MathListIndex expected) => Test(@"\sin\pi", point, expected);
+
+    public static TestData Issue64Data =>
+      new TestData {
+        { (0, 15), 0 },
+        { (10, 10), 0, (SubIndex.BetweenBaseAndScripts, 1) },
+        { (10, 15), 0, (SubIndex.BetweenBaseAndScripts, 1) },
+        { (12, 10), 0, (SubIndex.Superscript, 0) },
+        { (12, 15), 0, (SubIndex.Superscript, 0) },
+        { (35, 10), 1 },
+        { (50, 15), 2 },
+    };
+    [Theory, MemberData(nameof(Issue64Data))]
+    public void Issue64(PointF point, MathListIndex expected) => Test(@"1^{123}+", point, expected);
+
   }
 }
