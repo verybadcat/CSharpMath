@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using Xunit;
-using CSharpMath;
 using CSharpMath.Atoms;
-using CSharpMath.Editor;
 using CSharpMath.Enumerations;
-using CSharpMath.FrontEnd;
 using CSharpMath.Tests.FrontEnd;
+using Xunit;
 
 namespace CSharpMath.Editor.Tests {
   // Use the "CSharpMath.Editor Test Checker" project in the _Utils folder to visualize the test cases
