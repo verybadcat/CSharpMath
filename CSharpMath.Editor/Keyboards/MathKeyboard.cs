@@ -8,6 +8,8 @@ namespace CSharpMath.Editor {
   using Enumerations;
   using FrontEnd;
   using Interfaces;
+  using Color = Atoms.Color;
+
   public class MathKeyboard<TFont, TGlyph> where TFont : IFont<TGlyph> {
     public MathKeyboard(TypesettingContext<TFont, TGlyph> context) => Context = context;
     //private readonly List<MathListIndex> highlighted;

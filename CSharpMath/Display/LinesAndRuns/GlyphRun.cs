@@ -1,8 +1,9 @@
-﻿using CSharpMath.Structures;
+using CSharpMath.Structures;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
+using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Display.Text {
   /// <summary>Corresponds to CTRun in iOSMath.</summary> 

@@ -5,6 +5,7 @@ using System.Text;
 using CSharpMath.Rendering;
 using CSharpMath.Structures;
 using SkiaSharp;
+using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.SkiaSharp
 {
