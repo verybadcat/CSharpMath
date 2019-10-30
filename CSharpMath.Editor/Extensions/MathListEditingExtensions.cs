@@ -107,7 +107,7 @@ namespace CSharpMath.Editor {
             }
           }
           // no previous atom or the previous atom sucks (has sub/super scripts)
-          currentAtom.Nucleus = "";
+          currentAtom.AtomType = Enumerations.MathAtomType.Placeholder;
           break;
         case MathListSubIndexType.Radicand:
         case MathListSubIndexType.Degree:
