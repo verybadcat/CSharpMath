@@ -156,81 +156,81 @@ namespace CSharpMath.Atoms {
          { "amalg", Create(MathAtomType.BinaryOperator, "\u2A3F") },
          
          // No limit operators
-         { "log", Operator("log" , false, true) },
-         { "lg", Operator("lg" , false, true) },
-         { "ln", Operator("ln" , false, true) },
-         { "sin", Operator("sin" , false, true) },
-         { "arcsin", Operator("arcsin" , false, true) },
-         { "sinh", Operator("sinh" , false, true) },
-         { "arsinh", Operator("arsinh" , false, true) }, //not in iosMath
-         { "cos", Operator("cos" , false, true) },
-         { "arccos", Operator("arccos" , false, true) },
-         { "cosh", Operator("cosh" , false, true) },
-         { "arcosh", Operator("arcosh" , false, true) }, //not in iosMath
-         { "tan", Operator("tan" , false, true) },
-         { "arctan", Operator("arctan" , false, true) },
-         { "tanh", Operator("tanh" , false, true) },
-         { "artanh", Operator("artanh", false, true) },  //not in iosMath
-         { "cot", Operator("cot" , false, true) },
-         { "arccot", Operator("arccot", false, true) },  //not in iosMath
-         { "coth", Operator("coth" , false, true) },
-         { "arcoth", Operator("arcoth", false, true) },  //not in iosMath
-         { "sec", Operator("sec" , false, true) },
-         { "arcsec", Operator("arcsec", false, true) },  //not in iosMath
-         { "sech", Operator("sech", false, true) },  //not in iosMath
-         { "arsech", Operator("arsech", false, true) },  //not in iosMath
-         { "csc", Operator("csc" , false, true) },
-         { "arccsc", Operator("arccsc", false, true) },  //not in iosMath
-         { "csch", Operator("csch", false, true) },  //not in iosMath
-         { "arcsch", Operator("arcsch", false, true) },  //not in iosMath
-         { "arg", Operator("arg" , false, true) },
-         { "ker", Operator("ker" , false, true) },
-         { "dim", Operator("dim" , false, true) },
-         { "hom", Operator("hom" , false, true) },
-         { "exp", Operator("exp" , false, true) },
-         { "deg", Operator("deg" , false, true) },
+         { "log", Operator("log","log" , false, true) },
+         { "lg", Operator("lg","lg" , false, true) },
+         { "ln", Operator("ln","ln" , false, true) },
+         { "sin", Operator("sin","sin" , false, true) },
+         { "arcsin", Operator("arcsin","arcsin" , false, true) },
+         { "sinh", Operator("sinh","sinh" , false, true) },
+         { "arsinh", Operator("arsinh","arsinh" , false, true) }, //not in iosMath
+         { "cos", Operator("cos","cos" , false, true) },
+         { "arccos", Operator("arccos","arccos" , false, true) },
+         { "cosh", Operator("cosh","cosh" , false, true) },
+         { "arcosh", Operator("arcosh","arcosh" , false, true) }, //not in iosMath
+         { "tan", Operator("tan","tan" , false, true) },
+         { "arctan", Operator("arctan","arctan" , false, true) },
+         { "tanh", Operator("tanh","tanh" , false, true) },
+         { "artanh", Operator("artanh","artanh", false, true) },  //not in iosMath
+         { "cot", Operator("cot","cot" , false, true) },
+         { "arccot", Operator("arccot","arccot", false, true) },  //not in iosMath
+         { "coth", Operator("coth","coth" , false, true) },
+         { "arcoth", Operator("arcoth","arcoth", false, true) },  //not in iosMath
+         { "sec", Operator("sec","sec" , false, true) },
+         { "arcsec", Operator("arcsec","arcsec", false, true) },  //not in iosMath
+         { "sech", Operator("sech","sech", false, true) },  //not in iosMath
+         { "arsech", Operator("arsech","arsech", false, true) },  //not in iosMath
+         { "csc", Operator("csc","csc" , false, true) },
+         { "arccsc", Operator("arccsc","arccsc", false, true) },  //not in iosMath
+         { "csch", Operator("csch","csch", false, true) },  //not in iosMath
+         { "arcsch", Operator("arcsch","arcsch", false, true) },  //not in iosMath
+         { "arg", Operator("arg","arg" , false, true) },
+         { "ker", Operator("ker","ker" , false, true) },
+         { "dim", Operator("dim","dim" , false, true) },
+         { "hom", Operator("hom","hom" , false, true) },
+         { "exp", Operator("exp","exp" , false, true) },
+         { "deg", Operator("deg","deg" , false, true) },
          
          // Limit operators
-         { "lim", Operator("lim" , null) },
-         { "limsup", Operator("lim sup" , null) },
-         { "liminf", Operator("lim inf" , null) },
-         { "max", Operator("max" , null) },
-         { "min", Operator("min" , null) },
-         { "sup", Operator("sup" , null) },
-         { "inf", Operator("inf" , null) },
-         { "det", Operator("det" , null) },
-         { "Pr", Operator("Pr" , null) },
-         { "gcd", Operator("gcd" , null) },
+         { "lim", Operator("lim","lim" , null) },
+         { "limsup", Operator("limsup","lim sup" , null) },
+         { "liminf", Operator("liminf","lim inf" , null) },
+         { "max", Operator("max","max" , null) },
+         { "min", Operator("min","min" , null) },
+         { "sup", Operator("sup","sup" , null) },
+         { "inf", Operator("inf","inf" , null) },
+         { "det", Operator("det","det" , null) },
+         { "Pr", Operator("Pr","Pr" , null) },
+         { "gcd", Operator("gcd","gcd" , null) },
          
          // Large operators
-         { "prod", Operator("\u220F" , null) },
-         { "coprod", Operator("\u2210" , null) },
-         { "sum", Operator("\u2211" , null) },
-         { "int", Operator("\u222B" , false) },
-         { "iint", Operator("\u222C", false) }, //not in iosMath
-         { "iiint", Operator("\u222D", false) }, //not in iosMath
-         { "iiiint", Operator("\u2A0C", false) }, //not in iosMath
-         { "oint", Operator("\u222E" , false) },
-         { "oiint", Operator("\u222F" , false) }, //not in iosMath
-         { "oiiint", Operator("\u2230" , false) }, //not in iosMath
-         { "intclockwise", Operator("\u2231" , false) }, //not in iosMath
-         { "awint", Operator("\u2A11" , false) }, //not in iosMath
-         { "varointclockwise", Operator("\u2232" , false) }, //not in iosMath
-         { "ointctrclockwise", Operator("\u2233" , false) }, //not in iosMath
-         { "bigwedge", Operator("\u22C0" , null) },
-         { "bigvee", Operator("\u22C1" , null) },
-         { "bigcap", Operator("\u22C2" , null) },
-         { "bigcup", Operator("\u22C3" , null) },
-         { "bigbot", Operator("\u27D8" , null) }, //not in iosMath
-         { "bigtop", Operator("\u27D9" , null) }, //not in iosMath
-         { "bigodot", Operator("\u2A00" , null) },
-         { "bigoplus", Operator("\u2A01" , null) },
-         { "bigotimes", Operator("\u2A02" , null) },
-         { "bigcupdot", Operator("\u2A03" , null) }, //not in iosMath
-         { "biguplus", Operator("\u2A04" , null) },
-         { "bigsqcap", Operator("\u2A05" , null) }, //not in iosMath
-         { "bigsqcup", Operator("\u2A06" , null) },
-         { "bigtimes", Operator("\u2A09" , null) }, //not in iosMath
+         { "prod", Operator("prod","\u220F" , null) },
+         { "coprod", Operator("coprod","\u2210" , null) },
+         { "sum", Operator("sum","\u2211" , null) },
+         { "int", Operator("int","\u222B" , false) },
+         { "iint", Operator("iint","\u222C", false) }, //not in iosMath
+         { "iiint", Operator("iiint","\u222D", false) }, //not in iosMath
+         { "iiiint", Operator("iiiint","\u2A0C", false) }, //not in iosMath
+         { "oint", Operator("oint","\u222E" , false) },
+         { "oiint", Operator("oiint","\u222F" , false) }, //not in iosMath
+         { "oiiint", Operator("oiiint","\u2230" , false) }, //not in iosMath
+         { "intclockwise", Operator("intclockwise","\u2231" , false) }, //not in iosMath
+         { "awint", Operator("awint","\u2A11" , false) }, //not in iosMath
+         { "varointclockwise", Operator("varointclockwise","\u2232" , false) }, //not in iosMath
+         { "ointctrclockwise", Operator("ointctrclockwise","\u2233" , false) }, //not in iosMath
+         { "bigwedge", Operator("bigwedge","\u22C0" , null) },
+         { "bigvee", Operator("bigvee","\u22C1" , null) },
+         { "bigcap", Operator("bigcap","\u22C2" , null) },
+         { "bigcup", Operator("bigcup","\u22C3" , null) },
+         { "bigbot", Operator("bigbot","\u27D8" , null) }, //not in iosMath
+         { "bigtop", Operator("bigtop","\u27D9" , null) }, //not in iosMath
+         { "bigodot", Operator("bigodot","\u2A00" , null) },
+         { "bigoplus", Operator("bigoplus","\u2A01" , null) },
+         { "bigotimes", Operator("bigotimes","\u2A02" , null) },
+         { "bigcupdot", Operator("bigcupdot","\u2A03" , null) }, //not in iosMath
+         { "biguplus", Operator("biguplus","\u2A04" , null) },
+         { "bigsqcap", Operator("bigsqcap","\u2A05" , null) }, //not in iosMath
+         { "bigsqcup", Operator("bigsqcup","\u2A06" , null) },
+         { "bigtimes", Operator("bigtimes","\u2A09" ,  null) }, //not in iosMath
          
          // Latex command characters
          { "{", "lbrace", Create(MathAtomType.Open, "{") },
@@ -322,7 +322,7 @@ namespace CSharpMath.Atoms {
          { "threeunderdot", new Accent("\u20E8") } //not in iosMath
       });
     
-    public static LargeOperator Operator(string name, bool? limits, bool noLimits = false) => new LargeOperator(name, limits, noLimits);
+    public static LargeOperator Operator(string key, string name, bool? limits, bool noLimits = false) => new LargeOperator(name, key, limits, noLimits);
     public static Space Space(Structures.Space sp) => new Space(sp);
     public static MathAtom Create(MathAtomType type, char value) => Create(type, value.ToString());
     public static MathAtom Create(MathAtomType type, string value) {
@@ -348,7 +348,7 @@ namespace CSharpMath.Atoms {
             "Do not use Create(MathAtomType.Space, string)." +
             "Use Space(int, bool) instead.", nameof(type));
         default:
-          return new MathAtom(type, value);
+          return new MathAtom(type, value, string.Empty);
       }
     }
 

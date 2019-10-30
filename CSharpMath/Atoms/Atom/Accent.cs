@@ -6,7 +6,7 @@ namespace CSharpMath.Atoms {
   public class Accent : MathAtom, IAccent {
     public IMathList InnerList { get; set; }
 
-    public Accent(string value): base(MathAtomType.Accent, value) {
+    public Accent(string value): base(MathAtomType.Accent, value, "") {
 
     }
 

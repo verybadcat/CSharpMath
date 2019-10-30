@@ -699,7 +699,7 @@ namespace CSharpMath.Atoms {
             }
           case MathAtomType.LargeOperator: {
               var op = (LargeOperator)atom;
-              var command = MathAtoms.LatexSymbolNameForAtom(op);
+              var command = op.Key;
               var originalOperator = (LargeOperator)MathAtoms.ForLatexSymbolName(command);
               builder.Append($@"\{command} ");
               if (originalOperator.Limits != op.Limits) {

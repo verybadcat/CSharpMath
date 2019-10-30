@@ -8,7 +8,7 @@ namespace CSharpMath.Atoms {
   public class Color: MathAtom, IColor {
     public string ColorString { get; set; }
     public IMathList InnerList { get; set; }
-    public Color(): base(MathAtomType.Color, string.Empty) { }
+    public Color(): base(MathAtomType.Color, string.Empty, string.Empty) { }
 
     public override string StringValue {
       get {

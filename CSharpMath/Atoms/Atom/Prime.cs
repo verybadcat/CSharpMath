@@ -6,7 +6,7 @@ using CSharpMath.Interfaces;
 
 namespace CSharpMath.Atoms {
   public class Prime : MathAtom {
-    public Prime(int length) : base(MathAtomType.Prime, PrimeOfLength(length)) =>
+    public Prime(int length) : base(MathAtomType.Prime, PrimeOfLength(length), string.Empty) =>
       Length = length;
 
     public int Length { get; }

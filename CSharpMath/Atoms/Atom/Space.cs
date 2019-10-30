@@ -12,7 +12,7 @@ namespace CSharpMath.Atoms {
 
     public bool IsMu => _space.IsMu;
 
-    public Space(Structures.Space space) : base(MathAtomType.Space, string.Empty) =>
+    public Space(Structures.Space space) : base(MathAtomType.Space, string.Empty, string.Empty) =>
       _space = space;
 
     public Space(Space cloneMe, bool finalize) : base(cloneMe, finalize) =>

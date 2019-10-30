@@ -7,7 +7,7 @@ using CSharpMath.Interfaces;
 namespace CSharpMath.Atoms {
   public class Group : MathAtom {
     public IMathList InnerList { get; set; }
-    public Group() : base(MathAtomType.Group, string.Empty) {
+    public Group() : base(MathAtomType.Group, string.Empty, string.Empty) {
 
     }
     public Group(Group cloneMe, bool finalize) : base(cloneMe, finalize) {

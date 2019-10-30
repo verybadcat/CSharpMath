@@ -6,7 +6,7 @@ using System.Text;
 
 namespace CSharpMath.Atoms {
   public class Inner : MathAtom,IMathInner {
-    public Inner(): base(MathAtomType.Inner, string.Empty) {
+    public Inner(): base(MathAtomType.Inner, string.Empty, string.Empty) {
 
     }
     private IMathAtom _LeftBoundary;

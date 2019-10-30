@@ -80,7 +80,7 @@ namespace CSharpMath.Atoms {
             }
           }
           if (!scriptsExpanded)
-            Atoms.Insert(i + 1, new MathAtom(MathAtomType.Ordinary, "") {
+            Atoms.Insert(i + 1, new MathAtom(MathAtomType.Ordinary, string.Empty, string.Empty) {
               Superscript = group.Superscript,
               Subscript = group.Subscript
             });

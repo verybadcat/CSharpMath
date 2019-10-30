@@ -7,7 +7,7 @@ using CSharpMath.Interfaces;
 namespace CSharpMath.Atoms {
   public class Underline : MathAtom, IUnderline {
     public IMathList InnerList { get; set; }
-    public Underline() : base(MathAtomType.Underline, string.Empty) { }
+    public Underline() : base(MathAtomType.Underline, string.Empty, string.Empty) { }
     public Underline(Underline cloneMe, bool finalize) : base(cloneMe, finalize) {
       this.InnerList = AtomCloner.Clone(cloneMe.InnerList, finalize);
     }

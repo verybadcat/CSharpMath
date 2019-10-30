@@ -1,4 +1,4 @@
-﻿using CSharpMath.Enumerations;
+using CSharpMath.Enumerations;
 using CSharpMath.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -15,7 +15,7 @@ namespace CSharpMath.Atoms {
 
     private string _environment;
 
-    public Table(string environment): base(MathAtomType.Table, string.Empty) {
+    public Table(string environment): base(MathAtomType.Table, string.Empty, string.Empty) {
       _environment = environment;
     }
 

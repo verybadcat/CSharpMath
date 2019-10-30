@@ -8,7 +8,7 @@ namespace CSharpMath.Atoms {
   public class Radical: MathAtom, IRadical {
     public IMathList Degree { get; set; }
     public IMathList Radicand { get; set; }
-    public Radical(): base(MathAtomType.Radical, string.Empty) {
+    public Radical(): base(MathAtomType.Radical, string.Empty, string.Empty) {
 
     }
 

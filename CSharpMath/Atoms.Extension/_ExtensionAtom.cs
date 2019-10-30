@@ -7,7 +7,7 @@ using CSharpMath.Interfaces;
 namespace CSharpMath.Atoms.Extension {
   internal interface I_ExtensionAtom : IMathAtom { }
   public abstract class _ExtensionAtom<T> : MathAtom, I_ExtensionAtom where T : _ExtensionAtom<T>, new() {
-    internal _ExtensionAtom(MathAtomType type) : base(type, string.Empty) { }
+    internal _ExtensionAtom(MathAtomType type) : base(type, string.Empty, "") { }
     //protected _ExtensionAtom(_ExtensionAtom<T> cloneMe, bool finalize) : base(cloneMe, finalize) { }
 
     protected abstract void CopyPropertiesFrom(T oldAtom);

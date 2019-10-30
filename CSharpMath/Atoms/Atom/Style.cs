@@ -1,4 +1,4 @@
-﻿using CSharpMath.Interfaces;
+using CSharpMath.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -6,7 +6,7 @@ using CSharpMath.Enumerations;
 
 namespace CSharpMath.Atoms {
   public class Style : MathAtom, IStyle {
-    public Style(LineStyle style) : base(MathAtomType.Style, string.Empty) {
+    public Style(LineStyle style) : base(MathAtomType.Style, string.Empty, string.Empty) {
       LineStyle = style;
     }
     public Style(Style cloneMe, bool finalize) : base(cloneMe, finalize) {
