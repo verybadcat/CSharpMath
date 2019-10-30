@@ -3,6 +3,7 @@ using System.Drawing;
 using CSharpMath.Display;
 using CSharpMath.Display.Text;
 using CSharpMath.Structures;
+using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.FrontEnd {
   /// <summary>Represents a front-end graphics context. Used for drawing.</summary>

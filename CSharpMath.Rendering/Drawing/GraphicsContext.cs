@@ -6,6 +6,7 @@ using CSharpMath.Structures;
 using TFonts = CSharpMath.Rendering.Fonts;
 using Typography.OpenFont;
 using Typography.TextLayout;
+using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Rendering {
   public class GraphicsContext : IGraphicsContext<TFonts, Glyph> {

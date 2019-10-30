@@ -13,6 +13,7 @@ using Typography.OpenFont;
 
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Rendering {
   public static class PainterConstants {

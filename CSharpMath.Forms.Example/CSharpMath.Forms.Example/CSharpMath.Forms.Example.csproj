@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Xamarin.Forms" Version="4.0.0.425677" />
+    <PackageReference Include="Xamarin.Forms" Version="4.3.0.908675" />
     <ProjectReference Include="..\..\CSharpMath.Forms\CSharpMath.Forms.csproj" />
     <ProjectReference Include="..\..\SkiaSharp.Extended\SkiaSharp.Extended.Svg\source\SkiaSharp.Extended.Svg.csproj" />
   </ItemGroup>
