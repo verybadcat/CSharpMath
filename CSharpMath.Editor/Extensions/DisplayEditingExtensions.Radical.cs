@@ -37,9 +37,9 @@ namespace CSharpMath.Editor {
 
       if (index.AtomIndex == self.Range.End)
         // draw a caret after the radical
-        return new PointF(self.DisplayBounds.Right, self.Position.Y);
-
-      return new PointF(self.DisplayBounds.Left, self.Position.Y);
+        return self.Position.Plus(new PointF(self.DisplayBounds.Right, 0));
+      // draw a caret before the radical
+      return self.Position;
     }
 
     public static void HighlightCharacterAt<TFont, TGlyph>(this RadicalDisplay<TFont, TGlyph> self, MathListIndex index, Color color) where TFont : IFont<TGlyph> {

@@ -90,46 +90,26 @@ namespace CSharpMath.Editor {
     public static PointF? PointForIndex<TFont, TGlyph>(this ListDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, MathListIndex index) where TFont : IFont<TGlyph> {
       if (index is null) return null;
 
-      PointF? position = null;
-      var nonScripted =
-        self.Displays
-        .Where(d => !(d is ListDisplay<TFont, TGlyph> ld &&
-                      ld.LinePosition != Enumerations.LinePosition.Regular))
-        .ToArray();
-      if (index.SubIndexType == MathListSubIndexType.None &&
-          nonScripted.Length > 0 &&
-          nonScripted.All(d => d.Range.End <= index.AtomIndex)) {
+      PointF? position;
+      if (index.AtomIndex == self.Range.End) {
+        // Special case the edge of the range
         position = new PointF(self.Width, 0);
-      } else {
-        if (index.AtomIndex == self.Range.End) {
-          // Special case the edge of the range
-          position = new PointF(self.Width, 0);
-        } else if (self.Range.Contains(index.AtomIndex) && self.SubDisplayForIndex(index) is IDisplay<TFont, TGlyph> display)
-          switch (index.SubIndexType) {
-            case MathListSubIndexType.BetweenBaseAndScripts:
-              var nucleusPosition = index.AtomIndex + index.SubIndex.AtomIndex;
-              position = display.PointForIndex(context, MathListIndex.Level0Index(nucleusPosition));
-              break;
-            case MathListSubIndexType.None:
-              if (!display.HasScript) {
-                position = display.PointForIndex(context, index);
-              } else {
-                var mainPosition = display.PointForIndex(context, index);
-                position = self.Displays.SingleOrDefault(d =>
-                    d is ListDisplay<TFont, TGlyph> ld && ld.IndexInParent == index.AtomIndex - 1)
-                  is IDisplay<TFont, TGlyph> scripted && mainPosition != null
-                  ? new PointF(mainPosition.Value.X + scripted.Width, 0)
-                  : mainPosition;
-              }
-              break;
-            default:
-              // Recurse
-              position = display.PointForIndex(context, index.SubIndex);
-              break;
-          } else
-          // Outside the range
-          return null;
-      }
+      } else if (self.Range.Contains(index.AtomIndex) && self.SubDisplayForIndex(index) is IDisplay<TFont, TGlyph> display)
+        switch (index.SubIndexType) {
+          case MathListSubIndexType.BetweenBaseAndScripts:
+            var nucleusPosition = index.AtomIndex + index.SubIndex.AtomIndex;
+            position = display.PointForIndex(context, MathListIndex.Level0Index(nucleusPosition));
+            break;
+          case MathListSubIndexType.None:
+            position = display.PointForIndex(context, index);
+            break;
+          default:
+            // Recurse
+            position = display.PointForIndex(context, index.SubIndex);
+            break;
+        } else
+        // Outside the range
+        return null;
       if (position is PointF found) {
         // Convert bounds from our coordinate system before returning
         found.X += self.Position.X;

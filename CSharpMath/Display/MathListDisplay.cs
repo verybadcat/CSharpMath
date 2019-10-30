@@ -37,7 +37,11 @@ namespace CSharpMath.Display {
     public float Descent => Displays.CollectionDescent();
     public PointF Position { get; set; }
     public RectangleF DisplayBounds => this.ComputeDisplayBounds();
-    public Range Range => Range.Combine(Displays.Select(d => d.Range));
+    public Range Range =>
+      Range.Combine(
+        Displays
+        .Where(d => !(d is ListDisplay<TFont, TGlyph> ld && ld.LinePosition != Enumerations.LinePosition.Regular))
+        .Select(d => d.Range));
     public float Width => Displays.CollectionMaxX() - Displays.CollectionX();
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
       context.SaveState();
