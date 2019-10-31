@@ -45,7 +45,7 @@ namespace CSharpMath.Atoms {
     public MathAtom(MathAtomType type, string nucleus, string name = "") {
       AtomType = type;
       Nucleus = nucleus;
-      Name = string.IsNullOrWhiteSpace(name) ? name : nucleus;
+      Name = !string.IsNullOrWhiteSpace(name) ? name : nucleus;
     }
     public MathAtom(MathAtom cloneMe, bool finalize) {
       AtomType = cloneMe.AtomType;
