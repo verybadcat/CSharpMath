@@ -10,7 +10,7 @@ namespace CSharpMath.Atoms {
     public virtual string StringValue => new StringBuilder(Nucleus).AppendScripts(this).ToString();
     public MathAtomType AtomType { get; set; }
     public string Nucleus { get; set; }
-    public string Key { get; protected set; }
+    public string Name { get; protected set; }
 
     private IMathList _Superscript;
     public IMathList Superscript {
@@ -42,10 +42,10 @@ namespace CSharpMath.Atoms {
 
     public virtual bool ScriptsAllowed => AtomType < MathAtomType.Boundary;
 
-    public MathAtom(MathAtomType type, string nucleus, string key) {
+    public MathAtom(MathAtomType type, string nucleus, string name = "") {
       AtomType = type;
       Nucleus = nucleus;
-      Key = key;
+      Name = string.IsNullOrWhiteSpace(name) ? name : nucleus;
     }
     public MathAtom(MathAtom cloneMe, bool finalize) {
       AtomType = cloneMe.AtomType;

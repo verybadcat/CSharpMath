@@ -17,14 +17,14 @@ namespace CSharpMath.Atoms {
     ///<summary>If true, overrides Limits and makes it treated as false</summary>
     public bool NoLimits { get; }
 
-    public LargeOperator(string value, string key, bool? limits, bool noLimits = false): base(MathAtomType.LargeOperator, value, key) {
+    public LargeOperator(string value, bool? limits, bool noLimits = false, string name = ""): base(MathAtomType.LargeOperator, value, name) {
       Limits = limits;
       NoLimits = noLimits;
     }
 
     public LargeOperator(LargeOperator cloneMe, bool finalize): base(cloneMe, finalize) {
       NoLimits = cloneMe.NoLimits;
-      Key = cloneMe.Key;
+      Name = cloneMe.Name;
       _limits = cloneMe._limits;
     }
 

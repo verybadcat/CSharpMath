@@ -78,7 +78,7 @@ namespace CSharpMath.Tests {
       list.Insert(0, atom);
       Assert.Single(list);
       Assert.Equal(atom, list[0]);
-      var atom2 = MathAtoms.Operator(string.Empty, "+", false);
+      var atom2 = MathAtoms.Operator("+", false);
       list.Insert(0, atom2);
       Assert.Equal(2, list.Count);
       Assert.Equal(atom2, list[0]);
@@ -95,8 +95,8 @@ namespace CSharpMath.Tests {
     public void TestAppend() {
       var list1 = new MathList();
       var atom1 = MathAtoms.Placeholder;
-      var atom2 = MathAtoms.Operator(string.Empty, "+", false);
-      var atom3 = MathAtoms.Operator(string.Empty, "-", false);
+      var atom2 = MathAtoms.Operator("+", false);
+      var atom3 = MathAtoms.Operator("-", false);
       list1.Add(atom1);
       list1.Add(atom2);
       list1.Add(atom3);

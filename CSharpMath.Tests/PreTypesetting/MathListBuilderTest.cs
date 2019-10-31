@@ -819,7 +819,7 @@ namespace CSharpMath.Tests {
       Assert.Null(list);
       Assert.NotNull(builder.Error);
 
-      MathAtoms.AddLatexSymbol("lcm", MathAtoms.Operator("lcm", "lcm", false));
+      MathAtoms.AddLatexSymbol("lcm", MathAtoms.Operator("lcm", false));
       var builder2 = new MathListBuilder(input);
       var list2 = builder2.Build();
       list2.ExpandGroups();
