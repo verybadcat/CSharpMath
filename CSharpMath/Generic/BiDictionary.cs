@@ -9,8 +9,8 @@ namespace CSharpMath
 {
   public class AliasDictionary<K, V> : ICollection<KeyValuePair<K, V>>, IDictionary<K, V> {
     public AliasDictionary() {
-      k2v = new Dictionary<K, V>();
-      v2k = new Dictionary<V, K>();
+      k2v = new Dictionary<K, V>(293);
+      v2k = new Dictionary<V, K>(293);
     }
 
     readonly Dictionary<K, V> k2v;
