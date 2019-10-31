@@ -973,5 +973,13 @@ namespace CSharpMath.Tests {
       Assert.Equal(@"\begin{array}{lr}x^2&\: x<0\\ x^3&\: x\geq 0\end{array}", latex);
     }
 
+    [Fact]
+    public void TestListToString() {
+      var input = @"\int_a^b";
+      var list = MathLists.FromString(input);
+      var str = MathListBuilder.MathListToString(list);
+      Assert.Equal(input, str);
+    }
+
   }
 }

@@ -694,7 +694,7 @@ namespace CSharpMath.Atoms {
               var accent = (IAccent)atom;
               var list = accent.InnerList;
               accent.InnerList = null; //for lookup
-              builder.Append(@"\" + MathAtoms.Commands[(MathAtom)atom] + "{" + MathListToString(list) + "}");
+              builder.Append(@"\" + ((MathAtom)atom).Key + "{" + MathListToString(list) + "}");
               break;
             }
           case MathAtomType.LargeOperator: {
