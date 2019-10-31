@@ -694,12 +694,12 @@ namespace CSharpMath.Atoms {
               var accent = (IAccent)atom;
               var list = accent.InnerList;
               accent.InnerList = null; //for lookup
-              builder.Append(@"\" + MathAtoms.Commands[(MathAtom)atom] + "{" + MathListToString(list) + "}");
+              builder.Append(@"\" + ((MathAtom)atom).Name + "{" + MathListToString(list) + "}");
               break;
             }
           case MathAtomType.LargeOperator: {
               var op = (LargeOperator)atom;
-              var command = op.Key;
+              var command = op.Name;
               var originalOperator = (LargeOperator)MathAtoms.ForLatexSymbolName(command);
               builder.Append($@"\{command} ");
               if (originalOperator.Limits != op.Limits) {

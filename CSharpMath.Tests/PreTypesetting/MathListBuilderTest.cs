@@ -819,7 +819,7 @@ namespace CSharpMath.Tests {
       Assert.Null(list);
       Assert.NotNull(builder.Error);
 
-      MathAtoms.AddLatexSymbol("lcm", MathAtoms.Operator("lcm", "lcm", false));
+      MathAtoms.AddLatexSymbol("lcm", MathAtoms.Operator("lcm", false));
       var builder2 = new MathListBuilder(input);
       var list2 = builder2.Build();
       list2.ExpandGroups();
@@ -971,6 +971,14 @@ namespace CSharpMath.Tests {
       Assert.Single(list);
       var latex = MathListBuilder.MathListToString(list);
       Assert.Equal(@"\begin{array}{lr}x^2&\: x<0\\ x^3&\: x\geq 0\end{array}", latex);
+    }
+
+    [Fact]
+    public void TestListToString() {
+      var input = @"\int_a^b";
+      var list = MathLists.FromString(input);
+      var str = MathListBuilder.MathListToString(list);
+      Assert.Equal(input, str);
     }
 
   }
