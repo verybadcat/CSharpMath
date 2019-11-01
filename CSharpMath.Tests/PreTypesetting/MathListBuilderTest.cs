@@ -5,10 +5,13 @@ using Xunit;
 using CSharpMath.Atoms;
 using CSharpMath.Interfaces;
 using CSharpMath.Enumerations;
+using System.Text.RegularExpressions;
 
 namespace CSharpMath.Tests {
 
   public class MathListBuilderTest {
+    const string RemoveWhiteSpacesPattern = "\\s*";
+
     public static IEnumerable<(string, MathAtomType[], string)> RawTestData() => new[] {
       ("x", new[] { MathAtomType.Variable }, "x"),
       ("1", new[] { MathAtomType.Number }, "1"),
@@ -926,7 +929,7 @@ namespace CSharpMath.Tests {
       Assert.Equal(MathAtomType.LargeOperator, op.AtomType);
       Assert.Null(op.Limits);
       var latex = MathListBuilder.MathListToString(list);
-      Assert.Equal(@"\sum ", latex);
+      Assert.Equal(RemoveWhiteSpacesFromString(latex), input);
     }
 
     [Fact]
@@ -938,19 +941,19 @@ namespace CSharpMath.Tests {
       Assert.Equal(MathAtomType.LargeOperator, op.AtomType);
       Assert.False(op.Limits);
       var latex = MathListBuilder.MathListToString(list);
-      Assert.Equal(@"\sum \nolimits ", latex);
+      Assert.Equal(RemoveWhiteSpacesFromString(latex), input);
     }
 
     [Fact]
     public void TestColor() {
-      var input = @"\color{#F00}a";
+      var input = @"\color{#F00}{a}";
       var list = MathLists.FromString(input);
       Assert.Single(list);
       var op = list[0] as Color;
       Assert.Equal(MathAtomType.Color, op.AtomType);
       Assert.False(op.ScriptsAllowed);
       var latex = MathListBuilder.MathListToString(list);
-      Assert.Equal(@"\color{#F00}{a}", latex);
+      Assert.Equal(RemoveWhiteSpacesFromString(latex), input);
     }
 
     [Fact]
@@ -960,7 +963,7 @@ namespace CSharpMath.Tests {
 
       Assert.Single(list);
       var latex = MathListBuilder.MathListToString(list);
-      Assert.Equal(@"\begin{array}{l}a=14\\ b=15\end{array}", latex);
+      Assert.Equal(RemoveWhiteSpacesFromString(latex), input);
     }
 
     [Fact]
@@ -970,15 +973,32 @@ namespace CSharpMath.Tests {
 
       Assert.Single(list);
       var latex = MathListBuilder.MathListToString(list);
-      Assert.Equal(@"\begin{array}{lr}x^2&\: x<0\\ x^3&\: x\geq 0\end{array}", latex);
+      Assert.Equal(RemoveWhiteSpacesFromString(latex), input);
     }
 
     [Fact]
     public void TestListToString() {
-      var input = @"\int_a^b";
+      TestLatexToListAndBack(@"\int_a^b");
+    }
+
+    [Fact]
+    public void TestListToString1() {
+      TestLatexToListAndBack(@"\int_wdf=\int_{\partial w}f");
+    }
+
+    [Fact]
+    public void TestMatrixListToString() {
+      TestLatexToListAndBack(@"\left| \begin{matrix}\sin (x)&\cos (x)\\ -\cos (x)&\sin (x)\end{matrix}\right| =1");
+    }
+
+    private static void TestLatexToListAndBack(string input) {
       var list = MathLists.FromString(input);
       var str = MathListBuilder.MathListToString(list);
-      Assert.Equal(input, str);
+      Assert.Equal(RemoveWhiteSpacesFromString(input), RemoveWhiteSpacesFromString(str));
+    }
+    
+    private static string RemoveWhiteSpacesFromString(string str) {
+      return Regex.Replace(str, RemoveWhiteSpacesPattern, string.Empty, RegexOptions.Multiline);
     }
 
   }

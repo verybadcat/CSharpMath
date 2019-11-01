@@ -701,11 +701,11 @@ namespace CSharpMath.Atoms {
               var op = (LargeOperator)atom;
               var command = op.Name;
               var originalOperator = (LargeOperator)MathAtoms.ForLatexSymbolName(command);
-              builder.Append($@"\{command}");
+              builder.Append($@"\{command} ");
               if (originalOperator.Limits != op.Limits) {
                 switch (op.Limits) {
                   case true:
-                    builder.Append(@"\limits");
+                    builder.Append(@"\limits ");
                     break;
                   case false:
                     if (!op.NoLimits) builder.Append(@"\nolimits");
@@ -738,6 +738,7 @@ namespace CSharpMath.Atoms {
             }
           case MathAtomType.Color: {
               var color = (IColor)atom;
+
               builder.Append($@"\color{{{color.ColorString}}}{{{MathListToString(color.InnerList)}}}");
               break;
             }
