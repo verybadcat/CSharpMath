@@ -701,14 +701,14 @@ namespace CSharpMath.Atoms {
               var op = (LargeOperator)atom;
               var command = op.Name;
               var originalOperator = (LargeOperator)MathAtoms.ForLatexSymbolName(command);
-              builder.Append($@"\{command} ");
+              builder.Append($@"\{command}");
               if (originalOperator.Limits != op.Limits) {
                 switch (op.Limits) {
                   case true:
-                    builder.Append(@"\limits ");
+                    builder.Append(@"\limits");
                     break;
                   case false:
-                    if (!op.NoLimits) builder.Append(@"\nolimits ");
+                    if (!op.NoLimits) builder.Append(@"\nolimits");
                     break;
                   case null:
                     break;
