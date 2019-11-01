@@ -988,13 +988,13 @@ namespace CSharpMath.Tests {
 
     [Fact]
     public void TestMatrixListToString() {
-      TestLatexToListAndBack(@"\left| \begin{matrix}\sin (x)&\cos (x)\\ -\cos (x)&\sin (x)\end{matrix}\right| =1");
+      TestLatexToListAndBack(@"\begin{ vmatrix}\sin(x) &\cos(x)\\-\cos(x) &\sin(x)\end{ vmatrix}= 1", @"\left| \begin{matrix}\sin (x)&\cos (x)\\ -\cos (x)&\sin (x)\end{matrix}\right| =1");
     }
 
     private static void TestLatexToListAndBack(string input, string expected = "") {
       var list = MathLists.FromString(input);
       var str = MathListBuilder.MathListToString(list);
-      Assert.Equal(string.IsNullOrWhiteSpace(expected) ? RemoveWhiteSpacesFromString(input): expected, RemoveWhiteSpacesFromString(str));
+      Assert.Equal(string.IsNullOrWhiteSpace(expected) ? RemoveWhiteSpacesFromString(input): RemoveWhiteSpacesFromString(expected), RemoveWhiteSpacesFromString(str));
     }
     
     private static string RemoveWhiteSpacesFromString(string str) {
