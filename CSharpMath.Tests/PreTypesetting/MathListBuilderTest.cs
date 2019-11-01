@@ -991,10 +991,10 @@ namespace CSharpMath.Tests {
       TestLatexToListAndBack(@"\left| \begin{matrix}\sin (x)&\cos (x)\\ -\cos (x)&\sin (x)\end{matrix}\right| =1");
     }
 
-    private static void TestLatexToListAndBack(string input) {
+    private static void TestLatexToListAndBack(string input, string expected = "") {
       var list = MathLists.FromString(input);
       var str = MathListBuilder.MathListToString(list);
-      Assert.Equal(RemoveWhiteSpacesFromString(input), RemoveWhiteSpacesFromString(str));
+      Assert.Equal(string.IsNullOrWhiteSpace(expected) ? RemoveWhiteSpacesFromString(input): expected, RemoveWhiteSpacesFromString(str));
     }
     
     private static string RemoveWhiteSpacesFromString(string str) {
