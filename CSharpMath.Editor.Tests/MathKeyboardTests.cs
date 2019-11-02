@@ -178,5 +178,8 @@ namespace CSharpMath.Editor.Tests {
       T(@"1^3_2", K.D1, K.D4, K.Power, K.D3, K.Left, K.Left, K.Subscript, K.D2, K.Left, K.Left, K.Left, K.Left, K.Backspace)
     ]
     public void LeftRightBackspace(string latex, params K[] inputs) => Test(latex, inputs);
+
+    [Theory, T(@"□_■", K.Subscript)]
+    public void SubscriptWorksAtBeginningOfLine(string latex, params K[] inputs) => Test(latex, inputs);
   }
 }
