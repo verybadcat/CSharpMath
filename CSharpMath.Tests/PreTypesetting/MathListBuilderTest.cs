@@ -111,7 +111,7 @@ namespace CSharpMath.Tests {
       string latex = MathListBuilder.MathListToString(list);
       Assert.Equal(output, latex);
     }
-    
+
     /// <summary>Safe to call with a null list. Types cannot be null however.</summary>
     private void CheckAtomTypes(IMathList list, params MathAtomType[] types) {
       int atomCount = (list == null) ? 0 : list.Atoms.Count;
@@ -929,7 +929,7 @@ namespace CSharpMath.Tests {
       Assert.Equal(MathAtomType.LargeOperator, op.AtomType);
       Assert.Null(op.Limits);
       var latex = MathListBuilder.MathListToString(list);
-      Assert.Equal(RemoveWhiteSpacesFromString(latex), input);
+      Assert.Equal(input, RemoveWhiteSpacesFromString(latex));
     }
 
     [Fact]
@@ -941,7 +941,7 @@ namespace CSharpMath.Tests {
       Assert.Equal(MathAtomType.LargeOperator, op.AtomType);
       Assert.False(op.Limits);
       var latex = MathListBuilder.MathListToString(list);
-      Assert.Equal(RemoveWhiteSpacesFromString(latex), input);
+      Assert.Equal(input, RemoveWhiteSpacesFromString(latex));
     }
 
     [Fact]
@@ -953,7 +953,7 @@ namespace CSharpMath.Tests {
       Assert.Equal(MathAtomType.Color, op.AtomType);
       Assert.False(op.ScriptsAllowed);
       var latex = MathListBuilder.MathListToString(list);
-      Assert.Equal(RemoveWhiteSpacesFromString(latex), input);
+      Assert.Equal(input, RemoveWhiteSpacesFromString(latex));
     }
 
     [Fact]
@@ -963,7 +963,7 @@ namespace CSharpMath.Tests {
 
       Assert.Single(list);
       var latex = MathListBuilder.MathListToString(list);
-      Assert.Equal(RemoveWhiteSpacesFromString(latex), input);
+      Assert.Equal(input, RemoveWhiteSpacesFromString(latex));
     }
 
     [Fact]
@@ -973,16 +973,16 @@ namespace CSharpMath.Tests {
 
       Assert.Single(list);
       var latex = MathListBuilder.MathListToString(list);
-      Assert.Equal(RemoveWhiteSpacesFromString(latex), input);
+      Assert.Equal(input, RemoveWhiteSpacesFromString(latex));
     }
 
     [Fact]
-    public void TestListToString() {
+    public void TestListToString_int_a_to_b() {
       TestLatexToListAndBack(@"\int_a^b");
     }
 
     [Fact]
-    public void TestListToString1() {
+    public void TestListToString_int_wdf() {
       TestLatexToListAndBack(@"\int_wdf=\int_{\partial w}f");
     }
 
@@ -994,9 +994,9 @@ namespace CSharpMath.Tests {
     private static void TestLatexToListAndBack(string input, string expected = "") {
       var list = MathLists.FromString(input);
       var str = MathListBuilder.MathListToString(list);
-      Assert.Equal(string.IsNullOrWhiteSpace(expected) ? RemoveWhiteSpacesFromString(input): RemoveWhiteSpacesFromString(expected), RemoveWhiteSpacesFromString(str));
+      Assert.Equal(string.IsNullOrWhiteSpace(expected) ? RemoveWhiteSpacesFromString(input) : RemoveWhiteSpacesFromString(expected), RemoveWhiteSpacesFromString(str));
     }
-    
+
     private static string RemoveWhiteSpacesFromString(string str) {
       return Regex.Replace(str, RemoveWhiteSpacesPattern, string.Empty, RegexOptions.Multiline);
     }

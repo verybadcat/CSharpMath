@@ -50,6 +50,7 @@ namespace CSharpMath.Atoms {
     public MathAtom(MathAtom cloneMe, bool finalize) {
       AtomType = cloneMe.AtomType;
       Nucleus = cloneMe.Nucleus;
+      Name = cloneMe.Name;
       if (cloneMe.FusedAtoms != null)
         FusedAtoms = new List<IMathAtom>(cloneMe.FusedAtoms);
       Superscript = AtomCloner.Clone(cloneMe.Superscript, finalize);

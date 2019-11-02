@@ -147,7 +147,7 @@ namespace CSharpMath.Atoms {
               }
               continue;
             }
-            atom = AtomForCommand(command, stopChar); 
+            atom = AtomForCommand(command, stopChar);
             if (atom == null) {
               SetError(_error ?? "Internal error");
               return null;
@@ -157,7 +157,7 @@ namespace CSharpMath.Atoms {
               if (_currentEnvironment != null) {
                 return r;
               }
-              var table = BuildTable(null, r, false, stopChar); 
+              var table = BuildTable(null, r, false, stopChar);
               if (table == null) return null;
               return MathLists.WithAtoms(table);
             }
@@ -334,7 +334,7 @@ namespace CSharpMath.Atoms {
 
     internal IMathAtom AtomForCommand(string command, char stopChar) {
       var atom = MathAtoms.ForLatexSymbolName(command);
-      if(atom is Accent accent) {
+      if (atom is Accent accent) {
         accent.InnerList = BuildInternal(true);
         return accent;
       }
@@ -371,7 +371,7 @@ namespace CSharpMath.Atoms {
           if (_currentInnerAtom.LeftBoundary == null) {
             return null;
           }
-          _currentInnerAtom.InnerList = BuildInternal(false, stopChar); 
+          _currentInnerAtom.InnerList = BuildInternal(false, stopChar);
           if (_currentInnerAtom.RightBoundary == null) {
             SetError("Missing \\right");
             return null;
@@ -385,14 +385,14 @@ namespace CSharpMath.Atoms {
           };
         case "underline":
           return new Underline() {
-              InnerList = BuildInternal(true)
+            InnerList = BuildInternal(true)
           };
         case "begin":
           var env = ReadEnvironment();
           if (env == null) {
             return null;
           }
-          var table = BuildTable(env, null, false, stopChar); 
+          var table = BuildTable(env, null, false, stopChar);
           return table;
         case "color":
           return new Color {
@@ -446,7 +446,7 @@ namespace CSharpMath.Atoms {
         return MathLists.WithAtoms(fraction);
       } else if (command == "\\" || command == "cr") {
         if (_currentEnvironment == null) {
-          var table = BuildTable(null, list, true, stopChar); 
+          var table = BuildTable(null, list, true, stopChar);
           if (table == null) return null;
           return MathLists.WithAtoms(table);
         } else {
@@ -463,7 +463,7 @@ namespace CSharpMath.Atoms {
         if (env == null) {
           return null;
         }
-        if (env!=_currentEnvironment.Name) {
+        if (env != _currentEnvironment.Name) {
           SetError($"Begin environment name {_currentEnvironment.Name} does not match end environment name {env}");
           return null;
         }
@@ -497,7 +497,7 @@ namespace CSharpMath.Atoms {
       }
     }
 
-    internal IMathAtom BuildTable(string environment, IMathList firstList, bool isRow, char stopChar) { 
+    internal IMathAtom BuildTable(string environment, IMathList firstList, bool isRow, char stopChar) {
       var oldEnv = _currentEnvironment;
       _currentEnvironment = new TableEnvironmentProperties(environment);
       int currentRow = 0;
@@ -539,8 +539,8 @@ namespace CSharpMath.Atoms {
       return tableResult.Value;
     }
 
-// ^ LaTeX -> Math atoms
-// v Math atoms -> LaTeX
+    // ^ LaTeX -> Math atoms
+    // v Math atoms -> LaTeX
 
     internal static Dictionary<float, string> SpaceToCommands { get; } = new Dictionary<float, string> {
       { Structures.Space.ShortSpace.Length, "," },
@@ -781,9 +781,9 @@ namespace CSharpMath.Atoms {
           var scriptString = MathListToString(atom.Superscript);
           builder.Append(scriptString.Length == 1 ? $"^{scriptString}" : $"^{{{scriptString}}}");
         }
-        
+
       }
-      if (currentFontStyle!=FontStyle.Default) {
+      if (currentFontStyle != FontStyle.Default) {
         builder.Append("}");
       }
       return builder.ToString();

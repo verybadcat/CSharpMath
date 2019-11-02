@@ -321,8 +321,8 @@ namespace CSharpMath.Atoms {
          { "asteraccent", new Accent("\u20F0") }, //not in iosMath
          { "threeunderdot", new Accent("\u20E8") } //not in iosMath
       });
-    
-    public static LargeOperator Operator(string displayChar, bool? limits, bool noLimits = false, string name = "") => new LargeOperator(displayChar, limits, noLimits, name);
+
+    public static LargeOperator Operator(string displayChars, bool? limits, bool noLimits = false, string name = "") => new LargeOperator(displayChars, limits, noLimits, name);
     public static Space Space(Structures.Space sp) => new Space(sp);
     public static MathAtom Create(MathAtomType type, char value) => Create(type, value.ToString());
     public static MathAtom Create(MathAtomType type, string value) {
@@ -358,7 +358,7 @@ namespace CSharpMath.Atoms {
     public static MathAtom Placeholder => Create(MathAtomType.Placeholder, Symbols.WhiteSquare);
     public static MathList PlaceholderList => new MathList { Placeholder };
     public static Fraction PlaceholderFraction => new Fraction { Numerator = PlaceholderList, Denominator = PlaceholderList };
-    public static Radical PlaceholderRadical => new Radical { Degree = PlaceholderList,  Radicand = PlaceholderList };
+    public static Radical PlaceholderRadical => new Radical { Degree = PlaceholderList, Radicand = PlaceholderList };
     public static Radical PlaceholderSquareRoot => new Radical { Radicand = PlaceholderList };
 
     public static MathAtom ForCharacter(char c) {
@@ -440,12 +440,12 @@ namespace CSharpMath.Atoms {
         symbolName ?? throw new ArgumentNullException(nameof(symbolName), "LaTeX Symbol name must not be null."
       ), out var symbol) ? AtomCloner.Clone(symbol, false) : null;
 
-    public static string LatexSymbolNameForAtom(MathAtom atom) =>  Commands.TryGetKey(atom, out var name) ? name : null;
+    public static string LatexSymbolNameForAtom(MathAtom atom) => Commands.TryGetKey(atom, out var name) ? name : null;
 
     public static void AddLatexSymbol(string name, MathAtom atom) => Commands.Add(name, atom);
 
     public static IEnumerable<string> SupportedLatexSymbolNames => Commands.Keys;
-    
+
     public static AliasDictionary<string, string> BoundaryDelimiters { get; } = new AliasDictionary<string, string> {
       { ".", string.Empty }, // . means no delimiter
       { "(", "(" },
@@ -495,9 +495,9 @@ namespace CSharpMath.Atoms {
         { "vmatrix", Pair.Create("vert", "vert") },
         { "Vmatrix", Pair.Create("Vert", "Vert") }
       };
-      
 
-    public static Structures.Result<IMathAtom> Table( string environment, List<List<IMathList>> rows) {
+
+    public static Structures.Result<IMathAtom> Table(string environment, List<List<IMathList>> rows) {
       Style style;
       var table = new Table(environment) { Cells = rows };
       switch (environment) {

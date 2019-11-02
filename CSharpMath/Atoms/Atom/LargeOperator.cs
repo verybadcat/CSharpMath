@@ -24,7 +24,6 @@ namespace CSharpMath.Atoms {
 
     public LargeOperator(LargeOperator cloneMe, bool finalize): base(cloneMe, finalize) {
       NoLimits = cloneMe.NoLimits;
-      Name = cloneMe.Name;
       _limits = cloneMe._limits;
     }
 
