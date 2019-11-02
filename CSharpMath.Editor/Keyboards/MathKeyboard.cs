@@ -662,12 +662,14 @@ namespace CSharpMath.Editor {
         }
       }
       VisualizePlaceholders(MathList);
-      if(MathList.AtomAt(_insertionIndex) is IMathAtom atom && atom.AtomType is MathAtomType.Placeholder)
+      if (MathList.AtomAt(_insertionIndex) is IMathAtom atom && atom.AtomType is MathAtomType.Placeholder) {
         atom.Nucleus = Symbols.BlackSquare;
-      /* Find the insert point rect and create a caretView to draw the caret at this position. */
-
+        Caret = null;
+      } else {
+        /* Find the insert point rect and create a caretView to draw the caret at this position. */
+        Caret = new CaretHandle(Font.PointSize);
+      }
       // Check that we were returned a valid position before displaying a caret there.
-      Caret = new CaretHandle(Font.PointSize);
       RecreateDisplayFromMathList();
       RedrawRequested?.Invoke(this, EventArgs.Empty);
     }
