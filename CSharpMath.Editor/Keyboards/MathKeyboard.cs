@@ -100,7 +100,7 @@ namespace CSharpMath.Editor {
         if (_insertionIndex.AtBeginningOfLine) {
           // Create an empty atom and move the insertion index up.
           var emptyAtom = MathAtoms.Placeholder;
-          emptyAtom.Superscript = MathAtoms.PlaceholderList;
+          SetScript(emptyAtom, MathAtoms.PlaceholderList);
           MathList.InsertAndAdvance(ref _insertionIndex, emptyAtom, subIndexType);
         } else {
           var prevAtom = MathList.AtomAt(_insertionIndex.Previous);
