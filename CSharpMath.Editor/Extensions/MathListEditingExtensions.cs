@@ -108,7 +108,7 @@ namespace CSharpMath.Editor {
               previous.Superscript = currentAtom.Superscript;
               previous.Subscript = currentAtom.Subscript;
               // it was in the nucleus and we removed it, get out of the nucleus and get in the nucleus of the previous one.
-              
+
               self.RemoveAt(index.AtomIndex);
               index = downIndex.Previous is MathListIndex downPrev
                 ? downPrev.LevelUpWithSubIndex(MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1))
@@ -126,7 +126,7 @@ namespace CSharpMath.Editor {
           index = downIndex;
           self.InsertAndAdvance(ref index, insertionAtom, MathListSubIndexType.None);
           index = index.Previous;
-          break;
+          return;
         case MathListSubIndexType.Radicand:
         case MathListSubIndexType.Degree:
           if (!(self.Atoms[index.AtomIndex] is Radical radical && radical.AtomType == Enumerations.MathAtomType.Radical))
@@ -157,6 +157,16 @@ namespace CSharpMath.Editor {
           break;
         default:
           throw new SubIndexTypeMismatchException("Invalid subindex type.");
+      }
+      if (index.AtBeginningOfLine && index.SubIndexType != MathListSubIndexType.None) {
+        // We have deleted to the beginning of the line and it is not the outermost line
+        if (self.AtomAt(index) is null) {
+          var insertionAtom = MathAtoms.Placeholder;
+          // mark the placeholder as selected since that is the current insertion point.
+          insertionAtom.Nucleus = Symbols.BlackSquare;
+          self.InsertAndAdvance(ref index, insertionAtom, MathListSubIndexType.None);
+          index = index.Previous;
+        }
       }
     }
 
