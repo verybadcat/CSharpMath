@@ -17,8 +17,7 @@ namespace CSharpMath.Rendering {
     public void DrawCaret(ICanvas canvas, Structures.Color color, CaretShape shape) {
       if (!(Caret is CaretHandle caret))
         return;
-      if (!(Display.PointForIndex(TypesettingContext.Instance, InsertionIndex) is PointF cursorPosition))
-        return;
+      var cursorPosition = Display.PointForIndex(TypesettingContext.Instance, InsertionIndex) ?? Display.Position;
       cursorPosition.Y *= -1; //inverted canvas, blah blah
       var path = canvas.GetPath();
       path.BeginRead(1);
