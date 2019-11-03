@@ -25,7 +25,7 @@ namespace CSharpMath.Enumerations {
   public static class FontStyleExtensions {
     public static string FontName(this FontStyle style) => FontStyles[style];
     public static AliasDictionary<string, FontStyle> FontStyles { get; } =
-      new AliasDictionary<string, FontStyle> {
+      new AliasDictionary<string, FontStyle>(11) {
         { "mathnormal", FontStyle.Default },
         { "mathrm", "rm", "text", FontStyle.Roman },
         { "mathbf", "bf", FontStyle.Bold },

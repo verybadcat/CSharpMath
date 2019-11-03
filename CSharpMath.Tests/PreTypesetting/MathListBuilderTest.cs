@@ -10,7 +10,6 @@ using System.Text.RegularExpressions;
 namespace CSharpMath.Tests {
 
   public class MathListBuilderTest {
-    const string RemoveWhiteSpacesPattern = "\\s*";
 
     public static IEnumerable<(string, MathAtomType[], string)> RawTestData() => new[] {
       ("x", new[] { MathAtomType.Variable }, "x"),
@@ -929,7 +928,7 @@ namespace CSharpMath.Tests {
       Assert.Equal(MathAtomType.LargeOperator, op.AtomType);
       Assert.Null(op.Limits);
       var latex = MathListBuilder.MathListToString(list);
-      Assert.Equal(input, RemoveWhiteSpacesFromString(latex));
+      Assert.Equal(@"\sum ", latex);
     }
 
     [Fact]
@@ -941,7 +940,7 @@ namespace CSharpMath.Tests {
       Assert.Equal(MathAtomType.LargeOperator, op.AtomType);
       Assert.False(op.Limits);
       var latex = MathListBuilder.MathListToString(list);
-      Assert.Equal(input, RemoveWhiteSpacesFromString(latex));
+      Assert.Equal(@"\sum \nolimits", latex);
     }
 
     [Fact]
@@ -953,7 +952,7 @@ namespace CSharpMath.Tests {
       Assert.Equal(MathAtomType.Color, op.AtomType);
       Assert.False(op.ScriptsAllowed);
       var latex = MathListBuilder.MathListToString(list);
-      Assert.Equal(input, RemoveWhiteSpacesFromString(latex));
+      Assert.Equal(input, latex);
     }
 
     [Fact]
@@ -963,7 +962,7 @@ namespace CSharpMath.Tests {
 
       Assert.Single(list);
       var latex = MathListBuilder.MathListToString(list);
-      Assert.Equal(input, RemoveWhiteSpacesFromString(latex));
+      Assert.Equal(@"\begin{array}{l}a=14\\ b=15\end{array}", latex);
     }
 
     [Fact]
@@ -973,32 +972,35 @@ namespace CSharpMath.Tests {
 
       Assert.Single(list);
       var latex = MathListBuilder.MathListToString(list);
-      Assert.Equal(input, RemoveWhiteSpacesFromString(latex));
+      Assert.Equal(@"\begin{array}{lr}x^2&\: x<0\\ x^3&\: x\geq 0\end{array}", latex);
     }
 
     [Fact]
-    public void TestListToString_int_a_to_b() {
-      TestLatexToListAndBack(@"\int_a^b");
+    public void TestListToString_integral_a_to_b() {
+      var input = @"\int_a^b";
+      var list = MathLists.FromString(input);
+
+      Assert.Single(list);
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"\int _a^b", latex);
     }
 
     [Fact]
-    public void TestListToString_int_wdf() {
-      TestLatexToListAndBack(@"\int_wdf=\int_{\partial w}f");
+    public void TestListToString_integral_wdf() {
+      var input = @"\int_wdf=\int_{\partial w}f";
+      var list = MathLists.FromString(input);
+
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"\int _wdf=\int _{\partial w}f", latex);
     }
 
     [Fact]
     public void TestMatrixListToString() {
-      TestLatexToListAndBack(@"\begin{ vmatrix}\sin(x) &\cos(x)\\-\cos(x) &\sin(x)\end{ vmatrix}= 1", @"\left| \begin{matrix}\sin (x)&\cos (x)\\ -\cos (x)&\sin (x)\end{matrix}\right| =1");
-    }
-
-    private static void TestLatexToListAndBack(string input, string expected = "") {
+      var input = @"\begin{ vmatrix}\sin(x) &\cos(x)\\-\cos(x) &\sin(x)\end{ vmatrix}= 1";
       var list = MathLists.FromString(input);
-      var str = MathListBuilder.MathListToString(list);
-      Assert.Equal(string.IsNullOrWhiteSpace(expected) ? RemoveWhiteSpacesFromString(input) : RemoveWhiteSpacesFromString(expected), RemoveWhiteSpacesFromString(str));
-    }
 
-    private static string RemoveWhiteSpacesFromString(string str) {
-      return Regex.Replace(str, RemoveWhiteSpacesPattern, string.Empty, RegexOptions.Multiline);
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"\left| \begin{matrix}\sin (x)&\cos (x)\\ -\cos (x)&\sin (x)\end{matrix}\right| =1", latex);
     }
 
   }

@@ -10,7 +10,7 @@ namespace CSharpMath.Atoms {
   public static class MathAtoms {
     private static AliasDictionary<string, MathAtom> _commands;
     public static AliasDictionary<string, MathAtom> Commands =>
-      _commands ?? (_commands = new AliasDictionary<string, MathAtom> {
+      _commands ?? (_commands = new AliasDictionary<string, MathAtom>(293) {
          { "square", Placeholder },
          
          // Greek characters
@@ -446,7 +446,7 @@ namespace CSharpMath.Atoms {
 
     public static IEnumerable<string> SupportedLatexSymbolNames => Commands.Keys;
 
-    public static AliasDictionary<string, string> BoundaryDelimiters { get; } = new AliasDictionary<string, string> {
+    public static AliasDictionary<string, string> BoundaryDelimiters { get; } = new AliasDictionary<string, string>(29) {
       { ".", string.Empty }, // . means no delimiter
       { "(", "(" },
       { ")", ")" },

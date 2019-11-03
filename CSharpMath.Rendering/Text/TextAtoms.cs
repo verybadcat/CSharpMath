@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CSharpMath.Rendering {
   public static class TextAtoms {
-    public static AliasDictionary<string, string> PredefinedTextSymbols { get; } = new AliasDictionary<string, string> {
+    public static AliasDictionary<string, string> PredefinedTextSymbols { get; } = new AliasDictionary<string, string>(54) {
       /*Ten special characters and their commands:
        & \&
        % \%

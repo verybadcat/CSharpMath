@@ -8,9 +8,9 @@ using System.Linq;
 namespace CSharpMath
 {
   public class AliasDictionary<K, V> : ICollection<KeyValuePair<K, V>>, IDictionary<K, V> {
-    public AliasDictionary() {
-      k2v = new Dictionary<K, V>(293);
-      v2k = new Dictionary<V, K>(293);
+    public AliasDictionary(int initialCapacity) {
+      k2v = new Dictionary<K, V>(initialCapacity);
+      v2k = new Dictionary<V, K>(initialCapacity);
     }
 
     readonly Dictionary<K, V> k2v;
