@@ -180,7 +180,9 @@ namespace CSharpMath.Editor.Tests {
       T(@"\sqrt[■]{\square }",K.NthRoot,K.SmallA,K.Backspace),
       T(@"\sqrt{■}", K.SquareRoot, K.SmallA, K.Backspace),
       T(@"\frac{1}{■}", K.Slash, K.D6, K.Backspace),
-      T(@"■_5", K.Subscript, K.D5, K.Left, K.Left, K.Backspace, K.X, K.Left, K.Left, K.Left, K.Backspace)
+      T(@"■_5", K.Subscript, K.D5, K.Left, K.Left, K.Backspace, K.X, K.Left, K.Left, K.Left, K.Backspace),
+      T(@"7+1^x", K.D7, K.Plus, K.D1, K.D2, K.Power, K.X, K.Left, K.Left, K.Backspace),
+      T(@"7+■^x", K.D7, K.Plus, K.D1, K.Power, K.X, K.Left, K.Left, K.Backspace),
     ]
     public void LeftRightBackspace(string latex, params K[] inputs) => Test(latex, inputs);
 

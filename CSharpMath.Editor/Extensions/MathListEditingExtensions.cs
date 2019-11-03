@@ -87,7 +87,7 @@ namespace CSharpMath.Editor {
     }
 
     public static void RemoveAt(this IMathList self, ref MathListIndex index) {
-      index = index ?? MathListIndex.Level0Index(0);
+      index ??= MathListIndex.Level0Index(0);
       if (index.AtomIndex > self.Atoms.Count)
         throw new IndexOutOfRangeException($"Index {index.AtomIndex} is out of bounds for list of size {self.Atoms.Count}");
       switch (index.SubIndexType) {
@@ -101,15 +101,12 @@ namespace CSharpMath.Editor {
           var downIndex = index.LevelDown();
           if (index.AtomIndex > 0) {
             var previous = self.Atoms[index.AtomIndex - 1];
-            if (previous.Subscript is null
-                && previous.Superscript is null
-                && previous.AtomType == Enumerations.MathAtomType.Number
-                ) {
+            if (previous.Subscript is null && previous.Superscript is null
+                && previous.AtomType == Enumerations.MathAtomType.Number) {
               previous.Superscript = currentAtom.Superscript;
               previous.Subscript = currentAtom.Subscript;
-              // it was in the nucleus and we removed it, get out of the nucleus and get in the nucleus of the previous one.
-
               self.RemoveAt(index.AtomIndex);
+              // it was in the nucleus and we removed it, get out of the nucleus and get in the nucleus of the previous one.
               index = downIndex.Previous is MathListIndex downPrev
                 ? downPrev.LevelUpWithSubIndex(MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1))
                 : downIndex;
