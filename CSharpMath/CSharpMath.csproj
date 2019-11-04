@@ -37,8 +37,10 @@
     <PackageReference Include="NuGet.Build.Packaging" Version="0.2.2" />
   </ItemGroup>
   <ItemGroup>
-    <!--Cannot use project reference as analyzer like in CSharpMath.Rendering here because this targets netstandard1.1 which is < netstandard1.3, a requirement of an Analyzer project.-->
-    <Analyzer Include="..\CSharpMath.Analyzers\CSharpMath.Analyzers\bin\Debug\netstandard1.3\CSharpMath.Analyzers.dll" />
+    <ProjectReference Include="..\CSharpMath.Analyzers\CSharpMath.Analyzers\CSharpMath.Analyzers.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <OutputItemType>Analyzer</OutputItemType>
+    </ProjectReference>
     <Folder Include="RenderedSamples\" />
   </ItemGroup>
   <ItemGroup>
