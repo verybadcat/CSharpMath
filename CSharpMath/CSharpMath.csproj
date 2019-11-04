@@ -35,7 +35,6 @@
   </ItemGroup>
   <ItemGroup>
     <!--Cannot use project reference as analyzer like in CSharpMath.Rendering here because this targets netstandard1.1 which is < netstandard1.3, a requirement of an Analyzer project.-->
-    <Analyzer Include="..\CSharpMath.Analyzers\CSharpMath.Analyzers\bin\Debug\netstandard1.3\CSharpMath.Analyzers.dll" />
     <Folder Include="RenderedSamples\" />
   </ItemGroup>
   <ItemGroup>
