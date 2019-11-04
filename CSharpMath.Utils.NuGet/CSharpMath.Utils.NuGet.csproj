@@ -49,7 +49,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="CallerMemberName.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="Editor2.xaml.cs">
       <DependentUpon>Editor2.xaml</DependentUpon>

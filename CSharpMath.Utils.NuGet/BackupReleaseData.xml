@@ -1,22 +1,20 @@
 ﻿<?xml version="1.0"?>
 <ReleaseData>
   <_Global->
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageVersion>0.1.0-pre1</PackageVersion>
-    <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie)</Authors>
-    <PackageReleaseNotes>The 0.1.0 SkiaSharp Update brings the SkiaSharp front end to CSharpMath.</PackageReleaseNotes>
+    <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
+    <PackageVersion>0.3.0-beta2</PackageVersion>
+    <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie, FoggyFinder)</Authors>
+    <PackageReleaseNotes>The 0.3.0 Clickity Update brings a clickable math editor!</PackageReleaseNotes>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/verybadcat/CSharpMath.git</RepositoryUrl>
     <RepositoryBranch>master</RepositoryBranch>
-    <RepositoryCommit>
-    </RepositoryCommit>
+    <RepositoryCommit>334e005307d1f390b240290df0eb49668ca31fa3</RepositoryCommit>
     <PackageProjectUrl>https://github.com/verybadcat/CSharpMath</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageLicenseUrl>https://github.com/verybadcat/CSharpMath/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageIconUrl>
-    </PackageIconUrl>
-    <Copyright>CSharpMath Contributors 2018</Copyright>
-    <PackageTags>latex;math;rendering</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>../Icon.png</PackageIcon>
+    <Copyright>© CSharpMath Contributors 2019</Copyright>
+    <PackageTags>math;mathematics;mathematical;formula;equation;equations;expression;tex;latex;render;rendering;display</PackageTags>
   </_Global->
   <_Template->
     <PackageId>
@@ -31,39 +29,39 @@
   <CSharpMath>
     <PackageId>CSharpMath</PackageId>
     <Title>CSharpMath</Title>
-    <Description>C# LaTeX engine core. Needs a front end to function. Currently, front end exists for iOS and SkiaSharp.</Description>
+    <Description>The core of the C# math rendering engine - CSharpMath. Can display beautiful math equations and symbols from the LaTeX format. Needs a front end to function. Currently, front ends exist for iOS, SkiaSharp and Xamarin.Forms.</Description>
     <PackageTags>
     </PackageTags>
   </CSharpMath>
   <CSharpMath.Rendering>
     <PackageId>CSharpMath.Rendering</PackageId>
     <Title>CSharpMath.Rendering</Title>
-    <Description>Rendering interface fror CSharpMath using Typography</Description>
+    <Description>Rendering interface fror CSharpMath using the Typography library.</Description>
     <PackageTags>
     </PackageTags>
   </CSharpMath.Rendering>
-  <CSharpMath.Text>
-    <PackageId>CSharpMath.Text</PackageId>
-    <Title>CSharpMath.Text</Title>
-    <Description>A text renderer built on top of the CSharpMath math renderer</Description>
-    <PackageTags>text</PackageTags>
-  </CSharpMath.Text>
   <CSharpMath.Ios>
     <PackageId>CSharpMath.Ios</PackageId>
     <Title>CSharpMath.Ios</Title>
-    <Description>The iOS front end for CSharpMath</Description>
+    <Description>The iOS front end for CSharpMath.</Description>
     <PackageTags>ios;xamarin</PackageTags>
   </CSharpMath.Ios>
   <CSharpMath.SkiaSharp>
     <PackageId>CSharpMath.SkiaSharp</PackageId>
     <Title>CSharpMath.SkiaSharp</Title>
-    <Description>The SkiaSharp front end for CSharpMath</Description>
+    <Description>The SkiaSharp front end for CSharpMath.</Description>
     <PackageTags>skiasharp</PackageTags>
   </CSharpMath.SkiaSharp>
   <CSharpMath.Forms>
     <PackageId>CSharpMath.Forms</PackageId>
     <Title>CSharpMath.Forms</Title>
-    <Description>The Xamarin.Forms front end for CSharpMath</Description>
+    <Description>The Xamarin.Forms front end for CSharpMath.</Description>
     <PackageTags>forms;xamarin.forms;xamarin</PackageTags>
   </CSharpMath.Forms>
+  <CSharpMath.Editor>
+    <PackageId>CSharpMath.Editor</PackageId>
+    <Title>CSharpMath.Editor</Title>
+    <Description>The base code for a What You See Is What You Get math editor.</Description>
+    <PackageTags>edit;editing;editor;WYSIWYG</PackageTags>
+  </CSharpMath.Editor>
 </ReleaseData>
