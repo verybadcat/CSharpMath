@@ -26,6 +26,7 @@ namespace CSharpMath.Interfaces {
     /// </summary>
     List<IMathAtom> FusedAtoms { get; }
 
+    // TODO: document this
     T Accept<T, THelper>(IMathAtomVisitor<T, THelper> visitor, THelper helper);
   }
 }

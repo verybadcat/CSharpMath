@@ -697,6 +697,13 @@ namespace CSharpMath.Atoms {
               builder.Append(@"\" + MathAtoms.Commands[(MathAtom)atom] + "{" + MathListToString(list) + "}");
               break;
             }
+          case MathAtomType.Operator: {
+              var op = (MathAtom)atom;
+              var command = MathAtoms.LatexSymbolNameForAtom(new MathAtom(MathAtomType.Operator, op.Nucleus));
+              var originalOperator = MathAtoms.ForLatexSymbolName(command);
+              builder.Append($@"\{command} ");
+              break;
+            }
           case MathAtomType.LargeOperator: {
               var op = (LargeOperator)atom;
               var command = MathAtoms.LatexSymbolNameForAtom(op);

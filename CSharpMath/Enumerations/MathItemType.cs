@@ -10,9 +10,13 @@ namespace CSharpMath.Enumerations {
     Number,
     Variable,
     /// <summary>
-    /// A large operator such as sin/cos, integral, etc.
+    /// A large operator such integral, etc.
     /// </summary>
     LargeOperator,
+    /// <summary>
+    /// An operator such as sin/cos etc.
+    /// </summary>
+    Operator,
     /// <summary>
     /// A binary operator
     /// </summary>

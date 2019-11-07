@@ -36,6 +36,7 @@ namespace CSharpMath.Atoms {
                 case MathAtomType.Relation:
                 case MathAtomType.Open:
                 case MathAtomType.Punctuation:
+                case MathAtomType.Operator:
                 case MathAtomType.LargeOperator:
                   newNode.AtomType = MathAtomType.UnaryOperator;
                   break;

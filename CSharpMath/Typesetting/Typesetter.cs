@@ -241,12 +241,18 @@ namespace CSharpMath {
             _displayAtoms.Add(tableDisplay);
             _currentPosition.X += tableDisplay.Width;
             break;
+          case MathAtomType.Operator:
+            AddDisplayLine(false);
+            AddInterElementSpace(prevNode, atom.AtomType);
+            var opDisplay = MakeOperator((MathAtom) atom);
+            _displayAtoms.Add(opDisplay);
+            break;
           case MathAtomType.LargeOperator:
             AddDisplayLine(false);
             AddInterElementSpace(prevNode, atom.AtomType);
-            var op = atom as LargeOperator;
-            var opDisplay = MakeLargeOperator(op);
-            _displayAtoms.Add(opDisplay);
+            var lop = atom as LargeOperator;
+            var lopDisplay = MakeLargeOperator(lop);
+            _displayAtoms.Add(lopDisplay);
             break;
           case MathAtomType.Ordinary:
           case MathAtomType.BinaryOperator:
@@ -546,6 +552,7 @@ namespace CSharpMath {
         case MathAtomType.Placeholder:
         case MathAtomType.Ordinary:
           return 0;
+        case MathAtomType.Operator:
         case MathAtomType.LargeOperator:
           return 1;
         case MathAtomType.BinaryOperator:
@@ -1078,7 +1085,7 @@ namespace CSharpMath {
             glyphDisplay.Width -= delta;
           glyphDisplay.ShiftDown = (float)shiftDown;
           glyphDisplay.Position = _currentPosition;
-          return AddLimitsToDisplay(glyphDisplay, op, delta);
+          return AddLimitsToLargeOperatorDisplay(glyphDisplay, op, delta);
 
         default:
           // create a regular node.
@@ -1090,12 +1097,49 @@ namespace CSharpMath {
           var line = new TextLineDisplay<TFont, TGlyph>(runs, atoms) {
             Position = _currentPosition
           };
-          return AddLimitsToDisplay(line, op, 0);
+          return AddLimitsToLargeOperatorDisplay(line, op, 0);
+
+      }
+    }
+    private IDisplay<TFont, TGlyph> MakeOperator(MathAtom op) {
+      switch (op.Nucleus.Length) {
+        case 1:
+          var glyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, 0, op.Nucleus);
+          if (_style == LineStyle.Display && !_context.GlyphFinder.GlyphIsEmpty(glyph))
+            // Enlarge the character in display style.
+            glyph = _mathTable.GetLargerGlyph(_styleFont, glyph);
+          var delta = _mathTable.GetItalicCorrection(_styleFont, glyph);
+          var glyphsArray = new RentedArray<TGlyph>(glyph);
+          var boundingBox = _context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(_styleFont, glyphsArray.Result, 1).Single();
+          var width = _context.GlyphBoundsProvider.GetAdvancesForGlyphs(_styleFont, glyphsArray.Result, 1).Total;
+          glyphsArray.Return();
+          boundingBox.GetAscentDescentWidth(out float ascent, out float descent, out _);
+          var shiftDown = 0.5 * (ascent - descent) - _mathTable.AxisHeight(_styleFont);
+          var glyphDisplay = new GlyphDisplay<TFont, TGlyph>(glyph, op.IndexRange, _styleFont) {
+            Ascent = ascent,
+            Descent = descent,
+            Width = width
+          };
+          glyphDisplay.ShiftDown = (float)shiftDown;
+          glyphDisplay.Position = _currentPosition;
+          return glyphDisplay;
+
+        default:
+          // create a regular node.
+          var glyphs = _context.GlyphFinder.FindGlyphs(_font, op.Nucleus);
+          var glyphRun = new AttributedGlyphRun<TFont, TGlyph>(op.Nucleus, glyphs, _styleFont);
+          var run = new TextRunDisplay<TFont, TGlyph>(glyphRun, op.IndexRange, _context);
+          var runs = new List<TextRunDisplay<TFont, TGlyph>> { run };
+          var atoms = new List<IMathAtom> { op };
+          var line = new TextLineDisplay<TFont, TGlyph>(runs, atoms) {
+            Position = _currentPosition
+          };
+          return AddLimitsToOperatorDisplay(line, op, 0);
 
       }
     }
 
-    private IDisplay<TFont, TGlyph> AddLimitsToDisplay(IDisplay<TFont, TGlyph> display,
+    private IDisplay<TFont, TGlyph> AddLimitsToLargeOperatorDisplay(IDisplay<TFont, TGlyph> display,
       LargeOperator op, float delta) {
       if (op.Subscript == null && op.Superscript == null) {
         _currentPosition.X += display.Width;
@@ -1125,6 +1169,17 @@ namespace CSharpMath {
         }
         _currentPosition.X += opsDisplay.Width;
         return opsDisplay;
+      }
+      _currentPosition.X += display.Width;
+      MakeScripts(op, display, op.IndexRange.Location, delta);
+      return display;
+    }
+
+    private IDisplay<TFont, TGlyph> AddLimitsToOperatorDisplay(IDisplay<TFont, TGlyph> display,
+      MathAtom op, float delta) {
+      if (op.Subscript == null && op.Superscript == null) {
+        _currentPosition.X += display.Width;
+        return display;
       }
       _currentPosition.X += display.Width;
       MakeScripts(op, display, op.IndexRange.Location, delta);
