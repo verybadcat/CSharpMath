@@ -253,12 +253,18 @@ namespace CSharpMath {
           case MathAtomType.LargeOperator: {
               AddDisplayLine(false);
               AddInterElementSpace(prevNode, atom.AtomType);
-              var lop = atom as LargeOperator;
-              var lopDisplay = MakeLargeOperator(lop);
-              _displayAtoms.Add(lopDisplay);
+              var op = atom as LargeOperator;
+              var opDisplay = MakeLargeOperator(op);
+              _displayAtoms.Add(opDisplay);
               break;
             }
-          case MathAtomType.Operator:
+          case MathAtomType.Operator: {
+              AddDisplayLine(false);
+              AddInterElementSpace(prevNode, atom.AtomType);
+              var opDisplay = MakeOperator((MathAtom)atom);
+              _displayAtoms.Add(opDisplay);
+              break;
+            }
           case MathAtomType.Ordinary:
           case MathAtomType.BinaryOperator:
           case MathAtomType.Relation:
@@ -1106,6 +1112,18 @@ namespace CSharpMath {
 
       }
     }
+    private IDisplay<TFont, TGlyph> MakeOperator(MathAtom op) {
+          // create a regular node.
+          var glyphs = _context.GlyphFinder.FindGlyphs(_font, op.Nucleus);
+          var glyphRun = new AttributedGlyphRun<TFont, TGlyph>(op.Nucleus, glyphs, _styleFont);
+          var run = new TextRunDisplay<TFont, TGlyph>(glyphRun, op.IndexRange, _context);
+          var runs = new List<TextRunDisplay<TFont, TGlyph>> { run };
+          var atoms = new List<IMathAtom> { op };
+          var line = new TextLineDisplay<TFont, TGlyph>(runs, atoms) {
+            Position = _currentPosition
+          };
+          return line;
+      }
 
     private IDisplay<TFont, TGlyph> AddLimitsToLargeOperatorDisplay(IDisplay<TFont, TGlyph> display,
       LargeOperator op, float delta) {
