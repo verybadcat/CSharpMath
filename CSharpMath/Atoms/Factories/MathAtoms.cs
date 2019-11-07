@@ -338,8 +338,6 @@ namespace CSharpMath.Atoms {
           return new Fraction();
         case MathAtomType.Inner:
           return new Inner();
-        case MathAtomType.Operator:
-          return new MathAtom(MathAtomType.Operator, value);
         case MathAtomType.LargeOperator:
           throw new ArgumentException(
             "Do not use Create(MathAtomType.LargeOperator, string)." +
