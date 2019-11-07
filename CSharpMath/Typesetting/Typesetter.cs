@@ -1142,16 +1142,5 @@ namespace CSharpMath {
       MakeScripts(op, display, op.IndexRange.Location, delta);
       return display;
     }
-
-    private IDisplay<TFont, TGlyph> AddLimitsToOperatorDisplay(IDisplay<TFont, TGlyph> display,
-      MathAtom op, float delta) {
-      if (op.Subscript == null && op.Superscript == null) {
-        _currentPosition.X += display.Width;
-        return display;
-      }
-      _currentPosition.X += display.Width;
-      MakeScripts(op, display, op.IndexRange.Location, delta);
-      return display;
-    }
   }
 }

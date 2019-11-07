@@ -4,7 +4,6 @@ using CSharpMath.Helpers;
 using CSharpMath.Interfaces;
 using System;
 using System.Collections.Generic;
-using CSharpMath.Atoms;
 
 namespace CSharpMath.Atoms {
   //https://mirror.hmc.edu/ctan/macros/latex/contrib/unicode-math/unimath-symbols.pdf
