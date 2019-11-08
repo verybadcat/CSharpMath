@@ -3,7 +3,7 @@
     <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
-    <PackageVersion>0.3.0-beta2</PackageVersion>
+    <PackageVersion>0.3.0-beta3</PackageVersion>
     <PackageReleaseNotes>The 0.3.0 Clickity Update brings a clickable math editor!</PackageReleaseNotes>
     <Description>The base code for a What You See Is What You Get math editor.</Description>
     <PackageId>CSharpMath.Editor</PackageId>

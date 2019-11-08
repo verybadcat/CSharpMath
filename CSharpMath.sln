@@ -90,7 +90,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkiaSharp.Extended.Svg", "S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkiaSharp.Extended.Svg.Tests", "SkiaSharp.Extended\SkiaSharp.Extended.Svg\tests\SkiaSharp.Extended.Svg.Tests.csproj", "{D5821772-5060-4C71-9D71-5A36FBC5BF4A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Editor Test Checker", "CSharpMath.Editor.TestChecker\CSharpMath.Editor Test Checker.csproj", "{C60126CE-A71D-4D11-A4A8-A45B67312E98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Editor Test Checker", "CSharpMath.Editor.TestChecker\CSharpMath.Editor Test Checker.csproj", "{C60126CE-A71D-4D11-A4A8-A45B67312E98}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

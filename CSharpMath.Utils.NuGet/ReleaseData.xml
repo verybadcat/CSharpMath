@@ -2,7 +2,7 @@
 <ReleaseData>
   <_Global->
     <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
-    <PackageVersion>0.3.0-beta2</PackageVersion>
+    <PackageVersion>0.3.0-beta3</PackageVersion>
     <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie, FoggyFinder)</Authors>
     <PackageReleaseNotes>The 0.3.0 Clickity Update brings a clickable math editor!</PackageReleaseNotes>
     <RepositoryType>git</RepositoryType>

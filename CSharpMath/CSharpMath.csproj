@@ -12,7 +12,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>© CSharpMath Contributors 2019</Copyright>
     <PackageTags>math;mathematics;mathematical;formula;equation;equations;expression;tex;latex;render;rendering;display</PackageTags>
-    <PackageVersion>0.3.0-beta2</PackageVersion>
+    <PackageVersion>0.3.0-beta3</PackageVersion>
     <RepositoryBranch>master</RepositoryBranch>
     <RepositoryCommit>334e005307d1f390b240290df0eb49668ca31fa3</RepositoryCommit>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -27,26 +27,27 @@
     <DefineConstants>DEBUG</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="../Icon.png" Pack="true" PackagePath=""/>
+    <None Include="../Icon.png" Pack="true" PackagePath="" />
+    <Folder Include="RenderedSamples\" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.1'">
     <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Release-iOS'">
-    <PackageReference Include="NuGet.Build.Packaging" Version="0.2.2" />
-  </ItemGroup>
-  <ItemGroup>
+  <!--NuGet.Build.Packaging does not like analyzers-->
+  <ItemGroup Condition="'$(Configuration)' != 'Release-iOS'">
     <ProjectReference Include="..\CSharpMath.Analyzers\CSharpMath.Analyzers\CSharpMath.Analyzers.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <OutputItemType>Analyzer</OutputItemType>
     </ProjectReference>
-    <Folder Include="RenderedSamples\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Buffers" Version="4.5.0" />
     <PackageReference Include="System.Memory" Version="4.5.3" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.6.0" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release-iOS'">
+    <PackageReference Include="NuGet.Build.Packaging" Version="0.2.2"/>
   </ItemGroup>
   <Import Project="..\packages\NuGet.Build.Packaging.0.2.2\build\NuGet.Build.Packaging.targets" Condition="Exists('..\packages\NuGet.Build.Packaging.0.2.2\build\NuGet.Build.Packaging.targets') And '$(Configuration)' == 'Release-iOS'" />
 </Project>
