@@ -42,7 +42,7 @@ let test100keypresses() =
         let ki = getRandomMathKeyboardInput()
         reverseInputs <- ki::reverseInputs
         try
-            getRandomMathKeyboardInput() |> keyboard.KeyPress
+            ki |> keyboard.KeyPress
             keyboard.LaTeX |> ignore
         with e ->
             result <-
