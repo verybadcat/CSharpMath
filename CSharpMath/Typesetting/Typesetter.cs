@@ -102,152 +102,162 @@ namespace CSharpMath {
             throw new InvalidCodePathException($"Type {atom.AtomType} should have been removed by preprocessing");
           case MathAtomType.Boundary:
             throw new InvalidCodePathException("A boundary atom should never be inside a mathlist");
-          case MathAtomType.Space:
-            AddDisplayLine(false);
-            var space = atom as ISpace;
-            _currentPosition.X += space.ActualLength(_mathTable, _font);
-            continue;
-          case MathAtomType.Style:
-            // stash the existing layout
-            AddDisplayLine(false);
-            var style = atom as IStyle;
-            _style = style.LineStyle;
-            _styleFont = _context.MathFontCloner.Invoke(_font, _mathTable.GetStyleSize(_style, _font));
-            // We need to preserve the prevNode for any inter-element space changes,
-            // so we skip to the next node.
-            continue;
-          case MathAtomType.Color:
-            AddDisplayLine(false);
-            AddInterElementSpace(prevNode, MathAtomType.Color);
-            var color = atom as IColor;
-            var colorDisplay = CreateLine(color.InnerList, _font, _context, _style);
-            colorDisplay.SetTextColorRecursive(Color.Create(color.ColorString.AsSpan()));
-            colorDisplay.Position = _currentPosition;
-            _currentPosition.X += colorDisplay.Width;
-            _displayAtoms.Add(colorDisplay);
-            break;
-          case MathAtomType.Radical:
-            AddDisplayLine(false);
-            var rad = atom as IRadical;
-            // Radicals are considered as Ord in rule 16.
-            AddInterElementSpace(prevNode, MathAtomType.Ordinary);
-            var displayRad = MakeRadical(rad.Radicand, rad.IndexRange);
-            if (rad.Degree != null) {
-              // add the degree to the radical
-              var degree = CreateLine(rad.Degree, _styleFont, _context, LineStyle.Script);
-              displayRad.SetDegree(degree, _styleFont, _mathTable);
+          case MathAtomType.Space: {
+              AddDisplayLine(false);
+              var space = atom as ISpace;
+              _currentPosition.X += space.ActualLength(_mathTable, _font);
+              continue;
             }
-            _displayAtoms.Add(displayRad);
-            _currentPosition.X += displayRad.Width;
+          case MathAtomType.Style: {
+              // stash the existing layout
+              AddDisplayLine(false);
+              var style = atom as IStyle;
+              _style = style.LineStyle;
+              _styleFont = _context.MathFontCloner.Invoke(_font, _mathTable.GetStyleSize(_style, _font));
+              // We need to preserve the prevNode for any inter-element space changes,
+              // so we skip to the next node.
+              continue;
+            }
+          case MathAtomType.Color: {
+              AddDisplayLine(false);
+              AddInterElementSpace(prevNode, MathAtomType.Color);
+              var color = atom as IColor;
+              var colorDisplay = CreateLine(color.InnerList, _font, _context, _style);
+              colorDisplay.SetTextColorRecursive(Color.Create(color.ColorString.AsSpan()));
+              colorDisplay.Position = _currentPosition;
+              _currentPosition.X += colorDisplay.Width;
+              _displayAtoms.Add(colorDisplay);
+              break;
+            }
+          case MathAtomType.Radical: {
+              AddDisplayLine(false);
+              var rad = atom as IRadical;
+              // Radicals are considered as Ord in rule 16.
+              AddInterElementSpace(prevNode, MathAtomType.Ordinary);
+              var displayRad = MakeRadical(rad.Radicand, rad.IndexRange);
+              if (rad.Degree != null) {
+                // add the degree to the radical
+                var degree = CreateLine(rad.Degree, _styleFont, _context, LineStyle.Script);
+                displayRad.SetDegree(degree, _styleFont, _mathTable);
+              }
+              _displayAtoms.Add(displayRad);
+              _currentPosition.X += displayRad.Width;
 
-            if (atom.Superscript != null || atom.Subscript != null) {
-              MakeScripts(atom, displayRad, rad.IndexRange.Location, 0);
+              if (atom.Superscript != null || atom.Subscript != null) {
+                MakeScripts(atom, displayRad, rad.IndexRange.Location, 0);
+              }
+              break;
             }
-            break;
-          case MathAtomType.Fraction:
-            AddDisplayLine(false);
-            var fraction = atom as IFraction;
-            AddInterElementSpace(prevNode, atom.AtomType);
-            var fractionDisplay = MakeFraction(fraction);
-            _displayAtoms.Add(fractionDisplay);
-            _currentPosition.X += fractionDisplay.Width;
-            if (atom.Superscript != null || atom.Subscript != null) {
-              MakeScripts(atom, fractionDisplay, fraction.IndexRange.Location, 0);
+          case MathAtomType.Fraction: {
+              AddDisplayLine(false);
+              var fraction = atom as IFraction;
+              AddInterElementSpace(prevNode, atom.AtomType);
+              var fractionDisplay = MakeFraction(fraction);
+              _displayAtoms.Add(fractionDisplay);
+              _currentPosition.X += fractionDisplay.Width;
+              if (atom.Superscript != null || atom.Subscript != null) {
+                MakeScripts(atom, fractionDisplay, fraction.IndexRange.Location, 0);
+              }
+              break;
             }
-            break;
-          case MathAtomType.Inner:
-            AddDisplayLine(false);
-            AddInterElementSpace(prevNode, atom.AtomType);
-            var inner = atom as IMathInner;
-            ListDisplay<TFont, TGlyph> innerDisplay;
-            if (inner.LeftBoundary != null || inner.RightBoundary != null) {
-              innerDisplay = _MakeLeftRight(inner);
-            } else {
-              innerDisplay = _CreateLine(inner.InnerList, _font, _context, _style, _cramped);
+          case MathAtomType.Inner: {
+              AddDisplayLine(false);
+              AddInterElementSpace(prevNode, atom.AtomType);
+              var inner = atom as IMathInner;
+              ListDisplay<TFont, TGlyph> innerDisplay;
+              if (inner.LeftBoundary != null || inner.RightBoundary != null) {
+                innerDisplay = _MakeLeftRight(inner);
+              } else {
+                innerDisplay = _CreateLine(inner.InnerList, _font, _context, _style, _cramped);
+              }
+              innerDisplay.Position = _currentPosition;
+              _currentPosition.X += innerDisplay.Width;
+              _displayAtoms.Add(innerDisplay);
+              if (atom.Subscript != null || atom.Superscript != null) {
+                MakeScripts(atom, innerDisplay, atom.IndexRange.Location, 0);
+              }
+              break;
             }
-            innerDisplay.Position = _currentPosition;
-            _currentPosition.X += innerDisplay.Width;
-            _displayAtoms.Add(innerDisplay);
-            if (atom.Subscript != null || atom.Superscript != null) {
-              MakeScripts(atom, innerDisplay, atom.IndexRange.Location, 0);
+          case MathAtomType.Group: {
+              AddDisplayLine(false);
+              //no inserting space here as group has no inter-element space
+              var group = atom as Group;
+              ListDisplay<TFont, TGlyph> groupDisplay =
+                _CreateLine(group.InnerList, _font, _context, _style, _cramped);
+              groupDisplay.Position = _currentPosition;
+              _currentPosition.X += groupDisplay.Width;
+              _displayAtoms.Add(groupDisplay);
+              if (atom.Subscript != null || atom.Superscript != null) {
+                MakeScripts(atom, groupDisplay, atom.IndexRange.Location, 0);
+              }
+              break;
             }
-            break;
-          case MathAtomType.Group:
-            AddDisplayLine(false);
-            //no inserting space here as group has no inter-element space
-            var group = atom as Group;
-            ListDisplay<TFont, TGlyph> groupDisplay =
-              _CreateLine(group.InnerList, _font, _context, _style, _cramped);
-            groupDisplay.Position = _currentPosition;
-            _currentPosition.X += groupDisplay.Width;
-            _displayAtoms.Add(groupDisplay);
-            if (atom.Subscript != null || atom.Superscript != null) {
-              MakeScripts(atom, groupDisplay, atom.IndexRange.Location, 0);
+          case MathAtomType.Underline: {
+              AddDisplayLine(false);
+              // Underline is considered as Ord in rule 16.
+              AddInterElementSpace(prevNode, MathAtomType.Ordinary);
+              atom.AtomType = MathAtomType.Ordinary;
+              var under = atom as IUnderline;
+              var underlineDisplay = MakeUnderline(under);
+              _displayAtoms.Add(underlineDisplay);
+              _currentPosition.X += underlineDisplay.Width;
+              // add super scripts || subscripts
+              if (atom.Subscript != null || atom.Superscript != null) {
+                MakeScripts(atom, underlineDisplay, atom.IndexRange.Location, 0);
+              }
+              break;
             }
-            break;
-          case MathAtomType.Underline:
-            AddDisplayLine(false);
-            // Underline is considered as Ord in rule 16.
-            AddInterElementSpace(prevNode, MathAtomType.Ordinary);
-            atom.AtomType = MathAtomType.Ordinary;
-            var under = atom as IUnderline;
-            var underlineDisplay = MakeUnderline(under);
-            _displayAtoms.Add(underlineDisplay);
-            _currentPosition.X += underlineDisplay.Width;
-                // add super scripts || subscripts
-                if (atom.Subscript != null || atom.Superscript != null) {
-                    MakeScripts(atom, underlineDisplay, atom.IndexRange.Location, 0);
-                }
-                break;
-                
-          case MathAtomType.Overline:
-            AddDisplayLine(false);
-            // Overline is considered as Ord in rule 16.
-            AddInterElementSpace(prevNode, MathAtomType.Ordinary);
-            atom.AtomType = MathAtomType.Ordinary;
+          case MathAtomType.Overline: {
+              AddDisplayLine(false);
+              // Overline is considered as Ord in rule 16.
+              AddInterElementSpace(prevNode, MathAtomType.Ordinary);
+              atom.AtomType = MathAtomType.Ordinary;
 
-            var over = atom as IOverline;
-            var overlineDisplay = MakeOverline(over);
-            _displayAtoms.Add(overlineDisplay);
-            _currentPosition.X += overlineDisplay.Width;
-            // add super scripts || subscripts
-            if (atom.Subscript != null || atom.Superscript != null) {
-              MakeScripts(atom, overlineDisplay, atom.IndexRange.Location, 0);
+              var over = atom as IOverline;
+              var overlineDisplay = MakeOverline(over);
+              _displayAtoms.Add(overlineDisplay);
+              _currentPosition.X += overlineDisplay.Width;
+              // add super scripts || subscripts
+              if (atom.Subscript != null || atom.Superscript != null) {
+                MakeScripts(atom, overlineDisplay, atom.IndexRange.Location, 0);
+              }
+              break;
             }
-            break;
-                
-          case MathAtomType.Accent:
-            AddDisplayLine(false);
-            // Accent is considered as Ord in rule 16.
-            AddInterElementSpace(prevNode, MathAtomType.Ordinary);
-            atom.AtomType = MathAtomType.Ordinary;
+          case MathAtomType.Accent: {
+              AddDisplayLine(false);
+              // Accent is considered as Ord in rule 16.
+              AddInterElementSpace(prevNode, MathAtomType.Ordinary);
+              atom.AtomType = MathAtomType.Ordinary;
 
-            var accent = atom as IAccent;
-            var accentDisplay = MakeAccent(accent);
-            _displayAtoms.Add(accentDisplay);
-            _currentPosition.X += accentDisplay.Width;
-            // add super scripts || subscripts
-            if (atom.Subscript != null || atom.Superscript != null) {
-              MakeScripts(atom, accentDisplay, atom.IndexRange.Location, 0);
+              var accent = atom as IAccent;
+              var accentDisplay = MakeAccent(accent);
+              _displayAtoms.Add(accentDisplay);
+              _currentPosition.X += accentDisplay.Width;
+              // add super scripts || subscripts
+              if (atom.Subscript != null || atom.Superscript != null) {
+                MakeScripts(atom, accentDisplay, atom.IndexRange.Location, 0);
+              }
+              break;
             }
-            break;
-          case MathAtomType.Table:
-            AddDisplayLine(false);
-            // We will consider tables as inner
-            AddInterElementSpace(prevNode, MathAtomType.Inner);
-            var table = atom as Table;
-            table.AtomType = MathAtomType.Inner;
-            var tableDisplay = MakeTable(table);
-            _displayAtoms.Add(tableDisplay);
-            _currentPosition.X += tableDisplay.Width;
-            break;
-          case MathAtomType.LargeOperator:
-            AddDisplayLine(false);
-            AddInterElementSpace(prevNode, atom.AtomType);
-            var op = atom as LargeOperator;
-            var opDisplay = MakeLargeOperator(op);
-            _displayAtoms.Add(opDisplay);
-            break;
+          case MathAtomType.Table: {
+              AddDisplayLine(false);
+              // We will consider tables as inner
+              AddInterElementSpace(prevNode, MathAtomType.Inner);
+              var table = atom as Table;
+              table.AtomType = MathAtomType.Inner;
+              var tableDisplay = MakeTable(table);
+              _displayAtoms.Add(tableDisplay);
+              _currentPosition.X += tableDisplay.Width;
+              break;
+            }
+          case MathAtomType.LargeOperator: {
+              AddDisplayLine(false);
+              AddInterElementSpace(prevNode, atom.AtomType);
+              var op = atom as LargeOperator;
+              var opDisplay = MakeLargeOperator(op);
+              _displayAtoms.Add(opDisplay);
+              break;
+            }
           case MathAtomType.Ordinary:
           case MathAtomType.BinaryOperator:
           case MathAtomType.Relation:
@@ -255,46 +265,47 @@ namespace CSharpMath {
           case MathAtomType.Close:
           case MathAtomType.Placeholder:
           case MathAtomType.Punctuation:
-          case MathAtomType.Prime:
-            if (prevNode != null) {
-              float interElementSpace = GetInterElementSpace(prevNode.AtomType, atom.AtomType);
-              if (_currentLine.Length > 0) {
-                if (interElementSpace > 0) {
-                  var run = _currentLine.Runs.Last();
-                  run.GlyphInfos.Last().KernAfterGlyph = interElementSpace;
+          case MathAtomType.Prime: {
+              if (prevNode != null) {
+                float interElementSpace = GetInterElementSpace(prevNode.AtomType, atom.AtomType);
+                if (_currentLine.Length > 0) {
+                  if (interElementSpace > 0) {
+                    var run = _currentLine.Runs.Last();
+                    run.GlyphInfos.Last().KernAfterGlyph = interElementSpace;
+                  }
+                } else {
+                  _currentPosition.X += interElementSpace;
                 }
-              } else {
-                _currentPosition.X += interElementSpace;
               }
-            }
-            AttributedGlyphRun<TFont, TGlyph> current = null;
-            var nucleusText = atom.Nucleus;
-            var glyphs = _context.GlyphFinder.FindGlyphs(_font, nucleusText);
-            current = new AttributedGlyphRun<TFont, TGlyph>(nucleusText, glyphs, _font, isPlaceHolder: atom.AtomType == MathAtomType.Placeholder);
-            _currentLine.AppendGlyphRun(current);
-            if (_currentLineIndexRange.Location == Range.UndefinedInt)
-              _currentLineIndexRange = atom.IndexRange;
-            else
-              _currentLineIndexRange = new Range(_currentLineIndexRange.Location, _currentLineIndexRange.Length + atom.IndexRange.Length);
-            // add the fused atoms
-            if (atom.FusedAtoms != null) 
-              _currentAtoms.AddRange(atom.FusedAtoms);
-            else 
-              _currentAtoms.Add(atom);
-            if (atom.Subscript != null || atom.Superscript != null) {
-              var line = AddDisplayLine(true);
-              float delta = 0;
-              if (atom.Nucleus.IsNonEmpty()) {
-                TGlyph glyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, atom.Nucleus.Length - 1, atom.Nucleus);
-                delta = _context.MathTable.GetItalicCorrection(_styleFont, glyph);
+              AttributedGlyphRun<TFont, TGlyph> current = null;
+              var nucleusText = atom.Nucleus;
+              var glyphs = _context.GlyphFinder.FindGlyphs(_font, nucleusText);
+              current = new AttributedGlyphRun<TFont, TGlyph>(nucleusText, glyphs, _font, isPlaceHolder: atom.AtomType == MathAtomType.Placeholder);
+              _currentLine.AppendGlyphRun(current);
+              if (_currentLineIndexRange.Location == Range.UndefinedInt)
+                _currentLineIndexRange = atom.IndexRange;
+              else
+                _currentLineIndexRange = new Range(_currentLineIndexRange.Location, _currentLineIndexRange.Length + atom.IndexRange.Length);
+              // add the fused atoms
+              if (atom.FusedAtoms != null)
+                _currentAtoms.AddRange(atom.FusedAtoms);
+              else
+                _currentAtoms.Add(atom);
+              if (atom.Subscript != null || atom.Superscript != null) {
+                var line = AddDisplayLine(true);
+                float delta = 0;
+                if (atom.Nucleus.IsNonEmpty()) {
+                  TGlyph glyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, atom.Nucleus.Length - 1, atom.Nucleus);
+                  delta = _context.MathTable.GetItalicCorrection(_styleFont, glyph);
+                }
+                if (delta > 0 && atom.Subscript == null)
+                  // add a kern of delta
+                  _currentPosition.X += delta;
+                MakeScripts(atom, line, atom.IndexRange.End - 1, delta);
               }
-              if (delta > 0 && atom.Subscript == null)
-                // add a kern of delta
-                _currentPosition.X += delta;
-              MakeScripts(atom, line, atom.IndexRange.End - 1, delta);
+              if (atom.AtomType == MathAtomType.Prime) continue; //preserve spacing of previous atom
+              break;
             }
-            if (atom.AtomType == MathAtomType.Prime) continue; //preserve spacing of previous atom
-            break;
           case var _ when atom is Atoms.Extension.I_ExtensionAtom ext:
             Display.Extension._Typesetter.CreateDisplayAtom(this, ext);
             break;
