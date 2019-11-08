@@ -43,8 +43,8 @@ let test100keypresses() =
         try
             getRandomMathKeyboardInput() |> keyboard.KeyPress
             keyboard.LaTeX |> ignore
-        with _ ->
-            failwith <| sprintf "KeyboardInputs: %A" (reverseInputs |> List.rev)
+        with e ->
+            failwithf "Exception: %s KeyboardInputs: %A" e.Message (reverseInputs |> List.rev)
 
 [<Test>]
 let ``random inputs don't crash editor``() =
