@@ -37,17 +37,15 @@ let private getRandomMathKeyboardInput =
 let private test100keypresses() =
     let keyboard = CSharpMath.Rendering.MathKeyboard()
     let mutable reverseInputs:MathKeyboardInput list = []
-    let mutable result = Ok()
-    for _ = 1 to 100 do
-        let ki = getRandomMathKeyboardInput()
-        reverseInputs <- ki::reverseInputs
-        try
+    try
+        for _ = 1 to 100 do
+            let ki = getRandomMathKeyboardInput()
+            reverseInputs <- ki::reverseInputs
             ki |> keyboard.KeyPress
             keyboard.LaTeX |> ignore
-        with e ->
-            result <-
-                Error(reverseInputs |> List.rev)
-    result
+        Ok()
+    with _ ->
+        Error(reverseInputs |> List.rev)
 
 let private tryList(kl:MathKeyboardInput list) =
     let keyboard = CSharpMath.Rendering.MathKeyboard()
