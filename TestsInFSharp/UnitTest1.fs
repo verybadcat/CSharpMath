@@ -1,4 +1,4 @@
-﻿module TestsInFSharp
+﻿module TestEditor.RandomKeyboardInputsTest
 
 open NUnit.Framework
 
@@ -28,13 +28,13 @@ let private mathKeyboardInputs =
 
 // can use Hedgehog or FSCheck instead for random testing
 
-let getRandomMathKeyboardInput =
+let private getRandomMathKeyboardInput =
     let r = System.Random()
     let n = mathKeyboardInputs.Length
     fun () -> mathKeyboardInputs.[r.Next(n)]
 
 /// adds 100 random keypresses to a MathKeyboard and gets LaTeX and checks that there is no crash
-let test100keypresses() =
+let private test100keypresses() =
     let keyboard = CSharpMath.Rendering.MathKeyboard()
     let mutable reverseInputs:MathKeyboardInput list = []
     let mutable result = Ok()
@@ -46,8 +46,28 @@ let test100keypresses() =
             keyboard.LaTeX |> ignore
         with e ->
             result <-
-                Error(e.Message, reverseInputs |> List.rev)
+                Error(reverseInputs |> List.rev)
     result
+
+let private tryList(kl:MathKeyboardInput list) =
+    let keyboard = CSharpMath.Rendering.MathKeyboard()
+    for ki in kl do
+        ki |> keyboard.KeyPress
+        keyboard.LaTeX |> ignore
+
+// kl gives an error; this finds a shortest sublist that gives an error
+let rec private findShortening(kl:MathKeyboardInput list) =
+    let isError(kl:MathKeyboardInput list) =
+        try
+            tryList kl
+            false
+        with _ -> true
+    let reductions =
+        List.init kl.Length (fun i ->
+            kl.[0 .. i-1] @ kl.[i+1 .. kl.Length-1])
+    match reductions |> List.tryFind isError with
+    | None -> kl
+    | Some sl -> findShortening sl
 
 [<Test>]
 let ``random inputs don't crash editor``() =
@@ -56,8 +76,12 @@ let ``random inputs don't crash editor``() =
     let shortestError =
         results
         |> List.choose (function Ok _ -> None | Error e -> Some e)
-        |> List.sortBy (fun (_, inputs) -> inputs.Length)
+        |> List.sortBy (fun inputs -> inputs.Length)
     match shortestError with
     | [] -> ()
-    | (ex, inputs)::_ ->
-        failwithf "Exeption: %s inputs: %A" ex inputs
+    | kl::_ ->
+        let shortestSublist =
+            findShortening kl
+        try
+            tryList shortestSublist
+        with ex -> failwithf "Exeption: %s inputs: %A" ex.Message shortestSublist
