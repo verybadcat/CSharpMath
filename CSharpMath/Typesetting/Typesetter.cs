@@ -1123,7 +1123,7 @@ namespace CSharpMath {
           var line = new TextLineDisplay<TFont, TGlyph>(runs, atoms) {
             Position = _currentPosition
           };
-          return line;
+          return AddLimitsToOperatorDisplay(line, op);
       }
 
     private IDisplay<TFont, TGlyph> AddLimitsToLargeOperatorDisplay(IDisplay<TFont, TGlyph> display,
@@ -1159,6 +1159,16 @@ namespace CSharpMath {
       }
       _currentPosition.X += display.Width;
       MakeScripts(op, display, op.IndexRange.Location, delta);
+      return display;
+    }
+    private IDisplay<TFont, TGlyph> AddLimitsToOperatorDisplay(IDisplay<TFont, TGlyph> display,
+        MathAtom op) {
+      if (op.Subscript == null && op.Superscript == null) {
+        _currentPosition.X += display.Width;
+        return display;
+      }
+      _currentPosition.X += display.Width;
+      MakeScripts(op, display, op.IndexRange.Location, 0);
       return display;
     }
   }
