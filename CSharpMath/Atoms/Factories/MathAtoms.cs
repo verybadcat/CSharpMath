@@ -8,9 +8,9 @@ using System.Collections.Generic;
 namespace CSharpMath.Atoms {
   //https://mirror.hmc.edu/ctan/macros/latex/contrib/unicode-math/unimath-symbols.pdf
   public static class MathAtoms {
-    private static AliasDictionary<string, MathAtom> _commands;
-    public static AliasDictionary<string, MathAtom> Commands =>
-      _commands ?? (_commands = new AliasDictionary<string, MathAtom> {
+    private static AliasDictionary<string, IMathAtom> _commands;
+    public static AliasDictionary<string, IMathAtom> Commands =>
+      _commands ?? (_commands = new AliasDictionary<string, IMathAtom> {
          { "square", Placeholder },
          
          // Greek characters
@@ -440,7 +440,12 @@ namespace CSharpMath.Atoms {
         symbolName ?? throw new ArgumentNullException(nameof(symbolName), "LaTeX Symbol name must not be null."
       ), out var symbol) ? AtomCloner.Clone(symbol, false) : null;
 
-    public static string LatexSymbolNameForAtom(MathAtom atom) =>  Commands.TryGetKey(atom, out var name) ? name : null;
+    public static string LatexSymbolNameForAtom(MathAtom atom) {
+      var atomWithoutScripts = AtomCloner.Clone(atom, true);
+      atomWithoutScripts.Subscript = null;
+      atomWithoutScripts.Superscript = null;
+      return Commands.TryGetKey(atomWithoutScripts, out var name) ? name : null;
+    }
 
     public static void AddLatexSymbol(string name, MathAtom atom) => Commands.Add(name, atom);
 

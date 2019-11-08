@@ -29,11 +29,8 @@ namespace CSharpMath.Atoms {
 
     public override string StringValue => base.StringValue + (Limits == true ? @"\limits" : Limits == false && !NoLimits ? @"\nolimits" : string.Empty);
 
-    public bool EqualsLargeOperator(LargeOperator obj) =>
-      EqualsAtom(obj)
-      && Limits == obj.Limits;
+    public bool EqualsLargeOperator(LargeOperator obj) => EqualsAtom(obj); // Don't care about \limits or \nolimits
 
-    public override T Accept<T, THelper>(IMathAtomVisitor<T, THelper> visitor, THelper helper)
-  => visitor.Visit(this, helper);
+    public override T Accept<T, THelper>(IMathAtomVisitor<T, THelper> visitor, THelper helper) => visitor.Visit(this, helper);
   }
 }
