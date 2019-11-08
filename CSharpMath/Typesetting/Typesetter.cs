@@ -272,46 +272,47 @@ namespace CSharpMath {
           case MathAtomType.Close:
           case MathAtomType.Placeholder:
           case MathAtomType.Punctuation:
-          case MathAtomType.Prime:
-            if (prevNode != null) {
-              float interElementSpace = GetInterElementSpace(prevNode.AtomType, atom.AtomType);
-              if (_currentLine.Length > 0) {
-                if (interElementSpace > 0) {
-                  var run = _currentLine.Runs.Last();
-                  run.GlyphInfos.Last().KernAfterGlyph = interElementSpace;
+          case MathAtomType.Prime: {
+              if (prevNode != null) {
+                float interElementSpace = GetInterElementSpace(prevNode.AtomType, atom.AtomType);
+                if (_currentLine.Length > 0) {
+                  if (interElementSpace > 0) {
+                    var run = _currentLine.Runs.Last();
+                    run.GlyphInfos.Last().KernAfterGlyph = interElementSpace;
+                  }
+                } else {
+                  _currentPosition.X += interElementSpace;
                 }
-              } else {
-                _currentPosition.X += interElementSpace;
               }
-            }
-            AttributedGlyphRun<TFont, TGlyph> current = null;
-            var nucleusText = atom.Nucleus;
-            var glyphs = _context.GlyphFinder.FindGlyphs(_font, nucleusText);
-            current = new AttributedGlyphRun<TFont, TGlyph>(nucleusText, glyphs, _font, isPlaceHolder: atom.AtomType == MathAtomType.Placeholder);
-            _currentLine.AppendGlyphRun(current);
-            if (_currentLineIndexRange.Location == Range.UndefinedInt)
-              _currentLineIndexRange = atom.IndexRange;
-            else
-              _currentLineIndexRange = new Range(_currentLineIndexRange.Location, _currentLineIndexRange.Length + atom.IndexRange.Length);
-            // add the fused atoms
-            if (atom.FusedAtoms != null) 
-              _currentAtoms.AddRange(atom.FusedAtoms);
-            else 
-              _currentAtoms.Add(atom);
-            if (atom.Subscript != null || atom.Superscript != null) {
-              var line = AddDisplayLine(true);
-              float delta = 0;
-              if (atom.Nucleus.IsNonEmpty()) {
-                TGlyph glyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, atom.Nucleus.Length - 1, atom.Nucleus);
-                delta = _context.MathTable.GetItalicCorrection(_styleFont, glyph);
+              AttributedGlyphRun<TFont, TGlyph> current = null;
+              var nucleusText = atom.Nucleus;
+              var glyphs = _context.GlyphFinder.FindGlyphs(_font, nucleusText);
+              current = new AttributedGlyphRun<TFont, TGlyph>(nucleusText, glyphs, _font, isPlaceHolder: atom.AtomType == MathAtomType.Placeholder);
+              _currentLine.AppendGlyphRun(current);
+              if (_currentLineIndexRange.Location == Range.UndefinedInt)
+                _currentLineIndexRange = atom.IndexRange;
+              else
+                _currentLineIndexRange = new Range(_currentLineIndexRange.Location, _currentLineIndexRange.Length + atom.IndexRange.Length);
+              // add the fused atoms
+              if (atom.FusedAtoms != null)
+                _currentAtoms.AddRange(atom.FusedAtoms);
+              else
+                _currentAtoms.Add(atom);
+              if (atom.Subscript != null || atom.Superscript != null) {
+                var line = AddDisplayLine(true);
+                float delta = 0;
+                if (atom.Nucleus.IsNonEmpty()) {
+                  TGlyph glyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, atom.Nucleus.Length - 1, atom.Nucleus);
+                  delta = _context.MathTable.GetItalicCorrection(_styleFont, glyph);
+                }
+                if (delta > 0 && atom.Subscript == null)
+                  // add a kern of delta
+                  _currentPosition.X += delta;
+                MakeScripts(atom, line, atom.IndexRange.End - 1, delta);
               }
-              if (delta > 0 && atom.Subscript == null)
-                // add a kern of delta
-                _currentPosition.X += delta;
-              MakeScripts(atom, line, atom.IndexRange.End - 1, delta);
+              if (atom.AtomType == MathAtomType.Prime) continue; //preserve spacing of previous atom
+              break;
             }
-            if (atom.AtomType == MathAtomType.Prime) continue; //preserve spacing of previous atom
-            break;
           case var _ when atom is Atoms.Extension.I_ExtensionAtom ext:
             Display.Extension._Typesetter.CreateDisplayAtom(this, ext);
             break;
