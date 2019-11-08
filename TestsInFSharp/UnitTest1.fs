@@ -37,6 +37,7 @@ let getRandomMathKeyboardInput =
 let test100keypresses() =
     let keyboard = CSharpMath.Rendering.MathKeyboard()
     let mutable reverseInputs:MathKeyboardInput list = []
+    let mutable result = Ok()
     for _ = 1 to 100 do
         let ki = getRandomMathKeyboardInput()
         reverseInputs <- ki::reverseInputs
@@ -44,9 +45,19 @@ let test100keypresses() =
             getRandomMathKeyboardInput() |> keyboard.KeyPress
             keyboard.LaTeX |> ignore
         with e ->
-            failwithf "Exception: %s KeyboardInputs: %A" e.Message (reverseInputs |> List.rev)
+            result <-
+                Error(e.Message, reverseInputs |> List.rev)
+    result
 
 [<Test>]
 let ``random inputs don't crash editor``() =
-    for i = 1 to 1000 do
-        test100keypresses()
+    let results =
+        List.init 1000 (fun _ -> test100keypresses())
+    let shortestError =
+        results
+        |> List.choose (function Ok _ -> None | Error e -> Some e)
+        |> List.sortBy (fun (_, inputs) -> inputs.Length)
+    match shortestError with
+    | [] -> ()
+    | (ex, inputs)::_ ->
+        failwithf "Exeption: %s inputs: %A" ex inputs
