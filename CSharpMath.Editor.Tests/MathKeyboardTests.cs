@@ -175,7 +175,14 @@ namespace CSharpMath.Editor.Tests {
       T(@"\frac{\square }{3}", K.Slash, K.D3, K.Left, K.Left, K.Backspace, K.Left),
       T(@"1_3", K.D1, K.D2, K.Subscript, K.D3, K.Left, K.Left, K.Backspace),
       T(@"1^2_3", K.D1, K.D4, K.Subscript, K.D3, K.Left, K.Left, K.Power, K.D2, K.Left, K.Left, K.Backspace),
-      T(@"1^3_2", K.D1, K.D4, K.Power, K.D3, K.Left, K.Left, K.Subscript, K.D2, K.Left, K.Left, K.Left, K.Left, K.Backspace)
+      T(@"1^3_2", K.D1, K.D4, K.Power, K.D3, K.Left, K.Left, K.Subscript, K.D2, K.Left, K.Left, K.Left, K.Left, K.Backspace),
+      T(@"■^6", K.Power, K.D6, K.Left, K.Left, K.Left, K.X, K.Left, K.Left, K.Left, K.Backspace),
+      T(@"\sqrt[■]{\square }", K.NthRoot, K.SmallA, K.Backspace),
+      T(@"\sqrt{■}", K.SquareRoot, K.SmallA, K.Backspace),
+      T(@"\frac{1}{■}", K.Slash, K.D6, K.Backspace),
+      T(@"■_5", K.Subscript, K.D5, K.Left, K.Left, K.Backspace, K.X, K.Left, K.Left, K.Left, K.Backspace),
+      T(@"7+1^x", K.D7, K.Plus, K.D1, K.D2, K.Power, K.X, K.Left, K.Left, K.Backspace),
+      T(@"7+■^x", K.D7, K.Plus, K.D1, K.Power, K.X, K.Left, K.Left, K.Backspace),
     ]
     public void LeftRightBackspace(string latex, params K[] inputs) => Test(latex, inputs);
 

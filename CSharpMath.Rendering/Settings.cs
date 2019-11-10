@@ -17,7 +17,7 @@ namespace CSharpMath {
       Atoms.MathAtoms.BoundaryDelimiters;
     public static AliasDictionary<string, Enumerations.FontStyle> PredefinedFontStyles =>
       Enumerations.FontStyleExtensions.FontStyles;
-    public static AliasDictionary<string, Atoms.MathAtom> PredefinedLaTeXMathSymbols =>
+    public static AliasDictionary<string, Interfaces.IMathAtom> PredefinedLaTeXMathSymbols =>
       Atoms.MathAtoms.Commands;
     public static BiDictionary<string, string> PredefinedLaTeXTextAccents =>
       Rendering.TextAtoms.PredefinedAccents;

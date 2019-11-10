@@ -4,6 +4,7 @@ using System.Text;
 
 namespace CSharpMath.Editor {
   using Atoms;
+  using CSharpMath.Constants;
   using Interfaces;
   public static class MathListEditingExtensions {
     static void InsertAtAtomIndexAndAdvance(this IMathList self, int atomIndex, IMathAtom atom, ref MathListIndex advance, MathListSubIndexType advanceType) {
@@ -85,8 +86,8 @@ namespace CSharpMath.Editor {
       }
     }
 
-    public static void RemoveAt(this IMathList self, MathListIndex index) {
-      index = index ?? MathListIndex.Level0Index(0);
+    public static void RemoveAt(this IMathList self, ref MathListIndex index) {
+      index ??= MathListIndex.Level0Index(0);
       if (index.AtomIndex > self.Atoms.Count)
         throw new IndexOutOfRangeException($"Index {index.AtomIndex} is out of bounds for list of size {self.Atoms.Count}");
       switch (index.SubIndexType) {
@@ -97,48 +98,72 @@ namespace CSharpMath.Editor {
           var currentAtom = self.Atoms[index.AtomIndex];
           if (currentAtom.Subscript == null && currentAtom.Superscript == null)
             throw new SubIndexTypeMismatchException("Nuclear fission is not supported if there are no subscripts or superscripts.");
+          var downIndex = index.LevelDown();
           if (index.AtomIndex > 0) {
             var previous = self.Atoms[index.AtomIndex - 1];
-            if (previous.Subscript is null && previous.Superscript is null) {
+            if (previous.Subscript is null && previous.Superscript is null
+                && previous.AtomType == Enumerations.MathAtomType.Number) {
               previous.Superscript = currentAtom.Superscript;
               previous.Subscript = currentAtom.Subscript;
               self.RemoveAt(index.AtomIndex);
+              // it was in the nucleus and we removed it, get out of the nucleus and get in the nucleus of the previous one.
+              index = downIndex.Previous is MathListIndex downPrev
+                ? downPrev.LevelUpWithSubIndex(MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1))
+                : downIndex;
               break;
             }
           }
-          // no previous atom or the previous atom sucks (has sub/super scripts)
-          currentAtom.Nucleus = "";
-          break;
+          // insert placeholder since previous atom isn't a number
+          var insertionAtom = MathAtoms.Placeholder;
+          // mark the placeholder as selected since that is the current insertion point.
+          insertionAtom.Nucleus = Symbols.BlackSquare;
+          insertionAtom.Subscript = currentAtom.Subscript;
+          insertionAtom.Superscript = currentAtom.Superscript;
+          self.RemoveAt(index.AtomIndex);
+          index = downIndex;
+          self.InsertAndAdvance(ref index, insertionAtom, MathListSubIndexType.None);
+          index = index.Previous;
+          return;
         case MathListSubIndexType.Radicand:
         case MathListSubIndexType.Degree:
           if (!(self.Atoms[index.AtomIndex] is Radical radical && radical.AtomType == Enumerations.MathAtomType.Radical))
             throw new SubIndexTypeMismatchException($"No radical found at index {index.AtomIndex}");
           if (index.SubIndexType == MathListSubIndexType.Degree)
-            radical.Degree.RemoveAt(index.SubIndex);
+            radical.Degree.RemoveAt(ref index.SubIndex);
           else
-            radical.Radicand.RemoveAt(index.SubIndex);
+            radical.Radicand.RemoveAt(ref index.SubIndex);
           break;
         case MathListSubIndexType.Numerator:
         case MathListSubIndexType.Denominator:
           if (!(self.Atoms[index.AtomIndex] is Fraction frac && frac.AtomType == Enumerations.MathAtomType.Fraction))
             throw new SubIndexTypeMismatchException($"No fraction found at index {index.AtomIndex}");
           if (index.SubIndexType == MathListSubIndexType.Numerator)
-            frac.Numerator.RemoveAt(index.SubIndex);
+            frac.Numerator.RemoveAt(ref index.SubIndex);
           else
-            frac.Denominator.RemoveAt(index.SubIndex);
+            frac.Denominator.RemoveAt(ref index.SubIndex);
           break;
         case MathListSubIndexType.Subscript:
           var current = self.Atoms[index.AtomIndex];
           if (current.Subscript == null) throw new SubIndexTypeMismatchException($"No subscript for atom at index {index.AtomIndex}");
-          current.Subscript.RemoveAt(index.SubIndex);
+          current.Subscript.RemoveAt(ref index.SubIndex);
           break;
         case MathListSubIndexType.Superscript:
           current = self.Atoms[index.AtomIndex];
           if (current.Superscript == null) throw new SubIndexTypeMismatchException($"No superscript for atom at index {index.AtomIndex}");
-          current.Superscript.RemoveAt(index.SubIndex);
+          current.Superscript.RemoveAt(ref index.SubIndex);
           break;
         default:
           throw new SubIndexTypeMismatchException("Invalid subindex type.");
+      }
+      if (index.AtBeginningOfLine && index.SubIndexType != MathListSubIndexType.None) {
+        // We have deleted to the beginning of the line and it is not the outermost line
+        if (self.AtomAt(index) is null) {
+          var insertionAtom = MathAtoms.Placeholder;
+          // mark the placeholder as selected since that is the current insertion point.
+          insertionAtom.Nucleus = Symbols.BlackSquare;
+          self.InsertAndAdvance(ref index, insertionAtom, MathListSubIndexType.None);
+          index = index.Previous;
+        }
       }
     }
 

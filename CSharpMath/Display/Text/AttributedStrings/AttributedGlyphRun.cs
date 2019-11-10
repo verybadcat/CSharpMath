@@ -34,6 +34,6 @@ namespace CSharpMath.Display.Text {
 
   public static class AttributedGlyphRunExtensions {
     public static bool AttributesMatch<TFont, TGlyph>(this AttributedGlyphRun<TFont, TGlyph> run1, AttributedGlyphRun<TFont, TGlyph> run2) where TFont : IFont<TGlyph> =>
-      !(run1 is null || run2 is null) && run1.Placeholder == run2.Placeholder && EqualityComparer<TFont>.Default.Equals(run1.Font, run2.Font);
+      !(run1 is null || run2 is null) && EqualityComparer<TFont>.Default.Equals(run1.Font, run2.Font);
   }
 }

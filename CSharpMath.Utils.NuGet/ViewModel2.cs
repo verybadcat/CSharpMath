@@ -94,8 +94,7 @@ namespace CSharpMath.Utils.NuGet {
     public ICommand Reload => new Command(Initialize);
 
     public void SaveFile() {
-      using (var file = new FileStream(App.ReleaseData, FileMode.Open))
-      using (var memory = new MemoryStream()) {
+      using (var file = new FileStream(App.ReleaseData, FileMode.Open)) {
         var d = new XmlDocument();
         d.Load(file);
         var root = (XmlElement)d.LastChild;
@@ -117,10 +116,9 @@ namespace CSharpMath.Utils.NuGet {
           SetValue(nameof(info.Description), info.Description);
           SetValue(nameof(info.PackageTags), info.PackageTags);
         }
-        d.Save(memory); //Not directly to file so that we can know its actual length
-        file.SetLength(memory.Length); //Gets rid of residue when memory.Length < file.Length
         file.Seek(0, SeekOrigin.Begin); //Prevents XML from appending to the end of the file
-        memory.WriteTo(file); //Actually save the file
+        d.Save(file); //Save to the file
+        file.SetLength(file.Position); //Gets rid of residue after this position
       }
       App.UpdateProject(CurrentInfo.Project);
       System.Windows.MessageBox.Show($"Project-wise spec for {CurrentInfo.Project} was saved successfully."); //MVVM broken here

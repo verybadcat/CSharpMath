@@ -318,27 +318,8 @@ namespace CSharpMath.Editor {
         // delete the last atom from the list
         var prevIndex = _insertionIndex.Previous;
         if (HasText && !(prevIndex is null)) {
-          MathList.RemoveAt(prevIndex);
-          if (prevIndex.FinalSubIndexType is MathListSubIndexType.BetweenBaseAndScripts) {
-            // it was in the nucleus and we removed it, get out of the nucleus and get in the nucleus of the previous one.
-            var downIndex = prevIndex.LevelDown();
-            prevIndex = downIndex.Previous is MathListIndex downPrev
-              ? downPrev.LevelUpWithSubIndex(MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1))
-              : downIndex;
-          }
           _insertionIndex = prevIndex;
-          if (_insertionIndex.AtBeginningOfLine && _insertionIndex.SubIndexType != MathListSubIndexType.None) {
-            // We have deleted to the beginning of the line and it is not the outermost line
-            var insertionAtom = MathList.AtomAt(_insertionIndex);
-            if (insertionAtom is null) {
-              // add a placeholder if we deleted everything in the list
-              insertionAtom = MathAtoms.Placeholder;
-              // mark the placeholder as selected since that is the current insertion point.
-              insertionAtom.Nucleus = Symbols.BlackSquare;
-              MathList.InsertAndAdvance(ref _insertionIndex, insertionAtom, MathListSubIndexType.None);
-              _insertionIndex = _insertionIndex.Previous;
-            }
-          }
+          MathList.RemoveAt(ref _insertionIndex);
         }
       }
 
@@ -662,12 +643,14 @@ namespace CSharpMath.Editor {
         }
       }
       VisualizePlaceholders(MathList);
-      if(MathList.AtomAt(_insertionIndex) is IMathAtom atom && atom.AtomType is MathAtomType.Placeholder)
+      if (MathList.AtomAt(_insertionIndex) is IMathAtom atom && atom.AtomType is MathAtomType.Placeholder) {
         atom.Nucleus = Symbols.BlackSquare;
-      /* Find the insert point rect and create a caretView to draw the caret at this position. */
-
+        Caret = null;
+      } else {
+        /* Find the insert point rect and create a caretView to draw the caret at this position. */
+        Caret = new CaretHandle(Font.PointSize);
+      }
       // Check that we were returned a valid position before displaying a caret there.
-      Caret = new CaretHandle(Font.PointSize);
       RecreateDisplayFromMathList();
       RedrawRequested?.Invoke(this, EventArgs.Empty);
     }

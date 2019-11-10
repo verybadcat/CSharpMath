@@ -34,8 +34,8 @@ namespace CSharpMath.Utils.NuGet {
         RepositoryCommit = GetValue(nameof(RepositoryCommit));
         PackageProjectUrl = GetValue(nameof(PackageProjectUrl));
         PackageRequireLicenseAcceptance = bool.Parse(GetValue(nameof(PackageRequireLicenseAcceptance)));
-        PackageLicenseUrl = GetValue(nameof(PackageLicenseUrl));
-        PackageIconUrl = GetValue(nameof(PackageIconUrl));
+        PackageLicenseExpression = GetValue(nameof(PackageLicenseExpression));
+        PackageIcon = GetValue(nameof(PackageIcon));
         Copyright = GetValue(nameof(Copyright));
         PackageTags = GetValue(nameof(PackageTags));
       }
@@ -71,11 +71,11 @@ namespace CSharpMath.Utils.NuGet {
     bool _licenseRequired;
     public bool PackageRequireLicenseAcceptance { get => _licenseRequired; set => Set(_licenseRequired = value); }
 
-    string _packageLicenseURL;
-    public string PackageLicenseUrl { get => _packageLicenseURL; set => Set(_packageLicenseURL = value); }
+    string _packageLicenseExpression;
+    public string PackageLicenseExpression { get => _packageLicenseExpression; set => Set(_packageLicenseExpression = value); }
 
-    string _packageIconURL;
-    public string PackageIconUrl { get => _packageIconURL; set => Set(_packageIconURL = value); }
+    string _packageIcon;
+    public string PackageIcon { get => _packageIcon; set => Set(_packageIcon = value); }
 
     string _copyright;
     public string Copyright { get => _copyright; set => Set(_copyright = value); }
@@ -86,8 +86,7 @@ namespace CSharpMath.Utils.NuGet {
     public ICommand Reload => new Command(Initialize);
 
     public void SaveFile() {
-      using (var file = new FileStream(App.ReleaseData, FileMode.Open))
-      using (var memory = new MemoryStream()) {
+      using (var file = new FileStream(App.ReleaseData, FileMode.Open)) {
         var r = new XmlSerializer(typeof(XmlElement));
         var e = (XmlElement)r.Deserialize(file);
         var global = (XmlElement)e.GetElementsByTagName("_Global-")[0];
@@ -104,14 +103,13 @@ namespace CSharpMath.Utils.NuGet {
         SetValue(nameof(RepositoryCommit), RepositoryCommit);
         SetValue(nameof(PackageProjectUrl), PackageProjectUrl);
         SetValue(nameof(PackageRequireLicenseAcceptance), PackageRequireLicenseAcceptance.ToString().ToLowerInvariant());
-        SetValue(nameof(PackageLicenseUrl), PackageLicenseUrl);
-        SetValue(nameof(PackageIconUrl), PackageIconUrl);
+        SetValue(nameof(PackageLicenseExpression), PackageLicenseExpression);
+        SetValue(nameof(PackageIcon), PackageIcon);
         SetValue(nameof(Copyright), Copyright);
         SetValue(nameof(PackageTags), PackageTags);
-        r.Serialize(memory, e); //Not directly to file so that we can know its actual length
-        file.SetLength(memory.Length); //Gets rid of residue when memory.Length < file.Length
         file.Seek(0, SeekOrigin.Begin); //Prevents XML from appending to the end of the file
-        memory.WriteTo(file); //Actually save the file
+        r.Serialize(file, e); //Save to the file
+        file.SetLength(file.Position); //Gets rid of residue after this position
       }
       App.UpdateAllProjects();
       System.Windows.MessageBox.Show("Successfully saved the global spec."); //MVVM broken here
