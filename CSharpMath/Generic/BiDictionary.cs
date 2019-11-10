@@ -162,18 +162,21 @@ namespace CSharpMath
     public bool Remove(KeyValuePair<K, V> pair) => Remove(pair.Key, pair.Value);
     public bool Remove(K key, V value) {
       var valueMatches = k2v.Where(p => EqualityComparer<V>.Default.Equals(p.Value, value)).ToList();
-      if (valueMatches.Count == 0) return false;
-      if (valueMatches.Count == 1) {
-        if (!EqualityComparer<K>.Default.Equals(valueMatches[0].Key, key)) return false;
-        k2v.Remove(key);
-        v2k.Remove(value);
-        return true;
+      switch (valueMatches.Count) {
+        case 0:
+          return false;
+        case 1:
+          if (!EqualityComparer<K>.Default.Equals(valueMatches[0].Key, key)) return false;
+          k2v.Remove(key);
+          v2k.Remove(value);
+          return true;
+        case var _:
+          if (!valueMatches.Any(p => EqualityComparer<K>.Default.Equals(p.Key, key))) return false;
+          k2v.Remove(key);
+          if (EqualityComparer<K>.Default.Equals(v2k[value], key))
+            v2k[value] = valueMatches.First(p => !EqualityComparer<K>.Default.Equals(p.Key, key)).Key;
+          return true;
       }
-      if (!valueMatches.Any(p => EqualityComparer<K>.Default.Equals(p.Key, key))) return false;
-      k2v.Remove(key);
-      if (EqualityComparer<K>.Default.Equals(v2k[value], key))
-        v2k[value] = valueMatches.First(p => !EqualityComparer<K>.Default.Equals(p.Key, key)).Key;
-      return true;
     }
   }
 
@@ -243,11 +246,11 @@ namespace CSharpMath
     }
 
     public bool Remove(TFirst first, TSecond second) =>
-      firstToSecond.Remove(first) &&
-      secondToFirst.Remove(second);
+      firstToSecond.Remove(first) && secondToFirst.Remove(second);
     public bool Remove(KeyValuePair<TFirst, TSecond> pair) =>
-      firstToSecond.Remove(pair.Key) &&
-      secondToFirst.Remove(pair.Value);
+      firstToSecond.Remove(pair.Key) && secondToFirst.Remove(pair.Value);
+    public bool RemoveFirst(TFirst first) => Remove(first, firstToSecond[first]);
+    public bool RemoveSecond(TSecond second) => Remove(secondToFirst[second], second);
   }
 
   public class MultiDictionary<TFirst, TSecond> : IEnumerable<KeyValuePair<TFirst, TSecond>> {
@@ -259,8 +262,9 @@ namespace CSharpMath
       firstToSecond = new Dictionary<TFirst, IList<TSecond>>(capacity);
       secondToFirst = new Dictionary<TSecond, IList<TFirst>>(capacity);
     }
-    Dictionary<TFirst, IList<TSecond>> firstToSecond;
-    Dictionary<TSecond, IList<TFirst>> secondToFirst;
+
+    readonly Dictionary<TFirst, IList<TSecond>> firstToSecond;
+    readonly Dictionary<TSecond, IList<TFirst>> secondToFirst;
 
     private static readonly ReadOnlyCollection<TFirst> EmptyFirstList =
       new ReadOnlyCollection<TFirst>(new TFirst[0]);
@@ -268,11 +272,11 @@ namespace CSharpMath
       new ReadOnlyCollection<TSecond>(new TSecond[0]);
 
     public void Add(TFirst first, TSecond second) {
-      if (!firstToSecond.TryGetValue(first, out IList<TSecond> seconds)) {
+      if (!firstToSecond.TryGetValue(first, out var seconds)) {
         seconds = new List<TSecond>();
         firstToSecond[first] = seconds;
       }
-      if (!secondToFirst.TryGetValue(second, out IList<TFirst> firsts)) {
+      if (!secondToFirst.TryGetValue(second, out var firsts)) {
         firsts = new List<TFirst>();
         secondToFirst[second] = firsts;
       }
@@ -280,23 +284,11 @@ namespace CSharpMath
       firsts.Add(first);
     }
 
-    public ReadOnlyCollection<TSecond> this[TFirst first] {
-      get {
-        if (!firstToSecond.TryGetValue(first, out IList<TSecond> list)) {
-          return EmptySecondList;
-        }
-        return new ReadOnlyCollection<TSecond>(list);
-      }
-    }
+    public ReadOnlyCollection<TSecond> this[TFirst first] =>
+      firstToSecond.TryGetValue(first, out var list) ? new ReadOnlyCollection<TSecond>(list) : EmptySecondList;
 
-    public ReadOnlyCollection<TFirst> this[TSecond second] {
-      get {
-        if (!secondToFirst.TryGetValue(second, out IList<TFirst> list)) {
-          return EmptyFirstList;
-        }
-        return new ReadOnlyCollection<TFirst>(list);
-      }
-    }
+    public ReadOnlyCollection<TFirst> this[TSecond second] =>
+      secondToFirst.TryGetValue(second, out var list) ? new ReadOnlyCollection<TFirst>(list) : EmptyFirstList;
 
     public bool TryGetByFirst(TFirst first, out TSecond second) {
       if (firstToSecond.TryGetValue(first, out var list) && list.Count > 0) {
