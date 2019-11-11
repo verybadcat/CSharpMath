@@ -973,5 +973,33 @@ namespace CSharpMath.Tests {
       Assert.Equal(@"\begin{array}{lr}x^2&\: x<0\\ x^3&\: x\geq 0\end{array}", latex);
     }
 
+    [Fact]
+    public void TestListToString_integral_a_to_b() {
+      var input = @"\int_a^b";
+      var list = MathLists.FromString(input);
+
+      Assert.Single(list);
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"\int _a^b", latex);
+    }
+
+    [Fact]
+    public void TestListToString_integral() {
+      var input = @"\int_wdf=\int_{\partial w}f";
+      var list = MathLists.FromString(input);
+
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"\int _wdf=\int _{\partial w}f", latex);
+    }
+
+    [Fact]
+    public void TestMatrixListToString() {
+      var input = @"\begin{ vmatrix}\sin(x) &\cos(x)\\-\cos(x) &\sin(x)\end{ vmatrix}= 1";
+      var list = MathLists.FromString(input);
+
+      var latex = MathListBuilder.MathListToString(list);
+      Assert.Equal(@"\left| \begin{matrix}\sin (x)&\cos (x)\\ -\cos (x)&\sin (x)\end{matrix}\right| =1", latex);
+    }
+
   }
 }

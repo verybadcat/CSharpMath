@@ -770,14 +770,16 @@ namespace CSharpMath.Atoms {
             }
 
         }
+        if (atom.Subscript != null) {
+          var scriptString = MathListToString(atom.Subscript);
+          builder.Append(scriptString.Length == 1 ? $"_{scriptString}" : $"_{{{scriptString}}}");
+        }
+
         if (atom.Superscript != null) {
           var scriptString = MathListToString(atom.Superscript);
           builder.Append(scriptString.Length == 1 ? $"^{scriptString}" : $"^{{{scriptString}}}");
         }
-        if (atom.Subscript!=null) {
-          var scriptString = MathListToString(atom.Subscript);
-          builder.Append(scriptString.Length == 1 ? $"_{scriptString}" : $"_{{{scriptString}}}");
-        }
+        
       }
       if (currentFontStyle!=FontStyle.Default) {
         builder.Append("}");
