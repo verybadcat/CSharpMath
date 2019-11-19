@@ -17,6 +17,11 @@ namespace CSharpMath.Tests.Generic {
       Assert.Equal(3, testBiDictionary.Firsts.Count);
       Assert.Equal(3, testBiDictionary.Seconds.Count);
 
+      // Remove with wrong first key
+      Assert.False(testBiDictionary.Remove(4, "10"));
+      Assert.Equal(3, testBiDictionary.Firsts.Count);
+      Assert.Equal(3, testBiDictionary.Seconds.Count);
+
       // Remove with wrong second key
       Assert.False(testBiDictionary.Remove(3, "15"));
       Assert.Equal(3, testBiDictionary.Firsts.Count);
