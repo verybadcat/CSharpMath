@@ -245,12 +245,22 @@ namespace CSharpMath
         array[arrayIndex++] = pair;
     }
 
-    public bool Remove(TFirst first, TSecond second) =>
-      firstToSecond.Remove(first) && secondToFirst.Remove(second);
-    public bool Remove(KeyValuePair<TFirst, TSecond> pair) =>
-      firstToSecond.Remove(pair.Key) && secondToFirst.Remove(pair.Value);
-    public bool RemoveFirst(TFirst first) => Remove(first, firstToSecond[first]);
-    public bool RemoveSecond(TSecond second) => Remove(secondToFirst[second], second);
+    public bool Remove(TFirst first, TSecond second) {
+      if (TryGetByFirst(first, out var svalue) && TryGetBySecond(second, out var fvalue)) {
+
+        firstToSecond.Remove(first);
+        firstToSecond.Remove(fvalue);
+
+        secondToFirst.Remove(second);
+        secondToFirst.Remove(svalue);
+        return true;
+      }
+      return false;
+    }
+
+    public bool Remove(KeyValuePair<TFirst, TSecond> pair) => Remove(pair.Key, pair.Value);
+    public bool RemoveByFirst(TFirst first) => Remove(first, firstToSecond[first]);
+    public bool RemoveBySecond(TSecond second) => Remove(secondToFirst[second], second);
   }
 
   public class MultiDictionary<TFirst, TSecond> : IEnumerable<KeyValuePair<TFirst, TSecond>> {
