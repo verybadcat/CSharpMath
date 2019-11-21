@@ -235,8 +235,8 @@ namespace CSharpMath
       secondToFirst.Clear();
     }
 
-    public bool Contains(TFirst first) => firstToSecond.ContainsKey(first);
-    public bool Contains(TSecond second) => secondToFirst.ContainsKey(second);
+    public bool ContainsByFirst(TFirst first) => firstToSecond.ContainsKey(first);
+    public bool ContainsBySecond(TSecond second) => secondToFirst.ContainsKey(second);
     public bool Contains(KeyValuePair<TFirst, TSecond> pair) =>
       firstToSecond.TryGetValue(pair.Key, out var second) && EqualityComparer<TSecond>.Default.Equals(second, pair.Value);
 
