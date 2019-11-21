@@ -40,5 +40,34 @@ namespace CSharpMath.Tests.Generic {
       Assert.Single(testBiDictionary.Firsts);
       Assert.Single(testBiDictionary.Seconds);
     }
+
+    [Fact]
+    public void TestAddOrReplace() {
+      var testBiDictionary = new BiDictionary<int, string>();
+
+      testBiDictionary.AddOrReplace(0, "Value1");
+      Assert.Equal("Value1", testBiDictionary[0]);
+      Assert.Equal(0, testBiDictionary["Value1"]);
+
+      testBiDictionary.AddOrReplace(2, "Value10");
+      Assert.Equal("Value10", testBiDictionary[2]);
+      Assert.Equal(2, testBiDictionary["Value10"]);
+
+      testBiDictionary.AddOrReplace(2, "Value2");
+      Assert.Equal("Value2", testBiDictionary[2]);
+      Assert.Equal(2, testBiDictionary["Value2"]);
+      Assert.Equal(2, testBiDictionary.Firsts.Count);
+      Assert.Equal(2, testBiDictionary.Seconds.Count);
+
+      testBiDictionary.AddOrReplace(3, "Value3");
+      Assert.Equal("Value3", testBiDictionary[3]);
+      Assert.Equal(3, testBiDictionary["Value3"]);
+
+      testBiDictionary.AddOrReplace(10, "Value3");
+      Assert.Equal("Value3", testBiDictionary[10]);
+      Assert.Equal(10, testBiDictionary["Value3"]);
+      Assert.Equal(3, testBiDictionary.Firsts.Count);
+      Assert.Equal(3, testBiDictionary.Seconds.Count);
+    }
   }
 }

@@ -203,6 +203,15 @@ namespace CSharpMath
       secondToFirst.Add(second, first);
     }
 
+    public void AddOrReplace(TFirst first, TSecond second) {
+      if (firstToSecond.ContainsKey(first))
+        RemoveByFirst(first);
+      if (secondToFirst.ContainsKey(second))
+        RemoveBySecond(second);
+      firstToSecond.Add(first, second);
+      secondToFirst.Add(second, first);
+    }
+
     public Dictionary<TFirst, TSecond>.KeyCollection Firsts => firstToSecond.Keys;
 
     public Dictionary<TSecond, TFirst>.KeyCollection Seconds => secondToFirst.Keys;
@@ -229,7 +238,7 @@ namespace CSharpMath
       firstToSecond.GetEnumerator();
 
     public void Add(KeyValuePair<TFirst, TSecond> item) => Add(item.Key, item.Value);
-
+    public void AddOrReplace(KeyValuePair<TFirst, TSecond> item) => AddOrReplace(item.Key, item.Value);
     public void Clear() {
       firstToSecond.Clear();
       secondToFirst.Clear();
