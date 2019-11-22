@@ -1,6 +1,6 @@
 ﻿module TestEditor.RandomKeyboardInputsTest
 
-open NUnit.Framework
+open Xunit
 
 open CSharpMath.Editor
 
@@ -67,7 +67,7 @@ let rec private findShortening(kl:MathKeyboardInput list) =
     | None -> kl
     | Some sl -> findShortening sl
 
-[<Test>]
+[<Fact>]
 let ``random inputs don't crash editor``() =
     let results =
         List.init 1000 (fun _ -> test100keypresses())
