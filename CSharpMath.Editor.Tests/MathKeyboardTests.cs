@@ -81,7 +81,7 @@ namespace CSharpMath.Editor.Tests {
       T(@"\frac{1}{■}", K.Slash),
       // https://github.com/kostub/MathEditor/issues/18
       T(@"\frac{4}{\frac{4}{■}}", K.D4, K.Slash, K.D4, K.Slash),
-      T(@"□^{□^{□^■}}", K.Power, K.Power, K.Power),
+      T(@"\square ^{\square ^{\square ^■}}", K.Power, K.Power, K.Power),
       T(@"e^■", K.SmallE, K.Power),
       T(@"e^■", K.BaseEPower),
       T(@"\sqrt{3}", K.SquareRoot, K.D3),
@@ -186,7 +186,7 @@ namespace CSharpMath.Editor.Tests {
     ]
     public void LeftRightBackspace(string latex, params K[] inputs) => Test(latex, inputs);
 
-    [Theory, T(@"□_■", K.Subscript)]
+    [Theory, T(@"\square _■", K.Subscript)]
     public void SubscriptWorksAtBeginningOfLine(string latex, params K[] inputs) => Test(latex, inputs);
   }
 }
