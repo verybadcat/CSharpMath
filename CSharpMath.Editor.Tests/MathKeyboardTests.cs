@@ -119,7 +119,7 @@ namespace CSharpMath.Editor.Tests {
       T(@"01\frac{\square }{\square }_{\square }^{\square }90", K.D0, K.Fraction, K.Right, K.Right, K.Power, K.Right,
         K.Subscript, K.Right, K.D9, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.D1,
         K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.D0),
-      T(@"01\sqrt[\square ]{\square }^{\square }_{\square }90", K.D0, K.NthRoot, K.Right, K.Right, K.Power, K.Right,
+      T(@"01\sqrt[\square ]{\square }_{\square }^{\square }90", K.D0, K.NthRoot, K.Right, K.Right, K.Power, K.Right,
         K.Subscript, K.Right, K.D9, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.D1,
         K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.D0),
     ]
