@@ -107,21 +107,21 @@ namespace CSharpMath.Editor {
           var prevIndexCorrected =
              isBetweenBaseAndScripts ? _insertionIndex.LevelDown() : _insertionIndex.Previous;
           var prevAtom = MathList.AtomAt(prevIndexCorrected);
-          switch ((GetScript(prevAtom) is null, isBetweenBaseAndScripts)) {
-            case (true, true):
-              SetScript(MathList.AtomAt(_insertionIndex.LevelDown()), MathAtoms.PlaceholderList);
-              _insertionIndex = _insertionIndex.LevelDown().LevelUpWithSubIndex(subIndexType, MathListIndex.Level0Index(0));
-              break;
-            case (true, false):
+          switch (GetScript(prevAtom), isBetweenBaseAndScripts) {
+            case (null, true):
               SetScript(prevAtom, MathAtoms.PlaceholderList);
-              _insertionIndex = _insertionIndex.Previous.LevelUpWithSubIndex(subIndexType, MathListIndex.Level0Index(0));
+              _insertionIndex = prevIndexCorrected.LevelUpWithSubIndex(subIndexType, MathListIndex.Level0Index(0));
               break;
-            case (false, true):
+            case (null, false):
+              SetScript(prevAtom, MathAtoms.PlaceholderList);
+              _insertionIndex = prevIndexCorrected.LevelUpWithSubIndex(subIndexType, MathListIndex.Level0Index(0));
+              break;
+            case (var script, true):
               // If we are already inside the nucleus, then we come out and go up to the script
-              _insertionIndex = _insertionIndex.LevelDown().LevelUpWithSubIndex(subIndexType, MathListIndex.Level0Index(GetScript(prevAtom).Atoms.Count));
+              _insertionIndex = prevIndexCorrected.LevelUpWithSubIndex(subIndexType, MathListIndex.Level0Index(script.Atoms.Count));
               break;
-            case (false, false):
-              _insertionIndex = _insertionIndex.Previous.LevelUpWithSubIndex(subIndexType, MathListIndex.Level0Index(GetScript(prevAtom).Atoms.Count));
+            case (var script, false):
+              _insertionIndex = prevIndexCorrected.LevelUpWithSubIndex(subIndexType, MathListIndex.Level0Index(script.Atoms.Count));
               break;
           }
         }
