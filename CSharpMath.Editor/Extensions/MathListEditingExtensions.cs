@@ -61,7 +61,7 @@ namespace CSharpMath.Editor {
             radical.Degree.InsertAndAdvance(ref index.SubIndex, atom, advanceType);
           else
             radical.Radicand.InsertAndAdvance(ref index.SubIndex, atom, advanceType);
-            break;
+          break;
         case MathListSubIndexType.Numerator:
         case MathListSubIndexType.Denominator:
           if (!(self.Atoms[index.AtomIndex] is Fraction frac && frac.AtomType == Enumerations.MathAtomType.Fraction))
@@ -70,7 +70,7 @@ namespace CSharpMath.Editor {
             frac.Numerator.InsertAndAdvance(ref index.SubIndex, atom, advanceType);
           else
             frac.Denominator.InsertAndAdvance(ref index.SubIndex, atom, advanceType);
-            break;
+          break;
         case MathListSubIndexType.Subscript:
           var current = self.Atoms[index.AtomIndex];
           if (current.Subscript == null) throw new SubIndexTypeMismatchException($"No subscript for atom at index {index.AtomIndex}");
@@ -206,14 +206,13 @@ namespace CSharpMath.Editor {
           break;
       }
     }
-    
+
     [NullableReference]
     public static IMathAtom AtomAt(this IMathList self, MathListIndex index) {
       if (index is null || index.AtomIndex >= self.Atoms.Count) return null;
       var atom = self.Atoms[index.AtomIndex];
       switch (index.SubIndexType) {
         case MathListSubIndexType.None:
-        case MathListSubIndexType.BetweenBaseAndScripts when index.AtomIndex == 1:
           return atom;
         case MathListSubIndexType.BetweenBaseAndScripts:
           return null;
