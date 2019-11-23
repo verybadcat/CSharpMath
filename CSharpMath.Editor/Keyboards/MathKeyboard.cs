@@ -104,26 +104,13 @@ namespace CSharpMath.Editor {
           MathList.InsertAndAdvance(ref _insertionIndex, emptyAtom, subIndexType);
         } else {
           var isBetweenBaseAndScripts = _insertionIndex.FinalSubIndexType is MathListSubIndexType.BetweenBaseAndScripts;
-          var prevIndexCorrected =
-             isBetweenBaseAndScripts ? _insertionIndex.LevelDown() : _insertionIndex.Previous;
+          var prevIndexCorrected = isBetweenBaseAndScripts ? _insertionIndex.LevelDown() : _insertionIndex.Previous;
           var prevAtom = MathList.AtomAt(prevIndexCorrected);
-          switch (GetScript(prevAtom), isBetweenBaseAndScripts) {
-            case (null, true):
-              SetScript(prevAtom, MathAtoms.PlaceholderList);
-              _insertionIndex = prevIndexCorrected.LevelUpWithSubIndex(subIndexType, MathListIndex.Level0Index(0));
-              break;
-            case (null, false):
-              SetScript(prevAtom, MathAtoms.PlaceholderList);
-              _insertionIndex = prevIndexCorrected.LevelUpWithSubIndex(subIndexType, MathListIndex.Level0Index(0));
-              break;
-            case (var script, true):
-              // If we are already inside the nucleus, then we come out and go up to the script
-              _insertionIndex = prevIndexCorrected.LevelUpWithSubIndex(subIndexType, MathListIndex.Level0Index(script.Atoms.Count));
-              break;
-            case (var script, false):
-              _insertionIndex = prevIndexCorrected.LevelUpWithSubIndex(subIndexType, MathListIndex.Level0Index(script.Atoms.Count));
-              break;
+          var script = GetScript(prevAtom);
+          if (script is null) {
+            SetScript(prevAtom, MathAtoms.PlaceholderList);
           }
+          _insertionIndex = prevIndexCorrected.LevelUpWithSubIndex(subIndexType, MathListIndex.Level0Index(script?.Atoms?.Count ?? 0));
         }
       }
 
