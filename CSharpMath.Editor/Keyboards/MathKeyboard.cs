@@ -103,22 +103,24 @@ namespace CSharpMath.Editor {
           SetScript(emptyAtom, MathAtoms.PlaceholderList);
           MathList.InsertAndAdvance(ref _insertionIndex, emptyAtom, subIndexType);
         } else {
-          var prevAtom = MathList.AtomAt(_insertionIndex.Previous);
-#warning Simplify to tuple patterns when C# 8 is out
-          switch ((GetScript(prevAtom) is null, _insertionIndex.FinalSubIndexType is MathListSubIndexType.BetweenBaseAndScripts)) {
-            case var t when t == (true, true):
+          var isBetweenBaseAndScripts = _insertionIndex.FinalSubIndexType is MathListSubIndexType.BetweenBaseAndScripts;
+          var prevIndexCorrected =
+             isBetweenBaseAndScripts ? _insertionIndex.LevelDown() : _insertionIndex.Previous;
+          var prevAtom = MathList.AtomAt(prevIndexCorrected);
+          switch ((GetScript(prevAtom) is null, isBetweenBaseAndScripts)) {
+            case (true, true):
               SetScript(MathList.AtomAt(_insertionIndex.LevelDown()), MathAtoms.PlaceholderList);
               _insertionIndex = _insertionIndex.LevelDown().LevelUpWithSubIndex(subIndexType, MathListIndex.Level0Index(0));
               break;
-            case var t when t == (true, false):
+            case (true, false):
               SetScript(prevAtom, MathAtoms.PlaceholderList);
               _insertionIndex = _insertionIndex.Previous.LevelUpWithSubIndex(subIndexType, MathListIndex.Level0Index(0));
               break;
-            case var t when t == (false, true):
+            case (false, true):
               // If we are already inside the nucleus, then we come out and go up to the script
               _insertionIndex = _insertionIndex.LevelDown().LevelUpWithSubIndex(subIndexType, MathListIndex.Level0Index(GetScript(prevAtom).Atoms.Count));
               break;
-            case var t when t == (false, false):
+            case (false, false):
               _insertionIndex = _insertionIndex.Previous.LevelUpWithSubIndex(subIndexType, MathListIndex.Level0Index(GetScript(prevAtom).Atoms.Count));
               break;
           }
