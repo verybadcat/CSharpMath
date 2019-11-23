@@ -203,6 +203,15 @@ namespace CSharpMath
       secondToFirst.Add(second, first);
     }
 
+    public void AddOrReplace(TFirst first, TSecond second) {
+      if (firstToSecond.ContainsKey(first))
+        RemoveByFirst(first);
+      if (secondToFirst.ContainsKey(second))
+        RemoveBySecond(second);
+      firstToSecond.Add(first, second);
+      secondToFirst.Add(second, first);
+    }
+
     public Dictionary<TFirst, TSecond>.KeyCollection Firsts => firstToSecond.Keys;
 
     public Dictionary<TSecond, TFirst>.KeyCollection Seconds => secondToFirst.Keys;
@@ -229,14 +238,14 @@ namespace CSharpMath
       firstToSecond.GetEnumerator();
 
     public void Add(KeyValuePair<TFirst, TSecond> item) => Add(item.Key, item.Value);
-
+    public void AddOrReplace(KeyValuePair<TFirst, TSecond> item) => AddOrReplace(item.Key, item.Value);
     public void Clear() {
       firstToSecond.Clear();
       secondToFirst.Clear();
     }
 
-    public bool Contains(TFirst first) => firstToSecond.ContainsKey(first);
-    public bool Contains(TSecond second) => secondToFirst.ContainsKey(second);
+    public bool ContainsByFirst(TFirst first) => firstToSecond.ContainsKey(first);
+    public bool ContainsBySecond(TSecond second) => secondToFirst.ContainsKey(second);
     public bool Contains(KeyValuePair<TFirst, TSecond> pair) =>
       firstToSecond.TryGetValue(pair.Key, out var second) && EqualityComparer<TSecond>.Default.Equals(second, pair.Value);
 
@@ -245,12 +254,22 @@ namespace CSharpMath
         array[arrayIndex++] = pair;
     }
 
-    public bool Remove(TFirst first, TSecond second) =>
-      firstToSecond.Remove(first) && secondToFirst.Remove(second);
-    public bool Remove(KeyValuePair<TFirst, TSecond> pair) =>
-      firstToSecond.Remove(pair.Key) && secondToFirst.Remove(pair.Value);
-    public bool RemoveFirst(TFirst first) => Remove(first, firstToSecond[first]);
-    public bool RemoveSecond(TSecond second) => Remove(secondToFirst[second], second);
+    public bool Remove(TFirst first, TSecond second) {
+      if (TryGetByFirst(first, out var svalue) && TryGetBySecond(second, out var fvalue)) {
+
+        firstToSecond.Remove(first);
+        firstToSecond.Remove(fvalue);
+
+        secondToFirst.Remove(second);
+        secondToFirst.Remove(svalue);
+        return true;
+      }
+      return false;
+    }
+
+    public bool Remove(KeyValuePair<TFirst, TSecond> pair) => Remove(pair.Key, pair.Value);
+    public bool RemoveByFirst(TFirst first) => Remove(first, firstToSecond[first]);
+    public bool RemoveBySecond(TSecond second) => Remove(secondToFirst[second], second);
   }
 
   public class MultiDictionary<TFirst, TSecond> : IEnumerable<KeyValuePair<TFirst, TSecond>> {
