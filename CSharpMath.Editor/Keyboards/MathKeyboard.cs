@@ -226,14 +226,18 @@ namespace CSharpMath.Editor {
         }
         if (_insertionIndex is null)
           throw new InvalidOperationException($"{nameof(_insertionIndex)} is null.");
-        if (MathList.AtomAt(_insertionIndex) is null &&
-          MathList.AtomAt(_insertionIndex?.Previous)?.AtomType is MathAtomType.Placeholder)
+        if (_insertionIndex.FinalSubIndexType is MathListSubIndexType.BetweenBaseAndScripts) {
+          var prevInd = _insertionIndex.LevelDown();
+          if (MathList.AtomAt(prevInd).AtomType is MathAtomType.Placeholder)
+            _insertionIndex = prevInd;
+        } else if (MathList.AtomAt(_insertionIndex) is null && MathList.AtomAt(_insertionIndex?.Previous)?.AtomType is MathAtomType.Placeholder)
           _insertionIndex = _insertionIndex.Previous; // Skip right side of placeholders when end of line
       }
       void MoveCursorRight() {
         if (_insertionIndex is null)
           throw new InvalidOperationException($"{nameof(_insertionIndex)} is null.");
-        switch (MathList.AtomAt(_insertionIndex)) {
+        var currentAtom = MathList.AtomAt(_insertionIndex);
+        switch (currentAtom) {
           case null: //After Count
             var levelDown = _insertionIndex.LevelDown();
             switch (_insertionIndex.FinalSubIndexType) {
@@ -300,6 +304,8 @@ namespace CSharpMath.Editor {
         }
         if (_insertionIndex is null)
           throw new InvalidOperationException($"{nameof(_insertionIndex)} is null.");
+        if (_insertionIndex.FinalSubIndexType is MathListSubIndexType.BetweenBaseAndScripts && currentAtom?.AtomType is MathAtomType.Placeholder)
+          MoveCursorRight();
       }
 
       void DeleteBackwards() {
