@@ -183,6 +183,7 @@ namespace CSharpMath.Editor.Tests {
       T(@"■_5", K.Subscript, K.D5, K.Left, K.Left, K.Backspace, K.X, K.Left, K.Left, K.Left, K.Backspace),
       T(@"7+1^X", K.D7, K.Plus, K.D1, K.D2, K.Power, K.X, K.Left, K.Left, K.Backspace),
       T(@"7+■^X", K.D7, K.Plus, K.D1, K.Power, K.X, K.Left, K.Left, K.Backspace),
+      T(@"a(c-2)^3", K.SmallA, K.Power, K.D3, K.Left, K.Left, K.BothRoundBrackets, K.SmallC, K.Minus, K.D2)
     ]
     public void LeftRightBackspace(string latex, params K[] inputs) => Test(latex, inputs);
 

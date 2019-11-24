@@ -155,13 +155,19 @@ namespace CSharpMath.Editor {
         MathList.InsertAndAdvance(ref _insertionIndex, MathAtoms.ForCharacter('('), MathListSubIndexType.None);
         MathList.InsertAndAdvance(ref _insertionIndex, MathAtoms.ForCharacter(')'), MathListSubIndexType.None);
         // Don't go to the next insertion index, to start inserting before the close parens.
-        _insertionIndex = _insertionIndex.Previous;
+        if (_insertionIndex.FinalSubIndexType is MathListSubIndexType.BetweenBaseAndScripts)
+          _insertionIndex = _insertionIndex.LevelDown();
+        else
+          _insertionIndex = _insertionIndex.Previous;
       }
       void InsertAbsValue() {
         MathList.InsertAndAdvance(ref _insertionIndex, MathAtoms.ForCharacter('|'), MathListSubIndexType.None);
         MathList.InsertAndAdvance(ref _insertionIndex, MathAtoms.ForCharacter('|'), MathListSubIndexType.None);
         // Don't go to the next insertion index, to start inserting before the close parens.
-        _insertionIndex = _insertionIndex.Previous;
+        if (_insertionIndex.FinalSubIndexType is MathListSubIndexType.BetweenBaseAndScripts)
+          _insertionIndex = _insertionIndex.LevelDown();
+        else
+          _insertionIndex = _insertionIndex.Previous;
       }
 
       void MoveCursorLeft() {
