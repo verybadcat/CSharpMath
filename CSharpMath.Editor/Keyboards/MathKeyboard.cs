@@ -106,17 +106,14 @@ namespace CSharpMath.Editor {
         static bool IsFullPlaceholderRequired(IMathAtom mathAtom) {
           var atomType = mathAtom.AtomType;
           switch (atomType) {
-            case MathAtomType.Variable:
-            case MathAtomType.Number:
-            case MathAtomType.Radical:
-            case MathAtomType.Fraction:
-            case MathAtomType.Ordinary:
-            // functions are treated as a LargeOperator so no special case here. Yet?
-            case MathAtomType.LargeOperator:
-            case MathAtomType.Close:
-              return false;
-            default:
+            case MathAtomType.BinaryOperator:
+            case MathAtomType.UnaryOperator:
+            case MathAtomType.Relation:
+            case MathAtomType.Open:
+            case MathAtomType.Punctuation:
               return true;
+            default:
+              return false;
           }
         }
 
