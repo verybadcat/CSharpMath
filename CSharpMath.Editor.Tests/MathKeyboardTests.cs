@@ -86,6 +86,13 @@ namespace CSharpMath.Editor.Tests {
       T(@"e^■", K.BaseEPower),
       T(@"\sqrt{3}", K.SquareRoot, K.D3),
       T(@"\sqrt[3]{3}", K.CubeRoot, K.D3),
+      // https://github.com/verybadcat/CSharpMath/issues/47
+      T(@"2^■", K.D2, K.Power),
+      T(@"3+\square ^■", K.D3, K.Plus, K.Power),
+      T(@"[\square ^■", K.LeftSquareBracket, K.Power),
+      T(@")^■", K.RightRoundBracket, K.Power),
+      T(@"\sin ^■", K.Sine, K.Power),
+      T(@"\infty ^■", K.Infinity, K.Power)
     ]
     public void AtomInput(string latex, params K[] inputs) => Test(latex, inputs);
 
