@@ -97,20 +97,45 @@ namespace CSharpMath.Editor {
         var subIndexType = isSuperScript ? MathListSubIndexType.Superscript : MathListSubIndexType.Subscript;
         IMathList GetScript(IMathAtom atom) => isSuperScript ? atom.Superscript : atom.Subscript;
         void SetScript(IMathAtom atom, IMathList value) { if (isSuperScript) atom.Superscript = value; else atom.Subscript = value; }
-        if (_insertionIndex.AtBeginningOfLine) {
+        void CreateEmptyAtom() {
           // Create an empty atom and move the insertion index up.
           var emptyAtom = MathAtoms.Placeholder;
           SetScript(emptyAtom, MathAtoms.PlaceholderList);
           MathList.InsertAndAdvance(ref _insertionIndex, emptyAtom, subIndexType);
+        }
+        static bool IsFullPlaceholderRequired(IMathAtom mathAtom) {
+          var atomType = mathAtom.AtomType;
+          switch (atomType) {
+            case MathAtomType.Variable:
+            case MathAtomType.Number:
+            case MathAtomType.Radical:
+            case MathAtomType.Fraction:
+            case MathAtomType.Ordinary:
+            // functions are treated as a LargeOperator so no special case here. Yet?
+            case MathAtomType.LargeOperator:
+            case MathAtomType.Close:
+              return false;
+            default:
+              return true;
+          }
+        }
+
+        if (_insertionIndex.AtBeginningOfLine) {
+          CreateEmptyAtom();
         } else {
           var isBetweenBaseAndScripts = _insertionIndex.FinalSubIndexType is MathListSubIndexType.BetweenBaseAndScripts;
           var prevIndexCorrected = isBetweenBaseAndScripts ? _insertionIndex.LevelDown() : _insertionIndex.Previous;
           var prevAtom = MathList.AtomAt(prevIndexCorrected);
-          var script = GetScript(prevAtom);
-          if (script is null) {
-            SetScript(prevAtom, MathAtoms.PlaceholderList);
+
+          if (!isBetweenBaseAndScripts && IsFullPlaceholderRequired(prevAtom)) {
+            CreateEmptyAtom();
+          } else {
+            var script = GetScript(prevAtom);
+            if (script is null) {
+              SetScript(prevAtom, MathAtoms.PlaceholderList);
+            }
+            _insertionIndex = prevIndexCorrected.LevelUpWithSubIndex(subIndexType, MathListIndex.Level0Index(script?.Atoms?.Count ?? 0));
           }
-          _insertionIndex = prevIndexCorrected.LevelUpWithSubIndex(subIndexType, MathListIndex.Level0Index(script?.Atoms?.Count ?? 0));
         }
       }
 
