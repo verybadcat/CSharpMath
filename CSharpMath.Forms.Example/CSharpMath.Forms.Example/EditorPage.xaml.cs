@@ -16,6 +16,15 @@ namespace CSharpMath.Forms.Example {
   }
 
   public class EditorView : ContentView {
+    static void M() {
+      var view = new global::SkiaSharp.Views.Forms.SKCanvasView { HeightRequest = 225 };
+      var keyboard = new CSharpMath.Rendering.MathKeyboard();
+      keyboard.BindDisplay(view, new CSharpMath.SkiaSharp.MathPainter {
+        TextColor = SKColors.Black
+      }, new SKColor(0, 0, 0, 153)); // BindDisplay automatically enables touch!
+
+      keyboard.KeyPress(CSharpMath.Editor.MathKeyboardInput.X); // Wire input like this
+    }
     public EditorView() {
       // Basic functionality
       var view = new SKCanvasView { HeightRequest = 225 };
