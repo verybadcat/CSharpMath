@@ -40,7 +40,10 @@
     <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Font Reference\latinmodern-math.otf" />
+    <EmbeddedResource Include="Font Reference/*.otf" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Font Reference\cyrillic-modern-nmr5.otf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CSharpMath.Analyzers\CSharpMath.Analyzers\CSharpMath.Analyzers.csproj">

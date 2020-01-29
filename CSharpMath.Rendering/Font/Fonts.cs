@@ -10,13 +10,17 @@ namespace CSharpMath.Rendering {
   public struct Fonts : IFont<Glyph>, IEnumerable<Typeface> {
     static Fonts() {
       var reader = new OpenFontReader();
-      var latinMathTypeface = reader.Read(new MemoryStream(Resources.LatinModernMath, false));
-      latinMathTypeface.UpdateAllCffGlyphBounds();
-      GlobalTypefaces = new Typefaces(latinMathTypeface);
-
-      var amsBlackboardBoldTypeface = reader.Read(new MemoryStream(Resources.AMSCapitalBlackboardBold, false));
-      amsBlackboardBoldTypeface.UpdateAllCffGlyphBounds();
-      GlobalTypefaces.AddStart(amsBlackboardBoldTypeface);
+      Typeface LoadFont(string fileName) {
+        var typeface = reader.Read(
+          System.Reflection.Assembly.GetExecutingAssembly()
+          .GetManifestResourceStream($"CSharpMath.Rendering.Font_Reference.{fileName}")
+        );
+        typeface.UpdateAllCffGlyphBounds();
+        return typeface;
+      }
+      GlobalTypefaces = new Typefaces(LoadFont("latinmodern-math.otf"));
+      GlobalTypefaces.AddStart(LoadFont("AMS-Capital-Blackboard-Bold.otf"));
+      //GlobalTypefaces.AddEnd(LoadFont("cyrillic-modern-nmr5.otf")); // oof
     }
 
     public Fonts(IList<Typeface> localTypefaces, float pointSize) {

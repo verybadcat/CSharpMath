@@ -279,6 +279,7 @@ namespace CSharpMath.Atoms {
          { "vdots", Create(MathAtomType.Ordinary, "\u22EE") },
          { "cdots", Create(MathAtomType.Ordinary, "\u22EF") },
          { "ddots", Create(MathAtomType.Ordinary, "\u22F1") },
+         { "diameter", Create(MathAtomType.Ordinary, "\u2300") }, // not in iosMath
          { "triangle", Create(MathAtomType.Ordinary, "\u25B3") },
          { "imath", Create(MathAtomType.Ordinary, "\U0001D6A4") },
          { "jmath", Create(MathAtomType.Ordinary, "\U0001D6A5") },
@@ -325,32 +326,22 @@ namespace CSharpMath.Atoms {
     public static LargeOperator Operator(string name, bool? limits, bool noLimits = false) => new LargeOperator(name, limits, noLimits);
     public static Space Space(Structures.Space sp) => new Space(sp);
     public static MathAtom Create(MathAtomType type, char value) => Create(type, value.ToString());
-    public static MathAtom Create(MathAtomType type, string value) {
-      switch (type) {
-        case MathAtomType.Accent:
-          return new Accent(value);
-        case MathAtomType.Color:
-          return new Color();
-        case MathAtomType.Fraction:
-          return new Fraction();
-        case MathAtomType.Inner:
-          return new Inner();
-        case MathAtomType.LargeOperator:
-          throw new ArgumentException(
-            "Do not use Create(MathAtomType.LargeOperator, string)." +
-            "Use Operator(string, bool?, bool) instead.", nameof(type));
-        case MathAtomType.Overline:
-          return new Overline();
-        case MathAtomType.Underline:
-          return new Underline();
-        case MathAtomType.Space:
-          throw new ArgumentException(
-            "Do not use Create(MathAtomType.Space, string)." +
-            "Use Space(int, bool) instead.", nameof(type));
-        default:
-          return new MathAtom(type, value);
-      }
-    }
+    public static MathAtom Create(MathAtomType type, string value) => type switch
+    {
+      MathAtomType.Accent => new Accent(value),
+      MathAtomType.Color => new Color(),
+      MathAtomType.Fraction => new Fraction(),
+      MathAtomType.Inner => new Inner(),
+      MathAtomType.LargeOperator => throw new ArgumentException(
+        "Do not use Create(MathAtomType.LargeOperator, string)." +
+        "Use Operator(string, bool?, bool) instead.", nameof(type)),
+      MathAtomType.Overline => new Overline(),
+      MathAtomType.Underline => new Underline(),
+      MathAtomType.Space => throw new ArgumentException(
+        "Do not use Create(MathAtomType.Space, string)." +
+        "Use Space(int, bool) instead.", nameof(type)),
+      _ => new MathAtom(type, value),
+    };
 
     public static MathAtom Times => Create(MathAtomType.BinaryOperator, Symbols.Multiplication);
     public static MathAtom Divide => Create(MathAtomType.BinaryOperator, Symbols.Division);
@@ -491,7 +482,7 @@ namespace CSharpMath.Atoms {
     public static IFraction Fraction(string numerator, string denominator)
       => Fraction(MathListForCharacters(numerator), MathListForCharacters(denominator));
 
-    private static Dictionary<string, Pair<string, string>?> _matrixEnvironments { get; } =
+    private static readonly Dictionary<string, Pair<string, string>?> _matrixEnvironments =
       new Dictionary<string, Pair<string, string>?> {
         { "matrix",  null } ,
         { "pmatrix", Pair.Create("(", ")") } ,
