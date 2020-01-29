@@ -41,8 +41,9 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
     public static bool NoEnhancedColors { get; set; }
     private static CustomBreaker breaker = new CustomBreaker { BreakNumberAfterText = true, ThrowIfCharOutOfRange = false };
     private const string SpecialChars = @"#$%&\^_{}~";
-    public static Result<TextAtom> Build(ReadOnlySpan<char> latexSource) {
-      if (latexSource.IsEmpty) return new TextAtom.List(Array.Empty<TextAtom>(), 0);
+    public static Result<TextAtom> Build(string latexSource) {
+      if (string.IsNullOrEmpty(latexSource))
+        return new TextAtom.List(Array.Empty<TextAtom>(), 0);
       bool? displayMath = null;
       StringBuilder mathLaTeX = null;
       bool backslashEscape = false;
@@ -51,7 +52,9 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
       int dollarCount = 0;
       var globalAtoms = new TextAtomListBuilder();
       var breakList = new List<BreakAtInfo>();
-      breaker.BreakWords(latexSource, breakList);
+      breaker.SetNewBreakHandler(v =>
+        breakList.Add(new BreakAtInfo(v.LatestBreakAt, v.LatestWordKind)));
+      breaker.BreakWords(latexSource);
       Result CheckDollarCount(TextAtomListBuilder atoms) {
         switch (dollarCount) {
           case 0:
@@ -438,7 +441,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
         if (stopChar > 0) return stopChar == '}' ? "Expected }, unbalanced braces" : $@"Expected {stopChar}";
         return Ok(i);
       }
-      { if (BuildBreakList(latexSource, globalAtoms, 0, false, '\0').Error is string error) return error; }
+      { if (BuildBreakList(latexSource.AsSpan(), globalAtoms, 0, false, '\0').Error is string error) return error; }
       { if (CheckDollarCount(globalAtoms).Error is string error) return error; }
       if (displayMath != null) return "Math mode was not terminated";
       return globalAtoms.Build();

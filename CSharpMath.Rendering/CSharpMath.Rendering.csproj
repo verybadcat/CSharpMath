@@ -52,9 +52,9 @@
     </ProjectReference>
     <ProjectReference Include="..\CSharpMath.Editor\CSharpMath.Editor.csproj" />
   </ItemGroup>
+  <Import Project="..\PixelFarm.Typography (Excerpt)\PixelFarm.Typography (Excerpt).projitems" Label="Shared" Condition="Exists('..\Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems')" />
   <Import Project="..\Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems" Label="Shared" Condition="Exists('..\Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems')" />
   <Import Project="..\Typography\Typography.OpenFont\Typography.OpenFont.projitems" Label="Shared" />
   <Import Project="..\Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems" Label="Shared" />
-  <Import Project="..\Typography\PixelFarm.NetStandard\PixelFarm.Triangulation\PixelFarm.Triangulation.projitems" Label="Shared" />
-  <Import Project="..\Typography\Typography.Contours\Typography.Contours.projitems" Label="Shared" />
+  <Import Project="..\Typography\PixelFarm\BackEnd.Triangulation\Triangulation.projitems" Label="Shared" />
 </Project>

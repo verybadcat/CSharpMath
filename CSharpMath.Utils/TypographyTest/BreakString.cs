@@ -9,11 +9,11 @@ namespace CSharpMath.DevUtils.TypographyTest {
       const int length = 100;
       var s = new System.Diagnostics.Stopwatch();
       var b = new Typography.TextBreak.CustomBreaker();
-      b.BreakWords("Initialize", delegate { }); //Don't measure startup costs
+      b.BreakWords("Initialize"); //Don't measure startup costs
       void TestChar(char c) {
         {
           s.Restart();
-          b.BreakWords(new string(c, length), delegate { });
+          b.BreakWords(new string(c, length));
           s.Stop();
           Console.WriteLine("'{0}': {1}", c, s.Elapsed);
         }

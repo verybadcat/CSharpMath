@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,9 +18,9 @@ namespace CSharpMath.Rendering {
 
     Typeface IReadOnlyList<Typeface>.this[int index] => this[(sbyte)index];
 
-    public void Add(Typeface item) => AddEnd(item);
-    public void AddStart(Typeface item) => _typefaces.Add((sbyte)(_typefaces.Keys.Min() - 1), item);
-    public void AddEnd(Typeface item) => _typefaces.Add((sbyte)(_typefaces.Keys.Max() + 1), item);
+    public void Add(Typeface item) => AddSupplement(item);
+    public void AddOverride(Typeface item) => _typefaces.Add((sbyte)(_typefaces.Keys.Min() - 1), item);
+    public void AddSupplement(Typeface item) => _typefaces.Add((sbyte)(_typefaces.Keys.Max() + 1), item);
 
     public void Clear() { var item = _typefaces[0]; _typefaces.Clear(); _typefaces[0] = item; }
 

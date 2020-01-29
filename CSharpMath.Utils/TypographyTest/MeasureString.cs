@@ -10,6 +10,6 @@ namespace CSharpMath.DevUtils.TypographyTest {
     /// </summary>
     /// <param name="text">The string to measure.</param>
     /// <returns>The width of the string.</returns>
-    public static float Measure(string text, float pointSize = 20) => _Statics.GlyphLayout.LayoutAndMeasureString(text, pointSize).width;
+    public static float Measure(string text, float pointSize = 20) => _Statics.GlyphLayout.LayoutAndMeasureString(text.ToCharArray(), 0, text.Length, pointSize).width;
   }
 }
