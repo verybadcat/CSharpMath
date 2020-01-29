@@ -20,7 +20,7 @@ namespace CSharpMath.Rendering {
       }
       GlobalTypefaces = new Typefaces(LoadFont("latinmodern-math.otf"));
       GlobalTypefaces.AddOverride(LoadFont("AMS-Capital-Blackboard-Bold.otf"));
-      GlobalTypefaces.AddSupplement(LoadFont("cyrillic-modern-nmr5.otf"));
+      GlobalTypefaces.AddSupplement(LoadFont("cyrillic-modern-nmr10.otf"));
     }
 
     public Fonts(IList<Typeface> localTypefaces, float pointSize) {

@@ -84,8 +84,8 @@ namespace CSharpMath.Rendering {
             //Calling Select(g => g.Typeface).Distinct() speeds up query up to 10 times,
             //Calling Max(Func<,>) instead of Select(Func<,>).Max() speeds up query 2 times
             var typefaces = glyphs.Select(g => g.Typeface).Distinct().ToList();
-            Warnings.AssertAll(typefaces, Typography.OpenFont.Extensions.TypefaceExtensions.RecommendToUseTypoMetricsForLineSpacing,
-              "This font file is too old. Font files that support standard typographical metrics are better supported.");
+            //Warnings.AssertAll(typefaces, Typography.OpenFont.Extensions.TypefaceExtensions.RecommendToUseTypoMetricsForLineSpacing,
+            //  "This font file is too old. Font files that support standard typographical metrics are better supported.");
             display = new TextRunDisplay<Fonts, Glyph>(new Display.Text.AttributedGlyphRun<Fonts, Glyph>(content, glyphs, fonts), t.Range, TypesettingContext.Instance);
             FinalizeInlineDisplay(
               typefaces.Max(tf => tf.Ascender * tf.CalculateScaleToPixelFromPointSize(fonts.PointSize)),
