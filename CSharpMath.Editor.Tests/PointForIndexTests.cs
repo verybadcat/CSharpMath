@@ -105,44 +105,44 @@ namespace CSharpMath.Editor.Tests {
       new TestData {
         { (0, 0), 0 },
         // \frac a\frac bc
-        { (0, -20), 0, (SubIndex.Denominator, 0), (SubIndex.Denominator, 0) },
-        { (0, 0), 0, (SubIndex.Denominator, 0), (SubIndex.Numerator, 0) },
-        { (0, 8), 0, (SubIndex.Numerator, 0) },
-        { (6, -20), 0, (SubIndex.Denominator, 0), (SubIndex.Denominator, 1) },
-        { (6, 0), 0, (SubIndex.Denominator, 0), (SubIndex.Numerator, 1) },
-        { (6, 8), 0, (SubIndex.Numerator, 1) },
-        { (8, -20), 0, (SubIndex.Denominator, 1) },
+        { (1.5, -23.5), 0, (SubIndex.Denominator, 0), (SubIndex.Denominator, 0) },
+        { (1.5, -7.6), 0, (SubIndex.Denominator, 0), (SubIndex.Numerator, 0) },
+        { (0, 13.54), 0, (SubIndex.Numerator, 0) },
+        { (8.5, -23.5), 0, (SubIndex.Denominator, 0), (SubIndex.Denominator, 1) },
+        { (8.5, -7.6), 0, (SubIndex.Denominator, 0), (SubIndex.Numerator, 1) },
+        { (10, 13.54), 0, (SubIndex.Numerator, 1) },
+        { (8.5, -16.6), 0, (SubIndex.Denominator, 1) },
         // \frac\frac123
-        { (17, -20), 1, (SubIndex.Denominator, 0) },
-        { (17, 8), 1, (SubIndex.Numerator, 0), (SubIndex.Denominator, 0) },
-        { (17, 40), 1, (SubIndex.Numerator, 0), (SubIndex.Numerator, 0) },
-        { (23, -20), 1, (SubIndex.Denominator, 1) },
-        { (23, 8), 1, (SubIndex.Numerator, 1) },
-        { (23, 40), 1, (SubIndex.Numerator, 0), (SubIndex.Numerator, 1) },
+        { (13.333, -13.72), 1, (SubIndex.Denominator, 0) },
+        { (14.833, 10.6), 1, (SubIndex.Numerator, 0), (SubIndex.Denominator, 0) },
+        { (14.833, 26.5), 1, (SubIndex.Numerator, 0), (SubIndex.Numerator, 0) },
+        { (23.333, -13.72), 1, (SubIndex.Denominator, 1) },
+        { (21.833, 17.5), 1, (SubIndex.Numerator, 1) },
+        { (21.833, 26.5), 1, (SubIndex.Numerator, 0), (SubIndex.Numerator, 1) },
         // \sqrt d^e
-        { (27, -20), 2, (SubIndex.Radicand, 0) },
-        { (45, -20), 2, (SubIndex.Radicand, 1) },
-        { (45, 40), 2, (SubIndex.Superscript, 0) },
-        { (55, -20), 2, (SubIndex.Superscript, 1) },
+        { (36.667, 0), 2, (SubIndex.Radicand, 0) },
+        { (46.667, 0), 2, (SubIndex.Radicand, 1) },
+        { (46.667, 13.478), 2, (SubIndex.Superscript, 0) },
+        { (53.667, 13.478), 2, (SubIndex.Superscript, 1) },
         // \sqrt[5]6
-        { (60, -20), 3, (SubIndex.Radicand, 0) },
-        { (60, 8), 3, (SubIndex.Degree, 0) },
-        { (73, 40), 3, (SubIndex.Degree, 1) },
-        { (80, -20), 3, (SubIndex.Radicand, 1) },
+        { (70.671, 0), 3, (SubIndex.Radicand, 0) },
+        { (64.791, 8.736), 3, (SubIndex.Degree, 0) },
+        { (71.791, 8.736), 3, (SubIndex.Degree, 1) },
+        { (80.671, 0), 3, (SubIndex.Radicand, 1) },
         // \sqrt[f]g^{7_8}_{9^0}
-        { (87, 0), 4, (SubIndex.Radicand, 0) },
-        { (87, 8), 4, (SubIndex.Degree, 0) },
-        { (95, 8), 4, (SubIndex.Degree, 1) },
-        { (105, -20), 4, (SubIndex.Subscript, 0) },
-        { (105, 0), 4, (SubIndex.Radicand, 1) },
-        { (118, 20), 4, (SubIndex.Superscript, 0), (SubIndex.Subscript, 1) },
-        { (115, -20), 4, (SubIndex.Subscript, 0), (SubIndex.BetweenBaseAndScripts, 1) },
-        { (115, 0), 4, (SubIndex.Subscript, 0), (SubIndex.Superscript, 0) },
-        { (118, -20), 4, (SubIndex.Subscript, 1) },
-        { (120, 0), 4, (SubIndex.Subscript, 0), (SubIndex.Superscript, 1) },
-        { (122, -20), 5 }
+        { (96.556, 0), 4, (SubIndex.Radicand, 0) },
+        { (90.676, 8.736), 4, (SubIndex.Degree, 0) },
+        { (97.676, 8.736), 4, (SubIndex.Degree, 1) },
+        { (106.556, -6.8), 4, (SubIndex.Subscript, 0) },
+        { (106.556, 0), 4, (SubIndex.Radicand, 1) },
+        { (118.556, 10.02), 4, (SubIndex.Superscript, 0), (SubIndex.Subscript, 1) },
+        { (113.556, -6.8), 4, (SubIndex.Subscript, 0), (SubIndex.BetweenBaseAndScripts, 1) },
+        { (113.556, -2.754), 4, (SubIndex.Subscript, 0), (SubIndex.Superscript, 0) },
+        { (118.556, -6.8), 4, (SubIndex.Subscript, 1) },
+        { (118.556, -2.754), 4, (SubIndex.Subscript, 0), (SubIndex.Superscript, 1) },
+        { (118.556, 0), 5 }
       };
-    [Theory(Skip = "Needs updating test data"), MemberData(nameof(ComplexData))]
+    [Theory, MemberData(nameof(ComplexData))]
     public void Complex(PointF point, MathListIndex expected) => 
       Test(@"\frac a\frac bc\frac\frac123\sqrt d^e\sqrt[5]6\sqrt[f]g^{7_8}_{9^0}", point, expected);
     public static TestData SineData =>
@@ -150,7 +150,7 @@ namespace CSharpMath.Editor.Tests {
         { (0, 0), 0 },
         { (33.333, 0), 1 },
         { (43.333, 0), 2 },
-    };
+      };
     [Theory, MemberData(nameof(SineData))]
     public void Sine(PointF point, MathListIndex expected) => Test(@"\sin\pi", point, expected);
   }

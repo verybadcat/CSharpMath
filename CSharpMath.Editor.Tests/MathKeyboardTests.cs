@@ -196,5 +196,16 @@ namespace CSharpMath.Editor.Tests {
 
     [Theory, T(@"\square _■", K.Subscript)]
     public void SubscriptWorksAtBeginningOfLine(string latex, params K[] inputs) => Test(latex, inputs);
+
+    [Theory, T(@"eA\frac{\square }{\square }\sqrt[3]{\square }B^{\square }",
+     K.BaseEPower, K.Left, K.A, K.Fraction, K.CubeRoot, K.B)]
+    public void BetweenBaseAndScriptsInsert(string latex, params K[] inputs) => Test(latex, inputs);
+
+    [Theory,
+     T(@"eA\frac{\square }{\square }\sqrt[3]{\square }^{\square }",
+     K.BaseEPower, K.Left, K.A, K.Fraction, K.CubeRoot, K.B, K.Backspace),
+     T(@"e^{\square }",
+     K.BaseEPower, K.Left, K.A, K.Fraction, K.CubeRoot, K.B, K.Backspace, K.Backspace, K.Backspace, K.Backspace)]
+    public void BetweenBaseAndScriptsRemove(string latex, params K[] inputs) => Test(latex, inputs);
   }
 }

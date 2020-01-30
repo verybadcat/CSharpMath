@@ -23,18 +23,15 @@ namespace CSharpMath.Editor {
         }
         self[atomIndex] = atom;
       } else self.Insert(atomIndex, atom);
-      switch (advanceType) {
-        case MathListSubIndexType.None:
-          advance = advance.Next;
-          break;
-        default:
-          advance = advance.LevelUpWithSubIndex(advanceType, MathListIndex.Level0Index(0));
-          break;
-      }
+      advance = advanceType switch
+      {
+        MathListSubIndexType.None => advance.Next,
+        _ => advance.LevelUpWithSubIndex(advanceType, MathListIndex.Level0Index(0)),
+      };
     }
     /// <summary>Inserts <paramref name="atom"/> and modifies <paramref name="index"/> to advance to the next position.</summary>
     public static void InsertAndAdvance(this IMathList self, ref MathListIndex index, IMathAtom atom, MathListSubIndexType advanceType) {
-      index = index ?? MathListIndex.Level0Index(0);
+      index ??= MathListIndex.Level0Index(0);
       if (index.AtomIndex > self.Atoms.Count)
         throw new IndexOutOfRangeException($"Index {index.AtomIndex} is out of bounds for list of size {self.Atoms.Count}");
       switch (index.SubIndexType) {
@@ -51,7 +48,7 @@ namespace CSharpMath.Editor {
           atom.Superscript = currentAtom.Superscript;
           currentAtom.Subscript = null;
           currentAtom.Superscript = null;
-          self.InsertAtAtomIndexAndAdvance(index.AtomIndex + index.SubIndex?.AtomIndex ?? 0, atom, ref index, advanceType);
+          self.InsertAtAtomIndexAndAdvance(index.AtomIndex + 1, atom, ref index, MathListSubIndexType.None);
           break;
         case MathListSubIndexType.Degree:
         case MathListSubIndexType.Radicand:
