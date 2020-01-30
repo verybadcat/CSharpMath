@@ -5,26 +5,7 @@ open Xunit
 open CSharpMath.Editor
 
 let private mathKeyboardInputs =
-    [|  MathKeyboardInput.A
-        MathKeyboardInput.B
-        MathKeyboardInput.C
-        MathKeyboardInput.Alpha
-        MathKeyboardInput.Sine
-        MathKeyboardInput.ArcCotangent
-        MathKeyboardInput.Subscript
-        MathKeyboardInput.Power
-        MathKeyboardInput.Left
-        MathKeyboardInput.Right
-        MathKeyboardInput.Up
-        MathKeyboardInput.Down
-        MathKeyboardInput.Equals
-        MathKeyboardInput.Plus
-        MathKeyboardInput.Minus
-        MathKeyboardInput.Divide
-        MathKeyboardInput.LeftRoundBracket
-        MathKeyboardInput.RightRoundBracket
-        MathKeyboardInput.BothRoundBrackets
-    |]
+    typeof<MathKeyboardInput>.GetEnumValues() :?> MathKeyboardInput[]
 
 // can use Hedgehog or FSCheck instead for random testing
 
@@ -38,7 +19,7 @@ let private test100keypresses() =
     let keyboard = CSharpMath.Rendering.MathKeyboard()
     let mutable reverseInputs:MathKeyboardInput list = []
     try
-        for _ = 1 to 100 do
+        for _ in 1 .. 100 do
             let ki = getRandomMathKeyboardInput()
             reverseInputs <- ki::reverseInputs
             ki |> keyboard.KeyPress
