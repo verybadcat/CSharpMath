@@ -48,7 +48,10 @@ namespace CSharpMath.Editor {
           atom.Superscript = currentAtom.Superscript;
           currentAtom.Subscript = null;
           currentAtom.Superscript = null;
-          self.InsertAtAtomIndexAndAdvance(index.AtomIndex + 1, atom, ref index, MathListSubIndexType.None);
+          var atomIndex = index.AtomIndex;
+          // Prevent further subindexing inside BetweenBaseAndScripts
+          if (advanceType != MathListSubIndexType.None) index = index.LevelDown().Next;
+          self.InsertAtAtomIndexAndAdvance(atomIndex + 1, atom, ref index, advanceType);
           break;
         case MathListSubIndexType.Degree:
         case MathListSubIndexType.Radicand:
@@ -98,8 +101,7 @@ namespace CSharpMath.Editor {
           var downIndex = index.LevelDown();
           if (index.AtomIndex > 0) {
             var previous = self.Atoms[index.AtomIndex - 1];
-            if (previous.Subscript is null && previous.Superscript is null
-                && previous.AtomType == Enumerations.MathAtomType.Number) {
+            if (previous.Subscript is null && previous.Superscript is null) {
               previous.Superscript = currentAtom.Superscript;
               previous.Subscript = currentAtom.Subscript;
               self.RemoveAt(index.AtomIndex);

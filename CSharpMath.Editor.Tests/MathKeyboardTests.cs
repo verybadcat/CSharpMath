@@ -92,7 +92,10 @@ namespace CSharpMath.Editor.Tests {
       T(@"[\square ^■", K.LeftSquareBracket, K.Power),
       T(@")^■", K.RightRoundBracket, K.Power),
       T(@"\sin ^■", K.Sine, K.Power),
-      T(@"\infty ^■", K.Infinity, K.Power)
+      T(@"\infty ^■", K.Infinity, K.Power),
+      T(@"\log _■", K.Logarithm, K.Subscript),
+      T(@"\log _■", K.LogarithmWithBase),
+      T(@"\log _3", K.LogarithmWithBase, K.D3),
     ]
     public void AtomInput(string latex, params K[] inputs) => Test(latex, inputs);
 
@@ -194,18 +197,49 @@ namespace CSharpMath.Editor.Tests {
     ]
     public void LeftRightBackspace(string latex, params K[] inputs) => Test(latex, inputs);
 
-    [Theory, T(@"\square _■", K.Subscript)]
-    public void SubscriptWorksAtBeginningOfLine(string latex, params K[] inputs) => Test(latex, inputs);
+    [Theory, T(@"\square ^■", K.Power), T(@"\square _■", K.Subscript)]
+    public void ScriptsAtBeginningOfLine(string latex, params K[] inputs) => Test(latex, inputs);
 
-    [Theory, T(@"eA\frac{\square }{\square }\sqrt[3]{\square }B^{\square }",
-     K.BaseEPower, K.Left, K.A, K.Fraction, K.CubeRoot, K.B)]
+    [Theory,
+     T(@"eA^{\square }", K.BaseEPower, K.Left, K.A),
+     T(@"e\frac{■}{\square }^{\square }", K.BaseEPower, K.Left, K.Fraction),
+     T(@"e\sqrt[3]{■}^{\square }", K.BaseEPower, K.Left, K.CubeRoot),
+     T(@"eAB^{\square }", K.BaseEPower, K.Left, K.A, K.B),
+     T(@"eA\frac{\square }{\square }\sqrt{\square }B^{\square }",
+       K.BaseEPower, K.Left, K.A, K.Fraction, K.Right, K.Right, K.SquareRoot, K.Right, K.B),
+     T(@"eA\frac{\square }{\square }\sqrt[3]{\square }B_{\square }",
+       K.SmallE, K.Subscript, K.Left, K.A, K.Fraction, K.Right, K.Right, K.CubeRoot, K.Right, K.B),
+     T(@"eA\frac{\square }{\square }\sqrt[\square ]{\square }B_{\square }^{\square }",
+       K.BaseEPower, K.Left, K.Subscript, K.Left, K.Left, K.A, K.Fraction, K.Right, K.Right, K.NthRoot, K.Right, K.Right, K.B)]
     public void BetweenBaseAndScriptsInsert(string latex, params K[] inputs) => Test(latex, inputs);
 
     [Theory,
      T(@"eA\frac{\square }{\square }\sqrt[3]{\square }^{\square }",
-     K.BaseEPower, K.Left, K.A, K.Fraction, K.CubeRoot, K.B, K.Backspace),
+       K.BaseEPower, K.Left, K.A, K.Fraction, K.CubeRoot, K.B, K.Backspace),
      T(@"e^{\square }",
-     K.BaseEPower, K.Left, K.A, K.Fraction, K.CubeRoot, K.B, K.Backspace, K.Backspace, K.Backspace, K.Backspace)]
+       K.BaseEPower, K.Left, K.A, K.Fraction, K.CubeRoot, K.B, K.Backspace, K.Backspace, K.Backspace, K.Backspace)]
     public void BetweenBaseAndScriptsRemove(string latex, params K[] inputs) => Test(latex, inputs);
+
+    [Theory,
+     T(@"\frac{1}{■}", K.Slash),
+     T(@"\frac{1}{■}", K.D1, K.Slash),
+     T(@"\frac{2}{■}", K.D2, K.Slash),
+     T(@"\frac{12}{■}", K.D1, K.D2, K.Slash),
+     T(@"\frac{a}{■}", K.SmallA, K.Slash),
+     T(@"\frac{XyZ}{■}", K.X, K.SmallY, K.Z, K.Slash),
+     T(@"\frac{\alpha \beta c}{■}", K.SmallAlpha, K.SmallBeta, K.SmallC, K.Slash),
+     T(@"\frac{\sin \theta}{■}", K.Sine, K.SmallTheta, K.Slash),
+     T(@"\frac{\infty }{■}", K.Infinity, K.Slash),
+
+     T(@"\frac{1}{\frac{1}{■}}", K.Slash, K.Slash),
+     T(@"\frac{1}{\frac{2}{■}}", K.Slash, K.D2, K.Slash),
+     T(@"\frac{1}{2}\times \frac{1}{■}", K.Slash, K.D2, K.Right, K.Slash),
+
+     T(@"\sqrt{\frac{2}{■}}", K.SquareRoot, K.D2, K.Slash),
+     T(@"\frac{\sqrt{2}}{■}", K.SquareRoot, K.D2, K.Right, K.Slash),
+     T(@"\sqrt[\frac{1}{■}]{\square }", K.NthRoot, K.Slash),
+#warning Add tests for #109
+    ]
+    public void Slash(string latex, params K[] inputs) => Test(latex, inputs);
   }
 }

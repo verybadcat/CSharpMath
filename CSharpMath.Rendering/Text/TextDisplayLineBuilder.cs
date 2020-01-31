@@ -14,7 +14,7 @@ namespace CSharpMath.Rendering {
     public void AddSpace(float width) => Width += width;
 
     public void Add(Display display, float ascender, float descender, float gapAfterLine) {
-      float Max(float x, float y, float z) => x < y ? (y < z ? z : y) : (x < z ? z : x);
+      static float Max(float x, float y, float z) => x < y ? (y < z ? z : y) : (x < z ? z : x);
       Ascent = Max(Ascent, display.Ascent, ascender);
       Descent = Max(Descent, display.Descent, descender);
 
