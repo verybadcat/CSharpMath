@@ -61,18 +61,12 @@ namespace CSharpMath.Editor {
       IndexAtLocation(AtomIndex, SubIndexType, prevSubIndex) : null;
 
     ///<summary>Returns the next index.</summary>
-    public MathListIndex Next {
-      get {
-        switch (SubIndexType) {
-          case MathListSubIndexType.None:
-            return Level0Index(AtomIndex + 1);
-          case MathListSubIndexType.BetweenBaseAndScripts:
-            return IndexAtLocation(AtomIndex + 1, SubIndexType, SubIndex);
-          default:
-            return IndexAtLocation(AtomIndex, SubIndexType, SubIndex?.Next);
-        }
-      }
-    }
+    public MathListIndex Next => SubIndexType switch
+    {
+      MathListSubIndexType.None => Level0Index(AtomIndex + 1),
+      MathListSubIndexType.BetweenBaseAndScripts => IndexAtLocation(AtomIndex + 1, SubIndexType, SubIndex),
+      _ => IndexAtLocation(AtomIndex, SubIndexType, SubIndex?.Next),
+    };
 
     ///<summary>Returns true if any of the subIndexes of this index have the given type.</summary>
     public bool HasSubIndexOfType(MathListSubIndexType subIndexType) =>

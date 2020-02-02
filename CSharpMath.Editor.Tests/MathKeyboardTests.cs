@@ -215,9 +215,11 @@ namespace CSharpMath.Editor.Tests {
 
     [Theory,
      T(@"eA\frac{\square }{\square }\sqrt[3]{\square }^{\square }",
-       K.BaseEPower, K.Left, K.A, K.Fraction, K.CubeRoot, K.B, K.Backspace),
+       K.BaseEPower, K.Left, K.A, K.Fraction, K.Right, K.Right, K.CubeRoot, K.Right, K.B,
+       K.Backspace),
      T(@"e^{\square }",
-       K.BaseEPower, K.Left, K.A, K.Fraction, K.CubeRoot, K.B, K.Backspace, K.Backspace, K.Backspace, K.Backspace)]
+       K.BaseEPower, K.Left, K.A, K.Fraction, K.Right, K.Right, K.SquareRoot, K.Right, K.B,
+       K.Backspace, K.Backspace, K.Backspace, K.Backspace)]
     public void BetweenBaseAndScriptsRemove(string latex, params K[] inputs) => Test(latex, inputs);
 
     [Theory,
@@ -228,7 +230,7 @@ namespace CSharpMath.Editor.Tests {
      T(@"\frac{a}{■}", K.SmallA, K.Slash),
      T(@"\frac{XyZ}{■}", K.X, K.SmallY, K.Z, K.Slash),
      T(@"\frac{\alpha \beta c}{■}", K.SmallAlpha, K.SmallBeta, K.SmallC, K.Slash),
-     T(@"\frac{\sin \theta}{■}", K.Sine, K.SmallTheta, K.Slash),
+     T(@"\frac{\sin \theta }{■}", K.Sine, K.SmallTheta, K.Slash),
      T(@"\frac{\infty }{■}", K.Infinity, K.Slash),
 
      T(@"\frac{1}{\frac{1}{■}}", K.Slash, K.Slash),
@@ -238,7 +240,37 @@ namespace CSharpMath.Editor.Tests {
      T(@"\sqrt{\frac{2}{■}}", K.SquareRoot, K.D2, K.Slash),
      T(@"\frac{\sqrt{2}}{■}", K.SquareRoot, K.D2, K.Right, K.Slash),
      T(@"\sqrt[\frac{1}{■}]{\square }", K.NthRoot, K.Slash),
-#warning Add tests for #109
+
+     T(@"\frac{1^{\square }}{■}", K.D1, K.Power, K.Left, K.Slash),
+     T(@"\frac{123^{\square }}{■}", K.D1, K.D2, K.D3, K.Power, K.Left, K.Slash),
+     T(@"\frac{x\infty 1^{\square }}{■}", K.SmallX, K.Infinity, K.D1, K.Power, K.Left, K.Slash),
+     T(@"\frac{1_{\square }}{■}", K.D1, K.Subscript, K.Left, K.Slash),
+     T(@"\frac{123_{\square }}{■}", K.D1, K.D2, K.D3, K.Subscript, K.Left, K.Slash),
+     T(@"\frac{x\infty 1_{\square }}{■}", K.SmallX, K.Infinity, K.D1, K.Subscript, K.Left, K.Slash),
+
+     T(@"\frac{()}{■}", K.BothRoundBrackets, K.Right, K.Slash),
+     T(@"(\frac{()}{■}", K.LeftRoundBracket, K.BothRoundBrackets, K.Right, K.Slash),
+     T(@"(\frac{1}{■})", K.BothRoundBrackets, K.Slash),
+     T(@"\frac{(\frac{1}{\square })}{■}", K.BothRoundBrackets, K.Slash, K.Right, K.Right, K.Slash),
+     T(@"(\frac{[\} }{■}", K.LeftRoundBracket, K.LeftSquareBracket, K.RightCurlyBracket, K.Slash),
+     T(@"\{ \frac{[0,\infty )}{■}",
+       K.LeftCurlyBracket, K.LeftSquareBracket, K.D0, K.Comma, K.Infinity, K.RightRoundBracket, K.Slash),
+     T(@"\frac{(\{ \} )([])}{■}",
+       K.LeftRoundBracket, K.LeftCurlyBracket, K.RightCurlyBracket, K.RightRoundBracket,
+       K.LeftRoundBracket, K.LeftSquareBracket, K.RightSquareBracket, K.RightRoundBracket, K.Slash),
+     T(@"(\frac{(\{ \} )([])}{■}", K.LeftRoundBracket,
+       K.LeftRoundBracket, K.LeftCurlyBracket, K.RightCurlyBracket, K.RightRoundBracket,
+       K.LeftRoundBracket, K.LeftSquareBracket, K.RightSquareBracket, K.RightRoundBracket, K.Slash),
+
+     T(@"\frac{(1+2)}{■}", K.BothRoundBrackets, K.D1, K.Plus, K.D2, K.Right, K.Slash),
+     T(@"1+\frac{2}{■}", K.D1, K.Plus, K.D2, K.Slash),
+     T(@"1-\frac{2}{■}", K.D1, K.Minus, K.D2, K.Slash),
+     T(@"1\times \frac{2}{■}", K.D1, K.Multiply, K.D2, K.Slash),
+     T(@"1\div \frac{2}{■}", K.D1, K.Divide, K.D2, K.Slash),
+     T(@"\frac{1}{\frac{2}{■}}", K.D1, K.Slash, K.D2, K.Slash),
+     T(@"\sqrt{x+\frac{2}{■}}", K.SquareRoot, K.SmallX, K.Plus, K.D2, K.Slash),
+     T(@"\frac{(x+\sqrt{2})}{■}", K.BothRoundBrackets, K.SmallX, K.Plus, K.SquareRoot, K.D2, K.Right, K.Right, K.Slash),
+     T(@"\sqrt[X2Z+\frac{X2Z}{■}]{\square }", K.NthRoot, K.X, K.D2, K.Z, K.Plus, K.X, K.D2, K.Z, K.Slash),
     ]
     public void Slash(string latex, params K[] inputs) => Test(latex, inputs);
   }

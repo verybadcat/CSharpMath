@@ -151,9 +151,21 @@ namespace CSharpMath.Editor {
       void HandleSlashButton() {
         // special / handling - makes the thing a fraction
         var numerator = new MathList();
+        var openCount = 0;
+        if (_insertionIndex.FinalSubIndexType == MathListSubIndexType.BetweenBaseAndScripts)
+          _insertionIndex = _insertionIndex.LevelDown().Next;
         for (; !_insertionIndex.AtBeginningOfLine; _insertionIndex = _insertionIndex.Previous) {
           var a = MathList.AtomAt(_insertionIndex.Previous);
-          if (a.AtomType != MathAtomType.Number && a.AtomType != MathAtomType.Variable)
+          switch (a.AtomType) {
+            case MathAtomType.Open: openCount--; break;
+            case MathAtomType.Close: openCount++; break;
+          }
+          if (a.AtomType switch {
+                MathAtomType.BinaryOperator when openCount == 0 => true,
+                MathAtomType.Fraction when openCount == 0 => true,
+                MathAtomType.Open when openCount < 0 => true,
+                _ => false
+              })
             //We don't put this atom on the fraction
             break;
           else
@@ -343,11 +355,9 @@ namespace CSharpMath.Editor {
       }
 
       void DeleteBackwards() {
-#warning Refactor pls (include this logic in MathList.RemoveAt)
         // delete the last atom from the list
-        var prevIndex = _insertionIndex.Previous;
-        if (HasText && !(prevIndex is null)) {
-          _insertionIndex = prevIndex;
+        if (HasText && !_insertionIndex.AtBeginningOfLine) {
+          _insertionIndex = _insertionIndex.Previous;
           MathList.RemoveAt(ref _insertionIndex);
         }
       }
