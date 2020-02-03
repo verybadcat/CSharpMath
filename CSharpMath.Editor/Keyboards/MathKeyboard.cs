@@ -62,29 +62,10 @@ namespace CSharpMath.Editor {
           case MathKeyboardInput.CubeRoot:
             var sqroot = MathAtoms.PlaceholderSquareRoot;
             sqroot.Degree = MathLists.WithAtoms(MathAtoms.ForCharacter('3'));
+            sqroot.Degree = MathLists.WithAtoms(MathAtoms.ForCharacter('3'));
             return sqroot;
-          case MathKeyboardInput.Infinity:
-          case MathKeyboardInput.Degree:
-          case MathKeyboardInput.Angle:
-            return MathAtoms.Create(MathAtomType.Ordinary, c);
-          case MathKeyboardInput.Divide:
-          case MathKeyboardInput.Slash:
-            return MathAtoms.Divide;
           case MathKeyboardInput.Fraction:
             return MathAtoms.PlaceholderFraction;
-          case MathKeyboardInput.LeftCurlyBracket:
-            return MathAtoms.Create(MathAtomType.Open, c);
-          case MathKeyboardInput.RightCurlyBracket:
-            return MathAtoms.Create(MathAtomType.Close, c);
-          case MathKeyboardInput.GreaterOrEquals:
-          case MathKeyboardInput.LessOrEquals:
-            return MathAtoms.Create(MathAtomType.Relation, c);
-          case var _ when c >= UnicodeFontChanger.UnicodeGreekLowerStart && c <= UnicodeFontChanger.UnicodeGreekLowerEnd:
-            // All greek letters are rendered as variables.
-            return MathAtoms.Create(MathAtomType.Variable, c);
-          case var _ when c >= UnicodeFontChanger.UnicodeGreekUpperStart && c <= UnicodeFontChanger.UnicodeGreekUpperEnd:
-            // Including capital greek letters
-            return MathAtoms.Create(MathAtomType.Variable, c);
           case var _ when MathAtoms.ForCharacter(c) is MathAtom a:
             return a;
           default:
@@ -162,6 +143,7 @@ namespace CSharpMath.Editor {
           }
           if (a.AtomType switch {
                 MathAtomType.BinaryOperator when openCount == 0 => true,
+                MathAtomType.Relation when openCount == 0 => true,
                 MathAtomType.Fraction when openCount == 0 => true,
                 MathAtomType.Open when openCount < 0 => true,
                 _ => false
@@ -538,6 +520,7 @@ namespace CSharpMath.Editor {
         case MathKeyboardInput.Ratio_:
         case MathKeyboardInput.Percentage:
         case MathKeyboardInput.Comma:
+        case MathKeyboardInput.Semicolon:
         case MathKeyboardInput.Factorial:
         case MathKeyboardInput.Infinity:
         case MathKeyboardInput.Angle:

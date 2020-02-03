@@ -18,8 +18,8 @@ namespace CSharpMath.Editor {
 
     //Basic operators
     Plus = '+', Minus = '−', Minus_ = '-', Multiply = '×', Multiply_ = '*', Divide = '÷', Ratio = '∶', 
-    Ratio_ = ':', Percentage = '%', Comma = ',', Factorial = '!', Infinity = '∞', Angle = '∠', Degree = '°',
-    VerticalBar = '|', Logarithm = '㏒', NaturalLogarithm = '㏑',
+    Ratio_ = ':', Percentage = '%', Comma = ',', Semicolon = ';', Factorial = '!',
+    Infinity = '∞', Angle = '∠', Degree = '°', VerticalBar = '|', Logarithm = '㏒', NaturalLogarithm = '㏑',
 
     //More complicated operators
     BothRoundBrackets = '㈾', Slash = '/', Fraction = '⁄', Power = '^', Subscript = '_', SquareRoot = '√', 

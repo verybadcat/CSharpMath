@@ -99,20 +99,28 @@ namespace CSharpMath.Editor {
           if (currentAtom.Subscript == null && currentAtom.Superscript == null)
             throw new SubIndexTypeMismatchException("Nuclear fission is not supported if there are no subscripts or superscripts.");
           var downIndex = index.LevelDown();
-          if (index.AtomIndex > 0) {
-            var previous = self.Atoms[index.AtomIndex - 1];
-            if (previous.Subscript is null && previous.Superscript is null) {
-              previous.Superscript = currentAtom.Superscript;
-              previous.Subscript = currentAtom.Subscript;
-              self.RemoveAt(index.AtomIndex);
-              // it was in the nucleus and we removed it, get out of the nucleus and get in the nucleus of the previous one.
-              index = downIndex.Previous is MathListIndex downPrev
-                ? downPrev.LevelUpWithSubIndex(MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1))
-                : downIndex;
-              break;
-            }
+          if (index.AtomIndex > 0 &&
+              self.Atoms[index.AtomIndex - 1] is IMathAtom previous &&
+              previous.Subscript is null &&
+              previous.Superscript is null &&
+              previous.AtomType switch {
+                Enumerations.MathAtomType.BinaryOperator => false,
+                Enumerations.MathAtomType.UnaryOperator => false,
+                Enumerations.MathAtomType.Relation => false,
+                Enumerations.MathAtomType.Punctuation => false,
+                Enumerations.MathAtomType.Space => false,
+                _ => true
+              }) {
+            previous.Superscript = currentAtom.Superscript;
+            previous.Subscript = currentAtom.Subscript;
+            self.RemoveAt(index.AtomIndex);
+            // it was in the nucleus and we removed it, get out of the nucleus and get in the nucleus of the previous one.
+            index = downIndex.Previous is MathListIndex downPrev
+              ? downPrev.LevelUpWithSubIndex(MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1))
+              : downIndex;
+            break;
           }
-          // insert placeholder since previous atom isn't a number
+          // insert placeholder since we couldn't place the scripts in previous atom
           var insertionAtom = MathAtoms.Placeholder;
           // mark the placeholder as selected since that is the current insertion point.
           insertionAtom.Nucleus = Symbols.BlackSquare;

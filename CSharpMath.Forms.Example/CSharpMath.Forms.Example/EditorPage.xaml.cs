@@ -45,16 +45,18 @@ namespace CSharpMath.Forms.Example {
 
       // Debug labels
       var latex = new Label { Text = "LaTeX = " };
+      var atomTypes = new Label { Text = "AtomTypes = " };
       var ranges = new Label { Text = "Ranges = " };
       var index = new Label { Text = "Index = " };
       viewModel.RedrawRequested += (sender, e) => {
         latex.Text = "LaTeX = " + viewModel.LaTeX;
+        atomTypes.Text = "AtomTypes = " + string.Join(", ", viewModel.MathList.Select(x => x.AtomType));
         ranges.Text = "Ranges = " + string.Join(", ", ((ListDisplay<Fonts, Glyph>)viewModel.Display).Displays.Select(x => x.Range));
         index.Text = "Index = " + viewModel.InsertionIndex;
       };
 
       // Assemble
-      Content = new StackLayout { Children = { latex, ranges, index, view, keyboard, entry } };
+      Content = new StackLayout { Children = { latex, atomTypes, ranges, index, view, keyboard, entry } };
     }
   }
 }

@@ -363,6 +363,7 @@ namespace CSharpMath.Atoms {
         return Create(MathAtomType.Variable, c);
       }
       switch (c) {
+#warning Todo check if all these 9 characters are already accounted for in MathListBuilder, then remove
         case '$':
         case '%':
         case '#':
@@ -371,15 +372,15 @@ namespace CSharpMath.Atoms {
         case '\'':
         case '^':
         case '_':
-        case '{':
-        case '}':
-        case '\\': // All these are special characters we don't support.
+        case '\\':
           return null;
         case '(':
         case '[':
+        case '{':
           return Create(MathAtomType.Open, c);
         case ')':
         case ']':
+        case '}':
         case '!':
         case '?':
           return Create(MathAtomType.Close, c);
@@ -389,6 +390,9 @@ namespace CSharpMath.Atoms {
         case '=':
         case '<':
         case '>':
+        case '≠':
+        case '≥':
+        case '≤':
           return Create(MathAtomType.Relation, c);
         case ':': // Colon is a ratio. Regular colon is \colon
         case '\u2236':
@@ -411,9 +415,14 @@ namespace CSharpMath.Atoms {
         case '`':
         case '|':
           return Create(MathAtomType.Ordinary, c);
-        default: //also support non-ascii characters
+        case var _ when c >= UnicodeFontChanger.UnicodeGreekLowerStart && c <= UnicodeFontChanger.UnicodeGreekLowerEnd:
+          // All greek letters are rendered as variables.
+          return Create(MathAtomType.Variable, c);
+        case var _ when c >= UnicodeFontChanger.UnicodeGreekUpperStart && c <= UnicodeFontChanger.UnicodeGreekUpperEnd:
+          // Including capital greek letters
+          return Create(MathAtomType.Variable, c);
+        default:
           return Create(MathAtomType.Ordinary, c);
-          //throw new NotImplementedException($"Ascii character {c} should have been accounted for.");
       }
     }
 
