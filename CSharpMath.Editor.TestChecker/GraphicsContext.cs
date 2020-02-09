@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using CSharpMath.Display.Text;
+using CSharpMath.Displays;
 using CSharpMath.Tests.FrontEnd;
 
 namespace CSharpMath.Editor.TestChecker {

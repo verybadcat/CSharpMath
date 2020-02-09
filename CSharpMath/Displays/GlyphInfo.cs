@@ -1,4 +1,4 @@
-namespace CSharpMath.Display.Text {
+namespace CSharpMath.Displays {
   public class GlyphInfo<TGlyph> {
     public GlyphInfo(TGlyph glyph, float kern = 0) {
       Glyph = glyph;

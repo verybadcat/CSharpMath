@@ -1,6 +1,6 @@
 using CSharpMath.Atoms;
-using CSharpMath.Display;
-using CSharpMath.Display.Text;
+using CSharpMath.Displays;
+using CSharpMath.Displays.Display;
 using CSharpMath.FrontEnd;
 using CSharpMath.Tests.FrontEnd;
 using System.Drawing;

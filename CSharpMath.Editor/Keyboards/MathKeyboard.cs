@@ -3,7 +3,7 @@ namespace CSharpMath.Editor {
   using System.Collections.Generic;
   using System.Drawing;
   using Atoms;
-  using Display;
+  using Displays;
   using FrontEnd;
   using Atom = Atoms.Atom;
 
@@ -13,7 +13,7 @@ namespace CSharpMath.Editor {
     //private readonly List<MathListIndex> highlighted;
     protected TypesettingContext<TFont, TGlyph> Context { get; }
     public CaretHandle? Caret { get; protected set; }
-    public IDisplay<TFont, TGlyph>? Display { get; protected set; }
+    public Displays.Display.ListDisplay<TFont, TGlyph>? Display { get; protected set; }
     public MathList MathList { get; } = new MathList();
     public string LaTeX => MathListBuilder.MathListToLaTeX(MathList);
     private MathListIndex _insertionIndex = MathListIndex.Level0Index(0);

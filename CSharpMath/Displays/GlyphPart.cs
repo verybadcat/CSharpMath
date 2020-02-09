@@ -1,4 +1,4 @@
-namespace CSharpMath.Display.Text {
+namespace CSharpMath.Displays {
   /// <summary>Represents a part of a glyph used for constructing a large vertical or horizontal glyph.</summary>
   public class GlyphPart<TGlyph> {
     public GlyphPart(TGlyph glyph,

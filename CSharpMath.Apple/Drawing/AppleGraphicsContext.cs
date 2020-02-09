@@ -1,24 +1,22 @@
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using CoreGraphics;
 using CoreText;
-using CSharpMath.Display.Text;
+using CSharpMath.Displays;
 using CSharpMath.FrontEnd;
 using Color = CSharpMath.Structures.Color;
-using UIKit;
 using TFont = CSharpMath.Apple.AppleMathFont;
 using TGlyph = System.UInt16;
 
 namespace CSharpMath.Apple.Drawing {
   public class AppleGraphicsContext : IGraphicsContext<TFont, TGlyph> {
-    
+
     public CGContext CgContext { get; set; }
 
-    public void DrawGlyphsAtPoints(IReadOnlyList<TGlyph> glyphs, TFont font, IEnumerable<PointF> points, Color? color)
-    {
-      if(color.HasValue) CgContext.SetFillColor(color.Value.ToCGColor());
+    public void DrawGlyphsAtPoints
+      (IReadOnlyList<TGlyph> glyphs, TFont font, IEnumerable<PointF> points, Color? color) {
+      if (color.HasValue) CgContext.SetFillColor(color.Value.ToCGColor());
       font.CtFont.DrawGlyphs(CgContext, glyphs.ToArray(), points.Select(p => (CGPoint)p).ToArray());
     }
 
@@ -31,7 +29,8 @@ namespace CSharpMath.Apple.Drawing {
     }
 
     public void DrawGlyphRunWithOffset(AttributedGlyphRun<TFont, TGlyph> run, PointF offset, Color? color) {
-      CgContext.TextPosition = new CGPoint(CgContext.TextPosition.X + offset.X, CgContext.TextPosition.Y + offset.Y);
+      CgContext.TextPosition = new CGPoint
+        (CgContext.TextPosition.X + offset.X, CgContext.TextPosition.Y + offset.Y);
       if (color.HasValue) CgContext.SetFillColor(color.Value.ToCGColor());
       using var textLine = new CTLine(run.ToNsAttributedString());
       textLine.Draw(CgContext);

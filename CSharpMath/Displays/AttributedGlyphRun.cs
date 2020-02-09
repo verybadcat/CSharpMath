@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CSharpMath.Display.Text {
+namespace CSharpMath.Displays {
   /// <summary>Like an attributed string, but the attributes other than Kern are required to be fixed
   /// over the whole string. We use KernedGlyph objects instead of Glyphs to
   /// allow us to set kern on a per-glyph basis.</summary>

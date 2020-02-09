@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using CSharpMath.Display;
+using CSharpMath.Displays;
 using CSharpMath.FrontEnd;
 using Typography.OpenFont;
 using Typography.OpenFont.MathGlyphs;
@@ -47,12 +47,11 @@ namespace CSharpMath.Rendering {
         }
       return glyph;
     }
-    public override IEnumerable<Display.Text.GlyphPart<Glyph>> GetVerticalGlyphAssembly
-      (Glyph rawGlyph, Fonts fonts) {
+    public override IEnumerable<GlyphPart<Glyph>> GetVerticalGlyphAssembly(Glyph rawGlyph, Fonts fonts) {
       var scale = rawGlyph.Typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);
       return
         rawGlyph.Info.MathGlyphInfo?.VertGlyphConstruction?.GlyphAsm_GlyphPartRecords?.Select(record =>
-        new Display.Text.GlyphPart<Glyph>(
+        new GlyphPart<Glyph>(
           new Glyph(rawGlyph.Typeface, rawGlyph.Typeface.GetGlyphByIndex(record.GlyphId)),
           record.FullAdvance * scale,
           record.StartConnectorLength * scale,

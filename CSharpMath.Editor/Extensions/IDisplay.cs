@@ -1,8 +1,8 @@
 using System.Drawing;
 
 namespace CSharpMath.Editor {
-  using Display;
-  using Display.Text;
+  using Displays;
+  using Displays.Display;
 
   public static partial class DisplayEditingExtensions {
     /// <summary>

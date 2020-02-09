@@ -1,7 +1,7 @@
 using System;
 using System.Drawing;
 using System.Text;
-using ListDisplay = CSharpMath.Display.ListDisplay<CSharpMath.Tests.FrontEnd.TestFont, char>;
+using ListDisplay = CSharpMath.Displays.Display.ListDisplay<CSharpMath.Tests.FrontEnd.TestFont, char>;
 
 namespace CSharpMath.Editor.TestChecker {
   public class Checker {

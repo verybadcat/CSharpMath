@@ -15,11 +15,13 @@ namespace CSharpMath.Rendering {
 #warning HIGH PRIORITY: Remove (Must have a Mac to test)
     void IGraphicsContext<TFonts, Glyph>.SetTextPosition(PointF position) => Translate(position);
 
-    public void DrawGlyphsAtPoints(IReadOnlyList<Glyph> glyphs, TFonts font, IEnumerable<PointF> points, Color? color) {
+    public void DrawGlyphsAtPoints
+      (IReadOnlyList<Glyph> glyphs, TFonts font, IEnumerable<PointF> points, Color? color) {
       foreach (var (glyph, point) in glyphs.Zip(points, System.ValueTuple.Create)) {
         if (GlyphBoxColor != null) {
           using var rentedArray = new RentedArray<Glyph>(glyph);
-          var rect = GlyphBoundsProvider.Instance.GetBoundingRectsForGlyphs(font, rentedArray.Result, 1).Single();
+          var rect =
+            GlyphBoundsProvider.Instance.GetBoundingRectsForGlyphs(font, rentedArray.Result, 1).Single();
           Canvas.CurrentColor = GlyphBoxColor?.glyph;
           Canvas.StrokeRect(point.X + rect.X, point.Y + rect.Y, rect.Width, rect.Height);
         }
@@ -40,7 +42,8 @@ namespace CSharpMath.Rendering {
       Canvas.DrawLine(x1, y1, x2, y2, lineThickness);
     }
 
-    public void DrawGlyphRunWithOffset(Display.Text.AttributedGlyphRun<TFonts, Glyph> run, PointF offset, Color? color) {
+    public void DrawGlyphRunWithOffset
+      (Displays.AttributedGlyphRun<TFonts, Glyph> run, PointF offset, Color? color) {
       var textPosition = offset;
       if (GlyphBoxColor != null) {
         Bounds bounds;

@@ -5,7 +5,7 @@ namespace CSharpMath.Rendering {
          (fonts, size) => new Fonts(fonts, size),
          GlyphBoundsProvider.Instance,
          GlyphFinder.Instance,
-         UnicodeFontChanger.Instance,
+         Displays.UnicodeFontChanger.Instance,
          MathTable.Instance
        );
   }

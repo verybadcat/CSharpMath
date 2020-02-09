@@ -3,9 +3,9 @@ namespace CSharpMath.Rendering {
   using System.Collections.Generic;
   using System.Linq;
   using Atoms;
-  using Display;
-  using Display.Text;
-  using Displays = Display.ListDisplay<Fonts, Glyph>;
+  using Displays;
+  using Displays.Display;
+  using Displays = Displays.Display.ListDisplay<Fonts, Glyph>;
   public static class TextLayoutter {
     public static (Displays relative, Displays absolute) Layout
       (TextAtom input, Fonts inputFont, float canvasWidth, float additionalLineSpacing) {
@@ -107,11 +107,8 @@ namespace CSharpMath.Rendering {
             //Calling Select(g => g.Typeface).Distinct() speeds up query up to 10 times,
             //Calling Max(Func<,>) instead of Select(Func<,>).Max() speeds up query 2 times
             var typefaces = glyphs.Select(g => g.Typeface).Distinct().ToList();
-            //Warnings.AssertAll(typefaces, Typography.OpenFont.Extensions.
-            //  TypefaceExtensions.RecommendToUseTypoMetricsForLineSpacing,
-            //  "This font file is too old. Font files that support standard typographical metrics are better supported.");
             display = new TextRunDisplay<Fonts, Glyph>(
-              new Display.Text.AttributedGlyphRun<Fonts, Glyph>(content, glyphs, fonts),
+              new AttributedGlyphRun<Fonts, Glyph>(content, glyphs, fonts),
               t.Range, TypesettingContext.Instance
             );
             FinalizeInlineDisplay(
@@ -122,7 +119,8 @@ namespace CSharpMath.Rendering {
             break;
           case TextAtom.Math m:
             if (m.DisplayStyle)
-              throw new InvalidCodePathException("Display style maths should have been handled above this switch.");
+              throw new InvalidCodePathException
+                ("Display style maths should have been handled above this switch.");
             display = Typesetter<Fonts, Glyph>
               .CreateLine(m.Content, fonts, TypesettingContext.Instance, LineStyle.Text);
             var scale = fonts.MathTypeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);
@@ -132,7 +130,7 @@ namespace CSharpMath.Rendering {
           case TextAtom.ControlSpace cs:
             var spaceGlyph = GlyphFinder.Instance.Lookup(fonts, ' ');
             display = new TextRunDisplay<Fonts, Glyph>(
-              new Display.Text.AttributedGlyphRun<Fonts, Glyph>(" ", new[] { spaceGlyph }, fonts),
+              new AttributedGlyphRun<Fonts, Glyph>(" ", new[] { spaceGlyph }, fonts),
               cs.Range, TypesettingContext.Instance
             );
             scale = spaceGlyph.Typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);
@@ -154,13 +152,13 @@ namespace CSharpMath.Rendering {
             float _ = default;
             accentDisplayLine.Clear
               (0, 0, accenteeDisplayList, ref _, false, false, additionalLineSpacing);
-            Warnings.Assert(invalidDisplayMaths.Count == 0,
+            System.Diagnostics.Debug.Assert(invalidDisplayMaths.Count == 0,
               "Display maths inside an accentee is unsupported -- ignoring display maths");
             var accentee = new Displays(accenteeDisplayList);
             var accenteeCodepoint = a.Content.SingleChar(style);
             var accenteeSingleGlyph =
               accenteeCodepoint.HasValue
-              ? GlyphFinder.Instance.Lookup(fonts, accenteeCodepoint.Value)
+              ? GlyphFinder.Instance.Lookup(fonts, accenteeCodepoint.GetValueOrDefault())
               : GlyphFinder.Instance.EmptyGlyph;
             
             var accentDisplay = new AccentDisplay<Fonts, Glyph>(

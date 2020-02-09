@@ -1,5 +1,5 @@
 using CSharpMath.Atoms;
-using CSharpMath.Display;
+using CSharpMath.Displays;
 using CSharpMath.FrontEnd;
 using CoreGraphics;
 using UIKit;
@@ -20,7 +20,7 @@ using NView = AppKit.NSView;
 namespace CSharpMath.Apple {
   public class AppleMathView : NView {
     public string ErrorMessage { get; set; }
-    private ListDisplay<TFont, TGlyph> _displayList;
+    private IDisplay<TFont, TGlyph> _displayList;
     public float FontSize { get; set; } = 20f;
     public ColumnAlignment TextAlignment { get; set; } = ColumnAlignment.Left;
     public NContentInsets ContentInsets { get; set; }

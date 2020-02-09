@@ -10,7 +10,7 @@ namespace CSharpMath {
     /// <summary>Return the empty string. Do not wrap.</summary>
     EmptyString,
   }
-  public static class StringBuilderExtensions {
+  public static partial class Extensions {
     public static StringBuilder Append(this StringBuilder sb, ReadOnlySpan<char> value) {
       sb.EnsureCapacity(sb.Length + value.Length);
       for (int i = 0; i < value.Length; i++) sb.Append(value[i]);

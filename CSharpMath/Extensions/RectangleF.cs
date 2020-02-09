@@ -2,7 +2,7 @@ using System;
 using System.Drawing;
 
 namespace CSharpMath {
-  public static class RectangleFExtensions {
+  public static partial class Extensions {
     public static RectangleF Plus(this RectangleF rect, PointF vector) =>
       new RectangleF(rect.Location.Plus(vector), rect.Size);
     public static RectangleF Union(this RectangleF rect1, RectangleF rect2) {

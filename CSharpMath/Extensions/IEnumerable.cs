@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace CSharpMath {
-  public static class IEnumerableExtensions {
+  public static partial class Extensions {
     public static bool IsEmpty<T>(this IEnumerable<T> enumerable) {
       if (enumerable == null) return true;
       foreach (var _ in enumerable) return false;

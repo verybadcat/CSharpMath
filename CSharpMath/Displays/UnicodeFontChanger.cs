@@ -3,7 +3,7 @@ using System.Text;
 using CSharpMath.Atoms;
 using CSharpMath.FrontEnd;
 
-namespace CSharpMath {
+namespace CSharpMath.Displays {
   public class UnicodeFontChanger : IFontChanger {
     private const char UnicodeGreekLowerStart = '\x03B1';
     private const char UnicodeGreekLowerEnd = '\x03C9';

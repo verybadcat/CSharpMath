@@ -1,10 +1,9 @@
 namespace CSharpMath.Editor {
   using System;
   using System.Drawing;
-  using System.Linq;
 
-  using Display;
-  using Display.Text;
+  using Displays;
+  using Displays.Display;
   using FrontEnd;
   using Color = Structures.Color;
 
@@ -35,7 +34,8 @@ namespace CSharpMath.Editor {
       TypesettingContext<TFont, TGlyph> context,
       MathListIndex index) where TFont : IFont<TGlyph> =>
       index.SubIndexType != MathListSubIndexType.None
-      ? throw new ArgumentException("The subindex must be none to get the closest point for it.", nameof(index))
+      ? throw new ArgumentException
+        ("The subindex must be none to get the closest point for it.", nameof(index))
       : index.AtomIndex == self.Range.End
       // draw a caret after the fraction
       ? self.Position.Plus(new PointF(self.DisplayBounds.Right, 0))
@@ -46,7 +46,8 @@ namespace CSharpMath.Editor {
       this FractionDisplay<TFont, TGlyph> self,
       MathListIndex index, Color color) where TFont : IFont<TGlyph> {
       if (index.SubIndexType != MathListSubIndexType.None)
-        throw new ArgumentException("The subindex must be none to get the highlight a character in it.", nameof(index));
+        throw new ArgumentException
+          ("The subindex must be none to get the highlight a character in it.", nameof(index));
       self.Highlight(color);
     }
 
@@ -62,7 +63,8 @@ namespace CSharpMath.Editor {
       {
         MathListSubIndexType.Numerator => self.Numerator,
         MathListSubIndexType.Denominator => self.Denominator,
-        _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Subindex type is not a fraction subtype."),
+        _ => throw new ArgumentOutOfRangeException
+          (nameof(type), type, "Subindex type is not a fraction subtype."),
       };
   }
 }

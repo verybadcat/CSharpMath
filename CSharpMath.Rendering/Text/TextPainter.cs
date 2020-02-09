@@ -2,7 +2,8 @@ using System.Drawing;
 using System.Linq;
 
 namespace CSharpMath.Rendering {
-  using Display;
+  using Displays;
+  using Displays.Display;
   /// <summary>
   /// Unlike <see cref="Typesetter{TFont, TGlyph}"/>,
   /// <see cref="TextPainter{TCanvas, TColor}"/>'s coordinates are inverted by default.
@@ -71,7 +72,7 @@ namespace CSharpMath.Rendering {
         using var array = new Structures.RentedArray<IDisplay<Fonts, Glyph>>(
           _relativeXCoordDisplay, _absoluteXCoordDisplay
         );
-        DrawCore(c, new Display.ListDisplay<Fonts, Glyph>(array.Result));
+        DrawCore(c, new ListDisplay<Fonts, Glyph>(array.Result));
       }
     }
     /// <summary>

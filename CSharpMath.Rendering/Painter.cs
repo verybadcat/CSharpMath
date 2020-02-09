@@ -1,7 +1,7 @@
 using System;
 using System.Drawing;
 
-using CSharpMath.Display;
+using CSharpMath.Displays;
 using TFonts = CSharpMath.Rendering.Fonts;
 
 using Typography.OpenFont;

@@ -19,8 +19,8 @@ namespace CSharpMath.Rendering {
           : content;
       public string Content { get; }
       public override int? SingleChar(FontStyle style) =>
-        Typesetter<Fonts, Glyph>.UnicodeLengthIsOne(Content)
-        ? UnicodeFontChanger.Instance.ChangeFont(GlyphFinder.Instance.GetCodepoint(Content, 0), style)
+        Displays.Typesetter<Fonts, Glyph>.UnicodeLengthIsOne(Content)
+        ? Displays.UnicodeFontChanger.Instance.ChangeFont(GlyphFinder.Instance.GetCodepoint(Content, 0), style)
         : new int?();
     }
     public sealed class Newline : TextAtom {
@@ -50,9 +50,9 @@ namespace CSharpMath.Rendering {
       public override int? SingleChar(FontStyle style) => Content.SingleChar(style);
     }
     public sealed class Math : TextAtom {
-      public Math(Atoms.MathList content, bool displayStyle, Range range) : base(range) =>
+      public Math(MathList content, bool displayStyle, Range range) : base(range) =>
         (Content, DisplayStyle) = (content, displayStyle);
-      public Atoms.MathList Content { get; }
+      public MathList Content { get; }
       public bool DisplayStyle { get; }
       public override int? SingleChar(FontStyle style) => null;
     }
@@ -61,7 +61,8 @@ namespace CSharpMath.Rendering {
         : base(new Range(index, commandLength + content.Range.Length + 2 /*counting '{' and '}'*/)) =>
         (Content, FontStyle, content.Range) =
           (content, style == FontStyle.Default
-           ? FontStyle.Roman //FontStyle.Default is FontStyle.Italic, FontStyle.Roman is no change to characters
+           //FontStyle.Default is FontStyle.Italic, FontStyle.Roman is no change to characters
+           ? FontStyle.Roman
            : style, new Range(content.Range.Location + commandLength + index + 1 /*counting '{'*/,
                               content.Range.Length));
       public TextAtom Content { get; }

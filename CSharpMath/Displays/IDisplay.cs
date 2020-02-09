@@ -1,10 +1,9 @@
 using CSharpMath.Atoms;
 using System.Drawing;
-using CSharpMath.Display;
 using CSharpMath.FrontEnd;
 using Color = CSharpMath.Structures.Color;
 
-namespace CSharpMath.Display {
+namespace CSharpMath.Displays {
   public interface IDisplay<TFont, TGlyph>
     where TFont : IFont<TGlyph> {
     void Draw(IGraphicsContext<TFont, TGlyph> context);

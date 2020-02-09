@@ -3,14 +3,17 @@ namespace CSharpMath.Editor {
   using System.Collections.Generic;
   using System.Drawing;
   using System.Linq;
-  using Display;
-  using Display.Text;
+  using Displays;
+  using Displays.Display;
   using FrontEnd;
   using Color = Structures.Color;
 
   partial class DisplayEditingExtensions {
-    public static MathListIndex? IndexForPoint<TFont, TGlyph>(this ListDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, PointF point) where TFont : IFont<TGlyph> {
-      // The origin of for the subelements of a MathList is the current position, so translate the current point to our origin.
+    public static MathListIndex? IndexForPoint<TFont, TGlyph>
+      (this ListDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, PointF point)
+      where TFont : IFont<TGlyph> {
+      // The origin of for the subelements of a MathList is the current position,
+      // so translate the current point to our origin.
       var translatedPoint = new PointF(point.X - self.Position.X, point.Y - self.Position.Y);
 
       IDisplay<TFont, TGlyph>? closest = null;
@@ -50,20 +53,22 @@ namespace CSharpMath.Editor {
                    ? null
                    : MathListIndex.Level0Index(self.Range.End);
           } else
-            // It is within the ListDisplay but not within the X bounds of any sublist. Use the closest in that case.
+            // It is within the ListDisplay but not within the X bounds of any sublist.
+            // Use the closest in that case.
             displayWithPoint = closest;
           break;
         case 1:
           displayWithPoint = xbounds[0];
           var rect = new RectangleF(displayWithPoint.Position, displayWithPoint.DisplayBounds.Size);
           if (translatedPoint.X >= self.Width - PixelDelta)
-            //The point is close to the end. Only use the selected X bounds if the Y is within range.
+            // The point is close to the end. Only use the selected X bounds if the Y is within range.
             if (translatedPoint.Y <= rect.YMin() - PixelDelta)
-              //The point is less than the Y including the delta. Move the cursor to the end rather than in this atom.
+              // The point is less than the Y including the delta.
+              // Move the cursor to the end rather than in this atom.
               return MathListIndex.Level0Index(self.Range.End);
           break;
         default:
-          //Use the closest since there are more than 2 sublists which have this X position.
+          // Use the closest since there are more than 2 sublists which have this X position.
           displayWithPoint = closest;
           break;
       }
@@ -96,7 +101,9 @@ namespace CSharpMath.Editor {
       return index;
     }
 
-    public static PointF? PointForIndex<TFont, TGlyph>(this ListDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, MathListIndex index) where TFont : IFont<TGlyph> {
+    public static PointF? PointForIndex<TFont, TGlyph>
+      (this ListDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, MathListIndex index)
+      where TFont : IFont<TGlyph> {
       if (index is null) return null;
 
       PointF? position;
@@ -144,7 +151,8 @@ namespace CSharpMath.Editor {
           display.HighlightCharacterAt(index.SubIndex, color);
     }
 
-    public static void Highlight<TFont, TGlyph>(this ListDisplay<TFont, TGlyph> self, Color color) where TFont : IFont<TGlyph> {
+    public static void Highlight<TFont, TGlyph>(this ListDisplay<TFont, TGlyph> self, Color color)
+      where TFont : IFont<TGlyph> {
       foreach (var display in self.Displays)
         display.Highlight(color);
     }

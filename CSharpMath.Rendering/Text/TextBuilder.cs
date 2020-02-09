@@ -56,6 +56,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
       breaker.SetNewBreakHandler(v =>
         breakList.Add(new BreakAtInfo(v.LatestBreakAt, v.LatestWordKind)));
       breaker.BreakWords(latexSource);
+
       Result CheckDollarCount(TextAtomListBuilder atoms) {
         switch (dollarCount) {
           case 0:
@@ -108,32 +109,32 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
           atoms.Add(Space.ParagraphIndent, 3);
         }
         for (; i < breakList.Count; i++) {
-          void ObtainRange(ReadOnlySpan<char> latexInput, int index,
+          void ObtainSection(ReadOnlySpan<char> latexInput, int index,
             out int start, out int end, out ReadOnlySpan<char> section, out WordKind kind) {
             (start, end) = (index == 0 ? 0 : breakList[index - 1].breakAt, breakList[index].breakAt);
             section = latexInput.Slice(start, end - start);
             kind = breakList[index].wordKind;
           }
-          ObtainRange(latex, i, out var startAt, out var endAt, out var textSection, out var wordKind);
-          bool SetPrevRange(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section) {
+          ObtainSection(latex, i, out var startAt, out var endAt, out var textSection, out var wordKind);
+          bool PreviousSection(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section) {
             bool success = i-- > 0;
-            if (success) ObtainRange(latexInput, i, out startAt, out endAt, out section, out wordKind);
+            if (success) ObtainSection(latexInput, i, out startAt, out endAt, out section, out wordKind);
             return success;
           }
-          bool SetNextRange(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section) {
+          bool NextSection(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section) {
             bool success = ++i < breakList.Count;
-            if (success) ObtainRange(latexInput, i, out startAt, out endAt, out section, out wordKind);
+            if (success) ObtainSection(latexInput, i, out startAt, out endAt, out section, out wordKind);
             return success;
           }
-          Result<TextAtom> ReadArgumentAtom(ReadOnlySpan<char> latexInput) {
+          Result<TextAtom.List> ReadArgumentAtom(ReadOnlySpan<char> latexInput) {
             backslashEscape = false;
             var argAtoms = new TextAtomListBuilder();
-            if(BuildBreakList(latexInput, argAtoms, ++i, true, '\0').Bind(index => i = index).Error is string error) return error;
-            return argAtoms.Build();
+            return BuildBreakList(latexInput, argAtoms, ++i, true, '\0')
+              .Bind(index => { i = index; return argAtoms.Build(); });
           }
           SpanResult<char> ReadArgumentString(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section) {
             afterCommand = false;
-            if (!SetNextRange(latexInput, ref section)) return Err("Missing argument");
+            if (!NextSection(latexInput, ref section)) return Err("Missing argument");
             if (section.IsNot('{')) return Err("Missing {");
             int endingIndex = -1;
             //startAt + 1 to not start at the { we started at
@@ -149,15 +150,15 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
             if (endingIndex == -1) return Err("Missing }");
             var resultText = latexInput.Slice(endAt, endingIndex - endAt);
             while (startAt < endingIndex)
-              _ = SetNextRange(latexInput, ref section); //this never fails because the above check
+              _ = NextSection(latexInput, ref section); //this never fails because the above check
             return Ok(resultText);
           }
-          ReadOnlySpan<char> LookAheadForPunc(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section) {
+          ReadOnlySpan<char> NextSectionUntilPunc(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section) {
             int start = endAt;
-            while (SetNextRange(latexInput, ref section))
+            while (NextSection(latexInput, ref section))
               if (wordKind != WordKind.Punc || SpecialChars.Contains(section[0])) {
                 //We have overlooked by one
-                SetPrevRange(latexInput, ref section);
+                PreviousSection(latexInput, ref section);
                 break;
               }
             return latexInput.Slice(start, endAt - start);
@@ -167,7 +168,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
           if (textSection.Is('$')) {
             if (backslashEscape)
               if (displayMath != null) mathLaTeX.Append(@"\$");
-              else atoms.Add("$", LookAheadForPunc(latex, ref textSection));
+              else atoms.Add("$", NextSectionUntilPunc(latex, ref textSection));
             else {
               dollarCount++;
               continue;
@@ -209,17 +210,19 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     break;
                   case var _ when textSection.Is('%'):
                     var comment = new StringBuilder();
-                    while (SetNextRange(latex, ref textSection) && wordKind != WordKind.NewLine) comment.Append(textSection);
+                    while (NextSection(latex, ref textSection) && wordKind != WordKind.NewLine)
+                      comment.Append(textSection);
                     atoms.Comment(comment.ToString());
                     break;
                   case var _ when textSection.Is('{'):
-                    if(BuildBreakList(latex, atoms, ++i, false, '}').Bind(index => i = index).Error is string error) return error;
+                    if(BuildBreakList(latex, atoms, ++i, false, '}').Bind(index => i = index).Error is string error)
+                      return error;
                     break;
                   case var _ when textSection.Is('}'):
                     return "Unexpected }, unbalanced braces";
                   case var _ when wordKind == WordKind.NewLine:
-                    //Consume newlines after commands
-                    //Double newline == paragraph break
+                    // Consume newlines after commands
+                    // Double newline == paragraph break
                     if (afterNewline) {
                       ParagraphBreak();
                       afterNewline = false;
@@ -243,7 +246,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                       //Need to allocate in the end :(
                       //Don't look ahead for punc; we are looking for one char only
                       atoms.Add(textSection[0].ToString(), default(ReadOnlySpan<char>));
-                    } else atoms.Add(textSection.ToString(), LookAheadForPunc(latex, ref textSection));
+                    } else atoms.Add(textSection.ToString(), NextSectionUntilPunc(latex, ref textSection));
                     break;
                 }
               afterCommand = false;
@@ -398,7 +401,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                   }
                 //case "^", "\"", ...
                 case var textAccent when
-                  TextAtoms.PredefinedAccents.TryGetByFirst(textAccent.ToString(), out var accent): {
+                  TextAtoms.PredefinedAccents.TryGetByFirst(textAccent, out var accent): {
                     int tmp_commandLength = textAccent.Length;
                     if (ReadArgumentAtom(latex)
                       .Bind(builtContent => atoms.Add(builtContent, accent, tmp_commandLength))
@@ -407,12 +410,12 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     break;
                   }
                 //case "textasciicircum", "textless", ...
-                case var textSymbol when TextAtoms.PredefinedTextSymbols.TryGetValue(textSymbol.ToString(), out var replaceResult):
-                  atoms.Add(replaceResult, LookAheadForPunc(latex, ref textSection));
+                case var textSymbol when TextAtoms.PredefinedTextSymbols.TryGetValue(textSymbol, out var replaceResult):
+                  atoms.Add(replaceResult, NextSectionUntilPunc(latex, ref textSection));
                   break;
                 case var command:
                   if (displayMath != null) mathLaTeX.Append(command); //don't eat the command when parsing math
-                  else return $@"Unknown command \{command.ToString()}";
+                  else return $@"Unknown command \{command}";
                   break;
               }
               backslashEscape = false;
@@ -425,7 +428,8 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
         if (stopChar > 0) return stopChar == '}' ? "Expected }, unbalanced braces" : $@"Expected {stopChar}";
         return Ok(i);
       }
-      { if (BuildBreakList(latexSource.AsSpan(), globalAtoms, 0, false, '\0').Error is string error) return error; }
+      { if (BuildBreakList(latexSource.AsSpan(), globalAtoms, 0, false, '\0').Error is string error)
+          return error; }
       { if (CheckDollarCount(globalAtoms).Error is string error) return error; }
       if (displayMath != null) return "Math mode was not terminated";
       return globalAtoms.Build();
@@ -439,7 +443,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
         case TextAtom.Math m:
           return b.Append('\\')
             .Append(m.DisplayStyle ? '[' : '(')
-            .Append(Atoms.MathListBuilder.MathListToLaTeX(m.Content))
+            .Append(MathListBuilder.MathListToLaTeX(m.Content))
             .Append('\\')
             .Append(m.DisplayStyle ? ']' : ')');
         case TextAtom.Space s:
@@ -466,7 +470,8 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
             "TextAtoms should never be null. You must have sneaked one in.");
         case var a:
           throw new InvalidCodePathException(
-            $"There should not be an unknown type of TextAtom. However, one with type {a.GetType()} was encountered.");
+            "There should not be an unknown type of TextAtom." +
+            $"However, one with type {a.GetType()} was encountered.");
       }
     }
   }

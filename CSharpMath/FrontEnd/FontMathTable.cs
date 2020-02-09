@@ -1,5 +1,5 @@
 using CSharpMath.Atoms;
-using CSharpMath.Display;
+using CSharpMath.Displays;
 using System;
 using System.Collections.Generic;
 
@@ -69,8 +69,7 @@ namespace CSharpMath.FrontEnd {
     public abstract float RadicalExtraAscender(TFont font);
     #endregion
     #region glyph assembly
-    public abstract IEnumerable<Display.Text.GlyphPart<TGlyph>>? GetVerticalGlyphAssembly
-      (TGlyph rawGlyph, TFont font);
+    public abstract IEnumerable<GlyphPart<TGlyph>>? GetVerticalGlyphAssembly(TGlyph rawGlyph, TFont font);
     public abstract float MinConnectorOverlap(TFont font);
     public abstract (IEnumerable<TGlyph> variants, int count) GetVerticalVariantsForGlyph(TGlyph rawGlyph);
     public abstract (IEnumerable<TGlyph> variants, int count) GetHorizontalVariantsForGlyph(TGlyph rawGlyph);

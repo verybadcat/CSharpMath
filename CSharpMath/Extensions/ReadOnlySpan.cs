@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 
 namespace CSharpMath {
-  public static class ReadOnlySpanExtensions {
+  public static partial class Extensions {
     public static bool Is(this ReadOnlySpan<char> span, char c) =>
       span.Length == 1 && span[0] == c;
     public static bool IsNot(this ReadOnlySpan<char> span, char c) =>

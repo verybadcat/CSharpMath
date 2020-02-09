@@ -386,7 +386,7 @@ namespace CSharpMath.Atoms {
           return Divide;
         case '.':
           return new Number(c.ToString());
-        case var _ when UnicodeFontChanger.IsLowerGreek(c) || UnicodeFontChanger.IsUpperGreek(c):
+        case var _ when Displays.UnicodeFontChanger.IsLowerGreek(c) || Displays.UnicodeFontChanger.IsUpperGreek(c):
           // All greek letters are rendered as variables.
           return new Variable(c.ToString());
         default:

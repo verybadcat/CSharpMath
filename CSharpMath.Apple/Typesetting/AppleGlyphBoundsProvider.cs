@@ -4,7 +4,7 @@ using System.Linq;
 using CoreGraphics;
 using CoreText;
 using CSharpMath.Apple.Drawing;
-using CSharpMath.Display.Text;
+using CSharpMath.Displays;
 using CSharpMath.FrontEnd;
 using TGlyph = System.UInt16;
 using TFont = CSharpMath.Apple.AppleMathFont;
@@ -13,10 +13,12 @@ namespace CSharpMath.Apple {
   public class AppleGlyphBoundsProvider: IGlyphBoundsProvider<TFont, TGlyph> {
     private AppleGlyphBoundsProvider() { }
     public static AppleGlyphBoundsProvider Instance { get; } = new AppleGlyphBoundsProvider();
-    public (IEnumerable<float> Advances, float Total) GetAdvancesForGlyphs(TFont font, IEnumerable<TGlyph> glyphs, int nGlyphs) {
+    public (IEnumerable<float> Advances, float Total) GetAdvancesForGlyphs
+      (TFont font, IEnumerable<TGlyph> glyphs, int nGlyphs) {
       using var glyphArray = new Structures.RentedArray<TGlyph>(glyphs, nGlyphs);
       var advanceSizes = new CGSize[nGlyphs];
-      var combinedAdvance = font.CtFont.GetAdvancesForGlyphs(CTFontOrientation.Default, glyphArray.EntireArray, advanceSizes, nGlyphs);
+      var combinedAdvance = font.CtFont.GetAdvancesForGlyphs
+        (CTFontOrientation.Default, glyphArray.EntireArray, advanceSizes, nGlyphs);
       return (advanceSizes.Select(advance => (float)advance.Width), (float)combinedAdvance);
     }
     public IEnumerable<RectangleF> GetBoundingRectsForGlyphs(TFont font, IEnumerable<TGlyph> glyphs, int nVariants) {

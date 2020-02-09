@@ -1,6 +1,6 @@
 using System.Globalization;
 using CoreText;
-using CSharpMath.Display.Text;
+using CSharpMath.Displays;
 using Foundation;
 using TFont = CSharpMath.Apple.AppleMathFont;
 using TGlyph = System.UInt16;

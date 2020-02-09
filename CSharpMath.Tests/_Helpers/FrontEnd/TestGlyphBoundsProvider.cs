@@ -4,13 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Drawing;
 using TGlyph = System.Char;
-using CSharpMath.Display.Text;
+using CSharpMath.Displays;
 
 namespace CSharpMath.Tests.FrontEnd {
   class TestGlyphBoundsProvider : IGlyphBoundsProvider<TestFont, TGlyph> {
+    // all constants were chosen to bear some resemblance to a real font.
     private const float WidthPerCharacterPerFontSize = 0.5f; // "m" and "M" get double width.
     private const float AscentPerFontSize = 0.7f;
-    private const float DescentPerFontSize = 0.2f; // all constants were chosen to bear some resemblance to a real font.
+    private const float DescentPerFontSize = 0.2f;
 
     TestGlyphBoundsProvider() { }
     public static TestGlyphBoundsProvider Instance { get; } = new TestGlyphBoundsProvider();
@@ -32,19 +33,23 @@ namespace CSharpMath.Tests.FrontEnd {
     }
 
     public float GetTypographicWidth(TestFont font, AttributedGlyphRun<TestFont, TGlyph> run) =>
-      font.PointSize * GetEffectiveLength(run.Glyphs) * WidthPerCharacterPerFontSize + run.GlyphInfos.Sum(g => g.KernAfterGlyph);
+      font.PointSize * GetEffectiveLength(run.Glyphs) * WidthPerCharacterPerFontSize
+      + run.GlyphInfos.Sum(g => g.KernAfterGlyph);
 
-    public IEnumerable<RectangleF> GetBoundingRectsForGlyphs(TestFont font, IEnumerable<TGlyph> glyphs, int nGlyphs) =>
+    public IEnumerable<RectangleF> GetBoundingRectsForGlyphs
+      (TestFont font, IEnumerable<TGlyph> glyphs, int nGlyphs) =>
       glyphs.Select(glyph => {
         ReadOnlySpan<TGlyph> span = stackalloc[] { glyph };
         float width = font.PointSize * GetEffectiveLength(span) * WidthPerCharacterPerFontSize;
         float ascent = font.PointSize * AscentPerFontSize;
         float descent = font.PointSize * DescentPerFontSize;
-        //  The y axis is NOT inverted. So our y coordinate is minus the descent, i.e. the rect bottom is the descent below the axis.
+        // The y axis is NOT inverted. So our y coordinate is minus the descent,
+        // i.e. the rect bottom is the descent below the axis.
         return new RectangleF(0, -descent, width, ascent + descent);
       });
 
-    public (IEnumerable<float> Advances, float Total) GetAdvancesForGlyphs(TestFont font, IEnumerable<TGlyph> glyphs, int nGlyphs) {
+    public (IEnumerable<float> Advances, float Total) GetAdvancesForGlyphs
+      (TestFont font, IEnumerable<TGlyph> glyphs, int nGlyphs) {
       var r = new float[nGlyphs];
       var total = 0f;
       int i = 0;

@@ -5,7 +5,7 @@ using CSharpMath.Atoms;
 using CSharpMath.FrontEnd;
 using Color = CSharpMath.Structures.Color;
 
-namespace CSharpMath.Display.Text {
+namespace CSharpMath.Displays.Display {
   public class GlyphConstructionDisplay<TFont, TGlyph> : IGlyphDisplay<TFont, TGlyph> where TFont : IFont<TGlyph> {
     private readonly IReadOnlyList<TGlyph> _glyphs;
     private readonly IEnumerable<PointF> _glyphPositions;

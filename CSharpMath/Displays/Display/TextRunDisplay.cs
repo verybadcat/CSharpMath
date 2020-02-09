@@ -1,11 +1,10 @@
 using CSharpMath.Atoms;
-using CSharpMath.Display.Text;
 using CSharpMath.FrontEnd;
 using Color = CSharpMath.Structures.Color;
 using System.Drawing;
 using System.Linq;
 
-namespace CSharpMath.Display.Text {
+namespace CSharpMath.Displays.Display {
   /// <summary>Corresponds to MTCTLineDisplay in iOSMath.</summary> 
   public class TextRunDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph> where TFont : IFont<TGlyph> {
     public TextRunDisplay(

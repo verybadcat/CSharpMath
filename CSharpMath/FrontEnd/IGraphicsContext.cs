@@ -1,13 +1,11 @@
 using System.Collections.Generic;
 using System.Drawing;
-using CSharpMath.Display;
-using CSharpMath.Display.Text;
+using CSharpMath.Displays;
 using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.FrontEnd {
   /// <summary>Represents a front-end graphics context. Used for drawing.</summary>
-  public interface IGraphicsContext<TFont, TGlyph>
-    where TFont: IFont<TGlyph> {
+  public interface IGraphicsContext<TFont, TGlyph> where TFont: IFont<TGlyph> {
     void DrawLine(float x1, float y1, float x2, float y2, float strokeWidth, Color? color);
     void DrawGlyphRunWithOffset
       (AttributedGlyphRun<TFont, TGlyph> text, PointF point, Color? color);

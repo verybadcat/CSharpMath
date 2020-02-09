@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CSharpMath.Display {
-  public static class IEnumerableOfIDisplayExtensions {
+namespace CSharpMath {
+  using Displays;
+  public static partial class Extensions {
     public static float CollectionAscent<TFont, TGlyph>
       (this IEnumerable<IDisplay<TFont, TGlyph>> displays) where TFont : IFont<TGlyph> =>
         displays.IsNonempty() ? displays.Max(display => display.Ascent + display.Position.Y) : 0;

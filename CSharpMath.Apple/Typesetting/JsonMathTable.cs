@@ -1,4 +1,4 @@
-using CSharpMath.Display;
+using CSharpMath.Displays;
 using CSharpMath.FrontEnd;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
@@ -133,11 +133,10 @@ namespace CSharpMath.Apple {
     private const string _startConnectorKey = "startConnector";
     private const string _extenderKey = "extender";
     private const string _glyphKey = "glyph";
-    public override IEnumerable<Display.Text.GlyphPart<TGlyph>> GetVerticalGlyphAssembly
-      (TGlyph rawGlyph, TFont font) =>
+    public override IEnumerable<GlyphPart<TGlyph>> GetVerticalGlyphAssembly(TGlyph rawGlyph, TFont font) =>
       _assemblyTable[GlyphNameProvider.GetGlyphName(rawGlyph)]?[_assemblyPartsKey] is JArray parts
       ? parts.Select(partInfo =>
-        new Display.Text.GlyphPart<TGlyph>(
+        new GlyphPart<TGlyph>(
           GlyphNameProvider.GetGlyph(partInfo[_glyphKey].Value<string>()),
           FontUnitsToPt(font, partInfo[_advanceKey].Value<int>()),
           FontUnitsToPt(font, partInfo[_startConnectorKey].Value<int>()),

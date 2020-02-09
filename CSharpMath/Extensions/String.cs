@@ -1,5 +1,5 @@
 namespace CSharpMath {
-  public static class StringExtensions {
+  public static partial class Extensions {
     public static bool Contains(this string str, char c) {
       for (int i = 0; i < str.Length; i++)
         if (str[i] == c) return true;

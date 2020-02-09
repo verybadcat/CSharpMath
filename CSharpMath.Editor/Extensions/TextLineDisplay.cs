@@ -3,8 +3,8 @@ namespace CSharpMath.Editor {
   using System.Drawing;
   using System.Linq;
 
-  using Display;
-  using Display.Text;
+  using Displays;
+  using Displays.Display;
   using FrontEnd;
   using Color = Structures.Color;
 

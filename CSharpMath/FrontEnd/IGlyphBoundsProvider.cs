@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Drawing;
-using CSharpMath.Display;
-using CSharpMath.Display.Text;
+using CSharpMath.Displays;
 
 namespace CSharpMath.FrontEnd {
   public interface IGlyphBoundsProvider<TFont, TGlyph> where TFont: IFont<TGlyph> {

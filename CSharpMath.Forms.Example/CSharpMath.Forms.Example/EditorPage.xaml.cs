@@ -5,7 +5,7 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 namespace CSharpMath.Forms.Example {
-  using Display;
+  using Displays;
   using Rendering;
   [XamlCompilation(XamlCompilationOptions.Compile)]
   public partial class EditorPage : ContentPage {
@@ -43,7 +43,7 @@ namespace CSharpMath.Forms.Example {
         atomTypes.Text = "Atom Types = " + string.Join
           (", ", viewModel.MathList.Select(x => x.GetType().Name));
         ranges.Text = "Ranges = " + string.Join
-          (", ", ((ListDisplay<Fonts, Glyph>)viewModel.Display).Displays.Select(x => x.Range));
+          (", ", viewModel.Display.Displays.Select(x => x.Range));
         index.Text = "Index = " + viewModel.InsertionIndex;
       };
 

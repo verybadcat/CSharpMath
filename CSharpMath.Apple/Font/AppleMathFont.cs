@@ -1,6 +1,6 @@
 using CoreGraphics;
 using CoreText;
-using CSharpMath.Display;
+using CSharpMath.Displays;
 
 namespace CSharpMath.Apple {
   /// <remarks>Corresponds to MTFont in iosMath.</remarks>
