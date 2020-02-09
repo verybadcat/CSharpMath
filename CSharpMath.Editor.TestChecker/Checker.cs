@@ -1,15 +1,13 @@
 using System;
 using System.Drawing;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using ListDisplay = CSharpMath.Display.ListDisplay<CSharpMath.Tests.FrontEnd.TestFont, char>;
 
 namespace CSharpMath.Editor.TestChecker {
   public class Checker {
-    /// <summary>Whether you want to view e.g. fraction lines and radical lines despite viewing character positions with less clarity.</summary>
-    public static readonly bool OutputLines = false;
-
+    /// <summary>Whether you want to view e.g. fraction lines and radical lines
+    /// despite viewing character positions with less clarity.</summary>
+    public static readonly bool OutputLines = true;
     public static void Main() {
       int ReadInt(string message) {
         string input;
@@ -20,7 +18,6 @@ namespace CSharpMath.Editor.TestChecker {
         } while (!int.TryParse(input, out value));
         return value;
       }
-
       var context = new GraphicsContext();
       // We need lots of horizontal space, vertical not so much
       Console.SetBufferSize(10000, 500);
@@ -45,17 +42,21 @@ namespace CSharpMath.Editor.TestChecker {
           Console.WriteLine("Enter: Moves on to another test case.");
           Console.WriteLine("");
           
-          ListDisplay display;
-          do {
+          ListDisplay display = null;
+          void AssignDisplay() {
             Console.Write("Input LaTeX: ");
             if (latex is null) latex = Console.ReadLine();
             else Console.WriteLine(latex);
-            display = Tests.IndexForPointTests.CreateDisplay(latex);
-          } while (display is null);
+            Tests.IndexForPointTests.CreateDisplay(latex)
+            .Match(listDisplay => display = listDisplay, error => {
+              Console.WriteLine(error);
+              AssignDisplay();
+            });
+          }
+          AssignDisplay();
           var x = ReadInt("Input Touch X (integer): ");
           var y = ReadInt("Input Touch Y (integer): ");
           Console.Clear();
-          // ConsoleDrawRectangle(Rectangle.Empty, 'O', Structures.Color.PredefinedColors["yellow"]); // Origin
 
           // ReadKey() overwrites the drawn content, but re-drawing takes too long
           display.Draw(context);
@@ -85,17 +86,16 @@ moveCursor:var pos = Adjust(new Rectangle(x, y, 0, 0));
       if (col is Structures.Color color) {
         ConsoleColor ret = 0;
         double rr = color.R, gg = color.G, bb = color.B, delta = double.MaxValue;
-
         foreach (ConsoleColor cc in Enum.GetValues(typeof(ConsoleColor))) {
           var n = Enum.GetName(typeof(ConsoleColor), cc);
-          var c = cc is ConsoleColor.DarkYellow ? Color.Orange : Color.FromName(n); // There's no "DarkYellow" in System.Drawing.Color
+          // There's no "DarkYellow" in System.Drawing.Color
+          var c = cc is ConsoleColor.DarkYellow ? Color.Orange : Color.FromName(n);
           var t = Math.Pow(c.R - rr, 2.0) + Math.Pow(c.G - gg, 2.0) + Math.Pow(c.B - bb, 2.0);
           if (t < delta) {
             delta = t;
             ret = cc;
           }
         }
-
         Console.ForegroundColor = ret;
       }
       else Console.ResetColor();
@@ -107,9 +107,9 @@ moveCursor:var pos = Adjust(new Rectangle(x, y, 0, 0));
         Math.Clamp(Console.BufferHeight / 2 - rect.Bottom, 0, Console.BufferHeight - 1),
         rect.Width,
         rect.Height);
-    public static void ConsoleDrawRectangle(Rectangle rect, char glyph, Structures.Color? color) {
+    public static void ConsoleDrawRectangle
+      (Rectangle rect, char glyph, Structures.Color? color) {
       rect = Adjust(rect);
-
       var innerRectWidth = rect.Width - 2;
       var innerRectHeight = rect.Height - 2;
 
@@ -132,15 +132,14 @@ moveCursor:var pos = Adjust(new Rectangle(x, y, 0, 0));
           Console.Write('━');
         Console.Write('┛');
       }
-
       if (glyph != '\0') {
         Console.SetCursorPosition(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
         Console.Write(glyph);
       }
-
       Console.ResetColor();
     }
-    public static void ConsoleDrawHorizontal(int x1_, int y_, int x2_, int thickness, Structures.Color? color) {
+    public static void ConsoleDrawHorizontal
+      (int x1_, int y_, int x2_, int thickness, Structures.Color? color) {
       var rect = Adjust(Rectangle.FromLTRB(x1_, y_ - thickness / 2, x2_, y_ + thickness / 2));
       SetConsoleColor(color);
       for (int i = 0; i < thickness; i++) {

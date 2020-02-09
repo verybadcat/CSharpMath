@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>CSharpMath.DevUtils</RootNamespace>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
@@ -20,4 +20,7 @@
   <Import Project="..\Typography\Typography.OpenFont\Typography.OpenFont.projitems" Label="Shared" />
   <Import Project="..\Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems" Label="Shared" />
   <Import Project="..\Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems" Label="Shared" />
+  <ItemGroup>
+    <Compile Include="..\CSharpMath.Rendering\_IgnoreTypographyWarnings.cs" Link="_IgnoreTypographyWarnings.cs" />
+  </ItemGroup>
 </Project>

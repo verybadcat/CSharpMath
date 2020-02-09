@@ -10,12 +10,12 @@ namespace CSharpMath.Editor.Tests {
   public class MathKeyboardTests {
     private static readonly TypesettingContext<TestFont, char> context = TestTypesettingContexts.Instance;
     static void Test(string latex, K[] inputs) {
-      var keyboard = new MathKeyboard<TestFont, char>(context);
+      var keyboard = new MathKeyboard<TestFont, char>(context, new TestFont());
       keyboard.KeyPress(inputs);
       Assert.Equal(latex, keyboard.LaTeX);
     }
     static void TestEvent(EventInteractor attach, EventInteractor detach, K[] inputs) {
-      var keyboard = new MathKeyboard<TestFont, char>(context);
+      var keyboard = new MathKeyboard<TestFont, char>(context, new TestFont());
       Assert.Raises<EventArgs>(
         h => attach(keyboard, new EventHandler(h)),
         h => detach(keyboard, new EventHandler(h)),

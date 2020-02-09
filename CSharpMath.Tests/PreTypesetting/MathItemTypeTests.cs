@@ -1,12 +1,10 @@
 using Xunit;
 using CSharpMath.Enumerations;
 
-namespace CSharpMath.Tests {
+namespace CSharpMath.Tests.PreTypesetting {
   public class MathItemTypeTests {
     [Fact]
-    public void TestToText() {
-      var str = MathAtomType.BinaryOperator.ToText();
-      Assert.Equal("Binary Operator", str);
-    }
+    public void TestToText() =>
+      Assert.Equal("Binary Operator", MathAtomType.BinaryOperator.ToText());
   }
 }

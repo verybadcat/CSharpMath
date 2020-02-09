@@ -1,24 +1,42 @@
-﻿using CSharpMath.Enumerations;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace CSharpMath.TypesetterInternal {
+  using static InterElementSpaceType;
+  using Enumerations;
+  internal enum InterElementSpaceType {
+    Invalid = -1,
+    None = 0,
+    Thin,
+    ///<summary>Thin if not in script mode, else none</summary> 
+    NsThin,
+    ///<summary>Medium if not in script mode, else none</summary> 
+    NsMedium,
+    ///<summary>Thick if not in script mode, else none</summary> 
+    NsThick
+  }
   internal static class InterElementSpaces {
-    public static InterElementSpaceType[][] Spaces;
-    static InterElementSpaces() {
-      Spaces = new InterElementSpaceType[][] {
-           new InterElementSpaceType[] {InterElementSpaceType.None,     InterElementSpaceType.Thin,     InterElementSpaceType.NsMedium, InterElementSpaceType.NsThick, InterElementSpaceType.None,     InterElementSpaceType.None,    InterElementSpaceType.None,    InterElementSpaceType.NsThin},    // ordinary
-           new InterElementSpaceType[] {InterElementSpaceType.Thin,     InterElementSpaceType.Thin,     InterElementSpaceType.Invalid,  InterElementSpaceType.NsThick, InterElementSpaceType.None,     InterElementSpaceType.None,    InterElementSpaceType.None,    InterElementSpaceType.NsThin},    // operator
-           new InterElementSpaceType[] {InterElementSpaceType.NsMedium, InterElementSpaceType.NsMedium, InterElementSpaceType.Invalid,  InterElementSpaceType.Invalid, InterElementSpaceType.NsMedium, InterElementSpaceType.Invalid, InterElementSpaceType.Invalid, InterElementSpaceType.NsMedium},  // binary
-           new InterElementSpaceType[] {InterElementSpaceType.NsThick,  InterElementSpaceType.NsThick,  InterElementSpaceType.Invalid,  InterElementSpaceType.None,    InterElementSpaceType.NsThick,  InterElementSpaceType.None,    InterElementSpaceType.None,    InterElementSpaceType.NsThick},   // relation
-           new InterElementSpaceType[] {InterElementSpaceType.None,     InterElementSpaceType.None,     InterElementSpaceType.Invalid,  InterElementSpaceType.None,    InterElementSpaceType.None,     InterElementSpaceType.None,    InterElementSpaceType.None,    InterElementSpaceType.None},      // open
-           new InterElementSpaceType[] {InterElementSpaceType.None,     InterElementSpaceType.Thin,     InterElementSpaceType.NsMedium, InterElementSpaceType.NsThick, InterElementSpaceType.None,     InterElementSpaceType.None,    InterElementSpaceType.None,    InterElementSpaceType.NsThin},    // close
-           new InterElementSpaceType[] {InterElementSpaceType.NsThin,   InterElementSpaceType.NsThin,   InterElementSpaceType.Invalid,  InterElementSpaceType.NsThin,  InterElementSpaceType.NsThin,   InterElementSpaceType.NsThin,  InterElementSpaceType.NsThin,  InterElementSpaceType.NsThin},    // punct
-           new InterElementSpaceType[] {InterElementSpaceType.NsThin,   InterElementSpaceType.Thin,     InterElementSpaceType.NsMedium, InterElementSpaceType.NsThick, InterElementSpaceType.NsThin,   InterElementSpaceType.None,    InterElementSpaceType.NsThin,  InterElementSpaceType.NsThin},    // fraction
-           new InterElementSpaceType[] {InterElementSpaceType.NsMedium, InterElementSpaceType.NsThin,   InterElementSpaceType.NsMedium, InterElementSpaceType.NsThick, InterElementSpaceType.None,     InterElementSpaceType.None,    InterElementSpaceType.None,    InterElementSpaceType.NsThin}   // radical
-      };
+    public static InterElementSpaceType[][] Spaces = {
+    // RIGHT ordinary  operator  binary    relation open      close    punct    fraction       LEFT
+      new[]{ None,     Thin,     NsMedium, NsThick, None,     None,    None,    NsThin   }, // ordinary
+      new[]{ Thin,     Thin,     Invalid,  NsThick, None,     None,    None,    NsThin   }, // operator
+      new[]{ NsMedium, NsMedium, Invalid,  Invalid, NsMedium, Invalid, Invalid, NsMedium }, // binary
+      new[]{ NsThick,  NsThick,  Invalid,  None,    NsThick,  None,    None,    NsThick  }, // relation
+      new[]{ None,     None,     Invalid,  None,    None,     None,    None,    None     }, // open
+      new[]{ None,     Thin,     NsMedium, NsThick, None,     None,    None,    NsThin   }, // close
+      new[]{ NsThin,   NsThin,   Invalid,  NsThin,  NsThin,   NsThin,  NsThin,  NsThin   }, // punct
+      new[]{ NsThin,   Thin,     NsMedium, NsThick, NsThin,   None,    NsThin,  NsThin   }, // fraction
+      new[]{ NsMedium, NsThin,   NsMedium, NsThick, None,     None,    None,    NsThin   }, // radical
+    };
 
-    }
+    public static int SpacingInMu(this InterElementSpaceType type, LineStyle _style) =>
+      type switch
+      {
+        Invalid => -1,
+        None => 0,
+        Thin => 3,
+        NsThin => _style < LineStyle.Script ? 3 : 0,
+        NsMedium => _style < LineStyle.Script ? 4 : 0,
+        NsThick => _style < LineStyle.Script ? 5 : 0,
+        _ => throw new System.ComponentModel.InvalidEnumArgumentException
+                (nameof(_style), (int)_style, typeof(LineStyle))
+      };
   }
 }

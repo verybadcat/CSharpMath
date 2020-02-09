@@ -10,13 +10,11 @@ namespace CSharpMath.Display {
   public class FractionDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph>
     where TFont : IFont<TGlyph> {
     private PointF _position;
-
-    // A display representing the numerator of the fraction. Its position is relative
-    //to the parent and it is not treated as a sub-display.
-
+    ///<summary>A display representing the numerator of the fraction.
+    ///Its position is relative to the parent and it is not treated as a sub-display.</summary>
     public ListDisplay<TFont, TGlyph> Numerator { get; private set; }
-    // A display representing the numerator of the fraction. Its position is relative
-    //to the parent and it is not treated as a sub-display.
+    ///<summary>A display representing the numerator of the fraction.
+    ///Its position is relative to the parent and it is not treated as a sub-display.</summary>
     public ListDisplay<TFont, TGlyph> Denominator { get; private set; }
 
     public float NumeratorUp { get; set; }
@@ -33,17 +31,7 @@ namespace CSharpMath.Display {
       Range = range;
       UpdateNumeratorAndDenominatorPositions();
     }
-
-
-
-    public RectangleF DisplayBounds {
-      get {
-        var numFrame = Numerator.Frame();
-        var denomFrame = Denominator.Frame();
-        var r = numFrame.Union(denomFrame);
-        return r;
-      }
-    }
+    public RectangleF DisplayBounds => this.DisplayBounds(); //Numerator.Frame().Union(Denominator.Frame());
     public float Ascent => Numerator.Ascent + NumeratorUp;
 
     public float Descent => Denominator.Descent + DenominatorDown;
@@ -51,18 +39,11 @@ namespace CSharpMath.Display {
     public float Width => Math.Max(Numerator.Width, Denominator.Width);
 
     public void UpdateNumeratorAndDenominatorPositions() {
-      _UpdateNumeratorPosition();
-      _UpdateDenominatorPosition();
+      Numerator.Position =
+        new PointF(Position.X + (Width - Numerator.Width) / 2, Position.Y + NumeratorUp);
+      Denominator.Position =
+        new PointF(Position.X + (Width - Denominator.Width) / 2, Position.Y - DenominatorDown);
     }
-    private void _UpdateNumeratorPosition() => Numerator.Position = new PointF(
-        this.Position.X + (this.Width - Numerator.Width) / 2,
-        this.Position.Y + this.NumeratorUp);
-
-    private void _UpdateDenominatorPosition()
-      => Denominator.Position = new PointF(
-        this.Position.X + (this.Width - Denominator.Width) / 2,
-        this.Position.Y - this.DenominatorDown);
-
     public PointF Position {
       get => _position;
       set {
@@ -83,7 +64,7 @@ namespace CSharpMath.Display {
     public Color? TextColor { get; set; }
 
     public void SetTextColorRecursive(Color? textColor) {
-      TextColor = TextColor ?? textColor;
+      TextColor ??= textColor;
       Numerator.SetTextColorRecursive(textColor);
       Denominator.SetTextColorRecursive(textColor);
     }

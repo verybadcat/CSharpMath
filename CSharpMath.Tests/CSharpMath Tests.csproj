@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <RootNamespace>CSharpMath.Tests</RootNamespace>
   </PropertyGroup>
@@ -16,7 +16,7 @@
     <Compile Include="..\CSharpMath.Apple\Interfaces\IFontMeasurer.cs" Link="_Helpers\Interfaces\IFontMeasurer.cs" />
     <Compile Include="..\CSharpMath.Apple\Interfaces\IGlyphNameProvider.cs" Link="_Helpers\Interfaces\IGlyphNameProvider.cs" />
     <Compile Include="..\CSharpMath.Apple\Resources\AssemblyExtensions.cs" Link="_Helpers\Resources\AssemblyExtensions.cs" />
-    <Compile Include="..\CSharpMath.Apple\Resources\JTokenLoader.cs" Link="_Helpers\Resources\JTokenLoader.cs" />
+    <Compile Include="..\CSharpMath.Apple\Resources\ManifestResources.cs" Link="_Helpers\Resources\ManifestResources.cs" />
     <Compile Include="..\CSharpMath.Apple\Resources\ManifestResourceProvider.cs" Link="_Helpers\Resources\ManifestResourceProvider.cs" />
     <EmbeddedResource Include="_Helpers\Resources\latinmodern-math.json" />
   </ItemGroup>

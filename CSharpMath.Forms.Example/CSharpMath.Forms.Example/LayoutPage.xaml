@@ -8,20 +8,38 @@
         <StackLayout>
             <StackLayout Orientation="Horizontal">
                 <Label>X: </Label>
-                <Label Text="{x:Binding Value, Source={x:Reference SliderX}}"/>
-                <Slider x:Name="SliderX" HorizontalOptions="FillAndExpand" Minimum="-2" Maximum="{Binding Width, Source={x:Reference Canvas}}" ValueChanged="SliderX_ValueChanged"/>
+                <Label x:Name="SliderXValue" Text=" 0000.00"/>
+                <Slider x:Name="SliderX"
+                        HorizontalOptions="FillAndExpand"
+                        Minimum="-2"
+                        Maximum="{Binding Width, Source={x:Reference Canvas}}"
+                        ValueChanged="Slider_ValueChanged"/>
+                <Button x:Name="OneLineButton"
+                        Clicked="OneLineButton_Clicked"
+                        Text="Draw on one line only" />
             </StackLayout>
             <StackLayout Orientation="Horizontal">
                 <Label>Y: </Label>
-                <Label Text="{x:Binding Value, Source={x:Reference SliderY}}"/>
-                <Slider x:Name="SliderY" HorizontalOptions="FillAndExpand" Minimum="-2" Maximum="{Binding Height, Source={x:Reference Canvas}}" ValueChanged="SliderY_ValueChanged"/>
+                <Label x:Name="SliderYValue" Text=" 0000.00"/>
+                <Slider x:Name="SliderY"
+                        HorizontalOptions="FillAndExpand"
+                        Minimum="-2"
+                        Maximum="{Binding Height, Source={x:Reference Canvas}}"
+                        ValueChanged="Slider_ValueChanged"/>
             </StackLayout>
             <StackLayout Orientation="Horizontal">
-                <Label>W: </Label>
-                <Label Text="{x:Binding Value, Source={x:Reference SliderW}}"/>
-                <Slider x:Name="SliderW" HorizontalOptions="FillAndExpand" Minimum="-2" Maximum="1000" ValueChanged="SliderW_ValueChanged"/>
+                <Label>W:</Label>
+                <Label x:Name="SliderWValue" Text=" 0000.00"/>
+                <Slider x:Name="SliderW"
+                        HorizontalOptions="FillAndExpand"
+                        Minimum="-2"
+                        Maximum="1000"
+                        ValueChanged="Slider_ValueChanged"/>
             </StackLayout>
-            <skia:SKCanvasView x:Name="Canvas" HorizontalOptions="Fill" VerticalOptions="FillAndExpand" PaintSurface="Canvas_PaintSurface"/>
+            <skia:SKCanvasView x:Name="Canvas"
+                               HorizontalOptions="Fill"
+                               VerticalOptions="FillAndExpand"
+                               PaintSurface="Canvas_PaintSurface"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

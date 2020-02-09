@@ -6,26 +6,25 @@ using System.Text;
 using System.Collections;
 
 namespace CSharpMath.Atoms {
-  public class MathList : IMathList {
-
-    public List<IMathAtom> Atoms { get; set; } = new List<IMathAtom>();
-    public MathList() { }
-
-    public bool IsAtomAllowed(IMathAtom atom) => atom != null && atom.AtomType != MathAtomType.Boundary;
-
-    public MathList(IMathList cloneMe, bool finalize) : this() {
+  public class MathList : IMathObject, IList<MathAtom> {
+    public List<MathAtom> Atoms { get; set; }
+    public MathList() => Atoms = new List<MathAtom>();
+    public MathList(IEnumerable<MathAtom> atoms) => Atoms = new List<MathAtom>(atoms);
+    public MathList(params MathAtom[] atoms) => Atoms = new List<MathAtom>(atoms);
+    public bool IsAtomAllowed(MathAtom atom) =>
+      atom != null && atom.AtomType != MathAtomType.Boundary;
+    public MathList Clone(bool finalize) {
+      var newList = new MathList();
       if (!finalize) {
-        foreach (var atom in cloneMe.Atoms) {
-          var cloneAtom = AtomCloner.Clone(atom, finalize);
-          Add(cloneAtom);
-
-        }
+        foreach (var atom in Atoms)
+          newList.Add(atom.Clone(finalize));
       } else {
-        IMathAtom prevNode = null;
-        foreach (var atom in cloneMe.Atoms) {
-          var newNode = AtomCloner.Clone(atom, finalize);
+        MathAtom? prevNode = null;
+        foreach (var atom in Atoms) {
+          var newNode = atom.Clone(finalize);
           if (atom.IndexRange == Range.Zero) {
-            int prevIndex = prevNode is null ? 0 : prevNode.IndexRange.Location + prevNode.IndexRange.Length;
+            int prevIndex =
+              prevNode?.IndexRange.Location + prevNode?.IndexRange.Length ?? 0;
             newNode.IndexRange = new Range(prevIndex, 1);
           }
           switch (newNode.AtomType) {
@@ -49,84 +48,48 @@ namespace CSharpMath.Atoms {
               }
               break;
             case MathAtomType.Number:
-              if (prevNode != null && prevNode.AtomType == MathAtomType.Number && prevNode.Subscript == null && prevNode.Superscript == null) {
+              if (prevNode != null && prevNode.AtomType == MathAtomType.Number
+                  && prevNode.Subscript == null && prevNode.Superscript == null) {
                 prevNode.Fuse(newNode);
                 continue; // do not add the new node; we fused it instead.
               }
               break;
-
           }
-          Add(newNode);
+          newList.Add(newNode);
           prevNode = newNode;
-
         }
       }
-
+      return newList;
     }
-    
-    ///<summary>Iteratively expands all groups in this list.</summary>
-    public void ExpandGroups() {
-      for (int i = 0; i < Count; i++) {
-        if (Atoms[i].AtomType == MathAtomType.Group) {
-          var group = (Group)Atoms[i];
-          var initial = group.InnerList.Count - 1;
-          var scriptsExpanded = false;
-          for (int j = initial; j >= 0; j--) {
-            Atoms.Insert(i + 1, group.InnerList[j]);
-            if (!scriptsExpanded) {
-              Atoms[i + 1].Superscript = group.Superscript;
-              Atoms[i + 1].Subscript = group.Subscript;
-              scriptsExpanded = true;
-            }
-          }
-          if (!scriptsExpanded)
-            Atoms.Insert(i + 1, new MathAtom(MathAtomType.Ordinary, "") {
-              Superscript = group.Superscript,
-              Subscript = group.Subscript
-            });
-          Atoms.RemoveAt(i);
-        }
-      }
-    }
-
     public int Count => Atoms.Count;
-
-    public string StringValue =>
-      string.Concat(System.Linq.Enumerable.Select(Atoms, a => a.StringValue));
-
+    public string DebugString =>
+      string.Concat(System.Linq.Enumerable.Select(Atoms, a => a.DebugString));
     public bool IsReadOnly => false;
-
-    public IMathAtom this[int index] { get => Atoms[index]; set => Atoms[index] = value; }
-
-    public void Append(IMathList list) => Atoms.AddRange(list.Atoms);
-    public IMathList DeepCopy() => AtomCloner.Clone(this, false);
-    public IMathList FinalizedList() => AtomCloner.Clone(this, true);
+    public MathAtom this[int index] { get => Atoms[index]; set => Atoms[index] = value; }
+    public void Append(IEnumerable<MathAtom> list) => Atoms.AddRange(list);
+    public MathList DeepCopy() => Clone(false);
+    public MathList FinalizedList() => Clone(true);
     public void RemoveAtoms(Range inRange) => Atoms.RemoveRange(inRange.Location, inRange.Length);
     public bool EqualsList(MathList otherList) {
       if (otherList == null) {
         return false;
       } 
-      if (otherList.Count!=this.Count) {
+      if (otherList.Count != Count) {
         return false;
       }
-      for (int i=0; i<this.Count; i++) {
+      for (int i=0; i < Count; i++) {
         if (!this[i].NullCheckingEquals(otherList[i])) {
           return false;
         }
       }
       return true;
     }
-    public override bool Equals(object obj) {
-      if (obj is MathList) {
-        return EqualsList((MathList)obj);
-      }
-      return false;
-    }
+    public override bool Equals(object obj) => obj is MathList l ? EqualsList(l) : false;
     public override int GetHashCode() => Atoms.GetHashCode();
-    public IEnumerator<IMathAtom> GetEnumerator() => Atoms.GetEnumerator();
+    public IEnumerator<MathAtom> GetEnumerator() => Atoms.GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => Atoms.GetEnumerator();
-    public int IndexOf(IMathAtom item) => Atoms.IndexOf(item);
-    private void ThrowInvalid(IMathAtom item) {
+    public int IndexOf(MathAtom item) => Atoms.IndexOf(item);
+    private void ThrowInvalid(MathAtom item) {
       if (item == null) {
         throw new InvalidOperationException("MathList cannot contain null.");
       }
@@ -134,24 +97,19 @@ namespace CSharpMath.Atoms {
         throw new InvalidOperationException("MathList cannot contain items of type " + item.AtomType);
       }
     }
-    public void Insert(int index, IMathAtom item) {
-      if (IsAtomAllowed(item)) {
-        Atoms.Insert(index, item);
-      } else {
-        ThrowInvalid(item);
-      }
+    public void Insert(int index, MathAtom item) {
+      if (IsAtomAllowed(item)) Atoms.Insert(index, item); else ThrowInvalid(item);
     }
     public void RemoveAt(int index) => Atoms.RemoveAt(index);
-    public void Add(IMathAtom item) {
-      if (IsAtomAllowed(item)) {
-        Atoms.Add(item);
-      } else {
-        ThrowInvalid(item);
-      }
+    public void Add(MathAtom item) {
+      if (IsAtomAllowed(item)) Atoms.Add(item);
+      else ThrowInvalid(item);
     }
     public void Clear() => Atoms.Clear();
-    public bool Contains(IMathAtom item) => Atoms.Contains(item);
-    public void CopyTo(IMathAtom[] array, int arrayIndex) => Atoms.CopyTo(array, arrayIndex);
-    public bool Remove(IMathAtom item) => Atoms.Remove(item);
+    public bool Contains(MathAtom item) => Atoms.Contains(item);
+    public void CopyTo(MathAtom[] array, int arrayIndex) => Atoms.CopyTo(array, arrayIndex);
+    public bool Remove(MathAtom item) => Atoms.Remove(item);
+    public MathList GetRange(int index, int count) =>
+      new MathList { Atoms = Atoms.GetRange(index, count) };
   }
 }

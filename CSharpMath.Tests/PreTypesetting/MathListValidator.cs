@@ -1,11 +1,10 @@
 using CSharpMath.Atoms;
 using CSharpMath.Enumerations;
-using CSharpMath.Interfaces;
 using Xunit;
 
-namespace CSharpMath.Tests {
+namespace CSharpMath.Tests.PreTypesetting {
   internal static class MathListValidator {
-    public static void CheckListContents(IMathList list) {
+    public static void CheckListContents(MathList list) {
       Assert.Equal(10, list.Atoms.Count);
       var atom0 = list.Atoms[0];
       Assert.Equal(MathAtomType.UnaryOperator, atom0.AtomType);

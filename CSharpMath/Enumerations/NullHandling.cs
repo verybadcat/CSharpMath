@@ -4,9 +4,11 @@ using System.Text;
 
 namespace CSharpMath.Enumerations {
   public enum NullHandling {
-    LiteralNull, // the string "null", without the quotes
-    EmptyContent, // Change the null to the empty string, then do whatever.
-    EmptyString, // Return the empty string. Do not wrap.
-    None, // null remains null.
+    ///<summary>the string "null", without the quotes</summary>
+    LiteralNull,
+    /// <summary>Change the null to the empty string, then wrap.</summary>
+    EmptyContent,
+    /// <summary>Return the empty string. Do not wrap.</summary>
+    EmptyString,
   }
 }

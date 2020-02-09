@@ -1,15 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace CSharpMath.Enumerations {
   public enum FontStyle {
-    Default = 0,
+    ///<summary>\mathnormal</summary>
+    Default,
     ///<summary>\mathrm</summary>
     Roman,
+    ///<summary>\mathbf</summary>
     Bold,
+    ///<summary>\mathcal</summary>
     Caligraphic,
-    ///<summary>Monospace, i.e.</summary>
+    ///<summary>Monospace, i.e. \mathtt</summary>
     Typewriter,
     ///<summary>\mathit</summary>
     Italic,
@@ -19,13 +18,14 @@ namespace CSharpMath.Enumerations {
     Fraktur,
     ///<summary>\mathbb</summary>
     Blackboard,
+    ///<summary>\mathbfit</summary>
     BoldItalic
   }
 
   public static class FontStyleExtensions {
     public static string FontName(this FontStyle style) => FontStyles[style];
-    public static AliasDictionary<string, FontStyle> FontStyles { get; } =
-      new AliasDictionary<string, FontStyle> {
+    public static Structures.AliasDictionary<string, FontStyle> FontStyles { get; } =
+      new Structures.AliasDictionary<string, FontStyle> {
         { "mathnormal", FontStyle.Default },
         { "mathrm", "rm", "text", FontStyle.Roman },
         { "mathbf", "bf", FontStyle.Bold },

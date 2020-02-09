@@ -31,7 +31,8 @@ namespace CSharpMath.Utils.NuGet {
     }
 
     /// <summary>
-    /// The action (or parameterized action) that will be called when the command is invoked.
+    /// The action (or parameterized action) that will
+    /// be called when the command is invoked.
     /// </summary>
     protected Action action = null;
     protected Action<object> parameterizedAction = null;
@@ -48,7 +49,7 @@ namespace CSharpMath.Utils.NuGet {
     ///     <c>true</c> if this instance can execute; otherwise, <c>false</c>.
     /// </value>
     public bool CanExecute {
-      get { return canExecute; }
+      get => canExecute;
       set {
         if (canExecute != value) {
           canExecute = value;
@@ -58,7 +59,8 @@ namespace CSharpMath.Utils.NuGet {
     }
 
     /// <summary>
-    /// Defines the method that determines whether the command can execute in its current state.
+    /// Defines the method that determines whether the command
+    /// can execute in its current state.
     /// </summary>
     /// <param name="parameter">Data used by the command.
     ///  If the command does not require data to be passed,
@@ -66,9 +68,7 @@ namespace CSharpMath.Utils.NuGet {
     /// <returns>
     /// true if this command can be executed; otherwise, false.
     /// </returns>
-    bool ICommand.CanExecute(object parameter) {
-      return canExecute;
-    }
+    bool ICommand.CanExecute(object parameter) => canExecute;
 
     /// <summary>
     /// Occurs when can execute is changed.
@@ -86,20 +86,15 @@ namespace CSharpMath.Utils.NuGet {
     public event EventHandler<CommandEventArgs> Executed;
 
     protected void InvokeAction(object param) {
-      Action theAction = action;
-      Action<object> theParameterizedAction = parameterizedAction;
-      if (theAction != null)
-        theAction();
-      else theParameterizedAction?.Invoke(param);
+      if (action != null) action();
+      else parameterizedAction?.Invoke(param);
     }
 
-    protected void InvokeExecuted(CommandEventArgs args) {
+    protected void InvokeExecuted(CommandEventArgs args) =>
       Executed?.Invoke(this, args);
-    }
 
-    protected void InvokeExecuting(CancelCommandEventArgs args) {
+    protected void InvokeExecuting(CancelCommandEventArgs args) =>
       Executing?.Invoke(this, args);
-    }
 
     /// <summary>
     /// Defines the method to be called when the command is invoked.
@@ -109,8 +104,7 @@ namespace CSharpMath.Utils.NuGet {
     ///  this object can be set to null.</param>
     public virtual void Execute(object param) {
       //  Invoke the executing command, allowing the command to be cancelled.
-      CancelCommandEventArgs args =
-         new CancelCommandEventArgs() { Parameter = param, Cancel = false };
+      var args = new CancelCommandEventArgs { Parameter = param, Cancel = false };
       InvokeExecuting(args);
 
       //  If the event has been cancelled, bail now.

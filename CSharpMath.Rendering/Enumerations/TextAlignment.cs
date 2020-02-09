@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace CSharpMath.Rendering {
-  [Flags]
+  [System.Flags]
   public enum TextAlignment : byte {
     //              LRTB
     TopLeft     = 0b1010,

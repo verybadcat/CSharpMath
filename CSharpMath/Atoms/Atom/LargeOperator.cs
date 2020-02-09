@@ -4,7 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CSharpMath.Atoms {
+namespace CSharpMath.Atoms.Atom {
+  /// <summary>A large operator such as sin/cos, integral, etc.</summary>
   public class LargeOperator : MathAtom {
     bool? _limits;
     /// <summary>
@@ -21,16 +22,11 @@ namespace CSharpMath.Atoms {
       Limits = limits;
       NoLimits = noLimits;
     }
-
-    public LargeOperator(LargeOperator cloneMe, bool finalize): base(cloneMe, finalize) {
-      NoLimits = cloneMe.NoLimits;
-      _limits = cloneMe._limits;
-    }
-
-    public override string StringValue => base.StringValue + (Limits == true ? @"\limits" : Limits == false && !NoLimits ? @"\nolimits" : string.Empty);
-
+    public new LargeOperator Clone(bool finalize) => (LargeOperator)base.Clone(finalize);
+    protected override MathAtom CloneInside(bool finalize) =>
+      new LargeOperator(Nucleus, Limits, NoLimits);
+    public override bool ScriptsAllowed => true;
+    public override string DebugString => base.DebugString + (Limits == true ? @"\limits" : Limits == false && !NoLimits ? @"\nolimits" : string.Empty);
     public bool EqualsLargeOperator(LargeOperator obj) => EqualsAtom(obj); // Don't care about \limits or \nolimits
-
-    public override T Accept<T, THelper>(IMathAtomVisitor<T, THelper> visitor, THelper helper) => visitor.Visit(this, helper);
   }
 }

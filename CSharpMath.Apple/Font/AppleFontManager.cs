@@ -1,45 +1,18 @@
-﻿using System;
-using CoreGraphics;
-using CoreText;
-using CSharpMath.Ios.Resources;
-using Foundation;
-
-namespace CSharpMath.Apple
-{
-  public static class AppleFontManager
-  {
-    private static readonly object _lock = new object();
-    private static CGFont _latinMathCg { get; set; }
+namespace CSharpMath.Apple {
+  public static class AppleFontManager {
     public const string LatinMathFontName = "latinmodern-math";
-    private static CGFont _CreateLatinMathCg() {
-      var manifestProvider = IosResourceProviders.Manifest();
-      byte[] buffer = manifestProvider.ManifestContents(LatinMathFontName + ".otf");
-      using (CGDataProvider fontDataProvider = new CGDataProvider(buffer))
-      {
-        var r = CGFont.CreateFromProvider(fontDataProvider);
-        return r;
-      }
-
-    }
-    public static CGFont LatinMathCg {
-      get
-      {
-        if (_latinMathCg == null)
-        {
-          lock (_lock)
-          {
-            if (_latinMathCg == null)
-            {
-              _latinMathCg = _CreateLatinMathCg();
-            }
-          }
-        }
-        return _latinMathCg;
-      }
-    }
-
-    public static AppleMathFont LatinMath(float pointSize) {
-      return new AppleMathFont(LatinMathFontName, LatinMathCg, pointSize);
-    }
+    public static CoreGraphics.CGFont LatinMathCG { get; } =
+      new System.Func<CoreGraphics.CGFont>(() => {
+        using var fontDataProvider = new CoreGraphics.CGDataProvider(
+          Foundation.NSData.FromStream(
+            new Resources.ManifestResourceProvider(
+              System.Reflection.Assembly.GetExecutingAssembly()
+            ).ManifestStream(LatinMathFontName + ".otf")
+          )
+        );
+        return CoreGraphics.CGFont.CreateFromProvider(fontDataProvider);
+      })();
+    public static AppleMathFont LatinMath(float pointSize) =>
+      new AppleMathFont(LatinMathFontName, LatinMathCG, pointSize);
   }
 }

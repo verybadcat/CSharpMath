@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:skia="clr-namespace:SkiaSharp.Views.Forms;assembly=SkiaSharp.Views.Forms"
@@ -9,14 +9,26 @@
             <StackLayout Orientation="Horizontal">
                 <Label>X: </Label>
                 <Label Text="{x:Binding Value, Source={x:Reference SliderX}}"/>
-                <Slider x:Name="SliderX" HorizontalOptions="FillAndExpand" Minimum="-2" Maximum="{Binding Width, Source={x:Reference Canvas}}" ValueChanged="SliderX_ValueChanged"/>
+                <Slider x:Name="SliderX"
+                        HorizontalOptions="FillAndExpand"
+                        Minimum="-2"
+                        Maximum="{Binding Width, Source={x:Reference Canvas}}"
+                        ValueChanged="SliderX_ValueChanged"/>
             </StackLayout>
             <StackLayout Orientation="Horizontal">
                 <Label>Y: </Label>
                 <Label Text="{x:Binding Value, Source={x:Reference SliderY}}"/>
-                <Slider x:Name="SliderY" HorizontalOptions="FillAndExpand" Minimum="-2" Maximum="{Binding Height, Source={x:Reference Canvas}}" ValueChanged="SliderY_ValueChanged"/>
+                <Slider x:Name="SliderY"
+                        HorizontalOptions="FillAndExpand"
+                        Minimum="-2"
+                        Maximum="{Binding Height, Source={x:Reference Canvas}}"
+                        ValueChanged="SliderY_ValueChanged"/>
             </StackLayout>
-            <skia:SKCanvasView x:Name="Canvas" HorizontalOptions="Fill" VerticalOptions="FillAndExpand" EnableTouchEvents="True" PaintSurface="Canvas_PaintSurface" Touch="Canvas_Touch"/>
+            <skia:SKCanvasView x:Name="Canvas"
+                               HorizontalOptions="Fill"
+                               VerticalOptions="FillAndExpand"
+                               EnableTouchEvents="True"
+                               PaintSurface="Canvas_PaintSurface" Touch="Canvas_Touch"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

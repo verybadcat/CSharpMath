@@ -1,25 +1,13 @@
 using CSharpMath.Resources;
-using CSharpMath.Tests.Resources;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace CSharpMath.Tests.Mocks {
   public class ResourceProviderTest {
     [Fact]
-    public void ResourceProvider_FindsResource() {
-      var content = TestResources.LatinMathContent;
-      Assert.NotEmpty(content);
-    }
+    public void ResourceProvider_FindsResource() =>
+      Assert.NotNull(ManifestResources.LatinMathContent);
     [Fact]
-    public void ResourceProvider_FindsMathConfiguration() {
-      var content = TestResources.LatinMath;
-      var constants = content["constants"];
-      var constantsType = constants.GetType();
-      Assert.True(1 > 0);
-    }
+    public void ResourceProvider_FindsMathConfiguration() =>
+      Assert.IsType<Newtonsoft.Json.Linq.JObject>(ManifestResources.LatinMath["constants"]);
   }
 }

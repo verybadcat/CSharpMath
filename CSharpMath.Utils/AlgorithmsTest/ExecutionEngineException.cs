@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CSharpMath.DevUtils {
   static partial class AlgorithmsTest {

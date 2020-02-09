@@ -10,9 +10,8 @@ namespace CSharpMath.Rendering {
   public class MathKeyboard : MathKeyboard<Fonts, Glyph> {
     public MathKeyboard() : this(PainterConstants.DefaultFontSize * 3 / 2) { }
     public MathKeyboard(float fontSize = PainterConstants.DefaultFontSize * 3 / 2)
-      : base(TypesettingContext.Instance) {
-      Font = new Fonts(Array.Empty<Typography.OpenFont.Typeface>(), fontSize);
-    }
+      : base(TypesettingContext.Instance,
+             new Fonts(Array.Empty<Typography.OpenFont.Typeface>(), fontSize)) { }
     
     public void DrawCaret(ICanvas canvas, Structures.Color color, CaretShape shape) {
       if (!(Caret is CaretHandle caret))

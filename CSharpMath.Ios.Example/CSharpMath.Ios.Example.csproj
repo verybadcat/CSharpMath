@@ -124,7 +124,7 @@
   <ItemGroup>
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
-    <Compile Include="ViewController\IosMathViewController.cs" />
+    <Compile Include="IosMathViewController.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CSharpMath.Ios\CSharpMath.Ios.csproj">

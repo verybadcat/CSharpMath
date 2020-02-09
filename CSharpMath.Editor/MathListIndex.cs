@@ -19,7 +19,22 @@ namespace CSharpMath.Editor {
     Degree
   }
 
-  public class MathListIndex : IMathListIndex<MathListIndex> {
+  /** 
+* An index that points to a particular character in the MTMathList. The index is a LinkedList that represents
+* a path from the beginning of the MTMathList to reach a particular atom in the list. The next node of the path
+* is represented by the subIndex. The path terminates when the subIndex is nil.
+*
+* If there is a subIndex, the subIndexType denotes what branch the path takes (i.e. superscript, subscript, 
+* numerator, denominator etc.).
+* e.g in the expression 25^{2/4} the index of the character 4 is represented as:
+* (1, superscript) -> (0, denominator) -> (0, none)
+* This can be interpreted as start at index 1 (i.e. the 5) go up to the superscript.
+* Then look at index 0 (i.e. 2/4) and go to the denominator. Then look up index 0 (i.e. the 4) which this final
+* index.
+* 
+* The level of an index is the number of nodes in the LinkedList to get to the final path.
+*/
+  public class MathListIndex {
     private MathListIndex() { }
 
     ///<summary>The index of the associated atom.</summary>
@@ -27,7 +42,7 @@ namespace CSharpMath.Editor {
     ///<summary>The type of subindex, e.g. superscript, numerator etc.</summary>
     public MathListSubIndexType SubIndexType { get; set; }
     ///<summary>The index into the sublist.</summary>
-    [NullableReference] public MathListIndex SubIndex;
+    public MathListIndex? SubIndex;
 
     /** <summary>Factory function to create a `MTMathListIndex` with no subindexes.</summary>
         <param name="index">The index of the atom that the `MTMathListIndex` points at.</param>
@@ -38,27 +53,34 @@ namespace CSharpMath.Editor {
         <param name="subIndex">The subIndex to be added. Can be nil.</param> 
         <param name="type">The type of the subIndex.</param> 
      */
-    public static MathListIndex IndexAtLocation(int location, MathListSubIndexType type, [NullableReference]MathListIndex subIndex) =>
+    public static MathListIndex IndexAtLocation(int location, MathListSubIndexType type, MathListIndex? subIndex) =>
       new MathListIndex { AtomIndex = location, SubIndexType = type, SubIndex = subIndex };
 
     ///<summary>Creates a new index by attaching this index at the end of the current one.</summary>
-    public MathListIndex LevelUpWithSubIndex(MathListSubIndexType type, [NullableReference]MathListIndex subIndex) =>
+    public MathListIndex LevelUpWithSubIndex(MathListSubIndexType type, MathListIndex? subIndex) =>
       SubIndexType is MathListSubIndexType.None ? IndexAtLocation(AtomIndex, type, subIndex) :
-      IndexAtLocation(AtomIndex, SubIndexType, SubIndex.LevelUpWithSubIndex(type, subIndex));
+      IndexAtLocation(AtomIndex, SubIndexType, SubIndex?.LevelUpWithSubIndex(type, subIndex));
     ///<summary>Creates a new index by removing the last index item. If this is the last one, then returns nil.</summary>
-    [NullableReference]
-    public MathListIndex LevelDown() =>
+    public MathListIndex? LevelDown() =>
       SubIndexType is MathListSubIndexType.None ? null :
       SubIndex?.LevelDown() is MathListIndex subIndex ? IndexAtLocation(AtomIndex, SubIndexType, subIndex) :
       Level0Index(AtomIndex);
 
-    ///<summary>Returns the previous index if present. Returns `nil` if there is no previous index.</summary>
-    [NullableReference]
-    public MathListIndex Previous =>
-      SubIndexType == MathListSubIndexType.None ?
-      AtomIndex > 0 ? Level0Index(AtomIndex - 1) : null :
-      SubIndex?.Previous is MathListIndex prevSubIndex ?
-      IndexAtLocation(AtomIndex, SubIndexType, prevSubIndex) : null;
+    /** <summary>
+     * Returns the previous index if this index is not at the beginning of a line.
+     * Note there may be multiple lines in a MTMathList,
+     * e.g. a superscript or a fraction numerator.
+     * This returns <see cref="null"/> if there is no previous index, i.e.
+     * the innermost subindex points to the beginning of a line.</summary>
+     */
+    public MathListIndex? Previous =>
+      SubIndexType == MathListSubIndexType.None
+      ? AtomIndex > 0
+        ? Level0Index(AtomIndex - 1)
+        : null
+      : SubIndex?.Previous is MathListIndex prevSubIndex
+       ? IndexAtLocation(AtomIndex, SubIndexType, prevSubIndex)
+        : null;
 
     ///<summary>Returns the next index.</summary>
     public MathListIndex Next => SubIndexType switch
@@ -73,13 +95,6 @@ namespace CSharpMath.Editor {
       SubIndexType == subIndexType ? true :
       SubIndex != null ? SubIndex.HasSubIndexOfType(subIndexType) : false;
 
-    /** <summary>
-     * Returns true if this index represents the beginning of a line. Note there may be multiple lines in a MTMathList,
-     * e.g. a superscript or a fraction numerator. This returns true if the innermost subindex points to the beginning of a
-     * line.</summary>
-     */
-    public bool AtBeginningOfLine => FinalIndex is 0;
-    
     public bool AtSameLevel(MathListIndex other) =>
       SubIndexType != other.SubIndexType ? false :
       // No subindexes, they are at the same level.
@@ -113,6 +128,6 @@ namespace CSharpMath.Editor {
     public override bool Equals(object obj) =>
       obj is MathListIndex index && EqualsToIndex(index);
     public override int GetHashCode() =>
-      unchecked((AtomIndex * 31 + (int)SubIndexType) * 31 + SubIndex.GetHashCode());
+      unchecked((AtomIndex * 31 + (int)SubIndexType) * 31 + (SubIndex?.GetHashCode() ?? -1));
   }
 }

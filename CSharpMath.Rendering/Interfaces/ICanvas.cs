@@ -1,6 +1,5 @@
 using System;
 using CSharpMath.Structures;
-using Typography.OpenFont;
 
 namespace CSharpMath.Rendering {
   public interface ICanvas {
@@ -9,7 +8,6 @@ namespace CSharpMath.Rendering {
     Color DefaultColor { get; set; }
     Color? CurrentColor { get; set; }
     PaintStyle CurrentStyle { get; set; }
-
     IPath GetPath();
     void DrawLine(float x1, float y1, float x2, float y2, float lineThickness);
     void StrokeRect(float left, float top, float width, float height);
@@ -21,7 +19,8 @@ namespace CSharpMath.Rendering {
     void Restore();
   }
   public static class CanvasExtensions {
-    public static void StrokeLineOutline(this ICanvas c, float x1, float y1, float x2, float y2, float lineThickness) {
+    public static void StrokeLineOutline
+      (this ICanvas c, float x1, float y1, float x2, float y2, float lineThickness) {
       var dx = Math.Abs(x2 - x1);
       var dy = Math.Abs(y2 - y1);
       var length = (float)Math.Sqrt((double)dx * dx + (double)dy * dy);

@@ -14,28 +14,22 @@ namespace CSharpMath.Tests.Framework {
       int nBytes = bytes.Count();
       var decoder = encoding.GetDecoder();
       var chars = new char[50];
-      int index = 0;                   // Next character to write in array.
-      int written = 0;                 // Number of chars written to array.
-      written = decoder.GetChars(bytes, 0, nBytes, chars, index);
+      int index = 0; // Next character to write in array.
+      // Number of chars written to array.
+      var written = decoder.GetChars(bytes, 0, nBytes, chars, index);
       index += written;
       // create a new string
-      var output = new String(chars, 0, index);
+      var output = new string(chars, 0, index);
       Assert.Equal(input, output);
     }
 
     private IEnumerable<ushort> ToUintEnumerable(byte[] bytes) {
       for (int i=0; i<bytes.Length; i+=2) {
-        if (i == bytes.Length - 1) {
-          yield return bytes[i];
-        } else {
-          yield return BitConverter.ToUInt16(bytes, i);
-        }
+        yield return i == bytes.Length - 1 ? bytes[i] : BitConverter.ToUInt16(bytes, i);
       }
     }
 
-    public ushort[] ToUintArray(byte[] bytes) {
-      return ToUintEnumerable(bytes).ToArray();
-    }
+    public ushort[] ToUintArray(byte[] bytes) => ToUintEnumerable(bytes).ToArray();
 
     public byte[] ToByteArray(ushort[] uints) {
       byte[] r = new byte[uints.Length * 2];
@@ -65,13 +59,9 @@ namespace CSharpMath.Tests.Framework {
     public void TestUtf32()
     {
       var input = 0x0001D45A; // mathematical italic small m
-
-      var stringified = char.ConvertFromUtf32(input);
-      var chars = stringified.ToCharArray();
-      var char0 = chars[0];
-      var char1 = chars[1];
-      Assert.Equal(55349, char0);
-      Assert.Equal(56410, char1);
+      var chars = char.ConvertFromUtf32(input).ToCharArray();
+      Assert.Equal(55349, chars[0]);
+      Assert.Equal(56410, chars[1]);
     }
   }
 }

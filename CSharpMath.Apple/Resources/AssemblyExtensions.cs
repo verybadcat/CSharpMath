@@ -1,13 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 
 namespace CSharpMath {
   internal static class AssemblyExtensions {
-    public static string ShortName(this Assembly @this) =>
-      @this.FullName.Split(',').First();
     public static string ManifestResourcePrefix(this Assembly assembly) {
       string r = null;
       const string resourceString = ".Resources.";
@@ -22,17 +19,13 @@ namespace CSharpMath {
       }
       return r;
     }
-    public static string AssemblyPath(this Assembly assembly) {
-      Module m = assembly.ManifestModule;
-      ;
-      return m?.FullyQualifiedName;
-    }
-    public static List<string> ManifestEntriesWithPrefix(this Assembly assembly, string prefix
+    public static List<string> ManifestEntriesWithPrefix
+      (this Assembly assembly, string prefix
 #if DEBUG
       , bool recursingIsOK = true
 #endif
     ) {
-      List<string> r = new List<string>();
+      var r = new List<string>();
       string namePrefix = assembly.ManifestResourcePrefix();
       if (namePrefix != null) {
         int resEndIndex = namePrefix.Length;
@@ -58,7 +51,7 @@ namespace CSharpMath {
             while (length > 1) {
               length--;
               string shorterPrefix = prefix.Substring(0, length);
-              List<string> shorterList = assembly.ManifestEntriesWithPrefix(shorterPrefix, false);
+              var shorterList = assembly.ManifestEntriesWithPrefix(shorterPrefix, false);
               if (shorterList.Count > 1) {
                 string firstPartial = shorterList[0];
               }

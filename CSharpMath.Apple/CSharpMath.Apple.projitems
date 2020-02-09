@@ -11,17 +11,16 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AppleMathView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Drawing\AppleGraphicsContext.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Drawing\AttributedStrings\AppleAttributeDictionaryFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\AppleColorExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Resources\AssemblyExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Resources\JTokenLoader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Resources\ManifestResources.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Resources\ManifestResourceProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Typesetting\AppleGlyphBoundsProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Typesetting\AppleFontMeasurer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Typesetting\AppleGlyphNameProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Font\AppleMathFont.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Font\CtFontGlyphFinder.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Drawing\AttributedStrings\AppleAttributedStringFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Drawing\AppleAttributedStringFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Font\AppleFontManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Typesetting\AppleTypesetters.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Typesetting\JsonMathTable.cs" />
@@ -30,5 +29,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Interfaces\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\latinmodern-math.json" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\latinmodern-math.otf" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,914 @@
+using CSharpMath.Enumerations;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace CSharpMath.Atoms {
+  using Atom;
+  public class MathListBuilder {
+    class TableEnvironmentProperties {
+      public string? Name { get; set; }
+      public bool Ended { get; set; }
+      public int NRows { get; set; }
+      public string? ArrayAlignments { get; set; }
+      public TableEnvironmentProperties(string? name) => Name = name;
+    }
+    private readonly char[] _chars;
+    private readonly int _length;
+    private int _currentChar;
+    private bool _textMode; //_spacesAllowed in iosMath
+    private FontStyle _currentFontStyle;
+    private TableEnvironmentProperties? _currentEnvironment;
+    private Inner? _currentInnerAtom;
+    public string? Error { get; private set; }
+    public MathListBuilder(string str) {
+      _chars = str.ToCharArray();
+      _currentFontStyle = FontStyle.Default;
+      _length = str.Length;
+    }
+    public MathList? Build() {
+      var r = BuildInternal(false);
+      if (HasCharacters && Error == null) {
+        SetError("Error; most likely mismatched braces. The string provided was: " + new string(_chars));
+      }
+      return Error != null ? null : r;
+    }
+    private char GetNextCharacter() => _chars[_currentChar++];
+    private void UnlookCharacter() => _ = _currentChar == 0 ? throw new InvalidOperationException("Can't unlook below character 0") : _currentChar--;
+    private bool HasCharacters => _currentChar < _length;
+    private MathList? BuildInternal(bool oneCharOnly) => BuildInternal(oneCharOnly, (char)0);
+    private MathList? BuildInternal(bool oneCharOnly, char stopChar) {
+      if (oneCharOnly && stopChar > 0) {
+        throw new InvalidOperationException("Cannot set both oneCharOnly and stopChar");
+      }
+      var r = new MathList();
+      MathAtom? prevAtom = null;
+      while (HasCharacters) {
+        if (Error != null) {
+          return null;
+        }
+        MathAtom atom;
+        var ch = GetNextCharacter();
+        if (oneCharOnly) {
+          if (ch == '^' || ch == '}' || ch == '_' || ch == '&') {
+            // this is not the character we are looking for. They are for the caller to look at.
+            UnlookCharacter();
+            return r;
+          }
+        }
+        if (stopChar > 0 && ch == stopChar) {
+          return r;
+        }
+        switch (ch) {
+          case '^':
+            if (prevAtom == null || prevAtom.Superscript != null || !prevAtom.ScriptsAllowed) {
+              prevAtom = new Ordinary(string.Empty);
+              r.Add(prevAtom);
+            }
+            // this is a superscript for the previous atom.
+            // note, if the next char is StopChar, it will be consumed and doesn't count as stop.
+            prevAtom.Superscript = this.BuildInternal(true);
+            continue;
+          case '_':
+            if (prevAtom == null || prevAtom.Subscript != null || !prevAtom.ScriptsAllowed) {
+              prevAtom = new Ordinary(string.Empty);
+              r.Add(prevAtom);
+            }
+            // this is a subscript for the previous atom.
+            // note, if the next char is StopChar, it will be consumed and doesn't count as stop.
+            prevAtom.Subscript = this.BuildInternal(true);
+            continue;
+          case '{':
+            MathList? sublist;
+            if (_currentEnvironment != null && _currentEnvironment.Name == null) {
+              // \\ or \cr which do not have a corrosponding \end
+              var oldEnv = _currentEnvironment;
+              _currentEnvironment = null;
+              sublist = BuildInternal(false, '}');
+              _currentEnvironment = oldEnv;
+            } else {
+              sublist = BuildInternal(false, '}');
+            }
+            if (sublist == null) return null;
+            prevAtom = sublist.Atoms.LastOrDefault();
+            r.Append(sublist);
+            if (oneCharOnly) {
+              return r;
+            }
+            continue;
+#warning TODO Example
+            //https://phabricator.wikimedia.org/T99369
+            //https://phab.wmfusercontent.org/file/data/xsimlcnvo42siudvwuzk/PHID-FILE-bdcqexocj5b57tj2oezn/math_rendering.png
+            //dt, \text{d}t, \partial t, \nabla\psi \\ \underline\overline{dy/dx, \text{d}y/\text{d}x, \frac{dy}{dx}, \frac{\text{d}y}{\text{d}x}, \frac{\partial^2}{\partial x_1\partial x_2}y} \\ \prime,
+          case '}':
+            if (oneCharOnly || stopChar != 0) {
+              throw new InvalidCodePathException("This should have been handled before.");
+            }
+            SetError("Missing opening brace");
+            return null;
+
+          case '\\':
+            var command = ReadCommand();
+            var done = StopCommand(command, r, stopChar);
+            if (done != null) {
+              return done;
+            }
+            if (Error != null) {
+              return null;
+            }
+            if (ApplyModifier(command, prevAtom)) {
+              continue;
+            }
+            var fontStyleQ = MathAtoms.FontStyle(command);
+            if (fontStyleQ.HasValue) {
+              var fontStyle = fontStyleQ.Value;
+              var oldSpacesAllowed = _textMode;
+              var oldFontStyle = _currentFontStyle;
+              _textMode = (command == "text");
+              _currentFontStyle = fontStyle;
+              var childList = BuildInternal(true);
+              if (childList == null) return null;
+              _currentFontStyle = oldFontStyle;
+              _textMode = oldSpacesAllowed;
+              prevAtom = childList.Atoms.LastOrDefault();
+              r.Append(childList);
+              if (oneCharOnly) {
+                return r;
+              }
+              continue;
+            }
+            switch(AtomForCommand(command, stopChar)) {
+              case null:
+                SetError(Error ?? "Internal error");
+                return null;
+              case var a:
+                atom = a;
+                break;
+            }
+            break;
+          case '&': { // column separation in tables
+              if (_currentEnvironment != null) {
+                return r;
+              }
+              var table = BuildTable(null, r, false, stopChar); 
+              if (table == null) return null;
+              return new MathList(table);
+            }
+          case '\'': // this case is NOT in iosMath
+            int i = 1;
+            while (ExpectCharacter('\'')) i++;
+            atom = new Prime(i);
+            break;
+          default:
+            if (_textMode && ch == ' ') {
+              atom = new Ordinary(" ");
+            } else {
+              switch (MathAtoms.ForCharacter(ch)) {
+                case null:
+                  // not a recognized character
+                  continue;
+                case var a:
+                  atom = a;
+                  break;
+              }
+            }
+            break;
+        }
+        if (atom == null) {
+          throw new InvalidCodePathException("Atom shouldn't be null");
+        }
+        atom.FontStyle = _currentFontStyle;
+        r.Add(atom);
+        prevAtom = atom;
+        if (oneCharOnly) {
+          return r; // we consumed our character.
+        }
+      }
+      if (stopChar > 0) {
+        if (stopChar == '}') {
+          SetError("Missing closing brace");
+        } else {
+          // we never found our stop character.
+          SetError("Expected character not found: " + stopChar.ToString());
+        }
+      }
+      return r;
+    }
+
+    private string ReadString() {
+      var builder = new StringBuilder();
+      while (HasCharacters) {
+        var ch = GetNextCharacter();
+        if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')) {
+          builder.Append(ch.ToString());
+        } else {
+          UnlookCharacter();
+          break;
+        }
+      }
+      return builder.ToString();
+    }
+
+    private string? ReadColor() {
+      if (!ExpectCharacter('{')) {
+        SetError("Missing {");
+        return null;
+      }
+      SkipSpaces();
+      var builder = new StringBuilder();
+      while (HasCharacters) {
+        var ch = GetNextCharacter();
+        if (char.IsLetterOrDigit(ch) || ch == '#') {
+          builder.Append(ch);
+        } else {
+          // we went too far
+          UnlookCharacter();
+          break;
+        }
+      }
+      SkipSpaces();
+      if (!ExpectCharacter('}')) {
+        SetError("Missing }");
+        return null;
+      }
+      return builder.ToString();
+    }
+
+    private void SkipSpaces() {
+      while (HasCharacters) {
+        var ch = GetNextCharacter();
+        if (char.IsWhiteSpace(ch) || char.IsControl(ch)) {
+          continue;
+        } else {
+          UnlookCharacter();
+          return;
+        }
+      }
+    }
+
+    private void AssertNotSpace(char ch) {
+      if (char.IsWhiteSpace(ch) || char.IsControl(ch)) {
+        //throw since this is not normal
+        throw new InvalidOperationException("Expected non space character; found " + ch);
+      }
+    }
+
+    private bool ExpectCharacter(char ch) {
+      AssertNotSpace(ch);
+      SkipSpaces();
+      if (HasCharacters) {
+        var c = GetNextCharacter();
+        AssertNotSpace(c);
+        if (c == ch) {
+          return true;
+        } else {
+          UnlookCharacter();
+          return false;
+        }
+      }
+      return false;
+    }
+
+
+    //static readonly char[] _singleCharCommands = @"{}$#%_| ,:>;!\".ToCharArray();
+    private string ReadCommand() {
+      if (HasCharacters) {
+        var ch = GetNextCharacter();
+        if ((ch < 'a' || ch > 'z') && (ch < 'A' || ch > 'Z')) {
+          return ch.ToString();
+        } else {
+          UnlookCharacter();
+        }
+      }
+      return ReadString();
+    }
+
+    private string? ReadDelimiter() {
+      SkipSpaces();
+      while (HasCharacters) {
+        var ch = GetNextCharacter();
+        AssertNotSpace(ch);
+        if (ch == '\\') {
+          // a command
+          var command = ReadCommand();
+          if (command == "|") {
+            return @"||";
+          }
+          return command;
+        }
+        return ch.ToString();
+      }
+      return null;
+    }
+
+    private string? ReadEnvironment() {
+      if (!ExpectCharacter('{')) {
+        SetError("Missing {");
+        return null;
+      }
+      SkipSpaces();
+      var env = ReadString();
+      SkipSpaces();
+      if (!ExpectCharacter('}')) {
+        SetError("Missing }");
+        return null;
+      }
+      return env;
+    }
+
+    private Space? ReadSpace() {
+      SkipSpaces();
+      var sb = new StringBuilder();
+      while (HasCharacters) {
+        var ch = GetNextCharacter();
+        if (char.IsDigit(ch) || ch == '.' || ch == '-' || ch == '+') {
+          sb.Append(ch);
+        } else {
+          UnlookCharacter();
+          break;
+        }
+      }
+      var length = sb.ToString();
+      if (string.IsNullOrEmpty(length)) {
+        SetError("Expected length value");
+        return null;
+      }
+      SkipSpaces();
+      var unit = new char[2];
+      for (int i = 0; i < 2 && HasCharacters; i++) {
+        unit[i] = GetNextCharacter();
+      }
+      return Structures.Space.Create(length, new string(unit), _textMode).Match<Space?>(
+        sp => new Space(sp),
+        error => { SetError(error); return null; }
+      );
+    }
+    private Boundary? BoundaryAtomForDelimiterType(string delimiterType) {
+      var delim = ReadDelimiter();
+      if (delim == null) {
+        SetError("Missing delimiter for " + delimiterType);
+        return null;
+      }
+      var boundary = MathAtoms.BoundaryAtom(delim);
+      if (boundary == null) {
+        SetError(@"Invalid delimiter for \" + delimiterType + ": " + delim);
+      }
+      return boundary;
+    }
+
+    private MathAtom? AtomForCommand(string command, char stopChar) {
+      var atom = MathAtoms.ForLatexSymbolName(command);
+      if(atom is Accent accent) {
+        var innerList = BuildInternal(true);
+        if (innerList is null) return null;
+        accent.InnerList = innerList;
+        return accent;
+      }
+      if (atom != null) {
+        return atom;
+      }
+      switch (command) {
+        case "frac":
+          return new Fraction {
+            Numerator = BuildInternal(true),
+            Denominator = BuildInternal(true)
+          };
+        case "binom":
+          return new Fraction(false) {
+            Numerator = BuildInternal(true),
+            Denominator = BuildInternal(true),
+            LeftDelimiter = "(",
+            RightDelimiter = ")"
+          };
+        case "sqrt":
+          var degree = ExpectCharacter('[') ? BuildInternal(false, ']') : null;
+          var radicand = BuildInternal(true);
+          return radicand != null ? new Radical(degree, radicand) : null;
+        case "left":
+          var oldInner = _currentInnerAtom;
+          _currentInnerAtom = new Inner(new MathList()) {
+            LeftBoundary = BoundaryAtomForDelimiterType("left")
+          };
+          if (_currentInnerAtom.LeftBoundary is null) return null;
+          var innerList = BuildInternal(false, stopChar);
+          if (innerList is null) return null;
+          _currentInnerAtom.InnerList = innerList; 
+          if (_currentInnerAtom.RightBoundary is null) {
+            SetError("Missing \\right");
+            return null;
+          }
+          var newInner = _currentInnerAtom;
+          _currentInnerAtom = oldInner;
+          return newInner;
+        case "overline":
+          innerList = BuildInternal(true);
+          if (innerList is null) return null;
+          return new Overline(innerList);
+        case "underline":
+          innerList = BuildInternal(true);
+          if (innerList is null) return null;
+          return new Underline(innerList);
+        case "begin":
+          var env = ReadEnvironment();
+          if (env == null) {
+            return null;
+          }
+          return BuildTable(env, null, false, stopChar);
+        case "color":
+          return ReadColor() switch
+          {
+            string c when BuildInternal(true) is MathList ml => new Color(c, ml),
+            _ => null
+          };
+        case "prime":
+          SetError(@"\prime won't be supported as Unicode has no matching character. Use ' instead.");
+          return null;
+
+        case "kern":
+        case "hskip":
+          if (_textMode) return ReadSpace();
+          SetError($@"\{command} is not allowed in math mode");
+          return null;
+        case "mkern":
+        case "mskip":
+          if (!_textMode) return ReadSpace();
+          SetError($@"\{command} is not allowed in text mode");
+          return null;
+        case "raisebox":
+          if (!ExpectCharacter('{')) { SetError("Expected {"); return null; }
+          var space = ReadSpace();
+          if (space is null) return null;
+          if (!ExpectCharacter('}')) { SetError("Expected }"); return null; }
+          innerList = BuildInternal(true);
+          if (innerList is null) return null;
+          return new RaiseBox(space, innerList);
+        case "TeX":
+          return TeX;
+        default:
+          SetError("Invalid command \\" + command);
+          return null;
+      }
+    }
+
+    private static readonly Dictionary<string, (string left, string right)?> fractionCommands =
+      new Dictionary<string, (string, string)?> {
+        { "over", null },
+        { "atop", null },
+        { "choose", ("(", ")") },
+        { "brack", ("[", "]") },
+        { "brace", ("{", "}") }
+      };
+
+    //should be \textrm instead of \text
+    private static readonly MathAtom TeX = new Inner(
+      MathListFromLaTeX(@"\text{T\kern-.1667em\raisebox{-.5ex}{E}\kern-.125emX}")
+      ?? throw new FormatException(@"A syntax error is present in the definition of \TeX."));
+
+    private MathList? StopCommand(string command, MathList list, char stopChar) {
+      if (command == "right") {
+        if (_currentInnerAtom == null) {
+          SetError("Missing \\left");
+          return null;
+        }
+        _currentInnerAtom.RightBoundary = BoundaryAtomForDelimiterType("right");
+        if (_currentInnerAtom.RightBoundary == null) {
+          return null;
+        }
+        return list;
+      }
+      if (fractionCommands.ContainsKey(command)) {
+        var fraction = new Fraction(command == "over") {
+          Numerator = list,
+          Denominator = BuildInternal(false, stopChar)
+        };
+        if (Error != null) {
+          return null;
+        }
+        if (fractionCommands[command] is (var left, var right))
+        {
+            fraction.LeftDelimiter = left;
+            fraction.RightDelimiter = right;
+        };
+        return new MathList(fraction);
+      } else if (command == "\\" || command == "cr") {
+        if (_currentEnvironment == null) {
+          var table = BuildTable(null, list, true, stopChar); 
+          if (table == null) return null;
+          return new MathList(table);
+        } else {
+          // stop the current list and increment the row count
+          _currentEnvironment.NRows++;
+          return list;
+        }
+      } else if (command == "end") {
+        if (_currentEnvironment == null) {
+          SetError(@"Missing \begin");
+          return null;
+        }
+        var env = ReadEnvironment();
+        if (env == null) {
+          return null;
+        }
+        if (env!=_currentEnvironment.Name) {
+          SetError($"Begin environment name {_currentEnvironment.Name} does not match end environment name {env}");
+          return null;
+        }
+        _currentEnvironment.Ended = true;
+        return list;
+      }
+      return null;
+    }
+    private bool ApplyModifier(string modifier, MathAtom? atom) {
+      if (modifier == "limits") {
+        if (atom is LargeOperator op) {
+          op.Limits = true;
+        } else {
+          SetError(@"\limits can only be applied to an operator");
+        }
+        return true;
+      } else if (modifier == "nolimits") {
+        if (atom is LargeOperator op) {
+          op.Limits = false;
+        } else {
+          SetError(@"\nolimits can only be applied to an operator");
+        }
+        return true;
+      }
+      return false;
+    }
+
+    private void SetError(string message) => Error ??= message;
+
+    private MathAtom? BuildTable
+      (string? environment, MathList? firstList, bool isRow, char stopChar) { 
+      var oldEnv = _currentEnvironment;
+      _currentEnvironment = new TableEnvironmentProperties(environment);
+      int currentRow = 0;
+      int currentColumn = 0;
+      var rows = new List<List<MathList>> { new List<MathList>() };
+      if (firstList != null) {
+        rows[currentRow].Add(firstList);
+        if (isRow) {
+          _currentEnvironment.NRows++;
+          currentRow++;
+          rows.Add(new List<MathList>());
+        } else {
+          currentColumn++;
+        }
+      }
+      if (_currentEnvironment.Name == "array") {
+        if (!ExpectCharacter('{')) {
+          SetError("Missing array alignment");
+          return null;
+        }
+        var builder = new StringBuilder();
+        var done = false;
+        while (HasCharacters && !done) {
+          var ch = GetNextCharacter();
+          switch (ch) {
+            case 'l': case 'c': case 'r': case '|':
+              builder.Append(ch);
+              break;
+            case '}':
+              _currentEnvironment.ArrayAlignments = builder.ToString();
+              done = true;
+              break;
+            default:
+              SetError($"Invalid character '{ch}' encountered while parsing array alignments");
+              return null;
+          }
+        }
+        if (!done) {
+          SetError("Missing }");
+          return null;
+        }
+      }
+      while (HasCharacters && !_currentEnvironment.Ended) {
+        var list = BuildInternal(false, stopChar);
+        if (list == null) {
+          return null;
+        }
+        rows[currentRow].Add(list);
+        currentColumn++;
+        if (_currentEnvironment.NRows > currentRow) {
+          currentRow = _currentEnvironment.NRows;
+          rows.Add(new List<MathList>());
+          currentColumn = 0;
+        }
+      }
+      if (_currentEnvironment.Name != null && !_currentEnvironment.Ended) {
+        SetError(@"Missing \end");
+        return null;
+      }
+      return
+        MathAtoms.Table(_currentEnvironment.Name, _currentEnvironment.ArrayAlignments, rows)
+        .Match<MathAtom?>(table => {
+          _currentEnvironment = oldEnv;
+          return table;
+        }, error => {
+          SetError(error);
+          return null;
+        });
+    }
+
+    public static Structures.Result<MathList> TryMathListFromLaTeX(string str) {
+      var builder = new MathListBuilder(str);
+      var list = builder.Build();
+      var error = builder.Error;
+      return
+        error != null
+        ? Structures.Result.Err(error)
+        : list != null
+        ? Structures.Result.Ok(list)
+        : throw new InvalidCodePathException("Both error and list are null?");
+    }
+
+    public static MathList? MathListFromLaTeX(string str) => new MathListBuilder(str).Build();
+
+    // ^ LaTeX -> Math atoms
+    // v Math atoms -> LaTeX
+
+    private static Dictionary<float, string> SpaceToCommands { get; } = new Dictionary<float, string> {
+      { Structures.Space.ShortSpace.Length, "," },
+      { Structures.Space.MediumSpace.Length, ":" },
+      { Structures.Space.LongSpace.Length, ";" },
+      { -Structures.Space.ShortSpace.Length, "!" },
+      { Structures.Space.EmWidth.Length, "quad" },
+      { Structures.Space.EmWidth.Length * 2, "qquad" }
+    };
+
+    private static Dictionary<LineStyle, string> StyleToCommands { get; } = new Dictionary<LineStyle, string> {
+      { LineStyle.Display, "displaystyle" },
+      { LineStyle.Text, "textstyle" },
+      { LineStyle.Script, "scriptstyle" },
+      { LineStyle.ScriptScript, "scriptscriptstyle" }
+    };
+
+    public static string DelimiterToString(Boundary delimiter) {
+      var command = MathAtoms.DelimiterName(delimiter);
+      if (command == null) {
+        return string.Empty;
+      }
+      var singleChars = @"()[]<>|./";
+      if (singleChars.IndexOf(command, StringComparison.OrdinalIgnoreCase) >= 0 && command.Length == 1) {
+        return command;
+      }
+      if (command == "||") {
+        return @"\|";
+      } else {
+        return @"\" + command;
+      }
+    }
+
+    public static string MathListToLaTeX(MathList mathList) {
+      static string? NullableListToLaTeX(MathList? mathList) =>
+        mathList switch { null => null, var ml => MathListToLaTeX(mathList) };
+      var builder = new StringBuilder();
+      var currentFontStyle = FontStyle.Default;
+      foreach (var atom in mathList) {
+        if (currentFontStyle != atom.FontStyle) {
+          if (currentFontStyle != FontStyle.Default) {
+            // close the previous font style
+            builder.Append("}");
+          }
+          if (atom.FontStyle != FontStyle.Default) {
+            // open a new font style
+            builder.Append(@"\").Append(atom.FontStyle.FontName()).Append("{");
+          }
+        }
+        currentFontStyle = atom.FontStyle;
+        switch (atom.AtomType) {
+          case MathAtomType.Fraction: {
+              var fraction = (Fraction)atom;
+              var numerator = NullableListToLaTeX(fraction.Numerator);
+              var denominator = NullableListToLaTeX(fraction.Denominator);
+              if (fraction.HasRule) {
+                builder.Append(@"\frac{").Append(numerator).Append("}{").Append(denominator).Append("}");
+              } else {
+                builder.Append("{").Append(numerator).Append(@" \").Append(
+                  (fraction.LeftDelimiter, fraction.RightDelimiter) switch
+                  {
+                    (null, null) => "atop",
+                    ("(", ")") => "choose",
+                    ("{", "}") => "brace",
+                    ("[", "]") => "brack",
+                    (var left, var right) => $"atopwithdelims{left}{right}",
+                  }).Append(" ").Append(denominator).Append("}");
+              }
+            }
+            break;
+          case MathAtomType.Radical: {
+              builder.Append(@"\sqrt");
+              var radical = (Radical)atom;
+              builder.AppendInSquareBrackets(NullableListToLaTeX(radical.Degree), NullHandling.EmptyString);
+              builder.AppendInBraces(MathListToLaTeX(radical.Radicand), NullHandling.EmptyContent);
+              break;
+            }
+          case MathAtomType.Inner: {
+              var inner = (Inner)atom;
+              if (inner.LeftBoundary == null && inner.RightBoundary == null) {
+                builder.AppendInBraces(MathListToLaTeX(inner.InnerList), NullHandling.EmptyContent);
+              } else {
+                builder.Append(inner.LeftBoundary switch
+                {
+                  null => @"\left. ",
+                  var b => @"\left" + DelimiterToString(b) + " "
+                }).Append(MathListToLaTeX(inner.InnerList))
+                .Append(inner.RightBoundary switch
+                {
+                  null => @"\right. ",
+                  var b => @"\right" + DelimiterToString(b) + " "
+                });
+              }
+              break;
+            }
+          case MathAtomType.Table: {
+              var table = (Table)atom;
+              if (table.Environment != null) {
+                builder.Append(@"\begin{" + table.Environment + "}");
+              }
+              if (table.Environment == "array") {
+                builder.Append('{');
+                foreach (var alignment in table.Alignments)
+                  builder.Append(alignment switch
+                  {
+                    ColumnAlignment.Left => 'l',
+                    ColumnAlignment.Right => 'r',
+                    _ => 'c'
+                  });
+                builder.Append('}');
+              }
+              for (int i = 0; i < table.NRows; i++) {
+                var row = table.Cells[i];
+                for (int j = 0; j < row.Count; j++) {
+                  var cell = row[j];
+                  if (table.Environment == "matrix"
+                      && cell.Count >= 1
+                      && cell[0].AtomType == MathAtomType.Style) {
+                    // remove the first atom.
+                    cell = cell.GetRange(1, cell.Count - 1);
+                  }
+                  if (table.Environment switch {
+                        "eqalign" => true,
+                        "aligned" => true,
+                        "split" => true,
+                        _ => false
+                      }
+                      && j == 1
+                      && cell.Count >= 1
+                      && cell[0].AtomType == MathAtomType.Ordinary
+                      && string.IsNullOrEmpty(cell[0].Nucleus)) {
+                    // empty nucleus added for spacing. Remove it.
+                    cell = cell.GetRange(1, cell.Count - 1);
+                  }
+                  builder.Append(MathListToLaTeX(cell));
+                  if (j < row.Count - 1) {
+                    builder.Append("&");
+                  }
+                }
+                if (i < table.NRows - 1) {
+                  builder.Append(@"\\ ");
+                }
+              }
+              if (table.Environment != null) {
+                builder.Append(@"\end{")
+                  .Append(table.Environment)
+                  .Append("}");
+              }
+              break;
+            }
+          case MathAtomType.Overline: {
+              var over = (Overline)atom;
+              builder.Append(@"\overline{")
+                .Append(MathListToLaTeX(over.InnerList))
+                .Append("}");
+              break;
+            }
+          case MathAtomType.Underline: {
+              var under = (Underline)atom;
+              builder.Append(@"\underline{")
+                .Append(MathListToLaTeX(under.InnerList))
+                .Append("}");
+              break;
+            }
+          case MathAtomType.Accent: {
+              var accent = (Accent)atom;
+              var list = accent.InnerList;
+              accent.InnerList = null; //for lookup
+              builder.Append(@"\")
+                .Append(MathAtoms.Commands[atom])
+                .Append("{")
+                .Append(NullableListToLaTeX(list))
+                .Append("}");
+              accent.InnerList = list;
+              break;
+            }
+          case MathAtomType.LargeOperator: {
+              var op = (LargeOperator)atom;
+              var command = MathAtoms.LatexSymbolNameForAtom(op);
+              if (command == null) {
+                builder.Append($@"\mathrm{{{command}}} ");
+              } else {
+                builder.Append($@"\{command} ");
+                if (!(MathAtoms.ForLatexSymbolName(command) is LargeOperator originalOperator))
+                  throw new InvalidCodePathException("original operator not found!");
+                if (originalOperator.Limits == op.Limits)
+                  break;
+              }
+              switch (op.Limits) {
+                case true:
+                  builder.Append(@"\limits ");
+                  break;
+                case false:
+                  if (!op.NoLimits) builder.Append(@"\nolimits ");
+                  break;
+                case null:
+                  break;
+              }
+              break;
+            }
+          case MathAtomType.Space: {
+              var space = (Space)atom;
+              var intSpace = (int)space.Length;
+              if (SpaceToCommands.ContainsKey(intSpace) && intSpace == space.Length)
+                builder.Append(@"\")
+                  .Append(SpaceToCommands[intSpace])
+                  .Append(" ");
+              else if (space.IsMu)
+                builder.Append(@"\mkern")
+                  .Append(space.Length.ToString("0.0"))
+                  .Append("mu");
+              else
+                builder.Append(@"\kern")
+                  .Append(space.Length.ToString("0.0"))
+                  .Append("pt");
+              break;
+            }
+          case MathAtomType.Style: {
+              var style = (Style)atom;
+              var command = StyleToCommands[style.LineStyle];
+              builder.Append(@"\").Append(command).Append(" ");
+              break;
+            }
+          case MathAtomType.Color: {
+              var color = (Color)atom;
+              builder.Append(@"\color{")
+                .Append(color.ColorString)
+                .Append("}{")
+                .Append(MathListToLaTeX(color.InnerList))
+                .Append("}");
+              break;
+            }
+          case MathAtomType.Prime:
+            builder.Append('\'', ((Prime)atom).Length);
+            break;
+          case MathAtomType.RaiseBox: {
+              var r = (RaiseBox)atom;
+              builder.Append(@"\raisebox{")
+                .Append(r.Raise.Length)
+                .Append(r.Raise.IsMu ? "mu" : "pt")
+                .Append("}{")
+                .Append(MathListToLaTeX(r.InnerList))
+                .Append("}");
+              break;
+            }
+          default:
+            switch (atom.Nucleus) {
+              case null:
+              case "":
+                builder.Append("{}");
+                break;
+              case "\u2236":
+                builder.Append(":");
+                break;
+              case "\u2212":
+                builder.Append("-");
+                break;
+              case var _ when MathAtoms.LatexSymbolNameForAtom(atom) is string name:
+                builder.Append(@"\").Append(name).Append(" ");
+                break;
+              case var aNucleus:
+                builder.Append(aNucleus);
+                break;
+              }
+            break;
+        }
+        if (atom.Subscript != null) {
+          var scriptString = MathListToLaTeX(atom.Subscript);
+          builder.Append(scriptString.Length == 1 ? $"_{scriptString}" : $"_{{{scriptString}}}");
+        }
+
+        if (atom.Superscript != null) {
+          var scriptString = MathListToLaTeX(atom.Superscript);
+          builder.Append(scriptString.Length == 1 ? $"^{scriptString}" : $"^{{{scriptString}}}");
+        }
+        
+      }
+      if (currentFontStyle!=FontStyle.Default) {
+        builder.Append("}");
+      }
+      return builder.ToString();
+    }
+  }
+}

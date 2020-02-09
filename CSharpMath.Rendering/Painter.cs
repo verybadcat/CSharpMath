@@ -106,7 +106,7 @@ namespace CSharpMath.Rendering {
       } else DrawError(canvas);
     }
     protected void DrawError(ICanvas canvas) {
-      if (DisplayErrorInline && ErrorMessage.IsNonEmpty()) {
+      if (DisplayErrorInline && ErrorMessage != null) {
         canvas.Save();
         var size = ErrorFontSize ?? FontSize;
         canvas.CurrentColor = WrapColor(ErrorColor);

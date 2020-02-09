@@ -1,13 +1,14 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<Application xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="CSharpMath.Forms.Example.App">
+<?xml version="1.0" encoding="utf-8"?>
+<Application
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:CSharpMath.Forms.Example"
+    xmlns:android="clr-namespace:Xamarin.Forms.PlatformConfiguration.AndroidSpecific;assembly=Xamarin.Forms.Core"
+    x:Class="CSharpMath.Forms.Example.App">
     <Application.MainPage>
-        <TabbedPage xmlns:local="clr-namespace:CSharpMath.Forms.Example"
-                    xmlns:android="clr-namespace:Xamarin.Forms.PlatformConfiguration.AndroidSpecific;assembly=Xamarin.Forms.Core"
-                    xmlns:math="clr-namespace:CSharpMath.Forms;assembly=CSharpMath.Forms"
-                    android:TabbedPage.IsSwipePagingEnabled="False"
-                    ChildAdded="Handle_ChildAdded">
+        <TabbedPage
+            android:TabbedPage.IsSwipePagingEnabled="False"
+            ChildAdded="Handle_ChildAdded">
             <local:IconPage/>
             <local:ExamplePage/>
             <local:ExamplesPage/>

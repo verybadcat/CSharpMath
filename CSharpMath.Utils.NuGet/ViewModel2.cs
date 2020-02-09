@@ -1,13 +1,9 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Linq;
-using System.Text;
 using System.Xml;
-using System.Xml.Serialization;
 using System.Windows.Input;
 
 namespace CSharpMath.Utils.NuGet {
@@ -23,13 +19,10 @@ namespace CSharpMath.Utils.NuGet {
         "CSharpMath.Forms"
         //NOTE: When a new project is added, first save project spec, NOT global spec
       };
-
     public event PropertyChangedEventHandler PropertyChanged;
-    private void Set<T>(T assignment, [CallerMemberName] string propertyName = null) =>
+    private void Set<T>(T _, [CallerMemberName] string propertyName = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-
     public ViewModel2() => Initialize();
-
     public void Initialize() {
       var d = new XmlDocument();
       using (var s = new FileStream(App.ReleaseData, FileMode.Open))
@@ -57,7 +50,6 @@ namespace CSharpMath.Utils.NuGet {
     
     public ReadOnlyCollection<ProjectInfo> Projects { get; } =
       ProjectNames.Select(p => new ProjectInfo(p)).ToList().AsReadOnly();
-
     ProjectInfo _currentInfo;
     public ProjectInfo CurrentInfo {
       get => _currentInfo;
@@ -69,30 +61,24 @@ namespace CSharpMath.Utils.NuGet {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PackageTags)));
       }
     }
-
-    public string PackageId { get => CurrentInfo.PackageId; set => Set(CurrentInfo.PackageId = value); }
-
-    public string Title { get => CurrentInfo.Title; set => Set(CurrentInfo.Title = value); }
-
-    public string Description { get => CurrentInfo.Description; set => Set(CurrentInfo.Description = value); }
-
-    public string PackageTags { get => CurrentInfo.PackageTags; set => Set(CurrentInfo.PackageTags = value); }
-
+    public string PackageId
+      { get => CurrentInfo.PackageId; set => Set(CurrentInfo.PackageId = value); }
+    public string Title
+      { get => CurrentInfo.Title; set => Set(CurrentInfo.Title = value); }
+    public string Description
+      { get => CurrentInfo.Description; set => Set(CurrentInfo.Description = value); }
+    public string PackageTags
+      { get => CurrentInfo.PackageTags; set => Set(CurrentInfo.PackageTags = value); }
     public class ProjectInfo {
       public ProjectInfo(string project) => Project = project;
-
       public string Project { get; }
-
       public string PackageId { get; set; }
       public string Title { get; set; }
       public string Description { get; set; }
       public string PackageTags { get; set; }
-
       public override string ToString() => Project;
     }
-
     public ICommand Reload => new Command(Initialize);
-
     public void SaveFile() {
       using (var file = new FileStream(App.ReleaseData, FileMode.Open)) {
         var d = new XmlDocument();
@@ -116,14 +102,16 @@ namespace CSharpMath.Utils.NuGet {
           SetValue(nameof(info.Description), info.Description);
           SetValue(nameof(info.PackageTags), info.PackageTags);
         }
-        file.Seek(0, SeekOrigin.Begin); //Prevents XML from appending to the end of the file
+        //Prevents XML from appending to the end of the file
+        file.Seek(0, SeekOrigin.Begin);
         d.Save(file); //Save to the file
         file.SetLength(file.Position); //Gets rid of residue after this position
       }
       App.UpdateProject(CurrentInfo.Project);
-      System.Windows.MessageBox.Show($"Project-wise spec for {CurrentInfo.Project} was saved successfully."); //MVVM broken here
+      //MVVM broken here
+      System.Windows.MessageBox.Show
+        ($"Project-wise spec for {CurrentInfo.Project} was saved successfully.");
     }
-
     public ICommand Save => new Command(SaveFile);
   }
 }

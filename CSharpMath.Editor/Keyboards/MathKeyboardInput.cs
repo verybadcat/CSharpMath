@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace CSharpMath.Editor {
   public enum MathKeyboardInput {
     //Navigation
@@ -9,7 +5,8 @@ namespace CSharpMath.Editor {
     Backspace = '⌫', Clear = '⎚', Return = '\n', Dismiss = '❌',
 
     //Brackets
-    LeftRoundBracket = '(', RightRoundBracket = ')', LeftSquareBracket = '[', RightSquareBracket = ']',
+    LeftRoundBracket = '(', RightRoundBracket = ')',
+    LeftSquareBracket = '[', RightSquareBracket = ']',
     LeftCurlyBracket = '{', RightCurlyBracket = '}',
 
     //Decimals
@@ -17,8 +14,8 @@ namespace CSharpMath.Editor {
     D5 = '5', D6 = '6', D7 = '7', D8 = '8', D9 = '9', Decimal = '.',
 
     //Basic operators
-    Plus = '+', Minus = '−', Minus_ = '-', Multiply = '×', Multiply_ = '*', Divide = '÷', Ratio = '∶', 
-    Ratio_ = ':', Percentage = '%', Comma = ',', Semicolon = ';', Factorial = '!',
+    Plus = '+', Minus = '−', Minus_ = '-', Multiply = '×', Multiply_ = '*', Divide = '÷',
+    Ratio = '∶', Ratio_ = ':', Percentage = '%', Comma = ',', Semicolon = ';', Factorial = '!',
     Infinity = '∞', Angle = '∠', Degree = '°', VerticalBar = '|', Logarithm = '㏒', NaturalLogarithm = '㏑',
 
     //More complicated operators

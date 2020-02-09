@@ -1,4 +1,4 @@
-﻿//MIT, 2016-present, WinterDev
+//MIT, 2016-present, WinterDev
 
 using Typography.OpenFont;
 
@@ -144,7 +144,7 @@ namespace Typography.Contours
     {
         public static void Build(this GlyphPathBuilderBase builder, char c, float sizeInPoints)
         {
-            builder.BuildFromGlyphIndex((ushort)builder.Typeface.LookupIndex(c), sizeInPoints);
+            builder.BuildFromGlyphIndex(builder.Typeface.GetGlyphIndex(c), sizeInPoints);
         }
         public static void SetHintTechnique(this GlyphPathBuilderBase builder, HintTechnique hintTech)
         {

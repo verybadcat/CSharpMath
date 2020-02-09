@@ -17,11 +17,15 @@ namespace CSharpMath.Editor.Tests {
             var mathListIndex = MathListIndex.Level0Index(index);
             goto default;
           case var _:
-            mathListIndex = MathListIndex.Level0Index(subIndexRecursive[subIndexRecursive.Length - 1].subIndex);
+            mathListIndex = MathListIndex.Level0Index(
+              subIndexRecursive[subIndexRecursive.Length - 1].subIndex);
             for (var i = subIndexRecursive.Length - 2; i >= 0; i--)
               mathListIndex = MathListIndex.IndexAtLocation(
-                subIndexRecursive[i].subIndex, subIndexRecursive[i + 1].subType, mathListIndex);
-            mathListIndex = MathListIndex.IndexAtLocation(index, subIndexRecursive[0].subType, mathListIndex);
+                subIndexRecursive[i].subIndex,
+                subIndexRecursive[i + 1].subType,
+                mathListIndex);
+            mathListIndex = MathListIndex.IndexAtLocation(index,
+              subIndexRecursive[0].subType, mathListIndex);
             goto default;
           default:
             AddRow(new PointF((float)point.x, (float)point.y), mathListIndex);
@@ -29,19 +33,17 @@ namespace CSharpMath.Editor.Tests {
         }
       }
     }
-    public static Display.ListDisplay<TestFont, char> CreateDisplay(string latex) =>
-      MathLists.FromString(latex) is Interfaces.IMathList mathList ?
+    public static Structures.Result<Display.ListDisplay<TestFont, char>>
+      CreateDisplay(string latex) =>
+      MathListBuilder.TryMathListFromLaTeX(latex).Bind(mathList =>
         Typesetter<TestFont, char>.CreateLine(
-          mathList, new TestFont(20), TestTypesettingContexts.Instance, LineStyle.Display) :
-        null;
-
-    void Test(string latex, PointF point, MathListIndex expected) {
-      var display = CreateDisplay(latex);
-      Assert.NotNull(display);
-      var actual = display.IndexForPoint(TestTypesettingContexts.Instance, point);
-      Assert.True(expected.EqualsToIndex(actual), $"Point: {point}\n" +
-        $"ExpectedIndex: {expected?.ToString() ?? "(null)"}\nActualIndex: {actual?.ToString() ?? "(null)"}");
-    }
+          mathList, new TestFont(20), TestTypesettingContexts.Instance, LineStyle.Display));
+    void Test(string latex, PointF point, MathListIndex expected) =>
+      CreateDisplay(latex).Match(
+        display => Assert.Equal(expected,
+          display.IndexForPoint(TestTypesettingContexts.Instance, point)),
+        s => throw new Xunit.Sdk.XunitException(s)
+      );
 
     public static TestData FractionData =>
       new TestData {

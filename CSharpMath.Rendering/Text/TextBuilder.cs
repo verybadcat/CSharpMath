@@ -39,9 +39,10 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
      */
     public const int StringArgumentLimit = 25;
     public static bool NoEnhancedColors { get; set; }
-    private static CustomBreaker breaker = new CustomBreaker { BreakNumberAfterText = true, ThrowIfCharOutOfRange = false };
+    private static readonly CustomBreaker breaker =
+      new CustomBreaker { BreakNumberAfterText = true, ThrowIfCharOutOfRange = false };
     private const string SpecialChars = @"#$%&\^_{}~";
-    public static Result<TextAtom> Build(string latexSource) {
+    public static Result<TextAtom> TextAtomFromLaTeX(string latexSource) {
       if (string.IsNullOrEmpty(latexSource))
         return new TextAtom.List(Array.Empty<TextAtom>(), 0);
       bool? displayMath = null;
@@ -98,7 +99,8 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
         }
         return Ok();
       }
-      Result<int> BuildBreakList(ReadOnlySpan<char> latex, TextAtomListBuilder atoms, int i, bool oneCharOnly, char stopChar) {
+      Result<int> BuildBreakList(ReadOnlySpan<char> latex, TextAtomListBuilder atoms,
+          int i, bool oneCharOnly, char stopChar) {
         void ParagraphBreak() {
           atoms.Break(3);
 #warning Should the newline and space occupy the same range?
@@ -106,7 +108,8 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
           atoms.Add(Space.ParagraphIndent, 3);
         }
         for (; i < breakList.Count; i++) {
-          void ObtainRange(ReadOnlySpan<char> latexInput, int index, out int start, out int end, out ReadOnlySpan<char> section, out WordKind kind) {
+          void ObtainRange(ReadOnlySpan<char> latexInput, int index,
+            out int start, out int end, out ReadOnlySpan<char> section, out WordKind kind) {
             (start, end) = (index == 0 ? 0 : breakList[index - 1].breakAt, breakList[index].breakAt);
             section = latexInput.Slice(start, end - start);
             kind = breakList[index].wordKind;
@@ -252,14 +255,12 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                 case var _ when textSection.Is('$'):
                   throw new InvalidCodePathException("The $ case should have been accounted for.");
                 case var _ when textSection.Is('('):
-                  switch (displayMath) {
-                    case true:
-                      return "Cannot open inline math mode in display math mode";
-                    case false:
-                      return "Cannot open inline math mode in inline math mode";
-                    default:
-                      throw new InvalidCodePathException("displayMath is null. This switch should not be hit.");
-                  }
+                  return displayMath switch
+                  {
+                    true => "Cannot open inline math mode in display math mode",
+                    false => "Cannot open inline math mode in inline math mode",
+                    null => throw new InvalidCodePathException("displayMath is null. This switch should not be hit."),
+                  };
                 case var _ when textSection.Is(')'):
                   switch (displayMath) {
                     case true:
@@ -270,19 +271,17 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                       mathLaTeX = null;
                       displayMath = null;
                       break;
-                    default:
+                    case null:
                       throw new InvalidCodePathException("displayMath is null. This switch should not be hit.");
                   }
                   break;
                 case var _ when textSection.Is('['):
-                  switch (displayMath) {
-                    case true:
-                      return "Cannot open display math mode in display math mode";
-                    case false:
-                      return "Cannot open display math mode in inline math mode";
-                    default:
-                      throw new InvalidCodePathException("displayMath is null. This switch should not be hit.");
-                  }
+                  return displayMath switch
+                  {
+                    true => "Cannot open display math mode in display math mode",
+                    false => "Cannot open display math mode in inline math mode",
+                    null => throw new InvalidCodePathException("displayMath is null. This switch should not be hit."),
+                  };
                 case var _ when textSection.Is(']'):
                   switch (displayMath) {
                     case true:
@@ -305,41 +304,42 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
             } else {
               //Escaped text section and not in inline/display math mode
               afterCommand = true;
-              switch (textSection) {
-                case var _ when textSection.Is('('):
-                  mathLaTeX = new StringBuilder();
-                  displayMath = false;
-                  break;
-                case var _ when textSection.Is(')'):
-                  return "Cannot close inline math mode outside of math mode";
-                case var _ when textSection.Is('['):
-                  mathLaTeX = new StringBuilder();
-                  displayMath = true;
-                  break;
-                case var _ when textSection.Is(']'):
-                  return "Cannot close display math mode outside of math mode";
-                case var _ when textSection.Is('\\'):
-                  atoms.Break(1);
-                  break;
-                case var _ when textSection.Is(','):
-                  atoms.Add(Space.ShortSpace, 1);
-                  break;
-                case var _ when textSection.Is(':') || textSection.Is('>'):
-                  atoms.Add(Space.MediumSpace, 1);
-                  break;
-                case var _ when textSection.Is(';'):
-                  atoms.Add(Space.LongSpace, 1);
-                  break;
-                case var _ when textSection.Is('!'):
-                  atoms.Add(-Space.ShortSpace, 1);
-                  break;
+              switch (textSection.ToString()) {
                 case var _ when wordKind == WordKind.Whitespace: //control space
                   atoms.Add();
                   break;
-                case var _ when textSection.Is("par"):
+                case "(":
+                  mathLaTeX = new StringBuilder();
+                  displayMath = false;
+                  break;
+                case ")":
+                  return "Cannot close inline math mode outside of math mode";
+                case "[":
+                  mathLaTeX = new StringBuilder();
+                  displayMath = true;
+                  break;
+                case "]":
+                  return "Cannot close display math mode outside of math mode";
+                case "\\":
+                  atoms.Break(1);
+                  break;
+                case ",":
+                  atoms.Add(Space.ShortSpace, 1);
+                  break;
+                case ":":
+                case ">":
+                  atoms.Add(Space.MediumSpace, 1);
+                  break;
+                case ";":
+                  atoms.Add(Space.LongSpace, 1);
+                  break;
+                case "!":
+                  atoms.Add(-Space.ShortSpace, 1);
+                  break;
+                case "par":
                   ParagraphBreak();
                   break;
-                case var _ when textSection.Is("fontsize"): {
+                case "fontsize": {
                     if (ReadArgumentString(latex, ref textSection).Bind(fontSize => {
                       if (fontSize.Length > StringArgumentLimit)
                         return Err($"Length of font size has over {StringArgumentLimit} characters. Please shorten it.");
@@ -359,7 +359,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     ) return error;
                     break;
                   }
-                case var _ when textSection.Is("color"): {
+                case "color": {
                     if (ReadArgumentString(latex, ref textSection).Bind(color =>
                         color.Length > StringArgumentLimit ?
                           Err($"Length of color has over {StringArgumentLimit} characters. Please shorten it.") :
@@ -375,7 +375,8 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     break;
                   }
                 //case "red", "yellow", ...
-                case var shortColor when !NoEnhancedColors && shortColor.TryAccessDictionary(Color.PredefinedColors, out var color): {
+                case var shortColor when
+                  !NoEnhancedColors && Color.PredefinedColors.TryGetByFirst(shortColor, out var color): {
                     int tmp_commandLength = shortColor.Length;
                     if (ReadArgumentAtom(latex).Bind(
                         coloredContent => atoms.Add(coloredContent, color, tmp_commandLength)
@@ -384,28 +385,10 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     break;
                   }
                 //case "textbf", "textit", ...
-                bool ValidTextStyle(ReadOnlySpan<char> textStyle, out FontStyle fontStyle) {
-                    fontStyle = default;
-                    if (textStyle.Length > 3 &&
-                        textStyle[0] == 'm'  &&
-                        textStyle[1] == 'a'  &&
-                        textStyle[2] == 't'  &&
-                        textStyle[3] == 'h') return false;
-                    Span<char> copy = stackalloc char[textStyle.Length];
-                    textStyle.CopyTo(copy);
-                    if (textStyle.Length > 3 &&
-                        textStyle[0] == 't' &&
-                        textStyle[1] == 'e' &&
-                        textStyle[2] == 'x' &&
-                        textStyle[3] == 't') {
-                      copy[0] = 'm';
-                      copy[1] = 'a';
-                      copy[2] = 't';
-                      copy[3] = 'h';
-                    }
-                    return ((ReadOnlySpan<char>)copy).TryAccessDictionary(FontStyleExtensions.FontStyles, out fontStyle);
-                }
-                case var textStyle when ValidTextStyle(textStyle, out var fontStyle): {
+                case var textStyle when !textStyle.StartsWith("math")
+                  && FontStyleExtensions.FontStyles.TryGetValue(
+                      textStyle.StartsWith("text") ? textStyle.Replace("text", "math") : textStyle,
+                      out var fontStyle): {
                     int tmp_commandLength = textStyle.Length;
                     if (ReadArgumentAtom(latex)
                       .Bind(builtContent => atoms.Add(builtContent, fontStyle, tmp_commandLength))
@@ -414,7 +397,8 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     break;
                   }
                 //case "^", "\"", ...
-                case var textAccent when textAccent.TryAccessDictionary(TextAtoms.PredefinedAccents, out var accent): {
+                case var textAccent when
+                  TextAtoms.PredefinedAccents.TryGetByFirst(textAccent.ToString(), out var accent): {
                     int tmp_commandLength = textAccent.Length;
                     if (ReadArgumentAtom(latex)
                       .Bind(builtContent => atoms.Add(builtContent, accent, tmp_commandLength))
@@ -423,7 +407,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     break;
                   }
                 //case "textasciicircum", "textless", ...
-                case var textSymbol when textSymbol.TryAccessDictionary(TextAtoms.PredefinedTextSymbols, out var replaceResult):
+                case var textSymbol when TextAtoms.PredefinedTextSymbols.TryGetValue(textSymbol.ToString(), out var replaceResult):
                   atoms.Add(replaceResult, LookAheadForPunc(latex, ref textSection));
                   break;
                 case var command:
@@ -446,32 +430,43 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
       if (displayMath != null) return "Math mode was not terminated";
       return globalAtoms.Build();
     }
-    public static StringBuilder Unbuild(TextAtom atom, StringBuilder b) {
+    public static StringBuilder TextAtomToLaTeX(TextAtom atom, StringBuilder b) {
       switch (atom) {
         case TextAtom.Text t:
           return b.Append(t.Content);
-        case TextAtom.Newline n:
+        case TextAtom.Newline _:
           return b.Append(@"\\");
         case TextAtom.Math m:
-          return b.Append('\\').Append(m.DisplayStyle ? '[' : '(').Append(Atoms.MathListBuilder.MathListToString(m.Content)).Append('\\').Append(m.DisplayStyle ? ']' : ')');
+          return b.Append('\\')
+            .Append(m.DisplayStyle ? '[' : '(')
+            .Append(Atoms.MathListBuilder.MathListToLaTeX(m.Content))
+            .Append('\\')
+            .Append(m.DisplayStyle ? ']' : ')');
         case TextAtom.Space s:
-          return b.Append(@"\hspace").AppendInBraces(s.Content.Length.ToStringInvariant(), NullHandling.EmptyContent);
-        case TextAtom.ControlSpace c:
+          return b.Append(@"\hspace")
+            .AppendInBraces(s.Content.Length.ToStringInvariant(), NullHandling.EmptyContent);
+        case TextAtom.ControlSpace _:
           return b.Append(@"\ ");
         case TextAtom.Style t:
-          return b.Append('\\').Append(t.FontStyle.FontName()).AppendInBraces(Unbuild(t.Content, new StringBuilder()).ToString(), NullHandling.None);
+          return b.Append('\\')
+            .Append(t.FontStyle.FontName())
+            .AppendInBraces(TextAtomToLaTeX(t.Content, new StringBuilder()).ToString(),
+                            NullHandling.EmptyContent);
         case TextAtom.Size z:
-          return b.Append(@"\fontsize").AppendInBraces(z.PointSize.ToStringInvariant(), NullHandling.EmptyContent)
-                                       .AppendInBraces(Unbuild(z.Content, new StringBuilder()).ToString(), NullHandling.None);
+          return b.Append(@"\fontsize")
+            .AppendInBraces(z.PointSize.ToStringInvariant(), NullHandling.EmptyContent)
+            .AppendInBraces(TextAtomToLaTeX(z.Content, new StringBuilder()).ToString(),
+                            NullHandling.EmptyContent);
         case TextAtom.List l:
-          foreach (var a in l.Content) {
-            b.Append(Unbuild(a, b));
-          }
+          foreach (var a in l.Content)
+            b.Append(TextAtomToLaTeX(a, b));
           return b;
         case null:
-          throw new ArgumentNullException(nameof(atom), "TextAtoms should never be null. You must have sneaked one in.");
+          throw new ArgumentNullException(nameof(atom),
+            "TextAtoms should never be null. You must have sneaked one in.");
         case var a:
-          throw new InvalidCodePathException($"There should not be an unknown type of TextAtom. However, one with type {a.GetType()} was encountered.");
+          throw new InvalidCodePathException(
+            $"There should not be an unknown type of TextAtom. However, one with type {a.GetType()} was encountered.");
       }
     }
   }

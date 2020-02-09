@@ -1,20 +1,16 @@
-﻿using System;
+using System;
 using CSharpMath.Display;
-using CSharpMath.Display.Text;
 
 namespace CSharpMath.FrontEnd {
-
-  /// <summary>A wrapper class holding everything the core needs to have in order
-  /// layout the LaTeX.</summary>
-  public class TypesettingContext<TFont, TGlyph>
-    where TFont: IFont<TGlyph> {
+  /// <summary>
+  /// A wrapper class holding everything the core needs to have in order to layout the LaTeX.
+  /// </summary>
+  public class TypesettingContext<TFont, TGlyph> where TFont: IFont<TGlyph> {
     public IGlyphBoundsProvider<TFont, TGlyph> GlyphBoundsProvider { get; }
     public IGlyphFinder<TFont, TGlyph> GlyphFinder { get; }
-    
-    public FontMathTable<TFont, TGlyph> MathTable { get; private set; }
-    public Func<TFont, float, TFont> MathFontCloner { get; private set; }
-    public IFontChanger FontChanger { get; private set; }
-
+    public FontMathTable<TFont, TGlyph> MathTable { get; }
+    public Func<TFont, float, TFont> MathFontCloner { get; }
+    public IFontChanger FontChanger { get; }
     public TypesettingContext(Func<TFont, float, TFont> mathFontCloner,
       IGlyphBoundsProvider<TFont, TGlyph> glyphBoundsProvider,
       IGlyphFinder<TFont, TGlyph> glyphFinder,
@@ -26,6 +22,5 @@ namespace CSharpMath.FrontEnd {
       FontChanger = fontChanger;
       MathTable = mathTable;
     }
-
   }
 }

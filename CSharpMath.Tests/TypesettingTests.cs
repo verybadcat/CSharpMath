@@ -35,7 +35,7 @@ namespace CSharpMath.Tests {
     void TestOuter(string latex, int rangeMax, double ascent, double descent, double width,
         params System.Action<IDisplay<TFont, TGlyph>>[] inspectors) =>
       TestList(rangeMax, ascent, descent, width, 0, 0, LinePosition.Regular, Range.UndefinedInt, inspectors)
-      (_context.CreateLine(MathLists.FromString(latex), _font, LineStyle.Display));
+      (_context.CreateLine(MathListBuilder.MathListFromLaTeX(latex), _font, LineStyle.Display));
 
     [Theory, InlineData("x"), InlineData("2")]
     public void TestSimpleVariable(string latex) =>

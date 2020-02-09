@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:math="clr-namespace:CSharpMath.Forms;assembly=CSharpMath.Forms"
@@ -8,7 +8,12 @@
     <StackLayout>
         <Entry x:Name="Entry" HorizontalOptions="FillAndExpand"/>
         <Label x:Name="Exit" HorizontalOptions="FillAndExpand"/>
-        <Picker x:Name="Size" HorizontalOptions="Fill" ItemsSource="{x:Static local:CustomExamplePage.FontSizes}"/>
-        <math:MathView x:Name="View" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" EnableTouchEvents="True"/>
+        <Picker x:Name="Size"
+                HorizontalOptions="Fill"
+                ItemsSource="{x:Static local:CustomExamplePage.FontSizes}"/>
+        <math:MathView x:Name="View"
+                       HorizontalOptions="FillAndExpand"
+                       VerticalOptions="FillAndExpand"
+                       EnableTouchEvents="True"/>
     </StackLayout>
 </ContentPage>

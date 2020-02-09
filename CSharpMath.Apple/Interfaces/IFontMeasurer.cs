@@ -1,13 +1,5 @@
-﻿using CSharpMath.Display.Text;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
-using CSharpMath.Display;
-
 namespace CSharpMath.FrontEnd {
-  public interface IFontMeasurer<TFont, TGlyph>
-    where TFont: IFont<TGlyph> {
+  public interface IFontMeasurer<TFont, TGlyph> where TFont: Display.IFont<TGlyph> {
     /// <summary>A proportionality constant that is applied when
     /// reading from the Json table.</summary>
     int GetUnitsPerEm(TFont font);

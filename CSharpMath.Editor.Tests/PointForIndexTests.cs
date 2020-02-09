@@ -7,13 +7,12 @@ namespace CSharpMath.Editor.Tests {
   // Use the "CSharpMath.Editor Test Checker" project in the _Utils folder to visualize the test cases
   using SubIndex = MathListSubIndexType;
   public class PointForIndexTests {
-    void Test(string latex, PointF expected, MathListIndex index) {
-      var display = CreateDisplay(latex);
-      Assert.NotNull(display);
-      var pr = display.PointForIndex(TestTypesettingContexts.Instance, index);
-      System.Diagnostics.Debug.WriteLine(pr);
-      CSharpMath.Tests.Approximately.Equal(expected, pr, 0.001);
-    }
+    void Test(string latex, PointF expected, MathListIndex index) =>
+      CreateDisplay(latex).Match(
+        display => CSharpMath.Tests.Approximately.Equal
+          (expected, display.PointForIndex(TestTypesettingContexts.Instance, index)),
+        s => throw new Xunit.Sdk.XunitException(s)
+      );
 
     public static TestData FractionData =>
       new TestData {

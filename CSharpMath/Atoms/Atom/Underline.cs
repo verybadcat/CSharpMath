@@ -4,36 +4,23 @@ using System.Text;
 using CSharpMath.Enumerations;
 using CSharpMath.Interfaces;
 
-namespace CSharpMath.Atoms {
-  public class Underline : MathAtom, IUnderline {
-    public IMathList InnerList { get; set; }
-    public Underline() : base(MathAtomType.Underline, string.Empty) { }
-    public Underline(Underline cloneMe, bool finalize) : base(cloneMe, finalize) {
-      this.InnerList = AtomCloner.Clone(cloneMe.InnerList, finalize);
-    }
-    
-    public override string StringValue =>
+namespace CSharpMath.Atoms.Atom {
+  /// <summary>An underlined atom</summary>
+  public class Underline : MathAtom {
+    public MathList InnerList { get; set; }
+    public Underline(MathList innerList) : base(MathAtomType.Underline, string.Empty) =>
+      InnerList = innerList;
+    public new Underline Clone(bool finalize) => (Underline)base.Clone(finalize);
+    protected override MathAtom CloneInside(bool finalize) =>
+      new Underline(InnerList.Clone(finalize));
+    public override bool ScriptsAllowed => true;
+    public override string DebugString =>
       new StringBuilder(@"\underline")
-      .AppendInBraces(InnerList, NullHandling.LiteralNull)
+      .AppendInBraces(InnerList.DebugString, NullHandling.LiteralNull)
       .ToString();
-
-    public bool EqualsUnderline(Underline other) {
-      bool r = this.EqualsAtom(other);
-      r &= InnerList.NullCheckingEquals(other.InnerList);
-      return r;
-    }
-
-    public override bool Equals(object obj)
-      => EqualsUnderline(obj as Underline);
-
-    public override int GetHashCode() {
-      unchecked {
-        return base.GetHashCode()
-        + 57 * InnerList?.GetHashCode() ?? 1;
-      }
-    }
-
-    public override T Accept<T, THelper>(IMathAtomVisitor<T, THelper> visitor, THelper helper)
-=> visitor.Visit(this, helper);
+    public bool EqualsUnderline(Underline other) =>
+      EqualsAtom(other) && InnerList.NullCheckingEquals(other.InnerList);
+    public override bool Equals(object obj) => obj is Underline u ? EqualsUnderline(u) : false;
+    public override int GetHashCode() => unchecked(base.GetHashCode() + 57 * InnerList.GetHashCode());
   }
 }

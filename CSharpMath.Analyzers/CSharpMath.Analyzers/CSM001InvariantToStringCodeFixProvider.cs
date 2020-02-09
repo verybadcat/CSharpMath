@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
@@ -10,22 +8,18 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Rename;
-using Microsoft.CodeAnalysis.Text;
 
 namespace CSharpMath.Analyzers {
   [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(CSM001InvariantToStringCodeFixProvider)), Shared]
   public class CSM001InvariantToStringCodeFixProvider : CodeFixProvider {
     private const string title = "Replace culture-sensitive ToString() with an culture-invariant one";
 
-    public sealed override ImmutableArray<string> FixableDiagnosticIds {
-      get { return ImmutableArray.Create(CSM001InvariantToStringAnalyzer.DiagnosticId); }
-    }
+    public sealed override ImmutableArray<string> FixableDiagnosticIds =>
+      ImmutableArray.Create(CSM001InvariantToStringAnalyzer.DiagnosticId);
 
-    public sealed override FixAllProvider GetFixAllProvider() {
+    public sealed override FixAllProvider GetFixAllProvider() =>
       // See https://github.com/dotnet/roslyn/blob/master/docs/analyzers/FixAllProvider.md for more information on Fix All Providers
-      return WellKnownFixAllProviders.BatchFixer;
-    }
+      WellKnownFixAllProviders.BatchFixer;
 
     public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context) {
       var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);

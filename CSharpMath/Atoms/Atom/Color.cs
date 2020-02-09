@@ -4,26 +4,20 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CSharpMath.Atoms {
-  public class Color: MathAtom, IColor {
+namespace CSharpMath.Atoms.Atom {
+  public class Color : MathAtom {
     public string ColorString { get; set; }
-    public IMathList InnerList { get; set; }
-    public Color(): base(MathAtomType.Color, string.Empty) { }
+    public MathList InnerList { get; set; }
+    public Color(string color, MathList innerList) : base(MathAtomType.Color, string.Empty) =>
+      (ColorString, InnerList) = (color, innerList);
 
-    public override string StringValue {
-      get {
-        var builder = new StringBuilder(@"\color");
-        builder.AppendInBraces(ColorString, NullHandling.LiteralNull);
-        builder.AppendInBraces(InnerList, NullHandling.LiteralNull);
-        return builder.ToString();
-      }
-    }
-    public Color(Color cloneMe, bool finalize): base(cloneMe, finalize) {
-      InnerList = AtomCloner.Clone(cloneMe.InnerList, finalize);
-      ColorString = cloneMe.ColorString;
-    }
-
-    public override T Accept<T, THelper>(IMathAtomVisitor<T, THelper> visitor, THelper helper)
-       => visitor.Visit(this, helper);
+    public override string DebugString =>
+      new StringBuilder(@"\color")
+      .AppendInBraces(ColorString, NullHandling.LiteralNull)
+      .AppendInBraces(InnerList.DebugString, NullHandling.LiteralNull).ToString();
+    public override bool ScriptsAllowed => false;
+    public new Color Clone(bool finalize) => (Color)base.Clone(finalize);
+    protected override MathAtom CloneInside(bool finalize) =>
+      new Color(ColorString, InnerList.Clone(finalize));
   }
 }

@@ -1,11 +1,7 @@
-using CSharpMath.Display;
 using CSharpMath.Tests.FrontEnd;
-using System;
-using System.Drawing;
 using Xunit;
 using TGlyph = System.Char;
 using CSharpMath.Display.Text;
-using System.Linq;
 
 namespace CSharpMath.Tests.Mocks {
   // purpose of this class is to make sure our mocks behave as expected.
@@ -13,7 +9,7 @@ namespace CSharpMath.Tests.Mocks {
     [Fact]
     public void TestGlyphBoundsWithoutM() {
       string hello = "Hello";
-      TestFont font = new TestFont(10);
+      var font = new TestFont(10);
       var provider = TestGlyphBoundsProvider.Instance;
       var glyphRun = new AttributedGlyphRun<TestFont, TGlyph>(hello, hello, font);
       var width = provider.GetTypographicWidth(font, glyphRun);
@@ -23,7 +19,7 @@ namespace CSharpMath.Tests.Mocks {
     [Fact]
     public void TestGlyphBoundsWithM() {
       string america = "America";
-      TestFont font = new TestFont(10);
+      var font = new TestFont(10);
       var provider = TestGlyphBoundsProvider.Instance;
       var glyphRun = new AttributedGlyphRun<TestFont, TGlyph>(america, america, font);
       var width = provider.GetTypographicWidth(font, glyphRun);

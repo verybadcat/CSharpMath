@@ -2,7 +2,8 @@
   <PropertyGroup>
     <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>preview</LangVersion>
+    <Nullable>enable</Nullable>
     <PackageVersion>0.3.0</PackageVersion>
     <PackageReleaseNotes>The 0.3.0 Clickity Update brings a clickable math editor!</PackageReleaseNotes>
     <Description>The base code for a What You See Is What You Get math editor.</Description>
@@ -25,7 +26,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="../Icon.png" Pack="true" PackagePath="" />
-    <Compile Remove="Interfaces\IButtonControl.cs" />
     <Compile Remove="Keyboards\DefaultMathKeyboardView.cs" />
     <Compile Remove="Keyboards\MathKeyboardOld.cs" />
     <Compile Remove="Keyboards\MathKeyboardView.cs" />

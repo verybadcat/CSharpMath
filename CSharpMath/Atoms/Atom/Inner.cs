@@ -4,15 +4,15 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CSharpMath.Atoms {
-  public class Inner : MathAtom,IMathInner {
-    public Inner(): base(MathAtomType.Inner, string.Empty) {
-
-    }
-    private IMathAtom _LeftBoundary;
-    private IMathAtom _RightBoundary;
-    public IMathList InnerList { get; set; }
-    public IMathAtom LeftBoundary {
+namespace CSharpMath.Atoms.Atom {
+  /// <summary>An inner atom, i.e. embedded math list</summary>
+  public class Inner : MathAtom {
+    public Inner(MathList innerList) : base(MathAtomType.Inner, string.Empty) =>
+      InnerList = innerList;
+    public MathList InnerList { get; set; }
+    private Boundary? _LeftBoundary;
+    private Boundary? _RightBoundary;
+    public Boundary? LeftBoundary {
       get => _LeftBoundary;
       set {
         if (value != null && value.AtomType!=MathAtomType.Boundary) {
@@ -21,7 +21,7 @@ namespace CSharpMath.Atoms {
         _LeftBoundary = value;
       }
     }
-    public IMathAtom RightBoundary {
+    public Boundary? RightBoundary {
       get => _RightBoundary;
       set {
         if (value != null && value.AtomType != MathAtomType.Boundary) {
@@ -30,12 +30,13 @@ namespace CSharpMath.Atoms {
         _RightBoundary = value;
       }
     }
-
-    public Inner(Inner cloneMe, bool finalize): base(cloneMe, finalize) {
-      InnerList = AtomCloner.Clone(cloneMe.InnerList, finalize);
-      LeftBoundary = AtomCloner.Clone(cloneMe.LeftBoundary, finalize);
-      RightBoundary = AtomCloner.Clone(cloneMe.RightBoundary, finalize);
-    }
+    public override bool ScriptsAllowed => true;
+    public new Inner Clone(bool finalize) => (Inner)base.Clone(finalize);
+    protected override MathAtom CloneInside(bool finalize) =>
+      new Inner(InnerList.Clone(finalize)) { 
+        LeftBoundary = LeftBoundary?.Clone(finalize),
+        RightBoundary = RightBoundary?.Clone(finalize)
+      };
 
     public bool EqualsInner(Inner otherInner) =>
       EqualsAtom(otherInner)
@@ -52,19 +53,11 @@ namespace CSharpMath.Atoms {
           + 101 * LeftBoundary?.GetHashCode() ?? 0
           + 103 * RightBoundary?.GetHashCode() ?? 0);
 
-    public override string StringValue {
-      get {
-        var builder = new StringBuilder(@"\inner");
-        builder.AppendInSquareBrackets(LeftBoundary?.Nucleus, NullHandling.EmptyString);
-        builder.AppendInBraces(InnerList, NullHandling.LiteralNull);
-        builder.AppendInBraces(RightBoundary?.Nucleus, NullHandling.EmptyString);
-        builder.AppendScripts(this);
-        var r = builder.ToString();
-        return r;
-      }
-    }
-
-    public override T Accept<T, THelper>(IMathAtomVisitor<T, THelper> visitor, THelper helper)
-  => visitor.Visit(this, helper);
+    public override string DebugString =>
+      new StringBuilder(@"\inner")
+      .AppendInSquareBrackets(LeftBoundary?.Nucleus, NullHandling.EmptyString)
+      .AppendInBraces(InnerList?.DebugString, NullHandling.LiteralNull)
+      .AppendInBraces(RightBoundary?.Nucleus, NullHandling.EmptyString)
+      .AppendDebugStringOfScripts(this).ToString();
   }
 }

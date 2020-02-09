@@ -1,13 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using CSharpMath.Display;
-using CSharpMath.FrontEnd;
 using Typography.OpenFont;
 
 namespace CSharpMath.Rendering {
-  public struct Fonts : IFont<Glyph>, IEnumerable<Typeface> {
+  public readonly struct Fonts : IFont<Glyph>, IEnumerable<Typeface> {
     static Fonts() {
       var reader = new OpenFontReader();
       Typeface LoadFont(string fileName) {
@@ -22,27 +20,21 @@ namespace CSharpMath.Rendering {
       GlobalTypefaces.AddOverride(LoadFont("AMS-Capital-Blackboard-Bold.otf"));
       GlobalTypefaces.AddSupplement(LoadFont("cyrillic-modern-nmr10.otf"));
     }
-
     public Fonts(IList<Typeface> localTypefaces, float pointSize) {
       PointSize = pointSize;
-      var typefaces = localTypefaces.Concat(GlobalTypefaces);
-      Typefaces = typefaces;
-      MathTypeface = typefaces.First(t => t.HasMathTable());
+      Typefaces = localTypefaces.Concat(GlobalTypefaces);
+      MathTypeface = Typefaces.First(t => t.HasMathTable());
     }
     public Fonts(Fonts cloneMe, float pointSize) {
       PointSize = pointSize;
       Typefaces = cloneMe.Typefaces;
       MathTypeface = cloneMe.MathTypeface;
     }
-
     public static Typefaces GlobalTypefaces { get; }
-
     public float PointSize { get; }
     public IEnumerable<Typeface> Typefaces { get; }
     public Typeface MathTypeface { get; }
-
     public Typography.OpenFont.MathGlyphs.MathConstants MathConsts => MathTypeface.MathConsts;
-    
     public IEnumerator<Typeface> GetEnumerator() => Typefaces.GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => Typefaces.GetEnumerator();
   }

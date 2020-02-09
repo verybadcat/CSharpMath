@@ -1,29 +1,25 @@
 using System;
-using System.Collections.ObjectModel;
-using System.Drawing;
-using System.Linq;
 using CSharpMath.Rendering;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using Typography.OpenFont;
 using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
 
 namespace CSharpMath.Forms {
-  using Color = Xamarin.Forms.Color;
   using TextAlignment = Rendering.TextAlignment;
   using Thickness = Rendering.Thickness;
-
   public interface IPainterAndSourceSupplier<TPainter, TSource> {
     TPainter Default { get; }
     TSource SourceFromLaTeX(string latex);
     string LaTeXFromSource(TSource source);
     string DefaultLaTeX(TPainter painter);
   }
-
-  public abstract class BaseView<TPainter, TSource, TPainterAndSourceSupplier> : SKCanvasView, IPainter<TSource, Color> where TPainter : ICanvasPainter<SKCanvas, TSource, SKColor> where TSource : struct, ISource where TPainterAndSourceSupplier : struct, IPainterAndSourceSupplier<TPainter, TSource> {
+  public abstract class BaseView<TPainter, TSource, TPainterAndSourceSupplier>
+    : SKCanvasView, IPainter<TSource, Color>
+    where TPainter : ICanvasPainter<SKCanvas, TSource, SKColor>
+    where TSource : struct, ISource
+    where TPainterAndSourceSupplier : struct, IPainterAndSourceSupplier<TPainter, TSource> {
     public BaseView(TPainter painter) => Painter = painter;
-
     public TPainter Painter { get; }
     protected override void OnPaintSurface(SKPaintSurfaceEventArgs e) {
       base.OnPaintSurface(e);
@@ -36,11 +32,16 @@ namespace CSharpMath.Forms {
       var supplier = default(TPainterAndSourceSupplier);
       var painter = supplier.Default;
       var thisType = typeof(BaseView<TPainter, TSource, TPainterAndSourceSupplier>);
-      BaseView<TPainter, TSource, TPainterAndSourceSupplier> Actual(BindableObject b) => (BaseView<TPainter, TSource, TPainterAndSourceSupplier>)b;
-      var drawMethodParams = typeof(TPainter).GetMethod(nameof(ICanvasPainter<SKCanvas, TSource, SKColor>.Draw), new[] { typeof(SKCanvas), typeof(TextAlignment), typeof(Thickness), typeof(float), typeof(float) }).GetParameters();
-      TPainter p(BindableObject b) => ((BaseView<TPainter, TSource, TPainterAndSourceSupplier>)b).Painter;
-      SourceProperty = BindableProperty.Create(nameof(Source), typeof(TSource), thisType, painter.Source, BindingMode.TwoWay, null,
-        (b, o, n) => { p(b).Source = (TSource)n; Actual(b).ErrorMessage = p(b).ErrorMessage; var latex = supplier.LaTeXFromSource((TSource)n); if(Actual(b).LaTeX != latex || false/*get rid of warning for redundant check*/) Actual(b).LaTeX = latex; });
+
+      static BaseView<TPainter, TSource, TPainterAndSourceSupplier> Actual
+        (BindableObject b) => (BaseView<TPainter, TSource, TPainterAndSourceSupplier>)b;
+      var drawMethodParams = typeof(TPainter)
+        .GetMethod(nameof(ICanvasPainter<SKCanvas, TSource, SKColor>.Draw),
+          new[] { typeof(SKCanvas), typeof(TextAlignment),
+                  typeof(Thickness), typeof(float), typeof(float) }).GetParameters();
+      static TPainter p(BindableObject b) =>
+        ((BaseView<TPainter, TSource, TPainterAndSourceSupplier>)b).Painter;
+      SourceProperty = BindableProperty.Create(nameof(Source), typeof(TSource), thisType, painter.Source, BindingMode.TwoWay, null,  (b, o, n) => { p(b).Source = (TSource)n; Actual(b).ErrorMessage = p(b).ErrorMessage; var latex = supplier.LaTeXFromSource((TSource)n); if(Actual(b).LaTeX != latex) Actual(b).LaTeX = latex; });
       DisplayErrorInlineProperty = BindableProperty.Create(nameof(DisplayErrorInline), typeof(bool), thisType, painter.DisplayErrorInline, propertyChanged: (b, o, n) => p(b).DisplayErrorInline = (bool)n);
       FontSizeProperty = BindableProperty.Create(nameof(FontSize), typeof(float), thisType, painter.FontSize, propertyChanged: (b, o, n) => p(b).FontSize = (float)n);
       ErrorFontSizeProperty = BindableProperty.Create(nameof(ErrorFontSize), typeof(float?), thisType, painter.ErrorFontSize, propertyChanged: (b, o, n) => p(b).ErrorFontSize = (float)n);
