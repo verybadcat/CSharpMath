@@ -4,7 +4,6 @@ namespace CSharpMath.Editor {
   using System.Drawing;
   using Atoms;
   using Display;
-  using Enumerations;
   using FrontEnd;
   using Atom = Atoms.Atom;
 
@@ -72,16 +71,15 @@ namespace CSharpMath.Editor {
           MathList.InsertAndAdvance(ref _insertionIndex, emptyAtom, subIndexType);
         }
         static bool IsFullPlaceholderRequired(MathAtom mathAtom) =>
-          mathAtom.AtomType switch
+          mathAtom switch
           {
-            MathAtomType.BinaryOperator => true,
-            MathAtomType.UnaryOperator => true,
-            MathAtomType.Relation => true,
-            MathAtomType.Open => true,
-            MathAtomType.Punctuation => true,
+            Atom.BinaryOperator _ => true,
+            Atom.UnaryOperator _ => true,
+            Atom.Relation _ => true,
+            Atom.Open _ => true,
+            Atom.Punctuation _ => true,
             _ => false
           };
-
         if (!(_insertionIndex.Previous is MathListIndex previous)) {
           CreateEmptyAtom();
         } else {
@@ -129,15 +127,16 @@ namespace CSharpMath.Editor {
         for (; _insertionIndex.Previous != null; _insertionIndex = _insertionIndex.Previous) {
           var a = MathList.AtomAt(_insertionIndex.Previous);
           if (a is null) throw new InvalidCodePathException("Invalid _insertionIndex");
-          switch (a.AtomType) {
-            case MathAtomType.Open: openCount--; break;
-            case MathAtomType.Close: openCount++; break;
+          switch (a) {
+            case Atom.Open _: openCount--; break;
+            case Atom.Close { HasCorrespondingOpen:true }:
+              openCount++; break;
           }
-          if (a.AtomType switch {
-                MathAtomType.BinaryOperator when openCount == 0 => true,
-                MathAtomType.Relation when openCount == 0 => true,
-                MathAtomType.Fraction when openCount == 0 => true,
-                MathAtomType.Open when openCount < 0 => true,
+          if (a switch {
+                Atom.BinaryOperator _ when openCount == 0 => true,
+                Atom.Relation _ when openCount == 0 => true,
+                Atom.Fraction _ when openCount == 0 => true,
+                Atom.Open _ when openCount < 0 => true,
                 _ => false
               })
             //We don't put this atom on the fraction
@@ -149,7 +148,7 @@ namespace CSharpMath.Editor {
         if (numerator.Count == 0) {
           // so we didn't really find any numbers before this, so make the numerator 1
           numerator.Add(new Atom.Number("1"));
-          if (MathList.AtomAt(_insertionIndex.Previous)?.AtomType is MathAtomType.Fraction)
+          if (MathList.AtomAt(_insertionIndex.Previous) is Atom.Fraction)
             //Add a times symbol
             MathList.InsertAndAdvance
               (ref _insertionIndex, MathAtoms.Times, MathListSubIndexType.None);
@@ -256,14 +255,11 @@ namespace CSharpMath.Editor {
           throw new InvalidOperationException($"{nameof(_insertionIndex)} is null.");
         if (_insertionIndex.FinalSubIndexType is MathListSubIndexType.BetweenBaseAndScripts) {
           var prevInd = _insertionIndex.LevelDown();
-          if (prevInd != null && MathList.AtomAt(prevInd)?.AtomType is MathAtomType.Placeholder)
+          if (prevInd != null && MathList.AtomAt(prevInd) is Atom.Placeholder)
             _insertionIndex = prevInd;
         } else if (MathList.AtomAt(_insertionIndex) is null
                    && _insertionIndex?.Previous is MathListIndex previous) {
-          if (MathList.AtomAt(previous) is MathAtom atom &&
-              atom.AtomType is MathAtomType.Placeholder &&
-              atom.Superscript is null &&
-              atom.Subscript is null)
+          if (MathList.AtomAt(previous) is Atom.Placeholder { Superscript:null, Subscript: null })
             _insertionIndex = previous; // Skip right side of placeholders when end of line
         }
       }
@@ -283,13 +279,15 @@ namespace CSharpMath.Editor {
                 throw new InvalidCodePathException("Invalid levelDown");
               case MathListSubIndexType.Degree:
                 if (levelDownAtom is Atom.Radical)
-                  _insertionIndex = levelDown.LevelUpWithSubIndex(MathListSubIndexType.Radicand, MathListIndex.Level0Index(0));
+                  _insertionIndex = levelDown.LevelUpWithSubIndex
+                    (MathListSubIndexType.Radicand, MathListIndex.Level0Index(0));
                 else
                   throw new SubIndexTypeMismatchException(typeof(Atom.Radical), levelDown);
                 break;
               case MathListSubIndexType.Numerator:
                 if (levelDownAtom is Atom.Fraction)
-                  _insertionIndex = levelDown.LevelUpWithSubIndex(MathListSubIndexType.Denominator, MathListIndex.Level0Index(0));
+                  _insertionIndex = levelDown.LevelUpWithSubIndex
+                    (MathListSubIndexType.Denominator, MathListIndex.Level0Index(0));
                 else
                   throw new SubIndexTypeMismatchException(typeof(Atom.Fraction), levelDown);
                 break;
@@ -324,7 +322,8 @@ namespace CSharpMath.Editor {
           case var a when _insertionIndex.FinalSubIndexType is MathListSubIndexType.BetweenBaseAndScripts:
             levelDown = _insertionIndex.LevelDown();
             if (levelDown is null)
-              throw new InvalidCodePathException("_insertionIndex.FinalSubIndexType is BetweenBaseAndScripts but levelDown is null");
+              throw new InvalidCodePathException
+                ("_insertionIndex.FinalSubIndexType is BetweenBaseAndScripts but levelDown is null");
             _insertionIndex = levelDown.LevelUpWithSubIndex(
               a.Superscript != null ? MathListSubIndexType.Superscript : MathListSubIndexType.Subscript,
               MathListIndex.Level0Index(0));
@@ -342,8 +341,7 @@ namespace CSharpMath.Editor {
             _insertionIndex = _insertionIndex.LevelUpWithSubIndex
               (MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1));
             break;
-          case var a when a.AtomType is MathAtomType.Placeholder
-                       && MathList.AtomAt(_insertionIndex.Next) is null:
+          case Atom.Placeholder _ when MathList.AtomAt(_insertionIndex.Next) is null:
             // Skip right side of placeholders when end of line
             goto case null;
           default:
@@ -353,7 +351,7 @@ namespace CSharpMath.Editor {
         if (_insertionIndex is null)
           throw new InvalidOperationException($"{nameof(_insertionIndex)} is null.");
         if (_insertionIndex.FinalSubIndexType is MathListSubIndexType.BetweenBaseAndScripts
-            && MathList.AtomAt(_insertionIndex.LevelDown())?.AtomType is MathAtomType.Placeholder)
+            && MathList.AtomAt(_insertionIndex.LevelDown()) is Atom.Placeholder)
           MoveCursorRight();
       }
 
@@ -367,7 +365,7 @@ namespace CSharpMath.Editor {
 
       void InsertAtom(MathAtom a) =>
         MathList.InsertAndAdvance(ref _insertionIndex, a,
-          a.AtomType is MathAtomType.Fraction ?
+          a is Atom.Fraction ?
           MathListSubIndexType.Numerator :
           MathListSubIndexType.None);
       void InsertCharacterKey(MathKeyboardInput i) => InsertAtom(AtomForKeyPress(i));
@@ -671,7 +669,7 @@ namespace CSharpMath.Editor {
     private void InsertionPointChanged() {
       static void VisualizePlaceholders(MathList? mathList) {
         foreach (var mathAtom in mathList?.Atoms as IList<MathAtom> ?? Array.Empty<MathAtom>()) {
-          if (mathAtom.AtomType is MathAtomType.Placeholder)
+          if (mathAtom is Atom.Placeholder)
             mathAtom.Nucleus = "\u25A1";
           if (mathAtom.Superscript is MathList super)
             VisualizePlaceholders(super);
@@ -688,8 +686,8 @@ namespace CSharpMath.Editor {
         }
       }
       VisualizePlaceholders(MathList);
-      if (MathList.AtomAt(_insertionIndex) is MathAtom atom && atom.AtomType is MathAtomType.Placeholder) {
-        atom.Nucleus = "\u25A0";
+      if (MathList.AtomAt(_insertionIndex) is Atom.Placeholder placeholder) {
+        placeholder.Nucleus = "\u25A0";
         Caret = null;
       } else {
         // Find the insert point rect and create a caretView to draw the caret at this position.

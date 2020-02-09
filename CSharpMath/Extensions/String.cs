@@ -1,7 +1,4 @@
-using System;
-
 namespace CSharpMath {
-  using Enumerations;
   public static class StringExtensions {
     public static bool Contains(this string str, char c) {
       for (int i = 0; i < str.Length; i++)

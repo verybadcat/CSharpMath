@@ -1,28 +1,36 @@
-using CSharpMath.Enumerations;
-using CSharpMath.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace CSharpMath.Atoms {
   public abstract class MathAtom : IScripts, IMathObject {
+    public string TypeName {
+      get {
+        // Insert a space before every capital letter other than the first one.
+        var itemString = GetType().Name;
+        var chars = new StringBuilder(itemString);
+        for (int i = itemString.Length - 1; i > 0; i--)
+          if (char.IsUpper(chars[i]))
+            chars.Insert(i, ' ');
+        return chars.ToString();
+      }
+    }
     public virtual string DebugString =>
       new StringBuilder(Nucleus).AppendDebugStringOfScripts(this).ToString();
-    public MathAtomType AtomType { get; set; }
     public string Nucleus { get; set; }
     private MathList? _Superscript;
     public MathList? Superscript {
       get => _Superscript;
       set =>
         _Superscript = ScriptsAllowed || value == null ? value :
-          throw new ArgumentException("Scripts are not allowed in atom type " + AtomType.ToText());
+          throw new ArgumentException("Scripts are not allowed in atom type " + TypeName);
     }
     private MathList? _Subscript;
     public MathList? Subscript {
       get => _Subscript;
       set =>
         _Subscript = ScriptsAllowed || value == null ? value :
-          throw new ArgumentException("Scripts are not allowed in atom type " + AtomType.ToText());
+          throw new ArgumentException("Scripts are not allowed in atom type " + TypeName);
     }
     public FontStyle FontStyle { get; set; }
 
@@ -40,9 +48,8 @@ namespace CSharpMath.Atoms {
     /// </summary>
     public abstract bool ScriptsAllowed { get; }
     protected abstract MathAtom CloneInside(bool finalize);
-    public MathAtom Clone(bool finalize) {
-      var newAtom = CloneInside(finalize);
-      newAtom.AtomType = AtomType;
+    protected Atom ApplyCommonPropertiesOn<Atom>(bool finalize, Atom newAtom)
+      where Atom : MathAtom {
       newAtom.Nucleus = Nucleus;
       if (FusedAtoms != null)
         newAtom.FusedAtoms = new List<MathAtom>(FusedAtoms);
@@ -52,46 +59,44 @@ namespace CSharpMath.Atoms {
       newAtom.FontStyle = FontStyle;
       return newAtom;
     }
-    public MathAtom(MathAtomType type, string nucleus = "") =>
-      (AtomType, Nucleus) = (type, nucleus);
+    public MathAtom Clone(bool finalize) =>
+      ApplyCommonPropertiesOn(finalize, CloneInside(finalize));
+    public MathAtom(string nucleus = "") => Nucleus = nucleus;
     public void Fuse(MathAtom otherAtom) {
       if (Subscript != null) {
-        throw new InvalidOperationException("Cannot fuse into an atom with a subscript " + DebugString);
+        throw new InvalidOperationException("Cannot fuse into an atom with a subscript");
       }
       if (Superscript != null) {
-        throw new InvalidOperationException("Cannot fuse into an atom with a superscript " + DebugString);
+        throw new InvalidOperationException("Cannot fuse into an atom with a superscript");
       }
-      if (otherAtom.AtomType != AtomType) {
+      if (otherAtom.GetType() != GetType()) {
         throw new InvalidOperationException("Cannot fuse atoms with different types");
       }
-      FusedAtoms ??= new List<MathAtom> {
-        Clone(false)
-      };
+      FusedAtoms ??= new List<MathAtom> { Clone(false) };
       if (otherAtom.FusedAtoms != null) {
         FusedAtoms.AddRange(otherAtom.FusedAtoms);
       } else {
         FusedAtoms.Add(otherAtom);
       }
       Nucleus += otherAtom.Nucleus;
-      IndexRange = new Range(IndexRange.Location, IndexRange.Length + otherAtom.IndexRange.Length);
+      IndexRange = new Range(IndexRange.Location,
+        IndexRange.Length + otherAtom.IndexRange.Length);
       Subscript = otherAtom.Subscript;
       Superscript = otherAtom.Superscript;
     }
 
     public override string ToString() =>
-      AtomType.ToText() + " " + DebugString;
-    public bool EqualsAtom(MathAtom? otherAtom) =>
-      otherAtom != null &&
+      TypeName + " " + DebugString;
+    public bool EqualsAtom(MathAtom otherAtom) =>
       Nucleus == otherAtom.Nucleus &&
-      AtomType == otherAtom.AtomType &&
-      Superscript.NullCheckingEquals(otherAtom.Superscript) &&
-      Subscript.NullCheckingEquals(otherAtom.Subscript) &&
+      GetType() == otherAtom.GetType() &&
       //IndexRange == otherAtom.IndexRange &&
       //FontStyle == otherAtom.FontStyle &&
-      otherAtom.GetType() == this.GetType();
-    public override bool Equals(object obj) => EqualsAtom(obj as MathAtom);
+      Superscript.NullCheckingEquals(otherAtom.Superscript) &&
+      Subscript.NullCheckingEquals(otherAtom.Subscript);
+    public override bool Equals(object obj) => obj is MathAtom a ? EqualsAtom(a) : false;
     public override int GetHashCode() => unchecked(
-        AtomType.GetHashCode()
+        GetType().GetHashCode()
         + 3 * (Superscript?.GetHashCode() ?? 0)
         + 5 * (Subscript?.GetHashCode() ?? 0)
         //+ 7 * IndexRange.GetHashCode()

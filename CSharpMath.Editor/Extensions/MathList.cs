@@ -10,8 +10,7 @@ namespace CSharpMath.Editor {
       if (atomIndex < 0 || atomIndex > self.Count)
         throw new IndexOutOfRangeException($"Index {atomIndex} is out of bounds for list of size {self.Atoms.Count}");
       // Test for placeholder to the right of index, e.g. \sqrt{‸■} -> \sqrt{2‸}
-      if (atomIndex < self.Count && self[atomIndex] is MathAtom placeholder &&
-          placeholder?.AtomType is Enumerations.MathAtomType.Placeholder) {
+      if (atomIndex < self.Count && self[atomIndex] is Atom.Placeholder placeholder) {
         if (placeholder.Superscript is MathList super) {
           if (atom.Superscript != null) super.Append(atom.Superscript);
           atom.Superscript = super;
@@ -57,7 +56,7 @@ namespace CSharpMath.Editor {
           break;
         case MathListSubIndexType.Degree:
         case MathListSubIndexType.Radicand:
-          if (!(self.Atoms[index.AtomIndex] is Atom.Radical radical && radical.AtomType == Enumerations.MathAtomType.Radical))
+          if (!(self.Atoms[index.AtomIndex] is Atom.Radical radical))
             throw new SubIndexTypeMismatchException(typeof(Atom.Radical), index);
           if (index.SubIndexType == MathListSubIndexType.Degree)
             if (radical.Degree is null) throw new SubIndexTypeMismatchException(index);
@@ -66,8 +65,7 @@ namespace CSharpMath.Editor {
           break;
         case MathListSubIndexType.Numerator:
         case MathListSubIndexType.Denominator:
-          if (!(self.Atoms[index.AtomIndex] is Atom.Fraction frac
-                && frac.AtomType == Enumerations.MathAtomType.Fraction))
+          if (!(self.Atoms[index.AtomIndex] is Atom.Fraction frac))
             throw new SubIndexTypeMismatchException(typeof(Atom.Fraction), index);
           if (index.SubIndexType == MathListSubIndexType.Numerator)
             if (frac.Numerator is null)
@@ -113,12 +111,12 @@ namespace CSharpMath.Editor {
               self.Atoms[index.AtomIndex - 1] is MathAtom previous &&
               previous.Subscript is null &&
               previous.Superscript is null &&
-              previous.AtomType switch {
-                Enumerations.MathAtomType.BinaryOperator => false,
-                Enumerations.MathAtomType.UnaryOperator => false,
-                Enumerations.MathAtomType.Relation => false,
-                Enumerations.MathAtomType.Punctuation => false,
-                Enumerations.MathAtomType.Space => false,
+              previous switch {
+                Atom.BinaryOperator _ => false,
+                Atom.UnaryOperator _ => false,
+                Atom.Relation _ => false,
+                Atom.Punctuation _ => false,
+                Atom.Space _ => false,
                 _ => true
               }) {
             previous.Superscript = currentAtom.Superscript;
@@ -141,8 +139,7 @@ namespace CSharpMath.Editor {
           return;
         case MathListSubIndexType.Radicand:
         case MathListSubIndexType.Degree:
-          if (!(self.Atoms[index.AtomIndex] is Atom.Radical radical
-                && radical.AtomType == Enumerations.MathAtomType.Radical))
+          if (!(self.Atoms[index.AtomIndex] is Atom.Radical radical))
             throw new SubIndexTypeMismatchException(typeof(Atom.Radical), index);
           if (index.SubIndexType == MathListSubIndexType.Degree)
             if (radical.Degree is null) throw new SubIndexTypeMismatchException(index);
@@ -151,7 +148,7 @@ namespace CSharpMath.Editor {
           break;
         case MathListSubIndexType.Numerator:
         case MathListSubIndexType.Denominator:
-          if (!(self.Atoms[index.AtomIndex] is Atom.Fraction frac && frac.AtomType == Enumerations.MathAtomType.Fraction))
+          if (!(self.Atoms[index.AtomIndex] is Atom.Fraction frac))
             throw new SubIndexTypeMismatchException(typeof(Atom.Fraction), index);
           if (index.SubIndexType == MathListSubIndexType.Numerator)
             if (frac.Numerator is null) throw new SubIndexTypeMismatchException(index);
@@ -196,7 +193,7 @@ namespace CSharpMath.Editor {
           throw new NotSupportedException("Nuclear fission is not supported");
         case MathListSubIndexType.Radicand:
         case MathListSubIndexType.Degree:
-          if (!(self.Atoms[start.AtomIndex] is Atom.Radical radical && radical.AtomType == Enumerations.MathAtomType.Radical))
+          if (!(self.Atoms[start.AtomIndex] is Atom.Radical radical))
             throw new SubIndexTypeMismatchException(typeof(Atom.Radical), start);
           if (start.SubIndexType == MathListSubIndexType.Degree)
             if (radical.Degree is null)
@@ -206,7 +203,7 @@ namespace CSharpMath.Editor {
           break;
         case MathListSubIndexType.Numerator:
         case MathListSubIndexType.Denominator:
-          if (!(self.Atoms[start.AtomIndex] is Atom.Fraction frac && frac.AtomType == Enumerations.MathAtomType.Fraction))
+          if (!(self.Atoms[start.AtomIndex] is Atom.Fraction frac))
             throw new SubIndexTypeMismatchException(typeof(Atom.Fraction), start);
           if (start.SubIndexType == MathListSubIndexType.Numerator)
             if (frac.Numerator is null) throw new SubIndexTypeMismatchException(start);
@@ -244,7 +241,7 @@ namespace CSharpMath.Editor {
         case MathListSubIndexType.Radicand:
         case MathListSubIndexType.Degree:
           return
-            atom is Atom.Radical radical && radical.AtomType == Enumerations.MathAtomType.Radical
+            atom is Atom.Radical radical
             ? index.SubIndexType == MathListSubIndexType.Degree
               ? radical.Degree?.AtomAt(index.SubIndex)
               : radical.Radicand?.AtomAt(index.SubIndex)
@@ -252,7 +249,7 @@ namespace CSharpMath.Editor {
         case MathListSubIndexType.Numerator:
         case MathListSubIndexType.Denominator:
           return
-            atom is Atom.Fraction frac && frac.AtomType == Enumerations.MathAtomType.Fraction
+            atom is Atom.Fraction frac
             ? index.SubIndexType == MathListSubIndexType.Denominator
               ? frac.Denominator?.AtomAt(index.SubIndex)
               : frac.Numerator?.AtomAt(index.SubIndex)

@@ -9,13 +9,17 @@ namespace CSharpMath.Editor {
   using Color = Structures.Color;
 
   public partial class DisplayEditingExtensions {
-    public static int? GlyphIndexForXOffset<TFont, TGlyph>(this AttributedGlyphRun<TFont, TGlyph> line, TypesettingContext<TFont, TGlyph> context, float offset) where TFont : IFont<TGlyph> {
+    public static int? GlyphIndexForXOffset<TFont, TGlyph>
+      (this AttributedGlyphRun<TFont, TGlyph> line, TypesettingContext<TFont, TGlyph> context, float offset)
+      where TFont : IFont<TGlyph> {
       if (offset < 0) return 0; // Move cursor to index 0
       if (line.Placeholder) return 0;
       int i = 0;
       float x = 0;
-      var advances = context.GlyphBoundsProvider.GetAdvancesForGlyphs(line.Font, line.Glyphs, line.Length).Advances;
-      foreach (var (advance, kernAfter) in advances.Zip(line.GlyphInfos.Select(g => g.KernAfterGlyph), ValueTuple.Create))
+      var advances =
+        context.GlyphBoundsProvider.GetAdvancesForGlyphs(line.Font, line.Glyphs, line.Length).Advances;
+      foreach (var (advance, kernAfter) in
+        advances.Zip(line.GlyphInfos.Select(g => g.KernAfterGlyph), ValueTuple.Create))
         if (x <= offset && offset < advance + x) {
           return Math.Abs(offset - x) < Math.Abs(advance + x - offset) ? i : i + 1;
         } else {
@@ -27,13 +31,17 @@ namespace CSharpMath.Editor {
       return i;
     }
 
-    public static float XOffsetForGlyphIndex<TFont, TGlyph>(this AttributedGlyphRun<TFont, TGlyph> line, TypesettingContext<TFont, TGlyph> context, int index) where TFont : IFont<TGlyph> {
+    public static float XOffsetForGlyphIndex<TFont, TGlyph>
+      (this AttributedGlyphRun<TFont, TGlyph> line, TypesettingContext<TFont, TGlyph> context, int index)
+      where TFont : IFont<TGlyph> {
       if (index < 0)
         throw new ArgumentOutOfRangeException(nameof(index), index, "The index is negative.");
       int i = 0;
       float x = 0;
-      var advances = context.GlyphBoundsProvider.GetAdvancesForGlyphs(line.Font, line.Glyphs, line.Length).Advances;
-      foreach (var (advance, kernAfter) in advances.Zip(line.GlyphInfos.Select(g => g.KernAfterGlyph), ValueTuple.Create))
+      var advances =
+        context.GlyphBoundsProvider.GetAdvancesForGlyphs(line.Font, line.Glyphs, line.Length).Advances;
+      foreach (var (advance, kernAfter) in
+        advances.Zip(line.GlyphInfos.Select(g => g.KernAfterGlyph), ValueTuple.Create))
         if (i++ >= index)
           return x;
         else
@@ -43,7 +51,8 @@ namespace CSharpMath.Editor {
 
     // Convert the index into the current string to an index into the mathlist. These may not be the same since a single
     // math atom may have multiple characters.
-    public static int StringIndexToMathListIndex<TFont, TGlyph>(this TextLineDisplay<TFont, TGlyph> self, int strIndex) where TFont : IFont<TGlyph> {
+    public static int StringIndexToMathListIndex<TFont, TGlyph>
+      (this TextLineDisplay<TFont, TGlyph> self, int strIndex) where TFont : IFont<TGlyph> {
       int strLenCovered = 0;
       for (int mlIndex = 0; mlIndex < self.Atoms.Length; mlIndex++) {
         if (strLenCovered >= strIndex)
@@ -55,9 +64,11 @@ namespace CSharpMath.Editor {
       return self.Atoms.Length;
     }
 
-    public static int MathListIndexToStringIndex<TFont, TGlyph>(this TextLineDisplay<TFont, TGlyph> self, int mlIndex) where TFont : IFont<TGlyph> {
+    public static int MathListIndexToStringIndex<TFont, TGlyph>
+      (this TextLineDisplay<TFont, TGlyph> self, int mlIndex) where TFont : IFont<TGlyph> {
       if (mlIndex >= self.Atoms.Length)
-        throw new ArgumentOutOfRangeException(nameof(mlIndex), mlIndex, $"The index is not in the range {self.Atoms.Length}");
+        throw new ArgumentOutOfRangeException
+          (nameof(mlIndex), mlIndex, $"The index is not in the range {self.Atoms.Length}");
       int strIndex = 0;
       for (int i = 0; i < mlIndex; i++) {
         strIndex += self.Atoms[i].Nucleus.Length;
@@ -65,12 +76,14 @@ namespace CSharpMath.Editor {
       return strIndex;
     }
 
-    public static MathListIndex? IndexForPoint<TFont, TGlyph>(this TextLineDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, PointF point) where TFont : IFont<TGlyph> {
+    public static MathListIndex? IndexForPoint<TFont, TGlyph>
+      (this TextLineDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, PointF point)
+      where TFont : IFont<TGlyph> {
       // Convert the point to the reference of the CTLine
       var relativePoint = new PointF(point.X - self.Position.X, point.Y - self.Position.Y);
       var runsAndIndicies =
         self.Runs
-        .Select(run => ValueTuple.Create(run, run.Run.GlyphIndexForXOffset(context, relativePoint.Plus(run.Position).X)))
+        .Select(run => (run, run.Run.GlyphIndexForXOffset(context, relativePoint.Plus(run.Position).X)))
         .Where(x => x.Item2.HasValue)
         .ToArray();
       if (runsAndIndicies.Length == 0)
@@ -79,7 +92,8 @@ namespace CSharpMath.Editor {
       var index = nindex.GetValueOrDefault();
       var diffLng = r.Run.Length != r.Range.Length;
       if (index < 0 || (!diffLng && index > self.Range.Length) || (diffLng && index > r.Run.Length))
-        throw new InvalidCodePathException($"Returned index out of range: {index}, range ({self.Range.Location}, {self.Range.Length})");
+        throw new InvalidCodePathException
+          ($"Returned index out of range: {index}, range ({self.Range.Location}, {self.Range.Length})");
       return diffLng
         ? index > r.Run.Length / 2
           ? MathListIndex.Level0Index(self.Range.End)
@@ -91,7 +105,8 @@ namespace CSharpMath.Editor {
       GetRunAndCharIndexFromStringIndex<TFont, TGlyph>(
       this TextLineDisplay<TFont, TGlyph> self, int lineCharIndex) where TFont : IFont<TGlyph> {
       var currentRun = self.Runs.First(s => (lineCharIndex -= s.Run.Text.Length) < 0);
-      return (currentRun, currentRun.Run.Text.Length + lineCharIndex); //offset for target char in its containing string
+      //return offset for target char in its containing string
+      return (currentRun, currentRun.Run.Text.Length + lineCharIndex);
       /* //Quick test in C# Interactive
 int strIndex = 6; //offset for target char if all strings in array are fused together
 var ss = new[] { "abcde", "fgh", "i", "f", "g" };
@@ -106,9 +121,12 @@ return c.Length + strIndex; //offset for target char in its containing string
         if (char.IsSurrogate(str[i])) i++;
       return count;
     }
-    public static (TextRunDisplay<TFont, TGlyph> run, int charIndex) GetRunAndCharIndexFromCodepointIndex<TFont, TGlyph>(this TextLineDisplay<TFont, TGlyph> self, int lineCharIndex) where TFont : IFont<TGlyph> {
+    public static (TextRunDisplay<TFont, TGlyph> run, int charIndex)
+      GetRunAndCharIndexFromCodepointIndex<TFont, TGlyph>
+      (this TextLineDisplay<TFont, TGlyph> self, int lineCharIndex) where TFont : IFont<TGlyph> {
       var currentRun = self.Runs.First(s => (lineCharIndex -= CountCodepoints(s.Run.Text)) < 0);
-      return (currentRun, CountCodepoints(currentRun.Run.Text) + lineCharIndex); //offset for target char in its containing string
+      //return offset for target char in its containing string
+      return (currentRun, CountCodepoints(currentRun.Run.Text) + lineCharIndex);
     }
 
     public static int StringIndexToCodepointIndex(System.Text.StringBuilder str, int stringIndex) {
@@ -118,29 +136,39 @@ return c.Length + strIndex; //offset for target char in its containing string
         if (char.IsSurrogate(str[i])) i++;
         if (i >= stringIndex) return count;
       }
-      throw new ArgumentOutOfRangeException(nameof(stringIndex), stringIndex, "The string index is beyond the last codepoint of the string.");
+      throw new ArgumentOutOfRangeException
+        (nameof(stringIndex), stringIndex, "The string index is beyond the last codepoint of the string.");
     }
-    public static PointF? PointForIndex<TFont, TGlyph>(this TextLineDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, MathListIndex index) where TFont : IFont<TGlyph> {
+    public static PointF? PointForIndex<TFont, TGlyph>
+      (this TextLineDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, MathListIndex index)
+      where TFont : IFont<TGlyph> {
       float offset;
       if (!(index.SubIndexType is MathListSubIndexType.None))
-        throw new ArgumentException($"An index in a {nameof(TextLineDisplay<TFont, TGlyph>)} cannot have sub-indexes.", nameof(index));
+        throw new ArgumentException
+          ($"An index in a {nameof(TextLineDisplay<TFont, TGlyph>)} cannot have sub-indexes.", nameof(index));
       if (index.AtomIndex == self.Range.End)
         offset = self.Width;
       else {
         if (!self.Range.Contains(index.AtomIndex))
-          throw new ArgumentOutOfRangeException(nameof(index), index, $"The index is not in the range {self.Range}.");
+          throw new ArgumentOutOfRangeException
+            (nameof(index), index, $"The index is not in the range {self.Range}.");
         var strIndex = self.MathListIndexToStringIndex(index.AtomIndex - self.Range.Location);
         var (run, charIndex) = self.GetRunAndCharIndexFromStringIndex(strIndex);
-        offset = run.Position.X + run.Run.XOffsetForGlyphIndex(context, StringIndexToCodepointIndex(run.Run.Text, charIndex));
+        offset = run.Position.X + run.Run.XOffsetForGlyphIndex
+          (context, StringIndexToCodepointIndex(run.Run.Text, charIndex));
       }
       return self.Position.Plus(new PointF(offset, 0));
     }
 
-    public static void HighlightCharacterAt<TFont, TGlyph>(this TextLineDisplay<TFont, TGlyph> self, MathListIndex index, Color color) where TFont : IFont<TGlyph> {
+    public static void HighlightCharacterAt<TFont, TGlyph>
+      (this TextLineDisplay<TFont, TGlyph> self, MathListIndex index, Color color)
+      where TFont : IFont<TGlyph> {
       if (!self.Range.Contains(index.AtomIndex))
-        throw new ArgumentOutOfRangeException(nameof(index), index, $"The index is not in the range {self.Range}.");
+        throw new ArgumentOutOfRangeException
+          (nameof(index), index, $"The index is not in the range {self.Range}.");
       if (index.SubIndexType is MathListSubIndexType.None)
-        throw new ArgumentException("The subindex type must not be none to be able to highlight it.", nameof(index));
+        throw new ArgumentException
+          ("The subindex type must not be none to be able to highlight it.", nameof(index));
       if (index.SubIndexType is MathListSubIndexType.BetweenBaseAndScripts)
         throw new ArgumentException("Nucleus highlighting is not supported.", nameof(index));
       // index is in unicode code points, while attrString is not
@@ -148,7 +176,8 @@ return c.Length + strIndex; //offset for target char in its containing string
       run.Run.GlyphInfos[charIndex].Foreground = color;
     }
 
-    public static void Highlight<TFont, TGlyph>(this TextLineDisplay<TFont, TGlyph> self, Color color) where TFont : IFont<TGlyph> {
+    public static void Highlight<TFont, TGlyph>(this TextLineDisplay<TFont, TGlyph> self, Color color)
+      where TFont : IFont<TGlyph> {
       var iMax = self.Runs.Count;
       for (int i = 0; i < iMax; i++) {
         var run = self.Runs[i].Run;

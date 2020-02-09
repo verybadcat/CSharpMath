@@ -2,8 +2,14 @@ using System;
 using System.Text;
 
 namespace CSharpMath {
-  using Enumerations;
-  using Interfaces;
+  public enum NullHandling {
+    ///<summary>the string "null", without the quotes</summary>
+    LiteralNull,
+    /// <summary>Change the null to the empty string, then wrap.</summary>
+    EmptyContent,
+    /// <summary>Return the empty string. Do not wrap.</summary>
+    EmptyString,
+  }
   public static class StringBuilderExtensions {
     public static StringBuilder Append(this StringBuilder sb, ReadOnlySpan<char> value) {
       sb.EnsureCapacity(sb.Length + value.Length);
@@ -33,7 +39,7 @@ namespace CSharpMath {
       string? appendMe, NullHandling handling) =>
       builder.Append(appendMe.WrapInParens(handling));
     public static StringBuilder AppendDebugStringOfScripts
-      (this StringBuilder builder, IScripts target) {
+      (this StringBuilder builder, Atoms.IScripts target) {
       if (target.Superscript != null) {
         builder.AppendFormat("^{0}",
           target.Superscript.DebugString.WrapInBraces(NullHandling.LiteralNull));

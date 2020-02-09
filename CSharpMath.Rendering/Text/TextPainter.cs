@@ -2,6 +2,7 @@ using System.Drawing;
 using System.Linq;
 
 namespace CSharpMath.Rendering {
+  using Display;
   /// <summary>
   /// Unlike <see cref="Typesetter{TFont, TGlyph}"/>,
   /// <see cref="TextPainter{TCanvas, TColor}"/>'s coordinates are inverted by default.
@@ -12,14 +13,14 @@ namespace CSharpMath.Rendering {
     public TextPainter(float fontSize = DefaultFontSize) : base(fontSize) { }
 
     public override IDisplay<Fonts, Glyph> Display =>
-      new Display.ListDisplay<Fonts, Glyph>(new[] {
+      new ListDisplay<Fonts, Glyph>(new[] {
         _relativeXCoordDisplay, _absoluteXCoordDisplay
       });
 
     //display maths should always be center-aligned regardless of parameter for Draw()
     //so special case them into _absoluteXCoordDisplay instead of using _relativeXCoordDisplay
-    public Display.ListDisplay<Fonts, Glyph> _absoluteXCoordDisplay;
-    public Display.ListDisplay<Fonts, Glyph> _relativeXCoordDisplay;
+    public ListDisplay<Fonts, Glyph> _absoluteXCoordDisplay;
+    public ListDisplay<Fonts, Glyph> _relativeXCoordDisplay;
     protected Typography.TextLayout.GlyphLayout _glyphLayout =
       new Typography.TextLayout.GlyphLayout();
 
@@ -98,7 +99,7 @@ namespace CSharpMath.Rendering {
           new Structures.RentedArray<IDisplay<Fonts, Glyph>>(
             _relativeXCoordDisplay, _absoluteXCoordDisplay
           );
-        DrawCore(c, new Display.ListDisplay<Fonts, Glyph>(array.Result));
+        DrawCore(c, new ListDisplay<Fonts, Glyph>(array.Result));
       }
     }
   }

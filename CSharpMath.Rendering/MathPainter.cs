@@ -1,12 +1,13 @@
 using System.Drawing;
-using CSharpMath.FrontEnd;
 
 namespace CSharpMath.Rendering {
+  using Display;
+  using FrontEnd;
   public abstract class MathPainter<TCanvas, TColor> : Painter<TCanvas, MathSource, TColor> {
     public MathPainter(float fontSize = DefaultFontSize) : base(fontSize) { }
-    protected IDisplay<Fonts, Glyph> _display;
+    protected Display.IDisplay<Fonts, Glyph> _display;
     protected bool _displayChanged = true;
-    public override IDisplay<Fonts, Glyph> Display => _display;
+    public override Display.IDisplay<Fonts, Glyph> Display => _display;
     public Atoms.MathList MathList { get => Source.MathList; set => Source = new MathSource(value); }
     public string LaTeX { get => Source.LaTeX; set => Source = new MathSource(value); }
     protected override RectangleF? MeasureCore(float canvasWidth = float.NaN) =>

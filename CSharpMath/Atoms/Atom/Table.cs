@@ -1,14 +1,10 @@
-using CSharpMath.Enumerations;
-using CSharpMath.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CSharpMath.Atoms.Atom {
   ///<summary>A table. Not part of TeX.</summary>
   public class Table : MathAtom {
-    public Table(string? environment) : base(MathAtomType.Table, string.Empty) =>
+    public Table(string? environment) : base(string.Empty) =>
       Environment = environment;
     public Table() : this(null) { }
     /// <summary>Deep copy, finalized or not.</summary>
@@ -22,7 +18,8 @@ namespace CSharpMath.Atoms.Atom {
         new List<MathList>(list.Select(sublist => sublist.Clone(finalize)))))
     };
     public override bool ScriptsAllowed => false;
-    public List<ColumnAlignment> Alignments { get; private set; } = new List<ColumnAlignment>();
+    public List<ColumnAlignment> Alignments { get; private set; } =
+      new List<ColumnAlignment>();
     public List<List<MathList>> Cells { get; set; } = new List<List<MathList>>();
     /// <summary>Space between columns in mu units.</summary>
     public float InterColumnSpacing { get; set; }
@@ -54,6 +51,7 @@ namespace CSharpMath.Atoms.Atom {
         Alignments.SequenceEqual(otherTable.Alignments);
     public override bool Equals(object obj) => obj is Table t ? EqualsTable(t) : false;
     public override int GetHashCode() =>
-      unchecked(base.GetHashCode() + 109 * Cells.GetHashCode() + 113 * Alignments.GetHashCode());
+      unchecked(base.GetHashCode()
+        + 109 * Cells.GetHashCode() + 113 * Alignments.GetHashCode());
   }
 }

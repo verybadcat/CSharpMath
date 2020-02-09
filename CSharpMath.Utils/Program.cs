@@ -9,7 +9,7 @@ namespace CSharpMath.DevUtils {
       iosMathDemo.ToFormsMoreExamples.Build();
       //CSharpMathExamples.MirrorFromIos.Do();
 
-      TypographyTest.BreakString.Benchmark();
+      //TypographyTest.BreakString.Benchmark();
       Console.WriteLine();
       Console.WriteLine("Finished executing the method(s) requested.");
       Console.WriteLine("Press Enter to continue...");

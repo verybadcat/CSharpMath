@@ -4,7 +4,6 @@ using CSharpMath.Atoms;
 using CSharpMath.Atoms.Atom;
 using CSharpMath.Display;
 using CSharpMath.Display.Text;
-using CSharpMath.Enumerations;
 using CSharpMath.FrontEnd;
 using ColorAtom = CSharpMath.Atoms.Atom.Color;
 using Color = CSharpMath.Structures.Color;
@@ -62,34 +61,29 @@ namespace CSharpMath {
     private static ListDisplay<TFont, TGlyph> CreateLine(
       MathList list, TFont font, TypesettingContext<TFont, TGlyph> context,
       LineStyle style, bool cramped, bool spaced = false) {
+
       List<MathAtom> _PreprocessMathList() {
-        MathAtom? prevNode = null;
+        MathAtom? prevAtom = null;
         var r = new List<MathAtom>();
         foreach (var atom in list.Atoms) {
-          // we do not use a switch statement on AtomType here as we may be changing said type.
-          if (atom.AtomType == MathAtomType.Variable || atom.AtomType == MathAtomType.Number) {
-            // These are not a TeX type nodes. TeX does this during parsing the input.
-            // switch to using the font specified in the atom
-            var newFont = context.ChangeFont(atom.Nucleus, atom.FontStyle);
-            // we convert it to ordinary
-            atom.AtomType = MathAtomType.Ordinary;
-            atom.Nucleus = newFont;
-          }
-          if (atom.AtomType == MathAtomType.Ordinary || atom.AtomType == MathAtomType.UnaryOperator) {
-            // TeX treats unary operators as Ordinary. So will we.
-            atom.AtomType = MathAtomType.Ordinary;
-            // This is Rule 14 to merge ordinary characters.
-            // combine ordinary atoms together
-            if (prevNode != null && prevNode.AtomType == MathAtomType.Ordinary
-              && prevNode.Superscript == null && prevNode.Subscript == null) {
-              prevNode.Fuse(atom);
-              // skip the current node as we fused it
-              continue;
-            }
+          // we do not use a switch statement on atom here as we may be changing said type.
+          var newAtom = atom;
+          // These are not a TeX type nodes. TeX does this during parsing the input.
+          // switch to using the font specified in the atom and convert it to ordinary
+          if (newAtom is Variable v) newAtom = v.ToOrdinary(context.FontChanger.ChangeFont);
+          else if (newAtom is Number n) newAtom = n.ToOrdinary(context.FontChanger.ChangeFont);
+          // TeX treats unary operators as Ordinary. So will we.
+          else if (newAtom is UnaryOperator u) newAtom = u.ToOrdinary();
+          // This is Rule 14 to merge ordinary characters.
+          // combine ordinary atoms together
+          if (newAtom is Ordinary && prevAtom is Ordinary { Superscript: null, Subscript: null }) {
+            prevAtom.Fuse(newAtom);
+            // skip the current node as we fused it
+            continue;
           }
           // TODO: add italic correction here or in second pass?
-          prevNode = atom;
-          r.Add(prevNode);
+          prevAtom = newAtom;
+          r.Add(newAtom);
         }
         return r;
       }
@@ -98,50 +92,41 @@ namespace CSharpMath {
       return new ListDisplay<TFont, TGlyph>(typesetter._displayAtoms.ToArray());
     }
     private void CreateDisplayAtoms(List<MathAtom> preprocessedAtoms) {
-      MathAtom? prevNode = null;
-      var prevType = MathAtomType.MinValue;
+      MathAtom? prevAtom = null;
       foreach (var atom in preprocessedAtoms) {
-        switch (atom.AtomType) {
-          case MathAtomType.Number:
-          case MathAtomType.Variable:
-          case MathAtomType.UnaryOperator:
+        switch (atom) {
+          case Number _:
+          case Variable _:
+          case UnaryOperator _:
             throw new InvalidCodePathException
-              ($"Type {atom.AtomType} should have been removed by preprocessing");
-          case MathAtomType.Boundary:
+              ($"Type {atom.GetType()} should have been removed by preprocessing");
+          case Boundary _:
             throw new InvalidCodePathException("A boundary atom should never be inside a mathlist");
-          case MathAtomType.Space: {
+          case Space space:
+            AddDisplayLine(false);
+            _currentPosition.X += space.ActualLength(_mathTable, _font);
+            continue;
+          case Style style:
+            // stash the existing layout
+            AddDisplayLine(false);
+            _style = style.LineStyle;
+            _styleFont =
+              _context.MathFontCloner.Invoke(_font, _mathTable.GetStyleSize(_style, _font));
+            // We need to preserve the prevAtom for any inter-element space changes,
+            // so we skip to the next node.
+            continue;
+          case ColorAtom color:
               AddDisplayLine(false);
-              var space = (Space)atom;
-              _currentPosition.X += space.ActualLength(_mathTable, _font);
-              continue;
-            }
-          case MathAtomType.Style: {
-              // stash the existing layout
-              AddDisplayLine(false);
-              var style = (Style)atom;
-              _style = style.LineStyle;
-              _styleFont =
-                _context.MathFontCloner.Invoke(_font, _mathTable.GetStyleSize(_style, _font));
-              // We need to preserve the prevNode for any inter-element space changes,
-              // so we skip to the next node.
-              continue;
-            }
-          case MathAtomType.Color: {
-              AddDisplayLine(false);
-              AddInterElementSpace(prevNode, MathAtomType.Color);
-              var color = (ColorAtom)atom;
+              AddInterElementSpace(prevAtom, color);
               var colorDisplay = CreateLine(color.InnerList, _font, _context, _style);
               colorDisplay.SetTextColorRecursive(Color.Create(color.ColorString.AsSpan()));
               colorDisplay.Position = _currentPosition;
               _currentPosition.X += colorDisplay.Width;
               _displayAtoms.Add(colorDisplay);
               break;
-            }
-          case MathAtomType.Radical: {
+          case Radical rad:
               AddDisplayLine(false);
-              var rad = (Radical)atom;
-              // Radicals are considered as Ord in rule 16.
-              AddInterElementSpace(prevNode, MathAtomType.Ordinary);
+              AddInterElementSpace(prevAtom, rad);
               var displayRad = MakeRadical(rad.Radicand, rad.IndexRange);
               if (rad.Degree != null) {
                 // add the degree to the radical
@@ -156,11 +141,9 @@ namespace CSharpMath {
                 MakeScripts(atom, displayRad, rad.IndexRange.Location, 0);
               }
               break;
-            }
-          case MathAtomType.Fraction: {
+          case Fraction fraction:
               AddDisplayLine(false);
-              var fraction = (Fraction)atom;
-              AddInterElementSpace(prevNode, atom.AtomType);
+              AddInterElementSpace(prevAtom, fraction);
               var fractionDisplay = MakeFraction(fraction);
               _displayAtoms.Add(fractionDisplay);
               _currentPosition.X += fractionDisplay.Width;
@@ -168,11 +151,9 @@ namespace CSharpMath {
                 MakeScripts(atom, fractionDisplay, fraction.IndexRange.Location, 0);
               }
               break;
-            }
-          case MathAtomType.Inner: {
+          case Inner inner:
               AddDisplayLine(false);
-              AddInterElementSpace(prevNode, atom.AtomType);
-              var inner = (Inner)atom;
+              AddInterElementSpace(prevAtom, inner);
               ListDisplay<TFont, TGlyph> innerDisplay;
               if (inner.LeftBoundary != null || inner.RightBoundary != null) {
                 innerDisplay = _MakeLeftRight(inner);
@@ -186,13 +167,9 @@ namespace CSharpMath {
                 MakeScripts(atom, innerDisplay, atom.IndexRange.Location, 0);
               }
               break;
-            }
-          case MathAtomType.Underline: {
+          case Underline underline:
               AddDisplayLine(false);
-              // Underline is considered as Ord in rule 16.
-              AddInterElementSpace(prevNode, MathAtomType.Ordinary);
-              atom.AtomType = MathAtomType.Ordinary;
-              var underline = (Underline)atom;
+              AddInterElementSpace(prevAtom, underline);
               var innerListDisplay = Typesetter<TFont, TGlyph>.CreateLine
                 (underline.InnerList, _font, _context, _style, _cramped);
               var underlineDisplay =
@@ -207,15 +184,10 @@ namespace CSharpMath {
                 MakeScripts(atom, underlineDisplay, atom.IndexRange.Location, 0);
               }
               break;
-            }
-          case MathAtomType.Overline: {
+          case Overline overline: 
               AddDisplayLine(false);
-              // Overline is considered as Ord in rule 16.
-              AddInterElementSpace(prevNode, MathAtomType.Ordinary);
-              atom.AtomType = MathAtomType.Ordinary;
-
-              var overline = (Overline)atom;
-              var innerListDisplay = Typesetter<TFont, TGlyph>.CreateLine
+              AddInterElementSpace(prevAtom, overline);
+              innerListDisplay = Typesetter<TFont, TGlyph>.CreateLine
                 (overline.InnerList, _font, _context, _style, true);
               var overlineDisplay =
                 new OverOrUnderlineDisplay<TFont, TGlyph>(innerListDisplay, _currentPosition) {
@@ -230,14 +202,10 @@ namespace CSharpMath {
                 MakeScripts(atom, overlineDisplay, atom.IndexRange.Location, 0);
               }
               break;
-            }
-          case MathAtomType.Accent: {
+          case Accent accent:
               AddDisplayLine(false);
-              // Accent is considered as Ord in rule 16.
-              AddInterElementSpace(prevNode, MathAtomType.Ordinary);
-              atom.AtomType = MathAtomType.Ordinary;
+              AddInterElementSpace(prevAtom, accent);
 
-              var accent = (Accent)atom;
               var accentDisplay = MakeAccent(accent);
               _displayAtoms.Add(accentDisplay);
               _currentPosition.X += accentDisplay.Width;
@@ -246,40 +214,43 @@ namespace CSharpMath {
                 MakeScripts(atom, accentDisplay, atom.IndexRange.Location, 0);
               }
               break;
-            }
-          case MathAtomType.Table: {
+          case Table table:
               AddDisplayLine(false);
-              // We will consider tables as inner
-              AddInterElementSpace(prevNode, MathAtomType.Inner);
-              var table = (Table)atom;
-              table.AtomType = MathAtomType.Inner;
+              AddInterElementSpace(prevAtom, table);
               var tableDisplay = MakeTable(table);
               _displayAtoms.Add(tableDisplay);
               _currentPosition.X += tableDisplay.Width;
               break;
-            }
-          case MathAtomType.LargeOperator: {
+          case LargeOperator op:
               AddDisplayLine(false);
-              AddInterElementSpace(prevNode, atom.AtomType);
-              var op = (LargeOperator)atom;
+              AddInterElementSpace(prevAtom, op);
               var opDisplay = MakeLargeOperator(op);
               _displayAtoms.Add(opDisplay);
               break;
-            }
-          case MathAtomType.Ordinary:
-          case MathAtomType.BinaryOperator:
-          case MathAtomType.Relation:
-          case MathAtomType.Open:
-          case MathAtomType.Close:
-          case MathAtomType.Placeholder:
-          case MathAtomType.Punctuation:
-          case MathAtomType.Prime: {
-              if (prevNode != null) {
-                float interElementSpace = GetInterElementSpace(prevNode.AtomType, atom.AtomType);
+          case RaiseBox raiseBox:
+            AddDisplayLine(false);
+            var raisedDisplay =
+              Typesetter<TFont, TGlyph>.CreateLine(raiseBox.InnerList, _font, _context, _style);
+            var raisedPosition = _currentPosition;
+            raisedPosition.Y += raiseBox.Raise.ActualLength(_mathTable, _font);
+            raisedDisplay.Position = raisedPosition;
+            _currentPosition.X += raisedDisplay.Width;
+            _displayAtoms.Add(raisedDisplay);
+            break;
+          case Ordinary _:
+          case BinaryOperator _:
+          case Relation _:
+          case Open _:
+          case Close _:
+          case Placeholder _:
+          case Punctuation _:
+          case Prime _: {
+              if (prevAtom != null) {
+                float interElementSpace =
+                  InterElementSpaces.Get(prevAtom, atom, _style, _styleFont, _mathTable);
                 if (_currentLine.Length > 0) {
                   if (interElementSpace > 0) {
-                    var run = _currentLine.Runs.Last();
-                    run.GlyphInfos.Last().KernAfterGlyph = interElementSpace;
+                    _currentLine.Runs.Last().GlyphInfos.Last().KernAfterGlyph = interElementSpace;
                   }
                 } else {
                   _currentPosition.X += interElementSpace;
@@ -288,7 +259,7 @@ namespace CSharpMath {
               var nucleusText = atom.Nucleus;
               var glyphs = _context.GlyphFinder.FindGlyphs(_font, nucleusText);
               var current = new AttributedGlyphRun<TFont, TGlyph>(
-                nucleusText, glyphs, _font, atom.AtomType == MathAtomType.Placeholder);
+                nucleusText, glyphs, _font, atom is Placeholder);
               _currentLine.AppendGlyphRun(current);
               if (_currentLineIndexRange.Location == Range.UndefinedInt)
                 _currentLineIndexRange = atom.IndexRange;
@@ -302,7 +273,7 @@ namespace CSharpMath {
                 _currentAtoms.Add(atom);
               if (atom.Subscript != null || atom.Superscript != null) {
                 var line = AddDisplayLine(true);
-                if (line is null) throw new InvalidCodePathException("evenIfLengthIsZeo not respected");
+                if (line is null) throw new InvalidCodePathException("evenIfLengthIsZero not respected");
                 float delta = 0;
                 if (atom.Nucleus != "") {
                   var glyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex
@@ -314,29 +285,17 @@ namespace CSharpMath {
                   _currentPosition.X += delta;
                 MakeScripts(atom, line, atom.IndexRange.End - 1, delta);
               }
-              if (atom.AtomType == MathAtomType.Prime) continue; //preserve spacing of previous atom
+              if (atom is Prime) continue; //preserve spacing of previous atom
               break;
             }
-          case MathAtomType.RaiseBox:
-            AddDisplayLine(false);
-            var raiseBox = (RaiseBox)atom;
-            var raisedDisplay =
-              Typesetter<TFont, TGlyph>.CreateLine(raiseBox.InnerList, _font, _context, _style);
-            var raisedPosition = _currentPosition;
-            raisedPosition.Y += raiseBox.Raise.ActualLength(_mathTable, _font);
-            raisedDisplay.Position = raisedPosition;
-            _currentPosition.X += raisedDisplay.Width;
-            _displayAtoms.Add(raisedDisplay);
-            break;
           default:
-            throw new InvalidCodePathException("Unknown atom type " + atom.AtomType);
+            throw new InvalidCodePathException("Unknown atom type " + atom.TypeName);
         }
-        prevNode = atom;
-        prevType = atom.AtomType;
+        prevAtom = atom;
       }
 
       AddDisplayLine(false);
-      if (_spaced && prevType != MathAtomType.MinValue) {
+      if (_spaced && prevAtom != null) {
         var lastDisplay = _displayAtoms.LastOrDefault();
         if (lastDisplay != null) {
           //float space = GetInterElementSpace(prevType, MathAtomType.Close);
@@ -347,7 +306,6 @@ namespace CSharpMath {
     }
 
     private IDisplay<TFont, TGlyph> MakeAccent(Accent accent) {
-
       var accentee =
         CreateLine(accent.InnerList ?? new MathList(), _font, _context, _style, true);
       if (accent.Nucleus.Length == 0) {
@@ -463,8 +421,8 @@ namespace CSharpMath {
       float subscriptShiftDown = 0;
       display.HasScript = true;
       if (!(display is TextLineDisplay<TFont, TGlyph>)) {
-        float scriptFontSize = _mathTable.GetStyleSize(_scriptStyle, _font);
-        TFont scriptFont = _context.MathFontCloner.Invoke(_font, scriptFontSize);
+        var scriptFontSize = _mathTable.GetStyleSize(_scriptStyle, _font);
+        var scriptFont = _context.MathFontCloner.Invoke(_font, scriptFontSize);
         superscriptShiftUp = display.Ascent - _context.MathTable.SuperscriptShiftUp(scriptFont);
         subscriptShiftDown = display.Descent + _context.MathTable.SubscriptBaselineDropMin(scriptFont);
       }
@@ -531,45 +489,11 @@ namespace CSharpMath {
         Math.Max(superscript.Width + delta, subscriptB.Width)
         + _mathTable.SpaceAfterScript(_styleFont);
     }
-    private float GetInterElementSpace(MathAtomType left, MathAtomType right) {
-      static int GetInterElementSpaceArrayIndexForType(MathAtomType atomType, bool row) =>
-        atomType switch
-        {
-          MathAtomType.Color => 0,
-          MathAtomType.Placeholder => 0,
-          MathAtomType.Ordinary => 0,
-          MathAtomType.RaiseBox => 0,
-          MathAtomType.LargeOperator => 1,
-          MathAtomType.BinaryOperator => 2,
-          MathAtomType.Relation => 3,
-          MathAtomType.Open => 4,
-          MathAtomType.Close => 5,
-          MathAtomType.Punctuation => 6,
-          MathAtomType.Fraction => 7,
-          MathAtomType.Inner => 7,
-          MathAtomType.Radical when row => 8,
-          MathAtomType.Radical =>
-            throw new InvalidCodePathException
-              ("Inter-element space undefined for radical on the right. Treat radical as ordinary."),
-          _ =>
-            throw new InvalidCodePathException
-              ($"Inter-element space undefined for atom type {atomType}")
-        };
-      if (right == MathAtomType.Prime)
-        return 0;
-      var leftIndex = GetInterElementSpaceArrayIndexForType(left, true);
-      var rightIndex = GetInterElementSpaceArrayIndexForType(right, false);
-      var spaceType = InterElementSpaces.Spaces[leftIndex][rightIndex];
-      if (spaceType == InterElementSpaceType.Invalid)
-        throw new InvalidCodePathException($"Invalid space between {left} and {right}");
-      var multiplier = spaceType.SpacingInMu(_style);
-      return multiplier > 0 ? multiplier * _mathTable.MuUnit(_styleFont) : 0;
-    }
 
-    private void AddInterElementSpace(MathAtom? prevNode, MathAtomType currentType) =>
+    private void AddInterElementSpace(MathAtom? prev, MathAtom current) =>
       _currentPosition.X +=
-        prevNode != null ? GetInterElementSpace(prevNode.AtomType, currentType)
-        : _spaced ? GetInterElementSpace(MathAtomType.Open, currentType)
+        prev != null ? InterElementSpaces.Get(prev, current, _style, _styleFont, _mathTable)
+        : _spaced ? InterElementSpaces.Get(new Open(""), current, _style, _styleFont, _mathTable)
         : 0;
     internal TextLineDisplay<TFont, TGlyph>? AddDisplayLine(bool evenIfLengthIsZero) {
       if (evenIfLengthIsZero || (_currentLine != null && _currentLine.Length > 0)) {
@@ -585,16 +509,15 @@ namespace CSharpMath {
       }
       return null;
     }
-    private float _radicalVerticalGap(TFont font) =>
-      _style == LineStyle.Display
-      ? _mathTable.RadicalDisplayStyleVerticalGap(font)
-      : _mathTable.RadicalVerticalGap(font);
     private RadicalDisplay<TFont, TGlyph> MakeRadical(MathList radicand, Range range) {
       var innerDisplay = CreateLine(radicand, _font, _context, _style, true);
-      var clearance = _radicalVerticalGap(_styleFont);
+      var radicalVerticalGap =
+        _style == LineStyle.Display
+        ? _mathTable.RadicalDisplayStyleVerticalGap(_styleFont)
+        : _mathTable.RadicalVerticalGap(_styleFont);
       var radicalRuleThickness = _mathTable.RadicalRuleThickness(_styleFont);
       var radicalHeight =
-        innerDisplay.Ascent + innerDisplay.Descent + clearance + radicalRuleThickness;
+        innerDisplay.Ascent + innerDisplay.Descent + radicalVerticalGap + radicalRuleThickness;
       var glyph = _GetRadicalGlyph(radicalHeight);
       // Note this is a departure from LaTeX. LaTeX assumes that glyphAscent == thickness.
       // Open type math makes no such assumption,
@@ -605,13 +528,13 @@ namespace CSharpMath {
       var descent = glyph.Descent;
       var ascent = glyph.Ascent;
       var delta = descent + ascent
-        - (innerDisplay.Ascent + innerDisplay.Descent + clearance + radicalRuleThickness);
+        - (innerDisplay.Ascent + innerDisplay.Descent + radicalVerticalGap + radicalRuleThickness);
       if (delta > 0) {
-        clearance += delta / 2;
+        radicalVerticalGap += delta / 2;
       }
       // we need to shift the radical glyph up, to coincide with the baseline of inner.
       // The new ascent of the radical glyph should be thickness + adjusted clearance + h(inner)
-      var radicalAscent = radicalRuleThickness + clearance + innerDisplay.Ascent;
+      var radicalAscent = radicalRuleThickness + radicalVerticalGap + innerDisplay.Ascent;
       // Note: if the font designer followed latex conventions,
       // this is the same as glyphAscent == thickness.
       var shiftUp = radicalAscent - ascent;

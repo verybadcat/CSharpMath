@@ -1,6 +1,5 @@
 using System.Drawing;
 using CSharpMath.Atoms;
-using CSharpMath.Enumerations;
 using CSharpMath.Tests.FrontEnd;
 using Xunit;
 

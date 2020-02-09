@@ -1,5 +1,4 @@
 using System.Drawing;
-using CSharpMath.Enumerations;
 using Typography.OpenFont;
 
 namespace CSharpMath.Rendering {
@@ -19,7 +18,7 @@ namespace CSharpMath.Rendering {
     /// <summary>Unit of measure: points</summary>
     float FontSize { get; set; }
     ObservableRangeCollection<Typeface> LocalTypefaces { get; }
-    LineStyle LineStyle { get; set; }
+    Atoms.LineStyle LineStyle { get; set; }
     TSource Source { get; set; }
     #endregion Redisplaying properties
   }

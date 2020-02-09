@@ -19,9 +19,9 @@ namespace CSharpMath.Editor {
     Degree
   }
 
-  /** 
-* An index that points to a particular character in the MTMathList. The index is a LinkedList that represents
-* a path from the beginning of the MTMathList to reach a particular atom in the list. The next node of the path
+  /** <summary>
+* An index that points to a particular character in the MathList. The index is a LinkedList that represents
+* a path from the beginning of the MathList to reach a particular atom in the list. The next node of the path
 * is represented by the subIndex. The path terminates when the subIndex is nil.
 *
 * If there is a subIndex, the subIndexType denotes what branch the path takes (i.e. superscript, subscript, 
@@ -33,7 +33,7 @@ namespace CSharpMath.Editor {
 * index.
 * 
 * The level of an index is the number of nodes in the LinkedList to get to the final path.
-*/
+* </summary>*/
   public class MathListIndex {
     private MathListIndex() { }
 
@@ -44,11 +44,11 @@ namespace CSharpMath.Editor {
     ///<summary>The index into the sublist.</summary>
     public MathListIndex? SubIndex;
 
-    /** <summary>Factory function to create a `MTMathListIndex` with no subindexes.</summary>
-        <param name="index">The index of the atom that the `MTMathListIndex` points at.</param>
+    /** <summary>Factory function to create a `MathListIndex` with no subindexes.</summary>
+        <param name="index">The index of the atom that the `MathListIndex` points at.</param>
      */
     public static MathListIndex Level0Index(int index) => new MathListIndex { AtomIndex = index };
-    /** <summary>Factory function to create at `MTMathListIndex` with a given subIndex.</summary>
+    /** <summary>Factory function to create at `MathListIndex` with a given subIndex.</summary>
         <param name="location">The location at which the subIndex should is present.</param>
         <param name="subIndex">The subIndex to be added. Can be nil.</param> 
         <param name="type">The type of the subIndex.</param> 
@@ -68,7 +68,7 @@ namespace CSharpMath.Editor {
 
     /** <summary>
      * Returns the previous index if this index is not at the beginning of a line.
-     * Note there may be multiple lines in a MTMathList,
+     * Note there may be multiple lines in a MathList,
      * e.g. a superscript or a fraction numerator.
      * This returns <see cref="null"/> if there is no previous index, i.e.
      * the innermost subindex points to the beginning of a line.</summary>

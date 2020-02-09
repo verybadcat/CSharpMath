@@ -1,16 +1,11 @@
-using CSharpMath.Enumerations;
-using CSharpMath.Interfaces;
-using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace CSharpMath.Atoms.Atom {
   public class Color : MathAtom {
     public string ColorString { get; set; }
     public MathList InnerList { get; set; }
-    public Color(string color, MathList innerList) : base(MathAtomType.Color, string.Empty) =>
+    public Color(string color, MathList innerList) : base(string.Empty) =>
       (ColorString, InnerList) = (color, innerList);
-
     public override string DebugString =>
       new StringBuilder(@"\color")
       .AppendInBraces(ColorString, NullHandling.LiteralNull)

@@ -14,8 +14,8 @@ namespace CSharpMath {
       Structures.Color.PredefinedColors;
     public static Structures.AliasDictionary<string, string> PredefinedBoundaryDelimiters =>
       Atoms.MathAtoms.BoundaryDelimiters;
-    public static Structures.AliasDictionary<string, Enumerations.FontStyle> PredefinedFontStyles =>
-      Enumerations.FontStyleExtensions.FontStyles;
+    public static Structures.AliasDictionary<string, Atoms.FontStyle> PredefinedFontStyles =>
+      Atoms.FontStyleExtensions.FontStyles;
     public static Structures.AliasDictionary<string, Atoms.MathAtom> PredefinedLaTeXMathSymbols =>
       Atoms.MathAtoms.Commands;
     public static Structures.BiDictionary<string, string> PredefinedLaTeXTextAccents =>

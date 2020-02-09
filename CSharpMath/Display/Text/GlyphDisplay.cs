@@ -3,7 +3,7 @@ using CSharpMath.Atoms;
 using CSharpMath.FrontEnd;
 using Color = CSharpMath.Structures.Color;
 
-namespace CSharpMath.Display {
+namespace CSharpMath.Display.Text {
   public class GlyphDisplay<TFont, TGlyph> : IGlyphDisplay<TFont, TGlyph>
     where TFont : IFont<TGlyph> {
     public RectangleF DisplayBounds => this.DisplayBounds();

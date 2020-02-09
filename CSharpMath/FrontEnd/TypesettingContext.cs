@@ -22,5 +22,8 @@ namespace CSharpMath.FrontEnd {
       FontChanger = fontChanger;
       MathTable = mathTable;
     }
+    public ListDisplay<TFont, TGlyph> CreateLine
+      (Atoms.MathList list, TFont font, Atoms.LineStyle style) =>
+      Typesetter<TFont, TGlyph>.CreateLine(list, font, this, style);
   }
 }

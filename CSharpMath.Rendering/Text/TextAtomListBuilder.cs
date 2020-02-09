@@ -13,7 +13,7 @@ namespace CSharpMath.Rendering {
       Add(new TextAtom.Text(text + lookAheadForPunc.ToString(), TextLength));
     public void Add(Structures.Space space, int sourceLength) =>
       Add(new TextAtom.Space(space, TextLength, sourceLength));
-    public void Add(TextAtom atom, Enumerations.FontStyle style, int commandLength) =>
+    public void Add(TextAtom atom, Atoms.FontStyle style, int commandLength) =>
       Add(new TextAtom.Style(atom, style, TextLength, commandLength));
     public void Add(TextAtom atom, float fontSize, int commandLength) =>
       Add(new TextAtom.Size(atom, fontSize, TextLength, commandLength));

@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CSharpMath.Display {
+namespace CSharpMath.Display.Text {
   /// <summary>Represents a part of a glyph used for constructing a large vertical or horizontal glyph.</summary>
   public class GlyphPart<TGlyph> {
     public GlyphPart(TGlyph glyph,

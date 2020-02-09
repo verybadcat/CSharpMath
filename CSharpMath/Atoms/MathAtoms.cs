@@ -1,4 +1,3 @@
-using CSharpMath.Enumerations;
 using System;
 using System.Collections.Generic;
 
@@ -358,9 +357,10 @@ namespace CSharpMath.Atoms {
         case ')':
         case ']':
         case '}':
+          return new Close(c.ToString());
         case '!':
         case '?':
-          return new Close(c.ToString());
+          return new Close(c.ToString(), false);
         case ',':
         case ';':
           return new Punctuation(c.ToString());

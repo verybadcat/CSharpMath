@@ -10,7 +10,7 @@ namespace CSharpMath.Display {
   public class ListDisplay<TFont, TGlyph>: IDisplay<TFont, TGlyph>
     where TFont : IFont<TGlyph> {
     public IReadOnlyList<IDisplay<TFont, TGlyph>> Displays { get; }
-    public Enumerations.LinePosition LinePosition { get; set; }
+    public LinePosition LinePosition { get; set; }
     public Color? TextColor { get; set; }
     public bool HasScript { get; set; }
     public void SetTextColorRecursive(Color? textColor) {
@@ -23,7 +23,7 @@ namespace CSharpMath.Display {
     public int IndexInParent { get; set; }
     public ListDisplay(IReadOnlyList<IDisplay<TFont, TGlyph>> displays) {
       Displays = displays;
-      LinePosition = Enumerations.LinePosition.Regular;
+      LinePosition = LinePosition.Regular;
       IndexInParent = int.MinValue;
     }
     public float Ascent => Displays.CollectionAscent();
@@ -33,8 +33,7 @@ namespace CSharpMath.Display {
     public Range Range =>
       Range.Combine(
         Displays
-        .Where(d => !(d is ListDisplay<TFont, TGlyph> ld
-          && ld.LinePosition != Enumerations.LinePosition.Regular))
+        .Where(d => !(d is ListDisplay<TFont, TGlyph> ld && ld.LinePosition != LinePosition.Regular))
         .Select(d => d.Range));
     public float Width => Displays.CollectionMaxX() - Displays.CollectionX();
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {

@@ -38,8 +38,7 @@ namespace CSharpMath.Editor {
                    : MathListIndex.Level0Index(self.Range.Location);
           else if (translatedPoint.X >= self.Width + PixelDelta) {
             // if closest is a script
-            if (closest != null && closest is ListDisplay<TFont, TGlyph> ld
-                && ld.LinePosition != Enumerations.LinePosition.Regular) {
+            if (closest is ListDisplay<TFont, TGlyph> ld && ld.LinePosition != LinePosition.Regular) {
               // then we try to find its parent
               var parent = self.Displays.FirstOrDefault(d => d.HasScript && d.Range.Contains(ld.IndexInParent));
               if (parent != null) {
@@ -73,20 +72,27 @@ namespace CSharpMath.Editor {
 
       var index = displayWithPoint.IndexForPoint(context, translatedPoint);
       if (displayWithPoint is ListDisplay<TFont, TGlyph> closestLine) {
-        if (closestLine.LinePosition is Enumerations.LinePosition.Regular)
-          throw new ArgumentException(
-            $"{nameof(ListDisplay<TFont, TGlyph>)} {nameof(ListDisplay<TFont, TGlyph>.LinePosition)} {nameof(Enumerations.LinePosition.Regular)} " +
+        if (closestLine.LinePosition is LinePosition.Regular)
+          throw new ArgumentException(nameof(ListDisplay<TFont, TGlyph>) + " " +
+            nameof(ListDisplay<TFont, TGlyph>.LinePosition) + " " + nameof(LinePosition.Regular) + " " +
             $"inside an {nameof(ListDisplay<TFont, TGlyph>)} - shouldn't happen", nameof(self));
         // This is a subscript or a superscript, return the right type of subindex
-        var indexType = closestLine.LinePosition is Enumerations.LinePosition.Subscript ? MathListSubIndexType.Subscript : MathListSubIndexType.Superscript;
+        var indexType =
+          closestLine.LinePosition is LinePosition.Subscript
+          ? MathListSubIndexType.Subscript
+          : MathListSubIndexType.Superscript;
         // The index of the atom this denotes.
         if (closestLine.IndexInParent is int.MinValue)
-          throw new ArgumentException($"Index was not set for a {indexType} in the {nameof(ListDisplay<TFont, TGlyph>)}.", nameof(self));
+          throw new ArgumentException
+            ($"Index was not set for a {indexType} in the {nameof(ListDisplay<TFont, TGlyph>)}.", nameof(self));
         return MathListIndex.IndexAtLocation(closestLine.IndexInParent, indexType, index);
       } else if (displayWithPoint.HasScript)
-        //The display list has a subscript or a superscript. If the index is at the end of the atom, then we need to put it before the sub/super script rather than after.
+        // The display list has a subscript or a superscript.
+        // If the index is at the end of the atom,
+        // then we need to put it before the sub/super script rather than after.
         if (index?.AtomIndex == displayWithPoint.Range.End)
-          return MathListIndex.IndexAtLocation(index.AtomIndex - 1, MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1));
+          return MathListIndex.IndexAtLocation
+            (index.AtomIndex - 1, MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1));
       return index;
     }
 
@@ -126,8 +132,10 @@ namespace CSharpMath.Editor {
         return null;
     }
     
-    public static void HighlightCharacterAt<TFont, TGlyph>(this ListDisplay<TFont, TGlyph> self, MathListIndex index, Color color) where TFont : IFont<TGlyph> {
-      if (self.Range.Contains(index.AtomIndex) && self.SubDisplayForIndex(index) is IDisplay<TFont, TGlyph> display)
+    public static void HighlightCharacterAt<TFont, TGlyph>(this ListDisplay<TFont, TGlyph> self,
+      MathListIndex index, Color color) where TFont : IFont<TGlyph> {
+      if (self.Range.Contains(index.AtomIndex)
+        && self.SubDisplayForIndex(index) is IDisplay<TFont, TGlyph> display)
         if (index.SubIndexType is MathListSubIndexType.BetweenBaseAndScripts
             || index.SubIndexType is MathListSubIndexType.None)
           display.HighlightCharacterAt(index, color);
@@ -151,9 +159,9 @@ namespace CSharpMath.Editor {
               && index.AtomIndex == list.IndexInParent
               // This is the right character for the sub/superscript, check that it's type matches the index
               &&
-              (list.LinePosition is Enumerations.LinePosition.Subscript
+              (list.LinePosition is LinePosition.Subscript
                && index.SubIndexType is MathListSubIndexType.Subscript
-               || list.LinePosition is Enumerations.LinePosition.Superscript
+               || list.LinePosition is LinePosition.Superscript
                && index.SubIndexType is MathListSubIndexType.Superscript))
             return list;
           else { }
@@ -178,7 +186,8 @@ namespace CSharpMath.Editor {
               case MathListSubIndexType.Superscript:
               case MathListSubIndexType.Subscript:
               default:
-                throw new InvalidCodePathException("Superscripts and subscripts should have been handled in a separate case above.");
+                throw new InvalidCodePathException
+                  ("Superscripts and subscripts should have been handled in a separate case above.");
             }
       return null;
     }

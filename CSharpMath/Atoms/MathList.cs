@@ -1,8 +1,5 @@
-using CSharpMath.Enumerations;
-using CSharpMath.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Collections;
 
 namespace CSharpMath.Atoms {
@@ -11,52 +8,55 @@ namespace CSharpMath.Atoms {
     public MathList() => Atoms = new List<MathAtom>();
     public MathList(IEnumerable<MathAtom> atoms) => Atoms = new List<MathAtom>(atoms);
     public MathList(params MathAtom[] atoms) => Atoms = new List<MathAtom>(atoms);
-    public bool IsAtomAllowed(MathAtom atom) =>
-      atom != null && atom.AtomType != MathAtomType.Boundary;
+    public bool IsAtomAllowed(MathAtom atom) => atom != null && !(atom is Atom.Boundary);
     public MathList Clone(bool finalize) {
       var newList = new MathList();
       if (!finalize) {
         foreach (var atom in Atoms)
           newList.Add(atom.Clone(finalize));
       } else {
-        MathAtom? prevNode = null;
         foreach (var atom in Atoms) {
+          var prevNode = newList.Count > 0 ? newList[newList.Count - 1] : null;
           var newNode = atom.Clone(finalize);
           if (atom.IndexRange == Range.Zero) {
             int prevIndex =
               prevNode?.IndexRange.Location + prevNode?.IndexRange.Length ?? 0;
             newNode.IndexRange = new Range(prevIndex, 1);
           }
-          switch (newNode.AtomType) {
-            case MathAtomType.BinaryOperator:
-              switch (prevNode?.AtomType) {
-                case null:
-                case MathAtomType.BinaryOperator:
-                case MathAtomType.Relation:
-                case MathAtomType.Open:
-                case MathAtomType.Punctuation:
-                case MathAtomType.LargeOperator:
-                  newNode.AtomType = MathAtomType.UnaryOperator;
-                  break;
-              }
+#warning One day when C# receives "or patterns", simplify this abomination
+          switch (prevNode, newNode) {
+            case (null, Atom.BinaryOperator b):
+              newNode = b.ToUnaryOperator();
               break;
-            case MathAtomType.Relation:
-            case MathAtomType.Punctuation:
-            case MathAtomType.Close:
-              if (prevNode != null && prevNode.AtomType == MathAtomType.BinaryOperator) {
-                prevNode.AtomType = MathAtomType.UnaryOperator;
-              }
+            case (Atom.BinaryOperator _, Atom.BinaryOperator b):
+              newNode = b.ToUnaryOperator();
               break;
-            case MathAtomType.Number:
-              if (prevNode != null && prevNode.AtomType == MathAtomType.Number
-                  && prevNode.Subscript == null && prevNode.Superscript == null) {
-                prevNode.Fuse(newNode);
-                continue; // do not add the new node; we fused it instead.
-              }
+            case (Atom.Relation _, Atom.BinaryOperator b):
+              newNode = b.ToUnaryOperator();
               break;
+            case (Atom.Open _, Atom.BinaryOperator b):
+              newNode = b.ToUnaryOperator();
+              break;
+            case (Atom.Punctuation _, Atom.BinaryOperator b):
+              newNode = b.ToUnaryOperator();
+              break;
+            case (Atom.LargeOperator _, Atom.BinaryOperator b):
+              newNode = b.ToUnaryOperator();
+              break;
+            case (Atom.BinaryOperator b, Atom.Relation _):
+              newList[newList.Count - 1] = b.ToUnaryOperator();
+              break;
+            case (Atom.BinaryOperator b, Atom.Punctuation _):
+              newList[newList.Count - 1] = b.ToUnaryOperator();
+              break;
+            case (Atom.BinaryOperator b, Atom.Close _):
+              newList[newList.Count - 1] = b.ToUnaryOperator();
+              break;
+            case (Atom.Number { Subscript: null, Superscript: null } n, Atom.Number _):
+              n.Fuse(newNode); // do not add the new node; we fused it instead.
+              continue;
           }
           newList.Add(newNode);
-          prevNode = newNode;
         }
       }
       return newList;
@@ -93,8 +93,8 @@ namespace CSharpMath.Atoms {
       if (item == null) {
         throw new InvalidOperationException("MathList cannot contain null.");
       }
-      if (item.AtomType == MathAtomType.Boundary) {
-        throw new InvalidOperationException("MathList cannot contain items of type " + item.AtomType);
+      if (item is Atom.Boundary) {
+        throw new InvalidOperationException("MathList cannot contain boundaries");
       }
     }
     public void Insert(int index, MathAtom item) {

@@ -1,4 +1,3 @@
-using CSharpMath.Enumerations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -98,9 +97,9 @@ namespace CSharpMath.Atoms {
             }
             continue;
 #warning TODO Example
-            //https://phabricator.wikimedia.org/T99369
-            //https://phab.wmfusercontent.org/file/data/xsimlcnvo42siudvwuzk/PHID-FILE-bdcqexocj5b57tj2oezn/math_rendering.png
-            //dt, \text{d}t, \partial t, \nabla\psi \\ \underline\overline{dy/dx, \text{d}y/\text{d}x, \frac{dy}{dx}, \frac{\text{d}y}{\text{d}x}, \frac{\partial^2}{\partial x_1\partial x_2}y} \\ \prime,
+          //https://phabricator.wikimedia.org/T99369
+          //https://phab.wmfusercontent.org/file/data/xsimlcnvo42siudvwuzk/PHID-FILE-bdcqexocj5b57tj2oezn/math_rendering.png
+          //dt, \text{d}t, \partial t, \nabla\psi \\ \underline\overline{dy/dx, \text{d}y/\text{d}x, \frac{dy}{dx}, \frac{\text{d}y}{\text{d}x}, \frac{\partial^2}{\partial x_1\partial x_2}y} \\ \prime,
           case '}':
             if (oneCharOnly || stopChar != 0) {
               throw new InvalidCodePathException("This should have been handled before.");
@@ -138,7 +137,7 @@ namespace CSharpMath.Atoms {
               }
               continue;
             }
-            switch(AtomForCommand(command, stopChar)) {
+            switch (AtomForCommand(command, stopChar)) {
               case null:
                 SetError(Error ?? "Internal error");
                 return null;
@@ -151,7 +150,7 @@ namespace CSharpMath.Atoms {
               if (_currentEnvironment != null) {
                 return r;
               }
-              var table = BuildTable(null, r, false, stopChar); 
+              var table = BuildTable(null, r, false, stopChar);
               if (table == null) return null;
               return new MathList(table);
             }
@@ -359,7 +358,7 @@ namespace CSharpMath.Atoms {
 
     private MathAtom? AtomForCommand(string command, char stopChar) {
       var atom = MathAtoms.ForLatexSymbolName(command);
-      if(atom is Accent accent) {
+      if (atom is Accent accent) {
         var innerList = BuildInternal(true);
         if (innerList is null) return null;
         accent.InnerList = innerList;
@@ -393,7 +392,7 @@ namespace CSharpMath.Atoms {
           if (_currentInnerAtom.LeftBoundary is null) return null;
           var innerList = BuildInternal(false, stopChar);
           if (innerList is null) return null;
-          _currentInnerAtom.InnerList = innerList; 
+          _currentInnerAtom.InnerList = innerList;
           if (_currentInnerAtom.RightBoundary is null) {
             SetError("Missing \\right");
             return null;
@@ -485,15 +484,14 @@ namespace CSharpMath.Atoms {
         if (Error != null) {
           return null;
         }
-        if (fractionCommands[command] is (var left, var right))
-        {
-            fraction.LeftDelimiter = left;
-            fraction.RightDelimiter = right;
+        if (fractionCommands[command] is (var left, var right)) {
+          fraction.LeftDelimiter = left;
+          fraction.RightDelimiter = right;
         };
         return new MathList(fraction);
       } else if (command == "\\" || command == "cr") {
         if (_currentEnvironment == null) {
-          var table = BuildTable(null, list, true, stopChar); 
+          var table = BuildTable(null, list, true, stopChar);
           if (table == null) return null;
           return new MathList(table);
         } else {
@@ -510,7 +508,7 @@ namespace CSharpMath.Atoms {
         if (env == null) {
           return null;
         }
-        if (env!=_currentEnvironment.Name) {
+        if (env != _currentEnvironment.Name) {
           SetError($"Begin environment name {_currentEnvironment.Name} does not match end environment name {env}");
           return null;
         }
@@ -541,7 +539,7 @@ namespace CSharpMath.Atoms {
     private void SetError(string message) => Error ??= message;
 
     private MathAtom? BuildTable
-      (string? environment, MathList? firstList, bool isRow, char stopChar) { 
+      (string? environment, MathList? firstList, bool isRow, char stopChar) {
       var oldEnv = _currentEnvironment;
       _currentEnvironment = new TableEnvironmentProperties(environment);
       int currentRow = 0;
@@ -567,7 +565,10 @@ namespace CSharpMath.Atoms {
         while (HasCharacters && !done) {
           var ch = GetNextCharacter();
           switch (ch) {
-            case 'l': case 'c': case 'r': case '|':
+            case 'l':
+            case 'c':
+            case 'r':
+            case '|':
               builder.Append(ch);
               break;
             case '}':
@@ -678,220 +679,194 @@ namespace CSharpMath.Atoms {
           }
         }
         currentFontStyle = atom.FontStyle;
-        switch (atom.AtomType) {
-          case MathAtomType.Fraction: {
-              var fraction = (Fraction)atom;
-              var numerator = NullableListToLaTeX(fraction.Numerator);
-              var denominator = NullableListToLaTeX(fraction.Denominator);
-              if (fraction.HasRule) {
-                builder.Append(@"\frac{").Append(numerator).Append("}{").Append(denominator).Append("}");
-              } else {
-                builder.Append("{").Append(numerator).Append(@" \").Append(
-                  (fraction.LeftDelimiter, fraction.RightDelimiter) switch
-                  {
-                    (null, null) => "atop",
-                    ("(", ")") => "choose",
-                    ("{", "}") => "brace",
-                    ("[", "]") => "brack",
-                    (var left, var right) => $"atopwithdelims{left}{right}",
-                  }).Append(" ").Append(denominator).Append("}");
-              }
+        switch (atom) {
+          case Fraction fraction:
+            var numerator = NullableListToLaTeX(fraction.Numerator);
+            var denominator = NullableListToLaTeX(fraction.Denominator);
+            if (fraction.HasRule) {
+              builder.Append(@"\frac{").Append(numerator).Append("}{").Append(denominator).Append("}");
+            } else {
+              builder.Append("{").Append(numerator).Append(@" \").Append(
+                (fraction.LeftDelimiter, fraction.RightDelimiter) switch
+                {
+                  (null, null) => "atop",
+                  ("(", ")") => "choose",
+                  ("{", "}") => "brace",
+                  ("[", "]") => "brack",
+                  (var left, var right) => $"atopwithdelims{left}{right}",
+                }).Append(" ").Append(denominator).Append("}");
             }
             break;
-          case MathAtomType.Radical: {
-              builder.Append(@"\sqrt");
-              var radical = (Radical)atom;
-              builder.AppendInSquareBrackets(NullableListToLaTeX(radical.Degree), NullHandling.EmptyString);
-              builder.AppendInBraces(MathListToLaTeX(radical.Radicand), NullHandling.EmptyContent);
-              break;
+          case Radical radical:
+            builder.Append(@"\sqrt");
+            builder.AppendInSquareBrackets(NullableListToLaTeX(radical.Degree), NullHandling.EmptyString);
+            builder.AppendInBraces(MathListToLaTeX(radical.Radicand), NullHandling.EmptyContent);
+            break;
+          case Inner inner:
+            if (inner.LeftBoundary == null && inner.RightBoundary == null) {
+              builder.AppendInBraces(MathListToLaTeX(inner.InnerList), NullHandling.EmptyContent);
+            } else {
+              builder.Append(inner.LeftBoundary switch
+              {
+                null => @"\left. ",
+                var b => @"\left" + DelimiterToString(b) + " "
+              }).Append(MathListToLaTeX(inner.InnerList))
+              .Append(inner.RightBoundary switch
+              {
+                null => @"\right. ",
+                var b => @"\right" + DelimiterToString(b) + " "
+              });
             }
-          case MathAtomType.Inner: {
-              var inner = (Inner)atom;
-              if (inner.LeftBoundary == null && inner.RightBoundary == null) {
-                builder.AppendInBraces(MathListToLaTeX(inner.InnerList), NullHandling.EmptyContent);
-              } else {
-                builder.Append(inner.LeftBoundary switch
+            break;
+          case Table table:
+            if (table.Environment != null) {
+              builder.Append(@"\begin{" + table.Environment + "}");
+            }
+            if (table.Environment == "array") {
+              builder.Append('{');
+              foreach (var alignment in table.Alignments)
+                builder.Append(alignment switch
                 {
-                  null => @"\left. ",
-                  var b => @"\left" + DelimiterToString(b) + " "
-                }).Append(MathListToLaTeX(inner.InnerList))
-                .Append(inner.RightBoundary switch
-                {
-                  null => @"\right. ",
-                  var b => @"\right" + DelimiterToString(b) + " "
+                  ColumnAlignment.Left => 'l',
+                  ColumnAlignment.Right => 'r',
+                  _ => 'c'
                 });
-              }
-              break;
+              builder.Append('}');
             }
-          case MathAtomType.Table: {
-              var table = (Table)atom;
-              if (table.Environment != null) {
-                builder.Append(@"\begin{" + table.Environment + "}");
-              }
-              if (table.Environment == "array") {
-                builder.Append('{');
-                foreach (var alignment in table.Alignments)
-                  builder.Append(alignment switch
-                  {
-                    ColumnAlignment.Left => 'l',
-                    ColumnAlignment.Right => 'r',
-                    _ => 'c'
-                  });
-                builder.Append('}');
-              }
-              for (int i = 0; i < table.NRows; i++) {
-                var row = table.Cells[i];
-                for (int j = 0; j < row.Count; j++) {
-                  var cell = row[j];
-                  if (table.Environment == "matrix"
-                      && cell.Count >= 1
-                      && cell[0].AtomType == MathAtomType.Style) {
-                    // remove the first atom.
-                    cell = cell.GetRange(1, cell.Count - 1);
-                  }
-                  if (table.Environment switch {
-                        "eqalign" => true,
-                        "aligned" => true,
-                        "split" => true,
-                        _ => false
-                      }
-                      && j == 1
-                      && cell.Count >= 1
-                      && cell[0].AtomType == MathAtomType.Ordinary
-                      && string.IsNullOrEmpty(cell[0].Nucleus)) {
-                    // empty nucleus added for spacing. Remove it.
-                    cell = cell.GetRange(1, cell.Count - 1);
-                  }
-                  builder.Append(MathListToLaTeX(cell));
-                  if (j < row.Count - 1) {
-                    builder.Append("&");
-                  }
+            for (int i = 0; i < table.NRows; i++) {
+              var row = table.Cells[i];
+              for (int j = 0; j < row.Count; j++) {
+                var cell = row[j];
+                if (table.Environment == "matrix"
+                    && cell.Count >= 1
+                    && cell[0] is Style) {
+                  // remove the first atom.
+                  cell = cell.GetRange(1, cell.Count - 1);
                 }
-                if (i < table.NRows - 1) {
-                  builder.Append(@"\\ ");
+                if (table.Environment switch
+                {
+                  "eqalign" => true,
+                  "aligned" => true,
+                  "split" => true,
+                  _ => false
+                }
+                    && j == 1
+                    && cell.Count >= 1
+                    && cell[0] is Ordinary ord
+                    && string.IsNullOrEmpty(ord.Nucleus)) {
+                  // empty nucleus added for spacing. Remove it.
+                  cell = cell.GetRange(1, cell.Count - 1);
+                }
+                builder.Append(MathListToLaTeX(cell));
+                if (j < row.Count - 1) {
+                  builder.Append("&");
                 }
               }
-              if (table.Environment != null) {
-                builder.Append(@"\end{")
-                  .Append(table.Environment)
-                  .Append("}");
+              if (i < table.NRows - 1) {
+                builder.Append(@"\\ ");
               }
-              break;
             }
-          case MathAtomType.Overline: {
-              var over = (Overline)atom;
-              builder.Append(@"\overline{")
-                .Append(MathListToLaTeX(over.InnerList))
+            if (table.Environment != null) {
+              builder.Append(@"\end{")
+                .Append(table.Environment)
                 .Append("}");
-              break;
             }
-          case MathAtomType.Underline: {
-              var under = (Underline)atom;
-              builder.Append(@"\underline{")
-                .Append(MathListToLaTeX(under.InnerList))
-                .Append("}");
-              break;
-            }
-          case MathAtomType.Accent: {
-              var accent = (Accent)atom;
-              var list = accent.InnerList;
-              accent.InnerList = null; //for lookup
-              builder.Append(@"\")
-                .Append(MathAtoms.Commands[atom])
-                .Append("{")
-                .Append(NullableListToLaTeX(list))
-                .Append("}");
-              accent.InnerList = list;
-              break;
-            }
-          case MathAtomType.LargeOperator: {
-              var op = (LargeOperator)atom;
-              var command = MathAtoms.LatexSymbolNameForAtom(op);
-              if (command == null) {
-                builder.Append($@"\mathrm{{{command}}} ");
-              } else {
-                builder.Append($@"\{command} ");
-                if (!(MathAtoms.ForLatexSymbolName(command) is LargeOperator originalOperator))
-                  throw new InvalidCodePathException("original operator not found!");
-                if (originalOperator.Limits == op.Limits)
-                  break;
-              }
-              switch (op.Limits) {
-                case true:
-                  builder.Append(@"\limits ");
-                  break;
-                case false:
-                  if (!op.NoLimits) builder.Append(@"\nolimits ");
-                  break;
-                case null:
-                  break;
-              }
-              break;
-            }
-          case MathAtomType.Space: {
-              var space = (Space)atom;
-              var intSpace = (int)space.Length;
-              if (SpaceToCommands.ContainsKey(intSpace) && intSpace == space.Length)
-                builder.Append(@"\")
-                  .Append(SpaceToCommands[intSpace])
-                  .Append(" ");
-              else if (space.IsMu)
-                builder.Append(@"\mkern")
-                  .Append(space.Length.ToString("0.0"))
-                  .Append("mu");
-              else
-                builder.Append(@"\kern")
-                  .Append(space.Length.ToString("0.0"))
-                  .Append("pt");
-              break;
-            }
-          case MathAtomType.Style: {
-              var style = (Style)atom;
-              var command = StyleToCommands[style.LineStyle];
-              builder.Append(@"\").Append(command).Append(" ");
-              break;
-            }
-          case MathAtomType.Color: {
-              var color = (Color)atom;
-              builder.Append(@"\color{")
-                .Append(color.ColorString)
-                .Append("}{")
-                .Append(MathListToLaTeX(color.InnerList))
-                .Append("}");
-              break;
-            }
-          case MathAtomType.Prime:
-            builder.Append('\'', ((Prime)atom).Length);
             break;
-          case MathAtomType.RaiseBox: {
-              var r = (RaiseBox)atom;
-              builder.Append(@"\raisebox{")
-                .Append(r.Raise.Length)
-                .Append(r.Raise.IsMu ? "mu" : "pt")
-                .Append("}{")
-                .Append(MathListToLaTeX(r.InnerList))
-                .Append("}");
-              break;
+          case Overline over:
+            builder.Append(@"\overline{")
+              .Append(MathListToLaTeX(over.InnerList))
+              .Append("}");
+            break;
+          case Underline under:
+            builder.Append(@"\underline{")
+              .Append(MathListToLaTeX(under.InnerList))
+              .Append("}");
+            break;
+          case Accent accent:
+            var list = accent.InnerList;
+            accent.InnerList = null; //for lookup
+            builder.Append(@"\")
+              .Append(MathAtoms.Commands[atom])
+              .Append("{")
+              .Append(NullableListToLaTeX(list))
+              .Append("}");
+            accent.InnerList = list;
+            break;
+          case LargeOperator op:
+            var command = MathAtoms.LatexSymbolNameForAtom(op);
+            if (command == null) {
+              builder.Append($@"\mathrm{{{command}}} ");
+            } else {
+              builder.Append($@"\{command} ");
+              if (!(MathAtoms.ForLatexSymbolName(command) is LargeOperator originalOperator))
+                throw new InvalidCodePathException("original operator not found!");
+              if (originalOperator.Limits == op.Limits)
+                break;
             }
-          default:
-            switch (atom.Nucleus) {
+            switch (op.Limits) {
+              case true:
+                builder.Append(@"\limits ");
+                break;
+              case false:
+                if (!op.NoLimits) builder.Append(@"\nolimits ");
+                break;
               case null:
-              case "":
-                builder.Append("{}");
                 break;
-              case "\u2236":
-                builder.Append(":");
-                break;
-              case "\u2212":
-                builder.Append("-");
-                break;
-              case var _ when MathAtoms.LatexSymbolNameForAtom(atom) is string name:
-                builder.Append(@"\").Append(name).Append(" ");
-                break;
-              case var aNucleus:
-                builder.Append(aNucleus);
-                break;
-              }
+            }
+            break;
+          case Space space:
+            var intSpace = (int)space.Length;
+            if (SpaceToCommands.ContainsKey(intSpace) && intSpace == space.Length)
+              builder.Append(@"\")
+                .Append(SpaceToCommands[intSpace])
+                .Append(" ");
+            else if (space.IsMu)
+              builder.Append(@"\mkern")
+                .Append(space.Length.ToString("0.0"))
+                .Append("mu");
+            else
+              builder.Append(@"\kern")
+                .Append(space.Length.ToString("0.0"))
+                .Append("pt");
+            break;
+          case Style style:
+            builder.Append(@"\")
+              .Append(StyleToCommands[style.LineStyle])
+              .Append(" ");
+            break;
+          case Color color:
+            builder.Append(@"\color{")
+              .Append(color.ColorString)
+              .Append("}{")
+              .Append(MathListToLaTeX(color.InnerList))
+              .Append("}");
+            break;
+          case Prime prime:
+            builder.Append('\'', prime.Length);
+            break;
+          case RaiseBox r:
+            builder.Append(@"\raisebox{")
+              .Append(r.Raise.Length)
+              .Append(r.Raise.IsMu ? "mu" : "pt")
+              .Append("}{")
+              .Append(MathListToLaTeX(r.InnerList))
+              .Append("}");
+            break;
+          case { Nucleus: null }:
+          case { Nucleus: "" }:
+            builder.Append("{}");
+            break;
+          case { Nucleus: "\u2236" }:
+            builder.Append(":");
+            break;
+          case { Nucleus: "\u2212" }:
+            builder.Append("-");
+            break;
+          case var _ when MathAtoms.LatexSymbolNameForAtom(atom) is string name:
+            builder.Append(@"\").Append(name).Append(" ");
+            break;
+          case { Nucleus: var aNucleus }:
+            builder.Append(aNucleus);
             break;
         }
         if (atom.Subscript != null) {
@@ -903,9 +878,9 @@ namespace CSharpMath.Atoms {
           var scriptString = MathListToLaTeX(atom.Superscript);
           builder.Append(scriptString.Length == 1 ? $"^{scriptString}" : $"^{{{scriptString}}}");
         }
-        
+
       }
-      if (currentFontStyle!=FontStyle.Default) {
+      if (currentFontStyle != FontStyle.Default) {
         builder.Append("}");
       }
       return builder.ToString();

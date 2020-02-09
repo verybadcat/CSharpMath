@@ -1,7 +1,3 @@
-using CSharpMath.Enumerations;
-using CSharpMath.Interfaces;
-using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace CSharpMath.Atoms.Atom {
@@ -10,15 +6,10 @@ namespace CSharpMath.Atoms.Atom {
     public MathList? Denominator { get; set; }
     public string? LeftDelimiter { get; set; }
     public string? RightDelimiter { get; set; }
-
-    /// <summary>
-    /// In this context, a "rule" is a fraction line.
-    /// </summary>
+    /// <summary>In this context, a "rule" is a fraction line.</summary>
     public bool HasRule { get; }
-
-    public Fraction(bool hasRule = true): base(MathAtomType.Fraction) {
+    public Fraction(bool hasRule = true) : base() =>
       HasRule = hasRule;
-    }
     public override bool ScriptsAllowed => true;
     public new Fraction Clone(bool finalize) => (Fraction)base.Clone(finalize);
     protected override MathAtom CloneInside(bool finalize) => new Fraction(HasRule) {
@@ -27,7 +18,6 @@ namespace CSharpMath.Atoms.Atom {
       LeftDelimiter = LeftDelimiter,
       RightDelimiter = RightDelimiter
     };
-
     public override string DebugString =>
       new StringBuilder(HasRule ? @"\frac" : @"\atop")
         .AppendInSquareBrackets(LeftDelimiter, NullHandling.EmptyContent)

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace CSharpMath.Rendering {
   using Range = Atoms.Range;
-  using Enumerations;
+  using Atoms;
 #warning Review Ranges; they have an extremely high probability of not working
   //Base type
   public abstract class TextAtom {

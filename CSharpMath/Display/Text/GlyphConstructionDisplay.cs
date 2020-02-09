@@ -1,14 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using CSharpMath.Atoms;
-using CSharpMath.Display.Text;
 using CSharpMath.FrontEnd;
 using Color = CSharpMath.Structures.Color;
 
-namespace CSharpMath.Display {
+namespace CSharpMath.Display.Text {
   public class GlyphConstructionDisplay<TFont, TGlyph> : IGlyphDisplay<TFont, TGlyph> where TFont : IFont<TGlyph> {
     private readonly IReadOnlyList<TGlyph> _glyphs;
     private readonly IEnumerable<PointF> _glyphPositions;

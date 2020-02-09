@@ -2,7 +2,7 @@
 //CSharpMath\CSharpMath.Utils\iosMathDemo\Builder.cs and re-generate
 //this file by executing the method in that file in the CSharpMath.Utils project.
 
-using CSharpMath.Enumerations;
+using CSharpMath.Atoms;
 using CSharpMath.Rendering;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

@@ -1,23 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using CSharpMath.Enumerations;
-using CSharpMath.Interfaces;
-
 namespace CSharpMath.Atoms.Atom {
   public class Prime : MathAtom {
-    public Prime(int length) : base(MathAtomType.Prime, PrimeOfLength(length)) =>
+    public Prime(int length) : base(PrimeOfLength(length)) =>
       Length = length;
-
     public int Length { get; }
     public override bool ScriptsAllowed => true;
     public new Prime Clone(bool finalize) => (Prime)base.Clone(finalize);
     protected override MathAtom CloneInside(bool finalize) => new Prime(Length);
     private static string PrimeOfLength(int length) {
       if (length <= 0)
-        throw new ArgumentOutOfRangeException(
+        throw new System.ArgumentOutOfRangeException(
           nameof(length), length, "Only positive length is allowed.");
-      var sb = new StringBuilder();
+      var sb = new System.Text.StringBuilder();
       Append: switch (length) {
         //glyphs are already superscripted
         //pick appropriate codepoint depending on number of primes
@@ -29,9 +22,8 @@ namespace CSharpMath.Atoms.Atom {
       }
       return sb.ToString();
     }
-
     public override int GetHashCode() => unchecked(base.GetHashCode() + 401 * Length);
-    public override bool Equals(object obj) =>
-      EqualsAtom(obj as Prime) && ((Prime)obj).Length == Length;
+    public bool EqualsPrime(Prime other) => EqualsAtom(other) && Length == other.Length;
+    public override bool Equals(object obj) => obj is Prime p ? EqualsPrime(p) : false; 
   }
 }

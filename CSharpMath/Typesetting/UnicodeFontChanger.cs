@@ -1,12 +1,10 @@
 using System;
 using System.Text;
-using CSharpMath.Enumerations;
+using CSharpMath.Atoms;
 using CSharpMath.FrontEnd;
 
-namespace CSharpMath
-{
-  public class UnicodeFontChanger : IFontChanger
-  {
+namespace CSharpMath {
+  public class UnicodeFontChanger : IFontChanger {
     private const char UnicodeGreekLowerStart = '\x03B1';
     private const char UnicodeGreekLowerEnd = '\x03C9';
     private const char UnicodeGreekUpperStart = '\x0391';
@@ -140,7 +138,8 @@ namespace CSharpMath
     // mathfrak
     private static int GetFraktur(char c) =>
       // Fraktur has exceptions:
-      c switch {
+      c switch
+      {
         'C' => 0x212D, // C Fraktur
         'H' => 0x210C, // Hilbert space
         'I' => 0x2111, // Imaginary
@@ -180,15 +179,13 @@ namespace CSharpMath
       char.MinValue <= c && c <= char.MaxValue
       ? StyleCharacter((char)c, outputFontStyle) : c;
 
-    public string ChangeFont(char c, FontStyle outputFontStyle)
-    {
+    public string ChangeFont(char c, FontStyle outputFontStyle) {
       int unicode = StyleCharacter(c, outputFontStyle);
       return 0xD800 < unicode && unicode < 0xDFFF
         ? ((char)unicode).ToString() : char.ConvertFromUtf32(unicode);
     }
 
-    public string ChangeFont(string inputString, FontStyle outputFontStyle)
-    {
+    public string ChangeFont(string inputString, FontStyle outputFontStyle) {
       var builder = new StringBuilder();
       foreach (var c in inputString)
         builder.Append(ChangeFont(c, outputFontStyle));

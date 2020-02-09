@@ -4,7 +4,7 @@ using CSharpMath.Display;
 using CSharpMath.FrontEnd;
 using Color = CSharpMath.Structures.Color;
 
-namespace CSharpMath {
+namespace CSharpMath.Display {
   public interface IDisplay<TFont, TGlyph>
     where TFont : IFont<TGlyph> {
     void Draw(IGraphicsContext<TFont, TGlyph> context);

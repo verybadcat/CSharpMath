@@ -2,16 +2,9 @@ using System;
 using System.Drawing;
 
 using CSharpMath.Display;
-using CSharpMath.Enumerations;
-using CSharpMath.Rendering;
-using CSharpMath.Interfaces;
 using TFonts = CSharpMath.Rendering.Fonts;
-using CSharpMath.FrontEnd;
-using CSharpMath.Structures;
 
 using Typography.OpenFont;
-
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using Color = CSharpMath.Structures.Color;
 
@@ -59,10 +52,14 @@ namespace CSharpMath.Rendering {
     /// Unit of measure: points
     /// </summary>
     public float FontSize { get => Fonts.PointSize; set { Fonts = new TFonts(Fonts, value); SetRedisplay(); } }
-    public ObservableRangeCollection<Typeface> LocalTypefaces { get; } = new ObservableRangeCollection<Typeface>();
-    void TypefacesChanged(object sender, NotifyCollectionChangedEventArgs e) { Fonts = new TFonts(LocalTypefaces, FontSize); SetRedisplay(); }
-    LineStyle __style = LineStyle.Display; public LineStyle LineStyle { get => __style; set { __style = value; SetRedisplay(); } }
-    TSource __source = default; public TSource Source { get => __source; set { __source = value; SetRedisplay(); } }
+    public ObservableRangeCollection<Typeface> LocalTypefaces { get; } =
+      new ObservableRangeCollection<Typeface>();
+    void TypefacesChanged(object sender, NotifyCollectionChangedEventArgs e)
+      { Fonts = new TFonts(LocalTypefaces, FontSize); SetRedisplay(); }
+    Atoms.LineStyle __style = Atoms.LineStyle.Display;
+    public Atoms.LineStyle LineStyle { get => __style; set { __style = value; SetRedisplay(); } }
+    TSource __source = default;
+    public TSource Source { get => __source; set { __source = value; SetRedisplay(); } }
     #endregion Redisplaying properties
 
     protected abstract bool CoordinatesFromBottomLeftInsteadOfTopLeft { get; }
@@ -91,15 +88,21 @@ namespace CSharpMath.Rendering {
         canvas.CurrentColor = WrapColor(HighlightColor);
         canvas.CurrentStyle = PaintStyle;
         var measure = MeasureCore(canvas.Width) ??
-          throw new InvalidCodePathException($"{nameof(MeasureCore)} returned null. Any conditions leading to this should have already been checked via {nameof(Source)}.{nameof(Source.IsValid)}.");
+          throw new InvalidCodePathException(
+            nameof(MeasureCore) + " returned null." +
+            $"Any conditions leading to this should have already been checked via " +
+            nameof(Source) + "." + nameof(Source.IsValid) + ".");
         canvas.FillRect(display.Position.X + measure.X, display.Position.Y -
           (CoordinatesFromBottomLeftInsteadOfTopLeft ? display.Ascent : display.Descent),
           measure.Width, measure.Height);
         canvas.CurrentColor = null;
-        T? Nullable<T>(T nonnull) where T : struct => new T?(nonnull);
+        static T? Nullable<T>(T nonnull) where T : struct => new T?(nonnull);
         display.Draw(new GraphicsContext {
           Canvas = canvas,
-          GlyphBoxColor = GlyphBoxColor.HasValue ? Nullable((WrapColor(GlyphBoxColor.Value.glyph), WrapColor(GlyphBoxColor.Value.textRun))) : null
+          GlyphBoxColor =
+            GlyphBoxColor.HasValue
+            ? Nullable((WrapColor(GlyphBoxColor.Value.glyph), WrapColor(GlyphBoxColor.Value.textRun)))
+            : null
         });
         canvas.Restore();
         DrawAfterSuccess(canvas);

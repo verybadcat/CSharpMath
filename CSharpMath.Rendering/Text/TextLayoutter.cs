@@ -2,8 +2,9 @@ namespace CSharpMath.Rendering {
   using System;
   using System.Collections.Generic;
   using System.Linq;
+  using Atoms;
   using Display;
-  using Enumerations;
+  using Display.Text;
   using Displays = Display.ListDisplay<Fonts, Glyph>;
   public static class TextLayoutter {
     public static (Displays relative, Displays absolute) Layout

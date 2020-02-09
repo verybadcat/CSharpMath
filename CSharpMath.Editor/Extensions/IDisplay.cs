@@ -1,17 +1,18 @@
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Text;
 
 namespace CSharpMath.Editor {
-  using Range = Atoms.Range;
   using Display;
+  using Display.Text;
 
   public static partial class DisplayEditingExtensions {
-    ///<summary>Number of pixels outside the bound to allow a point to be considered as part of the bounds.</summary>
+    /// <summary>
+    /// Number of pixels outside the bound to allow a point to be considered as part of the bounds.
+    /// </summary>
     public const float PixelDelta = 2;
 
-    ///<summary>Calculates the manhattan distance from a point to the nearest boundary of the rectangle.</summary>
+    /// <summary>
+    /// Calculates the manhattan distance from a point to the nearest boundary of the rectangle.
+    /// </summary>
     public static float DistanceFromPointToRect(PointF point, RectangleF rect) {
       float distance = 0;
       if (point.X < rect.X)
@@ -27,9 +28,9 @@ namespace CSharpMath.Editor {
     }
 
     /// <summary>
-    /// Finds the index in the mathlist before which a new character should be inserted.Returns null if it cannot find the index.
+    /// Finds the index in the mathlist before which a new character should be inserted.
+    /// Returns null if it cannot find the index.
     /// </summary>
-    /// <returns>Null if it cannot find the index.</returns>
     public static MathListIndex? IndexForPoint<TFont, TGlyph>(
       this IDisplay<TFont, TGlyph> display,
       FrontEnd.TypesettingContext<TFont, TGlyph> context, PointF point)
@@ -52,7 +53,9 @@ namespace CSharpMath.Editor {
       ListDisplay<TFont, TGlyph> list => list.PointForIndex(context, index),
       _ => null,
     };
-    public static void HighlightCharacterAt<TFont, TGlyph>(this IDisplay<TFont, TGlyph> display, MathListIndex index, Structures.Color color) where TFont : IFont<TGlyph> {
+    public static void HighlightCharacterAt<TFont, TGlyph>
+      (this IDisplay<TFont, TGlyph> display, MathListIndex index, Structures.Color color)
+      where TFont : IFont<TGlyph> {
       switch (display) {
         case TextLineDisplay<TFont, TGlyph> text:
           text.HighlightCharacterAt(index, color);
@@ -70,7 +73,8 @@ namespace CSharpMath.Editor {
           break;
       }
     }
-    public static void Highlight<TFont, TGlyph>(this IDisplay<TFont, TGlyph> display, Structures.Color color) where TFont : IFont<TGlyph> {
+    public static void Highlight<TFont, TGlyph>(this IDisplay<TFont, TGlyph> display, Structures.Color color)
+      where TFont : IFont<TGlyph> {
       switch (display) {
         case TextLineDisplay<TFont, TGlyph> text:
           text.Highlight(color);

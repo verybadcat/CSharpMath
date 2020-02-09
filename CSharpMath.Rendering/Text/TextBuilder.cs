@@ -4,7 +4,7 @@ using System.Text;
 using Typography.TextBreak;
 
 namespace CSharpMath.Rendering {
-  using Enumerations;
+  using Atoms;
   using Structures;
   using static Structures.Result;
   public static class TextBuilder {

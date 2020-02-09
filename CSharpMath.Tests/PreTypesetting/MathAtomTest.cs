@@ -1,6 +1,5 @@
 using CSharpMath.Atoms;
 using CSharpMath.Atoms.Atom;
-using CSharpMath.Enumerations;
 using System;
 using Xunit;
 
@@ -10,15 +9,17 @@ namespace CSharpMath.Tests.PreTypesetting {
       MathListTest.CheckClone(original, clone);
     internal static void CheckClone(MathList original, MathList clone) =>
       MathListTest.CheckClone(original, clone);
-
+    [Fact]
+    public void TestTypeName() =>
+      Assert.Equal("Binary Operator", new BinaryOperator("").TypeName);
     [Fact]
     public void TestAtomInit() {
       var atom = new Open("(");
-      Assert.Equal(MathAtomType.Open, atom.AtomType);
+      Assert.IsType<Open>(atom);
       Assert.Equal("(", atom.Nucleus);
 
       var atom2 = new Boundary("(");
-      Assert.Equal(MathAtomType.Boundary, atom2.AtomType);
+      Assert.IsType<Boundary>(atom2);
       Assert.Equal("(", atom2.Nucleus);
     }
     [Fact]
@@ -55,7 +56,7 @@ namespace CSharpMath.Tests.PreTypesetting {
         RightDelimiter = "b"
       };
 
-      Assert.Equal(MathAtomType.Fraction, frac.AtomType);
+      Assert.IsType<Fraction>(frac);
 
       var copy = frac.Clone(false);
       CheckClone(copy, frac);
@@ -81,7 +82,7 @@ namespace CSharpMath.Tests.PreTypesetting {
     [Fact]
     public void TestCopyLargeOperator() {
       var large = new LargeOperator("lim", true);
-      Assert.Equal(MathAtomType.LargeOperator, large.AtomType);
+      Assert.IsType<LargeOperator>(large);
       Assert.True(large.Limits);
 
       var copy = large.Clone(false);
@@ -99,7 +100,7 @@ namespace CSharpMath.Tests.PreTypesetting {
         RightBoundary = new Boundary(")")
       };
 
-      Assert.Equal(MathAtomType.Inner, inner.AtomType);
+      Assert.IsType<Inner>(inner);
 
       var copy = inner.Clone(false);
       CheckClone(inner, copy);
@@ -115,7 +116,7 @@ namespace CSharpMath.Tests.PreTypesetting {
       var list = new MathList(atom1, atom2, atom3);
       var over = new Overline(list);
 
-      Assert.Equal(MathAtomType.Overline, over.AtomType);
+      Assert.IsType<Overline>(over);
 
       var copy = over.Clone(false);
       CheckClone(copy, over);
@@ -130,7 +131,7 @@ namespace CSharpMath.Tests.PreTypesetting {
       var list = new MathList(atom1, atom2, atom3);
       var under = new Underline(list);
 
-      Assert.Equal(MathAtomType.Underline, under.AtomType);
+      Assert.IsType<Underline>(under);
 
       var copy = under.Clone(false);
       CheckClone(copy, under);
@@ -144,7 +145,7 @@ namespace CSharpMath.Tests.PreTypesetting {
       var list = new MathList(atom1, atom2, atom3);
       var accent = new Accent("^");
 
-      Assert.Equal(MathAtomType.Accent, accent.AtomType);
+      Assert.IsType<Accent>(accent);
       accent.InnerList = list;
 
       var copy = accent.Clone(false);
@@ -154,7 +155,7 @@ namespace CSharpMath.Tests.PreTypesetting {
     [Fact]
     public void TestCopySpace() {
       var space = new Space(3 * CSharpMath.Structures.Space.Point);
-      Assert.Equal(MathAtomType.Space, space.AtomType);
+      Assert.IsType<Space>(space);
 
       var copy = space.Clone(false);
       CheckClone(space, copy);
@@ -173,7 +174,7 @@ namespace CSharpMath.Tests.PreTypesetting {
     [Fact]
     public void TestCreateMathTable() {
       var table = new Table();
-      Assert.Equal(MathAtomType.Table, table.AtomType);
+      Assert.IsType<Table>(table);
       var atom1 = MathAtoms.Placeholder;
       var atom2 = MathAtoms.Times;
       var atom3 = MathAtoms.Divide;
@@ -207,7 +208,7 @@ namespace CSharpMath.Tests.PreTypesetting {
     [Fact]
     public void TestCopyMathTable() {
       var table = new Table();
-      Assert.Equal(MathAtomType.Table, table.AtomType);
+      Assert.IsType<Table>(table);
       var atom = MathAtoms.Placeholder;
       var atom2 = MathAtoms.Times;
       var atom3 = MathAtoms.Divide;
