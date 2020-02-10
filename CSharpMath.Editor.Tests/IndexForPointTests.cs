@@ -17,7 +17,7 @@ namespace CSharpMath.Editor.Tests {
             goto default;
           case var _:
             mathListIndex = MathListIndex.Level0Index(
-              subIndexRecursive[subIndexRecursive.Length - 1].subIndex);
+              subIndexRecursive[^1].subIndex);
             for (var i = subIndexRecursive.Length - 2; i >= 0; i--)
               mathListIndex = MathListIndex.IndexAtLocation(
                 subIndexRecursive[i].subIndex,

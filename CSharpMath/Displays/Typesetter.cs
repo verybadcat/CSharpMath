@@ -32,10 +32,10 @@ namespace CSharpMath.Displays {
       LineStyle.Text => LineStyle.Script,
       LineStyle.Script => LineStyle.ScriptScript,
       LineStyle.ScriptScript => LineStyle.ScriptScript,
-      _ => throw new ArgumentOutOfRangeException(nameof(_style))
+      _ => throw new
+        System.ComponentModel.InvalidEnumArgumentException(nameof(_style), (int)_style, typeof(LineStyle))
     };
-    private LineStyle _fractionStyle =>
-      _style == LineStyle.ScriptScript ? _style : _style + 1;
+    private LineStyle _fractionStyle => _style == LineStyle.ScriptScript ? _style : _style + 1;
     private bool _subscriptCramped => true;
     private bool _superscriptCramped => _cramped;
     private float _superscriptShiftUp =>
@@ -889,7 +889,7 @@ namespace CSharpMath.Displays {
       float openUp = table.InterRowAdditionalSpacing * jotMultiplier * _styleFont.PointSize;
       float baselineSkip = openUp + baseLineSkipMultiplier * _styleFont.PointSize;
       float lineSkip = openUp + lineSkipMultiplier * _styleFont.PointSize;
-      float lineSkipLimit = openUp + lineSkipMultiplier * _styleFont.PointSize;
+      float lineSkipLimit = openUp + lineSkipLimitMultiplier * _styleFont.PointSize;
       float prevRowDescent = 0;
       float ascent = 0;
       bool first = true;
@@ -974,20 +974,21 @@ namespace CSharpMath.Displays {
           subscript =
             CreateLine(op.Subscript, _font, _context, _scriptStyle, _subscriptCramped);
         }
-        var opsDisplay = new LargeOpLimitsDisplay<TFont, TGlyph>
-          (display, superscript, subscript, delta / 2, 0) {
+        var opsDisplay = new LargeOpLimitsDisplay<TFont, TGlyph>(
+          display,
+          superscript,
+          superscript is null ? 0
+          : Math.Max(_mathTable.UpperLimitGapMin(_styleFont),
+                     _mathTable.UpperLimitBaselineRiseMin(_styleFont) - superscript.Descent),
+          subscript,
+          subscript is null ? 0
+          : Math.Max(_mathTable.LowerLimitGapMin(_styleFont),
+                     _mathTable.LowerLimitBaselineDropMin(_styleFont) - subscript.Ascent),
+          delta / 2,
+          0
+        ) {
           Position = _currentPosition
         };
-        if (superscript!=null) {
-          opsDisplay.SetUpperLimitGap(
-            Math.Max(_mathTable.UpperLimitGapMin(_styleFont),
-                     _mathTable.UpperLimitBaselineRiseMin(_styleFont) - superscript.Descent));
-        }
-        if (subscript!=null) {
-          opsDisplay.SetLowerLimitGap(
-            Math.Max(_mathTable.LowerLimitGapMin(_styleFont),
-                     _mathTable.LowerLimitBaselineDropMin(_styleFont) - subscript.Ascent));
-        }
         _currentPosition.X += opsDisplay.Width;
         return opsDisplay;
       }

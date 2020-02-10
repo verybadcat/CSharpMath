@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 using SkiaSharp.Views.Forms;
 
-namespace CSharpMath.Forms.Example
-{
+namespace CSharpMath.Forms.Example {
   [XamlCompilation(XamlCompilationOptions.Compile)]
   public partial class SlidePage : ContentPage {
-    SkiaSharp.MathPainter painter = new SkiaSharp.MathPainter { LaTeX = @"\text{Press to clear}" };
+    readonly SkiaSharp.MathPainter painter = new SkiaSharp.MathPainter { LaTeX = @"\text{Press to clear}" };
     bool reset;
     double x, y;
 
@@ -21,17 +14,23 @@ namespace CSharpMath.Forms.Example
 
     private void Canvas_PaintSurface(object sender, SKPaintSurfaceEventArgs e) {
       if (reset) { e.Surface.Canvas.Clear(); reset = false; }
-      e.Surface.Canvas.DrawRect((float)x + painter.Measure.Value.X, (float)y + painter.Measure.Value.Y, painter.Measure.Value.Width, painter.Measure.Value.Height, new global::SkiaSharp.SKPaint { Color = global::SkiaSharp.SKColors.Orange });
+      e.Surface.Canvas.DrawRect
+        ((float)x + painter.Measure.Value.X, (float)y + painter.Measure.Value.Y,
+          painter.Measure.Value.Width, painter.Measure.Value.Height,
+          new global::SkiaSharp.SKPaint { Color = global::SkiaSharp.SKColors.Orange });
       painter.Draw(e.Surface.Canvas, (float)x, (float)y);
     }
 
     private void Canvas_Touch(object sender, SKTouchEventArgs e) {
-      if(e.InContact && e.ActionType == SKTouchAction.Pressed) { reset = true; Canvas.InvalidateSurface(); e.Handled = true; }
+      if (e.InContact && e.ActionType == SKTouchAction.Pressed)
+        { reset = true; Canvas.InvalidateSurface(); e.Handled = true; }
     }
 
-    private void SliderX_ValueChanged(object sender, ValueChangedEventArgs e) { x = e.NewValue; Canvas.InvalidateSurface(); }
+    private void SliderX_ValueChanged(object sender, ValueChangedEventArgs e)
+      { x = e.NewValue; Canvas.InvalidateSurface(); }
 
-    private void SliderY_ValueChanged(object sender, ValueChangedEventArgs e) { y = e.NewValue; Canvas.InvalidateSurface(); }
+    private void SliderY_ValueChanged(object sender, ValueChangedEventArgs e)
+      { y = e.NewValue; Canvas.InvalidateSurface(); }
 
     protected override void OnSizeAllocated(double width, double height) {
       base.OnSizeAllocated(width, height);
