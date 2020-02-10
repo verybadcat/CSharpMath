@@ -48,8 +48,8 @@ namespace CSharpMath.Atoms {
     /// </summary>
     public abstract bool ScriptsAllowed { get; }
     protected abstract MathAtom CloneInside(bool finalize);
-    protected Atom ApplyCommonPropertiesOn<Atom>(bool finalize, Atom newAtom)
-      where Atom : MathAtom {
+    protected TAtom ApplyCommonPropertiesOn<TAtom>(bool finalize, TAtom newAtom)
+      where TAtom : MathAtom {
       newAtom.Nucleus = Nucleus;
       if (FusedAtoms != null)
         newAtom.FusedAtoms = new List<MathAtom>(FusedAtoms);

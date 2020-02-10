@@ -37,7 +37,7 @@ namespace CSharpMath.Structures {
     public bool Equals(Color other) => R == other.R && G == other.G && B == other.B && A == other.A;
     public override bool Equals(object obj) => obj is Color c ? Equals(c) : false;
     public override int GetHashCode() => unchecked(R * 13 + G * 37 + B * 113 + A * 239);
-    private static string ToString(byte b) => b.ToString("X").PadLeft(2, '0');
+    private static string ToString(byte b) => b.ToStringInvariant("X").PadLeft(2, '0');
     public override string ToString() => $"#{ToString(A)}{ToString(R)}{ToString(G)}{ToString(B)}";
     public static Color? Create(ReadOnlySpan<char> hexOrName, bool extraSweet = true) {
       if (hexOrName == null) return null;
