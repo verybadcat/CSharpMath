@@ -20,7 +20,7 @@ namespace CSharpMath.Tests.PreTypesetting {
         .DefinedTypes
         .Where(t => t.Namespace == typeof(Accent).Namespace)
         .Select(t => t.GetConstructor(new[] { typeof(string) }))
-        .Where(c => c != null)
+        .Where(c => c != null && c.DeclaringType != typeof(Table))
         .Cast<System.Reflection.ConstructorInfo>()
         .Select(c => c.Invoke(new[] { "(" })))
         Assert.Equal("(", Assert.IsAssignableFrom<MathAtom>(atom).Nucleus);
