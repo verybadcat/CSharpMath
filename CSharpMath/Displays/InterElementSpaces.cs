@@ -26,6 +26,8 @@ namespace CSharpMath.Displays {
         _ => throw new System.ComponentModel.InvalidEnumArgumentException
                 (nameof(_style), (int)_style, typeof(LineStyle))
       };
+    // CA1814 is TRASH: https://github.com/MicrosoftDocs/visualstudio-docs/issues/3139
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
     public static InterElementSpaceType[,] Spaces = {
 //RIGHT ordinary  operator  binary    relation open      close    punct    fraction       LEFT
       { None,     Thin,     NsMedium, NsThick, None,     None,    None,    NsThin   }, // ordinary
@@ -40,7 +42,7 @@ namespace CSharpMath.Displays {
     };
     internal static float Get<TFont, TGlyph>(MathAtom left, MathAtom right,
       LineStyle style, TFont styleFont, FrontEnd.FontMathTable<TFont, TGlyph> mathTable)
-      where TFont : Displays.IFont<TGlyph> {
+      where TFont : IFont<TGlyph> {
       static int GetInterElementSpaceArrayIndexForType(MathAtom atomType, bool row) =>
         atomType switch
         {

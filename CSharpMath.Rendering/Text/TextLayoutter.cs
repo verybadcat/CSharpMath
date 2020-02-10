@@ -72,8 +72,7 @@ namespace CSharpMath.Rendering {
           case TextAtom.Math m when m.DisplayStyle:
             var lastLineWidth = line.Width;
             BreakLine(line, displayList, displayMathList, false);
-            display = Typesetter<Fonts, Glyph>.CreateLine
-              (m.Content, fonts, TypesettingContext.Instance, LineStyle.Display);
+            display = Typesetter.CreateLine(m.Content, fonts, TypesettingContext.Instance, LineStyle.Display);
             var displayX = IPainterExtensions.GetDisplayPosition
               (display.Width, display.Ascent, display.Descent,
                fonts.PointSize, false, canvasWidth, float.NaN,
@@ -121,8 +120,7 @@ namespace CSharpMath.Rendering {
             if (m.DisplayStyle)
               throw new InvalidCodePathException
                 ("Display style maths should have been handled above this switch.");
-            display = Typesetter<Fonts, Glyph>
-              .CreateLine(m.Content, fonts, TypesettingContext.Instance, LineStyle.Text);
+            display = Typesetter.CreateLine(m.Content, fonts, TypesettingContext.Instance, LineStyle.Text);
             var scale = fonts.MathTypeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);
             FinalizeInlineDisplay(fonts.MathTypeface.Ascender * scale,
               fonts.MathTypeface.Descender * scale, fonts.MathTypeface.LineGap * scale);
@@ -162,9 +160,9 @@ namespace CSharpMath.Rendering {
               : GlyphFinder.Instance.EmptyGlyph;
             
             var accentDisplay = new AccentDisplay<Fonts, Glyph>(
-              Typesetter<Fonts, Glyph>.CreateAccentGlyphDisplay(
+              Typesetter.CreateAccentGlyphDisplay(
                 accentee, accenteeSingleGlyph, accentGlyph,
-                TypesettingContext.Instance, fonts, fonts, a.Range
+                TypesettingContext.Instance, fonts, a.Range
               ), accentee);
             display = accentDisplay;
             //accentDisplay.Ascent does not take account of accent glyph's extra height

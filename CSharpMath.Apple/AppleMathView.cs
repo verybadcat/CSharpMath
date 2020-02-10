@@ -41,8 +41,8 @@ namespace CSharpMath.Apple {
         _latex = value;
         (_mathList, ErrorMessage) = MathListBuilder.TryMathListFromLaTeX(value);
         if (_mathList != null) {
-          _displayList = _typesettingContext.CreateLine(_mathList,
-            AppleFontManager.LatinMath(FontSize), LineStyle.Display);
+          _displayList = Typesetter.CreateLine(_mathList,
+            AppleFontManager.LatinMath(FontSize), _typesettingContext, LineStyle.Display);
         }
         InvalidateIntrinsicContentSize();
         SetNeedsLayout();

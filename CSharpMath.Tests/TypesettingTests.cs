@@ -34,7 +34,7 @@ namespace CSharpMath.Tests {
     void TestOuter(string latex, int rangeMax, double ascent, double descent, double width,
         params System.Action<IDisplay<TFont, TGlyph>>[] inspectors) =>
       TestList(rangeMax, ascent, descent, width, 0, 0, LinePosition.Regular, Range.UndefinedInt, inspectors)
-      (_context.CreateLine(MathListBuilder.MathListFromLaTeX(latex), _font, LineStyle.Display));
+      (Typesetter.CreateLine(MathListBuilder.MathListFromLaTeX(latex), _font, _context, LineStyle.Display));
 
     [Theory, InlineData("x"), InlineData("2")]
     public void TestSimpleVariable(string latex) =>
@@ -57,7 +57,7 @@ namespace CSharpMath.Tests {
       TestOuter(latex, 4, 14, 4, 40,
         d => {
           var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
-          Assert.Equal(4, line.Atoms.Length);
+          Assert.Equal(4, line.Atoms.Count);
           AssertText(latex, line);
           Assert.Equal(new PointF(), line.Position);
           Assert.Equal(new Range(0, 4), line.Range);
@@ -213,7 +213,7 @@ namespace CSharpMath.Tests {
       TestOuter(latex, 6, 14, 4, 80, d => {
         var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
 
-        Assert.Equal(6, line.Atoms.Length);
+        Assert.Equal(6, line.Atoms.Count);
         AssertText(latex, line);
         Assert.Equal(new PointF(), line.Position);
         Assert.Equal(new Range(0, 6), line.Range);

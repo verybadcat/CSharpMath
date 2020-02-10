@@ -8,8 +8,7 @@ namespace CSharpMath.Atoms.Atom {
     public string? RightDelimiter { get; set; }
     /// <summary>In this context, a "rule" is a fraction line.</summary>
     public bool HasRule { get; }
-    public Fraction(bool hasRule = true) : base() =>
-      HasRule = hasRule;
+    public Fraction(bool hasRule = true) : base() => HasRule = hasRule;
     public override bool ScriptsAllowed => true;
     public new Fraction Clone(bool finalize) => (Fraction)base.Clone(finalize);
     protected override MathAtom CloneInside(bool finalize) => new Fraction(HasRule) {

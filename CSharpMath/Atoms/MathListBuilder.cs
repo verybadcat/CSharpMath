@@ -22,7 +22,7 @@ namespace CSharpMath.Atoms {
     private Inner? _currentInnerAtom;
     public string? Error { get; private set; }
     public MathListBuilder(string str) {
-      _chars = str.ToCharArray();
+      _chars = str?.ToCharArray() ?? throw new ArgumentNullException(nameof(str));
       _currentFontStyle = FontStyle.Default;
       _length = str.Length;
     }
@@ -34,12 +34,15 @@ namespace CSharpMath.Atoms {
       return Error != null ? null : r;
     }
     private char GetNextCharacter() => _chars[_currentChar++];
-    private void UnlookCharacter() => _ = _currentChar == 0 ? throw new InvalidOperationException("Can't unlook below character 0") : _currentChar--;
+    private void UnlookCharacter() =>
+      _ = _currentChar == 0
+      ? throw new InvalidCodePathException("Can't unlook below character 0")
+      : _currentChar--;
     private bool HasCharacters => _currentChar < _length;
     private MathList? BuildInternal(bool oneCharOnly) => BuildInternal(oneCharOnly, (char)0);
     private MathList? BuildInternal(bool oneCharOnly, char stopChar) {
       if (oneCharOnly && stopChar > 0) {
-        throw new InvalidOperationException("Cannot set both oneCharOnly and stopChar");
+        throw new InvalidCodePathException("Cannot set both oneCharOnly and stopChar");
       }
       var r = new MathList();
       MathAtom? prevAtom = null;
@@ -189,7 +192,7 @@ namespace CSharpMath.Atoms {
           SetError("Missing closing brace");
         } else {
           // we never found our stop character.
-          SetError("Expected character not found: " + stopChar.ToString());
+          SetError("Expected character not found: " + stopChar.ToStringInvariant());
         }
       }
       return r;
@@ -200,7 +203,7 @@ namespace CSharpMath.Atoms {
       while (HasCharacters) {
         var ch = GetNextCharacter();
         if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')) {
-          builder.Append(ch.ToString());
+          builder.Append(ch.ToStringInvariant());
         } else {
           UnlookCharacter();
           break;
@@ -246,7 +249,7 @@ namespace CSharpMath.Atoms {
       }
     }
 
-    private void AssertNotSpace(char ch) {
+    private static void AssertNotSpace(char ch) {
       if (char.IsWhiteSpace(ch) || char.IsControl(ch)) {
         //throw since this is not normal
         throw new InvalidOperationException("Expected non space character; found " + ch);
@@ -275,7 +278,7 @@ namespace CSharpMath.Atoms {
       if (HasCharacters) {
         var ch = GetNextCharacter();
         if ((ch < 'a' || ch > 'z') && (ch < 'A' || ch > 'Z')) {
-          return ch.ToString();
+          return ch.ToStringInvariant();
         } else {
           UnlookCharacter();
         }
@@ -296,7 +299,7 @@ namespace CSharpMath.Atoms {
           }
           return command;
         }
-        return ch.ToString();
+        return ch.ToStringInvariant();
       }
       return null;
     }
@@ -357,7 +360,7 @@ namespace CSharpMath.Atoms {
     }
 
     private MathAtom? AtomForCommand(string command, char stopChar) {
-      var atom = MathAtoms.ForLatexSymbolName(command);
+      var atom = MathAtoms.ForLaTeXSymbolName(command);
       if (atom is Accent accent) {
         var innerList = BuildInternal(true);
         if (innerList is null) return null;
@@ -536,7 +539,7 @@ namespace CSharpMath.Atoms {
       return false;
     }
 
-    private void SetError(string message) => Error ??= message;
+    private void SetError(string error) => Error ??= error;
 
     private MathAtom? BuildTable
       (string? environment, MathList? firstList, bool isRow, char stopChar) {
@@ -663,6 +666,7 @@ namespace CSharpMath.Atoms {
     }
 
     public static string MathListToLaTeX(MathList mathList) {
+      if (mathList is null) throw new ArgumentNullException(nameof(mathList));
       static string? NullableListToLaTeX(MathList? mathList) =>
         mathList switch { null => null, var ml => MathListToLaTeX(mathList) };
       var builder = new StringBuilder();
@@ -793,12 +797,12 @@ namespace CSharpMath.Atoms {
             accent.InnerList = list;
             break;
           case LargeOperator op:
-            var command = MathAtoms.LatexSymbolNameForAtom(op);
+            var command = MathAtoms.LaTeXSymbolNameForAtom(op);
             if (command == null) {
               builder.Append($@"\mathrm{{{command}}} ");
             } else {
               builder.Append($@"\{command} ");
-              if (!(MathAtoms.ForLatexSymbolName(command) is LargeOperator originalOperator))
+              if (!(MathAtoms.ForLaTeXSymbolName(command) is LargeOperator originalOperator))
                 throw new InvalidCodePathException("original operator not found!");
               if (originalOperator.Limits == op.Limits)
                 break;
@@ -822,11 +826,11 @@ namespace CSharpMath.Atoms {
                 .Append(" ");
             else if (space.IsMu)
               builder.Append(@"\mkern")
-                .Append(space.Length.ToString("0.0"))
+                .Append(space.Length.ToStringInvariant("0.0"))
                 .Append("mu");
             else
               builder.Append(@"\kern")
-                .Append(space.Length.ToString("0.0"))
+                .Append(space.Length.ToStringInvariant("0.0"))
                 .Append("pt");
             break;
           case Style style:
@@ -862,7 +866,7 @@ namespace CSharpMath.Atoms {
           case { Nucleus: "\u2212" }:
             builder.Append("-");
             break;
-          case var _ when MathAtoms.LatexSymbolNameForAtom(atom) is string name:
+          case var _ when MathAtoms.LaTeXSymbolNameForAtom(atom) is string name:
             builder.Append(@"\").Append(name).Append(" ");
             break;
           case { Nucleus: var aNucleus }:

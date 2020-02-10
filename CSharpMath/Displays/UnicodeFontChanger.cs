@@ -182,7 +182,7 @@ namespace CSharpMath.Displays {
     public string ChangeFont(char c, FontStyle outputFontStyle) {
       int unicode = StyleCharacter(c, outputFontStyle);
       return 0xD800 < unicode && unicode < 0xDFFF
-        ? ((char)unicode).ToString() : char.ConvertFromUtf32(unicode);
+        ? ((char)unicode).ToStringInvariant() : char.ConvertFromUtf32(unicode);
     }
 
     public string ChangeFont(string inputString, FontStyle outputFontStyle) {

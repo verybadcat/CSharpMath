@@ -26,7 +26,7 @@ namespace CSharpMath.Editor {
     public bool HasText => MathList?.Atoms?.Count > 0;
     public void RecreateDisplayFromMathList() {
       var position = Display?.Position ?? default;
-      Display = Context.CreateLine(MathList, Font, LineStyle);
+      Display = Typesetter.CreateLine(MathList, Font, Context, LineStyle);
       Display.Position = position;
     }
     /// <summary>Keyboard should now be hidden and input be discarded.</summary>
@@ -370,7 +370,7 @@ namespace CSharpMath.Editor {
           MathListSubIndexType.None);
       void InsertCharacterKey(MathKeyboardInput i) => InsertAtom(AtomForKeyPress(i));
       void InsertSymbolName(string s) =>
-        InsertAtom(MathAtoms.ForLatexSymbolName(s) ??
+        InsertAtom(MathAtoms.ForLaTeXSymbolName(s) ??
                    throw new InvalidCodePathException("Looks like someone mistyped a symbol name..."));
 
       switch (input) {

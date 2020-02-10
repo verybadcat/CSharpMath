@@ -15,12 +15,9 @@ namespace CSharpMath {
       IEnumerable<TSecond> second,
       IEnumerable<TThird> third,
       Func<TFirst, TSecond, TThird, TResult> resultSelector) {
-      if (first is null)
-        throw new ArgumentNullException(nameof(first), "first is null.");
-      if (second is null)
-        throw new ArgumentNullException(nameof(second), "second is null.");
-      if (third is null)
-        throw new ArgumentNullException(nameof(third), "third is null.");
+      if (first is null) throw new ArgumentNullException(nameof(first));
+      if (second is null) throw new ArgumentNullException(nameof(second));
+      if (third is null) throw new ArgumentNullException(nameof(third));
       return ZipIterator();
       IEnumerable<TResult> ZipIterator() {
         using var enum1 = first.GetEnumerator();

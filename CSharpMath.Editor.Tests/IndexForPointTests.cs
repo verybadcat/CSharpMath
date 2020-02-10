@@ -35,7 +35,7 @@ namespace CSharpMath.Editor.Tests {
     public static Structures.Result<Displays.Display.ListDisplay<TestFont, char>>
       CreateDisplay(string latex) =>
       MathListBuilder.TryMathListFromLaTeX(latex).Bind(mathList =>
-        Displays.Typesetter<TestFont, char>.CreateLine(
+        Displays.Typesetter.CreateLine(
           mathList, new TestFont(20), TestTypesettingContexts.Instance, LineStyle.Display));
     void Test(string latex, PointF point, MathListIndex expected) =>
       CreateDisplay(latex).Match(

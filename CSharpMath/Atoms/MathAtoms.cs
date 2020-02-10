@@ -329,14 +329,15 @@ namespace CSharpMath.Atoms {
     public static Radical PlaceholderCubeRoot => new Radical(new MathList(new Number("3")), PlaceholderList);
 
     public static MathAtom? ForCharacter(char c) {
+      var s = c.ToStringInvariant();
       if (char.IsControl(c) || char.IsWhiteSpace(c)) {
         return null; // skip spaces
       }
       if (c >= '0' && c <= '9') {
-        return new Number(c.ToString());
+        return new Number(s);
       }
       if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
-        return new Variable(c.ToString());
+        return new Variable(s);
       }
       switch (c) {
 #warning Todo check if all these 9 characters are already accounted for in MathListBuilder, then remove
@@ -353,24 +354,24 @@ namespace CSharpMath.Atoms {
         case '(':
         case '[':
         case '{':
-          return new Open(c.ToString());
+          return new Open(s);
         case ')':
         case ']':
         case '}':
-          return new Close(c.ToString());
+          return new Close(s);
         case '!':
         case '?':
-          return new Close(c.ToString(), false);
+          return new Close(s, false);
         case ',':
         case ';':
-          return new Punctuation(c.ToString());
+          return new Punctuation(s);
         case '=':
         case '<':
         case '>':
         case '≠':
         case '≥':
         case '≤':
-          return new Relation(c.ToString());
+          return new Relation(s);
         case ':': // Colon is a ratio. Regular colon is \colon
         case '\u2236':
           return new Relation("\u2236");
@@ -379,37 +380,30 @@ namespace CSharpMath.Atoms {
           return new BinaryOperator("\u2212");
         case '+':
         case '*': // Star operator, not times symbol
-          return new BinaryOperator(c.ToString());
+          return new BinaryOperator(s);
         case '×':
           return Times;
         case '÷':
           return Divide;
         case '.':
-          return new Number(c.ToString());
-        case var _ when Displays.UnicodeFontChanger.IsLowerGreek(c) || Displays.UnicodeFontChanger.IsUpperGreek(c):
+          return new Number(s);
+        case var _ when Displays.UnicodeFontChanger.IsLowerGreek(c)
+                     || Displays.UnicodeFontChanger.IsUpperGreek(c):
           // All greek letters are rendered as variables.
-          return new Variable(c.ToString());
+          return new Variable(s);
         default:
-          return new Ordinary(c.ToString());
+          return new Ordinary(s);
       }
     }
 
     internal static FontStyle? FontStyle(string command) => FontStyleExtensions.FontStyles.TryGetValue(command, out var fontStyle) ? fontStyle : default(FontStyle?);
 
-    public static MathList MathListForCharacters(string chars) {
-      var mathList = new MathList();
-      foreach (var c in chars) switch (ForCharacter(c)) {
-          case null: break;
-          case var a: mathList.Add(a); break;
-        }
-      return mathList;
-    }
-    public static MathAtom? ForLatexSymbolName(string symbolName) =>
+    public static MathAtom? ForLaTeXSymbolName(string symbolName) =>
       Commands.TryGetValue(
-        symbolName ?? throw new ArgumentNullException(nameof(symbolName), "LaTeX Symbol name must not be null."
+        symbolName ?? throw new ArgumentNullException(nameof(symbolName)
       ), out var symbol) ? symbol.Clone(false) : null;
 
-    public static string? LatexSymbolNameForAtom(MathAtom atom) {
+    public static string? LaTeXSymbolNameForAtom(MathAtom atom) {
       var atomWithoutScripts = atom.Clone(true);
       atomWithoutScripts.Subscript = null;
       atomWithoutScripts.Superscript = null;

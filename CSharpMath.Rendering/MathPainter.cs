@@ -21,7 +21,7 @@ namespace CSharpMath.Rendering {
     protected override void SetRedisplay() => _displayChanged = true;
     protected void UpdateDisplay() {
       if (_displayChanged && MathList != null) {
-        _display = TypesettingContext.Instance.CreateLine(MathList, Fonts, LineStyle);
+        _display = Typesetter.CreateLine(MathList, Fonts, TypesettingContext.Instance, LineStyle);
         _displayChanged = false;
       }
     }

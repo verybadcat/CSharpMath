@@ -5,7 +5,8 @@ namespace CSharpMath {
   /// Please contact the CSharpMath maintainers.
   /// </summary>
   public class InvalidCodePathException : System.Exception {
-    public InvalidCodePathException(string message) : base(message) { }
-    public InvalidCodePathException(string message, System.Exception inner) : base(message, inner) { }
+    private InvalidCodePathException() { }
+    public InvalidCodePathException(string why) : base(why) { }
+    public InvalidCodePathException(string why, System.Exception inner) : base(why, inner) { }
   }
 }

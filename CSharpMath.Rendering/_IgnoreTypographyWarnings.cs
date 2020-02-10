@@ -18,6 +18,7 @@ using Suppress = System.Diagnostics.CodeAnalysis.SuppressMessageAttribute;
 [assembly:Suppress("", "CS0162:Unreachable code detected", Target = _Typography, Justification = Justification, Scope = Scope)]
 [assembly:Suppress("", "CS0168:Variable is declared but never used", Target = _Typography, Justification = Justification, Scope = Scope)]
 [assembly:Suppress("", "CS0219:Variable is assigned but never used", Target = _Typography, Justification = Justification, Scope = Scope)]
+[assembly:Suppress("", "CS0649:Field is never assigned to and will always have its default value", Target = _Typography, Justification = Justification, Scope = Scope)]
 [assembly:Suppress("", "CSM001:Culture-invariant ToString()", Target = _Typography, Justification = Justification, Scope = Scope)]
 
 [assembly:Suppress("", "IDE0017:Object initialization can be simplified", Target = _Poly2Tri, Justification = Justification, Scope = Scope)]

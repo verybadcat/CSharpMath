@@ -19,7 +19,7 @@ namespace CSharpMath.Rendering {
           : content;
       public string Content { get; }
       public override int? SingleChar(FontStyle style) =>
-        Displays.Typesetter<Fonts, Glyph>.UnicodeLengthIsOne(Content)
+        Displays.Typesetter.UnicodeLengthIsOne(Content)
         ? Displays.UnicodeFontChanger.Instance.ChangeFont(GlyphFinder.Instance.GetCodepoint(Content, 0), style)
         : new int?();
     }

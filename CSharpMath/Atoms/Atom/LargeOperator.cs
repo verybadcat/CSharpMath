@@ -24,6 +24,6 @@ namespace CSharpMath.Atoms.Atom {
       _ => ""
     };
     // Don't care about \limits or \nolimits
-    public bool EqualsLargeOperator(LargeOperator obj) => EqualsAtom(obj);
+    public bool EqualsLargeOperator(LargeOperator op) => EqualsAtom(op);
   }
 }

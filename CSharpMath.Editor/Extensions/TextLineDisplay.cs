@@ -54,21 +54,21 @@ namespace CSharpMath.Editor {
     public static int StringIndexToMathListIndex<TFont, TGlyph>
       (this TextLineDisplay<TFont, TGlyph> self, int strIndex) where TFont : IFont<TGlyph> {
       int strLenCovered = 0;
-      for (int mlIndex = 0; mlIndex < self.Atoms.Length; mlIndex++) {
+      for (int mlIndex = 0; mlIndex < self.Atoms.Count; mlIndex++) {
         if (strLenCovered >= strIndex)
           return mlIndex;
         strLenCovered += self.Atoms[mlIndex].Nucleus.Length;
       }
       if (strLenCovered < strIndex)
         throw new InvalidCodePathException("StrIndex should not be more than the len covered");
-      return self.Atoms.Length;
+      return self.Atoms.Count;
     }
 
     public static int MathListIndexToStringIndex<TFont, TGlyph>
       (this TextLineDisplay<TFont, TGlyph> self, int mlIndex) where TFont : IFont<TGlyph> {
-      if (mlIndex >= self.Atoms.Length)
+      if (mlIndex >= self.Atoms.Count)
         throw new ArgumentOutOfRangeException
-          (nameof(mlIndex), mlIndex, $"The index is not in the range {self.Atoms.Length}");
+          (nameof(mlIndex), mlIndex, $"The index is not in the range {self.Atoms.Count}");
       int strIndex = 0;
       for (int i = 0; i < mlIndex; i++) {
         strIndex += self.Atoms[i].Nucleus.Length;

@@ -10,10 +10,85 @@ using System.Drawing;
 using System.Linq;
 
 namespace CSharpMath.Displays {
+  public static class Typesetter {
+    public static ListDisplay<TFont, TGlyph> CreateLine<TFont, TGlyph>
+      (MathList list, TFont font, TypesettingContext<TFont, TGlyph> context, LineStyle style)
+      where TFont : IFont<TGlyph> =>
+      list is null ? throw new ArgumentNullException(nameof(list))
+      : Typesetter<TFont, TGlyph>.CreateLine(list.FinalizedList(), font, context, style, false);
+    public static bool UnicodeLengthIsOne(string? str) => str?.Length switch
+    {
+      1 => true,
+      2 when char.IsHighSurrogate(str[0]) && char.IsLowSurrogate(str[1]) => true,
+      _ => false
+    };
+    private static TGlyph FindVariantGlyph<TFont, TGlyph>(FontMathTable<TFont, TGlyph> mathTable,
+      IGlyphBoundsProvider<TFont, TGlyph> boundsProvider, TFont styleFont, TGlyph rawGlyph,
+      float targetWidth, out float glyphAscent, out float glyphDescent, out float glyphWidth)
+      where TFont : IFont<TGlyph> {
+      var (glyphs, nGlyphs) = mathTable.GetHorizontalVariantsForGlyph(rawGlyph);
+      if (nGlyphs == 0)
+        throw new InvalidCodePathException("Incorrect GetHorizontalVariantsForGlyph implementation. " +
+          "There should always be at least one variant -- the glyph itself");
+
+      var boundingBoxes = boundsProvider.GetBoundingRectsForGlyphs(styleFont, glyphs, nGlyphs);
+      var (advances, _) = boundsProvider.GetAdvancesForGlyphs(styleFont, glyphs, nGlyphs);
+      TGlyph currentGlyph = default!;
+      // These NaN values should never be returned. We have to set them to keep the compiler happy.
+      glyphAscent = float.NaN;
+      glyphDescent = float.NaN;
+      glyphWidth = float.NaN;
+      foreach (var (advance, bounds, glyph) in advances.Zip(boundingBoxes, glyphs, ValueTuple.Create)) {
+        bounds.GetAscentDescentWidth(out float ascent, out float descent, out float _);
+        var width = bounds.Right;
+        if (width > targetWidth) {
+          if (glyphAscent is float.NaN) {
+            // glyph dimensions are not yet set
+            glyphWidth = advance;
+            glyphAscent = ascent;
+            glyphDescent = descent;
+          }
+          return glyph;
+        } else {
+          currentGlyph = glyph;
+          glyphWidth = advance;
+          glyphAscent = ascent;
+          glyphDescent = descent;
+        }
+      }
+      return currentGlyph;
+    }
+    public static GlyphDisplay<TFont, TGlyph> CreateAccentGlyphDisplay<TFont, TGlyph>
+      (ListDisplay<TFont, TGlyph> accentee, TGlyph accenteeSingleGlyph, TGlyph accent,
+       TypesettingContext<TFont, TGlyph> context, TFont styleFont, Range atomRange)
+      where TFont : IFont<TGlyph> {
+      if (accentee is null) throw new ArgumentNullException(nameof(accentee));
+      if (context is null) throw new ArgumentNullException(nameof(context));
+      var accenteeWidth = accentee.Width;
+      var accentGlyph =
+        FindVariantGlyph(context.MathTable, context.GlyphBoundsProvider, styleFont, accent,
+          accenteeWidth, out float glyphAscent, out float glyphDescent, out float glyphWidth);
+      var delta = Math.Min(accentee.Ascent, context.MathTable.AccentBaseHeight(styleFont));
+      float accentAdjustment = context.MathTable.GetTopAccentAdjustment(styleFont, accentGlyph);
+      float accenteeAdjustment =
+        context.GlyphFinder.GlyphIsEmpty(accenteeSingleGlyph)
+        ? accenteeWidth / 2
+        : context.MathTable.GetTopAccentAdjustment(styleFont, accenteeSingleGlyph);
+      float skew = accenteeAdjustment - accentAdjustment;
+      var height = accentee.Ascent - delta;
+      var accentPosition = new PointF(skew, height);
+      return new GlyphDisplay<TFont, TGlyph>(accentGlyph, atomRange, styleFont) {
+        Ascent = glyphAscent,
+        Descent = glyphDescent,
+        Width = glyphWidth,
+        Position = accentPosition
+      };
+    }
+  }
   public class Typesetter<TFont, TGlyph> where TFont: IFont<TGlyph> {
     internal readonly TFont _font;
     internal readonly TypesettingContext<TFont, TGlyph> _context;
-    internal FontMathTable<TFont, TGlyph> _mathTable => _context.MathTable;
+    internal readonly FontMathTable<TFont, TGlyph> _mathTable;
     internal TFont _styleFont;
     internal LineStyle _style;
     internal readonly bool _cramped;
@@ -36,7 +111,7 @@ namespace CSharpMath.Displays {
         System.ComponentModel.InvalidEnumArgumentException(nameof(_style), (int)_style, typeof(LineStyle))
     };
     private LineStyle _fractionStyle => _style == LineStyle.ScriptScript ? _style : _style + 1;
-    private bool _subscriptCramped => true;
+    private const bool _subscriptCramped = true;
     private bool _superscriptCramped => _cramped;
     private float _superscriptShiftUp =>
       _cramped
@@ -46,17 +121,14 @@ namespace CSharpMath.Displays {
       LineStyle style, bool cramped, bool spaced) {
       _font = font;
       _context = context;
+      _mathTable = context.MathTable;
       _style = style;
       _styleFont = _context.MathFontCloner.Invoke(font, context.MathTable.GetStyleSize(style, font));
       _cramped = cramped;
       _spaced = spaced;
       _currentLine = new AttributedString<TFont, TGlyph>();
     }
-    public static ListDisplay<TFont, TGlyph> CreateLine
-      (MathList list, TFont font, TypesettingContext<TFont, TGlyph> context, LineStyle style) =>
-      Typesetter<TFont, TGlyph>.CreateLine(list.FinalizedList(), font, context, style, false);
-
-    private static ListDisplay<TFont, TGlyph> CreateLine(
+    internal static ListDisplay<TFont, TGlyph> CreateLine(
       MathList list, TFont font, TypesettingContext<TFont, TGlyph> context,
       LineStyle style, bool cramped, bool spaced = false) {
 
@@ -114,7 +186,7 @@ namespace CSharpMath.Displays {
           case ColorAtom color:
               AddDisplayLine(false);
               AddInterElementSpace(prevAtom, color);
-              var colorDisplay = CreateLine(color.InnerList, _font, _context, _style);
+              var colorDisplay = Typesetter.CreateLine(color.InnerList, _font, _context, _style);
               colorDisplay.SetTextColorRecursive(Color.Create(color.ColorString.AsSpan()));
               colorDisplay.Position = _currentPosition;
               _currentPosition.X += colorDisplay.Width;
@@ -127,7 +199,7 @@ namespace CSharpMath.Displays {
               if (rad.Degree != null) {
                 // add the degree to the radical
                 displayRad.SetDegree(
-                  CreateLine(rad.Degree, _styleFont, _context, LineStyle.Script),
+                  Typesetter.CreateLine(rad.Degree, _styleFont, _context, LineStyle.Script),
                   _styleFont, _mathTable);
               }
               _displayAtoms.Add(displayRad);
@@ -226,7 +298,7 @@ namespace CSharpMath.Displays {
           case RaiseBox raiseBox:
             AddDisplayLine(false);
             var raisedDisplay =
-              Typesetter<TFont, TGlyph>.CreateLine(raiseBox.InnerList, _font, _context, _style);
+              Typesetter.CreateLine(raiseBox.InnerList, _font, _context, _style);
             var raisedPosition = _currentPosition;
             raisedPosition.Y += raiseBox.Raise.ActualLength(_mathTable, _font);
             raisedDisplay.Position = raisedPosition;
@@ -271,7 +343,7 @@ namespace CSharpMath.Displays {
                 var line = AddDisplayLine(true);
                 if (line is null) throw new InvalidCodePathException("evenIfLengthIsZero not respected");
                 float delta = 0;
-                if (atom.Nucleus != "") {
+                if (atom.Nucleus.Length > 0) {
                   var glyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex
                     (_font, atom.Nucleus.Length - 1, atom.Nucleus);
                   delta = _context.MathTable.GetItalicCorrection(_styleFont, glyph);
@@ -312,7 +384,7 @@ namespace CSharpMath.Displays {
       var accenteeSingleGlyph = _context.GlyphFinder.EmptyGlyph;
       if (accent.InnerList?.Atoms.Count == 1
         && accent.InnerList.Atoms[0] is MathAtom innerAtom
-        && UnicodeLengthIsOne(innerAtom.Nucleus)
+        && Typesetter.UnicodeLengthIsOne(innerAtom.Nucleus)
         && innerAtom.Superscript is null
         && innerAtom.Subscript is null) {
         // Only one single Unicode character is allowed to be an accent
@@ -334,12 +406,12 @@ namespace CSharpMath.Displays {
       }
 
       var display = new AccentDisplay<TFont, TGlyph>(
-        Typesetter<TFont, TGlyph>.CreateAccentGlyphDisplay(
+        Typesetter.CreateAccentGlyphDisplay(
           accentee, accenteeSingleGlyph,
           _context.GlyphFinder.FindGlyphForCharacterAtIndex(
             _font, accent.Nucleus.Length - 1, accent.Nucleus
           ),
-          _context, _font, _styleFont, accent.IndexRange), accentee);
+          _context, _styleFont, accent.IndexRange), accentee);
       // WJWJWJ -- In the display, the position is the Accentee position.
       // Is that correct, or should we be setting it here?
       // (Happypig375 edit: That should be correct but _currentPosition
@@ -348,69 +420,6 @@ namespace CSharpMath.Displays {
       return display;
     }
 
-    public static GlyphDisplay<TFont, TGlyph> CreateAccentGlyphDisplay
-      (ListDisplay<TFont, TGlyph> accentee, TGlyph accenteeSingleGlyph, TGlyph accent,
-       TypesettingContext<TFont, TGlyph> context, TFont normalFont, TFont styleFont, Range atomRange) {
-      var accenteeWidth = accentee.Width;
-      var accentGlyph =
-        _FindVariantGlyph(context.MathTable, context.GlyphBoundsProvider, styleFont, accent,
-          accenteeWidth, out float glyphAscent, out float glyphDescent, out float glyphWidth);
-      var delta = Math.Min(accentee.Ascent, context.MathTable.AccentBaseHeight(styleFont));
-      float accentAdjustment = context.MathTable.GetTopAccentAdjustment(styleFont, accentGlyph);
-      float accenteeAdjustment =
-        context.GlyphFinder.GlyphIsEmpty(accenteeSingleGlyph)
-        ? accenteeWidth / 2
-        : context.MathTable.GetTopAccentAdjustment(styleFont, accenteeSingleGlyph);
-      float skew = accenteeAdjustment - accentAdjustment;
-      var height = accentee.Ascent - delta;
-      var accentPosition = new PointF(skew, height);
-      return new GlyphDisplay<TFont, TGlyph>(accentGlyph, atomRange, styleFont) {
-        Ascent = glyphAscent,
-        Descent = glyphDescent,
-        Width = glyphWidth,
-        Position = accentPosition
-      };
-    }
-
-    private static TGlyph _FindVariantGlyph(FontMathTable<TFont, TGlyph> mathTable,
-      IGlyphBoundsProvider<TFont, TGlyph> boundsProvider, TFont styleFont, TGlyph rawGlyph,
-      float targetWidth, out float glyphAscent, out float glyphDescent, out float glyphWidth) {
-      var (glyphs, nGlyphs) = mathTable.GetHorizontalVariantsForGlyph(rawGlyph);
-      if (nGlyphs == 0)
-        throw new ArgumentException("There should always be at least one variant -- the glyph itself");
-
-      var boundingBoxes = boundsProvider.GetBoundingRectsForGlyphs(styleFont, glyphs, nGlyphs);
-      var (advances, _) = boundsProvider.GetAdvancesForGlyphs(styleFont, glyphs, nGlyphs);
-      TGlyph currentGlyph = default!;
-      // These NaN values should never be returned. We have to set them to keep the compiler happy.
-      glyphAscent = float.NaN; 
-      glyphDescent = float.NaN;
-      glyphWidth = float.NaN;
-      foreach (var (advance, bounds, glyph) in advances.Zip(boundingBoxes, glyphs, ValueTuple.Create)) {
-        bounds.GetAscentDescentWidth(out float ascent, out float descent, out float _);
-        var width = bounds.Right;
-        if (width > targetWidth) {
-          if (glyphAscent is float.NaN) {
-            // glyph dimensions are not yet set
-            glyphWidth = advance;
-            glyphAscent = ascent;
-            glyphDescent = descent;
-          }
-          return glyph;
-        }
-        else {
-          currentGlyph = glyph;
-          glyphWidth = advance;
-          glyphAscent = ascent;
-          glyphDescent = descent;
-        }
-      }
-      return currentGlyph;
-    }
-
-    public static bool UnicodeLengthIsOne(string str) =>
-      (str.Length == 1)
-      || (str.Length == 2 && char.IsHighSurrogate(str[0]) && char.IsLowSurrogate(str[1]));
 
     private void MakeScripts(MathAtom atom, IDisplay<TFont, TGlyph> display, int index, float delta) {
       float superscriptShiftUp = 0;
@@ -636,7 +645,7 @@ namespace CSharpMath.Displays {
       var glyphHeight = _FractionDelimiterHeight;
       var position = new PointF();
       var innerGlyphs = new List<IDisplay<TFont, TGlyph>>();
-      if (fraction.LeftDelimiter != null && fraction.LeftDelimiter != "") {
+      if (fraction.LeftDelimiter?.Length > 0) {
         var leftGlyph = _FindGlyphForBoundary(fraction.LeftDelimiter, glyphHeight);
         leftGlyph.Position = position;
         innerGlyphs.Add(leftGlyph);
@@ -645,7 +654,7 @@ namespace CSharpMath.Displays {
       display.Position = position;
       position.X += display.Width;
       innerGlyphs.Add(display);
-      if (fraction.RightDelimiter != null && fraction.RightDelimiter != "") {
+      if (fraction.RightDelimiter?.Length > 0) {
         var rightGlyph = _FindGlyphForBoundary(fraction.RightDelimiter, glyphHeight);
         rightGlyph.Position = position;
         innerGlyphs.Add(rightGlyph);
@@ -671,8 +680,8 @@ namespace CSharpMath.Displays {
 
       var innerElements = new List<IDisplay<TFont, TGlyph>>();
       var innerPosition = new PointF();
-      if (inner.LeftBoundary is Boundary left && left.Nucleus != "") {
-        var leftGlyph = _FindGlyphForBoundary(left.Nucleus, glyphHeight);
+      if (inner.LeftBoundary is Boundary { Nucleus: var left } && left.Length > 0) {
+        var leftGlyph = _FindGlyphForBoundary(left, glyphHeight);
         leftGlyph.Position = innerPosition;
         innerPosition.X += leftGlyph.Width;
         innerElements.Add(leftGlyph);
@@ -681,8 +690,8 @@ namespace CSharpMath.Displays {
       innerPosition.X += innerListDisplay.Width;
       innerElements.Add(innerListDisplay);
 
-      if (inner.RightBoundary is Boundary right && right.Nucleus != "") {
-        var rightGlyph = _FindGlyphForBoundary(right.Nucleus, glyphHeight);
+      if (inner.RightBoundary is Boundary { Nucleus: var right } && right.Length > 0) {
+        var rightGlyph = _FindGlyphForBoundary(right, glyphHeight);
         rightGlyph.Position = innerPosition;
         innerPosition.X += rightGlyph.Width;
         innerElements.Add(rightGlyph);
@@ -825,7 +834,7 @@ namespace CSharpMath.Displays {
         var colDispalys = new List<ListDisplay<TFont, TGlyph>>();
         r.Add(colDispalys);
         for (int i=0; i<row.Count; i++) {
-          var disp = Typesetter<TFont, TGlyph>.CreateLine(row[i], _font, _context, _style);
+          var disp = Typesetter.CreateLine(row[i], _font, _context, _style);
           columnWidths[i] = Math.Max(disp.Width, columnWidths[i]);
           colDispalys.Add(disp);
         }
@@ -836,7 +845,7 @@ namespace CSharpMath.Displays {
       int nColumns = table.NColumns;
       if (nColumns == 0 || table.NRows == 0) {
         //Empty table
-        var emptyTable = new ListDisplay<TFont, TGlyph>(new IDisplay<TFont, TGlyph>[0]);
+        var emptyTable = new ListDisplay<TFont, TGlyph>(Array.Empty<IDisplay<TFont, TGlyph>>());
         return emptyTable;
       }
       var columnWidths = new float[nColumns];

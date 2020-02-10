@@ -14,16 +14,32 @@ namespace CSharpMath.Tests.PreTypesetting {
       Assert.Equal("Binary Operator", new BinaryOperator("").TypeName);
     [Fact]
     public void TestAtomInit() {
-      foreach (var atom in
+      foreach (var c in
         typeof(Accent)
         .Assembly
         .DefinedTypes
-        .Where(t => t.Namespace == typeof(Accent).Namespace)
-        .Select(t => t.GetConstructor(new[] { typeof(string) }))
-        .Where(c => c != null && c.DeclaringType != typeof(Table))
-        .Cast<System.Reflection.ConstructorInfo>()
-        .Select(c => c.Invoke(new[] { "(" })))
-        Assert.Equal("(", Assert.IsAssignableFrom<MathAtom>(atom).Nucleus);
+        .Where(t => t.Namespace == typeof(Accent).Namespace && t.GetCustomAttributes(
+          typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), false).Length == 0)
+        .SelectMany(t =>
+          new[] { t.GetConstructor(new System.Type[0]), t.GetConstructor(new[] { typeof(string) }) })
+        .Where(c => c != null)
+        .Cast<System.Reflection.ConstructorInfo>()) {
+        switch (c.GetParameters().Length) {
+          case 0:
+            Assert.Equal("", Assert.IsAssignableFrom<MathAtom>(c.Invoke(null)).Nucleus);
+            break;
+          case 1 when c.DeclaringType == typeof(Table):
+            var table = Assert.IsAssignableFrom<Table>(c.Invoke(new[] { "(" }));
+            Assert.Equal("", table.Nucleus);
+            Assert.Equal("(", table.Environment);
+            break;
+          case 1:
+            Assert.Equal("(", Assert.IsAssignableFrom<MathAtom>(c.Invoke(new[] { "(" })).Nucleus);
+            break;
+          default:
+            throw new Xunit.Sdk.XunitException("Unexpected parameter length");
+        }
+      }
     }
     [Fact]
     public void TestScripts() {
