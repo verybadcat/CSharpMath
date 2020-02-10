@@ -10,7 +10,6 @@ namespace CSharpMath.Tests.PreTypesetting {
       Assert.Equal(original, clone);
       Assert.False(ReferenceEquals(original, clone));
     }
-
     internal static void CheckClone(MathList original, MathList clone) {
       Assert.Equal(original, clone);
       Assert.False(ReferenceEquals(original, clone));
@@ -66,8 +65,7 @@ namespace CSharpMath.Tests.PreTypesetting {
     [Fact]
     public void TestAddErrors() {
       var list = new MathList();
-      Assert.Throws<InvalidOperationException>(() => list.Add(null));
-      Assert.Throws<InvalidOperationException>(() => list.Add(new Boundary("")));
+      Assert.Throws<ArgumentNullException>(() => list.Add(null!));
     }
 
     [Fact]

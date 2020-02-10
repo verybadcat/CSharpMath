@@ -10,7 +10,7 @@ namespace CSharpMath.Atoms.Atom {
     public override bool ScriptsAllowed => true;
     public override string DebugString =>
       new System.Text.StringBuilder(@"\underline")
-      .AppendInBraces(InnerList.DebugString, NullHandling.LiteralNull)
+      .AppendInBracesOrLiteralNull(InnerList.DebugString)
       .ToString();
     public bool EqualsUnderline(Underline other) =>
       EqualsAtom(other) && InnerList.EqualsList(other.InnerList);

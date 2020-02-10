@@ -699,12 +699,12 @@ namespace CSharpMath.Atoms {
             break;
           case Radical radical:
             builder.Append(@"\sqrt");
-            builder.AppendInSquareBrackets(NullableListToLaTeX(radical.Degree), NullHandling.EmptyString);
-            builder.AppendInBraces(MathListToLaTeX(radical.Radicand), NullHandling.EmptyContent);
+            builder.AppendInBracketsOrNothing(NullableListToLaTeX(radical.Degree));
+            builder.AppendInBracesOrEmptyBraces(MathListToLaTeX(radical.Radicand));
             break;
           case Inner inner:
             if (inner.LeftBoundary == null && inner.RightBoundary == null) {
-              builder.AppendInBraces(MathListToLaTeX(inner.InnerList), NullHandling.EmptyContent);
+              builder.AppendInBracesOrEmptyBraces(MathListToLaTeX(inner.InnerList));
             } else {
               builder.Append(inner.LeftBoundary switch
               {

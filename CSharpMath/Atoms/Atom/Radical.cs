@@ -13,8 +13,8 @@ namespace CSharpMath.Atoms.Atom {
     public override bool ScriptsAllowed => true;
     public override string DebugString =>
       new StringBuilder(@"\sqrt")
-      .AppendInSquareBrackets(Degree?.DebugString, NullHandling.EmptyString)
-      .AppendInBraces(Radicand.DebugString, NullHandling.LiteralNull)
+      .AppendInBracketsOrNothing(Degree?.DebugString)
+      .AppendInBracesOrLiteralNull(Radicand.DebugString)
       .AppendDebugStringOfScripts(this).ToString();
   }
 }

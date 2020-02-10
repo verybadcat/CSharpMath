@@ -80,7 +80,8 @@ namespace CSharpMath.Tests.PreTypesetting {
     public void TestSubscript(string input, Type[][] atomTypes, string output) =>
       RunScriptTest(input, atom => atom.Subscript, atomTypes, output);
 
-    private void RunScriptTest(string input, Func<MathAtom, MathList> scriptGetter, Type[][] atomTypes, string output) {
+    private void RunScriptTest
+      (string input, Func<MathAtom, MathList> scriptGetter, Type[][] atomTypes, string output) {
       var builder = new MathListBuilder(input);
       var list = builder.Build();
       Assert.Null(builder.Error);
@@ -315,8 +316,8 @@ namespace CSharpMath.Tests.PreTypesetting {
       CheckAtomTypeAndNucleus(inner, typeof(Inner), "");
 
       CheckAtomTypes(inner.InnerList, expectedInnerTypes);
-      CheckAtomTypeAndNucleus(inner.LeftBoundary, typeof(Boundary), leftBoundary);
-      CheckAtomTypeAndNucleus(inner.RightBoundary, typeof(Boundary), rightBoundary);
+      Assert.Equal(leftBoundary, inner.LeftBoundary?.Nucleus);
+      Assert.Equal(rightBoundary, inner.RightBoundary?.Nucleus);
 
       var latex = MathListBuilder.MathListToLaTeX(list);
       Assert.Equal(expectedLatex, latex);
@@ -630,8 +631,8 @@ namespace CSharpMath.Tests.PreTypesetting {
       var inner = list[0] as Inner;
       CheckAtomTypeAndNucleus(inner, typeof(Inner), "");
       var innerList = inner.InnerList;
-      CheckAtomTypeAndNucleus(inner.LeftBoundary, typeof(Boundary), "(");
-      CheckAtomTypeAndNucleus(inner.RightBoundary, typeof(Boundary), ")");
+      Assert.Equal("(", inner.LeftBoundary?.Nucleus);
+      Assert.Equal(")", inner.RightBoundary?.Nucleus);
       Assert.Single(innerList);
       var table = innerList[0] as Table;
       CheckAtomTypeAndNucleus(table, typeof(Table), "");

@@ -26,7 +26,7 @@ namespace CSharpMath {
 #endif
     ) {
       var r = new List<string>();
-      string namePrefix = assembly.ManifestResourcePrefix();
+      var namePrefix = assembly.ManifestResourcePrefix();
       if (namePrefix != null) {
         int resEndIndex = namePrefix.Length;
         string[] names = assembly.GetManifestResourceNames();
@@ -60,6 +60,7 @@ namespace CSharpMath {
               throw new FileNotFoundException("No matches found, even of the first character", prefix);
             }
           }
+          throw new FileNotFoundException(errorMessage);
         }
 #endif
       }

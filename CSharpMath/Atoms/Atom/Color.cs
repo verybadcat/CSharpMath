@@ -8,8 +8,8 @@ namespace CSharpMath.Atoms.Atom {
       (ColorString, InnerList) = (color, innerList);
     public override string DebugString =>
       new StringBuilder(@"\color")
-      .AppendInBraces(ColorString, NullHandling.LiteralNull)
-      .AppendInBraces(InnerList.DebugString, NullHandling.LiteralNull).ToString();
+      .AppendInBracesOrLiteralNull(ColorString)
+      .AppendInBracesOrLiteralNull(InnerList.DebugString).ToString();
     public override bool ScriptsAllowed => false;
     public new Color Clone(bool finalize) => (Color)base.Clone(finalize);
     protected override MathAtom CloneInside(bool finalize) =>

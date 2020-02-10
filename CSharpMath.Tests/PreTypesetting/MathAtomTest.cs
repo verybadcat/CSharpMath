@@ -1,6 +1,6 @@
 using CSharpMath.Atoms;
 using CSharpMath.Atoms.Atom;
-using System;
+using System.Linq;
 using Xunit;
 
 namespace CSharpMath.Tests.PreTypesetting {
@@ -14,13 +14,16 @@ namespace CSharpMath.Tests.PreTypesetting {
       Assert.Equal("Binary Operator", new BinaryOperator("").TypeName);
     [Fact]
     public void TestAtomInit() {
-      var atom = new Open("(");
-      Assert.IsType<Open>(atom);
-      Assert.Equal("(", atom.Nucleus);
-
-      var atom2 = new Boundary("(");
-      Assert.IsType<Boundary>(atom2);
-      Assert.Equal("(", atom2.Nucleus);
+      foreach (var atom in
+        typeof(Accent)
+        .Assembly
+        .DefinedTypes
+        .Where(t => t.Namespace == typeof(Accent).Namespace)
+        .Select(t => t.GetConstructor(new[] { typeof(string) }))
+        .Where(c => c != null)
+        .Cast<System.Reflection.ConstructorInfo>()
+        .Select(c => c.Invoke(new[] { "(" })))
+        Assert.Equal("(", Assert.IsAssignableFrom<MathAtom>(atom).Nucleus);
     }
     [Fact]
     public void TestScripts() {
@@ -30,17 +33,6 @@ namespace CSharpMath.Tests.PreTypesetting {
       Assert.NotNull(atom.Subscript);
       atom.Superscript = new MathList();
       Assert.NotNull(atom.Superscript);
-
-      var atom2 = new Boundary("(");
-      Assert.False(atom2.ScriptsAllowed);
-      atom2.Subscript = null;
-      Assert.Null(atom2.Subscript);
-      atom2.Superscript = null;
-      Assert.Null(atom2.Superscript);
-
-      var list = new MathList();
-      Assert.ThrowsAny<Exception>(() => atom2.Subscript = list);
-      Assert.ThrowsAny<Exception>(() => atom2.Superscript = list);
     }
     [Fact]
     public void TestCopyFraction() {
@@ -105,8 +97,6 @@ namespace CSharpMath.Tests.PreTypesetting {
       var copy = inner.Clone(false);
       CheckClone(inner, copy);
       CheckClone(inner.InnerList, copy.InnerList);
-      CheckClone(inner.LeftBoundary, copy.LeftBoundary);
-      CheckClone(inner.RightBoundary, copy.RightBoundary);
     }
     [Fact]
     public void TestCopyOverline() {

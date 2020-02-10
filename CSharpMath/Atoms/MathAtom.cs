@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace CSharpMath.Atoms {
-  public abstract class MathAtom : IScripts, IMathObject {
+  public abstract class MathAtom : IMathObject {
     public string TypeName {
       get {
         // Insert a space before every capital letter other than the first one.

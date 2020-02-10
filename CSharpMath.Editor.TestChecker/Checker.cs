@@ -9,7 +9,7 @@ namespace CSharpMath.Editor.TestChecker {
     /// despite viewing character positions with less clarity.</summary>
     public static readonly bool OutputLines = true;
     public static void Main() {
-      int ReadInt(string message) {
+      static int ReadInt(string message) {
         string input;
         int value;
         do {
@@ -23,7 +23,7 @@ namespace CSharpMath.Editor.TestChecker {
       Console.SetBufferSize(10000, 500);
       // We need to output heavy box drawing characters, because the vertical light line displays as green lines at font size 16
       Console.OutputEncoding = Encoding.UTF8;
-      string latex = null;
+      string? latex = null;
       while (true) {
         try {
           Console.Title = "CSharpMath.Editor Test Checker";
@@ -42,7 +42,7 @@ namespace CSharpMath.Editor.TestChecker {
           Console.WriteLine("Enter: Moves on to another test case.");
           Console.WriteLine("");
           
-          ListDisplay display = null;
+          ListDisplay? display = null;
           void AssignDisplay() {
             Console.Write("Input LaTeX: ");
             if (latex is null) latex = Console.ReadLine();
@@ -54,6 +54,7 @@ namespace CSharpMath.Editor.TestChecker {
             });
           }
           AssignDisplay();
+          if (display == null) throw new InvalidCodePathException("display is still not assigned");
           var x = ReadInt("Input Touch X (integer): ");
           var y = ReadInt("Input Touch Y (integer): ");
           Console.Clear();
@@ -86,7 +87,7 @@ moveCursor:var pos = Adjust(new Rectangle(x, y, 0, 0));
       if (col is Structures.Color color) {
         ConsoleColor ret = 0;
         double rr = color.R, gg = color.G, bb = color.B, delta = double.MaxValue;
-        foreach (ConsoleColor cc in Enum.GetValues(typeof(ConsoleColor))) {
+        foreach (var cc in System.Linq.Enumerable.Cast<ConsoleColor>(Enum.GetValues(typeof(ConsoleColor)))) {
           var n = Enum.GetName(typeof(ConsoleColor), cc);
           // There's no "DarkYellow" in System.Drawing.Color
           var c = cc is ConsoleColor.DarkYellow ? Color.Orange : Color.FromName(n);

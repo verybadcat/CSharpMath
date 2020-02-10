@@ -12,7 +12,7 @@ namespace CSharpMath.Atoms.Atom {
       new Overline(InnerList.Clone(finalize));
     public override string DebugString =>
       new StringBuilder(@"\overline")
-      .AppendInBraces(InnerList.DebugString, NullHandling.LiteralNull)
+      .AppendInBracesOrLiteralNull(InnerList.DebugString)
       .ToString();
     public bool EqualsOverline(Overline other) =>
       EqualsAtom(other) && InnerList.NullCheckingEquals(other?.InnerList);

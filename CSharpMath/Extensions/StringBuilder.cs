@@ -2,14 +2,6 @@ using System;
 using System.Text;
 
 namespace CSharpMath {
-  public enum NullHandling {
-    ///<summary>the string "null", without the quotes</summary>
-    LiteralNull,
-    /// <summary>Change the null to the empty string, then wrap.</summary>
-    EmptyContent,
-    /// <summary>Return the empty string. Do not wrap.</summary>
-    EmptyString,
-  }
   public static partial class Extensions {
     public static StringBuilder Append(this StringBuilder sb, ReadOnlySpan<char> value) {
       sb.EnsureCapacity(sb.Length + value.Length);
@@ -21,32 +13,35 @@ namespace CSharpMath {
       for (int i = 0; i < sb2.Length; i++) sb1.Append(sb2[i]);
       return sb1;
     }
-    public static StringBuilder AppendUnlessNull(this StringBuilder builder,
-      string appendMe, string? unlessNull) =>
-      unlessNull != null
-      ? builder.Append(appendMe)
-      : builder;
-    public static StringBuilder AppendNullAware(this StringBuilder builder,
-      string? appendMe, NullHandling handling) =>
-      builder.Append(appendMe.NullToNull(handling));
-    public static StringBuilder AppendInBraces(this StringBuilder builder,
-      string? appendMe, NullHandling handling) =>
-      builder.Append(appendMe.WrapInBraces(handling));
-    public static StringBuilder AppendInSquareBrackets(this StringBuilder builder,
-      string? appendMe, NullHandling handling) =>
-      builder.Append(appendMe.WrapInSquareBrackets(handling));
-    public static StringBuilder AppendInParens(this StringBuilder builder,
-      string? appendMe, NullHandling handling) =>
-      builder.Append(appendMe.WrapInParens(handling));
-    public static StringBuilder AppendDebugStringOfScripts
-      (this StringBuilder builder, Atoms.IScripts target) {
-      if (target.Superscript != null) {
-        builder.AppendFormat("^{0}",
-          target.Superscript.DebugString.WrapInBraces(NullHandling.LiteralNull));
-      }
+    private enum NullHandling {
+      ///<summary>the string "null", without the quotes</summary>
+      LiteralNull,
+      /// <summary>Change the null to the empty string, then wrap.</summary>
+      EmptyContent,
+      /// <summary>Return the empty string. Do not wrap.</summary>
+      EmptyString,
+    }
+    private static StringBuilder AppendIn(this StringBuilder b, char l, string? s, char r, NullHandling h) =>
+      h switch
+      {
+        NullHandling.EmptyContent => b.Append(l).Append(s).Append(r),
+        NullHandling.EmptyString => s != null ? b.Append(l).Append(s).Append(r) : b,
+        NullHandling.LiteralNull => b.Append(l).Append(s ?? "null").Append(r),
+        _ =>
+          throw new System.ComponentModel.InvalidEnumArgumentException(nameof(h), (int)h, typeof(NullHandling))
+      };
+    public static StringBuilder AppendInBracesOrLiteralNull(this StringBuilder builder, string? appendMe) =>
+      builder.AppendIn('{', appendMe, '}', NullHandling.LiteralNull);
+    public static StringBuilder AppendInBracesOrEmptyBraces(this StringBuilder builder, string? appendMe) =>
+      builder.AppendIn('{', appendMe, '}', NullHandling.EmptyContent);
+    public static StringBuilder AppendInBracketsOrNothing(this StringBuilder builder, string? appendMe) =>
+      builder.AppendIn('[', appendMe, ']', NullHandling.EmptyString);
+    public static StringBuilder AppendDebugStringOfScripts(this StringBuilder builder, Atoms.MathAtom target) {
       if (target.Subscript != null) {
-        builder.AppendFormat("_{0}",
-          target.Subscript.DebugString.WrapInBraces(NullHandling.LiteralNull));
+        builder.Append('_').AppendInBracesOrLiteralNull(target.Subscript.DebugString);
+      }
+      if (target.Superscript != null) {
+        builder.Append('^').AppendInBracesOrLiteralNull(target.Superscript.DebugString);
       }
       return builder;
     }

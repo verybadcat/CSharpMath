@@ -7,8 +7,8 @@ namespace CSharpMath.Atoms.Atom {
     public Accent(string value) : base(value) { }
     public override string DebugString =>
       new StringBuilder(@"\accent")
-      .AppendInBraces(Nucleus, NullHandling.LiteralNull)
-      .AppendInBraces(InnerList?.DebugString, NullHandling.LiteralNull)
+      .AppendInBracesOrLiteralNull(Nucleus)
+      .AppendInBracesOrLiteralNull(InnerList?.DebugString)
       .ToString();
     public new Accent Clone(bool finalize) => (Accent)base.Clone(finalize);
     protected override MathAtom CloneInside(bool finalize) => new Accent(Nucleus) {

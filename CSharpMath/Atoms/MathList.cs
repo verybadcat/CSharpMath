@@ -8,7 +8,7 @@ namespace CSharpMath.Atoms {
     public MathList() => Atoms = new List<MathAtom>();
     public MathList(IEnumerable<MathAtom> atoms) => Atoms = new List<MathAtom>(atoms);
     public MathList(params MathAtom[] atoms) => Atoms = new List<MathAtom>(atoms);
-    public bool IsAtomAllowed(MathAtom atom) => atom != null && !(atom is Atom.Boundary);
+    public bool IsAtomAllowed(MathAtom atom) => atom != null;
     public MathList Clone(bool finalize) {
       var newList = new MathList();
       if (!finalize) {
@@ -90,11 +90,8 @@ namespace CSharpMath.Atoms {
     IEnumerator IEnumerable.GetEnumerator() => Atoms.GetEnumerator();
     public int IndexOf(MathAtom item) => Atoms.IndexOf(item);
     private void ThrowInvalid(MathAtom item) {
-      if (item == null) {
-        throw new InvalidOperationException("MathList cannot contain null.");
-      }
-      if (item is Atom.Boundary) {
-        throw new InvalidOperationException("MathList cannot contain boundaries");
+      if (item is null) {
+        throw new ArgumentNullException(nameof(item), "MathList cannot contain null.");
       }
     }
     public void Insert(int index, MathAtom item) {

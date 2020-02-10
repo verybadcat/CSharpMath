@@ -12,8 +12,8 @@ namespace CSharpMath.Atoms.Atom {
     public new Inner Clone(bool finalize) => (Inner)base.Clone(finalize);
     protected override MathAtom CloneInside(bool finalize) =>
       new Inner(InnerList.Clone(finalize)) { 
-        LeftBoundary = LeftBoundary?.Clone(finalize),
-        RightBoundary = RightBoundary?.Clone(finalize)
+        LeftBoundary = LeftBoundary,
+        RightBoundary = RightBoundary
       };
     public bool EqualsInner(Inner otherInner) =>
       EqualsAtom(otherInner)
@@ -28,9 +28,9 @@ namespace CSharpMath.Atoms.Atom {
         + 103 * RightBoundary?.GetHashCode() ?? 0);
     public override string DebugString =>
       new StringBuilder(@"\inner")
-      .AppendInSquareBrackets(LeftBoundary?.Nucleus, NullHandling.EmptyString)
-      .AppendInBraces(InnerList?.DebugString, NullHandling.LiteralNull)
-      .AppendInBraces(RightBoundary?.Nucleus, NullHandling.EmptyString)
+      .AppendInBracesOrEmptyBraces(LeftBoundary?.Nucleus)
+      .AppendInBracesOrLiteralNull(InnerList?.DebugString)
+      .AppendInBracesOrEmptyBraces(RightBoundary?.Nucleus)
       .AppendDebugStringOfScripts(this).ToString();
   }
 }

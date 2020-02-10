@@ -98,8 +98,6 @@ namespace CSharpMath.Displays {
           case UnaryOperator _:
             throw new InvalidCodePathException
               ($"Type {atom.GetType()} should have been removed by preprocessing");
-          case Boundary _:
-            throw new InvalidCodePathException("A boundary atom should never be inside a mathlist");
           case Space space:
             AddDisplayLine(false);
             _currentPosition.X += space.ActualLength(_mathTable, _font);

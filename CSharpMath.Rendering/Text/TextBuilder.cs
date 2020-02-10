@@ -41,7 +41,6 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
     public static bool NoEnhancedColors { get; set; }
     private static readonly CustomBreaker breaker =
       new CustomBreaker { BreakNumberAfterText = true, ThrowIfCharOutOfRange = false };
-    private const string SpecialChars = @"#$%&\^_{}~";
     public static Result<TextAtom> TextAtomFromLaTeX(string latexSource) {
       if (string.IsNullOrEmpty(latexSource))
         return new TextAtom.List(Array.Empty<TextAtom>(), 0);
@@ -155,8 +154,9 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
           }
           ReadOnlySpan<char> NextSectionUntilPunc(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section) {
             int start = endAt;
+            ReadOnlySpan<char> specialChars = stackalloc[] { '#', '$', '%', '&', '\\', '^', '_', '{', '}', '~' };
             while (NextSection(latexInput, ref section))
-              if (wordKind != WordKind.Punc || SpecialChars.Contains(section[0])) {
+              if (wordKind != WordKind.Punc || specialChars.IndexOf(section[0]) != -1) {
                 //We have overlooked by one
                 PreviousSection(latexInput, ref section);
                 break;
@@ -448,19 +448,17 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
             .Append(m.DisplayStyle ? ']' : ')');
         case TextAtom.Space s:
           return b.Append(@"\hspace")
-            .AppendInBraces(s.Content.Length.ToStringInvariant(), NullHandling.EmptyContent);
+            .AppendInBracesOrLiteralNull(s.Content.Length.ToStringInvariant());
         case TextAtom.ControlSpace _:
           return b.Append(@"\ ");
         case TextAtom.Style t:
           return b.Append('\\')
             .Append(t.FontStyle.FontName())
-            .AppendInBraces(TextAtomToLaTeX(t.Content, new StringBuilder()).ToString(),
-                            NullHandling.EmptyContent);
+            .AppendInBracesOrEmptyBraces(TextAtomToLaTeX(t.Content, new StringBuilder()).ToString());
         case TextAtom.Size z:
           return b.Append(@"\fontsize")
-            .AppendInBraces(z.PointSize.ToStringInvariant(), NullHandling.EmptyContent)
-            .AppendInBraces(TextAtomToLaTeX(z.Content, new StringBuilder()).ToString(),
-                            NullHandling.EmptyContent);
+            .AppendInBracesOrEmptyBraces(z.PointSize.ToStringInvariant())
+            .AppendInBracesOrEmptyBraces(TextAtomToLaTeX(z.Content, new StringBuilder()).ToString());
         case TextAtom.List l:
           foreach (var a in l.Content)
             b.Append(TextAtomToLaTeX(a, b));

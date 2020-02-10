@@ -20,10 +20,10 @@ namespace CSharpMath.Atoms.Atom {
     };
     public override string DebugString =>
       new StringBuilder(HasRule ? @"\frac" : @"\atop")
-        .AppendInSquareBrackets(LeftDelimiter, NullHandling.EmptyContent)
-        .AppendInSquareBrackets(RightDelimiter, NullHandling.EmptyContent)
-        .AppendInBraces(Numerator?.DebugString, NullHandling.EmptyString)
-        .AppendInBraces(Denominator?.DebugString, NullHandling.EmptyString)
+        .AppendInBracketsOrNothing(LeftDelimiter)
+        .AppendInBracketsOrNothing(RightDelimiter)
+        .AppendInBracesOrEmptyBraces(Numerator?.DebugString)
+        .AppendInBracesOrEmptyBraces(Denominator?.DebugString)
         .AppendDebugStringOfScripts(this).ToString();
     public override bool Equals(object obj) =>
       obj is Fraction f ? EqualsFraction(f) : false;

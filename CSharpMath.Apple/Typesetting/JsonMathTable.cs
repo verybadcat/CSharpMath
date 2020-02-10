@@ -157,8 +157,9 @@ namespace CSharpMath.Apple {
       var variantGlyphs = variants[glyphName];
       if (!(variantGlyphs is JArray variantGlyphsArray)) {
         var outputGlyph = GlyphNameProvider.GetGlyph(glyphName);
-        if (!outputGlyph.Equals(rawGlyph))
-          throw new InvalidCodePathException("GlyphNameProvider.GetGlyph(GlyphNameProvider.GetGlyphName(rawGlyph)) != rawGlyph");
+        if (outputGlyph is null || !outputGlyph.Equals(rawGlyph))
+          throw new InvalidCodePathException
+            ("GlyphNameProvider.GetGlyph(GlyphNameProvider.GetGlyphName(rawGlyph)) != rawGlyph");
         return (new TGlyph[] { outputGlyph }, 1);
       } else
         return
