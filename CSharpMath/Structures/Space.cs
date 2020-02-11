@@ -4,13 +4,10 @@ using System.Collections.Generic;
 namespace CSharpMath.Structures {
   public readonly struct Space : IEquatable<Space> {
     public float Length { get; }
-    //Is the length in math units (mu) or points (pt)?
+    // If IsMu is true, then the length is in math units (mu), else points (pt)
     public bool IsMu { get; }
-    //To anyone reading this, please use arithmetic operators instead of new
-    private Space(float length, bool isMu) {
-      Length = length;
-      IsMu = isMu;
-    }
+    // Use arithmetic operators instead of new
+    private Space(float length, bool isMu) { Length = length; IsMu = isMu; }
     public float ActualLength<TFont, TGlyph>(FrontEnd.FontMathTable<TFont, TGlyph> mathTable,
       TFont font) where TFont : Displays.IFont<TGlyph> =>
       IsMu ? Length * mathTable.MuUnit(font) : Length;
@@ -49,20 +46,25 @@ namespace CSharpMath.Structures {
       left.Length == right.Length && left.IsMu == right.IsMu;
     public static bool operator !=(Space left, Space right) =>
       left.Length != right.Length || left.IsMu != right.IsMu;
-    public static Space operator +(Space space) =>
-      new Space(+space.Length, space.IsMu);
-    public static Space operator -(Space space) =>
-      new Space(-space.Length, space.IsMu);
+    public static Space operator +(Space space) => space;
+    public static Space Plus(Space space) => +space;
+    public static Space operator -(Space space) => new Space(-space.Length, space.IsMu);
+    public static Space Negate(Space space) => -space;
     public static Space operator +(Space left, Space right) =>
       new Space(left.Length + right.Length, UnifyIsMu(left, right));
+    public static Space Add(Space left, Space right) => left + right;
     public static Space operator -(Space left, Space right) =>
       new Space(left.Length - right.Length, UnifyIsMu(left, right));
+    public static Space Subtract(Space left, Space right) => left - right;
     public static Space operator *(float magnitude, Space length) =>
-      new Space(length.Length * magnitude, length.IsMu);
+      new Space(magnitude * length.Length, length.IsMu);
+    public static Space Multiply(float magnitude, Space length) => magnitude * length;
     public static Space operator *(Space length, float magnitude) =>
       new Space(length.Length * magnitude, length.IsMu);
+    public static Space Multiply(Space length, float magnitude) => length * magnitude;
     public static Space operator /(Space length, float magnitude) =>
       new Space(length.Length / magnitude, length.IsMu);
+    public static Space Divide(Space length, float magnitude) => length / magnitude;
     public static readonly Space Point = new Space(1, false);
     public static readonly Space Millimeter = new Space(7227f / 2540f, false);
     public static readonly Space Centimeter = new Space(7227f / 254f, false);

@@ -2,9 +2,9 @@ using System.Text;
 
 namespace CSharpMath.Atoms.Atom {
   public class Radical: MathAtom {
-    public MathList? Degree { get; set; }
+    public MathList? Degree { get; private set; }
     /// <summary>Whatever is under the square root sign</summary>
-    public MathList Radicand { get; set; }
+    public MathList Radicand { get; private set; }
     public Radical(MathList? degree, MathList radicand) : base(string.Empty) =>
       (Degree, Radicand) = (degree, radicand);
     public new Radical Clone(bool finalize) => (Radical)base.Clone(finalize);

@@ -31,7 +31,7 @@ namespace CSharpMath.Editor {
 
     public static PointF? PointForIndex<TFont, TGlyph>(
       this FractionDisplay<TFont, TGlyph> self,
-      TypesettingContext<TFont, TGlyph> context,
+      TypesettingContext<TFont, TGlyph> _,
       MathListIndex index) where TFont : IFont<TGlyph> =>
       index.SubIndexType != MathListSubIndexType.None
       ? throw new ArgumentException

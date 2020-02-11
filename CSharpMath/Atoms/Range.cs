@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace CSharpMath.Atoms {
-  public readonly struct Range {
+  public readonly struct Range : IEquatable<Range> {
     public const int UndefinedInt = int.MinValue;
     public static readonly Range NotFound = new Range(UndefinedInt, UndefinedInt);
     public static readonly Range Zero = new Range(0, 0);
@@ -20,6 +20,8 @@ namespace CSharpMath.Atoms {
     public static bool operator ==(Range range1, Range range2) =>
       range1.Length == range2.Length && range1.Location == range2.Location;
     public static bool operator !=(Range range1, Range range2) => !(range1 == range2);
+    public override bool Equals(object obj) => obj is Range r && this == r;
+    public bool Equals(Range r) => this == r;
     /// <summary>If either Range is NotFound, returns the other.
     /// Otherwise, combines the ranges.</summary>
     public static Range operator +(Range range1, Range range2) {
@@ -29,7 +31,7 @@ namespace CSharpMath.Atoms {
       var end = Math.Max(range1.End, range2.End);
       return new Range(start, end - start);
     }
-    public override bool Equals(object obj) => obj is Range r && this == r;
+    public static Range Add(Range range1, Range range2) => range1 + range2;
     public override int GetHashCode() => unchecked(13 * Length.GetHashCode() + Location.GetHashCode());
     public override string ToString() => $@"{{{Location}, {Length}}}";
     public bool Contains(int i) => i >= Location && i < End;

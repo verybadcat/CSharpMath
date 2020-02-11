@@ -2,7 +2,7 @@ using System;
 
 namespace CSharpMath.Structures {
 #warning Replace this with TColor
-  public readonly struct Color {
+  public readonly struct Color : IEquatable<Color> {
     public Color(byte r, byte g, byte b, byte a = 0xFF) =>
       (R, G, B, A) = (r, g, b, a);
     public Color(float rf, float gf, float bf, float af = 1f)
@@ -15,27 +15,17 @@ namespace CSharpMath.Structures {
     public float Gf => G / 255f;
     public float Bf => B / 255f;
     public float Af => A / 255f;
-
-    public void Deconstruct(out byte r, out byte g, out byte b) {
-      r = R;
-      g = G;
-      b = B;
-    }
-    public void Deconstruct(out byte r, out byte g, out byte b, out byte a) {
-      Deconstruct(out r, out g, out b);
-      a = A;
-    }
-    public void Deconstruct(out float rf, out float gf, out float bf) {
-      rf = Rf;
-      gf = Gf;
-      bf = Bf;
-    }
-    public void Deconstruct(out float rf, out float gf, out float bf, out float af) {
-      Deconstruct(out rf, out gf, out bf);
-      af = Af;
-    }
+    public void Deconstruct(out byte r, out byte g, out byte b) { r = R; g = G; b = B; }
+    public void Deconstruct(out byte r, out byte g, out byte b, out byte a)
+      { Deconstruct(out r, out g, out b); a = A; }
+    public void Deconstruct(out float rf, out float gf, out float bf)
+      { rf = Rf; gf = Gf; bf = Bf; }
+    public void Deconstruct(out float rf, out float gf, out float bf, out float af)
+      { Deconstruct(out rf, out gf, out bf); af = Af; }
     public bool Equals(Color other) => R == other.R && G == other.G && B == other.B && A == other.A;
     public override bool Equals(object obj) => obj is Color c ? Equals(c) : false;
+    public static bool operator ==(Color left, Color right) => left.Equals(right);
+    public static bool operator !=(Color left, Color right) => left.Equals(right);
     public override int GetHashCode() => unchecked(R * 13 + G * 37 + B * 113 + A * 239);
     private static string ToString(byte b) => b.ToStringInvariant("X").PadLeft(2, '0');
     public override string ToString() => $"#{ToString(A)}{ToString(R)}{ToString(G)}{ToString(B)}";

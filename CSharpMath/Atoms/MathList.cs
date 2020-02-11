@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Collections;
 
 namespace CSharpMath.Atoms {
-  public class MathList : IMathObject, IList<MathAtom> {
-    public List<MathAtom> Atoms { get; set; }
+#pragma warning disable CA1710 // Identifiers should have correct suffix
+  // WTF CA1710, you want types inheriting IList to have the suffix Collection?
+  public class MathList : IMathObject, IList<MathAtom>, IReadOnlyList<MathAtom> {
+#pragma warning restore CA1710 // Identifiers should have correct suffix
+    public List<MathAtom> Atoms { get; private set; }
     public MathList() => Atoms = new List<MathAtom>();
     public MathList(IEnumerable<MathAtom> atoms) => Atoms = new List<MathAtom>(atoms);
     public MathList(params MathAtom[] atoms) => Atoms = new List<MathAtom>(atoms);
-    public bool IsAtomAllowed(MathAtom atom) => atom != null;
     public MathList Clone(bool finalize) {
       var newList = new MathList();
       if (!finalize) {
@@ -89,24 +91,19 @@ namespace CSharpMath.Atoms {
     public IEnumerator<MathAtom> GetEnumerator() => Atoms.GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => Atoms.GetEnumerator();
     public int IndexOf(MathAtom item) => Atoms.IndexOf(item);
-    private void ThrowInvalid(MathAtom item) {
-      if (item is null) {
-        throw new ArgumentNullException(nameof(item), "MathList cannot contain null.");
-      }
-    }
     public void Insert(int index, MathAtom item) {
-      if (IsAtomAllowed(item)) Atoms.Insert(index, item); else ThrowInvalid(item);
+      if (item != null) Atoms.Insert(index, item);
+      else throw new ArgumentNullException(nameof(item), "MathList cannot contain null.");
     }
     public void RemoveAt(int index) => Atoms.RemoveAt(index);
     public void Add(MathAtom item) {
-      if (IsAtomAllowed(item)) Atoms.Add(item);
-      else ThrowInvalid(item);
+      if (item != null) Atoms.Add(item);
+      else throw new ArgumentNullException(nameof(item), "MathList cannot contain null.");
     }
     public void Clear() => Atoms.Clear();
     public bool Contains(MathAtom item) => Atoms.Contains(item);
     public void CopyTo(MathAtom[] array, int arrayIndex) => Atoms.CopyTo(array, arrayIndex);
     public bool Remove(MathAtom item) => Atoms.Remove(item);
-    public MathList GetRange(int index, int count) =>
-      new MathList { Atoms = Atoms.GetRange(index, count) };
+    public MathList GetRange(int index, int count) => new MathList { Atoms = Atoms.GetRange(index, count) };
   }
 }

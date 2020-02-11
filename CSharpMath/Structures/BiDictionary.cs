@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace CSharpMath.Structures {
-  public class AliasDictionary<TKey, TValue> : IDictionary<TKey, TValue> {
+  public class AliasDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue> {
     readonly Dictionary<TKey, TValue> k2v = new Dictionary<TKey, TValue>();
     readonly Dictionary<TValue, TKey> v2k = new Dictionary<TValue, TKey>();
     public TValue this[TKey key] { get => k2v[key]; set { k2v[key] = value; v2k[value] = key; } }
@@ -163,11 +163,14 @@ namespace CSharpMath.Structures {
     IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator() =>
       k2v.GetEnumerator();
     ICollection<TKey> IDictionary<TKey, TValue>.Keys => k2v.Keys;
+    IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys => k2v.Keys;
     ICollection<TValue> IDictionary<TKey, TValue>.Values => v2k.Keys;
+    IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values => v2k.Keys;
   }
 
   //https://stackoverflow.com/questions/255341/getting-key-of-value-of-a-generic-dictionary/255638#255638
-  public class BiDictionary<TFirst, TSecond> : IDictionary<TFirst, TSecond> {
+  public class BiDictionary<TFirst, TSecond>
+    : IDictionary<TFirst, TSecond>, IReadOnlyDictionary<TFirst, TSecond> {
     readonly Dictionary<TFirst, TSecond> firstToSecond = new Dictionary<TFirst, TSecond>();
     readonly Dictionary<TSecond, TFirst> secondToFirst = new Dictionary<TSecond, TFirst>();
     public TSecond this[TFirst first] {
@@ -237,14 +240,19 @@ namespace CSharpMath.Structures {
       secondToFirst.TryGetValue(second, out first);
 #pragma warning disable CA1033 // Interface methods should be callable by child types
     bool IDictionary<TFirst, TSecond>.ContainsKey(TFirst first) => firstToSecond.ContainsKey(first);
+    bool IReadOnlyDictionary<TFirst, TSecond>.ContainsKey(TFirst first) => firstToSecond.ContainsKey(first);
     IEnumerator IEnumerable.GetEnumerator() => firstToSecond.GetEnumerator();
     IEnumerator<KeyValuePair<TFirst, TSecond>> IEnumerable<KeyValuePair<TFirst, TSecond>>.GetEnumerator() =>
       firstToSecond.GetEnumerator();
     ICollection<TFirst> IDictionary<TFirst, TSecond>.Keys => Firsts;
+    IEnumerable<TFirst> IReadOnlyDictionary<TFirst, TSecond>.Keys => Firsts;
     bool IDictionary<TFirst, TSecond>.Remove(TFirst first) => Remove(first, firstToSecond[first]);
     bool IDictionary<TFirst, TSecond>.TryGetValue(TFirst first, out TSecond second) =>
       firstToSecond.TryGetValue(first, out second);
+    bool IReadOnlyDictionary<TFirst, TSecond>.TryGetValue(TFirst first, out TSecond second) =>
+      firstToSecond.TryGetValue(first, out second);
     ICollection<TSecond> IDictionary<TFirst, TSecond>.Values => Seconds;
+    IEnumerable<TSecond> IReadOnlyDictionary<TFirst, TSecond>.Values => Seconds;
 #pragma warning restore CA1033 // Interface methods should be callable by child types
   }
 #pragma warning disable CA1710 // Identifiers should have correct suffix

@@ -18,13 +18,13 @@ namespace CSharpMath.Apple {
       using var glyphArray = new Structures.RentedArray<TGlyph>(glyphs, nGlyphs);
       var advanceSizes = new CGSize[nGlyphs];
       var combinedAdvance = font.CtFont.GetAdvancesForGlyphs
-        (CTFontOrientation.Default, glyphArray.EntireArray, advanceSizes, nGlyphs);
+        (CTFontOrientation.Default, glyphArray.Result.Array, advanceSizes, nGlyphs);
       return (advanceSizes.Select(advance => (float)advance.Width), (float)combinedAdvance);
     }
     public IEnumerable<RectangleF> GetBoundingRectsForGlyphs(TFont font, IEnumerable<TGlyph> glyphs, int nVariants) {
       using var glyphArray = new Structures.RentedArray<TGlyph>(glyphs, nVariants);
       var rects = new CGRect[nVariants];
-      font.CtFont.GetBoundingRects(CTFontOrientation.Horizontal, glyphArray.EntireArray, rects, nVariants);
+      font.CtFont.GetBoundingRects(CTFontOrientation.Horizontal, glyphArray.Result.Array, rects, nVariants);
       return rects.Select(rect => (RectangleF)rect);
     }
     public float GetTypographicWidth(TFont font, AttributedGlyphRun<TFont, TGlyph> run) {
