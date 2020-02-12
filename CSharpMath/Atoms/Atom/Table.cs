@@ -4,8 +4,8 @@ using System.Linq;
 namespace CSharpMath.Atoms.Atom {
   ///<summary>A table. Not part of TeX.</summary>
   public class Table : MathAtom {
-    public Table(string? environment) : base(string.Empty) =>
-      Environment = environment;
+    public Table(string? environment, List<List<MathList>>? cells = null) : base(string.Empty) =>
+      (Environment, Cells) = (environment, cells ?? new List<List<MathList>>());
     public Table() : this(null) { }
     /// <summary>Deep copy, finalized or not.</summary>
     public new Table Clone(bool finalize) => (Table)base.Clone(finalize);
@@ -20,7 +20,7 @@ namespace CSharpMath.Atoms.Atom {
     public override bool ScriptsAllowed => false;
     public List<ColumnAlignment> Alignments { get; private set; } =
       new List<ColumnAlignment>();
-    public List<List<MathList>> Cells { get; private set; } = new List<List<MathList>>();
+    public List<List<MathList>> Cells { get; private set; }
     /// <summary>Space between columns in mu units.</summary>
     public float InterColumnSpacing { get; set; }
     /// <summary>

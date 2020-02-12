@@ -18,8 +18,8 @@ namespace CSharpMath.Displays.Display {
       // Compute ascent and descent
       var rects =
         context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(font, Run.Glyphs, Run.GlyphInfos.Count);
-      Ascent = rects.Select(rect => rect.Bottom).Max(); // Convert to non-flipped naming here, 
-      Descent = rects.Select(rect => -rect.Y).Max();
+      Ascent = rects.IsEmpty() ? 0 : rects.Max(rect => rect.Bottom); // Convert to non-flipped naming here, 
+      Descent = rects.IsEmpty() ? 0 : rects.Max(rect => -rect.Y);
     }
     public AttributedGlyphRun<TFont, TGlyph> Run { get; }
     public RectangleF DisplayBounds => this.DisplayBounds();

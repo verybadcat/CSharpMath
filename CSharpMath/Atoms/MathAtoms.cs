@@ -461,7 +461,7 @@ namespace CSharpMath.Atoms {
     public static Structures.Result<MathAtom> Table(
       string? environment, string? arrayAlignments, List<List<MathList>> rows) {
       Style style;
-      var table = new Table(environment) { Cells = rows };
+      var table = new Table(environment, rows);
       switch (environment) {
         case null:
           table.InterRowAdditionalSpacing = 1;
