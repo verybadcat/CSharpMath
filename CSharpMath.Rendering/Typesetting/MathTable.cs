@@ -26,7 +26,7 @@ namespace CSharpMath.Rendering {
     (IEnumerable<Glyph> variants, int count)? GetVariants(Typeface typeface, MathGlyphConstruction glyphs) {
       var records = glyphs?.glyphVariantRecords;
       if (records == null) return null;
-      return (records.Select(record => new Glyph(typeface, typeface.GetGlyphByIndex(record.VariantGlyph))), records.Length);
+      return (records.Select(record => new Glyph(typeface, typeface.GetGlyph(record.VariantGlyph))), records.Length);
     }
     public override (IEnumerable<Glyph> variants, int count) GetHorizontalVariantsForGlyph(Glyph rawGlyph) =>
       GetVariants(rawGlyph.Typeface, rawGlyph.Info.MathGlyphInfo?.HoriGlyphConstruction) ?? (new[] { rawGlyph }, 1);
@@ -41,7 +41,7 @@ namespace CSharpMath.Rendering {
           var variantIndex = variant.VariantGlyph;
           if (variantIndex != glyphIndex) {
             //return the first glyph with a different index.
-            var variantGlyph = glyph.Typeface.GetGlyphByIndex(variantIndex);
+            var variantGlyph = glyph.Typeface.GetGlyph(variantIndex);
             return new Glyph(glyph.Typeface, variantGlyph);
           }
         }
@@ -52,7 +52,7 @@ namespace CSharpMath.Rendering {
       return
         rawGlyph.Info.MathGlyphInfo?.VertGlyphConstruction?.GlyphAsm_GlyphPartRecords?.Select(record =>
         new GlyphPart<Glyph>(
-          new Glyph(rawGlyph.Typeface, rawGlyph.Typeface.GetGlyphByIndex(record.GlyphId)),
+          new Glyph(rawGlyph.Typeface, rawGlyph.Typeface.GetGlyph(record.GlyphId)),
           record.FullAdvance * scale,
           record.StartConnectorLength * scale,
           record.EndConnectorLength * scale,
