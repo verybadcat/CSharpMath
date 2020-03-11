@@ -20,7 +20,7 @@ namespace CSharpMath.Rendering {
       public string Content { get; }
       public override int? SingleChar(FontStyle style) =>
         Displays.Typesetter.UnicodeLengthIsOne(Content)
-        ? Displays.UnicodeFontChanger.Instance.ChangeFont(GlyphFinder.Instance.GetCodepoint(Content, 0), style)
+        ? Displays.UnicodeFontChanger.Instance.StyleCharacter(Content[0], style)
         : new int?();
     }
     public sealed class Newline : TextAtom {

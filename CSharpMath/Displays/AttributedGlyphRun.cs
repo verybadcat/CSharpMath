@@ -6,7 +6,7 @@ namespace CSharpMath.Displays {
   /// <summary>Like an attributed string, but the attributes other than Kern are required to be fixed
   /// over the whole string. We use KernedGlyph objects instead of Glyphs to
   /// allow us to set kern on a per-glyph basis.</summary>
-  public class AttributedGlyphRun<TFont, TGlyph> where TFont : IFont<TGlyph> {
+  public class AttributedGlyphRun<TFont, TGlyph> where TFont : FrontEnd.IFont<TGlyph> {
     public AttributedGlyphRun(string text, IEnumerable<TGlyph> glyphs, TFont font, bool isPlaceHolder = false) {
       Text = new StringBuilder(text);
       GlyphInfos = glyphs.Select(g => new GlyphInfo<TGlyph>(g)).ToList();
@@ -30,7 +30,7 @@ namespace CSharpMath.Displays {
   public static class AttributedGlyphRunExtensions {
     public static bool AttributesMatch<TFont, TGlyph>(
         this AttributedGlyphRun<TFont, TGlyph>? run1,
-        AttributedGlyphRun<TFont, TGlyph>? run2) where TFont : IFont<TGlyph> =>
+        AttributedGlyphRun<TFont, TGlyph>? run2) where TFont : FrontEnd.IFont<TGlyph> =>
       run1 != null
       && run2 != null
       && EqualityComparer<TFont>.Default.Equals(run1.Font, run2.Font);

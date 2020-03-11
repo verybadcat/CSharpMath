@@ -1,5 +1,6 @@
 using CSharpMath.Displays;
 using CSharpMath.FrontEnd;
+using CSharpMath.Structures;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;

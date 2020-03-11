@@ -1,11 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using CSharpMath.Displays;
 using Typography.OpenFont;
 
 namespace CSharpMath.Rendering {
-  public readonly struct Fonts : IFont<Glyph>, IEnumerable<Typeface> {
+  public readonly struct Fonts : FrontEnd.IFont<Glyph>, IEnumerable<Typeface> {
     static Fonts() {
       var reader = new OpenFontReader();
       Typeface LoadFont(string fileName) {

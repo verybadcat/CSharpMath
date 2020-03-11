@@ -10,7 +10,7 @@ namespace CSharpMath.Displays.Display {
     public TextRunDisplay(
       AttributedGlyphRun<TFont, TGlyph> run, 
       Range range, 
-      TypesettingContext<TFont, TGlyph> context){
+      TypesettingContext<TFont, TGlyph> context) {
       var font = run.Font;
       Run = run;
       Range = range;

@@ -34,7 +34,7 @@ namespace CSharpMath.Tests {
     void TestOuter(string latex, int rangeMax, double ascent, double descent, double width,
         params System.Action<IDisplay<TFont, TGlyph>>[] inspectors) =>
       TestList(rangeMax, ascent, descent, width, 0, 0, LinePosition.Regular, Range.UndefinedInt, inspectors)
-      (Typesetter.CreateLine(MathListBuilder.MathListFromLaTeX(latex), _font, _context, LineStyle.Display));
+      (Typesetter.CreateLine(LaTeXBuilder.MathListFromLaTeX(latex), _font, _context, LineStyle.Display));
 
     [Theory, InlineData("x"), InlineData("2")]
     public void TestSimpleVariable(string latex) =>
@@ -79,6 +79,25 @@ namespace CSharpMath.Tests {
           Assert.True(line.HasScript);
         },
         TestList(1, 9.8, 2.8, 7, 10.32, 7.26, LinePosition.Superscript, 0,
+          d => {
+            var super10 = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
+            Assert.NotNull(super10);
+            Assert.Single(super10.Atoms);
+            Assert.Equal(new PointF(), super10.Position);
+            Assert.False(super10.HasScript);
+          }));
+
+    [Fact]
+    public void TestSuperScriptEmptyBase() =>
+      TestOuter("^2", 0, 17.06, 0, 7,
+        d => {
+          var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
+          Assert.Single(line.Atoms);
+          AssertText("", line);
+          Assert.Equal(new PointF(), line.Position);
+          Assert.True(line.HasScript);
+        },
+        TestList(1, 9.8, 2.8, 7, 0, 7.26, LinePosition.Superscript, 0,
           d => {
             var super10 = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
             Assert.NotNull(super10);

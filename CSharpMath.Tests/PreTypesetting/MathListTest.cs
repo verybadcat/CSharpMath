@@ -41,7 +41,7 @@ namespace CSharpMath.Tests.PreTypesetting {
     [Fact]
     public void TestSubscript() {
       var input = @"-52x^{13+y}_{15-} + (-12.3 *)\frac{-12}{15.2}";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
       var finalized = list.Clone(true);
       MathListValidator.CheckListContents(finalized);
       var reFinalized = finalized.Clone(true);
@@ -161,7 +161,7 @@ namespace CSharpMath.Tests.PreTypesetting {
 
     [Fact]
     public void TestListCopyWithFusedItems() {
-      var builder = new MathListBuilder("12+x");
+      var builder = new LaTeXBuilder("12+x");
       var list = builder.Build();
 
       var finalized = list.FinalizedList();

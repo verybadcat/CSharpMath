@@ -9,7 +9,7 @@ namespace CSharpMath {
       foreach (var _ in enumerable) return false;
       return true;
     }
-    public static bool IsNonempty<T>(this IEnumerable<T> enumerable) => !enumerable.IsEmpty();
+    public static bool IsNonEmpty<T>(this IEnumerable<T> enumerable) => !enumerable.IsEmpty();
     public static IEnumerable<TResult> Zip<TFirst, TSecond, TThird, TResult>(
       this IEnumerable<TFirst> first,
       IEnumerable<TSecond> second,

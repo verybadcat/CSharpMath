@@ -28,8 +28,8 @@ namespace CSharpMath.Atoms.Atom {
       obj is Fraction f ? EqualsFraction(f) : false;
     public bool EqualsFraction(Fraction other) =>
       EqualsAtom(other)
-      && Numerator.NullCheckingEquals(other.Numerator)
-      && Denominator.NullCheckingEquals(other.Denominator)
+      && Numerator.NullCheckingStructuralEquality(other.Numerator)
+      && Denominator.NullCheckingStructuralEquality(other.Denominator)
       && LeftDelimiter == other.LeftDelimiter
       && RightDelimiter == other.RightDelimiter;
     public override int GetHashCode() =>

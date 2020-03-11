@@ -1,11 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CSharpMath.Editor {
   using Atoms;
   using Atom = Atoms.Atom;
-  public static class MathListEditingExtensions {
+  using Structures;
+  partial class EditingExtensions {
     static void InsertAtAtomIndexAndAdvance(this MathList self, int atomIndex, MathAtom atom, ref MathListIndex advance, MathListSubIndexType advanceType) {
       if (atomIndex < 0 || atomIndex > self.Count)
         throw new IndexOutOfRangeException($"Index {atomIndex} is out of bounds for list of size {self.Atoms.Count}");

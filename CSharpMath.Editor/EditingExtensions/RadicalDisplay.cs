@@ -7,7 +7,7 @@ namespace CSharpMath.Editor {
   using FrontEnd;
   using Color = Structures.Color;
 
-  partial class DisplayEditingExtensions {
+  partial class EditingExtensions {
     public static MathListIndex IndexForPoint<TFont, TGlyph>(
       this RadicalDisplay<TFont, TGlyph> self,
       TypesettingContext<TFont, TGlyph> context,

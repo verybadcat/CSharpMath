@@ -4,8 +4,8 @@ using System.Collections;
 
 namespace CSharpMath.Atoms {
 #pragma warning disable CA1710 // Identifiers should have correct suffix
-  // WTF CA1710, you want types inheriting IList to have the suffix Collection?
-  public class MathList : IMathObject, IList<MathAtom>, IReadOnlyList<MathAtom> {
+  // WTF CA1710, you want types inheriting IList to have the Collection suffix?
+  public class MathList : IMathObject, IList<MathAtom>, IReadOnlyList<MathAtom>, IEquatable<MathList> {
 #pragma warning restore CA1710 // Identifiers should have correct suffix
     public List<MathAtom> Atoms { get; private set; }
     public MathList() => Atoms = new List<MathAtom>();
@@ -80,7 +80,7 @@ namespace CSharpMath.Atoms {
         return false;
       }
       for (int i=0; i < Count; i++) {
-        if (!this[i].NullCheckingEquals(otherList[i])) {
+        if (!this[i].NullCheckingStructuralEquality(otherList[i])) {
           return false;
         }
       }
@@ -88,6 +88,7 @@ namespace CSharpMath.Atoms {
     }
     public override bool Equals(object obj) => obj is MathList l ? EqualsList(l) : false;
     public override int GetHashCode() => Atoms.GetHashCode();
+    bool IEquatable<MathList>.Equals(MathList otherList) => EqualsList(otherList);
     public IEnumerator<MathAtom> GetEnumerator() => Atoms.GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => Atoms.GetEnumerator();
     public int IndexOf(MathAtom item) => Atoms.IndexOf(item);

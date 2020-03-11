@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace CSharpMath.Atoms {
-  public abstract class MathAtom : IMathObject {
+  public abstract class MathAtom : IMathObject, IEquatable<MathAtom> {
     public string TypeName {
       get {
         // Insert a space before every capital letter other than the first one.
@@ -92,9 +92,10 @@ namespace CSharpMath.Atoms {
       GetType() == otherAtom.GetType() &&
       //IndexRange == otherAtom.IndexRange &&
       //FontStyle == otherAtom.FontStyle &&
-      Superscript.NullCheckingEquals(otherAtom.Superscript) &&
-      Subscript.NullCheckingEquals(otherAtom.Subscript);
+      Superscript.NullCheckingStructuralEquality(otherAtom.Superscript) &&
+      Subscript.NullCheckingStructuralEquality(otherAtom.Subscript);
     public override bool Equals(object obj) => obj is MathAtom a ? EqualsAtom(a) : false;
+    bool IEquatable<MathAtom>.Equals(MathAtom otherAtom) => EqualsAtom(otherAtom);
     public override int GetHashCode() => unchecked(
         GetType().GetHashCode()
         + 3 * (Superscript?.GetHashCode() ?? 0)

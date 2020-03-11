@@ -9,7 +9,7 @@ namespace CSharpMath.Structures {
     // Use arithmetic operators instead of new
     private Space(float length, bool isMu) { Length = length; IsMu = isMu; }
     public float ActualLength<TFont, TGlyph>(FrontEnd.FontMathTable<TFont, TGlyph> mathTable,
-      TFont font) where TFont : Displays.IFont<TGlyph> =>
+      TFont font) where TFont : FrontEnd.IFont<TGlyph> =>
       IsMu ? Length * mathTable.MuUnit(font) : Length;
     public static Result<Space> Create(string length, string unit, bool useTextUnits) =>
       string.IsNullOrWhiteSpace(unit)

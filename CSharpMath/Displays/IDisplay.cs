@@ -23,7 +23,10 @@ namespace CSharpMath.Displays {
     void SetTextColorRecursive(Color? textColor);
     bool HasScript { get; set; }
   }
-  public static class IDisplayExtensions {
+}
+namespace CSharpMath {
+  using Displays;
+  partial class Extensions {
     /// <summary>The display's bounds, in its own coordinate system.</summary> 
     public static RectangleF DisplayBounds<TFont, TGlyph>
       (this IDisplay<TFont, TGlyph> display, bool invert = false) where TFont : IFont<TGlyph> =>

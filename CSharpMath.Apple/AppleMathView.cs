@@ -29,7 +29,7 @@ namespace CSharpMath.Apple {
       get => _mathList;
       set {
         _mathList = value;
-        LaTeX = MathListBuilder.MathListToLaTeX(value);
+        LaTeX = LaTeXBuilder.MathListToLaTeX(value);
         InvalidateIntrinsicContentSize();
         SetNeedsLayout();
       }
@@ -39,7 +39,7 @@ namespace CSharpMath.Apple {
       get => _latex;
       set {
         _latex = value;
-        (_mathList, ErrorMessage) = MathListBuilder.TryMathListFromLaTeX(value);
+        (_mathList, ErrorMessage) = LaTeXBuilder.TryMathListFromLaTeX(value);
         if (_mathList != null) {
           _displayList = Typesetter.CreateLine(_mathList,
             AppleFontManager.LatinMath(FontSize), _typesettingContext, LineStyle.Display);

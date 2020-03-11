@@ -6,9 +6,10 @@ namespace CSharpMath.Editor {
   using Displays;
   using Displays.Display;
   using FrontEnd;
+  using Structures;
   using Color = Structures.Color;
 
-  public partial class DisplayEditingExtensions {
+  partial class EditingExtensions {
     public static int? GlyphIndexForXOffset<TFont, TGlyph>
       (this AttributedGlyphRun<TFont, TGlyph> line, TypesettingContext<TFont, TGlyph> context, float offset)
       where TFont : IFont<TGlyph> {

@@ -22,7 +22,7 @@ namespace CSharpMath.Forms.Example {
         View.LaTeX = Entry.Text;
         (Exit.Text, Exit.TextColor) =
           View.MathList is Atoms.MathList ml
-          ? (Atoms.MathListBuilder.MathListToLaTeX(ml), Color.Black)
+          ? (Atoms.LaTeXBuilder.MathListToLaTeX(ml), Color.Black)
           : ("Error: " + View.ErrorMessage, Color.Red);
         View.InvalidateSurface();
       };

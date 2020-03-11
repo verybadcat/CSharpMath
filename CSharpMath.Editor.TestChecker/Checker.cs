@@ -4,6 +4,7 @@ using System.Text;
 using ListDisplay = CSharpMath.Displays.Display.ListDisplay<CSharpMath.Tests.FrontEnd.TestFont, char>;
 
 namespace CSharpMath.Editor.TestChecker {
+  using Structures;
   public class Checker {
     /// <summary>Whether you want to view e.g. fraction lines and radical lines
     /// despite viewing character positions with less clarity.</summary>
@@ -83,14 +84,14 @@ moveCursor:var pos = Adjust(new Rectangle(x, y, 0, 0));
         }
       }
     }
-    public static void SetConsoleColor(Structures.Color? col) {
-      if (col is Structures.Color color) {
+    public static void SetConsoleColor(Color? col) {
+      if (col is Color color) {
         ConsoleColor ret = 0;
         double rr = color.R, gg = color.G, bb = color.B, delta = double.MaxValue;
         foreach (var cc in System.Linq.Enumerable.Cast<ConsoleColor>(Enum.GetValues(typeof(ConsoleColor)))) {
           var n = Enum.GetName(typeof(ConsoleColor), cc);
           // There's no "DarkYellow" in System.Drawing.Color
-          var c = cc is ConsoleColor.DarkYellow ? Color.Orange : Color.FromName(n);
+          var c = cc is ConsoleColor.DarkYellow ? System.Drawing.Color.Orange : System.Drawing.Color.FromName(n);
           var t = Math.Pow(c.R - rr, 2.0) + Math.Pow(c.G - gg, 2.0) + Math.Pow(c.B - bb, 2.0);
           if (t < delta) {
             delta = t;

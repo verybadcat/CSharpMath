@@ -16,7 +16,7 @@ namespace CSharpMath.Atoms.Atom {
     };
     public override bool ScriptsAllowed => true;
     public bool EqualsAccent(Accent other) =>
-      EqualsAtom(other) && InnerList.NullCheckingEquals(other?.InnerList);
+      EqualsAtom(other) && InnerList.NullCheckingStructuralEquality(other?.InnerList);
     public override bool Equals(object obj) => obj is Accent a ? EqualsAccent(a) : false;
     public override int GetHashCode() =>
       unchecked(base.GetHashCode() + 71 * InnerList?.GetHashCode() ?? 1);

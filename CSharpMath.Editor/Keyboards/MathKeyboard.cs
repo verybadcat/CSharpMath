@@ -5,6 +5,7 @@ namespace CSharpMath.Editor {
   using Atoms;
   using Displays;
   using FrontEnd;
+  using Structures;
   using Atom = Atoms.Atom;
 
   public class MathKeyboard<TFont, TGlyph> where TFont : IFont<TGlyph> {
@@ -15,7 +16,7 @@ namespace CSharpMath.Editor {
     public CaretHandle? Caret { get; protected set; }
     public Displays.Display.ListDisplay<TFont, TGlyph>? Display { get; protected set; }
     public MathList MathList { get; } = new MathList();
-    public string LaTeX => MathListBuilder.MathListToLaTeX(MathList);
+    public string LaTeX => LaTeXBuilder.MathListToLaTeX(MathList);
     private MathListIndex _insertionIndex = MathListIndex.Level0Index(0);
     public MathListIndex InsertionIndex
       { get => _insertionIndex; set { _insertionIndex = value; InsertionPointChanged(); } }

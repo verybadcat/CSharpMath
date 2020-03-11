@@ -1,20 +1,20 @@
 namespace CSharpMath.Displays {
-  using static InterElementSpaceType;
   using Atoms;
   using Atom = Atoms.Atom;
-  internal enum InterElementSpaceType {
-    Invalid = -1,
-    None = 0,
-    Thin,
-    ///<summary>Thin if not in script mode, else none</summary> 
-    NsThin,
-    ///<summary>Medium if not in script mode, else none</summary> 
-    NsMedium,
-    ///<summary>Thick if not in script mode, else none</summary> 
-    NsThick
-  }
+  using static InterElementSpaces.InterElementSpaceType;
   internal static class InterElementSpaces {
-    public static int SpacingInMu(this InterElementSpaceType type, LineStyle _style) =>
+    internal enum InterElementSpaceType {
+      Invalid = -1,
+      None = 0,
+      Thin,
+      ///<summary>Thin if not in script mode, else none</summary> 
+      NsThin,
+      ///<summary>Medium if not in script mode, else none</summary> 
+      NsMedium,
+      ///<summary>Thick if not in script mode, else none</summary> 
+      NsThick
+    }
+    private static int SpacingInMu(this InterElementSpaceType type, LineStyle _style) =>
       type switch
       {
         Invalid => -1,
@@ -28,7 +28,7 @@ namespace CSharpMath.Displays {
       };
     // CA1814 is TRASH: https://github.com/MicrosoftDocs/visualstudio-docs/issues/3139
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-    public static InterElementSpaceType[,] Spaces = {
+    private static readonly InterElementSpaceType[,] Spaces = {
 //RIGHT ordinary  operator  binary    relation open      close    punct    fraction       LEFT
       { None,     Thin,     NsMedium, NsThick, None,     None,    None,    NsThin   }, // ordinary
       { Thin,     Thin,     Invalid,  NsThick, None,     None,    None,    NsThin   }, // operator
@@ -40,9 +40,9 @@ namespace CSharpMath.Displays {
       { NsThin,   Thin,     NsMedium, NsThick, NsThin,   None,    NsThin,  NsThin   }, // fraction
       { NsMedium, NsThin,   NsMedium, NsThick, None,     None,    None,    NsThin   }, // radical
     };
-    internal static float Get<TFont, TGlyph>(MathAtom left, MathAtom right,
+    public static float Get<TFont, TGlyph>(MathAtom left, MathAtom right,
       LineStyle style, TFont styleFont, FrontEnd.FontMathTable<TFont, TGlyph> mathTable)
-      where TFont : IFont<TGlyph> {
+      where TFont : FrontEnd.IFont<TGlyph> {
       static int GetInterElementSpaceArrayIndexForType(MathAtom atomType, bool row) =>
         atomType switch
         {
@@ -66,7 +66,7 @@ namespace CSharpMath.Displays {
       var rightIndex = GetInterElementSpaceArrayIndexForType(right, false);
       var spaceType = Spaces[leftIndex, rightIndex];
       if (spaceType == Invalid)
-        throw new InvalidCodePathException($"Invalid space between {left.TypeName} and {right.TypeName}");
+        throw new Structures.InvalidCodePathException($"Invalid space between {left.TypeName} and {right.TypeName}");
       var multiplier = spaceType.SpacingInMu(style);
       return multiplier > 0 ? multiplier * mathTable.MuUnit(styleFont) : 0;
     }

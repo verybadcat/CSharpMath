@@ -4,7 +4,9 @@ using CSharpMath.Atoms;
 using CSharpMath.Atoms.Atom;
 using CSharpMath.Displays.Display;
 using CSharpMath.FrontEnd;
+using CSharpMath.Structures;
 using ColorAtom = CSharpMath.Atoms.Atom.Color;
+using SpaceAtom = CSharpMath.Atoms.Atom.Space;
 using Color = CSharpMath.Structures.Color;
 using System.Drawing;
 using System.Linq;
@@ -170,7 +172,7 @@ namespace CSharpMath.Displays {
           case UnaryOperator _:
             throw new InvalidCodePathException
               ($"Type {atom.GetType()} should have been removed by preprocessing");
-          case Space space:
+          case SpaceAtom space:
             AddDisplayLine(false);
             _currentPosition.X += space.ActualLength(_mathTable, _font);
             continue;

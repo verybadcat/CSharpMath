@@ -62,13 +62,13 @@ namespace CSharpMath.Tests.PreTypesetting {
 
     [Theory, MemberData(nameof(TestData))]
     public void TestBuilder(string input, Type[] atomTypes, string output) {
-      var builder = new MathListBuilder(input);
+      var builder = new LaTeXBuilder(input);
       var list = builder.Build();
       Assert.Null(builder.Error);
 
       CheckAtomTypes(list, atomTypes);
 
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(output, latex);
     }
 
@@ -82,7 +82,7 @@ namespace CSharpMath.Tests.PreTypesetting {
 
     private void RunScriptTest
       (string input, Func<MathAtom, MathList> scriptGetter, Type[][] atomTypes, string output) {
-      var builder = new MathListBuilder(input);
+      var builder = new LaTeXBuilder(input);
       var list = builder.Build();
       Assert.Null(builder.Error);
 
@@ -103,7 +103,7 @@ namespace CSharpMath.Tests.PreTypesetting {
         CheckAtomTypes(scriptScriptList, atomTypes[2]);
       }
 
-      string latex = MathListBuilder.MathListToLaTeX(list);
+      string latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(output, latex);
     }
     
@@ -126,7 +126,7 @@ namespace CSharpMath.Tests.PreTypesetting {
     [Fact]
     public void TestSymbols() {
       string str = @"5\times3^{2\div2}";
-      var builder = new MathListBuilder(str);
+      var builder = new LaTeXBuilder(str);
       var list = builder.Build();
       Assert.NotNull(list);
       Assert.Equal(3, list.Atoms.Count());
@@ -146,7 +146,7 @@ namespace CSharpMath.Tests.PreTypesetting {
     [Fact]
     public void TestFraction() {
       var input = @"\frac1c";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
       Assert.NotNull(list);
       Assert.Single(list);
 
@@ -165,14 +165,14 @@ namespace CSharpMath.Tests.PreTypesetting {
       Assert.Single(denominator);
       CheckAtomTypeAndNucleus(denominator[0], typeof(Variable), "c");
 
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"\frac{1}{c}", latex);
     }
 
     [Fact]
     public void TestFractionInFraction() {
       var input = @"\frac1\frac23";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
       Assert.Single(list);
       CheckAtomTypeAndNucleus(list[0], typeof(Fraction), "");
       var fraction = list[0] as Fraction;
@@ -194,7 +194,7 @@ namespace CSharpMath.Tests.PreTypesetting {
       Assert.Single(subDenominator);
       CheckAtomTypeAndNucleus(subDenominator[0], typeof(Number), "3");
 
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"\frac{1}{\frac{2}{3}}", latex);
 
     }
@@ -202,7 +202,7 @@ namespace CSharpMath.Tests.PreTypesetting {
     [Fact]
     public void TestSqrt() {
       var input = @"\sqrt2";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
 
       Assert.Single(list);
       var radical = list[0] as Radical;
@@ -212,14 +212,14 @@ namespace CSharpMath.Tests.PreTypesetting {
       Assert.Single(radicand);
       CheckAtomTypeAndNucleus(radicand[0], typeof(Number), "2");
 
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"\sqrt{2}", latex);
     }
 
     [Fact]
     public void TestSqrtInSqrt() {
       var input = @"\sqrt\sqrt2";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
       Assert.Single(list);
 
       var radical = list[0] as Radical;
@@ -234,14 +234,14 @@ namespace CSharpMath.Tests.PreTypesetting {
       Assert.Single(subSubList);
       CheckAtomTypeAndNucleus(subSubList[0], typeof(Number), "2");
 
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"\sqrt{\sqrt{2}}", latex);
     }
 
     [Fact]
     public void TestRadical() {
       string input = @"\sqrt[3]2";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
 
       Assert.Single(list);
       var radical = list[0] as Radical;
@@ -257,7 +257,7 @@ namespace CSharpMath.Tests.PreTypesetting {
       Assert.Single(degree);
       CheckAtomTypeAndNucleus(degree[0], typeof(Number), "3");
 
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"\sqrt[3]{2}", latex);
     }
 
@@ -304,7 +304,7 @@ namespace CSharpMath.Tests.PreTypesetting {
       string leftBoundary,
       string rightBoundary,
       string expectedLatex) {
-      var builder = new MathListBuilder(input);
+      var builder = new LaTeXBuilder(input);
       var list = builder.Build();
 
       Assert.NotNull(list);
@@ -319,14 +319,14 @@ namespace CSharpMath.Tests.PreTypesetting {
       Assert.Equal(leftBoundary, inner.LeftBoundary?.Nucleus);
       Assert.Equal(rightBoundary, inner.RightBoundary?.Nucleus);
 
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(expectedLatex, latex);
     }
 
     [Fact]
     public void TestOver() {
       var input = @"1 \over c";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
       Assert.Single(list);
 
       var fraction = list[0] as Fraction;
@@ -341,14 +341,14 @@ namespace CSharpMath.Tests.PreTypesetting {
       Assert.Single(fraction.Denominator);
       CheckAtomTypeAndNucleus(fraction.Denominator[0], typeof(Variable), "c");
 
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"\frac{1}{c}", latex);
     }
 
     [Fact]
     public void TestOverInParens() {
       var input = @"5 + {1 \over c} + 8";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
 
       Assert.NotNull(list);
       Assert.Equal(5, list.Count);
@@ -366,14 +366,14 @@ namespace CSharpMath.Tests.PreTypesetting {
       Assert.Single(fraction.Denominator);
       CheckAtomTypeAndNucleus(fraction.Denominator[0], typeof(Variable), "c");
 
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"5+\frac{1}{c}+8", latex);
     }
 
     [Fact]
     public void TestAtop() {
       var input = @"1 \atop c";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
 
       Assert.Single(list);
       var fraction = list[0] as Fraction;
@@ -388,14 +388,14 @@ namespace CSharpMath.Tests.PreTypesetting {
       Assert.Single(fraction.Denominator);
       CheckAtomTypeAndNucleus(fraction.Denominator[0], typeof(Variable), "c");
 
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"{1 \atop c}", latex);
     }
 
     [Fact]
     public void TestAtopInParens() {
       var input = @"5 + {1 \atop c} + 8";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
 
       Assert.Equal(5, list.Count);
       var types = new Type[] {
@@ -418,14 +418,14 @@ namespace CSharpMath.Tests.PreTypesetting {
       Assert.Single(fraction.Denominator);
       CheckAtomTypeAndNucleus(fraction.Denominator[0], typeof(Variable), "c");
 
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"5+{1 \atop c}+8", latex);
     }
 
     [Fact]
     public void TestChoose() {
       var input = @"n \choose k";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
 
       Assert.Single(list);
       CheckAtomTypeAndNucleus(list[0], typeof(Fraction), "");
@@ -440,14 +440,14 @@ namespace CSharpMath.Tests.PreTypesetting {
 
       Assert.Single(fraction.Denominator);
       CheckAtomTypeAndNucleus(fraction.Denominator[0], typeof(Variable), "k");
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"{n \choose k}", latex);
     }
 
     [Fact]
     public void TestBrack() {
       var input = @"n \brack k";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
 
       Assert.Single(list);
       var fraction = list[0] as Fraction;
@@ -462,14 +462,14 @@ namespace CSharpMath.Tests.PreTypesetting {
       Assert.Single(fraction.Denominator);
       CheckAtomTypeAndNucleus(fraction.Denominator[0], typeof(Variable), "k");
 
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"{n \brack k}", latex);
     }
 
     [Fact]
     public void TestBrace() {
       var input = @"n \brace k";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
 
       Assert.Single(list);
       var fraction = list[0] as Fraction;
@@ -484,14 +484,14 @@ namespace CSharpMath.Tests.PreTypesetting {
       Assert.Single(fraction.Denominator);
       CheckAtomTypeAndNucleus(fraction.Denominator[0], typeof(Variable), "k");
 
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"{n \brace k}", latex);
     }
 
     [Fact]
     public void TestBinomial() {
       var input = @"\binom{n}{k}";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
 
       Assert.Single(list);
       var fraction = list[0] as Fraction;
@@ -506,14 +506,14 @@ namespace CSharpMath.Tests.PreTypesetting {
       Assert.Single(fraction.Denominator);
       CheckAtomTypeAndNucleus(fraction.Denominator[0], typeof(Variable), "k");
 
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"{n \choose k}", latex);
     }
 
     [Fact]
     public void TestOverline() {
       var input = @"\overline 2";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
 
       Assert.Single(list);
       var overline = list[0] as Overline;
@@ -523,14 +523,14 @@ namespace CSharpMath.Tests.PreTypesetting {
       Assert.Single(inner);
       CheckAtomTypeAndNucleus(inner[0], typeof(Number), "2");
 
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"\overline{2}", latex);
     }
 
     [Fact]
     public void TestUnderline() {
       var input = @"\underline 2";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
 
       Assert.Single(list);
       var underline = list[0] as Underline;
@@ -540,14 +540,14 @@ namespace CSharpMath.Tests.PreTypesetting {
       Assert.Single(inner);
       CheckAtomTypeAndNucleus(inner[0], typeof(Number), "2");
 
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"\underline{2}", latex);
     }
 
     [Fact]
     public void TestAccent() {
       var input = @"\bar x";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
 
       Assert.Single(list);
       var accent = list[0] as Accent;
@@ -557,27 +557,27 @@ namespace CSharpMath.Tests.PreTypesetting {
       Assert.Single(inner);
       CheckAtomTypeAndNucleus(inner[0], typeof(Variable), "x");
 
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"\bar{x}", latex);
     }
 
     [Fact]
     public void TestMathSpace() {
       var input = @"\!";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
 
       Assert.Single(list);
       CheckAtomTypeAndNucleus(list[0], typeof(Space), "");
       Assert.Equal(-3, (list[0] as Space).Length);
 
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"\! ", latex);
     }
 
     [Fact]
     public void TestMathStyle() {
       var input = @"\textstyle y \scriptstyle x";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
       Assert.Equal(4, list.Count);
 
       var style = list[0] as Style;
@@ -588,14 +588,14 @@ namespace CSharpMath.Tests.PreTypesetting {
       CheckAtomTypeAndNucleus(style2, typeof(Style), "");
       Assert.Equal(LineStyle.Script, style2.LineStyle);
 
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"\textstyle y\scriptstyle x", latex);
     }
 
     [Fact]
     public void TestMatrix() {
       var input = @"\begin{matrix} x & y \\ z & w \end{matrix}";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
       Assert.Single(list);
       var table = list[0] as Table;
       CheckAtomTypeAndNucleus(table, typeof(Table), "");
@@ -619,14 +619,14 @@ namespace CSharpMath.Tests.PreTypesetting {
           Assert.IsType<Variable>(atom);
         }
       }
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"\begin{matrix}x&y\\ z&w\end{matrix}", latex);
     }
 
     [Fact]
     public void TestPMatrix() {
       var input = @"\begin{pmatrix} x & y \\ z & w \end{pmatrix}";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
       Assert.Single(list);
       var inner = list[0] as Inner;
       CheckAtomTypeAndNucleus(inner, typeof(Inner), "");
@@ -656,14 +656,14 @@ namespace CSharpMath.Tests.PreTypesetting {
           Assert.IsType<Variable>(atom);
         }
       }
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"\left( \begin{matrix}x&y\\ z&w\end{matrix}\right) ", latex);
     }
 
     [Fact]
     public void TestDefaultTable() {
       var input = @"x \\ y";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
 
       Assert.Single(list);
       var table = list[0] as Table;
@@ -681,14 +681,14 @@ namespace CSharpMath.Tests.PreTypesetting {
           Assert.IsType<Variable>(cell[0]);
         }
       }
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"x\\ y", latex);
     }
 
     [Fact]
     public void TestTableWithColumns() {
       var input = @"x & y \\ z & w";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
       Assert.Single(list);
       var table = list[0] as Table;
       CheckAtomTypeAndNucleus(table, typeof(Table), "");
@@ -707,7 +707,7 @@ namespace CSharpMath.Tests.PreTypesetting {
         }
       }
 
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"x&y\\ z&w", latex);
     }
 
@@ -716,7 +716,7 @@ namespace CSharpMath.Tests.PreTypesetting {
     [InlineData(@"\begin{split}x&y\\ z&w\end{split}")]
     [InlineData(@"\begin{aligned}x&y\\ z&w\end{aligned}")]
     public void TestEqAlign(string input) {
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
       Assert.Single(list);
       var table = list[0] as Table;
       CheckAtomTypeAndNucleus(table, typeof(Table), "");
@@ -739,7 +739,7 @@ namespace CSharpMath.Tests.PreTypesetting {
           }
         }
       }
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(input, latex);
     }
 
@@ -747,7 +747,7 @@ namespace CSharpMath.Tests.PreTypesetting {
     [InlineData(@"\begin{displaylines}x\\ y\end{displaylines}")]
     [InlineData(@"\begin{gather}x\\ y\end{gather}")]
     public void TestDisplayLines(string input) {
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
       Assert.Single(list);
       var table = list[0] as Table;
       CheckAtomTypeAndNucleus(table, typeof(Table), "");
@@ -761,7 +761,7 @@ namespace CSharpMath.Tests.PreTypesetting {
         Assert.Single(cell);
         Assert.IsType<Variable>(cell[0]);
       }
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(input, latex);
     }
 
@@ -800,7 +800,7 @@ namespace CSharpMath.Tests.PreTypesetting {
     [InlineData(@"\nolimits")]
     [InlineData(@"\frac\limits{1}{2}")]
     public void TestErrors(string badInput) {
-      var builder = new MathListBuilder(badInput);
+      var builder = new LaTeXBuilder(badInput);
       var list = builder.Build();
       Assert.Null(list);
       Assert.NotNull(builder.Error);
@@ -809,52 +809,52 @@ namespace CSharpMath.Tests.PreTypesetting {
     [Fact]
     public void TestCustom() {
       var input = @"\lcm(a,b)";
-      var builder = new MathListBuilder(input);
+      var builder = new LaTeXBuilder(input);
       var list = builder.Build();
       Assert.Null(list);
       Assert.NotNull(builder.Error);
 
       MathAtoms.AddLatexSymbol("lcm", new LargeOperator("lcm", false));
-      var builder2 = new MathListBuilder(input);
+      var builder2 = new LaTeXBuilder(input);
       var list2 = builder2.Build();
       CheckAtomTypes(list2, typeof(LargeOperator), typeof(Open),
         typeof(Variable), typeof(Punctuation), typeof(Variable),
         typeof(Close));
-      var latex = MathListBuilder.MathListToLaTeX(list2);
+      var latex = LaTeXBuilder.MathListToLaTeX(list2);
       Assert.Equal(@"\lcm (a,b)", latex);
     }
 
     [Fact]
     public void TestFontSingle() {
       var input = @"\mathbf x";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
 
       Assert.Single(list);
       CheckAtomTypeAndNucleus(list[0], typeof(Variable), "x");
       Assert.Equal(FontStyle.Bold, list[0].FontStyle);
 
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"\mathbf{x}", latex);
     }
 
     [Fact]
     public void TestFontMultipleCharacters() {
       var input = @"\frak{xy}";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
       Assert.Equal(2, list.Count);
       CheckAtomTypeAndNucleus(list[0], typeof(Variable), "x");
       Assert.Equal(FontStyle.Fraktur, list[0].FontStyle);
       CheckAtomTypeAndNucleus(list[1], typeof(Variable), "y");
       Assert.Equal(FontStyle.Fraktur, list[1].FontStyle);
 
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"\mathfrak{xy}", latex);
     }
 
     [Fact]
     public void TestFontOneCharacterInside() {
       var input = @"\sqrt \mathrm x y";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
       Assert.Equal(2, list.Count);
 
       var radical = list[0] as Radical;
@@ -868,14 +868,14 @@ namespace CSharpMath.Tests.PreTypesetting {
       CheckAtomTypeAndNucleus(list[1], typeof(Variable), "y");
       Assert.Equal(FontStyle.Default, list[1].FontStyle);
 
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"\sqrt{\mathrm{x}}y", latex);
     }
 
     [Fact]
     public void TestText() {
       var input = @"\text{x y}";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
       Assert.Equal(3, list.Count);
       CheckAtomTypeAndNucleus(list[0], typeof(Variable), @"x");
       Assert.Equal(FontStyle.Roman, list[0].FontStyle);
@@ -884,114 +884,114 @@ namespace CSharpMath.Tests.PreTypesetting {
       CheckAtomTypeAndNucleus(list[2], typeof(Variable), @"y");
       Assert.Equal(FontStyle.Roman, list[2].FontStyle);
 
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"\mathrm{x\  y}", latex);
     }
 
     [Fact]
     public void TestLimits() {
       var input = @"\int";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
 
       Assert.Single(list);
       var op = list[0] as LargeOperator;
       Assert.IsType<LargeOperator>(op);
       Assert.False(op.Limits);
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"\int ", latex);
 
       var input2 = @"\int\limits";
-      var list2 = MathListBuilder.MathListFromLaTeX(input2);
+      var list2 = LaTeXBuilder.MathListFromLaTeX(input2);
       Assert.Single(list2);
       var op2 = list2[0] as LargeOperator;
       Assert.IsType<LargeOperator>(op2);
       Assert.True(op2.Limits);
 
-      var latex2 = MathListBuilder.MathListToLaTeX(list2);
+      var latex2 = LaTeXBuilder.MathListToLaTeX(list2);
       Assert.Equal(@"\int \limits ", latex2);
     }
 
     [Fact]
     public void TestUnspecifiedLimits() {
       var input = @"\sum";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
       Assert.Single(list);
       var op = list[0] as LargeOperator;
       Assert.IsType<LargeOperator>(op);
       Assert.Null(op.Limits);
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"\sum ", latex);
     }
 
     [Fact]
     public void TestNoLimits() {
       var input = @"\sum\nolimits";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
       Assert.Single(list);
       var op = list[0] as LargeOperator;
       Assert.IsType<LargeOperator>(op);
       Assert.False(op.Limits);
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"\sum \nolimits ", latex);
     }
 
     [Fact]
     public void TestColor() {
       var input = @"\color{#F00}a";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
       Assert.Single(list);
       var op = list[0] as Color;
       Assert.IsType<Color>(op);
       Assert.False(op.ScriptsAllowed);
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"\color{#F00}{a}", latex);
     }
 
     [Fact]
     public void TestSingleColumnArray() {
       var input = @"\begin{array}{l}a=14\\b=15\end{array}";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
 
       Assert.Single(list);
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"\begin{array}{l}a=14\\ b=15\end{array}", latex);
     }
 
     [Fact]
     public void TestDoubleColumnArray() {
       var input = @"\begin{array}{lr}x^2&\:x<0\\x^3&\:x\geq0\end{array}";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
 
       Assert.Single(list);
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"\begin{array}{lr}x^2&\: x<0\\ x^3&\: x\geq 0\end{array}", latex);
     }
 
     [Fact]
     public void TestListToString_integral_a_to_b() {
       var input = @"\int_a^b";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
 
       Assert.Single(list);
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"\int _a^b", latex);
     }
 
     [Fact]
     public void TestListToString_integral() {
       var input = @"\int_wdf=\int_{\partial w}f";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
 
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"\int _wdf=\int _{\partial w}f", latex);
     }
 
     [Fact]
     public void TestMatrixListToString() {
       var input = @"\begin{ vmatrix}\sin(x) &\cos(x)\\-\cos(x) &\sin(x)\end{ vmatrix}= 1";
-      var list = MathListBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
 
-      var latex = MathListBuilder.MathListToLaTeX(list);
+      var latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(@"\left| \begin{matrix}\sin (x)&\cos (x)\\ -\cos (x)&\sin (x)\end{matrix}\right| =1", latex);
     }
 

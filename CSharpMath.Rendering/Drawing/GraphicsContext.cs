@@ -12,7 +12,7 @@ namespace CSharpMath.Rendering {
     public (Color glyph, Color textRun)? GlyphBoxColor { get; set; }
     public ICanvas Canvas { get; set; }
 
-#warning HIGH PRIORITY: Remove (Must have a Mac to test)
+#warning Remove (Must have a Mac to test)
     void IGraphicsContext<TFonts, Glyph>.SetTextPosition(PointF position) => Translate(position);
 
     public void DrawGlyphsAtPoints

@@ -1,10 +1,11 @@
 using System.Drawing;
 
 namespace CSharpMath.Editor {
+  using FrontEnd;
   using Displays;
   using Displays.Display;
 
-  public static partial class DisplayEditingExtensions {
+  public static partial class EditingExtensions {
     /// <summary>
     /// Number of pixels outside the bound to allow a point to be considered as part of the bounds.
     /// </summary>

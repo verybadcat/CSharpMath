@@ -16,14 +16,14 @@ namespace CSharpMath.Apple.Drawing {
 
     public void DrawGlyphsAtPoints
       (IReadOnlyList<TGlyph> glyphs, TFont font, IEnumerable<PointF> points, Color? color) {
-      if (color.HasValue) CgContext.SetFillColor(color.Value.ToCGColor());
+      if (color.HasValue) CgContext.SetFillColor(color.GetValueOrDefault().ToCGColor());
       font.CtFont.DrawGlyphs(CgContext, glyphs.ToArray(), points.Select(p => (CGPoint)p).ToArray());
     }
 
     public void DrawLine(float x1, float y1, float x2, float y2, float lineThickness, Color? color) {
       CgContext.SetLineWidth(lineThickness);
       CgContext.SetLineCap(CGLineCap.Round);
-      if (color.HasValue) CgContext.SetStrokeColor(color.Value.ToCGColor());
+      if (color.HasValue) CgContext.SetStrokeColor(color.GetValueOrDefault().ToCGColor());
       CgContext.AddLines(new[] { new CGPoint(x1, y1), new CGPoint(x2, y2) });
       CgContext.StrokePath();
     }
@@ -31,7 +31,7 @@ namespace CSharpMath.Apple.Drawing {
     public void DrawGlyphRunWithOffset(AttributedGlyphRun<TFont, TGlyph> run, PointF offset, Color? color) {
       CgContext.TextPosition = new CGPoint
         (CgContext.TextPosition.X + offset.X, CgContext.TextPosition.Y + offset.Y);
-      if (color.HasValue) CgContext.SetFillColor(color.Value.ToCGColor());
+      if (color.HasValue) CgContext.SetFillColor(color.GetValueOrDefault().ToCGColor());
       using var textLine = new CTLine(run.ToNsAttributedString());
       textLine.Draw(CgContext);
     }

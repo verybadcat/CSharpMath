@@ -5,7 +5,8 @@ using System.Text;
 
 namespace CSharpMath.Atoms {
   using Atom;
-  public class MathListBuilder {
+  using InvalidCodePathException = Structures.InvalidCodePathException;
+  public class LaTeXBuilder {
     class TableEnvironmentProperties {
       public string? Name { get; set; }
       public bool Ended { get; set; }
@@ -21,7 +22,7 @@ namespace CSharpMath.Atoms {
     private TableEnvironmentProperties? _currentEnvironment;
     private Inner? _currentInnerAtom;
     public string? Error { get; private set; }
-    public MathListBuilder(string str) {
+    public LaTeXBuilder(string str) {
       _chars = str?.ToCharArray() ?? throw new ArgumentNullException(nameof(str));
       _currentFontStyle = FontStyle.Default;
       _length = str.Length;
@@ -360,15 +361,14 @@ namespace CSharpMath.Atoms {
     }
 
     private MathAtom? AtomForCommand(string command, char stopChar) {
-      var atom = MathAtoms.ForLaTeXSymbolName(command);
-      if (atom is Accent accent) {
-        var innerList = BuildInternal(true);
-        if (innerList is null) return null;
-        accent.InnerList = innerList;
-        return accent;
-      }
-      if (atom != null) {
-        return atom;
+      switch (MathAtoms.ForLaTeXSymbolName(command)) {
+        case Accent accent:
+          var innerList = BuildInternal(true);
+          if (innerList is null) return null;
+          accent.InnerList = innerList;
+          return accent;
+        case MathAtom atom:
+          return atom;
       }
       switch (command) {
         case "frac":
@@ -468,79 +468,90 @@ namespace CSharpMath.Atoms {
       ?? throw new FormatException(@"A syntax error is present in the definition of \TeX."));
 
     private MathList? StopCommand(string command, MathList list, char stopChar) {
-      if (command == "right") {
-        if (_currentInnerAtom == null) {
-          SetError("Missing \\left");
-          return null;
-        }
-        _currentInnerAtom.RightBoundary = BoundaryAtomForDelimiterType("right");
-        if (_currentInnerAtom.RightBoundary == null) {
-          return null;
-        }
-        return list;
-      }
-      if (fractionCommands.ContainsKey(command)) {
-        var fraction = new Fraction(command == "over") {
-          Numerator = list,
-          Denominator = BuildInternal(false, stopChar)
-        };
-        if (Error != null) {
-          return null;
-        }
-        if (fractionCommands[command] is (var left, var right)) {
-          fraction.LeftDelimiter = left;
-          fraction.RightDelimiter = right;
-        };
-        return new MathList(fraction);
-      } else if (command == "\\" || command == "cr") {
-        if (_currentEnvironment == null) {
-          var table = BuildTable(null, list, true, stopChar);
-          if (table == null) return null;
-          return new MathList(table);
-        } else {
-          // stop the current list and increment the row count
-          _currentEnvironment.NRows++;
+      switch(command) {
+        case "right":
+          if (_currentInnerAtom == null) {
+            SetError("Missing \\left");
+            return null;
+          }
+          _currentInnerAtom.RightBoundary = BoundaryAtomForDelimiterType("right");
+          if (_currentInnerAtom.RightBoundary == null) {
+            return null;
+          }
           return list;
-        }
-      } else if (command == "end") {
-        if (_currentEnvironment == null) {
-          SetError(@"Missing \begin");
-          return null;
-        }
-        var env = ReadEnvironment();
-        if (env == null) {
-          return null;
-        }
-        if (env != _currentEnvironment.Name) {
-          SetError($"Begin environment name {_currentEnvironment.Name} does not match end environment name {env}");
-          return null;
-        }
-        _currentEnvironment.Ended = true;
-        return list;
+        case var _ when fractionCommands.ContainsKey(command):
+          var fraction = new Fraction(command == "over") {
+            Numerator = list,
+            Denominator = BuildInternal(false, stopChar)
+          };
+          if (Error != null) {
+            return null;
+          }
+          if (fractionCommands[command] is (var left, var right)) {
+            fraction.LeftDelimiter = left;
+            fraction.RightDelimiter = right;
+          };
+          return new MathList(fraction);
+        case "\\":
+        case "cr":
+          if (_currentEnvironment == null) {
+            var table = BuildTable(null, list, true, stopChar);
+            if (table == null) return null;
+            return new MathList(table);
+          } else {
+            // stop the current list and increment the row count
+            _currentEnvironment.NRows++;
+            return list;
+          }
+        case "end":
+          if (_currentEnvironment == null) {
+            SetError(@"Missing \begin");
+            return null;
+          }
+          var env = ReadEnvironment();
+          if (env == null) {
+            return null;
+          }
+          if (env != _currentEnvironment.Name) {
+            SetError($"Begin environment name {_currentEnvironment.Name} does not match end environment name {env}");
+            return null;
+          }
+          _currentEnvironment.Ended = true;
+          return list;
       }
       return null;
     }
     private bool ApplyModifier(string modifier, MathAtom? atom) {
-      if (modifier == "limits") {
-        if (atom is LargeOperator op) {
-          op.Limits = true;
-        } else {
-          SetError(@"\limits can only be applied to an operator");
-        }
-        return true;
-      } else if (modifier == "nolimits") {
-        if (atom is LargeOperator op) {
-          op.Limits = false;
-        } else {
-          SetError(@"\nolimits can only be applied to an operator");
-        }
-        return true;
+      switch (modifier) {
+        case "limits":
+          if (atom is LargeOperator limitsOp) {
+            limitsOp.Limits = true;
+          } else {
+            SetError(@"\limits can only be applied to an operator");
+          }
+          return true;
+        case "nolimits":
+          if (atom is LargeOperator noLimitsOp) {
+            noLimitsOp.Limits = false;
+          } else {
+            SetError(@"\nolimits can only be applied to an operator");
+          }
+          return true;
       }
       return false;
     }
 
     private void SetError(string error) => Error ??= error;
 
+    private static readonly Dictionary<string, (string left, string right)?> _matrixEnvironments =
+      new Dictionary<string, (string left, string right)?> {
+        { "matrix",  null } ,
+        { "pmatrix", ("(", ")") } ,
+        { "bmatrix", ("[", "]") },
+        { "Bmatrix", ("{", "}") },
+        { "vmatrix", ("vert", "vert") },
+        { "Vmatrix", ("Vert", "Vert") }
+      };
     private MathAtom? BuildTable
       (string? environment, MathList? firstList, bool isRow, char stopChar) {
       var oldEnv = _currentEnvironment;
@@ -605,19 +616,124 @@ namespace CSharpMath.Atoms {
         SetError(@"Missing \end");
         return null;
       }
-      return
-        MathAtoms.Table(_currentEnvironment.Name, _currentEnvironment.ArrayAlignments, rows)
-        .Match<MathAtom?>(table => {
-          _currentEnvironment = oldEnv;
+
+      // We have finished parsing the table, now interpret the environment
+      environment = _currentEnvironment.Name;
+      var arrayAlignments = _currentEnvironment.ArrayAlignments;
+      _currentEnvironment = oldEnv;
+
+      Style style;
+      var table = new Table(environment, rows);
+      switch (environment) {
+        case null:
+          table.InterRowAdditionalSpacing = 1;
+          for (int i = 0; i < table.NColumns; i++) {
+            table.SetAlignment(ColumnAlignment.Left, i);
+          }
           return table;
-        }, error => {
-          SetError(error);
+        case var _ when _matrixEnvironments.TryGetValue(environment, out var delimiters):
+          table.Environment = "matrix"; // TableEnvironment is set to matrix as delimiters are converted to latex outside the table.
+          table.InterColumnSpacing = 18;
+
+          style = new Style(LineStyle.Text);
+          foreach (var row in table.Cells) {
+            foreach (var cell in row) {
+              cell.Insert(0, style);
+            }
+          }
+          return delimiters switch
+          {
+            (var left, var right) => new Inner(new MathList(table)) {
+              LeftBoundary = MathAtoms.BoundaryAtom(left),
+              RightBoundary = MathAtoms.BoundaryAtom(right)
+            },
+            null => table
+          };
+        case "array":
+          if (arrayAlignments is null)
+            throw new InvalidCodePathException("arrayAlignments is null despite array environment");
+          table.InterRowAdditionalSpacing = 1;
+          for (int i = 0, j = 0; i < arrayAlignments.Length && j < table.NColumns; i++, j++) {
+#warning vertical lines in array currently unsupported
+            while (arrayAlignments[i] == '|') i++;
+            table.SetAlignment(arrayAlignments[i] switch
+            {
+              'l' => ColumnAlignment.Left,
+              'c' => ColumnAlignment.Center,
+              'r' => ColumnAlignment.Right,
+              _ => throw new InvalidCodePathException("Invalid characters were not filtered")
+            }, j);
+          }
+          return table;
+        case "eqalign":
+        case "split":
+        case "aligned":
+          if (table.NColumns != 2) {
+            SetError(environment + " environment can have only 2 columns");
+            return null;
+          } else {
+            // add a spacer before each of the second column elements, in order to create the correct spacing for "=" and other relations.
+            var spacer = new Ordinary(string.Empty);
+            foreach (var row in table.Cells) {
+              if (row.Count > 1) {
+                row[1].Insert(0, spacer);
+              }
+            }
+            table.InterRowAdditionalSpacing = 1;
+            table.SetAlignment(ColumnAlignment.Right, 0);
+            table.SetAlignment(ColumnAlignment.Left, 1);
+            return table;
+          }
+        case "displaylines":
+        case "gather":
+          if (table.NColumns != 1) {
+            SetError(environment + " environment can only have 1 column.");
+            return null;
+          }
+          table.InterRowAdditionalSpacing = 1;
+          table.InterColumnSpacing = 0;
+          table.SetAlignment(ColumnAlignment.Center, 0);
+          return table;
+        case "eqnarray":
+          if (table.NColumns != 3) {
+            SetError(environment + " must have exactly 3 columns.");
+            return null;
+          } else {
+            table.InterRowAdditionalSpacing = 1;
+            table.InterColumnSpacing = 18;
+            table.SetAlignment(ColumnAlignment.Right, 0);
+            table.SetAlignment(ColumnAlignment.Center, 1);
+            table.SetAlignment(ColumnAlignment.Left, 2);
+            return table;
+          }
+        case "cases":
+          if (table.NColumns < 1 || table.NColumns > 2) {
+            SetError("cases environment must have 1 to 2 columns");
+            return null;
+          } else {
+            table.InterColumnSpacing = 18;
+            table.SetAlignment(ColumnAlignment.Left, 0);
+            if (table.NColumns == 2) table.SetAlignment(ColumnAlignment.Left, 1);
+            style = new Style(LineStyle.Text);
+            foreach (var row in table.Cells) {
+              foreach (var cell in row) {
+                cell.Insert(0, style);
+              }
+            }
+            // add delimiters
+            return new Inner(new MathList(new Space(Structures.Space.ShortSpace), table)) {
+              LeftBoundary = MathAtoms.BoundaryAtom("{"),
+              RightBoundary = MathAtoms.BoundaryAtom(".")
+            };
+          }
+        default:
+          SetError("Unknown environment " + environment);
           return null;
-        });
+      }
     }
 
     public static Structures.Result<MathList> TryMathListFromLaTeX(string str) {
-      var builder = new MathListBuilder(str);
+      var builder = new LaTeXBuilder(str);
       var list = builder.Build();
       var error = builder.Error;
       return
@@ -628,7 +744,7 @@ namespace CSharpMath.Atoms {
         : throw new InvalidCodePathException("Both error and list are null?");
     }
 
-    public static MathList? MathListFromLaTeX(string str) => new MathListBuilder(str).Build();
+    public static MathList? MathListFromLaTeX(string str) => new LaTeXBuilder(str).Build();
 
     // ^ LaTeX -> Math atoms
     // v Math atoms -> LaTeX
@@ -649,7 +765,7 @@ namespace CSharpMath.Atoms {
       { LineStyle.ScriptScript, "scriptscriptstyle" }
     };
 
-    public static string DelimiterToString(Boundary delimiter) {
+    public static string BoundaryToLaTeX(Boundary delimiter) {
       var command = MathAtoms.DelimiterName(delimiter);
       if (command == null) {
         return string.Empty;
@@ -713,12 +829,12 @@ namespace CSharpMath.Atoms {
               builder.Append(inner.LeftBoundary switch
               {
                 null => @"\left. ",
-                var b => @"\left" + DelimiterToString(b) + " "
+                var b => @"\left" + BoundaryToLaTeX(b) + " "
               }).Append(MathListToLaTeX(inner.InnerList))
               .Append(inner.RightBoundary switch
               {
                 null => @"\right. ",
-                var b => @"\right" + DelimiterToString(b) + " "
+                var b => @"\right" + BoundaryToLaTeX(b) + " "
               });
             }
             break;

@@ -6,6 +6,7 @@ namespace CSharpMath.Rendering {
   using Displays;
   using Displays.Display;
   using Displays = Displays.Display.ListDisplay<Fonts, Glyph>;
+  using Structures;
   public static class TextLayoutter {
     public static (Displays relative, Displays absolute) Layout
       (TextAtom input, Fonts inputFont, float canvasWidth, float additionalLineSpacing) {

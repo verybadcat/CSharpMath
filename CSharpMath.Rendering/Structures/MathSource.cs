@@ -3,11 +3,11 @@ using CSharpMath.Atoms;
 namespace CSharpMath.Rendering {
   public readonly struct MathSource : ISource {
     public MathSource(string latex) {
-      (MathList, ErrorMessage) = MathListBuilder.TryMathListFromLaTeX(latex);
+      (MathList, ErrorMessage) = LaTeXBuilder.TryMathListFromLaTeX(latex);
       LaTeX = latex;
     }
     public MathSource(MathList mathList) {
-      LaTeX = MathListBuilder.MathListToLaTeX(mathList);
+      LaTeX = LaTeXBuilder.MathListToLaTeX(mathList);
       MathList = mathList;
       ErrorMessage = null;
     }

@@ -1,5 +1,4 @@
 using System;
-using System.Text;
 using CSharpMath.Atoms;
 using CSharpMath.FrontEnd;
 
@@ -61,21 +60,6 @@ namespace CSharpMath.Displays {
       // The symbols are epsilon, vartheta, varkappa, phi, varrho, and varpi.
       Array.IndexOf(greekSymbols, c);
     private static bool IsGreekSymbol(char c) => GreekSymbolOrder(c) != -1;
-    private static int StyleCharacter(char c, FontStyle fontStyle) =>
-      fontStyle switch
-      {
-        FontStyle.Default => GetDefaultStyle(c),
-        FontStyle.Roman => c,
-        FontStyle.Bold => GetBold(c),
-        FontStyle.Italic => GetItalicized(c),
-        FontStyle.BoldItalic => GetBoldItalic(c),
-        FontStyle.Caligraphic => GetCaligraphic(c),
-        FontStyle.Typewriter => GetTypewriter(c),
-        FontStyle.SansSerif => GetSansSerif(c),
-        FontStyle.Fraktur => GetFraktur(c),
-        FontStyle.Blackboard => GetBlackboard(c),
-        _ => throw new NotImplementedException("Unknown font style " + fontStyle),
-      };
     private static int GetDefaultStyle(char c) =>
       IsLowerEn(c) || IsUpperEn(c) || IsLowerGreek(c) || IsGreekSymbol(c) ? GetItalicized(c) : c;
     private static int GetItalicized(char c) =>
@@ -174,22 +158,20 @@ namespace CSharpMath.Displays {
         var _ when IsNumber(c) => UnicodeNumberBlackboardStart + c - '0',
         _ => GetDefaultStyle(c),
       };
-
-    public int ChangeFont(int c, FontStyle outputFontStyle) =>
-      char.MinValue <= c && c <= char.MaxValue
-      ? StyleCharacter((char)c, outputFontStyle) : c;
-
-    public string ChangeFont(char c, FontStyle outputFontStyle) {
-      int unicode = StyleCharacter(c, outputFontStyle);
-      return 0xD800 < unicode && unicode < 0xDFFF
-        ? ((char)unicode).ToStringInvariant() : char.ConvertFromUtf32(unicode);
-    }
-
-    public string ChangeFont(string inputString, FontStyle outputFontStyle) {
-      var builder = new StringBuilder();
-      foreach (var c in inputString)
-        builder.Append(ChangeFont(c, outputFontStyle));
-      return builder.ToString();
-    }
+    public int StyleCharacter(char c, FontStyle fontStyle) =>
+      fontStyle switch
+      {
+        FontStyle.Default => GetDefaultStyle(c),
+        FontStyle.Roman => c,
+        FontStyle.Bold => GetBold(c),
+        FontStyle.Italic => GetItalicized(c),
+        FontStyle.BoldItalic => GetBoldItalic(c),
+        FontStyle.Caligraphic => GetCaligraphic(c),
+        FontStyle.Typewriter => GetTypewriter(c),
+        FontStyle.SansSerif => GetSansSerif(c),
+        FontStyle.Fraktur => GetFraktur(c),
+        FontStyle.Blackboard => GetBlackboard(c),
+        _ => throw new NotImplementedException("Unknown font style " + fontStyle),
+      };
   }
 }

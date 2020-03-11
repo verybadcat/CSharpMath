@@ -5,8 +5,7 @@ using System.Collections.Generic;
 
 namespace CSharpMath.FrontEnd {
   /// <summary>Holds lots of constants for spacing between various visible elements.</summary>
-  public abstract class FontMathTable<TFont, TGlyph>
-    where TFont : IFont<TGlyph> {
+  public abstract class FontMathTable<TFont, TGlyph> where TFont : IFont<TGlyph> {
     public float MuUnit(TFont font) => font.PointSize / 18f;
     public abstract float RadicalDisplayStyleVerticalGap(TFont font);
     public abstract float RadicalVerticalGap(TFont font);

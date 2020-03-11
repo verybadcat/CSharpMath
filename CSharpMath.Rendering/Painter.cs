@@ -3,10 +3,11 @@ using System.Drawing;
 
 using CSharpMath.Displays;
 using TFonts = CSharpMath.Rendering.Fonts;
+using CSharpMath.Structures;
+using Color = CSharpMath.Structures.Color;
 
 using Typography.OpenFont;
 using System.Collections.Specialized;
-using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Rendering {
   public static class PainterConstants {
