@@ -106,7 +106,7 @@ namespace CSharpMath.Tests.PreTypesetting {
       string latex = LaTeXBuilder.MathListToLaTeX(list);
       Assert.Equal(output, latex);
     }
-    
+
     /// <summary>Safe to call with a null list. Types cannot be null however.</summary>
     private void CheckAtomTypes(MathList list, params Type[] types) {
       int atomCount = (list == null) ? 0 : list.Atoms.Count;
