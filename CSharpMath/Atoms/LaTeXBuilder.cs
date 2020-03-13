@@ -928,7 +928,7 @@ namespace CSharpMath.Atoms {
                 builder.Append(@"\limits ");
                 break;
               case false:
-                if (!op.NoLimits) builder.Append(@"\nolimits ");
+                if (!op.ForceNoLimits) builder.Append(@"\nolimits ");
                 break;
               case null:
                 break;

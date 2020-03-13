@@ -2,21 +2,16 @@ using System.Drawing;
 
 namespace CSharpMath.Rendering {
   using Displays;
-  using Displays.FrontEnd;
   public abstract class MathPainter<TCanvas, TColor> : Painter<TCanvas, MathSource, TColor> {
     public MathPainter(float fontSize = DefaultFontSize) : base(fontSize) { }
-    protected Displays.IDisplay<Fonts, Glyph> _display;
+    protected IDisplay<Fonts, Glyph> _display;
     protected bool _displayChanged = true;
-    public override Displays.IDisplay<Fonts, Glyph> Display => _display;
+    public override IDisplay<Fonts, Glyph> Display => _display;
     public Atoms.MathList MathList { get => Source.MathList; set => Source = new MathSource(value); }
-    public string LaTeX { get => Source.LaTeX; set => Source = new MathSource(value); }
-    protected override RectangleF? MeasureCore(float canvasWidth = float.NaN) =>
-      _display?.DisplayBounds(CoordinatesFromBottomLeftInsteadOfTopLeft);
-    public RectangleF? Measure {
-      get {
-        UpdateDisplay();
-        return MeasureCore();
-      }
+    public override string LaTeX { get => Source.LaTeX; set => Source = new MathSource(value); }
+    public override RectangleF? Measure(float unused = float.NaN) {
+      UpdateDisplay();
+      return _display?.DisplayBounds(CoordinatesFromBottomLeftInsteadOfTopLeft);
     }
     protected override void SetRedisplay() => _displayChanged = true;
     protected void UpdateDisplay() {

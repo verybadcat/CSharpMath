@@ -48,7 +48,7 @@ let rec private findShortening(kl:MathKeyboardInput list) =
 
 [<Fact>]
 let ``random inputs don't crash editor``() =
-    let results = List.init 1000 (fun _ -> test100keypresses())
+    let results = List.init 100 (fun _ -> test100keypresses())
     let shortestError =
         results
         |> List.choose (function Ok _ -> None | Error e -> Some e)

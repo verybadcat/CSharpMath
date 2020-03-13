@@ -6,7 +6,7 @@ namespace CSharpMath.Forms.Example
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class LayoutPage : ContentPage {
-    readonly SkiaSharp.TextPainter painter = new SkiaSharp.TextPainter { Text =
+    readonly SkiaSharp.TextPainter painter = new SkiaSharp.TextPainter { LaTeX =
       @"Here are some text.
 This text is made to be long enough to have the TextPainter of CSharpMath add a line break to this text automatically.
 To demonstrate the capabilities of the TextPainter,

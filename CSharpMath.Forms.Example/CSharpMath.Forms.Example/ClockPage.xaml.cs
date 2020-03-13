@@ -68,7 +68,7 @@ namespace CSharpMath.Forms.Example {
         canvas.Restore();
         // Maths
         if (i % 5 == 0) {
-          painter.Text = labels[i / 5];
+          painter.LaTeX = labels[i / 5];
           var measure = painter.Measure(e.Info.Width).Value;
           var θ = (90 - 6 * i) / 180f * PI;
           var sinθ = (float)Sin(θ);

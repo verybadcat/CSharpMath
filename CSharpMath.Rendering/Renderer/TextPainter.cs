@@ -26,23 +26,20 @@ namespace CSharpMath.Rendering {
       new Typography.TextLayout.GlyphLayout();
 
     public TextAtom Atom { get => Source.Atom; set => Source = new TextSource(value); }
-    public string Text { get => Source.LaTeX; set => Source = new TextSource(value); }
+    public override string LaTeX { get => Source.LaTeX; set => Source = new TextSource(value); }
     public float AdditionalLineSpacing { get; set; }
 
     protected override void SetRedisplay() { }
-    protected override RectangleF? MeasureCore(float canvasWidth) =>
-      _relativeXCoordDisplay
-      ?.Frame(CoordinatesFromBottomLeftInsteadOfTopLeft)
-      .Union(_absoluteXCoordDisplay.Frame(CoordinatesFromBottomLeftInsteadOfTopLeft));
-    public RectangleF? Measure(float canvasWidth) {
+    public override RectangleF? Measure(float canvasWidth) {
       UpdateDisplay(canvasWidth);
-      return MeasureCore(canvasWidth);
+      return 
+        _relativeXCoordDisplay
+        ?.Frame(CoordinatesFromBottomLeftInsteadOfTopLeft)
+        .Union(_absoluteXCoordDisplay.Frame(CoordinatesFromBottomLeftInsteadOfTopLeft));
     }
-
     protected void UpdateDisplay(float canvasWidth) =>
       (_relativeXCoordDisplay, _absoluteXCoordDisplay) =
         TextLayoutter.Layout(Atom, Fonts, canvasWidth, AdditionalLineSpacing);
-
     public override void Draw(TCanvas canvas,
         TextAlignment alignment = TextAlignment.TopLeft, Thickness padding = default,
         float offsetX = 0, float offsetY = 0) =>

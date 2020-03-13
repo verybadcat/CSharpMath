@@ -45,9 +45,9 @@ namespace CSharpMath.Forms {
       get => Source.MathList;
       set => Source = new MathSource(value);
     }
-    public new RectangleF? Measure => Painter.Measure;
+    public new RectangleF? Measure => Painter.Measure();
     protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint) =>
-      Painter.Measure is RectangleF r
+      Painter.Measure() is RectangleF r
       ? new SizeRequest(new Xamarin.Forms.Size(r.Width, r.Height))
       : base.OnMeasure(widthConstraint, heightConstraint);
   }

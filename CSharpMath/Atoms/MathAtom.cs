@@ -50,7 +50,9 @@ namespace CSharpMath.Atoms {
     protected abstract MathAtom CloneInside(bool finalize);
     protected TAtom ApplyCommonPropertiesOn<TAtom>(bool finalize, TAtom newAtom)
       where TAtom : MathAtom {
-      newAtom.Nucleus = Nucleus;
+      if (string.IsNullOrEmpty(newAtom.Nucleus))
+        // newAtom.Nucleus may have already been initialized by newAtom's constructor
+        newAtom.Nucleus = Nucleus;
       if (FusedAtoms != null)
         newAtom.FusedAtoms = new List<MathAtom>(FusedAtoms);
       newAtom.Superscript = Superscript?.Clone(finalize);

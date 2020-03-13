@@ -39,7 +39,7 @@ namespace CSharpMath.Forms.Example {
       painter.TextColor = SKColors.White;
       for (int i = 0; i < count; i++) {
         painter.LaTeX = i.ToString();
-        var m = painter.Measure.Value;
+        var m = painter.Measure().Value;
         painter.Draw(c, cx - m.Width / 2, cy - r - m.Y / 2);
         c.RotateDegrees(θ, cx, cy);
       }

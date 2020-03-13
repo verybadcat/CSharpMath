@@ -40,9 +40,9 @@ namespace CSharpMath.Rendering {
     public (TColor glyph, TColor textRun)? GlyphBoxColor { get; set; }
     public PaintStyle PaintStyle { get; set; } = PaintStyle.Fill;
     public float Magnification { get; set; } = 1;
-
     public string ErrorMessage => Source.ErrorMessage;
     public abstract IDisplay<TFonts, Glyph> Display { get; }
+    public abstract string LaTeX { get; set; }
     #endregion Non-redisplaying properties
 
     #region Redisplaying properties
@@ -69,13 +69,9 @@ namespace CSharpMath.Rendering {
 
     public abstract Color WrapColor(TColor color);
     public abstract TColor UnwrapColor(Color color);
-
     public abstract ICanvas WrapCanvas(TCanvas canvas);
-
+    public abstract RectangleF? Measure(float canvasWidth);
     public abstract void Draw(TCanvas canvas, TextAlignment alignment, Thickness padding = default, float offsetX = 0, float offsetY = 0);
-    
-    protected abstract RectangleF? MeasureCore(float canvasWidth);
-
     protected void DrawCore(ICanvas canvas, IDisplay<TFonts, Glyph> display, PointF? position = null) {
       if (Source.IsValid) {
         if(position != null) display.Position = position.Value;
@@ -88,9 +84,9 @@ namespace CSharpMath.Rendering {
         canvas.DefaultColor = WrapColor(TextColor);
         canvas.CurrentColor = WrapColor(HighlightColor);
         canvas.CurrentStyle = PaintStyle;
-        var measure = MeasureCore(canvas.Width) ??
+        var measure = Measure(canvas.Width) ??
           throw new InvalidCodePathException(
-            nameof(MeasureCore) + " returned null." +
+            nameof(Measure) + " returned null." +
             $"Any conditions leading to this should have already been checked via " +
             nameof(Source) + "." + nameof(Source.IsValid) + ".");
         canvas.FillRect(display.Position.X + measure.X, display.Position.Y -
