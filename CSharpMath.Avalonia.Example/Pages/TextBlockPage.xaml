@@ -2,21 +2,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:csmath="clr-namespace:CSharpMath.Avalonia;assembly=CSharpMath.Avalonia"
              x:Class="CSharpMath.Avalonia.Example.Pages.TextBlockPage">
-
     <StackPanel Spacing="24">
-
-        <StackPanel Spacing="4">
-
-            <TextBlock Classes="h1"
-                       Text="TextBlock" />
-
-            <TextBlock Classes="h2"
-                       Text="Displays text"/>
-
-        </StackPanel>
-
-        <csmath:TextBlock Text="Hello World!" />
-
+        <TextBlock Classes="h1" Text="TextBlock" />
+        <TextBlock Classes="h2" Text="Displays text"/>
+        <TextBlock Classes="h1" Text="Enter your own LaTeX:" />
+        <TextBox Name="Input" />
+        <csmath:TextBlock HorizontalAlignment="Left" Text="{Binding #Input.Text}" />
     </StackPanel>
-
 </UserControl>

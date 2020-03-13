@@ -34,7 +34,7 @@
     <AvaloniaResource Include="**\*.xaml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.8.2" />
+    <PackageReference Include="Avalonia" Version="0.9.4" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CSharpMath.Rendering\CSharpMath.Rendering.csproj" />
