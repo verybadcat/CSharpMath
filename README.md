@@ -4,6 +4,8 @@
 
 CSharpMath is a C# port of the wonderful [iosMath LaTeX engine](https://github.com/kostub/iosMath).
 
+_The icon's text and numbers are generated with this library itself._
+
 Current release|Current pre-release|Commits since last version|Number of contributors
 -|-|-|-
 NuGet: ![NuGet Release shield](https://img.shields.io/nuget/v/CSharpMath.svg)<br/> GitHub: ![GitHub Releases shield](https://img.shields.io/github/release/verybadcat/CSharpMath.svg)<br/>Date: ![GitHub Release date shield](https://img.shields.io/github/release-date/verybadcat/CSharpMath.svg)|NuGet: ![NuGet pre-release shield](https://img.shields.io/nuget/vpre/CSharpMath.svg)<br/> GitHub: ![GitHub Pre-releases shield](https://img.shields.io/github/release-pre/verybadcat/CSharpMath.svg)<br/>Date: ![GitHub Pre-release date shield](https://img.shields.io/github/release-date-pre/verybadcat/CSharpMath.svg)|![GitHub commits since last version shield](https://img.shields.io/github/commits-since/verybadcat/CSharpMath/latest.svg)|![GitHub Contributors shield](https://img.shields.io/github/contributors/verybadcat/CSharpMath.svg)
@@ -53,15 +55,11 @@ latexView.Frame = new CoreGraphics.CGRect(0, 20, size.Width, size.Height);
 someSuperview.Add(latexView);
 ```
 
-[See an example project](CSharpMath.IosExample)
+[See an example project](CSharpMath.Ios.Example)
       
-![Quadratic Formula](CSharpMath/RenderedSamples/Quadratic%20Formula.png)
-
-![Power Series](CSharpMath/RenderedSamples/PowerSeries.png)
-
-![Matrix Product](CSharpMath/RenderedSamples/MatrixProduct.png)
-
-![Continued Fraction](CSharpMath/RenderedSamples/ContinuedFraction.png)
+![Quadratic Formula](CSharpMath/RenderedSamples/Quadratic%20Formula.png)|![Power Series](CSharpMath/RenderedSamples/PowerSeries.png)
+------------------------------------------------------------------------|-----------------------------------------------------------
+![Matrix Product](CSharpMath/RenderedSamples/MatrixProduct.png)         |![Continued Fraction](CSharpMath/RenderedSamples/ContinuedFraction.png)
       
 ### 2. CSharpMath.Forms
 
@@ -88,7 +86,7 @@ iOS | Android | Windows UWP
 ----|---------|------------
 ![1/2](https://user-images.githubusercontent.com/19922066/40612166-fd6c5b38-62ab-11e8-9cb1-b2b7eb6883be.png) | ![1+1](https://user-images.githubusercontent.com/19922066/40575043-183a6970-6110-11e8-887f-820e14efc588.jpeg) | ![Panning a view](https://user-images.githubusercontent.com/19922066/40731183-18a09b68-6463-11e8-8095-1a4cc9df9eae.gif) ![Colors!](https://user-images.githubusercontent.com/19922066/40972206-8abc247c-68f2-11e8-8684-561b5e833c21.png)
 
-# [Documentation](https://github.com/verybadcat/CSharpMath/wiki/Documentation-of-public-facing-APIs-of-CSharpMath.Rendering,-CSharpMath.SkiaSharp-and-CSharpMath.Forms)
+# [Documentation](https://github.com/verybadcat/CSharpMath/wiki/Documentation-of-public-facing-APIs-of-CSharpMath.Rendering,-CSharpMath.SkiaSharp-and-CSharpMath.Forms-MathViews)
 
 # Extending to more platforms
 
@@ -122,7 +120,7 @@ You can use this library on other appleOSes by making use of [AppleMathView](CSh
 We need more contributors! Maybe you can contribute something to this repository. Whether they are bug reports, feature proposals or pull requests, you are welcome to send them to us. We are sure that we will take a look at them!
 
 Here is an idea list if you cannot think of anything right now:
-- A new example for the Exmple projects (please open pull requests straight away)
+- A new example for the Example projects (please open pull requests straight away)
 - A new LaTeX command (please link documentation of it)
 - A new front end (please describe what it is and why should it be supported)
 - A new math syntax (please describe what it is and why should it be supported)
@@ -135,7 +133,7 @@ Dependency|Used by|License
 -|-|-
 Typography project|CSharpMath.Rendering|[MIT](https://github.com/LayoutFarm/Typography/blob/master/LICENSE.md)
 latin-modern-math font|CSharpMath.Ios, CSharpMath.Rendering|[GUST Font License](http://www.gust.org.pl/projects/e-foundry/licenses/GUST-FONT-LICENSE.txt/view)
-AMS-Capital-Blackboard-Bold font (extracted by @Happypig375 from [the amsfonts package](https://ctan.org/pkg/amsfonts))|CSharpMath.Rendering|[SIL Open Font License](https://ctan.org/license/ofl)
+[Cyrillic Modern](https://sourceforge.net/projects/cyrillic-modern/) and the AMS-Capital-Blackboard-Bold font (extracted by @Happypig375 from [the amsfonts package](https://ctan.org/pkg/amsfonts))|CSharpMath.Rendering|[SIL Open Font License](https://ctan.org/license/ofl)
 
 # Authors
 
@@ -148,6 +146,9 @@ AMS-Capital-Blackboard-Bold font (extracted by @Happypig375 from [the amsfonts p
 [@FoggyFinder](https://github.com/FoggyFinder)
 
 Thanks for reading.
+<!--
+The roadmap isn't happening bois
+
 <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 You can take a look at the code now.<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 Really, there is nothing here.<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
@@ -166,3 +167,4 @@ Shhh... Don't tell anybody!
 
 0.4.0: Math evaluation??
 0.5.0: Handwritten math recognition???
+-->

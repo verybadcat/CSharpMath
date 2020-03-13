@@ -1,22 +1,27 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard1.1</TargetFramework>
-    <LangVersion>latest</LangVersion>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>preview</LangVersion>
+    <Nullable>enable</Nullable>
+    <NoWarn>
+      CA1062,<!--Obsolete with C# 8 nullability annotations-->
+      CA1303<!--Who localizes exception messages, anyway?-->
+    </NoWarn>
     <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
     <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie, FoggyFinder)</Authors>
     <Description>The core of the C# math rendering engine - CSharpMath. Can display beautiful math equations and symbols from the LaTeX format. Needs a front end to function. Currently, front ends exist for iOS, SkiaSharp and Xamarin.Forms.</Description>
-    <PackageReleaseNotes>The 0.2.0 Editor Update brings an editor interface to CSharpMath.</PackageReleaseNotes>
+    <PackageReleaseNotes>The 0.3.0 Clickity Update brings a clickable math editor!</PackageReleaseNotes>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/verybadcat/CSharpMath.git</RepositoryUrl>
     <PackageProjectUrl>https://github.com/verybadcat/CSharpMath</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/verybadcat/CSharpMath/blob/master/LICENSE</PackageLicenseUrl>
-    <Copyright>© CSharpMath Contributors 2018</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Copyright>© CSharpMath Contributors 2019</Copyright>
     <PackageTags>math;mathematics;mathematical;formula;equation;equations;expression;tex;latex;render;rendering;display</PackageTags>
-    <PackageVersion>0.2.0</PackageVersion>
+    <PackageVersion>0.3.0</PackageVersion>
     <RepositoryBranch>master</RepositoryBranch>
-    <RepositoryCommit>5610427533fc4ed9f1fd86b07dda36dca6c65f67</RepositoryCommit>
+    <RepositoryCommit>3f4e8d3f9b5bcf39bfc425f8a7d8a29ea06a1c84</RepositoryCommit>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageIconUrl>https://raw.githubusercontent.com/verybadcat/CSharpMath/master/Icon.png</PackageIconUrl>
+    <PackageIcon>Icon.png</PackageIcon>
     <PackageId>CSharpMath</PackageId>
     <Title>CSharpMath</Title>
     <AssemblyVersion>0.1.0.0</AssemblyVersion>
@@ -26,19 +31,32 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>DEBUG</DefineConstants>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="../Icon.png" Pack="true" PackagePath="" />
+    <Folder Include="RenderedSamples\" />
+  </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.1'">
     <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
-  <ItemGroup>
-    <!--Cannot use project reference as analyzer like in CSharpMath.Rendering here because this targets netstandard1.1 which is < netstandard1.3, a requirement of an Analyzer project.-->
-    <Analyzer Include="..\CSharpMath.Analyzers\CSharpMath.Analyzers\bin\Debug\netstandard1.3\CSharpMath.Analyzers.dll" />
-    <Folder Include="RenderedSamples\" />
+  <!--NuGet.Build.Packaging does not like analyzers-->
+  <ItemGroup Condition="'$(Configuration)' != 'Release-iOS'">
+    <ProjectReference Include="..\CSharpMath.Analyzers\CSharpMath.Analyzers\CSharpMath.Analyzers.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <OutputItemType>Analyzer</OutputItemType>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="System.Buffers" Version="4.5.0" />
-    <PackageReference Include="System.Memory" Version="4.5.1" />
-    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.2" />
+    <PackageReference Include="System.Memory" Version="4.5.3" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.6.0" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release-iOS'">
+    <PackageReference Include="NuGet.Build.Packaging" Version="0.2.2" />
   </ItemGroup>
   <Import Project="..\packages\NuGet.Build.Packaging.0.2.2\build\NuGet.Build.Packaging.targets" Condition="Exists('..\packages\NuGet.Build.Packaging.0.2.2\build\NuGet.Build.Packaging.targets') And '$(Configuration)' == 'Release-iOS'" />
 </Project>

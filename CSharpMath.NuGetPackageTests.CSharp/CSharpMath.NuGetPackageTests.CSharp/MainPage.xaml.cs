@@ -1,29 +1,63 @@
-using System;
-using System.Collections.Generic;
+using System.Reflection;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SkiaSharp;
+using SkiaSharp.Views.Forms;
 using Xamarin.Forms;
 
-namespace CSharpMath.NuGetPackageTests.CSharp
-{
-	public partial class MainPage : ContentPage
-	{
+namespace CSharpMath.NuGetPackageTests.CSharp {
+  using Display;
+  using MathKeyboard = Forms.MathKeyboard;
+  using Rendering;
+  using SkiaSharp;
+  public partial class MainPage : ContentPage {
     public MainPage() {
-      InitializeComponent();
-      global::SkiaSharp.Views.Forms.SKCanvasView canvasView = canvas;
-      CSharpMath.Forms.MathKeyboard keyboard = b;
-      
-      var painter = new CSharpMath.SkiaSharp.MathPainter
-      { /*set all properties aside from LocalTypefaces, FontSize, LineStyle,
-          MathList, LaTeX and Source (these are ignored)*/ };
-      keyboard.RedrawRequested += (sender, e) => canvasView.InvalidateSurface();
-      canvasView.PaintSurface += (sender, e) => {
-        e.Surface.Canvas.Clear();
-        //for any DrawDisplay overload, arguments after canvas are the same as Draw
-        CSharpMath.SkiaSharp.MathPainter.DrawDisplay(painter, keyboard.Display, e.Surface.Canvas);
-        keyboard.DrawCaret(e.Surface.Canvas, CSharpMath.Rendering.CaretShape.IBeam);
+      // Basic functionality
+      var view = new SKCanvasView { HeightRequest = 225 };
+      var keyboard = new MathKeyboard();
+      var viewModel =
+        (Rendering.MathKeyboard)typeof(MathKeyboard)
+        .GetField("Keyboard", BindingFlags.NonPublic | BindingFlags.Instance)
+        .GetValue(keyboard);
+
+      view.EnableTouchEvents = true;
+      view.Touch +=
+        (sender, e) => {
+          if (e.ActionType == SKTouchAction.Pressed)
+            viewModel.MoveCaretToPoint
+              (new System.Drawing.PointF(e.Location.X, e.Location.Y));
+        };
+      keyboard.RedrawRequested += (_, __) => view.InvalidateSurface();
+      view.PaintSurface +=
+        (sender, e) => {
+          var c = e.Surface.Canvas;
+          c.Clear();
+          MathPainter.DrawDisplay(new MathPainter { TextColor = SKColors.Black },
+            keyboard.Display, c);
+          keyboard.DrawCaret(c, CaretShape.IBeam);
+        };
+
+      // Input from physical keyboard
+      var entry = new Entry { Placeholder = "Enter keystrokes..." };
+      entry.TextChanged += (sender, e) => {
+        entry.Text = "";
+        foreach (var c in e.NewTextValue)
+          viewModel.KeyPress((Editor.MathKeyboardInput)c);
       };
-		}
-	}
+
+      // Debug labels
+      var latex = new Label { Text = "LaTeX = " };
+      var ranges = new Label { Text = "Ranges = " };
+      var index = new Label { Text = "Index = " };
+      viewModel.RedrawRequested += (sender, e) => {
+        latex.Text = "LaTeX = " + viewModel.LaTeX;
+        ranges.Text = "Ranges = " + string.Join(", ",
+          ((ListDisplay<Fonts, Glyph>)viewModel.Display).Displays.Select(x => x.Range));
+        index.Text = "Index = " + viewModel.InsertionIndex;
+      };
+
+      // Assemble
+      Content = new StackLayout
+        { Children = { latex, ranges, index, view, keyboard, entry } };
+    }
+  }
 }

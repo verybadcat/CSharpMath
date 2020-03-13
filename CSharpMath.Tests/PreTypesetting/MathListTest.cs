@@ -1,17 +1,16 @@
 using CSharpMath.Atoms;
-using CSharpMath.Enumerations;
-using CSharpMath.Interfaces;
+using CSharpMath.Atoms.Atom;
 using System;
+using System.Linq;
 using Xunit;
 
-namespace CSharpMath.Tests {
+namespace CSharpMath.Tests.PreTypesetting {
   public class MathListTest {
-    internal static void CheckClone(IMathAtom original, IMathAtom clone) {
+    internal static void CheckClone(MathAtom original, MathAtom clone) {
       Assert.Equal(original, clone);
       Assert.False(ReferenceEquals(original, clone));
     }
-
-    internal static void CheckClone(IMathList original, IMathList clone) {
+    internal static void CheckClone(MathList original, MathList clone) {
       Assert.Equal(original, clone);
       Assert.False(ReferenceEquals(original, clone));
     }
@@ -28,11 +27,12 @@ namespace CSharpMath.Tests {
         MathAtoms.Times
       };
 
-      var open = MathAtoms.Create(MathAtomType.Open, "(");
-      open.Subscript = list;
-      open.Superscript = list2;
+      var open = new Open("(") {
+        Subscript = list,
+        Superscript = list2
+      };
 
-      var clone = AtomCloner.Clone(open, false);
+      var clone = open.Clone(false);
       CheckClone(open, clone);
       CheckClone(open.Superscript, clone.Superscript);
       CheckClone(open.Subscript, clone.Subscript);
@@ -41,10 +41,10 @@ namespace CSharpMath.Tests {
     [Fact]
     public void TestSubscript() {
       var input = @"-52x^{13+y}_{15-} + (-12.3 *)\frac{-12}{15.2}";
-      var list = MathLists.FromString(input);
-      var finalized = new MathList(list, true);
+      var list = LaTeXBuilder.MathListFromLaTeX(input);
+      var finalized = list.Clone(true);
       MathListValidator.CheckListContents(finalized);
-      var reFinalized = new MathList(finalized, true);
+      var reFinalized = finalized.Clone(true);
       MathListValidator.CheckListContents(reFinalized);
     }
 
@@ -65,8 +65,7 @@ namespace CSharpMath.Tests {
     [Fact]
     public void TestAddErrors() {
       var list = new MathList();
-      Assert.Throws<InvalidOperationException>(() => list.Add(null));
-      Assert.Throws<InvalidOperationException>(() => list.Add(MathAtoms.Create(MathAtomType.Boundary, "")));
+      Assert.Throws<ArgumentNullException>(() => list.Add(null!));
     }
 
     [Fact]
@@ -77,12 +76,12 @@ namespace CSharpMath.Tests {
       list.Insert(0, atom);
       Assert.Single(list);
       Assert.Equal(atom, list[0]);
-      var atom2 = MathAtoms.Operator("+", false);
+      var atom2 = new LargeOperator("+", false);
       list.Insert(0, atom2);
       Assert.Equal(2, list.Count);
       Assert.Equal(atom2, list[0]);
       Assert.Equal(atom, list[1]);
-      var atom3 = MathAtoms.Create(MathAtomType.Variable, "x");
+      var atom3 = new Variable("x");
       list.Insert(2, atom3);
       Assert.Equal(3, list.Count);
       Assert.Equal(atom2, list[0]);
@@ -94,8 +93,8 @@ namespace CSharpMath.Tests {
     public void TestAppend() {
       var list1 = new MathList();
       var atom1 = MathAtoms.Placeholder;
-      var atom2 = MathAtoms.Operator("+", false);
-      var atom3 = MathAtoms.Operator("-", false);
+      var atom2 = new LargeOperator("+", false);
+      var atom3 = new LargeOperator("-", false);
       list1.Add(atom1);
       list1.Add(atom2);
       list1.Add(atom3);
@@ -113,25 +112,6 @@ namespace CSharpMath.Tests {
       Assert.Equal(5, list1.Count);
       Assert.Equal(atom5, list1[3]);
       Assert.Equal(atom6, list1[4]);
-    }
-
-    [Fact]
-    public void TestRemoveLast() {
-      var list = new MathList();
-      var atom = MathAtoms.Placeholder;
-      list.Add(atom);
-      Assert.Single(list);
-      list.RemoveLastAtom();
-      Assert.Empty(list);
-      list.RemoveLastAtom(); // should not throw; just noop in this case
-      Assert.Empty(list);
-      var atom2 = MathAtoms.Times;
-      list.Add(atom);
-      list.Add(atom2);
-      Assert.Equal(2, list.Count);
-      list.RemoveLastAtom();
-      Assert.Single(list);
-      Assert.Equal(atom, list[0]);
     }
 
     [Fact]
@@ -159,10 +139,10 @@ namespace CSharpMath.Tests {
       list.Add(atom2);
       list.Add(atom3);
       Assert.Equal(3, list.Count);
-      list.RemoveAtoms(new Range(1, 2));
+      list.RemoveAtoms(new Atoms.Range(1, 2));
       Assert.Single(list);
       Assert.Equal(atom, list[0]);
-      Assert.Throws<ArgumentException>(() => list.RemoveAtoms(new Range(1, 1)));
+      Assert.Throws<ArgumentException>(() => list.RemoveAtoms(new Atoms.Range(1, 1)));
     }
 
     [Fact]
@@ -175,8 +155,22 @@ namespace CSharpMath.Tests {
       list.Add(atom2);
       list.Add(atom3);
 
-      var list2 = AtomCloner.Clone(list, false);
+      var list2 = list.Clone(false);
       CheckClone(list, list2);
+    }
+
+    [Fact]
+    public void TestListCopyWithFusedItems() {
+      var builder = new LaTeXBuilder("12+x");
+      var list = builder.Build();
+
+      var finalized = list.FinalizedList();
+      var fusedCount = finalized.Sum(atom => atom.FusedAtoms?.Count ?? 0);
+      Assert.Equal(2, fusedCount);
+
+      var copy = finalized.Clone(true);
+      var fusedCopyCount = copy.Sum(atom => atom.FusedAtoms?.Count ?? 0);
+      Assert.Equal(2, fusedCopyCount);
     }
   }
 }

@@ -59,10 +59,10 @@
         <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding PackageProjectUrl}" IsReadOnly="True"/>
         <Label Grid.Row="9">Package Requires License Acceptance</Label>
         <CheckBox Grid.Row="9" Grid.Column="1" IsChecked="{Binding PackageRequireLicenseAcceptance}" IsEnabled="False" VerticalAlignment="Center"/>
-        <Label Grid.Row="10">Package License URL</Label>
-        <TextBox Grid.Row="10" Grid.Column="1" Text="{Binding PackageLicenseUrl}" IsReadOnly="True"/>
-        <Label Grid.Row="11">Package Icon URL</Label>
-        <TextBox Grid.Row="11" Grid.Column="1" Text="{Binding PackageIconUrl}"/>
+        <Label Grid.Row="10">Package License Expression</Label>
+        <TextBox Grid.Row="10" Grid.Column="1" Text="{Binding PackageLicenseExpression}" IsReadOnly="True"/>
+        <Label Grid.Row="11">Package Icon Path</Label>
+        <TextBox Grid.Row="11" Grid.Column="1" Text="{Binding PackageIcon}"/>
         <Label Grid.Row="12">Copyright</Label>
         <TextBox Grid.Row="12" Grid.Column="1" Text="{Binding Copyright}"/>
         <Label Grid.Row="13">Package Tags (Global)</Label>

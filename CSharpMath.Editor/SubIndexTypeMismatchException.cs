@@ -4,8 +4,11 @@ using System.Text;
 
 namespace CSharpMath.Editor {
   public class SubIndexTypeMismatchException : InvalidOperationException {
-    public SubIndexTypeMismatchException() { }
-    public SubIndexTypeMismatchException(string message) : base(message) { }
-    public SubIndexTypeMismatchException(string message, Exception inner) : base(message, inner) { }
+    public SubIndexTypeMismatchException(Type atomType, MathListIndex index) : base(
+      $"{atomType} not found at index {index.AtomIndex}.") { }
+    public SubIndexTypeMismatchException(MathListIndex index) : base(
+      Array.IndexOf(typeof(MathListSubIndexType).GetEnumValues(), index.SubIndexType) == -1
+      ? $"{index.SubIndexType} is an invalid subindex type."
+      : $"{index.SubIndexType} not found at index {index.AtomIndex}.") { }
   }
 }

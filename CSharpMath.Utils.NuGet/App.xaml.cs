@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -22,7 +21,8 @@ namespace CSharpMath.Utils.NuGet {
     }))();
 
     public static readonly string ReleaseData =
-      Path.Combine(Path.Combine(Global, $"{nameof(CSharpMath)}.{nameof(Utils)}.{nameof(NuGet)}"), "ReleaseData.xml");
+      Path.Combine(Path.Combine(Global,
+        $"{nameof(CSharpMath)}.{nameof(Utils)}.{nameof(NuGet)}"), "ReleaseData.xml");
 
     protected override void OnStartup(StartupEventArgs e) {
       base.OnStartup(e);
@@ -36,17 +36,22 @@ namespace CSharpMath.Utils.NuGet {
       var csproj = new XmlDocument();
       d.Load(ReleaseData);
       var tags = string.Empty;
-      var files = new List<string>(Directory.GetFiles(Global, project + ".csproj", SearchOption.AllDirectories));
-      files.AddRange(Directory.GetFiles(Global, project.Insert(project.LastIndexOf('.') + 1, "?")
-        + "?.csproj", //The ~ character in project names!
+      var files = new List<string>(Directory.GetFiles
+        (Global, project + ".csproj", SearchOption.AllDirectories));
+      files.AddRange(Directory.GetFiles(
+        Global,
+        project.Insert(project.LastIndexOf('.') + 1, "?")
+          + "?.csproj", //The ~ character in project names!
         SearchOption.AllDirectories));
-      using (var reader = new StreamReader(files[0], true)) { //Avoid "Cannot switch to Unicode" errors
+      //Avoid "Cannot switch to Unicode" errors => use 'true'
+      using (var reader = new StreamReader(files[0], true)) {
         csproj.Load(reader);
       }
       var propGroup = (XmlElement)csproj.LastChild.FirstChild;
       if (propGroup.Name != "PropertyGroup") {
         Debugger.Break(); //Something fishy
-        propGroup = (XmlElement)((XmlElement)csproj.LastChild).GetElementsByTagName("PropertyGroup")[0];
+        propGroup = (XmlElement)
+          ((XmlElement)csproj.LastChild).GetElementsByTagName("PropertyGroup")[0];
       }
       XmlElement GetProjectProperty(string node) {
         var list = propGroup.GetElementsByTagName(node);
@@ -61,7 +66,8 @@ namespace CSharpMath.Utils.NuGet {
         else {
           GetProjectProperty(e.Name).InnerText = e.InnerText;
           for (int i = 0; i < e.Attributes.Count; i++) {
-            GetProjectProperty(e.Name).SetAttributeNode((XmlAttribute)e.Attributes[i].CloneNode(true));
+            GetProjectProperty(e.Name)
+              .SetAttributeNode((XmlAttribute)e.Attributes[i].CloneNode(true));
           }
         }
       }
@@ -70,7 +76,8 @@ namespace CSharpMath.Utils.NuGet {
         else {
           GetProjectProperty(e.Name).InnerText = e.InnerText;
           for (int i = 0; i < e.Attributes.Count; i++) {
-            GetProjectProperty(e.Name).SetAttributeNode((XmlAttribute)e.Attributes[i].CloneNode(true));
+            GetProjectProperty(e.Name)
+              .SetAttributeNode((XmlAttribute)e.Attributes[i].CloneNode(true));
           }
         }
       }

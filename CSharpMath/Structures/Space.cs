@@ -1,56 +1,43 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace CSharpMath.Structures {
-  public readonly struct Space : IEquatable<Space>, Interfaces.ISpace {
+  public readonly struct Space : IEquatable<Space> {
     public float Length { get; }
-
-    //Is the length in math units (mu) or points (pt)?
+    // If IsMu is true, then the length is in math units (mu), else points (pt)
     public bool IsMu { get; }
-
-    //To anyone reading this, please use arithmetic operators instead of new
-    private Space(float length, bool isMu) {
-      Length = length;
-      IsMu = isMu;
-    }
-
-    public float ActualLength<TFont, TGlyph>(FrontEnd.FontMathTable<TFont, TGlyph> mathTable, TFont font)
-      where TFont : Display.IFont<TGlyph> =>
+    // Use arithmetic operators instead of new
+    private Space(float length, bool isMu) { Length = length; IsMu = isMu; }
+    public float ActualLength<TFont, TGlyph>(
+      Displays.FrontEnd.FontMathTable<TFont, TGlyph> mathTable, TFont font)
+      where TFont : Displays.FrontEnd.IFont<TGlyph> =>
       IsMu ? Length * mathTable.MuUnit(font) : Length;
-
-    public static Result<Space> Create(string length, string unit, bool useTextUnits) {
-      if (string.IsNullOrWhiteSpace(unit) || unit.Length != 2 || unit[1] == default || unit[0] == default)
-        return "Expected two-character length unit";
-      else if (!float.TryParse(length,
-                           System.Globalization.NumberStyles.AllowLeadingSign |
-                           System.Globalization.NumberStyles.AllowDecimalPoint,
-                           System.Globalization.CultureInfo.InvariantCulture.NumberFormat,
-                           out var value))
-        return "Invalid length value";
-      else if (useTextUnits)
-        switch (unit) {
-          case "mu":
-            return "The length unit mu is not allowed in text mode";
-          case var _ when PredefinedLengthUnits.TryGetValue(unit, out var space):
-            return space * value;
-          default:
-            return $"Unsupported length unit {unit}";
-        }
-      else if (unit != "mu")
-        return "Only the length unit mu is allowed in math mode";
-      else
-        return MathUnit * value;
-    }
-
-    private static bool DetermineSameLengthType(Space left, Space right) {
-      if (left.IsMu && right.IsMu) return true;
-      else if (left.IsMu || right.IsMu)
-        throw new ArgumentException("The IsMu property of two Spaces must not differ " +
-          "in order to perform addition or subtraction on them.");
-      else return false;
-    }
-
+    public static Result<Space> Create(string length, string unit, bool useTextUnits) =>
+      string.IsNullOrWhiteSpace(unit)
+      || unit.Length != 2
+      || unit[0] == default
+      || unit[1] == default
+      ? "Expected two-character length unit"
+      : !float.TryParse(length,
+        System.Globalization.NumberStyles.AllowLeadingSign |
+        System.Globalization.NumberStyles.AllowDecimalPoint,
+        System.Globalization.CultureInfo.InvariantCulture.NumberFormat,
+        out var value)
+      ? "Invalid length value"
+      : useTextUnits
+      ? unit switch {
+        "mu" => "The length unit mu is not allowed in text mode",
+        var _ when PredefinedLengthUnits.TryGetValue(unit, out var space) => space * value,
+        _ => $"Unsupported length unit {unit}",
+      } : unit != "mu"
+      ? "Only the length unit mu is allowed in math mode"
+      : (Result<Space>)(MathUnit * value);
+    private static bool UnifyIsMu(Space left, Space right) =>
+      left.IsMu && right.IsMu ? true
+      : left.IsMu || right.IsMu
+      ? throw new ArgumentException("The IsMu property of two Spaces must not differ " +
+          "in order to perform addition or subtraction on them.")
+      : false;
     public override bool Equals(object obj) => obj is Space s && this == s;
     public bool EqualsSpace(Space otherSpace) => this == otherSpace;
     bool IEquatable<Space>.Equals(Space other) => EqualsSpace(other);
@@ -60,21 +47,25 @@ namespace CSharpMath.Structures {
       left.Length == right.Length && left.IsMu == right.IsMu;
     public static bool operator !=(Space left, Space right) =>
       left.Length != right.Length || left.IsMu != right.IsMu;
-    public static Space operator +(Space space) =>
-      new Space(+space.Length, space.IsMu);
-    public static Space operator -(Space space) =>
-      new Space(-space.Length, space.IsMu);
+    public static Space operator +(Space space) => space;
+    public static Space Plus(Space space) => +space;
+    public static Space operator -(Space space) => new Space(-space.Length, space.IsMu);
+    public static Space Negate(Space space) => -space;
     public static Space operator +(Space left, Space right) =>
-      new Space(left.Length + right.Length, DetermineSameLengthType(left, right));
+      new Space(left.Length + right.Length, UnifyIsMu(left, right));
+    public static Space Add(Space left, Space right) => left + right;
     public static Space operator -(Space left, Space right) =>
-      new Space(left.Length - right.Length, DetermineSameLengthType(left, right));
+      new Space(left.Length - right.Length, UnifyIsMu(left, right));
+    public static Space Subtract(Space left, Space right) => left - right;
     public static Space operator *(float magnitude, Space length) =>
-      new Space(length.Length * magnitude, length.IsMu);
+      new Space(magnitude * length.Length, length.IsMu);
+    public static Space Multiply(float magnitude, Space length) => magnitude * length;
     public static Space operator *(Space length, float magnitude) =>
       new Space(length.Length * magnitude, length.IsMu);
+    public static Space Multiply(Space length, float magnitude) => length * magnitude;
     public static Space operator /(Space length, float magnitude) =>
       new Space(length.Length / magnitude, length.IsMu);
-
+    public static Space Divide(Space length, float magnitude) => length / magnitude;
     public static readonly Space Point = new Space(1, false);
     public static readonly Space Millimeter = new Space(7227f / 2540f, false);
     public static readonly Space Centimeter = new Space(7227f / 254f, false);

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace CSharpMath.Editor {
   public enum MathKeyboardInput {
     //Navigation
@@ -9,7 +5,7 @@ namespace CSharpMath.Editor {
     Backspace = '⌫', Clear = '⎚', Return = '\n', Dismiss = '❌',
 
     //Brackets
-    LeftRoundBracket = '(', RightRoundBracket = ')', BothRoundBrackets = '㈾',
+    LeftRoundBracket = '(', RightRoundBracket = ')',
     LeftSquareBracket = '[', RightSquareBracket = ']',
     LeftCurlyBracket = '{', RightCurlyBracket = '}',
 
@@ -18,14 +14,13 @@ namespace CSharpMath.Editor {
     D5 = '5', D6 = '6', D7 = '7', D8 = '8', D9 = '9', Decimal = '.',
 
     //Basic operators
-    Plus = '+', Minus = '−', Minus_ = '-', Multiply = '×', Multiply_ = '*',
-    Divide = '÷',  Slash = '/', Fraction = '⁄', Ratio = '∶', Ratio_ = ':',
-    Percentage = '%', Comma = ',', Factorial = '!', Infinity = '∞', Angle = '∠', Degree = '°',
+    Plus = '+', Minus = '−', Minus_ = '-', Multiply = '×', Multiply_ = '*', Divide = '÷',
+    Ratio = '∶', Ratio_ = ':', Percentage = '%', Comma = ',', Semicolon = ';', Factorial = '!',
+    Infinity = '∞', Angle = '∠', Degree = '°', VerticalBar = '|', Logarithm = '㏒', NaturalLogarithm = '㏑',
 
     //More complicated operators
-    Power = '^', Subscript = '_', SquareRoot = '√', CubeRoot = '∛', NthRoot = '∜',
-    VerticalBar = '|', Absolute = '‖',
-    BaseEPower = 'ℯ', Logarithm = '㏒', NaturalLogarithm = '㏑', LogarithmWithBase = '㏐',
+    BothRoundBrackets = '㈾', Slash = '/', Fraction = '⁄', Power = '^', Subscript = '_', SquareRoot = '√', 
+    CubeRoot = '∛', NthRoot = '∜', Absolute = '‖', BaseEPower = 'ℯ', LogarithmWithBase = '㏐',
 
     //Relations
     Equals = '=', NotEquals = '≠',
@@ -44,10 +39,9 @@ namespace CSharpMath.Editor {
     SmallU = 'u', SmallV = 'v', SmallW = 'w', SmallX = 'x', SmallY = 'y', SmallZ = 'z',
 
     //Capital Greek alphabets
-    Alpha = 'Α', Beta = 'Β', Gamma = 'Γ', Delta = 'Δ', Epsilon = 'Ε', Zeta = 'Ζ',
-    Eta = 'Η', Theta = 'Θ', Iota = 'Ι', Kappa = 'Κ', Lambda = 'Λ', Mu = 'Μ', Nu = 'Ν',
-    Xi = 'Ξ', Omicron = 'Ο', Pi = 'Π', Rho = 'Ρ', Sigma = 'Σ', Tau = 'Τ', Upsilon = 'Υ',
-    Phi = 'Φ', Chi = 'Χ', Omega = 'Ω',
+    Alpha = 'Α', Beta = 'Β', Gamma = 'Γ', Delta = 'Δ', Epsilon = 'Ε', Zeta = 'Ζ', Eta = 'Η', 
+    Theta = 'Θ', Iota = 'Ι', Kappa = 'Κ', Lambda = 'Λ', Mu = 'Μ', Nu = 'Ν', Xi = 'Ξ', Omicron = 'Ο', 
+    Pi = 'Π', Rho = 'Ρ', Sigma = 'Σ', Tau = 'Τ', Upsilon = 'Υ', Phi = 'Φ', Chi = 'Χ', Omega = 'Ω',
 
     //Small Greek alphabets
     SmallAlpha = 'α', SmallBeta = 'β', SmallGamma = 'γ', SmallDelta = 'δ', SmallEpsilon = 'ε',
@@ -57,9 +51,8 @@ namespace CSharpMath.Editor {
     SmallUpsilon = 'υ', SmallPhi = 'φ', SmallChi = 'χ', SmallOmega = 'ω',
 
     //Trigonometric functions
-    Sine = '␖', Cosine = '℅', Tangent = '␘', Cotangent = '␄', Secant = '␎', Cosecant = '␛',
-    ArcSine = '◜', ArcCosine = '◝', ArcTangent = '◟',
-    ArcCotangent = '◞', ArcSecant = '◠', ArcCosecant = '◡',
+    Sine = '␖', Cosine = '℅', Tangent = '␘', Cotangent = '␄', Secant = '␎', Cosecant = '␛', ArcSine = '◜', 
+    ArcCosine = '◝', ArcTangent = '◟', ArcCotangent = '◞', ArcSecant = '◠', ArcCosecant = '◡',
     
     //Hyperbolic functions
     HyperbolicSine = '◐', HyperbolicCosine = '◑', HyperbolicTangent = '◓',

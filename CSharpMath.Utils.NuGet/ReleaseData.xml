@@ -2,18 +2,18 @@
 <ReleaseData>
   <_Global->
     <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
-    <PackageVersion>0.2.0</PackageVersion>
+    <PackageVersion>0.3.0</PackageVersion>
     <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie, FoggyFinder)</Authors>
-    <PackageReleaseNotes>The 0.2.0 Editor Update brings an editor interface to CSharpMath.</PackageReleaseNotes>
+    <PackageReleaseNotes>The 0.3.0 Clickity Update brings a clickable math editor!</PackageReleaseNotes>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/verybadcat/CSharpMath.git</RepositoryUrl>
     <RepositoryBranch>master</RepositoryBranch>
-    <RepositoryCommit>5610427533fc4ed9f1fd86b07dda36dca6c65f67</RepositoryCommit>
+    <RepositoryCommit>3f4e8d3f9b5bcf39bfc425f8a7d8a29ea06a1c84</RepositoryCommit>
     <PackageProjectUrl>https://github.com/verybadcat/CSharpMath</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageLicenseUrl>https://github.com/verybadcat/CSharpMath/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/verybadcat/CSharpMath/master/Icon.png</PackageIconUrl>
-    <Copyright>© CSharpMath Contributors 2018</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>Icon.png</PackageIcon>
+    <Copyright>© CSharpMath Contributors 2019</Copyright>
     <PackageTags>math;mathematics;mathematical;formula;equation;equations;expression;tex;latex;render;rendering;display</PackageTags>
   </_Global->
   <_Template->

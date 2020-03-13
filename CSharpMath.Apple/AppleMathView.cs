@@ -1,14 +1,11 @@
-﻿using CSharpMath.Display;
-using CSharpMath.Enumerations;
-using CSharpMath.FrontEnd;
 using CSharpMath.Atoms;
-using CSharpMath.Interfaces;
+using CSharpMath.Displays;
+using CSharpMath.Displays.FrontEnd;
 using CoreGraphics;
 using UIKit;
 using TGlyph = System.UInt16;
 using TFont = CSharpMath.Apple.AppleMathFont;
 using CoreText;
-using CSharpMath.Apple.Drawing;
 using System;
 using Foundation;
 #if __IOS__
@@ -22,120 +19,97 @@ using NView = AppKit.NSView;
 namespace CSharpMath.Apple {
   public class AppleMathView : NView {
     public string ErrorMessage { get; set; }
-    public void SetMathList(IMathList mathList)
-    {
-      _mathList = mathList;
-      Latex = MathListBuilder.MathListToString(mathList);
-      InvalidateIntrinsicContentSize();
-      SetNeedsLayout();
-    }
-    public void SetLatex(string latex)
-    {
-      Latex = latex;
-      (_mathList, ErrorMessage) = MathLists.BuildResultFromString(latex);
-      if (_mathList != null)
-      {
-        _CreateDisplayList();
-      }
-      InvalidateIntrinsicContentSize();
-
-      SetNeedsLayout();
-    }
+    private IDisplay<TFont, TGlyph> _displayList;
     public float FontSize { get; set; } = 20f;
     public ColumnAlignment TextAlignment { get; set; } = ColumnAlignment.Left;
     public NContentInsets ContentInsets { get; set; }
-
-    private IMathList _mathList;
-
-    public string Latex { get; private set; }
-    private ListDisplay<TFont, TGlyph> _displayList { get; set; }
-
+    private MathList _mathList;
+    public MathList MathList {
+      get => _mathList;
+      set {
+        _mathList = value;
+        LaTeX = LaTeXBuilder.MathListToLaTeX(value);
+        InvalidateIntrinsicContentSize();
+        SetNeedsLayout();
+      }
+    }
+    private string _latex;
+    public string LaTeX {
+      get => _latex;
+      set {
+        _latex = value;
+        (_mathList, ErrorMessage) = LaTeXBuilder.TryMathListFromLaTeX(value);
+        if (_mathList != null) {
+          _displayList = Typesetter.CreateLine(_mathList,
+            TFont.LatinMath(FontSize), _typesettingContext, LineStyle.Display);
+        }
+        InvalidateIntrinsicContentSize();
+        SetNeedsLayout();
+      }
+    }
     public bool DisplayErrorInline { get; set; } = true;
     public NColor TextColor { get; set; }
-
     private readonly TypesettingContext<TFont, TGlyph> _typesettingContext;
-
-    public AppleMathView(TypesettingContext<TFont, TGlyph> typesettingContext, float fontSize) {
+    public AppleMathView
+      (TypesettingContext<TFont, TGlyph> typesettingContext, float fontSize) {
       Layer.GeometryFlipped = true;
       BackgroundColor = NColor.FromRGB(0.9f, 0.9f, 0.9f);
       TextColor = NColor.Black;
       FontSize = fontSize;
       _typesettingContext = typesettingContext;
     }
-
-    public override CGSize SizeThatFits(CGSize size)
-    {
+    public override CGSize SizeThatFits(CGSize size) {
       CGSize r;
-      if (_displayList!=null) {
-        r = _displayList.ComputeDisplayBounds().Size;
+      if (_displayList != null) {
+        r = _displayList.DisplayBounds.Size;
         r.Width += ContentInsets.Left + ContentInsets.Right;
         r.Height += ContentInsets.Top + ContentInsets.Bottom;
       } else {
         r = new CGSize(320, 40);
       }
-
       return r;
     }
-
-    public override void LayoutSubviews()
-    {
-      if (_mathList!=null) {
+    public override void LayoutSubviews() {
+      if (_mathList != null) {
         float displayWidth = _displayList.Width;
-        nfloat textX = 0;
-        switch (TextAlignment) {
-          case ColumnAlignment.Left:
-            textX = ContentInsets.Left;
-            break;
-          case ColumnAlignment.Center:
-            textX = ContentInsets.Left + (Bounds.Size.Width - ContentInsets.Left - ContentInsets.Right - displayWidth) / 2;
-            break;
-          case ColumnAlignment.Right:
-            textX = Bounds.Size.Width - ContentInsets.Right - displayWidth;
-            break;
-        }
-        nfloat availableHeight = Bounds.Size.Height - ContentInsets.Top - ContentInsets.Bottom;
-        nfloat contentHeight = _displayList.Ascent + _displayList.Descent;
-        if (contentHeight < FontSize/2) {
-          contentHeight = FontSize / 2;
-        }
-        nfloat textY = ((availableHeight - contentHeight) / 2) + ContentInsets.Bottom + _displayList.Descent;
+        var textX = TextAlignment switch
+        {
+          ColumnAlignment.Left => ContentInsets.Left,
+          ColumnAlignment.Center =>
+            (Bounds.Size.Width - ContentInsets.Right - displayWidth) / 2,
+          ColumnAlignment.Right =>
+            Bounds.Size.Width - ContentInsets.Right - displayWidth,
+          _ => 0,
+        };
+        var availableHeight =
+          Bounds.Size.Height - ContentInsets.Top - ContentInsets.Bottom;
+        var contentHeight =
+          Math.Max(_displayList.Ascent + _displayList.Descent, FontSize / 2);
+        var textY =
+          (availableHeight - contentHeight) / 2
+          + ContentInsets.Bottom + _displayList.Descent;
         _displayList.Position = new System.Drawing.PointF((float)textX, (float)textY);
       }
     }
-
-    private void _CreateDisplayList()
-    {
-      var fontSize = FontSize;
-      var appleFont = AppleFontManager.LatinMath(fontSize);
-      _displayList = _typesettingContext.CreateLine(_mathList, appleFont, LineStyle.Display);
-    }
-
     public override void Draw(CGRect rect) {
       base.Draw(rect);
       var cgContext = UIGraphics.GetCurrentContext();
       if (_mathList != null) {
-
-        var appleContext = new AppleGraphicsContext()
-        {
-          CgContext = cgContext
-        };
         cgContext.SaveState();
         cgContext.SetStrokeColor(TextColor.CGColor);
         cgContext.SetFillColor(TextColor.CGColor);
-        _displayList.Draw(appleContext);
+        _displayList.Draw(new AppleGraphicsContext() {
+          CgContext = cgContext
+        });
         cgContext.RestoreState();
-      } else if (ErrorMessage.IsNonEmpty()) {
+      } else if (ErrorMessage != null) {
         cgContext.SaveState();
         float errorFontSize = 20;
-        var attributes = new UIStringAttributes
-        {
+        cgContext.TextPosition = new CGPoint(0, Bounds.Size.Height - errorFontSize);
+        new CTLine(new NSAttributedString(ErrorMessage, new UIStringAttributes {
           ForegroundColor = NColor.Red,
           Font = UIFont.SystemFontOfSize(errorFontSize),
-        };
-        var attributedString = new NSAttributedString(ErrorMessage, attributes);
-        var ctLine = new CTLine(attributedString);
-        cgContext.TextPosition = new CGPoint(0, Bounds.Size.Height - errorFontSize);
-        ctLine.Draw(cgContext);
+        })).Draw(cgContext);
         cgContext.RestoreState();
       }
     }

@@ -1,26 +1,25 @@
 using System;
-using System.Collections.ObjectModel;
-using System.Drawing;
-using System.Linq;
 using CSharpMath.Rendering;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using Typography.OpenFont;
 using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
 
 namespace CSharpMath.Forms {
-  using Color = Xamarin.Forms.Color;
   using TextAlignment = Rendering.TextAlignment;
   using Thickness = Rendering.Thickness;
-
-  public interface IPainterSupplier<TPainter> {
+  public interface IPainterAndSourceSupplier<TPainter, TSource> {
     TPainter Default { get; }
+    TSource SourceFromLaTeX(string latex);
+    string LaTeXFromSource(TSource source);
+    string DefaultLaTeX(TPainter painter);
   }
-
-  public abstract class BaseView<TPainter, TSource, TPainterSupplier> : SKCanvasView, IPainter<TSource, Color> where TPainter : ICanvasPainter<SKCanvas, TSource, SKColor> where TSource : struct, ISource where TPainterSupplier : struct, IPainterSupplier<TPainter> {
+  public abstract class BaseView<TPainter, TSource, TPainterAndSourceSupplier>
+    : SKCanvasView, IPainter<TSource, Color>
+    where TPainter : ICanvasPainter<SKCanvas, TSource, SKColor>
+    where TSource : struct, ISource
+    where TPainterAndSourceSupplier : struct, IPainterAndSourceSupplier<TPainter, TSource> {
     public BaseView(TPainter painter) => Painter = painter;
-
     public TPainter Painter { get; }
     protected override void OnPaintSurface(SKPaintSurfaceEventArgs e) {
       base.OnPaintSurface(e);
@@ -30,11 +29,19 @@ namespace CSharpMath.Forms {
 
     #region BindableProperties
     static BaseView() {
-      var painter = default(TPainterSupplier).Default;
-      var thisType = typeof(BaseView<TPainter, TSource, TPainterSupplier>);
-      var drawMethodParams = typeof(TPainter).GetMethod(nameof(ICanvasPainter<SKCanvas, TSource, SKColor>.Draw), new[] { typeof(SKCanvas), typeof(TextAlignment), typeof(Thickness), typeof(float), typeof(float) }).GetParameters();
-      TPainter p(BindableObject b) => ((BaseView<TPainter, TSource, TPainterSupplier>)b).Painter;
-      SourceProperty = BindableProperty.Create(nameof(Source), typeof(TSource), thisType, painter.Source, BindingMode.TwoWay, null, (b, o, n) => { p(b).Source = (TSource)n; ((BaseView<TPainter, TSource, TPainterSupplier>)b).ErrorMessage = p(b).ErrorMessage; });
+      var supplier = default(TPainterAndSourceSupplier);
+      var painter = supplier.Default;
+      var thisType = typeof(BaseView<TPainter, TSource, TPainterAndSourceSupplier>);
+
+      static BaseView<TPainter, TSource, TPainterAndSourceSupplier> Actual
+        (BindableObject b) => (BaseView<TPainter, TSource, TPainterAndSourceSupplier>)b;
+      var drawMethodParams = typeof(TPainter)
+        .GetMethod(nameof(ICanvasPainter<SKCanvas, TSource, SKColor>.Draw),
+          new[] { typeof(SKCanvas), typeof(TextAlignment),
+                  typeof(Thickness), typeof(float), typeof(float) }).GetParameters();
+      static TPainter p(BindableObject b) =>
+        ((BaseView<TPainter, TSource, TPainterAndSourceSupplier>)b).Painter;
+      SourceProperty = BindableProperty.Create(nameof(Source), typeof(TSource), thisType, painter.Source, BindingMode.TwoWay, null,  (b, o, n) => { p(b).Source = (TSource)n; Actual(b).ErrorMessage = p(b).ErrorMessage; var latex = supplier.LaTeXFromSource((TSource)n); if(Actual(b).LaTeX != latex) Actual(b).LaTeX = latex; });
       DisplayErrorInlineProperty = BindableProperty.Create(nameof(DisplayErrorInline), typeof(bool), thisType, painter.DisplayErrorInline, propertyChanged: (b, o, n) => p(b).DisplayErrorInline = (bool)n);
       FontSizeProperty = BindableProperty.Create(nameof(FontSize), typeof(float), thisType, painter.FontSize, propertyChanged: (b, o, n) => p(b).FontSize = (float)n);
       ErrorFontSizeProperty = BindableProperty.Create(nameof(ErrorFontSize), typeof(float?), thisType, painter.ErrorFontSize, propertyChanged: (b, o, n) => p(b).ErrorFontSize = (float)n);
@@ -46,10 +53,13 @@ namespace CSharpMath.Forms {
       DisplacementYProperty = BindableProperty.Create(nameof(DisplacementY), typeof(float), thisType, drawMethodParams[4].DefaultValue, BindingMode.TwoWay);
       MagnificationProperty = BindableProperty.Create(nameof(Magnification), typeof(float), thisType, painter.Magnification, propertyChanged: (b, o, n) => p(b).Magnification = (float)n);
       PaintStyleProperty = BindableProperty.Create(nameof(PaintStyle), typeof(PaintStyle), thisType, painter.PaintStyle, propertyChanged: (b, o, n) => p(b).PaintStyle = (PaintStyle)n);
-      LineStyleProperty = BindableProperty.Create(nameof(LineStyle), typeof(Enumerations.LineStyle), thisType, painter.LineStyle, propertyChanged: (b, o, n) => p(b).LineStyle = (Enumerations.LineStyle)n);
+      LineStyleProperty = BindableProperty.Create(nameof(LineStyle), typeof(Atoms.LineStyle), thisType, painter.LineStyle, propertyChanged: (b, o, n) => p(b).LineStyle = (Atoms.LineStyle)n);
       PaddingProperty = BindableProperty.Create(nameof(Padding), typeof(Thickness), thisType, drawMethodParams[2].DefaultValue ?? default(Thickness));
       ErrorMessagePropertyKey = BindableProperty.CreateReadOnly(nameof(ErrorMessage), typeof(string), thisType, painter.ErrorMessage, BindingMode.OneWayToSource);
       ErrorMessageProperty = ErrorMessagePropertyKey.BindableProperty;
+      LaTeXProperty = BindableProperty.Create(nameof(LaTeX), typeof(string), thisType, supplier.DefaultLaTeX(painter),
+        propertyChanged: (b, o, n) => { var ss = supplier.SourceFromLaTeX((string)n); Actual(b).Source = ss; });
+      DisablePanningProperty = BindableProperty.Create(nameof(DisablePanning), typeof(bool), thisType, false);
     }
     public static readonly BindableProperty DisplayErrorInlineProperty;
     public static readonly BindableProperty FontSizeProperty;
@@ -67,11 +77,13 @@ namespace CSharpMath.Forms {
     public static readonly BindableProperty SourceProperty;
     private static readonly BindablePropertyKey ErrorMessagePropertyKey;
     public static readonly BindableProperty ErrorMessageProperty;
+    public static readonly BindableProperty LaTeXProperty;
+    public static readonly BindableProperty DisablePanningProperty;
     #endregion
 
     SKPoint _origin;
     protected override void OnTouch(SKTouchEventArgs e) {
-      if (e.InContact && Source.IsValid) {
+      if (e.InContact && Source.IsValid && !DisablePanning) {
         switch (e.ActionType) {
           case SKTouchAction.Entered:
             break;
@@ -121,9 +133,12 @@ namespace CSharpMath.Forms {
     public float DisplacementY { get => (float)GetValue(DisplacementYProperty); set => SetValue(DisplacementYProperty, value); }
     public float Magnification { get => (float)GetValue(MagnificationProperty); set => SetValue(MagnificationProperty, value); }
     public PaintStyle PaintStyle { get => (PaintStyle)GetValue(PaintStyleProperty); set => SetValue(PaintStyleProperty, value); }
-    public Enumerations.LineStyle LineStyle { get => (Enumerations.LineStyle)GetValue(LineStyleProperty); set => SetValue(LineStyleProperty, value); }
+    public Atoms.LineStyle LineStyle { get => (Atoms.LineStyle)GetValue(LineStyleProperty); set => SetValue(LineStyleProperty, value); }
     public Thickness Padding { get => (Thickness)GetValue(PaddingProperty); set => SetValue(PaddingProperty, value); }
     public string ErrorMessage { get => (string)GetValue(ErrorMessageProperty); private set => SetValue(ErrorMessagePropertyKey, value); }
     public ObservableRangeCollection<Typeface> LocalTypefaces => Painter.LocalTypefaces;
+    public string LaTeX { get => default(TPainterAndSourceSupplier).LaTeXFromSource(Source); set => Source = default(TPainterAndSourceSupplier).SourceFromLaTeX(value); }
+    /// <summary>Panning is enabled by default when <see cref="SKCanvasView.EnableTouchEvents"/> is set to true.</summary>
+    public bool DisablePanning { get => (bool)GetValue(DisablePanningProperty); set => SetValue(DisablePanningProperty, value); }
   }
 }

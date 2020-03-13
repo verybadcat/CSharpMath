@@ -2,7 +2,7 @@
 //CSharpMath\CSharpMath.Utils\iosMathDemo\Builder.cs and re-generate
 //this file by executing the method in that file in the CSharpMath.Utils project.
 
-using CSharpMath.Enumerations;
+using CSharpMath.Atoms;
 using CSharpMath.Rendering;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -21,7 +21,7 @@ namespace CSharpMath.Forms.Example {
       
       //  Quadratic formula
       demoLabels[0] = new MathView {
-        LaTeX = @"x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}",
+        LaTeX = @"\text{ваш вопрос: }x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}",
         HeightRequest = 112.5,
         FontSize = 22.5f
       };
@@ -439,7 +439,7 @@ namespace CSharpMath.Forms.Example {
       
       //  large roots
       labels[40] = new MathView {
-        LaTeX = @"\sqrt{1+\sqrt{1+\sqrt{1+\sqrt{1+\sqrt{1+\cdots}}}}}",
+        LaTeX = @"\colorbox{#f0f0e0}{\sqrt{1+\colorbox{#d0c0d0}{\sqrt{1+\colorbox{#a080c0}{\sqrt{1+\colorbox{#7050a0}{\sqrt{1+\colorbox{403060}{\colorbox{#102000}{\sqrt{1+\cdots}}}}}}}}}}}",
         HeightRequest = 150,
         FontSize = 22.5f
       };
@@ -473,6 +473,14 @@ namespace CSharpMath.Forms.Example {
       labels[46] = new MathView {
         LaTeX = @"\text{Mary has }\$500 + \$200.",
         HeightRequest = 56.25,
+        FontSize = 22.5f
+      };
+      labels[47] = new MathView {
+        LaTeX = @"\colorbox{#888888}{\begin{pmatrix}
+                       \colorbox{#ff0000}{a} & \colorbox{#00ff00}{b} \\
+                       \colorbox{#00aaff}{c} & \colorbox{#f0f0f0}{d}
+                       \end{pmatrix}}",
+        HeightRequest = 131.25,
         FontSize = 22.5f
       };
       

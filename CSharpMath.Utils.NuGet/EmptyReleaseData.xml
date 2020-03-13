@@ -11,8 +11,8 @@
     <RepositoryCommit></RepositoryCommit>
     <PackageProjectUrl></PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageLicenseUrl></PackageLicenseUrl>
-    <PackageIconUrl></PackageIconUrl>
+    <PackageLicenseExpression></PackageLicenseExpression>
+    <PackageIcon></PackageIcon>
     <Copyright></Copyright>
     <PackageTags></PackageTags>
   </_Global->

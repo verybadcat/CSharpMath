@@ -25,6 +25,8 @@ namespace CSharpMath.Analyzers {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
     public override void Initialize(AnalysisContext context) {
+      context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+      context.EnableConcurrentExecution();
       // TODO: Consider registering other actions that act on syntax instead of or in addition to symbols
       // See https://github.com/dotnet/roslyn/blob/master/docs/analyzers/Analyzer%20Actions%20Semantics.md for more information
       context.RegisterSyntaxNodeAction(AnalyzeSyntax, SyntaxKind.InvocationExpression);

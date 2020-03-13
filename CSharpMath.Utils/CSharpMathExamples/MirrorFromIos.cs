@@ -1,26 +1,11 @@
-﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace CSharpMath.DevUtils.CSharpMathExamples {
   static class MirrorFromIos {
-    //unused helper function
-    static bool ReadUntil(this Stream s, string str) {
-      byte[] chars = Encoding.UTF8.GetBytes(str);
-      byte b;
-      matchFirstByte: do {
-        int res = s.ReadByte();
-        if (res == -1) return false;
-        b = (byte)res;
-      } while (b != chars[0]);
-      //matched first byte
-      for (int i = 1; i < chars.Length; i++) if (s.ReadByte() != chars[i]) goto matchFirstByte;
-      return true;
-    }
-
     /// <summary>
-    /// Mirrors examples from CSharpMath.Ios.Example (IosMathViewController.cs) to CSharpMath.Forms.Example (ExamplesPage.xaml.cs)
+    /// Mirrors examples from CSharpMath.Ios.Example (IosMathViewController.cs)
+    /// to CSharpMath.Forms.Example (ExamplesPage.xaml.cs)
     /// </summary>
     public static void Do() {
       var lines = File.ReadLines(Paths.IosMathViewController);
