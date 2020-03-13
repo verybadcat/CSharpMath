@@ -4,7 +4,7 @@ namespace CSharpMath.Editor {
 
   using Displays;
   using Displays.Display;
-  using FrontEnd;
+  using Displays.FrontEnd;
   using Color = Structures.Color;
 
   partial class EditingExtensions {

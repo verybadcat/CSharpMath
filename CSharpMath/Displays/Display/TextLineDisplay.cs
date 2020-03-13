@@ -1,11 +1,11 @@
 using CSharpMath.Atoms;
-using CSharpMath.FrontEnd;
 using Color = CSharpMath.Structures.Color;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
 namespace CSharpMath.Displays.Display {
+  using FrontEnd;
   public class TextLineDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph> where TFont: IFont<TGlyph> {
     public TextLineDisplay(
       AttributedString<TFont, TGlyph> text, Range range,

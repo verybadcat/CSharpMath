@@ -1,0 +1,1 @@
+namespace CSharpMath.Displays.FrontEnd { public interface IFont<TGlyph> { float PointSize { get; } } }

@@ -1,11 +1,10 @@
 using CSharpMath.Atoms;
 using System.Drawing;
-using CSharpMath.FrontEnd;
 using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Displays {
-  public interface IDisplay<TFont, TGlyph>
-    where TFont : IFont<TGlyph> {
+  using FrontEnd;
+  public interface IDisplay<TFont, TGlyph> where TFont : IFont<TGlyph> {
     void Draw(IGraphicsContext<TFont, TGlyph> context);
     RectangleF DisplayBounds { get; }
     /// <summary>By convention, Ascent and Descent should be positive
@@ -26,6 +25,7 @@ namespace CSharpMath.Displays {
 }
 namespace CSharpMath {
   using Displays;
+  using Displays.FrontEnd;
   partial class Extensions {
     /// <summary>The display's bounds, in its own coordinate system.</summary> 
     public static RectangleF DisplayBounds<TFont, TGlyph>

@@ -4,7 +4,7 @@ namespace CSharpMath.Editor {
   using System.Drawing;
   using Atoms;
   using Displays;
-  using FrontEnd;
+  using Displays.FrontEnd;
   using Structures;
   using Atom = Atoms.Atom;
 

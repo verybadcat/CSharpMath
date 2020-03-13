@@ -1,5 +1,5 @@
 using System;
-using CSharpMath.FrontEnd;
+using CSharpMath.Displays.FrontEnd;
 using CSharpMath.Tests.FrontEnd;
 using Xunit;
 using T = Xunit.InlineDataAttribute; // 'T'est

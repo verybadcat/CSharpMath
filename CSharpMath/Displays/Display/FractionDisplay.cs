@@ -1,12 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Text;
 using CSharpMath.Atoms;
-using CSharpMath.FrontEnd;
 using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Displays.Display {
+  using FrontEnd;
   public class FractionDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph>
     where TFont : IFont<TGlyph> {
     private PointF _position;

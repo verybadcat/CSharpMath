@@ -1,10 +1,9 @@
 using CSharpMath.Atoms;
 using CSharpMath.Displays;
 using CSharpMath.Displays.Display;
-using CSharpMath.FrontEnd;
+using CSharpMath.Displays.FrontEnd;
 using CSharpMath.Tests.FrontEnd;
 using System.Drawing;
-using System.Linq;
 using Xunit;
 using TGlyph = System.Char;
 using TFont = CSharpMath.Tests.FrontEnd.TestFont;

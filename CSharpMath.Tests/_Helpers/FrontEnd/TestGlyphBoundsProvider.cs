@@ -1,4 +1,3 @@
-using CSharpMath.FrontEnd;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +6,7 @@ using TGlyph = System.Char;
 using CSharpMath.Displays;
 
 namespace CSharpMath.Tests.FrontEnd {
-  class TestGlyphBoundsProvider : IGlyphBoundsProvider<TestFont, TGlyph> {
+  class TestGlyphBoundsProvider : Displays.FrontEnd.IGlyphBoundsProvider<TestFont, TGlyph> {
     // all constants were chosen to bear some resemblance to a real font.
     private const float WidthPerCharacterPerFontSize = 0.5f; // "m" and "M" get double width.
     private const float AscentPerFontSize = 0.7f;

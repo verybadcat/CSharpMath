@@ -1,8 +1,8 @@
 using System;
 using CSharpMath.Atoms;
-using CSharpMath.FrontEnd;
 
 namespace CSharpMath.Displays {
+  using FrontEnd;
   public class UnicodeFontChanger : IFontChanger {
     private const char UnicodeGreekLowerStart = '\x03B1';
     private const char UnicodeGreekLowerEnd = '\x03C9';

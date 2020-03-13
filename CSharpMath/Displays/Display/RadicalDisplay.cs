@@ -1,12 +1,11 @@
 using System.Drawing;
 using CSharpMath.Atoms;
-using CSharpMath.FrontEnd;
 using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Displays.Display {
+  using FrontEnd;
   public class RadicalDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph>
-    where TFont : IFont<TGlyph>
-  {
+    where TFont : IFont<TGlyph> {
     ///<summary>A display representing the numerator of the fraction.
     ///Its position is relative to the parent and it is not treated as a sub-display.</summary>
     public ListDisplay<TFont, TGlyph> Radicand { get; private set; }
@@ -19,28 +18,25 @@ namespace CSharpMath.Displays.Display {
     public float LineThickness { get; set; }
     private float _radicalShift;
     private readonly IDisplay<TFont, TGlyph> _radicalGlyph;
-    public RadicalDisplay(ListDisplay<TFont, TGlyph> innerDisplay, IGlyphDisplay<TFont, TGlyph> glyph, PointF position, Range range)
-    {
+    public RadicalDisplay(ListDisplay<TFont, TGlyph> innerDisplay, IGlyphDisplay<TFont, TGlyph> glyph, PointF position, Range range) {
       Radicand = innerDisplay;
       _radicalGlyph = glyph;
       Position = position;
       Range = range;
     }
-    public void SetDegree(ListDisplay<TFont, TGlyph> degree, TFont degreeFont, FontMathTable<TFont, TGlyph> degreeFontMathTable)
-    {
+    public void SetDegree(ListDisplay<TFont, TGlyph> degree, TFont degreeFont, FontMathTable<TFont, TGlyph> degreeFontMathTable) {
       var kernBefore = degreeFontMathTable.RadicalKernBeforeDegree(degreeFont);
       Degree = degree;
       _radicalShift = kernBefore + degree.Width +
         degreeFontMathTable.RadicalKernAfterDegree(degreeFont);
-      if (_radicalShift < 0)
-      {
+      if (_radicalShift < 0) {
         kernBefore -= _radicalShift;
         _radicalShift = 0;
       }
 
       // Position of degree is relative to parent.
       Degree.Position =
-        new PointF(Position.X + kernBefore, Position.Y + 
+        new PointF(Position.X + kernBefore, Position.Y +
           degreeFontMathTable.RadicalDegreeBottomRaise(degreeFont) * (Ascent - Descent));
       // update the width by the _radicalShift
       Width = _radicalShift + _radicalGlyph.Width + Radicand.Width;
@@ -56,8 +52,7 @@ namespace CSharpMath.Displays.Display {
     PointF _position;
     public PointF Position { get => _position; set { _position = value; UpdateRadicandPosition(); } }
     public bool HasScript { get; set; }
-    public void Draw(IGraphicsContext<TFont, TGlyph> context)
-    {
+    public void Draw(IGraphicsContext<TFont, TGlyph> context) {
       Radicand.Draw(context);
       Degree?.Draw(context);
       context.SaveState();

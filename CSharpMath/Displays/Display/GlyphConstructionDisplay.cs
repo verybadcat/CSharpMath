@@ -2,10 +2,10 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using CSharpMath.Atoms;
-using CSharpMath.FrontEnd;
 using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Displays.Display {
+  using FrontEnd;
   public class GlyphConstructionDisplay<TFont, TGlyph> : IGlyphDisplay<TFont, TGlyph> where TFont : IFont<TGlyph> {
     private readonly IReadOnlyList<TGlyph> _glyphs;
     private readonly IEnumerable<PointF> _glyphPositions;

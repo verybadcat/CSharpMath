@@ -1,12 +1,11 @@
 using CSharpMath.Atoms;
 using CSharpMath.Displays;
-using CSharpMath.FrontEnd;
+using CSharpMath.Displays.FrontEnd;
 using CoreGraphics;
 using UIKit;
 using TGlyph = System.UInt16;
 using TFont = CSharpMath.Apple.AppleMathFont;
 using CoreText;
-using CSharpMath.Apple.Drawing;
 using System;
 using Foundation;
 #if __IOS__
@@ -42,7 +41,7 @@ namespace CSharpMath.Apple {
         (_mathList, ErrorMessage) = LaTeXBuilder.TryMathListFromLaTeX(value);
         if (_mathList != null) {
           _displayList = Typesetter.CreateLine(_mathList,
-            AppleFontManager.LatinMath(FontSize), _typesettingContext, LineStyle.Display);
+            TFont.LatinMath(FontSize), _typesettingContext, LineStyle.Display);
         }
         InvalidateIntrinsicContentSize();
         SetNeedsLayout();

@@ -1,10 +1,9 @@
 using System.Drawing;
 
 namespace CSharpMath.Editor {
-  using FrontEnd;
   using Displays;
   using Displays.Display;
-
+  using Displays.FrontEnd;
   public static partial class EditingExtensions {
     /// <summary>
     /// Number of pixels outside the bound to allow a point to be considered as part of the bounds.
@@ -34,7 +33,7 @@ namespace CSharpMath.Editor {
     /// </summary>
     public static MathListIndex? IndexForPoint<TFont, TGlyph>(
       this IDisplay<TFont, TGlyph> display,
-      FrontEnd.TypesettingContext<TFont, TGlyph> context, PointF point)
+      TypesettingContext<TFont, TGlyph> context, PointF point)
       where TFont : IFont<TGlyph> => display switch
     {
       TextLineDisplay<TFont, TGlyph> text => text.IndexForPoint(context, point),
@@ -45,7 +44,7 @@ namespace CSharpMath.Editor {
     };
     ///<summary>The bounds of the display indicated by the given index</summary>
     public static PointF? PointForIndex<TFont, TGlyph>(this IDisplay<TFont, TGlyph> display,
-      FrontEnd.TypesettingContext<TFont, TGlyph> context,
+      TypesettingContext<TFont, TGlyph> context,
       MathListIndex index) where TFont : IFont<TGlyph> => display switch
     {
       TextLineDisplay<TFont, TGlyph> text => text.PointForIndex(context, index),

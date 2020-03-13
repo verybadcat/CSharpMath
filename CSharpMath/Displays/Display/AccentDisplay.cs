@@ -1,9 +1,9 @@
 using System.Drawing;
 using CSharpMath.Atoms;
-using CSharpMath.FrontEnd;
 using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Displays.Display {
+  using FrontEnd;
   public class AccentDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph> where TFont : IFont<TGlyph> {
     public AccentDisplay(GlyphDisplay<TFont, TGlyph> accentGlyphDisplay, IDisplay<TFont, TGlyph> accentee) {
       Accent = accentGlyphDisplay;

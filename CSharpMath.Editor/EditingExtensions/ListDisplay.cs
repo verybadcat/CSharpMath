@@ -5,7 +5,7 @@ namespace CSharpMath.Editor {
   using System.Linq;
   using Displays;
   using Displays.Display;
-  using FrontEnd;
+  using Displays.FrontEnd;
   using Structures;
   using Color = Structures.Color;
 

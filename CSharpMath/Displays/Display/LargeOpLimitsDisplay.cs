@@ -1,10 +1,10 @@
 using System;
 using System.Drawing;
 using CSharpMath.Atoms;
-using CSharpMath.FrontEnd;
 using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Displays.Display {
+  using FrontEnd;
   public class LargeOpLimitsDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph>
     where TFont : IFont<TGlyph> {
     private readonly IDisplay<TFont, TGlyph> _nucleusDisplay;

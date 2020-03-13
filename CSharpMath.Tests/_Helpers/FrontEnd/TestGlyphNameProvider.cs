@@ -1,5 +1,5 @@
 namespace CSharpMath.Tests.FrontEnd {
-  class TestGlyphNameProvider : CSharpMath.FrontEnd.IGlyphNameProvider<char> {
+  class TestGlyphNameProvider : Displays.FrontEnd.IGlyphNameProvider<char> {
     TestGlyphNameProvider() { }
     public static TestGlyphNameProvider Instance { get; } = new TestGlyphNameProvider();
     public char GetGlyph(string glyphName) => System.Linq.Enumerable.FirstOrDefault(glyphName);

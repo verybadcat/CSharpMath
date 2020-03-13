@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using CSharpMath.Atoms;
 using CSharpMath.Atoms.Atom;
 using CSharpMath.Displays.Display;
-using CSharpMath.FrontEnd;
+using CSharpMath.Displays.FrontEnd;
 using CSharpMath.Structures;
 using ColorAtom = CSharpMath.Atoms.Atom.Color;
 using SpaceAtom = CSharpMath.Atoms.Atom.Space;

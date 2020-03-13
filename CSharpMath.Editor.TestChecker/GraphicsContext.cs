@@ -6,7 +6,7 @@ using CSharpMath.Displays;
 using CSharpMath.Tests.FrontEnd;
 
 namespace CSharpMath.Editor.TestChecker {
-  public class GraphicsContext : FrontEnd.IGraphicsContext<TestFont, char> {
+  public class GraphicsContext : Displays.FrontEnd.IGraphicsContext<TestFont, char> {
     readonly Stack<PointF> stack = new Stack<PointF>();
     PointF trans = new PointF();
     public void DrawGlyphRunWithOffset(AttributedGlyphRun<TestFont, char> text,

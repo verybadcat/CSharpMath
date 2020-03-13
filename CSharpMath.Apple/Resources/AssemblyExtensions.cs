@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
-namespace CSharpMath {
-  internal static class AssemblyExtensions {
+namespace CSharpMath.Resources {
+  public static class Extensions {
     public static string ManifestResourcePrefix(this Assembly assembly) {
       string r = null;
       const string resourceString = ".Resources.";

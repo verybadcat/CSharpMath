@@ -2,10 +2,10 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using CSharpMath.Atoms;
-using CSharpMath.FrontEnd;
 using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Displays.Display {
+  using FrontEnd;
   /// <summary>Corresponds to MTMathListDisplay in iosMath.</summary>
   public class ListDisplay<TFont, TGlyph>: IDisplay<TFont, TGlyph>
     where TFont : IFont<TGlyph> {

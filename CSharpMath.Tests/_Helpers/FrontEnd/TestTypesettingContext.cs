@@ -1,7 +1,7 @@
 namespace CSharpMath.Tests.FrontEnd {
   public static class TestTypesettingContexts {
-    public static CSharpMath.FrontEnd.TypesettingContext<TestFont, char> Instance { get; } =
-      new CSharpMath.FrontEnd.TypesettingContext<TestFont, char>(
+    public static Displays.FrontEnd.TypesettingContext<TestFont, char> Instance { get; } =
+      new Displays.FrontEnd.TypesettingContext<TestFont, char>(
         (font, size) => new TestFont(size),
         TestGlyphBoundsProvider.Instance,
         TestGlyphFinder.Instance,

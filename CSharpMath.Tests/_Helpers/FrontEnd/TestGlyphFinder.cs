@@ -1,5 +1,5 @@
 namespace CSharpMath.Tests.FrontEnd {
-  class TestGlyphFinder : CSharpMath.FrontEnd.IGlyphFinder<TestFont, char> {
+  class TestGlyphFinder : Displays.FrontEnd.IGlyphFinder<TestFont, char> {
     TestGlyphFinder() { }
     public static TestGlyphFinder Instance { get; } = new TestGlyphFinder();
     public char FindGlyphForCharacterAtIndex

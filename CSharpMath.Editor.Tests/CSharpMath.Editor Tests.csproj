@@ -8,12 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\CSharpMath.Apple\Interfaces\IFontMeasurer.cs" Link="_Helpers\Interfaces\IFontMeasurer.cs" />
-    <Compile Include="..\CSharpMath.Apple\Interfaces\IGlyphNameProvider.cs" Link="_Helpers\Interfaces\IGlyphNameProvider.cs" />
+    <Compile Include="..\CSharpMath.Apple\FrontEnd\IFontMeasurer.cs" Link="_Helpers\FrontEnd\IFontMeasurer.cs" />
+    <Compile Include="..\CSharpMath.Apple\FrontEnd\IGlyphNameProvider.cs" Link="_Helpers\FrontEnd\IGlyphNameProvider.cs" />
+    <Compile Include="..\CSharpMath.Apple\FrontEnd\JsonMathTable.cs" Link="_Helpers\FrontEnd\JsonMathTable.cs" />
     <Compile Include="..\CSharpMath.Apple\Resources\AssemblyExtensions.cs" Link="_Helpers\Resources\AssemblyExtensions.cs" />
     <Compile Include="..\CSharpMath.Apple\Resources\ManifestResources.cs" Link="_Helpers\Resources\ManifestResources.cs" />
     <Compile Include="..\CSharpMath.Apple\Resources\ManifestResourceProvider.cs" Link="_Helpers\Resources\ManifestResourceProvider.cs" />
-    <Compile Include="..\CSharpMath.Apple\Typesetting\JsonMathTable.cs" Link="_Helpers\FrontEnd\JsonMathTable.cs" />
     <Compile Include="..\CSharpMath.Tests\_Helpers\ApproximateAssertions.cs" Link="_Helpers\ApproximateAssertions.cs" />
     <Compile Include="..\CSharpMath.Tests\_Helpers\FrontEnd\DoNothingFontChanger.cs" Link="_Helpers\FrontEnd\DoNothingFontChanger.cs" />
     <Compile Include="..\CSharpMath.Tests\_Helpers\FrontEnd\TestFont.cs" Link="_Helpers\FrontEnd\TestFont.cs" />

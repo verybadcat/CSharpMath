@@ -9,8 +9,8 @@ namespace CSharpMath.Atoms.Atom {
     public new Space Clone(bool finalize) => (Space)base.Clone(finalize);
     protected override MathAtom CloneInside(bool finalize) => new Space(_space);
     public float ActualLength<TFont, TGlyph>
-      (FrontEnd.FontMathTable<TFont, TGlyph> mathTable, TFont font)
-      where TFont : FrontEnd.IFont<TGlyph> => _space.ActualLength(mathTable, font);
+      (Displays.FrontEnd.FontMathTable<TFont, TGlyph> mathTable, TFont font)
+      where TFont : Displays.FrontEnd.IFont<TGlyph> => _space.ActualLength(mathTable, font);
     public override string DebugString => " ";
     public override bool Equals(object obj) => obj is Space s && EqualsSpace(s);
     public bool EqualsSpace(Space otherSpace) =>
