@@ -45,7 +45,10 @@ namespace CSharpMath.SkiaSharp {
         pngData.SaveTo(outFile);
       }
       var expectedFile = new FileInfo(Path.Combine(folder, inFile + ".png"));
-      if (!expectedFile.Exists) actualFile.CopyTo(expectedFile.FullName);
+      if (!expectedFile.Exists) {
+        actualFile.CopyTo(expectedFile.FullName);
+        return;
+      }
       Assert.True(expectedFile.Exists, "The expected image does not exist.");
       Assert.True(actualFile.Exists, "The actual image does not exist.");
       using var actualStream = actualFile.OpenRead();
