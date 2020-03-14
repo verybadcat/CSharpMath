@@ -5,11 +5,14 @@
              x:Class="CSharpMath.Forms.Example.ExamplePage"
              Title="Select">
     <StackLayout>
-        <StackLayout Orientation="Horizontal" BackgroundColor="LightGray">
+        <StackLayout Orientation="Horizontal">
             <Picker x:Name="Picker" HorizontalOptions="FillAndExpand"/>
             <Picker x:Name="Size" HorizontalOptions="FillAndExpand"/>
         </StackLayout>
-        <Label x:Name="Label"/>
+        <StackLayout Orientation="Horizontal">
+            <Label x:Name="Label" HorizontalOptions="FillAndExpand"/>
+            <Button Text="Reset pan" Clicked="Button_Clicked" HorizontalOptions="End"/>
+        </StackLayout>
         <math:MathView x:Name="View"
                        HorizontalOptions="FillAndExpand"
                        VerticalOptions="FillAndExpand"

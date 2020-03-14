@@ -27,5 +27,9 @@ namespace CSharpMath.Forms.Example {
       //App.AllViews.Remove(View);
       base.OnDisappearing();
     }
+    private void Button_Clicked(object sender, System.EventArgs e) {
+      View.DisplacementX = View.DisplacementY = 0;
+      View.InvalidateSurface();
+    }
   }
 }

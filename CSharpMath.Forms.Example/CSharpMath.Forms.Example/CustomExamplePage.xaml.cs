@@ -27,9 +27,5 @@ namespace CSharpMath.Forms.Example {
         View.InvalidateSurface();
       };
     }
-    protected override void OnDisappearing() {
-      //App.AllViews.Remove(View);
-      base.OnDisappearing();
-    }
   }
 }

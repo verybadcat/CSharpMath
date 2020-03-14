@@ -1,19 +1,49 @@
 using SkiaSharp;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Xunit;
 
 namespace CSharpMath.SkiaSharp {
-  public class TestsFixture {
-    // Pre-initialize the typefaces to speed tests up
-    public TestsFixture() => Rendering.Fonts.GlobalTypefaces.ToString();
+  public class TestsFixture : IDisposable {
+    public TestsFixture() {
+      // Pre-initialize the typefaces to speed tests up
+      Rendering.Fonts.GlobalTypefaces.ToString();
+      // Delete garbage by previous tests
+      foreach (var garbage in
+        Tests.Folders.SelectMany(folder => Directory.EnumerateFiles(folder, "*.actual.*")))
+        File.Delete(garbage);
+    }
+    // Verify that all expected images have been tested against
+    public void Dispose() {
+      Assert.NotEmpty(Tests.Folders);
+      Assert.All(
+        Tests.Folders.SelectMany(folder =>
+          Directory.EnumerateFiles(folder)
+          .Select(file => Path.GetRelativePath(Tests.ThisDirectory.FullName, file))
+          .GroupBy(path => path.Split('.')[0])
+        ),
+        file => Assert.Collection(file,
+          f => Assert.EndsWith(".actual.png", f),
+          f => Assert.EndsWith(".png", f)
+        )
+      );
+    }
   }
   public class Tests : IClassFixture<TestsFixture> {
     // https://www.codecogs.com/latex/eqneditor.php
     static string ThisFilePath
       ([System.Runtime.CompilerServices.CallerFilePath] string path = null) => path;
-    static string GetFolder(string folderName) =>
-      new FileInfo(ThisFilePath()).Directory.CreateSubdirectory(folderName).FullName;
+    public static DirectoryInfo ThisDirectory = new FileInfo(ThisFilePath()).Directory;
+    public static string GetFolder(string folderName) =>
+      ThisDirectory.CreateSubdirectory(folderName).FullName;
+    public static IEnumerable<string> Folders =>
+      typeof(Tests)
+      .GetMethods()
+      .Where(method => method.IsDefined(typeof(TheoryAttribute), false))
+      .Select(method => GetFolder(method.Name));
+
     [Theory, ClassData(typeof(MathData))]
     public void Display(string file, string latex) =>
       Test(file, latex, GetFolder(nameof(Display)), new MathPainter { LineStyle = Atoms.LineStyle.Display });
@@ -23,6 +53,7 @@ namespace CSharpMath.SkiaSharp {
     [Theory, ClassData(typeof(TextData))]
     public void Text(string file, string latex) =>
       Test(file, latex, GetFolder(nameof(Text)), new TextPainter());
+
     static void Test<TSource>(string inFile, string latex, string folder,
       Rendering.Painter<SKCanvas, TSource, SKColor> painter)
       where TSource: struct, Rendering.ISource {
@@ -32,11 +63,13 @@ namespace CSharpMath.SkiaSharp {
       painter.LaTeX = latex;
       if (painter.ErrorMessage != null)
         throw new Xunit.Sdk.XunitException(painter.ErrorMessage);
+
       var size = painter.Measure(2000f) switch {
         System.Drawing.RectangleF rect => rect.Size,
         null => throw new Xunit.Sdk.XunitException("Measure returned null.")
       };
       var actualFile = new FileInfo(Path.Combine(folder, inFile + ".actual.png"));
+      Assert.False(actualFile.Exists, "The actual file was not deleted by test initialization.");
       using (var surface = SKSurface.Create(new SKImageInfo((int)size.Width, (int)size.Height))) {
         painter.Draw(surface.Canvas, Rendering.TextAlignment.TopLeft);
         using var snapshot = surface.Snapshot();
@@ -44,17 +77,20 @@ namespace CSharpMath.SkiaSharp {
         using var outFile = actualFile.OpenWrite();
         pngData.SaveTo(outFile);
       }
+      actualFile.Refresh();
+      Assert.True(actualFile.Exists, "The actual image was not created successfully.");
+
       var expectedFile = new FileInfo(Path.Combine(folder, inFile + ".png"));
       if (!expectedFile.Exists) {
         actualFile.CopyTo(expectedFile.FullName);
-        return;
+        expectedFile.Refresh();
       }
-      Assert.True(expectedFile.Exists, "The expected image does not exist.");
-      Assert.True(actualFile.Exists, "The actual image does not exist.");
+      Assert.True(expectedFile.Exists, "The expected image was not copied successfully.");
       using var actualStream = actualFile.OpenRead();
       using var expectedStream = expectedFile.OpenRead();
       Assert.Equal(expectedStream.Length, actualStream.Length);
       Assert.True(StreamsContentsAreEqual(expectedStream, actualStream), "The images differ.");
+
       // https://stackoverflow.com/a/2637303/5429648
       static bool StreamsContentsAreEqual(Stream stream1, Stream stream2) {
         const int bufferSize = 2048 * 2;

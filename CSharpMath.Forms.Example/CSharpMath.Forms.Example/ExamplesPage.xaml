@@ -4,5 +4,11 @@
              xmlns:math="clr-namespace:CSharpMath.Forms;assembly=CSharpMath.Forms"
              x:Class="CSharpMath.Forms.Example.ExamplesPage"
              Title="Examples">
-    <math:MathView x:Name="View" EnableTouchEvents="true"/>
+    <StackLayout>
+        <StackLayout Orientation="Horizontal">
+            <Label Text="Pan to view more!" HorizontalOptions="FillAndExpand"/>
+            <Button Text="Reset pan" Clicked="Button_Clicked" HorizontalOptions="End"/>
+        </StackLayout>
+        <math:MathView x:Name="View" EnableTouchEvents="true"/>
+    </StackLayout>
 </ContentPage>
