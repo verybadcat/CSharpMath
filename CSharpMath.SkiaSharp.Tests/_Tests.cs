@@ -1,16 +1,20 @@
 using SkiaSharp;
 using System;
 using System.IO;
-using System.Linq;
 using Xunit;
 
 namespace CSharpMath.SkiaSharp {
-  public static class Tests {
+  [CollectionDefinition(nameof(Tests))]
+  public class TestsFixture : ICollectionFixture<Tests> { }
+  public class Tests {
+    // Pre-initialize the typefaces to speed tests up
+    public Tests() => Rendering.Fonts.GlobalTypefaces.ToString();
+
     // https://www.codecogs.com/latex/eqneditor.php
     static string ThisFilePath
       ([System.Runtime.CompilerServices.CallerFilePath] string path = null) => path;
     static string GetFolder(string folderName) =>
-      new FileInfo(ThisFilePath()).Directory.EnumerateDirectories(folderName).First().FullName;
+      new FileInfo(ThisFilePath()).Directory.CreateSubdirectory(folderName).FullName;
     internal static readonly string InlineFolder = GetFolder("Inline");
     internal static readonly string DisplayFolder = GetFolder("Display");
     internal static readonly string TextFolder = GetFolder("Text");
@@ -19,9 +23,12 @@ namespace CSharpMath.SkiaSharp {
     internal static void Test<TSource>(string inFile, string latex, string folder,
       Rendering.Painter<SKCanvas, TSource, SKColor> painter)
       where TSource: struct, Rendering.ISource {
+      // Prevent black background behind black rendered output in File Explorer preview
+      painter.HighlightColor = new SKColor(0xF0, 0xF0, 0xF0);
       painter.FontSize = FontSize;
       painter.LaTeX = latex;
-      Assert.Null(painter.ErrorMessage);
+      if (painter.ErrorMessage != null)
+        throw new Xunit.Sdk.XunitException(painter.ErrorMessage);
       var size = painter.Measure(CanvasWidth) switch {
         System.Drawing.RectangleF rect => rect.Size,
         null => throw new Xunit.Sdk.XunitException("Measure returned null.")
@@ -35,12 +42,13 @@ namespace CSharpMath.SkiaSharp {
         pngData.SaveTo(outFile);
       }
       var expectedFile = new FileInfo(Path.Combine(folder, inFile + ".png"));
+      if (!expectedFile.Exists) actualFile.CopyTo(expectedFile.FullName);
       Assert.True(expectedFile.Exists, "The expected image does not exist.");
       Assert.True(actualFile.Exists, "The actual image does not exist.");
       using var actualStream = actualFile.OpenRead();
       using var expectedStream = expectedFile.OpenRead();
       Assert.Equal(expectedStream.Length, actualStream.Length);
-      Assert.True(StreamsContentsAreEqual(expectedStream, actualStream));
+      Assert.True(StreamsContentsAreEqual(expectedStream, actualStream), "The images differ.");
       // https://stackoverflow.com/a/2637303/5429648
       static bool StreamsContentsAreEqual(Stream stream1, Stream stream2) {
         const int bufferSize = 2048 * 2;

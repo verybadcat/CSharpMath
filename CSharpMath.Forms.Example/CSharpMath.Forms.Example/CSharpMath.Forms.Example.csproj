@@ -11,6 +11,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\CSharpMath.SkiaSharp.Tests\MathData.cs" Link="Examples\MathData.cs" />
+    <Compile Include="..\..\CSharpMath.SkiaSharp.Tests\SharedData.cs" Link="Examples\SharedData.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Include="SVGs\Backspace.svg" />
     <EmbeddedResource Include="SVGs\Clear.svg" />
     <EmbeddedResource Include="SVGs\Exponent.svg" />
@@ -65,5 +70,9 @@
     <EmbeddedResource Update="TextPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Examples\" />
   </ItemGroup>
 </Project>

@@ -7,9 +7,6 @@ using Xamarin.Forms.Xaml;
 namespace CSharpMath.Forms.Example {
   [XamlCompilation(XamlCompilationOptions.Compile)]
   public partial class ExamplePage : ContentPage {
-    readonly Dictionary<string, string> dict =
-      ExamplesPage.AllConstants.ToDictionary
-        (info => info.Name, info => (string)info.GetRawConstantValue());
     public ExamplePage() {
       InitializeComponent();
       App.AllViews.Add(View);
@@ -19,9 +16,9 @@ namespace CSharpMath.Forms.Example {
         View.InvalidateSurface();
       };
       Size.SelectedItem = 96f;
-      Picker.ItemsSource = dict.Keys.ToList();
+      Picker.ItemsSource = SkiaSharp.MathData.AllConstants.Keys.ToList();
       Picker.SelectedIndexChanged += (sender, e) => {
-        View.LaTeX = Label.Text = dict[(string)Picker.SelectedItem];
+        View.LaTeX = Label.Text = SkiaSharp.MathData.AllConstants[(string)Picker.SelectedItem];
         View.InvalidateSurface();
       };
       Picker.SelectedItem = nameof(ExamplesPage.ShortIntegral);
