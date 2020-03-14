@@ -1,21 +1,6 @@
-//For the Android linker
-namespace Android.Runtime {
-  public sealed class PreserveAttribute : System.Attribute {
-    public bool AllMembers; public bool Conditional;
-  }
-}
-#if !__IOS__
-//For the iOS linker
-namespace Foundation {
-  public sealed class PreserveAttribute : System.Attribute {
-    public bool AllMembers; public bool Conditional;
-  }
-}
-#endif
 namespace CSharpMath.SkiaSharp {
-  [Android.Runtime.Preserve(AllMembers = true),
-   Foundation.Preserve(AllMembers = true)]
-  public class MathData : SharedData<MathData> {
+  [Android.Runtime.Preserve(AllMembers = true), Foundation.Preserve(AllMembers = true)]
+  public sealed class MathData : SharedData<MathData> {
     public const string Color = @"\color{#008}a\color{#00F}b\color{#080}c\color{#088}d\color{#08F}e\color{#0F0}f\color{#0F8}g\color{#0FF}h\color{#800}i\color{#808}j\color{#80F}k\color{#880}l\color{#888}m\color{#88F}n\color{#8F0}o\color{#8F8}p\color{#8FF}q\color{#F00}r\color{#F08}s\color{#F0F}t\color{#F80}u\color{#F88}v\color{#F8F}w\color{#FF0}x\color{#FF8}y\color{#FFF}z";
 
     //START mirror CSharpMath.Ios.Example
@@ -81,7 +66,6 @@ namespace CSharpMath.SkiaSharp {
     public const string Taylor = @"\begin{eqnarray} e^x  &=&  \sum_{n=0}^{\infty}\frac{x^n}{n!} \\ \\ \sin(x) &=& \sum_{n=0}^{\infty}(-1)^n\frac{x^{2n+1}}{(2n+1)!}  \\ \\ -\ln(1-x)   &=& \sum_{n=1}^{\infty}\frac{x^n}{n}  \ \ \ \ \ (-1 \leq x < 1) \end{eqnarray}";
     public const string TwoSin = @"2 \sin";
     public const string Underline = @"\underline{Underline}";
-
     //END mirror CSharpMath.Ios.Example
 
     public const string BMartix = @"\begin{bmatrix} x_{11}&x_{12}&x_{13}&.&.&.&.&x_{1n} \end{bmatrix}";

@@ -3,14 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
+//For the Android linker
+namespace Android.Runtime {
+  public sealed class PreserveAttribute : System.Attribute {
+    public bool AllMembers; public bool Conditional;
+  }
+}
+#if !__IOS__
+//For the iOS linker
+namespace Foundation {
+  public sealed class PreserveAttribute : System.Attribute {
+    public bool AllMembers; public bool Conditional;
+  }
+}
+#endif
 namespace CSharpMath.SkiaSharp {
-  public sealed class SharedData : SharedData<SharedData> { }
-  [Android.Runtime.Preserve(AllMembers = true),
-   Foundation.Preserve(AllMembers = true)]
-  public class SharedData<TThis> : IEnumerable<object[]> where TThis : SharedData<TThis> {
+  [Android.Runtime.Preserve(AllMembers = true), Foundation.Preserve(AllMembers = true)]
+  public abstract class SharedData<TThis> : IEnumerable<object[]> where TThis : SharedData<TThis> {
     public static IReadOnlyDictionary<string, string> AllConstants { get; } =
-      typeof(TThis)
-      .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+      typeof(SharedData<TThis>)
+      .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
+      .Concat(typeof(TThis)
+        .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly))
       .Where(fi => fi.IsLiteral && !fi.IsInitOnly)
       .ToDictionary(fi => fi.Name, fi => (string)fi.GetRawConstantValue());
     public IEnumerator<object[]> GetEnumerator() =>
@@ -22,5 +36,7 @@ namespace CSharpMath.SkiaSharp {
     public const string Greeks = @"\alpha \beta \gamma \delta \varepsilon \zeta \eta \theta \iota \kappa \lambda " +
                                     @"\mu \nu \xi \omicron \pi \rho \sigma \varsigma \tau \upsilon \varphi \chi \omega ";
     public const string CapitalGreeks = @"ΑΒ\Gamma \Delta ΕΖΗ\Theta ΙΚ\Lambda ΜΝ\Xi Ο\Pi Ρ\Sigma Τ\Upsilon \Phi Χ\Omega ";
+    public const string Cyrillic = @"А а\ Б б\ В в\ Г г\ Д д\ Е е\ Ё ё\ Ж ж\\ З з\ И и\ Й й\ К к\ Л л\ М м\ Н н\ О о\ П п" +
+                                   @"\\ Р р\ С с\ Т т\ У у\ Ф ф\ Х х\ Ц ц\ Ч ч\\ Ш ш\ Щ щ\ Ъ ъ\ Ы ы\ Ь ь\ Э э\ Ю ю\ Я я";
   }
 }

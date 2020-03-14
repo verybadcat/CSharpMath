@@ -8,9 +8,9 @@ using Xamarin.Forms.Xaml;
 namespace CSharpMath.Forms.Example {
   [XamlCompilation(XamlCompilationOptions.Compile)]
   public partial class ExamplesPage : ContentPage {
+    public ExamplesPage() => InitializeComponent();
     static readonly string latex =
       string.Join(@"\\", SkiaSharp.MathData.AllConstants.Select(info => $@"{info.Key}: {info.Value}"));
-
     protected override void OnAppearing() {
       base.OnAppearing();
       App.AllViews.Add(View);

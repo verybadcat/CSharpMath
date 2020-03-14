@@ -4,32 +4,35 @@ using System.IO;
 using Xunit;
 
 namespace CSharpMath.SkiaSharp {
-  [CollectionDefinition(nameof(Tests))]
-  public class TestsFixture : ICollectionFixture<Tests> { }
-  public class Tests {
+  public class TestsFixture {
     // Pre-initialize the typefaces to speed tests up
-    public Tests() => Rendering.Fonts.GlobalTypefaces.ToString();
-
+    public TestsFixture() => Rendering.Fonts.GlobalTypefaces.ToString();
+  }
+  public class Tests : IClassFixture<TestsFixture> {
     // https://www.codecogs.com/latex/eqneditor.php
     static string ThisFilePath
       ([System.Runtime.CompilerServices.CallerFilePath] string path = null) => path;
     static string GetFolder(string folderName) =>
       new FileInfo(ThisFilePath()).Directory.CreateSubdirectory(folderName).FullName;
-    internal static readonly string InlineFolder = GetFolder("Inline");
-    internal static readonly string DisplayFolder = GetFolder("Display");
-    internal static readonly string TextFolder = GetFolder("Text");
-    const float FontSize = 50f;
-    const float CanvasWidth = 2000f;
-    internal static void Test<TSource>(string inFile, string latex, string folder,
+    [Theory, ClassData(typeof(MathData))]
+    public void Display(string file, string latex) =>
+      Test(file, latex, GetFolder(nameof(Display)), new MathPainter { LineStyle = Atoms.LineStyle.Display });
+    [Theory, ClassData(typeof(MathData))]
+    public void Inline(string file, string latex) =>
+      Test(file, latex, GetFolder(nameof(Inline)), new MathPainter { LineStyle = Atoms.LineStyle.Text });
+    [Theory, ClassData(typeof(TextData))]
+    public void Text(string file, string latex) =>
+      Test(file, latex, GetFolder(nameof(Text)), new TextPainter());
+    static void Test<TSource>(string inFile, string latex, string folder,
       Rendering.Painter<SKCanvas, TSource, SKColor> painter)
       where TSource: struct, Rendering.ISource {
       // Prevent black background behind black rendered output in File Explorer preview
       painter.HighlightColor = new SKColor(0xF0, 0xF0, 0xF0);
-      painter.FontSize = FontSize;
+      painter.FontSize = 50f;
       painter.LaTeX = latex;
       if (painter.ErrorMessage != null)
         throw new Xunit.Sdk.XunitException(painter.ErrorMessage);
-      var size = painter.Measure(CanvasWidth) switch {
+      var size = painter.Measure(2000f) switch {
         System.Drawing.RectangleF rect => rect.Size,
         null => throw new Xunit.Sdk.XunitException("Measure returned null.")
       };

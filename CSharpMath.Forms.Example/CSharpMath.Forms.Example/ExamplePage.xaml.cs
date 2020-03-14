@@ -21,7 +21,7 @@ namespace CSharpMath.Forms.Example {
         View.LaTeX = Label.Text = SkiaSharp.MathData.AllConstants[(string)Picker.SelectedItem];
         View.InvalidateSurface();
       };
-      Picker.SelectedItem = nameof(ExamplesPage.ShortIntegral);
+      Picker.SelectedItem = nameof(SkiaSharp.MathData.ShortIntegral);
     }
     protected override void OnDisappearing() {
       //App.AllViews.Remove(View);
