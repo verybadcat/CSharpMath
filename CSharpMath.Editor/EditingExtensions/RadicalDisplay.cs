@@ -19,8 +19,8 @@ namespace CSharpMath.Editor {
       //We are after the radical
       ? MathListIndex.Level0Index(self.Range.End)
       //We can be either near the degree or the radicand
-      : DistanceFromPointToRect(point, self.Degree != null ? new RectangleF(self.Degree.Position, self.Degree.DisplayBounds.Size) : default)
-      < DistanceFromPointToRect(point, new RectangleF(self.Radicand.Position, self.Radicand.DisplayBounds.Size))
+      : DistanceFromPointToRect(point, self.Degree != null ? new RectangleF(self.Degree.Position, self.Degree.DisplayBounds().Size) : default)
+      < DistanceFromPointToRect(point, new RectangleF(self.Radicand.Position, self.Radicand.DisplayBounds().Size))
       ? self.Degree != null
         ? MathListIndex.IndexAtLocation(self.Range.Location, MathListSubIndexType.Degree, self.Degree.IndexForPoint(context, point))
         : MathListIndex.Level0Index(self.Range.Location)
@@ -35,7 +35,7 @@ namespace CSharpMath.Editor {
 
       if (index.AtomIndex == self.Range.End)
         // draw a caret after the radical
-        return self.Position.Plus(new PointF(self.DisplayBounds.Right, 0));
+        return self.Position.Plus(new PointF(self.DisplayBounds().Right, 0));
       // draw a caret before the radical
       return self.Position;
     }

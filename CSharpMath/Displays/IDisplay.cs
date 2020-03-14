@@ -6,7 +6,6 @@ namespace CSharpMath.Displays {
   using FrontEnd;
   public interface IDisplay<TFont, TGlyph> where TFont : IFont<TGlyph> {
     void Draw(IGraphicsContext<TFont, TGlyph> context);
-    RectangleF DisplayBounds { get; }
     /// <summary>By convention, Ascent and Descent should be positive
     /// numbers for the typical case where your font is partly above
     /// and partly below the baseline. This may differ from the 
@@ -29,12 +28,11 @@ namespace CSharpMath {
   partial class Extensions {
     /// <summary>The display's bounds, in its own coordinate system.</summary> 
     public static RectangleF DisplayBounds<TFont, TGlyph>
-      (this IDisplay<TFont, TGlyph> display, bool invert = false) where TFont : IFont<TGlyph> =>
-      new RectangleF(0, invert ? display.Descent : -display.Ascent,
-        display.Width, display.Ascent + display.Descent);
+      (this IDisplay<TFont, TGlyph> display) where TFont : IFont<TGlyph> =>
+      new RectangleF(0, -display.Ascent, display.Width, display.Ascent + display.Descent);
     /// <summary>Where the display is located, expressed in its parent's coordinate system.</summary>
     public static RectangleF Frame<TFont, TGlyph>
-      (this IDisplay<TFont, TGlyph> display, bool invert = false) where TFont : IFont<TGlyph> =>
-      display.DisplayBounds(invert).Plus(display.Position);
+      (this IDisplay<TFont, TGlyph> display) where TFont : IFont<TGlyph> =>
+      display.DisplayBounds().Plus(display.Position);
   }
 }

@@ -16,7 +16,6 @@ namespace CSharpMath.Displays.Display {
     /// <summary>A display representing the inner list that is underlined.
     /// Its position is relative to the parent. </summary>
     public IDisplay<TFont, TGlyph> Inner { get; }
-    public RectangleF DisplayBounds => Inner.DisplayBounds;
     public float Ascent => Inner.Ascent;
     public float Descent => Inner.Descent;
     public float Width => Inner.Width;

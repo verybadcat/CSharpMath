@@ -39,12 +39,12 @@ Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6. \[\f
           measure.Width, measure.Height, new global::SkiaSharp.SKPaint {
             Color = global::SkiaSharp.SKColors.Orange
           });
-        measure = painter._absoluteXCoordDisplay.DisplayBounds;
+        measure = painter._absoluteXCoordDisplay.DisplayBounds();
         e.Surface.Canvas.DrawRect(x + measure.X, y + measure.Y,
           measure.Width, measure.Height, new global::SkiaSharp.SKPaint {
             Color = global::SkiaSharp.SKColors.Red, IsStroke = true
           });
-        measure = painter._relativeXCoordDisplay.DisplayBounds;
+        measure = painter._relativeXCoordDisplay.DisplayBounds();
         e.Surface.Canvas.DrawRect(x + measure.X, y + measure.Y,
           measure.Width, measure.Height, new global::SkiaSharp.SKPaint {
             Color = global::SkiaSharp.SKColors.Blue, IsStroke = true

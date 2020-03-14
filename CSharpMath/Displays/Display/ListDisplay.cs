@@ -29,7 +29,7 @@ namespace CSharpMath.Displays.Display {
     public float Ascent => Displays.CollectionAscent();
     public float Descent => Displays.CollectionDescent();
     public PointF Position { get; set; }
-    public RectangleF DisplayBounds => this.DisplayBounds();
+    
     public Range Range =>
       Range.Combine(
         Displays

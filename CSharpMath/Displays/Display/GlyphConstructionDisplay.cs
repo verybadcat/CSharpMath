@@ -12,7 +12,7 @@ namespace CSharpMath.Displays.Display {
     private readonly TFont _mathFont;
 
     public float ShiftDown { get; set; }
-    public RectangleF DisplayBounds => this.DisplayBounds();
+    
 
     public float Ascent { get; set; }
 

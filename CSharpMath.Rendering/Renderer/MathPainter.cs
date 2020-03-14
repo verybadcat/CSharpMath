@@ -13,7 +13,7 @@ namespace CSharpMath.Rendering.Renderer {
     public override string LaTeX { get => Source.LaTeX; set => Source = new MathSource(value); }
     public override RectangleF? Measure(float unused = float.NaN) {
       UpdateDisplay();
-      return _display?.DisplayBounds(CoordinatesFromBottomLeftInsteadOfTopLeft);
+      return _display?.DisplayBounds();
     }
     protected override void SetRedisplay() => _displayChanged = true;
     protected void UpdateDisplay() {

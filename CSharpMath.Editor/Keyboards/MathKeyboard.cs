@@ -23,7 +23,7 @@ namespace CSharpMath.Editor {
     public TFont Font { get; set; }
     public LineStyle LineStyle { get; set; }
     public Structures.Color SelectColor { get; set; }
-    public RectangleF? Measure => Display?.DisplayBounds;
+    public RectangleF? Measure => Display?.DisplayBounds();
     public bool HasText => MathList?.Atoms?.Count > 0;
     public void RecreateDisplayFromMathList() {
       var position = Display?.Position ?? default;

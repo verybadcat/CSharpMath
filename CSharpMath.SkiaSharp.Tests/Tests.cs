@@ -8,6 +8,8 @@ using Xunit;
 namespace CSharpMath.SkiaSharp {
   using Rendering.Renderer;
   public class TestsFixture : IDisposable {
+    // Switch this on and run all tests if you are curious :)
+    public static bool TestIfAllImagesWereTested = false;
     public TestsFixture() {
       // Pre-initialize the typefaces to speed tests up
       Rendering.FrontEnd.Fonts.GlobalTypefaces.ToString();
@@ -16,9 +18,12 @@ namespace CSharpMath.SkiaSharp {
         Tests.Folders.SelectMany(folder => Directory.EnumerateFiles(folder, "*.actual.*")))
         File.Delete(garbage);
     }
-    // Verify that all expected images have been tested against
     public void Dispose() {
       Assert.NotEmpty(Tests.Folders);
+      if (System.Diagnostics.Debugger.IsAttached || !TestIfAllImagesWereTested)
+        return;
+      // Verify that all expected images have been tested against
+      // FAILS if tests are executed in isolation!! (Not all tests are run)
       Assert.All(
         Tests.Folders.SelectMany(folder =>
           Directory.EnumerateFiles(folder)

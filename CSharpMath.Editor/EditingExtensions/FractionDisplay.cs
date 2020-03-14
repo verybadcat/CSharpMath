@@ -38,7 +38,7 @@ namespace CSharpMath.Editor {
         ("The subindex must be none to get the closest point for it.", nameof(index))
       : index.AtomIndex == self.Range.End
       // draw a caret after the fraction
-      ? self.Position.Plus(new PointF(self.DisplayBounds.Right, 0))
+      ? self.Position.Plus(new PointF(self.DisplayBounds().Right, 0))
       // draw a caret before the fraction
       : self.Position;
 

@@ -22,7 +22,7 @@ namespace CSharpMath.Displays.Display {
       Descent = rects.IsEmpty() ? 0 : rects.Max(rect => -rect.Y);
     }
     public AttributedGlyphRun<TFont, TGlyph> Run { get; }
-    public RectangleF DisplayBounds => this.DisplayBounds();
+    
     public Range Range { get; set; }
     public float Width { get; set; }
     public float Ascent { get; set; }

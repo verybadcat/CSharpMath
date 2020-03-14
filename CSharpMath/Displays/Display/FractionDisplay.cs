@@ -29,7 +29,7 @@ namespace CSharpMath.Displays.Display {
       Range = range;
       UpdateNumeratorAndDenominatorPositions();
     }
-    public RectangleF DisplayBounds => this.DisplayBounds(); //Numerator.Frame().Union(Denominator.Frame());
+    
     public float Ascent => Numerator.Ascent + NumeratorUp;
 
     public float Descent => Denominator.Descent + DenominatorDown;

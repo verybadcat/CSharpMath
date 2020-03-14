@@ -39,7 +39,7 @@ namespace CSharpMath.Displays.Display {
     ///<summary>A display representing the numerator of the fraction.
     ///Its position is relative to the parent and it is not treated as a sub-display.</summary>
     public IDisplay<TFont, TGlyph>? LowerLimit { get; private set; }
-    public RectangleF DisplayBounds => this.DisplayBounds();
+    
     public float Ascent =>
       _nucleusDisplay.Ascent +
       (_extraPadding + UpperLimit?.Ascent + _upperLimitGap + UpperLimit?.Descent ?? 0);

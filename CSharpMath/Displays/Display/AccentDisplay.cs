@@ -10,18 +10,17 @@ namespace CSharpMath.Displays.Display {
       Accentee = accentee;
     }
     ///<summary>A display representing the inner list that is accented.
-    ///It's position is relative to the parent is not treated as a sub-display.</summary>
+    ///Its position is relative to the parent is not treated as a sub-display.</summary>
     public IDisplay<TFont, TGlyph> Accentee { get; private set; }
     ///<summary>A display representing the accent.
-    ///It's position is relative to the current display.</summary>
+    ///Its position is relative to the current display.</summary>
     public GlyphDisplay<TFont, TGlyph> Accent { get; private set; }
-    public RectangleF DisplayBounds => Accentee.DisplayBounds;
 
-    public float Ascent => Accentee.Ascent;
+    public float Ascent => System.Math.Max(Accent.Ascent + Accent.Position.Y, Accentee.Ascent);
 
-    public float Descent => Accentee.Descent;
+    public float Descent => System.Math.Max(Accent.Descent + Accent.Position.Y, Accentee.Descent);
 
-    public float Width => Accentee.Width;
+    public float Width => System.Math.Max(Accent.Width + Accent.Position.X, Accentee.Width);
 
     public Range Range => Accentee.Range;
 

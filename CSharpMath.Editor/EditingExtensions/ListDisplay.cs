@@ -21,7 +21,7 @@ namespace CSharpMath.Editor {
       var xbounds = new List<IDisplay<TFont, TGlyph>>();
       float minDistance = float.MaxValue;
       foreach (var display in self.Displays) {
-        var bounds = display.DisplayBounds;
+        var bounds = display.DisplayBounds();
         var rect = new RectangleF(display.Position, bounds.Size);
         var maxBoundsX = rect.Right;
         if (rect.X - PixelDelta <= translatedPoint.X && translatedPoint.X <= maxBoundsX + PixelDelta)
@@ -60,7 +60,7 @@ namespace CSharpMath.Editor {
           break;
         case 1:
           displayWithPoint = xbounds[0];
-          var rect = new RectangleF(displayWithPoint.Position, displayWithPoint.DisplayBounds.Size);
+          var rect = new RectangleF(displayWithPoint.Position, displayWithPoint.DisplayBounds().Size);
           if (translatedPoint.X >= self.Width - PixelDelta)
             // The point is close to the end. Only use the selected X bounds if the Y is within range.
             if (translatedPoint.Y <= rect.YMin() - PixelDelta)

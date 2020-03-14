@@ -34,9 +34,7 @@ namespace CSharpMath.Rendering.Renderer {
     public override RectangleF? Measure(float canvasWidth) {
       UpdateDisplay(canvasWidth);
       return 
-        _relativeXCoordDisplay
-        ?.Frame(CoordinatesFromBottomLeftInsteadOfTopLeft)
-        .Union(_absoluteXCoordDisplay.Frame(CoordinatesFromBottomLeftInsteadOfTopLeft));
+        _relativeXCoordDisplay?.Frame().Union(_absoluteXCoordDisplay.Frame());
     }
     protected void UpdateDisplay(float canvasWidth) =>
       (_relativeXCoordDisplay, _absoluteXCoordDisplay) =

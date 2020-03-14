@@ -6,7 +6,7 @@ namespace CSharpMath.Displays.Display {
   using FrontEnd;
   public class GlyphDisplay<TFont, TGlyph> : IGlyphDisplay<TFont, TGlyph>
     where TFont : IFont<TGlyph> {
-    public RectangleF DisplayBounds => this.DisplayBounds();
+    
     public float Ascent { get; set; }
     public float Descent { get; set; }
     public float Width { get; set; }

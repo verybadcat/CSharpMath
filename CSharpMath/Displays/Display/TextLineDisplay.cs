@@ -23,7 +23,7 @@ namespace CSharpMath.Displays.Display {
     public List<TextRunDisplay<TFont, TGlyph>> Runs { get; }
     public IReadOnlyList<MathAtom> Atoms { get; }
     public IEnumerable<TGlyph> Text => Runs.SelectMany(run => run.Run.Glyphs);
-    public RectangleF DisplayBounds => this.DisplayBounds();
+    
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
       context.SaveState();
       context.SetTextPosition(this.Position);

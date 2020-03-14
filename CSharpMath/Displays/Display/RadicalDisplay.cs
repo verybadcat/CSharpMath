@@ -45,7 +45,7 @@ namespace CSharpMath.Displays.Display {
     private void UpdateRadicandPosition() =>
       Radicand.Position =
         new PointF(Position.X + _radicalShift + _radicalGlyph.Width, Position.Y);
-    public RectangleF DisplayBounds => this.DisplayBounds();
+    
     public float Ascent { get; set; }
     public float Descent { get; set; }
     public Range Range { get; set; }

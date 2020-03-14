@@ -1,7 +1,9 @@
-﻿Switch default config to Release
-Update NuGet package information using CSharpMath.Utils.NuGet
+﻿Update NuGet package information using CSharpMath.Utils.NuGet
 Switch on "Generate package on build" in the CSharpMath.Utils.NuGet interface
-Build solution until success
 Check Example projects, test thoroughly
+Switch default config to Release
+Build CSharpMath.Forms
+Switch default config to Release-iOS
+Build CSharpMath.Ios
 Get all .nupkg files from bin/Release folders
 Upload them to NuGet
