@@ -1,15 +1,16 @@
 using System.Drawing;
 using System.Linq;
 
-namespace CSharpMath.Rendering {
+namespace CSharpMath.Rendering.Renderer {
   using Displays;
   using Displays.Display;
+  using FrontEnd;
+  using Structures;
+  using Text;
   /// <summary>
   /// Unlike <see cref="Typesetter{TFont, TGlyph}"/>,
   /// <see cref="TextPainter{TCanvas, TColor}"/>'s coordinates are inverted by default.
   /// </summary>
-  /// <typeparam name="TCanvas"></typeparam>
-  /// <typeparam name="TColor"></typeparam>
   public abstract class TextPainter<TCanvas, TColor> : Painter<TCanvas, TextSource, TColor> {
     public TextPainter(float fontSize = DefaultFontSize) : base(fontSize) { }
 
@@ -66,7 +67,7 @@ namespace CSharpMath.Rendering {
         _absoluteXCoordDisplay.Position =
           new PointF(_absoluteXCoordDisplay.Position.X + offsetX,
                      _absoluteXCoordDisplay.Position.Y + _relativeXCoordDisplay.Position.Y);
-        using var array = new Structures.RentedArray<IDisplay<Fonts, Glyph>>(
+        using var array = new RentedArray<IDisplay<Fonts, Glyph>>(
           _relativeXCoordDisplay, _absoluteXCoordDisplay
         );
         DrawCore(c, new ListDisplay<Fonts, Glyph>(array.Result));
@@ -94,7 +95,7 @@ namespace CSharpMath.Rendering {
           new PointF(_absoluteXCoordDisplay.Position.X + x,
                      _relativeXCoordDisplay.Position.Y);
         using var array =
-          new Structures.RentedArray<IDisplay<Fonts, Glyph>>(
+          new RentedArray<IDisplay<Fonts, Glyph>>(
             _relativeXCoordDisplay, _absoluteXCoordDisplay
           );
         DrawCore(c, new ListDisplay<Fonts, Glyph>(array.Result));

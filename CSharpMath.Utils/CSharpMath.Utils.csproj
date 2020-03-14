@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -12,6 +12,6 @@
   <Import Project="..\Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems" Label="Shared" />
   <Import Project="..\Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems" Label="Shared" />
   <ItemGroup>
-    <Compile Include="..\CSharpMath.Rendering\_IgnoreTypographyWarnings.cs" Link="_IgnoreTypographyWarnings.cs" />
+    <Compile Include="..\CSharpMath.Rendering\RendererBase\IgnoreTypographyWarnings.cs" Link="IgnoreTypographyWarnings.cs" />
   </ItemGroup>
 </Project>

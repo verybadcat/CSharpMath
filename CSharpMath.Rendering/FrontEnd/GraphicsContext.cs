@@ -3,23 +3,22 @@ using System.Drawing;
 using System.Linq;
 using CSharpMath.Displays.FrontEnd;
 using CSharpMath.Structures;
-using TFonts = CSharpMath.Rendering.Fonts;
 using Typography.OpenFont;
 using Color = CSharpMath.Structures.Color;
 
-namespace CSharpMath.Rendering {
-  public class GraphicsContext : IGraphicsContext<TFonts, Glyph> {
+namespace CSharpMath.Rendering.FrontEnd {
+  public class GraphicsContext : IGraphicsContext<Fonts, Glyph> {
     private class GlyphPathBuilder : Typography.Contours.GlyphPathBuilderBase {
       public GlyphPathBuilder(Typeface typeface) : base(typeface) { }
     }
     public (Color glyph, Color textRun)? GlyphBoxColor { get; set; }
-    public ICanvas Canvas { get; set; }
+    public Renderer.ICanvas Canvas { get; set; }
 
 #warning Remove (Must have a Mac to test)
-    void IGraphicsContext<TFonts, Glyph>.SetTextPosition(PointF position) => Translate(position);
+    void IGraphicsContext<Fonts, Glyph>.SetTextPosition(PointF position) => Translate(position);
 
     public void DrawGlyphsAtPoints
-      (IReadOnlyList<Glyph> glyphs, TFonts font, IEnumerable<PointF> points, Color? color) {
+      (IReadOnlyList<Glyph> glyphs, Fonts font, IEnumerable<PointF> points, Color? color) {
       foreach (var (glyph, point) in glyphs.Zip(points, System.ValueTuple.Create)) {
         if (GlyphBoxColor != null) {
           using var rentedArray = new RentedArray<Glyph>(glyph);
@@ -46,7 +45,7 @@ namespace CSharpMath.Rendering {
     }
 
     public void DrawGlyphRunWithOffset
-      (Displays.AttributedGlyphRun<TFonts, Glyph> run, PointF offset, Color? color) {
+      (Displays.AttributedGlyphRun<Fonts, Glyph> run, PointF offset, Color? color) {
       var textPosition = offset;
       if (GlyphBoxColor != null) {
         Bounds bounds;

@@ -7,7 +7,7 @@ namespace CSharpMath.Forms.Example {
   [AcceptEmptyServiceProvider]
   public class MathInputExtension : IMarkupExtension<Command> {
     public Editor.MathKeyboardInput Input { get; set; }
-    public Rendering.MathKeyboard Keyboard { get; set; }
+    public Rendering.Renderer.MathKeyboard Keyboard { get; set; }
     public Command ProvideValue(IServiceProvider _) =>
       Input is 0 ? throw new ArgumentNullException(nameof(Input)) :
       Keyboard is null ? throw new ArgumentNullException(nameof(Keyboard)) :

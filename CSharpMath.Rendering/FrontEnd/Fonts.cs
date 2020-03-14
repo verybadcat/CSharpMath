@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Typography.OpenFont;
 
-namespace CSharpMath.Rendering {
+namespace CSharpMath.Rendering.FrontEnd {
+  using Structures;
   public readonly struct Fonts : Displays.FrontEnd.IFont<Glyph>, IEnumerable<Typeface> {
     static Fonts() {
       var reader = new OpenFontReader();

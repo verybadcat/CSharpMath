@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace CSharpMath.Rendering {
+namespace CSharpMath.Rendering.Text {
   using Range = Atoms.Range;
   using Atoms;
 #warning Review Ranges; they have an extremely high probability of not working
@@ -28,9 +28,9 @@ namespace CSharpMath.Rendering {
       public override int? SingleChar(FontStyle style) => null;
     }
     public sealed class Space : TextAtom {
-      public Space(Structures.Space space, int index, int length)
+      public Space(CSharpMath.Structures.Space space, int index, int length)
         : base(new Range(index, length)) => Content = space;
-      public Structures.Space Content { get; }
+      public CSharpMath.Structures.Space Content { get; }
       public override int? SingleChar(FontStyle style) => ' ';
   }
     public sealed class ControlSpace : TextAtom {
@@ -80,14 +80,14 @@ namespace CSharpMath.Rendering {
       public override int? SingleChar(FontStyle style) => Content.SingleChar(style);
     }
     public sealed class Color : TextAtom {
-      public Color(TextAtom content, Structures.Color colour, int index, int commandLength)
+      public Color(TextAtom content, CSharpMath.Structures.Color colour, int index, int commandLength)
         : base(new Range(index, commandLength + content.Range.Length + 2 /*counting '{' and '}'*/)) =>
         (Content, Colour, content.Range) =
           (content, colour,
             new Range(content.Range.Location + commandLength + index + 1/*counting '{'*/,
               content.Range.Length));
       public TextAtom Content { get; }
-      public Structures.Color Colour { get; }
+      public CSharpMath.Structures.Color Colour { get; }
       
       public override int? SingleChar(FontStyle style) => Content.SingleChar(style);
     }

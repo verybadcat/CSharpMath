@@ -1,7 +1,8 @@
 using System.Drawing;
 using Typography.OpenFont;
 
-namespace CSharpMath.Rendering {
+namespace CSharpMath.Rendering.Renderer {
+  using Structures;
   public interface IPainter<TSource, TColor> where TSource : struct, ISource {
     #region Non-redisplaying properties
     TColor HighlightColor { get; set; }
@@ -56,8 +57,8 @@ namespace CSharpMath.Rendering {
   }
   public interface ICanvasPainter<TCanvas, TSource, TColor> : IPainter<TSource, TColor> where TSource : struct, ISource {
     ICanvas WrapCanvas(TCanvas canvas);
-    Structures.Color WrapColor(TColor color);
-    TColor UnwrapColor(Structures.Color color);
+    Color WrapColor(TColor color);
+    TColor UnwrapColor(Color color);
     void Draw(TCanvas canvas, TextAlignment alignment, Thickness padding = default, float offsetX = 0, float offsetY = 0);
   }
 }

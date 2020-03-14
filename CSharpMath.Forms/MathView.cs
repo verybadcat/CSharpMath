@@ -1,7 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Drawing;
-using CSharpMath.Rendering;
+using CSharpMath.Rendering.Renderer;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using Xamarin.Forms;

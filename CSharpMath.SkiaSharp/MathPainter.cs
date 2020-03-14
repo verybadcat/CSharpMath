@@ -1,5 +1,7 @@
 using System.Drawing;
-using CSharpMath.Rendering;
+using CSharpMath.Structures;
+using CSharpMath.Rendering.FrontEnd;
+using CSharpMath.Rendering.Renderer;
 using SkiaSharp;
 using Color = CSharpMath.Structures.Color;
 

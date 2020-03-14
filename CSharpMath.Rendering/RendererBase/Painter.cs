@@ -2,14 +2,14 @@ using System;
 using System.Drawing;
 
 using CSharpMath.Displays;
-using TFonts = CSharpMath.Rendering.Fonts;
 using CSharpMath.Structures;
 using Color = CSharpMath.Structures.Color;
 
 using Typography.OpenFont;
 using System.Collections.Specialized;
 
-namespace CSharpMath.Rendering {
+namespace CSharpMath.Rendering.Renderer {
+  using FrontEnd;
   public static class PainterConstants {
     public const float DefaultFontSize = 20f;
   }
@@ -19,7 +19,7 @@ namespace CSharpMath.Rendering {
     
     #region Constructors
     public Painter(float fontSize = DefaultFontSize) {
-      Fonts = new TFonts(Array.Empty<Typeface>(), fontSize);
+      Fonts = new Fonts(Array.Empty<Typeface>(), fontSize);
       LocalTypefaces.CollectionChanged += TypefacesChanged;
       ErrorColor = UnwrapColor(new Color(255, 0, 0));
       TextColor = UnwrapColor(new Color(0, 0, 0));
@@ -41,22 +41,22 @@ namespace CSharpMath.Rendering {
     public PaintStyle PaintStyle { get; set; } = PaintStyle.Fill;
     public float Magnification { get; set; } = 1;
     public string ErrorMessage => Source.ErrorMessage;
-    public abstract IDisplay<TFonts, Glyph> Display { get; }
+    public abstract IDisplay<Fonts, Glyph> Display { get; }
     public abstract string LaTeX { get; set; }
     #endregion Non-redisplaying properties
 
     #region Redisplaying properties
     //_field == private field, __field == property-only field
     protected abstract void SetRedisplay();
-    protected TFonts Fonts { get; private set; }
+    protected Fonts Fonts { get; private set; }
     /// <summary>
     /// Unit of measure: points
     /// </summary>
-    public float FontSize { get => Fonts.PointSize; set { Fonts = new TFonts(Fonts, value); SetRedisplay(); } }
+    public float FontSize { get => Fonts.PointSize; set { Fonts = new Fonts(Fonts, value); SetRedisplay(); } }
     public ObservableRangeCollection<Typeface> LocalTypefaces { get; } =
       new ObservableRangeCollection<Typeface>();
     void TypefacesChanged(object sender, NotifyCollectionChangedEventArgs e)
-      { Fonts = new TFonts(LocalTypefaces, FontSize); SetRedisplay(); }
+      { Fonts = new Fonts(LocalTypefaces, FontSize); SetRedisplay(); }
     Atoms.LineStyle __style = Atoms.LineStyle.Display;
     public Atoms.LineStyle LineStyle { get => __style; set { __style = value; SetRedisplay(); } }
     TSource __source = default;
@@ -72,7 +72,7 @@ namespace CSharpMath.Rendering {
     public abstract ICanvas WrapCanvas(TCanvas canvas);
     public abstract RectangleF? Measure(float canvasWidth);
     public abstract void Draw(TCanvas canvas, TextAlignment alignment, Thickness padding = default, float offsetX = 0, float offsetY = 0);
-    protected void DrawCore(ICanvas canvas, IDisplay<TFonts, Glyph> display, PointF? position = null) {
+    protected void DrawCore(ICanvas canvas, IDisplay<Fonts, Glyph> display, PointF? position = null) {
       if (Source.IsValid) {
         if(position != null) display.Position = position.Value;
         canvas.Save();

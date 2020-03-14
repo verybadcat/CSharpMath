@@ -1,6 +1,6 @@
 using CSharpMath.Atoms;
 
-namespace CSharpMath.Rendering {
+namespace CSharpMath.Rendering.Renderer {
   public readonly struct MathSource : ISource {
     public MathSource(string latex) {
       (MathList, ErrorMessage) = LaTeXBuilder.TryMathListFromLaTeX(latex);

@@ -1,13 +1,14 @@
 using System;
-using CSharpMath.Rendering;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using Typography.OpenFont;
 using Xamarin.Forms;
 
 namespace CSharpMath.Forms {
-  using TextAlignment = Rendering.TextAlignment;
-  using Thickness = Rendering.Thickness;
+  using TextAlignment = Rendering.Renderer.TextAlignment;
+  using Color = Color;
+  using Rendering.Renderer;
+  using Structures;
   public interface IPainterAndSourceSupplier<TPainter, TSource> {
     TPainter Default { get; }
     TSource SourceFromLaTeX(string latex);

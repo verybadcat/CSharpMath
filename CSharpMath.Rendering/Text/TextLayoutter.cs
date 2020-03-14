@@ -1,12 +1,13 @@
-namespace CSharpMath.Rendering {
+namespace CSharpMath.Rendering.Text {
   using System;
   using System.Collections.Generic;
   using System.Linq;
   using Atoms;
   using Displays;
   using Displays.Display;
-  using Displays = Displays.Display.ListDisplay<Fonts, Glyph>;
-  using Structures;
+  using FrontEnd;
+  using Displays = Displays.Display.ListDisplay<FrontEnd.Fonts, FrontEnd.Glyph>;
+  using CSharpMath.Structures;
   public static class TextLayoutter {
     public static (Displays relative, Displays absolute) Layout
       (TextAtom input, Fonts inputFont, float canvasWidth, float additionalLineSpacing) {
@@ -39,7 +40,7 @@ namespace CSharpMath.Rendering {
         List<IDisplay<Fonts, Glyph>> displayList,
         List<IDisplay<Fonts, Glyph>> displayMathList,
         FontStyle style,
-        Structures.Color? color
+        Color? color
       ) {
 
         IDisplay<Fonts, Glyph> display;
@@ -74,10 +75,10 @@ namespace CSharpMath.Rendering {
             var lastLineWidth = line.Width;
             BreakLine(line, displayList, displayMathList, false);
             display = Typesetter.CreateLine(m.Content, fonts, TypesettingContext.Instance, LineStyle.Display);
-            var displayX = IPainterExtensions.GetDisplayPosition
+            var displayX = Renderer.IPainterExtensions.GetDisplayPosition
               (display.Width, display.Ascent, display.Descent,
                fonts.PointSize, false, canvasWidth, float.NaN,
-               TextAlignment.Top, default, default, default).X;
+               Renderer.TextAlignment.Top, default, default, default).X;
             //\because When displayList.LastOrDefault() is null,
             //the false condition is selected
             //\therefore Append abovedisplayshortskip which defaults

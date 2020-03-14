@@ -1,7 +1,8 @@
-namespace CSharpMath.Rendering {
+namespace CSharpMath.Rendering.Text {
+  using CSharpMath.Structures;
   public static class TextAtoms {
-    public static Structures.AliasDictionary<string, string> PredefinedTextSymbols { get; } =
-      new Structures.AliasDictionary<string, string> {
+    public static AliasDictionary<string, string> PredefinedTextSymbols { get; } =
+      new AliasDictionary<string, string> {
         /*Ten special characters and their commands:
          & \&
          % \%
@@ -130,8 +131,8 @@ namespace CSharpMath.Rendering {
         { "textvisiblespace", "␣" },
         { "textgreater", ">" },
       };
-    public static Structures.BiDictionary<string, string> PredefinedAccents { get; } =
-      new Structures.BiDictionary<string, string> {
+    public static BiDictionary<string, string> PredefinedAccents { get; } =
+      new BiDictionary<string, string> {
         //textsuperscript, textsubscript
         //textcircled
         { "`", "\u0300" }, //grave

@@ -1,4 +1,4 @@
-namespace CSharpMath.Rendering {
+namespace CSharpMath.Rendering.FrontEnd {
   public readonly struct Glyph {
     public Glyph(Typography.OpenFont.Typeface typeface, Typography.OpenFont.Glyph info) {
       Typeface = typeface ?? throw new System.ArgumentNullException(nameof(typeface));

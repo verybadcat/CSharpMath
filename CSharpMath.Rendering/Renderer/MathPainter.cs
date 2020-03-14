@@ -1,7 +1,9 @@
 using System.Drawing;
 
-namespace CSharpMath.Rendering {
+namespace CSharpMath.Rendering.Renderer {
   using Displays;
+  using FrontEnd;
+  using Structures;
   public abstract class MathPainter<TCanvas, TColor> : Painter<TCanvas, MathSource, TColor> {
     public MathPainter(float fontSize = DefaultFontSize) : base(fontSize) { }
     protected IDisplay<Fonts, Glyph> _display;

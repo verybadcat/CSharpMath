@@ -1,6 +1,6 @@
 using System.Linq;
 
-namespace CSharpMath.Rendering {
+namespace CSharpMath.Rendering.FrontEnd {
   public class GlyphFinder : Displays.FrontEnd.IGlyphFinder<Fonts, Glyph> {
     private GlyphFinder() { }
     //http://unicode.org/charts/PDF/U25A0.pdf

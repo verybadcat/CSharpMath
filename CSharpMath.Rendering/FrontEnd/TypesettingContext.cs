@@ -1,4 +1,4 @@
-namespace CSharpMath.Rendering {
+namespace CSharpMath.Rendering.FrontEnd {
   public static class TypesettingContext {
     public static Displays.FrontEnd.TypesettingContext<Fonts, Glyph> Instance { get; } =
       new Displays.FrontEnd.TypesettingContext<Fonts, Glyph>(

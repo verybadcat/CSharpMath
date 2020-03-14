@@ -1,7 +1,7 @@
 using System;
 using CSharpMath.Structures;
 
-namespace CSharpMath.Rendering {
+namespace CSharpMath.Rendering.Renderer {
   public interface ICanvas {
     float Width { get; }
     float Height { get; }

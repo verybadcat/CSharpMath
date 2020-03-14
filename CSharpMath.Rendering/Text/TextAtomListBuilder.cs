@@ -2,7 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace CSharpMath.Rendering {
+namespace CSharpMath.Rendering.Text {
+  using CSharpMath.Structures;
   public class TextAtomListBuilder : IReadOnlyList<TextAtom> {
     readonly List<TextAtom> _list = new List<TextAtom>();
     private void Add(TextAtom atom) { _list.Add(atom); TextLength += atom.Range.Length; }
@@ -11,20 +12,20 @@ namespace CSharpMath.Rendering {
       Add(new TextAtom.Accent(atom, accent, TextLength, sourceLength));
     public void Text(string text, ReadOnlySpan<char> lookAheadForPunc) =>
       Add(new TextAtom.Text(text + lookAheadForPunc.ToString(), TextLength));
-    public void Space(Structures.Space space, int sourceLength) =>
+    public void Space(Space space, int sourceLength) =>
       Add(new TextAtom.Space(space, TextLength, sourceLength));
     public void Style(TextAtom atom, Atoms.FontStyle style, int commandLength) =>
       Add(new TextAtom.Style(atom, style, TextLength, commandLength));
     public void Size(TextAtom atom, float fontSize, int commandLength) =>
       Add(new TextAtom.Size(atom, fontSize, TextLength, commandLength));
-    public void Color(TextAtom atom, Structures.Color color, int commandLength) =>
+    public void Color(TextAtom atom, Color color, int commandLength) =>
       Add(new TextAtom.Color(atom, color, TextLength, commandLength));
-    public Structures.Result Math(string mathLaTeX, bool displayStyle) {
-      var mathSource = new MathSource(mathLaTeX);
+    public Result Math(string mathLaTeX, bool displayStyle) {
+      var mathSource = new Renderer.MathSource(mathLaTeX);
       if (mathSource.ErrorMessage != null) return mathSource.ErrorMessage;
       Add(new TextAtom.Math(mathSource.MathList, displayStyle,
                             new Atoms.Range(TextLength, mathLaTeX.Length)));
-      return Structures.Result.Ok();
+      return Result.Ok();
     }
     public void List(IReadOnlyList<TextAtom> textAtoms) =>
       Add(new TextAtom.List(textAtoms, TextLength));

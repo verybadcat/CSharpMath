@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Typography.OpenFont;
 
-namespace CSharpMath.Rendering {
+namespace CSharpMath.Rendering.FrontEnd {
   public class Typefaces : ICollection<Typeface>, IReadOnlyList<Typeface> {
     internal Typefaces(Typeface _default) =>
       _typefaces = new Dictionary<sbyte, Typeface> { [0] = _default };

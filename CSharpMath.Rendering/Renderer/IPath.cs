@@ -1,5 +1,5 @@
-namespace CSharpMath.Rendering {
+namespace CSharpMath.Rendering.Renderer {
   public interface IPath : Typography.OpenFont.IGlyphTranslator {
-    Structures.Color? Foreground { get; set; }
+    CSharpMath.Structures.Color? Foreground { get; set; }
   }
 }

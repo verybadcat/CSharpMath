@@ -1,8 +1,9 @@
-namespace CSharpMath.Rendering {
+namespace CSharpMath.Rendering.Renderer {
   using System;
   using System.Drawing;
 
   using Editor;
+  using FrontEnd;
 
   public enum CaretShape {
     IBeam, UpArrow
@@ -13,7 +14,7 @@ namespace CSharpMath.Rendering {
       : base(TypesettingContext.Instance,
              new Fonts(Array.Empty<Typography.OpenFont.Typeface>(), fontSize)) { }
     
-    public void DrawCaret(ICanvas canvas, Structures.Color color, CaretShape shape) {
+    public void DrawCaret(ICanvas canvas, CSharpMath.Structures.Color color, CaretShape shape) {
       if (!(Caret is CaretHandle caret))
         return;
       var cursorPosition = Display.PointForIndex(TypesettingContext.Instance, InsertionIndex) ?? Display.Position;

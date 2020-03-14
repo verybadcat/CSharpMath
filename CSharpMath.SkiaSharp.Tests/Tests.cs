@@ -6,10 +6,11 @@ using System.Linq;
 using Xunit;
 
 namespace CSharpMath.SkiaSharp {
+  using Rendering.Renderer;
   public class TestsFixture : IDisposable {
     public TestsFixture() {
       // Pre-initialize the typefaces to speed tests up
-      Rendering.Fonts.GlobalTypefaces.ToString();
+      Rendering.FrontEnd.Fonts.GlobalTypefaces.ToString();
       // Delete garbage by previous tests
       foreach (var garbage in
         Tests.Folders.SelectMany(folder => Directory.EnumerateFiles(folder, "*.actual.*")))
@@ -55,14 +56,13 @@ namespace CSharpMath.SkiaSharp {
       Test(file, latex, GetFolder(nameof(Text)), new TextPainter());
 
     static void Test<TSource>(string inFile, string latex, string folder,
-      Rendering.Painter<SKCanvas, TSource, SKColor> painter)
-      where TSource: struct, Rendering.ISource {
+      Painter<SKCanvas, TSource, SKColor> painter) where TSource: struct, ISource {
       // Prevent black background behind black rendered output in File Explorer preview
       painter.HighlightColor = new SKColor(0xF0, 0xF0, 0xF0);
       painter.FontSize = 50f;
       painter.LaTeX = latex;
       if (painter.ErrorMessage != null)
-        throw new Xunit.Sdk.XunitException(painter.ErrorMessage);
+        throw new Xunit.Sdk.XunitException("Painter error: " + painter.ErrorMessage);
 
       var size = painter.Measure(2000f) switch {
         System.Drawing.RectangleF rect => rect.Size,
@@ -71,7 +71,7 @@ namespace CSharpMath.SkiaSharp {
       var actualFile = new FileInfo(Path.Combine(folder, inFile + ".actual.png"));
       Assert.False(actualFile.Exists, "The actual file was not deleted by test initialization.");
       using (var surface = SKSurface.Create(new SKImageInfo((int)size.Width, (int)size.Height))) {
-        painter.Draw(surface.Canvas, Rendering.TextAlignment.TopLeft);
+        painter.Draw(surface.Canvas, Rendering.Renderer.TextAlignment.TopLeft);
         using var snapshot = surface.Snapshot();
         using var pngData = snapshot.Encode();
         using var outFile = actualFile.OpenWrite();

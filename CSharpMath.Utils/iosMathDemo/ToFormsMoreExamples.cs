@@ -65,7 +65,7 @@ namespace CSharpMath.DevUtils.iosMathDemo {
         .AppendLine("//this file by executing the method in that file in the CSharpMath.Utils project.")
         .AppendLine()
         .AppendLine("using CSharpMath.Atoms;")
-        .AppendLine("using CSharpMath.Rendering;")
+        .AppendLine("using CSharpMath.Rendering.Renderer;")
         .AppendLine("using System.Collections.Generic;")
         .AppendLine("using System.Collections.ObjectModel;")
         .AppendLine("using System.Linq;")

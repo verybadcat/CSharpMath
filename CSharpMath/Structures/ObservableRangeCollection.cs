@@ -5,8 +5,11 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 
-namespace CSharpMath.Rendering {
+namespace CSharpMath.Structures {
+// No need to scream at helper "disposables"
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
   public class ObservableRangeCollection<T> : ObservableCollection<T> {
+#pragma warning restore CA1001 // Types that own disposable fields should be disposable
     public ObservableRangeCollection() : base() { }
     public ObservableRangeCollection(IEnumerable<T> collection) : base(collection) { }
     public ObservableRangeCollection(List<T> list) : base(list) { }
@@ -35,8 +38,9 @@ namespace CSharpMath.Rendering {
         )
       );
     }
-    public class BatchOperation : IDisposable {
-      internal BatchOperation() => IsInForce = false;
+#pragma warning disable CA1034 // Nested types should not be visible
+    public sealed class BatchOperation : IDisposable {
+#pragma warning restore CA1034 // Nested types should not be visible
       public bool IsInForce { get; private set; }
       internal BatchOperation Deploy() { IsInForce = true; return this; }
       public void Dispose() => IsInForce = false;

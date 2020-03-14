@@ -5,7 +5,7 @@ using Avalonia;
 using Avalonia.Media;
 using AvaloniaTextBlock = Avalonia.Controls.TextBlock;
 
-using CSharpMath.Rendering;
+using CSharpMath.Rendering.Renderer;
 
 namespace CSharpMath.Avalonia {
   public class MathBlock : AvaloniaTextBlock {

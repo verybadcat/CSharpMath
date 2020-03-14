@@ -11,7 +11,7 @@ namespace CSharpMath.Forms.Example {
       InitializeComponent();
       CurrentTab = Tab.Numbers;
     }
-    public Rendering.MathKeyboard ViewModel => keyboard;
+    public Rendering.Renderer.MathKeyboard ViewModel => keyboard;
     public double SelectedBorderWidth { get; set; } = 3;
     public Color SelectedBorderColor { get; set; } = Color.Orange;
     private Tab _tab;

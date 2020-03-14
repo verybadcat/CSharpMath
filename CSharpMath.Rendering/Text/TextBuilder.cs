@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text;
 using Typography.TextBreak;
 
-namespace CSharpMath.Rendering {
+namespace CSharpMath.Rendering.Text {
   using Atoms;
-  using Structures;
-  using static Structures.Result;
+  using CSharpMath.Structures;
+  using static CSharpMath.Structures.Result;
   public static class TextBuilder {
     /* //Paste this into the C# Interactive, fill <username> yourself
 #r "C:/Users/<username>/source/repos/CSharpMath/Typography/Build/NetStandard/Typography.TextBreak/bin/Debug/netstandard1.3/Typography.TextBreak.dll"

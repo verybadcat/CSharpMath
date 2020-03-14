@@ -1,5 +1,6 @@
 namespace CSharpMath.Forms {
-  using Rendering;
+  using Rendering.Renderer;
+  using Rendering.Text;
   using SkiaSharp;
   using Xamarin.Forms;
   using Xamarin.Forms.Xaml;
