@@ -653,6 +653,7 @@ namespace CSharpMath.Atoms {
           if (arrayAlignments is null)
             throw new InvalidCodePathException("arrayAlignments is null despite array environment");
           table.InterRowAdditionalSpacing = 1;
+          table.InterColumnSpacing = 18;
           for (int i = 0, j = 0; i < arrayAlignments.Length && j < table.NColumns; i++, j++) {
 #warning vertical lines in array currently unsupported
             while (arrayAlignments[i] == '|') i++;

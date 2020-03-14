@@ -82,5 +82,6 @@ namespace CSharpMath.SkiaSharp {
     public const string LnEquation = @"\ln(P) = a_0 - \frac{a_1}{a_2 + T}";
     public const string ArcsinSin = @"\arcsin(\sin x)=x\quad\rm{for}\quad|x|\le\frac\pi2";
     public const string TangentPeriodShift = @"\tan(\theta\pm\frac\pi4)=\frac{\tan\theta\pm1}{1\mp\tan\theta}";
+    public const string LineStyles = @"a \displaystyle a \textstyle a \scriptstyle a \scriptscriptstyle a";
   }
 }
