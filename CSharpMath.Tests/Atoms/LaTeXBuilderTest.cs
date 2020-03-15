@@ -158,8 +158,7 @@ namespace CSharpMath.Tests.PreTypesetting {
 
     [Fact]
     public void TestFractionInFraction() {
-      var input = @"\frac1\frac23";
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(@"\frac1\frac23");
       Assert.Collection(list,
         CheckAtom<Fraction>("", fraction => {
           Assert.Collection(fraction.Numerator, CheckAtom<Number>("1"));
@@ -255,268 +254,142 @@ namespace CSharpMath.Tests.PreTypesetting {
       Assert.Equal(expectedLatex, LaTeXBuilder.MathListToLaTeX(list));
     }
 
-    [Fact]
-    public void TestOver() {
-      var input = @"1 \over c";
+    [
+      Theory,
+      InlineData(@"1 \over c", @"\frac{1}{c}", true),
+      InlineData(@"1 \atop c", @"{1 \atop c}", false)
+    ]
+    public void TestOverAndAtop(string input, string output, bool hasRule) {
       var list = LaTeXBuilder.MathListFromLaTeX(input);
-      Assert.Single(list);
-
-      var fraction = list[0] as Fraction;
-      CheckAtom<Fraction>("")(fraction);
-      Assert.True(fraction.HasRule);
-      Assert.Null(fraction.LeftDelimiter);
-      Assert.Null(fraction.RightDelimiter);
-
-      Assert.Single(fraction.Numerator);
-      CheckAtom<Number>("1")(fraction.Numerator[0]);
-
-      Assert.Single(fraction.Denominator);
-      CheckAtom<Variable>("c")(fraction.Denominator[0]);
-
-      Assert.Equal(@"\frac{1}{c}", LaTeXBuilder.MathListToLaTeX(list));
+      Assert.Collection(list,
+        CheckAtom<Fraction>("", fraction => {
+          Assert.Equal(hasRule, fraction.HasRule);
+          Assert.Null(fraction.LeftDelimiter);
+          Assert.Null(fraction.RightDelimiter);
+          Assert.Collection(fraction.Numerator, CheckAtom<Number>("1"));
+          Assert.Collection(fraction.Denominator, CheckAtom<Variable>("c"));
+        })
+      );
+      Assert.Equal(output, LaTeXBuilder.MathListToLaTeX(list));
     }
 
-    [Fact]
-    public void TestOverInParens() {
-      var input = @"5 + {1 \over c} + 8";
+    [
+      Theory,
+      InlineData(@"5 + {1 \over c} + 8", @"5+\frac{1}{c}+8", true),
+      InlineData(@"5 + {1 \atop c} + 8", @"5+{1 \atop c}+8", false)
+    ]
+    public void TestOverAndAtopInParens(string input, string output, bool hasRule) {
       var list = LaTeXBuilder.MathListFromLaTeX(input);
-
-      Assert.NotNull(list);
-      Assert.Equal(5, list.Count);
-      var types = new Type[] { typeof(Number), typeof(BinaryOperator), typeof(Fraction), typeof(BinaryOperator), typeof(Number) };
-      CheckAtomTypes(list, types);
-
-      var fraction = list[2] as Fraction;
-      CheckAtom<Fraction>("")(fraction);
-      Assert.True(fraction.HasRule);
-      Assert.Null(fraction.LeftDelimiter);
-      Assert.Null(fraction.RightDelimiter);
-
-      Assert.Single(fraction.Numerator);
-      CheckAtom<Number>("1")(fraction.Numerator[0]);
-      Assert.Single(fraction.Denominator);
-      CheckAtom<Variable>("c")(fraction.Denominator[0]);
-
-      Assert.Equal(@"5+\frac{1}{c}+8", LaTeXBuilder.MathListToLaTeX(list));
+      Assert.Collection(list,
+        CheckAtom<Number>("5"),
+        CheckAtom<BinaryOperator>("+"),
+        CheckAtom<Fraction>("", fraction => {
+          Assert.Equal(hasRule, fraction.HasRule);
+          Assert.Null(fraction.LeftDelimiter);
+          Assert.Null(fraction.RightDelimiter);
+          Assert.Collection(fraction.Numerator, CheckAtom<Number>("1"));
+          Assert.Collection(fraction.Denominator, CheckAtom<Variable>("c"));
+        }),
+        CheckAtom<BinaryOperator>("+"),
+        CheckAtom<Number>("8")
+      );
+      Assert.Equal(output, LaTeXBuilder.MathListToLaTeX(list));
     }
 
-    [Fact]
-    public void TestAtop() {
-      var input = @"1 \atop c";
+    [
+      Theory,
+      InlineData(@"n \choose k", @"{n \choose k}", "(", ")"),
+      InlineData(@"n \brack k", @"{n \brack k}", "[", "]"),
+      InlineData(@"n \brace k", @"{n \brace k}", "{", "}"),
+      InlineData(@"\binom{n}{k}", @"{n \choose k}", "(", ")"),
+    ]
+    public void TestChooseBrackBraceBinomial(string input, string output, string left, string right) {
       var list = LaTeXBuilder.MathListFromLaTeX(input);
-
-      Assert.Single(list);
-      var fraction = list[0] as Fraction;
-      CheckAtom<Fraction>("")(fraction);
-      Assert.False(fraction.HasRule);
-      Assert.Null(fraction.LeftDelimiter);
-      Assert.Null(fraction.RightDelimiter);
-
-      Assert.Single(fraction.Numerator);
-      CheckAtom<Number>("1")(fraction.Numerator[0]);
-
-      Assert.Single(fraction.Denominator);
-      CheckAtom<Variable>("c")(fraction.Denominator[0]);
-
-      Assert.Equal(@"{1 \atop c}", LaTeXBuilder.MathListToLaTeX(list));
-    }
-
-    [Fact]
-    public void TestAtopInParens() {
-      var input = @"5 + {1 \atop c} + 8";
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
-
-      Assert.Equal(5, list.Count);
-      var types = new Type[] {
-        typeof(Number),
-        typeof(BinaryOperator),
-        typeof(Fraction),
-        typeof(BinaryOperator),
-        typeof(Number)
-      };
-      CheckAtomTypes(list, types);
-      var fraction = list[2] as Fraction;
-      CheckAtom<Fraction>("")(fraction);
-      Assert.False(fraction.HasRule);
-      Assert.Null(fraction.LeftDelimiter);
-      Assert.Null(fraction.RightDelimiter);
-
-      Assert.Single(fraction.Numerator);
-      CheckAtom<Number>("1")(fraction.Numerator[0]);
-
-      Assert.Single(fraction.Denominator);
-      CheckAtom<Variable>("c")(fraction.Denominator[0]);
-
-      Assert.Equal(@"5+{1 \atop c}+8", LaTeXBuilder.MathListToLaTeX(list));
-    }
-
-    [Fact]
-    public void TestChoose() {
-      var input = @"n \choose k";
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
-
-      Assert.Single(list);
-      CheckAtom<Fraction>("")(list[0]);
-
-      var fraction = list[0] as Fraction;
-      Assert.False(fraction.HasRule);
-      Assert.Equal("(", fraction.LeftDelimiter);
-      Assert.Equal(")", fraction.RightDelimiter);
-
-      Assert.Single(fraction.Numerator);
-      CheckAtom<Variable>("n")(fraction.Numerator[0]);
-
-      Assert.Single(fraction.Denominator);
-      CheckAtom<Variable>("k")(fraction.Denominator[0]);
-      Assert.Equal(@"{n \choose k}", LaTeXBuilder.MathListToLaTeX(list));
-    }
-
-    [Fact]
-    public void TestBrack() {
-      var input = @"n \brack k";
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
-
-      Assert.Single(list);
-      var fraction = list[0] as Fraction;
-      CheckAtom<Fraction>("")(fraction);
-
-      Assert.False(fraction.HasRule);
-      Assert.Equal("[", fraction.LeftDelimiter);
-      Assert.Equal("]", fraction.RightDelimiter);
-
-      Assert.Single(fraction.Numerator);
-      CheckAtom<Variable>("n")(fraction.Numerator[0]);
-      Assert.Single(fraction.Denominator);
-      CheckAtom<Variable>("k")(fraction.Denominator[0]);
-
-      Assert.Equal(@"{n \brack k}", LaTeXBuilder.MathListToLaTeX(list));
-    }
-
-    [Fact]
-    public void TestBrace() {
-      var input = @"n \brace k";
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
-
-      Assert.Single(list);
-      var fraction = list[0] as Fraction;
-      CheckAtom<Fraction>("")(fraction);
-
-      Assert.False(fraction.HasRule);
-      Assert.Equal("{", fraction.LeftDelimiter);
-      Assert.Equal("}", fraction.RightDelimiter);
-
-      Assert.Single(fraction.Numerator);
-      CheckAtom<Variable>("n")(fraction.Numerator[0]);
-      Assert.Single(fraction.Denominator);
-      CheckAtom<Variable>("k")(fraction.Denominator[0]);
-
-      Assert.Equal(@"{n \brace k}", LaTeXBuilder.MathListToLaTeX(list));
-    }
-
-    [Fact]
-    public void TestBinomial() {
-      var input = @"\binom{n}{k}";
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
-
-      Assert.Single(list);
-      var fraction = list[0] as Fraction;
-      CheckAtom<Fraction>("")(fraction);
-
-      Assert.False(fraction.HasRule);
-      Assert.Equal("(", fraction.LeftDelimiter);
-      Assert.Equal(")", fraction.RightDelimiter);
-
-      Assert.Single(fraction.Numerator);
-      CheckAtom<Variable>("n")(fraction.Numerator[0]);
-      Assert.Single(fraction.Denominator);
-      CheckAtom<Variable>("k")(fraction.Denominator[0]);
-
-      Assert.Equal(@"{n \choose k}", LaTeXBuilder.MathListToLaTeX(list));
+      Assert.Collection(list,
+        CheckAtom<Fraction>("", fraction => {
+          Assert.False(fraction.HasRule);
+          Assert.Equal(left, fraction.LeftDelimiter);
+          Assert.Equal(right, fraction.RightDelimiter);
+          Assert.Collection(fraction.Numerator, CheckAtom<Variable>("n"));
+          Assert.Collection(fraction.Denominator, CheckAtom<Variable>("k"));
+        })
+      );
+      Assert.Equal(output, LaTeXBuilder.MathListToLaTeX(list));
     }
 
     [Fact]
     public void TestOverline() {
-      var input = @"\overline 2";
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
-
-      Assert.Single(list);
-      var overline = list[0] as Overline;
-      CheckAtom<Overline>("")(overline);
-
-      var inner = overline.InnerList;
-      Assert.Single(inner);
-      CheckAtom<Number>("2")(inner[0]);
-
+      var list = LaTeXBuilder.MathListFromLaTeX(@"\overline 2");
+      Assert.Collection(list,
+        CheckAtom<Overline>("", overline =>
+          Assert.Collection(overline.InnerList, CheckAtom<Number>("2"))
+        )
+      );
       Assert.Equal(@"\overline{2}", LaTeXBuilder.MathListToLaTeX(list));
     }
 
     [Fact]
     public void TestUnderline() {
-      var input = @"\underline 2";
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
-
-      Assert.Single(list);
-      var underline = list[0] as Underline;
-      CheckAtom<Underline>("")(underline);
-
-      var inner = underline.InnerList;
-      Assert.Single(inner);
-      CheckAtom<Number>("2")(inner[0]);
-
+      var list = LaTeXBuilder.MathListFromLaTeX(@"\underline 2");
+      Assert.Collection(list,
+        CheckAtom<Underline>("", underline =>
+          Assert.Collection(underline.InnerList, CheckAtom<Number>("2"))
+        )
+      );
       Assert.Equal(@"\underline{2}", LaTeXBuilder.MathListToLaTeX(list));
     }
 
     [Fact]
     public void TestAccent() {
-      var input = @"\bar x";
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
-
-      Assert.Single(list);
-      var accent = list[0] as Accent;
-      CheckAtom<Accent>("\u0304")(accent);
-
-      var inner = accent.InnerList;
-      Assert.Single(inner);
-      CheckAtom<Variable>("x")(inner[0]);
-
+      var list = LaTeXBuilder.MathListFromLaTeX(@"\bar x");
+      Assert.Collection(list,
+        CheckAtom<Accent>("\u0304", accent =>
+          Assert.Collection(accent.InnerList, CheckAtom<Variable>("x"))
+        )
+      );
       Assert.Equal(@"\bar{x}", LaTeXBuilder.MathListToLaTeX(list));
     }
 
     [Fact]
     public void TestMathSpace() {
-      var input = @"\!";
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
-
-      Assert.Single(list);
-      CheckAtom<Space>("")(list[0]);
-      Assert.Equal(-3, (list[0] as Space).Length);
-
+      var list = LaTeXBuilder.MathListFromLaTeX(@"\!");
+      Assert.Collection(list,
+        CheckAtom<Space>("", space => {
+          Assert.Equal(-3, space.Length);
+          Assert.True(space.IsMu);
+        })
+      );
       Assert.Equal(@"\! ", LaTeXBuilder.MathListToLaTeX(list));
     }
 
     [Fact]
     public void TestMathStyle() {
-      var input = @"\textstyle y \scriptstyle x";
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
-      Assert.Equal(4, list.Count);
-
-      var style = list[0] as Style;
-      CheckAtom<Style>("")(style);
-      Assert.Equal(LineStyle.Text, style.LineStyle);
-
-      var style2 = list[2] as Style;
-      CheckAtom<Style>("")(style2);
-      Assert.Equal(LineStyle.Script, style2.LineStyle);
-
+      var list = LaTeXBuilder.MathListFromLaTeX(@"\textstyle y \scriptstyle x");
+      Assert.Collection(list,
+        CheckAtom<Style>("", style => Assert.Equal(LineStyle.Text, style.LineStyle)),
+        CheckAtom<Variable>("y"),
+        CheckAtom<Style>("", style2 => Assert.Equal(LineStyle.Script, style2.LineStyle)),
+        CheckAtom<Variable>("x")
+      );
       Assert.Equal(@"\textstyle y\scriptstyle x", LaTeXBuilder.MathListToLaTeX(list));
     }
 
-    [Fact]
-    public void TestMatrix() {
-      var input = @"\begin{matrix} x & y \\ z & w \end{matrix}";
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
-      Assert.Single(list);
-      var table = list[0] as Table;
+    [Theory]
+    [InlineData("matrix", null, null)]
+    [InlineData("pmatrix", "(", ")")]
+    [InlineData("bmatrix", "[", "]")]
+    [InlineData("Bmatrix", "{", "}")]
+    public void TestMatrix(string env, string left, string right) {
+      var list = LaTeXBuilder.MathListFromLaTeX($@"\begin{{{env}}} x & y \\ z & w \end{{{env}}}");
+      Table table;
+      if (left is null && right is null)
+        table = Assert.IsType<Table>(Assert.Single(list));
+      else {
+        var inner = Assert.IsType<Inner>(Assert.Single(list));
+        Assert.Equal(left, inner.LeftBoundary?.Nucleus);
+        Assert.Equal(right, inner.RightBoundary?.Nucleus);
+        table = Assert.IsType<Table>(Assert.Single(inner.InnerList));
+      }
       CheckAtom<Table>("")(table);
       Assert.Equal("matrix", table.Environment);
       Assert.Equal(0, table.InterRowAdditionalSpacing);
@@ -528,62 +401,21 @@ namespace CSharpMath.Tests.PreTypesetting {
         var alignment = table.GetAlignment(i);
         Assert.Equal(ColumnAlignment.Center, alignment);
         for (int j = 0; j < 2; j++) {
-          var cell = table.Cells[j][i];
-          Assert.Equal(2, cell.Count);
-          var style = cell[0] as Style;
-          Assert.IsType<Style>(style);
-          Assert.Equal(LineStyle.Text, style.LineStyle);
-
-          var atom = cell[1];
-          Assert.IsType<Variable>(atom);
+          Assert.Collection(table.Cells[j][i],
+            CheckAtom<Style>("", style => Assert.Equal(LineStyle.Text, style.LineStyle)),
+            atom => Assert.IsType<Variable>(atom)
+          );
         }
       }
-      Assert.Equal(@"\begin{matrix}x&y\\ z&w\end{matrix}", LaTeXBuilder.MathListToLaTeX(list));
-    }
-
-    [Fact]
-    public void TestPMatrix() {
-      var input = @"\begin{pmatrix} x & y \\ z & w \end{pmatrix}";
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
-      Assert.Single(list);
-      var inner = list[0] as Inner;
-      CheckAtom<Inner>("")(inner);
-      var innerList = inner.InnerList;
-      Assert.Equal("(", inner.LeftBoundary?.Nucleus);
-      Assert.Equal(")", inner.RightBoundary?.Nucleus);
-      Assert.Single(innerList);
-      var table = innerList[0] as Table;
-      CheckAtom<Table>("")(table);
-      Assert.Equal("matrix", table.Environment);
-      Assert.Equal(0, table.InterRowAdditionalSpacing);
-      Assert.Equal(18, table.InterColumnSpacing);
-      Assert.Equal(2, table.NRows);
-      Assert.Equal(2, table.NColumns);
-
-      for (int i = 0; i < 2; i++) {
-        var alignment = table.GetAlignment(i);
-        Assert.Equal(ColumnAlignment.Center, alignment);
-        for (int j = 0; j < 2; j++) {
-          var cell = table.Cells[j][i];
-          Assert.Equal(2, cell.Count);
-          var style = cell[0] as Style;
-          Assert.IsType<Style>(style);
-          Assert.Equal(LineStyle.Text, style.LineStyle);
-
-          var atom = cell[1];
-          Assert.IsType<Variable>(atom);
-        }
-      }
-      Assert.Equal(@"\left( \begin{matrix}x&y\\ z&w\end{matrix}\right) ", LaTeXBuilder.MathListToLaTeX(list));
+      var l = left != null ? $@"\left{left} " : left;
+      var r = right != null ? $@"\right{right} " : right;
+      Assert.Equal($@"{l}\begin{{{env}}}x&y\\ z&w\end{{{env}}}{r}", LaTeXBuilder.MathListToLaTeX(list));
     }
 
     [Fact]
     public void TestDefaultTable() {
-      var input = @"x \\ y";
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
-
-      Assert.Single(list);
-      var table = list[0] as Table;
+      var list = LaTeXBuilder.MathListFromLaTeX(@"x \\ y");
+      var table = Assert.IsType<Table>(Assert.Single(list));
       CheckAtom<Table>("")(table);
       Assert.Null(table.Environment);
       Assert.Equal(1, table.InterRowAdditionalSpacing);
@@ -593,9 +425,7 @@ namespace CSharpMath.Tests.PreTypesetting {
       for (int i = 0; i < 1; i++) {
         Assert.Equal(ColumnAlignment.Left, table.GetAlignment(i));
         for (int j = 0; j < 2; j++) {
-          var cell = table.Cells[j][i];
-          Assert.Single(cell);
-          Assert.IsType<Variable>(cell[0]);
+          Assert.IsType<Variable>(Assert.Single(table.Cells[j][i]));
         }
       }
       Assert.Equal(@"x\\ y", LaTeXBuilder.MathListToLaTeX(list));
@@ -603,26 +433,20 @@ namespace CSharpMath.Tests.PreTypesetting {
 
     [Fact]
     public void TestTableWithColumns() {
-      var input = @"x & y \\ z & w";
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
-      Assert.Single(list);
-      var table = list[0] as Table;
+      var list = LaTeXBuilder.MathListFromLaTeX(@"x & y \\ z & w");
+      var table = Assert.IsType<Table>(Assert.Single(list));
       CheckAtom<Table>("")(table);
       Assert.Null(table.Environment);
       Assert.Equal(1, table.InterRowAdditionalSpacing);
       Assert.Equal(0, table.InterColumnSpacing);
       Assert.Equal(2, table.NRows);
       Assert.Equal(2, table.NColumns);
-
       for (int i = 0; i < 2; i++) {
         Assert.Equal(ColumnAlignment.Left, table.GetAlignment(i));
         for (int j = 0; j < 2; j++) {
-          var cell = table.Cells[j][i];
-          Assert.Single(cell);
-          Assert.IsType<Variable>(cell[0]);
+          Assert.IsType<Variable>(Assert.Single(table.Cells[j][i]));
         }
       }
-
       Assert.Equal(@"x&y\\ z&w", LaTeXBuilder.MathListToLaTeX(list));
     }
 
@@ -632,8 +456,7 @@ namespace CSharpMath.Tests.PreTypesetting {
     [InlineData(@"\begin{aligned}x&y\\ z&w\end{aligned}")]
     public void TestEqAlign(string input) {
       var list = LaTeXBuilder.MathListFromLaTeX(input);
-      Assert.Single(list);
-      var table = list[0] as Table;
+      var table = Assert.IsType<Table>(Assert.Single(list));
       CheckAtom<Table>("")(table);
       Assert.Equal(1, table.InterRowAdditionalSpacing);
       Assert.Equal(0, table.InterColumnSpacing);
@@ -645,12 +468,12 @@ namespace CSharpMath.Tests.PreTypesetting {
         for (int j = 0; j < 2; j++) {
           var cell = table.Cells[j][i];
           if (i == 0) {
-            Assert.Single(cell);
-            Assert.IsType<Variable>(cell[0]);
+            Assert.IsType<Variable>(Assert.Single(cell));
           } else {
-            Assert.Equal(2, cell.Count);
-            Assert.IsType<Ordinary>(cell[0]);
-            Assert.IsType<Variable>(cell[1]);
+            Assert.Collection(cell,
+              cell0 => Assert.IsType<Ordinary>(cell0),
+              cell1 => Assert.IsType<Variable>(cell1)
+            );
           }
         }
       }
@@ -662,18 +485,15 @@ namespace CSharpMath.Tests.PreTypesetting {
     [InlineData(@"\begin{gather}x\\ y\end{gather}")]
     public void TestDisplayLines(string input) {
       var list = LaTeXBuilder.MathListFromLaTeX(input);
-      Assert.Single(list);
-      var table = list[0] as Table;
+      var table = Assert.IsType<Table>(Assert.Single(list));
       CheckAtom<Table>("")(table);
       Assert.Equal(1, table.InterRowAdditionalSpacing);
       Assert.Equal(0, table.InterColumnSpacing);
       Assert.Equal(2, table.NRows);
       Assert.Equal(1, table.NColumns);
-      Assert.Equal(ColumnAlignment.Center, table.GetAlignment(0));
+      Assert.Equal(ColumnAlignment.Center, Assert.Single(table.Alignments));
       for (int j = 0; j < 2; j++) {
-        var cell = table.Cells[j][0];
-        Assert.Single(cell);
-        Assert.IsType<Variable>(cell[0]);
+        Assert.IsType<Variable>(Assert.Single(table.Cells[j][0]));
       }
       Assert.Equal(input, LaTeXBuilder.MathListToLaTeX(list));
     }
@@ -710,6 +530,7 @@ namespace CSharpMath.Tests.PreTypesetting {
     [InlineData(@"\begin{matrix} \notacommand \end{matrix}")]
     [InlineData(@"\begin{displaylines} x & y \end{displaylines}")]
     [InlineData(@"\begin{eqalign} x \end{eqalign}")]
+    [InlineData(@"\limits")]
     [InlineData(@"\nolimits")]
     [InlineData(@"\frac\limits{1}{2}")]
     public void TestErrors(string badInput) {
@@ -730,42 +551,38 @@ namespace CSharpMath.Tests.PreTypesetting {
       MathAtoms.AddLatexSymbol("lcm", new LargeOperator("lcm", false));
       var builder2 = new LaTeXBuilder(input);
       var list2 = builder2.Build();
-      CheckAtomTypes(list2, typeof(LargeOperator), typeof(Open),
-        typeof(Variable), typeof(Punctuation), typeof(Variable),
-        typeof(Close));
-      var latex = LaTeXBuilder.MathListToLaTeX(list2);
-      Assert.Equal(@"\lcm (a,b)", latex);
+      Assert.Collection(list2,
+        CheckAtom<LargeOperator>("lcm"),
+        CheckAtom<Open>("("),
+        CheckAtom<Variable>("a"),
+        CheckAtom<Punctuation>(","),
+        CheckAtom<Variable>("b"),
+        CheckAtom<Close>(")")
+      );
+      Assert.Equal(@"\lcm (a,b)", LaTeXBuilder.MathListToLaTeX(list2));
     }
 
     [Fact]
     public void TestFontSingle() {
-      var input = @"\mathbf x";
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
-
-      Assert.Single(list);
-      CheckAtom<Variable>("x")(list[0]);
-      Assert.Equal(FontStyle.Bold, list[0].FontStyle);
-
+      var list = LaTeXBuilder.MathListFromLaTeX(@"\mathbf x");
+      Assert.Collection(list, CheckAtom<Variable>("x",
+        variable => Assert.Equal(FontStyle.Bold, variable.FontStyle)));
       Assert.Equal(@"\mathbf{x}", LaTeXBuilder.MathListToLaTeX(list));
     }
 
     [Fact]
     public void TestFontMultipleCharacters() {
-      var input = @"\frak{xy}";
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
-      Assert.Equal(2, list.Count);
-      CheckAtom<Variable>("x")(list[0]);
-      Assert.Equal(FontStyle.Fraktur, list[0].FontStyle);
-      CheckAtom<Variable>("y")(list[1]);
-      Assert.Equal(FontStyle.Fraktur, list[1].FontStyle);
-
+      var list = LaTeXBuilder.MathListFromLaTeX(@"\frak{xy}");
+      Assert.Collection(list,
+        CheckAtom<Variable>("x", variable => Assert.Equal(FontStyle.Fraktur, variable.FontStyle)),
+        CheckAtom<Variable>("y", variable => Assert.Equal(FontStyle.Fraktur, variable.FontStyle))
+      );
       Assert.Equal(@"\mathfrak{xy}", LaTeXBuilder.MathListToLaTeX(list));
     }
 
     [Fact]
     public void TestFontOneCharacterInside() {
-      var input = @"\sqrt \mathrm x y";
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(@"\sqrt \mathrm x y");
       Assert.Equal(2, list.Count);
 
       var radical = list[0] as Radical;
@@ -784,8 +601,7 @@ namespace CSharpMath.Tests.PreTypesetting {
 
     [Fact]
     public void TestText() {
-      var input = @"\text{x y}";
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(@"\text{x y}");
       Assert.Equal(3, list.Count);
       CheckAtom<Variable>(@"x")(list[0]);
       Assert.Equal(FontStyle.Roman, list[0].FontStyle);
@@ -799,8 +615,7 @@ namespace CSharpMath.Tests.PreTypesetting {
 
     [Fact]
     public void TestLimits() {
-      var input = @"\int";
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(@"\int");
 
       Assert.Single(list);
       var op = list[0] as LargeOperator;
@@ -821,8 +636,7 @@ namespace CSharpMath.Tests.PreTypesetting {
 
     [Fact]
     public void TestUnspecifiedLimits() {
-      var input = @"\sum";
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(@"\sum");
       Assert.Single(list);
       var op = list[0] as LargeOperator;
       Assert.IsType<LargeOperator>(op);
@@ -832,8 +646,7 @@ namespace CSharpMath.Tests.PreTypesetting {
 
     [Fact]
     public void TestNoLimits() {
-      var input = @"\sum\nolimits";
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(@"\sum\nolimits");
       Assert.Single(list);
       var op = list[0] as LargeOperator;
       Assert.IsType<LargeOperator>(op);
@@ -843,8 +656,7 @@ namespace CSharpMath.Tests.PreTypesetting {
 
     [Fact]
     public void TestColor() {
-      var input = @"\color{#F00}a";
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(@"\color{#F00}a");
       Assert.Single(list);
       var op = list[0] as Color;
       Assert.IsType<Color>(op);
@@ -854,8 +666,7 @@ namespace CSharpMath.Tests.PreTypesetting {
 
     [Fact]
     public void TestSingleColumnArray() {
-      var input = @"\begin{array}{l}a=14\\b=15\end{array}";
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(@"\begin{array}{l}a=14\\b=15\end{array}");
 
       Assert.Single(list);
       Assert.Equal(@"\begin{array}{l}a=14\\ b=15\end{array}", LaTeXBuilder.MathListToLaTeX(list));
@@ -863,8 +674,7 @@ namespace CSharpMath.Tests.PreTypesetting {
 
     [Fact]
     public void TestDoubleColumnArray() {
-      var input = @"\begin{array}{lr}x^2&\:x<0\\x^3&\:x\geq0\end{array}";
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(@"\begin{array}{lr}x^2&\:x<0\\x^3&\:x\geq0\end{array}");
 
       Assert.Single(list);
       Assert.Equal(@"\begin{array}{lr}x^2&\: x<0\\ x^3&\: x\geq 0\end{array}", LaTeXBuilder.MathListToLaTeX(list));
@@ -872,8 +682,7 @@ namespace CSharpMath.Tests.PreTypesetting {
 
     [Fact]
     public void TestListToString_integral_a_to_b() {
-      var input = @"\int_a^b";
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(@"\int_a^b");
 
       Assert.Single(list);
       Assert.Equal(@"\int _a^b", LaTeXBuilder.MathListToLaTeX(list));
@@ -881,16 +690,14 @@ namespace CSharpMath.Tests.PreTypesetting {
 
     [Fact]
     public void TestListToString_integral() {
-      var input = @"\int_wdf=\int_{\partial w}f";
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(@"\int_wdf=\int_{\partial w}f");
 
       Assert.Equal(@"\int _wdf=\int _{\partial w}f", LaTeXBuilder.MathListToLaTeX(list));
     }
 
     [Fact]
     public void TestMatrixListToString() {
-      var input = @"\begin{ vmatrix}\sin(x) &\cos(x)\\-\cos(x) &\sin(x)\end{ vmatrix}= 1";
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilder.MathListFromLaTeX(@"\begin{ vmatrix}\sin(x) &\cos(x)\\-\cos(x) &\sin(x)\end{ vmatrix}= 1");
 
       Assert.Equal(@"\left| \begin{matrix}\sin (x)&\cos (x)\\ -\cos (x)&\sin (x)\end{matrix}\right| =1", LaTeXBuilder.MathListToLaTeX(list));
     }
