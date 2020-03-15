@@ -10,7 +10,7 @@ namespace CSharpMath.Rendering.Renderer {
     protected bool _displayChanged = true;
     public override IDisplay<Fonts, Glyph> Display => _display;
     public Atoms.MathList MathList { get => Source.MathList; set => Source = new MathSource(value); }
-    public override string LaTeX { get => Source.LaTeX; set => Source = new MathSource(value); }
+    public override string LaTeX { get => Source.LaTeX; set => Source = MathSource.FromLaTeX(value); }
     public override RectangleF? Measure(float unused = float.NaN) {
       UpdateDisplay();
       return _display?.DisplayBounds();

@@ -55,8 +55,8 @@ namespace CSharpMath.Atoms {
               newList[newList.Count - 1] = b.ToUnaryOperator();
               break;
             case (Atom.Number { Subscript: null, Superscript: null } n, Atom.Number _):
-              n.Fuse(newNode); // do not add the new node; we fused it instead.
-              continue;
+              n.Fuse(newNode);
+              continue; // do not add the new node; we fused it instead.
           }
           newList.Add(newNode);
         }

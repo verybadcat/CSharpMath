@@ -18,7 +18,7 @@ namespace CSharpMath.Forms {
   public abstract class BaseView<TPainter, TSource, TPainterAndSourceSupplier>
     : SKCanvasView, IPainter<TSource, Color>
     where TPainter : ICanvasPainter<SKCanvas, TSource, SKColor>
-    where TSource : struct, ISource
+    where TSource : ISource
     where TPainterAndSourceSupplier : struct, IPainterAndSourceSupplier<TPainter, TSource> {
     public BaseView(TPainter painter) => Painter = painter;
     public TPainter Painter { get; }

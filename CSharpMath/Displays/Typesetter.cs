@@ -189,7 +189,7 @@ namespace CSharpMath.Displays {
               AddDisplayLine(false);
               AddInterElementSpace(prevAtom, color);
               var colorDisplay = Typesetter.CreateLine(color.InnerList, _font, _context, _style);
-              colorDisplay.SetTextColorRecursive(Color.Create(color.ColorString.AsSpan()));
+              colorDisplay.SetTextColorRecursive(color.Colour);
               colorDisplay.Position = _currentPosition;
               _currentPosition.X += colorDisplay.Width;
               _displayAtoms.Add(colorDisplay);

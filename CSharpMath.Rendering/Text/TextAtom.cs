@@ -28,9 +28,9 @@ namespace CSharpMath.Rendering.Text {
       public override int? SingleChar(FontStyle style) => null;
     }
     public sealed class Space : TextAtom {
-      public Space(CSharpMath.Structures.Space space, int index, int length)
+      public Space(Structures.Space space, int index, int length)
         : base(new Range(index, length)) => Content = space;
-      public CSharpMath.Structures.Space Content { get; }
+      public Structures.Space Content { get; }
       public override int? SingleChar(FontStyle style) => ' ';
   }
     public sealed class ControlSpace : TextAtom {

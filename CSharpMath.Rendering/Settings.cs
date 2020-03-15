@@ -2,8 +2,8 @@ namespace CSharpMath {
   using System.Collections.Generic;
   public static class Settings {
     public static bool DisableEnhancedTextPainterColors {
-      get => Rendering.Text.TextBuilder.NoEnhancedColors;
-      set => Rendering.Text.TextBuilder.NoEnhancedColors = value;
+      get => Rendering.Text.TextLaTeXBuilder.NoEnhancedColors;
+      set => Rendering.Text.TextLaTeXBuilder.NoEnhancedColors = value;
     }
     public static Rendering.FrontEnd.Typefaces GlobalTypefaces =>
       Rendering.FrontEnd.Fonts.GlobalTypefaces;

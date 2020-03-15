@@ -10,7 +10,7 @@ namespace CSharpMath.Forms {
       public TextPainter Default => new TextPainter();
       public string DefaultLaTeX(TextPainter painter) => painter.LaTeX;
       public string LaTeXFromSource(TextSource source) => source.LaTeX;
-      public TextSource SourceFromLaTeX(string latex) => new TextSource(latex);
+      public TextSource SourceFromLaTeX(string latex) => TextSource.FromLaTeX(latex);
     }
     public TextView() : base(default(PainterSupplier).Default) { }
     public TextAtom Atom { get => Source.Atom; set => Source = new TextSource(value); }

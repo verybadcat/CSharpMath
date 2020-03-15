@@ -20,6 +20,7 @@ namespace CSharpMath.Atoms.Atom {
     public override bool ScriptsAllowed => false;
     public List<ColumnAlignment> Alignments { get; private set; } =
       new List<ColumnAlignment>();
+    /// <summary>Cells[i][j] == cell at ith row and jth column</summary>
     public List<List<MathList>> Cells { get; private set; }
     /// <summary>Space between columns in mu units.</summary>
     public float InterColumnSpacing { get; set; }

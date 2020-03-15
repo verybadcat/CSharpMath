@@ -7,7 +7,7 @@ namespace CSharpMath.Rendering.Text {
   using Atoms;
   using CSharpMath.Structures;
   using static CSharpMath.Structures.Result;
-  public static class TextBuilder {
+  public static class TextLaTeXBuilder {
     /* //Paste this into the C# Interactive, fill <username> yourself
 #r "C:/Users/<username>/source/repos/CSharpMath/Typography/Build/NetStandard/Typography.TextBreak/bin/Debug/netstandard1.3/Typography.TextBreak.dll"
 using Typography.TextBreak;
@@ -245,7 +245,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                       }
                       //Need to allocate in the end :(
                       //Don't look ahead for punc; we are looking for one char only
-                      atoms.Text(textSection[0].ToString(), default(ReadOnlySpan<char>));
+                      atoms.Text(textSection[0].ToString(), default);
                     } else atoms.Text(textSection.ToString(), NextSectionUntilPunc(latex, ref textSection));
                     break;
                 }
@@ -368,7 +368,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                           Err($"Length of color has over {StringArgumentLimit} characters. Please shorten it.") :
                         Color.Create(color, !NoEnhancedColors) is Color value ?
                           Ok(value) :
-                        Err("Invalid color")
+                        Err("Invalid color: " + color.ToString())
                       ).Bind(
                         ReadArgumentAtom(latex),
                         (color, coloredContent) =>

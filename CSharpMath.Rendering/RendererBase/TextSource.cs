@@ -1,18 +1,16 @@
 namespace CSharpMath.Rendering.Renderer {
   using Text;
-  public readonly struct TextSource : ISource {
-    public TextSource(string latex) {
-      LaTeX = latex;
-      (Atom, ErrorMessage) = TextBuilder.TextAtomFromLaTeX(latex);
+  public class TextSource : ISource {
+    public static TextSource FromLaTeX(string latex) {
+      var (textAtom, errorMessage) = TextLaTeXBuilder.TextAtomFromLaTeX(latex);
+      return new TextSource(textAtom) { ErrorMessage = errorMessage, _latex = latex };
     }
-    public TextSource(TextAtom atom) {
-      Atom = atom;
-      LaTeX = TextBuilder.TextAtomToLaTeX(atom, new System.Text.StringBuilder()).ToString();
-      ErrorMessage = null;
-    }
-    public string LaTeX { get; }
+    public TextSource(TextAtom atom) => Atom = atom;
+    private string _latex;
+    public string LaTeX =>
+      _latex ??= TextLaTeXBuilder.TextAtomToLaTeX(Atom, new System.Text.StringBuilder()).ToString();
     public TextAtom Atom { get; }
-    public string ErrorMessage { get; }
+    public string ErrorMessage { get; private set; }
     public bool IsValid => Atom != null;
   }
 }

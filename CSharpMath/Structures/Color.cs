@@ -22,17 +22,18 @@ namespace CSharpMath.Structures {
       { rf = Rf; gf = Gf; bf = Bf; }
     public void Deconstruct(out float rf, out float gf, out float bf, out float af)
       { Deconstruct(out rf, out gf, out bf); af = Af; }
-    public bool Equals(Color other) => R == other.R && G == other.G && B == other.B && A == other.A;
+    public bool Equals(Color other) => (R, G, B, A) == (other.R, other.G, other.B, other.A);
     public override bool Equals(object obj) => obj is Color c ? Equals(c) : false;
     public static bool operator ==(Color left, Color right) => left.Equals(right);
-    public static bool operator !=(Color left, Color right) => left.Equals(right);
+    public static bool operator !=(Color left, Color right) => !left.Equals(right);
     public override int GetHashCode() => unchecked(R * 13 + G * 37 + B * 113 + A * 239);
-    private static string ToString(byte b) => b.ToStringInvariant("X").PadLeft(2, '0');
-    public override string ToString() => $"#{ToString(A)}{ToString(R)}{ToString(G)}{ToString(B)}";
+    public override string ToString() =>
+      PredefinedColors.TryGetBySecond(this, out var name)
+      ? name : $"#{A:X2}{R:X2}{G:X2}{B:X2}";
     public static Color? Create(ReadOnlySpan<char> hexOrName, bool extraSweet = true) {
       if (hexOrName == null) return null;
       if (extraSweet && (hexOrName.StartsWithInvariant("#") || hexOrName.StartsWithInvariant("0x")))
-        return FromHexString(hexOrName);
+        return FromHexString(hexOrName.RemovePrefix("#").RemovePrefix("0x"));
       if (hexOrName.Length <= 100) { //Never gonna spill the stack
         Span<char> loweredName = stackalloc char[hexOrName.Length];
         hexOrName.ToLowerInvariant(loweredName);
@@ -40,52 +41,42 @@ namespace CSharpMath.Structures {
           return predefined;
       }
       return null;
-    }
-    private static int? CharToByte(char c) =>
-      c >= '0' && c <= '9' ? c - '0' :
-      c >= 'A' && c <= 'F' ? c - 'A' + 10 :
-      c >= 'a' && c <= 'f' ? c - 'a' + 10 :
-      new int?();
-    private static byte? FromHex1(ReadOnlySpan<char> hex, int index) =>
-      //read one hex char -> byte
-      (byte?)(CharToByte(hex[index]) * 17);
-    private static byte? FromHex2(ReadOnlySpan<char> hex, int index) =>
-      //read two hex chars -> byte
-      (byte?)(CharToByte(hex[index]) * 16 + CharToByte(hex[index + 1]));
-    private static Color? FromHexString(ReadOnlySpan<char> hex) {
-      hex = hex.RemovePrefix("#").RemovePrefix("0x");
-      byte? r, g, b, a;
-      switch (hex.Length) {
-        case 3:
-          r = FromHex1(hex, 0);
-          g = FromHex1(hex, 1);
-          b = FromHex1(hex, 2);
-          if ((r ^ g ^ b) is null) return null;
-          return new Color(r.GetValueOrDefault(), g.GetValueOrDefault(), b.GetValueOrDefault());
-        case 4:
-          a = FromHex1(hex, 0);
-          r = FromHex1(hex, 1);
-          g = FromHex1(hex, 2);
-          b = FromHex1(hex, 3);
-          if ((r ^ g ^ b ^ a) is null) return null;
-          return new Color(r.GetValueOrDefault(),
-            g.GetValueOrDefault(), b.GetValueOrDefault(), a.GetValueOrDefault());
-        case 6:
-          r = FromHex2(hex, 0);
-          g = FromHex2(hex, 2);
-          b = FromHex2(hex, 4);
-          if ((r ^ g ^ b) is null) return null;
-          return new Color(r.GetValueOrDefault(), g.GetValueOrDefault(), b.GetValueOrDefault());
-        case 8:
-          a = FromHex2(hex, 0);
-          r = FromHex2(hex, 2);
-          g = FromHex2(hex, 4);
-          b = FromHex2(hex, 6);
-          if ((r ^ g ^ b ^ a) is null) return null;
-          return new Color(r.GetValueOrDefault(),
-            g.GetValueOrDefault(), b.GetValueOrDefault(), a.GetValueOrDefault());
-        default:
-          return null;
+      static Color? FromHexString(ReadOnlySpan<char> hex) {
+        static int? CharToByte(char c) =>
+          c >= '0' && c <= '9' ? c - '0' :
+          c >= 'A' && c <= 'F' ? c - 'A' + 10 :
+          c >= 'a' && c <= 'f' ? c - 'a' + 10 :
+          new int?();
+        static byte? FromHex1(ReadOnlySpan<char> hex, int index) =>
+          //read one hex char -> byte
+          (byte?)(CharToByte(hex[index]) * 17);
+        static byte? FromHex2(ReadOnlySpan<char> hex, int index) =>
+          //read two hex chars -> byte
+          (byte?)(CharToByte(hex[index]) * 16 + CharToByte(hex[index + 1]));
+        return hex.Length switch
+        {
+          3 => (FromHex1(hex, 0), FromHex1(hex, 1), FromHex1(hex, 2)) switch
+          {
+            (byte r, byte g, byte b) => new Color(r, g, b),
+            _ => new Color?()
+          },
+          4 => (FromHex1(hex, 0), FromHex1(hex, 1), FromHex1(hex, 2), FromHex1(hex, 3)) switch
+          {
+            (byte a, byte r, byte g, byte b) => new Color(r, g, b, a),
+            _ => new Color?()
+          },
+          6 => (FromHex2(hex, 0), FromHex2(hex, 2), FromHex2(hex, 4)) switch
+          {
+            (byte r, byte g, byte b) => new Color(r, g, b),
+            _ => new Color?()
+          },
+          8 => (FromHex2(hex, 0), FromHex2(hex, 2), FromHex2(hex, 4), FromHex2(hex, 6)) switch
+          {
+            (byte a, byte r, byte g, byte b) => new Color(r, g, b, a),
+            _ => new Color?()
+          },
+          _ => null,
+        };
       }
     }
     //https://en.wikibooks.org/wiki/LaTeX/Colors#Predefined_colors

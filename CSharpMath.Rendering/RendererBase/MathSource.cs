@@ -1,19 +1,19 @@
 using CSharpMath.Atoms;
 
 namespace CSharpMath.Rendering.Renderer {
-  public readonly struct MathSource : ISource {
-    public MathSource(string latex) {
-      (MathList, ErrorMessage) = LaTeXBuilder.TryMathListFromLaTeX(latex);
-      LaTeX = latex;
+  public class MathSource : ISource, System.IEquatable<MathSource> {
+    public static MathSource FromLaTeX(string latex) {
+      var (mathList, errorMessage) = LaTeXBuilder.TryMathListFromLaTeX(latex);
+      return new MathSource(mathList) { ErrorMessage = errorMessage, _latex = latex };
     }
-    public MathSource(MathList mathList) {
-      LaTeX = LaTeXBuilder.MathListToLaTeX(mathList);
-      MathList = mathList;
-      ErrorMessage = null;
-    }
+    public MathSource(MathList mathList) => MathList = mathList;
     public MathList MathList { get; }
-    public string LaTeX { get; }
-    public string ErrorMessage { get; }
+    private string _latex;
+    public string LaTeX => _latex ??= LaTeXBuilder.MathListToLaTeX(MathList);
+    public string ErrorMessage { get; private set; }
     public bool IsValid => MathList != null;
+    public override int GetHashCode() => unchecked(MathList.GetHashCode() * 2519);
+    public override bool Equals(object obj) => obj is MathSource s ? Equals(s) : false;
+    public bool Equals(MathSource other) => MathList.NullCheckingStructuralEquality(other.MathList);
   }
 }

@@ -17,7 +17,7 @@ namespace CSharpMath.Forms {
       public MathPainter Default => new MathPainter();
       public string DefaultLaTeX(MathPainter painter) => painter.LaTeX;
       public string LaTeXFromSource(MathSource source) => source.LaTeX;
-      public MathSource SourceFromLaTeX(string latex) => new MathSource(latex);
+      public MathSource SourceFromLaTeX(string latex) => MathSource.FromLaTeX(latex);
     }
     public MathView() : base(default(PainterSupplier).Default) { }
     #region BindableProperties

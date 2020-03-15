@@ -20,7 +20,7 @@ namespace CSharpMath.Avalonia {
       this.GetObservable(ForegroundProperty).Subscribe(
         v => _painter.TextColor = (v as ISolidColorBrush)?.Color ?? default);
 
-      this.GetObservable(TextProperty).Subscribe(v => _painter.Source = new MathSource(v ?? String.Empty));
+      this.GetObservable(TextProperty).Subscribe(v => _painter.Source = MathSource.FromLaTeX(v ?? ""));
     }
 
     public override void Render(DrawingContext context) =>

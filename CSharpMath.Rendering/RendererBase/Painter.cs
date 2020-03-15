@@ -14,7 +14,7 @@ namespace CSharpMath.Rendering.Renderer {
     public const float DefaultFontSize = 20f;
   }
   public abstract class Painter<TCanvas, TSource, TColor> : ICanvasPainter<TCanvas, TSource, TColor>
-    where TSource : struct, ISource {
+    where TSource : ISource {
     public const float DefaultFontSize = PainterConstants.DefaultFontSize;
     
     #region Constructors

@@ -20,7 +20,7 @@ namespace CSharpMath.Rendering.Text {
       float accumulatedHeight = 0;
       //indicator of the need to apply belowdisplay(short)skip when line break
       bool afterDisplayMaths = false;
-      void BreakLine(TextDisplayLineBuilder line, List<IDisplay<Fonts, Glyph>> displayList,
+      void BreakLine(TextLayoutLineBuilder line, List<IDisplay<Fonts, Glyph>> displayList,
         List<IDisplay<Fonts, Glyph>> displayMathList, bool appendLineGap = true) {
         if (afterDisplayMaths) {
           accumulatedHeight +=
@@ -36,7 +36,7 @@ namespace CSharpMath.Rendering.Text {
       void AddDisplaysWithLineBreaks(
         TextAtom atom,
         Fonts fonts,
-        TextDisplayLineBuilder line,
+        TextLayoutLineBuilder line,
         List<IDisplay<Fonts, Glyph>> displayList,
         List<IDisplay<Fonts, Glyph>> displayMathList,
         FontStyle style,
@@ -146,7 +146,7 @@ namespace CSharpMath.Rendering.Text {
             scale = accentGlyph.Typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);
             var accenteeDisplayList = new List<IDisplay<Fonts, Glyph>>();
             var invalidDisplayMaths = new List<IDisplay<Fonts, Glyph>>();
-            var accentDisplayLine = new TextDisplayLineBuilder();
+            var accentDisplayLine = new TextLayoutLineBuilder();
             AddDisplaysWithLineBreaks(a.Content, fonts, accentDisplayLine,
               accenteeDisplayList, invalidDisplayMaths, style, color);
             float _ = default;
@@ -187,7 +187,7 @@ namespace CSharpMath.Rendering.Text {
       }
       var relativePositionList = new List<IDisplay<Fonts, Glyph>>();
       var absolutePositionList = new List<IDisplay<Fonts, Glyph>>();
-      var globalLine = new TextDisplayLineBuilder();
+      var globalLine = new TextLayoutLineBuilder();
       AddDisplaysWithLineBreaks(
         input,
         inputFont,

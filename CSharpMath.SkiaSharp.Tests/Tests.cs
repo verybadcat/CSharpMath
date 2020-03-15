@@ -61,7 +61,7 @@ namespace CSharpMath.SkiaSharp {
       Test(file, latex, GetFolder(nameof(Text)), new TextPainter());
 
     static void Test<TSource>(string inFile, string latex, string folder,
-      Painter<SKCanvas, TSource, SKColor> painter) where TSource: struct, ISource {
+      Painter<SKCanvas, TSource, SKColor> painter) where TSource: ISource {
       // Prevent black background behind black rendered output in File Explorer preview
       painter.HighlightColor = new SKColor(0xF0, 0xF0, 0xF0);
       painter.FontSize = 50f;

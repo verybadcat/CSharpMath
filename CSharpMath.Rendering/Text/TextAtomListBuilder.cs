@@ -21,7 +21,7 @@ namespace CSharpMath.Rendering.Text {
     public void Color(TextAtom atom, Color color, int commandLength) =>
       Add(new TextAtom.Color(atom, color, TextLength, commandLength));
     public Result Math(string mathLaTeX, bool displayStyle) {
-      var mathSource = new Renderer.MathSource(mathLaTeX);
+      var mathSource = Renderer.MathSource.FromLaTeX(mathLaTeX);
       if (mathSource.ErrorMessage != null) return mathSource.ErrorMessage;
       Add(new TextAtom.Math(mathSource.MathList, displayStyle,
                             new Atoms.Range(TextLength, mathLaTeX.Length)));
