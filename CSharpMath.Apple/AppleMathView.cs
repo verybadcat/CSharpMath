@@ -61,7 +61,7 @@ namespace CSharpMath.Apple {
     public override CGSize SizeThatFits(CGSize size) {
       CGSize r;
       if (_displayList != null) {
-        r = _displayList.DisplayBounds.Size;
+        r = _displayList.DisplayBounds().Size;
         r.Width += ContentInsets.Left + ContentInsets.Right;
         r.Height += ContentInsets.Top + ContentInsets.Bottom;
       } else {

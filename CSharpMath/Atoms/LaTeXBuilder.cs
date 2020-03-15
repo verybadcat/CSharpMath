@@ -622,7 +622,6 @@ namespace CSharpMath.Atoms {
       var arrayAlignments = _currentEnvironment.ArrayAlignments;
       _currentEnvironment = oldEnv;
 
-      Style style;
       var table = new Table(environment, rows);
       switch (environment) {
         case null:
@@ -635,7 +634,7 @@ namespace CSharpMath.Atoms {
           table.Environment = "matrix"; // TableEnvironment is set to matrix as delimiters are converted to latex outside the table.
           table.InterColumnSpacing = 18;
 
-          style = new Style(LineStyle.Text);
+          var style = new Style(LineStyle.Text);
           foreach (var row in table.Cells) {
             foreach (var cell in row) {
               cell.Insert(0, style);
