@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using Xunit;
@@ -30,10 +31,8 @@ namespace CSharpMath.Tests {
       (PointF? expected, PointF? actual, double tolerance = DefaultTolerance) {
       if (expected is PointF e && actual is PointF a)
         At(e.X, e.Y, a, tolerance);
-      else {
-        Assert.Null(expected);
-        Assert.Null(actual);
-      }
+      else
+        Assert.Equal(expected, actual);
     }
     public static void Congruent(double x, double y, double width, double height,
       RectangleF actual, double tolerance = DefaultTolerance) {

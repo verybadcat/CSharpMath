@@ -3,13 +3,13 @@ using System.Drawing;
 using System.Linq;
 using CoreGraphics;
 using CoreText;
-using CSharpMath.Displays;
+using CSharpMath.Display;
 using Color = CSharpMath.Structures.Color;
 using TFont = CSharpMath.Apple.AppleMathFont;
 using TGlyph = System.UInt16;
 
 namespace CSharpMath.Apple {
-  public class AppleGraphicsContext : Displays.FrontEnd.IGraphicsContext<TFont, TGlyph> {
+  public class AppleGraphicsContext : Display.FrontEnd.IGraphicsContext<TFont, TGlyph> {
 
     public CGContext CgContext { get; set; }
 

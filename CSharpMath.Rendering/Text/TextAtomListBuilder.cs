@@ -14,7 +14,7 @@ namespace CSharpMath.Rendering.Text {
       Add(new TextAtom.Text(text + lookAheadForPunc.ToString(), TextLength));
     public void Space(Space space, int sourceLength) =>
       Add(new TextAtom.Space(space, TextLength, sourceLength));
-    public void Style(TextAtom atom, Atoms.FontStyle style, int commandLength) =>
+    public void Style(TextAtom atom, Atom.FontStyle style, int commandLength) =>
       Add(new TextAtom.Style(atom, style, TextLength, commandLength));
     public void Size(TextAtom atom, float fontSize, int commandLength) =>
       Add(new TextAtom.Size(atom, fontSize, TextLength, commandLength));
@@ -24,7 +24,7 @@ namespace CSharpMath.Rendering.Text {
       var mathSource = Renderer.MathSource.FromLaTeX(mathLaTeX);
       if (mathSource.ErrorMessage != null) return mathSource.ErrorMessage;
       Add(new TextAtom.Math(mathSource.MathList, displayStyle,
-                            new Atoms.Range(TextLength, mathLaTeX.Length)));
+                            new Atom.Range(TextLength, mathLaTeX.Length)));
       return Result.Ok();
     }
     public void List(IReadOnlyList<TextAtom> textAtoms) =>

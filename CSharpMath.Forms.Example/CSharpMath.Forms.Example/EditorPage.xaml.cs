@@ -5,7 +5,7 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 namespace CSharpMath.Forms.Example {
-  using Displays;
+  using Display;
   using Rendering;
   [XamlCompilation(XamlCompilationOptions.Compile)]
   public partial class EditorPage : ContentPage {

@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using CSharpMath.Displays;
-using CSharpMath.Displays.FrontEnd;
+using CSharpMath.Display;
+using CSharpMath.Display.FrontEnd;
 
 namespace CSharpMath.Rendering.FrontEnd {
   public class GlyphBoundsProvider : IGlyphBoundsProvider<Fonts, Glyph> {

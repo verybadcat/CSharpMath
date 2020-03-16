@@ -3,9 +3,9 @@ namespace CSharpMath.Editor {
   using System.Drawing;
   using System.Linq;
 
-  using Displays;
-  using Displays.Display;
-  using Displays.FrontEnd;
+  using Display;
+  using Display.Displays;
+  using Display.FrontEnd;
   using Structures;
   using Color = Structures.Color;
 

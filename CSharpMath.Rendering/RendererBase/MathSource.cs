@@ -1,4 +1,4 @@
-using CSharpMath.Atoms;
+using CSharpMath.Atom;
 
 namespace CSharpMath.Rendering.Renderer {
   public class MathSource : ISource, System.IEquatable<MathSource> {

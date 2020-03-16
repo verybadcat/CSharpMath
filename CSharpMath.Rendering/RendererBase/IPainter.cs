@@ -19,7 +19,7 @@ namespace CSharpMath.Rendering.Renderer {
     /// <summary>Unit of measure: points</summary>
     float FontSize { get; set; }
     ObservableRangeCollection<Typeface> LocalTypefaces { get; }
-    Atoms.LineStyle LineStyle { get; set; }
+    Atom.LineStyle LineStyle { get; set; }
     TSource Source { get; set; }
     #endregion Redisplaying properties
   }

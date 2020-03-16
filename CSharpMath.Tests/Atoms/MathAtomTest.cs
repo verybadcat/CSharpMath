@@ -1,5 +1,5 @@
-using CSharpMath.Atoms;
-using CSharpMath.Atoms.Atom;
+using CSharpMath.Atom;
+using CSharpMath.Atom.Atoms;
 using System.Linq;
 using Xunit;
 

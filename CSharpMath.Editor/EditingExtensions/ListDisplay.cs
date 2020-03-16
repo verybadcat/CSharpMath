@@ -3,9 +3,9 @@ namespace CSharpMath.Editor {
   using System.Collections.Generic;
   using System.Drawing;
   using System.Linq;
-  using Displays;
-  using Displays.Display;
-  using Displays.FrontEnd;
+  using Display;
+  using Display.Displays;
+  using Display.FrontEnd;
   using Structures;
   using Color = Structures.Color;
 
@@ -164,16 +164,24 @@ namespace CSharpMath.Editor {
       if (index.SubIndexType is MathListSubIndexType.Superscript
          || index.SubIndexType is MathListSubIndexType.Subscript)
         foreach (var display in self.Displays)
-          if (display is ListDisplay<TFont, TGlyph> list
-              && index.AtomIndex == list.IndexInParent
+          switch (display) {
+            case ListDisplay<TFont, TGlyph> list when
+              index.AtomIndex == list.IndexInParent
               // This is the right character for the sub/superscript, check that it's type matches the index
-              &&
-              (list.LinePosition is LinePosition.Subscript
+              && (list.LinePosition is LinePosition.Subscript
                && index.SubIndexType is MathListSubIndexType.Subscript
                || list.LinePosition is LinePosition.Superscript
-               && index.SubIndexType is MathListSubIndexType.Superscript))
-            return list;
-          else { }
+               && index.SubIndexType is MathListSubIndexType.Superscript):
+              return list;
+            case LargeOpLimitsDisplay<TFont, TGlyph> { LowerLimit:{ } limit } when
+              limit.Range.Contains(index.AtomIndex) &&
+              index.SubIndexType is MathListSubIndexType.Subscript:
+              return limit;
+            case LargeOpLimitsDisplay<TFont, TGlyph> { UpperLimit: { } limit } when
+              limit.Range.Contains(index.AtomIndex) &&
+              index.SubIndexType is MathListSubIndexType.Superscript:
+              return limit;
+          }
       else
         foreach (var display in self.Displays)
           if (!(display is ListDisplay<TFont, TGlyph>) && display.Range.Contains(index.AtomIndex))
@@ -186,12 +194,12 @@ namespace CSharpMath.Editor {
               case MathListSubIndexType.Radicand:
                 if (display is RadicalDisplay<TFont, TGlyph> radical)
                   return radical.SubListForIndexType(index.SubIndexType);
-                else throw new SubIndexTypeMismatchException(typeof(Atoms.Atom.Radical), index);
+                else throw new SubIndexTypeMismatchException(typeof(Atom.Atoms.Radical), index);
               case MathListSubIndexType.Numerator:
               case MathListSubIndexType.Denominator:
                 if (display is FractionDisplay<TFont, TGlyph> fraction)
                   return fraction.SubListForIndexType(index.SubIndexType);
-                else throw new SubIndexTypeMismatchException(typeof(Atoms.Atom.Fraction), index);
+                else throw new SubIndexTypeMismatchException(typeof(Atom.Atoms.Fraction), index);
               case MathListSubIndexType.Superscript:
               case MathListSubIndexType.Subscript:
               default:

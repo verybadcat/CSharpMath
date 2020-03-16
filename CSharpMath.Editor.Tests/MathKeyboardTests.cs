@@ -1,5 +1,6 @@
 using System;
-using CSharpMath.Displays.FrontEnd;
+using System.Linq;
+using CSharpMath.Display.FrontEnd;
 using CSharpMath.Tests.FrontEnd;
 using Xunit;
 using T = Xunit.InlineDataAttribute; // 'T'est
@@ -22,6 +23,20 @@ namespace CSharpMath.Editor.Tests {
         () => keyboard.KeyPress(inputs));
     }
 
+    [Fact]
+    public void NoDuplicateValues() {
+      var names = Enum.GetNames(typeof(K));
+      var values = (K[])Enum.GetValues(typeof(K));
+      var duplicateValues =
+        values
+        .GroupBy(x => x)
+        .Where(g => g.Count() > 1)
+        .Select(g => $"({string.Join(" or ", names.Where(n => Enum.Parse<K>(n) == g.Key))}) == {(int)g.Key}")
+        .ToArray();
+      Assert.True(duplicateValues.Length == 0,
+        $"{typeof(K).Name} has some duplicate values: {string.Join(", ", duplicateValues)}");
+    }
+
     // Copy for more test categories
     [
       Theory,
@@ -41,7 +56,7 @@ namespace CSharpMath.Editor.Tests {
       //Basic operators
       T(@"+--\times \times \div ::\% ,!\infty \angle \degree \vert \log \ln ",
         K.Plus, K.Minus, K.Minus_, K.Multiply, K.Multiply_, K.Divide, K.Ratio, K.Ratio_, K.Percentage, 
-       K.Comma, K.Factorial, K.Infinity, K.Angle, K.Degree, K.VerticalBar, K.Logarithm, K.NaturalLogarithm),
+        K.Comma, K.Factorial, K.Infinity, K.Angle, K.Degree, K.VerticalBar, K.Logarithm, K.NaturalLogarithm),
       //Relations
       T(@"=\neq <\leq >\geq ", K.Equals, K.NotEquals, K.LessThan, K.LessOrEquals, K.GreaterThan, K.GreaterOrEquals),
       //Capital English alphabets
@@ -52,18 +67,18 @@ namespace CSharpMath.Editor.Tests {
         K.SmallH, K.SmallI, K.SmallJ, K.SmallK, K.SmallL, K.SmallM, K.SmallN, K.SmallO, K.SmallP, K.SmallQ, 
         K.SmallR, K.SmallS, K.SmallT, K.SmallU, K.SmallV, K.SmallW, K.SmallX, K.SmallY, K.SmallZ),
       //Capital Greek alphabets
-      T(@"ΑΒ\Gamma \Delta ΕΖΗ\Theta ΙΚ\Lambda ΜΝ\Xi Ο\Pi Ρ\Sigma Τ\Upsilon \Phi Χ\Omega ",
+      T(@"ΑΒ\Gamma \Delta ΕΖΗ\Theta ΙΚ\Lambda ΜΝ\Xi Ο\Pi Ρ\Sigma Τ\Upsilon \Phi Χ\Psi \Omega ",
         K.Alpha, K.Beta, K.Gamma, K.Delta, K.Epsilon, K.Zeta, K.Eta, K.Theta, 
         K.Iota, K.Kappa, K.Lambda, K.Mu, K.Nu, K.Xi, K.Omicron, 
-        K.Pi, K.Rho, K.Sigma, K.Tau, K.Upsilon, K.Phi, K.Chi, K.Omega),
+        K.Pi, K.Rho, K.Sigma, K.Tau, K.Upsilon, K.Phi, K.Chi, K.Psi, K.Omega),
       //Small Greek alphabets
       T(@"\alpha \beta \gamma \delta \varepsilon \zeta \eta \theta \iota \kappa \lambda \mu " +
-        @"\nu \xi \omicron \pi \rho \sigma \varsigma \tau \upsilon \varphi \chi \omega ",
+        @"\nu \xi \omicron \pi \rho \sigma \varsigma \tau \upsilon \varphi \chi \psi \omega ",
         K.SmallAlpha, K.SmallBeta, K.SmallGamma, K.SmallDelta, K.SmallEpsilon,
         K.SmallZeta, K.SmallEta, K.SmallTheta, K.SmallIota, K.SmallKappa,
         K.SmallLambda, K.SmallMu, K.SmallNu, K.SmallXi, K.SmallOmicron,
         K.SmallPi, K.SmallRho, K.SmallSigma, K.SmallSigma2, K.SmallTau,
-        K.SmallUpsilon, K.SmallPhi, K.SmallChi, K.SmallOmega),
+        K.SmallUpsilon, K.SmallPhi, K.SmallChi, K.SmallPsi, K.SmallOmega),
       //Trigonometric functions
       T(@"\sin \cos \tan \cot \sec \csc \arcsin \arccos \arctan \arccot \arcsec \arccsc ",
         K.Sine, K.Cosine, K.Tangent, K.Cotangent, K.Secant, K.Cosecant,
@@ -74,6 +89,11 @@ namespace CSharpMath.Editor.Tests {
         K.HyperbolicCotangent, K.HyperbolicSecant, K.HyperbolicCosecant,
         K.AreaHyperbolicSine, K.AreaHyperbolicCosine, K.AreaHyperbolicTangent,
         K.AreaHyperbolicCotangent, K.AreaHyperbolicSecant, K.AreaHyperbolicCosecant),
+      //Large operators
+      T(@"\sum \prod \int \iint \iiint \iiiint \oint \oiint \oiiint \intclockwise \varointclockwise \ointctrclockwise ",
+        K.Summation, K.Product, K.Integral, K.DoubleIntegral, K.TripleIntegral, K.QuadrupleIntegral,
+        K.ContourIntegral, K.DoubleContourIntegral, K.TripleContourIntegral,
+        K.ClockwiseIntegral, K.ClockwiseContourIntegral, K.CounterClockwiseContourIntegral),
       T(@"X_{2_3}", K.X, K.Subscript, K.D2, K.Subscript, K.D3),
       T(@"x^{\frac{2}{■}}", K.SmallX, K.Power, K.D2, K.Slash),
       // https://github.com/verybadcat/CSharpMath/issues/39
@@ -96,6 +116,33 @@ namespace CSharpMath.Editor.Tests {
       T(@"\log _■", K.Logarithm, K.Subscript),
       T(@"\log _■", K.LogarithmWithBase),
       T(@"\log _3", K.LogarithmWithBase, K.D3),
+      T(@"\int ^2", K.Integral, K.Power, K.D2),
+      T(@"\int ^2", K.IntegralUpperLimit, K.D2),
+      T(@"\int _2", K.Integral, K.Subscript, K.D2),
+      T(@"\int _2", K.IntegralLowerLimit, K.D2),
+      T(@"\int _2^{\square }", K.IntegralBothLimits, K.D2),
+      T(@"\int ^{\square ^2}", K.IntegralUpperLimit, K.Power, K.D2),
+      T(@"\int ^{\square _2}", K.IntegralUpperLimit, K.Subscript, K.D2),
+      T(@"\int _{\square ^2}", K.IntegralLowerLimit, K.Power, K.D2),
+      T(@"\int _{\square _2}", K.IntegralLowerLimit, K.Subscript, K.D2),
+      T(@"\sum ^2", K.Summation, K.Power, K.D2),
+      T(@"\sum ^2", K.SummationUpperLimit, K.D2),
+      T(@"\sum _2", K.Summation, K.Subscript, K.D2),
+      T(@"\sum _2", K.SummationLowerLimit, K.D2),
+      T(@"\sum _2^{\square }", K.SummationBothLimits, K.D2),
+      T(@"\sum ^{\square ^2}", K.SummationUpperLimit, K.Power, K.D2),
+      T(@"\sum ^{\square _2}", K.SummationUpperLimit, K.Subscript, K.D2),
+      T(@"\sum _{\square ^2}", K.SummationLowerLimit, K.Power, K.D2),
+      T(@"\sum _{\square _2}", K.SummationLowerLimit, K.Subscript, K.D2),
+      T(@"\prod ^2", K.Product, K.Power, K.D2),
+      T(@"\prod ^2", K.ProductUpperLimit, K.D2),
+      T(@"\prod _2", K.Product, K.Subscript, K.D2),
+      T(@"\prod _2", K.ProductLowerLimit, K.D2),
+      T(@"\prod _2^{\square }", K.ProductBothLimits, K.D2),
+      T(@"\prod ^{\square ^2}", K.ProductUpperLimit, K.Power, K.D2),
+      T(@"\prod ^{\square _2}", K.ProductUpperLimit, K.Subscript, K.D2),
+      T(@"\prod _{\square ^2}", K.ProductLowerLimit, K.Power, K.D2),
+      T(@"\prod _{\square _2}", K.ProductLowerLimit, K.Subscript, K.D2),
     ]
     public void AtomInput(string latex, params K[] inputs) => Test(latex, inputs);
 
@@ -114,24 +161,28 @@ namespace CSharpMath.Editor.Tests {
       T(@"23^{\square }", K.D2, K.Power, K.Left, K.D3),
       T(@"2^{\square }4", K.D2, K.Power, K.Right, K.D4),
       T(@"\sin \Pi ^2", K.Sine, K.Power, K.D2, K.Left, K.Left, K.Pi),
+      T(@"17_{26}^{35}4", K.D1, K.Subscript, K.D2, K.Right, K.Power, K.D3, K.Right, K.D4,
+         K.Left, K.Left, K.D5, K.Left, K.Left, K.Left, K.D6, K.Left, K.Left, K.Left, K.D7),
       T(@"\frac{23}{4}_6^578", K.Fraction, K.D3, K.Right, K.D4, K.Right, K.Power, K.D5, K.Right, K.Subscript, 
-        K.D6, K.Right, K.D7, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left,
+        K.D6, K.Right, K.Right, K.Right, K.D7, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left,
         K.D2, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.D8),
       T(@"\sqrt[23]{4}_6^578", K.NthRoot, K.D3, K.Right, K.D4, K.Right, K.Power, K.D5, K.Right, K.Subscript,
-        K.D6, K.Right, K.D7, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left,
+        K.D6, K.Right, K.Right, K.Right, K.D7, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left,
         K.D2, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.D8),
       T(@"1\frac{\square }{\square }_{\square }^{\square }90", K.Fraction, K.Right, K.Right, K.Power, K.Right,
-        K.Subscript, K.Right, K.D9, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.D1,
+        K.Subscript, K.Right, K.Right, K.Right, K.D9, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.D1,
         K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.D0),
       T(@"1\sqrt[\square ]{\square }_{\square }^{\square }90", K.NthRoot, K.Right, K.Right, K.Power, K.Right,
-        K.Subscript, K.Right, K.D9, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.D1,
+        K.Subscript, K.Right, K.Right, K.Right, K.D9, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.D1,
         K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.D0),
       T(@"01\frac{\square }{\square }_{\square }^{\square }90", K.D0, K.Fraction, K.Right, K.Right, K.Power, K.Right,
-        K.Subscript, K.Right, K.D9, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.D1,
+        K.Subscript, K.Right, K.Right, K.Right, K.D9, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.D1,
         K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.D0),
       T(@"01\sqrt[\square ]{\square }_{\square }^{\square }90", K.D0, K.NthRoot, K.Right, K.Right, K.Power, K.Right,
-        K.Subscript, K.Right, K.D9, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.D1,
+        K.Subscript, K.Right, K.Right, K.Right, K.D9, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.D1,
         K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.D0),
+      T(@"\int 2^{\square }", K.IntegralUpperLimit, K.Left, K.D2),
+      T(@"\int 2_{\square }", K.IntegralLowerLimit, K.Left, K.D2),
     ]
     public void LeftRightNavigation(string latex, params K[] inputs) => Test(latex, inputs);
 
@@ -184,8 +235,8 @@ namespace CSharpMath.Editor.Tests {
       T(@"", K.Left, K.Left, K.Backspace, K.Backspace, K.Right, K.Right, K.Backspace, K.Backspace, K.Left),
       T(@"\frac{\square }{3}", K.Slash, K.D3, K.Left, K.Left, K.Backspace, K.Left),
       T(@"1_3", K.D1, K.D2, K.Subscript, K.D3, K.Left, K.Left, K.Backspace),
-      T(@"1_3^2", K.D1, K.D4, K.Subscript, K.D3, K.Left, K.Left, K.Power, K.D2, K.Left, K.Left, K.Backspace),
-      T(@"1_2^3", K.D1, K.D4, K.Power, K.D3, K.Left, K.Left, K.Subscript, K.D2, K.Left, K.Left, K.Left, K.Left, K.Backspace),
+      T(@"1_3^2", K.D1, K.D4, K.Subscript, K.D3, K.Left, K.Left, K.Power, K.D2, K.Left, K.Left, K.Left, K.Left, K.Backspace),
+      T(@"1_2^3", K.D1, K.D4, K.Power, K.D3, K.Left, K.Left, K.Subscript, K.D2, K.Left, K.Left, K.Backspace),
       T(@"■^6", K.Power, K.D6, K.Left, K.Left, K.Left, K.X, K.Left, K.Left, K.Left, K.Backspace),
       T(@"\sqrt[■]{\square }", K.NthRoot, K.SmallA, K.Backspace),
       T(@"\sqrt{■}", K.SquareRoot, K.SmallA, K.Backspace),
@@ -207,6 +258,13 @@ namespace CSharpMath.Editor.Tests {
       T(@"7;■^X", K.D7, K.Semicolon, K.D1, K.Power, K.X, K.Left, K.Left, K.Backspace),
       T(@"7,■^X", K.D7, K.Comma, K.D1, K.Power, K.X, K.Left, K.Left, K.Backspace),
       T(@"a(c-2)^3", K.SmallA, K.Power, K.D3, K.Left, K.Left, K.BothRoundBrackets, K.SmallC, K.Minus, K.D2),
+      T(@"■^{\square }", K.IntegralUpperLimit, K.Left, K.Backspace),
+      T(@"■_{\square }", K.IntegralLowerLimit, K.Left, K.Backspace),
+      T(@"■_{\square }^{\square }", K.IntegralBothLimits, K.Left, K.Backspace),
+      T(@"■^{\square }", K.SummationUpperLimit, K.Left, K.Backspace),
+      T(@"■_{\square }", K.SummationLowerLimit, K.Left, K.Backspace),
+      T(@"■^{\square }", K.ProductUpperLimit, K.Left, K.Backspace),
+      T(@"■_{\square }", K.ProductLowerLimit, K.Left, K.Backspace),
     ]
     public void LeftRightBackspace(string latex, params K[] inputs) => Test(latex, inputs);
 
@@ -224,7 +282,14 @@ namespace CSharpMath.Editor.Tests {
       T(@"eA\frac{\square }{\square }\sqrt[3]{\square }B_{\square }",
         K.SmallE, K.Subscript, K.Left, K.A, K.Fraction, K.Right, K.Right, K.CubeRoot, K.Right, K.B),
       T(@"eA\frac{\square }{\square }\sqrt[\square ]{\square }B_{\square }^{\square }",
-        K.BaseEPower, K.Left, K.Subscript, K.Left, K.Left, K.A, K.Fraction, K.Right, K.Right, K.NthRoot, K.Right, K.Right, K.B),
+        K.BaseEPower, K.Left, K.Subscript, K.Left, K.A, K.Fraction, K.Right, K.Right, K.NthRoot, K.Right, K.Right, K.B),
+      T(@"\int \log _■^{\square }", K.IntegralUpperLimit, K.Left, K.LogarithmWithBase),
+      T(@"\sum \prod _{\square }^■", K.SummationLowerLimit, K.Left, K.ProductUpperLimit),
+      T(@"\log \log _{\square }", K.LogarithmWithBase, K.Left, K.LogarithmWithBase),
+      T(@"\prod \int ^{\square }", K.ProductUpperLimit, K.Left, K.IntegralUpperLimit),
+      T(@"\int \prod _{\square }^{\square }", K.IntegralBothLimits, K.Left, K.ProductBothLimits),
+      T(@"\sum \int _{\square }^{\square }", K.SummationBothLimits, K.Left, K.IntegralLowerLimit),
+      T(@"\prod \prod _{\square }^{\square }", K.ProductBothLimits, K.Left, K.ProductBothLimits),
     ]
     public void BetweenBaseAndScriptsInsert(string latex, params K[] inputs) => Test(latex, inputs);
 

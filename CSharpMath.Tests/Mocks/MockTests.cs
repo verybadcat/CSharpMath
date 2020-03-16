@@ -1,7 +1,7 @@
 using CSharpMath.Tests.FrontEnd;
 using Xunit;
 using TGlyph = System.Char;
-using CSharpMath.Displays;
+using CSharpMath.Display;
 
 namespace CSharpMath.Tests.Mocks {
   // purpose of this class is to make sure our mocks behave as expected.

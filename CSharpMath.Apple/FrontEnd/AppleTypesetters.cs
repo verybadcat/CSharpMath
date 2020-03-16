@@ -1,4 +1,4 @@
-using CSharpMath.Displays.FrontEnd;
+using CSharpMath.Display.FrontEnd;
 using TGlyph = System.UInt16;
 
 namespace CSharpMath.Apple {
@@ -8,7 +8,7 @@ namespace CSharpMath.Apple {
         (font, size) => new AppleMathFont(font, size),
         AppleGlyphBoundsProvider.Instance,
         CtFontGlyphFinder.Instance,
-        Displays.UnicodeFontChanger.Instance,
+        Display.UnicodeFontChanger.Instance,
         new JsonMathTable<AppleMathFont, TGlyph>(
           AppleFontMeasurer.Instance,
           Resources.ManifestResources.LatinMath,

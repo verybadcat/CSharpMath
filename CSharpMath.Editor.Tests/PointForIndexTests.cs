@@ -152,5 +152,35 @@ namespace CSharpMath.Editor.Tests {
       };
     [Theory, MemberData(nameof(SineData))]
     public void Sine(PointF point, MathListIndex expected) => Test(@"\sin\pi", point, expected);
+    public static TestData IntegralData =>
+      new TestData {
+        { (0, 0), 0 },
+        { (10, 9.68), 0, (SubIndex.Superscript, 0) },
+        { (17, 9.68), 0, (SubIndex.Superscript, 1) },
+        { (10, -6.12), 0, (SubIndex.Subscript, 0) },
+        { (17, -6.12), 0, (SubIndex.Subscript, 1) },
+        { (21.453, 0), 1 },
+        { (31.453, 0), 2 },
+        { (41.453, 0), 3 },
+        { (51.453, 0), 4 },
+        { (61.453, 0), 5 },
+      };
+    [Theory, MemberData(nameof(IntegralData))]
+    public void Integral(PointF point, MathListIndex expected) => Test(@"\int_a^b x\ dx", point, expected);
+    public static TestData IntegralLimitsData =>
+      new TestData {
+        { (0, 0), 0 },
+        { (1.5, 20.8), 0, (SubIndex.Superscript, 0) },
+        { (8.5, 20.8), 0, (SubIndex.Superscript, 1) },
+        { (1.5, -17.14), 0, (SubIndex.Subscript, 0) },
+        { (8.5, -17.14), 0, (SubIndex.Subscript, 1) },
+        { (13.333, 0), 1 },
+        { (23.333, 0), 2 },
+        { (33.333, 0), 3 },
+        { (43.333, 0), 4 },
+        { (53.333, 0), 5 },
+      };
+    [Theory, MemberData(nameof(IntegralLimitsData))]
+    public void IntegralLimits(PointF point, MathListIndex expected) => Test(@"\int\limits_a^b x\ dx", point, expected);
   }
 }

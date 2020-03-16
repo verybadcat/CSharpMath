@@ -1,7 +1,7 @@
 using CoreGraphics;
 using TGlyph = System.UInt16;
 namespace CSharpMath.Apple {
-  public class AppleGlyphNameProvider : Displays.FrontEnd.IGlyphNameProvider<TGlyph> {
+  public class AppleGlyphNameProvider : Display.FrontEnd.IGlyphNameProvider<TGlyph> {
     private readonly CGFont _cgFont;
     public AppleGlyphNameProvider(CGFont someCgFontSizeIrrelevant) =>
       _cgFont = someCgFontSizeIrrelevant;

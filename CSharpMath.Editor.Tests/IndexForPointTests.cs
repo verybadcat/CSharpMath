@@ -1,5 +1,5 @@
 using System.Drawing;
-using CSharpMath.Atoms;
+using CSharpMath.Atom;
 using CSharpMath.Tests.FrontEnd;
 using Xunit;
 
@@ -32,10 +32,10 @@ namespace CSharpMath.Editor.Tests {
         }
       }
     }
-    public static Structures.Result<Displays.Display.ListDisplay<TestFont, char>>
+    public static Structures.Result<Display.Displays.ListDisplay<TestFont, char>>
       CreateDisplay(string latex) =>
       LaTeXBuilder.TryMathListFromLaTeX(latex).Bind(mathList =>
-        Displays.Typesetter.CreateLine(
+        Display.Typesetter.CreateLine(
           mathList, new TestFont(20), TestTypesettingContexts.Instance, LineStyle.Display));
     void Test(string latex, PointF point, MathListIndex expected) =>
       CreateDisplay(latex).Match(
@@ -500,5 +500,35 @@ namespace CSharpMath.Editor.Tests {
     [Theory, MemberData(nameof(Issue64Data))]
     public void Issue64(PointF point, MathListIndex expected) => Test(@"1^{123}+", point, expected);
 
+    public static TestData IntegralData =>
+      new TestData {
+        { (0, 0), 0 },
+        { (10, 10), 0, (SubIndex.Superscript, 0) },
+        { (15, 10), 0, (SubIndex.Superscript, 1) },
+        { (10, -10), 0, (SubIndex.Subscript, 0) },
+        { (15, -10), 0, (SubIndex.Subscript, 1) },
+        { (20, 0), 1 },
+        { (30, 0), 2 },
+        { (40, 0), 3 },
+        { (50, 0), 4 },
+        { (60, 0), 5 },
+      };
+    [Theory, MemberData(nameof(IntegralData))]
+    public void Integral(PointF point, MathListIndex expected) => Test(@"\int_a^b x\ dx", point, expected);
+    public static TestData IntegralLimitsData =>
+      new TestData {
+        { (0, 0), 0 },
+        { (0, 20), 0, (SubIndex.Superscript, 0) },
+        { (10, 20), 0, (SubIndex.Superscript, 1) },
+        { (0, -20), 0, (SubIndex.Subscript, 0) },
+        { (10, -20), 0, (SubIndex.Subscript, 1) },
+        { (15, 0), 1 },
+        { (25, 0), 2 },
+        { (35, 0), 3 },
+        { (45, 0), 4 },
+        { (55, 0), 5 },
+      };
+    [Theory, MemberData(nameof(IntegralLimitsData))]
+    public void IntegralLimits(PointF point, MathListIndex expected) => Test(@"\int\limits_a^b x\ dx", point, expected);
   }
 }

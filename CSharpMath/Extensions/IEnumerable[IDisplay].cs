@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace CSharpMath {
-  using Displays;
-  using Displays.FrontEnd;
+  using Display;
+  using Display.FrontEnd;
   public static partial class Extensions {
     public static float CollectionAscent<TFont, TGlyph>
       (this IEnumerable<IDisplay<TFont, TGlyph>> displays) where TFont : IFont<TGlyph> =>

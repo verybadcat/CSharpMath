@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using CSharpMath.Displays;
-using CSharpMath.Displays.FrontEnd;
+using CSharpMath.Display;
+using CSharpMath.Display.FrontEnd;
 using Typography.OpenFont;
 using Typography.OpenFont.MathGlyphs;
 

@@ -3,7 +3,7 @@ using CoreText;
 
 namespace CSharpMath.Apple {
   /// <remarks>Corresponds to MTFont in iosMath.</remarks>
-  public struct AppleMathFont : Displays.FrontEnd.IFont<ushort> {
+  public struct AppleMathFont : Display.FrontEnd.IFont<ushort> {
     public float PointSize { get; }
     public CGFont CgFont { get; private set; }
     public CTFont CtFont { get; private set; }

@@ -3,8 +3,8 @@ using System.Drawing;
 using System.Linq;
 using CoreGraphics;
 using CoreText;
-using CSharpMath.Displays;
-using CSharpMath.Displays.FrontEnd;
+using CSharpMath.Display;
+using CSharpMath.Display.FrontEnd;
 using TGlyph = System.UInt16;
 using TFont = CSharpMath.Apple.AppleMathFont;
 

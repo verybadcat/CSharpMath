@@ -1,9 +1,9 @@
 using System.Drawing;
 
 namespace CSharpMath.Editor {
-  using Displays;
-  using Displays.Display;
-  using Displays.FrontEnd;
+  using Display;
+  using Display.Displays;
+  using Display.FrontEnd;
   public static partial class EditingExtensions {
     /// <summary>
     /// Number of pixels outside the bound to allow a point to be considered as part of the bounds.
@@ -40,6 +40,8 @@ namespace CSharpMath.Editor {
       FractionDisplay<TFont, TGlyph> frac => frac.IndexForPoint(context, point),
       RadicalDisplay<TFont, TGlyph> radical => radical.IndexForPoint(context, point),
       ListDisplay<TFont, TGlyph> list => list.IndexForPoint(context, point),
+      LargeOpLimitsDisplay<TFont, TGlyph> largeOp => largeOp.IndexForPoint(context, point),
+      IGlyphDisplay<TFont, TGlyph> glyph => glyph.IndexForPoint(context, point),
       _ => null,
     };
     ///<summary>The bounds of the display indicated by the given index</summary>
@@ -51,6 +53,8 @@ namespace CSharpMath.Editor {
       FractionDisplay<TFont, TGlyph> frac => frac.PointForIndex(context, index),
       RadicalDisplay<TFont, TGlyph> radical => radical.PointForIndex(context, index),
       ListDisplay<TFont, TGlyph> list => list.PointForIndex(context, index),
+      LargeOpLimitsDisplay<TFont, TGlyph> largeOp => largeOp.PointForIndex(context, index),
+      IGlyphDisplay<TFont, TGlyph> glyph => glyph.PointForIndex(context, index),
       _ => null,
     };
     public static void HighlightCharacterAt<TFont, TGlyph>
@@ -68,6 +72,12 @@ namespace CSharpMath.Editor {
           break;
         case ListDisplay<TFont, TGlyph> list:
           list.HighlightCharacterAt(index, color);
+          break;
+        case LargeOpLimitsDisplay<TFont, TGlyph> largeOp:
+          largeOp.HighlightCharacterAt(index, color);
+          break;
+        case IGlyphDisplay<TFont, TGlyph> glyph:
+          glyph.HighlightCharacterAt(index, color);
           break;
         default:
           break;
@@ -87,6 +97,12 @@ namespace CSharpMath.Editor {
           break;
         case ListDisplay<TFont, TGlyph> list:
           list.Highlight(color);
+          break;
+        case LargeOpLimitsDisplay<TFont, TGlyph> largeOp:
+          largeOp.Highlight(color);
+          break;
+        case IGlyphDisplay<TFont, TGlyph> glyph:
+          glyph.Highlight(color);
           break;
         default:
           break;

@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
-using CSharpMath.Atoms;
-using CSharpMath.Atoms.Atom;
+using CSharpMath.Atom;
+using CSharpMath.Atom.Atoms;
 
 namespace CSharpMath.Tests.PreTypesetting {
 
@@ -35,7 +35,7 @@ namespace CSharpMath.Tests.PreTypesetting {
     [InlineData("x+2", new[] { typeof(Variable), typeof(BinaryOperator), typeof(Number) }, "x+2")]
     [InlineData("(2.3 * 8)", new[] { typeof(Open), typeof(Number), typeof(Number), typeof(Number), typeof(BinaryOperator), typeof(Number), typeof(Close) }, "(2.3*8)")]
     [InlineData("5{3+4}", new[] { typeof(Number), typeof(Number), typeof(BinaryOperator), typeof(Number) }, "53+4")] // braces are just for grouping
-    // commands
+                                                                                                                     // commands
     [InlineData(@"\pi+\theta\geq 3", new[] { typeof(Variable), typeof(BinaryOperator), typeof(Variable), typeof(Relation), typeof(Number) }, @"\pi +\theta \geq 3")]
     // aliases
     [InlineData(@"\pi\ne 5 \land 3", new[] { typeof(Variable), typeof(Relation), typeof(Number), typeof(BinaryOperator), typeof(Number) }, @"\pi \neq 5\wedge 3")]
@@ -146,9 +146,9 @@ namespace CSharpMath.Tests.PreTypesetting {
           Assert.Collection(fraction.Numerator, CheckAtom<Number>("1"));
           Assert.Collection(fraction.Denominator,
             CheckAtom<Fraction>("", subFraction => {
-              Assert.Collection(subFraction.Numerator, CheckAtom<Number>("2"));
-              Assert.Collection(subFraction.Denominator, CheckAtom<Number>("3"));
-            })
+          Assert.Collection(subFraction.Numerator, CheckAtom<Number>("2"));
+          Assert.Collection(subFraction.Denominator, CheckAtom<Number>("3"));
+        })
           );
         })
       );
@@ -525,9 +525,9 @@ namespace CSharpMath.Tests.PreTypesetting {
               ), column1 =>
               Assert.Collection(column1,
                 CheckAtom<Space>("", space => {
-                  Assert.Equal(4, space.Length);
-                  Assert.True(space.IsMu);
-                }),
+              Assert.Equal(4, space.Length);
+              Assert.True(space.IsMu);
+            }),
                 CheckAtom<Variable>("x"),
                 cell2 => Assert.IsType<Relation>(cell2),
                 cell3 => Assert.IsType<Number>(cell3)

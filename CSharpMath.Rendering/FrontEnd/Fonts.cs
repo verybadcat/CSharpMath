@@ -5,7 +5,7 @@ using Typography.OpenFont;
 
 namespace CSharpMath.Rendering.FrontEnd {
   using Structures;
-  public readonly struct Fonts : Displays.FrontEnd.IFont<Glyph>, IEnumerable<Typeface> {
+  public readonly struct Fonts : Display.FrontEnd.IFont<Glyph>, IEnumerable<Typeface> {
     static Fonts() {
       var reader = new OpenFontReader();
       Typeface LoadFont(string fileName) {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace CSharpMath.Editor {
-  using Atoms;
+  using Atom;
   public readonly struct MathListRange {
     public MathListRange(int start) =>
       (Start, Length) = (MathListIndex.Level0Index(start), 1);

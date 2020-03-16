@@ -1,7 +1,7 @@
 using System.Linq;
 
 namespace CSharpMath.Rendering.FrontEnd {
-  public class GlyphFinder : Displays.FrontEnd.IGlyphFinder<Fonts, Glyph> {
+  public class GlyphFinder : Display.FrontEnd.IGlyphFinder<Fonts, Glyph> {
     private GlyphFinder() { }
     //http://unicode.org/charts/PDF/U25A0.pdf
     //U+25A1 WHITE SQUARE may be used to represent a missing ideograph

@@ -2,8 +2,8 @@ using System.Drawing;
 using System.Linq;
 
 namespace CSharpMath.Rendering.Renderer {
-  using Displays;
-  using Displays.Display;
+  using Display;
+  using Display.Displays;
   using FrontEnd;
   using Structures;
   using Text;

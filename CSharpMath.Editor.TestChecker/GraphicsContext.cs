@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using CSharpMath.Displays;
+using CSharpMath.Display;
 using CSharpMath.Tests.FrontEnd;
 
 namespace CSharpMath.Editor.TestChecker {
-  public class GraphicsContext : Displays.FrontEnd.IGraphicsContext<TestFont, char> {
+  public class GraphicsContext : Display.FrontEnd.IGraphicsContext<TestFont, char> {
     readonly Stack<PointF> stack = new Stack<PointF>();
     PointF trans = new PointF();
     public void DrawGlyphRunWithOffset(AttributedGlyphRun<TestFont, char> text,

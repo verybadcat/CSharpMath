@@ -2,8 +2,8 @@ namespace CSharpMath.Editor {
   using System;
   using System.Drawing;
 
-  using Displays.Display;
-  using Displays.FrontEnd;
+  using Display.Displays;
+  using Display.FrontEnd;
   using Color = Structures.Color;
 
   partial class EditingExtensions {

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 namespace CSharpMath.Rendering.Text {
-  using Display = Displays.IDisplay<FrontEnd.Fonts, FrontEnd.Glyph>;
+  using Display = Display.IDisplay<FrontEnd.Fonts, FrontEnd.Glyph>;
   public class TextLayoutLineBuilder {
     readonly Queue<Display> _queue = new Queue<Display>();
     public float Ascent { get; private set; }

@@ -41,7 +41,7 @@ namespace CSharpMath.Forms {
       get => ((Color glyph, Color textRun)?)GetValue(GlyphBoxColorProperty);
       set => SetValue(GlyphBoxColorProperty, value);
     }
-    public Atoms.MathList MathList {
+    public Atom.MathList MathList {
       get => Source.MathList;
       set => Source = new MathSource(value);
     }

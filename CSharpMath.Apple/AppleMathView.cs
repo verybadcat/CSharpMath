@@ -1,6 +1,6 @@
-using CSharpMath.Atoms;
-using CSharpMath.Displays;
-using CSharpMath.Displays.FrontEnd;
+using CSharpMath.Atom;
+using CSharpMath.Display;
+using CSharpMath.Display.FrontEnd;
 using CoreGraphics;
 using UIKit;
 using TGlyph = System.UInt16;

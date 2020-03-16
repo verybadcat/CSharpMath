@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using CSharpMath.Displays.FrontEnd;
+using CSharpMath.Display.FrontEnd;
 using CSharpMath.Structures;
 using Typography.OpenFont;
 using Color = CSharpMath.Structures.Color;
@@ -45,7 +45,7 @@ namespace CSharpMath.Rendering.FrontEnd {
     }
 
     public void DrawGlyphRunWithOffset
-      (Displays.AttributedGlyphRun<Fonts, Glyph> run, PointF offset, Color? color) {
+      (Display.AttributedGlyphRun<Fonts, Glyph> run, PointF offset, Color? color) {
       var textPosition = offset;
       if (GlyphBoxColor != null) {
         Bounds bounds;

@@ -1,4 +1,4 @@
-namespace CSharpMath.Displays.FrontEnd {
+namespace CSharpMath.Display.FrontEnd {
   /// <remarks>
   /// The names provided by this class are used to lookup spacings in JsonMathTable.cs.
   /// </remarks>

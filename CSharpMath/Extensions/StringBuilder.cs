@@ -36,7 +36,7 @@ namespace CSharpMath {
       builder.AppendIn('{', appendMe, '}', NullHandling.EmptyContent);
     public static StringBuilder AppendInBracketsOrNothing(this StringBuilder builder, string? appendMe) =>
       builder.AppendIn('[', appendMe, ']', NullHandling.EmptyString);
-    public static StringBuilder AppendDebugStringOfScripts(this StringBuilder builder, Atoms.MathAtom target) {
+    public static StringBuilder AppendDebugStringOfScripts(this StringBuilder builder, Atom.MathAtom target) {
       if (target.Subscript != null) {
         builder.Append('_').AppendInBracesOrLiteralNull(target.Subscript.DebugString);
       }

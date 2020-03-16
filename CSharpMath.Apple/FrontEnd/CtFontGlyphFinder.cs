@@ -1,4 +1,4 @@
-using CSharpMath.Displays.FrontEnd;
+using CSharpMath.Display.FrontEnd;
 using TFont = CSharpMath.Apple.AppleMathFont;
 using TGlyph = System.UInt16;
 using System.Globalization;
