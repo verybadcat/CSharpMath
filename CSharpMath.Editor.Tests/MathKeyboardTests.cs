@@ -57,6 +57,8 @@ namespace CSharpMath.Editor.Tests {
       T(@"+--\times \times \div ::\% ,!\infty \angle \degree \vert \log \ln ",
         K.Plus, K.Minus, K.Minus_, K.Multiply, K.Multiply_, K.Divide, K.Ratio, K.Ratio_, K.Percentage, 
         K.Comma, K.Factorial, K.Infinity, K.Angle, K.Degree, K.VerticalBar, K.Logarithm, K.NaturalLogarithm),
+      T(@"''\leftarrow \uparrow \rightarrow \downarrow \  ",
+        K.Prime, K.Prime, K.LeftArrow, K.UpArrow, K.RightArrow, K.DownArrow, K.Space),
       //Relations
       T(@"=\neq <\leq >\geq ", K.Equals, K.NotEquals, K.LessThan, K.LessOrEquals, K.GreaterThan, K.GreaterOrEquals),
       //Capital English alphabets

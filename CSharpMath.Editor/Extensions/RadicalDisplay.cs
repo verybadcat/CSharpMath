@@ -6,7 +6,7 @@ namespace CSharpMath.Editor {
   using Display.FrontEnd;
   using Color = Structures.Color;
 
-  partial class EditingExtensions {
+  partial class Extensions {
     public static MathListIndex IndexForPoint<TFont, TGlyph>(
       this RadicalDisplay<TFont, TGlyph> self,
       TypesettingContext<TFont, TGlyph> context,
@@ -55,14 +55,5 @@ namespace CSharpMath.Editor {
       self.Degree?.Highlight(color);
       self.Radicand.Highlight(color);
     }
-
-    public static ListDisplay<TFont, TGlyph>? SubListForIndexType<TFont, TGlyph>(
-      this RadicalDisplay<TFont, TGlyph> self,
-      MathListSubIndexType type) where TFont : IFont<TGlyph> => type switch
-    {
-      MathListSubIndexType.Radicand => self.Radicand,
-      MathListSubIndexType.Degree => self?.Degree,
-      _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Subindex type is not a radical subtype."),
-    };
   }
 }

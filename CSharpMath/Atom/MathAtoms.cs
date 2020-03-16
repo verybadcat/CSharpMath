@@ -188,16 +188,16 @@ namespace CSharpMath.Atom
          { "deg", new LargeOperator("deg", false, true) },
          
          // Limit operators
-         { "lim", new LargeOperator("lim" , null) },
-         { "limsup", new LargeOperator("lim sup" , null) },
-         { "liminf", new LargeOperator("lim inf" , null) },
-         { "max", new LargeOperator("max" , null) },
-         { "min", new LargeOperator("min" , null) },
-         { "sup", new LargeOperator("sup" , null) },
-         { "inf", new LargeOperator("inf" , null) },
-         { "det", new LargeOperator("det" , null) },
-         { "Pr", new LargeOperator("Pr" , null) },
-         { "gcd", new LargeOperator("gcd" , null) },
+         { "lim", new LargeOperator("lim", null) },
+         { "limsup", new LargeOperator("lim sup", null) },
+         { "liminf", new LargeOperator("lim inf", null) },
+         { "max", new LargeOperator("max", null) },
+         { "min", new LargeOperator("min", null) },
+         { "sup", new LargeOperator("sup", null) },
+         { "inf", new LargeOperator("inf", null) },
+         { "det", new LargeOperator("det", null) },
+         { "Pr", new LargeOperator("Pr", null) },
+         { "gcd", new LargeOperator("gcd", null) },
          
          // Large operators
          { "prod", new LargeOperator("\u220F" , null) },
@@ -241,7 +241,7 @@ namespace CSharpMath.Atom
          { "backslash", new Ordinary("\\") },
          
          // Punctuation
-         // Note: \colon is different from, which is a relation
+         // Note: \colon is different from : which is a relation
          { "colon", new Punctuation(":") },
          { "cdotp", new Punctuation("\u00B7") },
          
@@ -396,8 +396,6 @@ namespace CSharpMath.Atom
           return new Ordinary(s);
       }
     }
-
-    internal static FontStyle? FontStyle(string command) => FontStyleExtensions.FontStyles.TryGetValue(command, out var fontStyle) ? fontStyle : default(FontStyle?);
 
     public static MathAtom? ForLaTeXSymbolName(string symbolName) =>
       Commands.TryGetValue(

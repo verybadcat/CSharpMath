@@ -16,7 +16,9 @@ namespace CSharpMath.Editor {
     // Basic operators
     Plus = '+', Minus = '−', Minus_ = '-', Multiply = '×', Multiply_ = '*', Divide = '÷',
     Ratio = '∶', Ratio_ = ':', Percentage = '%', Comma = ',', Semicolon = ';', Factorial = '!',
-    Infinity = '∞', Angle = '∠', Degree = '°', VerticalBar = '|', Logarithm = '㏒', NaturalLogarithm = '㏑',
+    Infinity = '∞', Angle = '∠', Degree = '°', VerticalBar = '|',
+    Logarithm = '㏒', NaturalLogarithm = '㏑', Prime = '\'',
+    LeftArrow = '←', UpArrow = '↑', RightArrow = '→', DownArrow = '↓', Space= ' ',
 
     // More complicated operators
     BothRoundBrackets = '㈾', Slash = '/', Fraction = '⁄', Power = '^', Subscript = '_', SquareRoot = '√', 
@@ -48,7 +50,7 @@ namespace CSharpMath.Editor {
     SmallZeta = 'ζ', SmallEta = 'η', SmallTheta = 'θ', SmallIota = 'ι', SmallKappa = 'κ',
     SmallLambda = 'λ', SmallMu = 'μ', SmallNu = 'ν', SmallXi = 'ξ', SmallOmicron = 'ο',
     SmallPi = 'π', SmallRho = 'ρ', SmallSigma = 'σ', SmallSigma2 = 'ς', SmallTau = 'τ',
-    SmallPsi = 'ψ', SmallUpsilon = 'υ', SmallPhi = 'φ', SmallChi = 'χ', SmallOmega = 'ω',
+    SmallUpsilon = 'υ', SmallPhi = 'φ', SmallChi = 'χ', SmallPsi = 'ψ', SmallOmega = 'ω',
 
     // Trigonometric functions
     Sine = '␖', Cosine = '℅', Tangent = '␘', Cotangent = '␄', Secant = '␎', Cosecant = '␛',

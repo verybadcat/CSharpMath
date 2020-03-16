@@ -5,7 +5,7 @@ namespace CSharpMath.Editor
     using Atom;
     using Atoms = Atom.Atoms;
     using Structures;
-    partial class EditingExtensions
+    partial class Extensions
     {
         static void InsertAtAtomIndexAndAdvance(this MathList self, int atomIndex, MathAtom atom, ref MathListIndex advance, MathListSubIndexType advanceType)
         {

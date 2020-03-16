@@ -353,7 +353,6 @@ namespace CSharpMath.Display {
                   _currentPosition.X += delta;
                 MakeScripts(atom, line, atom.IndexRange.End - 1, delta);
               }
-              if (atom is Prime) continue; //preserve spacing of previous atom
               break;
             }
           default:

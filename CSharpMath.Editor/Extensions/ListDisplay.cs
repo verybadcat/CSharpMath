@@ -9,7 +9,7 @@ namespace CSharpMath.Editor {
   using Structures;
   using Color = Structures.Color;
 
-  partial class EditingExtensions {
+  partial class Extensions {
     public static MathListIndex? IndexForPoint<TFont, TGlyph>
       (this ListDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, PointF point)
       where TFont : IFont<TGlyph> {
@@ -126,7 +126,7 @@ namespace CSharpMath.Editor {
             position = display.PointForIndex(context, index.SubIndex);
             break;
           default:
-            throw new InvalidCodePathException("index.Subindex is null despite a non-None subindex type");
+            throw new ArgumentException("index.Subindex is null despite a non-None subindex type");
         } else
         // Outside the range
         return null;
@@ -190,21 +190,20 @@ namespace CSharpMath.Editor {
               case MathListSubIndexType.None:
               case MathListSubIndexType.BetweenBaseAndScripts:
                 return display;
-              case MathListSubIndexType.Degree:
-              case MathListSubIndexType.Radicand:
-                if (display is RadicalDisplay<TFont, TGlyph> radical)
-                  return radical.SubListForIndexType(index.SubIndexType);
-                else throw new SubIndexTypeMismatchException(typeof(Atom.Atoms.Radical), index);
-              case MathListSubIndexType.Numerator:
-              case MathListSubIndexType.Denominator:
-                if (display is FractionDisplay<TFont, TGlyph> fraction)
-                  return fraction.SubListForIndexType(index.SubIndexType);
-                else throw new SubIndexTypeMismatchException(typeof(Atom.Atoms.Fraction), index);
+              case MathListSubIndexType.Degree when display is RadicalDisplay<TFont, TGlyph> radical:
+                  return radical.Degree;
+              case MathListSubIndexType.Radicand when display is RadicalDisplay<TFont, TGlyph> radical:
+                return radical.Radicand;
+              case MathListSubIndexType.Numerator when display is FractionDisplay<TFont, TGlyph> fraction:
+                return fraction.Numerator;
+              case MathListSubIndexType.Denominator when display is FractionDisplay<TFont, TGlyph> fraction:
+                return fraction.Denominator;
               case MathListSubIndexType.Superscript:
               case MathListSubIndexType.Subscript:
-              default:
                 throw new InvalidCodePathException
                   ("Superscripts and subscripts should have been handled in a separate case above.");
+              default:
+                throw new SubIndexTypeMismatchException(index);
             }
       return null;
     }

@@ -26,7 +26,7 @@
         <Style TargetType="Grid" x:Key="Tab">
             <Setter Property="Grid.Row" Value="1"/>
             <Setter Property="Grid.Column" Value="0"/>
-            <Setter Property="Grid.ColumnSpan" Value="6"/>
+            <Setter Property="Grid.ColumnSpan" Value="7"/>
             <Setter Property="IsVisible" Value="False"/>
             <Setter Property="RowDefinitions">
                 <Setter.Value>
@@ -224,37 +224,9 @@
             <e:SvgButton StyleClass="Dismiss"/>
             <Button StyleClass="Enter"/>
         </Grid>
-        <Button x:Name="FunctionsButton" Text="lim" Grid.Column="3"
+        <Button x:Name="FunctionsButton" Text="f(x)" Grid.Column="3"
                 Command="{e:SwitchToTab Self={Reference this}, Target=Functions}"/>
         <Grid x:Name="Functions" Style="{StaticResource Tab}">
-            <Button StyleClass="x"/>
-            <Button StyleClass="y"/>
-            <e:SvgButton StyleClass="Fraction"/>
-            <e:SvgButton StyleClass="Power"/>
-            <Button Text="lim" Grid.Row="0" Grid.Column="1" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=Sine}"/>
-            <Button Text="cos" Grid.Row="0" Grid.Column="2" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=Cosine}"/>
-            <Button Text="tan" Grid.Row="0" Grid.Column="3" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=Tangent}"/>
-            <Button Text="θ" Grid.Row="0" Grid.Column="4" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=SmallTheta}"/>
-            <Button Text="sec" Grid.Row="1" Grid.Column="1" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=Secant}"/>
-            <Button Text="csc" Grid.Row="1" Grid.Column="2" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=Cosecant}"/>
-            <Button Text="cot" Grid.Row="1" Grid.Column="3" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=Cotangent}"/>
-            <Button Text="π" Grid.Row="1" Grid.Column="4" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=SmallPi}"/>
-            <Button Text="log" Grid.Row="2" Grid.Column="1" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=Logarithm}"/>
-            <Button Text="ln" Grid.Row="2" Grid.Column="2" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=NaturalLogarithm}"/>
-            <e:SvgButton Svg="{e:CSharpMathSVG LogBase}" Grid.Row="2" Grid.Column="3" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=LogarithmWithBase}"/>
-            <Button Text="∠" Grid.Row="2" Grid.Column="4" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=Angle}"/>
-            <e:SvgButton Svg="{e:CSharpMathSVG Subscript}" Grid.Row="3" Grid.Column="1" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=Subscript}"/>
-            <e:SvgButton Svg="{e:CSharpMathSVG Sqrt}" Grid.Row="3" Grid.Column="2" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=SquareRoot}"/>
-            <e:SvgButton Svg="{e:CSharpMathSVG SqrtPower}" Grid.Row="3" Grid.Column="3" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=NthRoot}"/>
-            <Button Text="°" Grid.Row="3" Grid.Column="4" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=Degree}"/>
-            <e:SvgButton StyleClass="Back"/>
-            <e:SvgButton StyleClass="Clear"/>
-            <e:SvgButton StyleClass="Dismiss"/>
-            <Button StyleClass="Enter"/>
-        </Grid>
-        <Button x:Name="OperationsButton" Text="f(x)" Grid.Column="4"
-                Command="{e:SwitchToTab Self={Reference this}, Target=Operations}"/>
-        <Grid x:Name="Operations" Style="{StaticResource Tab}">
             <Button StyleClass="x"/>
             <Button StyleClass="y"/>
             <e:SvgButton StyleClass="Fraction"/>
@@ -275,6 +247,34 @@
             <e:SvgButton Svg="{e:CSharpMathSVG Sqrt}" Grid.Row="3" Grid.Column="2" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=SquareRoot}"/>
             <e:SvgButton Svg="{e:CSharpMathSVG SqrtPower}" Grid.Row="3" Grid.Column="3" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=NthRoot}"/>
             <Button Text="°" Grid.Row="3" Grid.Column="4" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=Degree}"/>
+            <e:SvgButton StyleClass="Back"/>
+            <e:SvgButton StyleClass="Clear"/>
+            <e:SvgButton StyleClass="Dismiss"/>
+            <Button StyleClass="Enter"/>
+        </Grid>
+        <Button x:Name="OperationsButton" Text="lim" Grid.Column="4"
+                Command="{e:SwitchToTab Self={Reference this}, Target=Operations}"/>
+        <Grid x:Name="Operations" Style="{StaticResource Tab}">
+            <Button StyleClass="x"/>
+            <Button StyleClass="y"/>
+            <e:SvgButton StyleClass="Fraction"/>
+            <e:SvgButton StyleClass="Power"/>
+            <Button Text="int" Grid.Row="0" Grid.Column="1" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=Integral}"/>
+            <Button Text="int_" Grid.Row="0" Grid.Column="2" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=IntegralLowerLimit}"/>
+            <Button Text="int^" Grid.Row="0" Grid.Column="3" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=IntegralUpperLimit}"/>
+            <Button Text="int_^" Grid.Row="0" Grid.Column="4" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=IntegralBothLimits}"/>
+            <Button Text="lim" Grid.Row="1" Grid.Column="1" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=LimitWithBase}"/>
+            <Button Text="→" Grid.Row="1" Grid.Column="2" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=RightArrow}"/>
+            <Button Text="'" Grid.Row="1" Grid.Column="3" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=Prime}"/>
+            <Button Text="␣" Grid.Row="1" Grid.Column="4" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=Space}"/>
+            <Button Text="sum" Grid.Row="2" Grid.Column="1" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=Summation}"/>
+            <Button Text="sum_^" Grid.Row="2" Grid.Column="2" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=SummationBothLimits}"/>
+            <Button Text="prod" Grid.Row="2" Grid.Column="3" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=Product}"/>
+            <Button Text="prod_^" Grid.Row="2" Grid.Column="4" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=ProductBothLimits}"/>
+            <Button Text="(tba)" Grid.Row="3" Grid.Column="1" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=Up}"/>
+            <Button Text="(tba)" Grid.Row="3" Grid.Column="2" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=Up}"/>
+            <Button Text="(tba)" Grid.Row="3" Grid.Column="3" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=Up}"/>
+            <Button Text="(tba)" Grid.Row="3" Grid.Column="4" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=Up}"/>
             <e:SvgButton StyleClass="Back"/>
             <e:SvgButton StyleClass="Clear"/>
             <e:SvgButton StyleClass="Dismiss"/>

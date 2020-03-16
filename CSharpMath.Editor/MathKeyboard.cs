@@ -590,6 +590,21 @@ namespace CSharpMath.Editor {
         case MathKeyboardInput.CounterClockwiseContourIntegral:
           InsertSymbolName("ointctrclockwise");
           break;
+        case MathKeyboardInput.LeftArrow:
+          InsertSymbolName("leftarrow");
+          break;
+        case MathKeyboardInput.UpArrow:
+          InsertSymbolName("uparrow");
+          break;
+        case MathKeyboardInput.RightArrow:
+          InsertSymbolName("rightarrow");
+          break;
+        case MathKeyboardInput.DownArrow:
+          InsertSymbolName("downarrow");
+          break;
+        case MathKeyboardInput.Prime:
+          InsertAtom(new Atoms.Prime(1));
+          break;
         case MathKeyboardInput.LeftRoundBracket:
         case MathKeyboardInput.RightRoundBracket:
         case MathKeyboardInput.LeftSquareBracket:
@@ -623,6 +638,7 @@ namespace CSharpMath.Editor {
         case MathKeyboardInput.Infinity:
         case MathKeyboardInput.Angle:
         case MathKeyboardInput.Degree:
+        case MathKeyboardInput.Space:
         case MathKeyboardInput.Equals:
         case MathKeyboardInput.NotEquals:
         case MathKeyboardInput.LessThan:

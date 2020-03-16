@@ -60,8 +60,6 @@ namespace CSharpMath.Display {
           Atoms.Ordinary _ => 0,
           _ => 0 // Anything else are considered as Ord in rule 16.
         };
-      if (right is Atoms.Prime)
-        return 0;
       var leftIndex = GetInterElementSpaceArrayIndexForType(left, true);
       var rightIndex = GetInterElementSpaceArrayIndexForType(right, false);
       var spaceType = Spaces[leftIndex, rightIndex];

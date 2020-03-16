@@ -4,7 +4,7 @@ namespace CSharpMath.Editor {
   using Display;
   using Display.Displays;
   using Display.FrontEnd;
-  public static partial class EditingExtensions {
+  public static partial class Extensions {
     /// <summary>
     /// Number of pixels outside the bound to allow a point to be considered as part of the bounds.
     /// </summary>

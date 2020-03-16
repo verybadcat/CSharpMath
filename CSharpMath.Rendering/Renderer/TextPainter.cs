@@ -26,8 +26,8 @@ namespace CSharpMath.Rendering.Renderer {
     protected Typography.TextLayout.GlyphLayout _glyphLayout =
       new Typography.TextLayout.GlyphLayout();
 
-    public TextAtom Atom { get => Source.Atom; set => Source = new TextSource(value); }
-    public override string LaTeX { get => Source.LaTeX; set => Source = TextSource.FromLaTeX(value); }
+    public TextAtom Atom { get => Source?.Atom; set => Source = new TextSource(value); }
+    public override string LaTeX { get => Source?.LaTeX; set => Source = TextSource.FromLaTeX(value); }
     public float AdditionalLineSpacing { get; set; }
 
     protected override void SetRedisplay() { }

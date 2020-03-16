@@ -182,5 +182,22 @@ namespace CSharpMath.Editor.Tests {
       };
     [Theory, MemberData(nameof(IntegralLimitsData))]
     public void IntegralLimits(PointF point, MathListIndex expected) => Test(@"\int\limits_a^b x\ dx", point, expected);
+    public static TestData LargeOperatorsData =>
+      new TestData {
+        { (0, 0), 0 },
+        { (13.333, 0), 1 },
+        { (22.833, -17.14), 1, (SubIndex.Subscript, 0) },
+        { (29.833, -17.14), 1, (SubIndex.Subscript, 1) },
+        { (36.833, -17.14), 1, (SubIndex.Subscript, 2) },
+        { (13.333, 0), 2 },
+        { (22.833, -17.14), 2, (SubIndex.Subscript, 0) },
+        { (29.833, -17.14), 2, (SubIndex.Subscript, 1) },
+        { (66.666, 9.68), 2, (SubIndex.Superscript, 0) },
+        { (73.666, 9.68), 2, (SubIndex.Superscript, 1) },
+        { (78.12, 0), 3 },
+        { (88.12, 0), 4 },
+      };
+    [Theory, MemberData(nameof(LargeOperatorsData))]
+    public void LargeOperators(PointF point, MathListIndex expected) => Test(@"1\lim_{x\to 2}\int_3^4x", point, expected);
   }
 }
