@@ -20,6 +20,7 @@
     <EmbeddedResource Include="SVGs\Clear.svg" />
     <EmbeddedResource Include="SVGs\Exponent.svg" />
     <EmbeddedResource Include="SVGs\Fraction.svg" />
+    <EmbeddedResource Include="SVGs\Integral.svg" />
     <EmbeddedResource Include="SVGs\KeyboardDown.svg" />
     <EmbeddedResource Include="SVGs\LogBase.svg" />
     <EmbeddedResource Include="SVGs\Sqrt.svg" />

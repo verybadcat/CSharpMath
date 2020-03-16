@@ -61,6 +61,7 @@ namespace CSharpMath.Editor {
     AreaHyperbolicCotangent = '◶', AreaHyperbolicSecant = '⚆', AreaHyperbolicCosecant = '⚇',
 
     // Large operators
+    LimitWithBase = '≐', 
     Integral = '∫', IntegralLowerLimit= 'ʆ', IntegralUpperLimit = 'ƒ', IntegralBothLimits = 'ʄ',
     Summation = '∑', SummationLowerLimit = 'Ƹ', SummationUpperLimit = 'ⵉ', SummationBothLimits = '⅀',
     Product = '∏', ProductLowerLimit = '⫪', ProductUpperLimit = '⥣', ProductBothLimits = '⍡',

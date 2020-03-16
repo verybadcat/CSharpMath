@@ -5,7 +5,7 @@ namespace CSharpMath.Forms.Example {
   [XamlCompilation(XamlCompilationOptions.Compile)]
   public partial class MathKeyboard : ContentView {
     public enum Tab {
-      Numbers = 1, Operations, Functions, Letters, LettersCapitals
+      Numbers = 1, Symbols, Functions, Operations, Letters, LettersCapitals
     }
     public MathKeyboard() {
       InitializeComponent();
@@ -19,16 +19,17 @@ namespace CSharpMath.Forms.Example {
       get => _tab;
       set {
         foreach (var grid in new[] {
-          Numbers, Operations, Functions, Letters, LettersCapitals
+          Numbers, Symbols, Functions, Operations, Letters, LettersCapitals
         }) grid.IsVisible = false;
         foreach (var gridButton in new[] {
-          NumbersButton, OperationsButton, FunctionsButton, LettersButton
+          NumbersButton, SymbolsButton, FunctionsButton, OperationsButton, LettersButton
         }) { gridButton.BorderWidth = 0; gridButton.BorderColor = Color.Default; }
         var (selectedGrid, selectedGridButton) =
           value switch {
             Tab.Numbers => (Numbers, NumbersButton),
-            Tab.Operations => (Operations, OperationsButton),
+            Tab.Symbols => (Symbols, SymbolsButton),
             Tab.Functions => (Functions, FunctionsButton),
+            Tab.Operations => (Operations, OperationsButton),
             Tab.Letters => (Letters, LettersButton),
             Tab.LettersCapitals => (LettersCapitals, LettersButton),
             _ => throw new System.ComponentModel.InvalidEnumArgumentException
