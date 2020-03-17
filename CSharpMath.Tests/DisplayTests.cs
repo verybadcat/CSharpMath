@@ -310,7 +310,7 @@ namespace CSharpMath.Tests {
             Assert.False(line.HasScript);
           }));
     [Fact]
-    public void TestLargeOperator() =>
+    public void TestIntegral() =>
       TestOuter(@"\int^\pi_0 \theta d\theta", 4, 19.48, 8.92, 51.453,
         TestList(1, 9.8, 2.8, 7, 10, 9.68, LinePosition.Superscript, 0,
           d => {
@@ -319,6 +319,7 @@ namespace CSharpMath.Tests {
             Assert.Single(superscript.Atoms);
             Assert.Equal(new PointF(), superscript.Position);
             Assert.False(superscript.HasScript);
+            Assert.Equal(new Range(0, 1), superscript.Range);
           }),
         TestList(1, 9.8, 2.8, 7, 10, -6.12, LinePosition.Subscript, 0,
           d => {
@@ -327,6 +328,7 @@ namespace CSharpMath.Tests {
             Assert.Single(subscript.Atoms);
             Assert.Equal(new PointF(), subscript.Position);
             Assert.False(subscript.HasScript);
+            Assert.Equal(new Range(0, 1), subscript.Range);
           }),
         d => {
           var glyph = Assert.IsType<GlyphDisplay<TFont, TGlyph>>(d);
@@ -337,12 +339,14 @@ namespace CSharpMath.Tests {
         d => {
           var textAfter = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
           AssertText("θdθ", textAfter);
+          Assert.Equal(new Range(1, 3), textAfter.Range);
         });
     [Fact]
-    public void TestLargeOperatorLimits() =>
+    public void TestIntegralLimits() =>
       TestOuter(@"\int\limits^\pi_0 \theta d\theta", 4, 30.6, 19.94, 43.333,
         d => {
           var largeOp = Assert.IsType<LargeOpLimitsDisplay<TFont, TGlyph>>(d);
+          Assert.Equal(new Range(0, 1), largeOp.Range);
           var glyph = Assert.IsType<GlyphDisplay<TFont, TGlyph>>(largeOp.NucleusDisplay);
           Assert.Equal('∫', glyph.Glyph);
           Assert.Equal(new PointF(), glyph.Position);
@@ -354,6 +358,7 @@ namespace CSharpMath.Tests {
               Assert.Single(superscript.Atoms);
               Assert.Equal(new PointF(), superscript.Position);
               Assert.False(superscript.HasScript);
+              Assert.Equal(new Range(0, 1), superscript.Range);
             })(largeOp.UpperLimit);
           TestList(1, 9.8, 2.8, 7, 1.5, -17.14, LinePosition.Regular, Range.UndefinedInt,
             d => {
@@ -362,11 +367,42 @@ namespace CSharpMath.Tests {
               Assert.Single(subscript.Atoms);
               Assert.Equal(new PointF(), subscript.Position);
               Assert.False(subscript.HasScript);
+              Assert.Equal(new Range(0, 1), subscript.Range);
             })(largeOp.LowerLimit);
         },
         d => {
           var textAfter = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
           AssertText("θdθ", textAfter);
+          Assert.Equal(new Range(1, 3), textAfter.Range);
+        });
+    [Fact]
+    public void TestLimit() =>
+      TestOuter(@"\infty = \lim_{x\to 0^+} \frac{1}{x}", 4, 27.54, 21.186, 84.444,
+        d => {
+          var textBefore = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
+          AssertText("∞=", textBefore);
+          Assert.Equal(new Range(0, 2), textBefore.Range);
+        },
+        d => {
+          var largeOp = Assert.IsType<LargeOpLimitsDisplay<TFont, TGlyph>>(d);
+          //Assert.Equal(new Range(2, 1), largeOp.Range);
+          var largeOpText = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(largeOp.NucleusDisplay);
+          AssertText("lim", largeOpText);
+          Assert.Equal(new PointF(), largeOpText.Position);
+          Assert.False(largeOpText.HasScript);
+          TestList(1, 9.8, 2.8, 7, 1.5, -17.14, LinePosition.Regular, Range.UndefinedInt,
+            d => {
+              var subscript = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
+              AssertText("0", subscript);
+              Assert.Single(subscript.Atoms);
+              Assert.Equal(new PointF(), subscript.Position);
+              Assert.False(subscript.HasScript);
+              Assert.Equal(new Range(0, 1), subscript.Range);
+            })(largeOp.LowerLimit);
+        },
+        d => {
+          var fraction = Assert.IsType<FractionDisplay<TFont, TGlyph>>(d);
+          Assert.Equal(new Range(3, 1), fraction.Range);
         });
   }
 }

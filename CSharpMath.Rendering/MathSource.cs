@@ -1,6 +1,6 @@
 using CSharpMath.Atom;
 
-namespace CSharpMath.Rendering.Renderer {
+namespace CSharpMath.Rendering {
   public class MathSource : ISource, System.IEquatable<MathSource> {
     public static MathSource FromLaTeX(string latex) {
       var (mathList, errorMessage) = LaTeXBuilder.TryMathListFromLaTeX(latex);
@@ -14,6 +14,7 @@ namespace CSharpMath.Rendering.Renderer {
     public bool IsValid => MathList != null;
     public override int GetHashCode() => unchecked(MathList.GetHashCode() * 2519);
     public override bool Equals(object obj) => obj is MathSource s ? Equals(s) : false;
-    public bool Equals(MathSource other) => MathList.NullCheckingStructuralEquality(other.MathList);
+    public bool Equals(MathSource other) => // CSharpMath.Forms bindings rely on this
+      MathList.NullCheckingStructuralEquality(other.MathList) && ErrorMessage == other.ErrorMessage;
   }
 }

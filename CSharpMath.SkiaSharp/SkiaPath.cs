@@ -2,7 +2,7 @@ using SKPath = SkiaSharp.SKPath;
 
 namespace CSharpMath.SkiaSharp {
   using Structures;
-  public class SkiaPath : Rendering.Renderer.IPath {
+  public class SkiaPath : Rendering.FrontEnd.IPath {
     public SkiaPath(SkiaCanvas owner) => _owner = owner;
     public Color? Foreground { get; set; }
     private SkiaCanvas _owner;

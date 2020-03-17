@@ -1,9 +1,9 @@
-namespace CSharpMath.Rendering.Renderer {
+namespace CSharpMath.Rendering.FrontEnd {
   using System;
   using System.Drawing;
 
   using Editor;
-  using FrontEnd;
+  using BackEnd;
 
   public enum CaretShape {
     IBeam, UpArrow

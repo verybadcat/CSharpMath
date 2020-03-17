@@ -6,8 +6,8 @@ namespace CSharpMath.Rendering.Text
     using Atom;
     using Display;
     using Display.Displays;
-    using FrontEnd;
-    using Display = Display.Displays.ListDisplay<FrontEnd.Fonts, FrontEnd.Glyph>;
+    using BackEnd;
+    using Display = Display.Displays.ListDisplay<BackEnd.Fonts, BackEnd.Glyph>;
     using CSharpMath.Structures;
     public static class TextLayoutter
     {
@@ -82,10 +82,10 @@ namespace CSharpMath.Rendering.Text
                         var lastLineWidth = line.Width;
                         BreakLine(line, displayList, displayMathList, false);
                         display = Typesetter.CreateLine(m.Content, fonts, TypesettingContext.Instance, LineStyle.Display);
-                        var displayX = Renderer.IPainterExtensions.GetDisplayPosition
+                        var displayX = IPainterExtensions.GetDisplayPosition
                           (display.Width, display.Ascent, display.Descent,
                            fonts.PointSize, false, canvasWidth, float.NaN,
-                           Renderer.TextAlignment.Top, default, default, default).X;
+                           TextAlignment.Top, default, default, default).X;
                         //\because When displayList.LastOrDefault() is null,
                         //the false condition is selected
                         //\therefore Append abovedisplayshortskip which defaults

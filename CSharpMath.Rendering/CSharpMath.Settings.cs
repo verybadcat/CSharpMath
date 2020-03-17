@@ -5,8 +5,8 @@ namespace CSharpMath {
       get => Rendering.Text.TextLaTeXBuilder.NoEnhancedColors;
       set => Rendering.Text.TextLaTeXBuilder.NoEnhancedColors = value;
     }
-    public static Rendering.FrontEnd.Typefaces GlobalTypefaces =>
-      Rendering.FrontEnd.Fonts.GlobalTypefaces;
+    public static Rendering.BackEnd.Typefaces GlobalTypefaces =>
+      Rendering.BackEnd.Fonts.GlobalTypefaces;
     public static Structures.BiDictionary<string, Structures.Color> PredefinedColors =>
       Structures.Color.PredefinedColors;
     public static Structures.AliasDictionary<string, string> PredefinedBoundaryDelimiters =>

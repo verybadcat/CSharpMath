@@ -5,7 +5,7 @@ using CSharpMath.Display.FrontEnd;
 using Typography.OpenFont;
 using Typography.OpenFont.MathGlyphs;
 
-namespace CSharpMath.Rendering.FrontEnd {
+namespace CSharpMath.Rendering.BackEnd {
   public class MathTable : FontMathTable<Fonts, Glyph> {
     private MathTable() { }
     public static MathTable Instance { get; } = new MathTable();

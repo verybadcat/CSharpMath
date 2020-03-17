@@ -8,9 +8,8 @@ namespace CSharpMath.Atom
     public string TypeName {
       get {
         // Insert a space before every capital letter other than the first one.
-        var itemString = GetType().Name;
-        var chars = new StringBuilder(itemString);
-        for (int i = itemString.Length - 1; i > 0; i--)
+        var chars = new StringBuilder(GetType().Name);
+        for (int i = chars.Length - 1; i > 0; i--)
           if (char.IsUpper(chars[i]))
             chars.Insert(i, ' ');
         return chars.ToString();
@@ -34,7 +33,7 @@ namespace CSharpMath.Atom
           throw new ArgumentException("Scripts are not allowed in atom type " + TypeName);
     }
     public FontStyle FontStyle { get; set; }
-
+    /// <summary>Defaults to zero, only has a value after finalization</summary>
     public Range IndexRange { get; set; }
 
     /// <summary>
@@ -42,7 +41,7 @@ namespace CSharpMath.Atom
     /// of atoms that were fused to create this one. This is used in the finalizing
     /// and preprocessing steps.
     /// </summary>
-    public List<MathAtom>? FusedAtoms { get; set; }
+    public List<MathAtom>? FusedAtoms { get; private set; }
 
     /// <summary>
     /// Whether or not the atom allows superscripts and subscripts.

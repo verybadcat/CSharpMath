@@ -201,7 +201,7 @@ namespace CSharpMath.Editor
             switch (start.SubIndexType)
             {
                 case MathListSubIndexType.None:
-                    self.RemoveAtoms(new Range(start.AtomIndex, range.Length));
+                    self.RemoveAtoms(start.AtomIndex, range.Length);
                     break;
                 case var _ when start.SubIndex is null:
                     throw new InvalidCodePathException("start.SubIndex is null despite non-None subindex type");

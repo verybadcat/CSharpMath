@@ -878,7 +878,7 @@ namespace CSharpMath.Atom {
                     && cell.Count >= 1
                     && cell[0] is Style) {
                   // remove the first atom.
-                  cell = cell.GetRange(1, cell.Count - 1);
+                  cell = cell.Slice(1, cell.Count - 1);
                 }
                 if (table.Environment switch
                 {
@@ -892,7 +892,7 @@ namespace CSharpMath.Atom {
                     && cell[0] is Ordinary ord
                     && string.IsNullOrEmpty(ord.Nucleus)) {
                   // empty nucleus added for spacing. Remove it.
-                  cell = cell.GetRange(1, cell.Count - 1);
+                  cell = cell.Slice(1, cell.Count - 1);
                 }
                 MathListToLaTeX(cell, builder, currentFontStyle);
                 if (j < row.Count - 1) {

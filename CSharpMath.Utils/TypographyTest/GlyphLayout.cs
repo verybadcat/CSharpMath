@@ -7,7 +7,7 @@ namespace CSharpMath.DevUtils.TypographyTest {
         Typeface =
           new Typography.OpenFont.OpenFontReader()
           .Read(new System.IO.FileStream(
-            System.IO.Directory.EnumerateFiles(Paths.FontReferenceFolder, "*.otf").First(),
+            System.IO.Directory.EnumerateFiles(Paths.ReferenceFontsFolder, "*.otf").First(),
             System.IO.FileMode.Open))
     };
   }

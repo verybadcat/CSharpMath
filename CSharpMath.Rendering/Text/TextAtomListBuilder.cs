@@ -20,13 +20,9 @@ namespace CSharpMath.Rendering.Text {
       Add(new TextAtom.Size(atom, fontSize, TextLength, commandLength));
     public void Color(TextAtom atom, Color color, int commandLength) =>
       Add(new TextAtom.Color(atom, color, TextLength, commandLength));
-    public Result Math(string mathLaTeX, bool displayStyle) {
-      var mathSource = Renderer.MathSource.FromLaTeX(mathLaTeX);
-      if (mathSource.ErrorMessage != null) return mathSource.ErrorMessage;
-      Add(new TextAtom.Math(mathSource.MathList, displayStyle,
-                            new Atom.Range(TextLength, mathLaTeX.Length)));
-      return Result.Ok();
-    }
+    public Result Math(string mathLaTeX, bool displayStyle) =>
+      Atom.LaTeXBuilder.TryMathListFromLaTeX(mathLaTeX).Bind(mathList =>
+        Add(new TextAtom.Math(mathList, displayStyle, new Atom.Range(TextLength, mathLaTeX.Length))));
     public void List(IReadOnlyList<TextAtom> textAtoms) =>
       Add(new TextAtom.List(textAtoms, TextLength));
     public void Break(int sourceLength) =>

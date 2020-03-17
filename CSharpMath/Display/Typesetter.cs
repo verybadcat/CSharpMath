@@ -15,7 +15,7 @@ namespace CSharpMath.Display {
       (MathList list, TFont font, TypesettingContext<TFont, TGlyph> context, LineStyle style)
       where TFont : IFont<TGlyph> =>
       list is null ? throw new ArgumentNullException(nameof(list))
-      : Typesetter<TFont, TGlyph>.CreateLine(list.FinalizedList(), font, context, style, false);
+      : Typesetter<TFont, TGlyph>.CreateLine(list.Clone(true), font, context, style, false);
     public static bool UnicodeLengthIsOne(string? str) => str?.Length switch
     {
       1 => true,
@@ -136,14 +136,16 @@ namespace CSharpMath.Display {
         MathAtom? prevAtom = null;
         var r = new List<MathAtom>();
         foreach (var atom in list.Atoms) {
-          // we do not use a switch statement on atom here as we may be changing said type.
-          var newAtom = atom;
           // These are not a TeX type nodes. TeX does this during parsing the input.
           // switch to using the font specified in the atom and convert it to ordinary
-          if (newAtom is Variable v) newAtom = v.ToOrdinary(context.FontChanger.ChangeFont);
-          else if (newAtom is Number n) newAtom = n.ToOrdinary(context.FontChanger.ChangeFont);
-          // TeX treats unary operators as Ordinary. So will we.
-          else if (newAtom is UnaryOperator u) newAtom = u.ToOrdinary();
+          var newAtom = atom switch
+          {
+            Variable v => v.ToOrdinary(context.FontChanger.ChangeFont),
+            Number n => n.ToOrdinary(context.FontChanger.ChangeFont),
+            // TeX treats unary operators as Ordinary. So will we.
+            UnaryOperator u => u.ToOrdinary(),
+            _ => atom
+          };
           // This is Rule 14 to merge ordinary characters.
           // combine ordinary atoms together
           if (newAtom is Ordinary && prevAtom is Ordinary { Superscript: null, Subscript: null }) {

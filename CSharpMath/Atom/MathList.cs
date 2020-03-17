@@ -12,6 +12,7 @@ namespace CSharpMath.Atom
     public MathList() => Atoms = new List<MathAtom>();
     public MathList(IEnumerable<MathAtom> atoms) => Atoms = new List<MathAtom>(atoms);
     public MathList(params MathAtom[] atoms) => Atoms = new List<MathAtom>(atoms);
+    /// <summary>Just a deep copy if finalize is false; A finalized list if finalize is true</summary>
     public MathList Clone(bool finalize) {
       var newList = new MathList();
       if (!finalize) {
@@ -70,9 +71,7 @@ namespace CSharpMath.Atom
     public bool IsReadOnly => false;
     public MathAtom this[int index] { get => Atoms[index]; set => Atoms[index] = value; }
     public void Append(IEnumerable<MathAtom> list) => Atoms.AddRange(list);
-    public MathList DeepCopy() => Clone(false);
-    public MathList FinalizedList() => Clone(true);
-    public void RemoveAtoms(Range inRange) => Atoms.RemoveRange(inRange.Location, inRange.Length);
+    public void RemoveAtoms(int index, int count) => Atoms.RemoveRange(index, count);
     public bool EqualsList(MathList otherList) {
       if (otherList == null) {
         return false;
@@ -106,6 +105,6 @@ namespace CSharpMath.Atom
     public bool Contains(MathAtom item) => Atoms.Contains(item);
     public void CopyTo(MathAtom[] array, int arrayIndex) => Atoms.CopyTo(array, arrayIndex);
     public bool Remove(MathAtom item) => Atoms.Remove(item);
-    public MathList GetRange(int index, int count) => new MathList { Atoms = Atoms.GetRange(index, count) };
+    public MathList Slice(int index, int count) => new MathList { Atoms = Atoms.GetRange(index, count) };
   }
 }

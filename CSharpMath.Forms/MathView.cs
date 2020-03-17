@@ -1,7 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Drawing;
-using CSharpMath.Rendering.Renderer;
+using CSharpMath.Rendering;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using Xamarin.Forms;
@@ -12,17 +12,12 @@ namespace CSharpMath.Forms {
   using Color = Xamarin.Forms.Color;
 
   [XamlCompilation(XamlCompilationOptions.Compile)]
-  public class MathView : BaseView<MathPainter, MathSource, MathView.PainterSupplier>, IPainter<MathSource, Color> {
-    public struct PainterSupplier : IPainterAndSourceSupplier<MathPainter, MathSource> {
-      public MathPainter Default => new MathPainter();
-      public string DefaultLaTeX(MathPainter painter) => painter.LaTeX;
-      public string LaTeXFromSource(MathSource source) => source.LaTeX;
-      public MathSource SourceFromLaTeX(string latex) => MathSource.FromLaTeX(latex);
-    }
-    public MathView() : base(default(PainterSupplier).Default) { }
+  public class MathView : BaseView<MathPainter, MathSource>, IPainter<MathSource, Color> {
+    protected override MathSource SourceFromLaTeX(string latex) => MathSource.FromLaTeX(latex);
+    protected override string LaTeXFromSource(MathSource source) => source.LaTeX;
     #region BindableProperties
     static MathView() {
-      var painter = default(PainterSupplier).Default;
+      var painter = new MathPainter();
       var thisType = typeof(MathView);
 
       static MathPainter p(BindableObject b) => ((MathView)b).Painter;

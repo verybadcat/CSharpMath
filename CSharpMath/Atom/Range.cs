@@ -2,12 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CSharpMath.Atom
- {
+namespace CSharpMath.Atom {
+  // e.g. new Range(location: 1, length: 3)
+  // 0     1     2     3     4 (End exclusive)
+  //       ^----------------^ Length = 3
+  //     Start              End
   public readonly struct Range : IEquatable<Range> {
     public const int UndefinedInt = int.MinValue;
-    public static readonly Range NotFound = new Range(UndefinedInt, UndefinedInt);
+    /// <summary>Value of IndexRange for unfinalized atoms</summary>
     public static readonly Range Zero = new Range(0, 0);
+    public static readonly Range NotFound = new Range(UndefinedInt, UndefinedInt);
     public int Location { get; }
     /// <summary>The number of integers in the range. So End-Start=Length-1.</summary>
     public int Length { get; }

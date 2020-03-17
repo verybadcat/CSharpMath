@@ -1,14 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Args = System.Collections.Specialized.NotifyCollectionChangedEventArgs;
 using Action = System.Collections.Specialized.NotifyCollectionChangedAction;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
-using CSharpMath.Rendering.Renderer;
+using CSharpMath.Rendering;
 
 namespace CSharpMath.Forms.Example
 {
@@ -19,14 +16,14 @@ namespace CSharpMath.Forms.Example
         {
             InitializeComponent();
 
-            var values = typeof(Rendering.Renderer.TextAlignment).GetEnumValues();
+            var values = typeof(Rendering.TextAlignment).GetEnumValues();
             Array.Reverse(values);
             Alignment.ItemsSource = values;
-            Alignment.SelectedItem = Rendering.Renderer.TextAlignment.Center;
+            Alignment.SelectedItem = Rendering.TextAlignment.Center;
 
             values = typeof(PaintStyle).GetEnumValues();
             PaintStyle.ItemsSource = values;
-            PaintStyle.SelectedItem = Rendering.Renderer.PaintStyle.Fill;
+            PaintStyle.SelectedItem = Rendering.PaintStyle.Fill;
 
             values = typeof(Atom.LineStyle).GetEnumValues();
             LineStyle.ItemsSource = values;
@@ -53,7 +50,7 @@ namespace CSharpMath.Forms.Example
             if (e.NewItems != null) foreach (var v in e.NewItems.Cast<MathView>())
                 {
                     v.GlyphBoxColor = DrawGlyphBoxes.On ? (Parse(GlyphBoxColor.Text), Parse(GlyphRunColor.Text)) : default((Color glyph, Color textRun)?);
-                    v.TextAlignment = (Rendering.Renderer.TextAlignment)Alignment.SelectedItem;
+                    v.TextAlignment = (Rendering.TextAlignment)Alignment.SelectedItem;
                     v.TextColor = TextColor.LabelColor;
                     v.HighlightColor = HighlightColor.LabelColor;
                     v.BackgroundColor = BackColor.LabelColor;
@@ -67,7 +64,7 @@ namespace CSharpMath.Forms.Example
         {
             foreach (var v in App.AllViews)
             {
-                v.TextAlignment = (Rendering.Renderer.TextAlignment)Alignment.SelectedItem;
+                v.TextAlignment = (Rendering.TextAlignment)Alignment.SelectedItem;
                 v.InvalidateSurface();
             }
         }

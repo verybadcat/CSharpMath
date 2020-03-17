@@ -1,18 +1,16 @@
 using System.Drawing;
 using CSharpMath.Structures;
+using CSharpMath.Rendering;
+using CSharpMath.Rendering.BackEnd;
 using CSharpMath.Rendering.FrontEnd;
-using CSharpMath.Rendering.Renderer;
 using SkiaSharp;
 using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.SkiaSharp {
   public class MathPainter : MathPainter<SKCanvas, SKColor>, ICanvasPainter<SKCanvas, MathSource, SKColor> {
     public const AntiAlias DefaultAntiAlias = AntiAlias.WithSubpixelText;
-    public MathPainter(float fontSize = DefaultFontSize,
-      AntiAlias antiAlias = DefaultAntiAlias) : base(fontSize) =>
-      AntiAlias = antiAlias;
     public SKStrokeCap StrokeCap { get; set; }
-    public AntiAlias AntiAlias { get; set; }
+    public AntiAlias AntiAlias { get; set; } = DefaultAntiAlias;
     public void Draw(SKCanvas canvas, SKPoint point) => Draw(canvas, point.X, point.Y);
     protected override bool CoordinatesFromBottomLeftInsteadOfTopLeft => false;
     public override SKColor UnwrapColor(Color color) => color.ToNative();

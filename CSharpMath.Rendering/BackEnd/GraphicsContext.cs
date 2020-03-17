@@ -6,13 +6,13 @@ using CSharpMath.Structures;
 using Typography.OpenFont;
 using Color = CSharpMath.Structures.Color;
 
-namespace CSharpMath.Rendering.FrontEnd {
+namespace CSharpMath.Rendering.BackEnd {
   public class GraphicsContext : IGraphicsContext<Fonts, Glyph> {
     private class GlyphPathBuilder : Typography.Contours.GlyphPathBuilderBase {
       public GlyphPathBuilder(Typeface typeface) : base(typeface) { }
     }
     public (Color glyph, Color textRun)? GlyphBoxColor { get; set; }
-    public Renderer.ICanvas Canvas { get; set; }
+    public FrontEnd.ICanvas Canvas { get; set; }
 
 #warning Remove (Must have a Mac to test)
     void IGraphicsContext<Fonts, Glyph>.SetTextPosition(PointF position) => Translate(position);

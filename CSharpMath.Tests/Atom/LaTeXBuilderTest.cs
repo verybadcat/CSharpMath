@@ -5,22 +5,9 @@ using Xunit;
 using CSharpMath.Atom;
 using CSharpMath.Atom.Atoms;
 
-namespace CSharpMath.Tests.PreTypesetting {
+namespace CSharpMath.Tests.Atom {
 
   public class LaTeXBuilderTest {
-    public static IEnumerable<object[]> ScriptTestData(char c) => new[] {
-      ("x^2", new[] { new[] { typeof(Variable) }, new[] { typeof(Number) } }, "x^2"),
-      ("x^23", new[] { new[] { typeof(Variable), typeof(Number) }, new[] { typeof(Number) } }, "x^23"),
-      ("x^{23}", new[] { new[] { typeof(Variable) }, new[] { typeof(Number), typeof(Number) } }, "x^{23}"),
-      ("x^2^3", new[] { new[] { typeof(Variable), typeof(Ordinary) }, new[] { typeof(Number) } }, "x^2{}^3"),
-      ("x^{2^3}", new[] { new[] { typeof(Variable)}, new[] { typeof(Number) }, new[] {typeof(Number)} }, "x^{2^3}"),
-      ("x^{^2*}", new[] { new[] { typeof(Variable) }, new[] { typeof(Ordinary), typeof(BinaryOperator) }, new[] { typeof(Number) } }, "x^{{}^2*}"),
-      ("^2", new[] { new[] { typeof(Ordinary) }, new[] { typeof(Number) } }, "{}^2"),
-      ("{}^2", new[] { new[] { typeof(Ordinary) }, new[] { typeof(Number) } }, "{}^2"),
-      ("x^^2", new[] { new[] { typeof(Variable), typeof(Ordinary) }, new Type[] { } }, "x^{}{}^2"),
-      ("5{x}^2", new[] { new[] { typeof(Number), typeof(Variable) }, new Type[] { } }, "5x^2")
-    }.Select(tuple => new object[] { tuple.Item1.Replace('^', c), tuple.Item2, tuple.Item3.Replace('^', c) });
-
     [Theory]
     [InlineData("x", new[] { typeof(Variable) }, "x")]
     [InlineData("1", new[] { typeof(Number) }, "1")]
@@ -30,12 +17,12 @@ namespace CSharpMath.Tests.PreTypesetting {
     [InlineData("(", new[] { typeof(Open) }, "(")]
     [InlineData(")", new[] { typeof(Close) }, ")")]
     [InlineData(",", new[] { typeof(Punctuation) }, ",")]
-    [InlineData("!", new[] { typeof(Close) }, "!")]
+    [InlineData("?!", new[] { typeof(Close), typeof(Close) }, "?!")]
     [InlineData("=", new[] { typeof(Relation) }, "=")]
     [InlineData("x+2", new[] { typeof(Variable), typeof(BinaryOperator), typeof(Number) }, "x+2")]
     [InlineData("(2.3 * 8)", new[] { typeof(Open), typeof(Number), typeof(Number), typeof(Number), typeof(BinaryOperator), typeof(Number), typeof(Close) }, "(2.3*8)")]
     [InlineData("5{3+4}", new[] { typeof(Number), typeof(Number), typeof(BinaryOperator), typeof(Number) }, "53+4")] // braces are just for grouping
-                                                                                                                     // commands
+    // commands
     [InlineData(@"\pi+\theta\geq 3", new[] { typeof(Variable), typeof(BinaryOperator), typeof(Variable), typeof(Relation), typeof(Number) }, @"\pi +\theta \geq 3")]
     // aliases
     [InlineData(@"\pi\ne 5 \land 3", new[] { typeof(Variable), typeof(Relation), typeof(Number), typeof(BinaryOperator), typeof(Number) }, @"\pi \neq 5\wedge 3")]
@@ -53,39 +40,46 @@ namespace CSharpMath.Tests.PreTypesetting {
       Assert.Equal(output, LaTeXBuilder.MathListToLaTeX(list));
     }
 
-    [Theory, MemberData(nameof(ScriptTestData), '^')]
-    public void TestSuperscript(string input, Type[][] atomTypes, string output) =>
+    [Theory]
+    [InlineData("x^2", "x^2", new[] { typeof(Variable) }, new[] { typeof(Number) })]
+    [InlineData("x^23", "x^23", new[] { typeof(Variable), typeof(Number) }, new[] { typeof(Number) })]
+    [InlineData("x^{23}", "x^{23}", new[] { typeof(Variable) }, new[] { typeof(Number), typeof(Number) })]
+    [InlineData("x^2^3", "x^2{}^3", new[] { typeof(Variable), typeof(Ordinary) }, new[] { typeof(Number) })]
+    [InlineData("x^{2^3}", "x^{2^3}", new[] { typeof(Variable) }, new[] { typeof(Number) }, new[] { typeof(Number) })]
+    [InlineData("x^{^2*}", "x^{{}^2*}", new[] { typeof(Variable) }, new[] { typeof(Ordinary), typeof(BinaryOperator) }, new[] { typeof(Number) })]
+    [InlineData("^2", "{}^2", new[] { typeof(Ordinary) }, new[] { typeof(Number) })]
+    [InlineData("{}^2", "{}^2", new[] { typeof(Ordinary) }, new[] { typeof(Number) })]
+    [InlineData("x^^2", "x^{}{}^2", new[] { typeof(Variable), typeof(Ordinary) }, new Type[] { })]
+    [InlineData("5{x}^2", "5x^2", new[] { typeof(Number), typeof(Variable) }, new Type[] { })]
+    public void TestScript(string input, string output, params Type[][] atomTypes) {
       RunScriptTest(input, atom => atom.Superscript, atomTypes, output);
+      RunScriptTest(input.Replace('^', '_'), atom => atom.Subscript, atomTypes, output.Replace('^', '_'));
 
-    [Theory, MemberData(nameof(ScriptTestData), '_')]
-    public void TestSubscript(string input, Type[][] atomTypes, string output) =>
-      RunScriptTest(input, atom => atom.Subscript, atomTypes, output);
+      void RunScriptTest
+        (string input, Func<MathAtom, MathList> scriptGetter, Type[][] atomTypes, string output) {
+        var builder = new LaTeXBuilder(input);
+        var list = builder.Build();
+        Assert.Null(builder.Error);
 
-    private void RunScriptTest
-      (string input, Func<MathAtom, MathList> scriptGetter, Type[][] atomTypes, string output) {
-      var builder = new LaTeXBuilder(input);
-      var list = builder.Build();
-      Assert.Null(builder.Error);
+        var expandedList = list.Clone(false);
+        CheckAtomTypes(expandedList, atomTypes[0]);
 
-      var expandedList = list.Clone(false);
-      CheckAtomTypes(expandedList, atomTypes[0]);
+        var firstAtom = expandedList[0];
+        var types = atomTypes[1];
+        if (types.Length > 0)
+          Assert.NotNull(scriptGetter(firstAtom));
 
-      var firstAtom = expandedList[0];
-      var types = atomTypes[1];
-      if (types.Length > 0)
-        Assert.NotNull(scriptGetter(firstAtom));
+        var scriptList = scriptGetter(firstAtom);
+        CheckAtomTypes(scriptList, atomTypes[1]);
+        if (atomTypes.Length == 3) {
+          // one more level
+          var firstScript = scriptList[0];
+          var scriptScriptList = scriptGetter(firstScript);
+          CheckAtomTypes(scriptScriptList, atomTypes[2]);
+        }
 
-      var scriptList = scriptGetter(firstAtom);
-      CheckAtomTypes(scriptList, atomTypes[1]);
-      if (atomTypes.Length == 3) {
-        // one more level
-        var firstScript = scriptList[0];
-        var scriptScriptList = scriptGetter(firstScript);
-        CheckAtomTypes(scriptScriptList, atomTypes[2]);
+        Assert.Equal(output, LaTeXBuilder.MathListToLaTeX(list));
       }
-
-      string latex = LaTeXBuilder.MathListToLaTeX(list);
-      Assert.Equal(output, latex);
     }
 
     /// <summary>Safe to call with a null list. Types cannot be null however.</summary>
@@ -121,6 +115,7 @@ namespace CSharpMath.Tests.PreTypesetting {
           )
         )
       );
+      Assert.Equal(@"5\times 3^{2\div 2}", LaTeXBuilder.MathListToLaTeX(list));
     }
 
     [Fact]
@@ -146,9 +141,9 @@ namespace CSharpMath.Tests.PreTypesetting {
           Assert.Collection(fraction.Numerator, CheckAtom<Number>("1"));
           Assert.Collection(fraction.Denominator,
             CheckAtom<Fraction>("", subFraction => {
-          Assert.Collection(subFraction.Numerator, CheckAtom<Number>("2"));
-          Assert.Collection(subFraction.Denominator, CheckAtom<Number>("3"));
-        })
+              Assert.Collection(subFraction.Numerator, CheckAtom<Number>("2"));
+              Assert.Collection(subFraction.Denominator, CheckAtom<Number>("3"));
+            })
           );
         })
       );
@@ -236,11 +231,9 @@ namespace CSharpMath.Tests.PreTypesetting {
       Assert.Equal(expectedLatex, LaTeXBuilder.MathListToLaTeX(list));
     }
 
-    [
-      Theory,
-      InlineData(@"1 \over c", @"\frac{1}{c}", true),
-      InlineData(@"1 \atop c", @"{1 \atop c}", false)
-    ]
+    [Theory]
+    [InlineData(@"1 \over c", @"\frac{1}{c}", true)]
+    [InlineData(@"1 \atop c", @"{1 \atop c}", false)]
     public void TestOverAndAtop(string input, string output, bool hasRule) {
       var list = LaTeXBuilder.MathListFromLaTeX(input);
       Assert.Collection(list,
@@ -255,11 +248,9 @@ namespace CSharpMath.Tests.PreTypesetting {
       Assert.Equal(output, LaTeXBuilder.MathListToLaTeX(list));
     }
 
-    [
-      Theory,
-      InlineData(@"5 + {1 \over c} + 8", @"5+\frac{1}{c}+8", true),
-      InlineData(@"5 + {1 \atop c} + 8", @"5+{1 \atop c}+8", false)
-    ]
+    [Theory]
+    [InlineData(@"5 + {1 \over c} + 8", @"5+\frac{1}{c}+8", true)]
+    [InlineData(@"5 + {1 \atop c} + 8", @"5+{1 \atop c}+8", false)]
     public void TestOverAndAtopInParens(string input, string output, bool hasRule) {
       var list = LaTeXBuilder.MathListFromLaTeX(input);
       Assert.Collection(list,
@@ -278,13 +269,11 @@ namespace CSharpMath.Tests.PreTypesetting {
       Assert.Equal(output, LaTeXBuilder.MathListToLaTeX(list));
     }
 
-    [
-      Theory,
-      InlineData(@"n \choose k", @"{n \choose k}", "(", ")"),
-      InlineData(@"n \brack k", @"{n \brack k}", "[", "]"),
-      InlineData(@"n \brace k", @"{n \brace k}", "{", "}"),
-      InlineData(@"\binom{n}{k}", @"{n \choose k}", "(", ")"),
-    ]
+    [Theory]
+    [InlineData(@"n \choose k", @"{n \choose k}", "(", ")")]
+    [InlineData(@"n \brack k", @"{n \brack k}", "[", "]")]
+    [InlineData(@"n \brace k", @"{n \brace k}", "{", "}")]
+    [InlineData(@"\binom{n}{k}", @"{n \choose k}", "(", ")")]
     public void TestChooseBrackBraceBinomial(string input, string output, string left, string right) {
       var list = LaTeXBuilder.MathListFromLaTeX(input);
       Assert.Collection(list,
@@ -381,11 +370,10 @@ namespace CSharpMath.Tests.PreTypesetting {
       Assert.Equal(2, table.NRows);
       Assert.Equal(2, table.NColumns);
 
-      for (int i = 0; i < 2; i++) {
-        var alignment = table.GetAlignment(i);
-        Assert.Equal(ColumnAlignment.Center, alignment);
-        for (int j = 0; j < 2; j++) {
-          Assert.Collection(table.Cells[j][i],
+      for (int col = 0; col < 2; col++) {
+        Assert.Equal(ColumnAlignment.Center, table.GetAlignment(col));
+        for (int row = 0; row < 2; row++) {
+          Assert.Collection(table.Cells[row][col],
             CheckAtom<Style>("", style => Assert.Equal(LineStyle.Text, style.LineStyle)),
             atom => Assert.IsType<Variable>(atom)
           );
@@ -393,6 +381,39 @@ namespace CSharpMath.Tests.PreTypesetting {
       }
       Assert.Equal($@"{leftOutput}\begin{{matrix}}x&y\\ z&w\end{{matrix}}{rightOutput}",
         LaTeXBuilder.MathListToLaTeX(list));
+    }
+
+    [Fact]
+    public void TestDeterminant() {
+      var list = LaTeXBuilder.MathListFromLaTeX(@"\begin{ vmatrix}\sin(x) &\cos(x)\\-\cos(x) &\sin(x)\end{ vmatrix}= 1");
+      Assert.Collection(list,
+        CheckAtom<Inner>("", inner =>
+          Assert.Collection(inner.InnerList,
+            CheckAtom<Table>("", table => {
+              Assert.Equal(0, table.InterRowAdditionalSpacing);
+              Assert.Equal(18, table.InterColumnSpacing);
+              Assert.Equal(2, table.NRows);
+              Assert.Equal(2, table.NColumns);
+              for (int i = 0; i < 2 * 2; i++) {
+                Assert.Equal(ColumnAlignment.Center, table.GetAlignment(i % 2));
+                IEnumerable<Action<MathAtom>> Checkers() {
+                  yield return
+                    CheckAtom<Style>("", style => Assert.Equal(LineStyle.Text, style.LineStyle));
+                  if (i == 2) yield return CheckAtom<BinaryOperator>("\u2212");
+                  yield return CheckAtom<LargeOperator>(i switch { 0 => "sin", 3 => "sin", _ => "cos" });
+                  yield return CheckAtom<Open>("(");
+                  yield return CheckAtom<Variable>("x");
+                  yield return CheckAtom<Close>(")");
+                };
+                Assert.Collection(table.Cells[i / 2][i % 2], Checkers().ToArray());
+              }
+            })
+          )
+        ),
+        CheckAtom<Relation>("="),
+        CheckAtom<Number>("1")
+      );
+      Assert.Equal(@"\left| \begin{matrix}\sin (x)&\cos (x)\\ -\cos (x)&\sin (x)\end{matrix}\right| =1", LaTeXBuilder.MathListToLaTeX(list));
     }
 
     [Fact]
@@ -405,10 +426,10 @@ namespace CSharpMath.Tests.PreTypesetting {
       Assert.Equal(0, table.InterColumnSpacing);
       Assert.Equal(2, table.NRows);
       Assert.Equal(1, table.NColumns);
-      for (int i = 0; i < 1; i++) {
-        Assert.Equal(ColumnAlignment.Left, table.GetAlignment(i));
-        for (int j = 0; j < 2; j++) {
-          Assert.IsType<Variable>(Assert.Single(table.Cells[j][i]));
+      for (int col = 0; col < 1; col++) {
+        Assert.Equal(ColumnAlignment.Left, table.GetAlignment(col));
+        for (int row = 0; row < 2; row++) {
+          Assert.IsType<Variable>(Assert.Single(table.Cells[row][col]));
         }
       }
       Assert.Equal(@"x\\ y", LaTeXBuilder.MathListToLaTeX(list));
@@ -424,10 +445,10 @@ namespace CSharpMath.Tests.PreTypesetting {
       Assert.Equal(0, table.InterColumnSpacing);
       Assert.Equal(2, table.NRows);
       Assert.Equal(2, table.NColumns);
-      for (int i = 0; i < 2; i++) {
-        Assert.Equal(ColumnAlignment.Left, table.GetAlignment(i));
-        for (int j = 0; j < 2; j++) {
-          Assert.IsType<Variable>(Assert.Single(table.Cells[j][i]));
+      for (int col = 0; col < 2; col++) {
+        Assert.Equal(ColumnAlignment.Left, table.GetAlignment(col));
+        for (int row = 0; row < 2; row++) {
+          Assert.IsType<Variable>(Assert.Single(table.Cells[row][col]));
         }
       }
       Assert.Equal(@"x&y\\ z&w", LaTeXBuilder.MathListToLaTeX(list));
@@ -445,12 +466,12 @@ namespace CSharpMath.Tests.PreTypesetting {
       Assert.Equal(0, table.InterColumnSpacing);
       Assert.Equal(2, table.NRows);
       Assert.Equal(2, table.NColumns);
-      for (int i = 0; i < 2; i++) {
-        var alignment = table.GetAlignment(i);
-        Assert.Equal(i == 0 ? ColumnAlignment.Right : ColumnAlignment.Left, alignment);
-        for (int j = 0; j < 2; j++) {
-          var cell = table.Cells[j][i];
-          if (i == 0) {
+      for (int col = 0; col < 2; col++) {
+        var alignment = table.GetAlignment(col);
+        Assert.Equal(col == 0 ? ColumnAlignment.Right : ColumnAlignment.Left, alignment);
+        for (int row = 0; row < 2; row++) {
+          var cell = table.Cells[row][col];
+          if (col == 0) {
             Assert.IsType<Variable>(Assert.Single(cell));
           } else {
             Assert.Collection(cell,
@@ -476,8 +497,8 @@ namespace CSharpMath.Tests.PreTypesetting {
       Assert.Equal(2, table.NRows);
       Assert.Equal(1, table.NColumns);
       Assert.Equal(ColumnAlignment.Center, Assert.Single(table.Alignments));
-      for (int j = 0; j < 2; j++) {
-        Assert.IsType<Variable>(Assert.Single(table.Cells[j][0]));
+      for (int row = 0; row < 2; row++) {
+        Assert.IsType<Variable>(Assert.Single(Assert.Single(table.Cells[row])));
       }
       Assert.Equal(input, LaTeXBuilder.MathListToLaTeX(list));
     }
@@ -525,9 +546,9 @@ namespace CSharpMath.Tests.PreTypesetting {
               ), column1 =>
               Assert.Collection(column1,
                 CheckAtom<Space>("", space => {
-              Assert.Equal(4, space.Length);
-              Assert.True(space.IsMu);
-            }),
+                  Assert.Equal(4, space.Length);
+                  Assert.True(space.IsMu);
+                }),
                 CheckAtom<Variable>("x"),
                 cell2 => Assert.IsType<Relation>(cell2),
                 cell3 => Assert.IsType<Number>(cell3)
@@ -538,6 +559,7 @@ namespace CSharpMath.Tests.PreTypesetting {
       );
       Assert.Equal(@"\begin{array}{lr}x^2&\: x<0\\ x^3&\: x\geq 0\end{array}", LaTeXBuilder.MathListToLaTeX(list));
     }
+
     [Theory]
     [InlineData(@"}a")]
     [InlineData(@"\notacommand")]
@@ -766,14 +788,5 @@ namespace CSharpMath.Tests.PreTypesetting {
       );
       Assert.Equal(@"\color{red}{}{}_2", LaTeXBuilder.MathListToLaTeX(list));
     }
-
-
-    [Fact]
-    public void TestMatrixListToString() {
-      var list = LaTeXBuilder.MathListFromLaTeX(@"\begin{ vmatrix}\sin(x) &\cos(x)\\-\cos(x) &\sin(x)\end{ vmatrix}= 1");
-
-      Assert.Equal(@"\left| \begin{matrix}\sin (x)&\cos (x)\\ -\cos (x)&\sin (x)\end{matrix}\right| =1", LaTeXBuilder.MathListToLaTeX(list));
-    }
-
   }
 }

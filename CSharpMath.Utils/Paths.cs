@@ -12,10 +12,10 @@ namespace CSharpMath.DevUtils {
     }))();
 
     /// <summary>
-    /// The path of Font Reference folder
+    /// The path of Reference Fonts folder
     /// </summary>
-    public static readonly string FontReferenceFolder =
-      P.Combine(Global, nameof(CSharpMath) + ".Rendering", "Font Reference");
+    public static readonly string ReferenceFontsFolder =
+      P.Combine(Global, nameof(CSharpMath) + ".Rendering", "Reference Fonts");
     /// <summary>
     /// The path of the MoreExamples.cs file, which stores examples from iosMath
     /// </summary>

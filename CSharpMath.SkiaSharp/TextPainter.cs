@@ -1,4 +1,4 @@
-using CSharpMath.Rendering.Renderer;
+using CSharpMath.Rendering.FrontEnd;
 using SkiaSharp;
 using Color = CSharpMath.Structures.Color;
 

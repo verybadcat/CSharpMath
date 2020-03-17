@@ -1,10 +1,11 @@
 using System.Drawing;
 using Typography.OpenFont;
 
-namespace CSharpMath.Rendering.Renderer {
+namespace CSharpMath.Rendering {
+  using FrontEnd;
   using Structures;
   public interface IPainter<TSource, TColor> where TSource : ISource {
-    #region Non-redisplaying properties
+    #region Non-display-recreating properties
     TColor HighlightColor { get; set; }
     TColor TextColor { get; set; }
     TColor ErrorColor { get; set; }
@@ -14,14 +15,15 @@ namespace CSharpMath.Rendering.Renderer {
     PaintStyle PaintStyle { get; set; }
     float Magnification { get; set; }
     string ErrorMessage { get; }
-    #endregion Non-redisplaying properties
-    #region Redisplaying properties
+    #endregion Non-display-recreating properties
+    #region Display-recreating properties
     /// <summary>Unit of measure: points</summary>
     float FontSize { get; set; }
     ObservableRangeCollection<Typeface> LocalTypefaces { get; }
     Atom.LineStyle LineStyle { get; set; }
     TSource Source { get; set; }
-    #endregion Redisplaying properties
+    string LaTeX { get; set; }
+    #endregion Display-recreating properties
   }
   public static class IPainterExtensions {
     public static PointF GetDisplayPosition(

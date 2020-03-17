@@ -1,4 +1,4 @@
-namespace CSharpMath.Rendering.Renderer {
+namespace CSharpMath.Rendering {
   [System.Flags]
   public enum TextAlignment : byte {
     //              LRTB

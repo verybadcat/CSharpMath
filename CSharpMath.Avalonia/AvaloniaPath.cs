@@ -1,4 +1,4 @@
-using CSharpMath.Rendering.Renderer;
+using CSharpMath.Rendering.FrontEnd;
 using CSharpMathColor = CSharpMath.Structures.Color;
 
 using Avalonia;
@@ -51,7 +51,7 @@ namespace CSharpMath.Avalonia {
         _context.EndFigure(false);
       }
 
-      _context.BeginFigure(new Point(x0, y0), _canvas.CurrentStyle == PaintStyle.Fill);
+      _context.BeginFigure(new Point(x0, y0), _canvas.CurrentStyle == Rendering.PaintStyle.Fill);
     }
   }
 }

@@ -43,7 +43,12 @@
     <EmbeddedResource Include="Font Reference/*.otf" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="Font Reference\cyrillic-modern-nmr5.otf" />
+    <None Remove="Reference Fonts\cyrillic-modern-nmr5.otf" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Reference Fonts\AMS-Capital-Blackboard-Bold.otf" />
+    <EmbeddedResource Include="Reference Fonts\cyrillic-modern-nmr10.otf" />
+    <EmbeddedResource Include="Reference Fonts\latinmodern-math.otf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CSharpMath.Analyzers\CSharpMath.Analyzers\CSharpMath.Analyzers.csproj">

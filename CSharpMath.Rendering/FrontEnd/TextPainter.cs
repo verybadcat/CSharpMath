@@ -1,10 +1,10 @@
 using System.Drawing;
 using System.Linq;
 
-namespace CSharpMath.Rendering.Renderer {
+namespace CSharpMath.Rendering.FrontEnd {
   using Display;
   using Display.Displays;
-  using FrontEnd;
+  using BackEnd;
   using Structures;
   using Text;
   /// <summary>
@@ -12,8 +12,6 @@ namespace CSharpMath.Rendering.Renderer {
   /// <see cref="TextPainter{TCanvas, TColor}"/>'s coordinates are inverted by default.
   /// </summary>
   public abstract class TextPainter<TCanvas, TColor> : Painter<TCanvas, TextSource, TColor> {
-    public TextPainter(float fontSize = DefaultFontSize) : base(fontSize) { }
-
     public override IDisplay<Fonts, Glyph> Display =>
       new ListDisplay<Fonts, Glyph>(new[] {
         _relativeXCoordDisplay, _absoluteXCoordDisplay

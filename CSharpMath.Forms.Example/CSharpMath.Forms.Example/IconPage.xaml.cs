@@ -30,7 +30,7 @@ namespace CSharpMath.Forms.Example {
       const float f = 40f; //font size in points
       const float thicknessAdjust = 2 * f / 3; //thickness adjust of the two circles
       const float θ = 360f / count; //angle to rotate when drawing each digit
-      painter ??= new SkiaSharp.MathPainter(f); //{ GlyphBoxColor = (SKColors.Red, SKColors.Red) };
+      painter ??= new SkiaSharp.MathPainter { FontSize = f }; //{ GlyphBoxColor = (SKColors.Red, SKColors.Red) };
       var cx = e.Info.Width / 2;
       var cy = e.Info.Height / 2;
       var c = e.Surface.Canvas;

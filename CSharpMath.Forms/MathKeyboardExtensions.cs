@@ -1,7 +1,7 @@
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 namespace CSharpMath.Forms {
-  using Rendering.Renderer;
+  using Rendering.FrontEnd;
   using SkiaSharp;
   public static class MathKeyboardExtensions {
     public static void BindDisplay(this MathKeyboard keyboard,

@@ -1,4 +1,4 @@
-namespace CSharpMath.Rendering.Renderer {
+namespace CSharpMath.Rendering {
   using Text;
   public class TextSource : ISource {
     public static TextSource FromLaTeX(string latex) {

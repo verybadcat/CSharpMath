@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Typography.OpenFont;
 
-namespace CSharpMath.Rendering.FrontEnd {
-  using Structures;
+namespace CSharpMath.Rendering.BackEnd {
   public readonly struct Fonts : Display.FrontEnd.IFont<Glyph>, IEnumerable<Typeface> {
     static Fonts() {
       var reader = new OpenFontReader();
       Typeface LoadFont(string fileName) {
         var typeface = reader.Read(
           System.Reflection.Assembly.GetExecutingAssembly()
-          .GetManifestResourceStream($"CSharpMath.Rendering.Font_Reference.{fileName}")
+          .GetManifestResourceStream($"CSharpMath.Rendering.Reference_Fonts.{fileName}")
         );
         typeface.UpdateAllCffGlyphBounds();
         return typeface;

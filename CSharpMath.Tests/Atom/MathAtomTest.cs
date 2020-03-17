@@ -3,7 +3,7 @@ using CSharpMath.Atom.Atoms;
 using System.Linq;
 using Xunit;
 
-namespace CSharpMath.Tests.PreTypesetting {
+namespace CSharpMath.Tests.Atom {
   public class MathAtomTest {
     internal static void CheckClone(MathAtom original, MathAtom clone) =>
       MathListTest.CheckClone(original, clone);

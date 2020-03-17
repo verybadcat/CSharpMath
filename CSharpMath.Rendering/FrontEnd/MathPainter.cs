@@ -1,11 +1,10 @@
 using System.Drawing;
 
-namespace CSharpMath.Rendering.Renderer {
+namespace CSharpMath.Rendering.FrontEnd {
   using Display;
-  using FrontEnd;
+  using BackEnd;
   using Structures;
   public abstract class MathPainter<TCanvas, TColor> : Painter<TCanvas, MathSource, TColor> {
-    public MathPainter(float fontSize = DefaultFontSize) : base(fontSize) { }
     protected IDisplay<Fonts, Glyph> _display;
     protected bool _displayChanged = true;
     public override IDisplay<Fonts, Glyph> Display => _display;
@@ -24,7 +23,8 @@ namespace CSharpMath.Rendering.Renderer {
     }
     public override void Draw(TCanvas canvas, TextAlignment alignment = TextAlignment.Center, Thickness padding = default, float offsetX = 0, float offsetY = 0) {
       var c = WrapCanvas(canvas);
-      if (!Source.IsValid) DrawError(c);
+      if (Source is null) return;
+      else if (!Source.IsValid) DrawError(c);
       else {
         UpdateDisplay();
         DrawCore(c, _display, IPainterExtensions.GetDisplayPosition(_display.Width, _display.Ascent, _display.Descent, FontSize, CoordinatesFromBottomLeftInsteadOfTopLeft, c.Width, c.Height, alignment, padding, offsetX, offsetY));

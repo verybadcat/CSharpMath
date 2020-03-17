@@ -91,6 +91,20 @@ namespace CSharpMath.Editor.Tests {
       };
     [Theory, MemberData(nameof(ExponentData))]
     public void Exponent(PointF point, MathListIndex expected) => Test("2^3", point, expected);
+    public static TestData ExponentsData =>
+      new TestData {
+        { (0, 0), 0 },
+        { (10, 0), 0, (SubIndex.BetweenBaseAndScripts, 1) },
+        { (10, -4.94), 0, (SubIndex.Subscript, 0) },
+        { (17, -4.94), 0, (SubIndex.Subscript, 1) },
+        { (18.12, 0), 1 },
+        { (28.12, 0), 1, (SubIndex.BetweenBaseAndScripts, 1) },
+        { (28.12, -4.94), 1, (SubIndex.Subscript, 0) },
+        { (35.12, -4.94), 1, (SubIndex.Subscript, 1) },
+        { (35.12, 0), 2 },
+      };
+    [Theory, MemberData(nameof(ExponentsData))]
+    public void Subscripts(PointF point, MathListIndex expected) => Test("{2_3}{3_2}", point, expected);
 
     public static TestData Issue46Data =>
       new TestData {

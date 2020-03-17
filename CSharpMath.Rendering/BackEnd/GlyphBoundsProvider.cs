@@ -4,7 +4,7 @@ using System.Linq;
 using CSharpMath.Display;
 using CSharpMath.Display.FrontEnd;
 
-namespace CSharpMath.Rendering.FrontEnd {
+namespace CSharpMath.Rendering.BackEnd {
   public class GlyphBoundsProvider : IGlyphBoundsProvider<Fonts, Glyph> {
     private GlyphBoundsProvider() { }
     public static GlyphBoundsProvider Instance { get; } = new GlyphBoundsProvider();
