@@ -165,22 +165,18 @@ namespace CSharpMath.Editor {
          || index.SubIndexType is MathListSubIndexType.Subscript)
         foreach (var display in self.Displays)
           switch (display) {
-            case ListDisplay<TFont, TGlyph> list when
-              index.AtomIndex == list.IndexInParent
+            case ListDisplay<TFont, TGlyph> list
+              when index.AtomIndex == list.IndexInParent
               // This is the right character for the sub/superscript, check that it's type matches the index
               && (list.LinePosition is LinePosition.Subscript
                && index.SubIndexType is MathListSubIndexType.Subscript
                || list.LinePosition is LinePosition.Superscript
                && index.SubIndexType is MathListSubIndexType.Superscript):
               return list;
-            case LargeOpLimitsDisplay<TFont, TGlyph> { LowerLimit:{ } limit } when
-              limit.Range.Contains(index.AtomIndex) &&
-              index.SubIndexType is MathListSubIndexType.Subscript:
-              return limit;
-            case LargeOpLimitsDisplay<TFont, TGlyph> { UpperLimit: { } limit } when
-              limit.Range.Contains(index.AtomIndex) &&
-              index.SubIndexType is MathListSubIndexType.Superscript:
-              return limit;
+            case LargeOpLimitsDisplay<TFont, TGlyph> largeOps
+              when largeOps.Range.Contains(index.AtomIndex):
+              return index.SubIndexType is MathListSubIndexType.Subscript
+              ? largeOps.LowerLimit : largeOps.UpperLimit;
           }
       else
         foreach (var display in self.Displays)

@@ -49,8 +49,7 @@ namespace CSharpMath.Display.Displays {
 
     public float Width { get; set; }
 
-    public Range Range =>
-      NucleusDisplay.Range + (UpperLimit?.Range ?? Range.NotFound) + (LowerLimit?.Range ?? Range.NotFound);
+    public Range Range => NucleusDisplay.Range;
 
     PointF _position;
     public PointF Position { get => _position; set { _position = value; UpdateComponentPositions(); } }

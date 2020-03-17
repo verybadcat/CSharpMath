@@ -385,24 +385,51 @@ namespace CSharpMath.Tests {
         },
         d => {
           var largeOp = Assert.IsType<LargeOpLimitsDisplay<TFont, TGlyph>>(d);
-          //Assert.Equal(new Range(2, 1), largeOp.Range);
+          Assert.Equal(new Range(2, 1), largeOp.Range);
           var largeOpText = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(largeOp.NucleusDisplay);
           AssertText("lim", largeOpText);
-          Assert.Equal(new PointF(), largeOpText.Position);
+          Approximately.Equal(new PointF(31.111f, 0), largeOpText.Position);
           Assert.False(largeOpText.HasScript);
-          TestList(1, 9.8, 2.8, 7, 1.5, -17.14, LinePosition.Regular, Range.UndefinedInt,
+          TestList(3, 11.046, 2.8, 26, 38.111, -18.386, LinePosition.Regular, Range.UndefinedInt,
             d => {
               var subscript = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
-              AssertText("0", subscript);
-              Assert.Single(subscript.Atoms);
+              AssertText("x→0", subscript);
+              Assert.Equal(3, subscript.Atoms.Count);
               Assert.Equal(new PointF(), subscript.Position);
-              Assert.False(subscript.HasScript);
-              Assert.Equal(new Range(0, 1), subscript.Range);
-            })(largeOp.LowerLimit);
+              Assert.True(subscript.HasScript);
+              Assert.Equal(new Range(0, 3), subscript.Range);
+            },
+            TestList(1, 7, 2, 5, 21, 4.046, LinePosition.Superscript, 2,
+              d => {
+                var superscript = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
+                AssertText("+", superscript);
+                Assert.Single(superscript.Atoms);
+                Assert.Equal(new PointF(), superscript.Position);
+                Assert.False(superscript.HasScript);
+                Assert.Equal(new Range(0, 1), superscript.Range);
+              }))(largeOp.LowerLimit);
         },
         d => {
           var fraction = Assert.IsType<FractionDisplay<TFont, TGlyph>>(d);
           Assert.Equal(new Range(3, 1), fraction.Range);
+          TestList(1, 14, 4, 10, 74.444, 13.54, LinePosition.Regular, Range.UndefinedInt,
+            d => {
+              var superscript = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
+              AssertText("1", superscript);
+              Assert.Single(superscript.Atoms);
+              Assert.Equal(new PointF(), superscript.Position);
+              Assert.False(superscript.HasScript);
+              Assert.Equal(new Range(0, 1), superscript.Range);
+            })(fraction.Numerator);
+          TestList(1, 14, 4, 10, 74.444, -13.72, LinePosition.Regular, Range.UndefinedInt,
+            d => {
+              var subscript = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
+              AssertText("x", subscript);
+              Assert.Single(subscript.Atoms);
+              Assert.Equal(new PointF(), subscript.Position);
+              Assert.False(subscript.HasScript);
+              Assert.Equal(new Range(0, 1), subscript.Range);
+            })(fraction.Denominator);
         });
   }
 }

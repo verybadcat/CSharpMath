@@ -188,6 +188,7 @@ namespace CSharpMath.Apple {
       ConstantFromTable(font, nameof(UpperLimitBaselineRiseMin));
     public override float LowerLimitGapMin(TFont font) =>
       ConstantFromTable(font, nameof(LowerLimitGapMin));
+
     public override float LowerLimitBaselineDropMin(TFont font) =>
       ConstantFromTable(font, nameof(LowerLimitBaselineDropMin));
     #region overline/underline
