@@ -79,9 +79,9 @@ namespace CSharpMath.Editor {
       var index = displayWithPoint.IndexForPoint(context, translatedPoint);
       if (displayWithPoint is ListDisplay<TFont, TGlyph> closestLine) {
         if (closestLine.LinePosition is LinePosition.Regular)
-          throw new ArgumentException(nameof(ListDisplay<TFont, TGlyph>) + " " +
-            nameof(ListDisplay<TFont, TGlyph>.LinePosition) + " " + nameof(LinePosition.Regular) + " " +
-            $"inside an {nameof(ListDisplay<TFont, TGlyph>)} - shouldn't happen", nameof(self));
+          throw new ArgumentException(nameof(ListDisplay<TFont, TGlyph>) + " with " +
+            nameof(ListDisplay<TFont, TGlyph>.LinePosition) + " " + nameof(LinePosition.Regular) +
+            $" inside a {nameof(ListDisplay<TFont, TGlyph>)} - shouldn't happen", nameof(self));
         // This is a subscript or a superscript, return the right type of subindex
         var indexType =
           closestLine.LinePosition is LinePosition.Subscript

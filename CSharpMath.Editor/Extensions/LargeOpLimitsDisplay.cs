@@ -37,8 +37,8 @@ namespace CSharpMath.Editor {
       ? throw new ArgumentException
         ("The subindex must be none to get the closest point for it.", nameof(index))
       : index.AtomIndex == self.Range.End
-      // draw a caret after the large operator
-      ? self.Position.Plus(new PointF(self.DisplayBounds().Right, 0))
+      // draw a caret after the nucleus for BetweenBaseAndScripts
+      ? new PointF(self.NucleusDisplay.Frame().Right, 0)
       // draw a caret before the large operator
       : self.Position;
 

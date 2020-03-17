@@ -20,13 +20,12 @@ namespace CSharpMath.Editor.TestChecker {
         return value;
       }
       var context = new GraphicsContext();
-      // We need lots of horizontal space, vertical not so much
-      Console.SetBufferSize(10000, 500);
       // We need to output heavy box drawing characters, because the vertical light line displays as green lines at font size 16
       Console.OutputEncoding = Encoding.UTF8;
       string? latex = null;
       while (true) {
         try {
+          Console.SetBufferSize(Console.WindowWidth, Console.BufferHeight); // line wrapping
           Console.Title = "CSharpMath.Editor Test Checker";
           Console.Clear();
           Console.ResetColor();
@@ -47,10 +46,11 @@ namespace CSharpMath.Editor.TestChecker {
           void AssignDisplay() {
             Console.Write("Input LaTeX: ");
             if (latex is null) latex = Console.ReadLine();
-            else Console.WriteLine(latex);
+            else Console.WriteLine(latex); // The P-key case
             Tests.IndexForPointTests.CreateDisplay(latex)
             .Match(listDisplay => display = listDisplay, error => {
               Console.WriteLine(error);
+              latex = null;
               AssignDisplay();
             });
           }
@@ -60,7 +60,7 @@ namespace CSharpMath.Editor.TestChecker {
           var y = ReadInt("Input Touch Y (integer): ");
           Console.Clear();
 
-          // ReadKey() overwrites the drawn content, but re-drawing takes too long
+          Console.SetBufferSize(10000, Console.BufferHeight); // no line wrapping
           display.Draw(context);
 moveCursor:var pos = Adjust(new Rectangle(x, y, 0, 0));
           Console.Title = $"CSharpMath.Editor Test Checker - ({x}, {y}) in {latex}";

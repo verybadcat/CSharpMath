@@ -169,6 +169,7 @@ namespace CSharpMath.Editor.Tests {
     public static TestData IntegralData =>
       new TestData {
         { (0, 0), 0 },
+        { (10, 0), 0, (SubIndex.BetweenBaseAndScripts, 1) },
         { (10, 9.68), 0, (SubIndex.Superscript, 0) },
         { (17, 9.68), 0, (SubIndex.Superscript, 1) },
         { (10, -6.12), 0, (SubIndex.Subscript, 0) },
@@ -184,6 +185,7 @@ namespace CSharpMath.Editor.Tests {
     public static TestData IntegralLimitsData =>
       new TestData {
         { (0, 0), 0 },
+        { (10, 0), 0, (SubIndex.BetweenBaseAndScripts, 1) },
         { (1.5, 20.8), 0, (SubIndex.Superscript, 0) },
         { (8.5, 20.8), 0, (SubIndex.Superscript, 1) },
         { (1.5, -17.14), 0, (SubIndex.Subscript, 0) },
@@ -200,12 +202,14 @@ namespace CSharpMath.Editor.Tests {
       new TestData {
         { (0, 0), 0 },
         { (13.333, 0), 1 },
+        { (53.333, 0), 1, (SubIndex.BetweenBaseAndScripts, 1) },
         { (22.833, -17.14), 1, (SubIndex.Subscript, 0) },
         { (29.833, -17.14), 1, (SubIndex.Subscript, 1) },
         { (36.833, -17.14), 1, (SubIndex.Subscript, 2) },
         { (56.666, 0), 2 },
+        { (66.666, 0), 2, (SubIndex.BetweenBaseAndScripts, 1) },
         { (66.666, -6.12), 2, (SubIndex.Subscript, 0) },
-        { (73.555, -6.12), 2, (SubIndex.Subscript, 1) },
+        { (73.666, -6.12), 2, (SubIndex.Subscript, 1) },
         { (66.666, 9.68), 2, (SubIndex.Superscript, 0) },
         { (73.666, 9.68), 2, (SubIndex.Superscript, 1) },
         { (78.12, 0), 3 },
@@ -213,5 +217,29 @@ namespace CSharpMath.Editor.Tests {
       };
     [Theory, MemberData(nameof(LargeOperatorsData))]
     public void LargeOperators(PointF point, MathListIndex expected) => Test(@"1\lim_{x\to 2}\int_3^4x", point, expected);
+    public static TestData SummationData =>
+      new TestData {
+        { (0, 0), 0 },
+        { (10, 0), 1 },
+        { (20, 0), 2 },
+        { (33.333, 0), 3 },
+        { (62.833, 0), 3, (SubIndex.BetweenBaseAndScripts, 1) },
+        { (54.333, 20.8), 3, (SubIndex.Superscript, 0) },
+        { (61.333, 20.8), 3, (SubIndex.Superscript, 1) },
+        { (33.333, -17.14), 3, (SubIndex.Subscript, 0) },
+        { (40.333, -17.14), 3, (SubIndex.Subscript, 1) },
+        { (47.333, -17.14), 3, (SubIndex.Subscript, 2) },
+        { (54.333, -17.14), 3, (SubIndex.Subscript, 3) },
+        { (61.333, -17.14), 3, (SubIndex.Subscript, 4) },
+        { (68.333, -17.14), 3, (SubIndex.Subscript, 5) },
+        { (75.333, -17.14), 3, (SubIndex.Subscript, 6) },
+        { (82.333, -17.14), 3, (SubIndex.Subscript, 7) },
+        { (85.666, 0), 4 },
+        { (95.666, 0), 5 },
+        { (105.666, 0), 6 },
+        { (115.666, 0), 7 },
+      };
+    [Theory, MemberData(nameof(SummationData))]
+    public void Summation(PointF point, MathListIndex expected) => Test(@"777 \sum_{7777777}^7 777", point, expected);
   }
 }
