@@ -2,19 +2,19 @@
 <ReleaseData>
   <_Global->
     <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
-    <PackageVersion>0.3.0</PackageVersion>
+    <PackageVersion>0.4.0-alpha</PackageVersion>
     <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie, FoggyFinder)</Authors>
-    <PackageReleaseNotes>The 0.3.0 Clickity Update brings a clickable math editor!</PackageReleaseNotes>
+    <PackageReleaseNotes>The 0.4.0 Avalonia Update brings the Avalonia front end! Warning: Massive breaking changes!</PackageReleaseNotes>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/verybadcat/CSharpMath.git</RepositoryUrl>
     <RepositoryBranch>master</RepositoryBranch>
-    <RepositoryCommit>3f4e8d3f9b5bcf39bfc425f8a7d8a29ea06a1c84</RepositoryCommit>
+    <RepositoryCommit>bcfda8b3fd03020b51e4b59cadf7eda121831745</RepositoryCommit>
     <PackageProjectUrl>https://github.com/verybadcat/CSharpMath</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>Icon.png</PackageIcon>
-    <Copyright>© CSharpMath Contributors 2019</Copyright>
-    <PackageTags>math;mathematics;mathematical;formula;equation;equations;expression;tex;latex;render;rendering;display</PackageTags>
+    <Copyright>© CSharpMath Contributors 2020</Copyright>
+    <PackageTags>math;mathematics;mathematical;formula;equation;equations;expression;tex;latex;render;rendering;display;beautiful</PackageTags>
   </_Global->
   <_Template->
     <PackageId>
@@ -64,4 +64,10 @@
     <Description>The base code for a What You See Is What You Get math editor.</Description>
     <PackageTags>edit;editing;editor;WYSIWYG</PackageTags>
   </CSharpMath.Editor>
+  <CSharpMath.Avalonia>
+    <PackageId>CSharpMath.Avalonia</PackageId>
+    <Title>CSharpMath.Avalonia</Title>
+    <Description>The Avalonia front end for CSharpMath.</Description>
+    <PackageTags>avalonia</PackageTags>
+  </CSharpMath.Avalonia>
 </ReleaseData>

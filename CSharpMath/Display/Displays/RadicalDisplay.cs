@@ -8,7 +8,7 @@ namespace CSharpMath.Display.Displays {
     where TFont : IFont<TGlyph> {
     ///<summary>A display representing the radicand of the radical.
     ///Its position is relative to the parent and it is not treated as a sub-display.</summary>
-    public ListDisplay<TFont, TGlyph> Radicand { get; private set; }
+    public ListDisplay<TFont, TGlyph> Radicand { get; }
     ///<summary>A display representing the degree of the radical.
     ///Its position is relative to the parent and it is not treated as a sub-display.</summary>
     public ListDisplay<TFont, TGlyph>? Degree { get; private set; }
@@ -48,7 +48,7 @@ namespace CSharpMath.Display.Displays {
     
     public float Ascent { get; set; }
     public float Descent { get; set; }
-    public Range Range { get; set; }
+    public Range Range { get; }
     PointF _position;
     public PointF Position { get => _position; set { _position = value; UpdateRadicandPosition(); } }
     public bool HasScript { get; set; }

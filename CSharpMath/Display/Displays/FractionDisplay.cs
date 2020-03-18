@@ -10,10 +10,10 @@ namespace CSharpMath.Display.Displays {
     private PointF _position;
     ///<summary>A display representing the numerator of the fraction.
     ///Its position is relative to the parent and it is not treated as a sub-display.</summary>
-    public ListDisplay<TFont, TGlyph> Numerator { get; private set; }
+    public ListDisplay<TFont, TGlyph> Numerator { get; }
     ///<summary>A display representing the numerator of the fraction.
     ///Its position is relative to the parent and it is not treated as a sub-display.</summary>
-    public ListDisplay<TFont, TGlyph> Denominator { get; private set; }
+    public ListDisplay<TFont, TGlyph> Denominator { get; }
 
     public float NumeratorUp { get; set; }
     public float DenominatorDown { get; set; }

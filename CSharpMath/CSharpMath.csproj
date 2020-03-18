@@ -5,21 +5,20 @@
     <Nullable>enable</Nullable>
     <NoWarn>
       CA1062,<!--Obsolete with C# 8 nullability annotations-->
-      CA1303<!--Who localizes exception messages, anyway?-->
-    </NoWarn>
+      CA1303<!--Who localizes exception messages, anyway?--></NoWarn>
     <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
     <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie, FoggyFinder)</Authors>
     <Description>The core of the C# math rendering engine - CSharpMath. Can display beautiful math equations and symbols from the LaTeX format. Needs a front end to function. Currently, front ends exist for iOS, SkiaSharp and Xamarin.Forms.</Description>
-    <PackageReleaseNotes>The 0.3.0 Clickity Update brings a clickable math editor!</PackageReleaseNotes>
+    <PackageReleaseNotes>The 0.4.0 Avalonia Update brings the Avalonia front end! Warning: Massive breaking changes!</PackageReleaseNotes>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/verybadcat/CSharpMath.git</RepositoryUrl>
     <PackageProjectUrl>https://github.com/verybadcat/CSharpMath</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Copyright>© CSharpMath Contributors 2019</Copyright>
-    <PackageTags>math;mathematics;mathematical;formula;equation;equations;expression;tex;latex;render;rendering;display</PackageTags>
-    <PackageVersion>0.3.0</PackageVersion>
+    <Copyright>© CSharpMath Contributors 2020</Copyright>
+    <PackageTags>math;mathematics;mathematical;formula;equation;equations;expression;tex;latex;render;rendering;display;beautiful</PackageTags>
+    <PackageVersion>0.4.0-alpha</PackageVersion>
     <RepositoryBranch>master</RepositoryBranch>
-    <RepositoryCommit>3f4e8d3f9b5bcf39bfc425f8a7d8a29ea06a1c84</RepositoryCommit>
+    <RepositoryCommit>bcfda8b3fd03020b51e4b59cadf7eda121831745</RepositoryCommit>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageIcon>Icon.png</PackageIcon>
     <PackageId>CSharpMath</PackageId>

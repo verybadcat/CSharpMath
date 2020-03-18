@@ -4,12 +4,12 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>preview</LangVersion>
     <Nullable>enable</Nullable>
-    <PackageVersion>0.3.0</PackageVersion>
-    <PackageReleaseNotes>The 0.3.0 Clickity Update brings a clickable math editor!</PackageReleaseNotes>
+    <PackageVersion>0.4.0-alpha</PackageVersion>
+    <PackageReleaseNotes>The 0.4.0 Avalonia Update brings the Avalonia front end! Warning: Massive breaking changes!</PackageReleaseNotes>
     <Description>The base code for a What You See Is What You Get math editor.</Description>
     <PackageId>CSharpMath.Editor</PackageId>
     <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie, FoggyFinder)</Authors>
-    <PackageTags>math;mathematics;mathematical;formula;equation;equations;expression;tex;latex;render;rendering;display;edit;editing;editor;WYSIWYG</PackageTags>
+    <PackageTags>math;mathematics;mathematical;formula;equation;equations;expression;tex;latex;render;rendering;display;beautiful;edit;editing;editor;WYSIWYG</PackageTags>
     <PackageProjectUrl>https://github.com/verybadcat/CSharpMath</PackageProjectUrl>
     <Title>CSharpMath.Editor</Title>
     <PackageIcon>Icon.png</PackageIcon>
@@ -17,9 +17,9 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/verybadcat/CSharpMath.git</RepositoryUrl>
     <RepositoryBranch>master</RepositoryBranch>
-    <RepositoryCommit>3f4e8d3f9b5bcf39bfc425f8a7d8a29ea06a1c84</RepositoryCommit>
+    <RepositoryCommit>bcfda8b3fd03020b51e4b59cadf7eda121831745</RepositoryCommit>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Copyright>© CSharpMath Contributors 2019</Copyright>
+    <Copyright>© CSharpMath Contributors 2020</Copyright>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\CSharpMath\CSharpMath.csproj" />

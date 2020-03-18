@@ -23,10 +23,10 @@ namespace CSharpMath.Display.Displays {
     }
     public AttributedGlyphRun<TFont, TGlyph> Run { get; }
     
-    public Range Range { get; set; }
-    public float Width { get; set; }
-    public float Ascent { get; set; }
-    public float Descent { get; set; }
+    public Range Range { get; }
+    public float Width { get; }
+    public float Ascent { get; }
+    public float Descent { get; }
     public PointF Position { get; set; }
     public bool HasScript { get; set; }
     public Color? TextColor { get; set; }

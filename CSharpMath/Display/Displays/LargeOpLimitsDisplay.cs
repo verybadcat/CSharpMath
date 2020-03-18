@@ -34,10 +34,10 @@ namespace CSharpMath.Display.Displays {
     public IDisplay<TFont, TGlyph> NucleusDisplay { get; }
     ///<summary>A display representing the upper limit of the large operator.
     ///Its position is relative to the parent and it is not treated as a sub-display.</summary>
-    public ListDisplay<TFont, TGlyph>? UpperLimit { get; private set; }
+    public ListDisplay<TFont, TGlyph>? UpperLimit { get; }
     ///<summary>A display representing the lower limit of the large operator.
     ///Its position is relative to the parent and it is not treated as a sub-display.</summary>
-    public ListDisplay<TFont, TGlyph>? LowerLimit { get; private set; }
+    public ListDisplay<TFont, TGlyph>? LowerLimit { get; }
     
     public float Ascent =>
       NucleusDisplay.Ascent +
@@ -47,7 +47,7 @@ namespace CSharpMath.Display.Displays {
       NucleusDisplay.Descent +
       (_extraPadding + LowerLimit?.Ascent + _lowerLimitGap + LowerLimit?.Descent ?? 0);
 
-    public float Width { get; set; }
+    public float Width { get; }
 
     public Range Range => NucleusDisplay.Range;
 

@@ -11,10 +11,10 @@ namespace CSharpMath.Display.Displays {
     }
     ///<summary>A display representing the inner list that is accented.
     ///Its position is relative to the parent and it is not treated as a sub-display.</summary>
-    public IDisplay<TFont, TGlyph> Accentee { get; private set; }
+    public IDisplay<TFont, TGlyph> Accentee { get; }
     ///<summary>A display representing the accent.
     ///Its position is relative to the current display.</summary>
-    public GlyphDisplay<TFont, TGlyph> Accent { get; private set; }
+    public GlyphDisplay<TFont, TGlyph> Accent { get; }
 
     public float Ascent => System.Math.Max(Accent.Ascent + Accent.Position.Y, Accentee.Ascent);
 

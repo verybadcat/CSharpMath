@@ -15,6 +15,7 @@ namespace CSharpMath.Utils.NuGet {
         "CSharpMath.Editor",
         "CSharpMath.Rendering",
         "CSharpMath.Ios",
+        "CSharpMath.Avalonia",
         "CSharpMath.SkiaSharp",
         "CSharpMath.Forms"
         //NOTE: When a new project is added, first save project spec, NOT global spec

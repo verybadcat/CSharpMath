@@ -25,9 +25,9 @@ namespace CSharpMath.Editor.TestChecker {
       string? latex = null;
       while (true) {
         try {
-          Console.SetBufferSize(Console.WindowWidth, Console.BufferHeight); // line wrapping
           Console.Title = "CSharpMath.Editor Test Checker";
           Console.Clear();
+          Console.SetBufferSize(Console.WindowWidth, Console.BufferHeight); // line wrapping
           Console.ResetColor();
           Console.WriteLine("Welcome to the CSharpMath.Editor Test Checker!");
           Console.WriteLine();

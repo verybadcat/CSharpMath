@@ -148,11 +148,11 @@ namespace CSharpMath.Editor.Tests {
         { (97.676, 8.736), 4, (SubIndex.Degree, 1) },
         { (106.556, -6.8), 4, (SubIndex.Subscript, 0) },
         { (106.556, 0), 4, (SubIndex.Radicand, 1) },
-        { (118.556, 10.02), 4, (SubIndex.Superscript, 0), (SubIndex.Subscript, 1) },
         { (113.556, -6.8), 4, (SubIndex.Subscript, 0), (SubIndex.BetweenBaseAndScripts, 1) },
         { (113.556, -2.754), 4, (SubIndex.Subscript, 0), (SubIndex.Superscript, 0) },
         { (118.556, -6.8), 4, (SubIndex.Subscript, 1) },
         { (118.556, -2.754), 4, (SubIndex.Subscript, 0), (SubIndex.Superscript, 1) },
+        { (118.556, 10.02), 4, (SubIndex.Superscript, 0), (SubIndex.Subscript, 1) },
         { (118.556, 0), 5 }
       };
     [Theory, MemberData(nameof(ComplexData))]
@@ -170,10 +170,10 @@ namespace CSharpMath.Editor.Tests {
       new TestData {
         { (0, 0), 0 },
         { (10, 0), 0, (SubIndex.BetweenBaseAndScripts, 1) },
-        { (10, 9.68), 0, (SubIndex.Superscript, 0) },
-        { (17, 9.68), 0, (SubIndex.Superscript, 1) },
         { (10, -6.12), 0, (SubIndex.Subscript, 0) },
         { (17, -6.12), 0, (SubIndex.Subscript, 1) },
+        { (10, 9.68), 0, (SubIndex.Superscript, 0) },
+        { (17, 9.68), 0, (SubIndex.Superscript, 1) },
         { (21.453, 0), 1 },
         { (31.453, 0), 2 },
         { (41.453, 0), 3 },
@@ -186,10 +186,10 @@ namespace CSharpMath.Editor.Tests {
       new TestData {
         { (0, 0), 0 },
         { (10, 0), 0, (SubIndex.BetweenBaseAndScripts, 1) },
-        { (1.5, 20.8), 0, (SubIndex.Superscript, 0) },
-        { (8.5, 20.8), 0, (SubIndex.Superscript, 1) },
         { (1.5, -17.14), 0, (SubIndex.Subscript, 0) },
         { (8.5, -17.14), 0, (SubIndex.Subscript, 1) },
+        { (1.5, 20.8), 0, (SubIndex.Superscript, 0) },
+        { (8.5, 20.8), 0, (SubIndex.Superscript, 1) },
         { (13.333, 0), 1 },
         { (23.333, 0), 2 },
         { (33.333, 0), 3 },
@@ -221,25 +221,20 @@ namespace CSharpMath.Editor.Tests {
       new TestData {
         { (0, 0), 0 },
         { (10, 0), 1 },
-        { (20, 0), 2 },
-        { (33.333, 0), 3 },
-        { (62.833, 0), 3, (SubIndex.BetweenBaseAndScripts, 1) },
-        { (54.333, 20.8), 3, (SubIndex.Superscript, 0) },
-        { (61.333, 20.8), 3, (SubIndex.Superscript, 1) },
-        { (33.333, -17.14), 3, (SubIndex.Subscript, 0) },
-        { (40.333, -17.14), 3, (SubIndex.Subscript, 1) },
-        { (47.333, -17.14), 3, (SubIndex.Subscript, 2) },
-        { (54.333, -17.14), 3, (SubIndex.Subscript, 3) },
-        { (61.333, -17.14), 3, (SubIndex.Subscript, 4) },
-        { (68.333, -17.14), 3, (SubIndex.Subscript, 5) },
-        { (75.333, -17.14), 3, (SubIndex.Subscript, 6) },
-        { (82.333, -17.14), 3, (SubIndex.Subscript, 7) },
-        { (85.666, 0), 4 },
-        { (95.666, 0), 5 },
-        { (105.666, 0), 6 },
-        { (115.666, 0), 7 },
+        { (23.333, 0), 2 },
+        { (38.833, 0), 2, (SubIndex.BetweenBaseAndScripts, 1) },
+        { (23.333, -17.14), 2, (SubIndex.Subscript, 0) },
+        { (30.333, -17.14), 2, (SubIndex.Subscript, 1) },
+        { (37.333, -17.14), 2, (SubIndex.Subscript, 2) },
+        { (44.333, -17.14), 2, (SubIndex.Subscript, 3) },
+        { (26.833, 20.8), 2, (SubIndex.Superscript, 0) },
+        { (33.833, 20.8), 2, (SubIndex.Superscript, 1) },
+        { (40.833, 20.8), 2, (SubIndex.Superscript, 2) },
+        { (47.666, 0), 3 },
+        { (57.666, 0), 4 },
+        { (67.666, 0), 5 },
       };
     [Theory, MemberData(nameof(SummationData))]
-    public void Summation(PointF point, MathListIndex expected) => Test(@"777 \sum_{7777777}^7 777", point, expected);
+    public void Summation(PointF point, MathListIndex expected) => Test(@"77 \sum_{777}^{77} 77", point, expected);
   }
 }

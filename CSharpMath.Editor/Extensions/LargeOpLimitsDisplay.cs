@@ -14,10 +14,10 @@ namespace CSharpMath.Editor {
       PointF point) where TFont : IFont<TGlyph> =>
       // We can be before or after the large operator
       point.X < self.Position.X - PixelDelta
-      //We are before the large operator, so
+      // We are before the large operator, so
       ? MathListIndex.Level0Index(self.Range.Location)
       : point.X > self.Position.X + self.Width + PixelDelta
-      //We are after the large operator
+      // We are after the large operator
       ? MathListIndex.Level0Index(self.Range.End)
       : self.UpperLimit is { } u && point.Y > self.Position.Y + u.Position.Y - PixelDelta
       ? MathListIndex.IndexAtLocation(self.Range.Location,
@@ -25,8 +25,11 @@ namespace CSharpMath.Editor {
       : self.LowerLimit is { } l && point.Y < self.Position.Y + l.Position.Y + l.DisplayBounds().Height + PixelDelta
       ? MathListIndex.IndexAtLocation(self.Range.Location,
           MathListSubIndexType.Subscript, l.IndexForPoint(context, point))
-      : point.X > self.Position.X + self.Width / 2
+      : point.X > self.Position.X + self.Width * 3 / 4
       ? MathListIndex.Level0Index(self.Range.End)
+      : point.X > self.Position.X + self.Width / 2
+      ? MathListIndex.IndexAtLocation(self.Range.Location,
+        MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1))
       : MathListIndex.Level0Index(self.Range.Location);
 
     public static PointF? PointForIndex<TFont, TGlyph>(

@@ -10,11 +10,11 @@ namespace CSharpMath.Display.Displays {
     public float Ascent { get; set; }
     public float Descent { get; set; }
     public float Width { get; set; }
-    public Range Range { get; set; }
+    public Range Range { get; }
     public PointF Position { get; set; }
     public bool HasScript { get; set; }
     public float ShiftDown { get; set; }
-    public TGlyph Glyph { get; set; }
+    public TGlyph Glyph { get; }
     public TFont Font { get; }
     public GlyphDisplay(TGlyph glyph, Range range, TFont font) {
       Glyph = glyph;
