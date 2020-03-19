@@ -20,11 +20,11 @@ namespace CSharpMath.Tests.Atom {
     public void TestAdd() {
       var list = new MathList();
       Assert.Empty(list);
-      var atom = MathAtoms.Placeholder;
+      var atom = LaTeXDefaults.Placeholder;
       list.Add(atom);
       Assert.Single(list);
       Assert.Equal(atom, list[0]);
-      var atom2 = MathAtoms.Times;
+      var atom2 = LaTeXDefaults.Times;
       list.Add(atom2);
       Assert.Equal(2, list.Count);
       Assert.Equal(atom2, list[1]);
@@ -40,7 +40,7 @@ namespace CSharpMath.Tests.Atom {
     public void TestInsert() {
       var list = new MathList();
       Assert.Empty(list);
-      var atom = MathAtoms.Placeholder;
+      var atom = LaTeXDefaults.Placeholder;
       list.Insert(0, atom);
       Assert.Single(list);
       Assert.Equal(atom, list[0]);
@@ -60,7 +60,7 @@ namespace CSharpMath.Tests.Atom {
     [Fact]
     public void TestAppend() {
       var list1 = new MathList();
-      var atom1 = MathAtoms.Placeholder;
+      var atom1 = LaTeXDefaults.Placeholder;
       var atom2 = new LargeOperator("+", false);
       var atom3 = new LargeOperator("-", false);
       list1.Add(atom1);
@@ -68,8 +68,8 @@ namespace CSharpMath.Tests.Atom {
       list1.Add(atom3);
 
       var list2 = new MathList();
-      var atom5 = MathAtoms.Times;
-      var atom6 = MathAtoms.Divide;
+      var atom5 = LaTeXDefaults.Times;
+      var atom6 = LaTeXDefaults.Divide;
       list2.Add(atom5);
       list2.Add(atom6);
 
@@ -85,8 +85,8 @@ namespace CSharpMath.Tests.Atom {
     [Fact]
     public void TestRemoveAtomAtIndex() {
       var list = new MathList();
-      var atom = MathAtoms.Placeholder;
-      var atom2 = MathAtoms.Times;
+      var atom = LaTeXDefaults.Placeholder;
+      var atom2 = LaTeXDefaults.Times;
       list.Add(atom);
       list.Add(atom2);
       Assert.Equal(2, list.Count);
@@ -100,9 +100,9 @@ namespace CSharpMath.Tests.Atom {
     [Fact]
     public void TestRemoveAtomsInRange() {
       var list = new MathList();
-      var atom = MathAtoms.Placeholder;
-      var atom2 = MathAtoms.Times;
-      var atom3 = MathAtoms.Divide;
+      var atom = LaTeXDefaults.Placeholder;
+      var atom2 = LaTeXDefaults.Times;
+      var atom3 = LaTeXDefaults.Divide;
       list.Add(atom);
       list.Add(atom2);
       list.Add(atom3);
@@ -116,9 +116,9 @@ namespace CSharpMath.Tests.Atom {
     [Fact]
     public void TestListCopy() {
       var list = new MathList();
-      var atom = MathAtoms.Placeholder;
-      var atom2 = MathAtoms.Times;
-      var atom3 = MathAtoms.Divide;
+      var atom = LaTeXDefaults.Placeholder;
+      var atom2 = LaTeXDefaults.Times;
+      var atom3 = LaTeXDefaults.Divide;
       list.Add(atom);
       list.Add(atom2);
       list.Add(atom3);

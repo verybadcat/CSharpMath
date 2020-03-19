@@ -40,9 +40,8 @@ namespace CSharpMath.Atom {
       ? throw new InvalidCodePathException("Can't unlook below character 0")
       : _currentChar--;
     private bool HasCharacters => _currentChar < _length;
-    private MathList? BuildInternal(bool oneCharOnly) => BuildInternal(oneCharOnly, (char)0);
-    private MathList? BuildInternal(bool oneCharOnly, char stopChar) {
-      if (oneCharOnly && stopChar > 0) {
+    private MathList? BuildInternal(bool oneCharOnly, char stopChar = '\0') {
+      if (oneCharOnly && stopChar > '\0') {
         throw new InvalidCodePathException("Cannot set both oneCharOnly and stopChar");
       }
       var r = new MathList();
@@ -52,18 +51,16 @@ namespace CSharpMath.Atom {
           return null;
         }
         MathAtom atom;
-        var ch = GetNextCharacter();
-        if (oneCharOnly) {
-          if (ch == '^' || ch == '}' || ch == '_' || ch == '&') {
+        switch (GetNextCharacter()) {
+          case '^' when oneCharOnly:
+          case '}' when oneCharOnly:
+          case '_' when oneCharOnly:
+          case '&' when oneCharOnly:
             // this is not the character we are looking for. They are for the caller to look at.
             UnlookCharacter();
             return r;
-          }
-        }
-        if (stopChar > 0 && ch == stopChar) {
-          return r;
-        }
-        switch (ch) {
+          case var ch when stopChar > '\0' && ch == stopChar:
+            return r;
           case '^':
             if (prevAtom == null || prevAtom.Superscript != null || !prevAtom.ScriptsAllowed) {
               prevAtom = new Ordinary(string.Empty);
@@ -104,13 +101,11 @@ namespace CSharpMath.Atom {
           //https://phabricator.wikimedia.org/T99369
           //https://phab.wmfusercontent.org/file/data/xsimlcnvo42siudvwuzk/PHID-FILE-bdcqexocj5b57tj2oezn/math_rendering.png
           //dt, \text{d}t, \partial t, \nabla\psi \\ \underline\overline{dy/dx, \text{d}y/\text{d}x, \frac{dy}{dx}, \frac{\text{d}y}{\text{d}x}, \frac{\partial^2}{\partial x_1\partial x_2}y} \\ \prime,
-          case '}':
-            if (oneCharOnly || stopChar != 0) {
+          case '}' when oneCharOnly || stopChar != 0:
               throw new InvalidCodePathException("This should have been handled before.");
-            }
+          case '}':
             SetError("Missing opening brace");
             return null;
-
           case '\\':
             var command = ReadCommand();
             var done = StopCommand(command, r, stopChar);
@@ -148,36 +143,27 @@ namespace CSharpMath.Atom {
                 break;
             }
             break;
-          case '&': { // column separation in tables
-              if (_currentEnvironment != null) {
-                return r;
-              }
-              var table = BuildTable(null, r, false, stopChar);
-              if (table == null) return null;
-              return new MathList(table);
+          case '&': // column separation in tables
+            if (_currentEnvironment != null) {
+              return r;
             }
+            var table = BuildTable(null, r, false, stopChar);
+            if (table == null) return null;
+            return new MathList(table);
           case '\'': // this case is NOT in iosMath
             int i = 1;
             while (ExpectCharacter('\'')) i++;
             atom = new Prime(i);
             break;
-          default:
-            if (_textMode && ch == ' ') {
-              atom = new Ordinary(" ");
-            } else {
-              switch (MathAtoms.ForCharacter(ch)) {
-                case null:
-                  // not a recognized character
-                  continue;
-                case var a:
-                  atom = a;
-                  break;
-              }
-            }
+          case ' ' when _textMode:
+            atom = new Ordinary(" ");
             break;
-        }
-        if (atom == null) {
-          throw new InvalidCodePathException("Atom shouldn't be null");
+          case var ch when LaTeXDefaults.ForCharacter(ch) is MathAtom a:
+            atom = a;
+            break;
+          default:
+            // not a recognized character, display it directly
+            continue;
         }
         atom.FontStyle = _currentFontStyle;
         r.Add(atom);
@@ -351,7 +337,7 @@ namespace CSharpMath.Atom {
         SetError("Missing delimiter for " + delimiterType);
         return null;
       }
-      var boundary = MathAtoms.BoundaryAtom(delim);
+      var boundary = LaTeXDefaults.BoundaryAtom(delim);
       if (boundary == null) {
         SetError(@"Invalid delimiter for \" + delimiterType + ": " + delim);
       }
@@ -359,7 +345,7 @@ namespace CSharpMath.Atom {
     }
 
     private MathAtom? AtomForCommand(string command, char stopChar) {
-      switch (MathAtoms.ForLaTeXSymbolName(command)) {
+      switch (LaTeXDefaults.ForLaTeXSymbolName(command)) {
         case Accent accent:
           var innerList = BuildInternal(true);
           if (innerList is null) return null;
@@ -643,8 +629,8 @@ namespace CSharpMath.Atom {
           return delimiters switch
           {
             (var left, var right) => new Inner(new MathList(table)) {
-              LeftBoundary = MathAtoms.BoundaryAtom(left),
-              RightBoundary = MathAtoms.BoundaryAtom(right)
+              LeftBoundary = LaTeXDefaults.BoundaryAtom(left),
+              RightBoundary = LaTeXDefaults.BoundaryAtom(right)
             },
             null => table
           };
@@ -722,8 +708,8 @@ namespace CSharpMath.Atom {
             }
             // add delimiters
             return new Inner(new MathList(new Space(Structures.Space.ShortSpace), table)) {
-              LeftBoundary = MathAtoms.BoundaryAtom("{"),
-              RightBoundary = MathAtoms.BoundaryAtom(".")
+              LeftBoundary = LaTeXDefaults.BoundaryAtom("{"),
+              RightBoundary = LaTeXDefaults.BoundaryAtom(".")
             };
           }
         default:
@@ -766,7 +752,7 @@ namespace CSharpMath.Atom {
     };
 
     public static string BoundaryToLaTeX(Boundary delimiter) {
-      var command = MathAtoms.DelimiterName(delimiter);
+      var command = LaTeXDefaults.DelimiterName(delimiter);
       if (command == null) {
         return string.Empty;
       }
@@ -923,19 +909,19 @@ namespace CSharpMath.Atom {
             var list = accent.InnerList;
             accent.InnerList = null; //for lookup
             builder.Append(@"\")
-              .Append(MathAtoms.Commands[atom])
+              .Append(LaTeXDefaults.Commands[atom])
               .Append("{");
             NullableListToLaTeX(list, builder, currentFontStyle);
             builder.Append("}");
             accent.InnerList = list;
             break;
           case LargeOperator op:
-            var command = MathAtoms.LaTeXSymbolNameForAtom(op);
+            var command = LaTeXDefaults.LaTeXSymbolNameForAtom(op);
             if (command == null) {
               builder.Append($@"\mathrm{{{command}}} ");
             } else {
               builder.Append($@"\{command} ");
-              if (!(MathAtoms.ForLaTeXSymbolName(command) is LargeOperator originalOperator))
+              if (!(LaTeXDefaults.ForLaTeXSymbolName(command) is LargeOperator originalOperator))
                 throw new InvalidCodePathException("original operator not found!");
               if (originalOperator.Limits == op.Limits)
                 break;
@@ -999,7 +985,7 @@ namespace CSharpMath.Atom {
           case { Nucleus: "\u2212" }:
             builder.Append("-");
             break;
-          case var _ when MathAtoms.LaTeXSymbolNameForAtom(atom) is string name:
+          case var _ when LaTeXDefaults.LaTeXSymbolNameForAtom(atom) is string name:
             builder.Append(@"\").Append(name).Append(" ");
             break;
           case { Nucleus: var aNucleus }:

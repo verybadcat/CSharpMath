@@ -48,12 +48,12 @@ namespace CSharpMath.Editor {
         i switch
         {
                 //https://github.com/kostub/MathEditor/blob/61f67c6224000c224e252f6eeba483003f11d3d5/mathEditor/editor/MTEditableMathLabel.m#L414
-                MathKeyboardInput.Multiply => MathAtoms.Times,
-          MathKeyboardInput.Multiply_ => MathAtoms.Times,
-          MathKeyboardInput.SquareRoot => MathAtoms.PlaceholderSquareRoot,
-          MathKeyboardInput.CubeRoot => MathAtoms.PlaceholderCubeRoot,
-          MathKeyboardInput.Fraction => MathAtoms.PlaceholderFraction,
-          _ when MathAtoms.ForCharacter((char)i) is MathAtom a => a,
+                MathKeyboardInput.Multiply => LaTeXDefaults.Times,
+          MathKeyboardInput.Multiply_ => LaTeXDefaults.Times,
+          MathKeyboardInput.SquareRoot => LaTeXDefaults.PlaceholderSquareRoot,
+          MathKeyboardInput.CubeRoot => LaTeXDefaults.PlaceholderCubeRoot,
+          MathKeyboardInput.Fraction => LaTeXDefaults.PlaceholderFraction,
+          _ when LaTeXDefaults.ForCharacter((char)i) is MathAtom a => a,
           _ => new Atoms.Ordinary(((char)i).ToString()) //Just an ordinary character
         };
 
@@ -65,8 +65,8 @@ namespace CSharpMath.Editor {
         void SetScript(MathAtom atom, MathList? value) { if (isSuperScript) atom.Superscript = value; else atom.Subscript = value; }
         void CreateEmptyAtom() {
           // Create an empty atom and move the insertion index up.
-          var emptyAtom = MathAtoms.Placeholder;
-          SetScript(emptyAtom, MathAtoms.PlaceholderList);
+          var emptyAtom = LaTeXDefaults.Placeholder;
+          SetScript(emptyAtom, LaTeXDefaults.PlaceholderList);
           MathList.InsertAndAdvance(ref _insertionIndex, emptyAtom, subIndexType);
         }
         static bool IsFullPlaceholderRequired(MathAtom mathAtom) =>
@@ -96,7 +96,7 @@ namespace CSharpMath.Editor {
           } else {
             var script = GetScript(prevAtom);
             if (script is null) {
-              SetScript(prevAtom, MathAtoms.PlaceholderList);
+              SetScript(prevAtom, LaTeXDefaults.PlaceholderList);
             }
             _insertionIndex = prevIndexCorrected.LevelUpWithSubIndex
               (subIndexType, MathListIndex.Level0Index(script?.Atoms?.Count ?? 0));
@@ -132,10 +132,10 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
           numerator.Push(new Atoms.Number("1"));
         if (MathList.AtomAt(_insertionIndex.Previous) is Atoms.Fraction)
           // Add a times symbol
-          MathList.InsertAndAdvance(ref _insertionIndex, MathAtoms.Times, MathListSubIndexType.None);
+          MathList.InsertAndAdvance(ref _insertionIndex, LaTeXDefaults.Times, MathListSubIndexType.None);
         MathList.InsertAndAdvance(ref _insertionIndex, new Atoms.Fraction {
           Numerator = new MathList(numerator),
-          Denominator = MathAtoms.PlaceholderList
+          Denominator = LaTeXDefaults.PlaceholderList
         }, MathListSubIndexType.Denominator);
       }
       void InsertAtomPair(MathAtom left, MathAtom right) {
@@ -355,7 +355,7 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
       void InsertCharacterKey(MathKeyboardInput i) => InsertAtom(AtomForKeyPress(i));
       void InsertSymbolName(string name, bool subscript = false, bool superscript = false) {
         var atom =
-          MathAtoms.ForLaTeXSymbolName(name) ??
+          LaTeXDefaults.ForLaTeXSymbolName(name) ??
             throw new InvalidCodePathException("Looks like someone mistyped a symbol name...");
         InsertAtom(atom);
         switch (subscript, superscript) {
@@ -417,13 +417,13 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
           HandleScriptButton(false);
           break;
         case MathKeyboardInput.SquareRoot:
-          InsertAtom(MathAtoms.PlaceholderSquareRoot);
+          InsertAtom(LaTeXDefaults.PlaceholderSquareRoot);
           break;
         case MathKeyboardInput.CubeRoot:
-          InsertAtom(MathAtoms.PlaceholderCubeRoot);
+          InsertAtom(LaTeXDefaults.PlaceholderCubeRoot);
           break;
         case MathKeyboardInput.NthRoot:
-          InsertAtom(MathAtoms.PlaceholderRadical);
+          InsertAtom(LaTeXDefaults.PlaceholderRadical);
           break;
         case MathKeyboardInput.VerticalBar:
           InsertCharacterKey(input);
@@ -759,19 +759,22 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
     private void InsertionPointChanged() {
       static void VisualizePlaceholders(MathList? mathList) {
         foreach (var mathAtom in mathList?.Atoms as IList<MathAtom> ?? Array.Empty<MathAtom>()) {
-          if (mathAtom is Atoms.Placeholder)
-            mathAtom.Nucleus = "\u25A1";
           if (mathAtom.Superscript is MathList super)
             VisualizePlaceholders(super);
           if (mathAtom.Subscript is MathList sub)
             VisualizePlaceholders(sub);
-          if (mathAtom is Atoms.Radical rad) {
-            VisualizePlaceholders(rad.Degree);
-            VisualizePlaceholders(rad.Radicand);
-          }
-          if (mathAtom is Atoms.Fraction frac) {
-            VisualizePlaceholders(frac.Numerator);
-            VisualizePlaceholders(frac.Denominator);
+          switch (mathAtom) {
+            case Atoms.Placeholder _:
+              mathAtom.Nucleus = "\u25A1";
+              break;
+            case Atoms.Radical rad:
+              VisualizePlaceholders(rad.Degree);
+              VisualizePlaceholders(rad.Radicand);
+              break;
+            case Atoms.Fraction frac:
+              VisualizePlaceholders(frac.Numerator);
+              VisualizePlaceholders(frac.Denominator);
+              break;
           }
         }
       }

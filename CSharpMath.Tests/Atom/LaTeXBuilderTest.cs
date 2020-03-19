@@ -611,7 +611,7 @@ namespace CSharpMath.Tests.Atom {
       Assert.Null(list);
       Assert.NotNull(builder.Error);
 
-      MathAtoms.AddLatexSymbol("lcm", new LargeOperator("lcm", false));
+      LaTeXDefaults.AddLatexSymbol("lcm", new LargeOperator("lcm", false));
       var builder2 = new LaTeXBuilder(input);
       var list2 = builder2.Build();
       Assert.Collection(list2,

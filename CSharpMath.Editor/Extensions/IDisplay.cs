@@ -11,8 +11,13 @@ namespace CSharpMath.Editor {
     public const float PixelDelta = 2;
 
     /// <summary>
-    /// Calculates the manhattan distance from a point to the nearest boundary of the rectangle.
+    /// Calculates the Manhattan distance from a point to the nearest boundary of the rectangle.
     /// </summary>
+    /// <remarks>
+    /// We use the Manhattan distance Δx+Δy instead of the Euclidean distance √(Δx²+Δy²)
+    /// because we prefer direct vertical/horizontal correspondance between
+    /// the pressed point and the matching index over diagonal correspondance.
+    /// </remarks>
     public static float DistanceFromPointToRect(PointF point, RectangleF rect) {
       float distance = 0;
       if (point.X < rect.X)

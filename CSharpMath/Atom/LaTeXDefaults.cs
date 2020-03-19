@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 
-namespace CSharpMath.Atom
- {
+namespace CSharpMath.Atom {
   using Atoms;
   //https://mirror.hmc.edu/ctan/macros/latex/contrib/unicode-math/unimath-symbols.pdf
-  public static class MathAtoms {
+  public static class LaTeXDefaults {
     public static Structures.AliasDictionary<string, MathAtom> Commands { get; } =
       new Structures.AliasDictionary<string, MathAtom> {
          { "square", Placeholder },
@@ -412,7 +411,7 @@ namespace CSharpMath.Atom
     public static void AddLatexSymbol(string name, MathAtom atom) => Commands.Add(name, atom);
 
     public static IEnumerable<string> SupportedLatexSymbolNames => Commands.Keys;
-    
+
     public static Structures.AliasDictionary<string, string> BoundaryDelimiters { get; } =
       new Structures.AliasDictionary<string, string> {
         { ".", string.Empty }, // . means no delimiter

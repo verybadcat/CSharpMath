@@ -8,7 +8,6 @@ namespace CSharpMath.DevUtils {
       //var path = Path.Combine(Environment.GetEnvironmentVariable("HOMEPATH"), "Desktop");
       iosMathDemo.ToFormsMoreExamples.Build();
       //CSharpMathExamples.MirrorFromIos.Do();
-
       //TypographyTest.BreakString.Benchmark();
       Console.WriteLine();
       Console.WriteLine("Finished executing the method(s) requested.");

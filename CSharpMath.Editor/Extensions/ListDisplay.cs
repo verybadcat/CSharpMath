@@ -61,12 +61,6 @@ namespace CSharpMath.Editor {
         case 1:
           displayWithPoint = xbounds[0];
           var rect = new RectangleF(displayWithPoint.Position, displayWithPoint.DisplayBounds().Size);
-          if (translatedPoint.X >= self.Width - PixelDelta)
-            // The point is close to the end. Only use the selected X bounds if the Y is within range.
-            if (translatedPoint.Y <= rect.YMin() - PixelDelta)
-              // The point is less than the Y including the delta.
-              // Move the cursor to the end rather than in this atom.
-              return MathListIndex.Level0Index(self.Range.End);
           break;
         default:
           // Use the closest since there are more than 2 sublists which have this X position.

@@ -266,12 +266,12 @@
             <Button Text="lim" Grid.Row="1" Grid.Column="1" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=LimitWithBase}"/>
             <Button Text="→" Grid.Row="1" Grid.Column="2" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=RightArrow}"/>
             <Button Text="'" Grid.Row="1" Grid.Column="3" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=Prime}"/>
-            <Button Text="␣" Grid.Row="1" Grid.Column="4" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=Space}"/>
+            <Button Text="∂" Grid.Row="1" Grid.Column="4" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=PartialDifferential}"/>
             <Button Text="sum" Grid.Row="2" Grid.Column="1" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=Summation}"/>
             <Button Text="sum_^" Grid.Row="2" Grid.Column="2" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=SummationBothLimits}"/>
             <Button Text="prod" Grid.Row="2" Grid.Column="3" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=Product}"/>
             <Button Text="prod_^" Grid.Row="2" Grid.Column="4" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=ProductBothLimits}"/>
-            <Button Text="(tba)" Grid.Row="3" Grid.Column="1" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=Up}"/>
+            <Button Text="␣" Grid.Row="3" Grid.Column="1" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=Space}"/>
             <Button Text="(tba)" Grid.Row="3" Grid.Column="2" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=Up}"/>
             <Button Text="(tba)" Grid.Row="3" Grid.Column="3" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=Up}"/>
             <Button Text="(tba)" Grid.Row="3" Grid.Column="4" Command="{e:MathInput Keyboard={StaticResource Keyboard}, Input=Up}"/>
