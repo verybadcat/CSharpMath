@@ -106,43 +106,35 @@ namespace CSharpMath.Editor {
 
       void HandleSlashButton() {
         // special / handling - makes the thing a fraction
-        var numerator = new MathList();
-        var openCount = 0;
+        var numerator = new Stack<MathAtom>();
+        var parenDepth = 0;
         if (_insertionIndex.FinalSubIndexType == MathListSubIndexType.BetweenBaseAndScripts)
           _insertionIndex = _insertionIndex.LevelDown()?.Next
               ?? throw new InvalidCodePathException("_insertionIndex.LevelDown() returned null");
         for (; _insertionIndex.Previous != null; _insertionIndex = _insertionIndex.Previous) {
-          var a = MathList.AtomAt(_insertionIndex.Previous);
-          if (a is null) throw new InvalidCodePathException("Invalid _insertionIndex");
-          switch (a) {
-            case Atoms.Open _: openCount--; break;
-            case Atoms.Close { HasCorrespondingOpen: true }:
-              openCount++; break;
+          switch (MathList.AtomAt(_insertionIndex.Previous), parenDepth) {
+            case (null, _): throw new InvalidCodePathException("Invalid _insertionIndex");
+            // Stop looking behind upon encountering these atoms unparenthesized
+            case (Atoms.Open _, _) when --parenDepth < 0: goto stop;
+            case (Atoms.Close { HasCorrespondingOpen: true } a, _): parenDepth++; numerator.Push(a); break;
+            case (Atoms.UnaryOperator _, 0): goto stop;
+            case (Atoms.BinaryOperator _, 0): goto stop;
+            case (Atoms.Relation _, 0): goto stop;
+            case (Atoms.Fraction _, 0): goto stop;
+            case (Atoms.Open _, _) when parenDepth < 0: goto stop;
+            // We don't put this atom on the fraction
+            case (var a, _): numerator.Push(a); break;
           }
-          if (a switch {
-            Atoms.BinaryOperator _ when openCount == 0 => true,
-            Atoms.Relation _ when openCount == 0 => true,
-            Atoms.Fraction _ when openCount == 0 => true,
-            Atoms.Open _ when openCount < 0 => true,
-            _ => false
-          })
-            //We don't put this atom on the fraction
-            break;
-          else
-            numerator.Insert(0, a);
         }
-        MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count));
-        if (numerator.Count == 0) {
+stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count));
+        if (numerator.Count == 0)
           // so we didn't really find any numbers before this, so make the numerator 1
-          numerator.Add(new Atoms.Number("1"));
-          if (MathList.AtomAt(_insertionIndex.Previous) is Atoms.Fraction)
-            //Add a times symbol
-            MathList.InsertAndAdvance
-              (ref _insertionIndex, MathAtoms.Times, MathListSubIndexType.None);
-        }
-
+          numerator.Push(new Atoms.Number("1"));
+        if (MathList.AtomAt(_insertionIndex.Previous) is Atoms.Fraction)
+          // Add a times symbol
+          MathList.InsertAndAdvance(ref _insertionIndex, MathAtoms.Times, MathListSubIndexType.None);
         MathList.InsertAndAdvance(ref _insertionIndex, new Atoms.Fraction {
-          Numerator = numerator,
+          Numerator = new MathList(numerator),
           Denominator = MathAtoms.PlaceholderList
         }, MathListSubIndexType.Denominator);
       }
@@ -601,6 +593,9 @@ namespace CSharpMath.Editor {
           break;
         case MathKeyboardInput.DownArrow:
           InsertSymbolName("downarrow");
+          break;
+        case MathKeyboardInput.PartialDifferential:
+          InsertSymbolName("partial");
           break;
         case MathKeyboardInput.Prime:
           InsertAtom(new Atoms.Prime(1));

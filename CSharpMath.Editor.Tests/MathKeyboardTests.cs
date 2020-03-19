@@ -57,8 +57,8 @@ namespace CSharpMath.Editor.Tests {
       T(@"+--\times \times \div ::\% ,!\infty \angle \degree \vert \log \ln ",
         K.Plus, K.Minus, K.Minus_, K.Multiply, K.Multiply_, K.Divide, K.Ratio, K.Ratio_, K.Percentage, 
         K.Comma, K.Factorial, K.Infinity, K.Angle, K.Degree, K.VerticalBar, K.Logarithm, K.NaturalLogarithm),
-      T(@"''\leftarrow \uparrow \rightarrow \downarrow \  ",
-        K.Prime, K.Prime, K.LeftArrow, K.UpArrow, K.RightArrow, K.DownArrow, K.Space),
+      T(@"''\partial \leftarrow \uparrow \rightarrow \downarrow \  ",
+        K.Prime, K.Prime, K.PartialDifferential, K.LeftArrow, K.UpArrow, K.RightArrow, K.DownArrow, K.Space),
       //Relations
       T(@"=\neq <\leq >\geq ", K.Equals, K.NotEquals, K.LessThan, K.LessOrEquals, K.GreaterThan, K.GreaterOrEquals),
       //Capital English alphabets
@@ -307,6 +307,8 @@ namespace CSharpMath.Editor.Tests {
       T(@"e^{\square }",
         K.BaseEPower, K.Left, K.A, K.Fraction, K.Right, K.Right, K.SquareRoot, K.Right, K.B,
         K.Backspace, K.Backspace, K.Backspace, K.Backspace),
+      T(@"\prod _{i=1}^{\infty }", K.A, K.SummationBothLimits, K.SmallI, K.Equals, K.D1, K.Right, K.Infinity,
+        K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Backspace, K.Backspace, K.Product),
     ]
     public void BetweenBaseAndScriptsRemove(string latex, params K[] inputs) => Test(latex, inputs);
 
@@ -327,6 +329,8 @@ namespace CSharpMath.Editor.Tests {
       T(@"\frac{1}{\frac{2}{■}}", K.Slash, K.D2, K.Slash),
       T(@"\frac{1}{\square }\times \frac{1}{■}", K.Slash, K.Right, K.Slash),
       T(@"\frac{1}{2}\times \frac{1}{■}", K.Slash, K.D2, K.Right, K.Slash),
+      T(@"\frac{1}{2}\times \frac{1}{■}", K.Slash, K.D2, K.Right, K.D1, K.Slash),
+      T(@"\frac{1}{2}\times \frac{2}{■}", K.Slash, K.D2, K.Right, K.D2, K.Slash),
       
       T(@"\sqrt{\frac{2}{■}}", K.SquareRoot, K.D2, K.Slash),
       T(@"\frac{\sqrt{2}}{■}", K.SquareRoot, K.D2, K.Right, K.Slash),
@@ -372,6 +376,13 @@ namespace CSharpMath.Editor.Tests {
       T(@"\sqrt{x+\frac{2}{■}}", K.SquareRoot, K.SmallX, K.Plus, K.D2, K.Slash),
       T(@"\frac{(x+\sqrt{2})}{■}", K.BothRoundBrackets, K.SmallX, K.Plus, K.SquareRoot, K.D2, K.Right, K.Right, K.Slash),
       T(@"\sqrt[X2Z+\frac{X2Z}{■}]{\square }", K.NthRoot, K.X, K.D2, K.Z, K.Plus, K.X, K.D2, K.Z, K.Slash),
+
+      T(@"\frac{\int }{■}", K.Integral, K.Slash),
+      T(@"\frac{1\int }{■}", K.D1, K.Integral, K.Slash),
+      T(@"\frac{\int 1}{■}", K.Integral, K.D1, K.Slash),
+      T(@"+\frac{\prod }{■}", K.Plus, K.Product, K.Slash),
+      T(@"\frac{x}{2}\times \frac{\sum }{■}", K.SmallX, K.Slash, K.D2, K.Right, K.Summation, K.Slash),
+      T(@"\frac{\lim _{x\rightarrow 2}}{■}", K.LimitWithBase, K.SmallX, K.RightArrow, K.D2, K.Right, K.Slash),
     ]
     public void Slash(string latex, params K[] inputs) => Test(latex, inputs);
   }

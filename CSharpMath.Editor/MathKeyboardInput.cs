@@ -17,7 +17,7 @@ namespace CSharpMath.Editor {
     Plus = '+', Minus = '−', Minus_ = '-', Multiply = '×', Multiply_ = '*', Divide = '÷',
     Ratio = '∶', Ratio_ = ':', Percentage = '%', Comma = ',', Semicolon = ';', Factorial = '!',
     Infinity = '∞', Angle = '∠', Degree = '°', VerticalBar = '|',
-    Logarithm = '㏒', NaturalLogarithm = '㏑', Prime = '\'',
+    Logarithm = '㏒', NaturalLogarithm = '㏑', Prime = '\'', PartialDifferential = '∂',
     LeftArrow = '←', UpArrow = '↑', RightArrow = '→', DownArrow = '↓', Space= ' ',
 
     // More complicated operators
