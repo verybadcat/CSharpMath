@@ -658,19 +658,28 @@ namespace CSharpMath.Editor.Tests {
         { (10, 5), 1 },
         { (10, 20), 0, (SubIndex.Numerator, 0) },
         { (10, 100), 0, (SubIndex.Numerator, 0) },
-        { (20, -100), 1 },
-        { (20, -5), 1 },
-        { (20, 0), 1 },
-        { (20, 30), 1 },
-        { (20, 100), 1 },
-        { (25, -100), 1 },
-        { (25, -5), 1 },
-        { (25, 0), 1 },
-        { (25, 30), 1 },
-        { (25, 100), 1 },
-        { (30, 0), 2 }
+        { (15, -100), 1, (SubIndex.Subscript, 0) },
+        { (15, -5), 1, (SubIndex.Subscript, 0)  },
+        { (15, 0), 1 },
+        { (15, 30), 1, (SubIndex.Superscript, 0)  },
+        { (15, 100), 1, (SubIndex.Superscript, 0)  },
+        { (20, -100), 1, (SubIndex.Subscript, 0)  },
+        { (20, -5), 1, (SubIndex.Subscript, 0)  },
+        { (20, 0), 1, (SubIndex.BetweenBaseAndScripts, 1) },
+        { (20, 30), 1, (SubIndex.Superscript, 0)  },
+        { (20, 100), 1, (SubIndex.Superscript, 0)  },
+        { (25, -100), 1, (SubIndex.Subscript, 0)  },
+        { (25, -5), 1, (SubIndex.Subscript, 0)  },
+        { (25, 0), 2 },
+        { (25, 30), 1, (SubIndex.Superscript, 0)  },
+        { (25, 100), 1, (SubIndex.Superscript, 0)  },
+        { (30, -100), 2  },
+        { (30, -5), 2  },
+        { (30, 0), 2 },
+        { (30, 30), 2  },
+        { (30, 100), 2 },
       };
     [Theory, MemberData(nameof(PlaceholderData))]
-    public void Placeholder(PointF point, MathListIndex expected) => Test(@"\frac\square\square\square", point, expected);
+    public void Placeholder(PointF point, MathListIndex expected) => Test(@"\frac\square\square\sum_\square^\square", point, expected);
   }
 }

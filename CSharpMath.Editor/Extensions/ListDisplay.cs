@@ -50,9 +50,15 @@ namespace CSharpMath.Editor {
               }
             }
             // All the way to the right
-            return self.Range.End < 0
-                   ? null
-                   : MathListIndex.Level0Index(self.Range.End);
+            return
+              self.Range.End < 0
+              ? null
+              : self.Displays.Count == 1
+                && self.Displays[0] is TextLineDisplay<TFont, TGlyph> { Atoms:var atoms }
+                && atoms.Count == 1
+                && atoms[0] is Atom.Atoms.Placeholder
+              ? MathListIndex.Level0Index(self.Range.Location)
+              : MathListIndex.Level0Index(self.Range.End);
           } else
             // It is within the ListDisplay but not within the X bounds of any sublist.
             // Use the closest in that case.
@@ -60,7 +66,6 @@ namespace CSharpMath.Editor {
           break;
         case 1:
           displayWithPoint = xbounds[0];
-          var rect = new RectangleF(displayWithPoint.Position, displayWithPoint.DisplayBounds().Size);
           break;
         default:
           // Use the closest since there are more than 2 sublists which have this X position.
