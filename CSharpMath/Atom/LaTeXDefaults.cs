@@ -328,9 +328,10 @@ namespace CSharpMath.Atom {
     public static Radical PlaceholderSquareRoot => new Radical(null, PlaceholderList);
     public static Radical PlaceholderCubeRoot => new Radical(new MathList(new Number("3")), PlaceholderList);
 
-    public static MathAtom? ForCharacter(char c) {
-      var s = c.ToStringInvariant();
-      if (char.IsControl(c) || char.IsWhiteSpace(c)) {
+    public static MathAtom? ForAscii(sbyte c) {
+      if (c < 0) throw new ArgumentOutOfRangeException(nameof(c), c, "The character cannot be negative");
+      var s = ((char)c).ToStringInvariant();
+      if (char.IsControl((char)c) || char.IsWhiteSpace((char)c)) {
         return null; // skip spaces
       }
       if (c >= '0' && c <= '9') {
@@ -341,58 +342,52 @@ namespace CSharpMath.Atom {
       }
       switch (c) {
 #warning Todo check if all these 9 characters are already accounted for in MathListBuilder, then remove
-        case '$':
-        case '%':
-        case '#':
-        case '&':
-        case '~':
-        case '\'':
-        case '^':
-        case '_':
-        case '\\':
+        case (sbyte)'$':
+        case (sbyte)'%':
+        case (sbyte)'#':
+        case (sbyte)'&':
+        case (sbyte)'~':
+        case (sbyte)'\'':
+        case (sbyte)'^':
+        case (sbyte)'_':
+        case (sbyte)'{':
+        case (sbyte)'}':
+        case (sbyte)'\\': // All these are special characters we don't support.
           return null;
-        case '(':
-        case '[':
-        case '{':
+        case (sbyte)'(':
+        case (sbyte)'[':
           return new Open(s);
-        case ')':
-        case ']':
-        case '}':
+        case (sbyte)')':
+        case (sbyte)']':
           return new Close(s);
-        case '!':
-        case '?':
-          return new Close(s, false);
-        case ',':
-        case ';':
+        case (sbyte)'!':
+        case (sbyte)'?':
+          return new Close(s, hasCorrespondingOpen: false);
+        case (sbyte)',':
+        case (sbyte)';':
           return new Punctuation(s);
-        case '=':
-        case '<':
-        case '>':
-        case '≠':
-        case '≥':
-        case '≤':
+        case (sbyte)'=':
+        case (sbyte)'<':
+        case (sbyte)'>':
           return new Relation(s);
-        case ':': // Colon is a ratio. Regular colon is \colon
-        case '\u2236':
+        case (sbyte)':': // Colon is a ratio. Regular colon is \colon
           return new Relation("\u2236");
-        case '-': // use the math minus sign
-        case '\u2212':
+        case (sbyte)'-': // Use the math minus sign
           return new BinaryOperator("\u2212");
-        case '+':
-        case '*': // Star operator, not times symbol
+        case (sbyte)'+':
+        case (sbyte)'*': // Star operator, not multiplication
           return new BinaryOperator(s);
-        case '×':
-          return Times;
-        case '÷':
-          return Divide;
-        case '.':
+        case (sbyte)'.':
           return new Number(s);
-        case var _ when Display.UnicodeFontChanger.IsLowerGreek(c)
-                     || Display.UnicodeFontChanger.IsUpperGreek(c):
-          // All greek letters are rendered as variables.
-          return new Variable(s);
-        default:
+        case (sbyte)'"':
+        case (sbyte)'/':
+        case (sbyte)'@':
+        case (sbyte)'`':
+        case (sbyte)'|':
           return new Ordinary(s);
+        default:
+          throw new Structures.InvalidCodePathException
+            ($"Ascii character {c} should have been accounted for.");
       }
     }
 

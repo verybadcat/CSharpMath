@@ -54,8 +54,8 @@ namespace CSharpMath.Editor.Tests {
       //Decimals
       T(@"0123456789.", K.D0, K.D1, K.D2, K.D3, K.D4, K.D5, K.D6, K.D7, K.D8, K.D9, K.Decimal),
       //Basic operators
-      T(@"+--\times \times \div ::\% ,!\infty \angle \degree \vert \log \ln ",
-        K.Plus, K.Minus, K.Minus_, K.Multiply, K.Multiply_, K.Divide, K.Ratio, K.Ratio_, K.Percentage, 
+      T(@"+-\times \div :\% ,!\infty \angle \degree \vert \log \ln ",
+        K.Plus, K.Minus, K.Multiply, K.Divide, K.Ratio, K.Percentage, 
         K.Comma, K.Factorial, K.Infinity, K.Angle, K.Degree, K.VerticalBar, K.Logarithm, K.NaturalLogarithm),
       T(@"''\partial \leftarrow \uparrow \rightarrow \downarrow \  ",
         K.Prime, K.Prime, K.PartialDifferential, K.LeftArrow, K.UpArrow, K.RightArrow, K.DownArrow, K.Space),
@@ -362,10 +362,8 @@ namespace CSharpMath.Editor.Tests {
       T(@"1+\frac{2}{■}", K.D1, K.Plus, K.D2, K.Slash),
       T(@"1-\frac{2}{■}", K.D1, K.Minus, K.D2, K.Slash),
       T(@"1\times \frac{2}{■}", K.D1, K.Multiply, K.D2, K.Slash),
-      T(@"1\times \frac{2}{■}", K.D1, K.Multiply_, K.D2, K.Slash),
       T(@"1\div \frac{2}{■}", K.D1, K.Divide, K.D2, K.Slash),
       T(@"1:\frac{2}{■}", K.D1, K.Ratio, K.D2, K.Slash),
-      T(@"1:\frac{2}{■}", K.D1, K.Ratio_, K.D2, K.Slash),
       T(@"1=\frac{2}{■}", K.D1, K.Equals, K.D2, K.Slash),
       T(@"1\neq \frac{2}{■}", K.D1, K.NotEquals, K.D2, K.Slash),
       T(@"1<\frac{2}{■}", K.D1, K.LessThan, K.D2, K.Slash),

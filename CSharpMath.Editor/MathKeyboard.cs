@@ -43,20 +43,6 @@ namespace CSharpMath.Editor {
       foreach (var input in inputs) KeyPress(input);
     }
     public void KeyPress(MathKeyboardInput input) {
-      static MathAtom AtomForKeyPress(MathKeyboardInput i) =>
-        // Get the basic conversion from MathAtoms, and then special case unicode characters and latex special characters.
-        i switch
-        {
-                //https://github.com/kostub/MathEditor/blob/61f67c6224000c224e252f6eeba483003f11d3d5/mathEditor/editor/MTEditableMathLabel.m#L414
-                MathKeyboardInput.Multiply => LaTeXDefaults.Times,
-          MathKeyboardInput.Multiply_ => LaTeXDefaults.Times,
-          MathKeyboardInput.SquareRoot => LaTeXDefaults.PlaceholderSquareRoot,
-          MathKeyboardInput.CubeRoot => LaTeXDefaults.PlaceholderCubeRoot,
-          MathKeyboardInput.Fraction => LaTeXDefaults.PlaceholderFraction,
-          _ when LaTeXDefaults.ForCharacter((char)i) is MathAtom a => a,
-          _ => new Atoms.Ordinary(((char)i).ToString()) //Just an ordinary character
-        };
-
       void HandleScriptButton(bool isSuperScript) {
         var subIndexType =
           isSuperScript ? MathListSubIndexType.Superscript : MathListSubIndexType.Subscript;
@@ -352,7 +338,6 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
             Atoms.Radical _ => MathListSubIndexType.Radicand,
             _ => MathListSubIndexType.None
           });
-      void InsertCharacterKey(MathKeyboardInput i) => InsertAtom(AtomForKeyPress(i));
       void InsertSymbolName(string name, bool subscript = false, bool superscript = false) {
         var atom =
           LaTeXDefaults.ForLaTeXSymbolName(name) ??
@@ -416,6 +401,9 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
         case MathKeyboardInput.Subscript:
           HandleScriptButton(false);
           break;
+        case MathKeyboardInput.Fraction:
+          InsertAtom(LaTeXDefaults.PlaceholderFraction);
+          break;
         case MathKeyboardInput.SquareRoot:
           InsertAtom(LaTeXDefaults.PlaceholderSquareRoot);
           break;
@@ -425,14 +413,12 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
         case MathKeyboardInput.NthRoot:
           InsertAtom(LaTeXDefaults.PlaceholderRadical);
           break;
-        case MathKeyboardInput.VerticalBar:
-          InsertCharacterKey(input);
-          break;
         case MathKeyboardInput.Absolute:
           InsertAtomPair(new Atoms.Ordinary("|"), new Atoms.Ordinary("|"));
           break;
         case MathKeyboardInput.BaseEPower:
-          InsertCharacterKey(MathKeyboardInput.SmallE);
+          InsertAtom(LaTeXDefaults.ForAscii((sbyte)'e')
+            ?? throw new InvalidCodePathException("LaTeXDefaults.ForAscii((byte)'e') is null"));
           HandleScriptButton(true);
           break;
         case MathKeyboardInput.Logarithm:
@@ -597,6 +583,42 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
         case MathKeyboardInput.PartialDifferential:
           InsertSymbolName("partial");
           break;
+        case MathKeyboardInput.NotEquals:
+          InsertSymbolName("neq");
+          break;
+        case MathKeyboardInput.LessOrEquals:
+          InsertSymbolName("leq");
+          break;
+        case MathKeyboardInput.GreaterOrEquals:
+          InsertSymbolName("geq");
+          break;
+        case MathKeyboardInput.Multiply:
+          InsertSymbolName("times");
+          break;
+        case MathKeyboardInput.Divide:
+          InsertSymbolName("div");
+          break;
+        case MathKeyboardInput.Infinity:
+          InsertSymbolName("infty");
+          break;
+        case MathKeyboardInput.Degree:
+          InsertSymbolName("degree");
+          break;
+        case MathKeyboardInput.Angle:
+          InsertSymbolName("angle");
+          break;
+        case MathKeyboardInput.LeftCurlyBracket:
+          InsertSymbolName("{");
+          break;
+        case MathKeyboardInput.RightCurlyBracket:
+          InsertSymbolName("}");
+          break;
+        case MathKeyboardInput.Percentage:
+          InsertSymbolName("%");
+          break;
+        case MathKeyboardInput.Space:
+          InsertSymbolName(" ");
+          break;
         case MathKeyboardInput.Prime:
           InsertAtom(new Atoms.Prime(1));
           break;
@@ -604,8 +626,6 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
         case MathKeyboardInput.RightRoundBracket:
         case MathKeyboardInput.LeftSquareBracket:
         case MathKeyboardInput.RightSquareBracket:
-        case MathKeyboardInput.LeftCurlyBracket:
-        case MathKeyboardInput.RightCurlyBracket:
         case MathKeyboardInput.D0:
         case MathKeyboardInput.D1:
         case MathKeyboardInput.D2:
@@ -619,27 +639,14 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
         case MathKeyboardInput.Decimal:
         case MathKeyboardInput.Plus:
         case MathKeyboardInput.Minus:
-        case MathKeyboardInput.Minus_:
-        case MathKeyboardInput.Multiply:
-        case MathKeyboardInput.Multiply_:
-        case MathKeyboardInput.Divide:
-        case MathKeyboardInput.Fraction:
         case MathKeyboardInput.Ratio:
-        case MathKeyboardInput.Ratio_:
-        case MathKeyboardInput.Percentage:
         case MathKeyboardInput.Comma:
         case MathKeyboardInput.Semicolon:
         case MathKeyboardInput.Factorial:
-        case MathKeyboardInput.Infinity:
-        case MathKeyboardInput.Angle:
-        case MathKeyboardInput.Degree:
-        case MathKeyboardInput.Space:
+        case MathKeyboardInput.VerticalBar:
         case MathKeyboardInput.Equals:
-        case MathKeyboardInput.NotEquals:
         case MathKeyboardInput.LessThan:
-        case MathKeyboardInput.LessOrEquals:
         case MathKeyboardInput.GreaterThan:
-        case MathKeyboardInput.GreaterOrEquals:
         case MathKeyboardInput.A:
         case MathKeyboardInput.B:
         case MathKeyboardInput.C:
@@ -692,6 +699,10 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
         case MathKeyboardInput.SmallX:
         case MathKeyboardInput.SmallY:
         case MathKeyboardInput.SmallZ:
+          InsertAtom(LaTeXDefaults.ForAscii(checked((sbyte)input))
+            ?? throw new InvalidCodePathException
+              ($"Invalid LaTeX character {input} was handled by ascii case"));
+          break;
         case MathKeyboardInput.Alpha:
         case MathKeyboardInput.Beta:
         case MathKeyboardInput.Gamma:
@@ -741,7 +752,8 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
         case MathKeyboardInput.SmallChi:
         case MathKeyboardInput.SmallPsi:
         case MathKeyboardInput.SmallOmega:
-          InsertCharacterKey(input);
+          // All Greek letters are rendered as variables.
+          InsertAtom(new Atoms.Variable(((char)input).ToStringInvariant()));
           break;
         default:
           break;

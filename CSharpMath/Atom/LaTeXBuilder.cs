@@ -158,12 +158,15 @@ namespace CSharpMath.Atom {
           case ' ' when _textMode:
             atom = new Ordinary(" ");
             break;
-          case var ch when LaTeXDefaults.ForCharacter(ch) is MathAtom a:
-            atom = a;
+          case var ch when ch <= sbyte.MaxValue:
+            if (LaTeXDefaults.ForAscii((sbyte)ch) is MathAtom asciiAtom)
+              atom = asciiAtom;
+            else continue; // Ignore ASCII spaces and control characters
             break;
-          default:
+          case var ch:
             // not a recognized character, display it directly
-            continue;
+            atom = new Ordinary(ch.ToStringInvariant());
+            break;
         }
         atom.FontStyle = _currentFontStyle;
         r.Add(atom);
