@@ -48,7 +48,8 @@ namespace CSharpMath.Rendering.FrontEnd {
     private void DrawCore(TCanvas canvas, float? width, TextAlignment alignment,
       Thickness padding, float offsetX, float offsetY) {
       var c = WrapCanvas(canvas);
-      if (!Source.IsValid) DrawError(c);
+      if (Source is null) return;
+      else if (!Source.IsValid) DrawError(c);
       else {
         UpdateDisplay(width ?? c.Width);
         _relativeXCoordDisplay.Position =
