@@ -57,9 +57,7 @@ namespace CSharpMath.Tests.Atom {
       var atom3 = LaTeXDefaults.Divide;
       var list = new MathList { atom, atom2, atom3 };
       var list2 = new MathList { atom3, atom2 };
-      var frac = new Fraction(false) {
-        Numerator = list,
-        Denominator = list2,
+      var frac = new Fraction(list, list2, false) {
         LeftDelimiter = "a",
         RightDelimiter = "b"
       };
@@ -80,7 +78,7 @@ namespace CSharpMath.Tests.Atom {
       var atom3 = LaTeXDefaults.Divide;
       var list = new MathList(atom, atom2, atom3);
       var list2 = new MathList(atom3, atom2);
-      var radical = new Radical { Degree = list2, Radicand = list };
+      var radical = new Radical(list2, list);
 
       var copy = radical.Clone(false);
       CheckClone(copy, radical);
@@ -103,11 +101,11 @@ namespace CSharpMath.Tests.Atom {
       var atom2 = LaTeXDefaults.Times;
       var atom3 = LaTeXDefaults.Divide;
       var list = new MathList(atom1, atom2, atom3);
-      var inner = new Inner() {
-        LeftBoundary = new Boundary("("),
-        InnerList = list,
-        RightBoundary = new Boundary(")")
-      };
+      var inner = new Inner(
+        new Boundary("("),
+        list,
+        new Boundary(")")
+      );
 
       Assert.IsType<Inner>(inner);
 
@@ -150,10 +148,7 @@ namespace CSharpMath.Tests.Atom {
       var atom2 = LaTeXDefaults.Times;
       var atom3 = LaTeXDefaults.Divide;
       var list = new MathList(atom1, atom2, atom3);
-      var accent = new Accent("^");
-
-      Assert.IsType<Accent>(accent);
-      accent.InnerList = list;
+      var accent = new Accent("^", list);
 
       var copy = accent.Clone(false);
       CheckClone(copy, accent);

@@ -87,7 +87,8 @@ namespace CSharpMath.Atom
       return true;
     }
     public override bool Equals(object obj) => obj is MathList l ? EqualsList(l) : false;
-    public override int GetHashCode() => Atoms.GetHashCode();
+    public override int GetHashCode() =>
+      Atoms.Count == 0 ? 0 : Atoms.GetHashCode(); // Special case empty list for LaTeXDefaults
     bool IEquatable<MathList>.Equals(MathList otherList) => EqualsList(otherList);
     public IEnumerator<MathAtom> GetEnumerator() => Atoms.GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => Atoms.GetEnumerator();

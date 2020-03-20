@@ -1,7 +1,7 @@
 namespace CSharpMath.Atom.Atoms {
   /// <summary>An underlined atom</summary>
-  public class Underline : MathAtom {
-    public MathList InnerList { get; set; }
+  public class Underline : MathAtom, IMathListContainer1 {
+    public MathList InnerList { get; }
     public Underline(MathList innerList) : base() =>
       InnerList = innerList;
     public new Underline Clone(bool finalize) => (Underline)base.Clone(finalize);
@@ -16,7 +16,6 @@ namespace CSharpMath.Atom.Atoms {
       EqualsAtom(other) && InnerList.EqualsList(other.InnerList);
     public override bool Equals(object obj) =>
       obj is Underline u ? EqualsUnderline(u) : false;
-    public override int GetHashCode() =>
-      unchecked(base.GetHashCode() + 57 * InnerList.GetHashCode());
+    public override int GetHashCode() => (base.GetHashCode(), InnerList).GetHashCode();
   }
 }

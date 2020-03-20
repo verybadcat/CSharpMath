@@ -268,16 +268,16 @@ namespace CSharpMath.Tests {
             Assert.False(glyph2.HasScript);
             Assert.Equal(right, glyph2.Glyph);
           }));
-    [Theory, InlineData("\\sqrt2", null, "2"), InlineData("\\sqrt[3]2", "3", "2")]
+    [Theory, InlineData("\\sqrt2", "", "2"), InlineData("\\sqrt[3]2", "3", "2")]
     public void TestRadical(string latex, string degree, string radicand) =>
-      TestOuter(latex, 1, 18.56, 4, degree is null ? 20 : 21.44, d => {
+      TestOuter(latex, 1, 18.56, 4, degree.IsEmpty() ? 20 : 21.44, d => {
         var radical = Assert.IsType<RadicalDisplay<TFont, TGlyph>>(d);
         Assert.Equal(new Range(0, 1), radical.Range);
         Assert.False(radical.HasScript);
         Assert.Equal(new PointF(), radical.Position);
         Assert.NotNull(radical.Radicand);
 
-        if (degree != null)
+        if (degree.IsNonEmpty())
           TestList(1, 9.8, 2.8, 7, 5.56, 8.736, LinePosition.Regular, Range.UndefinedInt, dd => {
             var line3 = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(dd);
             Assert.Single(line3.Atoms);
@@ -288,7 +288,7 @@ namespace CSharpMath.Tests {
           })(radical.Degree);
         else Assert.Null(radical.Degree);
 
-        TestList(1, 14, 4, 10, degree is null ? 10 : 11.44, 0, LinePosition.Regular, Range.UndefinedInt, dd => {
+        TestList(1, 14, 4, 10, degree.IsEmpty() ? 10 : 11.44, 0, LinePosition.Regular, Range.UndefinedInt, dd => {
           var line2 = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(dd);
           Assert.Single(line2.Atoms);
           AssertText(radicand, line2);
@@ -431,5 +431,23 @@ namespace CSharpMath.Tests {
               Assert.Equal(new Range(0, 1), subscript.Range);
             })(fraction.Denominator);
         });
+    [Fact]
+    public void TestAccent() =>
+      TestOuter(@"\bar{x}", 1, 19, 9, 10.16, d => {
+        var accent = Assert.IsType<AccentDisplay<TFont, TGlyph>>(d);
+        Assert.Equal(0, accent.Accent.ShiftDown);
+        Assert.Equal('\u0304', accent.Accent.Glyph);
+        Approximately.Equal(new PointF(0.16f, 5), accent.Accent.Position);
+        Assert.False(accent.Accent.HasScript);
+        Assert.Equal(new Range(0, 1), accent.Accent.Range);
+        TestList(1, 14, 4, 10, 0, 0, LinePosition.Regular, Range.UndefinedInt,
+          d => {
+            var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
+            Assert.Single(line.Atoms);
+            AssertText("x", line);
+            Assert.Equal(new PointF(), line.Position);
+            Assert.False(line.HasScript);
+          })(accent.Accentee);
+      });
   }
 }

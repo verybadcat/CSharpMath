@@ -119,10 +119,10 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
         if (MathList.AtomAt(_insertionIndex.Previous) is Atoms.Fraction)
           // Add a times symbol
           MathList.InsertAndAdvance(ref _insertionIndex, LaTeXDefaults.Times, MathListSubIndexType.None);
-        MathList.InsertAndAdvance(ref _insertionIndex, new Atoms.Fraction {
-          Numerator = new MathList(numerator),
-          Denominator = LaTeXDefaults.PlaceholderList
-        }, MathListSubIndexType.Denominator);
+        MathList.InsertAndAdvance(ref _insertionIndex, new Atoms.Fraction(
+          new MathList(numerator),
+          LaTeXDefaults.PlaceholderList
+        ), MathListSubIndexType.Denominator);
       }
       void InsertAtomPair(MathAtom left, MathAtom right) {
         MathList.InsertAndAdvance(ref _insertionIndex, left, MathListSubIndexType.None);
@@ -165,7 +165,7 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
                   (MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1));
                 break;
               case MathListSubIndexType.BetweenBaseAndScripts:
-                if (MathList.AtomAt(levelDown) is Atoms.Radical rad && rad.Radicand != null)
+                if (MathList.AtomAt(levelDown) is Atoms.Radical rad && rad.Radicand.Count > 0)
                   _insertionIndex = levelDown.LevelUpWithSubIndex
                     (MathListSubIndexType.Radicand,
                      MathListIndex.Level0Index(rad.Radicand.Count));
@@ -299,7 +299,7 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
             break;
           case Atoms.Radical rad:
             _insertionIndex = _insertionIndex.LevelUpWithSubIndex(
-              rad.Degree is MathList ? MathListSubIndexType.Degree : MathListSubIndexType.Radicand,
+              rad.Degree.Count > 0 ? MathListSubIndexType.Degree : MathListSubIndexType.Radicand,
               MathListIndex.Level0Index(0));
             break;
           case var a when a.Superscript != null || a.Subscript != null:

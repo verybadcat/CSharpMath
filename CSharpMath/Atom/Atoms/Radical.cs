@@ -2,20 +2,23 @@ using System.Text;
 
 namespace CSharpMath.Atom.Atoms {
   public class Radical: MathAtom, IMathListContainer2 {
-    public MathList? Degree { get; set; }
+    public Radical(MathList degree, MathList radicand) =>
+      (Degree, Radicand) = (degree, radicand);
+    public MathList Degree { get; }
     /// <summary>Whatever is under the square root sign</summary>
-    public MathList? Radicand { get; set; }
-    MathList? IMathListContainer2.InnerList1 { get => Degree; set => Degree = value; }
-    MathList? IMathListContainer2.InnerList2 { get => Radicand; set => Radicand = value; }
-    public Radical() : base(string.Empty) { }
+    public MathList Radicand { get; }
+    MathList IMathListContainer2.InnerList1 => Degree;
+    MathList IMathListContainer2.InnerList2 => Radicand;
     public new Radical Clone(bool finalize) => (Radical)base.Clone(finalize);
     protected override MathAtom CloneInside(bool finalize) =>
-      new Radical { Degree = Degree?.Clone(finalize), Radicand = Radicand?.Clone(finalize) };
+      new Radical(Degree.Clone(finalize), Radicand.Clone(finalize));
     public override bool ScriptsAllowed => true;
     public override string DebugString =>
       new StringBuilder(@"\sqrt")
       .AppendInBracketsOrNothing(Degree?.DebugString)
       .AppendInBracesOrLiteralNull(Radicand?.DebugString)
       .AppendDebugStringOfScripts(this).ToString();
+    public override int GetHashCode() =>
+      (base.GetHashCode(), Degree, Radicand).GetHashCode();
   }
 }

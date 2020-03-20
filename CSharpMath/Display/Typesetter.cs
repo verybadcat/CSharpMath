@@ -198,7 +198,7 @@ namespace CSharpMath.Display {
             AddDisplayLine(false);
             AddInterElementSpace(prevAtom, rad);
             var displayRad = MakeRadical(rad.Radicand, rad.IndexRange);
-            if (rad.Degree != null) {
+            if (rad.Degree.IsNonEmpty()) {
               // add the degree to the radical
               displayRad.SetDegree(
                 Typesetter.CreateLine(rad.Degree, _styleFont, _context, LineStyle.Script),
@@ -225,10 +225,10 @@ namespace CSharpMath.Display {
             AddDisplayLine(false);
             AddInterElementSpace(prevAtom, inner);
             ListDisplay<TFont, TGlyph> innerDisplay;
-            if (inner.LeftBoundary != null || inner.RightBoundary != null) {
+            if (inner.LeftBoundary != Boundary.Empty || inner.RightBoundary != Boundary.Empty) {
               innerDisplay = _MakeLeftRight(inner);
             } else {
-              innerDisplay = CreateLine(inner.InnerList ?? new MathList(), _font, _context, _style, _cramped);
+              innerDisplay = CreateLine(inner.InnerList, _font, _context, _style, _cramped);
             }
             innerDisplay.Position = _currentPosition;
             _currentPosition.X += innerDisplay.Width;
@@ -300,7 +300,7 @@ namespace CSharpMath.Display {
           case RaiseBox raiseBox:
             AddDisplayLine(false);
             var raisedDisplay =
-              Typesetter.CreateLine(raiseBox.InnerList ?? new MathList(), _font, _context, _style);
+              Typesetter.CreateLine(raiseBox.InnerList, _font, _context, _style);
             var raisedPosition = _currentPosition;
             raisedPosition.Y += raiseBox.Raise.ActualLength(_mathTable, _font);
             raisedDisplay.Position = raisedPosition;
@@ -376,7 +376,7 @@ namespace CSharpMath.Display {
 
     private IDisplay<TFont, TGlyph> MakeAccent(Accent accent) {
       var accentee =
-        CreateLine(accent.InnerList ?? new MathList(), _font, _context, _style, true);
+        CreateLine(accent.InnerList, _font, _context, _style, true);
       if (accent.Nucleus.Length == 0) {
         //no accent
         return accentee;
@@ -515,8 +515,8 @@ namespace CSharpMath.Display {
       }
       return null;
     }
-    private RadicalDisplay<TFont, TGlyph> MakeRadical(MathList? radicand, Range range) {
-      var innerDisplay = CreateLine(radicand ?? new MathList(), _font, _context, _style, true);
+    private RadicalDisplay<TFont, TGlyph> MakeRadical(MathList radicand, Range range) {
+      var innerDisplay = CreateLine(radicand, _font, _context, _style, true);
       var radicalVerticalGap =
         _style == LineStyle.Display
         ? _mathTable.RadicalDisplayStyleVerticalGap(_styleFont)
@@ -595,9 +595,9 @@ namespace CSharpMath.Display {
 
     private IDisplay<TFont, TGlyph> MakeFraction(Fraction fraction) {
       var numeratorDisplay =
-        CreateLine(fraction.Numerator ?? new MathList(), _font, _context, _fractionStyle, false);
+        CreateLine(fraction.Numerator, _font, _context, _fractionStyle, false);
       var denominatorDisplay =
-        CreateLine(fraction.Denominator ?? new MathList(), _font, _context, _fractionStyle, true);
+        CreateLine(fraction.Denominator, _font, _context, _fractionStyle, true);
 
       var numeratorShiftUp = _NumeratorShiftUp(fraction.HasRule);
       var denominatorShiftDown = _DenominatorShiftDown(fraction.HasRule);
@@ -670,7 +670,7 @@ namespace CSharpMath.Display {
       if (inner.LeftBoundary == null && inner.RightBoundary == null) {
         throw new InvalidCodePathException("Inner should have a boundary to call this function.");
       }
-      var innerListDisplay = CreateLine(inner.InnerList ?? new MathList(), _font, _context, _style, _cramped, true);
+      var innerListDisplay = CreateLine(inner.InnerList, _font, _context, _style, _cramped, true);
       float axisHeight = _mathTable.AxisHeight(_styleFont);
       // delta is the max distance from the axis.
       float delta =

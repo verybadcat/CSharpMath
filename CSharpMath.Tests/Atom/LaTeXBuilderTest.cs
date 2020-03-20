@@ -155,7 +155,7 @@ namespace CSharpMath.Tests.Atom {
       var list = LaTeXBuilder.MathListFromLaTeX(@"\sqrt2");
       Assert.Collection(list,
         CheckAtom<Radical>("", radical => {
-          Assert.Null(radical.Degree);
+          Assert.Empty(radical.Degree);
           Assert.Collection(radical.Radicand, CheckAtom<Number>("2"));
         })
       );
@@ -225,8 +225,8 @@ namespace CSharpMath.Tests.Atom {
       Assert.Single(expectedOutputTypes, t => t == typeof(Inner));
       CheckAtom<Inner>("", inner => {
         CheckAtomTypes(inner.InnerList, expectedInnerTypes);
-        Assert.Equal(leftBoundary, inner.LeftBoundary?.Nucleus);
-        Assert.Equal(rightBoundary, inner.RightBoundary?.Nucleus);
+        Assert.Equal(leftBoundary, inner.LeftBoundary.Nucleus);
+        Assert.Equal(rightBoundary, inner.RightBoundary.Nucleus);
       })(list[Array.IndexOf(expectedOutputTypes, typeof(Inner))]);
       Assert.Equal(expectedLatex, LaTeXBuilder.MathListToLaTeX(list));
     }
@@ -391,8 +391,8 @@ namespace CSharpMath.Tests.Atom {
         table = Assert.IsType<Table>(Assert.Single(list));
       else {
         var inner = Assert.IsType<Inner>(Assert.Single(list));
-        Assert.Equal(left, inner.LeftBoundary?.Nucleus);
-        Assert.Equal(right, inner.RightBoundary?.Nucleus);
+        Assert.Equal(left, inner.LeftBoundary.Nucleus);
+        Assert.Equal(right, inner.RightBoundary.Nucleus);
         table = Assert.IsType<Table>(Assert.Single(inner.InnerList));
       }
       CheckAtom<Table>("")(table);

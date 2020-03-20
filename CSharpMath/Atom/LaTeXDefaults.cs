@@ -15,6 +15,15 @@ namespace CSharpMath.Atom {
       var atomWithoutScripts = atom.Clone(false);
       atomWithoutScripts.Subscript = null;
       atomWithoutScripts.Superscript = null;
+      switch (atomWithoutScripts) {
+        case IMathListContainer1 c:
+          c.InnerList.Clear();
+          break;
+        case IMathListContainer2 c:
+          c.InnerList1.Clear();
+          c.InnerList2.Clear();
+          break;
+      }
       return Commands.TryGetKey(atomWithoutScripts, out var name) ? name : null;
     }
 
@@ -336,10 +345,10 @@ namespace CSharpMath.Atom {
 
     public static MathAtom Placeholder => new Placeholder("\u25A1");
     public static MathList PlaceholderList => new MathList { Placeholder };
-    public static Fraction PlaceholderFraction => new Fraction { Numerator = PlaceholderList, Denominator = PlaceholderList };
-    public static Radical PlaceholderRadical => new Radical { Degree = PlaceholderList, Radicand = PlaceholderList };
-    public static Radical PlaceholderSquareRoot => new Radical { Degree = null, Radicand = PlaceholderList };
-    public static Radical PlaceholderCubeRoot => new Radical { Degree = new MathList(new Number("3")), Radicand = PlaceholderList };
+    public static Fraction PlaceholderFraction => new Fraction(PlaceholderList, PlaceholderList);
+    public static Radical PlaceholderRadical => new Radical(PlaceholderList, PlaceholderList);
+    public static Radical PlaceholderSquareRoot => new Radical(new MathList(), PlaceholderList);
+    public static Radical PlaceholderCubeRoot => new Radical(new MathList(new Number("3")), PlaceholderList);
 
     public static MathAtom? ForAscii(sbyte c) {
       if (c < 0) throw new ArgumentOutOfRangeException(nameof(c), c, "The character cannot be negative");
@@ -405,7 +414,7 @@ namespace CSharpMath.Atom {
 
     public static Structures.AliasDictionary<string, Boundary> BoundaryDelimiters { get; } =
       new Structures.AliasDictionary<string, Boundary> {
-        { ".", new Boundary(string.Empty) }, // . means no delimiter
+        { ".", Boundary.Empty }, // . means no delimiter
         { "(", new Boundary("(") },
         { ")", new Boundary(")") },
         { "[", new Boundary("[") },

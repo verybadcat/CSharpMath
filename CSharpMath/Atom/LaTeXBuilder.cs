@@ -14,13 +14,16 @@ namespace CSharpMath.Atom {
       public string? ArrayAlignments { get; set; }
       public TableEnvironmentProperties(string? name) => Name = name;
     }
+    class InnerEnvironment {
+      public Boundary? RightBoundary { get; set; }
+    }
     private readonly char[] _chars;
     private readonly int _length;
     private int _currentChar;
     private bool _textMode; //_spacesAllowed in iosMath
     private FontStyle _currentFontStyle;
     private TableEnvironmentProperties? _currentEnvironment;
-    private Inner? _currentInnerAtom;
+    private InnerEnvironment? _currentInner;
     public string? Error { get; private set; }
     public LaTeXBuilder(string str) {
       _chars = str?.ToCharArray() ?? throw new ArgumentNullException(nameof(str));
@@ -347,48 +350,48 @@ namespace CSharpMath.Atom {
         case Accent accent:
           var innerList = BuildInternal(true);
           if (innerList is null) return null;
-          accent.InnerList = innerList;
-          return accent;
+          return new Accent(accent.Nucleus, innerList);
         case MathAtom atom:
           return atom;
       }
       switch (command) {
         case "frac":
-          return new Fraction {
-            Numerator = BuildInternal(true),
-            Denominator = BuildInternal(true)
-          };
+          var numerator = BuildInternal(true);
+          if (numerator is null) return null;
+          var denominator = BuildInternal(true);
+          if (denominator is null) return null;
+          return new Fraction(numerator, denominator);
         case "binom":
-          return new Fraction(false) {
-            Numerator = BuildInternal(true),
-            Denominator = BuildInternal(true),
+          numerator = BuildInternal(true);
+          if (numerator is null) return null;
+          denominator = BuildInternal(true);
+          if (denominator is null) return null;
+          return new Fraction(numerator, denominator, false) {
             LeftDelimiter = "(",
             RightDelimiter = ")"
           };
         case "sqrt":
-          var degree = ExpectCharacter('[') ? BuildInternal(false, ']') : null;
+          var degree = ExpectCharacter('[') ? BuildInternal(false, ']') : new MathList();
+          if (degree is null) return null;
           var radicand = BuildInternal(true);
-          return radicand != null ? new Radical { Degree = degree, Radicand = radicand } : null;
+          return radicand != null ? new Radical(degree, radicand) : null;
         case "left":
-          var oldInner = _currentInnerAtom;
-          _currentInnerAtom = new Inner() {
-            LeftBoundary = BoundaryAtomForDelimiterType("left")
-          };
-          if (_currentInnerAtom.LeftBoundary is null) return null;
+          var oldInner = _currentInner;
+          var leftBoundary = BoundaryAtomForDelimiterType("left");
+          if (!(leftBoundary is Boundary left)) return null;
+          _currentInner = new InnerEnvironment();
           var innerList = BuildInternal(false, stopChar);
           if (innerList is null) return null;
-          _currentInnerAtom.InnerList = innerList;
-          if (_currentInnerAtom.RightBoundary is null) {
+          if (!(_currentInner.RightBoundary is Boundary right)) {
             SetError("Missing \\right");
             return null;
           }
-          var newInner = _currentInnerAtom;
-          _currentInnerAtom = oldInner;
-          return newInner;
+          _currentInner = oldInner;
+          return new Inner(left, innerList, right);
         case "overline":
           innerList = BuildInternal(true);
           if (innerList is null) return null;
-          return new Overline { InnerList = innerList };
+          return new Overline(innerList);
         case "underline":
           innerList = BuildInternal(true);
           if (innerList is null) return null;
@@ -443,7 +446,7 @@ namespace CSharpMath.Atom {
           if (!ExpectCharacter('}')) { SetError("Expected }"); return null; }
           innerList = BuildInternal(true);
           if (innerList is null) return null;
-          return new RaiseBox { Raise = raise, InnerList = innerList };
+          return new RaiseBox(raise, innerList);
       case "TeX":
           return TeX;
         default:
@@ -462,31 +465,27 @@ namespace CSharpMath.Atom {
       };
 
     //should be \textrm instead of \text
-    private static readonly MathAtom TeX = new Inner { InnerList =
+    private static readonly MathAtom TeX = new Inner(Boundary.Empty,
       MathListFromLaTeX(@"\text{T\kern-.1667em\raisebox{-.5ex}{E}\kern-.125emX}")
-      ?? throw new FormatException(@"A syntax error is present in the definition of \TeX.")
-    };
+      ?? throw new FormatException(@"A syntax error is present in the definition of \TeX."),
+      Boundary.Empty);
 
     private MathList? StopCommand(string command, MathList list, char stopChar) {
       switch (command) {
         case "right":
-          if (_currentInnerAtom == null) {
+          if (_currentInner == null) {
             SetError("Missing \\left");
             return null;
           }
-          _currentInnerAtom.RightBoundary = BoundaryAtomForDelimiterType("right");
-          if (_currentInnerAtom.RightBoundary == null) {
+          _currentInner.RightBoundary = BoundaryAtomForDelimiterType("right");
+          if (_currentInner.RightBoundary == null) {
             return null;
           }
           return list;
         case var _ when fractionCommands.ContainsKey(command):
-          var fraction = new Fraction(command == "over") {
-            Numerator = list,
-            Denominator = BuildInternal(false, stopChar)
-          };
-          if (Error != null) {
-            return null;
-          }
+          var denominator = BuildInternal(false, stopChar);
+          if (denominator is null) return null;
+          var fraction = new Fraction(list, denominator, command == "over");
           if (fractionCommands[command] is (var left, var right)) {
             fraction.LeftDelimiter = left;
             fraction.RightDelimiter = right;
@@ -642,11 +641,11 @@ namespace CSharpMath.Atom {
           }
           return delimiters switch
           {
-            (var left, var right) => new Inner {
-              LeftBoundary = LaTeXDefaults.BoundaryDelimiters[left],
-              InnerList = new MathList(table),
-              RightBoundary = LaTeXDefaults.BoundaryDelimiters[right]
-            },
+            (var left, var right) => new Inner (
+              LaTeXDefaults.BoundaryDelimiters[left],
+              new MathList(table),
+              LaTeXDefaults.BoundaryDelimiters[right]
+            ),
             null => table
           };
         case "array":
@@ -722,11 +721,11 @@ namespace CSharpMath.Atom {
               }
             }
             // add delimiters
-            return new Inner {
-              LeftBoundary = LaTeXDefaults.BoundaryDelimiters["{"],
-              InnerList = new MathList(new Space(Structures.Space.ShortSpace), table),
-              RightBoundary = LaTeXDefaults.BoundaryDelimiters["."]
-            };
+            return new Inner (
+              LaTeXDefaults.BoundaryDelimiters["{"],
+              new MathList(new Space(Structures.Space.ShortSpace), table),
+              Boundary.Empty
+            );
           }
         default:
           SetError("Unknown environment " + environment);
@@ -798,7 +797,7 @@ namespace CSharpMath.Atom {
             break;
           case Radical radical:
             builder.Append(@"\sqrt");
-            if (radical.Degree != null) {
+            if (radical.Degree.IsNonEmpty()) {
               builder.Append('[');
               MathListToLaTeX(radical.Degree, builder, currentFontStyle);
               builder.Append(']');
@@ -808,7 +807,7 @@ namespace CSharpMath.Atom {
             builder.Append('}');
             break;
           case Inner inner:
-            if (inner.LeftBoundary == null && inner.RightBoundary == null) {
+            if (inner.LeftBoundary == Boundary.Empty && inner.RightBoundary == Boundary.Empty) {
               builder.Append('{');
               NullableListToLaTeX(inner.InnerList, builder, currentFontStyle);
               builder.Append('}');
@@ -818,27 +817,17 @@ namespace CSharpMath.Atom {
                 if (command == null) {
                   return string.Empty;
                 }
-                var singleChars = @"()[]<>|./";
-                if (singleChars.IndexOf(command, StringComparison.OrdinalIgnoreCase) >= 0 && command.Length == 1) {
+                if ("()[]<>|./".Contains(command) && command.Length == 1)
                   return command;
-                }
                 if (command == "||") {
                   return @"\|";
                 } else {
                   return @"\" + command;
                 }
               }
-              builder.Append(inner.LeftBoundary switch
-              {
-                null => @"\left. ",
-                Boundary b => @"\left" + BoundaryToLaTeX(b) + " "
-              });
+              builder.Append(@"\left").Append(BoundaryToLaTeX(inner.LeftBoundary)).Append(' ');
               NullableListToLaTeX(inner.InnerList, builder, currentFontStyle);
-              builder.Append(inner.RightBoundary switch
-              {
-                null => @"\right. ",
-                Boundary b => @"\right" + BoundaryToLaTeX(b) + " "
-              });
+              builder.Append(@"\right").Append(BoundaryToLaTeX(inner.RightBoundary)).Append(' ');
             }
             break;
           case Table table:
@@ -906,14 +895,11 @@ namespace CSharpMath.Atom {
             builder.Append("}");
             break;
           case Accent accent:
-            var list = accent.InnerList;
-            accent.InnerList = null; //for lookup
             builder.Append(@"\")
-              .Append(LaTeXDefaults.CommandForAtom(atom))
+              .Append(LaTeXDefaults.CommandForAtom(accent))
               .Append("{");
-            NullableListToLaTeX(list, builder, currentFontStyle);
+            NullableListToLaTeX(accent.InnerList, builder, currentFontStyle);
             builder.Append("}");
-            accent.InnerList = list;
             break;
           case LargeOperator op:
             var command = LaTeXDefaults.CommandForAtom(op);
@@ -937,20 +923,6 @@ namespace CSharpMath.Atom {
                 break;
             }
             break;
-          case var _ when LaTeXDefaults.CommandForAtom(atom) is string name:
-            builder.Append(@"\").Append(name).Append(" ");
-            break;
-          case Space space:
-            var intSpace = (int)space.Length;
-            if (space.IsMu)
-              builder.Append(@"\mkern")
-                .Append(space.Length.ToStringInvariant("0.0"))
-                .Append("mu");
-            else
-              builder.Append(@"\kern")
-                .Append(space.Length.ToStringInvariant("0.0"))
-                .Append("pt");
-            break;
           case Color color:
             builder.Append(@"\color{")
               .Append(color.Colour)
@@ -968,6 +940,20 @@ namespace CSharpMath.Atom {
               .Append("}{");
             NullableListToLaTeX(r.InnerList, builder, currentFontStyle);
             builder.Append("}");
+            break;
+          case var _ when LaTeXDefaults.CommandForAtom(atom) is string name:
+            builder.Append(@"\").Append(name).Append(" ");
+            break;
+          case Space space:
+            var intSpace = (int)space.Length;
+            if (space.IsMu)
+              builder.Append(@"\mkern")
+                .Append(space.Length.ToStringInvariant("0.0"))
+                .Append("mu");
+            else
+              builder.Append(@"\kern")
+                .Append(space.Length.ToStringInvariant("0.0"))
+                .Append("pt");
             break;
           case { Nucleus: null }:
           case { Nucleus: "" }:

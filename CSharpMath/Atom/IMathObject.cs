@@ -4,11 +4,14 @@ namespace CSharpMath.Atom {
     string DebugString { get; }
   }
   public interface IMathListContainer1 : IMathObject {
-    MathList? InnerList { get; set; }
+    MathList InnerList { get; }
   }
   public interface IMathListContainer2 : IMathObject {
-    MathList? InnerList1 { get; set; }
-    MathList? InnerList2 { get; set; }
+    MathList InnerList1 { get; }
+    MathList InnerList2 { get; }
+  }
+  public interface IMathListContainerN : IMathObject {
+    System.Collections.Generic.IEnumerable<MathList> InnerLists { get; }
   }
 }
 namespace CSharpMath {
