@@ -80,7 +80,7 @@ namespace CSharpMath.Tests.Atom {
       var atom3 = LaTeXDefaults.Divide;
       var list = new MathList(atom, atom2, atom3);
       var list2 = new MathList(atom3, atom2);
-      var radical = new Radical(list2, list);
+      var radical = new Radical { Degree = list2, Radicand = list };
 
       var copy = radical.Clone(false);
       CheckClone(copy, radical);
@@ -103,8 +103,9 @@ namespace CSharpMath.Tests.Atom {
       var atom2 = LaTeXDefaults.Times;
       var atom3 = LaTeXDefaults.Divide;
       var list = new MathList(atom1, atom2, atom3);
-      var inner = new Inner(list) {
+      var inner = new Inner() {
         LeftBoundary = new Boundary("("),
+        InnerList = list,
         RightBoundary = new Boundary(")")
       };
 

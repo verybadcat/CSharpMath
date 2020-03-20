@@ -5,6 +5,19 @@ namespace CSharpMath.Atom {
   using Atoms;
   //https://mirror.hmc.edu/ctan/macros/latex/contrib/unicode-math/unimath-symbols.pdf
   public static class LaTeXDefaults {
+
+    public static MathAtom? AtomForCommand(string symbolName) =>
+      Commands.TryGetValue(
+        symbolName ?? throw new ArgumentNullException(nameof(symbolName)),
+        out var symbol) ? symbol.Clone(false) : null;
+
+    public static string? CommandForAtom(MathAtom atom) {
+      var atomWithoutScripts = atom.Clone(false);
+      atomWithoutScripts.Subscript = null;
+      atomWithoutScripts.Superscript = null;
+      return Commands.TryGetKey(atomWithoutScripts, out var name) ? name : null;
+    }
+
     public static Structures.AliasDictionary<string, MathAtom> Commands { get; } =
       new Structures.AliasDictionary<string, MathAtom> {
          { "square", Placeholder },
@@ -199,34 +212,34 @@ namespace CSharpMath.Atom {
          { "gcd", new LargeOperator("gcd", null) },
          
          // Large operators
-         { "prod", new LargeOperator("\u220F" , null) },
-         { "coprod", new LargeOperator("\u2210" , null) },
-         { "sum", new LargeOperator("\u2211" , null) },
-         { "int", new LargeOperator("\u222B" , false) },
+         { "prod", new LargeOperator("\u220F", null) },
+         { "coprod", new LargeOperator("\u2210", null) },
+         { "sum", new LargeOperator("\u2211", null) },
+         { "int", new LargeOperator("\u222B", false) },
          { "iint", new LargeOperator("\u222C", false) }, //not in iosMath
          { "iiint", new LargeOperator("\u222D", false) }, //not in iosMath
          { "iiiint", new LargeOperator("\u2A0C", false) }, //not in iosMath
-         { "oint", new LargeOperator("\u222E" , false) },
-         { "oiint", new LargeOperator("\u222F" , false) }, //not in iosMath
-         { "oiiint", new LargeOperator("\u2230" , false) }, //not in iosMath
-         { "intclockwise", new LargeOperator("\u2231" , false) }, //not in iosMath
-         { "awint", new LargeOperator("\u2A11" , false) }, //not in iosMath
-         { "varointclockwise", new LargeOperator("\u2232" , false) }, //not in iosMath
-         { "ointctrclockwise", new LargeOperator("\u2233" , false) }, //not in iosMath
-         { "bigwedge", new LargeOperator("\u22C0" , null) },
-         { "bigvee", new LargeOperator("\u22C1" , null) },
-         { "bigcap", new LargeOperator("\u22C2" , null) },
-         { "bigcup", new LargeOperator("\u22C3" , null) },
-         { "bigbot", new LargeOperator("\u27D8" , null) }, //not in iosMath
-         { "bigtop", new LargeOperator("\u27D9" , null) }, //not in iosMath
-         { "bigodot", new LargeOperator("\u2A00" , null) },
-         { "bigoplus", new LargeOperator("\u2A01" , null) },
-         { "bigotimes", new LargeOperator("\u2A02" , null) },
-         { "bigcupdot", new LargeOperator("\u2A03" , null) }, //not in iosMath
-         { "biguplus", new LargeOperator("\u2A04" , null) },
-         { "bigsqcap", new LargeOperator("\u2A05" , null) }, //not in iosMath
-         { "bigsqcup", new LargeOperator("\u2A06" , null) },
-         { "bigtimes", new LargeOperator("\u2A09" , null) }, //not in iosMath
+         { "oint", new LargeOperator("\u222E", false) },
+         { "oiint", new LargeOperator("\u222F", false) }, //not in iosMath
+         { "oiiint", new LargeOperator("\u2230", false) }, //not in iosMath
+         { "intclockwise", new LargeOperator("\u2231", false) }, //not in iosMath
+         { "awint", new LargeOperator("\u2A11", false) }, //not in iosMath
+         { "varointclockwise", new LargeOperator("\u2232", false) }, //not in iosMath
+         { "ointctrclockwise", new LargeOperator("\u2233", false) }, //not in iosMath
+         { "bigwedge", new LargeOperator("\u22C0", null) },
+         { "bigvee", new LargeOperator("\u22C1", null) },
+         { "bigcap", new LargeOperator("\u22C2", null) },
+         { "bigcup", new LargeOperator("\u22C3", null) },
+         { "bigbot", new LargeOperator("\u27D8", null) }, //not in iosMath
+         { "bigtop", new LargeOperator("\u27D9", null) }, //not in iosMath
+         { "bigodot", new LargeOperator("\u2A00", null) },
+         { "bigoplus", new LargeOperator("\u2A01", null) },
+         { "bigotimes", new LargeOperator("\u2A02", null) },
+         { "bigcupdot", new LargeOperator("\u2A03", null) }, //not in iosMath
+         { "biguplus", new LargeOperator("\u2A04", null) },
+         { "bigsqcap", new LargeOperator("\u2A05", null) }, //not in iosMath
+         { "bigsqcup", new LargeOperator("\u2A06", null) },
+         { "bigtimes", new LargeOperator("\u2A09", null) }, //not in iosMath
          
          // Latex command characters
          { "{", "lbrace", new Open("{") },
@@ -324,9 +337,9 @@ namespace CSharpMath.Atom {
     public static MathAtom Placeholder => new Placeholder("\u25A1");
     public static MathList PlaceholderList => new MathList { Placeholder };
     public static Fraction PlaceholderFraction => new Fraction { Numerator = PlaceholderList, Denominator = PlaceholderList };
-    public static Radical PlaceholderRadical => new Radical(PlaceholderList, PlaceholderList);
-    public static Radical PlaceholderSquareRoot => new Radical(null, PlaceholderList);
-    public static Radical PlaceholderCubeRoot => new Radical(new MathList(new Number("3")), PlaceholderList);
+    public static Radical PlaceholderRadical => new Radical { Degree = PlaceholderList, Radicand = PlaceholderList };
+    public static Radical PlaceholderSquareRoot => new Radical { Degree = null, Radicand = PlaceholderList };
+    public static Radical PlaceholderCubeRoot => new Radical { Degree = new MathList(new Number("3")), Radicand = PlaceholderList };
 
     public static MathAtom? ForAscii(sbyte c) {
       if (c < 0) throw new ArgumentOutOfRangeException(nameof(c), c, "The character cannot be negative");
@@ -390,55 +403,47 @@ namespace CSharpMath.Atom {
       }
     }
 
-    public static MathAtom? ForLaTeXSymbolName(string symbolName) =>
-      Commands.TryGetValue(
-        symbolName ?? throw new ArgumentNullException(nameof(symbolName)
-      ), out var symbol) ? symbol.Clone(false) : null;
-
-    public static string? LaTeXSymbolNameForAtom(MathAtom atom) {
-      var atomWithoutScripts = atom.Clone(true);
-      atomWithoutScripts.Subscript = null;
-      atomWithoutScripts.Superscript = null;
-      return Commands.TryGetKey(atomWithoutScripts, out var name) ? name : null;
-    }
-
-    public static void AddLatexSymbol(string name, MathAtom atom) => Commands.Add(name, atom);
-
-    public static IEnumerable<string> SupportedLatexSymbolNames => Commands.Keys;
-
-    public static Structures.AliasDictionary<string, string> BoundaryDelimiters { get; } =
-      new Structures.AliasDictionary<string, string> {
-        { ".", string.Empty }, // . means no delimiter
-        { "(", "(" },
-        { ")", ")" },
-        { "[", "[" },
-        { "]", "]" },
-        { "{", "lbrace", "{" },
-        { "}", "rbrace", "}" },
-        { "<", "langle", "\u2329" },
-        { ">", "rangle", "\u232A" },
-        { "/", "/" },
-        { "\\", "backslash", "\\" },
-        { "|", "vert", "|" },
-        { "||", "Vert","\u2016" },
-        { "uparrow", "\u2191" },
-        { "downarrow", "\u2193" },
-        { "updownarrow", "\u2195" },
-        { "Uparrow", "\u21D1" },
-        { "Downarrow", "\u21D3" },
-        { "Updownarrow", "\u21D5" },
-        { "lgroup", "\u27EE" },
-        { "rgroup", "\u27EF" },
-        { "lceil", "\u2308" },
-        { "rceil", "\u2309" },
-        { "lfloor", "\u230A" },
-        { "rfloor", "\u230B" }
+    public static Structures.AliasDictionary<string, Boundary> BoundaryDelimiters { get; } =
+      new Structures.AliasDictionary<string, Boundary> {
+        { ".", new Boundary(string.Empty) }, // . means no delimiter
+        { "(", new Boundary("(") },
+        { ")", new Boundary(")") },
+        { "[", new Boundary("[") },
+        { "]", new Boundary("]") },
+        { "{", "lbrace", new Boundary("{") },
+        { "}", "rbrace", new Boundary("}") },
+        { "<", "langle", new Boundary("\u2329") },
+        { ">", "rangle", new Boundary("\u232A") },
+        { "/", new Boundary("/") },
+        { "\\", "backslash", new Boundary("\\") },
+        { "|", "vert", new Boundary("|") },
+        { "||", "Vert", new Boundary("\u2016") },
+        { "uparrow", new Boundary("\u2191") },
+        { "downarrow", new Boundary("\u2193") },
+        { "updownarrow", new Boundary("\u2195") },
+        { "Uparrow", new Boundary("\u21D1") },
+        { "Downarrow", new Boundary("\u21D3") },
+        { "Updownarrow", new Boundary("\u21D5") },
+        { "lgroup", new Boundary("\u27EE") },
+        { "rgroup", new Boundary("\u27EF") },
+        { "lceil", new Boundary("\u2308") },
+        { "rceil", new Boundary("\u2309") },
+        { "lfloor", new Boundary("\u230A") },
+        { "rfloor", new Boundary("\u230B") }
       };
 
-    public static Boundary? BoundaryAtom(string delimiterName) =>
-      BoundaryDelimiters.TryGetValue(delimiterName, out var value) ? new Boundary(value) : null;
-
-    public static string? DelimiterName(Boundary boundaryAtom) =>
-      BoundaryDelimiters.TryGetKey(boundaryAtom.Nucleus, out var name) ? name : null;
+    public static Structures.AliasDictionary<string, FontStyle> FontStyles { get; } =
+      new Structures.AliasDictionary<string, FontStyle> {
+        { "mathnormal", FontStyle.Default },
+        { "mathrm", "rm", "text", FontStyle.Roman },
+        { "mathbf", "bf", FontStyle.Bold },
+        { "mathcal", "cal", FontStyle.Caligraphic },
+        { "mathtt", FontStyle.Typewriter },
+        { "mathit", "mit", FontStyle.Italic },
+        { "mathsf", FontStyle.SansSerif },
+        { "mathfrak", "frak", FontStyle.Fraktur },
+        { "mathbb", FontStyle.Blackboard },
+        { "mathbfit", "bm", FontStyle.BoldItalic },
+      };
   }
 }

@@ -433,7 +433,7 @@ namespace CSharpMath.Rendering.Text
                                     }
                                 //case "textbf", "textit", ...
                                 case var textStyle when !textStyle.StartsWith("math")
-                                  && FontStyleExtensions.FontStyles.TryGetValue(
+                                  && LaTeXDefaults.FontStyles.TryGetValue(
                                       textStyle.StartsWith("text") ? textStyle.Replace("text", "math") : textStyle,
                                       out var fontStyle):
                                     {
@@ -503,7 +503,7 @@ namespace CSharpMath.Rendering.Text
                     return b.Append(@"\ ");
                 case TextAtom.Style t:
                     return b.Append('\\')
-                      .Append(t.FontStyle.FontName())
+                      .Append(LaTeXDefaults.FontStyles[t.FontStyle])
                       .AppendInBracesOrEmptyBraces(TextAtomToLaTeX(t.Content, new StringBuilder()).ToString());
                 case TextAtom.Size z:
                     return b.Append(@"\fontsize")

@@ -9,11 +9,11 @@ namespace CSharpMath {
       Rendering.BackEnd.Fonts.GlobalTypefaces;
     public static Structures.BiDictionary<string, Structures.Color> PredefinedColors =>
       Structures.Color.PredefinedColors;
-    public static Structures.AliasDictionary<string, string> PredefinedBoundaryDelimiters =>
+    public static Structures.AliasDictionary<string, Atom.Boundary> PredefinedLaTeXBoundaryDelimiters =>
       Atom.LaTeXDefaults.BoundaryDelimiters;
-    public static Structures.AliasDictionary<string, Atom.FontStyle> PredefinedFontStyles =>
-      Atom.FontStyleExtensions.FontStyles;
-    public static Structures.AliasDictionary<string, Atom.MathAtom> PredefinedLaTeXMathSymbols =>
+    public static Structures.AliasDictionary<string, Atom.FontStyle> PredefinedLaTeXFontStyles =>
+      Atom.LaTeXDefaults.FontStyles;
+    public static Structures.AliasDictionary<string, Atom.MathAtom> PredefinedLaTeXCommands =>
       Atom.LaTeXDefaults.Commands;
     public static Structures.BiDictionary<string, string> PredefinedLaTeXTextAccents =>
       Rendering.Text.TextAtoms.PredefinedAccents;

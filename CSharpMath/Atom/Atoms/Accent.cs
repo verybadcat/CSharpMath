@@ -2,7 +2,7 @@ using System.Text;
 
 namespace CSharpMath.Atom.Atoms {
   /// <summary>An accented atom</summary>
-  public class Accent : MathAtom {
+  public class Accent : MathAtom, IMathListContainer1 {
     public MathList? InnerList { get; set; }
     public Accent(string value) : base(value) { }
     public override string DebugString =>

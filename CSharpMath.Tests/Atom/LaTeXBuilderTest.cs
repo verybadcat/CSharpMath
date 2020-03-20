@@ -323,14 +323,46 @@ namespace CSharpMath.Tests.Atom {
 
     [Fact]
     public void TestMathSpace() {
-      var list = LaTeXBuilder.MathListFromLaTeX(@"\!");
+      var list = LaTeXBuilder.MathListFromLaTeX(@"\!\,\:\>\;\mskip15mu\quad\mkern36mu\qquad");
       Assert.Collection(list,
         CheckAtom<Space>("", space => {
           Assert.Equal(-3, space.Length);
           Assert.True(space.IsMu);
+        }),
+        CheckAtom<Space>("", space => {
+          Assert.Equal(3, space.Length);
+          Assert.True(space.IsMu);
+        }),
+        CheckAtom<Space>("", space => {
+          Assert.Equal(4, space.Length);
+          Assert.True(space.IsMu);
+        }),
+        CheckAtom<Space>("", space => {
+          Assert.Equal(4, space.Length);
+          Assert.True(space.IsMu);
+        }),
+        CheckAtom<Space>("", space => {
+          Assert.Equal(5, space.Length);
+          Assert.True(space.IsMu);
+        }),
+        CheckAtom<Space>("", space => {
+          Assert.Equal(15, space.Length);
+          Assert.True(space.IsMu);
+        }),
+        CheckAtom<Space>("", space => {
+          Assert.Equal(18, space.Length);
+          Assert.True(space.IsMu);
+        }),
+        CheckAtom<Space>("", space => {
+          Assert.Equal(36, space.Length);
+          Assert.True(space.IsMu);
+        }),
+        CheckAtom<Space>("", space => {
+          Assert.Equal(36, space.Length);
+          Assert.True(space.IsMu);
         })
       );
-      Assert.Equal(@"\! ", LaTeXBuilder.MathListToLaTeX(list));
+      Assert.Equal(@"\! \, \: \: \; \mkern15.0mu\quad \qquad \qquad ", LaTeXBuilder.MathListToLaTeX(list));
     }
 
     [Fact]
@@ -611,7 +643,7 @@ namespace CSharpMath.Tests.Atom {
       Assert.Null(list);
       Assert.NotNull(builder.Error);
 
-      LaTeXDefaults.AddLatexSymbol("lcm", new LargeOperator("lcm", false));
+      LaTeXDefaults.Commands.Add("lcm", new LargeOperator("lcm", false));
       var builder2 = new LaTeXBuilder(input);
       var list2 = builder2.Build();
       Assert.Collection(list2,

@@ -118,7 +118,7 @@ namespace CSharpMath.Atom {
             if (ApplyModifier(command, prevAtom)) {
               continue;
             }
-            if (FontStyleExtensions.FontStyles.TryGetValue(command, out var fontStyle)) {
+            if (LaTeXDefaults.FontStyles.TryGetValue(command, out var fontStyle)) {
               var oldSpacesAllowed = _textMode;
               var oldFontStyle = _currentFontStyle;
               _textMode = (command == "text");
@@ -307,7 +307,7 @@ namespace CSharpMath.Atom {
       return env;
     }
 
-    private Space? ReadSpace() {
+    private Structures.Result<Structures.Space> ReadSpace() {
       SkipSpaces();
       var sb = new StringBuilder();
       while (HasCharacters) {
@@ -321,18 +321,14 @@ namespace CSharpMath.Atom {
       }
       var length = sb.ToString();
       if (string.IsNullOrEmpty(length)) {
-        SetError("Expected length value");
-        return null;
+        return "Expected length value";
       }
       SkipSpaces();
       var unit = new char[2];
       for (int i = 0; i < 2 && HasCharacters; i++) {
         unit[i] = GetNextCharacter();
       }
-      return Structures.Space.Create(length, new string(unit), _textMode).Match<Space?>(
-        sp => new Space(sp),
-        error => { SetError(error); return null; }
-      );
+      return Structures.Space.Create(length, new string(unit), _textMode);
     }
     private Boundary? BoundaryAtomForDelimiterType(string delimiterType) {
       var delim = ReadDelimiter();
@@ -340,15 +336,14 @@ namespace CSharpMath.Atom {
         SetError("Missing delimiter for " + delimiterType);
         return null;
       }
-      var boundary = LaTeXDefaults.BoundaryAtom(delim);
-      if (boundary == null) {
+      if (!LaTeXDefaults.BoundaryDelimiters.TryGetValue(delim, out var boundary)) {
         SetError(@"Invalid delimiter for \" + delimiterType + ": " + delim);
       }
       return boundary;
     }
 
     private MathAtom? AtomForCommand(string command, char stopChar) {
-      switch (LaTeXDefaults.ForLaTeXSymbolName(command)) {
+      switch (LaTeXDefaults.AtomForCommand(command)) {
         case Accent accent:
           var innerList = BuildInternal(true);
           if (innerList is null) return null;
@@ -373,10 +368,10 @@ namespace CSharpMath.Atom {
         case "sqrt":
           var degree = ExpectCharacter('[') ? BuildInternal(false, ']') : null;
           var radicand = BuildInternal(true);
-          return radicand != null ? new Radical(degree, radicand) : null;
+          return radicand != null ? new Radical { Degree = degree, Radicand = radicand } : null;
         case "left":
           var oldInner = _currentInnerAtom;
-          _currentInnerAtom = new Inner(new MathList()) {
+          _currentInnerAtom = new Inner() {
             LeftBoundary = BoundaryAtomForDelimiterType("left")
           };
           if (_currentInnerAtom.LeftBoundary is null) return null;
@@ -393,7 +388,7 @@ namespace CSharpMath.Atom {
         case "overline":
           innerList = BuildInternal(true);
           if (innerList is null) return null;
-          return new Overline(innerList);
+          return new Overline { InnerList = innerList };
         case "underline":
           innerList = BuildInternal(true);
           if (innerList is null) return null;
@@ -418,23 +413,38 @@ namespace CSharpMath.Atom {
           return null;
         case "kern":
         case "hskip":
-          if (_textMode) return ReadSpace();
+          if (_textMode) {
+            var (space, error) = ReadSpace();
+            if (error != null) {
+              SetError(error);
+              return null;
+            } else return new Space(space);
+          }
           SetError($@"\{command} is not allowed in math mode");
           return null;
         case "mkern":
         case "mskip":
-          if (!_textMode) return ReadSpace();
+          if (!_textMode) {
+            var (space, error) = ReadSpace();
+            if (error != null) {
+              SetError(error);
+              return null;
+            } else return new Space(space);
+          }
           SetError($@"\{command} is not allowed in text mode");
           return null;
         case "raisebox":
           if (!ExpectCharacter('{')) { SetError("Expected {"); return null; }
-          var space = ReadSpace();
-          if (space is null) return null;
+          var (raise, err) = ReadSpace();
+          if (err != null) {
+            SetError(err);
+            return null;
+          }
           if (!ExpectCharacter('}')) { SetError("Expected }"); return null; }
           innerList = BuildInternal(true);
           if (innerList is null) return null;
-          return new RaiseBox(space, innerList);
-        case "TeX":
+          return new RaiseBox { Raise = raise, InnerList = innerList };
+      case "TeX":
           return TeX;
         default:
           SetError("Invalid command \\" + command);
@@ -452,9 +462,10 @@ namespace CSharpMath.Atom {
       };
 
     //should be \textrm instead of \text
-    private static readonly MathAtom TeX = new Inner(
+    private static readonly MathAtom TeX = new Inner { InnerList =
       MathListFromLaTeX(@"\text{T\kern-.1667em\raisebox{-.5ex}{E}\kern-.125emX}")
-      ?? throw new FormatException(@"A syntax error is present in the definition of \TeX."));
+      ?? throw new FormatException(@"A syntax error is present in the definition of \TeX.")
+    };
 
     private MathList? StopCommand(string command, MathList list, char stopChar) {
       switch (command) {
@@ -631,9 +642,10 @@ namespace CSharpMath.Atom {
           }
           return delimiters switch
           {
-            (var left, var right) => new Inner(new MathList(table)) {
-              LeftBoundary = LaTeXDefaults.BoundaryAtom(left),
-              RightBoundary = LaTeXDefaults.BoundaryAtom(right)
+            (var left, var right) => new Inner {
+              LeftBoundary = LaTeXDefaults.BoundaryDelimiters[left],
+              InnerList = new MathList(table),
+              RightBoundary = LaTeXDefaults.BoundaryDelimiters[right]
             },
             null => table
           };
@@ -710,9 +722,10 @@ namespace CSharpMath.Atom {
               }
             }
             // add delimiters
-            return new Inner(new MathList(new Space(Structures.Space.ShortSpace), table)) {
-              LeftBoundary = LaTeXDefaults.BoundaryAtom("{"),
-              RightBoundary = LaTeXDefaults.BoundaryAtom(".")
+            return new Inner {
+              LeftBoundary = LaTeXDefaults.BoundaryDelimiters["{"],
+              InnerList = new MathList(new Space(Structures.Space.ShortSpace), table),
+              RightBoundary = LaTeXDefaults.BoundaryDelimiters["."]
             };
           }
         default:
@@ -738,37 +751,6 @@ namespace CSharpMath.Atom {
     // ^ LaTeX -> Math atoms
     // v Math atoms -> LaTeX
 
-    private static Dictionary<float, string> SpaceToCommands { get; } = new Dictionary<float, string> {
-      { Structures.Space.ShortSpace.Length, "," },
-      { Structures.Space.MediumSpace.Length, ":" },
-      { Structures.Space.LongSpace.Length, ";" },
-      { -Structures.Space.ShortSpace.Length, "!" },
-      { Structures.Space.EmWidth.Length, "quad" },
-      { Structures.Space.EmWidth.Length * 2, "qquad" }
-    };
-
-    private static Dictionary<LineStyle, string> StyleToCommands { get; } = new Dictionary<LineStyle, string> {
-      { LineStyle.Display, "displaystyle" },
-      { LineStyle.Text, "textstyle" },
-      { LineStyle.Script, "scriptstyle" },
-      { LineStyle.ScriptScript, "scriptscriptstyle" }
-    };
-
-    public static string BoundaryToLaTeX(Boundary delimiter) {
-      var command = LaTeXDefaults.DelimiterName(delimiter);
-      if (command == null) {
-        return string.Empty;
-      }
-      var singleChars = @"()[]<>|./";
-      if (singleChars.IndexOf(command, StringComparison.OrdinalIgnoreCase) >= 0 && command.Length == 1) {
-        return command;
-      }
-      if (command == "||") {
-        return @"\|";
-      } else {
-        return @"\" + command;
-      }
-    }
 
     private static void MathListToLaTeX
       (MathList mathList, StringBuilder builder, FontStyle outerFontStyle) {
@@ -786,7 +768,7 @@ namespace CSharpMath.Atom {
           }
           if (atom.FontStyle != outerFontStyle) {
             // open a new font style
-            builder.Append(@"\").Append(atom.FontStyle.FontName()).Append("{");
+            builder.Append(@"\").Append(LaTeXDefaults.FontStyles[atom.FontStyle]).Append("{");
           }
         }
         currentFontStyle = atom.FontStyle;
@@ -822,25 +804,40 @@ namespace CSharpMath.Atom {
               builder.Append(']');
             }
             builder.Append('{');
-            MathListToLaTeX(radical.Radicand, builder, currentFontStyle);
+            NullableListToLaTeX(radical.Radicand, builder, currentFontStyle);
             builder.Append('}');
             break;
           case Inner inner:
             if (inner.LeftBoundary == null && inner.RightBoundary == null) {
               builder.Append('{');
-              MathListToLaTeX(inner.InnerList, builder, currentFontStyle);
+              NullableListToLaTeX(inner.InnerList, builder, currentFontStyle);
               builder.Append('}');
             } else {
+              static string BoundaryToLaTeX(Boundary delimiter) {
+                var command = LaTeXDefaults.BoundaryDelimiters[delimiter];
+                if (command == null) {
+                  return string.Empty;
+                }
+                var singleChars = @"()[]<>|./";
+                if (singleChars.IndexOf(command, StringComparison.OrdinalIgnoreCase) >= 0 && command.Length == 1) {
+                  return command;
+                }
+                if (command == "||") {
+                  return @"\|";
+                } else {
+                  return @"\" + command;
+                }
+              }
               builder.Append(inner.LeftBoundary switch
               {
                 null => @"\left. ",
-                var b => @"\left" + BoundaryToLaTeX(b) + " "
+                Boundary b => @"\left" + BoundaryToLaTeX(b) + " "
               });
-              MathListToLaTeX(inner.InnerList, builder, currentFontStyle);
+              NullableListToLaTeX(inner.InnerList, builder, currentFontStyle);
               builder.Append(inner.RightBoundary switch
               {
                 null => @"\right. ",
-                var b => @"\right" + BoundaryToLaTeX(b) + " "
+                Boundary b => @"\right" + BoundaryToLaTeX(b) + " "
               });
             }
             break;
@@ -912,19 +909,19 @@ namespace CSharpMath.Atom {
             var list = accent.InnerList;
             accent.InnerList = null; //for lookup
             builder.Append(@"\")
-              .Append(LaTeXDefaults.Commands[atom])
+              .Append(LaTeXDefaults.CommandForAtom(atom))
               .Append("{");
             NullableListToLaTeX(list, builder, currentFontStyle);
             builder.Append("}");
             accent.InnerList = list;
             break;
           case LargeOperator op:
-            var command = LaTeXDefaults.LaTeXSymbolNameForAtom(op);
+            var command = LaTeXDefaults.CommandForAtom(op);
             if (command == null) {
               builder.Append($@"\mathrm{{{command}}} ");
             } else {
               builder.Append($@"\{command} ");
-              if (!(LaTeXDefaults.ForLaTeXSymbolName(command) is LargeOperator originalOperator))
+              if (!(LaTeXDefaults.AtomForCommand(command) is LargeOperator originalOperator))
                 throw new InvalidCodePathException("original operator not found!");
               if (originalOperator.Limits == op.Limits)
                 break;
@@ -940,13 +937,12 @@ namespace CSharpMath.Atom {
                 break;
             }
             break;
+          case var _ when LaTeXDefaults.CommandForAtom(atom) is string name:
+            builder.Append(@"\").Append(name).Append(" ");
+            break;
           case Space space:
             var intSpace = (int)space.Length;
-            if (SpaceToCommands.ContainsKey(intSpace) && intSpace == space.Length)
-              builder.Append(@"\")
-                .Append(SpaceToCommands[intSpace])
-                .Append(" ");
-            else if (space.IsMu)
+            if (space.IsMu)
               builder.Append(@"\mkern")
                 .Append(space.Length.ToStringInvariant("0.0"))
                 .Append("mu");
@@ -955,16 +951,11 @@ namespace CSharpMath.Atom {
                 .Append(space.Length.ToStringInvariant("0.0"))
                 .Append("pt");
             break;
-          case Style style:
-            builder.Append(@"\")
-              .Append(StyleToCommands[style.LineStyle])
-              .Append(" ");
-            break;
           case Color color:
             builder.Append(@"\color{")
               .Append(color.Colour)
               .Append("}{");
-            MathListToLaTeX(color.InnerList, builder, currentFontStyle);
+            NullableListToLaTeX(color.InnerList, builder, currentFontStyle);
             builder.Append("}");
             break;
           case Prime prime:
@@ -975,7 +966,7 @@ namespace CSharpMath.Atom {
               .Append(r.Raise.Length)
               .Append(r.Raise.IsMu ? "mu" : "pt")
               .Append("}{");
-            MathListToLaTeX(r.InnerList, builder, currentFontStyle);
+            NullableListToLaTeX(r.InnerList, builder, currentFontStyle);
             builder.Append("}");
             break;
           case { Nucleus: null }:
@@ -987,9 +978,6 @@ namespace CSharpMath.Atom {
             break;
           case { Nucleus: "\u2212" }:
             builder.Append("-");
-            break;
-          case var _ when LaTeXDefaults.LaTeXSymbolNameForAtom(atom) is string name:
-            builder.Append(@"\").Append(name).Append(" ");
             break;
           case { Nucleus: var aNucleus }:
             builder.Append(aNucleus);

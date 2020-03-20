@@ -5,7 +5,8 @@
     <Nullable>enable</Nullable>
     <NoWarn>
       CA1062,<!--Obsolete with C# 8 nullability annotations-->
-      CA1303<!--Who localizes exception messages, anyway?--></NoWarn>
+      CA1303<!--Who localizes exception messages, anyway?-->
+    </NoWarn>
     <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
     <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie, FoggyFinder)</Authors>
     <Description>The core of the C# math rendering engine - CSharpMath. Can display beautiful math equations and symbols from the LaTeX format. Needs a front end to function. Currently, front ends exist for iOS, SkiaSharp and Xamarin.Forms.</Description>

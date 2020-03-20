@@ -340,7 +340,7 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
           });
       void InsertSymbolName(string name, bool subscript = false, bool superscript = false) {
         var atom =
-          LaTeXDefaults.ForLaTeXSymbolName(name) ??
+          LaTeXDefaults.AtomForCommand(name) ??
             throw new InvalidCodePathException("Looks like someone mistyped a symbol name...");
         InsertAtom(atom);
         switch (subscript, superscript) {

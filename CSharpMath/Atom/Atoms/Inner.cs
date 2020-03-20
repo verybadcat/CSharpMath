@@ -2,17 +2,17 @@ using System.Text;
 
 namespace CSharpMath.Atom.Atoms {
   /// <summary>An inner atom, i.e. embedded math list</summary>
-  public class Inner : MathAtom {
-    public Inner(MathList innerList) : base(string.Empty) =>
-      InnerList = innerList;
-    public MathList InnerList { get; set; }
+  public class Inner : MathAtom, IMathListContainer1 {
+    public Inner() : base(string.Empty) { }
+    public MathList? InnerList { get; set; }
     public Boundary? LeftBoundary { get; set; }
     public Boundary? RightBoundary { get; set; }
     public override bool ScriptsAllowed => true;
     public new Inner Clone(bool finalize) => (Inner)base.Clone(finalize);
     protected override MathAtom CloneInside(bool finalize) =>
-      new Inner(InnerList.Clone(finalize)) { 
+      new Inner() { 
         LeftBoundary = LeftBoundary,
+        InnerList = InnerList?.Clone(finalize),
         RightBoundary = RightBoundary
       };
     public bool EqualsInner(Inner otherInner) =>

@@ -228,7 +228,7 @@ namespace CSharpMath.Display {
             if (inner.LeftBoundary != null || inner.RightBoundary != null) {
               innerDisplay = _MakeLeftRight(inner);
             } else {
-              innerDisplay = CreateLine(inner.InnerList, _font, _context, _style, _cramped);
+              innerDisplay = CreateLine(inner.InnerList ?? new MathList(), _font, _context, _style, _cramped);
             }
             innerDisplay.Position = _currentPosition;
             _currentPosition.X += innerDisplay.Width;
@@ -300,7 +300,7 @@ namespace CSharpMath.Display {
           case RaiseBox raiseBox:
             AddDisplayLine(false);
             var raisedDisplay =
-              Typesetter.CreateLine(raiseBox.InnerList, _font, _context, _style);
+              Typesetter.CreateLine(raiseBox.InnerList ?? new MathList(), _font, _context, _style);
             var raisedPosition = _currentPosition;
             raisedPosition.Y += raiseBox.Raise.ActualLength(_mathTable, _font);
             raisedDisplay.Position = raisedPosition;
@@ -515,8 +515,8 @@ namespace CSharpMath.Display {
       }
       return null;
     }
-    private RadicalDisplay<TFont, TGlyph> MakeRadical(MathList radicand, Range range) {
-      var innerDisplay = CreateLine(radicand, _font, _context, _style, true);
+    private RadicalDisplay<TFont, TGlyph> MakeRadical(MathList? radicand, Range range) {
+      var innerDisplay = CreateLine(radicand ?? new MathList(), _font, _context, _style, true);
       var radicalVerticalGap =
         _style == LineStyle.Display
         ? _mathTable.RadicalDisplayStyleVerticalGap(_styleFont)
@@ -670,7 +670,7 @@ namespace CSharpMath.Display {
       if (inner.LeftBoundary == null && inner.RightBoundary == null) {
         throw new InvalidCodePathException("Inner should have a boundary to call this function.");
       }
-      var innerListDisplay = CreateLine(inner.InnerList, _font, _context, _style, _cramped, true);
+      var innerListDisplay = CreateLine(inner.InnerList ?? new MathList(), _font, _context, _style, _cramped, true);
       float axisHeight = _mathTable.AxisHeight(_styleFont);
       // delta is the max distance from the axis.
       float delta =

@@ -22,20 +22,4 @@ namespace CSharpMath.Atom
     ///<summary>\mathbfit</summary>
     BoldItalic
   }
-  public static class FontStyleExtensions {
-    public static string FontName(this FontStyle style) => FontStyles[style];
-    public static Structures.AliasDictionary<string, FontStyle> FontStyles { get; } =
-      new Structures.AliasDictionary<string, FontStyle> {
-        { "mathnormal", FontStyle.Default },
-        { "mathrm", "rm", "text", FontStyle.Roman },
-        { "mathbf", "bf", FontStyle.Bold },
-        { "mathcal", "cal", FontStyle.Caligraphic },
-        { "mathtt", FontStyle.Typewriter },
-        { "mathit", "mit", FontStyle.Italic },
-        { "mathsf", FontStyle.SansSerif },
-        { "mathfrak", "frak", FontStyle.Fraktur },
-        { "mathbb", FontStyle.Blackboard },
-        { "mathbfit", "bm", FontStyle.BoldItalic },
-      };
-  }
 }

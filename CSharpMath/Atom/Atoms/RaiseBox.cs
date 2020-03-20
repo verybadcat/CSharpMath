@@ -1,12 +1,10 @@
 namespace CSharpMath.Atom.Atoms {
-  public class RaiseBox : MathAtom {
-    public Space Raise { get; }
-    public MathList InnerList { get; set; }
-    public RaiseBox(Space raise, MathList innerList) : base() =>
-      (Raise, InnerList) = (raise, innerList);
+  public class RaiseBox : MathAtom, IMathListContainer1 {
+    public Structures.Space Raise { get; set; }
+    public MathList? InnerList { get; set; }
     public override bool ScriptsAllowed => false;
     public new RaiseBox Clone(bool finalize) => (RaiseBox)base.Clone(finalize);
     protected override MathAtom CloneInside(bool finalize) =>
-      new RaiseBox(Raise, InnerList.Clone(finalize));
+      new RaiseBox { Raise = Raise, InnerList = InnerList?.Clone(finalize) };
   }
 }
