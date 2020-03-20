@@ -8,9 +8,8 @@ using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.SkiaSharp {
   public class MathPainter : MathPainter<SKCanvas, SKColor>, ICanvasPainter<SKCanvas, MathSource, SKColor> {
-    public const AntiAlias DefaultAntiAlias = AntiAlias.WithSubpixelText;
     public SKStrokeCap StrokeCap { get; set; }
-    public AntiAlias AntiAlias { get; set; } = DefaultAntiAlias;
+    public bool AntiAlias { get; set; } = true;
     public void Draw(SKCanvas canvas, SKPoint point) => Draw(canvas, point.X, point.Y);
     protected override bool CoordinatesFromBottomLeftInsteadOfTopLeft => false;
     public override SKColor UnwrapColor(Color color) => color.ToNative();

@@ -134,6 +134,7 @@ Dependency|Used by|License
 Typography project|CSharpMath.Rendering|[MIT](https://github.com/LayoutFarm/Typography/blob/master/LICENSE.md)
 latin-modern-math font|CSharpMath.Ios, CSharpMath.Rendering|[GUST Font License](http://www.gust.org.pl/projects/e-foundry/licenses/GUST-FONT-LICENSE.txt/view)
 [Cyrillic Modern](https://sourceforge.net/projects/cyrillic-modern/) and the AMS-Capital-Blackboard-Bold font (extracted by @Happypig375 from [the amsfonts package](https://ctan.org/pkg/amsfonts))|CSharpMath.Rendering|[SIL Open Font License](https://ctan.org/license/ofl)
+[ComicNeue](http://comicneue.com) font|CSharpMath.SkiaSharp.Tests|[SIL Open Font License](http://scripts.sil.org/OFL)
 
 # Authors
 

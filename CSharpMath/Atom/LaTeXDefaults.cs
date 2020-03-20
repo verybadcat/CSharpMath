@@ -341,7 +341,6 @@ namespace CSharpMath.Atom {
         return new Variable(s);
       }
       switch (c) {
-#warning Todo check if all these 9 characters are already accounted for in MathListBuilder, then remove
         case (sbyte)'$':
         case (sbyte)'%':
         case (sbyte)'#':
