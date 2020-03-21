@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CSharpMath.Atom
- {
+namespace CSharpMath.Atom {
   public abstract class MathAtom : IMathObject, IEquatable<MathAtom> {
-    internal const int Phi = unchecked((int)0x9e3779b9);
     public string TypeName {
       get {
         // Insert a space before every capital letter other than the first one.

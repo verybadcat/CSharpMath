@@ -67,7 +67,7 @@ namespace CSharpMath.Rendering {
     public abstract Color WrapColor(TColor color);
     public abstract TColor UnwrapColor(Color color);
     public abstract ICanvas WrapCanvas(TCanvas canvas);
-    public abstract RectangleF? Measure(float canvasWidth);
+    public abstract RectangleF? Measure(float textPainterCanvasWidth);
     public abstract void Draw(TCanvas canvas, TextAlignment alignment, Thickness padding = default, float offsetX = 0, float offsetY = 0);
     protected void DrawCore(ICanvas canvas, IDisplay<Fonts, Glyph> display, PointF? position = null) {
       if (Source.IsValid) {

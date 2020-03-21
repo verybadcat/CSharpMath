@@ -60,20 +60,19 @@ namespace CSharpMath.SkiaSharp {
       if (painter.ErrorMessage != null)
         throw new Xunit.Sdk.XunitException("Painter error: " + painter.ErrorMessage);
 
-      var size = painter.Measure(2000f) switch
-      {
-        System.Drawing.RectangleF rect => rect.Size,
-        null => throw new Xunit.Sdk.XunitException("Measure returned null.")
-      };
       var actualFile = new FileInfo(Path.Combine(folder, inFile + ".actual.png"));
       Assert.False(actualFile.Exists, "The actual file was not deleted by test initialization.");
-      using (var surface = SKSurface.Create(new SKImageInfo((int)size.Width, (int)size.Height))) {
-        painter.Draw(surface.Canvas, Rendering.TextAlignment.TopLeft);
-        using var snapshot = surface.Snapshot();
-        using var pngData = snapshot.Encode();
-        using var outFile = actualFile.OpenWrite();
-        pngData.SaveTo(outFile);
-      }
+
+      switch (painter.DrawAsStream())
+      {
+        case { } stream:
+          using (var outFile = actualFile.OpenWrite())
+          using (stream)
+            stream.CopyTo(outFile);
+          break;
+        case null:
+          throw new Xunit.Sdk.XunitException("DrawAsStream returned null.");
+      };
       actualFile.Refresh();
       Assert.True(actualFile.Exists, "The actual image was not created successfully.");
 

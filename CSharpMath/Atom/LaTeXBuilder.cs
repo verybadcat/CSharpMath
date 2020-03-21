@@ -18,7 +18,6 @@ namespace CSharpMath.Atom {
       public Boundary? RightBoundary { get; set; }
     }
     private readonly char[] _chars;
-    private readonly int _length;
     private int _currentChar;
     private bool _textMode; //_spacesAllowed in iosMath
     private FontStyle _currentFontStyle;
@@ -28,7 +27,6 @@ namespace CSharpMath.Atom {
     public LaTeXBuilder(string str) {
       _chars = str?.ToCharArray() ?? throw new ArgumentNullException(nameof(str));
       _currentFontStyle = FontStyle.Default;
-      _length = str.Length;
     }
     public MathList? Build() {
       var r = BuildInternal(false);
@@ -42,7 +40,7 @@ namespace CSharpMath.Atom {
       _ = _currentChar == 0
       ? throw new InvalidCodePathException("Can't unlook below character 0")
       : _currentChar--;
-    private bool HasCharacters => _currentChar < _length;
+    private bool HasCharacters => _currentChar < _chars.Length;
     private MathList? BuildInternal(bool oneCharOnly, char stopChar = '\0') {
       if (oneCharOnly && stopChar > '\0') {
         throw new InvalidCodePathException("Cannot set both oneCharOnly and stopChar");
