@@ -3,14 +3,41 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using System.Windows;
 using System.Xml;
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Markup.Xaml;
 
 namespace CSharpMath.Utils.NuGet {
   /// <summary>
   /// Interaction logic for App.xaml
   /// </summary>
   public partial class App : Application {
+    public override void Initialize() {
+      AvaloniaXamlLoader.Load(this);
+    }
+    public override void OnFrameworkInitializationCompleted() {
+      switch (ApplicationLifetime) {
+        case IClassicDesktopStyleApplicationLifetime desktop:
+          desktop.MainWindow = new Editor();
+          new Editor2().Show();
+          break;
+        case ISingleViewApplicationLifetime _:
+          throw new Exception("Single view not supported");
+      }
+      base.OnFrameworkInitializationCompleted();
+    }
+
+    // This method is needed for IDE previewer infrastructure
+    public static AppBuilder BuildAvaloniaApp() =>
+      AppBuilder.Configure<App>().UsePlatformDetect();
+
+    // The entry point. Things aren't ready yet, so at this point
+    // you shouldn't use any Avalonia types or anything that expects
+    // a SynchronizationContext to be ready
+    public static int Main(string[] args) =>
+      BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+
     /// <summary>
     /// The path of the global CSharpMath folder
     /// </summary>
@@ -23,13 +50,6 @@ namespace CSharpMath.Utils.NuGet {
     public static readonly string ReleaseData =
       Path.Combine(Path.Combine(Global,
         $"{nameof(CSharpMath)}.{nameof(Utils)}.{nameof(NuGet)}"), "ReleaseData.xml");
-
-    protected override void OnStartup(StartupEventArgs e) {
-      base.OnStartup(e);
-      var e1 = new Editor { Left = 50 };
-      e1.Show();
-      new Editor2() { Left = e1.Left + e1.Width, Top = e1.Top }.Show();
-    }
 
     public static void UpdateProject(string project) {
       var d = new XmlDocument();

@@ -103,7 +103,11 @@ namespace CSharpMath.Utils.NuGet {
       }
       App.UpdateAllProjects();
       //MVVM broken here
-      System.Windows.MessageBox.Show("Successfully saved the global spec.");
+      new Avalonia.Controls.Window {
+        Content = new Avalonia.Controls.TextBlock {
+          Text = "Successfully saved the global spec."
+        }
+      }.Show();
     }
     public ICommand Save => new Command(SaveFile);
   }

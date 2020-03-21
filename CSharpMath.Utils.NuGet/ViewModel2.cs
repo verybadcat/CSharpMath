@@ -110,8 +110,11 @@ namespace CSharpMath.Utils.NuGet {
       }
       App.UpdateProject(CurrentInfo.Project);
       //MVVM broken here
-      System.Windows.MessageBox.Show
-        ($"Project-wise spec for {CurrentInfo.Project} was saved successfully.");
+      new Avalonia.Controls.Window {
+        Content = new Avalonia.Controls.TextBlock {
+          Text = $"Project-wise spec for {CurrentInfo.Project} was saved successfully."
+        }
+      }.Show();
     }
     public ICommand Save => new Command(SaveFile);
   }

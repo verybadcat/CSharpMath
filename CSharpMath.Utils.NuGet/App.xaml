@@ -1,7 +1,14 @@
 ﻿<Application x:Class="CSharpMath.Utils.NuGet.App"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Application.Resources>
 
-    </Application.Resources>
+    <Application.Styles>
+
+        <StyleInclude Source="avares://Avalonia.Themes.Default/DefaultTheme.xaml"/>
+        <StyleInclude Source="avares://Avalonia.Themes.Default/Accents/BaseLight.xaml"/>
+
+        <StyleInclude Source="/SideBar.xaml"/>
+        <StyleInclude Source="/Styles.xaml"/>
+
+    </Application.Styles>
 </Application>

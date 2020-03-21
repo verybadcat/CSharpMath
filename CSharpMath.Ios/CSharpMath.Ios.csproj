@@ -6,7 +6,6 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <LangVersion>latest</LangVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{11D4E6C7-C8E2-449C-A1E7-18BBBCE4E6F3}</ProjectGuid>
     <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <RootNamespace>CSharpMath.Ios</RootNamespace>
@@ -74,8 +73,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CSharpMath\CSharpMath.csproj">
-      <Project>{5157367b-f03e-4acb-83a1-0de414a3bfca}</Project>
-      <Name>CSharpMath</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
