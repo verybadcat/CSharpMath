@@ -2,12 +2,14 @@ using System.Text;
 
 namespace CSharpMath.Atom.Atoms {
   /// <summary>An inner atom, i.e. embedded math list</summary>
-  public class Inner : MathAtom, IMathListContainer1 {
+  public class Inner : MathAtom, IMathListContainer {
     public Inner(Boundary left, MathList innerList, Boundary right) =>
       (LeftBoundary, InnerList, RightBoundary) = (left, innerList, right);
     public MathList InnerList { get; }
     public Boundary LeftBoundary { get; }
     public Boundary RightBoundary { get; }
+    System.Collections.Generic.IEnumerable<MathList> IMathListContainer.InnerLists =>
+      new[] { InnerList };
     public override bool ScriptsAllowed => true;
     public new Inner Clone(bool finalize) => (Inner)base.Clone(finalize);
     protected override MathAtom CloneInside(bool finalize) =>

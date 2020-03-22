@@ -1,9 +1,11 @@
 namespace CSharpMath.Atom.Atoms {
   /// <summary>An underlined atom</summary>
-  public class Underline : MathAtom, IMathListContainer1 {
-    public MathList InnerList { get; }
+  public class Underline : MathAtom, IMathListContainer {
     public Underline(MathList innerList) : base() =>
       InnerList = innerList;
+    public MathList InnerList { get; }
+    System.Collections.Generic.IEnumerable<MathList> IMathListContainer.InnerLists =>
+      new[] { InnerList };
     public new Underline Clone(bool finalize) => (Underline)base.Clone(finalize);
     protected override MathAtom CloneInside(bool finalize) =>
       new Underline(InnerList.Clone(finalize));

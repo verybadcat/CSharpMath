@@ -1,11 +1,11 @@
 using System.Text;
 
 namespace CSharpMath.Atom.Atoms {
-  public class Fraction : MathAtom, IMathListContainer2 {
+  public class Fraction : MathAtom, IMathListContainer {
     public MathList Numerator { get; }
     public MathList Denominator { get; }
-    MathList IMathListContainer2.InnerList1 => Numerator;
-    MathList IMathListContainer2.InnerList2 => Denominator;
+    System.Collections.Generic.IEnumerable<MathList> IMathListContainer.InnerLists =>
+      new[] { Numerator, Denominator };
     public string? LeftDelimiter { get; set; }
     public string? RightDelimiter { get; set; }
     /// <summary>In this context, a "rule" is a fraction line.</summary>

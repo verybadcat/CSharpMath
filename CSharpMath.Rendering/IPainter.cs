@@ -2,7 +2,6 @@ using System.Drawing;
 using Typography.OpenFont;
 
 namespace CSharpMath.Rendering {
-  using FrontEnd;
   using Structures;
   public interface IPainter<TSource, TColor> where TSource : ISource {
     #region Non-display-recreating properties
@@ -56,11 +55,5 @@ namespace CSharpMath.Rendering {
           + padding.Top + displayDescent;
       return new PointF(x + offsetX, y + offsetY - (bottomLeftCoords ? 0 : height));
     }
-  }
-  public interface ICanvasPainter<TCanvas, TSource, TColor> : IPainter<TSource, TColor> where TSource : ISource {
-    ICanvas WrapCanvas(TCanvas canvas);
-    Color WrapColor(TColor color);
-    TColor UnwrapColor(Color color);
-    void Draw(TCanvas canvas, TextAlignment alignment, Thickness padding = default, float offsetX = 0, float offsetY = 0);
   }
 }

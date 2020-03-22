@@ -7,7 +7,7 @@ using SkiaSharp;
 using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.SkiaSharp {
-  public class MathPainter : MathPainter<SKCanvas, SKColor>, ICanvasPainter<SKCanvas, MathSource, SKColor> {
+  public class MathPainter : MathPainter<SKCanvas, SKColor> {
     public SKStrokeCap StrokeCap { get; set; }
     public bool AntiAlias { get; set; } = true;
     public void Draw(SKCanvas canvas, SKPoint point) => Draw(canvas, point.X, point.Y);

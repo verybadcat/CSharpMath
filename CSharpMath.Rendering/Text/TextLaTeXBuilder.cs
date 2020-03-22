@@ -446,7 +446,7 @@ namespace CSharpMath.Rendering.Text
                                     }
                                 //case "^", "\"", ...
                                 case var textAccent when
-                                  TextAtoms.PredefinedAccents.TryGetByFirst(textAccent, out var accent):
+                                  TextLaTeXDefaults.PredefinedAccents.TryGetByFirst(textAccent, out var accent):
                                     {
                                         int tmp_commandLength = textAccent.Length;
                                         if (ReadArgumentAtom(latex)
@@ -456,7 +456,7 @@ namespace CSharpMath.Rendering.Text
                                         break;
                                     }
                                 //case "textasciicircum", "textless", ...
-                                case var textSymbol when TextAtoms.PredefinedTextSymbols.TryGetValue(textSymbol, out var replaceResult):
+                                case var textSymbol when TextLaTeXDefaults.PredefinedTextSymbols.TryGetValue(textSymbol, out var replaceResult):
                                     atoms.Text(replaceResult, NextSectionUntilPunc(latex, ref textSection));
                                     break;
                                 case var command:

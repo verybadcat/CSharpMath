@@ -9,13 +9,11 @@ namespace CSharpMath.Forms {
     protected override string LaTeXFromSource(TextSource source) => source.LaTeX;
     protected override TextSource SourceFromLaTeX(string latex) => TextSource.FromLaTeX(latex);
     public TextAtom Atom { get => Source.Atom; set => Source = new TextSource(value); }
-#if false
-    public float? LineWidth {
-      get => (float?)GetValue(LineWidthProperty);
+    public float LineWidth {
+      get => (float)GetValue(LineWidthProperty);
       set => SetValue(LineWidthProperty, value);
     }
     public static readonly BindableProperty LineWidthProperty =
-      BindableProperty.Create(nameof(LineWidth), typeof(float?), typeof(TextView));
-#endif
+      BindableProperty.Create(nameof(LineWidth), typeof(float), typeof(TextView));
   }
 }

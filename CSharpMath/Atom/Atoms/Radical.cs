@@ -1,14 +1,14 @@
 using System.Text;
 
 namespace CSharpMath.Atom.Atoms {
-  public class Radical: MathAtom, IMathListContainer2 {
+  public class Radical: MathAtom, IMathListContainer {
     public Radical(MathList degree, MathList radicand) =>
       (Degree, Radicand) = (degree, radicand);
     public MathList Degree { get; }
     /// <summary>Whatever is under the square root sign</summary>
     public MathList Radicand { get; }
-    MathList IMathListContainer2.InnerList1 => Degree;
-    MathList IMathListContainer2.InnerList2 => Radicand;
+    System.Collections.Generic.IEnumerable<MathList> IMathListContainer.InnerLists =>
+      new[] { Degree, Radicand };
     public new Radical Clone(bool finalize) => (Radical)base.Clone(finalize);
     protected override MathAtom CloneInside(bool finalize) =>
       new Radical(Degree.Clone(finalize), Radicand.Clone(finalize));

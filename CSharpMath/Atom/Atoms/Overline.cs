@@ -2,9 +2,11 @@ using System.Text;
 
 namespace CSharpMath.Atom.Atoms {
   /// <summary>An overlined atom</summary>
-  public class Overline : MathAtom, IMathListContainer1 {
+  public class Overline : MathAtom, IMathListContainer {
     public Overline(MathList innerList) => InnerList = innerList;
     public MathList InnerList { get; }
+    System.Collections.Generic.IEnumerable<MathList> IMathListContainer.InnerLists =>
+      new[] { InnerList };
     public override bool ScriptsAllowed => true;
     public new Overline Clone(bool finalize) => (Overline)base.Clone(finalize);
     protected override MathAtom CloneInside(bool finalize) =>

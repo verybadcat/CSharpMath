@@ -13,7 +13,7 @@ namespace CSharpMath.Editor {
       (Context, Font) = (context, font);
     //private readonly List<MathListIndex> highlighted;
     protected TypesettingContext<TFont, TGlyph> Context { get; }
-    public CaretHandle? Caret { get; protected set; }
+    public bool ShowCaret { get; protected set; }
     public Display.Displays.ListDisplay<TFont, TGlyph>? Display { get; protected set; }
     public MathList MathList { get; } = new MathList();
     public string LaTeX => LaTeXBuilder.MathListToLaTeX(MathList);
@@ -383,11 +383,11 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
           break;
         case MathKeyboardInput.Return:
           ReturnPressed?.Invoke(this, EventArgs.Empty);
-          Caret = null;
+          ShowCaret = false;
           return;
         case MathKeyboardInput.Dismiss:
           DismissPressed?.Invoke(this, EventArgs.Empty);
-          Caret = null;
+          ShowCaret = false;
           return;
         case MathKeyboardInput.BothRoundBrackets:
           InsertAtomPair(new Atoms.Open("("), new Atoms.Close(")"));
@@ -764,7 +764,7 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
     public void MoveCaretToPoint(PointF point) {
       point.Y *= -1; //inverted canvas, blah blah
       InsertionIndex = ClosestIndexToPoint(point) ?? MathListIndex.Level0Index(MathList.Atoms.Count);
-      Caret = new CaretHandle(Font.PointSize);
+      ShowCaret = true;
     }
 
     /// <summary>Helper method to update caretView when insertion point/selection changes.</summary>
@@ -779,13 +779,9 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
             case Atoms.Placeholder _:
               mathAtom.Nucleus = "\u25A1";
               break;
-            case Atoms.Radical rad:
-              VisualizePlaceholders(rad.Degree);
-              VisualizePlaceholders(rad.Radicand);
-              break;
-            case Atoms.Fraction frac:
-              VisualizePlaceholders(frac.Numerator);
-              VisualizePlaceholders(frac.Denominator);
+            case IMathListContainer container:
+              foreach (var list in container.InnerLists)
+                VisualizePlaceholders(list);
               break;
           }
         }
@@ -793,10 +789,10 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
       VisualizePlaceholders(MathList);
       if (MathList.AtomAt(_insertionIndex) is Atoms.Placeholder placeholder) {
         placeholder.Nucleus = "\u25A0";
-        Caret = null;
+        ShowCaret = false;
       } else {
         // Find the insert point rect and create a caretView to draw the caret at this position.
-        Caret = new CaretHandle(Font.PointSize);
+        ShowCaret = true;
       }
       // Check that we were returned a valid position before displaying a caret there.
       RecreateDisplayFromMathList();

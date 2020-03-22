@@ -2,8 +2,10 @@ using System.Text;
 
 namespace CSharpMath.Atom.Atoms {
   /// <summary>An accented atom</summary>
-  public class Accent : MathAtom, IMathListContainer1 {
+  public class Accent : MathAtom, IMathListContainer {
     public MathList InnerList { get; } = new MathList();
+    System.Collections.Generic.IEnumerable<MathList> IMathListContainer.InnerLists =>
+      new[] { InnerList };
     public Accent(string value, MathList? innerList = null) : base(value) =>
       InnerList = innerList ?? new MathList();
     public override string DebugString =>

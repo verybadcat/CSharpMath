@@ -15,15 +15,9 @@ namespace CSharpMath.Atom {
       var atomWithoutScripts = atom.Clone(false);
       atomWithoutScripts.Subscript = null;
       atomWithoutScripts.Superscript = null;
-      switch (atomWithoutScripts) {
-        case IMathListContainer1 c:
-          c.InnerList.Clear();
-          break;
-        case IMathListContainer2 c:
-          c.InnerList1.Clear();
-          c.InnerList2.Clear();
-          break;
-      }
+      if (atomWithoutScripts is IMathListContainer container)
+        foreach (var list in container.InnerLists)
+          list.Clear();
       return Commands.TryGetKey(atomWithoutScripts, out var name) ? name : null;
     }
 

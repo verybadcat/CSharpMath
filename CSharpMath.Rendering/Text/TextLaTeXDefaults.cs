@@ -1,6 +1,6 @@
 namespace CSharpMath.Rendering.Text {
   using CSharpMath.Structures;
-  public static class TextAtoms {
+  public static class TextLaTeXDefaults {
     public static AliasDictionary<string, string> PredefinedTextSymbols { get; } =
       new AliasDictionary<string, string> {
         /*Ten special characters and their commands:
