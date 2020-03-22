@@ -21,12 +21,10 @@ namespace CSharpMath.Forms.Example
 
     private void Size_SelectedIndexChanged(object sender, EventArgs e) {
       View.FontSize = (float)Size.SelectedItem;
-      View.InvalidateSurface();
     }
 
     private void Text_TextChanged(object sender, TextChangedEventArgs e) {
       View.LaTeX = e.NewTextValue;
-      View.InvalidateSurface();
     }
   }
 }

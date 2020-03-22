@@ -28,10 +28,9 @@ namespace CSharpMath.Forms {
             break;
           case SKTouchAction.Moved:
             var displacement = e.Location - _origin;
+            _origin = e.Location;
             DisplacementX += displacement.X;
             DisplacementY += displacement.Y;
-            _origin = e.Location;
-            InvalidateSurface();
             e.Handled = true;
             break;
           case SKTouchAction.Released:
@@ -61,7 +60,11 @@ namespace CSharpMath.Forms {
     static TPainter staticPainter;
     protected static BindableProperty CreateProperty<T>(string propertyName, Func<TPainter, T> defaultValueGet, Action<TPainter, T> propertySet, Type thisType = null) =>
       BindableProperty.Create(propertyName, typeof(T), thisType ?? typeof(BaseView<TPainter, TContent>), defaultValueGet(staticPainter ??= new TPainter()),
-        propertyChanged: (b, o, n) => propertySet(((BaseView<TPainter, TContent>)b).Painter, (T)n));
+        propertyChanged: (b, o, n) => {
+          var p = (BaseView<TPainter, TContent>)b;
+          propertySet(p.Painter, (T)n);
+          p.InvalidateSurface(); // Redraw immediately! No deferred drawing
+        });
     
     public static readonly BindableProperty ContentProperty = CreateProperty(nameof(Content), p => p.Content, (p, v) => p.Content = v);
     public TContent Content { get => (TContent)GetValue(ContentProperty); set => SetValue(ContentProperty, value); }

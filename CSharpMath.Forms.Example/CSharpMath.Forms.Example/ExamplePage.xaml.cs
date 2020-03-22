@@ -11,16 +11,12 @@ namespace CSharpMath.Forms.Example {
       InitializeComponent();
       App.AllViews.Add(View);
       Size.ItemsSource = CustomExamplePage.FontSizes;
-      Size.SelectedIndexChanged += (sender, e) => {
+      Size.SelectedIndexChanged += (sender, e) =>
         View.FontSize = (float)Size.SelectedItem;
-        View.InvalidateSurface();
-      };
       Size.SelectedItem = 96f;
       Picker.ItemsSource = SkiaSharp.MathData.AllConstants.Keys.ToList();
-      Picker.SelectedIndexChanged += (sender, e) => {
+      Picker.SelectedIndexChanged += (sender, e) =>
         View.LaTeX = Label.Text = SkiaSharp.MathData.AllConstants[(string)Picker.SelectedItem];
-        View.InvalidateSurface();
-      };
       Picker.SelectedItem = nameof(SkiaSharp.MathData.ShortIntegral);
     }
     protected override void OnDisappearing() {
@@ -29,7 +25,6 @@ namespace CSharpMath.Forms.Example {
     }
     private void Button_Clicked(object sender, System.EventArgs e) {
       View.DisplacementX = View.DisplacementY = 0;
-      View.InvalidateSurface();
     }
   }
 }
