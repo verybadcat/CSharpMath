@@ -16,7 +16,7 @@ namespace CSharpMath.Editor {
     public bool ShowCaret { get; protected set; }
     public Display.Displays.ListDisplay<TFont, TGlyph>? Display { get; protected set; }
     public MathList MathList { get; } = new MathList();
-    public string LaTeX => LaTeXBuilder.MathListToLaTeX(MathList);
+    public string LaTeX => LaTeXBuilder.MathListToLaTeX(MathList).ToString();
     private MathListIndex _insertionIndex = MathListIndex.Level0Index(0);
     public MathListIndex InsertionIndex { get => _insertionIndex; set { _insertionIndex = value; InsertionPointChanged(); } }
     public TFont Font { get; set; }

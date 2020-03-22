@@ -9,7 +9,6 @@ namespace CSharpMath.Rendering {
     public MathSource(MathList mathList) => MathList = mathList;
     public MathList MathList { get; }
     private string _latex;
-    public string LaTeX => _latex ??= LaTeXBuilder.MathListToLaTeX(MathList);
     public string ErrorMessage { get; private set; }
     public bool IsValid => MathList != null;
     public override int GetHashCode() => unchecked(MathList.GetHashCode() * 2519);

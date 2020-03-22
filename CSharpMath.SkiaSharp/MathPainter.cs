@@ -51,11 +51,10 @@ namespace CSharpMath.SkiaSharp {
     private static void DrawDisplay(MathPainter settings, Display.IDisplay<Fonts, Glyph> display,
       System.Action<MathPainter> draw) {
       if (display is null) return;
-      var original = (settings.Source, settings._display, settings._displayChanged);
-      (settings.Source, settings._display, settings._displayChanged) =
-        (staticValidSource, display, false);
+      var original = (settings._display, settings._displayChanged);
+      (settings._display, settings._displayChanged) = (display, false);
       draw(settings);
-      (settings.Source, settings._display, settings._displayChanged) = original;
+      (settings._display, settings._displayChanged) = original;
     }
   }
 }

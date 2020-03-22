@@ -3,7 +3,7 @@ using Typography.OpenFont;
 
 namespace CSharpMath.Rendering {
   using Structures;
-  public interface IPainter<TSource, TColor> where TSource : ISource {
+  public interface IPainter<TContent, TColor> {
     #region Non-display-recreating properties
     TColor HighlightColor { get; set; }
     TColor TextColor { get; set; }
@@ -20,7 +20,7 @@ namespace CSharpMath.Rendering {
     float FontSize { get; set; }
     ObservableRangeCollection<Typeface> LocalTypefaces { get; }
     Atom.LineStyle LineStyle { get; set; }
-    TSource Source { get; set; }
+    TContent Content { get; set; }
     string LaTeX { get; set; }
     #endregion Display-recreating properties
   }

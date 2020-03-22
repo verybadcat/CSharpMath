@@ -14,18 +14,15 @@ namespace CSharpMath.Rendering {
   public static class PainterConstants {
     public const float DefaultFontSize = 20f;
   }
-  public abstract class Painter<TCanvas, TSource, TColor> : IPainter<TSource, TColor>
-    where TSource : ISource {
+  public abstract class Painter<TCanvas, TContent, TColor> : IPainter<TContent, TColor> {
     public const float DefaultFontSize = PainterConstants.DefaultFontSize;
 
-    #region Constructors
     public Painter() {
       LocalTypefaces.CollectionChanged += TypefacesChanged;
       ErrorColor = UnwrapColor(new Color(255, 0, 0));
       TextColor = UnwrapColor(new Color(0, 0, 0));
       HighlightColor = UnwrapColor(new Color(0, 0, 0, 0));
     }
-    #endregion Constructors
 
     #region Non-redisplaying properties
     /// <summary>
@@ -40,12 +37,12 @@ namespace CSharpMath.Rendering {
     public (TColor glyph, TColor textRun)? GlyphBoxColor { get; set; }
     public PaintStyle PaintStyle { get; set; } = PaintStyle.Fill;
     public float Magnification { get; set; } = 1;
-    public string ErrorMessage => Source?.ErrorMessage;
+    public string ErrorMessage { get; protected set; }
     public abstract IDisplay<Fonts, Glyph> Display { get; }
-    public abstract string LaTeX { get; set; }
     #endregion Non-redisplaying properties
 
     #region Redisplaying properties
+    public abstract string LaTeX { get; set; }
     //_field == private field, __field == property-only field
     protected abstract void SetRedisplay();
     protected Fonts Fonts { get; private set; } = new Fonts(Array.Empty<Typeface>(), DefaultFontSize);
@@ -56,8 +53,8 @@ namespace CSharpMath.Rendering {
     void TypefacesChanged(object sender, NotifyCollectionChangedEventArgs e) { Fonts = new Fonts(LocalTypefaces, FontSize); SetRedisplay(); }
     Atom.LineStyle __style = Atom.LineStyle.Display;
     public Atom.LineStyle LineStyle { get => __style; set { __style = value; SetRedisplay(); } }
-    TSource __source = default;
-    public TSource Source { get => __source; set { __source = value; SetRedisplay(); } }
+    TContent __content = default;
+    public TContent Content { get => __content; set { __content = value; SetRedisplay(); } }
     #endregion Redisplaying properties
 
     protected abstract bool CoordinatesFromBottomLeftInsteadOfTopLeft { get; }
@@ -70,7 +67,7 @@ namespace CSharpMath.Rendering {
     public abstract RectangleF? Measure(float textPainterCanvasWidth);
     public abstract void Draw(TCanvas canvas, TextAlignment alignment, Thickness padding = default, float offsetX = 0, float offsetY = 0);
     protected void DrawCore(ICanvas canvas, IDisplay<Fonts, Glyph> display, PointF? position = null) {
-      if (Source.IsValid) {
+      if (Content != null) {
         if (position != null) display.Position = position.Value;
         canvas.Save();
         if (!CoordinatesFromBottomLeftInsteadOfTopLeft) {
@@ -85,7 +82,7 @@ namespace CSharpMath.Rendering {
           throw new InvalidCodePathException(
             nameof(Measure) + " returned null." +
             $"Any conditions leading to this should have already been checked via " +
-            nameof(Source) + "." + nameof(Source.IsValid) + ".");
+            nameof(Content) + " != null.");
         canvas.FillRect(display.Position.X + measure.X, display.Position.Y -
           (CoordinatesFromBottomLeftInsteadOfTopLeft ? display.Ascent : display.Descent),
           measure.Width, measure.Height);

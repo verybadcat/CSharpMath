@@ -986,10 +986,10 @@ namespace CSharpMath.Atom {
         builder.Append("}");
       }
     }
-    public static string MathListToLaTeX(MathList mathList) {
-      var sb = new StringBuilder();
+    public static StringBuilder MathListToLaTeX(MathList mathList, StringBuilder? sb = null) {
+      sb ??= new StringBuilder();
       MathListToLaTeX(mathList, sb, FontStyle.Default);
-      return sb.ToString();
+      return sb;
     }
   }
 }

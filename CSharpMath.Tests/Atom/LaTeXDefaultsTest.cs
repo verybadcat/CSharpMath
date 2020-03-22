@@ -2,6 +2,7 @@ using Xunit;
 using System.Linq;
 namespace CSharpMath.Tests.Atom {
   using CSharpMath.Atom;
+  using Atoms = CSharpMath.Atom.Atoms;
   public class LaTeXDefaultsTest {
     [Fact]
     public void ForAsciiHandlesAllInputs() {
@@ -31,6 +32,19 @@ namespace CSharpMath.Tests.Atom {
             Assert.NotNull(LaTeXDefaults.ForAscii(i));
             break;
         }
+    }
+    [Fact]
+    public void CommandForAtomIgnoresInnerLists() {
+      var atom = new Atoms.Accent("\u0308", new MathList(new Atoms.Number("1")));
+      atom.Superscript = new MathList(new Atoms.Number("4"));
+      atom.Subscript = new MathList(new Atoms.Variable("x"));
+      Assert.Equal("ddots", LaTeXDefaults.CommandForAtom(atom));
+    }
+    [Fact]
+    public void AtomForCommandGeneratesACopy() {
+      var atom = LaTeXDefaults.AtomForCommand("int");
+      atom.IndexRange = Range.NotFound;
+      Assert.Equal(Range.Zero, LaTeXDefaults.AtomForCommand("int").IndexRange);
     }
   }
 }
