@@ -9,6 +9,6 @@
     <Import_RootNamespace>PixelFarm.Typography.Subset</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)GlyphPathBuilderBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)..\Typography\PixelFarm.Typography\3_Typography_Contours\GlyphOutlineBuilderBase.cs" />
   </ItemGroup>
 </Project>

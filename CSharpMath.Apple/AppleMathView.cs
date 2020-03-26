@@ -28,7 +28,7 @@ namespace CSharpMath.Apple {
       get => _mathList;
       set {
         _mathList = value;
-        LaTeX = LaTeXBuilder.MathListToLaTeX(value);
+        LaTeX = LaTeXBuilder.MathListToLaTeX(value).ToString();
         InvalidateIntrinsicContentSize();
         SetNeedsLayout();
       }

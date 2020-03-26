@@ -37,7 +37,7 @@ namespace CSharpMath.Rendering {
     public (TColor glyph, TColor textRun)? GlyphBoxColor { get; set; }
     public PaintStyle PaintStyle { get; set; } = PaintStyle.Fill;
     public float Magnification { get; set; } = 1;
-    public string ErrorMessage { get; protected set; }
+    public string? ErrorMessage { get; protected set; }
     public abstract IDisplay<Fonts, Glyph> Display { get; }
     #endregion Non-redisplaying properties
 

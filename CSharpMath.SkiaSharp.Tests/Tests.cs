@@ -51,8 +51,7 @@ namespace CSharpMath.SkiaSharp {
                     || method.IsDefined(typeof(TheoryAttribute), false))
       .Select(method => GetFolder(method.Name));
 
-    static void Test<TSource>(string inFile, string latex, string folder,
-      Painter<SKCanvas, TSource, SKColor> painter) where TSource : ISource {
+    static void Test<TContent>(string inFile, string latex, string folder, Painter<SKCanvas, TContent, SKColor> painter) {
       // Prevent black background behind black rendered output in File Explorer preview
       painter.HighlightColor = new SKColor(0xF0, 0xF0, 0xF0);
       painter.FontSize = 50f;
@@ -126,8 +125,7 @@ namespace CSharpMath.SkiaSharp {
       Test(file, latex, GetFolder(nameof(Text)), new TextPainter());
     [Fact]
     public void MathPainterSettings() {
-      void Test<TSource>(string file, Painter<SKCanvas, TSource, SKColor> painter)
-        where TSource : ISource =>
+      void Test<TContent>(string file, Painter<SKCanvas, TContent, SKColor> painter) =>
         Tests.Test(file, @"\sqrt[3]\frac\color{#F00}a\mathbb C", GetFolder(nameof(MathPainterSettings)), painter);
       Test("Baseline", new MathPainter());
       Test("Stroke", new MathPainter { PaintStyle = PaintStyle.Stroke });

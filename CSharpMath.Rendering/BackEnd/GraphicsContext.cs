@@ -8,7 +8,7 @@ using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Rendering.BackEnd {
   public class GraphicsContext : IGraphicsContext<Fonts, Glyph> {
-    private class GlyphPathBuilder : Typography.Contours.GlyphPathBuilderBase {
+    private class GlyphPathBuilder : Typography.Contours.GlyphOutlineBuilderBase {
       public GlyphPathBuilder(Typeface typeface) : base(typeface) { }
     }
     public (Color glyph, Color textRun)? GlyphBoxColor { get; set; }

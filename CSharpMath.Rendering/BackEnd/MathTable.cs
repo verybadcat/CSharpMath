@@ -23,8 +23,8 @@ namespace CSharpMath.Rendering.BackEnd {
     public override float FractionNumeratorGapMin(Fonts fonts) => ReadRecord(fonts.MathConsts.FractionNumeratorGapMin, fonts);
     public override float FractionNumeratorShiftUp(Fonts fonts) => ReadRecord(fonts.MathConsts.FractionNumeratorShiftUp, fonts);
     public override float FractionRuleThickness(Fonts fonts) => ReadRecord(fonts.MathConsts.FractionRuleThickness, fonts);
-    (IEnumerable<Glyph> variants, int count)? GetVariants(Typeface typeface, MathGlyphConstruction glyphs) {
-      var records = glyphs?.glyphVariantRecords;
+    (IEnumerable<Glyph> variants, int count)? GetVariants(Typeface typeface, MathGlyphConstruction? glyphs) {
+      var records = glyphs?.GlyphVariantRecords;
       if (records == null) return null;
       return (records.Select(record => new Glyph(typeface, typeface.GetGlyph(record.VariantGlyph))), records.Length);
     }
@@ -35,22 +35,22 @@ namespace CSharpMath.Rendering.BackEnd {
     public override float GetItalicCorrection(Fonts fonts, Glyph glyph) =>
       glyph.Info.MathGlyphInfo?.ItalicCorrection?.Value * glyph.Typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize) ?? 0;
     public override Glyph GetLargerGlyph(Fonts fonts, Glyph glyph) {
-      var variants = glyph.Info.MathGlyphInfo.VertGlyphConstruction.glyphVariantRecords;
+      var variants = glyph.Info.MathGlyphInfo?.VertGlyphConstruction?.GlyphVariantRecords;
       var glyphIndex = glyph.Info.GlyphIndex;
-        foreach (var variant in variants) {
-          var variantIndex = variant.VariantGlyph;
-          if (variantIndex != glyphIndex) {
-            //return the first glyph with a different index.
-            var variantGlyph = glyph.Typeface.GetGlyph(variantIndex);
-            return new Glyph(glyph.Typeface, variantGlyph);
-          }
+      foreach (var variant in variants ?? System.Array.Empty<MathGlyphVariantRecord>()) {
+        var variantIndex = variant.VariantGlyph;
+        if (variantIndex != glyphIndex) {
+          //return the first glyph with a different index.
+          var variantGlyph = glyph.Typeface.GetGlyph(variantIndex);
+          return new Glyph(glyph.Typeface, variantGlyph);
         }
+      }
       return glyph;
     }
-    public override IEnumerable<GlyphPart<Glyph>> GetVerticalGlyphAssembly(Glyph rawGlyph, Fonts fonts) {
+    public override IEnumerable<GlyphPart<Glyph>>? GetVerticalGlyphAssembly(Glyph rawGlyph, Fonts fonts) {
       var scale = rawGlyph.Typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);
       return
-        rawGlyph.Info.MathGlyphInfo?.VertGlyphConstruction?.GlyphAsm_GlyphPartRecords?.Select(record =>
+        rawGlyph.Info.MathGlyphInfo?.VertGlyphConstruction?.GlyphAsm?.GlyphPartRecords.Select(record =>
         new GlyphPart<Glyph>(
           new Glyph(rawGlyph.Typeface, rawGlyph.Typeface.GetGlyph(record.GlyphId)),
           record.FullAdvance * scale,

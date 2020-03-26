@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <IsPackable>false</IsPackable>
-    <LangVersion>latest</LangVersion>
     <RootNamespace>CSharpMath.Editor.Tests</RootNamespace>
   </PropertyGroup>
 
@@ -23,15 +22,12 @@
     <Compile Include="..\CSharpMath.Tests\_Helpers\FrontEnd\TestGlyphNameProvider.cs" Link="_Helpers\FrontEnd\TestGlyphNameProvider.cs" />
     <Compile Include="..\CSharpMath.Tests\_Helpers\FrontEnd\TestTypesettingContext.cs" Link="_Helpers\FrontEnd\TestTypesettingContext.cs" />
     <EmbeddedResource Include="..\CSharpMath.Tests\_Helpers\Resources\latinmodern-math.json" Link="_Helpers\Resources\latinmodern-math.json" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\CSharpMath.Editor\CSharpMath.Editor.csproj" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <ProjectReference Include="..\CSharpMath.Editor\CSharpMath.Editor.csproj" />
   </ItemGroup>
 </Project>

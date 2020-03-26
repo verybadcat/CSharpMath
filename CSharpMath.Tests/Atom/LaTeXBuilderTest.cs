@@ -6,7 +6,6 @@ using CSharpMath.Atom;
 using CSharpMath.Atom.Atoms;
 
 namespace CSharpMath.Tests.Atom {
-
   public class LaTeXBuilderTest {
     [Theory]
     [InlineData("x", new[] { typeof(Variable) }, "x")]

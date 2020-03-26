@@ -1,41 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <LangVersion>latest</LangVersion>
-    <GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
-    <PackageVersion>0.4.0-alpha</PackageVersion>
-    <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie, FoggyFinder)</Authors>
-    <PackageReleaseNotes>The 0.4.0 Avalonia Update brings the Avalonia front end! Warning: Massive breaking changes!</PackageReleaseNotes>
-    <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/verybadcat/CSharpMath.git</RepositoryUrl>
-    <RepositoryBranch>master</RepositoryBranch>
-    <RepositoryCommit>bcfda8b3fd03020b51e4b59cadf7eda121831745</RepositoryCommit>
-    <PackageProjectUrl>https://github.com/verybadcat/CSharpMath</PackageProjectUrl>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageIcon>Icon.png</PackageIcon>
-    <Copyright>© CSharpMath Contributors 2020</Copyright>
-    <PackageId>CSharpMath.SkiaSharp</PackageId>
-    <Title>CSharpMath.SkiaSharp</Title>
     <Description>The SkiaSharp front end for CSharpMath.</Description>
-    <PackageTags>math;mathematics;mathematical;formula;equation;equations;expression;tex;latex;render;rendering;display;beautiful;skiasharp</PackageTags>
+    <PackageTags>$(PackageTags) skiasharp</PackageTags>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Optimize>false</Optimize>
-    <DebugType>full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Include="../Icon.png" Pack="true" PackagePath="" />
-  </ItemGroup>
+  
   <ItemGroup>
     <PackageReference Include="SkiaSharp" Version="1.68.0" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\CSharpMath.Rendering\CSharpMath.Rendering.csproj" />
   </ItemGroup>
+  
 </Project>

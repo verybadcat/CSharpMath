@@ -21,9 +21,6 @@ namespace CSharpMath.Rendering.FrontEnd {
     //so special case them into _absoluteXCoordDisplay instead of using _relativeXCoordDisplay
     public ListDisplay<Fonts, Glyph> _absoluteXCoordDisplay;
     public ListDisplay<Fonts, Glyph> _relativeXCoordDisplay;
-    protected Typography.TextLayout.GlyphLayout _glyphLayout =
-      new Typography.TextLayout.GlyphLayout();
-
     public override string LaTeX {
       get => Content is null ? "" : TextLaTeXBuilder.TextAtomToLaTeX(Content).ToString();
       set => (Content, ErrorMessage) = TextLaTeXBuilder.TextAtomFromLaTeX(value);

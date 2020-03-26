@@ -39,21 +39,21 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
      */
     public const int StringArgumentLimit = 25;
     public static bool NoEnhancedColors { get; set; }
-    private static readonly CustomBreaker breaker =
-      new CustomBreaker { BreakNumberAfterText = true, ThrowIfCharOutOfRange = false };
     public static Result<TextAtom> TextAtomFromLaTeX(string latexSource) {
       if (string.IsNullOrEmpty(latexSource))
         return new TextAtom.List(Array.Empty<TextAtom>(), 0);
       bool? displayMath = null;
-      StringBuilder mathLaTeX = null;
+      var mathLaTeX = new StringBuilder();
       bool backslashEscape = false;
       bool afterCommand = false; //ignore spaces after command
       bool afterNewline = false;
       int dollarCount = 0;
       var globalAtoms = new TextAtomListBuilder();
       var breakList = new List<BreakAtInfo>();
-      breaker.SetNewBreakHandler(v =>
-        breakList.Add(new BreakAtInfo(v.LatestBreakAt, v.LatestWordKind)));
+      var breaker = new CustomBreaker(v => breakList.Add(new BreakAtInfo(v.LatestBreakAt, v.LatestWordKind))) {
+        BreakNumberAfterText = true,
+        ThrowIfCharOutOfRange = false
+      };
       breaker.BreakWords(latexSource);
 
       Result CheckDollarCount(TextAtomListBuilder atoms) {
@@ -68,11 +68,11 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
               case false:
                 if (atoms.Math(mathLaTeX.ToString(), false).Error is string mathError)
                   return "[Math mode error] " + mathError;
-                mathLaTeX = null;
+                mathLaTeX.Clear();
                 displayMath = null;
                 break;
               case null:
-                mathLaTeX = new StringBuilder();
+                mathLaTeX.Clear();
                 displayMath = false;
                 break;
             }
@@ -83,13 +83,13 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
               case true:
                 if (atoms.Math(mathLaTeX.ToString(), true).Error is string mathError)
                   return "[Math mode error] " + mathError;
-                mathLaTeX = null;
+                mathLaTeX.Clear();
                 displayMath = null;
                 break;
               case false:
                 return "Cannot close inline math mode with $$";
               case null:
-                mathLaTeX = new StringBuilder();
+                mathLaTeX.Clear();
                 displayMath = true;
                 break;
             }
@@ -272,7 +272,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     case false:
                       if (atoms.Math(mathLaTeX.ToString(), false).Error is string mathError)
                         return "[Math mode error] " + mathError;
-                      mathLaTeX = null;
+                      mathLaTeX.Clear();
                       displayMath = null;
                       break;
                     case null:
@@ -291,7 +291,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     case true:
                       if (atoms.Math(mathLaTeX.ToString(), true).Error is string mathError)
                         return "[Math mode error] " + mathError;
-                      mathLaTeX = null;
+                      mathLaTeX.Clear();
                       displayMath = null;
                       break;
                     case false:
@@ -437,7 +437,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
       if (displayMath != null) return "Math mode was not terminated";
       return globalAtoms.Build();
     }
-    public static StringBuilder TextAtomToLaTeX(TextAtom atom, StringBuilder b = null) {
+    public static StringBuilder TextAtomToLaTeX(TextAtom atom, StringBuilder? b = null) {
       b ??= new StringBuilder();
       switch (atom) {
         case TextAtom.Text t:

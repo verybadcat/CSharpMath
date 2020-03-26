@@ -7,8 +7,7 @@ namespace CSharpMath.DevUtils.TypographyTest {
       Console.OutputEncoding = Encoding.Unicode;
       const int length = 1000000;
       var s = new System.Diagnostics.Stopwatch();
-      var b = new Typography.TextBreak.CustomBreaker();
-      b.SetNewBreakHandler(_ => { });
+      var b = new Typography.TextBreak.CustomBreaker(_ => { });
       b.BreakWords("Initialize"); //Don't measure startup costs
       foreach (var c in new[] {
         '0', '3', ' ', 'a', 'r', '#', '.', '%', '\r', '\u3232', '\uFEFF', '0'
