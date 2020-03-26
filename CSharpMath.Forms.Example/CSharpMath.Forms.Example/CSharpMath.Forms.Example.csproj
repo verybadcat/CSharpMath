@@ -16,22 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="SVGs\Backspace.svg" />
-    <EmbeddedResource Include="SVGs\Clear.svg" />
-    <EmbeddedResource Include="SVGs\Exponent.svg" />
-    <EmbeddedResource Include="SVGs\Fraction.svg" />
-    <EmbeddedResource Include="SVGs\Integral.svg" />
-    <EmbeddedResource Include="SVGs\KeyboardDown.svg" />
-    <EmbeddedResource Include="SVGs\LogBase.svg" />
-    <EmbeddedResource Include="SVGs\Sqrt.svg" />
-    <EmbeddedResource Include="SVGs\SqrtPower.svg" />
-    <EmbeddedResource Include="SVGs\Subscript.svg" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Xamarin.Forms" Version="4.3.0.908675" />
     <ProjectReference Include="..\..\CSharpMath.Forms\CSharpMath.Forms.csproj" />
-    <ProjectReference Include="..\..\SkiaSharp.Extended\SkiaSharp.Extended.Svg\source\SkiaSharp.Extended.Svg.csproj" />
   </ItemGroup>
 
   <ItemGroup>

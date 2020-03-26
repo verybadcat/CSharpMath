@@ -11,7 +11,7 @@ namespace CSharpMath.Rendering.FrontEnd {
   /// Unlike <see cref="Typesetter{TFont, TGlyph}"/>,
   /// <see cref="TextPainter{TCanvas, TColor}"/>'s coordinates are inverted by default.
   /// </summary>
-  public abstract class TextPainter<TCanvas, TColor> : Painter<TCanvas, TextSource, TColor> {
+  public abstract class TextPainter<TCanvas, TColor> : Painter<TCanvas, TextAtom, TColor> {
     public override IDisplay<Fonts, Glyph> Display =>
       new ListDisplay<Fonts, Glyph>(new[] {
         _relativeXCoordDisplay, _absoluteXCoordDisplay
@@ -24,8 +24,10 @@ namespace CSharpMath.Rendering.FrontEnd {
     protected Typography.TextLayout.GlyphLayout _glyphLayout =
       new Typography.TextLayout.GlyphLayout();
 
-    public TextAtom Atom { get => Source?.Atom; set => Source = new TextSource(value); }
-    public override string LaTeX { get => Source?.LaTeX; set => Source = TextSource.FromLaTeX(value); }
+    public override string LaTeX {
+      get => Content is null ? "" : TextLaTeXBuilder.TextAtomToLaTeX(Content).ToString();
+      set => (Content, ErrorMessage) = TextLaTeXBuilder.TextAtomFromLaTeX(value);
+    }
     public float AdditionalLineSpacing { get; set; }
 
     protected override void SetRedisplay() { }
@@ -36,7 +38,7 @@ namespace CSharpMath.Rendering.FrontEnd {
     }
     protected void UpdateDisplay(float canvasWidth) =>
       (_relativeXCoordDisplay, _absoluteXCoordDisplay) =
-        TextLayoutter.Layout(Atom, Fonts, canvasWidth, AdditionalLineSpacing);
+        TextLayoutter.Layout(Content, Fonts, canvasWidth, AdditionalLineSpacing);
     public override void Draw(TCanvas canvas,
         TextAlignment alignment = TextAlignment.TopLeft, Thickness padding = default,
         float offsetX = 0, float offsetY = 0) =>
@@ -48,7 +50,7 @@ namespace CSharpMath.Rendering.FrontEnd {
     private void DrawCore(TCanvas canvas, float? width, TextAlignment alignment,
       Thickness padding, float offsetX, float offsetY) {
       var c = WrapCanvas(canvas);
-      if (!Source.IsValid) DrawError(c);
+      if (Content is null) DrawError(c);
       else {
         UpdateDisplay(width ?? c.Width);
         _relativeXCoordDisplay.Position =
@@ -75,7 +77,7 @@ namespace CSharpMath.Rendering.FrontEnd {
     /// </summary>
     public void DrawOneLine(TCanvas canvas, float x, float y) {
       var c = WrapCanvas(canvas);
-      if (!Source.IsValid) DrawError(c);
+      if (Content is null) DrawError(c);
       else {
         UpdateDisplay(float.PositiveInfinity);
         if (!CoordinatesFromBottomLeftInsteadOfTopLeft) {

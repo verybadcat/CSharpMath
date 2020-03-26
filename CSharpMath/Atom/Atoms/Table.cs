@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace CSharpMath.Atom.Atoms {
   ///<summary>A table. Not part of TeX.</summary>
-  public class Table : MathAtom {
+  public class Table : MathAtom, IMathListContainer {
     public Table(string? environment, List<List<MathList>>? cells = null) : base(string.Empty) =>
       (Environment, Cells) = (environment, cells ?? new List<List<MathList>>());
     public Table() : this(null) { }
@@ -22,6 +22,7 @@ namespace CSharpMath.Atom.Atoms {
       new List<ColumnAlignment>();
     /// <summary>Cells[i][j] == cell at ith row and jth column</summary>
     public List<List<MathList>> Cells { get; private set; }
+    IEnumerable<MathList> IMathListContainer.InnerLists => Cells.SelectMany(row => row);
     /// <summary>Space between columns in mu units.</summary>
     public float InterColumnSpacing { get; set; }
     /// <summary>
@@ -52,7 +53,6 @@ namespace CSharpMath.Atom.Atoms {
         Alignments.SequenceEqual(otherTable.Alignments);
     public override bool Equals(object obj) => obj is Table t ? EqualsTable(t) : false;
     public override int GetHashCode() =>
-      unchecked(base.GetHashCode()
-        + 109 * Cells.GetHashCode() + 113 * Alignments.GetHashCode());
+      (base.GetHashCode(), Cells, Alignments).GetHashCode();
   }
 }

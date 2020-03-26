@@ -1,3 +1,4 @@
+using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -12,8 +13,7 @@ namespace CSharpMath.Forms.Example {
       CurrentTab = Tab.Numbers;
     }
     public Rendering.FrontEnd.MathKeyboard ViewModel => keyboard;
-    public double SelectedBorderWidth { get; set; } = 3;
-    public Color SelectedBorderColor { get; set; } = Color.Orange;
+    public Color SelectedBackgroundColor { get; set; } = Color.Orange;
     private Tab _tab;
     public Tab CurrentTab {
       get => _tab;
@@ -23,7 +23,7 @@ namespace CSharpMath.Forms.Example {
         }) grid.IsVisible = false;
         foreach (var gridButton in new[] {
           NumbersButton, SymbolsButton, FunctionsButton, OperationsButton, LettersButton
-        }) { gridButton.BorderWidth = 0; gridButton.BorderColor = Color.Default; }
+        }) gridButton.BackgroundColor = Color.Default;
         var (selectedGrid, selectedGridButton) =
           value switch {
             Tab.Numbers => (Numbers, NumbersButton),
@@ -36,12 +36,20 @@ namespace CSharpMath.Forms.Example {
               (nameof(value), (int)value, typeof(Tab))
           };
         selectedGrid.IsVisible = true;
-        selectedGridButton.BorderWidth = SelectedBorderWidth;
-        selectedGridButton.BorderColor = SelectedBorderColor;
-        ShiftCapitalsButton.BorderWidth = SelectedBorderWidth;
-        ShiftCapitalsButton.BorderColor = SelectedBorderColor;
+        selectedGridButton.BackgroundColor = SelectedBackgroundColor;
+        ShiftCapitalsButton.BackgroundColor = SelectedBackgroundColor;
         _tab = value;
       }
     }
+  }
+  [AcceptEmptyServiceProvider]
+  public class SwitchToTabExtension : IMarkupExtension<Command> {
+    public MathKeyboard.Tab Target { get; set; }
+    public MathKeyboard Self { get; set; }
+    public Command ProvideValue(IServiceProvider _) =>
+      Target is 0 ? throw new ArgumentNullException(nameof(Target)) :
+      Self is null ? throw new ArgumentNullException(nameof(Self)) :
+      new Command(() => Self.CurrentTab = Target);
+    object IMarkupExtension.ProvideValue(IServiceProvider _) => ProvideValue(_);
   }
 }

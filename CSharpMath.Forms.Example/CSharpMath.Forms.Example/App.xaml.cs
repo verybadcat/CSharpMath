@@ -11,9 +11,7 @@ namespace CSharpMath.Forms.Example {
     int index = -1;
     void Handle_ChildAdded(object sender, ElementEventArgs e) {
       index++;
-      if (Device.RuntimePlatform == Device.iOS
-          && e.Element is Page p
-          && !(p is ExamplesPage)) {
+      if (Device.RuntimePlatform == Device.iOS && e.Element is Page p) {
         //Pages after 4th page have an extra thicc tab bar on iOS
         p.Padding = new Thickness(0, index > 3 ? 90 : 30, 0, 0);
       }

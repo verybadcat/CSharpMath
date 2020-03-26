@@ -14,10 +14,10 @@ namespace CSharpMath.Editor {
     D5 = '5', D6 = '6', D7 = '7', D8 = '8', D9 = '9', Decimal = '.',
 
     // Basic operators
-    Plus = '+', Minus = '−', Minus_ = '-', Multiply = '×', Multiply_ = '*', Divide = '÷',
-    Ratio = '∶', Ratio_ = ':', Percentage = '%', Comma = ',', Semicolon = ';', Factorial = '!',
+    Plus = '+', Minus = '-', Multiply = '*', Divide = '÷',
+    Ratio = ':', Percentage = '%', Comma = ',', Semicolon = ';', Factorial = '!',
     Infinity = '∞', Angle = '∠', Degree = '°', VerticalBar = '|',
-    Logarithm = '㏒', NaturalLogarithm = '㏑', Prime = '\'',
+    Logarithm = '㏒', NaturalLogarithm = '㏑', Prime = '\'', PartialDifferential = '∂',
     LeftArrow = '←', UpArrow = '↑', RightArrow = '→', DownArrow = '↓', Space= ' ',
 
     // More complicated operators

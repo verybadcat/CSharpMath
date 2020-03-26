@@ -20,7 +20,7 @@ namespace CSharpMath.Forms {
           c.Clear();
           MathPainter.DrawDisplay(settings, keyboard.Display, c);
           keyboard.DrawCaret(
-            new SkiaCanvas(c, cap, AntiAlias.Enable), caretColor.FromNative(), caretShape);
+            new SkiaCanvas(c, cap, settings.AntiAlias), caretColor.FromNative(), caretShape);
         };
     }
   }

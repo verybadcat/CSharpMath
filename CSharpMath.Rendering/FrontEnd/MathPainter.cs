@@ -4,27 +4,28 @@ namespace CSharpMath.Rendering.FrontEnd {
   using Display;
   using BackEnd;
   using Structures;
-  public abstract class MathPainter<TCanvas, TColor> : Painter<TCanvas, MathSource, TColor> {
+  public abstract class MathPainter<TCanvas, TColor> : Painter<TCanvas, Atom.MathList, TColor> {
     protected IDisplay<Fonts, Glyph> _display;
     protected bool _displayChanged = true;
     public override IDisplay<Fonts, Glyph> Display => _display;
-    public Atom.MathList MathList { get => Source?.MathList; set => Source = new MathSource(value); }
-    public override string LaTeX { get => Source?.LaTeX; set => Source = MathSource.FromLaTeX(value); }
+    public override string LaTeX {
+      get => Content is null ? "" : Atom.LaTeXBuilder.MathListToLaTeX(Content).ToString();
+      set => (Content, ErrorMessage) = Atom.LaTeXBuilder.TryMathListFromLaTeX(value);
+    }
     public override RectangleF? Measure(float unused = float.NaN) {
       UpdateDisplay();
       return _display?.DisplayBounds();
     }
     protected override void SetRedisplay() => _displayChanged = true;
     protected void UpdateDisplay() {
-      if (_displayChanged && MathList != null) {
-        _display = Typesetter.CreateLine(MathList, Fonts, TypesettingContext.Instance, LineStyle);
+      if (_displayChanged && Content != null) {
+        _display = Typesetter.CreateLine(Content, Fonts, TypesettingContext.Instance, LineStyle);
         _displayChanged = false;
       }
     }
     public override void Draw(TCanvas canvas, TextAlignment alignment = TextAlignment.Center, Thickness padding = default, float offsetX = 0, float offsetY = 0) {
       var c = WrapCanvas(canvas);
-      if (Source is null) return;
-      else if (!Source.IsValid) DrawError(c);
+      if (Content is null) DrawError(c);
       else {
         UpdateDisplay();
         DrawCore(c, _display, IPainterExtensions.GetDisplayPosition(_display.Width, _display.Ascent, _display.Descent, FontSize, CoordinatesFromBottomLeftInsteadOfTopLeft, c.Width, c.Height, alignment, padding, offsetX, offsetY));

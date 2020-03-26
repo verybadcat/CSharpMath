@@ -13,13 +13,11 @@ namespace CSharpMath.Forms.Example {
       App.AllViews.Add(View);
       View.FontSize = 30;
       View.LaTeX = latex;
-      View.InvalidateSurface();
     }
     static readonly string latex =
       string.Join(@"\\", SkiaSharp.MathData.AllConstants.Select(info => $@"{info.Key}: {info.Value}"));
     private void Button_Clicked(object sender, EventArgs e) {
       View.DisplacementX = View.DisplacementY = 0;
-      View.InvalidateSurface();
     }
   }
 }

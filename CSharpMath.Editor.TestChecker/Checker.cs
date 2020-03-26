@@ -27,7 +27,8 @@ namespace CSharpMath.Editor.TestChecker {
         try {
           Console.Title = "CSharpMath.Editor Test Checker";
           Console.Clear();
-          Console.SetBufferSize(Console.WindowWidth, Console.BufferHeight); // line wrapping
+          if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            Console.SetBufferSize(Console.WindowWidth, Console.BufferHeight); // line wrapping
           Console.ResetColor();
           Console.WriteLine("Welcome to the CSharpMath.Editor Test Checker!");
           Console.WriteLine();
@@ -60,7 +61,8 @@ namespace CSharpMath.Editor.TestChecker {
           var y = ReadInt("Input Touch Y (integer): ");
           Console.Clear();
 
-          Console.SetBufferSize(10000, Console.BufferHeight); // no line wrapping
+          if(Environment.OSVersion.Platform == PlatformID.Win32NT)
+            Console.SetBufferSize(10000, Console.BufferHeight); // no line wrapping
           display.Draw(context);
 moveCursor:var pos = Adjust(new Rectangle(x, y, 0, 0));
           Console.Title = $"CSharpMath.Editor Test Checker - ({x}, {y}) in {latex}";

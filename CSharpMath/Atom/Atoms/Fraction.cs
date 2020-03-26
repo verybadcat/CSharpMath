@@ -1,19 +1,21 @@
 using System.Text;
 
 namespace CSharpMath.Atom.Atoms {
-  public class Fraction : MathAtom {
-    public MathList? Numerator { get; set; }
-    public MathList? Denominator { get; set; }
+  public class Fraction : MathAtom, IMathListContainer {
+    public MathList Numerator { get; }
+    public MathList Denominator { get; }
+    System.Collections.Generic.IEnumerable<MathList> IMathListContainer.InnerLists =>
+      new[] { Numerator, Denominator };
     public string? LeftDelimiter { get; set; }
     public string? RightDelimiter { get; set; }
     /// <summary>In this context, a "rule" is a fraction line.</summary>
     public bool HasRule { get; }
-    public Fraction(bool hasRule = true) : base() => HasRule = hasRule;
+    public Fraction(MathList numerator, MathList denominator, bool hasRule = true) =>
+      (Numerator, Denominator, HasRule) = (numerator, denominator, hasRule);
     public override bool ScriptsAllowed => true;
     public new Fraction Clone(bool finalize) => (Fraction)base.Clone(finalize);
-    protected override MathAtom CloneInside(bool finalize) => new Fraction(HasRule) {
-      Numerator = Numerator?.Clone(finalize),
-      Denominator = Denominator?.Clone(finalize),
+    protected override MathAtom CloneInside(bool finalize) =>
+      new Fraction(Numerator.Clone(finalize), Denominator.Clone(finalize), HasRule) {
       LeftDelimiter = LeftDelimiter,
       RightDelimiter = RightDelimiter
     };
@@ -33,11 +35,6 @@ namespace CSharpMath.Atom.Atoms {
       && LeftDelimiter == other.LeftDelimiter
       && RightDelimiter == other.RightDelimiter;
     public override int GetHashCode() =>
-      unchecked(
-        base.GetHashCode()
-        + 17 * Numerator?.GetHashCode() ?? 0
-        + 19 * Denominator?.GetHashCode() ?? 0
-        + 61 * LeftDelimiter?.GetHashCode() ?? 0
-        + 101 * RightDelimiter?.GetHashCode() ?? 0);
+      (base.GetHashCode(), Numerator, Denominator, LeftDelimiter, RightDelimiter).GetHashCode();
   }
 }

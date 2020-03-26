@@ -13,10 +13,10 @@ namespace CSharpMath.Editor {
       (Context, Font) = (context, font);
     //private readonly List<MathListIndex> highlighted;
     protected TypesettingContext<TFont, TGlyph> Context { get; }
-    public CaretHandle? Caret { get; protected set; }
+    public bool ShowCaret { get; protected set; }
     public Display.Displays.ListDisplay<TFont, TGlyph>? Display { get; protected set; }
     public MathList MathList { get; } = new MathList();
-    public string LaTeX => LaTeXBuilder.MathListToLaTeX(MathList);
+    public string LaTeX => LaTeXBuilder.MathListToLaTeX(MathList).ToString();
     private MathListIndex _insertionIndex = MathListIndex.Level0Index(0);
     public MathListIndex InsertionIndex { get => _insertionIndex; set { _insertionIndex = value; InsertionPointChanged(); } }
     public TFont Font { get; set; }
@@ -43,20 +43,6 @@ namespace CSharpMath.Editor {
       foreach (var input in inputs) KeyPress(input);
     }
     public void KeyPress(MathKeyboardInput input) {
-      static MathAtom AtomForKeyPress(MathKeyboardInput i) =>
-        // Get the basic conversion from MathAtoms, and then special case unicode characters and latex special characters.
-        i switch
-        {
-                //https://github.com/kostub/MathEditor/blob/61f67c6224000c224e252f6eeba483003f11d3d5/mathEditor/editor/MTEditableMathLabel.m#L414
-                MathKeyboardInput.Multiply => MathAtoms.Times,
-          MathKeyboardInput.Multiply_ => MathAtoms.Times,
-          MathKeyboardInput.SquareRoot => MathAtoms.PlaceholderSquareRoot,
-          MathKeyboardInput.CubeRoot => MathAtoms.PlaceholderCubeRoot,
-          MathKeyboardInput.Fraction => MathAtoms.PlaceholderFraction,
-          _ when MathAtoms.ForCharacter((char)i) is MathAtom a => a,
-          _ => new Atoms.Ordinary(((char)i).ToString()) //Just an ordinary character
-        };
-
       void HandleScriptButton(bool isSuperScript) {
         var subIndexType =
           isSuperScript ? MathListSubIndexType.Superscript : MathListSubIndexType.Subscript;
@@ -65,8 +51,8 @@ namespace CSharpMath.Editor {
         void SetScript(MathAtom atom, MathList? value) { if (isSuperScript) atom.Superscript = value; else atom.Subscript = value; }
         void CreateEmptyAtom() {
           // Create an empty atom and move the insertion index up.
-          var emptyAtom = MathAtoms.Placeholder;
-          SetScript(emptyAtom, MathAtoms.PlaceholderList);
+          var emptyAtom = LaTeXDefaults.Placeholder;
+          SetScript(emptyAtom, LaTeXDefaults.PlaceholderList);
           MathList.InsertAndAdvance(ref _insertionIndex, emptyAtom, subIndexType);
         }
         static bool IsFullPlaceholderRequired(MathAtom mathAtom) =>
@@ -96,7 +82,7 @@ namespace CSharpMath.Editor {
           } else {
             var script = GetScript(prevAtom);
             if (script is null) {
-              SetScript(prevAtom, MathAtoms.PlaceholderList);
+              SetScript(prevAtom, LaTeXDefaults.PlaceholderList);
             }
             _insertionIndex = prevIndexCorrected.LevelUpWithSubIndex
               (subIndexType, MathListIndex.Level0Index(script?.Atoms?.Count ?? 0));
@@ -106,45 +92,37 @@ namespace CSharpMath.Editor {
 
       void HandleSlashButton() {
         // special / handling - makes the thing a fraction
-        var numerator = new MathList();
-        var openCount = 0;
+        var numerator = new Stack<MathAtom>();
+        var parenDepth = 0;
         if (_insertionIndex.FinalSubIndexType == MathListSubIndexType.BetweenBaseAndScripts)
           _insertionIndex = _insertionIndex.LevelDown()?.Next
               ?? throw new InvalidCodePathException("_insertionIndex.LevelDown() returned null");
         for (; _insertionIndex.Previous != null; _insertionIndex = _insertionIndex.Previous) {
-          var a = MathList.AtomAt(_insertionIndex.Previous);
-          if (a is null) throw new InvalidCodePathException("Invalid _insertionIndex");
-          switch (a) {
-            case Atoms.Open _: openCount--; break;
-            case Atoms.Close { HasCorrespondingOpen: true }:
-              openCount++; break;
+          switch (MathList.AtomAt(_insertionIndex.Previous), parenDepth) {
+            case (null, _): throw new InvalidCodePathException("Invalid _insertionIndex");
+            // Stop looking behind upon encountering these atoms unparenthesized
+            case (Atoms.Open _, _) when --parenDepth < 0: goto stop;
+            case (Atoms.Close { HasCorrespondingOpen: true } a, _): parenDepth++; numerator.Push(a); break;
+            case (Atoms.UnaryOperator _, 0): goto stop;
+            case (Atoms.BinaryOperator _, 0): goto stop;
+            case (Atoms.Relation _, 0): goto stop;
+            case (Atoms.Fraction _, 0): goto stop;
+            case (Atoms.Open _, _) when parenDepth < 0: goto stop;
+            // We don't put this atom on the fraction
+            case (var a, _): numerator.Push(a); break;
           }
-          if (a switch {
-            Atoms.BinaryOperator _ when openCount == 0 => true,
-            Atoms.Relation _ when openCount == 0 => true,
-            Atoms.Fraction _ when openCount == 0 => true,
-            Atoms.Open _ when openCount < 0 => true,
-            _ => false
-          })
-            //We don't put this atom on the fraction
-            break;
-          else
-            numerator.Insert(0, a);
         }
-        MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count));
-        if (numerator.Count == 0) {
+stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count));
+        if (numerator.Count == 0)
           // so we didn't really find any numbers before this, so make the numerator 1
-          numerator.Add(new Atoms.Number("1"));
-          if (MathList.AtomAt(_insertionIndex.Previous) is Atoms.Fraction)
-            //Add a times symbol
-            MathList.InsertAndAdvance
-              (ref _insertionIndex, MathAtoms.Times, MathListSubIndexType.None);
-        }
-
-        MathList.InsertAndAdvance(ref _insertionIndex, new Atoms.Fraction {
-          Numerator = numerator,
-          Denominator = MathAtoms.PlaceholderList
-        }, MathListSubIndexType.Denominator);
+          numerator.Push(new Atoms.Number("1"));
+        if (MathList.AtomAt(_insertionIndex.Previous) is Atoms.Fraction)
+          // Add a times symbol
+          MathList.InsertAndAdvance(ref _insertionIndex, LaTeXDefaults.Times, MathListSubIndexType.None);
+        MathList.InsertAndAdvance(ref _insertionIndex, new Atoms.Fraction(
+          new MathList(numerator),
+          LaTeXDefaults.PlaceholderList
+        ), MathListSubIndexType.Denominator);
       }
       void InsertAtomPair(MathAtom left, MathAtom right) {
         MathList.InsertAndAdvance(ref _insertionIndex, left, MathListSubIndexType.None);
@@ -187,7 +165,7 @@ namespace CSharpMath.Editor {
                   (MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1));
                 break;
               case MathListSubIndexType.BetweenBaseAndScripts:
-                if (MathList.AtomAt(levelDown) is Atoms.Radical rad && rad.Radicand != null)
+                if (MathList.AtomAt(levelDown) is Atoms.Radical rad && rad.Radicand.Count > 0)
                   _insertionIndex = levelDown.LevelUpWithSubIndex
                     (MathListSubIndexType.Radicand,
                      MathListIndex.Level0Index(rad.Radicand.Count));
@@ -321,7 +299,7 @@ namespace CSharpMath.Editor {
             break;
           case Atoms.Radical rad:
             _insertionIndex = _insertionIndex.LevelUpWithSubIndex(
-              rad.Degree is MathList ? MathListSubIndexType.Degree : MathListSubIndexType.Radicand,
+              rad.Degree.Count > 0 ? MathListSubIndexType.Degree : MathListSubIndexType.Radicand,
               MathListIndex.Level0Index(0));
             break;
           case var a when a.Superscript != null || a.Subscript != null:
@@ -360,10 +338,9 @@ namespace CSharpMath.Editor {
             Atoms.Radical _ => MathListSubIndexType.Radicand,
             _ => MathListSubIndexType.None
           });
-      void InsertCharacterKey(MathKeyboardInput i) => InsertAtom(AtomForKeyPress(i));
       void InsertSymbolName(string name, bool subscript = false, bool superscript = false) {
         var atom =
-          MathAtoms.ForLaTeXSymbolName(name) ??
+          LaTeXDefaults.AtomForCommand(name) ??
             throw new InvalidCodePathException("Looks like someone mistyped a symbol name...");
         InsertAtom(atom);
         switch (subscript, superscript) {
@@ -406,11 +383,11 @@ namespace CSharpMath.Editor {
           break;
         case MathKeyboardInput.Return:
           ReturnPressed?.Invoke(this, EventArgs.Empty);
-          Caret = null;
+          ShowCaret = false;
           return;
         case MathKeyboardInput.Dismiss:
           DismissPressed?.Invoke(this, EventArgs.Empty);
-          Caret = null;
+          ShowCaret = false;
           return;
         case MathKeyboardInput.BothRoundBrackets:
           InsertAtomPair(new Atoms.Open("("), new Atoms.Close(")"));
@@ -424,23 +401,24 @@ namespace CSharpMath.Editor {
         case MathKeyboardInput.Subscript:
           HandleScriptButton(false);
           break;
+        case MathKeyboardInput.Fraction:
+          InsertAtom(LaTeXDefaults.PlaceholderFraction);
+          break;
         case MathKeyboardInput.SquareRoot:
-          InsertAtom(MathAtoms.PlaceholderSquareRoot);
+          InsertAtom(LaTeXDefaults.PlaceholderSquareRoot);
           break;
         case MathKeyboardInput.CubeRoot:
-          InsertAtom(MathAtoms.PlaceholderCubeRoot);
+          InsertAtom(LaTeXDefaults.PlaceholderCubeRoot);
           break;
         case MathKeyboardInput.NthRoot:
-          InsertAtom(MathAtoms.PlaceholderRadical);
-          break;
-        case MathKeyboardInput.VerticalBar:
-          InsertCharacterKey(input);
+          InsertAtom(LaTeXDefaults.PlaceholderRadical);
           break;
         case MathKeyboardInput.Absolute:
           InsertAtomPair(new Atoms.Ordinary("|"), new Atoms.Ordinary("|"));
           break;
         case MathKeyboardInput.BaseEPower:
-          InsertCharacterKey(MathKeyboardInput.SmallE);
+          InsertAtom(LaTeXDefaults.ForAscii((sbyte)'e')
+            ?? throw new InvalidCodePathException("LaTeXDefaults.ForAscii((byte)'e') is null"));
           HandleScriptButton(true);
           break;
         case MathKeyboardInput.Logarithm:
@@ -602,6 +580,45 @@ namespace CSharpMath.Editor {
         case MathKeyboardInput.DownArrow:
           InsertSymbolName("downarrow");
           break;
+        case MathKeyboardInput.PartialDifferential:
+          InsertSymbolName("partial");
+          break;
+        case MathKeyboardInput.NotEquals:
+          InsertSymbolName("neq");
+          break;
+        case MathKeyboardInput.LessOrEquals:
+          InsertSymbolName("leq");
+          break;
+        case MathKeyboardInput.GreaterOrEquals:
+          InsertSymbolName("geq");
+          break;
+        case MathKeyboardInput.Multiply:
+          InsertSymbolName("times");
+          break;
+        case MathKeyboardInput.Divide:
+          InsertSymbolName("div");
+          break;
+        case MathKeyboardInput.Infinity:
+          InsertSymbolName("infty");
+          break;
+        case MathKeyboardInput.Degree:
+          InsertSymbolName("degree");
+          break;
+        case MathKeyboardInput.Angle:
+          InsertSymbolName("angle");
+          break;
+        case MathKeyboardInput.LeftCurlyBracket:
+          InsertSymbolName("{");
+          break;
+        case MathKeyboardInput.RightCurlyBracket:
+          InsertSymbolName("}");
+          break;
+        case MathKeyboardInput.Percentage:
+          InsertSymbolName("%");
+          break;
+        case MathKeyboardInput.Space:
+          InsertSymbolName(" ");
+          break;
         case MathKeyboardInput.Prime:
           InsertAtom(new Atoms.Prime(1));
           break;
@@ -609,8 +626,6 @@ namespace CSharpMath.Editor {
         case MathKeyboardInput.RightRoundBracket:
         case MathKeyboardInput.LeftSquareBracket:
         case MathKeyboardInput.RightSquareBracket:
-        case MathKeyboardInput.LeftCurlyBracket:
-        case MathKeyboardInput.RightCurlyBracket:
         case MathKeyboardInput.D0:
         case MathKeyboardInput.D1:
         case MathKeyboardInput.D2:
@@ -624,27 +639,14 @@ namespace CSharpMath.Editor {
         case MathKeyboardInput.Decimal:
         case MathKeyboardInput.Plus:
         case MathKeyboardInput.Minus:
-        case MathKeyboardInput.Minus_:
-        case MathKeyboardInput.Multiply:
-        case MathKeyboardInput.Multiply_:
-        case MathKeyboardInput.Divide:
-        case MathKeyboardInput.Fraction:
         case MathKeyboardInput.Ratio:
-        case MathKeyboardInput.Ratio_:
-        case MathKeyboardInput.Percentage:
         case MathKeyboardInput.Comma:
         case MathKeyboardInput.Semicolon:
         case MathKeyboardInput.Factorial:
-        case MathKeyboardInput.Infinity:
-        case MathKeyboardInput.Angle:
-        case MathKeyboardInput.Degree:
-        case MathKeyboardInput.Space:
+        case MathKeyboardInput.VerticalBar:
         case MathKeyboardInput.Equals:
-        case MathKeyboardInput.NotEquals:
         case MathKeyboardInput.LessThan:
-        case MathKeyboardInput.LessOrEquals:
         case MathKeyboardInput.GreaterThan:
-        case MathKeyboardInput.GreaterOrEquals:
         case MathKeyboardInput.A:
         case MathKeyboardInput.B:
         case MathKeyboardInput.C:
@@ -697,6 +699,10 @@ namespace CSharpMath.Editor {
         case MathKeyboardInput.SmallX:
         case MathKeyboardInput.SmallY:
         case MathKeyboardInput.SmallZ:
+          InsertAtom(LaTeXDefaults.ForAscii(checked((sbyte)input))
+            ?? throw new InvalidCodePathException
+              ($"Invalid LaTeX character {input} was handled by ascii case"));
+          break;
         case MathKeyboardInput.Alpha:
         case MathKeyboardInput.Beta:
         case MathKeyboardInput.Gamma:
@@ -746,7 +752,8 @@ namespace CSharpMath.Editor {
         case MathKeyboardInput.SmallChi:
         case MathKeyboardInput.SmallPsi:
         case MathKeyboardInput.SmallOmega:
-          InsertCharacterKey(input);
+          // All Greek letters are rendered as variables.
+          InsertAtom(new Atoms.Variable(((char)input).ToStringInvariant()));
           break;
         default:
           break;
@@ -757,36 +764,35 @@ namespace CSharpMath.Editor {
     public void MoveCaretToPoint(PointF point) {
       point.Y *= -1; //inverted canvas, blah blah
       InsertionIndex = ClosestIndexToPoint(point) ?? MathListIndex.Level0Index(MathList.Atoms.Count);
-      Caret = new CaretHandle(Font.PointSize);
+      ShowCaret = true;
     }
 
     /// <summary>Helper method to update caretView when insertion point/selection changes.</summary>
     private void InsertionPointChanged() {
       static void VisualizePlaceholders(MathList? mathList) {
         foreach (var mathAtom in mathList?.Atoms as IList<MathAtom> ?? Array.Empty<MathAtom>()) {
-          if (mathAtom is Atoms.Placeholder)
-            mathAtom.Nucleus = "\u25A1";
           if (mathAtom.Superscript is MathList super)
             VisualizePlaceholders(super);
           if (mathAtom.Subscript is MathList sub)
             VisualizePlaceholders(sub);
-          if (mathAtom is Atoms.Radical rad) {
-            VisualizePlaceholders(rad.Degree);
-            VisualizePlaceholders(rad.Radicand);
-          }
-          if (mathAtom is Atoms.Fraction frac) {
-            VisualizePlaceholders(frac.Numerator);
-            VisualizePlaceholders(frac.Denominator);
+          switch (mathAtom) {
+            case Atoms.Placeholder _:
+              mathAtom.Nucleus = "\u25A1";
+              break;
+            case IMathListContainer container:
+              foreach (var list in container.InnerLists)
+                VisualizePlaceholders(list);
+              break;
           }
         }
       }
       VisualizePlaceholders(MathList);
       if (MathList.AtomAt(_insertionIndex) is Atoms.Placeholder placeholder) {
         placeholder.Nucleus = "\u25A0";
-        Caret = null;
+        ShowCaret = false;
       } else {
         // Find the insert point rect and create a caretView to draw the caret at this position.
-        Caret = new CaretHandle(Font.PointSize);
+        ShowCaret = true;
       }
       // Check that we were returned a valid position before displaying a caret there.
       RecreateDisplayFromMathList();

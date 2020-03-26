@@ -16,8 +16,8 @@ namespace CSharpMath.Display.Displays {
     /// <summary>A display representing the inner list that is overlined or underlined.
     /// Its position is relative to the parent. </summary>
     public IDisplay<TFont, TGlyph> Inner { get; }
-    public float Ascent => Inner.Ascent;
-    public float Descent => Inner.Descent;
+    public float Ascent => System.Math.Max(LineShiftUp + LineThickness / 2, Inner.Ascent);
+    public float Descent => System.Math.Max(-LineShiftUp + LineThickness / 2, Inner.Descent);
     public float Width => Inner.Width;
     public Range Range => Inner.Range;
     public PointF Position {

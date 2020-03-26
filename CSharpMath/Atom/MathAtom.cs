@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CSharpMath.Atom
- {
+namespace CSharpMath.Atom {
   public abstract class MathAtom : IMathObject, IEquatable<MathAtom> {
     public string TypeName {
       get {
@@ -98,12 +97,6 @@ namespace CSharpMath.Atom
       Subscript.NullCheckingStructuralEquality(otherAtom.Subscript);
     public override bool Equals(object obj) => obj is MathAtom a ? EqualsAtom(a) : false;
     bool IEquatable<MathAtom>.Equals(MathAtom otherAtom) => EqualsAtom(otherAtom);
-    public override int GetHashCode() => unchecked(
-        GetType().GetHashCode()
-        + 3 * (Superscript?.GetHashCode() ?? 0)
-        + 5 * (Subscript?.GetHashCode() ?? 0)
-        //+ 7 * IndexRange.GetHashCode()
-        //+ 13 * FontStyle.GetHashCode()
-        + 307 * Nucleus.GetHashCode());
+    public override int GetHashCode() => (Superscript, Subscript, Nucleus).GetHashCode();
   }
 }

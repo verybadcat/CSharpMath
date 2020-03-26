@@ -198,7 +198,7 @@ namespace CSharpMath.Display {
             AddDisplayLine(false);
             AddInterElementSpace(prevAtom, rad);
             var displayRad = MakeRadical(rad.Radicand, rad.IndexRange);
-            if (rad.Degree != null) {
+            if (rad.Degree.IsNonEmpty()) {
               // add the degree to the radical
               displayRad.SetDegree(
                 Typesetter.CreateLine(rad.Degree, _styleFont, _context, LineStyle.Script),
@@ -225,7 +225,7 @@ namespace CSharpMath.Display {
             AddDisplayLine(false);
             AddInterElementSpace(prevAtom, inner);
             ListDisplay<TFont, TGlyph> innerDisplay;
-            if (inner.LeftBoundary != null || inner.RightBoundary != null) {
+            if (inner.LeftBoundary != Boundary.Empty || inner.RightBoundary != Boundary.Empty) {
               innerDisplay = _MakeLeftRight(inner);
             } else {
               innerDisplay = CreateLine(inner.InnerList, _font, _context, _style, _cramped);
@@ -376,7 +376,7 @@ namespace CSharpMath.Display {
 
     private IDisplay<TFont, TGlyph> MakeAccent(Accent accent) {
       var accentee =
-        CreateLine(accent.InnerList ?? new MathList(), _font, _context, _style, true);
+        CreateLine(accent.InnerList, _font, _context, _style, true);
       if (accent.Nucleus.Length == 0) {
         //no accent
         return accentee;
@@ -595,9 +595,9 @@ namespace CSharpMath.Display {
 
     private IDisplay<TFont, TGlyph> MakeFraction(Fraction fraction) {
       var numeratorDisplay =
-        CreateLine(fraction.Numerator ?? new MathList(), _font, _context, _fractionStyle, false);
+        CreateLine(fraction.Numerator, _font, _context, _fractionStyle, false);
       var denominatorDisplay =
-        CreateLine(fraction.Denominator ?? new MathList(), _font, _context, _fractionStyle, true);
+        CreateLine(fraction.Denominator, _font, _context, _fractionStyle, true);
 
       var numeratorShiftUp = _NumeratorShiftUp(fraction.HasRule);
       var denominatorShiftDown = _DenominatorShiftDown(fraction.HasRule);

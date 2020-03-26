@@ -52,14 +52,12 @@ namespace CSharpMath.Tests.Atom {
     }
     [Fact]
     public void TestCopyFraction() {
-      var atom = MathAtoms.Placeholder;
-      var atom2 = MathAtoms.Times;
-      var atom3 = MathAtoms.Divide;
+      var atom = LaTeXDefaults.Placeholder;
+      var atom2 = LaTeXDefaults.Times;
+      var atom3 = LaTeXDefaults.Divide;
       var list = new MathList { atom, atom2, atom3 };
       var list2 = new MathList { atom3, atom2 };
-      var frac = new Fraction(false) {
-        Numerator = list,
-        Denominator = list2,
+      var frac = new Fraction(list, list2, false) {
         LeftDelimiter = "a",
         RightDelimiter = "b"
       };
@@ -75,9 +73,9 @@ namespace CSharpMath.Tests.Atom {
     }
     [Fact]
     public void TestCopyRadical() {
-      var atom = MathAtoms.Placeholder;
-      var atom2 = MathAtoms.Times;
-      var atom3 = MathAtoms.Divide;
+      var atom = LaTeXDefaults.Placeholder;
+      var atom2 = LaTeXDefaults.Times;
+      var atom3 = LaTeXDefaults.Divide;
       var list = new MathList(atom, atom2, atom3);
       var list2 = new MathList(atom3, atom2);
       var radical = new Radical(list2, list);
@@ -99,14 +97,15 @@ namespace CSharpMath.Tests.Atom {
     }
     [Fact]
     public void TestCopyInner() {
-      var atom1 = MathAtoms.Placeholder;
-      var atom2 = MathAtoms.Times;
-      var atom3 = MathAtoms.Divide;
+      var atom1 = LaTeXDefaults.Placeholder;
+      var atom2 = LaTeXDefaults.Times;
+      var atom3 = LaTeXDefaults.Divide;
       var list = new MathList(atom1, atom2, atom3);
-      var inner = new Inner(list) {
-        LeftBoundary = new Boundary("("),
-        RightBoundary = new Boundary(")")
-      };
+      var inner = new Inner(
+        new Boundary("("),
+        list,
+        new Boundary(")")
+      );
 
       Assert.IsType<Inner>(inner);
 
@@ -116,9 +115,9 @@ namespace CSharpMath.Tests.Atom {
     }
     [Fact]
     public void TestCopyOverline() {
-      var atom1 = MathAtoms.Placeholder;
-      var atom2 = MathAtoms.Times;
-      var atom3 = MathAtoms.Divide;
+      var atom1 = LaTeXDefaults.Placeholder;
+      var atom2 = LaTeXDefaults.Times;
+      var atom3 = LaTeXDefaults.Divide;
       var list = new MathList(atom1, atom2, atom3);
       var over = new Overline(list);
 
@@ -131,9 +130,9 @@ namespace CSharpMath.Tests.Atom {
 
     [Fact]
     public void TestCopyUnderline() {
-      var atom1 = MathAtoms.Placeholder;
-      var atom2 = MathAtoms.Times;
-      var atom3 = MathAtoms.Divide;
+      var atom1 = LaTeXDefaults.Placeholder;
+      var atom2 = LaTeXDefaults.Times;
+      var atom3 = LaTeXDefaults.Divide;
       var list = new MathList(atom1, atom2, atom3);
       var under = new Underline(list);
 
@@ -145,14 +144,11 @@ namespace CSharpMath.Tests.Atom {
     }
     [Fact]
     public void TestCopyAccent() {
-      var atom1 = MathAtoms.Placeholder;
-      var atom2 = MathAtoms.Times;
-      var atom3 = MathAtoms.Divide;
+      var atom1 = LaTeXDefaults.Placeholder;
+      var atom2 = LaTeXDefaults.Times;
+      var atom3 = LaTeXDefaults.Divide;
       var list = new MathList(atom1, atom2, atom3);
-      var accent = new Accent("^");
-
-      Assert.IsType<Accent>(accent);
-      accent.InnerList = list;
+      var accent = new Accent("^", list);
 
       var copy = accent.Clone(false);
       CheckClone(copy, accent);
@@ -179,8 +175,8 @@ namespace CSharpMath.Tests.Atom {
     }
     [Fact]
     public void TestCopyOpen() {
-      var list = new MathList { MathAtoms.Placeholder, MathAtoms.Times, MathAtoms.Divide };
-      var list2 = new MathList { MathAtoms.Divide, MathAtoms.Times };
+      var list = new MathList { LaTeXDefaults.Placeholder, LaTeXDefaults.Times, LaTeXDefaults.Divide };
+      var list2 = new MathList { LaTeXDefaults.Divide, LaTeXDefaults.Times };
       var open = new Open("(") { Subscript = list, Superscript = list2 };
 
       var clone = open.Clone(false);
@@ -192,9 +188,9 @@ namespace CSharpMath.Tests.Atom {
     public void TestCreateMathTable() {
       var table = new Table();
       Assert.IsType<Table>(table);
-      var atom1 = MathAtoms.Placeholder;
-      var atom2 = MathAtoms.Times;
-      var atom3 = MathAtoms.Divide;
+      var atom1 = LaTeXDefaults.Placeholder;
+      var atom2 = LaTeXDefaults.Times;
+      var atom3 = LaTeXDefaults.Divide;
       var list = new MathList(atom1, atom2, atom3);
       var list2 = new MathList(atom3, atom2);
 
@@ -226,9 +222,9 @@ namespace CSharpMath.Tests.Atom {
     public void TestCopyMathTable() {
       var table = new Table();
       Assert.IsType<Table>(table);
-      var atom = MathAtoms.Placeholder;
-      var atom2 = MathAtoms.Times;
-      var atom3 = MathAtoms.Divide;
+      var atom = LaTeXDefaults.Placeholder;
+      var atom2 = LaTeXDefaults.Times;
+      var atom3 = LaTeXDefaults.Divide;
       var list = new MathList { atom, atom2, atom3 };
       var list2 = new MathList { atom3, atom2 };
 

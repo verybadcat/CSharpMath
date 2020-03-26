@@ -8,103 +8,38 @@ namespace CSharpMath.Forms {
   using Color = Color;
   using Rendering;
   using Structures;
-  public interface IPainterAndSourceSupplier<TPainter, TSource> {
-    TPainter Default { get; }
-    TSource SourceFromLaTeX(string latex);
-    string LaTeXFromSource(TSource source);
-    string DefaultLaTeX(TPainter painter);
-  }
-  public abstract class BaseView<TPainter, TSource>
-    : SKCanvasView, IPainter<TSource, Color>
-    where TPainter : ICanvasPainter<SKCanvas, TSource, SKColor>, new()
-    where TSource : ISource {
+
+  public abstract class BaseView<TPainter, TContent> : SKCanvasView, IPainter<TContent, Color>
+    where TPainter : Painter<SKCanvas, TContent, SKColor>, new() {
     public TPainter Painter { get; } = new TPainter();
-    protected abstract TSource SourceFromLaTeX(string latex);
-    protected abstract string LaTeXFromSource(TSource source);
-    protected override void OnPaintSurface(SKPaintSurfaceEventArgs e) {
+    protected sealed override void OnPaintSurface(SKPaintSurfaceEventArgs e) {
       base.OnPaintSurface(e);
       e.Surface.Canvas.Clear();
       Painter.Draw(e.Surface.Canvas, TextAlignment, Padding, DisplacementX, DisplacementY);
     }
 
-    #region BindableProperties
-    static BaseView() {
-      var painter = new TPainter();
-      var thisType = typeof(BaseView<TPainter, TSource>);
-
-      static BaseView<TPainter, TSource> Actual
-        (BindableObject b) => (BaseView<TPainter, TSource>)b;
-      var drawMethodParams = typeof(TPainter)
-        .GetMethod(nameof(ICanvasPainter<SKCanvas, TSource, SKColor>.Draw),
-          new[] { typeof(SKCanvas), typeof(TextAlignment),
-                  typeof(Thickness), typeof(float), typeof(float) }).GetParameters();
-      static TPainter p(BindableObject b) =>
-        ((BaseView<TPainter, TSource>)b).Painter;
-      SourceProperty = BindableProperty.Create(nameof(Source), typeof(TSource), thisType, painter.Source, BindingMode.TwoWay, null, (b, o, n) => { p(b).Source = (TSource)n; Actual(b).ErrorMessage = p(b).ErrorMessage; var latex = Actual(b).LaTeXFromSource((TSource)n); if (Actual(b).LaTeX != latex) Actual(b).LaTeX = latex; });
-      DisplayErrorInlineProperty = BindableProperty.Create(nameof(DisplayErrorInline), typeof(bool), thisType, painter.DisplayErrorInline, propertyChanged: (b, o, n) => p(b).DisplayErrorInline = (bool)n);
-      FontSizeProperty = BindableProperty.Create(nameof(FontSize), typeof(float), thisType, painter.FontSize, propertyChanged: (b, o, n) => p(b).FontSize = (float)n);
-      ErrorFontSizeProperty = BindableProperty.Create(nameof(ErrorFontSize), typeof(float?), thisType, painter.ErrorFontSize, propertyChanged: (b, o, n) => p(b).ErrorFontSize = (float)n);
-      TextColorProperty = BindableProperty.Create(nameof(TextColor), typeof(Color), thisType, painter.TextColor.ToFormsColor(), propertyChanged: (b, o, n) => p(b).TextColor = ((Color)n).ToSKColor());
-      HighlightColorProperty = BindableProperty.Create(nameof(HighlightColor), typeof(Color), thisType, painter.HighlightColor.ToFormsColor(), propertyChanged: (b, o, n) => p(b).HighlightColor = ((Color)n).ToSKColor());
-      ErrorColorProperty = BindableProperty.Create(nameof(ErrorColor), typeof(Color), thisType, painter.ErrorColor.ToFormsColor(), propertyChanged: (b, o, n) => p(b).ErrorColor = ((Color)n).ToSKColor());
-      TextAlignmentProperty = BindableProperty.Create(nameof(TextAlignment), typeof(TextAlignment), thisType, drawMethodParams[1].DefaultValue is DBNull ? default(TextAlignment) : drawMethodParams[1].DefaultValue ?? default(TextAlignment));
-      DisplacementXProperty = BindableProperty.Create(nameof(DisplacementX), typeof(float), thisType, drawMethodParams[3].DefaultValue, BindingMode.TwoWay);
-      DisplacementYProperty = BindableProperty.Create(nameof(DisplacementY), typeof(float), thisType, drawMethodParams[4].DefaultValue, BindingMode.TwoWay);
-      MagnificationProperty = BindableProperty.Create(nameof(Magnification), typeof(float), thisType, painter.Magnification, propertyChanged: (b, o, n) => p(b).Magnification = (float)n);
-      PaintStyleProperty = BindableProperty.Create(nameof(PaintStyle), typeof(PaintStyle), thisType, painter.PaintStyle, propertyChanged: (b, o, n) => p(b).PaintStyle = (PaintStyle)n);
-      LineStyleProperty = BindableProperty.Create(nameof(LineStyle), typeof(Atom.LineStyle), thisType, painter.LineStyle, propertyChanged: (b, o, n) => p(b).LineStyle = (Atom.LineStyle)n);
-      PaddingProperty = BindableProperty.Create(nameof(Padding), typeof(Thickness), thisType, drawMethodParams[2].DefaultValue ?? default(Thickness));
-      ErrorMessagePropertyKey = BindableProperty.CreateReadOnly(nameof(ErrorMessage), typeof(string), thisType, painter.ErrorMessage, BindingMode.OneWayToSource);
-      ErrorMessageProperty = ErrorMessagePropertyKey.BindableProperty;
-      LaTeXProperty = BindableProperty.Create(nameof(LaTeX), typeof(string), thisType, painter.LaTeX, propertyChanged: (b, o, n) => Actual(b).Source = Actual(b).SourceFromLaTeX((string)n));
-      DisablePanningProperty = BindableProperty.Create(nameof(DisablePanning), typeof(bool), thisType, false);
-    }
-    public static readonly BindableProperty DisplayErrorInlineProperty;
-    public static readonly BindableProperty FontSizeProperty;
-    public static readonly BindableProperty ErrorFontSizeProperty;
-    public static readonly BindableProperty TextColorProperty;
-    public static readonly BindableProperty HighlightColorProperty;
-    public static readonly BindableProperty ErrorColorProperty;
-    public static readonly BindableProperty TextAlignmentProperty;
-    public static readonly BindableProperty DisplacementXProperty;
-    public static readonly BindableProperty DisplacementYProperty;
-    public static readonly BindableProperty MagnificationProperty;
-    public static readonly BindableProperty PaintStyleProperty;
-    public static readonly BindableProperty LineStyleProperty;
-    public static readonly BindableProperty PaddingProperty;
-    public static readonly BindableProperty SourceProperty;
-    private static readonly BindablePropertyKey ErrorMessagePropertyKey;
-    public static readonly BindableProperty ErrorMessageProperty;
-    public static readonly BindableProperty LaTeXProperty;
-    public static readonly BindableProperty DisablePanningProperty;
-    #endregion
-
     SKPoint _origin;
     protected override void OnTouch(SKTouchEventArgs e) {
-      if (e.InContact && Source.IsValid && !DisablePanning) {
+      if (e.InContact && !DisablePanning) {
         switch (e.ActionType) {
-          case SKTouchAction.Entered:
-            break;
           case SKTouchAction.Pressed:
             _origin = e.Location;
             e.Handled = true;
             break;
           case SKTouchAction.Moved:
             var displacement = e.Location - _origin;
+            _origin = e.Location;
             DisplacementX += displacement.X;
             DisplacementY += displacement.Y;
-            _origin = e.Location;
-            InvalidateSurface();
             e.Handled = true;
             break;
           case SKTouchAction.Released:
             _origin = e.Location;
             e.Handled = true;
             break;
+          case SKTouchAction.Entered:
           case SKTouchAction.Cancelled:
-            break;
           case SKTouchAction.Exited:
-            break;
           default:
             break;
         }
@@ -112,31 +47,75 @@ namespace CSharpMath.Forms {
       base.OnTouch(e);
     }
 
-    public TSource Source { get => (TSource)GetValue(SourceProperty); set => SetValue(SourceProperty, value); }
-    public bool DisplayErrorInline { get => (bool)GetValue(DisplayErrorInlineProperty); set => SetValue(DisplayErrorInlineProperty, value); }
-    /// <summary>
-    /// Unit of measure: points
-    /// </summary>
-    public float FontSize { get => (float)GetValue(FontSizeProperty); set => SetValue(FontSizeProperty, value); }
-    /// <summary>
-    /// Unit of measure: points;
-    /// Defaults to <see cref="FontSize"/>.
-    /// </summary>
-    public float? ErrorFontSize { get => (float?)GetValue(ErrorFontSizeProperty); set => SetValue(ErrorFontSizeProperty, value); }
-    public Color TextColor { get => (Color)GetValue(TextColorProperty); set => SetValue(TextColorProperty, value); }
-    public Color HighlightColor { get => (Color)GetValue(HighlightColorProperty); set => SetValue(HighlightColorProperty, value); }
-    public Color ErrorColor { get => (Color)GetValue(ErrorColorProperty); set => SetValue(ErrorColorProperty, value); }
-    public TextAlignment TextAlignment { get => (TextAlignment)GetValue(TextAlignmentProperty); set => SetValue(TextAlignmentProperty, value); }
-    public float DisplacementX { get => (float)GetValue(DisplacementXProperty); set => SetValue(DisplacementXProperty, value); }
-    public float DisplacementY { get => (float)GetValue(DisplacementYProperty); set => SetValue(DisplacementYProperty, value); }
-    public float Magnification { get => (float)GetValue(MagnificationProperty); set => SetValue(MagnificationProperty, value); }
-    public PaintStyle PaintStyle { get => (PaintStyle)GetValue(PaintStyleProperty); set => SetValue(PaintStyleProperty, value); }
-    public Atom.LineStyle LineStyle { get => (Atom.LineStyle)GetValue(LineStyleProperty); set => SetValue(LineStyleProperty, value); }
-    public Thickness Padding { get => (Thickness)GetValue(PaddingProperty); set => SetValue(PaddingProperty, value); }
-    public string ErrorMessage { get => (string)GetValue(ErrorMessageProperty); private set => SetValue(ErrorMessagePropertyKey, value); }
     public ObservableRangeCollection<Typeface> LocalTypefaces => Painter.LocalTypefaces;
-    public string LaTeX { get => LaTeXFromSource(Source); set => Source = SourceFromLaTeX(value); }
+
+    public static readonly BindableProperty DisablePanningProperty = BindableProperty.Create(nameof(DisablePanning), typeof(bool), typeof(BaseView<TPainter, TContent>), false);
     /// <summary>Panning is enabled by default when <see cref="SKCanvasView.EnableTouchEvents"/> is set to true.</summary>
     public bool DisablePanning { get => (bool)GetValue(DisablePanningProperty); set => SetValue(DisablePanningProperty, value); }
+
+    #region Re-exposing Painter properties
+    static readonly System.Reflection.ParameterInfo[] drawMethodParams = typeof(TPainter)
+      .GetMethod(nameof(Painter<SKCanvas, TContent, SKColor>.Draw),
+        new[] { typeof(SKCanvas), typeof(TextAlignment), typeof(Thickness), typeof(float), typeof(float) }).GetParameters();
+    static TPainter staticPainter;
+    protected static BindableProperty CreateProperty<T>(string propertyName, Func<TPainter, T> defaultValueGet, Action<TPainter, T> propertySet, Type thisType = null) =>
+      BindableProperty.Create(propertyName, typeof(T), thisType ?? typeof(BaseView<TPainter, TContent>), defaultValueGet(staticPainter ??= new TPainter()),
+        propertyChanged: (b, o, n) => {
+          var p = (BaseView<TPainter, TContent>)b;
+          propertySet(p.Painter, (T)n);
+          p.InvalidateSurface(); // Redraw immediately! No deferred drawing
+        });
+    
+    public static readonly BindableProperty ContentProperty = CreateProperty(nameof(Content), p => p.Content, (p, v) => p.Content = v);
+    public TContent Content { get => (TContent)GetValue(ContentProperty); set => SetValue(ContentProperty, value); }
+
+    public static readonly BindableProperty LaTeXProperty = CreateProperty(nameof(LaTeX), p => p.LaTeX, (p, v) => p.LaTeX = v);
+    public string LaTeX { get => (string)GetValue(LaTeXProperty); set => SetValue(LaTeXProperty, value); }
+
+    public static readonly BindableProperty DisplayErrorInlineProperty = CreateProperty(nameof(DisplayErrorInline), p => p.DisplayErrorInline, (p, v) => p.DisplayErrorInline = v);
+    public bool DisplayErrorInline { get => (bool)GetValue(DisplayErrorInlineProperty); set => SetValue(DisplayErrorInlineProperty, value); }
+
+    public static readonly BindableProperty FontSizeProperty = CreateProperty(nameof(FontSize), p => p.FontSize, (p, v) => p.FontSize = v);
+    /// <summary>Unit of measure: points</summary>
+    public float FontSize { get => (float)GetValue(FontSizeProperty); set => SetValue(FontSizeProperty, value); }
+
+    public static readonly BindableProperty ErrorFontSizeProperty = CreateProperty(nameof(ErrorFontSize), p => p.ErrorFontSize, (p, v) => p.ErrorFontSize = v);
+    /// <summary>Unit of measure: points; Defaults to <see cref="FontSize"/>.</summary>
+    public float? ErrorFontSize { get => (float?)GetValue(ErrorFontSizeProperty); set => SetValue(ErrorFontSizeProperty, value); }
+
+    public static readonly BindableProperty TextColorProperty = CreateProperty(nameof(TextColor), p => p.TextColor, (p, v) => p.TextColor = v);
+    public Color TextColor { get => (Color)GetValue(TextColorProperty); set => SetValue(TextColorProperty, value); }
+
+    public static readonly BindableProperty HighlightColorProperty = CreateProperty(nameof(HighlightColor), p => p.HighlightColor, (p, v) => p.HighlightColor = v);
+    public Color HighlightColor { get => (Color)GetValue(HighlightColorProperty); set => SetValue(HighlightColorProperty, value); }
+
+    public static readonly BindableProperty ErrorColorProperty = CreateProperty(nameof(ErrorColor), p => p.ErrorColor, (p, v) => p.ErrorColor = v);
+    public Color ErrorColor { get => (Color)GetValue(ErrorColorProperty); set => SetValue(ErrorColorProperty, value); }
+
+    public static readonly BindableProperty TextAlignmentProperty = CreateProperty(nameof(TextAlignment), p => (TextAlignment)drawMethodParams[1].DefaultValue, (p, v) => { });
+    public TextAlignment TextAlignment { get => (TextAlignment)GetValue(TextAlignmentProperty); set => SetValue(TextAlignmentProperty, value); }
+
+    public static readonly BindableProperty PaddingProperty = CreateProperty(nameof(Padding), p => (Thickness)(drawMethodParams[2].DefaultValue ?? new Thickness()), (p, v) => { });
+    public Thickness Padding { get => (Thickness)GetValue(PaddingProperty); set => SetValue(PaddingProperty, value); }
+
+    public static readonly BindableProperty DisplacementXProperty = CreateProperty(nameof(DisplacementX), p => (float)drawMethodParams[3].DefaultValue, (p, v) => { });
+    public float DisplacementX { get => (float)GetValue(DisplacementXProperty); set => SetValue(DisplacementXProperty, value); }
+
+    public static readonly BindableProperty DisplacementYProperty = CreateProperty(nameof(DisplacementY), p => (float)drawMethodParams[4].DefaultValue, (p, v) => { });
+    public float DisplacementY { get => (float)GetValue(DisplacementYProperty); set => SetValue(DisplacementYProperty, value); }
+
+    public static readonly BindableProperty MagnificationProperty = CreateProperty(nameof(Magnification), p => p.Magnification, (p, v) => p.Magnification = v);
+    public float Magnification { get => (float)GetValue(MagnificationProperty); set => SetValue(MagnificationProperty, value); }
+
+    public static readonly BindableProperty PaintStyleProperty = CreateProperty(nameof(PaintStyle), p => p.PaintStyle, (p, v) => p.PaintStyle = v);
+    public PaintStyle PaintStyle { get => (PaintStyle)GetValue(PaintStyleProperty); set => SetValue(PaintStyleProperty, value); }
+
+    public static readonly BindableProperty LineStyleProperty = CreateProperty(nameof(LineStyle), p => p.LineStyle, (p, v) => p.LineStyle = v);
+    public Atom.LineStyle LineStyle { get => (Atom.LineStyle)GetValue(LineStyleProperty); set => SetValue(LineStyleProperty, value); }
+
+    private static readonly BindablePropertyKey ErrorMessagePropertyKey = BindableProperty.CreateReadOnly(nameof(ErrorMessage), typeof(string), typeof(BaseView<TPainter, TContent>), staticPainter.ErrorMessage, BindingMode.OneWayToSource);
+    public static readonly BindableProperty ErrorMessageProperty = ErrorMessagePropertyKey.BindableProperty;
+    public string ErrorMessage { get => (string)GetValue(ErrorMessageProperty); private set => SetValue(ErrorMessagePropertyKey, value); }
+    #endregion
   }
 }

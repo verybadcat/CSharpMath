@@ -15,7 +15,6 @@ namespace CSharpMath.Atom.Atoms {
     public override bool Equals(object obj) => obj is Space s && EqualsSpace(s);
     public bool EqualsSpace(Space otherSpace) =>
       EqualsAtom(otherSpace) && Length == otherSpace.Length && IsMu == otherSpace.IsMu;
-    public override int GetHashCode() =>
-      unchecked(base.GetHashCode() + 3 * _space.GetHashCode());
+    public override int GetHashCode() => (base.GetHashCode(), _space).GetHashCode();
   }
 }

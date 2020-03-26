@@ -1,11 +1,26 @@
 using System;
 using System.Collections.Generic;
 
-namespace CSharpMath.Atom
- {
+namespace CSharpMath.Atom {
   using Atoms;
   //https://mirror.hmc.edu/ctan/macros/latex/contrib/unicode-math/unimath-symbols.pdf
-  public static class MathAtoms {
+  public static class LaTeXDefaults {
+
+    public static MathAtom? AtomForCommand(string symbolName) =>
+      Commands.TryGetValue(
+        symbolName ?? throw new ArgumentNullException(nameof(symbolName)),
+        out var symbol) ? symbol.Clone(false) : null;
+
+    public static string? CommandForAtom(MathAtom atom) {
+      var atomWithoutScripts = atom.Clone(false);
+      atomWithoutScripts.Subscript = null;
+      atomWithoutScripts.Superscript = null;
+      if (atomWithoutScripts is IMathListContainer container)
+        foreach (var list in container.InnerLists)
+          list.Clear();
+      return Commands.TryGetKey(atomWithoutScripts, out var name) ? name : null;
+    }
+
     public static Structures.AliasDictionary<string, MathAtom> Commands { get; } =
       new Structures.AliasDictionary<string, MathAtom> {
          { "square", Placeholder },
@@ -200,34 +215,34 @@ namespace CSharpMath.Atom
          { "gcd", new LargeOperator("gcd", null) },
          
          // Large operators
-         { "prod", new LargeOperator("\u220F" , null) },
-         { "coprod", new LargeOperator("\u2210" , null) },
-         { "sum", new LargeOperator("\u2211" , null) },
-         { "int", new LargeOperator("\u222B" , false) },
+         { "prod", new LargeOperator("\u220F", null) },
+         { "coprod", new LargeOperator("\u2210", null) },
+         { "sum", new LargeOperator("\u2211", null) },
+         { "int", new LargeOperator("\u222B", false) },
          { "iint", new LargeOperator("\u222C", false) }, //not in iosMath
          { "iiint", new LargeOperator("\u222D", false) }, //not in iosMath
          { "iiiint", new LargeOperator("\u2A0C", false) }, //not in iosMath
-         { "oint", new LargeOperator("\u222E" , false) },
-         { "oiint", new LargeOperator("\u222F" , false) }, //not in iosMath
-         { "oiiint", new LargeOperator("\u2230" , false) }, //not in iosMath
-         { "intclockwise", new LargeOperator("\u2231" , false) }, //not in iosMath
-         { "awint", new LargeOperator("\u2A11" , false) }, //not in iosMath
-         { "varointclockwise", new LargeOperator("\u2232" , false) }, //not in iosMath
-         { "ointctrclockwise", new LargeOperator("\u2233" , false) }, //not in iosMath
-         { "bigwedge", new LargeOperator("\u22C0" , null) },
-         { "bigvee", new LargeOperator("\u22C1" , null) },
-         { "bigcap", new LargeOperator("\u22C2" , null) },
-         { "bigcup", new LargeOperator("\u22C3" , null) },
-         { "bigbot", new LargeOperator("\u27D8" , null) }, //not in iosMath
-         { "bigtop", new LargeOperator("\u27D9" , null) }, //not in iosMath
-         { "bigodot", new LargeOperator("\u2A00" , null) },
-         { "bigoplus", new LargeOperator("\u2A01" , null) },
-         { "bigotimes", new LargeOperator("\u2A02" , null) },
-         { "bigcupdot", new LargeOperator("\u2A03" , null) }, //not in iosMath
-         { "biguplus", new LargeOperator("\u2A04" , null) },
-         { "bigsqcap", new LargeOperator("\u2A05" , null) }, //not in iosMath
-         { "bigsqcup", new LargeOperator("\u2A06" , null) },
-         { "bigtimes", new LargeOperator("\u2A09" , null) }, //not in iosMath
+         { "oint", new LargeOperator("\u222E", false) },
+         { "oiint", new LargeOperator("\u222F", false) }, //not in iosMath
+         { "oiiint", new LargeOperator("\u2230", false) }, //not in iosMath
+         { "intclockwise", new LargeOperator("\u2231", false) }, //not in iosMath
+         { "awint", new LargeOperator("\u2A11", false) }, //not in iosMath
+         { "varointclockwise", new LargeOperator("\u2232", false) }, //not in iosMath
+         { "ointctrclockwise", new LargeOperator("\u2233", false) }, //not in iosMath
+         { "bigwedge", new LargeOperator("\u22C0", null) },
+         { "bigvee", new LargeOperator("\u22C1", null) },
+         { "bigcap", new LargeOperator("\u22C2", null) },
+         { "bigcup", new LargeOperator("\u22C3", null) },
+         { "bigbot", new LargeOperator("\u27D8", null) }, //not in iosMath
+         { "bigtop", new LargeOperator("\u27D9", null) }, //not in iosMath
+         { "bigodot", new LargeOperator("\u2A00", null) },
+         { "bigoplus", new LargeOperator("\u2A01", null) },
+         { "bigotimes", new LargeOperator("\u2A02", null) },
+         { "bigcupdot", new LargeOperator("\u2A03", null) }, //not in iosMath
+         { "biguplus", new LargeOperator("\u2A04", null) },
+         { "bigsqcap", new LargeOperator("\u2A05", null) }, //not in iosMath
+         { "bigsqcup", new LargeOperator("\u2A06", null) },
+         { "bigtimes", new LargeOperator("\u2A09", null) }, //not in iosMath
          
          // Latex command characters
          { "{", "lbrace", new Open("{") },
@@ -324,14 +339,15 @@ namespace CSharpMath.Atom
 
     public static MathAtom Placeholder => new Placeholder("\u25A1");
     public static MathList PlaceholderList => new MathList { Placeholder };
-    public static Fraction PlaceholderFraction => new Fraction { Numerator = PlaceholderList, Denominator = PlaceholderList };
+    public static Fraction PlaceholderFraction => new Fraction(PlaceholderList, PlaceholderList);
     public static Radical PlaceholderRadical => new Radical(PlaceholderList, PlaceholderList);
-    public static Radical PlaceholderSquareRoot => new Radical(null, PlaceholderList);
+    public static Radical PlaceholderSquareRoot => new Radical(new MathList(), PlaceholderList);
     public static Radical PlaceholderCubeRoot => new Radical(new MathList(new Number("3")), PlaceholderList);
 
-    public static MathAtom? ForCharacter(char c) {
-      var s = c.ToStringInvariant();
-      if (char.IsControl(c) || char.IsWhiteSpace(c)) {
+    public static MathAtom? ForAscii(sbyte c) {
+      if (c < 0) throw new ArgumentOutOfRangeException(nameof(c), c, "The character cannot be negative");
+      var s = ((char)c).ToStringInvariant();
+      if (char.IsControl((char)c) || char.IsWhiteSpace((char)c)) {
         return null; // skip spaces
       }
       if (c >= '0' && c <= '9') {
@@ -341,111 +357,96 @@ namespace CSharpMath.Atom
         return new Variable(s);
       }
       switch (c) {
-#warning Todo check if all these 9 characters are already accounted for in MathListBuilder, then remove
-        case '$':
-        case '%':
-        case '#':
-        case '&':
-        case '~':
-        case '\'':
-        case '^':
-        case '_':
-        case '\\':
+        case (sbyte)'$':
+        case (sbyte)'%':
+        case (sbyte)'#':
+        case (sbyte)'&':
+        case (sbyte)'~':
+        case (sbyte)'\'':
+        case (sbyte)'^':
+        case (sbyte)'_':
+        case (sbyte)'{':
+        case (sbyte)'}':
+        case (sbyte)'\\': // All these are special characters we don't support.
           return null;
-        case '(':
-        case '[':
-        case '{':
+        case (sbyte)'(':
+        case (sbyte)'[':
           return new Open(s);
-        case ')':
-        case ']':
-        case '}':
+        case (sbyte)')':
+        case (sbyte)']':
           return new Close(s);
-        case '!':
-        case '?':
-          return new Close(s, false);
-        case ',':
-        case ';':
+        case (sbyte)'!':
+        case (sbyte)'?':
+          return new Close(s, hasCorrespondingOpen: false);
+        case (sbyte)',':
+        case (sbyte)';':
           return new Punctuation(s);
-        case '=':
-        case '<':
-        case '>':
-        case '≠':
-        case '≥':
-        case '≤':
+        case (sbyte)'=':
+        case (sbyte)'<':
+        case (sbyte)'>':
           return new Relation(s);
-        case ':': // Colon is a ratio. Regular colon is \colon
-        case '\u2236':
+        case (sbyte)':': // Colon is a ratio. Regular colon is \colon
           return new Relation("\u2236");
-        case '-': // use the math minus sign
-        case '\u2212':
+        case (sbyte)'-': // Use the math minus sign
           return new BinaryOperator("\u2212");
-        case '+':
-        case '*': // Star operator, not times symbol
+        case (sbyte)'+':
+        case (sbyte)'*': // Star operator, not multiplication
           return new BinaryOperator(s);
-        case '×':
-          return Times;
-        case '÷':
-          return Divide;
-        case '.':
+        case (sbyte)'.':
           return new Number(s);
-        case var _ when Display.UnicodeFontChanger.IsLowerGreek(c)
-                     || Display.UnicodeFontChanger.IsUpperGreek(c):
-          // All greek letters are rendered as variables.
-          return new Variable(s);
-        default:
+        case (sbyte)'"':
+        case (sbyte)'/':
+        case (sbyte)'@':
+        case (sbyte)'`':
+        case (sbyte)'|':
           return new Ordinary(s);
+        default:
+          throw new Structures.InvalidCodePathException
+            ($"Ascii character {c} should have been accounted for.");
       }
     }
 
-    public static MathAtom? ForLaTeXSymbolName(string symbolName) =>
-      Commands.TryGetValue(
-        symbolName ?? throw new ArgumentNullException(nameof(symbolName)
-      ), out var symbol) ? symbol.Clone(false) : null;
-
-    public static string? LaTeXSymbolNameForAtom(MathAtom atom) {
-      var atomWithoutScripts = atom.Clone(true);
-      atomWithoutScripts.Subscript = null;
-      atomWithoutScripts.Superscript = null;
-      return Commands.TryGetKey(atomWithoutScripts, out var name) ? name : null;
-    }
-
-    public static void AddLatexSymbol(string name, MathAtom atom) => Commands.Add(name, atom);
-
-    public static IEnumerable<string> SupportedLatexSymbolNames => Commands.Keys;
-    
-    public static Structures.AliasDictionary<string, string> BoundaryDelimiters { get; } =
-      new Structures.AliasDictionary<string, string> {
-        { ".", string.Empty }, // . means no delimiter
-        { "(", "(" },
-        { ")", ")" },
-        { "[", "[" },
-        { "]", "]" },
-        { "{", "lbrace", "{" },
-        { "}", "rbrace", "}" },
-        { "<", "langle", "\u2329" },
-        { ">", "rangle", "\u232A" },
-        { "/", "/" },
-        { "\\", "backslash", "\\" },
-        { "|", "vert", "|" },
-        { "||", "Vert","\u2016" },
-        { "uparrow", "\u2191" },
-        { "downarrow", "\u2193" },
-        { "updownarrow", "\u2195" },
-        { "Uparrow", "\u21D1" },
-        { "Downarrow", "\u21D3" },
-        { "Updownarrow", "\u21D5" },
-        { "lgroup", "\u27EE" },
-        { "rgroup", "\u27EF" },
-        { "lceil", "\u2308" },
-        { "rceil", "\u2309" },
-        { "lfloor", "\u230A" },
-        { "rfloor", "\u230B" }
+    public static Structures.AliasDictionary<string, Boundary> BoundaryDelimiters { get; } =
+      new Structures.AliasDictionary<string, Boundary> {
+        { ".", Boundary.Empty }, // . means no delimiter
+        { "(", new Boundary("(") },
+        { ")", new Boundary(")") },
+        { "[", new Boundary("[") },
+        { "]", new Boundary("]") },
+        { "{", "lbrace", new Boundary("{") },
+        { "}", "rbrace", new Boundary("}") },
+        { "<", "langle", new Boundary("\u2329") },
+        { ">", "rangle", new Boundary("\u232A") },
+        { "/", new Boundary("/") },
+        { "\\", "backslash", new Boundary("\\") },
+        { "|", "vert", new Boundary("|") },
+        { "||", "Vert", new Boundary("\u2016") },
+        { "uparrow", new Boundary("\u2191") },
+        { "downarrow", new Boundary("\u2193") },
+        { "updownarrow", new Boundary("\u2195") },
+        { "Uparrow", new Boundary("\u21D1") },
+        { "Downarrow", new Boundary("\u21D3") },
+        { "Updownarrow", new Boundary("\u21D5") },
+        { "lgroup", new Boundary("\u27EE") },
+        { "rgroup", new Boundary("\u27EF") },
+        { "lceil", new Boundary("\u2308") },
+        { "rceil", new Boundary("\u2309") },
+        { "lfloor", new Boundary("\u230A") },
+        { "rfloor", new Boundary("\u230B") }
       };
 
-    public static Boundary? BoundaryAtom(string delimiterName) =>
-      BoundaryDelimiters.TryGetValue(delimiterName, out var value) ? new Boundary(value) : null;
-
-    public static string? DelimiterName(Boundary boundaryAtom) =>
-      BoundaryDelimiters.TryGetKey(boundaryAtom.Nucleus, out var name) ? name : null;
+    public static Structures.AliasDictionary<string, FontStyle> FontStyles { get; } =
+      new Structures.AliasDictionary<string, FontStyle> {
+        { "mathnormal", FontStyle.Default },
+        { "mathrm", "rm", "text", FontStyle.Roman },
+        { "mathbf", "bf", FontStyle.Bold },
+        { "mathcal", "cal", FontStyle.Caligraphic },
+        { "mathtt", FontStyle.Typewriter },
+        { "mathit", "mit", FontStyle.Italic },
+        { "mathsf", FontStyle.SansSerif },
+        { "mathfrak", "frak", FontStyle.Fraktur },
+        { "mathbb", FontStyle.Blackboard },
+        { "mathbfit", "bm", FontStyle.BoldItalic },
+      };
   }
 }

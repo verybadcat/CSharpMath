@@ -14,17 +14,14 @@ namespace CSharpMath.Forms.Example {
       InitializeComponent();
       App.AllViews.Add(View);
       Size.SelectedItem = View.FontSize;
-      Size.SelectedIndexChanged += (sender, e) => {
+      Size.SelectedIndexChanged += (sender, e) =>
         View.FontSize = (float)Size.SelectedItem;
-        View.InvalidateSurface();
-      };
       Entry.TextChanged += (sender, e) => {
         View.LaTeX = Entry.Text;
         (Exit.Text, Exit.TextColor) =
-          View.MathList is Atom.MathList ml
-          ? (Atom.LaTeXBuilder.MathListToLaTeX(ml), Color.Black)
-          : ("Error: " + View.ErrorMessage, Color.Red);
-        View.InvalidateSurface();
+          View.Painter.Content is Atom.MathList ml
+          ? (Atom.LaTeXBuilder.MathListToLaTeX(ml).ToString(), Color.Black)
+          : ("Error: " + View.Painter.ErrorMessage, Color.Red);
       };
     }
   }

@@ -47,18 +47,9 @@ namespace CSharpMath.SkiaSharp {
     public static IEnumerable<string> Folders =>
       typeof(Tests)
       .GetMethods()
-      .Where(method => method.IsDefined(typeof(TheoryAttribute), false))
+      .Where(method => method.IsDefined(typeof(FactAttribute), false)
+                    || method.IsDefined(typeof(TheoryAttribute), false))
       .Select(method => GetFolder(method.Name));
-
-    [Theory, ClassData(typeof(MathData))]
-    public void Display(string file, string latex) =>
-      Test(file, latex, GetFolder(nameof(Display)), new MathPainter { LineStyle = Atom.LineStyle.Display });
-    [Theory, ClassData(typeof(MathData))]
-    public void Inline(string file, string latex) =>
-      Test(file, latex, GetFolder(nameof(Inline)), new MathPainter { LineStyle = Atom.LineStyle.Text });
-    [Theory, ClassData(typeof(TextData))]
-    public void Text(string file, string latex) =>
-      Test(file, latex, GetFolder(nameof(Text)), new TextPainter());
 
     static void Test<TSource>(string inFile, string latex, string folder,
       Painter<SKCanvas, TSource, SKColor> painter) where TSource : ISource {
@@ -69,20 +60,19 @@ namespace CSharpMath.SkiaSharp {
       if (painter.ErrorMessage != null)
         throw new Xunit.Sdk.XunitException("Painter error: " + painter.ErrorMessage);
 
-      var size = painter.Measure(2000f) switch
-      {
-        System.Drawing.RectangleF rect => rect.Size,
-        null => throw new Xunit.Sdk.XunitException("Measure returned null.")
-      };
       var actualFile = new FileInfo(Path.Combine(folder, inFile + ".actual.png"));
       Assert.False(actualFile.Exists, "The actual file was not deleted by test initialization.");
-      using (var surface = SKSurface.Create(new SKImageInfo((int)size.Width, (int)size.Height))) {
-        painter.Draw(surface.Canvas, Rendering.TextAlignment.TopLeft);
-        using var snapshot = surface.Snapshot();
-        using var pngData = snapshot.Encode();
-        using var outFile = actualFile.OpenWrite();
-        pngData.SaveTo(outFile);
-      }
+
+      switch (painter.DrawAsStream())
+      {
+        case { } stream:
+          using (var outFile = actualFile.OpenWrite())
+          using (stream)
+            stream.CopyTo(outFile);
+          break;
+        case null:
+          throw new Xunit.Sdk.XunitException("DrawAsStream returned null.");
+      };
       actualFile.Refresh();
       Assert.True(actualFile.Exists, "The actual image was not created successfully.");
 
@@ -123,6 +113,38 @@ namespace CSharpMath.SkiaSharp {
           }
         }
       }
+    }
+
+    [Theory, ClassData(typeof(MathData))]
+    public void Display(string file, string latex) =>
+      Test(file, latex, GetFolder(nameof(Display)), new MathPainter { LineStyle = Atom.LineStyle.Display });
+    [Theory, ClassData(typeof(MathData))]
+    public void Inline(string file, string latex) =>
+      Test(file, latex, GetFolder(nameof(Inline)), new MathPainter { LineStyle = Atom.LineStyle.Text });
+    [Theory, ClassData(typeof(TextData))]
+    public void Text(string file, string latex) =>
+      Test(file, latex, GetFolder(nameof(Text)), new TextPainter());
+    [Fact]
+    public void MathPainterSettings() {
+      void Test<TSource>(string file, Painter<SKCanvas, TSource, SKColor> painter)
+        where TSource : ISource =>
+        Tests.Test(file, @"\sqrt[3]\frac\color{#F00}a\mathbb C", GetFolder(nameof(MathPainterSettings)), painter);
+      Test("Baseline", new MathPainter());
+      Test("Stroke", new MathPainter { PaintStyle = PaintStyle.Stroke });
+      Test("Magnification1.5", new MathPainter { Magnification = 1.5f });
+      Test("Magnification2", new MathPainter { Magnification = 2 });
+      using var comicNeue = ThisDirectory.EnumerateFiles("ComicNeue_Bold.otf").Single().OpenRead();
+      Test("LocalTypeface", new MathPainter { LocalTypefaces = {
+          new Typography.OpenFont.OpenFontReader().Read(comicNeue)
+      } });
+      Test("GlyphBoxColor", new MathPainter { GlyphBoxColor = (SKColors.Green, SKColors.Blue) });
+      Test("TextColor", new MathPainter { TextColor = SKColors.Orange });
+      Test("SquareStrokeCap", new MathPainter { StrokeCap = SKStrokeCap.Square });
+      Test("RoundStrokeCap", new MathPainter { StrokeCap = SKStrokeCap.Round });
+      Test("NoAntiAlias", new MathPainter { AntiAlias = false });
+      Test("TextLineStyle", new MathPainter { LineStyle = Atom.LineStyle.Text });
+      Test("ScriptLineStyle", new MathPainter { LineStyle = Atom.LineStyle.Script });
+      Test("ScriptScriptLineStyle", new MathPainter { LineStyle = Atom.LineStyle.ScriptScript });
     }
   }
 }
