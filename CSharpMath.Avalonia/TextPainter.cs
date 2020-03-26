@@ -1,6 +1,6 @@
 using AvaloniaColor = Avalonia.Media.Color;
 
-using CSharpMath.Rendering.FrontEnd;
+using CSharpMath.Rendering;
 using CSharpMathColor = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Avalonia {

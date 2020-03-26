@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using CSharpMath.Rendering;
 
 namespace CSharpMath.Avalonia.Example.Pages {
   public class MathBlockPage : UserControl {
@@ -9,8 +10,8 @@ namespace CSharpMath.Avalonia.Example.Pages {
     public MathBlockPage() {
       InitializeComponent();
 
-      Resources.Add("Taylor", Taylor);
-      Resources.Add("EvalIntegral", EvalIntegral);
+      Resources.Add("Taylor", new MathSource(Taylor));
+      Resources.Add("EvalIntegral", new MathSource(EvalIntegral));
     }
 
     private void InitializeComponent() {

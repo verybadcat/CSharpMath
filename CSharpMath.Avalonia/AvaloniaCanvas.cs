@@ -4,15 +4,16 @@ using Avalonia;
 using Avalonia.Media;
 
 using CSharpMath.Rendering;
-using CSharpMath.Rendering.FrontEnd;
 using CSharpMathColor = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Avalonia {
   public sealed class AvaloniaCanvas : ICanvas {
-    private readonly Stack<Stack<DrawingContext.PushedState>> _states;
+    private Stack<Stack<DrawingContext.PushedState>> _states;
     private ISolidColorBrush _currentBrush;
 
-    public AvaloniaCanvas(DrawingContext drawingContext, Size size) {
+    public AvaloniaCanvas(
+        DrawingContext drawingContext,
+        Size size) {
       DrawingContext = drawingContext;
 
       Width = (float)size.Width;

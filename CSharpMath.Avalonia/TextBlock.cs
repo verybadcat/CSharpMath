@@ -1,35 +1,25 @@
-using System;
-using System.Linq;
+using System.ComponentModel;
 using Avalonia;
 using Avalonia.Media;
-using AvaloniaTextBlock = Avalonia.Controls.TextBlock;
-
 using CSharpMath.Rendering;
 
 namespace CSharpMath.Avalonia {
-  public class TextBlock : AvaloniaTextBlock {
-    private readonly TextPainter _painter;
+  public class TextBlock : CSharpMathBlock<TextPainter<AvaloniaCanvas, Color>, TextSource> {
+    private TextSource _source;
 
     public TextBlock() {
-      _painter = new TextPainter();
-
-      this.GetObservable(FontFamilyProperty).Subscribe(UpdateTypeface);
-      this.GetObservable(FontSizeProperty).Subscribe(v => _painter.FontSize = (float)v);
-
-      this.GetObservable(ForegroundProperty).Subscribe(
-        v => _painter.TextColor = (v as ISolidColorBrush)?.Color ?? default);
-
-      this.GetObservable(TextProperty).Subscribe(v => _painter.Source = TextSource.FromLaTeX(v));
+      Painter = new TextPainter();
     }
 
-    public override void Render(DrawingContext context) =>
-        _painter.Draw(new AvaloniaCanvas(context, Bounds.Size));
+    protected override TextPainter<AvaloniaCanvas, Color> Painter { get; }
+
+    [TypeConverter(typeof(TextSourceTypeConverter))]
+    protected override TextSource Source {
+      get => _source;
+      set => SetAndRaise(SourceProperty, ref _source, value);
+    }
 
     protected override Size MeasureOverride(Size availableSize) =>
-      _painter.Measure((float)availableSize.Width) is System.Drawing.RectangleF r ? new Size(r.Width, r.Height) : default;
-
-    private void UpdateTypeface(FontFamily obj) {
-      //throw new NotImplementedException();
-    }
+      Painter.Measure((float)availableSize.Width)?.Size.ToAvaloniaSize() ?? Size.Empty;
   }
 }
