@@ -1,11 +1,11 @@
 using System.ComponentModel;
 using Avalonia;
 using Avalonia.Media;
-using CSharpMath.Rendering;
+using CSharpMath.Rendering.FrontEnd;
 
 namespace CSharpMath.Avalonia {
-  public class MathBlock : CSharpMathBlock<MathPainter<AvaloniaCanvas, Color>, MathSource> {
-    private MathSource _source;
+  public class MathBlock : CSharpMathBlock<MathPainter<AvaloniaCanvas, Color>, Atom.MathList> {
+    private Atom.MathList? _content;
 
     public MathBlock() {
       Painter = new MathPainter();
@@ -14,12 +14,12 @@ namespace CSharpMath.Avalonia {
     protected override MathPainter<AvaloniaCanvas, Color> Painter { get; }
 
     [TypeConverter(typeof(MathSourceTypeConverter))]
-    protected override MathSource Source {
-      get => _source;
-      set => SetAndRaise(SourceProperty, ref _source, value);
+    public override Atom.MathList? Content {
+      get => _content;
+      set => SetAndRaise(ContentProperty, ref _content, value);
     }
 
     protected override Size MeasureOverride(Size availableSize) =>
-      Painter.Measure?.Size.ToAvaloniaSize() ?? Size.Empty;
+      Painter.Measure()?.Size.ToAvaloniaSize() ?? Size.Empty;
   }
 }

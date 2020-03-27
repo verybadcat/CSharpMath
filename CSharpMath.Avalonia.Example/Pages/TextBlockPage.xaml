@@ -39,7 +39,7 @@
             </StackPanel>
 
           <csmath:TextBlock FontSize="{Binding #size.SelectedItem}"
-                            Source="Hello World!" />
+                            Content="Hello World!" />
 
         </StackPanel>
 

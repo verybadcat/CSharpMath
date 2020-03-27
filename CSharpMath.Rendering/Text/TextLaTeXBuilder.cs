@@ -41,7 +41,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
     public static bool NoEnhancedColors { get; set; }
     public static Result<TextAtom> TextAtomFromLaTeX(string latexSource) {
       if (string.IsNullOrEmpty(latexSource))
-        return new TextAtom.List(Array.Empty<TextAtom>(), 0);
+        return new TextAtom.List(Array.Empty<TextAtom>());
       bool? displayMath = null;
       var mathLaTeX = new StringBuilder();
       bool backslashEscape = false;
@@ -102,10 +102,8 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
       Result<int> BuildBreakList(ReadOnlySpan<char> latex, TextAtomListBuilder atoms,
           int i, bool oneCharOnly, char stopChar) {
         void ParagraphBreak() {
-          atoms.Break(3);
-#warning Should the newline and space occupy the same range?
-          atoms.TextLength -= 3;
-          atoms.Space(Space.ParagraphIndent, 3);
+          atoms.Break();
+          atoms.Space(Space.ParagraphIndent);
         }
         for (; i < breakList.Count; i++) {
           void ObtainSection(ReadOnlySpan<char> latexInput, int index,
@@ -325,20 +323,20 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                 case "]":
                   return "Cannot close display math mode outside of math mode";
                 case "\\":
-                  atoms.Break(1);
+                  atoms.Break();
                   break;
                 case ",":
-                  atoms.Space(Space.ShortSpace, 1);
+                  atoms.Space(Space.ShortSpace);
                   break;
                 case ":":
                 case ">":
-                  atoms.Space(Space.MediumSpace, 1);
+                  atoms.Space(Space.MediumSpace);
                   break;
                 case ";":
-                  atoms.Space(Space.LongSpace, 1);
+                  atoms.Space(Space.LongSpace);
                   break;
                 case "!":
-                  atoms.Space(-Space.ShortSpace, 1);
+                  atoms.Space(-Space.ShortSpace);
                   break;
                 case "par":
                   ParagraphBreak();
@@ -358,7 +356,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     }).Bind(
                       ReadArgumentAtom(latex),
                       (fontSize, resizedContent) =>
-                        atoms.Size(resizedContent, fontSize, "fontsize".Length)
+                        atoms.Size(resizedContent, fontSize)
                       ).Error is string error
                     ) return error;
                     break;
@@ -373,7 +371,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                       ).Bind(
                         ReadArgumentAtom(latex),
                         (color, coloredContent) =>
-                          atoms.Color(coloredContent, color, "color".Length)
+                          atoms.Color(coloredContent, color)
                       ).Error is string error
                     ) return error;
                     break;
@@ -383,7 +381,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                   !NoEnhancedColors && Color.PredefinedColors.TryGetByFirst(shortColor, out var color): {
                     int tmp_commandLength = shortColor.Length;
                     if (ReadArgumentAtom(latex).Bind(
-                        coloredContent => atoms.Color(coloredContent, color, tmp_commandLength)
+                        coloredContent => atoms.Color(coloredContent, color)
                       ).Error is string error
                     ) return error;
                     break;
@@ -395,7 +393,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                       out var fontStyle): {
                     int tmp_commandLength = textStyle.Length;
                     if (ReadArgumentAtom(latex)
-                      .Bind(builtContent => atoms.Style(builtContent, fontStyle, tmp_commandLength))
+                      .Bind(builtContent => atoms.Style(builtContent, fontStyle))
                       .Error is string error)
                       return error;
                     break;
@@ -405,7 +403,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                   TextLaTeXDefaults.PredefinedAccents.TryGetByFirst(textAccent, out var accent): {
                     int tmp_commandLength = textAccent.Length;
                     if (ReadArgumentAtom(latex)
-                      .Bind(builtContent => atoms.Accent(builtContent, accent, tmp_commandLength))
+                      .Bind(builtContent => atoms.Accent(builtContent, accent))
                       .Error is string error)
                       return error;
                     break;

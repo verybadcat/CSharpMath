@@ -1,4 +1,5 @@
 using CSharpMath.Rendering;
+using CSharpMath.Rendering.FrontEnd;
 using CSharpMathColor = CSharpMath.Structures.Color;
 
 using Avalonia;

@@ -16,7 +16,6 @@ namespace CSharpMath.SkiaSharp {
     public override Color WrapColor(SKColor color) => color.FromNative();
     public override ICanvas WrapCanvas(SKCanvas canvas) =>
       new SkiaCanvas(canvas, StrokeCap, AntiAlias);
-    static readonly MathSource staticValidSource = new MathSource(new Atom.MathList());
     /// <summary>
     /// Ignores the MathList and LaTeX of the <see cref="MathPainter"/> provided.
     /// Repositions the <paramref name="display"/>.

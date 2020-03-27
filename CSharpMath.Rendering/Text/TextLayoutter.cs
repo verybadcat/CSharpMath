@@ -118,7 +118,7 @@ namespace CSharpMath.Rendering.Text
                         var typefaces = glyphs.Select(g => g.Typeface).Distinct().ToList();
                         display = new TextRunDisplay<Fonts, Glyph>(
                           new AttributedGlyphRun<Fonts, Glyph>(content, glyphs, fonts),
-                          t.Range, TypesettingContext.Instance
+                          Range.NotFound, TypesettingContext.Instance
                         );
                         FinalizeInlineDisplay(
                           typefaces.Max(tf => tf.Ascender * tf.CalculateScaleToPixelFromPointSize(fonts.PointSize)),
@@ -139,7 +139,7 @@ namespace CSharpMath.Rendering.Text
                         var spaceGlyph = GlyphFinder.Instance.Lookup(fonts, ' ');
                         display = new TextRunDisplay<Fonts, Glyph>(
                           new AttributedGlyphRun<Fonts, Glyph>(" ", new[] { spaceGlyph }, fonts),
-                          cs.Range, TypesettingContext.Instance
+                          Range.NotFound, TypesettingContext.Instance
                         );
                         scale = spaceGlyph.Typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);
                         FinalizeInlineDisplay(spaceGlyph.Typeface.Ascender * scale,
@@ -172,7 +172,7 @@ namespace CSharpMath.Rendering.Text
                         var accentDisplay = new AccentDisplay<Fonts, Glyph>(
                           Typesetter.CreateAccentGlyphDisplay(
                             accentee, accenteeSingleGlyph, accentGlyph,
-                            TypesettingContext.Instance, fonts, a.Range
+                            TypesettingContext.Instance, fonts, Range.NotFound
                           ), accentee);
                         display = accentDisplay;
                         //accentDisplay.Ascent does not take account of accent glyph's extra height

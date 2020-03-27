@@ -9,43 +9,42 @@ using AvaloniaTextAlignment = Avalonia.Media.TextAlignment;
 using Typeface = Typography.OpenFont.Typeface;
 
 namespace CSharpMath.Avalonia {
-  public abstract class CSharpMathBlock<TPainter, TSource> : Control
-    where TPainter : Painter<AvaloniaCanvas, TSource, Color>
-    where TSource : struct, ISource {
+  public abstract class CSharpMathBlock<TPainter, TContent> : Control
+    where TPainter : Painter<AvaloniaCanvas, TContent, Color> {
 
     public static readonly StyledProperty<float> FontSizeProperty =
-      AvaloniaProperty.Register<CSharpMathBlock<TPainter, TSource>, float>(nameof(FontSize));
+      AvaloniaProperty.Register<CSharpMathBlock<TPainter, TContent>, float>(nameof(FontSize));
 
     public static readonly StyledProperty<Color> ForegroundProperty =
-      AvaloniaProperty.Register<CSharpMathBlock<TPainter, TSource>, Color>(nameof(Foreground));
+      AvaloniaProperty.Register<CSharpMathBlock<TPainter, TContent>, Color>(nameof(Foreground));
 
-    public static readonly DirectProperty<CSharpMathBlock<TPainter, TSource>, TSource> SourceProperty =
-      AvaloniaProperty.RegisterDirect<CSharpMathBlock<TPainter, TSource>, TSource>(
-        nameof(Source),
-        block => block.Source,
-        (block, source) => block.Source = source);
+    public static readonly DirectProperty<CSharpMathBlock<TPainter, TContent>, TContent> ContentProperty =
+      AvaloniaProperty.RegisterDirect<CSharpMathBlock<TPainter, TContent>, TContent>(
+        nameof(Content),
+        block => block.Content,
+        (block, content) => block.Content = content);
 
     public static readonly StyledProperty<AvaloniaTextAlignment> TextAlignmentProperty =
-      AvaloniaProperty.Register<CSharpMathBlock<TPainter, TSource>, AvaloniaTextAlignment>(nameof(TextAlignment));
+      AvaloniaProperty.Register<CSharpMathBlock<TPainter, TContent>, AvaloniaTextAlignment>(nameof(TextAlignment));
 
     public static readonly StyledProperty<IEnumerable<Typeface>> LocalTypefacesProperty =
-      AvaloniaProperty.Register<CSharpMathBlock<TPainter, TSource>, IEnumerable<Typeface>>(nameof(LocalTypefaces));
+      AvaloniaProperty.Register<CSharpMathBlock<TPainter, TContent>, IEnumerable<Typeface>>(nameof(LocalTypefaces));
 
     private static readonly IStyle DefaultStyle;
 
     static CSharpMathBlock() {
-      FontSizeProperty.Changed.AddClassHandler<CSharpMathBlock<TPainter, TSource>>(UpdateFontSize);
-      ForegroundProperty.Changed.AddClassHandler<CSharpMathBlock<TPainter, TSource>>(UpdateTextColor);
-      LocalTypefacesProperty.Changed.AddClassHandler<CSharpMathBlock<TPainter, TSource>>(UpdateLocalTypefaces);
-      SourceProperty.Changed.AddClassHandler<CSharpMathBlock<TPainter, TSource>>(UpdateSource);
+      FontSizeProperty.Changed.AddClassHandler<CSharpMathBlock<TPainter, TContent>>(UpdateFontSize);
+      ForegroundProperty.Changed.AddClassHandler<CSharpMathBlock<TPainter, TContent>>(UpdateTextColor);
+      LocalTypefacesProperty.Changed.AddClassHandler<CSharpMathBlock<TPainter, TContent>>(UpdateLocalTypefaces);
+      ContentProperty.Changed.AddClassHandler<CSharpMathBlock<TPainter, TContent>>(UpdateContent);
 
-      AffectsMeasure<CSharpMathBlock<TPainter, TSource>>(
-        FontSizeProperty, LocalTypefacesProperty, SourceProperty);
+      AffectsMeasure<CSharpMathBlock<TPainter, TContent>>(
+        FontSizeProperty, LocalTypefacesProperty, ContentProperty);
 
-      AffectsRender<CSharpMathBlock<TPainter, TSource>>(
-        FontSizeProperty, ForegroundProperty, LocalTypefacesProperty, SourceProperty, TextAlignmentProperty);
+      AffectsRender<CSharpMathBlock<TPainter, TContent>>(
+        FontSizeProperty, ForegroundProperty, LocalTypefacesProperty, ContentProperty, TextAlignmentProperty);
 
-      DefaultStyle = new Style(s => s.Is<CSharpMathBlock<TPainter, TSource>>()) {
+      DefaultStyle = new Style(s => s.Is<CSharpMathBlock<TPainter, TContent>>()) {
         Setters = new Setter[]
         {
           new Setter(ForegroundProperty, new DynamicResourceExtension("ThemeForegroundColor")),
@@ -73,7 +72,7 @@ namespace CSharpMath.Avalonia {
       set => SetValue(LocalTypefacesProperty, value);
     }
 
-    protected abstract TSource Source { get; set; }
+    public abstract TContent Content { get; set; }
 
     public AvaloniaTextAlignment TextAlignment {
       get => GetValue(TextAlignmentProperty);
@@ -85,18 +84,18 @@ namespace CSharpMath.Avalonia {
     public override void Render(DrawingContext context) =>
         Painter.Draw(new AvaloniaCanvas(context, Bounds.Size), TextAlignment.ToCSharpMathTextAlignment());
 
-    private static void UpdateFontSize(CSharpMathBlock<TPainter, TSource> block, AvaloniaPropertyChangedEventArgs e) =>
+    private static void UpdateFontSize(CSharpMathBlock<TPainter, TContent> block, AvaloniaPropertyChangedEventArgs e) =>
       block.Painter.FontSize = block.FontSize;
 
-    private static void UpdateLocalTypefaces(CSharpMathBlock<TPainter, TSource> block, AvaloniaPropertyChangedEventArgs e) {
+    private static void UpdateLocalTypefaces(CSharpMathBlock<TPainter, TContent> block, AvaloniaPropertyChangedEventArgs e) {
       block.Painter.LocalTypefaces.Clear();
       block.Painter.LocalTypefaces.AddRange(block.LocalTypefaces);
     }
 
-    private static void UpdateSource(CSharpMathBlock<TPainter, TSource> block, AvaloniaPropertyChangedEventArgs e) =>
-      block.Painter.Source = block.Source;
+    private static void UpdateContent(CSharpMathBlock<TPainter, TContent> block, AvaloniaPropertyChangedEventArgs e) =>
+      block.Painter.Content = block.Content;
 
-    private static void UpdateTextColor(CSharpMathBlock<TPainter, TSource> block, AvaloniaPropertyChangedEventArgs e) =>
+    private static void UpdateTextColor(CSharpMathBlock<TPainter, TContent> block, AvaloniaPropertyChangedEventArgs e) =>
       block.Painter.TextColor = block.Foreground;
   }
 }
