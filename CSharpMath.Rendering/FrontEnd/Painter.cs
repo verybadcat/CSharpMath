@@ -37,7 +37,7 @@ namespace CSharpMath.Rendering.FrontEnd {
     public PaintStyle PaintStyle { get; set; } = PaintStyle.Fill;
     public float Magnification { get; set; } = 1;
     public string? ErrorMessage { get; protected set; }
-    public abstract IDisplay<Fonts, Glyph> Display { get; }
+    public abstract IDisplay<Fonts, Glyph>? Display { get; }
     #endregion Non-redisplaying properties
 
     #region Redisplaying properties
@@ -65,8 +65,8 @@ namespace CSharpMath.Rendering.FrontEnd {
     public abstract ICanvas WrapCanvas(TCanvas canvas);
     public abstract RectangleF? Measure(float textPainterCanvasWidth);
     public abstract void Draw(TCanvas canvas, TextAlignment alignment, Thickness padding = default, float offsetX = 0, float offsetY = 0);
-    protected void DrawCore(ICanvas canvas, IDisplay<Fonts, Glyph> display, PointF? position = null) {
-      if (Content != null) {
+    protected void DrawCore(ICanvas canvas, IDisplay<Fonts, Glyph>? display, PointF? position = null) {
+      if (display != null) {
         if (position != null) display.Position = position.Value;
         canvas.Save();
         if (!CoordinatesFromBottomLeftInsteadOfTopLeft) {

@@ -69,7 +69,8 @@ namespace CSharpMath.Forms.Example {
         // Maths
         if (i % 5 == 0) {
           painter.LaTeX = labels[i / 5];
-          var measure = painter.Measure(e.Info.Width).Value;
+          if(!(painter.Measure(e.Info.Width) is { } measure))
+            throw new Structures.InvalidCodePathException("Invalid LaTeX");
           var θ = (90 - 6 * i) / 180f * PI;
           var sinθ = (float)Sin(θ);
           var cosθ = (float)Cos(θ);

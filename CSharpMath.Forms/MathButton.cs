@@ -3,9 +3,12 @@ using SkiaSharp.Views.Forms;
 namespace CSharpMath.Forms {
   using SkiaSharp;
   public class MathButton : ImageButton {
+    public MathButton() {
+      Aspect = Aspect.AspectFit;
+      BackgroundColor = Color.Transparent;
+    }
     private static void Paint(BindableObject o, object _, object __) {
       var b = (MathButton)o;
-      b.Aspect = Aspect.AspectFit;
       b.Source = ImageSource.FromStream(() => new MathPainter {
         FontSize = b.Clarity,
         // Appropriate positioning for non-full characters, e.g. prime, degree

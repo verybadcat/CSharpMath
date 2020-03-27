@@ -3,6 +3,7 @@ using SkiaSharp;
 using Xunit;
 
 namespace CSharpMath.Rendering.Tests {
+  using FrontEnd;
   using SkiaSharp;
   public class TestSkiaSharp : Test<SKCanvas, SKColor, MathPainter, TextPainter> {
     protected override string FrontEnd => nameof(SkiaSharp);

@@ -38,7 +38,7 @@ namespace CSharpMath.Tests.Atom {
       var atom = new Atoms.Accent("\u0308", new MathList(new Atoms.Number("1")));
       atom.Superscript = new MathList(new Atoms.Number("4"));
       atom.Subscript = new MathList(new Atoms.Variable("x"));
-      Assert.Equal("ddots", LaTeXDefaults.CommandForAtom(atom));
+      Assert.Equal("ddot", LaTeXDefaults.CommandForAtom(atom));
     }
     [Fact]
     public void AtomForCommandGeneratesACopy() {

@@ -23,7 +23,7 @@ namespace CSharpMath.Forms.Example {
         }) grid.IsVisible = false;
         foreach (var gridButton in new[] {
           NumbersButton, SymbolsButton, FunctionsButton, OperationsButton, LettersButton
-        }) gridButton.BackgroundColor = Color.Default;
+        }) gridButton.BackgroundColor = Color.Transparent;
         var (selectedGrid, selectedGridButton) =
           value switch {
             Tab.Numbers => (Numbers, NumbersButton),
@@ -45,7 +45,7 @@ namespace CSharpMath.Forms.Example {
   [AcceptEmptyServiceProvider]
   public class SwitchToTabExtension : IMarkupExtension<Command> {
     public MathKeyboard.Tab Target { get; set; }
-    public MathKeyboard Self { get; set; }
+    public MathKeyboard? Self { get; set; }
     public Command ProvideValue(IServiceProvider _) =>
       Target is 0 ? throw new ArgumentNullException(nameof(Target)) :
       Self is null ? throw new ArgumentNullException(nameof(Self)) :
