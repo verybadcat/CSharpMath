@@ -5,6 +5,7 @@ namespace CSharpMath.Forms {
   public class MathButton : ImageButton {
     public MathButton() {
       Aspect = Aspect.AspectFit;
+      // Color.Default will be ugly: https://github.com/verybadcat/CSharpMath/issues/111
       BackgroundColor = Color.Transparent;
     }
     private static void Paint(BindableObject o, object _, object __) {

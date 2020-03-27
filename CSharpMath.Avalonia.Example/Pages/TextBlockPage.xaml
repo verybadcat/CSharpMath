@@ -41,6 +41,18 @@
           <csmath:TextBlock FontSize="{Binding #size.SelectedItem}"
                             Content="Hello World!" />
 
+            <StackPanel Spacing="16">
+
+                <TextBlock Classes="h1"
+                           Text="Write some LaTeX" />
+
+                <TextBox Name="input" Text="{StaticResource Text}" />
+
+                <csmath:TextBlock FontSize="{Binding #size.SelectedItem}"
+                                  Content="{Binding #input.Text}" />
+
+            </StackPanel>
+
         </StackPanel>
 
     </ScrollViewer>

@@ -42,7 +42,8 @@ namespace CSharpMath.Avalonia {
       var brush = Foreground?.ToSolidColorBrush() ?? _canvas.CurrentBrush;
 
       _context.Dispose();
-      _canvas.DrawingContext.DrawGeometry(brush, new Pen(brush), _path);
+      // 0.00001 is for https://github.com/verybadcat/CSharpMath/pull/34#issuecomment-605055722
+      _canvas.DrawingContext.DrawGeometry(brush, new Pen(brush, 0.00001), _path);
     }
 
     public void LineTo(float x1, float y1) => _context.LineTo(new Point(x1, y1));

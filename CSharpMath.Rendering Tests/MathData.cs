@@ -1,11 +1,14 @@
 namespace CSharpMath.Rendering.Tests {
   [Android.Runtime.Preserve(AllMembers = true), Foundation.Preserve(AllMembers = true)]
   public sealed class MathData : SharedData<MathData> {
-    public const string Color = @"\color{#008}a\color{#00F}b\color{#080}c\color{#088}d\color{#08F}e\color{#0F0}f\color{#0F8}g\color{#0FF}h\color{#800}i\color{#808}j\color{#80F}k\color{#880}l\color{#888}m\color{#88F}n\color{#8F0}o\color{#8F8}p\color{#8FF}q\color{#F00}r\color{#F08}s\color{#F0F}t\color{#F80}u\color{#F88}v\color{#F8F}w\color{#FF0}x\color{#FF8}y\color{#FFF}z";
-
+    
     public const string AccentOver = @"\acute{x}";
-    public const string AccentOverMultiple = @"\hat{ABcd}";
+#warning Fix following line's output
+    public const string AccentOverF = @"\hat{f}";
+    public const string AccentOverMultiple = @"\widehat{ABcd}";
     public const string AccentUnder = @"\threeunderdot{x}";
+#warning Fix following line's output
+    public const string AccentUnderThin = @"\threeunderdot{i}";
     public const string Choose = @"{6 \choose x}";
     public const string Commands = @"5\times(-2 \div 1) = -10";
 
@@ -35,12 +38,15 @@ namespace CSharpMath.Rendering.Tests {
                             a\alpha + b\gamma & a\beta + b \delta \\
                             c\alpha + d\gamma & c\beta + d \delta 
                             \end{pmatrix}";
+    public const string Matrix0 = @"\begin{pmatrix}\end{pmatrix}";
+    public const string Matrix1 = @"\begin{pmatrix}2\end{pmatrix}";
+    public const string Matrix2 = @"\begin{pmatrix}a&b\\c&d\end{pmatrix}";
     public const string Matrix3 = @"\begin{bmatrix}a&b\\c&d\\e&f\end{bmatrix}";
-    public const string Matrix5 = @"\begin{bmatrix}a&b\\c&d\\e&f\\g&h\\i&j\end{bmatrix}";
-    public const string Matrix6 = @"\begin{bmatrix}a&b\\c&d\\e&f\\g&h\\i&j\\k&m\end{bmatrix}";
-    public const string MatrixEmpty = @"\begin{pmatrix}\end{pmatrix}";
-    public const string MatrixShort = @"\begin{pmatrix} a & b\\ c & d \end{pmatrix}";
-    public const string MatrixVeryShort = @"\begin{pmatrix}2\end{pmatrix}";
+    public const string Matrix4 = @"\begin{bmatrix}a&b\\c&d\\e&f\\g&h\end{bmatrix}";
+    public const string Matrix5 = @"\begin{Bmatrix}a&b\\c&d\\e&f\\g&h\\i&j\end{Bmatrix}";
+    public const string Matrix6 = @"\begin{vmatrix}a&b\\c&d\\e&f\\g&h\\i&j\\k&l\end{vmatrix}";
+    public const string Matrix7 = @"\begin{Vmatrix}a&b\\c&d\\e&f\\g&h\\i&j\\k&l\\m&n\end{Vmatrix}";
+    public const string Matrixception = @"\begin{Vmatrix}\begin{vmatrix}\begin{Bmatrix}\begin{bmatrix}\begin{pmatrix}a&b\\c&d\end{pmatrix}\end{bmatrix}\end{Bmatrix}\end{vmatrix}\end{Vmatrix}";
 
     public const string Overline = @"\overline{Overline}";
     public const string Pi = @"\pi";
@@ -83,5 +89,6 @@ namespace CSharpMath.Rendering.Tests {
     public const string ArcsinSin = @"\arcsin(\sin x)=x\quad\rm{for}\quad|x|\le\frac\pi2";
     public const string TangentPeriodShift = @"\tan(\theta\pm\frac\pi4)=\frac{\tan\theta\pm1}{1\mp\tan\theta}";
     public const string LineStyles = @"a \displaystyle a \textstyle a \scriptstyle a \scriptscriptstyle a";
+    
   }
 }

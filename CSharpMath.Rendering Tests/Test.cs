@@ -52,9 +52,11 @@ namespace CSharpMath.Rendering.Tests {
   }
   [Collection(nameof(TestFixture))]
   public abstract class Test<TCanvas, TColor, TMathPainter, TTextPainter>
-    where TMathPainter : FrontEnd.MathPainter<TCanvas, TColor>, new() 
-    where TTextPainter : FrontEnd.TextPainter<TCanvas, TColor>, new() {
+    where TMathPainter : MathPainter<TCanvas, TColor>, new() 
+    where TTextPainter : TextPainter<TCanvas, TColor>, new() {
     protected abstract string FrontEnd { get; }
+    /// <summary>Maximum percentage change from expected file size to actual file size * 100</summary>
+    protected abstract double FileSizeTolerance { get; }
     protected abstract void DrawToStream<TContent>(Painter<TCanvas, TContent, TColor> painter, Stream stream) where TContent : class;
     [Theory, ClassData(typeof(MathData))]
     public void Display(string file, string latex) =>
@@ -87,14 +89,16 @@ namespace CSharpMath.Rendering.Tests {
 
       var expectedFile = new FileInfo(Path.Combine(folder, inFile + ".png"));
       if (!expectedFile.Exists) {
+        if (FileSizeTolerance != 0) return; // Only let SkiaSharp create the baseline
         actualFile.CopyTo(expectedFile.FullName);
         expectedFile.Refresh();
       }
       Assert.True(expectedFile.Exists, "The expected image was not copied successfully.");
       using var actualStream = actualFile.OpenRead();
       using var expectedStream = expectedFile.OpenRead();
-      Assert.Equal(expectedStream.Length, actualStream.Length);
-      Assert.True(StreamsContentsAreEqual(expectedStream, actualStream), "The images differ.");
+      CSharpMath.Tests.Approximately.Equal(expectedStream.Length, actualStream.Length, expectedStream.Length * FileSizeTolerance);
+      if (FileSizeTolerance == 0)
+        Assert.True(StreamsContentsAreEqual(expectedStream, actualStream), "The images differ.");
 
       // https://stackoverflow.com/a/2637303/5429648
       static bool StreamsContentsAreEqual(Stream stream1, Stream stream2) {

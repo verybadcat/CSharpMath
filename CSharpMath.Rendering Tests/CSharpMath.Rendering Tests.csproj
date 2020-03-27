@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\CSharpMath Tests\_Helpers\ApproximateAssertions.cs" Link="ApproximateAssertions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CSharpMath.Avalonia\CSharpMath.Avalonia.csproj" />
     <ProjectReference Include="..\CSharpMath.SkiaSharp\CSharpMath.SkiaSharp.csproj" />
     <PackageReference Include="Avalonia.Skia" Version="0.9.4" />

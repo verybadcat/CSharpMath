@@ -13,7 +13,7 @@ namespace CSharpMath.Rendering.FrontEnd {
              new Fonts(Array.Empty<Typography.OpenFont.Typeface>(), fontSize)) { }
     
     public void DrawCaret(ICanvas canvas, Structures.Color color, CaretShape shape) {
-      if (!ShowCaret)
+      if (!ShowCaret || Display is null)
         return;
       var cursorPosition = Display.PointForIndex(TypesettingContext.Instance, InsertionIndex) ?? Display.Position;
       cursorPosition.Y *= -1; //inverted canvas, blah blah

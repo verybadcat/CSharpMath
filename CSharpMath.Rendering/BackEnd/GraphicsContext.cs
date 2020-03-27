@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using CSharpMath.Display.FrontEnd;
+using CSharpMath.Rendering.FrontEnd;
 using CSharpMath.Structures;
 using Typography.OpenFont;
 using Color = CSharpMath.Structures.Color;
@@ -11,12 +12,14 @@ namespace CSharpMath.Rendering.BackEnd {
     private class GlyphPathBuilder : Typography.Contours.GlyphOutlineBuilderBase {
       public GlyphPathBuilder(Typeface typeface) : base(typeface) { }
     }
+    public GraphicsContext(ICanvas canvas, (Color glyph, Color textRun)? glyphBoxColor) {
+      Canvas = canvas;
+      GlyphBoxColor = glyphBoxColor;
+    }
     public (Color glyph, Color textRun)? GlyphBoxColor { get; set; }
-    public FrontEnd.ICanvas Canvas { get; set; }
-
+    public ICanvas Canvas { get; set; }
 #warning Remove (Must have a Mac to test)
     void IGraphicsContext<Fonts, Glyph>.SetTextPosition(PointF position) => Translate(position);
-
     public void DrawGlyphsAtPoints
       (IReadOnlyList<Glyph> glyphs, Fonts font, IEnumerable<PointF> points, Color? color) {
       foreach (var (glyph, point) in glyphs.Zip(points, System.ValueTuple.Create)) {
@@ -38,12 +41,10 @@ namespace CSharpMath.Rendering.BackEnd {
         Canvas.Restore();
       }
     }
-
     public void DrawLine(float x1, float y1, float x2, float y2, float lineThickness, Color? color) {
       Canvas.CurrentColor = color;
       Canvas.DrawLine(x1, y1, x2, y2, lineThickness);
     }
-
     public void DrawGlyphRunWithOffset
       (Display.AttributedGlyphRun<Fonts, Glyph> run, PointF offset, Color? color) {
       var textPosition = offset;
@@ -77,11 +78,8 @@ namespace CSharpMath.Rendering.BackEnd {
       }
       Canvas.Restore();
     }
-
     public void RestoreState() => Canvas.Restore();
-
     public void SaveState() => Canvas.Save();
-
     public void Translate(PointF dxy) => Canvas.Translate(dxy.X, dxy.Y);
   }
 }
