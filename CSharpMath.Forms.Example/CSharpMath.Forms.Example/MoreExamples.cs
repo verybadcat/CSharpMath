@@ -3,7 +3,7 @@
 //this file by executing the method in that file in the CSharpMath.Utils project.
 
 using CSharpMath.Atom;
-using CSharpMath.Rendering;
+using CSharpMath.Rendering.FrontEnd;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;

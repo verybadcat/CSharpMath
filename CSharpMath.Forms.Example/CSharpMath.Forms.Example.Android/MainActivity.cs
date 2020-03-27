@@ -2,7 +2,7 @@ using Android.App;
 using Android.Content.PM;
 using Android.OS;
 
-namespace CSharpMath.Forms.Example.Droid {
+namespace CSharpMath.Forms.Example.Android {
   [Activity(
     Label = "CSharpMath.Forms.Example",
     Icon = "@mipmap/icon",

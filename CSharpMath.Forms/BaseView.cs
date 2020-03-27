@@ -6,7 +6,7 @@ using Xamarin.Forms;
 
 namespace CSharpMath.Forms {
   using Color = Color;
-  using Rendering;
+  using Rendering.FrontEnd;
   using Structures;
 
   public abstract class BaseView<TPainter, TContent> : SKCanvasView, IPainter<TContent, Color>

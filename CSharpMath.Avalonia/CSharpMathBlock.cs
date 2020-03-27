@@ -4,7 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Media;
 using Avalonia.Styling;
-using CSharpMath.Rendering;
+using CSharpMath.Rendering.FrontEnd;
 using AvaloniaTextAlignment = Avalonia.Media.TextAlignment;
 using Typeface = Typography.OpenFont.Typeface;
 

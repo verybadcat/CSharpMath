@@ -5,7 +5,7 @@ using System.Linq;
 using Xunit;
 
 namespace CSharpMath.Rendering.Tests {
-  using Rendering;
+  using Rendering.FrontEnd;
   [CollectionDefinition(nameof(TestFixture))]
   public class TestFixture : ICollectionFixture<TestFixture> {
     public TestFixture() {

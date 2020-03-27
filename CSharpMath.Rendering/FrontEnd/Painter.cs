@@ -8,9 +8,8 @@ using Color = CSharpMath.Structures.Color;
 using Typography.OpenFont;
 using System.Collections.Specialized;
 
-namespace CSharpMath.Rendering {
+namespace CSharpMath.Rendering.FrontEnd {
   using BackEnd;
-  using FrontEnd;
   public static class PainterConstants {
     public const float DefaultFontSize = 20f;
   }

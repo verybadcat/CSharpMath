@@ -5,9 +5,9 @@ using Avalonia.Media;
 using AvaloniaColor = Avalonia.Media.Color;
 using AvaloniaTextAlignment = Avalonia.Media.TextAlignment;
 
+using CSharpMath.Rendering.FrontEnd;
 using CSharpMathColor = CSharpMath.Structures.Color;
-using CSharpMathTextAlignment = CSharpMath.Rendering.TextAlignment;
-using CSharpMath.Rendering;
+using CSharpMathTextAlignment = CSharpMath.Rendering.FrontEnd.TextAlignment;
 
 namespace CSharpMath.Avalonia {
   public static class Extensions {

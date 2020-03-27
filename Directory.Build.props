@@ -2,7 +2,7 @@
 <!--Info: https://docs.microsoft.com/en-us/visualstudio/msbuild/customize-your-build?view=vs-2019#directorybuildprops-and-directorybuildtargets-->
 <Project>
   <PropertyGroup Condition="$(MSBuildProjectName.StartsWith('CSharpMath'))"> <!--Don't apply to Typography projects-->
-    <LangVersion>8.0</LangVersion>
+    <LangVersion Condition="$(MSBuildProjectExtension) == '.csproj'">8.0</LangVersion> <!--Don't apply to F# projects-->
     <Nullable>enable</Nullable>
     <NoWarn>
       CA1062,<!--Obsolete with C# 8 nullability annotations-->
@@ -38,7 +38,7 @@
     <PackageOutputPath>$(MSBuildThisFileDirectory).nupkgs</PackageOutputPath>
     <NeutralLanguage>en</NeutralLanguage>
     <RootNamespace>$(PackageId)</RootNamespace> <!---->
-    <AssemblyName>$(PackageId)</AssemblyName>
+    <AssemblyName>$(MSBuildProjectName)</AssemblyName>
     <AssemblyVersion>$(PackageVersion.Split('-')[0])</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion> <!--"File version" in DLL Details, $(AssemblyVersion) if unset-->
     <Version>$(AssemblyVersion)</Version> <!--"Product version" in DLL Details, '1.0.0' if unset-->

@@ -1,8 +1,9 @@
 using System;
 using CSharpMath.Structures;
 
-namespace CSharpMath.Rendering {
+namespace CSharpMath.Rendering.FrontEnd {
   using FrontEnd;
+  [Obsolete("Not ready", true)]
   public class InvertedCanvas : ICanvas {
     public InvertedCanvas(ICanvas canvas) =>
       _canvas = canvas ?? throw new ArgumentNullException(nameof(canvas), "The supplied canvas cannot be null.");
