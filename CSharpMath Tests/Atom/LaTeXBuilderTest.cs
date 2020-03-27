@@ -7,6 +7,14 @@ using CSharpMath.Atom.Atoms;
 
 namespace CSharpMath.Tests.Atom {
   public class LaTeXBuilderTest {
+    public static MathList ParseLaTeX(string latex) {
+      var builder = new LaTeXBuilder(latex);
+      if(builder.Build() is { } mathList) {
+        Assert.Null(builder.Error);
+        return mathList;
+      } else throw new Xunit.Sdk.NotNullException();
+    }
+
     [Theory]
     [InlineData("x", new[] { typeof(Variable) }, "x")]
     [InlineData("1", new[] { typeof(Number) }, "1")]
@@ -21,7 +29,7 @@ namespace CSharpMath.Tests.Atom {
     [InlineData("x+2", new[] { typeof(Variable), typeof(BinaryOperator), typeof(Number) }, "x+2")]
     [InlineData("(2.3 * 8)", new[] { typeof(Open), typeof(Number), typeof(Number), typeof(Number), typeof(BinaryOperator), typeof(Number), typeof(Close) }, "(2.3*8)")]
     [InlineData("5{3+4}", new[] { typeof(Number), typeof(Number), typeof(BinaryOperator), typeof(Number) }, "53+4")] // braces are just for grouping
-    // commands
+                                                                                                                     // commands
     [InlineData(@"\pi+\theta\geq 3", new[] { typeof(Variable), typeof(BinaryOperator), typeof(Variable), typeof(Relation), typeof(Number) }, @"\pi +\theta \geq 3")]
     // aliases
     [InlineData(@"\pi\ne 5 \land 3", new[] { typeof(Variable), typeof(Relation), typeof(Number), typeof(BinaryOperator), typeof(Number) }, @"\pi \neq 5\wedge 3")]
@@ -30,9 +38,7 @@ namespace CSharpMath.Tests.Atom {
     // spacing
     [InlineData(@"x \quad y \; z \! q", new[] { typeof(Variable), typeof(Space), typeof(Variable), typeof(Space), typeof(Variable), typeof(Space), typeof(Variable) }, @"x\quad y\; z\! q")]
     public void TestBuilder(string input, Type[] atomTypes, string output) {
-      var builder = new LaTeXBuilder(input);
-      var list = builder.Build();
-      Assert.Null(builder.Error);
+      var list = ParseLaTeX(input);
 
       CheckAtomTypes(list, atomTypes);
 
@@ -55,10 +61,8 @@ namespace CSharpMath.Tests.Atom {
       RunScriptTest(input.Replace('^', '_'), atom => atom.Subscript, atomTypes, output.Replace('^', '_'));
 
       void RunScriptTest
-        (string input, Func<MathAtom, MathList> scriptGetter, Type[][] atomTypes, string output) {
-        var builder = new LaTeXBuilder(input);
-        var list = builder.Build();
-        Assert.Null(builder.Error);
+        (string input, Func<MathAtom, MathList?> scriptGetter, Type[][] atomTypes, string output) {
+        var list = ParseLaTeX(input);
 
         var expandedList = list.Clone(false);
         CheckAtomTypes(expandedList, atomTypes[0]);
@@ -71,6 +75,8 @@ namespace CSharpMath.Tests.Atom {
         var scriptList = scriptGetter(firstAtom);
         CheckAtomTypes(scriptList, atomTypes[1]);
         if (atomTypes.Length == 3) {
+          if (scriptList == null)
+            throw new Xunit.Sdk.NotNullException();
           // one more level
           var firstScript = scriptList[0];
           var scriptScriptList = scriptGetter(firstScript);
@@ -82,18 +88,22 @@ namespace CSharpMath.Tests.Atom {
     }
 
     /// <summary>Safe to call with a null list. Types cannot be null however.</summary>
-    private void CheckAtomTypes(MathList list, params Type[] types) {
-      int atomCount = (list == null) ? 0 : list.Atoms.Count;
-      Assert.Equal(types.Length, atomCount);
-      for (int i = 0; i < atomCount; i++) {
-        var atom = list[i];
-        Assert.NotNull(atom);
-        Assert.IsType(types[i], atom);
+    private void CheckAtomTypes(MathList? list, params Type[] types) {
+      if (list == null) {
+        Assert.Empty(types);
+      } else {
+        int atomCount = list.Atoms.Count;
+        Assert.Equal(types.Length, atomCount);
+        for (int i = 0; i < atomCount; i++) {
+          var atom = list[i];
+          Assert.NotNull(atom);
+          Assert.IsType(types[i], atom);
+        }
       }
     }
 
     private Action<MathAtom> CheckAtom<T>
-      (string nucleus, Action<T> action = null) where T : MathAtom =>
+      (string nucleus, Action<T>? action = null) where T : MathAtom =>
       atom => {
         var actualAtom = Assert.IsType<T>(atom);
         Assert.Equal(nucleus, actualAtom.Nucleus);
@@ -102,7 +112,7 @@ namespace CSharpMath.Tests.Atom {
 
     [Fact]
     public void TestSymbols() {
-      var list = new LaTeXBuilder(@"5\times3^{2\div2}").Build();
+      var list = ParseLaTeX(@"5\times3^{2\div2}");
       Assert.Collection(list,
         CheckAtom<Number>("5"),
         CheckAtom<BinaryOperator>("\u00D7"),
@@ -119,7 +129,7 @@ namespace CSharpMath.Tests.Atom {
 
     [Fact]
     public void TestFraction() {
-      var list = LaTeXBuilder.MathListFromLaTeX(@"\frac1c");
+      var list = ParseLaTeX(@"\frac1c");
       Assert.Collection(list,
         CheckAtom<Fraction>("", fraction => {
           Assert.True(fraction.HasRule);
@@ -134,7 +144,7 @@ namespace CSharpMath.Tests.Atom {
 
     [Fact]
     public void TestFractionInFraction() {
-      var list = LaTeXBuilder.MathListFromLaTeX(@"\frac1\frac23");
+      var list = ParseLaTeX(@"\frac1\frac23");
       Assert.Collection(list,
         CheckAtom<Fraction>("", fraction => {
           Assert.Collection(fraction.Numerator, CheckAtom<Number>("1"));
@@ -151,7 +161,7 @@ namespace CSharpMath.Tests.Atom {
 
     [Fact]
     public void TestSqrt() {
-      var list = LaTeXBuilder.MathListFromLaTeX(@"\sqrt2");
+      var list = ParseLaTeX(@"\sqrt2");
       Assert.Collection(list,
         CheckAtom<Radical>("", radical => {
           Assert.Empty(radical.Degree);
@@ -163,7 +173,7 @@ namespace CSharpMath.Tests.Atom {
 
     [Fact]
     public void TestSqrtInSqrt() {
-      var list = LaTeXBuilder.MathListFromLaTeX(@"\sqrt\sqrt2");
+      var list = ParseLaTeX(@"\sqrt\sqrt2");
       Assert.Collection(list,
         CheckAtom<Radical>("", radical =>
           Assert.Collection(radical.Radicand,
@@ -178,7 +188,7 @@ namespace CSharpMath.Tests.Atom {
 
     [Fact]
     public void TestRadical() {
-      var list = LaTeXBuilder.MathListFromLaTeX(@"\sqrt[3]2");
+      var list = ParseLaTeX(@"\sqrt[3]2");
       Assert.Collection(list,
         CheckAtom<Radical>("", radical => {
           Assert.Collection(radical.Degree, CheckAtom<Number>("3"));
@@ -215,10 +225,7 @@ namespace CSharpMath.Tests.Atom {
     public void TestLeftRight(
       string input, Type[] expectedOutputTypes, Type[] expectedInnerTypes,
       string leftBoundary, string rightBoundary, string expectedLatex) {
-      var builder = new LaTeXBuilder(input);
-      var list = builder.Build();
-      Assert.NotNull(list);
-      Assert.Null(builder.Error);
+      var list = ParseLaTeX(input);
 
       CheckAtomTypes(list, expectedOutputTypes);
       Assert.Single(expectedOutputTypes, t => t == typeof(Inner));
@@ -234,7 +241,7 @@ namespace CSharpMath.Tests.Atom {
     [InlineData(@"1 \over c", @"\frac{1}{c}", true)]
     [InlineData(@"1 \atop c", @"{1 \atop c}", false)]
     public void TestOverAndAtop(string input, string output, bool hasRule) {
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
+      var list = ParseLaTeX(input);
       Assert.Collection(list,
         CheckAtom<Fraction>("", fraction => {
           Assert.Equal(hasRule, fraction.HasRule);
@@ -251,7 +258,7 @@ namespace CSharpMath.Tests.Atom {
     [InlineData(@"5 + {1 \over c} + 8", @"5+\frac{1}{c}+8", true)]
     [InlineData(@"5 + {1 \atop c} + 8", @"5+{1 \atop c}+8", false)]
     public void TestOverAndAtopInParens(string input, string output, bool hasRule) {
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
+      var list = ParseLaTeX(input);
       Assert.Collection(list,
         CheckAtom<Number>("5"),
         CheckAtom<BinaryOperator>("+"),
@@ -274,7 +281,7 @@ namespace CSharpMath.Tests.Atom {
     [InlineData(@"n \brace k", @"{n \brace k}", "{", "}")]
     [InlineData(@"\binom{n}{k}", @"{n \choose k}", "(", ")")]
     public void TestChooseBrackBraceBinomial(string input, string output, string left, string right) {
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
+      var list = ParseLaTeX(input);
       Assert.Collection(list,
         CheckAtom<Fraction>("", fraction => {
           Assert.False(fraction.HasRule);
@@ -289,7 +296,7 @@ namespace CSharpMath.Tests.Atom {
 
     [Fact]
     public void TestOverline() {
-      var list = LaTeXBuilder.MathListFromLaTeX(@"\overline 2");
+      var list = ParseLaTeX(@"\overline 2");
       Assert.Collection(list,
         CheckAtom<Overline>("", overline =>
           Assert.Collection(overline.InnerList, CheckAtom<Number>("2"))
@@ -300,7 +307,7 @@ namespace CSharpMath.Tests.Atom {
 
     [Fact]
     public void TestUnderline() {
-      var list = LaTeXBuilder.MathListFromLaTeX(@"\underline 2");
+      var list = ParseLaTeX(@"\underline 2");
       Assert.Collection(list,
         CheckAtom<Underline>("", underline =>
           Assert.Collection(underline.InnerList, CheckAtom<Number>("2"))
@@ -311,7 +318,7 @@ namespace CSharpMath.Tests.Atom {
 
     [Fact]
     public void TestAccent() {
-      var list = LaTeXBuilder.MathListFromLaTeX(@"\bar x");
+      var list = ParseLaTeX(@"\bar x");
       Assert.Collection(list,
         CheckAtom<Accent>("\u0304", accent =>
           Assert.Collection(accent.InnerList, CheckAtom<Variable>("x"))
@@ -322,7 +329,7 @@ namespace CSharpMath.Tests.Atom {
 
     [Fact]
     public void TestMathSpace() {
-      var list = LaTeXBuilder.MathListFromLaTeX(@"\!\,\:\>\;\mskip15mu\quad\mkern36mu\qquad");
+      var list = ParseLaTeX(@"\!\,\:\>\;\mskip15mu\quad\mkern36mu\qquad");
       Assert.Collection(list,
         CheckAtom<Space>("", space => {
           Assert.Equal(-3, space.Length);
@@ -366,7 +373,7 @@ namespace CSharpMath.Tests.Atom {
 
     [Fact]
     public void TestMathStyle() {
-      var list = LaTeXBuilder.MathListFromLaTeX(@"\textstyle y \scriptstyle x");
+      var list = ParseLaTeX(@"\textstyle y \scriptstyle x");
       Assert.Collection(list,
         CheckAtom<Style>("", style => Assert.Equal(LineStyle.Text, style.LineStyle)),
         CheckAtom<Variable>("y"),
@@ -384,7 +391,7 @@ namespace CSharpMath.Tests.Atom {
     [InlineData("vmatrix", "|", "|", @"\left| ", @"\right| ")]
     [InlineData("Vmatrix", "‖", "‖", @"\left\| ", @"\right\| ")]
     public void TestMatrix(string env, string left, string right, string leftOutput, string rightOutput) {
-      var list = LaTeXBuilder.MathListFromLaTeX($@"\begin{{{env}}} x & y \\ z & w \end{{{env}}}");
+      var list = ParseLaTeX($@"\begin{{{env}}} x & y \\ z & w \end{{{env}}}");
       Table table;
       if (left is null && right is null)
         table = Assert.IsType<Table>(Assert.Single(list));
@@ -416,7 +423,7 @@ namespace CSharpMath.Tests.Atom {
 
     [Fact]
     public void TestDeterminant() {
-      var list = LaTeXBuilder.MathListFromLaTeX(@"\begin{ vmatrix}\sin(x) &\cos(x)\\-\cos(x) &\sin(x)\end{ vmatrix}= 1");
+      var list = ParseLaTeX(@"\begin{ vmatrix}\sin(x) &\cos(x)\\-\cos(x) &\sin(x)\end{ vmatrix}= 1");
       Assert.Collection(list,
         CheckAtom<Inner>("", inner =>
           Assert.Collection(inner.InnerList,
@@ -449,7 +456,7 @@ namespace CSharpMath.Tests.Atom {
 
     [Fact]
     public void TestDefaultTable() {
-      var list = LaTeXBuilder.MathListFromLaTeX(@"x \\ y");
+      var list = ParseLaTeX(@"x \\ y");
       var table = Assert.IsType<Table>(Assert.Single(list));
       CheckAtom<Table>("")(table);
       Assert.Null(table.Environment);
@@ -468,7 +475,7 @@ namespace CSharpMath.Tests.Atom {
 
     [Fact]
     public void TestTableWithColumns() {
-      var list = LaTeXBuilder.MathListFromLaTeX(@"x & y \\ z & w");
+      var list = ParseLaTeX(@"x & y \\ z & w");
       var table = Assert.IsType<Table>(Assert.Single(list));
       CheckAtom<Table>("")(table);
       Assert.Null(table.Environment);
@@ -490,7 +497,7 @@ namespace CSharpMath.Tests.Atom {
     [InlineData(@"\begin{split}x&y\\ z&w\end{split}")]
     [InlineData(@"\begin{aligned}x&y\\ z&w\end{aligned}")]
     public void TestEqAlign(string input) {
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
+      var list = ParseLaTeX(input);
       var table = Assert.IsType<Table>(Assert.Single(list));
       CheckAtom<Table>("")(table);
       Assert.Equal(1, table.InterRowAdditionalSpacing);
@@ -520,7 +527,7 @@ namespace CSharpMath.Tests.Atom {
     [InlineData(@"\begin{displaylines}x\\ y\end{displaylines}", 0)]
     [InlineData(@"\begin{gather}x\\ y\end{gather}", 0)]
     public void TestDisplayLines(string input, float columnSpacing) {
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
+      var list = ParseLaTeX(input);
       var table = Assert.IsType<Table>(Assert.Single(list));
       CheckAtom<Table>("")(table);
       Assert.Equal(1, table.InterRowAdditionalSpacing);
@@ -536,7 +543,7 @@ namespace CSharpMath.Tests.Atom {
 
     [Fact]
     public void TestSingleColumnArray() {
-      var list = LaTeXBuilder.MathListFromLaTeX(@"\begin{array}{l}a=14\\b=15\end{array}");
+      var list = ParseLaTeX(@"\begin{array}{l}a=14\\b=15\end{array}");
       Assert.Collection(list,
         CheckAtom<Table>("", table => {
           Assert.Collection(table.Alignments, a => Assert.Equal(ColumnAlignment.Left, a));
@@ -559,7 +566,7 @@ namespace CSharpMath.Tests.Atom {
 
     [Fact]
     public void TestDoubleColumnArray() {
-      var list = LaTeXBuilder.MathListFromLaTeX(@"\begin{array}{lr}x^2&\:x<0\\x^3&\:x\geq0\end{array}");
+      var list = ParseLaTeX(@"\begin{array}{lr}x^2&\:x<0\\x^3&\:x\geq0\end{array}");
       Assert.Collection(list,
         CheckAtom<Table>("", table => {
           Assert.Collection(table.Alignments,
@@ -644,8 +651,7 @@ namespace CSharpMath.Tests.Atom {
       Assert.NotNull(builder.Error);
 
       LaTeXDefaults.Commands.Add("lcm", new LargeOperator("lcm", false));
-      var builder2 = new LaTeXBuilder(input);
-      var list2 = builder2.Build();
+      var list2 = ParseLaTeX(input);
       Assert.Collection(list2,
         CheckAtom<LargeOperator>("lcm"),
         CheckAtom<Open>("("),
@@ -659,7 +665,7 @@ namespace CSharpMath.Tests.Atom {
 
     [Fact]
     public void TestFontSingle() {
-      var list = LaTeXBuilder.MathListFromLaTeX(@"\mathbf x");
+      var list = ParseLaTeX(@"\mathbf x");
       Assert.Collection(list, CheckAtom<Variable>("x",
         variable => Assert.Equal(FontStyle.Bold, variable.FontStyle)));
       Assert.Equal(@"\mathbf{x}", LaTeXBuilder.MathListToLaTeX(list).ToString());
@@ -667,7 +673,7 @@ namespace CSharpMath.Tests.Atom {
 
     [Fact]
     public void TestFontMultipleCharacters() {
-      var list = LaTeXBuilder.MathListFromLaTeX(@"\frak{xy}");
+      var list = ParseLaTeX(@"\frak{xy}");
       Assert.Collection(list,
         CheckAtom<Variable>("x", variable => Assert.Equal(FontStyle.Fraktur, variable.FontStyle)),
         CheckAtom<Variable>("y", variable => Assert.Equal(FontStyle.Fraktur, variable.FontStyle))
@@ -677,7 +683,7 @@ namespace CSharpMath.Tests.Atom {
 
     [Fact]
     public void TestFontOneCharacterInside() {
-      var list = LaTeXBuilder.MathListFromLaTeX(@"\sqrt \mathrm x y");
+      var list = ParseLaTeX(@"\sqrt \mathrm x y");
       Assert.Collection(list,
         CheckAtom<Radical>("", radical =>
           Assert.Collection(radical.Radicand,
@@ -691,7 +697,7 @@ namespace CSharpMath.Tests.Atom {
 
     [Fact] // This is for https://github.com/verybadcat/CSharpMath/issues/59
     public void TestFontInsideScript() {
-      var list = LaTeXBuilder.MathListFromLaTeX(@"\mathbf{Gap}^2");
+      var list = ParseLaTeX(@"\mathbf{Gap}^2");
       Assert.Collection(list,
         CheckAtom<Variable>("G", G => Assert.Equal(FontStyle.Bold, G.FontStyle)),
         CheckAtom<Variable>("a", a => Assert.Equal(FontStyle.Bold, a.FontStyle)),
@@ -707,7 +713,7 @@ namespace CSharpMath.Tests.Atom {
 
     [Fact]
     public void TestText() {
-      var list = LaTeXBuilder.MathListFromLaTeX(@"\text{x y}");
+      var list = ParseLaTeX(@"\text{x y}");
       Assert.Collection(list,
         CheckAtom<Variable>(@"x", variable => Assert.Equal(FontStyle.Roman, variable.FontStyle)),
         CheckAtom<Ordinary>(" "),
@@ -718,7 +724,7 @@ namespace CSharpMath.Tests.Atom {
 
     [Fact]
     public void TestScriptOrdering() {
-      var list = LaTeXBuilder.MathListFromLaTeX(@"\int_a^b");
+      var list = ParseLaTeX(@"\int_a^b");
       Assert.Collection(list,
         CheckAtom<LargeOperator>("∫", op => {
           Assert.Collection(op.Superscript, CheckAtom<Variable>("b"));
@@ -730,7 +736,7 @@ namespace CSharpMath.Tests.Atom {
 
     [Fact]
     public void TestIntegrals() {
-      var list = LaTeXBuilder.MathListFromLaTeX(@"\int_wdf=\int_{\partial w}f");
+      var list = ParseLaTeX(@"\int_wdf=\int_{\partial w}f");
       Assert.Collection(list,
         CheckAtom<LargeOperator>("∫", op => {
           Assert.Null(op.Superscript);
@@ -753,7 +759,7 @@ namespace CSharpMath.Tests.Atom {
     [InlineData(@"\int\limits", @"\int \limits ", true)]
     [InlineData(@"\int\nolimits", @"\int ", false)]
     public void TestLimits(string input, string output, bool? limits) {
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
+      var list = ParseLaTeX(input);
       Assert.Collection(list, CheckAtom<LargeOperator>("∫", op => Assert.Equal(limits, op.Limits)));
       Assert.Equal(output, LaTeXBuilder.MathListToLaTeX(list).ToString());
     }
@@ -763,7 +769,7 @@ namespace CSharpMath.Tests.Atom {
     [InlineData(@"\sum\limits", @"\sum \limits ", true)]
     [InlineData(@"\sum\nolimits", @"\sum \nolimits ", false)]
     public void TestUnspecifiedLimits(string input, string output, bool? limits) {
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
+      var list = ParseLaTeX(input);
       Assert.Collection(list, CheckAtom<LargeOperator>("∑", op => Assert.Equal(limits, op.Limits)));
       Assert.Equal(output, LaTeXBuilder.MathListToLaTeX(list).ToString());
     }
@@ -773,7 +779,7 @@ namespace CSharpMath.Tests.Atom {
     [InlineData(@"\sin\limits", @"\sin ", false)]
     [InlineData(@"\sin\nolimits", @"\sin ", false)]
     public void TestNoLimits(string input, string output, bool? limits) {
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
+      var list = ParseLaTeX(input);
       Assert.Collection(list, CheckAtom<LargeOperator>("sin", op => Assert.Equal(limits, op.Limits)));
       Assert.Equal(output, LaTeXBuilder.MathListToLaTeX(list).ToString());
     }
@@ -793,7 +799,7 @@ namespace CSharpMath.Tests.Atom {
     [InlineData("0x12345678", "#12345678", 0x34, 0x56, 0x78, 0x12)]
     [InlineData("#fedcba98", "#FEDCBA98", 0xDC, 0xBA, 0x98, 0xFE)]
     public void TestColor(string inColor, string outColor, byte r, byte g, byte b, byte a = 0xFF) {
-      var list = LaTeXBuilder.MathListFromLaTeX($@"\color{{{inColor}}}a");
+      var list = ParseLaTeX($@"\color{{{inColor}}}a");
       Assert.Collection(list,
         CheckAtom<Color>("", color => {
           Assert.Equal(r, color.Colour.R);
@@ -808,7 +814,7 @@ namespace CSharpMath.Tests.Atom {
 
     [Fact]
     public void TestColorScripts() {
-      var list = LaTeXBuilder.MathListFromLaTeX(@"\color{red}_2");
+      var list = ParseLaTeX(@"\color{red}_2");
       Assert.Collection(list,
         CheckAtom<Color>("", color => {
           Assert.Equal("red", color.Colour.ToString());

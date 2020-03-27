@@ -10,7 +10,7 @@ namespace CSharpMath.Forms {
   using Structures;
 
   public abstract class BaseView<TPainter, TContent> : SKCanvasView, IPainter<TContent, Color>
-    where TPainter : Painter<SKCanvas, TContent, SKColor>, new() {
+    where TPainter : Painter<SKCanvas, TContent, SKColor>, new() where TContent : class {
     public TPainter Painter { get; } = new TPainter();
     protected sealed override void OnPaintSurface(SKPaintSurfaceEventArgs e) {
       base.OnPaintSurface(e);
@@ -57,9 +57,9 @@ namespace CSharpMath.Forms {
     static readonly System.Reflection.ParameterInfo[] drawMethodParams = typeof(TPainter)
       .GetMethod(nameof(Painter<SKCanvas, TContent, SKColor>.Draw),
         new[] { typeof(SKCanvas), typeof(TextAlignment), typeof(Thickness), typeof(float), typeof(float) }).GetParameters();
-    static TPainter staticPainter;
-    protected static BindableProperty CreateProperty<T>(string propertyName, Func<TPainter, T> defaultValueGet, Action<TPainter, T> propertySet, Type thisType = null) =>
-      BindableProperty.Create(propertyName, typeof(T), thisType ?? typeof(BaseView<TPainter, TContent>), defaultValueGet(staticPainter ??= new TPainter()),
+    protected static readonly TPainter staticPainter = new TPainter();
+    protected static BindableProperty CreateProperty<T>(string propertyName, Func<TPainter, T> defaultValueGet, Action<TPainter, T> propertySet, Type? thisType = null) =>
+      BindableProperty.Create(propertyName, typeof(T), thisType ?? typeof(BaseView<TPainter, TContent>), defaultValueGet(staticPainter),
         propertyChanged: (b, o, n) => {
           var p = (BaseView<TPainter, TContent>)b;
           propertySet(p.Painter, (T)n);
@@ -67,7 +67,7 @@ namespace CSharpMath.Forms {
         });
     
     public static readonly BindableProperty ContentProperty = CreateProperty(nameof(Content), p => p.Content, (p, v) => p.Content = v);
-    public TContent Content { get => (TContent)GetValue(ContentProperty); set => SetValue(ContentProperty, value); }
+    public TContent? Content { get => (TContent)GetValue(ContentProperty); set => SetValue(ContentProperty, value); }
 
     public static readonly BindableProperty LaTeXProperty = CreateProperty(nameof(LaTeX), p => p.LaTeX, (p, v) => p.LaTeX = v);
     public string LaTeX { get => (string)GetValue(LaTeXProperty); set => SetValue(LaTeXProperty, value); }

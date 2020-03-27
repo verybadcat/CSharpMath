@@ -37,6 +37,7 @@
     <GeneratePackageOnBuild Condition="!$(MSBuildProjectName.Contains('Test')) And !$(MSBuildProjectName.Contains('Example'))">$(Configuration.Equals('Release'))</GeneratePackageOnBuild>
     <PackageOutputPath>$(MSBuildThisFileDirectory).nupkgs</PackageOutputPath>
     <NeutralLanguage>en</NeutralLanguage>
+    <RootNamespace>$(PackageId)</RootNamespace> <!---->
     <AssemblyName>$(PackageId)</AssemblyName>
     <AssemblyVersion>$(PackageVersion.Split('-')[0])</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion> <!--"File version" in DLL Details, $(AssemblyVersion) if unset-->

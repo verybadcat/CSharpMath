@@ -5,9 +5,9 @@ using Xunit;
 
 namespace CSharpMath.Tests.Atom {
   public class MathAtomTest {
-    internal static void CheckClone(MathAtom original, MathAtom clone) =>
+    internal static void CheckClone(MathAtom? original, MathAtom? clone) =>
       MathListTest.CheckClone(original, clone);
-    internal static void CheckClone(MathList original, MathList clone) =>
+    internal static void CheckClone(MathList? original, MathList? clone) =>
       MathListTest.CheckClone(original, clone);
     [Fact]
     public void TestTypeName() =>

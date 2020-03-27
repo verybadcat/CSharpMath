@@ -7,7 +7,8 @@ namespace CSharpMath.DevUtils {
     /// </summary>
     public static readonly string Global = ((System.Func<string>)(() => {
       var L = typeof(Paths).Assembly.Location;
-      while (P.GetFileName(L) != nameof(CSharpMath)) L = P.GetDirectoryName(L);
+      while (P.GetFileName(L) != nameof(CSharpMath)) L = P.GetDirectoryName(L)
+        ?? throw new System.NotSupportedException($"The compiled assembly has been taken out of the {nameof(CSharpMath)} folder.");
       return L;
     }))();
 

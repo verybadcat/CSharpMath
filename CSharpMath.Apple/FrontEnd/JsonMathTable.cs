@@ -34,13 +34,15 @@ namespace CSharpMath.Apple {
     public JsonMathTable(IFontMeasurer<TFont, TGlyph> fontMeasurer, JToken mathTable, 
                          IGlyphNameProvider<TGlyph> glyphNameProvider,
                          IGlyphBoundsProvider<TFont, TGlyph> glyphBoundsProvider) {
+      JObject GetTable(string name) =>
+        _mathTable[name] as JObject ?? throw new System.ArgumentException($"Table not found: {name}", nameof(mathTable));
       FontMeasurer = fontMeasurer;
       GlyphNameProvider = glyphNameProvider;
       GlyphBoundsProvider = glyphBoundsProvider;
       _mathTable = mathTable;
-      _constantsDictionary = _mathTable["constants"] as JObject;
-      _assemblyTable = _mathTable["v_assembly"] as JObject;
-      _italicTable = _mathTable["italic"] as JObject;
+      _constantsDictionary = GetTable("constants");
+      _assemblyTable = GetTable("v_assembly");
+      _italicTable = GetTable("italic");
     }
     // different from _ConstantFromTable in that the _ConstantFromTable requires
     // a font and uses _FontUnitsToPt, while this is just a straight percentage.
@@ -134,7 +136,7 @@ namespace CSharpMath.Apple {
     private const string _startConnectorKey = "startConnector";
     private const string _extenderKey = "extender";
     private const string _glyphKey = "glyph";
-    public override IEnumerable<GlyphPart<TGlyph>> GetVerticalGlyphAssembly(TGlyph rawGlyph, TFont font) =>
+    public override IEnumerable<GlyphPart<TGlyph>>? GetVerticalGlyphAssembly(TGlyph rawGlyph, TFont font) =>
       _assemblyTable[GlyphNameProvider.GetGlyphName(rawGlyph)]?[_assemblyPartsKey] is JArray parts
       ? parts.Select(partInfo =>
         new GlyphPart<TGlyph>(

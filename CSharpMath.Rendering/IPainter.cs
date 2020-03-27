@@ -3,7 +3,7 @@ using Typography.OpenFont;
 
 namespace CSharpMath.Rendering {
   using Structures;
-  public interface IPainter<TContent, TColor> {
+  public interface IPainter<TContent, TColor> where TContent : class {
     #region Non-display-recreating properties
     TColor HighlightColor { get; set; }
     TColor TextColor { get; set; }
@@ -13,14 +13,14 @@ namespace CSharpMath.Rendering {
     bool DisplayErrorInline { get; set; }
     PaintStyle PaintStyle { get; set; }
     float Magnification { get; set; }
-    string ErrorMessage { get; }
+    string? ErrorMessage { get; }
     #endregion Non-display-recreating properties
     #region Display-recreating properties
     /// <summary>Unit of measure: points</summary>
     float FontSize { get; set; }
     ObservableRangeCollection<Typeface> LocalTypefaces { get; }
     Atom.LineStyle LineStyle { get; set; }
-    TContent Content { get; set; }
+    TContent? Content { get; set; }
     string LaTeX { get; set; }
     #endregion Display-recreating properties
   }

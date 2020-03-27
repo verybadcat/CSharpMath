@@ -9,7 +9,8 @@ using CSharpMathColor = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Avalonia {
   public sealed class AvaloniaCanvas : ICanvas {
-    private Stack<Stack<DrawingContext.PushedState>> _states;
+    private readonly Stack<Stack<DrawingContext.PushedState>> _states =
+      new Stack<Stack<DrawingContext.PushedState>>();
     private ISolidColorBrush _currentBrush;
 
     public AvaloniaCanvas(
@@ -19,8 +20,6 @@ namespace CSharpMath.Avalonia {
 
       Width = (float)size.Width;
       Height = (float)size.Height;
-
-      _states = new Stack<Stack<DrawingContext.PushedState>>();
     }
 
     public float Width { get; }

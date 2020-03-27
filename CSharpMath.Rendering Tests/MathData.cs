@@ -1,4 +1,4 @@
-namespace CSharpMath.SkiaSharp {
+namespace CSharpMath.Rendering.Tests {
   [Android.Runtime.Preserve(AllMembers = true), Foundation.Preserve(AllMembers = true)]
   public sealed class MathData : SharedData<MathData> {
     public const string Color = @"\color{#008}a\color{#00F}b\color{#080}c\color{#088}d\color{#08F}e\color{#0F0}f\color{#0F8}g\color{#0FF}h\color{#800}i\color{#808}j\color{#80F}k\color{#880}l\color{#888}m\color{#88F}n\color{#8F0}o\color{#8F8}p\color{#8FF}q\color{#F00}r\color{#F08}s\color{#F0F}t\color{#F80}u\color{#F88}v\color{#F8F}w\color{#FF0}x\color{#FF8}y\color{#FFF}z";

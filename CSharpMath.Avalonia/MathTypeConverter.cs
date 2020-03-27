@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 
 namespace CSharpMath.Avalonia {
-  internal sealed class MathSourceTypeConverter : TypeConverter {
+  public sealed class MathTypeConverter : TypeConverter {
     public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType) =>
       sourceType == typeof(string) || sourceType == typeof(Atom.MathList);
 

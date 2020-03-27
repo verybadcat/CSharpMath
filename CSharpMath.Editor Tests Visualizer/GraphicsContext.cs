@@ -5,7 +5,7 @@ using System.Linq;
 using CSharpMath.Display;
 using CSharpMath.Tests.FrontEnd;
 
-namespace CSharpMath.Editor.TestChecker {
+namespace CSharpMath.Editor.Tests.Visualizer {
   public class GraphicsContext : Display.FrontEnd.IGraphicsContext<TestFont, char> {
     readonly Stack<PointF> stack = new Stack<PointF>();
     PointF trans = new PointF();

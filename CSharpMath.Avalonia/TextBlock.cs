@@ -14,7 +14,7 @@ namespace CSharpMath.Avalonia {
 
     protected override TextPainter<AvaloniaCanvas, Color> Painter { get; }
 
-    [TypeConverter(typeof(TextSourceTypeConverter))]
+    [TypeConverter(typeof(TextTypeConverter))]
     public override TextAtom? Content {
       get => _content;
       set => SetAndRaise(ContentProperty, ref _content, value);

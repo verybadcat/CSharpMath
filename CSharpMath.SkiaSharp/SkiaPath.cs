@@ -5,8 +5,8 @@ namespace CSharpMath.SkiaSharp {
   public class SkiaPath : Rendering.FrontEnd.IPath {
     public SkiaPath(SkiaCanvas owner) => _owner = owner;
     public Color? Foreground { get; set; }
-    private SkiaCanvas _owner;
-    private SKPath _path = new SKPath();
+    private readonly SkiaCanvas _owner;
+    private readonly SKPath _path = new SKPath();
     public void BeginRead(int contourCount) { }
     public void EndRead() {
       if (Foreground is Color foreground)
@@ -17,8 +17,6 @@ namespace CSharpMath.SkiaSharp {
       else
         _owner.Canvas.DrawPath(_path, _owner.Paint);
       _path.Dispose();
-      _path = null;
-      _owner = null;
     }
     public void CloseContour() => _path.Close();
     public void Curve3(float x1, float y1, float x2, float y2) =>

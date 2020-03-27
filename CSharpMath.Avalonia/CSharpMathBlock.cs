@@ -10,7 +10,7 @@ using Typeface = Typography.OpenFont.Typeface;
 
 namespace CSharpMath.Avalonia {
   public abstract class CSharpMathBlock<TPainter, TContent> : Control
-    where TPainter : Painter<AvaloniaCanvas, TContent, Color> {
+    where TPainter : Painter<AvaloniaCanvas, TContent, Color> where TContent : class {
 
     public static readonly StyledProperty<float> FontSizeProperty =
       AvaloniaProperty.Register<CSharpMathBlock<TPainter, TContent>, float>(nameof(FontSize));
@@ -18,8 +18,8 @@ namespace CSharpMath.Avalonia {
     public static readonly StyledProperty<Color> ForegroundProperty =
       AvaloniaProperty.Register<CSharpMathBlock<TPainter, TContent>, Color>(nameof(Foreground));
 
-    public static readonly DirectProperty<CSharpMathBlock<TPainter, TContent>, TContent> ContentProperty =
-      AvaloniaProperty.RegisterDirect<CSharpMathBlock<TPainter, TContent>, TContent>(
+    public static readonly DirectProperty<CSharpMathBlock<TPainter, TContent>, TContent?> ContentProperty =
+      AvaloniaProperty.RegisterDirect<CSharpMathBlock<TPainter, TContent>, TContent?>(
         nameof(Content),
         block => block.Content,
         (block, content) => block.Content = content);
@@ -72,7 +72,7 @@ namespace CSharpMath.Avalonia {
       set => SetValue(LocalTypefacesProperty, value);
     }
 
-    public abstract TContent Content { get; set; }
+    public abstract TContent? Content { get; set; }
 
     public AvaloniaTextAlignment TextAlignment {
       get => GetValue(TextAlignmentProperty);

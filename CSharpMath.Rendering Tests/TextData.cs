@@ -1,4 +1,4 @@
-namespace CSharpMath.SkiaSharp {
+namespace CSharpMath.Rendering.Tests {
   [Android.Runtime.Preserve(AllMembers = true), Foundation.Preserve(AllMembers = true)]
   public sealed class TextData : SharedData<TextData> {
     public const string Accent = @"\'a";

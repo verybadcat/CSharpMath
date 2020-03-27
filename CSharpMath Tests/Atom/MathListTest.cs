@@ -7,11 +7,11 @@ using Xunit;
 namespace CSharpMath.Tests.Atom {
   using Range = CSharpMath.Atom.Range;
   public class MathListTest {
-    internal static void CheckClone(MathAtom original, MathAtom clone) {
+    internal static void CheckClone(MathAtom? original, MathAtom? clone) {
       Assert.Equal(original, clone);
       Assert.NotSame(original, clone);
     }
-    internal static void CheckClone(MathList original, MathList clone) {
+    internal static void CheckClone(MathList? original, MathList? clone) {
       Assert.Equal(original, clone);
       Assert.NotSame(original, clone);
     }
@@ -129,9 +129,8 @@ namespace CSharpMath.Tests.Atom {
 
     [Fact]
     public void TestListCopyWithFusedItems() {
-      var builder = new LaTeXBuilder("12+x");
-      var list = builder.Build();
-      
+      var list = LaTeXBuilderTest.ParseLaTeX("12+x");
+
       var finalized = list.Clone(true);
       var fusedCount = finalized.Sum(atom => atom.FusedAtoms?.Count ?? 0);
       Assert.Equal(2, fusedCount);
@@ -144,7 +143,7 @@ namespace CSharpMath.Tests.Atom {
     [Fact]
     public void TestListFinalizedCopy() {
       var input = @"-52x^{13+y}_{15-} + (-12.3 *)\frac{-12}{15.2}\int^\sqrt[!\ ]{=(}_0 \theta";
-      var list = LaTeXBuilder.MathListFromLaTeX(input);
+      var list = LaTeXBuilderTest.ParseLaTeX(input);
       Assert.ThrowsAny<Xunit.Sdk.XunitException>(() => CheckListContents(list));
       Assert.ThrowsAny<Xunit.Sdk.XunitException>(() => CheckListContents(list.Clone(false)));
       Assert.All(list, a => Assert.Equal(Range.Zero, a.IndexRange));
@@ -159,7 +158,8 @@ namespace CSharpMath.Tests.Atom {
           Assert.Equal(nucleus, a.Nucleus);
           Assert.Equal(new Range(rangeIndex, rangeLength), a.IndexRange);
         };
-      static void CheckListContents(MathList list) {
+      static void CheckListContents(MathList? list) {
+        if (list == null) throw new Xunit.Sdk.NotNullException();
         Assert.Collection(list.Atoms,
           CheckAtomNucleusAndRange<UnaryOperator>("\u2212", 0, 1),
           CheckAtomNucleusAndRange<Number>("52", 1, 2),

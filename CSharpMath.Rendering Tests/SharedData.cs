@@ -17,7 +17,7 @@ namespace Foundation {
   }
 }
 #endif
-namespace CSharpMath.SkiaSharp {
+namespace CSharpMath.Rendering.Tests {
   [Android.Runtime.Preserve(AllMembers = true), Foundation.Preserve(AllMembers = true)]
   public abstract class SharedData<TThis> : IEnumerable<object[]> where TThis : SharedData<TThis> {
     public static IReadOnlyDictionary<string, string> AllConstants { get; } =
@@ -26,7 +26,8 @@ namespace CSharpMath.SkiaSharp {
       .Concat(typeof(TThis)
         .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly))
       .Where(fi => fi.IsLiteral && !fi.IsInitOnly)
-      .ToDictionary(fi => fi.Name, fi => (string)fi.GetRawConstantValue());
+      .ToDictionary(fi => fi.Name, fi => fi.GetRawConstantValue() as string
+        ?? throw new Structures.InvalidCodePathException("All constants must be strings!"));
     public IEnumerator<object[]> GetEnumerator() =>
       AllConstants.Select(tuple => new[] { tuple.Key, tuple.Value }).GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

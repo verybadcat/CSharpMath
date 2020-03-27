@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Text;
 using ListDisplay = CSharpMath.Display.Displays.ListDisplay<CSharpMath.Tests.FrontEnd.TestFont, char>;
 
-namespace CSharpMath.Editor.TestChecker {
+namespace CSharpMath.Editor.Tests.Visualizer {
   using Structures;
   public class Checker {
     /// <summary>Whether you want to view e.g. fraction lines and radical lines

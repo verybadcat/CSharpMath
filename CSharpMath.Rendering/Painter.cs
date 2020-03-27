@@ -14,7 +14,7 @@ namespace CSharpMath.Rendering {
   public static class PainterConstants {
     public const float DefaultFontSize = 20f;
   }
-  public abstract class Painter<TCanvas, TContent, TColor> : IPainter<TContent, TColor> {
+  public abstract class Painter<TCanvas, TContent, TColor> : IPainter<TContent, TColor> where TContent : class {
     public const float DefaultFontSize = PainterConstants.DefaultFontSize;
 
     public Painter() {
@@ -53,8 +53,8 @@ namespace CSharpMath.Rendering {
     void TypefacesChanged(object sender, NotifyCollectionChangedEventArgs e) { Fonts = new Fonts(LocalTypefaces, FontSize); SetRedisplay(); }
     Atom.LineStyle __style = Atom.LineStyle.Display;
     public Atom.LineStyle LineStyle { get => __style; set { __style = value; SetRedisplay(); } }
-    TContent __content = default;
-    public TContent Content { get => __content; set { __content = value; SetRedisplay(); } }
+    TContent? __content;
+    public TContent? Content { get => __content; set { __content = value; SetRedisplay(); } }
     #endregion Redisplaying properties
 
     protected abstract bool CoordinatesFromBottomLeftInsteadOfTopLeft { get; }

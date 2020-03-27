@@ -15,7 +15,7 @@ namespace CSharpMath.Forms.Example {
       View.LaTeX = latex;
     }
     static readonly string latex =
-      string.Join(@"\\", SkiaSharp.MathData.AllConstants.Select(info => $@"{info.Key}: {info.Value}"));
+      string.Join(@"\\", Rendering.Tests.MathData.AllConstants.Select(info => $@"{info.Key}: {info.Value}"));
     private void Button_Clicked(object sender, EventArgs e) {
       View.DisplacementX = View.DisplacementY = 0;
     }

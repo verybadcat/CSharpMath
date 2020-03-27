@@ -13,7 +13,7 @@ namespace CSharpMath.Avalonia {
 
     protected override MathPainter<AvaloniaCanvas, Color> Painter { get; }
 
-    [TypeConverter(typeof(MathSourceTypeConverter))]
+    [TypeConverter(typeof(MathTypeConverter))]
     public override Atom.MathList? Content {
       get => _content;
       set => SetAndRaise(ContentProperty, ref _content, value);

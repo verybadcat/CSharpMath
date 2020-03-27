@@ -4,7 +4,7 @@ using System.Globalization;
 using CSharpMath.Rendering.Text;
 
 namespace CSharpMath.Avalonia {
-  public sealed class TextSourceTypeConverter : TypeConverter {
+  public sealed class TextTypeConverter : TypeConverter {
     public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType) =>
       sourceType == typeof(string) || sourceType == typeof(TextAtom);
 

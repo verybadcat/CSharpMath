@@ -3,7 +3,8 @@
 C:/
 
 # For CSharpMath.SkiaSharp.Tests
-/CSharpMath.SkiaSharp.Tests/*/*.actual.*
+/CSharpMath.Rendering Tests/*/*.avalonia.*
+/CSharpMath.Rendering Tests/*/*.skiasharp.*
 
 # Ignore generated .nupkgs
 /.nupkgs
