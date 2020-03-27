@@ -6,23 +6,21 @@ using Xunit;
 
 namespace CSharpMath.Rendering.Tests {
   using Rendering;
-  public class TestFixture {
+  [CollectionDefinition(nameof(TestFixture))]
+  public class TestFixture : ICollectionFixture<TestFixture> {
     public TestFixture() {
-      Assert.NotEmpty(Test.Folders);
+      Assert.NotEmpty(Folders);
       // Delete garbage by previous tests
       foreach (var garbage in
-        Test.Folders.SelectMany(folder =>
+        Folders.SelectMany(folder =>
           Directory.EnumerateFiles(folder)
           .Where(file => file.Contains(".avalonia.") || file.Contains(".skiasharp."))))
         File.Delete(garbage);
-      // Pre-initialize to speed tests up
-      global::Avalonia.Skia.SkiaPlatform.Initialize();
+      // Pre-initialize typefaces to speed tests up
       BackEnd.Fonts.GlobalTypefaces.ToString();
+      // Needed by Avalonia tests!
+      global::Avalonia.Skia.SkiaPlatform.Initialize();
     }
-  }
-  [CollectionDefinition(nameof(TestFixture))]
-  public class TestFixtureCollection : ICollectionFixture<TestFixture> { }
-  public static class Test {
     // https://www.codecogs.com/latex/eqneditor.php
     static string ThisFilePath
       ([System.Runtime.CompilerServices.CallerFilePath] string? path = null) =>
@@ -31,19 +29,46 @@ namespace CSharpMath.Rendering.Tests {
     public static string GetFolder(string folderName) =>
       ThisDirectory.CreateSubdirectory(folderName).FullName;
     public static IEnumerable<string> Folders =>
-      new[] { typeof(TestAvalonia), typeof(TestSkiaSharp) }
+      typeof(TestFixture)
+      .Assembly
+      .GetTypes()
+      .Where(t => IsSubclassOfRawGeneric(typeof(Test<,,,>), t))
       .SelectMany(t => t.GetMethods())
       .Where(method => method.IsDefined(typeof(FactAttribute), false)
                     || method.IsDefined(typeof(TheoryAttribute), false))
       .Select(method => GetFolder(method.Name))
       .Distinct();
-
-    public static void Run<TCanvas, TContent, TColor>(
-      string inFile, string latex, string folder, string frontEnd,
-      Painter<TCanvas, TContent, TColor> painter,
-      Action<Painter<TCanvas, TContent, TColor>, Stream> drawToStream) where TContent : class {
-      folder = GetFolder(folder);
-      frontEnd = frontEnd.ToLowerInvariant();
+    // https://stackoverflow.com/a/457708/5429648
+    static bool IsSubclassOfRawGeneric(Type generic, Type? toCheck) {
+      while (toCheck != null && toCheck != typeof(object)) {
+        var cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
+        if (generic == cur) {
+          return true;
+        }
+        toCheck = toCheck.BaseType;
+      }
+      return false;
+    }
+  }
+  [Collection(nameof(TestFixture))]
+  public abstract class Test<TCanvas, TColor, TMathPainter, TTextPainter>
+    where TMathPainter : FrontEnd.MathPainter<TCanvas, TColor>, new() 
+    where TTextPainter : FrontEnd.TextPainter<TCanvas, TColor>, new() {
+    protected abstract string FrontEnd { get; }
+    protected abstract void DrawToStream<TContent>(Painter<TCanvas, TContent, TColor> painter, Stream stream) where TContent : class;
+    [Theory, ClassData(typeof(MathData))]
+    public void Display(string file, string latex) =>
+      Run(file, latex, nameof(Display), new TMathPainter { LineStyle = Atom.LineStyle.Display });
+    [Theory, ClassData(typeof(MathData))]
+    public void Inline(string file, string latex) =>
+      Run(file, latex, nameof(Inline), new TMathPainter { LineStyle = Atom.LineStyle.Text });
+    [Theory, ClassData(typeof(TextData))]
+    public void Text(string file, string latex) =>
+      Run(file, latex, nameof(Text), new TTextPainter());
+    protected void Run<TContent>(
+      string inFile, string latex, string folder, Painter<TCanvas, TContent, TColor> painter) where TContent : class {
+      folder = TestFixture.GetFolder(folder);
+      var frontEnd = FrontEnd.ToLowerInvariant();
 
       // Prevent black background behind black rendered output in File Explorer preview
       painter.HighlightColor = painter.UnwrapColor(new Structures.Color(0xF0, 0xF0, 0xF0));
@@ -56,7 +81,7 @@ namespace CSharpMath.Rendering.Tests {
       Assert.False(actualFile.Exists, $"The actual file was not deleted by test initialization: {actualFile.FullName}");
 
       using (var outFile = actualFile.OpenWrite())
-        drawToStream(painter, outFile);
+        DrawToStream(painter, outFile);
       actualFile.Refresh();
       Assert.True(actualFile.Exists, "The actual image was not created successfully.");
 

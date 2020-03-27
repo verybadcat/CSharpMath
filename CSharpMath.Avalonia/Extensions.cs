@@ -51,7 +51,8 @@ namespace CSharpMath.Avalonia {
        System.IO.Stream target,
        float textPainterCanvasWidth = 2000f) where TContent : class {
       if (!(painter.Measure(textPainterCanvasWidth) is { } size)) return;
-      using var bitmap = new global::Avalonia.Media.Imaging.RenderTargetBitmap(new PixelSize((int)size.Width, (int)size.Height));
+      using var bitmap =
+        new global::Avalonia.Media.Imaging.RenderTargetBitmap(new PixelSize((int)size.Width, (int)size.Height));
       bitmap.Render(new DrawVisual<TContent>(painter, size));
       bitmap.Save(target);
     }
