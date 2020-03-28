@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Media;
 
-using CSharpMath.Rendering;
 using CSharpMath.Rendering.FrontEnd;
 using CSharpMathColor = CSharpMath.Structures.Color;
 

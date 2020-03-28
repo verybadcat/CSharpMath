@@ -5,10 +5,7 @@
     <Description>Rendering interface for CSharpMath using the Typography library.</Description>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="_TypographyExistanceTest.cs" Condition="Exists('..\Typography\Typography.OpenFont\Typography.OpenFont.projitems')" />
     <EmbeddedResource Include="Reference Fonts\*.otf" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\CSharpMath.Editor\CSharpMath.Editor.csproj" />
     <PackageReference Include="Nullable" Version="1.2.1" PrivateAssets="all" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />

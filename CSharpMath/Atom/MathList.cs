@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections;
 
-namespace CSharpMath.Atom
- {
+namespace CSharpMath.Atom {
+  [System.ComponentModel.TypeConverter(typeof(MathListTypeConverter))]
 #pragma warning disable CA1710 // Identifiers should have correct suffix
   // WTF CA1710, you want types inheriting IList to have the Collection suffix?
   public class MathList : IMathObject, IList<MathAtom>, IReadOnlyList<MathAtom>, IEquatable<MathList> {
@@ -75,11 +75,11 @@ namespace CSharpMath.Atom
     public bool EqualsList(MathList otherList) {
       if (otherList == null) {
         return false;
-      } 
+      }
       if (otherList.Count != Count) {
         return false;
       }
-      for (int i=0; i < Count; i++) {
+      for (int i = 0; i < Count; i++) {
         if (!this[i].NullCheckingStructuralEquality(otherList[i])) {
           return false;
         }

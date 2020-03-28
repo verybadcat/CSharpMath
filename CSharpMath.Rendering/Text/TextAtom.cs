@@ -3,6 +3,7 @@ using System.Collections.Generic;
 namespace CSharpMath.Rendering.Text {
   using Atom;
   //Base type
+  [System.ComponentModel.TypeConverter(typeof(TextAtomTypeConverter))]
   public abstract class TextAtom {
     public abstract int? SingleChar(FontStyle style);
     //Concrete types

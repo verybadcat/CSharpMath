@@ -87,7 +87,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Avalonia", "CSha
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Avalonia.Example", "CSharpMath.Avalonia.Example\CSharpMath.Avalonia.Example.csproj", "{4E728BD1-65C2-4D1C-8147-1C7457565B6E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Rendering Tests", "CSharpMath.Rendering Tests\CSharpMath.Rendering Tests.csproj", "{14E42639-10E7-44C1-9571-65F0A48A3696}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Rendering Tests", "CSharpMath.Rendering Tests\CSharpMath.Rendering Tests.csproj", "{14E42639-10E7-44C1-9571-65F0A48A3696}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Run 'git submodule update --init' if below unloaded", "Run 'git submodule update --init' if below unloaded", "{15784E9C-7D6D-47C0-B993-A45A964C82F5}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -1304,6 +1306,7 @@ Global
 		{56166C6C-B3B4-4BAE-823E-B3D24C080394} = {FCA00A99-04A2-467D-9557-C8BA3F8D50D4}
 		{4E728BD1-65C2-4D1C-8147-1C7457565B6E} = {FCA00A99-04A2-467D-9557-C8BA3F8D50D4}
 		{14E42639-10E7-44C1-9571-65F0A48A3696} = {125C1FE9-F684-4E87-A9EF-969FD1E2D726}
+		{15784E9C-7D6D-47C0-B993-A45A964C82F5} = {74FBDC58-E93A-4DCE-B83F-AA936EE57B31}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3C9A56A6-4EA3-4228-B064-E4789B282032}

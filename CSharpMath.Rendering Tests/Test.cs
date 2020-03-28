@@ -57,7 +57,7 @@ namespace CSharpMath.Rendering.Tests {
     protected abstract string FrontEnd { get; }
     /// <summary>Maximum percentage change from expected file size to actual file size * 100</summary>
     protected abstract double FileSizeTolerance { get; }
-    protected abstract void DrawToStream<TContent>(Painter<TCanvas, TContent, TColor> painter, Stream stream) where TContent : class;
+    protected abstract void DrawToStream<TContent>(Painter<TCanvas, TContent, TColor> painter, Stream stream, float textPainterCanvasWidth) where TContent : class;
     [Theory, ClassData(typeof(MathData))]
     public void Display(string file, string latex) =>
       Run(file, latex, nameof(Display), new TMathPainter { LineStyle = Atom.LineStyle.Display });
@@ -67,8 +67,13 @@ namespace CSharpMath.Rendering.Tests {
     [Theory, ClassData(typeof(TextData))]
     public void Text(string file, string latex) =>
       Run(file, latex, nameof(Text), new TTextPainter());
+    [Fact]
+    public void TextPainterMeasure() {
+      Run("PositiveInfinity", @"22222$$\sum\int^3_2x\ dx$$3333", nameof(TextPainterMeasure), new TTextPainter(), float.PositiveInfinity);
+    }
     protected void Run<TContent>(
-      string inFile, string latex, string folder, Painter<TCanvas, TContent, TColor> painter) where TContent : class {
+      string inFile, string latex, string folder, Painter<TCanvas, TContent, TColor> painter,
+      float textPainterCanvasWidth = TextPainter<TCanvas, TColor>.DefaultCanvasWidth) where TContent : class {
       folder = TestFixture.GetFolder(folder);
       var frontEnd = FrontEnd.ToLowerInvariant();
 
@@ -83,7 +88,7 @@ namespace CSharpMath.Rendering.Tests {
       Assert.False(actualFile.Exists, $"The actual file was not deleted by test initialization: {actualFile.FullName}");
 
       using (var outFile = actualFile.OpenWrite())
-        DrawToStream(painter, outFile);
+        DrawToStream(painter, outFile, textPainterCanvasWidth);
       actualFile.Refresh();
       Assert.True(actualFile.Exists, "The actual image was not created successfully.");
 

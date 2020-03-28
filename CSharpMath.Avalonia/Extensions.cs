@@ -49,7 +49,7 @@ namespace CSharpMath.Avalonia {
     public static void DrawAsPng<TContent>
       (this Painter<AvaloniaCanvas, TContent, AvaloniaColor> painter,
        System.IO.Stream target,
-       float textPainterCanvasWidth = 2000f) where TContent : class {
+       float textPainterCanvasWidth = TextPainter.DefaultCanvasWidth) where TContent : class {
       if (!(painter.Measure(textPainterCanvasWidth) is { } size)) return;
       using var bitmap =
         new global::Avalonia.Media.Imaging.RenderTargetBitmap(new PixelSize((int)size.Width, (int)size.Height));

@@ -12,6 +12,7 @@ namespace CSharpMath.Rendering.FrontEnd {
   /// <see cref="TextPainter{TCanvas, TColor}"/>'s coordinates are inverted by default.
   /// </summary>
   public abstract class TextPainter<TCanvas, TColor> : Painter<TCanvas, TextAtom, TColor> {
+    public const float DefaultCanvasWidth = 2000f;
     public override IDisplay<Fonts, Glyph> Display =>
       new ListDisplay<Fonts, Glyph>(new[] {
         _relativeXCoordDisplay, _absoluteXCoordDisplay
@@ -19,8 +20,8 @@ namespace CSharpMath.Rendering.FrontEnd {
 
     //display maths should always be center-aligned regardless of parameter for Draw()
     //so special case them into _absoluteXCoordDisplay instead of using _relativeXCoordDisplay
-    public ListDisplay<Fonts, Glyph> _absoluteXCoordDisplay;
-    public ListDisplay<Fonts, Glyph> _relativeXCoordDisplay;
+    public ListDisplay<Fonts, Glyph> _absoluteXCoordDisplay = new ListDisplay<Fonts, Glyph>(System.Array.Empty<IDisplay<Fonts, Glyph>>());
+    public ListDisplay<Fonts, Glyph> _relativeXCoordDisplay = new ListDisplay<Fonts, Glyph>(System.Array.Empty<IDisplay<Fonts, Glyph>>());
     public override string LaTeX {
       get => Content is null ? "" : TextLaTeXBuilder.TextAtomToLaTeX(Content).ToString();
       set => (Content, ErrorMessage) = TextLaTeXBuilder.TextAtomFromLaTeX(value);
@@ -29,6 +30,8 @@ namespace CSharpMath.Rendering.FrontEnd {
 
     protected override void SetRedisplay() { }
     public override RectangleF? Measure(float canvasWidth) {
+      if (float.IsInfinity(canvasWidth) || float.IsNaN(canvasWidth))
+        canvasWidth = DefaultCanvasWidth; // Rationalize the input
       UpdateDisplay(canvasWidth);
       return 
         _relativeXCoordDisplay?.Frame().Union(_absoluteXCoordDisplay.Frame());

@@ -10,7 +10,7 @@ namespace CSharpMath.SkiaSharp {
       new Color(color.Red, color.Green, color.Blue, color.Alpha);
     public static System.IO.Stream? DrawAsStream<TContent>
       (this Painter<SKCanvas, TContent, SKColor> painter,
-       float textPainterCanvasWidth = 2000f,
+       float textPainterCanvasWidth = TextPainter.DefaultCanvasWidth,
        SKEncodedImageFormat format = SKEncodedImageFormat.Png,
        int quality = 100) where TContent : class {
       if (!(painter.Measure(textPainterCanvasWidth) is { } size)) return null;
