@@ -28,4 +28,4 @@ jobs:
     - name: Build
       run: msbuild CSharpMath.sln /p:Configuration=Release
     - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      run: dotnet test --no-build --verbosity normal
