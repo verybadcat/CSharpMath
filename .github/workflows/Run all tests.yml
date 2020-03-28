@@ -1,4 +1,4 @@
-name: .NET Core
+name: Run all tests
 
 on:
   push:
@@ -19,9 +19,13 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.201
-    - name: Install dependencies
-      run: dotnet restore
+    - name: Setup MSBuild Path
+      uses: warrenbuckley/Setup-MSBuild@v1
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v1.0.2
+    - name: Restore NuGet Packages
+      run: nuget restore CSharpMath.sln
     - name: Build
-      run: dotnet build --configuration Release --no-restore
+      run: msbuild CSharpMath.sln /p:Configuration=Release
     - name: Test
       run: dotnet test --no-restore --verbosity normal
