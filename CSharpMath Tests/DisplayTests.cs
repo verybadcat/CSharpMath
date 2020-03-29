@@ -37,7 +37,7 @@ namespace CSharpMath.Tests {
 
     [Theory, InlineData("x"), InlineData("2")]
     public void TestSimpleVariable(string latex) =>
-      TestOuter(latex, 1, 14, 4, 10,
+      TestOuter(latex, 2, 14, 4, 10,
         d => {
           var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
           Assert.Single(line.Atoms); // have to think about these; doesn't really work atm
