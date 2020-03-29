@@ -16,6 +16,7 @@ namespace CSharpMath.CoreTests {
     [System.Diagnostics.DebuggerStepThrough] // Debugger should stop at the line that uses this function
     void AssertText(string expected, TextLineDisplay<TFont, TGlyph> actual) =>
       Assert.Equal(expected, string.Concat(actual.Text));
+    [Fact] public void IntentionalFailingTest() => throw null;
 
     System.Action<IDisplay<TFont, TGlyph>?> TestList(int rangeMax, double ascent, double descent, double width, double x, double y,
       LinePosition linePos, int indexInParent, params System.Action<IDisplay<TFont, TGlyph>>[] inspectors) => d => {
