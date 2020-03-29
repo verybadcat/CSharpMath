@@ -21,11 +21,10 @@ jobs:
       uses: NuGet/setup-nuget@v1.0.2
     - name: Setup MSBuild Path
       uses: warrenbuckley/Setup-MSBuild@v1
-    - name: Setup VSTest Path
-      uses: Malcolmnixon/Setup-VSTest@v2
     - name: Restore NuGet Packages
       run: nuget restore CSharpMath.sln
     - name: Build
       run: msbuild CSharpMath.sln /p:Configuration=Release
     - name: Test
-      run: vstest.console **/*Test*/**/*Test*.dll
+      run: >
+        dotnet test "CSharpMath Tests" "CSharpMath.Editor Tests" "CSharpMath.Editor Tests (F♯)" "CSharpMath.Rendering Tests" "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests"
