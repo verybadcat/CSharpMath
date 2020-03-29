@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29201.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath", "CSharpMath\CSharpMath.csproj", "{5157367B-F03E-4ACB-83A1-0DE414A3BFCA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath Tests", "CSharpMath Tests\CSharpMath Tests.csproj", "{0830C47F-AA16-4A0E-9CCF-E40835D1430D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.CoreTests", "CSharpMath.CoreTests\CSharpMath.CoreTests.csproj", "{0830C47F-AA16-4A0E-9CCF-E40835D1430D}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSharpMath.Apple", "CSharpMath.Apple\CSharpMath.Apple.shproj", "{1E62C0F0-B5C9-430E-ADDC-6F6EC6E0BDE1}"
 EndProject
@@ -65,7 +65,7 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Typography.GlyphLayout", "T
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Typography.TextBreak", "Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.shproj", "{9A99F103-B119-4A4D-8093-6A03BAA6D36B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextBreakTests", "Typography\Typography.TextBreak\Typography.TextBreak.UnitTests\TextBreakTests.csproj", "{2E593FCA-B809-4270-9EB2-93F380AF2D6C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TextBreakTests", "Typography\Typography.TextBreak\Typography.TextBreak.UnitTests\TextBreakTests.csproj", "{2E593FCA-B809-4270-9EB2-93F380AF2D6C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Dependencies", "_Dependencies", "{74FBDC58-E93A-4DCE-B83F-AA936EE57B31}"
 EndProject
@@ -73,11 +73,11 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSharpMath.Wiki", "wiki\CSh
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Editor", "CSharpMath.Editor\CSharpMath.Editor.csproj", "{38F58489-EDE4-4289-8ACF-A9756977A7A6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Editor Tests", "CSharpMath.Editor Tests\CSharpMath.Editor Tests.csproj", "{BA1ECF0E-134A-49C2-BA4D-1D28C6A8494A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Editor.Tests", "CSharpMath.Editor.Tests\CSharpMath.Editor.Tests.csproj", "{BA1ECF0E-134A-49C2-BA4D-1D28C6A8494A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Editor Tests Visualizer", "CSharpMath.Editor Tests Visualizer\CSharpMath.Editor Tests Visualizer.csproj", "{C60126CE-A71D-4D11-A4A8-A45B67312E98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Editor.Tests.Visualizer", "CSharpMath.Editor.Tests.Visualizer\CSharpMath.Editor.Tests.Visualizer.csproj", "{C60126CE-A71D-4D11-A4A8-A45B67312E98}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "CSharpMath.Editor Tests (F♯)", "CSharpMath.Editor Tests (F♯)\CSharpMath.Editor Tests (F♯).fsproj", "{65492AC6-8B98-42FF-AAA1-1DBDC050A25F}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "CSharpMath.Editor.Tests.FSharp", "CSharpMath.Editor.Tests.FSharp\CSharpMath.Editor.Tests.FSharp.fsproj", "{65492AC6-8B98-42FF-AAA1-1DBDC050A25F}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "PixelFarm.Typography (Excerpt)", "PixelFarm.Typography (Excerpt)\PixelFarm.Typography (Excerpt).shproj", "{3ECA00B3-0925-4418-B6F2-AC49AA3520BB}"
 EndProject
@@ -87,7 +87,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Avalonia", "CSha
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Avalonia.Example", "CSharpMath.Avalonia.Example\CSharpMath.Avalonia.Example.csproj", "{4E728BD1-65C2-4D1C-8147-1C7457565B6E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Rendering Tests", "CSharpMath.Rendering Tests\CSharpMath.Rendering Tests.csproj", "{14E42639-10E7-44C1-9571-65F0A48A3696}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Rendering.Tests", "CSharpMath.Rendering.Tests\CSharpMath.Rendering.Tests.csproj", "{14E42639-10E7-44C1-9571-65F0A48A3696}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Run 'git submodule update --init' if below unloaded", "Run 'git submodule update --init' if below unloaded", "{15784E9C-7D6D-47C0-B993-A45A964C82F5}"
 EndProject

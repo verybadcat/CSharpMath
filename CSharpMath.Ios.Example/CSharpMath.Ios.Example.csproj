@@ -122,10 +122,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\CSharpMath.Rendering Tests\MathData.cs">
+    <Compile Include="..\CSharpMath.Rendering.Tests\MathData.cs">
       <Link>MathData.cs</Link>
     </Compile>
-    <Compile Include="..\CSharpMath.Rendering Tests\SharedData.cs">
+    <Compile Include="..\CSharpMath.Rendering.Tests\SharedData.cs">
       <Link>SharedData.cs</Link>
     </Compile>
     <Compile Include="Main.cs" />
