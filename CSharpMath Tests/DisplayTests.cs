@@ -35,9 +35,10 @@ namespace CSharpMath.Tests {
       TestList(rangeMax, ascent, descent, width, 0, 0, LinePosition.Regular, Range.UndefinedInt, inspectors)
       (Typesetter.CreateLine(Atom.LaTeXBuilderTest.ParseLaTeX(latex), _font, _context, LineStyle.Display));
 
+    [Fact] public void Throw() => throw null;
     [Theory, InlineData("x"), InlineData("2")]
     public void TestSimpleVariable(string latex) =>
-      TestOuter(latex, 2, 14, 4, 10,
+      TestOuter(latex, 1, 14, 4, 10,
         d => {
           var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
           Assert.Single(line.Atoms); // have to think about these; doesn't really work atm
