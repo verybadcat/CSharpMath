@@ -23,7 +23,7 @@ jobs:
     - name: Build and Test
       run: |
         for p in\
-          "CSharpMath.Tests"\
+          "CSharpMath.CoreTests"\
           "CSharpMath.Editor.Tests"\
           "CSharpMath.Editor.Tests.FSharp"\
           "CSharpMath.Rendering.Tests"\
