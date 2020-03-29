@@ -20,18 +20,18 @@ jobs:
     - name: Build
       run: |
         IFS="" # Whitespace is NOT an item delimiter!
-        PROJECTS=(
+        export PROJECTS=(
           "CSharpMath Tests"
           "CSharpMath.Editor Tests"
           "CSharpMath.Editor Tests (F♯)"
           "CSharpMath.Rendering Tests"
           "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests"
         )
-        for p in ${PROJECTS[*]}; do
+        for p in ${PROJECTS[*]} do
           dotnet build "$p" -c:Release
         done
     - name: Test
       run: |
-        for p in ${PROJECTS[*]}; do
+        for p in ${PROJECTS[*]} do
           dotnet test "$p"
         done
