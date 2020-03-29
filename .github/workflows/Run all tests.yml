@@ -20,7 +20,7 @@ jobs:
     - name: Build and Test
       run: |
         IFS="" # Whitespace is NOT an item delimiter!
-        for p in (
+        for p in $(
           "CSharpMath Tests"
           "CSharpMath.Editor Tests"
           "CSharpMath.Editor Tests (F♯)"
