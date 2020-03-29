@@ -19,11 +19,14 @@ jobs:
         dotnet-version: '3.1.200'
     - name: Build
       run: |
-        PROJECTS=("CSharpMath Tests/CSharpMath Tests.csproj"
-                  "CSharpMath.Editor Tests/CSharpMath.Editor Tests.csproj"
-                  "CSharpMath.Editor Tests (F♯)/CSharpMath.Editor Tests (F♯).csproj"
-                  "CSharpMath.Rendering Tests/CSharpMath.Rendering Tests.csproj"
-                  "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests/TextBreakTests.csproj")
+        IFS="" # Whitespace is NOT an item delimiter!
+        PROJECTS=(
+          "CSharpMath Tests/CSharpMath Tests.csproj"
+          "CSharpMath.Editor Tests/CSharpMath.Editor Tests.csproj"
+          "CSharpMath.Editor Tests (F♯)/CSharpMath.Editor Tests (F♯).csproj"
+          "CSharpMath.Rendering Tests/CSharpMath.Rendering Tests.csproj"
+          "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests/TextBreakTests.csproj"
+        )
         for p in ${PROJECTS[*]}; do
           dotnet build "$p" -c:Release
         done
