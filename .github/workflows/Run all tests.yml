@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
       with:
@@ -17,14 +17,14 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '3.1.200'
-    - name: Setup NuGet
-      uses: NuGet/setup-nuget@v1.0.2
-    - name: Setup MSBuild Path
-      uses: warrenbuckley/Setup-MSBuild@v1
-    - name: Restore NuGet Packages
-      run: nuget restore CSharpMath.sln
     - name: Build
-      run: msbuild CSharpMath.sln /p:Configuration=Release
+      run: >
+        PROJECTS=("CSharpMath Tests" "CSharpMath.Editor Tests" "CSharpMath.Editor Tests (F♯)" "CSharpMath.Rendering Tests" "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests")
+        for p in ${PROJECTS[*]}; do
+          dotnet build $p -c:Release
+        done
     - name: Test
       run: >
-        dotnet test "CSharpMath Tests" "CSharpMath.Editor Tests" "CSharpMath.Editor Tests (F♯)" "CSharpMath.Rendering Tests" "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests"
+        for p in ${PROJECTS[*]}; do
+          dotnet test $p
+        done
