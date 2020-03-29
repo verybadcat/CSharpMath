@@ -18,13 +18,13 @@ jobs:
       with:
         dotnet-version: '3.1.200'
     - name: Build
-      run: >
+      run: |
         PROJECTS=("CSharpMath Tests" "CSharpMath.Editor Tests" "CSharpMath.Editor Tests (F♯)" "CSharpMath.Rendering Tests" "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests")
         for p in ${PROJECTS[*]}; do
           dotnet build $p -c:Release
         done
     - name: Test
-      run: >
+      run: |
         for p in ${PROJECTS[*]}; do
           dotnet test $p
         done
