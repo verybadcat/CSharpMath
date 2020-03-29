@@ -1,4 +1,4 @@
-name: Build all projects
+name: Build all
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  projects:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
