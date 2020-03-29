@@ -4,7 +4,7 @@ using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using Xamarin.Forms;
 
-namespace CSharpMath.NuGetPackageTests.CSharp {
+namespace CSharpMath.Playground.NuGet {
   using Display;
   using MathKeyboard = Forms.MathKeyboard;
   using Rendering;

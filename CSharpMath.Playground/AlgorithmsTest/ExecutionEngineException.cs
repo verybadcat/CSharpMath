@@ -1,6 +1,6 @@
 using System;
 
-namespace CSharpMath.DevUtils {
+namespace CSharpMath.Playground {
   static partial class AlgorithmsTest {
     public static string ExecutionEngineException() {
       try {

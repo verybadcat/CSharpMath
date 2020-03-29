@@ -1,6 +1,6 @@
 using System.Linq;
 
-namespace CSharpMath.DevUtils.TypographyTest {
+namespace CSharpMath.Playground.TypographyTest {
   static class GlyphLayout {
     public static Typography.TextLayout.GlyphLayout Get =>
       new Typography.TextLayout.GlyphLayout(new Typography.OpenFont.OpenFontReader()

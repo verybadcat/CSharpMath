@@ -1,6 +1,6 @@
 using System;
 
-namespace CSharpMath.DevUtils {
+namespace CSharpMath.Playground {
   class Program {
     static void Main(string[] _) {
       //Console.WriteLine(new StringBuilder().AppendJoin(", ", TypographyTest.Get.Codepoints("𝑥")).ToString());

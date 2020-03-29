@@ -1,4 +1,4 @@
-namespace CSharpMath.DevUtils.TypographyTest {
+namespace CSharpMath.Playground.TypographyTest {
   static class LayoutString {
     public static System.Collections.Generic.IEnumerable
       <(short x, short y, short w, ushort i)> Layout(string text) {

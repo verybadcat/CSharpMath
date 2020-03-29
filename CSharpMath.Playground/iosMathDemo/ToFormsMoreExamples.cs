@@ -6,7 +6,7 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace CSharpMath.DevUtils.iosMathDemo {
+namespace CSharpMath.Playground.iosMathDemo {
   /// <summary>
   /// Grabs the latest iosMath demo examples straight from GitHub
   /// and translates them into C# then stores them in MoreExamples.cs located at

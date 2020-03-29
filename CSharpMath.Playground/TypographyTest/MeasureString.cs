@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using static Typography.TextLayout.PixelScaleLayoutExtensions;
 
-namespace CSharpMath.DevUtils.TypographyTest {
+namespace CSharpMath.Playground.TypographyTest {
   static class MeasureString {
     /// <summary>
     /// Tests the Typography library for correctly measuring the string's width.

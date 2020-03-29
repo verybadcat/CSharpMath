@@ -1,8 +1,8 @@
-namespace CSharpMath.NuGetPackageTests.CSharp.UWP {
+namespace CSharpMath.Playground.NuGet.UWP {
   public sealed partial class MainPage {
     public MainPage() {
       InitializeComponent();
-      LoadApplication(new CSharp.App());
+      LoadApplication(new NuGet.App());
     }
   }
 }

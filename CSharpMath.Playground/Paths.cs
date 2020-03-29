@@ -1,6 +1,6 @@
 using P = System.IO.Path;
 
-namespace CSharpMath.DevUtils {
+namespace CSharpMath.Playground {
   static class Paths {
     /// <summary>
     /// The path of the global CSharpMath folder

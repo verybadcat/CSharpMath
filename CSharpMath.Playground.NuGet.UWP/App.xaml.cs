@@ -5,7 +5,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
-namespace CSharpMath.NuGetPackageTests.CSharp.UWP {
+namespace CSharpMath.Playground.NuGet.UWP {
   /// <summary>
   /// Provides application-specific behavior to supplement the default Application class.
   /// </summary>

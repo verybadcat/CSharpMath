@@ -131,8 +131,6 @@
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
     <Content Include="Assets\Wide310x150Logo.scale-400.png" />
     <Content Include="Properties\Default.rd.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -145,11 +143,9 @@
   <ItemGroup>
     <PackageReference Include="Xamarin.Forms" Version="4.3.0.908675" />
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.2.8" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CSharpMath.NuGetPackageTests.CSharp\CSharpMath.NuGetPackageTests.CSharp.csproj">
-      <Project>{BEF4538D-443C-4961-9C1C-BDBA4D84B5DF}</Project>
-      <Name>CSharpMath.NuGetPackageTests.CSharp</Name>
+    <ProjectReference Include="..\CSharpMath.Playground.NuGet\CSharpMath.Playground.NuGet.csproj">
+      <Project>{73C44AA1-69ED-4749-BDBA-62A4416F0081}</Project>
+      <Name>CSharpMath.Playground.NuGet</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

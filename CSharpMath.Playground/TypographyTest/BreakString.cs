@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 
-namespace CSharpMath.DevUtils.TypographyTest {
+namespace CSharpMath.Playground.TypographyTest {
   internal static class BreakString {
     public static void Benchmark() {
       Console.OutputEncoding = Encoding.Unicode;
