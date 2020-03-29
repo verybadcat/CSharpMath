@@ -27,5 +27,6 @@ jobs:
           "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests"
         do
           dotnet add "$p" package GitHubActionsTestLogger
+          VSTEST_CONNECTION_TIMEOUT=6000
           dotnet test "$p" --logger GitHubActions
         done
