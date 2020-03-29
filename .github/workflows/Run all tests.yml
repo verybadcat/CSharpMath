@@ -17,21 +17,15 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '3.1.200'
-    - name: Build
+    - name: Build and Test
       run: |
         IFS="" # Whitespace is NOT an item delimiter!
-        export PROJECTS=(
+        for p in (
           "CSharpMath Tests"
           "CSharpMath.Editor Tests"
           "CSharpMath.Editor Tests (F♯)"
           "CSharpMath.Rendering Tests"
           "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests"
-        )
-        for p in ${PROJECTS[*]} do
-          dotnet build "$p" -c:Release
-        done
-    - name: Test
-      run: |
-        for p in ${PROJECTS[*]} do
+        ) do
           dotnet test "$p"
         done
