@@ -1,9 +1,3 @@
-﻿Update NuGet package information using CSharpMath.Utils.NuGet
-Switch on "Generate package on build" in the CSharpMath.Utils.NuGet interface
-Check Example projects, test thoroughly
-Switch default config to Release
-Build CSharpMath.Forms
-Switch default config to Release-iOS
-Build CSharpMath.Ios
-Get all .nupkg files from bin/Release folders
-Upload them to NuGet
+﻿Edit PackageVersion, PackageReleaseNotes and RepositoryCommit in Directory.Build.props
+Upload packages in the top-level .nupkgs folder to NuGet
+Upload packages in the top-level .nupkgs folder to GitHub and submit a new release

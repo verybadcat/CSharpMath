@@ -34,7 +34,6 @@ namespace CSharpMath.CoreTests {
         params System.Action<IDisplay<TFont, TGlyph>>[] inspectors) =>
       TestList(rangeMax, ascent, descent, width, 0, 0, LinePosition.Regular, Range.UndefinedInt, inspectors)
       (Typesetter.CreateLine(Atom.LaTeXBuilderTest.ParseLaTeX(latex), _font, _context, LineStyle.Display));
-    [Fact] public void IntentionalFailingTest() => throw null;
 
     [Theory, InlineData("x"), InlineData("2")]
     public void TestSimpleVariable(string latex) =>
