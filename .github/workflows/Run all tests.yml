@@ -24,4 +24,4 @@ jobs:
     - name: Build
       run: msbuild CSharpMath.sln /p:Configuration=Release
     - name: Test
-      run: Vstest.console.exe *Test*/**/*.dll --verbosity normal
+      run: Vstest.console.exe *Test*/**/*.dll --Parallel
