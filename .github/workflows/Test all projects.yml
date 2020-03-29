@@ -31,8 +31,8 @@ jobs:
         do
           if [[ $p == CSharpMath.CoreTests ]]
           then # Only CSharpMath test projects can be logged into GitHub
-            dotnet test "$p" -c:Release --logger GitHubActions
+            dotnet test "$p" --configuration Release --logger GitHubActions
           else
-            dotnet test "$p" -c:Release
+            dotnet test "$p" --configuration Release
           fi
         done
