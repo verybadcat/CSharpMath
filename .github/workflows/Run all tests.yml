@@ -19,7 +19,6 @@ jobs:
         dotnet-version: '3.1.200'
     - name: Build and Test
       run: |
-        IFS="" # Whitespace is NOT an item delimiter!
         for p in\
           "CSharpMath Tests"\
           "CSharpMath.Editor Tests"\
