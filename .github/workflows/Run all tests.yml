@@ -17,10 +17,12 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '3.1.200'
-    - name: Setup MSBuild Path
-      uses: warrenbuckley/Setup-MSBuild@v1
     - name: Setup NuGet
       uses: NuGet/setup-nuget@v1.0.2
+    - name: Setup MSBuild Path
+      uses: warrenbuckley/Setup-MSBuild@v1
+    - name: Setup VSTest Path
+      uses: Malcolmnixon/Setup-VSTest@v2
     - name: Restore NuGet Packages
       run: nuget restore CSharpMath.sln
     - name: Build
