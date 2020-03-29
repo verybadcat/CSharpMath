@@ -18,13 +18,13 @@ jobs:
       with:
         dotnet-version: '3.1.200'
     - name: Build and Test
-      run: >
-        for p in
-          "CSharpMath Tests"
-          "CSharpMath.Editor Tests"
-          "CSharpMath.Editor Tests (F♯)"
-          "CSharpMath.Rendering Tests"
-          "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests
-        ; do
+      run: |
+        for p in\
+          "CSharpMath Tests"\
+          "CSharpMath.Editor Tests"\
+          "CSharpMath.Editor Tests (F♯)"\
+          "CSharpMath.Rendering Tests"\
+          "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests"
+        do
           dotnet test "$p"
         done
