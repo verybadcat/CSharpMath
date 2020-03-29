@@ -16,7 +16,6 @@ namespace CSharpMath.CoreTests {
     [System.Diagnostics.DebuggerStepThrough] // Debugger should stop at the line that uses this function
     void AssertText(string expected, TextLineDisplay<TFont, TGlyph> actual) =>
       Assert.Equal(expected, string.Concat(actual.Text));
-    [Fact] public void IntentionalFailingTest() => throw null;
 
     System.Action<IDisplay<TFont, TGlyph>?> TestList(int rangeMax, double ascent, double descent, double width, double x, double y,
       LinePosition linePos, int indexInParent, params System.Action<IDisplay<TFont, TGlyph>>[] inspectors) => d => {
@@ -35,6 +34,7 @@ namespace CSharpMath.CoreTests {
         params System.Action<IDisplay<TFont, TGlyph>>[] inspectors) =>
       TestList(rangeMax, ascent, descent, width, 0, 0, LinePosition.Regular, Range.UndefinedInt, inspectors)
       (Typesetter.CreateLine(Atom.LaTeXBuilderTest.ParseLaTeX(latex), _font, _context, LineStyle.Display));
+    [Fact] public void IntentionalFailingTest() => throw null;
 
     [Theory, InlineData("x"), InlineData("2")]
     public void TestSimpleVariable(string latex) =>
