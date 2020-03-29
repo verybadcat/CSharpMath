@@ -26,7 +26,11 @@ jobs:
           "CSharpMath.Rendering Tests"\
           "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests"
         do
-          dotnet add "$p" package GitHubActionsTestLogger
-          VSTEST_CONNECTION_TIMEOUT=6000
-          dotnet test "$p" --logger GitHubActions
+          if [[ $a == CSharpMath* ]]
+          then # Only CSharpMath test projects can be logged into GitHub
+            dotnet add "$p" package GitHubActionsTestLogger
+            dotnet test "$p" --logger GitHubActions
+          else
+            dotnet test "$p"
+          fi
         done
