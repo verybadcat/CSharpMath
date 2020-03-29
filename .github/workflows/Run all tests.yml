@@ -15,10 +15,6 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: 'recursive'
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.201
     - name: Setup MSBuild Path
       uses: warrenbuckley/Setup-MSBuild@v1
     - name: Setup NuGet
@@ -28,4 +24,4 @@ jobs:
     - name: Build
       run: msbuild CSharpMath.sln /p:Configuration=Release
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: Vstest.console.exe *Test*/**/*.dll --verbosity normal
