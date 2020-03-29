@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  all projects:
+  all_projects:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
