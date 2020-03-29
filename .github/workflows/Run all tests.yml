@@ -20,7 +20,7 @@ jobs:
     - name: Setup MSBuild Path
       uses: microsoft/setup-msbuild@v1.0.0
     - name: Setup VSTest Path
-      uses: Malcolmnixon/Setup-VSTest@v2
+      uses: Happypig375/Setup-VSTest@temporary # Malcolmnixon/Setup-VSTest@v2
     - name: Restore NuGet Packages
       run: nuget restore CSharpMath.sln
     - name: Build
