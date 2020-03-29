@@ -26,4 +26,4 @@ jobs:
     - name: Build
       run: msbuild CSharpMath.sln /p:Configuration=Release
     - name: Test
-      run: Vstest.console **Test*/**Test*.dll
+      run: Vstest.console **/*Test*/**/*Test*.dll
