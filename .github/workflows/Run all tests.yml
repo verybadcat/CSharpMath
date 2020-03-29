@@ -26,5 +26,6 @@ jobs:
           "CSharpMath.Rendering Tests"\
           "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests"
         do
-          dotnet test "$p"
+          dotnet add "$p" package GitHubActionsTestLogger
+          dotnet test "$p" --logger GitHubActions
         done
