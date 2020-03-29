@@ -21,11 +21,11 @@ jobs:
       run: |
         IFS="" # Whitespace is NOT an item delimiter!
         PROJECTS=(
-          "CSharpMath Tests/CSharpMath Tests.csproj"
-          "CSharpMath.Editor Tests/CSharpMath.Editor Tests.csproj"
-          "CSharpMath.Editor Tests (F♯)/CSharpMath.Editor Tests (F♯).csproj"
-          "CSharpMath.Rendering Tests/CSharpMath.Rendering Tests.csproj"
-          "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests/TextBreakTests.csproj"
+          "CSharpMath Tests"
+          "CSharpMath.Editor Tests"
+          "CSharpMath.Editor Tests (F♯)"
+          "CSharpMath.Rendering Tests"
+          "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests"
         )
         for p in ${PROJECTS[*]}; do
           dotnet build "$p" -c:Release
