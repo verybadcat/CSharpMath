@@ -1,4 +1,4 @@
-name: Run all
+name: Test
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  tests:
+  all projects:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
