@@ -2,15 +2,11 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Jurassic" Version="3.0.0" />
-    <Reference Include="nerdamer">
-      <HintPath>..\CSharpMath.Playground.Evaluation.Compiler\nerdamer.dll</HintPath>
-    </Reference>
-    <ProjectReference Include="../CSharpMath.Playground.Evaluation.Compiler/CSharpMath.Playground.Evaluation.Compiler.csproj"/>
   </ItemGroup>
 
 </Project>
