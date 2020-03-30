@@ -34,7 +34,10 @@
     <RepositoryCommit>bcfda8b3fd03020b51e4b59cadf7eda121831745</RepositoryCommit>
     
     <!--Info on NuGet packaging properties: https://github.com/NuGet/Home/wiki/Adding-nuget-pack-as-a-msbuild-target-->
-    <GeneratePackageOnBuild Condition="!$(MSBuildProjectName.Contains('Test')) And !$(MSBuildProjectName.Contains('Example'))">$(Configuration.Equals('Release'))</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild Condition="
+      !$(MSBuildProjectName.Contains('Test'))
+      And !$(MSBuildProjectName.Contains('Example'))
+      And !$(MSBuildProjectName.Contains('Playground'))">$(Configuration.Equals('Release'))</GeneratePackageOnBuild>
     <PackageOutputPath>$(MSBuildThisFileDirectory).nupkgs</PackageOutputPath>
     <NeutralLanguage>en</NeutralLanguage>
     <RootNamespace>$(MSBuildProjectName)</RootNamespace> <!--Prefix namespace for embedded resources-->
