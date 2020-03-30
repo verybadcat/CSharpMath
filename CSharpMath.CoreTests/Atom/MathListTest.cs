@@ -129,7 +129,7 @@ namespace CSharpMath.CoreTests.Atom {
 
     [Fact]
     public void TestListCopyWithFusedItems() {
-      var list = LaTeXBuilderTest.ParseLaTeX("12+x");
+      var list = LaTeXParserTest.ParseLaTeX("12+x");
 
       var finalized = list.Clone(true);
       var fusedCount = finalized.Sum(atom => atom.FusedAtoms?.Count ?? 0);
@@ -143,7 +143,7 @@ namespace CSharpMath.CoreTests.Atom {
     [Fact]
     public void TestListFinalizedCopy() {
       var input = @"-52x^{13+y}_{15-} + (-12.3 *)\frac{-12}{15.2}\int^\sqrt[!\ ]{=(}_0 \theta";
-      var list = LaTeXBuilderTest.ParseLaTeX(input);
+      var list = LaTeXParserTest.ParseLaTeX(input);
       Assert.ThrowsAny<Xunit.Sdk.XunitException>(() => CheckListContents(list));
       Assert.ThrowsAny<Xunit.Sdk.XunitException>(() => CheckListContents(list.Clone(false)));
       Assert.All(list, a => Assert.Equal(Range.Zero, a.IndexRange));

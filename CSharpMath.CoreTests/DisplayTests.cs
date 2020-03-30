@@ -33,7 +33,7 @@ namespace CSharpMath.CoreTests {
     void TestOuter(string latex, int rangeMax, double ascent, double descent, double width,
         params System.Action<IDisplay<TFont, TGlyph>>[] inspectors) =>
       TestList(rangeMax, ascent, descent, width, 0, 0, LinePosition.Regular, Range.UndefinedInt, inspectors)
-      (Typesetter.CreateLine(Atom.LaTeXBuilderTest.ParseLaTeX(latex), _font, _context, LineStyle.Display));
+      (Typesetter.CreateLine(Atom.LaTeXParserTest.ParseLaTeX(latex), _font, _context, LineStyle.Display));
 
     [Theory, InlineData("x"), InlineData("2")]
     public void TestSimpleVariable(string latex) =>

@@ -12,6 +12,7 @@ namespace CSharpMath.Rendering.BackEnd {
           System.Reflection.Assembly.GetExecutingAssembly()
           .GetManifestResourceStream($"CSharpMath.Rendering.Reference_Fonts.{fileName}")
         );
+        if (typeface == null) throw new Structures.InvalidCodePathException("Invalid predefined font!");
         typeface.UpdateAllCffGlyphBounds();
         return typeface;
       }
@@ -33,7 +34,8 @@ namespace CSharpMath.Rendering.BackEnd {
     public float PointSize { get; }
     public IEnumerable<Typeface> Typefaces { get; }
     public Typeface MathTypeface { get; }
-    public Typography.OpenFont.MathGlyphs.MathConstants MathConsts => MathTypeface.MathConsts;
+    public Typography.OpenFont.MathGlyphs.MathConstants MathConsts =>
+      MathTypeface.MathConsts ?? throw new Structures.InvalidCodePathException(nameof(MathTypeface) + " doesn't have " + nameof(MathConsts));
     public IEnumerator<Typeface> GetEnumerator() => Typefaces.GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => Typefaces.GetEnumerator();
   }

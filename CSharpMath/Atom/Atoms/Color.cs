@@ -1,7 +1,7 @@
 using System.Text;
 
 namespace CSharpMath.Atom.Atoms {
-  public class Color : MathAtom, IMathListContainer {
+  public sealed class Color : MathAtom, IMathListContainer {
     public Structures.Color Colour { get; set; }
     public MathList InnerList { get; }
     System.Collections.Generic.IEnumerable<MathList> IMathListContainer.InnerLists =>

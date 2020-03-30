@@ -13,8 +13,8 @@ namespace CSharpMath.Atom {
 
     public static string? CommandForAtom(MathAtom atom) {
       var atomWithoutScripts = atom.Clone(false);
-      atomWithoutScripts.Subscript = null;
-      atomWithoutScripts.Superscript = null;
+      atomWithoutScripts.Superscript.Clear();
+      atomWithoutScripts.Subscript.Clear();
       if (atomWithoutScripts is IMathListContainer container)
         foreach (var list in container.InnerLists)
           list.Clear();

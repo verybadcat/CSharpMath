@@ -84,8 +84,7 @@ namespace CSharpMath.Forms.Example {
 
     private void GlyphBoxColor_Completed(object sender, EventArgs e) {
       GlyphBoxColor.LabelColor = Parse(GlyphBoxColor.Text);
-      foreach (var v in App.AllViews) {
-        var value = v.GlyphBoxColor.Value;
+      foreach (var v in App.AllViews) if (v.GlyphBoxColor is { } value) {
         value.glyph = Parse(GlyphBoxColor.Text);
         v.GlyphBoxColor = value;
       }
@@ -93,8 +92,7 @@ namespace CSharpMath.Forms.Example {
 
     private void GlyphRunColor_Completed(object sender, EventArgs e) {
       GlyphRunColor.LabelColor = Parse(GlyphRunColor.Text);
-      foreach (var v in App.AllViews) {
-        var value = v.GlyphBoxColor.Value;
+      foreach (var v in App.AllViews) if (v.GlyphBoxColor is { } value) {
         value.textRun = Parse(GlyphRunColor.Text);
         v.GlyphBoxColor = value;
       }

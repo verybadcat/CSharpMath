@@ -1,5 +1,5 @@
 namespace CSharpMath.Atom.Atoms {
-  public class Space : MathAtom {
+  public sealed class Space : MathAtom {
     private readonly Structures.Space _space;
     public float Length => _space.Length;
     public bool IsMu => _space.IsMu;

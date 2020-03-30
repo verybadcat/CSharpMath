@@ -17,20 +17,12 @@ namespace CSharpMath.Atom {
     public virtual string DebugString =>
       new StringBuilder(Nucleus).AppendDebugStringOfScripts(this).ToString();
     public string Nucleus { get; set; }
-    private MathList? _Superscript;
-    public MathList? Superscript {
-      get => _Superscript;
-      set =>
-        _Superscript = ScriptsAllowed || value == null ? value :
-          throw new ArgumentException("Scripts are not allowed in atom type " + TypeName);
-    }
-    private MathList? _Subscript;
-    public MathList? Subscript {
-      get => _Subscript;
-      set =>
-        _Subscript = ScriptsAllowed || value == null ? value :
-          throw new ArgumentException("Scripts are not allowed in atom type " + TypeName);
-    }
+    private MathList _superscript = new MathList();
+    public MathList Superscript =>
+      ScriptsAllowed ? _superscript : throw new InvalidOperationException("Scripts are not allowed in atom type " + TypeName);
+    private MathList _subscript = new MathList();
+    public MathList Subscript =>
+      ScriptsAllowed ? _subscript : throw new InvalidOperationException("Scripts are not allowed in atom type " + TypeName);
     public FontStyle FontStyle { get; set; }
     /// <summary>Defaults to zero, only has a value after finalization</summary>
     public Range IndexRange { get; set; }
@@ -54,8 +46,8 @@ namespace CSharpMath.Atom {
         newAtom.Nucleus = Nucleus;
       if (FusedAtoms != null)
         newAtom.FusedAtoms = new List<MathAtom>(FusedAtoms);
-      newAtom.Superscript = Superscript?.Clone(finalize);
-      newAtom.Subscript = Subscript?.Clone(finalize);
+      newAtom._superscript = Superscript.Clone(finalize);
+      newAtom._subscript = Subscript.Clone(finalize);
       newAtom.IndexRange = IndexRange;
       newAtom.FontStyle = FontStyle;
       return newAtom;
@@ -64,10 +56,10 @@ namespace CSharpMath.Atom {
       ApplyCommonPropertiesOn(finalize, CloneInside(finalize));
     public MathAtom(string nucleus = "") => Nucleus = nucleus;
     public void Fuse(MathAtom otherAtom) {
-      if (Subscript != null) {
+      if (Subscript.IsNonEmpty()) {
         throw new InvalidOperationException("Cannot fuse into an atom with a subscript");
       }
-      if (Superscript != null) {
+      if (Superscript.IsNonEmpty()) {
         throw new InvalidOperationException("Cannot fuse into an atom with a superscript");
       }
       if (otherAtom.GetType() != GetType()) {
@@ -82,8 +74,8 @@ namespace CSharpMath.Atom {
       Nucleus += otherAtom.Nucleus;
       IndexRange = new Range(IndexRange.Location,
         IndexRange.Length + otherAtom.IndexRange.Length);
-      Subscript = otherAtom.Subscript;
-      Superscript = otherAtom.Superscript;
+      _subscript = otherAtom.Subscript;
+      _superscript = otherAtom.Superscript;
     }
 
     public override string ToString() =>

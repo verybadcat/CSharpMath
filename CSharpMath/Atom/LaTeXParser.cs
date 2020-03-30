@@ -6,7 +6,7 @@ using System.Text;
 namespace CSharpMath.Atom {
   using Atoms;
   using InvalidCodePathException = Structures.InvalidCodePathException;
-  public class LaTeXBuilder {
+  public class LaTeXParser {
     class TableEnvironmentProperties {
       public string? Name { get; set; }
       public bool Ended { get; set; }
@@ -24,7 +24,7 @@ namespace CSharpMath.Atom {
     private TableEnvironmentProperties? _currentEnvironment;
     private InnerEnvironment? _currentInner;
     public string? Error { get; private set; }
-    public LaTeXBuilder(string str) {
+    public LaTeXParser(string str) {
       _chars = str?.ToCharArray() ?? throw new ArgumentNullException(nameof(str));
       _currentFontStyle = FontStyle.Default;
     }
@@ -41,11 +41,11 @@ namespace CSharpMath.Atom {
       ? throw new InvalidCodePathException("Can't unlook below character 0")
       : _currentChar--;
     private bool HasCharacters => _currentChar < _chars.Length;
-    private MathList? BuildInternal(bool oneCharOnly, char stopChar = '\0') {
+    private MathList? BuildInternal(bool oneCharOnly, char stopChar = '\0', MathList? r = null) {
       if (oneCharOnly && stopChar > '\0') {
         throw new InvalidCodePathException("Cannot set both oneCharOnly and stopChar");
       }
-      var r = new MathList();
+      r ??= new MathList();
       MathAtom? prevAtom = null;
       while (HasCharacters) {
         if (Error != null) {
@@ -63,22 +63,24 @@ namespace CSharpMath.Atom {
           case var ch when stopChar > '\0' && ch == stopChar:
             return r;
           case '^':
-            if (prevAtom == null || prevAtom.Superscript != null || !prevAtom.ScriptsAllowed) {
+            if (prevAtom == null || prevAtom.Superscript.IsNonEmpty() || !prevAtom.ScriptsAllowed) {
               prevAtom = new Ordinary(string.Empty);
               r.Add(prevAtom);
             }
             // this is a superscript for the previous atom.
             // note, if the next char is StopChar, it will be consumed and doesn't count as stop.
-            prevAtom.Superscript = this.BuildInternal(true);
+            this.BuildInternal(true, r: prevAtom.Superscript);
+            if (Error != null) return null;
             continue;
           case '_':
-            if (prevAtom == null || prevAtom.Subscript != null || !prevAtom.ScriptsAllowed) {
+            if (prevAtom == null || prevAtom.Subscript.IsNonEmpty() || !prevAtom.ScriptsAllowed) {
               prevAtom = new Ordinary(string.Empty);
               r.Add(prevAtom);
             }
             // this is a subscript for the previous atom.
             // note, if the next char is StopChar, it will be consumed and doesn't count as stop.
-            prevAtom.Subscript = this.BuildInternal(true);
+            this.BuildInternal(true, r: prevAtom.Subscript);
+            if (Error != null) return null;
             continue;
           case '{':
             MathList? sublist;
@@ -732,7 +734,7 @@ namespace CSharpMath.Atom {
     }
 
     public static Structures.Result<MathList> TryMathListFromLaTeX(string str) {
-      var builder = new LaTeXBuilder(str);
+      var builder = new LaTeXParser(str);
       var list = builder.Build();
       var error = builder.Error;
       return
@@ -743,7 +745,7 @@ namespace CSharpMath.Atom {
         : throw new InvalidCodePathException("Both error and list are null?");
     }
 
-    public static MathList? MathListFromLaTeX(string str) => new LaTeXBuilder(str).Build();
+    public static MathList? MathListFromLaTeX(string str) => new LaTeXParser(str).Build();
 
     // ^ LaTeX -> Math atoms
     // v Math atoms -> LaTeX
@@ -968,8 +970,8 @@ namespace CSharpMath.Atom {
             break;
         }
         static void AppendScript
-          (StringBuilder builder, MathList? script, char scriptChar, FontStyle currentFontStyle) {
-          if (script != null) {
+          (StringBuilder builder, MathList script, char scriptChar, FontStyle currentFontStyle) {
+          if (script.IsNonEmpty()) {
             builder.Append(scriptChar).Append('{');
             var lengthBeforeScript = builder.Length;
             MathListToLaTeX(script, builder, currentFontStyle);

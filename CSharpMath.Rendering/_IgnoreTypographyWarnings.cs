@@ -24,5 +24,5 @@ using Suppress = System.Diagnostics.CodeAnalysis.SuppressMessageAttribute;
 static class IgnoreTypographyWarnings {
   public const string Justification = "These messages are from the Typography library. Its code is not very clean.";
   public const string Scope = "namespaceanddescendants";
-  public const string _Typography = "~N:Typography";
+  public const string _Typography = nameof(Typography);
 }

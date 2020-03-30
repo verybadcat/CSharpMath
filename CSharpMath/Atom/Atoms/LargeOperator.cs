@@ -1,6 +1,6 @@
 namespace CSharpMath.Atom.Atoms {
   /// <summary>A large operator such as sin/cos, integral, etc.</summary>
-  public class LargeOperator : MathAtom {
+  public sealed class LargeOperator : MathAtom {
     bool? _limits;
     /// <summary>
     /// True: \limits

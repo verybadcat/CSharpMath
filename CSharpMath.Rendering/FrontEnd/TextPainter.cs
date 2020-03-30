@@ -36,9 +36,12 @@ namespace CSharpMath.Rendering.FrontEnd {
       return 
         _relativeXCoordDisplay?.Frame().Union(_absoluteXCoordDisplay.Frame());
     }
-    protected void UpdateDisplay(float canvasWidth) =>
-      (_relativeXCoordDisplay, _absoluteXCoordDisplay) =
-        TextLayoutter.Layout(Content, Fonts, canvasWidth, AdditionalLineSpacing);
+    protected void UpdateDisplay(float canvasWidth) {
+      if (Content != null)
+        (_relativeXCoordDisplay, _absoluteXCoordDisplay) =
+          TextLayoutter.Layout(Content, Fonts, canvasWidth, AdditionalLineSpacing);
+    }
+
     public override void Draw(TCanvas canvas,
         TextAlignment alignment = TextAlignment.TopLeft, Thickness padding = default,
         float offsetX = 0, float offsetY = 0) =>

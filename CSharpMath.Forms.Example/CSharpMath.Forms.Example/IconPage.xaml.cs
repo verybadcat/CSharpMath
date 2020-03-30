@@ -14,7 +14,7 @@ namespace CSharpMath.Forms.Example {
       Content = v;
     }
 
-    SkiaSharp.MathPainter painter;
+    SkiaSharp.MathPainter? painter;
     readonly SKPaint black = new SKPaint { Color = SKColors.Black };
     readonly SKPaint white = new SKPaint { Color = SKColors.White };
     void Temp(object sender, SKPaintSurfaceEventArgs e) {
@@ -30,7 +30,8 @@ namespace CSharpMath.Forms.Example {
       const float f = 40f; //font size in points
       const float thicknessAdjust = 2 * f / 3; //thickness adjust of the two circles
       const float θ = 360f / count; //angle to rotate when drawing each digit
-      painter ??= new SkiaSharp.MathPainter { FontSize = f }; //{ GlyphBoxColor = (SKColors.Red, SKColors.Red) };
+      painter ??= new SkiaSharp.MathPainter();
+      painter.FontSize = f; //{ GlyphBoxColor = (SKColors.Red, SKColors.Red) };
       var cx = e.Info.Width / 2;
       var cy = e.Info.Height / 2;
       var c = e.Surface.Canvas;
@@ -39,7 +40,7 @@ namespace CSharpMath.Forms.Example {
       painter.TextColor = SKColors.White;
       for (int i = 0; i < count; i++) {
         painter.LaTeX = i.ToString();
-        var m = painter.Measure().Value;
+        var m = painter.Measure() ?? throw new Structures.InvalidCodePathException("Invalid LaTeX");
         painter.Draw(c, cx - m.Width / 2, cy - r - m.Y / 2);
         c.RotateDegrees(θ, cx, cy);
       }

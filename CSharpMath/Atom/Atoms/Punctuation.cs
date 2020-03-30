@@ -1,5 +1,5 @@
 namespace CSharpMath.Atom.Atoms {
-  public class Punctuation : MathAtom {
+  public sealed class Punctuation : MathAtom {
     public Punctuation(string nucleus) : base(nucleus) { }
     public override bool ScriptsAllowed => true;
     public new Punctuation Clone(bool finalize) => (Punctuation)base.Clone(finalize);

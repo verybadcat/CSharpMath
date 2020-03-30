@@ -3,10 +3,11 @@ using System.IO;
 
 namespace CSharpMath.Resources {
   public static class ManifestResources {
-    private static JToken _latinMath;
+    private static JToken? _latinMath;
     internal static Stream LatinMathContent =>
       new ManifestResourceProvider(System.Reflection.Assembly.GetExecutingAssembly())
-      .ManifestStream("latinmodern-math.json");
+      .ManifestStream("latinmodern-math.json")
+      ?? throw new Structures.InvalidCodePathException("Failed to load Latin Modern Math");
     public static JToken LatinMath {
       get {
         if (_latinMath is null) {

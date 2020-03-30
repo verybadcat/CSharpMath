@@ -23,7 +23,7 @@ namespace CSharpMath.Rendering.FrontEnd {
       _canvas.FillRect(left, Invert(top), width, height);
     public void FillText(string text, float x, float y, float pointSize) =>
       _canvas.FillText(text, x, Invert(y), pointSize);
-    public IPath GetPath() => _canvas.GetPath();
+    public GlyphPath StartDrawingNewGlyph() => _canvas.StartDrawingNewGlyph();
     public void Restore() => _canvas.Restore();
     public void Save() => _canvas.Save();
     public void Scale(float sx, float sy) => _canvas.Scale(sx, sy);

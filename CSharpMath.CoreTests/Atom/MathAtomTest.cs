@@ -45,9 +45,7 @@ namespace CSharpMath.CoreTests.Atom {
     public void TestScripts() {
       var atom = new Open("(");
       Assert.True(atom.ScriptsAllowed);
-      atom.Subscript = new MathList();
       Assert.NotNull(atom.Subscript);
-      atom.Superscript = new MathList();
       Assert.NotNull(atom.Superscript);
     }
     [Fact]
@@ -175,9 +173,10 @@ namespace CSharpMath.CoreTests.Atom {
     }
     [Fact]
     public void TestCopyOpen() {
-      var list = new MathList { LaTeXDefaults.Placeholder, LaTeXDefaults.Times, LaTeXDefaults.Divide };
-      var list2 = new MathList { LaTeXDefaults.Divide, LaTeXDefaults.Times };
-      var open = new Open("(") { Subscript = list, Superscript = list2 };
+      var open = new Open("(") {
+        Subscript = { LaTeXDefaults.Placeholder, LaTeXDefaults.Times, LaTeXDefaults.Divide },
+        Superscript = { LaTeXDefaults.Divide, LaTeXDefaults.Times }
+      };
 
       var clone = open.Clone(false);
       CheckClone(open, clone);

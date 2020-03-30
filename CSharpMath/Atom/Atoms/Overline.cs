@@ -2,7 +2,7 @@ using System.Text;
 
 namespace CSharpMath.Atom.Atoms {
   /// <summary>An overlined atom</summary>
-  public class Overline : MathAtom, IMathListContainer {
+  public sealed class Overline : MathAtom, IMathListContainer {
     public Overline(MathList innerList) => InnerList = innerList;
     public MathList InnerList { get; }
     System.Collections.Generic.IEnumerable<MathList> IMathListContainer.InnerLists =>

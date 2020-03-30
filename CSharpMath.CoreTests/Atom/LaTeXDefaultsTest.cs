@@ -36,15 +36,18 @@ namespace CSharpMath.CoreTests.Atom {
     [Fact]
     public void CommandForAtomIgnoresInnerLists() {
       var atom = new Atoms.Accent("\u0308", new MathList(new Atoms.Number("1")));
-      atom.Superscript = new MathList(new Atoms.Number("4"));
-      atom.Subscript = new MathList(new Atoms.Variable("x"));
+      atom.Superscript.Add(new Atoms.Number("4"));
+      atom.Subscript.Add(new Atoms.Variable("x"));
       Assert.Equal("ddot", LaTeXDefaults.CommandForAtom(atom));
     }
     [Fact]
     public void AtomForCommandGeneratesACopy() {
       var atom = LaTeXDefaults.AtomForCommand("int");
+      if (atom == null) throw new Xunit.Sdk.NotNullException();
       atom.IndexRange = Range.NotFound;
-      Assert.Equal(Range.Zero, LaTeXDefaults.AtomForCommand("int").IndexRange);
+      var atom2 = LaTeXDefaults.AtomForCommand("int");
+      if (atom2 == null) throw new Xunit.Sdk.NotNullException();
+      Assert.Equal(Range.Zero, atom2.IndexRange);
     }
   }
 }

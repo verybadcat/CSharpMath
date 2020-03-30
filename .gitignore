@@ -2,9 +2,9 @@
 # Special one for XamarinAndroidTemp on Mac
 C:/
 
-# For CSharpMath.SkiaSharp.Tests
-/CSharpMath.Rendering Tests/*/*.avalonia.*
-/CSharpMath.Rendering Tests/*/*.skiasharp.*
+# For CSharpMath.Rendering.Tests
+/CSharpMath.Rendering.Tests/*/*.avalonia.*
+/CSharpMath.Rendering.Tests/*/*.skiasharp.*
 
 # Ignore generated .nupkgs
 /.nupkgs

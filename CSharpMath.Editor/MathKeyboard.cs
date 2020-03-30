@@ -16,7 +16,7 @@ namespace CSharpMath.Editor {
     public bool ShowCaret { get; protected set; }
     public Display.Displays.ListDisplay<TFont, TGlyph>? Display { get; protected set; }
     public MathList MathList { get; } = new MathList();
-    public string LaTeX => LaTeXBuilder.MathListToLaTeX(MathList).ToString();
+    public string LaTeX => LaTeXParser.MathListToLaTeX(MathList).ToString();
     private MathListIndex _insertionIndex = MathListIndex.Level0Index(0);
     public MathListIndex InsertionIndex { get => _insertionIndex; set { _insertionIndex = value; InsertionPointChanged(); } }
     public TFont Font { get; set; }
@@ -46,9 +46,9 @@ namespace CSharpMath.Editor {
       void HandleScriptButton(bool isSuperScript) {
         var subIndexType =
           isSuperScript ? MathListSubIndexType.Superscript : MathListSubIndexType.Subscript;
-        MathList? GetScript(MathAtom atom) =>
+        MathList GetScript(MathAtom atom) =>
           isSuperScript ? atom.Superscript : atom.Subscript;
-        void SetScript(MathAtom atom, MathList? value) { if (isSuperScript) atom.Superscript = value; else atom.Subscript = value; }
+        void SetScript(MathAtom atom, MathList value) { if (isSuperScript) atom.Superscript.Append(value); else atom.Subscript.Append(value); }
         void CreateEmptyAtom() {
           // Create an empty atom and move the insertion index up.
           var emptyAtom = LaTeXDefaults.Placeholder;
@@ -81,7 +81,7 @@ namespace CSharpMath.Editor {
             CreateEmptyAtom();
           } else {
             var script = GetScript(prevAtom);
-            if (script is null) {
+            if (script.IsEmpty()) {
               SetScript(prevAtom, LaTeXDefaults.PlaceholderList);
             }
             _insertionIndex = prevIndexCorrected.LevelUpWithSubIndex
@@ -153,7 +153,7 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
                 var scriptAtom = MathList.AtomAt(levelDown);
                 if (scriptAtom is null)
                   throw new InvalidCodePathException("Invalid levelDown");
-                if (scriptAtom.Subscript != null)
+                if (scriptAtom.Subscript.IsNonEmpty())
                   _insertionIndex = levelDown.LevelUpWithSubIndex
                     (MathListSubIndexType.Subscript,
                      MathListIndex.Level0Index(scriptAtom.Subscript.Count));
@@ -258,21 +258,21 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
                 break;
               case MathListSubIndexType.Radicand:
               case MathListSubIndexType.Denominator:
-                if (levelDownAtom.Superscript != null || levelDownAtom.Subscript != null)
+                if (levelDownAtom.Superscript.IsNonEmpty() || levelDownAtom.Subscript.IsNonEmpty())
                   _insertionIndex = levelDown.LevelUpWithSubIndex
                     (MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1));
                 else
                   goto default;
                 break;
               case MathListSubIndexType.BetweenBaseAndScripts:
-                if (levelDownAtom.Subscript != null)
+                if (levelDownAtom.Subscript.IsNonEmpty())
                   _insertionIndex = levelDown.LevelUpWithSubIndex
                     (MathListSubIndexType.Subscript, MathListIndex.Level0Index(0));
                 else
                   goto case MathListSubIndexType.Subscript;
                 break;
               case MathListSubIndexType.Subscript:
-                if (levelDownAtom.Superscript != null)
+                if (levelDownAtom.Superscript.IsNonEmpty())
                   _insertionIndex = levelDown.LevelUpWithSubIndex
                     (MathListSubIndexType.Superscript, MathListIndex.Level0Index(0));
                 else
@@ -290,7 +290,7 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
               throw new InvalidCodePathException
                 ("_insertionIndex.FinalSubIndexType is BetweenBaseAndScripts but levelDown is null");
             _insertionIndex = levelDown.LevelUpWithSubIndex(
-              a.Subscript != null ? MathListSubIndexType.Subscript : MathListSubIndexType.Superscript,
+              a.Subscript.IsNonEmpty() ? MathListSubIndexType.Subscript : MathListSubIndexType.Superscript,
               MathListIndex.Level0Index(0));
             break;
           case Atoms.Fraction _:
@@ -302,7 +302,7 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
               rad.Degree.Count > 0 ? MathListSubIndexType.Degree : MathListSubIndexType.Radicand,
               MathListIndex.Level0Index(0));
             break;
-          case var a when a.Superscript != null || a.Subscript != null:
+          case var a when a.Superscript.IsNonEmpty() || a.Subscript.IsNonEmpty():
             _insertionIndex = _insertionIndex.LevelUpWithSubIndex
               (MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1));
             break;
@@ -769,12 +769,10 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
 
     /// <summary>Helper method to update caretView when insertion point/selection changes.</summary>
     private void InsertionPointChanged() {
-      static void VisualizePlaceholders(MathList? mathList) {
-        foreach (var mathAtom in mathList?.Atoms as IList<MathAtom> ?? Array.Empty<MathAtom>()) {
-          if (mathAtom.Superscript is MathList super)
-            VisualizePlaceholders(super);
-          if (mathAtom.Subscript is MathList sub)
-            VisualizePlaceholders(sub);
+      static void VisualizePlaceholders(MathList mathList) {
+        foreach (var mathAtom in mathList.Atoms) {
+          VisualizePlaceholders(mathAtom.Superscript);
+          VisualizePlaceholders(mathAtom.Subscript);
           switch (mathAtom) {
             case Atoms.Placeholder _:
               mathAtom.Nucleus = "\u25A1";

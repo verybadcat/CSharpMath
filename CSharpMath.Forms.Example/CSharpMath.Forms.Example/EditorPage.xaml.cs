@@ -43,7 +43,8 @@ namespace CSharpMath.Forms.Example {
         atomTypes.Text = "Atom Types = " + string.Join
           (", ", viewModel.MathList.Select(x => x.GetType().Name));
         ranges.Text = "Ranges = " + string.Join
-          (", ", viewModel.Display.Displays.Select(x => x.Range));
+          (", ", (viewModel.Display ?? throw new Structures.InvalidCodePathException("Invalid LaTeX"))
+                 .Displays.Select(x => x.Range));
         index.Text = "Index = " + viewModel.InsertionIndex;
       };
 

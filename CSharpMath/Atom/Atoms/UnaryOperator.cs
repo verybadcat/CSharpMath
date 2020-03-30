@@ -1,6 +1,6 @@
 namespace CSharpMath.Atom.Atoms {
   /// <summary>A unary operator</summary>
-  public class UnaryOperator : MathAtom {
+  public sealed class UnaryOperator : MathAtom {
     public UnaryOperator(string nucleus) : base(nucleus) { }
     public override bool ScriptsAllowed => true;
     public new UnaryOperator Clone(bool finalize) => (UnaryOperator)base.Clone(finalize);

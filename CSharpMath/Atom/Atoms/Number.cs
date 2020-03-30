@@ -1,5 +1,5 @@
 namespace CSharpMath.Atom.Atoms {
-  public class Number : MathAtom {
+  public sealed class Number : MathAtom {
     public Number(string number) : base(number) { }
     public override bool ScriptsAllowed => true;
     public new Number Clone(bool finalize) => (Number)base.Clone(finalize);

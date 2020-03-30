@@ -18,27 +18,28 @@ using NView = AppKit.NSView;
 
 namespace CSharpMath.Apple {
   public class AppleMathView : NView {
-    public string ErrorMessage { get; set; }
-    private IDisplay<TFont, TGlyph> _displayList;
+    public string? ErrorMessage { get; set; }
+    private IDisplay<TFont, TGlyph> _displayList =
+      new Display.Displays.ListDisplay<TFont, TGlyph>(Array.Empty<IDisplay<TFont, TGlyph>>());
     public float FontSize { get; set; } = 20f;
     public ColumnAlignment TextAlignment { get; set; } = ColumnAlignment.Left;
     public NContentInsets ContentInsets { get; set; }
-    private MathList _mathList;
+    private MathList _mathList = new MathList();
     public MathList MathList {
       get => _mathList;
       set {
         _mathList = value;
-        LaTeX = LaTeXBuilder.MathListToLaTeX(value).ToString();
+        LaTeX = LaTeXParser.MathListToLaTeX(value).ToString();
         InvalidateIntrinsicContentSize();
         SetNeedsLayout();
       }
     }
-    private string _latex;
+    private string _latex = "";
     public string LaTeX {
       get => _latex;
       set {
         _latex = value;
-        (_mathList, ErrorMessage) = LaTeXBuilder.TryMathListFromLaTeX(value);
+        (_mathList, ErrorMessage) = LaTeXParser.TryMathListFromLaTeX(value);
         if (_mathList != null) {
           _displayList = Typesetter.CreateLine(_mathList,
             TFont.LatinMath(FontSize), _typesettingContext, LineStyle.Display);
@@ -98,9 +99,7 @@ namespace CSharpMath.Apple {
         cgContext.SaveState();
         cgContext.SetStrokeColor(TextColor.CGColor);
         cgContext.SetFillColor(TextColor.CGColor);
-        _displayList.Draw(new AppleGraphicsContext() {
-          CgContext = cgContext
-        });
+        _displayList.Draw(new AppleGraphicsContext(cgContext));
         cgContext.RestoreState();
       } else if (ErrorMessage != null) {
         cgContext.SaveState();

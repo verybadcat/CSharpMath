@@ -9,8 +9,8 @@ using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Rendering.BackEnd {
   public class GraphicsContext : IGraphicsContext<Fonts, Glyph> {
-    private class GlyphPathBuilder : Typography.Contours.GlyphOutlineBuilderBase {
-      public GlyphPathBuilder(Typeface typeface) : base(typeface) { }
+    private class GlyphOutlineBuilder : Typography.Contours.GlyphOutlineBuilderBase {
+      public GlyphOutlineBuilder(Typeface typeface) : base(typeface) { }
     }
     public GraphicsContext(ICanvas canvas, (Color glyph, Color textRun)? glyphBoxColor) {
       Canvas = canvas;
@@ -32,12 +32,12 @@ namespace CSharpMath.Rendering.BackEnd {
         }
         var typeface = glyph.Typeface;
         var scale = typeface.CalculateScaleToPixelFromPointSize(font.PointSize);
-        var pathBuilder = new GlyphPathBuilder(typeface);
+        var pathBuilder = new GlyphOutlineBuilder(typeface);
         pathBuilder.BuildFromGlyph(glyph.Info, font.PointSize);
         Canvas.Save();
         Canvas.CurrentColor = color;
         Canvas.Translate(point.X, point.Y);
-        pathBuilder.ReadShapes(Canvas.GetPath());
+        pathBuilder.ReadShapes(Canvas.StartDrawingNewGlyph());
         Canvas.Restore();
       }
     }
@@ -68,12 +68,12 @@ namespace CSharpMath.Rendering.BackEnd {
       Canvas.CurrentColor = color;
       foreach(var (glyph, kernAfter, foreground) in run.GlyphInfos) {
         var typeface = glyph.Typeface;
-        var pathBuilder = new GlyphPathBuilder(typeface);
+        var pathBuilder = new GlyphOutlineBuilder(typeface);
         var scale = typeface.CalculateScaleToPixelFromPointSize(pointSize);
         var index = glyph.Info.GlyphIndex;
         pathBuilder.BuildFromGlyph(glyph.Info, pointSize);
         Canvas.CurrentColor = foreground ?? color;
-        pathBuilder.ReadShapes(Canvas.GetPath());
+        pathBuilder.ReadShapes(Canvas.StartDrawingNewGlyph());
         Canvas.Translate(typeface.GetHAdvanceWidthFromGlyphIndex(index) * scale + kernAfter, 0);
       }
       Canvas.Restore();

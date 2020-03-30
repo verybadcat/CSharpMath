@@ -10,9 +10,8 @@ using TGlyph = System.UInt16;
 
 namespace CSharpMath.Apple {
   public class AppleGraphicsContext : Display.FrontEnd.IGraphicsContext<TFont, TGlyph> {
-
+    public AppleGraphicsContext(CGContext cgContext) => CgContext = cgContext;
     public CGContext CgContext { get; set; }
-
     public void DrawGlyphsAtPoints
       (IReadOnlyList<TGlyph> glyphs, TFont font, IEnumerable<PointF> points, Color? color) {
       if (color.HasValue) CgContext.SetFillColor(color.GetValueOrDefault().ToCGColor());

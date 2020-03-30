@@ -30,7 +30,7 @@ Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6. \[\f
     public LayoutPage() => InitializeComponent();
     private void Canvas_PaintSurface(object sender, SKPaintSurfaceEventArgs e) {
       if (reset) { e.Surface.Canvas.Clear(); reset = false; }
-      var measure = painter.Measure(w).Value;
+      var measure = painter.Measure(w) ?? throw new Structures.InvalidCodePathException("Invalid LaTeX");
       e.Surface.Canvas.Clear();
       if (drawOneLine)
         painter.DrawOneLine(e.Surface.Canvas, x, y);

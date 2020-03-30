@@ -17,7 +17,7 @@ namespace CSharpMath.Rendering.Text {
     public void Size(TextAtom atom, float fontSize) => Add(new TextAtom.Size(atom, fontSize));
     public void Color(TextAtom atom, Color color) => Add(new TextAtom.Color(atom, color));
     public Result Math(string mathLaTeX, bool displayStyle) =>
-      Atom.LaTeXBuilder.TryMathListFromLaTeX(mathLaTeX).Bind(mathList =>
+      Atom.LaTeXParser.TryMathListFromLaTeX(mathLaTeX).Bind(mathList =>
         Add(new TextAtom.Math(mathList, displayStyle)));
     public void List(IReadOnlyList<TextAtom> textAtoms) => Add(new TextAtom.List(textAtoms));
     public void Break() => Add(new TextAtom.Newline());

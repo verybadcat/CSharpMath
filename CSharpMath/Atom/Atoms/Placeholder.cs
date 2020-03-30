@@ -1,6 +1,6 @@
 namespace CSharpMath.Atom.Atoms {
   /// <summary>A placeholder for future input</summary>
-  public class Placeholder : MathAtom {
+  public sealed class Placeholder : MathAtom {
     public Placeholder(string nucleus) : base(nucleus) { }
     public override bool ScriptsAllowed => true;
     public new Placeholder Clone(bool finalize) => (Placeholder)base.Clone(finalize);

@@ -1,6 +1,6 @@
 namespace CSharpMath.Atom.Atoms {
   ///<summary>Style changes during rendering</summary>
-  public class Style : MathAtom {
+  public sealed class Style : MathAtom {
     public Style(LineStyle style) : base(string.Empty) => LineStyle = style;
     public LineStyle LineStyle { get; }
     public override bool ScriptsAllowed => false;

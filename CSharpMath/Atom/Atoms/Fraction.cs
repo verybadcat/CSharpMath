@@ -1,7 +1,7 @@
 using System.Text;
 
 namespace CSharpMath.Atom.Atoms {
-  public class Fraction : MathAtom, IMathListContainer {
+  public sealed class Fraction : MathAtom, IMathListContainer {
     public MathList Numerator { get; }
     public MathList Denominator { get; }
     System.Collections.Generic.IEnumerable<MathList> IMathListContainer.InnerLists =>

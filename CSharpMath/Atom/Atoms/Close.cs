@@ -1,6 +1,6 @@
 namespace CSharpMath.Atom.Atoms {
   /// <summary>Close brackets</summary>
-  public class Close : MathAtom {
+  public sealed class Close : MathAtom {
     public Close(string nucleus, bool hasCorrespondingOpen = true) : base(nucleus) =>
       HasCorrespondingOpen = hasCorrespondingOpen;
     public bool HasCorrespondingOpen { get; }

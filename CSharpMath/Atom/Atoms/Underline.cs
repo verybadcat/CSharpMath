@@ -1,6 +1,6 @@
 namespace CSharpMath.Atom.Atoms {
   /// <summary>An underlined atom</summary>
-  public class Underline : MathAtom, IMathListContainer {
+  public sealed class Underline : MathAtom, IMathListContainer {
     public Underline(MathList innerList) : base() =>
       InnerList = innerList;
     public MathList InnerList { get; }

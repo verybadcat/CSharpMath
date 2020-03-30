@@ -5,8 +5,8 @@ using System.Reflection;
 
 namespace CSharpMath.Resources {
   public static class Extensions {
-    public static string ManifestResourcePrefix(this Assembly assembly) {
-      string r = null;
+    public static string? ManifestResourcePrefix(this Assembly assembly) {
+      string? r = null;
       const string resourceString = ".Resources.";
       int resourcesStringLength = resourceString.Length;
       foreach (string name in assembly.GetManifestResourceNames()) {

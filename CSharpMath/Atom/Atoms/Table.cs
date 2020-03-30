@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace CSharpMath.Atom.Atoms {
   ///<summary>A table. Not part of TeX.</summary>
-  public class Table : MathAtom, IMathListContainer {
+  public sealed class Table : MathAtom, IMathListContainer {
     public Table(string? environment, List<List<MathList>>? cells = null) : base(string.Empty) =>
       (Environment, Cells) = (environment, cells ?? new List<List<MathList>>());
     public Table() : this(null) { }

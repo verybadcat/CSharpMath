@@ -2,7 +2,7 @@ using System.Text;
 
 namespace CSharpMath.Atom.Atoms {
   /// <summary>An accented atom</summary>
-  public class Accent : MathAtom, IMathListContainer {
+  public sealed class Accent : MathAtom, IMathListContainer {
     public MathList InnerList { get; } = new MathList();
     System.Collections.Generic.IEnumerable<MathList> IMathListContainer.InnerLists =>
       new[] { InnerList };

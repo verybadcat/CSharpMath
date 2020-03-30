@@ -9,8 +9,8 @@ namespace CSharpMath.Rendering.FrontEnd {
     protected bool _displayChanged = true;
     public override IDisplay<Fonts, Glyph>? Display => _display;
     public override string LaTeX {
-      get => Content is null ? "" : Atom.LaTeXBuilder.MathListToLaTeX(Content).ToString();
-      set => (Content, ErrorMessage) = Atom.LaTeXBuilder.TryMathListFromLaTeX(value);
+      get => Content is null ? "" : Atom.LaTeXParser.MathListToLaTeX(Content).ToString();
+      set => (Content, ErrorMessage) = Atom.LaTeXParser.TryMathListFromLaTeX(value);
     }
     public override RectangleF? Measure(float unused = float.NaN) {
       UpdateDisplay();
@@ -28,6 +28,7 @@ namespace CSharpMath.Rendering.FrontEnd {
       if (ErrorMessage is { }) DrawError(c);
       else {
         UpdateDisplay();
+        if (_display == null) throw new InvalidCodePathException($"{nameof(UpdateDisplay)} didn't do its job properly");
         DrawCore(c, _display, IPainterExtensions.GetDisplayPosition(_display.Width, _display.Ascent, _display.Descent, FontSize, CoordinatesFromBottomLeftInsteadOfTopLeft, c.Width, c.Height, alignment, padding, offsetX, offsetY));
       }
     }

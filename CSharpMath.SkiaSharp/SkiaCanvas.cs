@@ -52,6 +52,6 @@ namespace CSharpMath.SkiaSharp {
       Canvas.DrawText(text, x, y, new SKPaint {
         Color = Color, TextSize = pointSize, IsAntialias = true
       });
-    public IPath GetPath() => new SkiaPath(this);
+    public GlyphPath StartDrawingNewGlyph() => new SkiaPath(this);
   }
 }

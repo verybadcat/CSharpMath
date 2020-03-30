@@ -20,7 +20,7 @@ namespace CSharpMath.Forms.Example {
         View.LaTeX = Entry.Text;
         (Exit.Text, Exit.TextColor) =
           View.Painter.Content is Atom.MathList ml
-          ? (Atom.LaTeXBuilder.MathListToLaTeX(ml).ToString(), Color.Black)
+          ? (Atom.LaTeXParser.MathListToLaTeX(ml).ToString(), Color.Black)
           : ("Error: " + View.Painter.ErrorMessage, Color.Red);
       };
     }

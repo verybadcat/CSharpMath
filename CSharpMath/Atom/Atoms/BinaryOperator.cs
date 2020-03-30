@@ -1,6 +1,6 @@
 namespace CSharpMath.Atom.Atoms {
   /// <summary>A binary operator</summary>
-  public class BinaryOperator : MathAtom {
+  public sealed class BinaryOperator : MathAtom {
     public BinaryOperator(string nucleus) : base(nucleus) { }
     public override bool ScriptsAllowed => true;
     public new BinaryOperator Clone(bool finalize) => (BinaryOperator)base.Clone(finalize);

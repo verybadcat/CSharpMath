@@ -8,7 +8,7 @@ namespace CSharpMath.Rendering.FrontEnd {
     Color DefaultColor { get; set; }
     Color? CurrentColor { get; set; }
     PaintStyle CurrentStyle { get; set; }
-    IPath GetPath();
+    GlyphPath StartDrawingNewGlyph();
     void DrawLine(float x1, float y1, float x2, float y2, float lineThickness);
     void StrokeRect(float left, float top, float width, float height);
     void FillRect(float left, float top, float width, float height);
@@ -27,14 +27,12 @@ namespace CSharpMath.Rendering.FrontEnd {
       var halfThickness = lineThickness / 2;
       var px = dx / length * halfThickness;
       var py = dy / length * halfThickness;
-      var p = c.GetPath();
-      p.BeginRead(1);
+      using var p = c.StartDrawingNewGlyph();
       p.MoveTo(x1 - py, y1 + px);
       p.LineTo(x1 + py, y1 - px);
       p.LineTo(x2 + py, y2 - px);
       p.LineTo(x2 - py, y2 + px);
       p.CloseContour();
-      p.EndRead();
     }
   }
 }

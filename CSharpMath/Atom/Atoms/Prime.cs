@@ -1,5 +1,5 @@
 namespace CSharpMath.Atom.Atoms {
-  public class Prime : MathAtom {
+  public sealed class Prime : MathAtom {
     public Prime(int length) : base(PrimeOfLength(length)) =>
       Length = length;
     public int Length { get; }

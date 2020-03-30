@@ -2,7 +2,7 @@ using System;
 
 namespace CSharpMath.Playground {
   static partial class AlgorithmsTest {
-    public static string ExecutionEngineException() {
+    public static string? ExecutionEngineException() {
       try {
         return System.Runtime.Serialization.FormatterServices.GetUninitializedObject(typeof(Type).GetType()).ToString();
       }

@@ -445,7 +445,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
         case TextAtom.Math m:
           return b.Append('\\')
             .Append(m.DisplayStyle ? '[' : '(')
-            .Append(LaTeXBuilder.MathListToLaTeX(m.Content))
+            .Append(LaTeXParser.MathListToLaTeX(m.Content))
             .Append('\\')
             .Append(m.DisplayStyle ? ']' : ')');
         case TextAtom.Space s:

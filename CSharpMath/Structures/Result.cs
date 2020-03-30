@@ -20,9 +20,17 @@ namespace CSharpMath.Structures {
     public Result(string error) =>
       Error = error ?? throw new ArgumentNullException(nameof(error));
     public string? Error { get; }
-    public void Match(Action<string> errorAction) {
-      if (errorAction is null) throw new ArgumentNullException(nameof(errorAction));
-      if (Error != null) errorAction(Error);
+    public void Match(Action successAction, Action<string> errorAction) {
+      if (Error != null) errorAction(Error); else successAction();
+    }
+    public Result<T> Bind<T>(Func<T> successAction) {
+      if (Error != null) return Error; else return successAction();
+    }
+    public Result Bind(Func<Result> successAction) {
+      if (Error != null) return Error; else return successAction();
+    }
+    public Result<T> Bind<T>(Func<Result<T>> successAction) {
+      if (Error != null) return Error; else return successAction();
     }
     public static implicit operator Result(string error) => new Result(error);
     public static implicit operator Result(ResultImplicitError error) => new Result(error.Error);

@@ -37,10 +37,10 @@ namespace CSharpMath {
     public static StringBuilder AppendInBracketsOrNothing(this StringBuilder builder, string? appendMe) =>
       builder.AppendIn('[', appendMe, ']', NullHandling.EmptyString);
     public static StringBuilder AppendDebugStringOfScripts(this StringBuilder builder, Atom.MathAtom target) {
-      if (target.Subscript != null) {
+      if (target.Subscript.IsNonEmpty()) {
         builder.Append('_').AppendInBracesOrLiteralNull(target.Subscript.DebugString);
       }
-      if (target.Superscript != null) {
+      if (target.Superscript.IsNonEmpty()) {
         builder.Append('^').AppendInBracesOrLiteralNull(target.Superscript.DebugString);
       }
       return builder;

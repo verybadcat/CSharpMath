@@ -1,5 +1,5 @@
 namespace CSharpMath.Atom.Atoms {
-  public class RaiseBox : MathAtom, IMathListContainer {
+  public sealed class RaiseBox : MathAtom, IMathListContainer {
     public RaiseBox(Structures.Space raise, MathList innerList) =>
       (Raise, InnerList) = (raise, innerList);
     public Structures.Space Raise { get; }

@@ -207,7 +207,7 @@ namespace CSharpMath.Display {
             _displayAtoms.Add(displayRad);
             _currentPosition.X += displayRad.Width;
 
-            if (atom.Superscript != null || atom.Subscript != null) {
+            if (atom.Superscript.IsNonEmpty() || atom.Subscript.IsNonEmpty()) {
               MakeScripts(atom, displayRad, rad.IndexRange.Location, 0);
             }
             break;
@@ -217,7 +217,7 @@ namespace CSharpMath.Display {
             var fractionDisplay = MakeFraction(fraction);
             _displayAtoms.Add(fractionDisplay);
             _currentPosition.X += fractionDisplay.Width;
-            if (atom.Superscript != null || atom.Subscript != null) {
+            if (atom.Superscript.IsNonEmpty() || atom.Subscript.IsNonEmpty()) {
               MakeScripts(atom, fractionDisplay, fraction.IndexRange.Location, 0);
             }
             break;
@@ -233,7 +233,7 @@ namespace CSharpMath.Display {
             innerDisplay.Position = _currentPosition;
             _currentPosition.X += innerDisplay.Width;
             _displayAtoms.Add(innerDisplay);
-            if (atom.Subscript != null || atom.Superscript != null) {
+            if (atom.Subscript.IsNonEmpty() || atom.Superscript.IsNonEmpty()) {
               MakeScripts(atom, innerDisplay, atom.IndexRange.Location, 0);
             }
             break;
@@ -250,7 +250,7 @@ namespace CSharpMath.Display {
             _displayAtoms.Add(underlineDisplay);
             _currentPosition.X += underlineDisplay.Width;
             // add super scripts || subscripts
-            if (atom.Subscript != null || atom.Superscript != null) {
+            if (atom.Subscript.IsNonEmpty() || atom.Superscript.IsNonEmpty()) {
               MakeScripts(atom, underlineDisplay, atom.IndexRange.Location, 0);
             }
             break;
@@ -268,7 +268,7 @@ namespace CSharpMath.Display {
             _displayAtoms.Add(overlineDisplay);
             _currentPosition.X += overlineDisplay.Width;
             // add super scripts || subscripts
-            if (atom.Subscript != null || atom.Superscript != null) {
+            if (atom.Subscript.IsNonEmpty() || atom.Superscript.IsNonEmpty()) {
               MakeScripts(atom, overlineDisplay, atom.IndexRange.Location, 0);
             }
             break;
@@ -280,7 +280,7 @@ namespace CSharpMath.Display {
             _displayAtoms.Add(accentDisplay);
             _currentPosition.X += accentDisplay.Width;
             // add super scripts || subscripts
-            if (atom.Subscript != null || atom.Superscript != null) {
+            if (atom.Subscript.IsNonEmpty() || atom.Superscript.IsNonEmpty()) {
               MakeScripts(atom, accentDisplay, atom.IndexRange.Location, 0);
             }
             break;
@@ -341,7 +341,7 @@ namespace CSharpMath.Display {
                 _currentAtoms.AddRange(atom.FusedAtoms);
               else
                 _currentAtoms.Add(atom);
-              if (atom.Subscript != null || atom.Superscript != null) {
+              if (atom.Subscript.IsNonEmpty() || atom.Superscript.IsNonEmpty()) {
                 var line = AddDisplayLine(true);
                 if (line is null) throw new InvalidCodePathException("evenIfLengthIsZero not respected");
                 float delta = 0;
@@ -350,7 +350,7 @@ namespace CSharpMath.Display {
                     (_font, atom.Nucleus.Length - 1, atom.Nucleus);
                   delta = _context.MathTable.GetItalicCorrection(_styleFont, glyph);
                 }
-                if (delta > 0 && atom.Subscript == null)
+                if (delta > 0 && atom.Subscript.IsEmpty())
                   // add a kern of delta
                   _currentPosition.X += delta;
                 MakeScripts(atom, line, atom.IndexRange.End - 1, delta);
@@ -386,18 +386,18 @@ namespace CSharpMath.Display {
       if (accent.InnerList?.Atoms.Count == 1
         && accent.InnerList.Atoms[0] is MathAtom innerAtom
         && Typesetter.UnicodeLengthIsOne(innerAtom.Nucleus)
-        && innerAtom.Superscript is null
-        && innerAtom.Subscript is null) {
+        && innerAtom.Superscript.IsEmpty()
+        && innerAtom.Subscript.IsEmpty()) {
         // Only one single Unicode character is allowed to be an accent
         accenteeSingleGlyph =
           _context.GlyphFinder.FindGlyphForCharacterAtIndex
             (_font, innerAtom.Nucleus.Length - 1, innerAtom.Nucleus);
-        if (accent.Subscript != null || accent.Superscript != null) {
+        if (accent.Subscript.IsNonEmpty() || accent.Superscript.IsNonEmpty()) {
           // Attach the super/subscripts to the accentee instead of the accent.
-          innerAtom.Subscript = accent.Subscript;
-          innerAtom.Superscript = accent.Superscript;
-          accent.Subscript = null;
-          accent.Superscript = null;
+          innerAtom.Subscript.Append(accent.Subscript);
+          innerAtom.Superscript.Append(accent.Superscript);
+          accent.Subscript.Clear();
+          accent.Superscript.Clear();
           // Remake the accentee (now with sub/superscripts)
           // Note: Latex adjusts the heights in case the height of the char is different
           // in non-cramped mode. However this shouldn't be the case since cramping
@@ -432,8 +432,8 @@ namespace CSharpMath.Display {
         superscriptShiftUp = display.Ascent - _context.MathTable.SuperscriptShiftUp(scriptFont);
         subscriptShiftDown = display.Descent + _context.MathTable.SubscriptBaselineDropMin(scriptFont);
       }
-      if (atom.Superscript == null) {
-        if (atom.Subscript == null)
+      if (atom.Superscript.IsEmpty()) {
+        if (atom.Subscript.IsEmpty())
           throw new InvalidCodePathException
             ($"MakeScripts was called when both supercript and subscript of atom were null.");
         var subscript = CreateLine(atom.Subscript, _font, _context, _scriptStyle, _subscriptCramped);
@@ -457,7 +457,7 @@ namespace CSharpMath.Display {
       superscriptShiftUp = Math.Max(superscriptShiftUp, _superscriptShiftUp);
       superscriptShiftUp = Math.Max(superscriptShiftUp,
         superscript.Descent + _mathTable.SuperscriptBottomMin(_styleFont));
-      if (atom.Subscript == null) {
+      if (atom.Subscript.IsEmpty()) {
         superscript.Position = new PointF(_currentPosition.X, _currentPosition.Y + superscriptShiftUp);
         _displayAtoms.Add(superscript);
         _currentPosition.X += superscript.Width + _mathTable.SpaceAfterScript(_styleFont);
@@ -947,7 +947,7 @@ namespace CSharpMath.Display {
               Descent = descent,
               Width = width
             };
-            if (op.Subscript != null && !(op.Limits ?? _style == LineStyle.Display))
+            if (op.Subscript.IsNonEmpty() && !(op.Limits ?? _style == LineStyle.Display))
               // remove italic correction in this case
               glyphDisplay.Width -= delta;
             glyphDisplay.ShiftDown = (float)shiftDown;
@@ -969,29 +969,29 @@ namespace CSharpMath.Display {
 
     private IDisplay<TFont, TGlyph> AddLimitsToDisplay(IDisplay<TFont, TGlyph> display,
       LargeOperator op, float delta) {
-      if (op.Subscript == null && op.Superscript == null) {
+      if (op.Subscript.IsEmpty() && op.Superscript.IsEmpty()) {
         _currentPosition.X += display.Width;
         return display;
       }
       if (op.Limits ?? _style == LineStyle.Display) {
         ListDisplay<TFont, TGlyph>? superscript = null;
         ListDisplay<TFont, TGlyph>? subscript = null;
-        if (op.Superscript != null) {
+        if (op.Superscript.IsNonEmpty()) {
           superscript =
             CreateLine(op.Superscript, _font, _context, _scriptStyle, _superscriptCramped);
         }
-        if (op.Subscript != null) {
+        if (op.Subscript.IsNonEmpty()) {
           subscript =
             CreateLine(op.Subscript, _font, _context, _scriptStyle, _subscriptCramped);
         }
         var opsDisplay = new LargeOpLimitsDisplay<TFont, TGlyph>(
           display,
           superscript,
-          superscript is null ? 0
+          superscript == null ? 0
           : Math.Max(_mathTable.UpperLimitGapMin(_styleFont),
                      _mathTable.UpperLimitBaselineRiseMin(_styleFont) - superscript.Descent),
           subscript,
-          subscript is null ? 0
+          subscript == null ? 0
           : Math.Max(_mathTable.LowerLimitGapMin(_styleFont),
                      _mathTable.LowerLimitBaselineDropMin(_styleFont) - subscript.Ascent),
           delta / 2,
