@@ -24,14 +24,14 @@ namespace CSharpMath.Playground.Evaluation.Compiler {
     static string ThisDirectory([System.Runtime.CompilerServices.CallerFilePath] string? path = null) =>
         Path.GetDirectoryName(path ?? throw new ArgumentNullException(nameof(path)));
     static async Task Main() {
-      Console.WriteLine("1 out of 6: Entered Main");
+      Console.WriteLine("1 out of 7: Entered Main");
 
       static string ReadNeradmerFile(string file) =>
         File.ReadAllText(Path.Combine(ThisDirectory(), "..", "nerdamer", file));
       using var http = new HttpClient();
       using var clearScript = new V8ScriptEngine();
       clearScript.Execute(await http.GetStringAsync("https://unpkg.com/@babel/standalone@7.9.4/babel.min.js"));
-      Console.WriteLine("2 out of 6: Loaded Babel");
+      Console.WriteLine("2 out of 7: Loaded Babel");
 
       clearScript.AddHostObject("nerdamer", new {
         Core = ReadNeradmerFile("nerdamer.core.js"),
@@ -47,7 +47,7 @@ namespace CSharpMath.Playground.Evaluation.Compiler {
         Solve: Babel.transform(nerdamer.Solve, { presets: ['env'] }).code,
         Extra: Babel.transform(nerdamer.Extra, { presets: ['env'] }).code
       })");
-      Console.WriteLine("3 out of 6: Transformed Nerdamer");
+      Console.WriteLine("3 out of 7: Transformed Nerdamer");
 
       var compiler = new ScriptCompiler();
       compiler.IncludeInput(transformed.Core);
@@ -56,7 +56,7 @@ namespace CSharpMath.Playground.Evaluation.Compiler {
       compiler.IncludeInput(transformed.Solve);
       compiler.IncludeInput(transformed.Extra);
       compiler.Save(Path.Combine(ThisDirectory(), "nerdamer.dll"));
-      Console.WriteLine("6 out of 6: Done!");
+      Console.WriteLine("7 out of 7: Done!");
     }
   }
 
@@ -88,23 +88,25 @@ namespace CSharpMath.Playground.Evaluation.Compiler {
       info.GetType().GetField("ModuleBuilder").SetValue(info, module);
       typeof(ScriptEngine).Assembly.GetType("Jurassic.Compiler.MethodGenerator").GetField("ReflectionEmitInfo", BindingFlags.NonPublic | BindingFlags.Static).SetValue(engine, info);
 
-      Console.WriteLine("4 out of 6: Including code");
+      Console.WriteLine("4 out of 7: Including code");
       int codei = 0;
       foreach (var code in codesInputs) {
         engine.Execute(code);
-        Console.WriteLine("5 out of 6: Included code #" + codei++);
+        Console.WriteLine("5 out of 7: Included code #" + codei++);
       }
 
+#if true
       var generatedTypes = module.GetTypes();
       var userType = module.DefineType(assemblyName, TypeAttributes.Public);
       var restoreMethod = userType.DefineMethod("RestoreScriptEngine", MethodAttributes.Public | MethodAttributes.Static, typeof(ScriptEngine), new Type[] { });
       var restoreMethodBody = restoreMethod.GetILGenerator();
-
+      
       var generator = typeof(ScriptEngine).Assembly
         .GetType("Jurassic.Compiler.ReflectionEmitILGenerator")
         .GetConstructor(new[] { restoreMethodBody.GetType(), typeof(bool) })
         .Invoke(new object[] { restoreMethodBody, true });
 
+      Console.WriteLine($"6 out of 7: Emitting Load method");
       // Local : engine = new ScriptEngine()
       var loadedEngine = restoreMethodBody.DeclareLocal(typeof(ScriptEngine));
       restoreMethodBody.EmitCall(OpCodes.Call, typeof(Assembly).GetMethod(nameof(Assembly.GetExecutingAssembly)), new Type[] { });
@@ -113,6 +115,56 @@ namespace CSharpMath.Playground.Evaluation.Compiler {
       userType.CreateType();
 
       assemblyBuilder.Save(Path.GetFileName(dllPath));
+#else
+
+      // * NEW CODE, DIFFERENT FROM ORIGINAL *
+
+      var newAssembly =
+          AppDomain.CurrentDomain.DefineDynamicAssembly(
+              new AssemblyName("New" + assemblyName),
+              AssemblyBuilderAccess.RunAndSave,
+              Path.GetDirectoryName(fullpath));
+
+      var newModule = newAssembly.DefineDynamicModule("Module", Path.GetFileName(fullpath), true);
+
+      var newType = newModule.DefineType(assemblyName, TypeAttributes.Public);
+      var objectMethods = typeof(object).GetMethods().Select(m => m.Name).ToHashSet();
+      int mi = 0;
+      foreach(var method in module.GetTypes().SelectMany(t => t.GetMethods())) {
+        if (objectMethods.Contains(method.Name)) continue;
+        var methodBody = method.GetMethodBody();
+        var methodILArray = methodBody.GetILAsByteArray();
+        Console.WriteLine($"6 out of 7: Emitting method #{mi} {method.Name}");
+
+        var newMethod = newType.DefineMethod($"{method.Name}_{mi}", method.Attributes, method.ReturnType,
+          method.GetParameters().Select(p => p.ParameterType).ToArray());
+        newMethod.SetMethodBody(
+          methodBody.GetILAsByteArray(),
+          methodBody.MaxStackSize,
+          methodBody.LocalVariables.Aggregate(
+            SignatureHelper.GetLocalVarSigHelper(newModule),
+            (helper, v) => { helper.AddArgument(v.LocalType, v.IsPinned); return helper; },
+            helper => helper.GetSignature()
+          ),
+          methodBody.ExceptionHandlingClauses.Select(e =>
+            new ExceptionHandler(
+              e.TryOffset,
+              e.TryLength,
+              (e.Flags & ExceptionHandlingClauseOptions.Filter) == ExceptionHandlingClauseOptions.Filter
+              ? e.FilterOffset : 0,
+              e.HandlerOffset,
+              e.HandlerLength,
+              e.Flags,
+              (e.Flags & ExceptionHandlingClauseOptions.Filter) == ExceptionHandlingClauseOptions.Filter
+              || (e.Flags & ExceptionHandlingClauseOptions.Finally) == ExceptionHandlingClauseOptions.Finally
+              ? 0 : e.CatchType.MetadataToken)),
+          null);
+        mi++;
+      }
+      newType.CreateType();
+
+      newAssembly.Save(Path.GetFileName(dllPath));
+#endif
     }
 
     public static void AddToFunctionCache(long id, FunctionDelegate functionDelegate, GeneratedMethod[] dependencies) {

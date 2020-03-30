@@ -10,6 +10,7 @@
     <Reference Include="nerdamer">
       <HintPath>..\CSharpMath.Playground.Evaluation.Compiler\nerdamer.dll</HintPath>
     </Reference>
+    <ProjectReference Include="../CSharpMath.Playground.Evaluation.Compiler/CSharpMath.Playground.Evaluation.Compiler.csproj"/>
   </ItemGroup>
 
 </Project>
