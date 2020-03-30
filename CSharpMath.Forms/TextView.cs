@@ -5,7 +5,7 @@ namespace CSharpMath.Forms {
   using Xamarin.Forms.Xaml;
   [ContentProperty(nameof(LaTeX)), XamlCompilation(XamlCompilationOptions.Compile)]
   public class TextView : BaseView<TextPainter, TextAtom> {
-    public static readonly BindableProperty AdditionalLineSpacingProperty = CreateProperty(nameof(AdditionalLineSpacing), p => p.AdditionalLineSpacing, (p, v) => p.AdditionalLineSpacing = v, typeof(TextView));
     public float AdditionalLineSpacing { get => (float)GetValue(AdditionalLineSpacingProperty); set => SetValue(AdditionalLineSpacingProperty, value); }
+    public static readonly BindableProperty AdditionalLineSpacingProperty = CreateProperty(nameof(AdditionalLineSpacing), p => p.AdditionalLineSpacing, (p, v) => p.AdditionalLineSpacing = v, typeof(TextView));
   }
 }

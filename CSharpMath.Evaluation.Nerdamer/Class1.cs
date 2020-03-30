@@ -26,6 +26,6 @@ namespace CSharpMath.Evaluation {
       _engine.Execute(new StreamScriptSource(typeof(Nerdamer).Assembly.GetManifestResourceStream("nerdamer.js")));
     readonly ScriptEngine _engine = new ScriptEngine();
 
-    public this[string expression, IReadOnlyDictionary<string, object>? subs = null, Options options = Options.Default, int index = ] { }
+    public object? this[string expression, IReadOnlyDictionary<string, object>? subs = null, Options options = Options.Default, int index = 0] => null;
   }
 }
