@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Net.Http;
 using Microsoft.ClearScript.V8;
+using obj = Microsoft.ClearScript.ScriptObject;
 using System.Threading.Tasks;
 
 namespace CSharpMath.Playground.Evaluation.Compiler {
@@ -18,10 +19,22 @@ namespace CSharpMath.Playground.Evaluation.Compiler {
         File.ReadAllText(Path.Combine(ThisDirectory(), "..", "nerdamer", file));
       using var http = new HttpClient();
       using var clearScript = new V8ScriptEngine();
+      clearScript.Execute("var module = {};");
+      
+      var nerdamerDocs =
+        (obj)clearScript.Evaluate(await http.GetStringAsync("https://raw.githubusercontent.com/Happypig375/nerdamer/patch-22/docgen/function_docs.js"));
+      foreach (var functionName in nerdamerDocs.PropertyNames) {
+        var function = (obj)nerdamerDocs.GetProperty(functionName);
+        string returns = (string)function.GetProperty(nameof(returns));
 
-      dynamic nerdamerDocs =
-        clearScript.Evaluate(await http.GetStringAsync("https://raw.githubusercontent.com/jiggzson/nerdamer/gh-pages/docgen/function_docs.js"));
-      System.Diagnostics.Debugger.Break();
+        obj parameters = (obj)function.GetProperty(nameof(parameters));
+        foreach (var parameterName in parameters.PropertyNames) {
+          var parameter = (obj)function.GetProperty(parameterName);
+          string type = (string)parameter.GetProperty(nameof(type));
+        }
+
+        System.Diagnostics.Debugger.Break();
+      }
       return;
       clearScript.Execute(await http.GetStringAsync("https://unpkg.com/@babel/standalone@7.9.4/babel.min.js"));
       Console.WriteLine("2: Loaded Babel");
