@@ -54,14 +54,13 @@ namespace CSharpMath.CoreTests.Atom {
     [InlineData("x^{^2*}", "x^{{}^2*}", new[] { typeof(Variable) }, new[] { typeof(Ordinary), typeof(BinaryOperator) }, new[] { typeof(Number) })]
     [InlineData("^2", "{}^2", new[] { typeof(Ordinary) }, new[] { typeof(Number) })]
     [InlineData("{}^2", "{}^2", new[] { typeof(Ordinary) }, new[] { typeof(Number) })]
-    [InlineData("x^^2", "x^{}{}^2", new[] { typeof(Variable), typeof(Ordinary) }, new Type[] { })]
     [InlineData("5{x}^2", "5x^2", new[] { typeof(Number), typeof(Variable) }, new Type[] { })]
     public void TestScript(string input, string output, params Type[][] atomTypes) {
       RunScriptTest(input, atom => atom.Superscript, atomTypes, output);
       RunScriptTest(input.Replace('^', '_'), atom => atom.Subscript, atomTypes, output.Replace('^', '_'));
 
       void RunScriptTest
-        (string input, Func<MathAtom, MathList?> scriptGetter, Type[][] atomTypes, string output) {
+        (string input, Func<MathAtom, MathList> scriptGetter, Type[][] atomTypes, string output) {
         var list = ParseLaTeX(input);
 
         var expandedList = list.Clone(false);
@@ -70,14 +69,13 @@ namespace CSharpMath.CoreTests.Atom {
         var firstAtom = expandedList[0];
         var types = atomTypes[1];
         if (types.Length > 0)
-          Assert.NotNull(scriptGetter(firstAtom));
+          Assert.NotEmpty(scriptGetter(firstAtom));
 
         var scriptList = scriptGetter(firstAtom);
         CheckAtomTypes(scriptList, atomTypes[1]);
         if (atomTypes.Length == 3) {
-          if (scriptList == null)
-            throw new Xunit.Sdk.NotNullException();
           // one more level
+          Assert.NotEmpty(scriptList);
           var firstScript = scriptList[0];
           var scriptScriptList = scriptGetter(firstScript);
           CheckAtomTypes(scriptScriptList, atomTypes[2]);
@@ -88,17 +86,13 @@ namespace CSharpMath.CoreTests.Atom {
     }
 
     /// <summary>Safe to call with a null list. Types cannot be null however.</summary>
-    private void CheckAtomTypes(MathList? list, params Type[] types) {
-      if (list == null) {
-        Assert.Empty(types);
-      } else {
-        int atomCount = list.Atoms.Count;
-        Assert.Equal(types.Length, atomCount);
-        for (int i = 0; i < atomCount; i++) {
-          var atom = list[i];
-          Assert.NotNull(atom);
-          Assert.IsType(types[i], atom);
-        }
+    private void CheckAtomTypes(MathList list, params Type[] types) {
+      int atomCount = list.Atoms.Count;
+      Assert.Equal(types.Length, atomCount);
+      for (int i = 0; i < atomCount; i++) {
+        var atom = list[i];
+        Assert.NotNull(atom);
+        Assert.IsType(types[i], atom);
       }
     }
 
@@ -599,47 +593,58 @@ namespace CSharpMath.CoreTests.Atom {
     }
 
     [Theory]
-    [InlineData(@"}a")]
-    [InlineData(@"\notacommand")]
-    [InlineData(@"\sqrt[5+3")]
-    [InlineData(@"{5+3")]
-    [InlineData(@"5+3}")]
-    [InlineData(@"{1+\frac{3+2")]
-    [InlineData(@"1+\left")]
-    [InlineData(@"\left{")]
-    [InlineData(@"\left(\frac12\right")]
-    [InlineData(@"\left 5 + 3 \right)")]
-    [InlineData(@"\left(\frac12\right + 3")]
-    [InlineData(@"\left\lmoustache 5 + 3 \right)")]
-    [InlineData(@"\left(\frac12\right\rmoustache + 3")]
-    [InlineData(@"5 + 3 \right)")]
-    [InlineData(@"\left(\frac12")]
-    [InlineData(@"\left(5 + \left| \frac12 \right)")]
-    [InlineData(@"5+ \left|\frac12\right| \right)")]
-    [InlineData(@"\begin matrix \end matrix")] // missing {
-    [InlineData(@"\begin")] // missing {
-    [InlineData(@"\begin{")] // missing }
-    [InlineData(@"\begin{matrix parens}")] // missing } (no spaces in env)
-    [InlineData(@"\begin{matrix} x")]
-    [InlineData(@"\begin{matrix} x \end")] // missing {
-    [InlineData(@"\begin{matrix} x \end + 3")] // missing {
-    [InlineData(@"\begin{matrix} x \end{")] // missing }
-    [InlineData(@"\begin{matrix} x \end{matrix + 3")]// missing }
-    [InlineData(@"\begin{matrix} x \end{pmatrix}")]
-    [InlineData(@"x \end{matrix}")]
-    [InlineData(@"\begin{notanenv} x \end{notanenv}")]
-    [InlineData(@"\begin{matrix} \notacommand \end{matrix}")]
-    [InlineData(@"\begin{displaylines} x & y \end{displaylines}")]
-    [InlineData(@"\begin{eqalign} x \end{eqalign}")]
-    [InlineData(@"\limits")]
-    [InlineData(@"\nolimits")]
-    [InlineData(@"\frac\limits{1}{2}")]
-    [InlineData(@"\color{notacolor}x")]
-    public void TestErrors(string badInput) {
+    [InlineData(@"x^^2", @"^ cannot appear as an argument to a command")]
+    [InlineData(@"x^_2", @"_ cannot appear as an argument to a command")]
+    [InlineData(@"x_^2", @"^ cannot appear as an argument to a command")]
+    [InlineData(@"x__2", @"_ cannot appear as an argument to a command")]
+    [InlineData(@"x^&2", @"& cannot appear as an argument to a command")]
+    [InlineData(@"x^}2", @"} cannot appear as an argument to a command")]
+    [InlineData(@"x_&2", @"& cannot appear as an argument to a command")]
+    [InlineData(@"x_}2", @"} cannot appear as an argument to a command")]
+    [InlineData(@"\sqrt^2", @"^ cannot appear as an argument to a command")]
+    [InlineData(@"\sqrt_2", @"_ cannot appear as an argument to a command")]
+    [InlineData(@"\sqrt&2", @"& cannot appear as an argument to a command")]
+    [InlineData(@"\sqrt}2", @"} cannot appear as an argument to a command")]
+    [InlineData(@"\notacommand", @"Invalid command \notacommand")]
+    [InlineData(@"\sqrt[5+3", @"Expected character not found: ]")]
+    [InlineData(@"{5+3", @"Missing closing brace")]
+    [InlineData(@"5+3}", @"Missing opening brace")]
+    [InlineData(@"{1+\frac{3+2", @"Missing closing brace")]
+    [InlineData(@"1+\left", @"Missing delimiter for left")]
+    [InlineData(@"\left{", @"Missing \right")]
+    [InlineData(@"\left(\frac12\right", @"Missing delimiter for right")]
+    [InlineData(@"\left 5 + 3 \right)", @"Invalid delimiter for \left: 5")]
+    [InlineData(@"\left(\frac12\right + 3", @"Invalid delimiter for \right: +")]
+    [InlineData(@"\left\notadelimiter 5 + 3 \right)", @"Invalid delimiter for \left: notadelimiter")]
+    [InlineData(@"\left(\frac12\right\notadelimiter + 3", @"Invalid delimiter for \right: notadelimiter")]
+    [InlineData(@"5 + 3 \right)", @"Missing \left")]
+    [InlineData(@"\left(\frac12", @"Missing \right")]
+    [InlineData(@"\left(5 + \left| \frac12 \right)", @"Missing \right")]
+    [InlineData(@"5+ \left|\frac12\right| \right)", @"Missing \left")]
+    [InlineData(@"\begin matrix \end matrix", @"Missing {")]
+    [InlineData(@"\begin", @"Missing {")]
+    [InlineData(@"\begin{", @"Missing }")]
+    [InlineData(@"\begin{matrix parens}", @"Missing }")] // no spaces in env
+    [InlineData(@"\begin{matrix} x", @"Missing \end")]
+    [InlineData(@"\begin{matrix} x \end", @"Missing {")]
+    [InlineData(@"\begin{matrix} x \end + 3", @"Missing {")]
+    [InlineData(@"\begin{matrix} x \end{", @"Missing }")]
+    [InlineData(@"\begin{matrix} x \end{matrix + 3", @"Missing }")]
+    [InlineData(@"\begin{matrix} x \end{pmatrix}", @"Begin environment name matrix does not match end environment name pmatrix")]
+    [InlineData(@"x \end{matrix}", @"Missing \begin")]
+    [InlineData(@"\begin{notanenv} x \end{notanenv}", @"Unknown environment notanenv")]
+    [InlineData(@"\begin{matrix} \notacommand \end{matrix}", @"Invalid command \notacommand")]
+    [InlineData(@"\begin{displaylines} x & y \end{displaylines}", @"displaylines environment can only have 1 column")]
+    [InlineData(@"\begin{eqalign} x \end{eqalign}", @"eqalign environment can only have 2 columns")]
+    [InlineData(@"\limits", @"\limits can only be applied to an operator")]
+    [InlineData(@"\nolimits", @"\nolimits can only be applied to an operator")]
+    [InlineData(@"\frac\limits{1}{2}", @"\limits can only be applied to an operator")]
+    [InlineData(@"\color{notacolor}x", @"Invalid color: notacolor")]
+    public void TestErrors(string badInput, string error) {
       var builder = new LaTeXParser(badInput);
       var list = builder.Build();
       Assert.Null(list);
-      Assert.NotNull(builder.Error);
+      Assert.Equal(builder.Error, error);
     }
 
     [Fact]
@@ -739,14 +744,14 @@ namespace CSharpMath.CoreTests.Atom {
       var list = ParseLaTeX(@"\int_wdf=\int_{\partial w}f");
       Assert.Collection(list,
         CheckAtom<LargeOperator>("∫", op => {
-          Assert.Null(op.Superscript);
+          Assert.Empty(op.Superscript);
           Assert.Collection(op.Subscript, CheckAtom<Variable>("w"));
         }),
         CheckAtom<Variable>("d"),
         CheckAtom<Variable>("f"),
         CheckAtom<Relation>("="),
         CheckAtom<LargeOperator>("∫", op => {
-          Assert.Null(op.Superscript);
+          Assert.Empty(op.Superscript);
           Assert.Collection(op.Subscript, CheckAtom<Ordinary>("𝜕"), CheckAtom<Variable>("w"));
         }),
         CheckAtom<Variable>("f")
@@ -814,17 +819,21 @@ namespace CSharpMath.CoreTests.Atom {
 
     [Fact]
     public void TestColorScripts() {
-      var list = ParseLaTeX(@"\color{red}_2");
+      var list = ParseLaTeX(@"\color{red}12");
       Assert.Collection(list,
         CheckAtom<Color>("", color => {
           Assert.Equal("red", color.Colour.ToString());
-          Assert.Null(color.Subscript);
+          Assert.Empty(color.Superscript);
+          Assert.Throws<InvalidOperationException>(() => color.Superscript.Add(new Variable("a")));
+          Assert.Throws<InvalidOperationException>(() => color.Superscript.Append(new MathList(new Variable("a"))));
+          Assert.Empty(color.Subscript);
+          Assert.Throws<InvalidOperationException>(() => color.Subscript.Add(new Variable("b")));
+          Assert.Throws<InvalidOperationException>(() => color.Subscript.Append(new MathList(new Variable("b"))));
+          Assert.Collection(color.InnerList, CheckAtom<Number>("1"));
         }),
-        CheckAtom<Ordinary>("", ord =>
-          Assert.Collection(ord.Subscript, CheckAtom<Number>("2"))
-        )
+        CheckAtom<Number>("2")
       );
-      Assert.Equal(@"\color{red}{}{}_2", LaTeXParser.MathListToLaTeX(list).ToString());
+      Assert.Equal(@"\color{red}{1}2", LaTeXParser.MathListToLaTeX(list).ToString());
     }
   }
 }

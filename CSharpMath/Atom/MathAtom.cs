@@ -17,12 +17,8 @@ namespace CSharpMath.Atom {
     public virtual string DebugString =>
       new StringBuilder(Nucleus).AppendDebugStringOfScripts(this).ToString();
     public string Nucleus { get; set; }
-    private MathList _superscript = new MathList();
-    public MathList Superscript =>
-      ScriptsAllowed ? _superscript : throw new InvalidOperationException("Scripts are not allowed in atom type " + TypeName);
-    private MathList _subscript = new MathList();
-    public MathList Subscript =>
-      ScriptsAllowed ? _subscript : throw new InvalidOperationException("Scripts are not allowed in atom type " + TypeName);
+    public MathList Superscript { get; private set; }
+    public MathList Subscript { get; private set; }
     public FontStyle FontStyle { get; set; }
     /// <summary>Defaults to zero, only has a value after finalization</summary>
     public Range IndexRange { get; set; }
@@ -46,15 +42,19 @@ namespace CSharpMath.Atom {
         newAtom.Nucleus = Nucleus;
       if (FusedAtoms != null)
         newAtom.FusedAtoms = new List<MathAtom>(FusedAtoms);
-      newAtom._superscript = Superscript.Clone(finalize);
-      newAtom._subscript = Subscript.Clone(finalize);
+      newAtom.Superscript = Superscript.Clone(finalize);
+      newAtom.Subscript = Subscript.Clone(finalize);
       newAtom.IndexRange = IndexRange;
       newAtom.FontStyle = FontStyle;
       return newAtom;
     }
     public MathAtom Clone(bool finalize) =>
       ApplyCommonPropertiesOn(finalize, CloneInside(finalize));
-    public MathAtom(string nucleus = "") => Nucleus = nucleus;
+    public MathAtom(string nucleus = "") {
+      Nucleus = nucleus;
+      Superscript = ScriptsAllowed ? new MathList() : new DisabledMathList();
+      Subscript = ScriptsAllowed ? new MathList() : new DisabledMathList();
+    }
     public void Fuse(MathAtom otherAtom) {
       if (Subscript.IsNonEmpty()) {
         throw new InvalidOperationException("Cannot fuse into an atom with a subscript");
@@ -74,8 +74,8 @@ namespace CSharpMath.Atom {
       Nucleus += otherAtom.Nucleus;
       IndexRange = new Range(IndexRange.Location,
         IndexRange.Length + otherAtom.IndexRange.Length);
-      _subscript = otherAtom.Subscript;
-      _superscript = otherAtom.Superscript;
+      Subscript = otherAtom.Subscript;
+      Superscript = otherAtom.Superscript;
     }
 
     public override string ToString() =>

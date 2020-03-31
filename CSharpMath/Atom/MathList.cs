@@ -6,6 +6,11 @@ namespace CSharpMath.Atom {
   [System.ComponentModel.TypeConverter(typeof(MathListTypeConverter))]
 #pragma warning disable CA1710 // Identifiers should have correct suffix
   // WTF CA1710, you want types inheriting IList to have the Collection suffix?
+  class DisabledMathList : MathList {
+    internal DisabledMathList() { }
+    public override void Add(MathAtom item) => throw new InvalidOperationException("Scripts are not allowed!");
+    public override void Append(IEnumerable<MathAtom> list) => throw new InvalidOperationException("Scripts are not allowed!");
+  }
   public class MathList : IMathObject, IList<MathAtom>, IReadOnlyList<MathAtom>, IEquatable<MathList> {
 #pragma warning restore CA1710 // Identifiers should have correct suffix
     public List<MathAtom> Atoms { get; private set; }
@@ -56,7 +61,7 @@ namespace CSharpMath.Atom {
             case (Atoms.BinaryOperator b, Atoms.Close _):
               newList[newList.Count - 1] = b.ToUnaryOperator();
               break;
-            case (Atoms.Number { Subscript: null, Superscript: null } n, Atoms.Number _):
+            case (Atoms.Number n, Atoms.Number _) when n.Superscript.IsEmpty() && n.Subscript.IsEmpty():
               n.Fuse(newNode);
               continue; // do not add the new node; we fused it instead.
           }
@@ -70,7 +75,7 @@ namespace CSharpMath.Atom {
       string.Concat(System.Linq.Enumerable.Select(Atoms, a => a.DebugString));
     public bool IsReadOnly => false;
     public MathAtom this[int index] { get => Atoms[index]; set => Atoms[index] = value; }
-    public void Append(IEnumerable<MathAtom> list) => Atoms.AddRange(list);
+    public virtual void Append(IEnumerable<MathAtom> list) => Atoms.AddRange(list);
     public void RemoveAtoms(int index, int count) => Atoms.RemoveRange(index, count);
     public bool EqualsList(MathList otherList) {
       if (otherList == null) {
@@ -98,7 +103,7 @@ namespace CSharpMath.Atom {
       else throw new ArgumentNullException(nameof(item), "MathList cannot contain null.");
     }
     public void RemoveAt(int index) => Atoms.RemoveAt(index);
-    public void Add(MathAtom item) {
+    public virtual void Add(MathAtom item) {
       if (item != null) Atoms.Add(item);
       else throw new ArgumentNullException(nameof(item), "MathList cannot contain null.");
     }

@@ -12,14 +12,19 @@ namespace CSharpMath.Playground.Evaluation.Compiler {
     static async Task Main() {
       if (!System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows))
         throw new PlatformNotSupportedException("As ClearScriptV8 is written in C++/CLI, this can only be run on Windows");
-      Console.WriteLine("1 out of 4: Entered Main");
+      Console.WriteLine("1: Entered Main");
 
       static string ReadNeradmerFile(string file) =>
         File.ReadAllText(Path.Combine(ThisDirectory(), "..", "nerdamer", file));
       using var http = new HttpClient();
       using var clearScript = new V8ScriptEngine();
+
+      dynamic nerdamerDocs =
+        clearScript.Evaluate(await http.GetStringAsync("https://raw.githubusercontent.com/jiggzson/nerdamer/gh-pages/docgen/function_docs.js"));
+      System.Diagnostics.Debugger.Break();
+      return;
       clearScript.Execute(await http.GetStringAsync("https://unpkg.com/@babel/standalone@7.9.4/babel.min.js"));
-      Console.WriteLine("2 out of 4: Loaded Babel");
+      Console.WriteLine("2: Loaded Babel");
 
       clearScript.AddHostObject("nerdamer", new {
         Code = string.Concat(
@@ -31,14 +36,15 @@ namespace CSharpMath.Playground.Evaluation.Compiler {
         )
       });
       var nerdamer = (string)clearScript.Evaluate(@"Babel.transform(nerdamer.Code, { presets: ['env'], comments:false }).code");
-      Console.WriteLine("3 out of 4: Transformed Nerdamer");
+      Console.WriteLine("3: Transformed Nerdamer");
 
       var outputDir = Path.Combine(ThisDirectory(), "..", "CSharpMath.Evaluation.Nerdamer");
       if (!Directory.Exists(outputDir))
         throw new DirectoryNotFoundException(outputDir + " not found!");
       using var output = File.CreateText(Path.Combine(outputDir, "nerdamer.js"));
       output.Write(nerdamer);
-      Console.WriteLine("4 out of 4: Saved the output");
+      Console.WriteLine("4: Saved the transformed output");
+
     }
   }
 }

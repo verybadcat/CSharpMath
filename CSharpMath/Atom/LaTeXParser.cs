@@ -53,12 +53,8 @@ namespace CSharpMath.Atom {
         }
         MathAtom atom;
         switch (GetNextCharacter()) {
-          case '^' when oneCharOnly:
-          case '}' when oneCharOnly:
-          case '_' when oneCharOnly:
-          case '&' when oneCharOnly:
-            // this is not the character we are looking for. They are for the caller to look at.
-            UnlookCharacter();
+          case var ch when oneCharOnly && (ch == '^' || ch == '}' || ch == '_' || ch == '&'):
+            SetError($"{ch} cannot appear as an argument to a command");
             return r;
           case var ch when stopChar > '\0' && ch == stopChar:
             return r;
@@ -669,7 +665,7 @@ namespace CSharpMath.Atom {
         case "split":
         case "aligned":
           if (table.NColumns != 2) {
-            SetError(environment + " environment can have only 2 columns");
+            SetError(environment + " environment can only have 2 columns");
             return null;
           } else {
             // add a spacer before each of the second column elements, in order to create the correct spacing for "=" and other relations.
@@ -687,7 +683,7 @@ namespace CSharpMath.Atom {
         case "displaylines":
         case "gather":
           if (table.NColumns != 1) {
-            SetError(environment + " environment can only have 1 column.");
+            SetError(environment + " environment can only have 1 column");
             return null;
           }
           table.InterRowAdditionalSpacing = 1;
@@ -696,7 +692,7 @@ namespace CSharpMath.Atom {
           return table;
         case "eqnarray":
           if (table.NColumns != 3) {
-            SetError(environment + " must have exactly 3 columns.");
+            SetError(environment + " must have exactly 3 columns");
             return null;
           } else {
             table.InterRowAdditionalSpacing = 1;

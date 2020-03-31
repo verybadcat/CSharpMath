@@ -73,14 +73,11 @@ namespace CSharpMath.Editor {
      * This returns <see cref="null"/> if there is no previous index, i.e.
      * the innermost subindex points to the beginning of a line.</summary>
      */
-    public MathListIndex? Previous =>
-      SubIndexType == MathListSubIndexType.None
-      ? AtomIndex > 0
-        ? Level0Index(AtomIndex - 1)
-        : null
-      : SubIndex?.Previous is MathListIndex prevSubIndex
-       ? IndexAtLocation(AtomIndex, SubIndexType, prevSubIndex)
-        : null;
+    public MathListIndex? Previous => SubIndexType switch
+    {
+      MathListSubIndexType.None => AtomIndex > 0 ? Level0Index(AtomIndex - 1) : null,
+      _ => SubIndex?.Previous is MathListIndex prevSubIndex ? IndexAtLocation(AtomIndex, SubIndexType, prevSubIndex) : null,
+    };
 
     ///<summary>Returns the next index.</summary>
     public MathListIndex Next => SubIndexType switch

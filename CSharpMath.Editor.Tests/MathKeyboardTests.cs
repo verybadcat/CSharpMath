@@ -277,6 +277,8 @@ namespace CSharpMath.Editor.Tests {
 
     [
       Theory,
+      T(@"\pi _{\square }", K.Subscript, K.Left, K.SmallPi),
+      T(@"\pi \theta _{\square }", K.SmallPi, K.Subscript, K.Left, K.SmallTheta),
       T(@"eA^{\square }", K.BaseEPower, K.Left, K.A),
       T(@"e\frac{■}{\square }^{\square }", K.BaseEPower, K.Left, K.Fraction),
       T(@"e\sqrt[3]{■}^{\square }", K.BaseEPower, K.Left, K.CubeRoot),
@@ -289,13 +291,13 @@ namespace CSharpMath.Editor.Tests {
         K.BaseEPower, K.Left, K.Subscript, K.Left, K.A, K.Fraction, K.Right, K.Right, K.NthRoot, K.Right, K.Right, K.B),
       T(@"\int \log _■^{\square }", K.IntegralUpperLimit, K.Left, K.LogarithmWithBase),
       T(@"\sum \prod _{\square }^■", K.SummationLowerLimit, K.Left, K.ProductUpperLimit),
-      T(@"\log \log _{\square }", K.LogarithmWithBase, K.Left, K.LogarithmWithBase),
-      T(@"\lim \lim _{\square }", K.LimitWithBase, K.Left, K.LimitWithBase),
-      T(@"\log \lim _{\square }", K.LogarithmWithBase, K.Left, K.LimitWithBase),
-      T(@"\prod \int ^{\square }", K.ProductUpperLimit, K.Left, K.IntegralUpperLimit),
-      T(@"\int \prod _{\square }^{\square }", K.IntegralBothLimits, K.Left, K.ProductBothLimits),
-      T(@"\sum \int _{\square }^{\square }", K.SummationBothLimits, K.Left, K.IntegralLowerLimit),
-      T(@"\prod \prod _{\square }^{\square }", K.ProductBothLimits, K.Left, K.ProductBothLimits),
+      T(@"\log \log _■", K.LogarithmWithBase, K.Left, K.LogarithmWithBase),
+      T(@"\lim \lim _■", K.LimitWithBase, K.Left, K.LimitWithBase),
+      T(@"\log \lim _■", K.LogarithmWithBase, K.Left, K.LimitWithBase),
+      T(@"\prod \int ^■", K.ProductUpperLimit, K.Left, K.IntegralUpperLimit),
+      T(@"\int \prod _■^{\square }", K.IntegralBothLimits, K.Left, K.ProductBothLimits),
+      T(@"\sum \int _■^{\square }", K.SummationBothLimits, K.Left, K.IntegralLowerLimit),
+      T(@"\prod \prod _■^{\square }", K.ProductBothLimits, K.Left, K.ProductBothLimits),
     ]
     public void BetweenBaseAndScriptsInsert(string latex, params K[] inputs) => Test(latex, inputs);
 

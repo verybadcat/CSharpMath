@@ -148,7 +148,7 @@ namespace CSharpMath.Display {
           };
           // This is Rule 14 to merge ordinary characters.
           // combine ordinary atoms together
-          if (newAtom is Ordinary && prevAtom is Ordinary { Superscript: null, Subscript: null }) {
+          if (newAtom is Ordinary && prevAtom is Ordinary o && o.Superscript.IsEmpty() && o.Subscript.IsEmpty()) {
             prevAtom.Fuse(newAtom);
             // skip the current node as we fused it
             continue;
