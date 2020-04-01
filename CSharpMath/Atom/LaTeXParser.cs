@@ -462,8 +462,9 @@ namespace CSharpMath.Atom {
 
     //should be \textrm instead of \text
     private static readonly MathAtom TeX = new Inner(Boundary.Empty,
-      MathListFromLaTeX(@"\text{T\kern-.1667em\raisebox{-.5ex}{E}\kern-.125emX}")
-      ?? throw new FormatException(@"A syntax error is present in the definition of \TeX."),
+      TryMathListFromLaTeX(@"\text{T\kern-.1667em\raisebox{-.5ex}{E}\kern-.125emX}")
+      .Match(mathList => mathList, e =>
+        throw new FormatException(@"A syntax error is present in the definition of \TeX.")),
       Boundary.Empty);
 
     private MathList? StopCommand(string command, MathList list, char stopChar) {
@@ -741,7 +742,9 @@ namespace CSharpMath.Atom {
         : throw new InvalidCodePathException("Both error and list are null?");
     }
 
-    public static MathList? MathListFromLaTeX(string str) => new LaTeXParser(str).Build();
+    public static MathList MathListFromLaTeX(string str) =>
+      TryMathListFromLaTeX(str).Match(list => list,
+          error => new MathList(new Color(Structures.Color.PredefinedColors["red"], new MathList(new Ordinary($"Error: {error}")))));
 
     // ^ LaTeX -> Math atoms
     // v Math atoms -> LaTeX

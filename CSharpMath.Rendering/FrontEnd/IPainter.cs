@@ -21,7 +21,7 @@ namespace CSharpMath.Rendering.FrontEnd {
     ObservableRangeCollection<Typeface> LocalTypefaces { get; }
     Atom.LineStyle LineStyle { get; set; }
     TContent? Content { get; set; }
-    string LaTeX { get; set; }
+    string? LaTeX { get; set; }
     #endregion Display-recreating properties
   }
   public static class IPainterExtensions {

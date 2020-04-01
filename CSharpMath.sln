@@ -95,7 +95,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Playground.Evalu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Playground.Evaluation.Nerdamer", "CSharpMath.Evaluation.Nerdamer\CSharpMath.Playground.Evaluation.Nerdamer.csproj", "{E13A50BC-8FE8-42E7-93E8-52D56E898DA3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Playground.Evaluation.MathNet", "CSharpMath.Evaluation.MathNet\CSharpMath.Playground.Evaluation.MathNet.csproj", "{7E6878CB-28F0-48F0-B778-B5305F822AD3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Playground.Evaluation.MathNet", "CSharpMath.Evaluation.MathNet\CSharpMath.Playground.Evaluation.MathNet.csproj", "{7E6878CB-28F0-48F0-B778-B5305F822AD3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms.Tests", "CSharpMath.Forms.Tests\CSharpMath.Forms.Tests.csproj", "{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSharpMath.Xaml", "CSharpMath.Xaml\CSharpMath.Xaml.shproj", "{D37416FB-3025-4A64-81CE-89DA21062ACB}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -107,12 +111,15 @@ Global
 		Typography\Typography.OpenFont\Typography.OpenFont.projitems*{235a071b-8d06-40ae-a5c5-b1ce59715ee9}*SharedItemsImports = 13
 		Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems*{2e593fca-b809-4270-9eb2-93f380af2d6c}*SharedItemsImports = 5
 		PixelFarm.Typography (Excerpt)\PixelFarm.Typography (Excerpt).projitems*{3eca00b3-0925-4418-b6f2-ac49aa3520bb}*SharedItemsImports = 13
+		CSharpMath.Xaml\CSharpMath.Xaml.projitems*{56166c6c-b3b4-4bae-823e-b3d24c080394}*SharedItemsImports = 5
 		PixelFarm.Typography (Excerpt)\PixelFarm.Typography (Excerpt).projitems*{65016a61-2125-4e0c-90e8-a915230c7826}*SharedItemsImports = 5
 		Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems*{65016a61-2125-4e0c-90e8-a915230c7826}*SharedItemsImports = 5
 		Typography\Typography.OpenFont\Typography.OpenFont.projitems*{65016a61-2125-4e0c-90e8-a915230c7826}*SharedItemsImports = 5
 		Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems*{65016a61-2125-4e0c-90e8-a915230c7826}*SharedItemsImports = 5
 		wiki\CSharpMath.Wiki.projitems*{883bcfb1-3aa8-4ab7-8f82-27b849716373}*SharedItemsImports = 13
 		Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems*{9a99f103-b119-4a4d-8093-6a03baa6d36b}*SharedItemsImports = 13
+		CSharpMath.Xaml\CSharpMath.Xaml.projitems*{9bad6846-0b1d-4446-bf62-fcf85c6e9a9f}*SharedItemsImports = 5
+		CSharpMath.Xaml\CSharpMath.Xaml.projitems*{d37416fb-3025-4a64-81ce-89da21062acb}*SharedItemsImports = 13
 		Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems*{d8861cf8-c506-472b-8a57-632bd6ca6496}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1469,6 +1476,54 @@ Global
 		{7E6878CB-28F0-48F0-B778-B5305F822AD3}.Release|x64.Build.0 = Release|Any CPU
 		{7E6878CB-28F0-48F0-B778-B5305F822AD3}.Release|x86.ActiveCfg = Release|Any CPU
 		{7E6878CB-28F0-48F0-B778-B5305F822AD3}.Release|x86.Build.0 = Release|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Ad-Hoc|Any CPU.ActiveCfg = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Ad-Hoc|Any CPU.Build.0 = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Ad-Hoc|ARM.ActiveCfg = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Ad-Hoc|ARM.Build.0 = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Ad-Hoc|iPhone.ActiveCfg = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Ad-Hoc|iPhone.Build.0 = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Ad-Hoc|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Ad-Hoc|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Ad-Hoc|x64.ActiveCfg = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Ad-Hoc|x64.Build.0 = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Ad-Hoc|x86.ActiveCfg = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Ad-Hoc|x86.Build.0 = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.AppStore|Any CPU.ActiveCfg = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.AppStore|Any CPU.Build.0 = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.AppStore|ARM.ActiveCfg = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.AppStore|ARM.Build.0 = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.AppStore|iPhone.ActiveCfg = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.AppStore|iPhone.Build.0 = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.AppStore|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.AppStore|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.AppStore|x64.ActiveCfg = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.AppStore|x64.Build.0 = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.AppStore|x86.ActiveCfg = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.AppStore|x86.Build.0 = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Debug|ARM.Build.0 = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Debug|x64.Build.0 = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Debug|x86.Build.0 = Debug|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Release|ARM.ActiveCfg = Release|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Release|ARM.Build.0 = Release|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Release|iPhone.Build.0 = Release|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Release|x64.ActiveCfg = Release|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Release|x64.Build.0 = Release|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Release|x86.ActiveCfg = Release|Any CPU
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1508,6 +1563,8 @@ Global
 		{039990A9-FBF8-421E-A40A-CAE2A34B7240} = {E7CDDECF-B87B-4114-932B-D3FB5E8302F8}
 		{E13A50BC-8FE8-42E7-93E8-52D56E898DA3} = {E7CDDECF-B87B-4114-932B-D3FB5E8302F8}
 		{7E6878CB-28F0-48F0-B778-B5305F822AD3} = {E7CDDECF-B87B-4114-932B-D3FB5E8302F8}
+		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E} = {C365BD30-D4E7-444A-A66D-25AAB9C67038}
+		{D37416FB-3025-4A64-81CE-89DA21062ACB} = {125C1FE9-F684-4E87-A9EF-969FD1E2D726}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3C9A56A6-4EA3-4228-B064-E4789B282032}

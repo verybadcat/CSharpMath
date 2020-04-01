@@ -58,17 +58,18 @@ namespace CSharpMath.Forms {
       .GetMethod(nameof(Painter<SKCanvas, TContent, SKColor>.Draw),
         new[] { typeof(SKCanvas), typeof(TextAlignment), typeof(Thickness), typeof(float), typeof(float) }).GetParameters();
     protected static readonly TPainter staticPainter = new TPainter();
-    protected static BindableProperty CreateProperty<T>(string propertyName, Func<TPainter, T> defaultValueGet, Action<TPainter, T> propertySet, Type? thisType = null) =>
+    protected static BindableProperty CreateProperty<T>(string propertyName, Func<TPainter, T> defaultValueGet, Action<TPainter, T> propertySet, Type? thisType = null, Action<BaseView<TPainter, TContent>, T>? updateOtherProperty = null) =>
       BindableProperty.Create(propertyName, typeof(T), thisType ?? typeof(BaseView<TPainter, TContent>), defaultValueGet(staticPainter),
         propertyChanged: (b, o, n) => {
           var p = (BaseView<TPainter, TContent>)b;
           propertySet(p.Painter, (T)n);
+          updateOtherProperty?.Invoke(p, (T)n);
           p.InvalidateSurface(); // Redraw immediately! No deferred drawing
         });
-
-    public string LaTeX { get => Painter.LaTeX; set => Painter.LaTeX = value; }
+    public string? LaTeX { get => (string?)GetValue(LaTeXProperty); set => SetValue(LaTeXProperty, value); }
+    public static readonly BindableProperty LaTeXProperty = CreateProperty(nameof(LaTeX), p => p.LaTeX, (p, v) => p.LaTeX = v, null, (b, v) => b.Content = b.Painter.Content);
     public TContent? Content { get => (TContent)GetValue(ContentProperty); set => SetValue(ContentProperty, value); }
-    public static readonly BindableProperty ContentProperty = CreateProperty(nameof(Content), p => p.Content, (p, v) => p.Content = v);
+    public static readonly BindableProperty ContentProperty = CreateProperty(nameof(Content), p => p.Content, (p, v) => p.Content = v, null, (b, v) => b.LaTeX = b.Painter.LaTeX);
     public bool DisplayErrorInline { get => (bool)GetValue(DisplayErrorInlineProperty); set => SetValue(DisplayErrorInlineProperty, value); }
     public static readonly BindableProperty DisplayErrorInlineProperty = CreateProperty(nameof(DisplayErrorInline), p => p.DisplayErrorInline, (p, v) => p.DisplayErrorInline = v);
     /// <summary>Unit of measure: points</summary>

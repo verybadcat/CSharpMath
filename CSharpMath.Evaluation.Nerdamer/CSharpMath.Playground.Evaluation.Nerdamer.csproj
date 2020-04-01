@@ -1,11 +1,16 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk" InitialTargets="Warn">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="nerdamer.cs"/>
     <EmbeddedResource Include="nerdamer.js"/>
     <PackageReference Include="Jurassic" Version="3.0.0" />
   </ItemGroup>
+  
+  <Target Name="Warn">
+    <Warning Text="Re-include nerdamer.cs"/>
+  </Target>
 </Project>

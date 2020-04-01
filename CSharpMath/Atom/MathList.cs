@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections;
 
 namespace CSharpMath.Atom {
-  [System.ComponentModel.TypeConverter(typeof(MathListTypeConverter))]
 #pragma warning disable CA1710 // Identifiers should have correct suffix
   // WTF CA1710, you want types inheriting IList to have the Collection suffix?
   class DisabledMathList : MathList {
@@ -11,6 +10,7 @@ namespace CSharpMath.Atom {
     public override void Add(MathAtom item) => throw new InvalidOperationException("Scripts are not allowed!");
     public override void Append(IEnumerable<MathAtom> list) => throw new InvalidOperationException("Scripts are not allowed!");
   }
+  [System.ComponentModel.TypeConverter(typeof(MathListTypeConverter))]
   public class MathList : IMathObject, IList<MathAtom>, IReadOnlyList<MathAtom>, IEquatable<MathList> {
 #pragma warning restore CA1710 // Identifiers should have correct suffix
     public List<MathAtom> Atoms { get; private set; }

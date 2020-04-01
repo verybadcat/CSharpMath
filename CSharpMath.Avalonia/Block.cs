@@ -45,6 +45,11 @@ namespace CSharpMath.Avalonia {
       Painter.Measure((float)availableSize.Width) is { } rect ? new Size(rect.Width, rect.Height) : Size.Empty;
     public override void Render(DrawingContext context) =>
       Painter.Draw(new AvaloniaCanvas(context, Bounds.Size), TextAlignment.ToCSharpMathTextAlignment());
+    /// <summary>For databinding, bind to <see cref="Content"/>.</summary>
+    public string LaTeX {
+      get => (string)System.ComponentModel.TypeDescriptor.GetConverter(typeof(TContent)).ConvertTo(Content, typeof(string));
+      set => Content = (TContent)System.ComponentModel.TypeDescriptor.GetConverter(typeof(TContent)).ConvertFrom(value);
+    }
     public TContent? Content { get => GetValue(ContentProperty); set => SetValue(ContentProperty, value); }
     public static readonly StyledProperty<TContent?> ContentProperty =
       AvaloniaProperty.Register<BaseBlock<TPainter, TContent>, TContent?>(nameof(Content));
