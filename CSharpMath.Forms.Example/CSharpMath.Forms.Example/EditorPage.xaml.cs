@@ -5,8 +5,6 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 namespace CSharpMath.Forms.Example {
-  using Display;
-  using Rendering;
   [XamlCompilation(XamlCompilationOptions.Compile)]
   public partial class EditorPage : ContentPage {
     public EditorPage() {
@@ -48,10 +46,28 @@ namespace CSharpMath.Forms.Example {
         index.Text = "Index = " + viewModel.InsertionIndex;
       };
 
+      static View GridItem(int row, int col, View view) {
+        Grid.SetRow(view, row);
+        Grid.SetColumn(view, col);
+        return view;
+      }
       // Assemble
-      Content = new StackLayout { Children = {
-          latex, atomTypes, ranges, index, view, keyboard, entry
-      } };
+      Content = new Grid {
+        RowDefinitions = {
+          new RowDefinition { Height = new GridLength(1, GridUnitType.Star) },
+          new RowDefinition { Height = new GridLength(2, GridUnitType.Star) },
+          new RowDefinition { Height = new GridLength(2, GridUnitType.Star) },
+        },
+        Children = {
+          GridItem(0, 0, new ScrollView {
+            Content = new StackLayout {
+              Children = { latex, atomTypes, ranges, index }
+            }
+          }),
+          GridItem(1, 0, view),
+          GridItem(2, 0, new StackLayout { Children = { keyboard, entry } })
+        }
+      };
     }
   }
 }

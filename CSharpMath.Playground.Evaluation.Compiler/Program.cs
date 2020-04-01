@@ -22,7 +22,7 @@ namespace CSharpMath.Playground.Evaluation.Compiler {
       clearScript.Execute("var module = {};");
       
       var nerdamerDocs =
-        (obj)clearScript.Evaluate(await http.GetStringAsync("https://raw.githubusercontent.com/Happypig375/nerdamer/patch-22/docgen/function_docs.js"));
+        (obj)clearScript.Evaluate(await http.GetStringAsync("https://raw.githubusercontent.com/jiggzson/nerdamer/gh-pages/docgen/function_docs.js"));
       foreach (var functionName in nerdamerDocs.PropertyNames) {
         var function = (obj)nerdamerDocs.GetProperty(functionName);
         string returns = (string)function.GetProperty(nameof(returns));
