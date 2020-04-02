@@ -16,8 +16,8 @@ namespace CSharpMath.Xaml.Tests {
   [Collection(nameof(TestFixture))]
   public abstract class Test<TColor, TBindingMode, TProperty, TBaseView, TMathView, TTextView>
     where TBindingMode : struct, Enum
-    where TMathView : TBaseView, IPainter<MathList, TColor>, new()
-    where TTextView : TBaseView, IPainter<TextAtom, TColor>, new() {
+    where TMathView : TBaseView, ICSharpMathAPI<MathList, TColor>, new()
+    where TTextView : TBaseView, ICSharpMathAPI<TextAtom, TColor>, new() {
     class ViewModel : INotifyPropertyChanged {
       void SetAndRaise<T>(ref T field, T value, [System.Runtime.CompilerServices.CallerMemberName] string? name = null) {
         field = value;

@@ -29,12 +29,11 @@ namespace CSharpMath.Rendering.FrontEnd {
     public float AdditionalLineSpacing { get; set; }
 
     protected override void SetRedisplay() { }
+    
     public override RectangleF? Measure(float canvasWidth) {
-      if (float.IsInfinity(canvasWidth) || float.IsNaN(canvasWidth))
-        canvasWidth = DefaultCanvasWidth; // Rationalize the input
       UpdateDisplay(canvasWidth);
       return 
-        _relativeXCoordDisplay?.Frame().Union(_absoluteXCoordDisplay.Frame());
+        _relativeXCoordDisplay.Frame().Union(_absoluteXCoordDisplay.Frame());
     }
     protected void UpdateDisplay(float canvasWidth) {
       if (Content != null)

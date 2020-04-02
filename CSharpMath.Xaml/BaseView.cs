@@ -21,7 +21,7 @@ using XControl = SkiaSharp.Views.Forms.SKCanvasView;
 namespace CSharpMath.Forms {
   [Xamarin.Forms.ContentProperty(nameof(LaTeX))]
 #endif
-  public class BaseView<TPainter, TContent> : XControl, IPainter<TContent, XColor>
+  public class BaseView<TPainter, TContent> : XControl, ICSharpMathAPI<TContent, XColor>
     where TPainter : Painter<XCanvas, TContent, XCanvasColor>, new() where TContent : class {
     public TPainter Painter { get; } = new TPainter();
 

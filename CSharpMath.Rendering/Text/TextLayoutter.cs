@@ -199,6 +199,17 @@ namespace CSharpMath.Rendering.Text {
         null
       );
       BreakLine(globalLine, relativePositionList, absolutePositionList); //remember to finalize the last line
+      if (float.IsInfinity(canvasWidth) || float.IsNaN(canvasWidth))
+        // In this case X of every display in absolutePositionList will be Infinity or NaN
+        // Use max(width of relativePositionList, width of absolutePositionList) as canvasWidth instead
+        foreach (var absDisplay in absolutePositionList)
+          absDisplay.Position = new System.Drawing.PointF(
+            IPainterExtensions.GetDisplayPosition
+              (absDisplay.Width, absDisplay.Ascent, absDisplay.Descent,
+               inputFont.PointSize, false,
+               Math.Max(relativePositionList.CollectionWidth(), absolutePositionList.Max(d => d.Width)), float.NaN,
+               TextAlignment.Top, default, default, default).X,
+            absDisplay.Position.Y);
       return (new Display(relativePositionList), new Display(absolutePositionList));
     }
   }

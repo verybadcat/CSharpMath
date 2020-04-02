@@ -66,10 +66,9 @@ namespace CSharpMath.Rendering.Tests {
     [Theory, ClassData(typeof(TextData))]
     public void Text(string file, string latex) =>
       Run(file, latex, nameof(Text), new TTextPainter());
-    [Fact]
-    public void TextPainterMeasure() {
-      Run("PositiveInfinity", @"22222$$\sum\int^3_2x\ dx$$3333", nameof(TextPainterMeasure), new TTextPainter(), float.PositiveInfinity);
-    }
+    [Theory, ClassData(typeof(TextData))]
+    public void TextInfiniteWidth(string file, string latex) =>
+      Run(file, latex, nameof(TextInfiniteWidth), new TTextPainter(), float.PositiveInfinity);
     protected void Run<TContent>(
       string inFile, string latex, string folder, Painter<TCanvas, TContent, TColor> painter,
       float textPainterCanvasWidth = TextPainter<TCanvas, TColor>.DefaultCanvasWidth) where TContent : class {

@@ -15,9 +15,6 @@ namespace CSharpMath.Avalonia {
     public static AvaloniaColor ToAvaloniaColor(this CSharpMathColor color) =>
         new AvaloniaColor(color.A, color.R, color.G, color.B);
 
-    public static Size ToAvaloniaSize(this SizeF size) =>
-        new Size(size.Width, size.Height);
-
     internal static CSharpMathColor ToCSharpMathColor(this AvaloniaColor color) =>
         new CSharpMathColor(color.R, color.G, color.B, color.A);
 
