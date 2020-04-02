@@ -9,7 +9,7 @@ namespace CSharpMath.Rendering.Text {
   using FrontEnd;
   using Display = Display.Displays.ListDisplay<BackEnd.Fonts, BackEnd.Glyph>;
   using CSharpMath.Structures;
-  public static class TextLayoutter {
+  public static class TextTypesetter {
     public static (Display relative, Display absolute) Layout
       (TextAtom input, Fonts inputFont, float canvasWidth, float additionalLineSpacing) {
 #warning Multiply these constants by resolution

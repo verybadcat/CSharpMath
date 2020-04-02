@@ -9,6 +9,7 @@ namespace CSharpMath.Xaml.Tests {
   public class TestXamarinForms
     : Test<Color, BindingMode, BindableProperty, SKCanvasView, MathView, TextView> {
     protected override BindingMode Default => BindingMode.Default;
+    protected override BindingMode OneWayToSource => BindingMode.OneWayToSource;
     protected override BindingMode TwoWay => BindingMode.TwoWay;
     protected override void SetBinding(SKCanvasView view, BindableProperty property, string viewModelProperty, BindingMode bindingMode) =>
       view.SetBinding(property, viewModelProperty, bindingMode);

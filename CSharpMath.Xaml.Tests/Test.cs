@@ -18,18 +18,19 @@ namespace CSharpMath.Xaml.Tests {
     where TBindingMode : struct, Enum
     where TMathView : TBaseView, ICSharpMathAPI<MathList, TColor>, new()
     where TTextView : TBaseView, ICSharpMathAPI<TextAtom, TColor>, new() {
-    class ViewModel : INotifyPropertyChanged {
+    class ViewModel<TContent> : INotifyPropertyChanged where TContent : class {
       void SetAndRaise<T>(ref T field, T value, [System.Runtime.CompilerServices.CallerMemberName] string? name = null) {
         field = value;
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
       }
-      string latex = "";
-      public string LaTeX { get => latex; set => SetAndRaise(ref latex, value); }
-      MathList content = new MathList();
-      public MathList Content { get => content; set => SetAndRaise(ref content, value); }
+      string? latex = "";
+      public string? LaTeX { get => latex; set => SetAndRaise(ref latex, value); }
+      TContent? content;
+      public TContent? Content { get => content; set => SetAndRaise(ref content, value); }
       public event PropertyChangedEventHandler? PropertyChanged;
     }
     protected abstract TBindingMode Default { get; }
+    protected abstract TBindingMode OneWayToSource { get; }
     protected abstract TBindingMode TwoWay { get; }
     protected abstract void SetBindingContext(TBaseView view, object viewModel);
     protected abstract void SetBinding(TBaseView view, TProperty property, string viewModelProperty, TBindingMode bindingMode);
@@ -42,97 +43,138 @@ namespace CSharpMath.Xaml.Tests {
         bindingMode ?? Default);
     [Fact]
     public void LaTeXUpdatesContent() {
-      var mathView = new TMathView { LaTeX = "1" };
-      Assert.Equal(new MathList(new Atom.Atoms.Number("1")), mathView.Content);
-      Assert.Null(mathView.ErrorMessage);
+      static void Test<TView, TContent>(TView view, TContent content)
+        where TView : TBaseView, ICSharpMathAPI<TContent, TColor> where TContent : class {
+        view.LaTeX = "1";
+        Assert.Equal(content, view.Content);
+        Assert.Equal("1", view.LaTeX);
+        Assert.Null(view.ErrorMessage);
+      }
+      Test(new TMathView(), new MathList(new Atom.Atoms.Number("1")));
+      Test(new TTextView(), (TextAtom)new TextAtom.Text("1"));
     }
     [Fact]
     public void ContentUpdatesLaTeX() {
-      var mathView = new TMathView { Content = new MathList(new Atom.Atoms.Number("1")) };
-      Assert.Equal("1", mathView.LaTeX);
-      Assert.Null(mathView.ErrorMessage);
+      static void Test<TView, TContent>(TView view, TContent content)
+        where TView : TBaseView, ICSharpMathAPI<TContent, TColor> where TContent : class {
+        view.Content = content;
+        Assert.Equal(view.Content, content);
+        Assert.Equal("1", view.LaTeX);
+        Assert.Null(view.ErrorMessage);
+      }
+      Test(new TMathView(), new MathList(new Atom.Atoms.Number("1")));
+      Test(new TTextView(), (TextAtom)new TextAtom.Text("1"));
     }
     [Fact]
     public void ContentIsBindable() {
-      var viewModel = new ViewModel();
-      var mathView = new TMathView();
-      SetBindingContext(mathView, viewModel);
-      SetBinding(mathView, nameof(ViewModel.Content));
+      void Test<TView, TContent>(TView view, TContent one, TContent two, TContent three)
+        where TView : TBaseView, ICSharpMathAPI<TContent, TColor> where TContent : class {
+        var viewModel = new ViewModel<TContent>();
+        SetBindingContext(view, viewModel);
+        SetBinding(view, nameof(viewModel.Content));
 
-      viewModel.Content = new MathList(new Atom.Atoms.Number("1"));
-      Assert.Equal(new MathList(new Atom.Atoms.Number("1")), mathView.Content);
-      Assert.Equal("1", mathView.LaTeX);
-      Assert.Null(mathView.ErrorMessage);
+        viewModel.Content = one;
+        Assert.Equal(one, view.Content);
+        Assert.Equal("1", view.LaTeX);
+        Assert.Null(view.ErrorMessage);
 
-      mathView.Content = new MathList(new Atom.Atoms.Number("2"));
-      Assert.Equal(new MathList(new Atom.Atoms.Number("1")), viewModel.Content); // Because one-way binding
-      Assert.Equal("2", mathView.LaTeX);
-      Assert.Null(mathView.ErrorMessage);
+        view.Content = two;
+        Assert.Equal(one, viewModel.Content); // Because one-way binding
+        Assert.Equal("2", view.LaTeX);
+        Assert.Null(view.ErrorMessage);
 
-      SetBinding(mathView, nameof(ViewModel.Content), TwoWay);
-      mathView.Content = new MathList(new Atom.Atoms.Number("3"));
-      Assert.Equal(new MathList(new Atom.Atoms.Number("3")), viewModel.Content);
-      Assert.Equal("3", mathView.LaTeX);
-      Assert.Null(mathView.ErrorMessage);
+        SetBinding(view, nameof(viewModel.Content), TwoWay);
+        view.Content = three;
+        Assert.Equal(three, viewModel.Content);
+        Assert.Equal("3", view.LaTeX);
+        Assert.Null(view.ErrorMessage);
+      }
+      Test(new TMathView(),
+        new MathList(new Atom.Atoms.Number("1")),
+        new MathList(new Atom.Atoms.Number("2")),
+        new MathList(new Atom.Atoms.Number("3")));
+      Test(new TTextView(),
+        (TextAtom)new TextAtom.Text("1"),
+        new TextAtom.Text("2"),
+        new TextAtom.Text("3"));
     }
     [Fact]
     public void LaTeXIsBindable() {
-      var viewModel = new ViewModel();
-      var mathView = new TMathView();
-      SetBindingContext(mathView, viewModel);
-      SetBinding(mathView, nameof(ViewModel.LaTeX));
+      void Test<TView, TContent>(TView view, TContent one, TContent two, TContent three)
+        where TView : TBaseView, ICSharpMathAPI<TContent, TColor> where TContent : class {
+        var viewModel = new ViewModel<TContent>();
+        SetBindingContext(view, viewModel);
+        SetBinding(view, nameof(viewModel.LaTeX));
 
-      viewModel.LaTeX = "1";
-      Assert.Equal("1", mathView.LaTeX);
-      Assert.Equal(new MathList(new Atom.Atoms.Number("1")), mathView.Content);
-      Assert.Null(mathView.ErrorMessage);
+        viewModel.LaTeX = "1";
+        Assert.Equal("1", view.LaTeX);
+        Assert.Equal(one, view.Content);
+        Assert.Null(view.ErrorMessage);
 
-      mathView.LaTeX = "2";
-      Assert.Equal("1", viewModel.LaTeX); // Because one-way binding
-      Assert.Equal(new MathList(new Atom.Atoms.Number("2")), mathView.Content);
-      Assert.Null(mathView.ErrorMessage);
+        view.LaTeX = "2";
+        Assert.Equal("1", viewModel.LaTeX); // Because one-way binding
+        Assert.Equal(two, view.Content);
+        Assert.Null(view.ErrorMessage);
 
-      SetBinding(mathView, nameof(ViewModel.LaTeX), TwoWay);
-      mathView.LaTeX = "3";
-      Assert.Equal("3", viewModel.LaTeX);
-      Assert.Equal(new MathList(new Atom.Atoms.Number("3")), mathView.Content);
-      Assert.Null(mathView.ErrorMessage);
+        SetBinding(view, nameof(viewModel.LaTeX), TwoWay);
+        view.LaTeX = "3";
+        Assert.Equal("3", viewModel.LaTeX);
+        Assert.Equal(three, view.Content);
+        Assert.Null(view.ErrorMessage);
+      }
+      Test(new TMathView(),
+        new MathList(new Atom.Atoms.Number("1")),
+        new MathList(new Atom.Atoms.Number("2")),
+        new MathList(new Atom.Atoms.Number("3")));
+      Test(new TTextView(),
+        (TextAtom)new TextAtom.Text("1"),
+        new TextAtom.Text("2"),
+        new TextAtom.Text("3"));
     }
     [Fact]
-    public void LaTeXIsBindable_Error() {
-      var viewModel = new ViewModel();
-      var mathView = new TMathView();
-      SetBindingContext(mathView, viewModel);
-      SetBinding(mathView, nameof(ViewModel.LaTeX));
+    public void ErrorMessageUpdates() {
+      void Test<TView, TContent>(TView view, TContent oneTwoThree)
+        where TView : TBaseView, ICSharpMathAPI<TContent, TColor> where TContent : class {
+        var viewModel = new ViewModel<TContent>();
+        SetBindingContext(view, viewModel);
+        SetBinding(view, nameof(viewModel.LaTeX));
 
-      viewModel.LaTeX = @"\alpha\beta\gamme";
-      Assert.Equal(@"\alpha\beta\gamme", mathView.LaTeX);
-      Assert.Null(mathView.Content);
-      Assert.Equal(@"Invalid command \gamme", mathView.ErrorMessage);
+        viewModel.LaTeX = @"\alpha\beta\gamme";
+        Assert.Equal(@"\alpha\beta\gamme", view.LaTeX);
+        Assert.Null(view.Content);
+        Assert.Equal(@"Invalid command \gamme", view.ErrorMessage);
+
+        SetBinding(view, nameof(viewModel.LaTeX), OneWayToSource);
+        view.LaTeX = @"123";
+        Assert.Equal(@"123", view.LaTeX);
+        Assert.Equal(@"123", viewModel.LaTeX);
+        Assert.Equal(oneTwoThree, view.Content);
+        Assert.Null(view.ErrorMessage);
+
+        SetBinding(view, nameof(viewModel.LaTeX));
+        viewModel.LaTeX = @"\\\";
+        Assert.Equal(@"\\\", view.LaTeX);
+        Assert.Null(view.Content);
+        Assert.Equal(@"Invalid command \", view.ErrorMessage);
+      }
+      Test(new TMathView(), new MathList(new Atom.Atoms.Number("1"), new Atom.Atoms.Number("2"), new Atom.Atoms.Number("3")));
+      Test(new TTextView(), (TextAtom)new TextAtom.Text("123"));
     }
     [Fact]
-    public void LaTeXIsBindable_Formatting() {
-      var viewModel = new ViewModel();
-      var mathView = new TMathView();
-      SetBindingContext(mathView, viewModel);
-      SetBinding(mathView, nameof(ViewModel.LaTeX));
+    public void LaTeXAutoFormats() {
+      void Test<TView, TContent>(TView view, string expected, TContent alphaBetaGamma)
+        where TView : TBaseView, ICSharpMathAPI<TContent, TColor> where TContent : class {
+        var viewModel = new ViewModel<TContent>();
+        SetBindingContext(view, viewModel);
+        SetBinding(view, nameof(viewModel.LaTeX));
 
-      viewModel.LaTeX = @"\alpha\beta\gamma";
-      Assert.Equal(@"\alpha \beta \gamma ", mathView.LaTeX);
-      Assert.Equal(new MathList(new Atom.Atoms.Variable("α"), new Atom.Atoms.Variable("β"), new Atom.Atoms.Variable("γ")), mathView.Content);
-      Assert.Null(mathView.ErrorMessage);
-    }
-    [Fact]
-    public void LaTeXIsBindable_Formatting2() {
-      var viewModel = new ViewModel();
-      var mathView = new TMathView();
-      SetBindingContext(mathView, viewModel);
-      SetBinding(mathView, nameof(ViewModel.LaTeX));
-
-      viewModel.LaTeX = @"\begin{cases} y=x^2-x+3 \\ y=x^2+\sqrt x-\frac2x \end{cases}";
-      Assert.Equal(@"\left\{ \, \begin{array}{l}\textstyle y=x^2-x+3\\ \textstyle y=x^2+\sqrt{x}-\frac{2}{x}\end{array}\right. ", mathView.LaTeX);
-      Assert.NotNull(mathView.Content);
-      Assert.Null(mathView.ErrorMessage);
+        viewModel.LaTeX = @"\alpha\beta\gamma";
+        Assert.Equal(expected, view.LaTeX);
+        Assert.Equal(alphaBetaGamma, view.Content);
+        Assert.Null(view.ErrorMessage);
+      }
+      Test(new TMathView(), @"\alpha \beta \gamma ", new MathList(new Atom.Atoms.Variable("α"), new Atom.Atoms.Variable("β"), new Atom.Atoms.Variable("γ")));
+      Test(new TTextView(), @"αβγ", (TextAtom)new TextAtom.List(new[] { new TextAtom.Text("α"), new TextAtom.Text("β"), new TextAtom.Text("γ") }));
     }
   }
 }

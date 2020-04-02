@@ -23,8 +23,8 @@ namespace CSharpMath.Rendering.FrontEnd {
     public ListDisplay<Fonts, Glyph> _absoluteXCoordDisplay = new ListDisplay<Fonts, Glyph>(System.Array.Empty<IDisplay<Fonts, Glyph>>());
     public ListDisplay<Fonts, Glyph> _relativeXCoordDisplay = new ListDisplay<Fonts, Glyph>(System.Array.Empty<IDisplay<Fonts, Glyph>>());
     public override string? LaTeX {
-      get => Content is null ? "" : TextLaTeXBuilder.TextAtomToLaTeX(Content).ToString();
-      set => (Content, ErrorMessage) = TextLaTeXBuilder.TextAtomFromLaTeX(value ?? "");
+      get => Content is null ? "" : TextLaTeXParser.TextAtomToLaTeX(Content).ToString();
+      set => (Content, ErrorMessage) = TextLaTeXParser.TextAtomFromLaTeX(value ?? "");
     }
     public float AdditionalLineSpacing { get; set; }
 
@@ -38,7 +38,7 @@ namespace CSharpMath.Rendering.FrontEnd {
     protected void UpdateDisplay(float canvasWidth) {
       if (Content != null)
         (_relativeXCoordDisplay, _absoluteXCoordDisplay) =
-          TextLayoutter.Layout(Content, Fonts, canvasWidth, AdditionalLineSpacing);
+          TextTypesetter.Layout(Content, Fonts, canvasWidth, AdditionalLineSpacing);
     }
 
     public override void Draw(TCanvas canvas,

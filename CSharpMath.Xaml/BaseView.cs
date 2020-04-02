@@ -26,11 +26,13 @@ namespace CSharpMath.Forms {
     public TPainter Painter { get; } = new TPainter();
 
     protected static readonly TPainter staticPainter = new TPainter();
-    protected static XProperty CreateProperty<TThis, TValue>(string propertyName,
+    protected static XProperty CreateProperty<TThis, TValue>(
+      string propertyName,
       bool affectsMeasure,
       Func<TPainter, TValue> defaultValueGet,
       Action<TPainter, TValue> propertySet,
-      Action<BaseView<TPainter, TContent>, TValue>? updateOtherProperty = null) where TThis : BaseView<TPainter, TContent> {
+      Action<BaseView<TPainter, TContent>, TValue>? updateOtherProperty = null)
+      where TThis : BaseView<TPainter, TContent> {
       var defaultValue = defaultValueGet(staticPainter);
       void PropertyChanged(BaseView<TPainter, TContent> @this, object newValue) {
         propertySet(@this.Painter, (TValue)newValue);
@@ -140,14 +142,17 @@ namespace CSharpMath.Forms {
     public static readonly XProperty GlyphBoxColorProperty = CreateProperty<BaseView<TPainter, TContent>, (XColor glyph, XColor textRun)?>(nameof(GlyphBoxColor), false,
       p => p.GlyphBoxColor is var (glyph, textRun) ? Nullable((XCanvasColorToXColor(glyph), XCanvasColorToXColor(textRun))) : null,
       (p, v) => p.GlyphBoxColor = v is var (glyph, textRun) ? Nullable((XColorToXCanvasColor(glyph), XColorToXCanvasColor(textRun))) : null);
-
+    public TContent? Content { get => (TContent)GetValue(ContentProperty); set => SetValue(ContentProperty, value); }
+    public static readonly XProperty ContentProperty = CreateProperty<BaseView<TPainter, TContent>, TContent?>(nameof(Content), true, p => p.Content, (p, v) => p.Content = v, (b, v) => {
+      if (b.Painter.ErrorMessage == null)
+        b.LaTeX = b.Painter.LaTeX;
+    });
 #if Avalonia
     [global::Avalonia.Metadata.Content]
 #endif
     public string? LaTeX { get => (string?)GetValue(LaTeXProperty); set => SetValue(LaTeXProperty, value); }
     public static readonly XProperty LaTeXProperty = CreateProperty<BaseView<TPainter, TContent>, string?>(nameof(LaTeX), true, p => p.LaTeX, (p, v) => p.LaTeX = v, (b, v) => (b.Content, b.ErrorMessage) = (b.Painter.Content, b.Painter.ErrorMessage));
-    public TContent? Content { get => (TContent)GetValue(ContentProperty); set => SetValue(ContentProperty, value); }
-    public static readonly XProperty ContentProperty = CreateProperty<BaseView<TPainter, TContent>, TContent?>(nameof(Content), true, p => p.Content, (p, v) => p.Content = v, (b, v) => b.LaTeX = b.Painter.LaTeX);
+
     public bool DisplayErrorInline { get => (bool)GetValue(DisplayErrorInlineProperty); set => SetValue(DisplayErrorInlineProperty, value); }
     public static readonly XProperty DisplayErrorInlineProperty = CreateProperty<BaseView<TPainter, TContent>, bool>(nameof(DisplayErrorInline), true, p => p.DisplayErrorInline, (p, v) => p.DisplayErrorInline = v);
     /// <summary>Unit of measure: points</summary>

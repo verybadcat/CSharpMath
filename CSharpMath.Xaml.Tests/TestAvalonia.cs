@@ -11,6 +11,7 @@ namespace CSharpMath.Xaml.Tests {
   public class TestAvalonia
     : Test<Color, BindingMode, AvaloniaProperty, Control, MathView, TextView> {
     protected override BindingMode Default => BindingMode.Default;
+    protected override BindingMode OneWayToSource => BindingMode.OneWayToSource;
     protected override BindingMode TwoWay => BindingMode.TwoWay;
     protected override void SetBinding(Control view, AvaloniaProperty property, string viewModelProperty, BindingMode bindingMode) =>
       view.Bind(property, new Binding(viewModelProperty, bindingMode));

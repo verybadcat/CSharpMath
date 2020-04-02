@@ -7,7 +7,7 @@ namespace CSharpMath.Rendering.Text {
   using Atom;
   using CSharpMath.Structures;
   using static CSharpMath.Structures.Result;
-  public static class TextLaTeXBuilder {
+  public static class TextLaTeXParser {
     /* //Paste this into the C# Interactive, fill <username> yourself
 #r "C:/Users/<username>/source/repos/CSharpMath/Typography/Build/NetStandard/Typography.TextBreak/bin/Debug/netstandard1.3/Typography.TextBreak.dll"
 using Typography.TextBreak;
@@ -123,7 +123,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
             if (success) ObtainSection(latexInput, i, out startAt, out endAt, out section, out wordKind);
             return success;
           }
-          Result<TextAtom.List> ReadArgumentAtom(ReadOnlySpan<char> latexInput) {
+          Result<TextAtom> ReadArgumentAtom(ReadOnlySpan<char> latexInput) {
             backslashEscape = false;
             var argAtoms = new TextAtomListBuilder();
             return BuildBreakList(latexInput, argAtoms, ++i, true, '\0')
@@ -414,7 +414,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                   break;
                 case var command:
                   if (displayMath != null) mathLaTeX.Append(command); //don't eat the command when parsing math
-                  else return $@"Unknown command \{command}";
+                  else return $@"Invalid command \{command}";
                   break;
               }
               backslashEscape = false;
@@ -423,7 +423,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
           afterNewline = false;
           if (oneCharOnly) return Ok(i);
         }
-        if (backslashEscape) return @"Unknown command \";
+        if (backslashEscape) return @"Invalid command \";
         if (stopChar > 0) return stopChar == '}' ? "Expected }, unbalanced braces" : $@"Expected {stopChar}";
         return Ok(i);
       }
@@ -463,7 +463,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
             .AppendInBracesOrEmptyBraces(TextAtomToLaTeX(z.Content, new StringBuilder()).ToString());
         case TextAtom.List l:
           foreach (var a in l.Content)
-            b.Append(TextAtomToLaTeX(a, b));
+            TextAtomToLaTeX(a, b);
           return b;
         case null:
           throw new ArgumentNullException(nameof(atom),
