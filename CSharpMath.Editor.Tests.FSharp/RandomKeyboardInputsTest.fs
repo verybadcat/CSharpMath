@@ -59,3 +59,5 @@ let ``random inputs don't crash editor``() =
         let shortestSublist = findShortening kl
         try tryList shortestSublist
         with ex -> failwithf "Exeption: %s inputs: %A" ex.Message shortestSublist
+
+let [<EntryPoint>] main _ = 0
