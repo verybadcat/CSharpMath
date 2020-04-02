@@ -8,7 +8,7 @@ using Avalonia.Media;
 
 namespace CSharpMath.Xaml.Tests {
   using Avalonia;
-  class TestAvalonia
+  public class TestAvalonia
     : Test<Color, BindingMode, AvaloniaProperty, Control, MathView, TextView> {
     protected override BindingMode Default => BindingMode.Default;
     protected override BindingMode TwoWay => BindingMode.TwoWay;

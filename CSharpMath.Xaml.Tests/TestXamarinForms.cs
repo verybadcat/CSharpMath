@@ -6,7 +6,7 @@ using SkiaSharp.Views.Forms;
 
 namespace CSharpMath.Xaml.Tests {
   using Forms;
-  class TestXamarinForms
+  public class TestXamarinForms
     : Test<Color, BindingMode, BindableProperty, SKCanvasView, MathView, TextView> {
     protected override BindingMode Default => BindingMode.Default;
     protected override BindingMode TwoWay => BindingMode.TwoWay;

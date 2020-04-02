@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Reflection;
 using Xunit;
 
 namespace CSharpMath.Xaml.Tests {
@@ -35,7 +36,7 @@ namespace CSharpMath.Xaml.Tests {
     void SetBinding<TView>(TView view, string propertyName, TBindingMode? bindingMode = null) where TView : TBaseView =>
       SetBinding(view,
         (TProperty)typeof(TView)
-        .GetField(propertyName + "Property", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
+        .GetField(propertyName + "Property", BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
         ?.GetValue(view) ?? throw new NotImplementedException($"Property not found in {typeof(TView)}: {propertyName}"),
         propertyName,
         bindingMode ?? Default);
@@ -78,6 +79,7 @@ namespace CSharpMath.Xaml.Tests {
     public void LaTeXIsBindable() {
       var viewModel = new ViewModel();
       var mathView = new TMathView();
+      SetBindingContext(mathView, viewModel);
       SetBinding(mathView, nameof(ViewModel.LaTeX));
 
       viewModel.LaTeX = "1";
@@ -100,17 +102,19 @@ namespace CSharpMath.Xaml.Tests {
     public void LaTeXIsBindable_Error() {
       var viewModel = new ViewModel();
       var mathView = new TMathView();
+      SetBindingContext(mathView, viewModel);
       SetBinding(mathView, nameof(ViewModel.LaTeX));
 
       viewModel.LaTeX = @"\alpha\beta\gamme";
       Assert.Equal(@"\alpha\beta\gamme", mathView.LaTeX);
       Assert.Null(mathView.Content);
-      Assert.Null(mathView.ErrorMessage);
+      Assert.Equal(@"Invalid command \gamme", mathView.ErrorMessage);
     }
     [Fact]
     public void LaTeXIsBindable_Formatting() {
       var viewModel = new ViewModel();
       var mathView = new TMathView();
+      SetBindingContext(mathView, viewModel);
       SetBinding(mathView, nameof(ViewModel.LaTeX));
 
       viewModel.LaTeX = @"\alpha\beta\gamma";
@@ -122,6 +126,7 @@ namespace CSharpMath.Xaml.Tests {
     public void LaTeXIsBindable_Formatting2() {
       var viewModel = new ViewModel();
       var mathView = new TMathView();
+      SetBindingContext(mathView, viewModel);
       SetBinding(mathView, nameof(ViewModel.LaTeX));
 
       viewModel.LaTeX = @"\begin{cases} y=x^2-x+3 \\ y=x^2+\sqrt x-\frac2x \end{cases}";

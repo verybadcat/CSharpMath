@@ -59,10 +59,9 @@ namespace CSharpMath.Forms {
       : base.MeasureOverride(availableSize);
     struct ReadOnlyProperty<TThis, TValue> where TThis : BaseView<TPainter, TContent> {
       public ReadOnlyProperty(string propertyName,
-        Func<TThis, TValue> getter,
-        Func<TPainter, TValue> defaultValueGet) {
-        Property = XProperty.RegisterDirect(propertyName, getter);
-        _value = defaultValueGet(staticPainter);
+        Func<TPainter, TValue> getter) {
+        Property = XProperty.RegisterDirect<TThis, TValue>(propertyName, b => getter(b.Painter), null, getter(staticPainter));
+        _value = getter(staticPainter);
       }
       TValue _value;
       public global::Avalonia.DirectProperty<TThis, TValue> Property;
@@ -85,9 +84,8 @@ namespace CSharpMath.Forms {
       : base.OnMeasure(widthConstraint, heightConstraint);
     struct ReadOnlyProperty<TThis, TValue> where TThis : BaseView<TPainter, TContent> {
       public ReadOnlyProperty(string propertyName,
-        Func<TThis, TValue> getter,
-        Func<TPainter, TValue> defaultValueGet) {
-        _key = XProperty.CreateReadOnly(propertyName, typeof(TValue), typeof(TThis), defaultValueGet(staticPainter));
+        Func<TPainter, TValue> getter) {
+        _key = XProperty.CreateReadOnly(propertyName, typeof(TValue), typeof(TThis), getter(staticPainter));
       }
       readonly Xamarin.Forms.BindablePropertyKey _key;
       public XProperty Property => _key.BindableProperty;
@@ -179,7 +177,7 @@ namespace CSharpMath.Forms {
     public LineStyle LineStyle { get => (LineStyle)GetValue(LineStyleProperty); set => SetValue(LineStyleProperty, value); }
     public static readonly XProperty LineStyleProperty = CreateProperty<BaseView<TPainter, TContent>, LineStyle>(nameof(LineStyle), false, p => p.LineStyle, (p, v) => p.LineStyle = v);
 
-    private static readonly ReadOnlyProperty<BaseView<TPainter, TContent>, string?> ErrorMessagePropertyKey = new ReadOnlyProperty<BaseView<TPainter, TContent>, string?>(nameof(ErrorMessage), b => b.ErrorMessage, p => p.ErrorMessage);
+    private static readonly ReadOnlyProperty<BaseView<TPainter, TContent>, string?> ErrorMessagePropertyKey = new ReadOnlyProperty<BaseView<TPainter, TContent>, string?>(nameof(ErrorMessage), p => p.ErrorMessage);
     public static readonly XProperty ErrorMessageProperty = ErrorMessagePropertyKey.Property;
     public string? ErrorMessage { get => (string?)GetValue(ErrorMessageProperty); private set => ErrorMessagePropertyKey.SetValue(this, value); }
 
