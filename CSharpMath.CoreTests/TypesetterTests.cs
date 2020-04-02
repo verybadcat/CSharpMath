@@ -9,7 +9,7 @@ using TGlyph = System.Char;
 using TFont = CSharpMath.CoreTests.FrontEnd.TestFont;
 
 namespace CSharpMath.CoreTests {
-  public class DisplayTests {
+  public class TypesetterTests {
     private readonly TFont _font = new TFont(20);
     private readonly TypesettingContext<TFont, TGlyph> _context = TestTypesettingContexts.Instance;
 
@@ -33,7 +33,7 @@ namespace CSharpMath.CoreTests {
     void TestOuter(string latex, int rangeMax, double ascent, double descent, double width,
         params System.Action<IDisplay<TFont, TGlyph>>[] inspectors) =>
       TestList(rangeMax, ascent, descent, width, 0, 0, LinePosition.Regular, Range.UndefinedInt, inspectors)
-      (Typesetter.CreateLine(Atom.LaTeXParserTest.ParseLaTeX(latex), _font, _context, LineStyle.Display));
+      (Typesetter.CreateLine(LaTeXParserTest.ParseLaTeX(latex), _font, _context, LineStyle.Display));
 
     [Theory, InlineData("x"), InlineData("2")]
     public void TestSimpleVariable(string latex) =>

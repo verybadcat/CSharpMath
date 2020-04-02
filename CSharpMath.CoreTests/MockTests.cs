@@ -3,7 +3,7 @@ using Xunit;
 using TGlyph = System.Char;
 using CSharpMath.Display;
 
-namespace CSharpMath.CoreTests.Mocks {
+namespace CSharpMath.CoreTests {
   // purpose of this class is to make sure our mocks behave as expected.
   public class MockTests {
     [Fact]
@@ -25,5 +25,11 @@ namespace CSharpMath.CoreTests.Mocks {
       var width = provider.GetTypographicWidth(font, glyphRun);
       Approximately.Equal(width, 40, 0.01);
     }
+    [Fact]
+    public void ResourceProviderFindsResource() =>
+      Assert.NotNull(Resources.ManifestResources.LatinMathContent);
+    [Fact]
+    public void ResourceProviderFindsMathConfiguration() =>
+      Assert.IsType<Newtonsoft.Json.Linq.JObject>(Resources.ManifestResources.LatinMath["constants"]);
   }
 }

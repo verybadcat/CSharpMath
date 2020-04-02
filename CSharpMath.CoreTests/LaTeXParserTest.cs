@@ -5,7 +5,7 @@ using Xunit;
 using CSharpMath.Atom;
 using CSharpMath.Atom.Atoms;
 
-namespace CSharpMath.CoreTests.Atom {
+namespace CSharpMath.CoreTests {
   public class LaTeXParserTest {
     public static MathList ParseLaTeX(string latex) {
       var builder = new LaTeXParser(latex);
@@ -422,6 +422,7 @@ namespace CSharpMath.CoreTests.Atom {
         CheckAtom<Inner>("", inner =>
           Assert.Collection(inner.InnerList,
             CheckAtom<Table>("", table => {
+              Assert.Equal("matrix", table.Environment);
               Assert.Equal(0, table.InterRowAdditionalSpacing);
               Assert.Equal(18, table.InterColumnSpacing);
               Assert.Equal(2, table.NRows);
@@ -487,13 +488,15 @@ namespace CSharpMath.CoreTests.Atom {
     }
 
     [Theory]
-    [InlineData(@"\begin{eqalign}x&y\\ z&w\end{eqalign}")]
-    [InlineData(@"\begin{split}x&y\\ z&w\end{split}")]
-    [InlineData(@"\begin{aligned}x&y\\ z&w\end{aligned}")]
-    public void TestEqAlign(string input) {
+    [InlineData("eqalign")]
+    [InlineData("split")]
+    [InlineData("aligned")]
+    public void TestEqAlign(string environment) {
+      var input = $@"\begin{{{environment}}}x&y\\ z&w\end{{{environment}}}";
       var list = ParseLaTeX(input);
       var table = Assert.IsType<Table>(Assert.Single(list));
       CheckAtom<Table>("")(table);
+      Assert.Equal(environment, table.Environment);
       Assert.Equal(1, table.InterRowAdditionalSpacing);
       Assert.Equal(0, table.InterColumnSpacing);
       Assert.Equal(2, table.NRows);
@@ -517,13 +520,15 @@ namespace CSharpMath.CoreTests.Atom {
     }
 
     [Theory]
-    [InlineData(@"\begin{array}{c}x\\ y\end{array}", 18)]
-    [InlineData(@"\begin{displaylines}x\\ y\end{displaylines}", 0)]
-    [InlineData(@"\begin{gather}x\\ y\end{gather}", 0)]
-    public void TestDisplayLines(string input, float columnSpacing) {
+    [InlineData("array", 18)]
+    [InlineData("displaylines", 0)]
+    [InlineData("gather", 0)]
+    public void TestDisplayLines(string environment, float columnSpacing) {
+      var input = $@"\begin{{{environment}}}{(environment == "array" ? "{c}" : null)}x\\ y\end{{{environment}}}";
       var list = ParseLaTeX(input);
       var table = Assert.IsType<Table>(Assert.Single(list));
       CheckAtom<Table>("")(table);
+      Assert.Equal(environment, table.Environment);
       Assert.Equal(1, table.InterRowAdditionalSpacing);
       Assert.Equal(columnSpacing, table.InterColumnSpacing);
       Assert.Equal(2, table.NRows);
@@ -540,6 +545,7 @@ namespace CSharpMath.CoreTests.Atom {
       var list = ParseLaTeX(@"\begin{array}{l}a=14\\b=15\end{array}");
       Assert.Collection(list,
         CheckAtom<Table>("", table => {
+          Assert.Equal("array", table.Environment);
           Assert.Collection(table.Alignments, a => Assert.Equal(ColumnAlignment.Left, a));
           Assert.Equal(2, table.NRows);
           Assert.Equal(1, table.NColumns);
@@ -563,6 +569,7 @@ namespace CSharpMath.CoreTests.Atom {
       var list = ParseLaTeX(@"\begin{array}{lr}x^2&\:x<0\\x^3&\:x\geq0\end{array}");
       Assert.Collection(list,
         CheckAtom<Table>("", table => {
+          Assert.Equal("array", table.Environment);
           Assert.Collection(table.Alignments,
             a => Assert.Equal(ColumnAlignment.Left, a),
             a => Assert.Equal(ColumnAlignment.Right, a)
@@ -590,6 +597,92 @@ namespace CSharpMath.CoreTests.Atom {
         })
       );
       Assert.Equal(@"\begin{array}{lr}x^2&\: x<0\\ x^3&\: x\geq 0\end{array}", LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+    [Fact]
+    public void TestCases() {
+      var list = ParseLaTeX(@"\begin{cases} y=x^2-x+3 \\ y=x^2+\sqrt x-\frac2x \end{cases}");
+      Assert.Collection(list,
+        CheckAtom<Inner>("", inner => {
+          Assert.Equal(new Boundary("{"), inner.LeftBoundary);
+          Assert.Equal(Boundary.Empty, inner.RightBoundary);
+          Assert.Collection(inner.InnerList,
+            CheckAtom<Space>("", space => {
+              Assert.Equal(3, space.Length);
+              Assert.True(space.IsMu);
+            }),
+            CheckAtom<Table>("", table => {
+              Assert.Equal("array", table.Environment);
+              Assert.Collection(table.Alignments, a => Assert.Equal(ColumnAlignment.Left, a));
+              Assert.Equal(2, table.NRows);
+              Assert.Equal(1, table.NColumns);
+              Assert.All(table.Cells, row =>
+                Assert.Collection(row, cell =>
+                  Assert.Collection(cell,
+                    CheckAtom<Style>("", style => Assert.Equal(LineStyle.Text, style.LineStyle)),
+                    CheckAtom<Variable>("y"),
+                    CheckAtom<Relation>("="),
+                    CheckAtom<Variable>("x", x => Assert.Collection(x.Superscript, CheckAtom<Number>("2"))),
+                    cell3 => Assert.IsType<BinaryOperator>(cell3),
+                    cell4 => { },
+                    cell5 => Assert.IsType<BinaryOperator>(cell5),
+                    cell6 => { }
+                  )
+                )
+              );
+            })
+          );
+        })
+      );
+      Assert.Equal(@"\left\{ \, \begin{array}{l}\textstyle y=x^2-x+3\\ \textstyle y=x^2+\sqrt{x}-\frac{2}{x}\end{array}\right. ", LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+    [Fact]
+    public void TestCases2() {
+      var list = ParseLaTeX(@"\begin{cases} y=x^2-x+3 &\text{for }x\leq0 \\ y=x^2+\sqrt x-\frac2x &\text{for }x>0 \end{cases}");
+      Assert.Collection(list,
+        CheckAtom<Inner>("", inner => {
+          Assert.Equal(new Boundary("{"), inner.LeftBoundary);
+          Assert.Equal(Boundary.Empty, inner.RightBoundary);
+          Assert.Collection(inner.InnerList,
+            CheckAtom<Space>("", space => {
+              Assert.Equal(3, space.Length);
+              Assert.True(space.IsMu);
+            }),
+            CheckAtom<Table>("", table => {
+              Assert.Equal("array", table.Environment);
+              Assert.Collection(table.Alignments,
+                a => Assert.Equal(ColumnAlignment.Left, a),
+                a => Assert.Equal(ColumnAlignment.Left, a));
+              Assert.Equal(2, table.NRows);
+              Assert.Equal(2, table.NColumns);
+              Assert.All(table.Cells, row =>
+                Assert.Collection(row, col0 =>
+                  Assert.Collection(col0,
+                    CheckAtom<Style>("", style => Assert.Equal(LineStyle.Text, style.LineStyle)),
+                    CheckAtom<Variable>("y"),
+                    CheckAtom<Relation>("="),
+                    CheckAtom<Variable>("x", x => Assert.Collection(x.Superscript, CheckAtom<Number>("2"))),
+                    cell3 => Assert.IsType<BinaryOperator>(cell3),
+                    cell4 => { },
+                    cell5 => Assert.IsType<BinaryOperator>(cell5),
+                    cell6 => { }
+                  ), col1 =>
+                  Assert.Collection(col1,
+                    CheckAtom<Style>("", style => Assert.Equal(LineStyle.Text, style.LineStyle)),
+                    CheckAtom<Variable>("f", f => Assert.Equal(FontStyle.Roman, f.FontStyle)),
+                    CheckAtom<Variable>("o", o => Assert.Equal(FontStyle.Roman, o.FontStyle)),
+                    CheckAtom<Variable>("r", r => Assert.Equal(FontStyle.Roman, r.FontStyle)),
+                    CheckAtom<Ordinary>(" ", space => Assert.Equal(FontStyle.Roman, space.FontStyle)),
+                    CheckAtom<Variable>("x", x => Assert.Equal(FontStyle.Default, x.FontStyle)),
+                    cell3 => Assert.IsType<Relation>(cell3),
+                    CheckAtom<Number>("0")
+                  )
+                )
+              );
+            })
+          );
+        })
+      );
+      Assert.Equal(@"\left\{ \, \begin{array}{ll}\textstyle y=x^2-x+3&\textstyle \mathrm{for\  }x\leq 0\\ \textstyle y=x^2+\sqrt{x}-\frac{2}{x}&\textstyle \mathrm{for\  }x>0\end{array}\right. ", LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
     [Theory]
@@ -655,7 +748,7 @@ namespace CSharpMath.CoreTests.Atom {
       Assert.Null(list);
       Assert.NotNull(builder.Error);
 
-      LaTeXDefaults.Commands.Add("lcm", new LargeOperator("lcm", false));
+      LaTeXSettings.Commands.Add("lcm", new LargeOperator("lcm", false));
       var list2 = ParseLaTeX(input);
       Assert.Collection(list2,
         CheckAtom<LargeOperator>("lcm"),

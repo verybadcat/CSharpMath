@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace CSharpMath.CoreTests.Structures {
+namespace CSharpMath.CoreTests {
   public class BiDictionaryTests {
     [Fact]
     public void TestRemove() {

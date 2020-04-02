@@ -49,8 +49,8 @@ namespace CSharpMath.Editor {
         void SetScript(MathAtom atom, MathList value) => GetScript(atom).Append(value);
         void CreateEmptyAtom() {
           // Create an empty atom and move the insertion index up.
-          var emptyAtom = LaTeXDefaults.Placeholder;
-          SetScript(emptyAtom, LaTeXDefaults.PlaceholderList);
+          var emptyAtom = LaTeXSettings.Placeholder;
+          SetScript(emptyAtom, LaTeXSettings.PlaceholderList);
           MathList.InsertAndAdvance(ref _insertionIndex, emptyAtom, subIndexType);
         }
         static bool IsFullPlaceholderRequired(MathAtom mathAtom) =>
@@ -81,7 +81,7 @@ namespace CSharpMath.Editor {
           } else {
             var script = GetScript(prevAtom);
             if (script.IsEmpty()) {
-              SetScript(prevAtom, LaTeXDefaults.PlaceholderList);
+              SetScript(prevAtom, LaTeXSettings.PlaceholderList);
             }
             _insertionIndex = prevIndexCorrected.LevelUpWithSubIndex
               (subIndexType, MathListIndex.Level0Index(0));
@@ -117,10 +117,10 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
           numerator.Push(new Atoms.Number("1"));
         if (MathList.AtomAt(_insertionIndex.Previous) is Atoms.Fraction)
           // Add a times symbol
-          MathList.InsertAndAdvance(ref _insertionIndex, LaTeXDefaults.Times, MathListSubIndexType.None);
+          MathList.InsertAndAdvance(ref _insertionIndex, LaTeXSettings.Times, MathListSubIndexType.None);
         MathList.InsertAndAdvance(ref _insertionIndex, new Atoms.Fraction(
           new MathList(numerator),
-          LaTeXDefaults.PlaceholderList
+          LaTeXSettings.PlaceholderList
         ), MathListSubIndexType.Denominator);
       }
       void InsertAtomPair(MathAtom left, MathAtom right) {
@@ -339,7 +339,7 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
           });
       void InsertSymbolName(string name, bool subscript = false, bool superscript = false) {
         var atom =
-          LaTeXDefaults.AtomForCommand(name) ??
+          LaTeXSettings.AtomForCommand(name) ??
             throw new InvalidCodePathException("Looks like someone mistyped a symbol name...");
         InsertAtom(atom);
         switch (subscript, superscript) {
@@ -401,22 +401,22 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
           HandleScriptButton(false);
           break;
         case MathKeyboardInput.Fraction:
-          InsertAtom(LaTeXDefaults.PlaceholderFraction);
+          InsertAtom(LaTeXSettings.PlaceholderFraction);
           break;
         case MathKeyboardInput.SquareRoot:
-          InsertAtom(LaTeXDefaults.PlaceholderSquareRoot);
+          InsertAtom(LaTeXSettings.PlaceholderSquareRoot);
           break;
         case MathKeyboardInput.CubeRoot:
-          InsertAtom(LaTeXDefaults.PlaceholderCubeRoot);
+          InsertAtom(LaTeXSettings.PlaceholderCubeRoot);
           break;
         case MathKeyboardInput.NthRoot:
-          InsertAtom(LaTeXDefaults.PlaceholderRadical);
+          InsertAtom(LaTeXSettings.PlaceholderRadical);
           break;
         case MathKeyboardInput.Absolute:
           InsertAtomPair(new Atoms.Ordinary("|"), new Atoms.Ordinary("|"));
           break;
         case MathKeyboardInput.BaseEPower:
-          InsertAtom(LaTeXDefaults.ForAscii((sbyte)'e')
+          InsertAtom(LaTeXSettings.ForAscii((sbyte)'e')
             ?? throw new InvalidCodePathException("LaTeXDefaults.ForAscii((byte)'e') is null"));
           HandleScriptButton(true);
           break;
@@ -698,7 +698,7 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
         case MathKeyboardInput.SmallX:
         case MathKeyboardInput.SmallY:
         case MathKeyboardInput.SmallZ:
-          InsertAtom(LaTeXDefaults.ForAscii(checked((sbyte)input))
+          InsertAtom(LaTeXSettings.ForAscii(checked((sbyte)input))
             ?? throw new InvalidCodePathException
               ($"Invalid LaTeX character {input} was handled by ascii case"));
           break;

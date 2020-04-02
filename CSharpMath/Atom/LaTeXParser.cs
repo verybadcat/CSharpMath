@@ -117,7 +117,7 @@ namespace CSharpMath.Atom {
             if (ApplyModifier(command, prevAtom)) {
               continue;
             }
-            if (LaTeXDefaults.FontStyles.TryGetValue(command, out var fontStyle)) {
+            if (LaTeXSettings.FontStyles.TryGetValue(command, out var fontStyle)) {
               var oldSpacesAllowed = _textMode;
               var oldFontStyle = _currentFontStyle;
               _textMode = (command == "text");
@@ -158,7 +158,7 @@ namespace CSharpMath.Atom {
             atom = new Ordinary(" ");
             break;
           case var ch when ch <= sbyte.MaxValue:
-            if (LaTeXDefaults.ForAscii((sbyte)ch) is MathAtom asciiAtom)
+            if (LaTeXSettings.ForAscii((sbyte)ch) is MathAtom asciiAtom)
               atom = asciiAtom;
             else continue; // Ignore ASCII spaces and control characters
             break;
@@ -335,14 +335,14 @@ namespace CSharpMath.Atom {
         SetError("Missing delimiter for " + delimiterType);
         return null;
       }
-      if (!LaTeXDefaults.BoundaryDelimiters.TryGetValue(delim, out var boundary)) {
+      if (!LaTeXSettings.BoundaryDelimiters.TryGetValue(delim, out var boundary)) {
         SetError(@"Invalid delimiter for \" + delimiterType + ": " + delim);
       }
       return boundary;
     }
 
     private MathAtom? AtomForCommand(string command, char stopChar) {
-      switch (LaTeXDefaults.AtomForCommand(command)) {
+      switch (LaTeXSettings.AtomForCommand(command)) {
         case Accent accent:
           var innerList = BuildInternal(true);
           if (innerList is null) return null;
@@ -639,9 +639,9 @@ namespace CSharpMath.Atom {
           return delimiters switch
           {
             (var left, var right) => new Inner (
-              LaTeXDefaults.BoundaryDelimiters[left],
+              LaTeXSettings.BoundaryDelimiters[left],
               new MathList(table),
-              LaTeXDefaults.BoundaryDelimiters[right]
+              LaTeXSettings.BoundaryDelimiters[right]
             ),
             null => table
           };
@@ -708,6 +708,7 @@ namespace CSharpMath.Atom {
             SetError("cases environment must have 1 to 2 columns");
             return null;
           } else {
+            table.Environment = "array";
             table.InterColumnSpacing = 18;
             table.SetAlignment(ColumnAlignment.Left, 0);
             if (table.NColumns == 2) table.SetAlignment(ColumnAlignment.Left, 1);
@@ -719,7 +720,7 @@ namespace CSharpMath.Atom {
             }
             // add delimiters
             return new Inner (
-              LaTeXDefaults.BoundaryDelimiters["{"],
+              LaTeXSettings.BoundaryDelimiters["{"],
               new MathList(new Space(Structures.Space.ShortSpace), table),
               Boundary.Empty
             );
@@ -753,10 +754,7 @@ namespace CSharpMath.Atom {
     private static void MathListToLaTeX
       (MathList mathList, StringBuilder builder, FontStyle outerFontStyle) {
       if (mathList is null) throw new ArgumentNullException(nameof(mathList));
-      static void NullableListToLaTeX
-        (MathList? mathList, StringBuilder builder, FontStyle currentFontStyle) {
-        if (mathList != null) MathListToLaTeX(mathList, builder, currentFontStyle);
-      }
+      if (mathList.IsEmpty()) return;
       var currentFontStyle = outerFontStyle;
       foreach (var atom in mathList) {
         if (currentFontStyle != atom.FontStyle) {
@@ -766,7 +764,7 @@ namespace CSharpMath.Atom {
           }
           if (atom.FontStyle != outerFontStyle) {
             // open a new font style
-            builder.Append(@"\").Append(LaTeXDefaults.FontStyles[atom.FontStyle]).Append("{");
+            builder.Append(@"\").Append(LaTeXSettings.FontStyles[atom.FontStyle]).Append("{");
           }
         }
         currentFontStyle = atom.FontStyle;
@@ -774,13 +772,13 @@ namespace CSharpMath.Atom {
           case Fraction fraction:
             if (fraction.HasRule) {
               builder.Append(@"\frac{");
-              NullableListToLaTeX(fraction.Numerator, builder, currentFontStyle);
+              MathListToLaTeX(fraction.Numerator, builder, currentFontStyle);
               builder.Append("}{");
-              NullableListToLaTeX(fraction.Denominator, builder, currentFontStyle);
+              MathListToLaTeX(fraction.Denominator, builder, currentFontStyle);
               builder.Append("}");
             } else {
               builder.Append("{");
-              NullableListToLaTeX(fraction.Numerator, builder, currentFontStyle);
+              MathListToLaTeX(fraction.Numerator, builder, currentFontStyle);
               builder.Append(@" \").Append(
                 (fraction.LeftDelimiter, fraction.RightDelimiter) switch
                 {
@@ -790,7 +788,7 @@ namespace CSharpMath.Atom {
                   ("[", "]") => "brack",
                   (var left, var right) => $"atopwithdelims{left}{right}",
                 }).Append(" ");
-              NullableListToLaTeX(fraction.Denominator, builder, currentFontStyle);
+              MathListToLaTeX(fraction.Denominator, builder, currentFontStyle);
               builder.Append("}");
             }
             break;
@@ -802,17 +800,17 @@ namespace CSharpMath.Atom {
               builder.Append(']');
             }
             builder.Append('{');
-            NullableListToLaTeX(radical.Radicand, builder, currentFontStyle);
+            MathListToLaTeX(radical.Radicand, builder, currentFontStyle);
             builder.Append('}');
             break;
           case Inner inner:
             if (inner.LeftBoundary == Boundary.Empty && inner.RightBoundary == Boundary.Empty) {
               builder.Append('{');
-              NullableListToLaTeX(inner.InnerList, builder, currentFontStyle);
+              MathListToLaTeX(inner.InnerList, builder, currentFontStyle);
               builder.Append('}');
             } else {
               static string BoundaryToLaTeX(Boundary delimiter) {
-                var command = LaTeXDefaults.BoundaryDelimiters[delimiter];
+                var command = LaTeXSettings.BoundaryDelimiters[delimiter];
                 if (command == null) {
                   return string.Empty;
                 }
@@ -825,7 +823,7 @@ namespace CSharpMath.Atom {
                 }
               }
               builder.Append(@"\left").Append(BoundaryToLaTeX(inner.LeftBoundary)).Append(' ');
-              NullableListToLaTeX(inner.InnerList, builder, currentFontStyle);
+              MathListToLaTeX(inner.InnerList, builder, currentFontStyle);
               builder.Append(@"\right").Append(BoundaryToLaTeX(inner.RightBoundary)).Append(' ');
             }
             break;
@@ -895,18 +893,18 @@ namespace CSharpMath.Atom {
             break;
           case Accent accent:
             builder.Append(@"\")
-              .Append(LaTeXDefaults.CommandForAtom(accent))
+              .Append(LaTeXSettings.CommandForAtom(accent))
               .Append("{");
-            NullableListToLaTeX(accent.InnerList, builder, currentFontStyle);
+            MathListToLaTeX(accent.InnerList, builder, currentFontStyle);
             builder.Append("}");
             break;
           case LargeOperator op:
-            var command = LaTeXDefaults.CommandForAtom(op);
+            var command = LaTeXSettings.CommandForAtom(op);
             if (command == null) {
               builder.Append($@"\mathrm{{{command}}} ");
             } else {
               builder.Append($@"\{command} ");
-              if (!(LaTeXDefaults.AtomForCommand(command) is LargeOperator originalOperator))
+              if (!(LaTeXSettings.AtomForCommand(command) is LargeOperator originalOperator))
                 throw new InvalidCodePathException("original operator not found!");
               if (originalOperator.Limits == op.Limits)
                 break;
@@ -926,7 +924,7 @@ namespace CSharpMath.Atom {
             builder.Append(@"\color{")
               .Append(color.Colour)
               .Append("}{");
-            NullableListToLaTeX(color.InnerList, builder, currentFontStyle);
+            MathListToLaTeX(color.InnerList, builder, currentFontStyle);
             builder.Append("}");
             break;
           case Prime prime:
@@ -937,10 +935,10 @@ namespace CSharpMath.Atom {
               .Append(r.Raise.Length)
               .Append(r.Raise.IsMu ? "mu" : "pt")
               .Append("}{");
-            NullableListToLaTeX(r.InnerList, builder, currentFontStyle);
+            MathListToLaTeX(r.InnerList, builder, currentFontStyle);
             builder.Append("}");
             break;
-          case var _ when LaTeXDefaults.CommandForAtom(atom) is string name:
+          case var _ when LaTeXSettings.CommandForAtom(atom) is string name:
             builder.Append(@"\").Append(name).Append(" ");
             break;
           case Space space:

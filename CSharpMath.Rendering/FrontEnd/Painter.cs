@@ -41,7 +41,7 @@ namespace CSharpMath.Rendering.FrontEnd {
     #endregion Non-redisplaying properties
 
     #region Redisplaying properties
-    public abstract string LaTeX { get; set; }
+    public abstract string? LaTeX { get; set; }
     //_field == private field, __field == property-only field
     protected abstract void SetRedisplay();
     protected Fonts Fonts { get; private set; } = new Fonts(Array.Empty<Typeface>(), DefaultFontSize);

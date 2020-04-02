@@ -116,7 +116,7 @@ namespace CSharpMath.Editor {
             break;
           }
           // insert placeholder since we couldn't place the scripts in previous atom
-          var insertionAtom = LaTeXDefaults.Placeholder;
+          var insertionAtom = LaTeXSettings.Placeholder;
           insertionAtom.Subscript.Append(currentAtom.Subscript);
           insertionAtom.Superscript.Append(currentAtom.Superscript);
           self.RemoveAt(index.AtomIndex);
@@ -158,7 +158,7 @@ namespace CSharpMath.Editor {
       if (index.Previous is null && index.SubIndexType != MathListSubIndexType.None) {
         // We have deleted to the beginning of the line and it is not the outermost line
         if (self.AtomAt(index) is null) {
-          self.InsertAndAdvance(ref index, LaTeXDefaults.Placeholder, MathListSubIndexType.None);
+          self.InsertAndAdvance(ref index, LaTeXSettings.Placeholder, MathListSubIndexType.None);
           index = index.Previous ?? throw new InvalidCodePathException("Cannot go back after insertion?"); ;
         }
       }

@@ -1,6 +1,6 @@
 using Xunit;
 using System.Linq;
-namespace CSharpMath.CoreTests.Atom {
+namespace CSharpMath.CoreTests {
   using CSharpMath.Atom;
   using Atoms = CSharpMath.Atom.Atoms;
   public class LaTeXDefaultsTest {
@@ -10,7 +10,7 @@ namespace CSharpMath.CoreTests.Atom {
         switch (i) {
           case var _ when i < 0:
             Assert.Throws<System.ArgumentOutOfRangeException>(
-              () => LaTeXDefaults.ForAscii(i)
+              () => LaTeXSettings.ForAscii(i)
             );
             break;
           case var _ when i <= ' ':
@@ -26,10 +26,10 @@ namespace CSharpMath.CoreTests.Atom {
           case (sbyte)'{':
           case (sbyte)'}':
           case (sbyte)'\\':
-            Assert.Null(LaTeXDefaults.ForAscii(i));
+            Assert.Null(LaTeXSettings.ForAscii(i));
             break;
           default:
-            Assert.NotNull(LaTeXDefaults.ForAscii(i));
+            Assert.NotNull(LaTeXSettings.ForAscii(i));
             break;
         }
     }
@@ -38,14 +38,14 @@ namespace CSharpMath.CoreTests.Atom {
       var atom = new Atoms.Accent("\u0308", new MathList(new Atoms.Number("1")));
       atom.Superscript.Add(new Atoms.Number("4"));
       atom.Subscript.Add(new Atoms.Variable("x"));
-      Assert.Equal("ddot", LaTeXDefaults.CommandForAtom(atom));
+      Assert.Equal("ddot", LaTeXSettings.CommandForAtom(atom));
     }
     [Fact]
     public void AtomForCommandGeneratesACopy() {
-      var atom = LaTeXDefaults.AtomForCommand("int");
+      var atom = LaTeXSettings.AtomForCommand("int");
       if (atom == null) throw new Xunit.Sdk.NotNullException();
       atom.IndexRange = Range.NotFound;
-      var atom2 = LaTeXDefaults.AtomForCommand("int");
+      var atom2 = LaTeXSettings.AtomForCommand("int");
       if (atom2 == null) throw new Xunit.Sdk.NotNullException();
       Assert.Equal(Range.Zero, atom2.IndexRange);
     }

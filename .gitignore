@@ -3,8 +3,7 @@
 C:/
 
 # For CSharpMath.Rendering.Tests
-/CSharpMath.Rendering.Tests/*/*.avalonia.*
-/CSharpMath.Rendering.Tests/*/*.skiasharp.*
+/CSharpMath.Rendering.Tests/*/*.*.png
 
 # Ignore generated .nupkgs
 /.nupkgs

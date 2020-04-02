@@ -22,9 +22,9 @@ namespace CSharpMath.Rendering.FrontEnd {
     //so special case them into _absoluteXCoordDisplay instead of using _relativeXCoordDisplay
     public ListDisplay<Fonts, Glyph> _absoluteXCoordDisplay = new ListDisplay<Fonts, Glyph>(System.Array.Empty<IDisplay<Fonts, Glyph>>());
     public ListDisplay<Fonts, Glyph> _relativeXCoordDisplay = new ListDisplay<Fonts, Glyph>(System.Array.Empty<IDisplay<Fonts, Glyph>>());
-    public override string LaTeX {
+    public override string? LaTeX {
       get => Content is null ? "" : TextLaTeXBuilder.TextAtomToLaTeX(Content).ToString();
-      set => (Content, ErrorMessage) = TextLaTeXBuilder.TextAtomFromLaTeX(value);
+      set => (Content, ErrorMessage) = TextLaTeXBuilder.TextAtomFromLaTeX(value ?? "");
     }
     public float AdditionalLineSpacing { get; set; }
 

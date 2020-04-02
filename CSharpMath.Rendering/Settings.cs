@@ -10,11 +10,11 @@ namespace CSharpMath {
     public static Structures.BiDictionary<string, Structures.Color> PredefinedColors =>
       Structures.Color.PredefinedColors;
     public static Structures.AliasDictionary<string, Atom.Boundary> PredefinedLaTeXBoundaryDelimiters =>
-      Atom.LaTeXDefaults.BoundaryDelimiters;
+      Atom.LaTeXSettings.BoundaryDelimiters;
     public static Structures.AliasDictionary<string, Atom.FontStyle> PredefinedLaTeXFontStyles =>
-      Atom.LaTeXDefaults.FontStyles;
+      Atom.LaTeXSettings.FontStyles;
     public static Structures.AliasDictionary<string, Atom.MathAtom> PredefinedLaTeXCommands =>
-      Atom.LaTeXDefaults.Commands;
+      Atom.LaTeXSettings.Commands;
     public static Structures.BiDictionary<string, string> PredefinedLaTeXTextAccents =>
       Rendering.Text.TextLaTeXDefaults.PredefinedAccents;
     public static Structures.AliasDictionary<string, string> PredefinedLaTeXTextSymbols =>

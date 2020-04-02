@@ -8,9 +8,9 @@ namespace CSharpMath.Rendering.FrontEnd {
     protected IDisplay<Fonts, Glyph>? _display;
     protected bool _displayChanged = true;
     public override IDisplay<Fonts, Glyph>? Display => _display;
-    public override string LaTeX {
+    public override string? LaTeX {
       get => Content is null ? "" : Atom.LaTeXParser.MathListToLaTeX(Content).ToString();
-      set => (Content, ErrorMessage) = Atom.LaTeXParser.TryMathListFromLaTeX(value);
+      set => (Content, ErrorMessage) = Atom.LaTeXParser.TryMathListFromLaTeX(value ?? "");
     }
     public override RectangleF? Measure(float unused = float.NaN) {
       UpdateDisplay();

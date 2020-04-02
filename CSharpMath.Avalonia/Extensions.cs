@@ -2,6 +2,7 @@ using SizeF = System.Drawing.SizeF;
 
 using Avalonia;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using AvaloniaColor = Avalonia.Media.Color;
 using AvaloniaTextAlignment = Avalonia.Media.TextAlignment;
 
@@ -52,7 +53,7 @@ namespace CSharpMath.Avalonia {
        float textPainterCanvasWidth = TextPainter.DefaultCanvasWidth) where TContent : class {
       if (!(painter.Measure(textPainterCanvasWidth) is { } size)) return;
       using var bitmap =
-        new global::Avalonia.Media.Imaging.RenderTargetBitmap(new PixelSize((int)size.Width, (int)size.Height));
+        new RenderTargetBitmap(new PixelSize((int)size.Width, (int)size.Height));
       bitmap.Render(new DrawVisual<TContent>(painter, size));
       bitmap.Save(target);
     }

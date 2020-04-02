@@ -38,7 +38,7 @@
 
             </StackPanel>
 
-          <csmath:TextBlock FontSize="{Binding #size.SelectedItem}"
+          <csmath:TextView FontSize="{Binding #size.SelectedItem}"
                             Content="Hello World!" />
 
             <StackPanel Spacing="16">
@@ -48,7 +48,7 @@
 
                 <TextBox Name="input" Text="{StaticResource Text}" />
 
-                <csmath:TextBlock FontSize="{Binding #size.SelectedItem}"
+                <csmath:TextView FontSize="{Binding #size.SelectedItem}"
                                   Content="{Binding #input.Text}" />
 
             </StackPanel>

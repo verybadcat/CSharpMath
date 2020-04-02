@@ -9,6 +9,8 @@
     <Import_RootNamespace>CSharpMath.Xaml</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Views.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BaseView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MathView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TextView.cs" />
   </ItemGroup>
 </Project>

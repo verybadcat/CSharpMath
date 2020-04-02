@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace CSharpMath.Atom {
   using Atoms;
   //https://mirror.hmc.edu/ctan/macros/latex/contrib/unicode-math/unimath-symbols.pdf
-  public static class LaTeXDefaults {
+  public static class LaTeXSettings {
 
     public static MathAtom? AtomForCommand(string symbolName) =>
       Commands.TryGetValue(

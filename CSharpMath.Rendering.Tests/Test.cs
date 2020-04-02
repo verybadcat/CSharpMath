@@ -13,8 +13,7 @@ namespace CSharpMath.Rendering.Tests {
       // Delete garbage by previous tests
       foreach (var garbage in
         Folders.SelectMany(folder =>
-          Directory.EnumerateFiles(folder)
-          .Where(file => file.Contains(".avalonia.") || file.Contains(".skiasharp."))))
+          Directory.EnumerateFiles(folder, "*.*.png")))
         File.Delete(garbage);
       // Pre-initialize typefaces to speed tests up
       BackEnd.Fonts.GlobalTypefaces.ToString();

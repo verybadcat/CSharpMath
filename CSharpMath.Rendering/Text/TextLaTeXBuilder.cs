@@ -388,7 +388,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                   }
                 //case "textbf", "textit", ...
                 case var textStyle when !textStyle.StartsWith("math")
-                  && LaTeXDefaults.FontStyles.TryGetValue(
+                  && LaTeXSettings.FontStyles.TryGetValue(
                       textStyle.StartsWith("text") ? textStyle.Replace("text", "math") : textStyle,
                       out var fontStyle): {
                     int tmp_commandLength = textStyle.Length;
@@ -455,7 +455,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
           return b.Append(@"\ ");
         case TextAtom.Style t:
           return b.Append('\\')
-            .Append(LaTeXDefaults.FontStyles[t.FontStyle])
+            .Append(LaTeXSettings.FontStyles[t.FontStyle])
             .AppendInBracesOrEmptyBraces(TextAtomToLaTeX(t.Content, new StringBuilder()).ToString());
         case TextAtom.Size z:
           return b.Append(@"\fontsize")

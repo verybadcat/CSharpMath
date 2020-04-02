@@ -43,7 +43,7 @@
                 <TextBlock Classes="h1"
                            Text="Taylor" />
 
-                <csmath:MathBlock FontSize="{Binding #size.SelectedItem}"
+                <csmath:MathView FontSize="{Binding #size.SelectedItem}"
                                   Content="{StaticResource Taylor}" />
 
             </StackPanel>
@@ -53,7 +53,7 @@
                 <TextBlock Classes="h1"
                            Text="EvalIntegral" />
 
-                <csmath:MathBlock FontSize="{Binding #size.SelectedItem}"
+                <csmath:MathView FontSize="{Binding #size.SelectedItem}"
                                   Content="{StaticResource EvalIntegral}" />
 
             </StackPanel>
@@ -65,7 +65,7 @@
 
                 <TextBox Name="input" Text="x + 2 \sqrt{x} + 1 = (\sqrt x+1)^2" />
 
-                <csmath:MathBlock FontSize="{Binding #size.SelectedItem}"
+                <csmath:MathView FontSize="{Binding #size.SelectedItem}"
                                   Content="{Binding #input.Text}" />
 
             </StackPanel>
