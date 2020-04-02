@@ -1,1 +1,2 @@
-module EntryPoint = let [<EntryPoint>] main _ = 0
+module EntryPoint
+let [<EntryPoint>] main _ = 0
