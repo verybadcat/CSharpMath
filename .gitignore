@@ -6,7 +6,7 @@ C:/
 CSharpMath.Rendering.Tests/*/*.*.png
 
 # Ignore generated .nupkgs
-.nupkgs/
+/.nupkgs
 
 ## END Specifically added for CSharpMath
 
