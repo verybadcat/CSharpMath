@@ -27,6 +27,7 @@ jobs:
           "CSharpMath.Editor.Tests"\
           "CSharpMath.Editor.Tests.FSharp"\
           "CSharpMath.Rendering.Tests"\
+          "CSharpMath.Rendering.Text.Tests"\
           "CSharpMath.Xaml.Tests"\
           "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests"
         do
