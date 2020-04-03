@@ -915,11 +915,25 @@ namespace CSharpMath.CoreTests {
         CheckAtom<Variable>("b")
       );
       Assert.Equal($@"\color{{{outColor}}}{{a}}b", LaTeXParser.MathListToLaTeX(list).ToString());
+
+      list = ParseLaTeX($@"\colorbox{{{inColor}}}ab");
+      Assert.Collection(list,
+        CheckAtom<ColorBox>("", color => {
+          Assert.Equal(r, color.Colour.R);
+          Assert.Equal(g, color.Colour.G);
+          Assert.Equal(b, color.Colour.B);
+          Assert.Equal(a, color.Colour.A);
+          Assert.False(color.ScriptsAllowed);
+          Assert.Collection(color.InnerList, CheckAtom<Variable>("a"));
+        }),
+        CheckAtom<Variable>("b")
+      );
+      Assert.Equal($@"\colorbox{{{outColor}}}{{a}}b", LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
     [Fact]
     public void TestColorScripts() {
-      var list = ParseLaTeX(@"\color{red}12");
+      var list = ParseLaTeX(@"\color{red}1\colorbox{blue}2");
       Assert.Collection(list,
         CheckAtom<Color>("", color => {
           Assert.Equal("red", color.Colour.ToString());
@@ -931,9 +945,18 @@ namespace CSharpMath.CoreTests {
           Assert.Throws<InvalidOperationException>(() => color.Subscript.Append(new MathList(new Variable("b"))));
           Assert.Collection(color.InnerList, CheckAtom<Number>("1"));
         }),
-        CheckAtom<Number>("2")
+        CheckAtom<ColorBox>("", colorBox => {
+          Assert.Equal("blue", colorBox.Colour.ToString());
+          Assert.Empty(colorBox.Superscript);
+          Assert.Throws<InvalidOperationException>(() => colorBox.Superscript.Add(new Variable("a")));
+          Assert.Throws<InvalidOperationException>(() => colorBox.Superscript.Append(new MathList(new Variable("a"))));
+          Assert.Empty(colorBox.Subscript);
+          Assert.Throws<InvalidOperationException>(() => colorBox.Subscript.Add(new Variable("b")));
+          Assert.Throws<InvalidOperationException>(() => colorBox.Subscript.Append(new MathList(new Variable("b"))));
+          Assert.Collection(colorBox.InnerList, CheckAtom<Number>("2"));
+        })
       );
-      Assert.Equal(@"\color{red}{1}2", LaTeXParser.MathListToLaTeX(list).ToString());
+      Assert.Equal(@"\color{red}{1}\colorbox{blue}{2}", LaTeXParser.MathListToLaTeX(list).ToString());
     }
   }
 }

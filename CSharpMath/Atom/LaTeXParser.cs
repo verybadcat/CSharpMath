@@ -407,6 +407,15 @@ namespace CSharpMath.Atom {
               return null;
             default: return null;
           };
+        case "colorbox":
+          switch (ReadColor()) {
+            case string s when BuildInternal(true) is { } ml:
+              if (Structures.Color.Create(s.AsSpan()) is { } color)
+                return new ColorBox(color, ml);
+              SetError(@"Invalid color: " + s);
+              return null;
+            default: return null;
+          };
         case "prime":
           SetError(@"\prime won't be supported as Unicode has no matching character. Use ' instead.");
           return null;
@@ -925,6 +934,13 @@ namespace CSharpMath.Atom {
               .Append(color.Colour)
               .Append("}{");
             MathListToLaTeX(color.InnerList, builder, currentFontStyle);
+            builder.Append("}");
+            break;
+          case ColorBox colorBox:
+            builder.Append(@"\colorbox{")
+              .Append(colorBox.Colour)
+              .Append("}{");
+            MathListToLaTeX(colorBox.InnerList, builder, currentFontStyle);
             builder.Append("}");
             break;
           case Prime prime:

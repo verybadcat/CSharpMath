@@ -194,6 +194,15 @@ namespace CSharpMath.Display {
             _currentPosition.X += colorDisplay.Width;
             _displayAtoms.Add(colorDisplay);
             break;
+          case ColorBox colorBox:
+            AddDisplayLine(false);
+            AddInterElementSpace(prevAtom, colorBox);
+            colorDisplay = Typesetter.CreateLine(colorBox.InnerList, _font, _context, _style);
+            colorDisplay.BackColor = colorBox.Colour;
+            colorDisplay.Position = _currentPosition;
+            _currentPosition.X += colorDisplay.Width;
+            _displayAtoms.Add(colorDisplay);
+            break;
           case Radical rad:
             AddDisplayLine(false);
             AddInterElementSpace(prevAtom, rad);

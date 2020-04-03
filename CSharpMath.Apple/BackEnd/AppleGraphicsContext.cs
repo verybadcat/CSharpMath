@@ -34,6 +34,11 @@ namespace CSharpMath.Apple {
       textLine.Draw(CgContext);
     }
 
+    public void FillRect(RectangleF rect, Color color) {
+      CgContext.SetFillColor(color.ToCGColor());
+      CgContext.FillRect(new CGRect(rect.X, rect.Y, rect.Width, rect.Height));
+    }
+
     public void RestoreState() {
       CgContext.RestoreState();
     }

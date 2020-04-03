@@ -78,6 +78,12 @@ namespace CSharpMath.Rendering.BackEnd {
       }
       Canvas.Restore();
     }
+
+    public void FillRect(RectangleF rect, Color color) {
+      Canvas.CurrentColor = color;
+      // Inverted canvas blah blah
+      Canvas.FillRect(rect.X, rect.Y, rect.Width, rect.Height);
+    }
     public void RestoreState() => Canvas.Restore();
     public void SaveState() => Canvas.Save();
     public void Translate(PointF dxy) => Canvas.Translate(dxy.X, dxy.Y);

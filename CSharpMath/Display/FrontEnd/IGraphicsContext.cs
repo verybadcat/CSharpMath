@@ -10,6 +10,7 @@ namespace CSharpMath.Display.FrontEnd {
       (AttributedGlyphRun<TFont, TGlyph> text, PointF point, Color? color);
     void DrawGlyphsAtPoints
       (IReadOnlyList<TGlyph> glyphs, TFont font, IEnumerable<PointF> points, Color? color);
+    void FillRect(RectangleF rect, Color color);
     void Translate(PointF dxy);
     void SaveState();
     void RestoreState();

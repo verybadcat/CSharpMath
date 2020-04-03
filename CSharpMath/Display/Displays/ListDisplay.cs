@@ -11,13 +11,14 @@ namespace CSharpMath.Display.Displays {
     where TFont : IFont<TGlyph> {
     public IReadOnlyList<IDisplay<TFont, TGlyph>> Displays { get; }
     public LinePosition LinePosition { get; set; }
-    public Color? TextColor { get; set; }
     public bool HasScript { get; set; }
+    public Color? TextColor { get; set; }
     public void SetTextColorRecursive(Color? textColor) {
       TextColor ??= textColor;
       foreach (var display in Displays)
         display.SetTextColorRecursive(textColor);
     }
+    public Color? BackColor { get; set; }
     /// <summary>For a subscript or superscript, this is the index in the
     /// parent list. For a regular list, it is int.MinValue.</summary>
     public int IndexInParent { get; set; }
@@ -37,6 +38,7 @@ namespace CSharpMath.Display.Displays {
         .Select(d => d.Range));
     public float Width => Displays.CollectionMaxX() - Displays.CollectionX();
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
+      this.DrawBackground(context);
       context.SaveState();
       context.Translate(this.Position);
       context.SetTextPosition(new PointF());

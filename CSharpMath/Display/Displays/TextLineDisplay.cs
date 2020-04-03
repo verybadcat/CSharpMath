@@ -25,6 +25,7 @@ namespace CSharpMath.Display.Displays {
     public IEnumerable<TGlyph> Text => Runs.SelectMany(run => run.Run.Glyphs);
     
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
+      this.DrawBackground(context);
       context.SaveState();
       context.SetTextPosition(this.Position);
       foreach (var run in Runs) {
@@ -45,6 +46,7 @@ namespace CSharpMath.Display.Displays {
         run.SetTextColorRecursive(textColor);
       }
     }
+    public Color? BackColor { get; set; }
     public override string ToString() => string.Concat(Runs);
   }
 }

@@ -29,13 +29,15 @@ namespace CSharpMath.Display.Displays {
     public float Descent { get; }
     public PointF Position { get; set; }
     public bool HasScript { get; set; }
-    public Color? TextColor { get; set; }
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
+      this.DrawBackground(context);
       context.SaveState();
       context.DrawGlyphRunWithOffset(Run, Position, TextColor);
       context.RestoreState();
     }
+    public Color? TextColor { get; set; }
     public void SetTextColorRecursive(Color? textColor) => TextColor ??= textColor;
+    public Color? BackColor { get; set; }
     public override string ToString() => Run.Text.ToString();
   }
 }

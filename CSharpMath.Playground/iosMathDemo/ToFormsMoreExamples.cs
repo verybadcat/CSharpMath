@@ -61,7 +61,7 @@ namespace CSharpMath.Playground.iosMathDemo {
         new IndentedTextWriter(new StringWriter(sb), "  ")
           { Indent = 0, NewLine = Environment.NewLine }
         .AppendLine("//Do not modify this file directly. Instead, modify this at")
-        .AppendLine("//CSharpMath\\CSharpMath.Utils\\iosMathDemo\\Builder.cs and re-generate")
+        .AppendLine("//CSharpMath\\CSharpMath.Playground\\iosMathDemo\\ToFormsMoreExamples.cs and re-generate")
         .AppendLine("//this file by executing the method in that file in the CSharpMath.Utils project.")
         .AppendLine()
         .AppendLine("using CSharpMath.Atom;")

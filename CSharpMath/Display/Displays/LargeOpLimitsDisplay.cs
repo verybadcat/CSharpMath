@@ -70,18 +70,19 @@ namespace CSharpMath.Display.Displays {
       }
     }
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
+      this.DrawBackground(context);
       UpperLimit?.Draw(context);
       LowerLimit?.Draw(context);
       NucleusDisplay.Draw(context);
     }
 
     public Color? TextColor { get; set; }
-
     public void SetTextColorRecursive(Color? textColor) {
       TextColor ??= textColor;
       UpperLimit?.SetTextColorRecursive(textColor);
       LowerLimit?.SetTextColorRecursive(textColor);
     }
+    public Color? BackColor { get; set; }
 
     public override string ToString() => $@"{{{NucleusDisplay}}}^{{{UpperLimit}}}_{{{LowerLimit}}}";
   }

@@ -10,24 +10,24 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AppleMathView.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)FrontEnd\AppleGraphicsContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BackEnd\AppleGraphicsContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\Color.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Resources\AssemblyExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Resources\ManifestResources.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Resources\ManifestResourceProvider.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)FrontEnd\AppleGlyphBoundsProvider.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)FrontEnd\AppleFontMeasurer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)FrontEnd\AppleGlyphNameProvider.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)FrontEnd\AppleMathFont.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)FrontEnd\CtFontGlyphFinder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BackEnd\AppleGlyphBoundsProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BackEnd\AppleFontMeasurer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BackEnd\AppleGlyphNameProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BackEnd\AppleMathFont.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BackEnd\CtFontGlyphFinder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\AttributedGlyphRun.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)FrontEnd\AppleTypesetters.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)FrontEnd\JsonMathTable.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)FrontEnd\IFontMeasurer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)FrontEnd\IGlyphNameProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BackEnd\AppleTypesetters.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BackEnd\JsonMathTable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BackEnd\IFontMeasurer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BackEnd\IGlyphNameProvider.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)FrontEnd\" />
+    <Folder Include="$(MSBuildThisFileDirectory)BackEnd\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\latinmodern-math.json" />

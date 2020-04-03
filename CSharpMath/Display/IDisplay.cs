@@ -17,8 +17,8 @@ namespace CSharpMath.Display {
     /// <summary>Position of the display, relative to its parent.</summary> 
     PointF Position { get; set; }
     Color? TextColor { get; set; }
-    /// <summary> iosMath name is "setTextColor".</summary> 
     void SetTextColorRecursive(Color? textColor);
+    Color? BackColor { get; set; }
     bool HasScript { get; set; }
   }
 }
@@ -29,10 +29,19 @@ namespace CSharpMath {
     /// <summary>The display's bounds, in its own coordinate system.</summary> 
     public static RectangleF DisplayBounds<TFont, TGlyph>
       (this IDisplay<TFont, TGlyph> display) where TFont : IFont<TGlyph> =>
-      new RectangleF(0, -display.Ascent, display.Width, display.Ascent + display.Descent);
+      new RectangleF(0, -display.Descent, display.Width, display.Ascent + display.Descent);
     /// <summary>Where the display is located, expressed in its parent's coordinate system.</summary>
     public static RectangleF Frame<TFont, TGlyph>
       (this IDisplay<TFont, TGlyph> display) where TFont : IFont<TGlyph> =>
       display.DisplayBounds().Plus(display.Position);
+    public static void DrawBackground<TFont, TGlyph>
+      (this IDisplay<TFont, TGlyph> display, IGraphicsContext<TFont, TGlyph> context)
+      where TFont : IFont<TGlyph> {
+      if (display.BackColor is { } color) {
+        context.SaveState();
+        context.FillRect(display.Frame(), color);
+        context.RestoreState();
+      }
+    }
   }
 }

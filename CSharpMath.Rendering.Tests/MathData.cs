@@ -90,5 +90,7 @@ namespace CSharpMath.Rendering.Tests {
     public const string TangentPeriodShift = @"\tan(\theta\pm\frac\pi4)=\frac{\tan\theta\pm1}{1\mp\tan\theta}";
     public const string LineStyles = @"a \displaystyle a \textstyle a \scriptstyle a \scriptscriptstyle a";
     public const string Cases = @" w \equiv \begin{cases} 0 & \text{for}\ c = d = 0\\ \sqrt{|c|}\,\sqrt{\frac{1+\sqrt{1+(d/c)^2}}{2}} &\text{for}\ |c| \geq |d|\\ \sqrt{|d|}\,\sqrt{\frac{|c/d| + \sqrt{1+(c/d)^2}}{2}} &\text{for}\ |c|<|d| \end{cases}";
+    public const string IntegralColorBoxWrong = @"\colorbox{red}\int^\colorbox{yellow}\infty_\colorbox{purple}{-\infty}\colorbox{green}x\ \colorbox{blue}{dx}";
+    public const string IntegralColorBoxCorrect = @"\colorbox{red}{\int^\colorbox{yellow}\infty_\colorbox{purple}{-\infty}}\colorbox{green}x\ \colorbox{blue}{dx}";
   }
 }

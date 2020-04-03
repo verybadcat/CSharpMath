@@ -53,6 +53,7 @@ namespace CSharpMath.Display.Displays {
     public PointF Position { get => _position; set { _position = value; UpdateRadicandPosition(); } }
     public bool HasScript { get; set; }
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
+      this.DrawBackground(context);
       Radicand.Draw(context);
       Degree?.Draw(context);
       context.SaveState();
@@ -76,6 +77,7 @@ namespace CSharpMath.Display.Displays {
       Radicand?.SetTextColorRecursive(textColor);
       Degree?.SetTextColorRecursive(textColor);
     }
+    public Color? BackColor { get; set; }
     public override string ToString() => $@"\sqrt[{Degree}]{{{Radicand}}}";
   }
 }

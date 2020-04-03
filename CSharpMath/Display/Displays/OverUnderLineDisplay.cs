@@ -26,6 +26,7 @@ namespace CSharpMath.Display.Displays {
     }
     public bool HasScript { get; set; }
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
+      this.DrawBackground(context);
       Inner.Draw(context);
       context.SaveState();
       context.DrawLine(Position.X, Position.Y + LineShiftUp, Position.X + Inner.Width, Position.Y + LineShiftUp, LineThickness, TextColor);
@@ -36,6 +37,7 @@ namespace CSharpMath.Display.Displays {
       TextColor ??= textColor;
       Inner.SetTextColorRecursive(textColor);
     }
+    public Color? BackColor { get; set; }
     public override string ToString() => $@"\shiftup{{{LineShiftUp}}}{{{Inner}}}";
   }
 }

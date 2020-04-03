@@ -5,9 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\CSharpMath.Apple\FrontEnd\JsonMathTable.cs" Link="_Helpers\FrontEnd\JsonMathTable.cs" />
-    <Compile Include="..\CSharpMath.Apple\FrontEnd\IFontMeasurer.cs" Link="_Helpers\FrontEnd\IFontMeasurer.cs" />
-    <Compile Include="..\CSharpMath.Apple\FrontEnd\IGlyphNameProvider.cs" Link="_Helpers\FrontEnd\IGlyphNameProvider.cs" />
+    <Compile Include="..\CSharpMath.Apple\BackEnd\JsonMathTable.cs" Link="_Helpers\BackEnd\JsonMathTable.cs" />
+    <Compile Include="..\CSharpMath.Apple\BackEnd\IFontMeasurer.cs" Link="_Helpers\BackEnd\IFontMeasurer.cs" />
+    <Compile Include="..\CSharpMath.Apple\BackEnd\IGlyphNameProvider.cs" Link="_Helpers\BackEnd\IGlyphNameProvider.cs" />
     <Compile Include="..\CSharpMath.Apple\Resources\AssemblyExtensions.cs" Link="_Helpers\Resources\AssemblyExtensions.cs" />
     <Compile Include="..\CSharpMath.Apple\Resources\ManifestResources.cs" Link="_Helpers\Resources\ManifestResources.cs" />
     <Compile Include="..\CSharpMath.Apple\Resources\ManifestResourceProvider.cs" Link="_Helpers\Resources\ManifestResourceProvider.cs" />

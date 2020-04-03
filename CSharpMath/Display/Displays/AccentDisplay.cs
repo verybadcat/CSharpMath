@@ -29,6 +29,7 @@ namespace CSharpMath.Display.Displays {
     public bool HasScript { get; set; }
 
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
+      this.DrawBackground(context);
       Accentee.Draw(context);
       context.SaveState();
       context.Translate(Position);
@@ -38,12 +39,12 @@ namespace CSharpMath.Display.Displays {
     }
 
     public Color? TextColor { get; set; }
-
     public void SetTextColorRecursive(Color? textColor) {
       TextColor ??= textColor;
       Accentee.SetTextColorRecursive(textColor);
       Accent.SetTextColorRecursive(textColor);
     }
+    public Color? BackColor { get; set; }
 
     public override string ToString() => $@"\accent{{{Accent}}}{{{Accentee}}}";
   }

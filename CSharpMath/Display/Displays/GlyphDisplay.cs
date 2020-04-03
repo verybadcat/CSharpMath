@@ -22,6 +22,7 @@ namespace CSharpMath.Display.Displays {
       Font = font;
     }
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
+      this.DrawBackground(context);
       context.SaveState();
       using var glyphs = new Structures.RentedArray<TGlyph>(Glyph);
       using var positions = new Structures.RentedArray<PointF>(new PointF());
@@ -32,6 +33,7 @@ namespace CSharpMath.Display.Displays {
     }
     public Color? TextColor { get; set; }
     public void SetTextColorRecursive(Color? textColor) => TextColor ??= textColor;
+    public Color? BackColor { get; set; }
     public override string ToString() => Glyph?.ToString() ?? "<null>";
   }
 }

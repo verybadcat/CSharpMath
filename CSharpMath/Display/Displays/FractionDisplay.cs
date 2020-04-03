@@ -53,6 +53,7 @@ namespace CSharpMath.Display.Displays {
     public bool HasScript { get; set; }
 
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
+      this.DrawBackground(context);
       Numerator.Draw(context);
       Denominator.Draw(context);
       context.SaveState();
@@ -60,12 +61,12 @@ namespace CSharpMath.Display.Displays {
       context.RestoreState();
     }
     public Color? TextColor { get; set; }
-
     public void SetTextColorRecursive(Color? textColor) {
       TextColor ??= textColor;
       Numerator.SetTextColorRecursive(textColor);
       Denominator.SetTextColorRecursive(textColor);
     }
+    public Color? BackColor { get; set; }
 
     public override string ToString() => $@"\frac{{{Numerator}}}{{{Denominator}}}";
   }
