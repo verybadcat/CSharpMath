@@ -111,8 +111,7 @@ moveCursor:var pos = Adjust(new Rectangle(x, y, 0, 0));
         Math.Clamp(Console.BufferHeight / 2 - rect.Bottom, 0, Console.BufferHeight - 1),
         rect.Width,
         rect.Height);
-    public static void ConsoleDrawRectangle
-      (Rectangle rect, char glyph, Structures.Color? color) {
+    public static void ConsoleDrawRectangle(Rectangle rect, char glyph, Color? color) {
       rect = Adjust(rect);
       var innerRectWidth = rect.Width - 2;
       var innerRectHeight = rect.Height - 2;
@@ -139,6 +138,18 @@ moveCursor:var pos = Adjust(new Rectangle(x, y, 0, 0));
       if (glyph != '\0') {
         Console.SetCursorPosition(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
         Console.Write(glyph);
+      }
+      Console.ResetColor();
+    }
+    public static void ConsoleFillRectangle(Rectangle rect, Color? color) {
+      rect = Adjust(rect);
+      SetConsoleColor(color);
+      if (rect.Width > 0 && rect.Height > 0) {
+        for (var i = 0; i < rect.Width; i++) {
+          Console.SetCursorPosition(rect.X, rect.Y + i);
+          for (var j = 0; j < rect.Height; j++)
+            Console.Write('█');
+        }
       }
       Console.ResetColor();
     }
