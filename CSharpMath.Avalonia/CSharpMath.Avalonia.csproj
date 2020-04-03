@@ -10,7 +10,7 @@
   <ItemGroup>
     <Compile Update="**\*.xaml.cs" DependentUpon="%(Filename)" />
     <AvaloniaResource Include="**\*.xaml" />
-    <PackageReference Include="Avalonia" Version="0.9.4" />
+    <PackageReference Include="Avalonia" Version="0.9.6" />
     <ProjectReference Include="..\CSharpMath.Rendering\CSharpMath.Rendering.csproj" />
   </ItemGroup>
   

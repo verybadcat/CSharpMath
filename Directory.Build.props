@@ -46,7 +46,7 @@
     <FileVersion>$(AssemblyVersion)</FileVersion> <!--"File version" in DLL Details, $(AssemblyVersion) if unset-->
     <Version>$(AssemblyVersion)</Version> <!--"Product version" in DLL Details, '1.0.0' if unset-->
   </PropertyGroup>
-  <ItemGroup Condition="$(MSBuildProjectName.StartsWith('CSharpMath'))">
+  <ItemGroup Condition="!$([System.String]::IsNullOrEmpty($(GeneratePackageOnBuild))) And $(GeneratePackageOnBuild)">
     <None Include="$(MSBuildThisFileDirectory)Icon.png" Pack="true" PackagePath="" />
   </ItemGroup>
 </Project>

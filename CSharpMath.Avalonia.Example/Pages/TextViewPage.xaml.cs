@@ -2,88 +2,88 @@ using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
 namespace CSharpMath.Avalonia.Example.Pages {
-  public class TextBlockPage : UserControl {
-    public TextBlockPage() {
+  public class TextViewPage : UserControl {
+    public TextViewPage() {
       InitializeComponent();
     }
 
     private void InitializeComponent() {
-      Resources.Add("Text", @"\textbf{Never Gonna Give You Up}
+      Resources.Add("Text", @"\textfrak{Never Gonna Give You Up}
 $$\int_3^4x\ dx$$
-We're no strangers to love
-You know the rules and so do I
-A full commitment's what I'm thinking of
-You wouldn't get this from any other guy
+We're no strangers to \color{red}{love} \\
+You know the \t{rules} and so do I \\
+$\rm{A_{full}}$ commitment's what I'm \(\mathrm{thinking^{of}}\) \\
+You wouldn't get this from $\text\frac{any other}{guy}$
 \[\lim_{x \to \infty} \frac1x\]
-I just wanna tell you how I'm feeling
-Gotta make you understand
-
-Never gonna give you up
-Never gonna let you down
-Never gonna run around and desert you
-Never gonna make you cry
-Never gonna say goodbye
-Never gonna tell a lie and hurt you
-
-We've known each other for so long
-Your heart's been aching, but
-You're too shy to say it
-Inside, we both know what's been going on
-We know the game and we're gonna play it
-
-And if you ask me how I'm feeling
-Don't tell me you're too blind to see
-
-Never gonna give you up
-Never gonna let you down
-Never gonna run around and desert you
-Never gonna make you cry
-Never gonna say goodbye
-Never gonna tell a lie and hurt you
-
-Never gonna give you up
-Never gonna let you down
-Never gonna run around and desert you
-Never gonna make you cry
-Never gonna say goodbye
-Never gonna tell a lie and hurt you
-
-(Ooh, give you up)
-(Ooh, give you up)
-Never gonna give, never gonna give
-(Give you up)
-Never gonna give, never gonna give
-(Give you up)
-
-We've known each other for so long
-Your heart's been aching, but
-You're too shy to say it
-Inside, we both know what's been going on
-We know the game and we're gonna play it
-
-I just wanna tell you how I'm feeling
-Gotta make you understand
-
-Never gonna give you up
-Never gonna let you down
-Never gonna run around and desert you
-Never gonna make you cry
-Never gonna say goodbye
-Never gonna tell a lie and hurt you
-
-Never gonna give you up
-Never gonna let you down
-Never gonna run around and desert you
-Never gonna make you cry
-Never gonna say goodbye
-Never gonna tell a lie and hurt you
-
-Never gonna give you up
-Never gonna let you down
-Never gonna run around and desert you
-Never gonna make you cry
-Never gonna say goodbye
-Never gonna tell a lie and hurt you ");
+I just wanna tell you how I'm \(\sqrt{feeling}\) \\
+Gotta make you understand \\
+ \\ \texttt{
+\color{red}{Never gonna give you up} \\
+\color{yellow}{Never gonna let you down} \\
+\color{green}{Never gonna run around and desert you} \\
+\color{cyan}{Never gonna make you cry} \\
+\color{blue}{Never gonna say goodbye} \\
+\color{purple}{Never gonna tell a lie and hurt you} \\
+} \\
+We've known each other for \~{so long} \\
+Your heart's been \color{red}\v{aching}, but \\
+You're too \color{pink}\r{shy} to say it \\
+Inside, we both know what's been going on \\
+We know the game and $\text\underline{we're gonna play it}$ \\
+ \\
+And if you ask me how I'm feeling \\
+Don't tell me you're too \(\rm\overline\underline{blind}\) to see \\
+ \\ \textsf{
+\color{red}{Never gonna give you up} \\
+\color{yellow}{Never gonna let you down} \\
+\color{green}{Never gonna run around and desert you} \\
+\color{cyan}{Never gonna make you cry} \\
+\color{blue}{Never gonna say goodbye} \\
+\color{purple}{Never gonna tell a lie and hurt you} \\
+} \textbb{ \\
+\color{red}{Never gonna give you up} \\
+\color{yellow}{Never gonna let you down} \\
+\color{green}{Never gonna run around and desert you} \\
+\color{cyan}{Never gonna make you cry} \\
+\color{blue}{Never gonna say goodbye} \\
+\color{purple}{Never gonna tell a lie and hurt you} \\
+} \\
+\textit{(Ooh, give you up)} \\
+\textit{(Ooh, give you up)} \\
+\textbf{Never gonna give, never gonna give} \\
+\textbfit{(Give you up)} \\
+\textbf{Never gonna give, never gonna give} \\
+\textbfit{(Give you up)} \\
+ \\
+We've known each other for so long \\
+Your heart's been \color{red}\H{aching}, but \\
+You're too \color{pink}\u{shy} to say it \\
+Inside, we both know what's been going on \\
+We know the game and $\text\overline{we're gonna play it}$ \\
+ \\
+I just wanna tell you how I'm \(\int_{-\infty}^\infty eeling\) \\
+Gotta make you understand \\
+ \\ \texttt{
+\color{red}{Never gonna give you up} \\
+\color{yellow}{Never gonna let you down} \\
+\color{green}{Never gonna run around and desert you} \\
+\color{cyan}{Never gonna make you cry} \\
+\color{blue}{Never gonna say goodbye} \\
+\color{purple}{Never gonna tell a lie and hurt you} \\
+} \\ \textsf{
+\color{red}{Never gonna give you up} \\
+\color{yellow}{Never gonna let you down} \\
+\color{green}{Never gonna run around and desert you} \\
+\color{cyan}{Never gonna make you cry} \\
+\color{blue}{Never gonna say goodbye} \\
+\color{purple}{Never gonna tell a lie and hurt you} \\
+} \\ \textbb{
+\color{red}{Never gonna give you up} \\
+\color{yellow}{Never gonna let you down} \\
+\color{green}{Never gonna run around and desert you} \\
+\color{cyan}{Never gonna make you cry} \\
+\color{blue}{Never gonna say goodbye} \\
+\color{purple}{Never gonna tell a lie and hurt you} }");
       Resources.Add("Text2", @"so guys we did it we reached a quater of a million subscribers, 250,000 subscribers and still growing\\
 the fact that we reached this number in such a short amount of time is just phenomenal i-im just amazed, thank you all so much\\
 for supporting this channel and helping it grow I-I love you guys, you guys are just awesome.\\

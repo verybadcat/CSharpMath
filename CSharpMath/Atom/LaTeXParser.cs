@@ -932,7 +932,7 @@ namespace CSharpMath.Atom {
             break;
           case RaiseBox r:
             builder.Append(@"\raisebox{")
-              .Append(r.Raise.Length)
+              .Append(r.Raise.Length.ToStringInvariant("0.0####"))
               .Append(r.Raise.IsMu ? "mu" : "pt")
               .Append("}{");
             MathListToLaTeX(r.InnerList, builder, currentFontStyle);
@@ -945,11 +945,11 @@ namespace CSharpMath.Atom {
             var intSpace = (int)space.Length;
             if (space.IsMu)
               builder.Append(@"\mkern")
-                .Append(space.Length.ToStringInvariant("0.0"))
+                .Append(space.Length.ToStringInvariant("0.0####"))
                 .Append("mu");
             else
               builder.Append(@"\kern")
-                .Append(space.Length.ToStringInvariant("0.0"))
+                .Append(space.Length.ToStringInvariant("0.0####"))
                 .Append("pt");
             break;
           case { Nucleus: null }:

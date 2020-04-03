@@ -302,6 +302,7 @@ namespace CSharpMath.Atom {
          { ":", ">", new Space(Structures.Space.MediumSpace) },
          { ";", new Space(Structures.Space.LongSpace) },
          { "!", new Space(-Structures.Space.ShortSpace) },
+         { "enspace", new Space(Structures.Space.EmWidth / 2) },
          { "quad", new Space(Structures.Space.EmWidth) },
          { "qquad", new Space(Structures.Space.EmWidth * 2) },
          

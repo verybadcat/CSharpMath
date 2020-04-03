@@ -33,8 +33,8 @@ namespace CSharpMath.Rendering.Text {
       public Space(Structures.Space space) => Content = space;
       public Structures.Space Content { get; }
       public override int? SingleChar(FontStyle style) => ' ';
-      public override bool Equals(TextAtom atom) => atom is Space;
-      public override int GetHashCode() => " ".GetHashCode();
+      public override bool Equals(TextAtom atom) => atom is Space s && s.Content == Content;
+      public override int GetHashCode() => Content.GetHashCode();
     }
     public sealed class ControlSpace : TextAtom {
       public override int? SingleChar(FontStyle style) => ' ';

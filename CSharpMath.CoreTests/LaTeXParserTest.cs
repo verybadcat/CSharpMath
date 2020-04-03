@@ -323,7 +323,7 @@ namespace CSharpMath.CoreTests {
 
     [Fact]
     public void TestMathSpace() {
-      var list = ParseLaTeX(@"\!\,\:\>\;\mskip15mu\quad\mkern36mu\qquad");
+      var list = ParseLaTeX(@"\!\,\:\>\;\enspace\mskip15mu\quad\mkern36mu\qquad");
       Assert.Collection(list,
         CheckAtom<Space>("", space => {
           Assert.Equal(-3, space.Length);
@@ -346,6 +346,10 @@ namespace CSharpMath.CoreTests {
           Assert.True(space.IsMu);
         }),
         CheckAtom<Space>("", space => {
+          Assert.Equal(9, space.Length);
+          Assert.True(space.IsMu);
+        }),
+        CheckAtom<Space>("", space => {
           Assert.Equal(15, space.Length);
           Assert.True(space.IsMu);
         }),
@@ -362,7 +366,7 @@ namespace CSharpMath.CoreTests {
           Assert.True(space.IsMu);
         })
       );
-      Assert.Equal(@"\! \, \: \: \; \mkern15.0mu\quad \qquad \qquad ", LaTeXParser.MathListToLaTeX(list).ToString());
+      Assert.Equal(@"\! \, \: \: \; \enspace \mkern15.0mu\quad \qquad \qquad ", LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
     [Fact]
@@ -882,6 +886,7 @@ namespace CSharpMath.CoreTests {
       Assert.Equal(output, LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
+    // Sync with CSharpMath.Rendering.Text.Tests TextLaTeXParserTests
     [Theory]
     [InlineData("0xFFF", "white", 0xFF, 0xFF, 0xFF)]
     [InlineData("#ff0", "yellow", 0xFF, 0xFF, 0x00)]
@@ -897,7 +902,7 @@ namespace CSharpMath.CoreTests {
     [InlineData("0x12345678", "#12345678", 0x34, 0x56, 0x78, 0x12)]
     [InlineData("#fedcba98", "#FEDCBA98", 0xDC, 0xBA, 0x98, 0xFE)]
     public void TestColor(string inColor, string outColor, byte r, byte g, byte b, byte a = 0xFF) {
-      var list = ParseLaTeX($@"\color{{{inColor}}}a");
+      var list = ParseLaTeX($@"\color{{{inColor}}}ab");
       Assert.Collection(list,
         CheckAtom<Color>("", color => {
           Assert.Equal(r, color.Colour.R);
@@ -905,9 +910,11 @@ namespace CSharpMath.CoreTests {
           Assert.Equal(b, color.Colour.B);
           Assert.Equal(a, color.Colour.A);
           Assert.False(color.ScriptsAllowed);
-        })
+          Assert.Collection(color.InnerList, CheckAtom<Variable>("a"));
+        }),
+        CheckAtom<Variable>("b")
       );
-      Assert.Equal($@"\color{{{outColor}}}{{a}}", LaTeXParser.MathListToLaTeX(list).ToString());
+      Assert.Equal($@"\color{{{outColor}}}{{a}}b", LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
     [Fact]

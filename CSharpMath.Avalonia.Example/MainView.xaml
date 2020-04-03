@@ -24,12 +24,12 @@
 
           </TabControl.Tag>
 
-          <TabItem Header="MathBlock">
-              <pages:MathBlockPage/>
+          <TabItem Header="MathView">
+              <pages:MathViewPage/>
           </TabItem>
 
-          <TabItem Header="TextBlock">
-              <pages:TextBlockPage/>
+          <TabItem Header="TextView">
+              <pages:TextViewPage/>
           </TabItem>
 
       </TabControl>

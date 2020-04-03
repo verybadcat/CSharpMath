@@ -8,8 +8,17 @@
   <ItemGroup>
     <Compile Update="**\*.xaml.cs" DependentUpon="%(Filename)" />
     <AvaloniaResource Include="**\*.xaml" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.9.4" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.9.6" />
     <ProjectReference Include="..\CSharpMath.Avalonia\CSharpMath.Avalonia.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Pages\MathViewPage.xaml.cs">
+      <DependentUpon>MathViewPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Pages\TextViewPage.xaml.cs">
+      <DependentUpon>TextViewPage.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 
 </Project>

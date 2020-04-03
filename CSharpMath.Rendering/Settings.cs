@@ -16,9 +16,9 @@ namespace CSharpMath {
     public static Structures.AliasDictionary<string, Atom.MathAtom> PredefinedLaTeXCommands =>
       Atom.LaTeXSettings.Commands;
     public static Structures.BiDictionary<string, string> PredefinedLaTeXTextAccents =>
-      Rendering.Text.TextLaTeXDefaults.PredefinedAccents;
+      Rendering.Text.TextLaTeXSettings.PredefinedAccents;
     public static Structures.AliasDictionary<string, string> PredefinedLaTeXTextSymbols =>
-      Rendering.Text.TextLaTeXDefaults.PredefinedTextSymbols;
+      Rendering.Text.TextLaTeXSettings.PredefinedTextSymbols;
     public static Dictionary<string, Structures.Space> PredefinedLengthUnits =>
       Structures.Space.PredefinedLengthUnits;
   }

@@ -3,7 +3,7 @@ using System.Linq;
 namespace CSharpMath.CoreTests {
   using CSharpMath.Atom;
   using Atoms = CSharpMath.Atom.Atoms;
-  public class LaTeXDefaultsTest {
+  public class LaTeXSettingsTests {
     [Fact]
     public void ForAsciiHandlesAllInputs() {
       for (sbyte i = -36 + 1; i != -36; i++) // Break loop at arbitrary negative value (-36)

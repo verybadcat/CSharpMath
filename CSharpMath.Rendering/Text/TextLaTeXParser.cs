@@ -338,6 +338,29 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                 case "!":
                   atoms.Space(-Space.ShortSpace);
                   break;
+                case "enspace":
+                  atoms.Space(Space.EmWidth / 2);
+                  break;
+                case "quad":
+                  atoms.Space(Space.EmWidth);
+                  break;
+                case "qquad":
+                  atoms.Space(Space.EmWidth * 2);
+                  break;
+                case "hspace": {
+                    if (ReadArgumentString(latex, ref textSection).Bind(space => {
+                      if (space.Length > StringArgumentLimit)
+                        return Err($"Length of space has over {StringArgumentLimit} characters. Please shorten it.");
+                      int lastNum = -1;
+                      for (int j = 0; j < space.Length; j++) {
+                        if ('0' <= space[j] && space[j] <= '9' || space[j] == '.') lastNum = j;
+                      }
+                      if (lastNum == -1) return Err("Space cannot be empty");
+                      return Space.Create(space.Slice(0, lastNum + 1).ToString(), space.Slice(lastNum + 1).ToString(), true);
+                    }).Bind(space => atoms.Space(space)).Error is string error)
+                      return Err(error);
+                    break;
+                  }
                 case "par":
                   ParagraphBreak();
                   break;
@@ -400,7 +423,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                   }
                 //case "^", "\"", ...
                 case var textAccent when
-                  TextLaTeXDefaults.PredefinedAccents.TryGetByFirst(textAccent, out var accent): {
+                  TextLaTeXSettings.PredefinedAccents.TryGetByFirst(textAccent, out var accent): {
                     int tmp_commandLength = textAccent.Length;
                     if (ReadArgumentAtom(latex)
                       .Bind(builtContent => atoms.Accent(builtContent, accent))
@@ -409,7 +432,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     break;
                   }
                 //case "textasciicircum", "textless", ...
-                case var textSymbol when TextLaTeXDefaults.PredefinedTextSymbols.TryGetValue(textSymbol, out var replaceResult):
+                case var textSymbol when TextLaTeXSettings.PredefinedTextSymbols.TryGetValue(textSymbol, out var replaceResult):
                   atoms.Text(replaceResult, NextSectionUntilPunc(latex, ref textSection));
                   break;
                 case var command:
@@ -443,24 +466,42 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
         case TextAtom.Newline _:
           return b.Append(@"\\");
         case TextAtom.Math m:
-          return b.Append('\\')
-            .Append(m.DisplayStyle ? '[' : '(')
-            .Append(LaTeXParser.MathListToLaTeX(m.Content))
+          b.Append('\\')
+            .Append(m.DisplayStyle ? '[' : '(');
+          return LaTeXParser.MathListToLaTeX(m.Content, b)
             .Append('\\')
             .Append(m.DisplayStyle ? ']' : ')');
         case TextAtom.Space s:
-          return b.Append(@"\hspace")
-            .AppendInBracesOrLiteralNull(s.Content.Length.ToStringInvariant());
+          return s.Content.IsMu
+          ? s.Content.Length switch
+          {
+            -3 => b.Append(@"\! "),
+            3 => b.Append(@"\, "),
+            4 => b.Append(@"\: "),
+            5 => b.Append(@"\; "),
+            9 => b.Append(@"\enspace "),
+            18 => b.Append(@"\quad "),
+            36 => b.Append(@"\qquad "),
+            var l => b.Append(@"\hspace{").Append((l / 18).ToStringInvariant("0.0####")).Append("em").Append('}')
+          }
+          : b.Append(@"\hspace{").Append(s.Content.Length.ToStringInvariant("0.0####")).Append("pt").Append('}');
         case TextAtom.ControlSpace _:
           return b.Append(@"\ ");
+        case TextAtom.Accent a:
+          b.Append('\\').Append(TextLaTeXSettings.PredefinedAccents[second: a.AccentChar]).Append('{');
+          return TextAtomToLaTeX(a.Content, b).Append('}');
         case TextAtom.Style t:
-          return b.Append('\\')
-            .Append(LaTeXSettings.FontStyles[t.FontStyle])
-            .AppendInBracesOrEmptyBraces(TextAtomToLaTeX(t.Content, new StringBuilder()).ToString());
+          b.Append('\\')
+            .Append(LaTeXSettings.FontStyles[t.FontStyle] is var style && style.StartsWith("math")
+                    ? style.Replace("math", "text") : style)
+            .Append('{');
+          return TextAtomToLaTeX(t.Content, b).Append('}');
         case TextAtom.Size z:
-          return b.Append(@"\fontsize")
-            .AppendInBracesOrEmptyBraces(z.PointSize.ToStringInvariant())
-            .AppendInBracesOrEmptyBraces(TextAtomToLaTeX(z.Content, new StringBuilder()).ToString());
+          b.Append(@"\fontsize{").Append(z.PointSize).Append("}{");
+          return TextAtomToLaTeX(z.Content, b).Append('}');
+        case TextAtom.Color c:
+          b.Append(@"\color{").Append(c.Colour).Append("}{");
+          return TextAtomToLaTeX(c.Content, b).Append('}');
         case TextAtom.List l:
           foreach (var a in l.Content)
             TextAtomToLaTeX(a, b);
