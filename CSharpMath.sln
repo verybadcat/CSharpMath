@@ -101,7 +101,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Xaml.Tests", "CS
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSharpMath.Xaml", "CSharpMath.Xaml\CSharpMath.Xaml.shproj", "{D37416FB-3025-4A64-81CE-89DA21062ACB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Rendering.Text.Tests", "CSharpMath.Rendering.Text.Tests\CSharpMath.Rendering.Text.Tests.csproj", "{B4187488-F6DF-45AC-96D3-EEE58B65C53E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Rendering.Text.Tests", "CSharpMath.Rendering.Text.Tests\CSharpMath.Rendering.Text.Tests.csproj", "{B4187488-F6DF-45AC-96D3-EEE58B65C53E}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

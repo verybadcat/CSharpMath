@@ -29,9 +29,11 @@ namespace CSharpMath.Xaml.Tests {
       public TContent? Content { get => content; set => SetAndRaise(ref content, value); }
       public event PropertyChangedEventHandler? PropertyChanged;
     }
+    protected abstract string FrontEndNamespace { get; }
     protected abstract TBindingMode Default { get; }
     protected abstract TBindingMode OneWayToSource { get; }
     protected abstract TBindingMode TwoWay { get; }
+    protected abstract TView ParseFromXaml<TView>(string xaml) where TView : TBaseView, new();
     protected abstract void SetBindingContext(TBaseView view, object viewModel);
     protected abstract IDisposable SetBinding(TBaseView view, TProperty property, string viewModelProperty, TBindingMode bindingMode);
     IDisposable SetBinding<TView>(TView view, string propertyName, TBindingMode? bindingMode = null) where TView : TBaseView =>
@@ -194,6 +196,18 @@ namespace CSharpMath.Xaml.Tests {
       }
       Test(new TMathView(), @"\alpha \beta \gamma ", new MathList(new Atom.Atoms.Variable("α"), new Atom.Atoms.Variable("β"), new Atom.Atoms.Variable("γ")));
       Test(new TTextView(), @"αβγ", (TextAtom)new TextAtom.List(new[] { new TextAtom.Text("α"), new TextAtom.Text("β"), new TextAtom.Text("γ") }));
+    }
+    [Fact]
+    public void ParseXaml() {
+      var xaml = $@"<MathView xmlns=""clr-namespace:CSharpMath.{FrontEndNamespace};assembly=CSharpMath.{FrontEndNamespace}"" LaTeX=""1\leq 2"" />";
+      var math = ParseFromXaml<TMathView>(xaml);
+      Assert.Equal(@"1\leq 2", math.LaTeX);
+      Assert.Equal(new MathList(new Atom.Atoms.Number("1"), new Atom.Atoms.Relation("≤"), new Atom.Atoms.Number("2")), math.Content);
+
+      xaml = $@"<TextView xmlns=""clr-namespace:CSharpMath.{FrontEndNamespace};assembly=CSharpMath.{FrontEndNamespace}"" LaTeX=""a b"" />";
+      var text = ParseFromXaml<TTextView>(xaml);
+      Assert.Equal(@"a\ b", text.LaTeX);
+      Assert.Equal(new TextAtom.List(new TextAtom[] { new TextAtom.Text("a"), new TextAtom.ControlSpace(), new TextAtom.Text("b") }), text.Content);
     }
   }
 }
