@@ -33,8 +33,8 @@ namespace CSharpMath.Xaml.Tests {
     protected abstract TBindingMode OneWayToSource { get; }
     protected abstract TBindingMode TwoWay { get; }
     protected abstract void SetBindingContext(TBaseView view, object viewModel);
-    protected abstract void SetBinding(TBaseView view, TProperty property, string viewModelProperty, TBindingMode bindingMode);
-    void SetBinding<TView>(TView view, string propertyName, TBindingMode? bindingMode = null) where TView : TBaseView =>
+    protected abstract IDisposable SetBinding(TBaseView view, TProperty property, string viewModelProperty, TBindingMode bindingMode);
+    IDisposable SetBinding<TView>(TView view, string propertyName, TBindingMode? bindingMode = null) where TView : TBaseView =>
       SetBinding(view,
         (TProperty)typeof(TView)
         .GetField(propertyName + "Property", BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
@@ -71,23 +71,23 @@ namespace CSharpMath.Xaml.Tests {
         where TView : TBaseView, ICSharpMathAPI<TContent, TColor> where TContent : class {
         var viewModel = new ViewModel<TContent>();
         SetBindingContext(view, viewModel);
-        SetBinding(view, nameof(viewModel.Content));
+        using (var binding = SetBinding(view, nameof(viewModel.Content))) {
+          viewModel.Content = one;
+          Assert.Equal(one, view.Content);
+          Assert.Equal("1", view.LaTeX);
+          Assert.Null(view.ErrorMessage);
 
-        viewModel.Content = one;
-        Assert.Equal(one, view.Content);
-        Assert.Equal("1", view.LaTeX);
-        Assert.Null(view.ErrorMessage);
-
-        view.Content = two;
-        Assert.Equal(one, viewModel.Content); // Because one-way binding
-        Assert.Equal("2", view.LaTeX);
-        Assert.Null(view.ErrorMessage);
-
-        SetBinding(view, nameof(viewModel.Content), TwoWay);
-        view.Content = three;
-        Assert.Equal(three, viewModel.Content);
-        Assert.Equal("3", view.LaTeX);
-        Assert.Null(view.ErrorMessage);
+          view.Content = two;
+          Assert.Equal(one, viewModel.Content); // Because one-way binding
+          Assert.Equal("2", view.LaTeX);
+          Assert.Null(view.ErrorMessage);
+        }
+        using (var binding = SetBinding(view, nameof(viewModel.Content), TwoWay)) {
+          view.Content = three;
+          Assert.Equal(three, viewModel.Content);
+          Assert.Equal("3", view.LaTeX);
+          Assert.Null(view.ErrorMessage);
+        }
       }
       Test(new TMathView(),
         new MathList(new Atom.Atoms.Number("1")),
@@ -104,23 +104,25 @@ namespace CSharpMath.Xaml.Tests {
         where TView : TBaseView, ICSharpMathAPI<TContent, TColor> where TContent : class {
         var viewModel = new ViewModel<TContent>();
         SetBindingContext(view, viewModel);
-        SetBinding(view, nameof(viewModel.LaTeX));
+        using (var binding = SetBinding(view, nameof(viewModel.LaTeX))) {
 
-        viewModel.LaTeX = "1";
-        Assert.Equal("1", view.LaTeX);
-        Assert.Equal(one, view.Content);
-        Assert.Null(view.ErrorMessage);
+          viewModel.LaTeX = "1";
+          Assert.Equal("1", view.LaTeX);
+          Assert.Equal(one, view.Content);
+          Assert.Null(view.ErrorMessage);
 
-        view.LaTeX = "2";
-        Assert.Equal("1", viewModel.LaTeX); // Because one-way binding
-        Assert.Equal(two, view.Content);
-        Assert.Null(view.ErrorMessage);
+          view.LaTeX = "2";
+          Assert.Equal("1", viewModel.LaTeX); // Because one-way binding
+          Assert.Equal(two, view.Content);
+          Assert.Null(view.ErrorMessage);
+        }
 
-        SetBinding(view, nameof(viewModel.LaTeX), TwoWay);
-        view.LaTeX = "3";
-        Assert.Equal("3", viewModel.LaTeX);
-        Assert.Equal(three, view.Content);
-        Assert.Null(view.ErrorMessage);
+        using (var binding = SetBinding(view, nameof(viewModel.LaTeX), TwoWay)) {
+          view.LaTeX = "3";
+          Assert.Equal("3", viewModel.LaTeX);
+          Assert.Equal(three, view.Content);
+          Assert.Null(view.ErrorMessage);
+        }
       }
       Test(new TMathView(),
         new MathList(new Atom.Atoms.Number("1")),
@@ -137,25 +139,42 @@ namespace CSharpMath.Xaml.Tests {
         where TView : TBaseView, ICSharpMathAPI<TContent, TColor> where TContent : class {
         var viewModel = new ViewModel<TContent>();
         SetBindingContext(view, viewModel);
-        SetBinding(view, nameof(viewModel.LaTeX));
+        using (var binding = SetBinding(view, nameof(viewModel.LaTeX))) {
 
-        viewModel.LaTeX = @"\alpha\beta\gamme";
-        Assert.Equal(@"\alpha\beta\gamme", view.LaTeX);
-        Assert.Null(view.Content);
-        Assert.Equal(@"Invalid command \gamme", view.ErrorMessage);
+          viewModel.LaTeX = @"\alpha\beta\gamme";
+          Assert.Equal(@"\alpha\beta\gamme", view.LaTeX);
+          Assert.Null(view.Content);
+          Assert.Equal(@"Invalid command \gamme", view.ErrorMessage);
+        }
+        using (var binding = SetBinding(view, nameof(viewModel.LaTeX), OneWayToSource)) {
+          view.LaTeX = @"123";
+          Assert.Equal(@"123", view.LaTeX);
+          Assert.Equal(@"123", viewModel.LaTeX);
+          Assert.Equal(oneTwoThree, view.Content);
+          Assert.Null(view.ErrorMessage);
 
-        SetBinding(view, nameof(viewModel.LaTeX), OneWayToSource);
-        view.LaTeX = @"123";
-        Assert.Equal(@"123", view.LaTeX);
-        Assert.Equal(@"123", viewModel.LaTeX);
-        Assert.Equal(oneTwoThree, view.Content);
-        Assert.Null(view.ErrorMessage);
-
-        SetBinding(view, nameof(viewModel.LaTeX));
-        viewModel.LaTeX = @"\\\";
-        Assert.Equal(@"\\\", view.LaTeX);
-        Assert.Null(view.Content);
-        Assert.Equal(@"Invalid command \", view.ErrorMessage);
+          using var innerBinding = SetBinding(view, nameof(viewModel.LaTeX));
+          viewModel.LaTeX = @"\\\";
+          if (typeof(TBindingMode) == typeof(global::Avalonia.Data.BindingMode)) {
+            // Avalonia processes bindings from newest to oldest
+            Assert.Equal(@"123", view.LaTeX);
+            Assert.Equal(@"123", viewModel.LaTeX);
+            Assert.Equal(oneTwoThree, view.Content);
+            Assert.Null(view.ErrorMessage);
+          } else if (typeof(TBindingMode) == typeof(Xamarin.Forms.BindingMode)) {
+            // Xamarin Forms processes bindings from oldest to newest
+            Assert.Equal(@"\\\", view.LaTeX);
+            Assert.Equal(@"\\\", viewModel.LaTeX);
+            Assert.Null(view.Content);
+            Assert.Equal(@"Invalid command \", view.ErrorMessage);
+          } else throw new NotImplementedException();
+        }
+        using (var binding = SetBinding(view, nameof(viewModel.LaTeX))) {
+          viewModel.LaTeX = @"}";
+          Assert.Equal(@"}", view.LaTeX);
+          Assert.Null(view.Content);
+          Assert.Equal(@"Missing opening brace", view.ErrorMessage);
+        }
       }
       Test(new TMathView(), new MathList(new Atom.Atoms.Number("1"), new Atom.Atoms.Number("2"), new Atom.Atoms.Number("3")));
       Test(new TTextView(), (TextAtom)new TextAtom.Text("123"));
@@ -166,7 +185,7 @@ namespace CSharpMath.Xaml.Tests {
         where TView : TBaseView, ICSharpMathAPI<TContent, TColor> where TContent : class {
         var viewModel = new ViewModel<TContent>();
         SetBindingContext(view, viewModel);
-        SetBinding(view, nameof(viewModel.LaTeX));
+        using var binding = SetBinding(view, nameof(viewModel.LaTeX));
 
         viewModel.LaTeX = @"\alpha\beta\gamma";
         Assert.Equal(expected, view.LaTeX);

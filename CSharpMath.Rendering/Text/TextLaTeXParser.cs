@@ -218,7 +218,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                       return error;
                     break;
                   case var _ when textSection.Is('}'):
-                    return "Unexpected }, unbalanced braces";
+                    return "Missing opening brace";
                   case var _ when wordKind == WordKind.NewLine:
                     // Consume newlines after commands
                     // Double newline == paragraph break

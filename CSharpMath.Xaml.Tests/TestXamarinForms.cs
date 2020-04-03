@@ -11,8 +11,15 @@ namespace CSharpMath.Xaml.Tests {
     protected override BindingMode Default => BindingMode.Default;
     protected override BindingMode OneWayToSource => BindingMode.OneWayToSource;
     protected override BindingMode TwoWay => BindingMode.TwoWay;
-    protected override void SetBinding(SKCanvasView view, BindableProperty property, string viewModelProperty, BindingMode bindingMode) =>
+    class DisposeAction : IDisposable {
+      public DisposeAction(Action action) => this.action = action;
+      readonly Action action;
+      void IDisposable.Dispose() => action();
+    }
+    protected override IDisposable SetBinding(SKCanvasView view, BindableProperty property, string viewModelProperty, BindingMode bindingMode) {
       view.SetBinding(property, viewModelProperty, bindingMode);
+      return new DisposeAction(() => view.RemoveBinding(property));
+    }
     protected override void SetBindingContext(SKCanvasView view, object viewModel) =>
       view.BindingContext = viewModel;
   }

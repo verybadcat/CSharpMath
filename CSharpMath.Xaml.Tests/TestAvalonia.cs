@@ -13,7 +13,7 @@ namespace CSharpMath.Xaml.Tests {
     protected override BindingMode Default => BindingMode.Default;
     protected override BindingMode OneWayToSource => BindingMode.OneWayToSource;
     protected override BindingMode TwoWay => BindingMode.TwoWay;
-    protected override void SetBinding(Control view, AvaloniaProperty property, string viewModelProperty, BindingMode bindingMode) =>
+    protected override IDisposable SetBinding(Control view, AvaloniaProperty property, string viewModelProperty, BindingMode bindingMode) =>
       view.Bind(property, new Binding(viewModelProperty, bindingMode));
     protected override void SetBindingContext(Control view, object viewModel) =>
       view.DataContext = viewModel;
