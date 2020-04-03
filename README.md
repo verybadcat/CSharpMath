@@ -72,9 +72,9 @@ someSuperview.Add(latexView);
     </math:FormsMathView>
 </ContentPage>
 ```
-or you can use the prehistoric way:
+or:
 ```cs
-var view = new FormsMathView();
+var view = new CSharpMath.Forms.MathView();
 view.HorizontalOptions = view.VerticalOptions = LayoutOptions.FillAndExpand;
 view.LaTeX = @"\frac\sqrt23";
 someLayout.Children.Add(view);
@@ -85,6 +85,17 @@ someLayout.Children.Add(view);
 iOS | Android | Windows UWP
 ----|---------|------------
 ![1/2](https://user-images.githubusercontent.com/19922066/40612166-fd6c5b38-62ab-11e8-9cb1-b2b7eb6883be.png) | ![1+1](https://user-images.githubusercontent.com/19922066/40575043-183a6970-6110-11e8-887f-820e14efc588.jpeg) | ![Panning a view](https://user-images.githubusercontent.com/19922066/40731183-18a09b68-6463-11e8-8095-1a4cc9df9eae.gif) ![Colors!](https://user-images.githubusercontent.com/19922066/40972206-8abc247c-68f2-11e8-8684-561b5e833c21.png)
+
+### 3. CSharpMath.Avalonia
+
+```xaml
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:math="clr-namespace:CSharpMath.Avalonia;assembly=CSharpMath.Avalonia"
+             x:Class="Namespace.Class">
+    <math:MathView LaTeX="x + 2 \sqrt{x} + 1 = (\sqrt x+1)^2" />
+</UserControl>
+```
+![MathViewPage](https://user-images.githubusercontent.com/19922066/78373612-692db400-75fd-11ea-89c3-2f2a4f47784a.png)
 
 # [Documentation](https://github.com/verybadcat/CSharpMath/wiki/Documentation-of-public-facing-APIs-of-CSharpMath.Rendering,-CSharpMath.SkiaSharp-and-CSharpMath.Forms-MathViews)
 
