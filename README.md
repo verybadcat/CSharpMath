@@ -67,9 +67,9 @@ someSuperview.Add(latexView);
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:math="clr-namespace:CSharpMath.Forms;assembly=CSharpMath.Forms"
              x:Class="Namespace.Class">
-    <math:FormsMathView x:Name="View" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+    <math:MathView x:Name="View" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
         \frac\sqrt23
-    </math:FormsMathView>
+    </math:MathView>
 </ContentPage>
 ```
 or:
