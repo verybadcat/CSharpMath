@@ -3,7 +3,7 @@
 	url = https://github.com/LayoutFarm/Typography.git
 [submodule "Wiki"]
 	path = CSharpMath.Wiki
-	url = https://github.com/verybadcat/CSharpMath.Wiki.git
+	url = https://github.com/verybadcat/CSharpMath.wiki.git
 [submodule "nerdamer"]
 	path = nerdamer
 	url = https://github.com/jiggzson/nerdamer
