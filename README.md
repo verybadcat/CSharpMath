@@ -101,6 +101,9 @@ var view = new CSharpMath.Avalonia.MathView();
 view.LaTeX = @"\frac\sqrt23";
 somePanel.Children.Add(view);
 ```
+
+[See an example project](CSharpMath.Avalonia.Example)
+
 ![MathViewPage](https://user-images.githubusercontent.com/19922066/78373612-692db400-75fd-11ea-89c3-2f2a4f47784a.png)
 
 # [Documentation](https://github.com/verybadcat/CSharpMath/wiki/Documentation-of-public-facing-APIs-of-CSharpMath.Rendering,-CSharpMath.SkiaSharp-and-CSharpMath.Forms-MathViews)
