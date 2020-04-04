@@ -37,7 +37,8 @@ namespace CSharpMath.Editor.Tests.Visualizer {
         );
       }
     }
-    public void FillRect(Rectangle rect, Structures.Color color) => Checker.ConsoleFillRectangle(rect, color);
+    public void FillRect(Rectangle rect, Structures.Color color) =>
+      Checker.ConsoleFillRectangle(new Rectangle((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height), color);
     public void DrawLine
       (float x1, float y1, float x2, float y2, float strokeWidth, Structures.Color? color) {
       if (y1 != y2) throw new NotImplementedException("Non-horizontal lines currently not supported");
