@@ -92,5 +92,6 @@ namespace CSharpMath.Rendering.Tests {
     public const string Cases = @" w \equiv \begin{cases} 0 & \text{for}\ c = d = 0\\ \sqrt{|c|}\,\sqrt{\frac{1+\sqrt{1+(d/c)^2}}{2}} &\text{for}\ |c| \geq |d|\\ \sqrt{|d|}\,\sqrt{\frac{|c/d| + \sqrt{1+(c/d)^2}}{2}} &\text{for}\ |c|<|d| \end{cases}";
     public const string IntegralColorBoxWrong = @"\colorbox{red}\int^\colorbox{yellow}\infty_\colorbox{purple}{-\infty}\colorbox{green}x\ \colorbox{blue}{dx}";
     public const string IntegralColorBoxCorrect = @"\colorbox{red}{\int^\colorbox{yellow}\infty_\colorbox{purple}{-\infty}}\colorbox{green}x\ \colorbox{blue}{dx}";
+    public const string RaiseBox = @"a\raisebox{1mu}a\raisebox{2mu}a\raisebox{3mu}a\raisebox{4mu}a";
   }
 }

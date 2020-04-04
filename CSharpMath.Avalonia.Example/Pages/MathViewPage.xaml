@@ -63,7 +63,7 @@
                 <TextBlock Classes="h1"
                            Text="Write some LaTeX" />
 
-                <TextBox Name="input" Text="x + 2 \sqrt{x} + 1 = (\sqrt x+1)^2 \\ \begin{bmatrix} 1 &amp; 2 &amp; 3 \\ a &amp; b &amp; c \end{bmatrix}" />
+                <TextBox Name="input" Text="x + 2 \sqrt{x} + 1 = (\sqrt x+1)^2 \\ \begin{bmatrix} 1 &amp; 2 &amp; 3 \\ a &amp; b &amp; c \\ \frac xy &amp; z^3 &amp; \infty \end{bmatrix}" />
 
                 <csmath:MathView FontSize="{Binding #size.SelectedItem}" LaTeX="{Binding #input.Text}" />
 

@@ -6,6 +6,8 @@ namespace CSharpMath.Avalonia.Example {
   public class MainWindow : Window {
     public MainWindow() {
       InitializeComponent();
+      Icon = new WindowIcon(System.Reflection.Assembly.GetExecutingAssembly()
+        .GetManifestResourceStream("CSharpMath.Avalonia.Example.Icon.png"));
       this.AttachDevTools();
     }
 

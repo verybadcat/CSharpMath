@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\CSharpMath.Rendering.Tests\DrawIcon.cs" Link="Examples\DrawIcon.cs" />
     <Compile Include="..\..\CSharpMath.Rendering.Tests\MathData.cs" Link="Examples\MathData.cs" />
     <Compile Include="..\..\CSharpMath.Rendering.Tests\SharedData.cs" Link="Examples\SharedData.cs" />
   </ItemGroup>

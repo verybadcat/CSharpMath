@@ -48,6 +48,24 @@ namespace CSharpMath.Rendering.Tests {
       }
       return false;
     }
+    // https://stackoverflow.com/a/2637303/5429648
+    public static bool StreamsContentsAreEqual(Stream stream1, Stream stream2) {
+      const int bufferSize = 2048 * 2;
+      var buffer1 = new byte[bufferSize];
+      var buffer2 = new byte[bufferSize];
+      while (true) {
+        int count1 = stream1.Read(buffer1, 0, bufferSize);
+        int count2 = stream2.Read(buffer2, 0, bufferSize);
+        if (count1 != count2) return false;
+        if (count1 == 0) return true;
+        int iterations = (int)Math.Ceiling((double)count1 / sizeof(long));
+        for (int i = 0; i < iterations; i++) {
+          if (BitConverter.ToInt64(buffer1, i * sizeof(long)) != BitConverter.ToInt64(buffer2, i * sizeof(long))) {
+            return false;
+          }
+        }
+      }
+    }
   }
   [Collection(nameof(TestFixture))]
   public abstract class Test<TCanvas, TColor, TMathPainter, TTextPainter>
@@ -99,36 +117,9 @@ namespace CSharpMath.Rendering.Tests {
       Assert.True(expectedFile.Exists, "The expected image was not copied successfully.");
       using var actualStream = actualFile.OpenRead();
       using var expectedStream = expectedFile.OpenRead();
-      CSharpMath.CoreTests.Approximately.Equal(expectedStream.Length, actualStream.Length, expectedStream.Length * FileSizeTolerance);
+      CoreTests.Approximately.Equal(expectedStream.Length, actualStream.Length, expectedStream.Length * FileSizeTolerance);
       if (FileSizeTolerance == 0)
-        Assert.True(StreamsContentsAreEqual(expectedStream, actualStream), "The images differ.");
-
-      // https://stackoverflow.com/a/2637303/5429648
-      static bool StreamsContentsAreEqual(Stream stream1, Stream stream2) {
-        const int bufferSize = 2048 * 2;
-        var buffer1 = new byte[bufferSize];
-        var buffer2 = new byte[bufferSize];
-
-        while (true) {
-          int count1 = stream1.Read(buffer1, 0, bufferSize);
-          int count2 = stream2.Read(buffer2, 0, bufferSize);
-
-          if (count1 != count2) {
-            return false;
-          }
-
-          if (count1 == 0) {
-            return true;
-          }
-
-          int iterations = (int)Math.Ceiling((double)count1 / sizeof(long));
-          for (int i = 0; i < iterations; i++) {
-            if (BitConverter.ToInt64(buffer1, i * sizeof(long)) != BitConverter.ToInt64(buffer2, i * sizeof(long))) {
-              return false;
-            }
-          }
-        }
-      }
+        Assert.True(TestFixture.StreamsContentsAreEqual(expectedStream, actualStream), "The images differ.");
     }
   }
 }
