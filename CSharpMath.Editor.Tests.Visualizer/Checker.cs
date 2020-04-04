@@ -123,13 +123,13 @@ moveCursor:var pos = Adjust(new Rectangle(x, y, 0, 0));
         for (var i = 0; i < innerRectWidth; i++)
           Console.Write('━');
         Console.Write('┓');
-        for (var y = rect.Y + 1; y < rect.Y + innerRectHeight; y++) {
+        for (var y = rect.Y + 1; y <= rect.Y + innerRectHeight; y++) {
           Console.SetCursorPosition(rect.X, y);
           Console.Write('┃');
           Console.SetCursorPosition(rect.X + innerRectWidth + 1, y);
           Console.Write('┃');
         }
-        Console.SetCursorPosition(rect.X, rect.Y + innerRectHeight);
+        Console.SetCursorPosition(rect.X, rect.Y + innerRectHeight + 1);
         Console.Write('┗');
         for (var i = 0; i < innerRectWidth; i++)
           Console.Write('━');
@@ -145,9 +145,9 @@ moveCursor:var pos = Adjust(new Rectangle(x, y, 0, 0));
       rect = Adjust(rect);
       SetConsoleColor(color);
       if (rect.Width > 0 && rect.Height > 0) {
-        for (var i = 0; i < rect.Width; i++) {
+        for (var i = 0; i < rect.Height; i++) {
           Console.SetCursorPosition(rect.X, rect.Y + i);
-          for (var j = 0; j < rect.Height; j++)
+          for (var j = 0; j < rect.Width; j++)
             Console.Write('█');
         }
       }

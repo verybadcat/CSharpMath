@@ -18,8 +18,8 @@ namespace CSharpMath.Editor.Tests.Visualizer {
           .GetBoundingRectsForGlyphs(text.Font, text.Glyphs, text.Length
         ), ValueTuple.Create)) {
         Checker.ConsoleDrawRectangle(
-          new Rectangle((int)(point.X + trans.X + advance),
-            (int)(point.Y + trans.Y), (int)bounds.Width, (int)bounds.Height),
+          new Rectangle((int)(point.X + trans.X + bounds.X + advance),
+            (int)(point.Y + trans.Y + bounds.Y), (int)bounds.Width, (int)bounds.Height),
           glyph, foreground ?? color);
         advance += bounds.Width + kernAfter;
       }
@@ -31,14 +31,14 @@ namespace CSharpMath.Editor.Tests.Visualizer {
         .GetBoundingRectsForGlyphs(font, glyphs, glyphs.Count);
       foreach (var ((glyph, point), bound) in zipped.Zip(bounds, ValueTuple.Create)) {
         Checker.ConsoleDrawRectangle(
-          new Rectangle((int)(point.X + trans.X), (int)(point.Y + trans.Y),
+          new Rectangle((int)(point.X + trans.X + bound.X), (int)(point.Y + trans.Y + bound.Y),
             (int)bound.Width, (int)bound.Height),
           glyph, color
         );
       }
     }
     public void FillRect(RectangleF rect, Structures.Color color) =>
-      Checker.ConsoleFillRectangle(new Rectangle((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height), color);
+      Checker.ConsoleFillRectangle(new Rectangle((int)(rect.X + trans.X), (int)(rect.Y + trans.Y), (int)rect.Width, (int)rect.Height), color);
     public void DrawLine
       (float x1, float y1, float x2, float y2, float strokeWidth, Structures.Color? color) {
       if (y1 != y2) throw new NotImplementedException("Non-horizontal lines currently not supported");
