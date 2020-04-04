@@ -37,7 +37,7 @@ namespace CSharpMath.Editor.Tests.Visualizer {
         );
       }
     }
-    public void FillRect(Rectangle rect, Structures.Color color) =>
+    public void FillRect(RectangleF rect, Structures.Color color) =>
       Checker.ConsoleFillRectangle(new Rectangle((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height), color);
     public void DrawLine
       (float x1, float y1, float x2, float y2, float strokeWidth, Structures.Color? color) {
