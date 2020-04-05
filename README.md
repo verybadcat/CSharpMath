@@ -38,8 +38,9 @@ Really, any one you like!
 [ASP.NET](wiki/@GettingStarted~ASP.md)
 [Ooui.Wasm](wiki/@GettingStarted~Ooui.md)-->
 
-Ironically enough, the first front end was iOS (CSharpMath.Ios).
-As development continued, Xamarin.Forms (CSharpMath.Forms)<!-- and Windows environments--> is now supported via SkiaSharp (CSharpMath.SkiaSharp) as of 0.1.0.
+Ironically enough, the first front end was iOS (CSharpMath.Ios), which was added in v0.0.
+As development continued, in v0.1, Xamarin.Forms (CSharpMath.Forms) support via SkiaSharp (CSharpMath.SkiaSharp) was added.
+In v0.4, Avalonia (CSharpMath.Avalonia) support was also added.
 
 # Usage and Examples
 
