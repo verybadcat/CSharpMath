@@ -6,11 +6,11 @@ using Xamarin.Forms.Xaml;
 
 namespace CSharpMath.Forms.Example {
   [XamlCompilation(XamlCompilationOptions.Compile)]
-  public partial class ExamplePage : ContentPage {
-    public ExamplePage() {
+  public partial class SelectPage : ContentPage {
+    public SelectPage() {
       InitializeComponent();
       App.AllViews.Add(View);
-      Size.ItemsSource = CustomExamplePage.FontSizes;
+      Size.ItemsSource = TryPage.FontSizes;
       Size.SelectedIndexChanged += (sender, e) =>
         View.FontSize = (float)Size.SelectedItem;
       Size.SelectedItem = 96f;

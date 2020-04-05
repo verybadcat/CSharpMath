@@ -16,7 +16,7 @@ namespace CSharpMath.Forms.Example {
       if (reset) { e.Surface.Canvas.Clear(); reset = false; }
       var measure = painter.Measure() ?? throw new Structures.InvalidCodePathException("Invalid LaTeX");
       e.Surface.Canvas.DrawRect
-        ((float)x + measure.X, (float)y + measure.Y, measure.Width, measure.Height,
+        ((float)x, (float)y, measure.Width, -measure.Height,
           new global::SkiaSharp.SKPaint { Color = global::SkiaSharp.SKColors.Orange });
       painter.Draw(e.Surface.Canvas, (float)x, (float)y);
     }

@@ -189,19 +189,19 @@ namespace CSharpMath.Xaml.Tests {
     }
     [Fact]
     public void LaTeXAutoFormats() {
-      void Test<TView, TContent>(TView view, string expected, TContent alphaBetaGamma)
+      void Test<TView, TContent>(TView view, TContent alphaBetaGamma)
         where TView : TBaseView, ICSharpMathAPI<TContent, TColor> where TContent : class {
         var viewModel = new ViewModel<TContent>();
         SetBindingContext(view, viewModel);
         using var binding = SetBinding(view, nameof(viewModel.LaTeX));
 
         viewModel.LaTeX = @"\alpha\beta\gamma";
-        Assert.Equal(expected, view.LaTeX);
+        Assert.Equal(@"\alpha \beta \gamma ", view.LaTeX);
         Assert.Equal(alphaBetaGamma, view.Content);
         Assert.Null(view.ErrorMessage);
       }
-      Test(new TMathView(), @"\alpha \beta \gamma ", new MathList(new Atom.Atoms.Variable("α"), new Atom.Atoms.Variable("β"), new Atom.Atoms.Variable("γ")));
-      Test(new TTextView(), @"αβγ", (TextAtom)new TextAtom.List(new[] { new TextAtom.Text("α"), new TextAtom.Text("β"), new TextAtom.Text("γ") }));
+      Test(new TMathView(), new MathList(new Atom.Atoms.Variable("α"), new Atom.Atoms.Variable("β"), new Atom.Atoms.Variable("γ")));
+      Test(new TTextView(), (TextAtom)new TextAtom.List(new[] { new TextAtom.Text("α"), new TextAtom.Text("β"), new TextAtom.Text("γ") }));
     }
     [Fact]
     public void ParseXaml() {

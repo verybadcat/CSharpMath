@@ -10,10 +10,10 @@
             android:TabbedPage.IsSwipePagingEnabled="False"
             ChildAdded="Handle_ChildAdded">
             <local:IconPage/>
-            <local:ExamplePage/>
+            <local:SelectPage/>
             <local:ExamplesPage/>
             <local:MoreExamplesPage/>
-            <local:CustomExamplePage/>
+            <local:TryPage/>
             <local:EditorPage/>
             <local:SlidePage/>
             <local:TextPage/>

@@ -427,7 +427,6 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                   //case "^", "\"", ...
                   case var textAccent when
                     TextLaTeXSettings.PredefinedAccents.TryGetByFirst(textAccent, out var accent): {
-                      int tmp_commandLength = textAccent.Length;
                       if (ReadArgumentAtom(latex)
                         .Bind(builtContent => atoms.Accent(builtContent, accent))
                         .Error is string error)
@@ -466,11 +465,15 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
       b ??= new StringBuilder();
       switch (atom) {
         case TextAtom.Text t:
-          return b.Append(t.Content switch
-          {
-            "$" => @"\$",
-            var c => c
-          });
+          foreach (var ch in t.Content) {
+            var c = ch.ToStringInvariant();
+            if (TextLaTeXSettings.PredefinedTextSymbols.TryGetKey(c, out var v))
+              if ('a' <= v[0] && v[0] <= 'z' || 'A' <= v[0] && v[0] <= 'Z')
+                b.Append('\\').Append(v).Append(' ');
+              else b.Append('\\').Append(v);
+            else b.Append(c);
+          }
+          return b;
         case TextAtom.Newline _:
           return b.Append(@"\\");
         case TextAtom.Math m:

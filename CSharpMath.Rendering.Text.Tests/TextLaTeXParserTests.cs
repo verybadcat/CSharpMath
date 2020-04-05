@@ -20,7 +20,7 @@ namespace CSharpMath.Rendering.Text.Tests {
     [InlineData("abc")]
     [InlineData("abc", "123")]
     [InlineData("12", "a.m.")]
-    [InlineData("α", "β", "γ")]
+    [InlineData("ก", "ข", "ฃ")]
     [InlineData("中", "文")]
     [InlineData("😀", "Text")]
     [InlineData("Chinese", "中", "文")]
@@ -33,6 +33,18 @@ namespace CSharpMath.Rendering.Text.Tests {
         ? (TextAtom)new TextAtom.Text(text[0])
         : new TextAtom.List(text.Select(t => new TextAtom.Text(t)).ToArray()), atom);
       Assert.Equal(input, TextLaTeXParser.TextAtomToLaTeX(atom).ToString());
+    }
+    [Theory]
+    [InlineData(@"a\alpha a", @"a\alpha a", "a", "α", "a")]
+    [InlineData(@"<\textless <", @"\textless \textless \textless ", "<", "<", "<")]
+    [InlineData(@"\textbar   |\textbar   ", @"\textbar \textbar \textbar ", "|", "|", "|")]
+    public void Command(string input, string output, params string[] text) {
+      var atom = Parse(input);
+      Assert.Equal(
+        text.Length == 1
+        ? (TextAtom)new TextAtom.Text(text[0])
+        : new TextAtom.List(text.Select(t => new TextAtom.Text(t)).ToArray()), atom);
+      Assert.Equal(output, TextLaTeXParser.TextAtomToLaTeX(atom).ToString());
     }
     [Theory]
     [InlineData(@"\textbb", Atom.FontStyle.Blackboard)]
@@ -220,6 +232,46 @@ namespace CSharpMath.Rendering.Text.Tests {
       if (textAfter is { } after)
         list.Add(Parse(after));
       Assert.Equal(list.Count == 1 ? list[0] : new TextAtom.List(list), atom);
+      Assert.Equal(output, TextLaTeXParser.TextAtomToLaTeX(atom).ToString());
+    }
+
+    [Theory]
+    [InlineData("$", @"\$")]
+    [InlineData("#", @"\#")]
+    [InlineData("%", @"\%")]
+    [InlineData("&", @"\&")]
+    [InlineData("{", @"\{")]
+    [InlineData("}", @"\}")]
+    [InlineData("^", @"\textasciicircum ")]
+    [InlineData("_", @"\_")]
+    [InlineData(@"\", @"\backslash ")]
+    public void Escape(string ch, string command) {
+      if (ch != "%") Assert.Throws<Xunit.Sdk.XunitException>(() => Parse(ch));
+      var atom = Parse(command);
+      Assert.Equal(new TextAtom.Text(ch), atom);
+      Assert.Equal(command, TextLaTeXParser.TextAtomToLaTeX(atom).ToString());
+    }
+
+    [Theory]
+    [InlineData("{}", "")]
+    [InlineData("{{}}", "")]
+    [InlineData("{}{}", "")]
+    [InlineData(@"\{", @"\{")]
+    [InlineData(@"\}", @"\}")]
+    [InlineData(@"\{\{", @"\{\{")]
+    [InlineData(@"\}\}", @"\}\}")]
+    [InlineData(@"\{\}", @"\{\}")]
+    [InlineData(@"{\{}\}", @"\{\}")]
+    [InlineData(@"\{{\}}", @"\{\}")]
+    [InlineData(@"{\{\}}", @"\{\}")]
+    [InlineData(@",{\{\}}", @",\{\}")]
+    [InlineData(@"{,\{\}}", @",\{\}")]
+    [InlineData(@"{\{,\}}", @"\{,\}")]
+    [InlineData(@"{\{\},}", @"\{\},")]
+    [InlineData(@"{\{\}},", @"\{\},")]
+    [InlineData(@"\color{red}\{", @"\color{red}{\{}")]
+    public void Braces(string input, string output) {
+      var atom = Parse(input);
       Assert.Equal(output, TextLaTeXParser.TextAtomToLaTeX(atom).ToString());
     }
   }

@@ -19,11 +19,17 @@
     <Compile Update="Controls\MathKeyboard.xaml.cs">
       <DependentUpon>MathKeyboard.xaml</DependentUpon>
     </Compile>
+    <Compile Update="TryPage.xaml.cs">
+      <DependentUpon>TryPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="SelectPage.xaml.cs">
+      <DependentUpon>SelectPage.xaml</DependentUpon>
+    </Compile>
     <Compile Update="ExamplesPage.xaml.cs">
       <DependentUpon>ExamplesPage.xaml</DependentUpon>
     </Compile>
-    <Compile Update="CustomExamplePage.xaml.cs">
-      <DependentUpon>CustomExamplePage.xaml</DependentUpon>
+    <Compile Update="TryPage.xaml.cs">
+      <DependentUpon>TryPage.xaml</DependentUpon>
     </Compile>
     <EmbeddedResource Update="ClockPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
@@ -31,7 +37,7 @@
     <EmbeddedResource Update="EditorPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="ExamplePage.xaml">
+    <EmbeddedResource Update="SelectPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="IconPage.xaml">

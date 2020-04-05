@@ -10,7 +10,7 @@ namespace CSharpMath.Structures {
     readonly Dictionary<TKey, TValue> k2v = new Dictionary<TKey, TValue>();
     readonly Dictionary<TValue, TKey> v2k = new Dictionary<TValue, TKey>();
     public TValue this[TKey key] { get => k2v[key]; set { k2v[key] = value; v2k[value] = key; } }
-    public TKey this[TValue Value] { get => v2k[Value]; set { v2k[Value] = value; k2v[value] = Value; } }
+    public TKey this[TValue val] { get => v2k[val]; set { v2k[val] = value; k2v[value] = val; } }
     public int Count => k2v.Count;
     public bool IsReadOnly => false;
     public Dictionary<TKey, TValue>.KeyCollection Keys => k2v.Keys;

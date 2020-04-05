@@ -26,5 +26,9 @@ namespace CSharpMath.Forms.Example
     private void Text_TextChanged(object sender, TextChangedEventArgs e) {
       View.LaTeX = e.NewTextValue;
     }
+
+    private void Button_Clicked(object sender, EventArgs e) {
+      View.DisplacementX = View.DisplacementY = 0;
+    }
   }
 }
