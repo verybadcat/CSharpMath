@@ -175,9 +175,9 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
             backslashEscape = false;
           } else {
             { if (CheckDollarCount(startAt, atoms).Error is string error) return error; }
-            if (!backslashEscape) {
-              //Unescaped text section, inside display/inline math mode
-              if (displayMath != null)
+            switch (backslashEscape, displayMath) {
+              case (false, { }):
+                //Unescaped text section, inside display/inline math mode
                 switch (textSection) {
                   case var _ when textSection.Is('$'):
                     throw new InvalidCodePathException("The $ case should have been accounted for.");
@@ -188,8 +188,11 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     mathLaTeX.Append(textSection);
                     break;
                 }
-              //Unescaped text section, not inside display/inline math mode
-              else switch (textSection) {
+                afterCommand = false;
+                break;
+              case (false, null):
+                //Unescaped text section, not inside display/inline math mode
+                switch (textSection) {
                   case var _ when stopChar > 0 && textSection[0] == stopChar:
                     return Ok(i);
                   case var _ when textSection.Is('$'):
@@ -248,199 +251,200 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     } else atoms.Text(textSection.ToString(), NextSectionUntilPunc(latex, ref textSection));
                     break;
                 }
-              afterCommand = false;
-            }
-
-            //Escaped text section but in inline/display math mode
-            else if (displayMath != null) {
-              switch (textSection) {
-                case var _ when textSection.Is('$'):
-                  throw new InvalidCodePathException("The $ case should have been accounted for.");
-                case var _ when textSection.Is('('):
-                  return displayMath switch
-                  {
-                    true => "Cannot open inline math mode in display math mode",
-                    false => "Cannot open inline math mode in inline math mode",
-                    null => throw new InvalidCodePathException("displayMath is null. This switch should not be hit."),
-                  };
-                case var _ when textSection.Is(')'):
-                  switch (displayMath) {
-                    case true:
-                      return "Cannot close inline math mode in display math mode";
-                    case false:
-                      if (atoms.Math(mathLaTeX.ToString(), false).Error is string mathError)
-                        return "[Math mode error] " + mathError;
-                      mathLaTeX.Clear();
-                      displayMath = null;
-                      break;
-                    case null:
-                      throw new InvalidCodePathException("displayMath is null. This switch should not be hit.");
-                  }
-                  break;
-                case var _ when textSection.Is('['):
-                  return displayMath switch
-                  {
-                    true => "Cannot open display math mode in display math mode",
-                    false => "Cannot open display math mode in inline math mode",
-                    null => throw new InvalidCodePathException("displayMath is null. This switch should not be hit."),
-                  };
-                case var _ when textSection.Is(']'):
-                  switch (displayMath) {
-                    case true:
-                      if (atoms.Math(mathLaTeX.ToString(), true).Error is string mathError)
-                        return "[Math mode error] " + mathError;
-                      mathLaTeX.Clear();
-                      displayMath = null;
-                      break;
-                    case false:
-                      return "Cannot close display math mode in inline math mode";
-                    default:
-                      throw new InvalidCodePathException("displayMath is null. This switch should not be hit.");
-                  }
-                  break;
-                default:
-                  mathLaTeX.Append('\\').Append(textSection);
-                  break;
-              }
-              backslashEscape = false;
-            } else {
-              //Escaped text section and not in inline/display math mode
-              afterCommand = true;
-              switch (textSection.ToString()) {
-                case var _ when wordKind == WordKind.Whitespace: //control space
-                  atoms.ControlSpace();
-                  break;
-                case "(":
-                  mathLaTeX = new StringBuilder();
-                  displayMath = false;
-                  break;
-                case ")":
-                  return "Cannot close inline math mode outside of math mode";
-                case "[":
-                  mathLaTeX = new StringBuilder();
-                  displayMath = true;
-                  break;
-                case "]":
-                  return "Cannot close display math mode outside of math mode";
-                case "\\":
-                  atoms.Break();
-                  break;
-                case ",":
-                  atoms.Space(Space.ShortSpace);
-                  break;
-                case ":":
-                case ">":
-                  atoms.Space(Space.MediumSpace);
-                  break;
-                case ";":
-                  atoms.Space(Space.LongSpace);
-                  break;
-                case "!":
-                  atoms.Space(-Space.ShortSpace);
-                  break;
-                case "enspace":
-                  atoms.Space(Space.EmWidth / 2);
-                  break;
-                case "quad":
-                  atoms.Space(Space.EmWidth);
-                  break;
-                case "qquad":
-                  atoms.Space(Space.EmWidth * 2);
-                  break;
-                case "hspace": {
-                    if (ReadArgumentString(latex, ref textSection).Bind(space => {
-                      if (space.Length > StringArgumentLimit)
-                        return Err($"Length of space has over {StringArgumentLimit} characters. Please shorten it.");
-                      int lastNum = -1;
-                      for (int j = 0; j < space.Length; j++) {
-                        if ('0' <= space[j] && space[j] <= '9' || space[j] == '.') lastNum = j;
-                      }
-                      if (lastNum == -1) return Err("Space cannot be empty");
-                      return Space.Create(space.Slice(0, lastNum + 1).ToString(), space.Slice(lastNum + 1).ToString(), true);
-                    }).Bind(space => atoms.Space(space)).Error is string error)
-                      return Err(error);
+                afterCommand = false;
+                break;
+              case (true, { }):
+                //Escaped text section but in inline/display math mode
+                switch (textSection) {
+                  case var _ when textSection.Is('$'):
+                    throw new InvalidCodePathException("The $ case should have been accounted for.");
+                  case var _ when textSection.Is('('):
+                    return displayMath switch
+                    {
+                      true => "Cannot open inline math mode in display math mode",
+                      false => "Cannot open inline math mode in inline math mode",
+                      null => throw new InvalidCodePathException("displayMath is null. This switch should not be hit."),
+                    };
+                  case var _ when textSection.Is(')'):
+                    switch (displayMath) {
+                      case true:
+                        return "Cannot close inline math mode in display math mode";
+                      case false:
+                        if (atoms.Math(mathLaTeX.ToString(), false).Error is string mathError)
+                          return "[Math mode error] " + mathError;
+                        mathLaTeX.Clear();
+                        displayMath = null;
+                        break;
+                      case null:
+                        throw new InvalidCodePathException("displayMath is null. This switch should not be hit.");
+                    }
                     break;
-                  }
-                case "par":
-                  ParagraphBreak();
-                  break;
-                case "fontsize": {
-                    if (ReadArgumentString(latex, ref textSection).Bind(fontSize => {
-                      if (fontSize.Length > StringArgumentLimit)
-                        return Err($"Length of font size has over {StringArgumentLimit} characters. Please shorten it.");
-                      Span<byte> charBytes = stackalloc byte[fontSize.Length];
-                      for (int j = 0; j < fontSize.Length; j++) {
-                        if (fontSize[j] > 127) return Err("Invalid font size");
-                        charBytes[j] = (byte)fontSize[j];
-                      }
-                      return System.Buffers.Text.Utf8Parser.TryParse(charBytes, out float parsedResult, out _, 'f') ?
-                        Ok(parsedResult) :
-                        Err("Invalid font size");
-                    }).Bind(
-                      ReadArgumentAtom(latex),
-                      (fontSize, resizedContent) =>
-                        atoms.Size(resizedContent, fontSize)
-                      ).Error is string error
-                    ) return error;
+                  case var _ when textSection.Is('['):
+                    return displayMath switch
+                    {
+                      true => "Cannot open display math mode in display math mode",
+                      false => "Cannot open display math mode in inline math mode",
+                      null => throw new InvalidCodePathException("displayMath is null. This switch should not be hit."),
+                    };
+                  case var _ when textSection.Is(']'):
+                    switch (displayMath) {
+                      case true:
+                        if (atoms.Math(mathLaTeX.ToString(), true).Error is string mathError)
+                          return "[Math mode error] " + mathError;
+                        mathLaTeX.Clear();
+                        displayMath = null;
+                        break;
+                      case false:
+                        return "Cannot close display math mode in inline math mode";
+                      default:
+                        throw new InvalidCodePathException("displayMath is null. This switch should not be hit.");
+                    }
                     break;
-                  }
-                case "color": {
-                    if (ReadArgumentString(latex, ref textSection).Bind(color =>
-                        color.Length > StringArgumentLimit ?
-                          Err($"Length of color has over {StringArgumentLimit} characters. Please shorten it.") :
-                        Color.Create(color, !NoEnhancedColors) is Color value ?
-                          Ok(value) :
-                        Err("Invalid color: " + color.ToString())
-                      ).Bind(
+                  default:
+                    mathLaTeX.Append('\\').Append(textSection);
+                    break;
+                }
+                backslashEscape = false;
+                break;
+              case (true, null):
+                //Escaped text section and not in inline/display math mode
+                afterCommand = true;
+                switch (textSection.ToString()) {
+                  case var _ when wordKind == WordKind.Whitespace: //control space
+                    atoms.ControlSpace();
+                    break;
+                  case "(":
+                    mathLaTeX = new StringBuilder();
+                    displayMath = false;
+                    break;
+                  case ")":
+                    return "Cannot close inline math mode outside of math mode";
+                  case "[":
+                    mathLaTeX = new StringBuilder();
+                    displayMath = true;
+                    break;
+                  case "]":
+                    return "Cannot close display math mode outside of math mode";
+                  case "\\":
+                    atoms.Break();
+                    break;
+                  case ",":
+                    atoms.Space(Space.ShortSpace);
+                    break;
+                  case ":":
+                  case ">":
+                    atoms.Space(Space.MediumSpace);
+                    break;
+                  case ";":
+                    atoms.Space(Space.LongSpace);
+                    break;
+                  case "!":
+                    atoms.Space(-Space.ShortSpace);
+                    break;
+                  case "enspace":
+                    atoms.Space(Space.EmWidth / 2);
+                    break;
+                  case "quad":
+                    atoms.Space(Space.EmWidth);
+                    break;
+                  case "qquad":
+                    atoms.Space(Space.EmWidth * 2);
+                    break;
+                  case "hspace": {
+                      if (ReadArgumentString(latex, ref textSection).Bind(space => {
+                        if (space.Length > StringArgumentLimit)
+                          return Err($"Length of space has over {StringArgumentLimit} characters. Please shorten it.");
+                        int lastNum = -1;
+                        for (int j = 0; j < space.Length; j++) {
+                          if ('0' <= space[j] && space[j] <= '9' || space[j] == '.') lastNum = j;
+                        }
+                        if (lastNum == -1) return Err("Space cannot be empty");
+                        return Space.Create(space.Slice(0, lastNum + 1).ToString(), space.Slice(lastNum + 1).ToString(), true);
+                      }).Bind(space => atoms.Space(space)).Error is string error)
+                        return Err(error);
+                      break;
+                    }
+                  case "par":
+                    ParagraphBreak();
+                    break;
+                  case "fontsize": {
+                      if (ReadArgumentString(latex, ref textSection).Bind(fontSize => {
+                        if (fontSize.Length > StringArgumentLimit)
+                          return Err($"Length of font size has over {StringArgumentLimit} characters. Please shorten it.");
+                        Span<byte> charBytes = stackalloc byte[fontSize.Length];
+                        for (int j = 0; j < fontSize.Length; j++) {
+                          if (fontSize[j] > 127) return Err("Invalid font size");
+                          charBytes[j] = (byte)fontSize[j];
+                        }
+                        return System.Buffers.Text.Utf8Parser.TryParse(charBytes, out float parsedResult, out _, 'f') ?
+                          Ok(parsedResult) :
+                          Err("Invalid font size");
+                      }).Bind(
                         ReadArgumentAtom(latex),
-                        (color, coloredContent) =>
-                          atoms.Color(coloredContent, color)
-                      ).Error is string error
-                    ) return error;
+                        (fontSize, resizedContent) =>
+                          atoms.Size(resizedContent, fontSize)
+                        ).Error is string error
+                      ) return error;
+                      break;
+                    }
+                  case "color": {
+                      if (ReadArgumentString(latex, ref textSection).Bind(color =>
+                          color.Length > StringArgumentLimit ?
+                            Err($"Length of color has over {StringArgumentLimit} characters. Please shorten it.") :
+                          Color.Create(color, !NoEnhancedColors) is Color value ?
+                            Ok(value) :
+                          Err("Invalid color: " + color.ToString())
+                        ).Bind(
+                          ReadArgumentAtom(latex),
+                          (color, coloredContent) =>
+                            atoms.Color(coloredContent, color)
+                        ).Error is string error
+                      ) return error;
+                      break;
+                    }
+                  //case "red", "yellow", ...
+                  case var shortColor when
+                    !NoEnhancedColors && Color.PredefinedColors.TryGetByFirst(shortColor, out var color): {
+                      int tmp_commandLength = shortColor.Length;
+                      if (ReadArgumentAtom(latex).Bind(
+                          coloredContent => atoms.Color(coloredContent, color)
+                        ).Error is string error
+                      ) return error;
+                      break;
+                    }
+                  //case "textbf", "textit", ...
+                  case var textStyle when !textStyle.StartsWith("math")
+                    && LaTeXSettings.FontStyles.TryGetValue(
+                        textStyle.StartsWith("text") ? textStyle.Replace("text", "math") : textStyle,
+                        out var fontStyle): {
+                      int tmp_commandLength = textStyle.Length;
+                      if (ReadArgumentAtom(latex)
+                        .Bind(builtContent => atoms.Style(builtContent, fontStyle))
+                        .Error is string error)
+                        return error;
+                      break;
+                    }
+                  //case "^", "\"", ...
+                  case var textAccent when
+                    TextLaTeXSettings.PredefinedAccents.TryGetByFirst(textAccent, out var accent): {
+                      int tmp_commandLength = textAccent.Length;
+                      if (ReadArgumentAtom(latex)
+                        .Bind(builtContent => atoms.Accent(builtContent, accent))
+                        .Error is string error)
+                        return error;
+                      break;
+                    }
+                  //case "textasciicircum", "textless", ...
+                  case var textSymbol when TextLaTeXSettings.PredefinedTextSymbols.TryGetValue(textSymbol, out var replaceResult):
+                    atoms.Text(replaceResult, NextSectionUntilPunc(latex, ref textSection));
                     break;
-                  }
-                //case "red", "yellow", ...
-                case var shortColor when
-                  !NoEnhancedColors && Color.PredefinedColors.TryGetByFirst(shortColor, out var color): {
-                    int tmp_commandLength = shortColor.Length;
-                    if (ReadArgumentAtom(latex).Bind(
-                        coloredContent => atoms.Color(coloredContent, color)
-                      ).Error is string error
-                    ) return error;
+                  case var command:
+                    if (displayMath != null) mathLaTeX.Append(command); //don't eat the command when parsing math
+                    else return $@"Invalid command \{command}";
                     break;
-                  }
-                //case "textbf", "textit", ...
-                case var textStyle when !textStyle.StartsWith("math")
-                  && LaTeXSettings.FontStyles.TryGetValue(
-                      textStyle.StartsWith("text") ? textStyle.Replace("text", "math") : textStyle,
-                      out var fontStyle): {
-                    int tmp_commandLength = textStyle.Length;
-                    if (ReadArgumentAtom(latex)
-                      .Bind(builtContent => atoms.Style(builtContent, fontStyle))
-                      .Error is string error)
-                      return error;
-                    break;
-                  }
-                //case "^", "\"", ...
-                case var textAccent when
-                  TextLaTeXSettings.PredefinedAccents.TryGetByFirst(textAccent, out var accent): {
-                    int tmp_commandLength = textAccent.Length;
-                    if (ReadArgumentAtom(latex)
-                      .Bind(builtContent => atoms.Accent(builtContent, accent))
-                      .Error is string error)
-                      return error;
-                    break;
-                  }
-                //case "textasciicircum", "textless", ...
-                case var textSymbol when TextLaTeXSettings.PredefinedTextSymbols.TryGetValue(textSymbol, out var replaceResult):
-                  atoms.Text(replaceResult, NextSectionUntilPunc(latex, ref textSection));
-                  break;
-                case var command:
-                  if (displayMath != null) mathLaTeX.Append(command); //don't eat the command when parsing math
-                  else return $@"Invalid command \{command}";
-                  break;
-              }
-              backslashEscape = false;
+                }
+                backslashEscape = false;
+                break;
             }
           }
           afterNewline = false;
@@ -462,7 +466,11 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
       b ??= new StringBuilder();
       switch (atom) {
         case TextAtom.Text t:
-          return b.Append(t.Content);
+          return b.Append(t.Content switch
+          {
+            "$" => @"\$",
+            var c => c
+          });
         case TextAtom.Newline _:
           return b.Append(@"\\");
         case TextAtom.Math m:

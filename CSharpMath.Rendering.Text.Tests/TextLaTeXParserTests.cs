@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
@@ -144,6 +145,82 @@ namespace CSharpMath.Rendering.Text.Tests {
         )
       )(atom);
       Assert.Equal($@"\{command}{{a}}b", TextLaTeXParser.TextAtomToLaTeX(atom).ToString());
+    }
+
+    [Theory]
+    [InlineData(@"$1$", null, @"1", false, null, @"\(1\)")]
+    [InlineData(@"\(1$", null, @"1", false, null, @"\(1\)")]
+    [InlineData(@"$1\)", null, @"1", false, null, @"\(1\)")]
+    [InlineData(@"\(1\)", null, @"1", false, null, @"\(1\)")]
+    [InlineData(@"$$1$$", null, @"1", true, null, @"\[1\]")]
+    [InlineData(@"\[1$$", null, @"1", true, null, @"\[1\]")]
+    [InlineData(@"$$1\]", null, @"1", true, null, @"\[1\]")]
+    [InlineData(@"\[1\]", null, @"1", true, null, @"\[1\]")]
+
+    [InlineData(@"a$1$", "a", @"1", false, null, @"a\(1\)")]
+    [InlineData(@"a\(1$", "a", @"1", false, null, @"a\(1\)")]
+    [InlineData(@"a$1\)", "a", @"1", false, null, @"a\(1\)")]
+    [InlineData(@"a\(1\)", "a", @"1", false, null, @"a\(1\)")]
+    [InlineData(@"a$$1$$", "a", @"1", true, null, @"a\[1\]")]
+    [InlineData(@"a\[1$$", "a", @"1", true, null, @"a\[1\]")]
+    [InlineData(@"a$$1\]", "a", @"1", true, null, @"a\[1\]")]
+    [InlineData(@"a\[1\]", "a", @"1", true, null, @"a\[1\]")]
+
+    [InlineData(@"$1$b", null, @"1", false, "b", @"\(1\)b")]
+    [InlineData(@"\(1$b", null, @"1", false, "b", @"\(1\)b")]
+    [InlineData(@"$1\)b", null, @"1", false, "b", @"\(1\)b")]
+    [InlineData(@"\(1\)b", null, @"1", false, "b", @"\(1\)b")]
+    [InlineData(@"$$1$$b", null, @"1", true, "b", @"\[1\]b")]
+    [InlineData(@"\[1$$b", null, @"1", true, "b", @"\[1\]b")]
+    [InlineData(@"$$1\]b", null, @"1", true, "b", @"\[1\]b")]
+    [InlineData(@"\[1\]b", null, @"1", true, "b", @"\[1\]b")]
+
+    [InlineData(@"a$1$b", "a", @"1", false, "b", @"a\(1\)b")]
+    [InlineData(@"a\(1$b", "a", @"1", false, "b", @"a\(1\)b")]
+    [InlineData(@"a$1\)b", "a", @"1", false, "b", @"a\(1\)b")]
+    [InlineData(@"a\(1\)b", "a", @"1", false, "b", @"a\(1\)b")]
+    [InlineData(@"a$$1$$b", "a", @"1", true, "b", @"a\[1\]b")]
+    [InlineData(@"a\[1$$b", "a", @"1", true, "b", @"a\[1\]b")]
+    [InlineData(@"a$$1\]b", "a", @"1", true, "b", @"a\[1\]b")]
+    [InlineData(@"a\[1\]b", "a", @"1", true, "b", @"a\[1\]b")]
+
+    [InlineData(@"\color{red}1$\color{yellow}2$\color{blue}3", @"\color{red}1", @"\color{yellow}2", false, @"\color{blue}3", @"\color{red}{1}\(\color{yellow}{2}\)\color{blue}{3}")]
+    [InlineData(@"\color{red}1\(\color{yellow}2$\color{blue}3", @"\color{red}1", @"\color{yellow}2", false, @"\color{blue}3", @"\color{red}{1}\(\color{yellow}{2}\)\color{blue}{3}")]
+    [InlineData(@"\color{red}1$\color{yellow}2\)\color{blue}3", @"\color{red}1", @"\color{yellow}2", false, @"\color{blue}3", @"\color{red}{1}\(\color{yellow}{2}\)\color{blue}{3}")]
+    [InlineData(@"\color{red}1\(\color{yellow}2\)\color{blue}3", @"\color{red}1", @"\color{yellow}2", false, @"\color{blue}3", @"\color{red}{1}\(\color{yellow}{2}\)\color{blue}{3}")]
+    [InlineData(@"\color{red}1$$\color{yellow}2$$\color{blue}3", @"\color{red}1", @"\color{yellow}2", true, @"\color{blue}3", @"\color{red}{1}\[\color{yellow}{2}\]\color{blue}{3}")]
+    [InlineData(@"\color{red}1\[\color{yellow}2$$\color{blue}3", @"\color{red}1", @"\color{yellow}2", true, @"\color{blue}3", @"\color{red}{1}\[\color{yellow}{2}\]\color{blue}{3}")]
+    [InlineData(@"\color{red}1$$\color{yellow}2\]\color{blue}3", @"\color{red}1", @"\color{yellow}2", true, @"\color{blue}3", @"\color{red}{1}\[\color{yellow}{2}\]\color{blue}{3}")]
+    [InlineData(@"\color{red}1\[\color{yellow}2\]\color{blue}3", @"\color{red}1", @"\color{yellow}2", true, @"\color{blue}3", @"\color{red}{1}\[\color{yellow}{2}\]\color{blue}{3}")]
+
+    [InlineData(@"a$\$$b", "a", @"\$", false, "b", @"a\(\$ \)b")]
+    [InlineData(@"a\(\$$b", "a", @"\$", false, "b", @"a\(\$ \)b")]
+    [InlineData(@"a$\$\)b", "a", @"\$", false, "b", @"a\(\$ \)b")]
+    [InlineData(@"a\(\$\)b", "a", @"\$", false, "b", @"a\(\$ \)b")]
+    [InlineData(@"a$$\$$$b", "a", @"\$", true, "b", @"a\[\$ \]b")]
+    [InlineData(@"a\[\$$$b", "a", @"\$", true, "b", @"a\[\$ \]b")]
+    [InlineData(@"a$$\$\]b", "a", @"\$", true, "b", @"a\[\$ \]b")]
+    [InlineData(@"a\[\$\]b", "a", @"\$", true, "b", @"a\[\$ \]b")]
+
+    [InlineData(@"\$$\$$\$", @"\$", @"\$", false, @"\$", @"\$\(\$ \)\$")]
+    [InlineData(@"\$\(\$$\$", @"\$", @"\$", false, @"\$", @"\$\(\$ \)\$")]
+    [InlineData(@"\$$\$\)\$", @"\$", @"\$", false, @"\$", @"\$\(\$ \)\$")]
+    [InlineData(@"\$\(\$\)\$", @"\$", @"\$", false, @"\$", @"\$\(\$ \)\$")]
+    [InlineData(@"\$$$\$$$\$", @"\$", @"\$", true, @"\$", @"\$\[\$ \]\$")]
+    [InlineData(@"\$\[\$$$\$", @"\$", @"\$", true, @"\$", @"\$\[\$ \]\$")]
+    [InlineData(@"\$$$\$\]\$", @"\$", @"\$", true, @"\$", @"\$\[\$ \]\$")]
+    [InlineData(@"\$\[\$\]\$", @"\$", @"\$", true, @"\$", @"\$\[\$ \]\$")]
+    public void Math(string input, string? textBefore, string math, bool display, string? textAfter, string output) {
+      var atom = Parse(input);
+      var list = new List<TextAtom>();
+      if (textBefore is { } before)
+        list.Add(Parse(before));
+      var inner = Atom.LaTeXParser.MathListFromLaTeX(math).Match(m => m, e => throw new Xunit.Sdk.XunitException(e));
+      list.Add(new TextAtom.Math(inner, display));
+      if (textAfter is { } after)
+        list.Add(Parse(after));
+      Assert.Equal(list.Count == 1 ? list[0] : new TextAtom.List(list), atom);
+      Assert.Equal(output, TextLaTeXParser.TextAtomToLaTeX(atom).ToString());
     }
   }
 }
