@@ -21,8 +21,6 @@ namespace CSharpMath.Rendering.FrontEnd {
       _canvas.DrawLine(x1, Invert(y1), x2, Invert(y2), lineThickness);
     public void FillRect(float left, float top, float width, float height) =>
       _canvas.FillRect(left, Invert(top), width, height);
-    public void FillText(string text, float x, float y, float pointSize) =>
-      _canvas.FillText(text, x, Invert(y), pointSize);
     public GlyphPath StartDrawingNewGlyph() => _canvas.StartDrawingNewGlyph();
     public void Restore() => _canvas.Restore();
     public void Save() => _canvas.Save();
