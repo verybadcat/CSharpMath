@@ -82,33 +82,6 @@ namespace CSharpMath.Structures {
       if (Error is string error) return error;
       else return method(_value);
     }
-    public Result Bind<TOther>(Result<TOther> other, Action<T, TOther> method) {
-      if (method is null) throw new ArgumentNullException(nameof(method));
-      if (Error is string error) return error;
-      else if (other.Error is string otherError) return otherError;
-      else method(_value, other._value);
-      return Result.Ok();
-    }
-    public Result Bind<TOther>(Result<TOther> other, Func<T, TOther, Result> method) {
-      if (method is null) throw new ArgumentNullException(nameof(method));
-      if (Error is string error) return error;
-      else if (other.Error is string otherError) return otherError;
-      else return method(_value, other._value);
-    }
-    public Result<TResult> Bind<TOther, TResult>
-      (Result<TOther> other, Func<T, TOther, TResult> method) {
-      if (method is null) throw new ArgumentNullException(nameof(method));
-      if (Error is string error) return error;
-      else if (other.Error is string otherError) return otherError;
-      else return method(_value, other._value);
-    }
-    public Result<TResult> Bind<TOther, TResult>
-      (Result<TOther> other, Func<T, TOther, Result<TResult>> method) {
-      if (method is null) throw new ArgumentNullException(nameof(method));
-      if (Error is string error) return error;
-      else if (other.Error is string otherError) return otherError;
-      else return method(_value, other._value);
-    }
   }
   public readonly ref struct SpanResult<T> {
     public SpanResult(ReadOnlySpan<T> value) {

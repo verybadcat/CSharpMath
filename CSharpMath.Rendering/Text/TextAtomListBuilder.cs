@@ -16,12 +16,18 @@ namespace CSharpMath.Rendering.Text {
     public void Style(TextAtom atom, Atom.FontStyle style) => Add(new TextAtom.Style(atom, style));
     public void Size(TextAtom atom, float fontSize) => Add(new TextAtom.Size(atom, fontSize));
     public void Color(TextAtom atom, Color color) => Add(new TextAtom.Color(atom, color));
-    public Result Math(string mathLaTeX, bool displayStyle) =>
-      Atom.LaTeXParser.MathListFromLaTeX(mathLaTeX).Bind(
-        mathList => Add(new TextAtom.Math(mathList, displayStyle))).Match(
-        Result.Ok,
-        // Remove line information
-        error => Result.Err(error.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)[0]));
+    public Result Math(string mathLaTeX, bool displayStyle, int startAt, ref int endAt) {
+      var builder = new Atom.LaTeXParser(mathLaTeX);
+      var mathList = builder.Build();
+      if (builder.Error is { } error) {
+        endAt = startAt - mathLaTeX.Length + builder.CurrentChar - 1;
+        return Result.Err("[Math] " + error);
+      } else if (mathList != null) {
+        Add(new TextAtom.Math(mathList, displayStyle));
+        return Result.Ok();
+      }
+      throw new InvalidCodePathException("Both error and list are null?");
+    }
     public void List(IReadOnlyList<TextAtom> textAtoms) => Add(new TextAtom.List(textAtoms));
     public void Break() => Add(new TextAtom.Newline());
     public void Comment(string comment) => Add(new TextAtom.Comment(comment));

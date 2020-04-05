@@ -37,11 +37,11 @@ string BreakText(string text, string seperator = "|")
 }
 BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
      */
-    public const int StringArgumentLimit = 25;
     public static bool NoEnhancedColors { get; set; }
     public static Result<TextAtom> TextAtomFromLaTeX(string latexSource) {
       if (string.IsNullOrEmpty(latexSource))
         return new TextAtom.List(Array.Empty<TextAtom>());
+      int endAt = 0;
       bool? displayMath = null;
       var mathLaTeX = new StringBuilder();
       bool backslashEscape = false;
@@ -56,7 +56,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
       };
       breaker.BreakWords(latexSource);
 
-      Result CheckDollarCount(int currentPosition, TextAtomListBuilder atoms) {
+      Result CheckDollarCount(int startAt, ref int endAt, TextAtomListBuilder atoms) {
         switch (dollarCount) {
           case 0:
             break;
@@ -66,8 +66,8 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
               case true:
                 return "Cannot close display math mode with $";
               case false:
-                if (atoms.Math(mathLaTeX.ToString(), false).Error is string mathError)
-                  return "[Math mode error] " + mathError;
+                if (atoms.Math(mathLaTeX.ToString(), false, startAt, ref endAt).Error is string error)
+                  return error;
                 mathLaTeX.Clear();
                 displayMath = null;
                 break;
@@ -81,8 +81,8 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
             dollarCount = 0;
             switch (displayMath) {
               case true:
-                if (atoms.Math(mathLaTeX.ToString(), true).Error is string mathError)
-                  return "[Math mode error] " + mathError;
+                if (atoms.Math(mathLaTeX.ToString(), true, startAt - 1, ref endAt).Error is string error)
+                  return error;
                 mathLaTeX.Clear();
                 displayMath = null;
                 break;
@@ -112,7 +112,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
             section = latexInput.Slice(start, end - start);
             kind = breakList[index].wordKind;
           }
-          ObtainSection(latex, i, out var startAt, out var endAt, out var textSection, out var wordKind);
+          ObtainSection(latex, i, out var startAt, out endAt, out var textSection, out var wordKind);
           bool PreviousSection(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section) {
             bool success = i-- > 0;
             if (success) ObtainSection(latexInput, i, out startAt, out endAt, out section, out wordKind);
@@ -151,6 +151,12 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
               _ = NextSection(latexInput, ref section); //this never fails because the above check
             return Ok(resultText);
           }
+          Result<Color> ReadColor(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section)  =>
+            ReadArgumentString(latexInput, ref section).Bind(color =>
+              Color.Create(color, !NoEnhancedColors) is Color value ?
+                Ok(value) :
+              Err("Invalid color: " + color.ToString())
+            );
           ReadOnlySpan<char> NextSectionUntilPunc(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section) {
             int start = endAt;
             ReadOnlySpan<char> specialChars = stackalloc[] { '#', '$', '%', '&', '\\', '^', '_', '{', '}', '~' };
@@ -174,7 +180,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
             }
             backslashEscape = false;
           } else {
-            { if (CheckDollarCount(startAt, atoms).Error is string error) return error; }
+            { if (CheckDollarCount(startAt, ref endAt, atoms).Error is string error) return error; }
             switch (backslashEscape, displayMath) {
               case (false, { }):
                 //Unescaped text section, inside display/inline math mode
@@ -270,8 +276,8 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                       case true:
                         return "Cannot close inline math mode in display math mode";
                       case false:
-                        if (atoms.Math(mathLaTeX.ToString(), false).Error is string mathError)
-                          return "[Math mode error] " + mathError;
+                        if (atoms.Math(mathLaTeX.ToString(), false, startAt, ref endAt).Error is string mathError)
+                          return mathError;
                         mathLaTeX.Clear();
                         displayMath = null;
                         break;
@@ -289,8 +295,8 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                   case var _ when textSection.Is(']'):
                     switch (displayMath) {
                       case true:
-                        if (atoms.Math(mathLaTeX.ToString(), true).Error is string mathError)
-                          return "[Math mode error] " + mathError;
+                        if (atoms.Math(mathLaTeX.ToString(), true, startAt, ref endAt).Error is string mathError)
+                          return mathError;
                         mathLaTeX.Clear();
                         displayMath = null;
                         break;
@@ -352,8 +358,6 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     break;
                   case "hspace": {
                       if (ReadArgumentString(latex, ref textSection).Bind(space => {
-                        if (space.Length > StringArgumentLimit)
-                          return Err($"Length of space has over {StringArgumentLimit} characters. Please shorten it.");
                         int lastNum = -1;
                         for (int j = 0; j < space.Length; j++) {
                           if ('0' <= space[j] && space[j] <= '9' || space[j] == '.') lastNum = j;
@@ -368,38 +372,30 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     ParagraphBreak();
                     break;
                   case "fontsize": {
-                      if (ReadArgumentString(latex, ref textSection).Bind(fontSize => {
-                        if (fontSize.Length > StringArgumentLimit)
-                          return Err($"Length of font size has over {StringArgumentLimit} characters. Please shorten it.");
-                        Span<byte> charBytes = stackalloc byte[fontSize.Length];
-                        for (int j = 0; j < fontSize.Length; j++) {
-                          if (fontSize[j] > 127) return Err("Invalid font size");
-                          charBytes[j] = (byte)fontSize[j];
-                        }
-                        return System.Buffers.Text.Utf8Parser.TryParse(charBytes, out float parsedResult, out _, 'f') ?
-                          Ok(parsedResult) :
-                          Err("Invalid font size");
-                      }).Bind(
-                        ReadArgumentAtom(latex),
-                        (fontSize, resizedContent) =>
-                          atoms.Size(resizedContent, fontSize)
-                        ).Error is string error
-                      ) return error;
+                      var (fontSize, error) =
+                        ReadArgumentString(latex, ref textSection).Bind(fontSize => {
+                          Span<byte> charBytes = stackalloc byte[fontSize.Length];
+                          for (int j = 0; j < fontSize.Length; j++) {
+                            if (fontSize[j] > 127) return Err("Invalid font size");
+                            charBytes[j] = (byte)fontSize[j];
+                          }
+                          return System.Buffers.Text.Utf8Parser.TryParse(charBytes, out float parsedResult, out var consumed, 'f')
+                            && fontSize.Slice(consumed).IsWhiteSpace()
+                            ? Ok(parsedResult)
+                            : Err("Invalid font size");
+                        });
+                      if (error != null) return error;
+                      var (resizedContent, error2) = ReadArgumentAtom(latex);
+                      if (error2 != null) return error2;
+                      atoms.Size(resizedContent, fontSize);
                       break;
                     }
                   case "color": {
-                      if (ReadArgumentString(latex, ref textSection).Bind(color =>
-                          color.Length > StringArgumentLimit ?
-                            Err($"Length of color has over {StringArgumentLimit} characters. Please shorten it.") :
-                          Color.Create(color, !NoEnhancedColors) is Color value ?
-                            Ok(value) :
-                          Err("Invalid color: " + color.ToString())
-                        ).Bind(
-                          ReadArgumentAtom(latex),
-                          (color, coloredContent) =>
-                            atoms.Color(coloredContent, color)
-                        ).Error is string error
-                      ) return error;
+                      var (color, error) = ReadColor(latex, ref textSection);
+                      if (error != null) return error;
+                      var (coloredContent, error2) = ReadArgumentAtom(latex);
+                      if (error2 != null) return error2;
+                      atoms.Color(coloredContent, color);
                       break;
                     }
                   //case "red", "yellow", ...
@@ -453,12 +449,11 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
         if (stopChar > 0) return stopChar == '}' ? "Expected }, unbalanced braces" : $@"Expected {stopChar}";
         return Ok(i);
       }
-      {
-        if (BuildBreakList(latexSource.AsSpan(), globalAtoms, 0, false, '\0').Error is string error)
-          return error;
-      }
-      { if (CheckDollarCount(latexSource.Length, globalAtoms).Error is string error) return error; }
-      if (displayMath != null) return "Math mode was not terminated";
+      var error = BuildBreakList(latexSource.AsSpan(), globalAtoms, 0, false, '\0').Error;
+      if (error != null) return LaTeXParser.HelpfulErrorMessage(error, latexSource, endAt);
+      error = CheckDollarCount(latexSource.Length, ref endAt, globalAtoms).Error;
+      if (error != null) return LaTeXParser.HelpfulErrorMessage(error, latexSource, endAt);
+      if (displayMath != null) return LaTeXParser.HelpfulErrorMessage("Math mode was not terminated", latexSource, endAt);
       return globalAtoms.Build();
     }
     public static StringBuilder TextAtomToLaTeX(TextAtom atom, StringBuilder? b = null) {

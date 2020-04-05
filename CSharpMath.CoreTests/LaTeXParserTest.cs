@@ -905,46 +905,45 @@ namespace CSharpMath.CoreTests {
       Assert.Equal(@"\color{red}{1}\colorbox{blue}{2}", LaTeXParser.MathListToLaTeX(list).ToString());
     }
     [Theory,
-     InlineData("0", 0, @"
+     InlineData("0", 0, @"Error: Error Message
 0
 ↑ (pos 0)"),
-     InlineData("01", 0, @"
+     InlineData("01", 0, @"Error: Error Message
 01
 ↑ (pos 0)"),
-     InlineData("01", 1, @"
+     InlineData("01", 1, @"Error: Error Message
 01
  ↑ (pos 1)"),
-     InlineData("012", 0, @"
+     InlineData("012", 0, @"Error: Error Message
 012
 ↑ (pos 0)"),
-     InlineData("012", 1, @"
+     InlineData("012", 1, @"Error: Error Message
 012
  ↑ (pos 1)"),
-     InlineData("012", 2, @"
+     InlineData("012", 2, @"Error: Error Message
 012
   ↑ (pos 2)"),
-     InlineData("012345678911234567892123456789", 10, @"
+     InlineData("012345678911234567892123456789", 10, @"Error: Error Message
 012345678911234567892123456789
           ↑ (pos 10)"),
-     InlineData("012345678911234567892123456789", 20, @"
+     InlineData("012345678911234567892123456789", 20, @"Error: Error Message
 012345678911234567892123456789
                     ↑ (pos 20)"),
-     InlineData("012345678911234567892123456789", 21, @"
+     InlineData("012345678911234567892123456789", 21, @"Error: Error Message
 ···12345678911234567892123456789
                        ↑ (pos 21)"),
-     InlineData("012345678911234567892123456789", 22, @"
+     InlineData("012345678911234567892123456789", 22, @"Error: Error Message
 ···2345678911234567892123456789
                        ↑ (pos 22)"),
-     InlineData("0123456789112345678921234567893123456789412345678951234567896123456789", 0, @"
+     InlineData("0123456789112345678921234567893123456789412345678951234567896123456789", 0, @"Error: Error Message
 01234567891123456789212345678931234567894···
 ↑ (pos 0)"),
-     InlineData("0123456789112345678921234567893123456789412345678951234567896123456789", 22, @"
+     InlineData("0123456789112345678921234567893123456789412345678951234567896123456789", 22, @"Error: Error Message
 ···2345678911234567892123456789312345678941234567895123456789612···
                        ↑ (pos 22)")]
-    public void TestPointToChar(string input, int index, string output) {
-      var sb = new StringBuilder("\n");
-      LaTeXParser.PointToChar(sb, input, index);
-      Assert.Equal(output.Replace("\r", null), sb.ToString());
+    public void TestHelpfulErrorMessage(string input, int index, string expected) {
+      var actual = LaTeXParser.HelpfulErrorMessage("Error Message", input, index);
+      Assert.Equal(expected.Replace("\r", null), actual);
     }
 
     [Theory,

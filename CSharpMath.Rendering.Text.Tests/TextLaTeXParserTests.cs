@@ -274,5 +274,168 @@ namespace CSharpMath.Rendering.Text.Tests {
       var atom = Parse(input);
       Assert.Equal(output, TextLaTeXParser.TextAtomToLaTeX(atom).ToString());
     }
+    [Theory,
+      InlineData(@"\", @"Error: Invalid command \
+\
+ ↑ (pos 1)"),
+      InlineData(@"\notacommand", @"Error: Invalid command \notacommand
+\notacommand
+            ↑ (pos 12)"),
+      InlineData(@"\(", @"Error: Math mode was not terminated
+\(
+  ↑ (pos 2)"),
+      InlineData(@"\[", @"Error: Math mode was not terminated
+\[
+  ↑ (pos 2)"),
+      InlineData(@"\)", @"Error: Cannot close inline math mode outside of math mode
+\)
+  ↑ (pos 2)"),
+      InlineData(@"\]", @"Error: Cannot close display math mode outside of math mode
+\]
+  ↑ (pos 2)"),
+      InlineData(@"{", @"Error: Expected }, unbalanced braces
+{
+ ↑ (pos 1)"),
+      InlineData(@"}", @"Error: Missing opening brace
+}
+ ↑ (pos 1)"),
+      InlineData(@"#", @"Error: Unexpected command argument reference character # outside of new command definition (currently unsupported)
+#
+ ↑ (pos 1)"),
+      InlineData(@"^", @"Error: Unexpected script indicator ^ outside of math mode
+^
+ ↑ (pos 1)"),
+      InlineData(@"_", @"Error: Unexpected script indicator _ outside of math mode
+_
+ ↑ (pos 1)"),
+      InlineData(@"^_", @"Error: Unexpected script indicator ^ outside of math mode
+^_
+ ↑ (pos 1)"),
+      InlineData(@"_^", @"Error: Unexpected script indicator _ outside of math mode
+_^
+ ↑ (pos 1)"),
+      InlineData(@"&", @"Error: Unexpected alignment tab character & outside of table environments
+&
+ ↑ (pos 1)"),
+      InlineData(@"{%}", @"Error: Expected }, unbalanced braces
+{%}
+   ↑ (pos 3)"),
+      InlineData(@"rewgfrh}e", @"Error: Missing opening brace
+rewgfrh}e
+        ↑ (pos 8)"),
+      InlineData(@"\(\(", @"Error: Cannot open inline math mode in inline math mode
+\(\(
+    ↑ (pos 4)"),
+      InlineData(@"\(\[", @"Error: Cannot open display math mode in inline math mode
+\(\[
+    ↑ (pos 4)"),
+      InlineData(@"\(\]", @"Error: Cannot close display math mode in inline math mode
+\(\]
+    ↑ (pos 4)"),
+      InlineData(@"\($$", @"Error: Cannot close inline math mode with $$
+\($$
+    ↑ (pos 4)"),
+      InlineData(@"$ $$", @"Error: Cannot close inline math mode with $$
+$ $$
+    ↑ (pos 4)"),
+      InlineData(@"\[\(", @"Error: Cannot open inline math mode in display math mode
+\[\(
+    ↑ (pos 4)"),
+      InlineData(@"\[\[", @"Error: Cannot open display math mode in display math mode
+\[\[
+    ↑ (pos 4)"),
+      InlineData(@"\[\)", @"Error: Cannot close inline math mode in display math mode
+\[\)
+    ↑ (pos 4)"),
+      InlineData(@"\[$", @"Error: Cannot close display math mode with $
+\[$
+   ↑ (pos 3)"),
+      InlineData(@"$$ $", @"Error: Cannot close display math mode with $
+$$ $
+    ↑ (pos 4)"),
+      InlineData(@"$$$", @"Error: Invalid number of $: 3
+$$$
+   ↑ (pos 3)"),
+      InlineData(@"$$$$", @"Error: Invalid number of $: 4
+$$$$
+    ↑ (pos 4)"),
+      InlineData(@"\(\notacommand \frac12\(", @"Error: Cannot open inline math mode in inline math mode
+···otacommand \frac12\(
+                       ↑ (pos 24)"),
+      InlineData(@"\(\notacommand \frac12\)", @"Error: [Math] Invalid command \notacommand
+\(\notacommand \frac12\)
+              ↑ (pos 14)"),
+      InlineData(@"\(\notacommand \frac12\[", @"Error: Cannot open display math mode in inline math mode
+···otacommand \frac12\[
+                       ↑ (pos 24)"),
+      InlineData(@"\(\notacommand \frac12\]", @"Error: Cannot close display math mode in inline math mode
+···otacommand \frac12\]
+                       ↑ (pos 24)"),
+      InlineData(@"\(\notacommand \frac12$", @"Error: [Math] Invalid command \notacommand
+\(\notacommand \frac12$
+              ↑ (pos 14)"),
+      InlineData(@"\(\notacommand \frac12$$", @"Error: Cannot close inline math mode with $$
+···otacommand \frac12$$
+                       ↑ (pos 24)"),
+      InlineData(@"\[\notacommand \frac12\(", @"Error: Cannot open inline math mode in display math mode
+···otacommand \frac12\(
+                       ↑ (pos 24)"),
+      InlineData(@"\[\notacommand \frac12\)", @"Error: Cannot close inline math mode in display math mode
+···otacommand \frac12\)
+                       ↑ (pos 24)"),
+      InlineData(@"\[\notacommand \frac12\[", @"Error: Cannot open display math mode in display math mode
+···otacommand \frac12\[
+                       ↑ (pos 24)"),
+      InlineData(@"\[\notacommand \frac12\]", @"Error: [Math] Invalid command \notacommand
+\[\notacommand \frac12\]
+              ↑ (pos 14)"),
+      InlineData(@"\[\notacommand \frac12$", @"Error: Cannot close display math mode with $
+···notacommand \frac12$
+                       ↑ (pos 23)"),
+      InlineData(@"\[\notacommand \frac12$$", @"Error: [Math] Invalid command \notacommand
+\[\notacommand \frac12$$
+              ↑ (pos 14)"),
+      InlineData(@"\color", @"Error: Missing argument
+\color
+      ↑ (pos 6)"),
+      InlineData(@"\color{", @"Error: Missing }
+\color{
+       ↑ (pos 7)"),
+      InlineData(@"\color{notacolor}", @"Error: Invalid color: notacolor
+\color{notacolor}
+                 ↑ (pos 17)"),
+      InlineData(@"\color{red}{", @"Error: Expected }, unbalanced braces
+\color{red}{
+            ↑ (pos 12)"),
+      InlineData(@"\color{notacolor}a", @"Error: Invalid color: notacolor
+\color{notacolor}a
+                 ↑ (pos 17)"),
+      InlineData(@"\color{#12345}a", @"Error: Invalid color: #12345
+\color{#12345}a
+              ↑ (pos 14)"),
+      InlineData(@"\fontsize", @"Error: Missing argument
+\fontsize
+         ↑ (pos 9)"),
+      InlineData(@"\fontsize{", @"Error: Missing }
+\fontsize{
+          ↑ (pos 10)"),
+      InlineData(@"\fontsize{p15}", @"Error: Invalid font size
+\fontsize{p15}
+              ↑ (pos 14)"),
+      InlineData(@"\fontsize{15p}", @"Error: Invalid font size
+\fontsize{15p}
+              ↑ (pos 14)"),
+      InlineData(@"\fontsize{15}{", @"Error: Expected }, unbalanced braces
+\fontsize{15}{
+              ↑ (pos 14)"),
+      InlineData(@"\fontsize{15p}a", @"Error: Invalid font size
+\fontsize{15p}a
+              ↑ (pos 14)"),
+    ]
+    public void Error(string badInput, string expected) {
+      var (atom, actual) = TextLaTeXParser.TextAtomFromLaTeX(badInput);
+      Assert.Null(atom);
+      Assert.Equal(expected.Replace("\r", null), actual);
+    }
   }
 }

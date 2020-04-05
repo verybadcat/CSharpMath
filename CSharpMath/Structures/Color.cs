@@ -34,12 +34,10 @@ namespace CSharpMath.Structures {
       if (hexOrName == null) return null;
       if (extraSweet && (hexOrName.StartsWithInvariant("#") || hexOrName.StartsWithInvariant("0x")))
         return FromHexString(hexOrName.RemovePrefix("#").RemovePrefix("0x"));
-      if (hexOrName.Length <= 100) { //Never gonna spill the stack
-        Span<char> loweredName = stackalloc char[hexOrName.Length];
-        hexOrName.ToLowerInvariant(loweredName);
-        if (PredefinedColors.TryGetByFirst(loweredName.ToString(), out var predefined))
-          return predefined;
-      }
+      Span<char> loweredName = stackalloc char[hexOrName.Length];
+      hexOrName.ToLowerInvariant(loweredName);
+      if (PredefinedColors.TryGetByFirst(loweredName.ToString(), out var predefined))
+        return predefined;
       return null;
       static Color? FromHexString(ReadOnlySpan<char> hex) {
         static int? CharToByte(char c) =>

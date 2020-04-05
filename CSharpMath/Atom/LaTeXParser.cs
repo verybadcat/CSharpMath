@@ -742,22 +742,20 @@ namespace CSharpMath.Atom {
     public static Structures.Result<MathList> MathListFromLaTeX(string str) {
       var builder = new LaTeXParser(str);
       var list = builder.Build();
-      var error = builder.Error;
-      if (error != null) {
-        var sb = new StringBuilder("Error: ").Append(error);
-        sb.Append('\n');
-        PointToChar(sb, builder.Chars, builder.CurrentChar);
-        return Structures.Result.Err(sb.ToString());
-      } else if (list != null)
-        return Structures.Result.Ok(list);
-      throw new InvalidCodePathException("Both error and list are null?");
+      return builder.Error is { } error
+      ? Structures.Result.Err(HelpfulErrorMessage(error, builder.Chars, builder.CurrentChar))
+      : list != null
+      ? Structures.Result.Ok(list)
+      : throw new InvalidCodePathException("Both error and list are null?");
     }
 
-    public static void PointToChar(StringBuilder sb, string source, int index) {
+    public static string HelpfulErrorMessage(string error, string source, int index) {
       // Just like Xunit's helpful error message in Assert.Equal(string, string)
       const string dots = "···";
       const int lookbehind = 20;
       const int lookahead = 41;
+      var sb = new StringBuilder("Error: ").Append(error);
+      sb.Append('\n');
       var startIsFarAway = index > lookbehind;
       if (startIsFarAway)
         sb.Append(dots).Append(source, index - lookbehind, lookbehind);
@@ -771,6 +769,7 @@ namespace CSharpMath.Atom {
         sb.Append(' ', lookbehind + dots.Length);
       else sb.Append(' ', index);
       sb.Append("↑ (pos ").Append(index).Append(')');
+      return sb.ToString();
     }
 
     // ^ LaTeX -> Math atoms
