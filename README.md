@@ -1,10 +1,10 @@
-### Ever wanted to display LaTeX math formulae in C# but cannot find any tool to help you? Here is what you may be looking for.
+<h3 align="center">Ever wanted to display LaTeX math formulae in C#, <br/> but cannot find any tool to help you? <br/> Here is what you may be looking for.</h3>
 
-![icon](Icon.png)
-
-CSharpMath is a C# port of the wonderful [iosMath LaTeX engine](https://github.com/kostub/iosMath).
-
-_The icon's text and numbers are generated with this library itself._
+<p align="center">
+<br/><img src="Icon.png" width="300px" alt="CSharpMath icon"><br/><br/>
+CSharpMath is a C# port of the wonderful <a href="https://github.com/kostub/iosMath">iosMath LaTeX engine</a>.<br/>
+<i>The icon is a product of this library.</i>
+</p>
 
 Current release|Current pre-release|Commits since last version|Number of contributors
 -|-|-|-
@@ -38,8 +38,13 @@ Really, any one you like!
 [ASP.NET](wiki/@GettingStarted~ASP.md)
 [Ooui.Wasm](wiki/@GettingStarted~Ooui.md)-->
 
-Ironically enough, the first front end was iOS (CSharpMath.Ios).
-As development continued, Xamarin.Forms (CSharpMath.Forms)<!-- and Windows environments--> is now supported via SkiaSharp (CSharpMath.SkiaSharp) as of 0.1.0.
+# Platform support
+
+iOS (CSharpMath.Ios) was ironically the first front end, which was added in v0.0.
+
+Xamarin.Forms (CSharpMath.Forms) support via SkiaSharp (CSharpMath.SkiaSharp) was added in v0.1 as development continued.
+
+Avalonia (CSharpMath.Avalonia) support was also added in v0.4.
 
 # Usage and Examples
 
