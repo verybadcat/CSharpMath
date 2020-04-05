@@ -1,10 +1,10 @@
-### Ever wanted to display LaTeX math formulae in C# but cannot find any tool to help you? Here is what you may be looking for.
+<h2 align="center">Ever wanted to display LaTeX math formulae in C# but cannot find any tool to help you? Here is what you may be looking for.</h2>
 
-![icon](Icon.png)
-
-CSharpMath is a C# port of the wonderful [iosMath LaTeX engine](https://github.com/kostub/iosMath).
-
-_The icon's text and numbers are generated with this library itself._
+<p align="center">
+<img src="Icon.png" width="400px" alt="CSharpMath icon"><br/>
+CSharpMath is a C# port of the wonderful <a href="https://github.com/kostub/iosMath">iosMath LaTeX engine</a>.<br/>
+<i>The icon's text and numbers are generated with this library itself.</i>
+</p>
 
 Current release|Current pre-release|Commits since last version|Number of contributors
 -|-|-|-
