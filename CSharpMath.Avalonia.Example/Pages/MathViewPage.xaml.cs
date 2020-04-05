@@ -8,8 +8,8 @@ namespace CSharpMath.Avalonia.Example.Pages {
     public const string EvalIntegral = @"\int_1^2 x\; dx=\left.\frac{x^2}{2}\right|_1^2=2-\frac{1}{2}=\frac{3}{2}";
 
     public MathViewPage() {
-      Resources.Add("Taylor", Atom.LaTeXParser.MathListFromLaTeX(Taylor));
-      Resources.Add("EvalIntegral", Atom.LaTeXParser.MathListFromLaTeX(EvalIntegral));
+      Resources.Add("Taylor", Atom.LaTeXParser.MathListFromLaTeX(Taylor).Match(mathList => mathList, error => throw new Structures.InvalidCodePathException(error)));
+      Resources.Add("EvalIntegral", Atom.LaTeXParser.MathListFromLaTeX(EvalIntegral).Match(mathList => mathList, error => throw new Structures.InvalidCodePathException(error)));
       InitializeComponent();
 
     }

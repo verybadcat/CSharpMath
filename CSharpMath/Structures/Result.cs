@@ -23,6 +23,9 @@ namespace CSharpMath.Structures {
     public void Match(Action successAction, Action<string> errorAction) {
       if (Error != null) errorAction(Error); else successAction();
     }
+    public TResult Match<TResult>(Func<TResult> successFunc, Func<string, TResult> errorFunc) {
+      if (Error != null) return errorFunc(Error); else return successFunc();
+    }
     public Result<T> Bind<T>(Func<T> successAction) {
       if (Error != null) return Error; else return successAction();
     }
@@ -48,10 +51,10 @@ namespace CSharpMath.Structures {
       if (errorAction is null) throw new ArgumentNullException(nameof(errorAction));
       if (Error != null) errorAction(Error); else successAction(_value);
     }
-    public TResult Match<TResult>(Func<T, TResult> successAction, Func<string, TResult> errorAction) =>
-      successAction is null ? throw new ArgumentNullException(nameof(successAction))
-      : errorAction is null ? throw new ArgumentNullException(nameof(errorAction))
-      : Error != null ? errorAction(Error) : successAction(_value);
+    public TResult Match<TResult>(Func<T, TResult> successFunc, Func<string, TResult> errorFunc) =>
+      successFunc is null ? throw new ArgumentNullException(nameof(successFunc))
+      : errorFunc is null ? throw new ArgumentNullException(nameof(errorFunc))
+      : Error != null ? errorFunc(Error) : successFunc(_value);
     public static implicit operator Result<T>(T value) =>
       new Result<T>(value);
     public static implicit operator Result<T>(string error) =>

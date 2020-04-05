@@ -13,32 +13,28 @@ namespace CSharpMath.Rendering.FrontEnd {
   /// </summary>
   public abstract class TextPainter<TCanvas, TColor> : Painter<TCanvas, TextAtom, TColor> {
     public const float DefaultCanvasWidth = 2000f;
-    public override IDisplay<Fonts, Glyph> Display =>
-      new ListDisplay<Fonts, Glyph>(new[] {
-        _relativeXCoordDisplay, _absoluteXCoordDisplay
-      });
+    public override IDisplay<Fonts, Glyph>? Display { get; protected set; }
 
     //display maths should always be center-aligned regardless of parameter for Draw()
     //so special case them into _absoluteXCoordDisplay instead of using _relativeXCoordDisplay
     public ListDisplay<Fonts, Glyph> _absoluteXCoordDisplay = new ListDisplay<Fonts, Glyph>(System.Array.Empty<IDisplay<Fonts, Glyph>>());
     public ListDisplay<Fonts, Glyph> _relativeXCoordDisplay = new ListDisplay<Fonts, Glyph>(System.Array.Empty<IDisplay<Fonts, Glyph>>());
-    public override string? LaTeX {
-      get => Content is null ? "" : TextLaTeXParser.TextAtomToLaTeX(Content).ToString();
-      set => (Content, ErrorMessage) = TextLaTeXParser.TextAtomFromLaTeX(value ?? "");
-    }
-    public float AdditionalLineSpacing { get; set; }
 
+    protected override Result<TextAtom> LaTeXToContent(string latex) =>
+      TextLaTeXParser.TextAtomFromLaTeX(latex);
+    protected override string ContentToLaTeX(TextAtom mathList) =>
+      TextLaTeXParser.TextAtomToLaTeX(mathList).ToString();
+    public float AdditionalLineSpacing { get; set; }
+    // Display has to be updated every draw as its position is mutated depending on canvas width
     protected override void SetRedisplay() { }
-    
-    public override RectangleF? Measure(float canvasWidth) {
-      UpdateDisplay(canvasWidth);
-      return 
-        _relativeXCoordDisplay.Frame().Union(_absoluteXCoordDisplay.Frame());
-    }
-    protected void UpdateDisplay(float canvasWidth) {
-      if (Content != null)
+    protected override void UpdateDisplayCore(float canvasWidth) {
+      if (ErrorMessage != null) {
+        Display = null;
+      } else {
         (_relativeXCoordDisplay, _absoluteXCoordDisplay) =
-          TextTypesetter.Layout(Content, Fonts, canvasWidth, AdditionalLineSpacing);
+          TextTypesetter.Layout(Content ?? new TextAtom.List(System.Array.Empty<TextAtom>()), Fonts, canvasWidth, AdditionalLineSpacing);
+        Display = new ListDisplay<Fonts, Glyph>(new[] { _relativeXCoordDisplay, _absoluteXCoordDisplay });
+      }
     }
 
     public override void Draw(TCanvas canvas,
@@ -52,9 +48,8 @@ namespace CSharpMath.Rendering.FrontEnd {
     private void DrawCore(TCanvas canvas, float? width, TextAlignment alignment,
       Thickness padding, float offsetX, float offsetY) {
       var c = WrapCanvas(canvas);
-      if (Content is null) DrawError(c);
-      else {
-        UpdateDisplay(width ?? c.Width);
+      UpdateDisplay(width ?? c.Width);
+      if (ErrorMessage == null) {
         _relativeXCoordDisplay.Position =
           _relativeXCoordDisplay.Position.Plus(IPainterExtensions.GetDisplayPosition(
             _relativeXCoordDisplay.Width, _relativeXCoordDisplay.Ascent,
@@ -67,11 +62,11 @@ namespace CSharpMath.Rendering.FrontEnd {
         _absoluteXCoordDisplay.Position =
           new PointF(_absoluteXCoordDisplay.Position.X + offsetX,
                      _absoluteXCoordDisplay.Position.Y + _relativeXCoordDisplay.Position.Y);
-        using var array = new RentedArray<IDisplay<Fonts, Glyph>>(
-          _relativeXCoordDisplay, _absoluteXCoordDisplay
-        );
-        DrawCore(c, new ListDisplay<Fonts, Glyph>(array.Result));
+        Display = new ListDisplay<Fonts, Glyph>(new[] {
+           _relativeXCoordDisplay, _absoluteXCoordDisplay
+        });
       }
+      DrawCore(c, Display);
     }
     /// <summary>
     /// Draws with respect to the only baseline which coordinates are given.
@@ -79,27 +74,24 @@ namespace CSharpMath.Rendering.FrontEnd {
     /// </summary>
     public void DrawOneLine(TCanvas canvas, float x, float y) {
       var c = WrapCanvas(canvas);
-      if (Content is null) DrawError(c);
-      else {
-        UpdateDisplay(float.PositiveInfinity);
-        if (!CoordinatesFromBottomLeftInsteadOfTopLeft) {
-          y -= _relativeXCoordDisplay.Displays.Max(dp => dp.Ascent);
-          y *= -1;
-        } else y -= _relativeXCoordDisplay.Displays.Max(dp => dp.Descent);
-        _relativeXCoordDisplay.Position =
-          new PointF(_relativeXCoordDisplay.Position.X + x,
-                     _relativeXCoordDisplay.Position.Y + y);
-        //y is already included in _relativeXCoordDisplay.Position,
-        //no need to add it again below
-        _absoluteXCoordDisplay.Position =
-          new PointF(_absoluteXCoordDisplay.Position.X + x,
-                     _relativeXCoordDisplay.Position.Y);
-        using var array =
-          new RentedArray<IDisplay<Fonts, Glyph>>(
-            _relativeXCoordDisplay, _absoluteXCoordDisplay
-          );
-        DrawCore(c, new ListDisplay<Fonts, Glyph>(array.Result));
-      }
+      UpdateDisplay(float.PositiveInfinity);
+      if (!CoordinatesFromBottomLeftInsteadOfTopLeft) {
+        y -= _relativeXCoordDisplay.Displays.Max(dp => dp.Ascent);
+        y *= -1;
+      } else y -= _relativeXCoordDisplay.Displays.Max(dp => dp.Descent);
+      _relativeXCoordDisplay.Position =
+        new PointF(_relativeXCoordDisplay.Position.X + x,
+                    _relativeXCoordDisplay.Position.Y + y);
+      //y is already included in _relativeXCoordDisplay.Position,
+      //no need to add it again below
+      _absoluteXCoordDisplay.Position =
+        new PointF(_absoluteXCoordDisplay.Position.X + x,
+                    _relativeXCoordDisplay.Position.Y);
+      using var array =
+        new RentedArray<IDisplay<Fonts, Glyph>>(
+          _relativeXCoordDisplay, _absoluteXCoordDisplay
+        );
+      DrawCore(c, new ListDisplay<Fonts, Glyph>(array.Result));
     }
   }
 }

@@ -39,7 +39,7 @@ namespace CSharpMath.Apple {
       get => _latex;
       set {
         _latex = value;
-        (_mathList, ErrorMessage) = LaTeXParser.TryMathListFromLaTeX(value);
+        (_mathList, ErrorMessage) = LaTeXParser.MathListFromLaTeX(value);
         if (_mathList != null) {
           _displayList = Typesetter.CreateLine(_mathList,
             TFont.LatinMath(FontSize), _typesettingContext, LineStyle.Display);

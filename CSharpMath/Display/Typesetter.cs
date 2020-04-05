@@ -676,7 +676,7 @@ namespace CSharpMath.Display {
     }
 
     private ListDisplay<TFont, TGlyph> _MakeLeftRight(Inner inner) {
-      if (inner.LeftBoundary == null && inner.RightBoundary == null) {
+      if (inner.LeftBoundary == Boundary.Empty && inner.RightBoundary == Boundary.Empty) {
         throw new InvalidCodePathException("Inner should have a boundary to call this function.");
       }
       var innerListDisplay = CreateLine(inner.InnerList, _font, _context, _style, _cramped, true);

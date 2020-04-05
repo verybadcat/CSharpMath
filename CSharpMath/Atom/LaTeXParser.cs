@@ -17,30 +17,30 @@ namespace CSharpMath.Atom {
     class InnerEnvironment {
       public Boundary? RightBoundary { get; set; }
     }
-    private readonly char[] _chars;
-    private int _currentChar;
+    public string Chars { get; }
+    public int CurrentChar { get; private set; }
     private bool _textMode; //_spacesAllowed in iosMath
     private FontStyle _currentFontStyle;
     private TableEnvironmentProperties? _currentEnvironment;
     private InnerEnvironment? _currentInner;
     public string? Error { get; private set; }
     public LaTeXParser(string str) {
-      _chars = str?.ToCharArray() ?? throw new ArgumentNullException(nameof(str));
+      Chars = str;
       _currentFontStyle = FontStyle.Default;
     }
     public MathList? Build() {
       var r = BuildInternal(false);
       if (HasCharacters && Error == null) {
-        SetError("Error; most likely mismatched braces. The string provided was: " + new string(_chars));
+        SetError("Error; most likely mismatched braces.");
       }
       return Error != null ? null : r;
     }
-    private char GetNextCharacter() => _chars[_currentChar++];
+    private char GetNextCharacter() => Chars[CurrentChar++];
     private void UnlookCharacter() =>
-      _ = _currentChar == 0
+      _ = CurrentChar == 0
       ? throw new InvalidCodePathException("Can't unlook below character 0")
-      : _currentChar--;
-    private bool HasCharacters => _currentChar < _chars.Length;
+      : CurrentChar--;
+    private bool HasCharacters => CurrentChar < Chars.Length;
     private MathList? BuildInternal(bool oneCharOnly, char stopChar = '\0', MathList? r = null) {
       if (oneCharOnly && stopChar > '\0') {
         throw new InvalidCodePathException("Cannot set both oneCharOnly and stopChar");
@@ -199,7 +199,7 @@ namespace CSharpMath.Atom {
       return builder.ToString();
     }
 
-    private string? ReadColor() {
+    private Structures.Color? ReadColor() {
       if (!ExpectCharacter('{')) {
         SetError("Missing {");
         return null;
@@ -216,12 +216,17 @@ namespace CSharpMath.Atom {
           break;
         }
       }
+      var str = builder.ToString();
+      if (!(Structures.Color.Create(str.AsSpan()) is { } color)) {
+        SetError("Invalid color: " + str);
+        return null;
+      }
       SkipSpaces();
       if (!ExpectCharacter('}')) {
         SetError("Missing }");
         return null;
       }
-      return builder.ToString();
+      return color;
     }
 
     private void SkipSpaces() {
@@ -399,22 +404,16 @@ namespace CSharpMath.Atom {
           }
           return BuildTable(env, null, false, stopChar);
         case "color":
-          switch (ReadColor()) {
-            case string s when BuildInternal(true) is { } ml:
-              if (Structures.Color.Create(s.AsSpan()) is { } color)
-                return new Color(color, ml);
-              SetError(@"Invalid color: " + s);
-              return null;
-            default: return null;
+          return (ReadColor()) switch
+          {
+            { } color when BuildInternal(true) is { } ml => new Color(color, ml),
+            _ => null,
           };
         case "colorbox":
-          switch (ReadColor()) {
-            case string s when BuildInternal(true) is { } ml:
-              if (Structures.Color.Create(s.AsSpan()) is { } color)
-                return new ColorBox(color, ml);
-              SetError(@"Invalid color: " + s);
-              return null;
-            default: return null;
+          return (ReadColor()) switch
+          {
+            { } color when BuildInternal(true) is { } ml => new ColorBox(color, ml),
+            _ => null,
           };
         case "prime":
           SetError(@"\prime won't be supported as Unicode has no matching character. Use ' instead.");
@@ -471,7 +470,7 @@ namespace CSharpMath.Atom {
 
     //should be \textrm instead of \text
     private static readonly MathAtom TeX = new Inner(Boundary.Empty,
-      TryMathListFromLaTeX(@"\text{T\kern-.1667em\raisebox{-.5ex}{E}\kern-.125emX}")
+      MathListFromLaTeX(@"\text{T\kern-.1667em\raisebox{-.5ex}{E}\kern-.125emX}")
       .Match(mathList => mathList, e =>
         throw new FormatException(@"A syntax error is present in the definition of \TeX.")),
       Boundary.Empty);
@@ -740,21 +739,39 @@ namespace CSharpMath.Atom {
       }
     }
 
-    public static Structures.Result<MathList> TryMathListFromLaTeX(string str) {
+    public static Structures.Result<MathList> MathListFromLaTeX(string str) {
       var builder = new LaTeXParser(str);
       var list = builder.Build();
       var error = builder.Error;
-      return
-        error != null
-        ? Structures.Result.Err(error)
-        : list != null
-        ? Structures.Result.Ok(list)
-        : throw new InvalidCodePathException("Both error and list are null?");
+      if (error != null) {
+        var sb = new StringBuilder("Error: ").Append(error);
+        sb.Append('\n');
+        PointToChar(sb, builder.Chars, builder.CurrentChar);
+        return Structures.Result.Err(sb.ToString());
+      } else if (list != null)
+        return Structures.Result.Ok(list);
+      throw new InvalidCodePathException("Both error and list are null?");
     }
 
-    public static MathList MathListFromLaTeX(string str) =>
-      TryMathListFromLaTeX(str).Match(list => list,
-          error => new MathList(new Color(Structures.Color.PredefinedColors["red"], new MathList(new Ordinary($"Error: {error}")))));
+    public static void PointToChar(StringBuilder sb, string source, int index) {
+      // Just like Xunit's helpful error message in Assert.Equal(string, string)
+      const string dots = "···";
+      const int lookbehind = 20;
+      const int lookahead = 41;
+      var startIsFarAway = index > lookbehind;
+      if (startIsFarAway)
+        sb.Append(dots).Append(source, index - lookbehind, lookbehind);
+      else sb.Append(source, 0, index);
+      var endIsFarAway = index < source.Length - lookahead;
+      if (endIsFarAway)
+        sb.Append(source, index, lookahead).Append(dots);
+      else sb.Append(source, index, source.Length - index);
+      sb.Append('\n');
+      if (startIsFarAway)
+        sb.Append(' ', lookbehind + dots.Length);
+      else sb.Append(' ', index);
+      sb.Append("↑ (pos ").Append(index).Append(')');
+    }
 
     // ^ LaTeX -> Math atoms
     // v Math atoms -> LaTeX

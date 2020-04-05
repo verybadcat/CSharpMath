@@ -97,9 +97,7 @@ namespace CSharpMath.Rendering.Tests {
       painter.HighlightColor = painter.UnwrapColor(new Structures.Color(0xF0, 0xF0, 0xF0));
       painter.FontSize = 50f;
       painter.LaTeX = latex;
-      if (painter.ErrorMessage != null)
-        throw new Xunit.Sdk.XunitException("Painter error: " + painter.ErrorMessage);
-
+      
       var actualFile = new FileInfo(Path.Combine(folder, inFile + "." + frontEnd + ".png"));
       Assert.False(actualFile.Exists, $"The actual file was not deleted by test initialization: {actualFile.FullName}");
 

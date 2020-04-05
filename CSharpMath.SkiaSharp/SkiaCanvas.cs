@@ -48,10 +48,6 @@ namespace CSharpMath.SkiaSharp {
     public void Translate(float dx, float dy) => Canvas.Translate(dx, dy);
     public void Scale(float sx, float sy) => Canvas.Scale(sx, sy);
     public void Restore() => Canvas.Restore();
-    public void FillText(string text, float x, float y, float pointSize) =>
-      Canvas.DrawText(text, x, y, new SKPaint {
-        Color = Color, TextSize = pointSize, IsAntialias = true
-      });
     public GlyphPath StartDrawingNewGlyph() => new SkiaPath(this);
   }
 }

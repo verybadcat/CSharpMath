@@ -50,10 +50,10 @@ namespace CSharpMath.SkiaSharp {
     private static void DrawDisplay(MathPainter settings, Display.IDisplay<Fonts, Glyph>? display,
       System.Action<MathPainter> draw) {
       if (display is null) return;
-      var original = (settings._display, settings._displayChanged);
-      (settings._display, settings._displayChanged) = (display, false);
+      var original = (settings.Display, settings._displayChanged);
+      (settings.Display, settings._displayChanged) = (display, false);
       draw(settings);
-      (settings._display, settings._displayChanged) = original;
+      (settings.Display, settings._displayChanged) = original;
     }
   }
 }

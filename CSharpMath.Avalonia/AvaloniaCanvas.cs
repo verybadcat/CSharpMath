@@ -30,13 +30,6 @@ namespace CSharpMath.Avalonia {
     }
     public void FillRect(float left, float top, float width, float height) =>
         DrawingContext.FillRectangle(CurrentBrush, new Rect(left, top, width, height));
-    public void FillText(string text, float x, float y, float pointSize) {
-      var typeface = new Typeface(Typeface.Default.FontFamily, pointSize);
-      DrawingContext.DrawText(
-          CurrentBrush,
-          new Point(x, y),
-          new FormattedText() { Text = text, Typeface = typeface });
-    }
     public GlyphPath StartDrawingNewGlyph() => new AvaloniaPath(this);
     public void Restore() {
       var stateStack = _states.Pop();

@@ -56,7 +56,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
       };
       breaker.BreakWords(latexSource);
 
-      Result CheckDollarCount(TextAtomListBuilder atoms) {
+      Result CheckDollarCount(int currentPosition, TextAtomListBuilder atoms) {
         switch (dollarCount) {
           case 0:
             break;
@@ -174,7 +174,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
             }
             backslashEscape = false;
           } else {
-            { if (CheckDollarCount(atoms).Error is string error) return error; }
+            { if (CheckDollarCount(startAt, atoms).Error is string error) return error; }
             if (!backslashEscape) {
               //Unescaped text section, inside display/inline math mode
               if (displayMath != null)
@@ -454,7 +454,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
         if (BuildBreakList(latexSource.AsSpan(), globalAtoms, 0, false, '\0').Error is string error)
           return error;
       }
-      { if (CheckDollarCount(globalAtoms).Error is string error) return error; }
+      { if (CheckDollarCount(latexSource.Length, globalAtoms).Error is string error) return error; }
       if (displayMath != null) return "Math mode was not terminated";
       return globalAtoms.Build();
     }

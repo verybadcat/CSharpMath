@@ -137,7 +137,7 @@ namespace CSharpMath.Xaml.Tests {
     }
     [Fact]
     public void ErrorMessageUpdates() {
-      void Test<TView, TContent>(TView view, TContent oneTwoThree)
+      void Test<TView, TContent>(TView view, TContent oneTwoThree, string gammeError, string tripleSlashError, string missingBraceError)
         where TView : TBaseView, ICSharpMathAPI<TContent, TColor> where TContent : class {
         var viewModel = new ViewModel<TContent>();
         SetBindingContext(view, viewModel);
@@ -146,7 +146,7 @@ namespace CSharpMath.Xaml.Tests {
           viewModel.LaTeX = @"\alpha\beta\gamme";
           Assert.Equal(@"\alpha\beta\gamme", view.LaTeX);
           Assert.Null(view.Content);
-          Assert.Equal(@"Invalid command \gamme", view.ErrorMessage);
+          Assert.Equal(gammeError, view.ErrorMessage);
         }
         using (var binding = SetBinding(view, nameof(viewModel.LaTeX), OneWayToSource)) {
           view.LaTeX = @"123";
@@ -168,18 +168,24 @@ namespace CSharpMath.Xaml.Tests {
             Assert.Equal(@"\\\", view.LaTeX);
             Assert.Equal(@"\\\", viewModel.LaTeX);
             Assert.Null(view.Content);
-            Assert.Equal(@"Invalid command \", view.ErrorMessage);
+            Assert.Equal(tripleSlashError, view.ErrorMessage);
           } else throw new NotImplementedException();
         }
         using (var binding = SetBinding(view, nameof(viewModel.LaTeX))) {
           viewModel.LaTeX = @"}";
           Assert.Equal(@"}", view.LaTeX);
           Assert.Null(view.Content);
-          Assert.Equal(@"Missing opening brace", view.ErrorMessage);
+          Assert.Equal(missingBraceError, view.ErrorMessage);
         }
       }
-      Test(new TMathView(), new MathList(new Atom.Atoms.Number("1"), new Atom.Atoms.Number("2"), new Atom.Atoms.Number("3")));
-      Test(new TTextView(), (TextAtom)new TextAtom.Text("123"));
+      Test(new TMathView(), new MathList(new Atom.Atoms.Number("1"), new Atom.Atoms.Number("2"), new Atom.Atoms.Number("3")),
+        "Error: Invalid command \\gamme\n\\alpha\\beta\\gamme\n                 ↑ (pos 17)",
+        "Error: Invalid command \\\n\\\\\\\n   ↑ (pos 3)",
+        "Error: Missing opening brace\n}\n ↑ (pos 1)");
+      Test(new TTextView(), (TextAtom)new TextAtom.Text("123"),
+        "Invalid command \\gamme",
+        "Invalid command \\",
+        "Missing opening brace");
     }
     [Fact]
     public void LaTeXAutoFormats() {

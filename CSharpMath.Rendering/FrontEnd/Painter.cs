@@ -9,7 +9,9 @@ using Typography.OpenFont;
 using System.Collections.Specialized;
 
 namespace CSharpMath.Rendering.FrontEnd {
+  using System.Linq;
   using BackEnd;
+
   public static class PainterConstants {
     public const float DefaultFontSize = 20f;
   }
@@ -37,11 +39,10 @@ namespace CSharpMath.Rendering.FrontEnd {
     public PaintStyle PaintStyle { get; set; } = PaintStyle.Fill;
     public float Magnification { get; set; } = 1;
     public string? ErrorMessage { get; protected set; }
-    public abstract IDisplay<Fonts, Glyph>? Display { get; }
+    public abstract IDisplay<Fonts, Glyph>? Display { get; protected set; }
     #endregion Non-redisplaying properties
 
     #region Redisplaying properties
-    public abstract string? LaTeX { get; set; }
     //_field == private field, __field == property-only field
     protected abstract void SetRedisplay();
     protected Fonts Fonts { get; private set; } = new Fonts(Array.Empty<Typeface>(), DefaultFontSize);
@@ -54,25 +55,69 @@ namespace CSharpMath.Rendering.FrontEnd {
     public Atom.LineStyle LineStyle { get => __style; set { __style = value; SetRedisplay(); } }
     TContent? __content;
     public TContent? Content { get => __content; set { __content = value; SetRedisplay(); } }
+    public string? LaTeX { get => Content is null ? "" : ContentToLaTeX(Content); set => (Content, ErrorMessage) = LaTeXToContent(value ?? ""); }
     #endregion Redisplaying properties
 
     protected abstract bool CoordinatesFromBottomLeftInsteadOfTopLeft { get; }
-
+    
     #region Methods
-
+    protected abstract Result<TContent> LaTeXToContent(string latex);
+    protected abstract string ContentToLaTeX(TContent content);
     public abstract Color WrapColor(TColor color);
     public abstract TColor UnwrapColor(Color color);
     public abstract ICanvas WrapCanvas(TCanvas canvas);
-    public abstract RectangleF? Measure(float textPainterCanvasWidth);
+    public virtual RectangleF? Measure(float textPainterCanvasWidth) {
+      UpdateDisplay(textPainterCanvasWidth);
+      return Display?.DisplayBounds();
+    }
+    protected abstract void UpdateDisplayCore(float textPainterCanvasWidth);
+    protected void UpdateDisplay(float textPainterCanvasWidth) {
+      UpdateDisplayCore(textPainterCanvasWidth);
+      if (Display == null && DisplayErrorInline && ErrorMessage != null) {
+        var font = Fonts;
+        if (ErrorFontSize is { } errorSize) font = new Fonts(font, errorSize);
+        var errorLines = ErrorMessage.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        var runs = new System.Collections.Generic.List<Display.Displays.TextRunDisplay<Fonts, Glyph>>();
+        float y = 0;
+        for (var i = 0; i < errorLines.Length; i++) {
+          var errorLine = errorLines[i];
+          float x = 0;
+          if (i == errorLines.Length - 1 && errorLines.Length > 1) {
+            var pointer = errorLine.TrimStart(' ');
+            var spaces = errorLine.Length - pointer.Length;
+            var pointerIndentChars = errorLines[i - 1];
+            if (spaces < pointerIndentChars.Length)
+              pointerIndentChars = pointerIndentChars.Remove(spaces);
+            x =
+              TypesettingContext.Instance.GlyphBoundsProvider.GetTypographicWidth(font,
+                new AttributedGlyphRun<Fonts, Glyph>(pointerIndentChars,
+                TypesettingContext.Instance.GlyphFinder.FindGlyphs(font, pointerIndentChars),
+                font));
+            errorLine = pointer;
+          }
+          var run = new Display.Displays.TextRunDisplay<Fonts, Glyph>(
+                new AttributedGlyphRun<Fonts, Glyph>(errorLine,
+                TypesettingContext.Instance.GlyphFinder.FindGlyphs(font, errorLine),
+                font),
+              Atom.Range.Zero, TypesettingContext.Instance);
+          run.SetTextColorRecursive(WrapColor(ErrorColor));
+          y -= run.Run.Glyphs.Max(g => g.Typeface.Ascender * g.Typeface.CalculateScaleToPixelFromPointSize(font.PointSize))
+             - run.Run.Glyphs.Min(g => g.Typeface.Descender * g.Typeface.CalculateScaleToPixelFromPointSize(font.PointSize))
+             + run.Run.Glyphs.Max(g => g.Typeface.LineGap * g.Typeface.CalculateScaleToPixelFromPointSize(font.PointSize));
+          run.Position = new PointF(x, y);
+          runs.Add(run);
+        }
+        Display = new Display.Displays.TextLineDisplay<Fonts, Glyph>(runs, Array.Empty<Atom.MathAtom>(), default);
+        Display.SetTextColorRecursive(WrapColor(ErrorColor));
+      }
+    }
     public abstract void Draw(TCanvas canvas, TextAlignment alignment, Thickness padding = default, float offsetX = 0, float offsetY = 0);
     protected void DrawCore(ICanvas canvas, IDisplay<Fonts, Glyph>? display, PointF? position = null) {
       if (display != null) {
         if (position != null) display.Position = position.Value;
         canvas.Save();
-        if (!CoordinatesFromBottomLeftInsteadOfTopLeft) {
-          //invert the canvas vertically
-          canvas.Scale(1, -1);
-        }
+        //invert the canvas vertically: displays are drawn with mathematical coordinates, not graphical coordinates
+        canvas.Scale(1, -1);
         canvas.Scale(Magnification, Magnification);
         canvas.DefaultColor = WrapColor(TextColor);
         canvas.CurrentColor = WrapColor(HighlightColor);
@@ -92,15 +137,6 @@ namespace CSharpMath.Rendering.FrontEnd {
         ));
         canvas.Restore();
         DrawAfterSuccess(canvas);
-      } else DrawError(canvas);
-    }
-    protected void DrawError(ICanvas canvas) {
-      if (DisplayErrorInline && ErrorMessage != null) {
-        canvas.Save();
-        var size = ErrorFontSize ?? FontSize;
-        canvas.CurrentColor = WrapColor(ErrorColor);
-        canvas.FillText(ErrorMessage, 0, size, size);
-        canvas.Restore();
       }
     }
     protected virtual void DrawAfterSuccess(ICanvas c) { }

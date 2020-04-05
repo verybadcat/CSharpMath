@@ -17,8 +17,11 @@ namespace CSharpMath.Rendering.Text {
     public void Size(TextAtom atom, float fontSize) => Add(new TextAtom.Size(atom, fontSize));
     public void Color(TextAtom atom, Color color) => Add(new TextAtom.Color(atom, color));
     public Result Math(string mathLaTeX, bool displayStyle) =>
-      Atom.LaTeXParser.TryMathListFromLaTeX(mathLaTeX).Bind(mathList =>
-        Add(new TextAtom.Math(mathList, displayStyle)));
+      Atom.LaTeXParser.MathListFromLaTeX(mathLaTeX).Bind(
+        mathList => Add(new TextAtom.Math(mathList, displayStyle))).Match(
+        Result.Ok,
+        // Remove line information
+        error => Result.Err(error.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)[0]));
     public void List(IReadOnlyList<TextAtom> textAtoms) => Add(new TextAtom.List(textAtoms));
     public void Break() => Add(new TextAtom.Newline());
     public void Comment(string comment) => Add(new TextAtom.Comment(comment));
