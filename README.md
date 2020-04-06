@@ -118,19 +118,19 @@ somePanel.Children.Add(view);
 There are a few ways to extend this to more platforms:
 (Hopefully, you would not need to touch the core typesetting engine. If you do, we would consider that a bug.)
 
-### 1. Branching off from CSharpMath (the project)
+### 1. Branching off from CSharpMath.Rendering (recommended)
+
+As CSharpMath.Rendering provides font lookup through [the Typography library](https://github.com/LayoutFarm/Typography), you would only need to write adapter classes to connect this library to your chosen graphics library.
+
+You would have to implement [ICanvas](CSharpMath.Rendering/FrontEnd/ICanvas.cs) and feed it into the Draw method of [MathPainter](CSharpMath.Rendering/FrontEnd/MathPainter.cs).
+
+### 2. Forking from CSharpMath the project
 
 This path would require the most effort to implement, but allows you to plug in any font library and graphics library.
 
 You would have to define your own [TypesettingContext](CSharpMath/Display/FrontEnd/TypesettingContext.cs) and write an implementation of [IGraphicsContext](CSharpMath/Display/FrontEnd/IGraphicsContext.cs).
 
 The TypesettingContext in turn has several components, including choosing a font.
-
-### 2. Forking from CSharpMath.Rendering
-
-As CSharpMath.Rendering provides font lookup through [the Typography library](https://github.com/LayoutFarm/Typography), you would only need to write adapter classes to connect this library to your chosen graphics library.
-
-You would have to implement [ICanvas](CSharpMath.Rendering/FrontEnd/ICanvas.cs) and feed it into the Draw method of [MathPainter](CSharpMath.Rendering/FrontEnd/MathPainter.cs).
 
 ### 3. Referencing CSharpMath.SkiaSharp
 
