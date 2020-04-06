@@ -138,7 +138,7 @@ You can extend this library to other SkiaSharp-supported platforms by feeding th
 
 ### 4. Building on top of CSharpMath.Apple
 
-You can use this library on other appleOSes by making use of [AppleMathView](CSharpMaath.Apple/AppleMathView.cs).
+You can use this library on other appleOSes by making use of [AppleMathView](CSharpMath.Apple/AppleMathView.cs).
       
 # Project needs
 
