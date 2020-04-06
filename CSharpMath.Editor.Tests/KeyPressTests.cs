@@ -8,7 +8,7 @@ using K = CSharpMath.Editor.MathKeyboardInput; // 'K'ey
 
 namespace CSharpMath.Editor.Tests {
   using EventInteractor = Action<MathKeyboard<TestFont, char>, EventHandler>;
-  public class MathKeyboardTests {
+  public class KeyPressTests {
     private static readonly TypesettingContext<TestFont, char> context = TestTypesettingContexts.Instance;
     static void Test(string latex, K[] inputs) {
       var keyboard = new MathKeyboard<TestFont, char>(context, new TestFont());

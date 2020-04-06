@@ -8,9 +8,9 @@ namespace CSharpMath.Rendering.FrontEnd {
   public enum CaretShape { IBeam, UpArrow }
   public class MathKeyboard : MathKeyboard<Fonts, Glyph> {
     public MathKeyboard() : this(PainterConstants.DefaultFontSize * 3 / 2) { }
-    public MathKeyboard(float fontSize = PainterConstants.DefaultFontSize * 3 / 2)
+    public MathKeyboard(float fontSize = PainterConstants.DefaultFontSize * 3 / 2, double blinkMilliseconds = DefaultBlinkMilliseconds)
       : base(TypesettingContext.Instance,
-             new Fonts(Array.Empty<Typography.OpenFont.Typeface>(), fontSize)) { }
+             new Fonts(Array.Empty<Typography.OpenFont.Typeface>(), fontSize), blinkMilliseconds) { }
     
     public void DrawCaret(ICanvas canvas, Structures.Color color, CaretShape shape) {
       if (CaretState != MathKeyboardCaretState.Shown || Display is null)
