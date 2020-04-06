@@ -188,7 +188,7 @@ namespace CSharpMath.Display {
           case Color color:
             AddDisplayLine(false);
             AddInterElementSpace(prevAtom, color);
-            var colorDisplay = Typesetter.CreateLine(color.InnerList, _font, _context, _style);
+            var colorDisplay = CreateLine(color.InnerList, _font, _context, _style, false);
             colorDisplay.SetTextColorRecursive(color.Colour);
             colorDisplay.Position = _currentPosition;
             _currentPosition.X += colorDisplay.Width;
@@ -197,7 +197,7 @@ namespace CSharpMath.Display {
           case ColorBox colorBox:
             AddDisplayLine(false);
             AddInterElementSpace(prevAtom, colorBox);
-            colorDisplay = Typesetter.CreateLine(colorBox.InnerList, _font, _context, _style);
+            colorDisplay = CreateLine(colorBox.InnerList, _font, _context, _style, false);
             colorDisplay.BackColor = colorBox.Colour;
             colorDisplay.Position = _currentPosition;
             _currentPosition.X += colorDisplay.Width;
@@ -210,7 +210,7 @@ namespace CSharpMath.Display {
             if (rad.Degree.IsNonEmpty()) {
               // add the degree to the radical
               displayRad.SetDegree(
-                Typesetter.CreateLine(rad.Degree, _styleFont, _context, LineStyle.Script),
+                CreateLine(rad.Degree, _styleFont, _context, LineStyle.Script, false),
                 _styleFont, _mathTable);
             }
             _displayAtoms.Add(displayRad);
@@ -309,7 +309,7 @@ namespace CSharpMath.Display {
           case RaiseBox raiseBox:
             AddDisplayLine(false);
             var raisedDisplay =
-              Typesetter.CreateLine(raiseBox.InnerList, _font, _context, _style);
+              CreateLine(raiseBox.InnerList, _font, _context, _style, false);
             var raisedPosition = _currentPosition;
             raisedPosition.Y += raiseBox.Raise.ActualLength(_mathTable, _font);
             raisedDisplay.Position = raisedPosition;
@@ -844,7 +844,7 @@ namespace CSharpMath.Display {
         var colDispalys = new List<ListDisplay<TFont, TGlyph>>();
         r.Add(colDispalys);
         for (int i = 0; i < row.Count; i++) {
-          var disp = Typesetter.CreateLine(row[i], _font, _context, _style);
+          var disp = CreateLine(row[i], _font, _context, _style, false);
           columnWidths[i] = Math.Max(disp.Width, columnWidths[i]);
           colDispalys.Add(disp);
         }
