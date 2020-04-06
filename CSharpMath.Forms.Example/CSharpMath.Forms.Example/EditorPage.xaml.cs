@@ -36,7 +36,7 @@ namespace CSharpMath.Forms.Example {
       var atomTypes = new Label { Text = "Atom Types = " };
       var ranges = new Label { Text = "Ranges = " };
       var index = new Label { Text = "Index = " };
-      viewModel.RedrawRequested += (sender, e) => {
+      viewModel.RedrawRequested += (sender, e) => Device.BeginInvokeOnMainThread(() => {
         latex.Text = "LaTeX = " + viewModel.LaTeX;
         atomTypes.Text = "Atom Types = " + string.Join
           (", ", viewModel.MathList.Select(x => x.GetType().Name));
@@ -44,7 +44,7 @@ namespace CSharpMath.Forms.Example {
           (", ", (viewModel.Display ?? throw new Structures.InvalidCodePathException("Invalid LaTeX"))
                  .Displays.Select(x => x.Range));
         index.Text = "Index = " + viewModel.InsertionIndex;
-      };
+      });
 
       static View GridItem(int row, int col, View view) {
         Grid.SetRow(view, row);

@@ -2,18 +2,56 @@ namespace CSharpMath.Editor {
   using System;
   using System.Collections.Generic;
   using System.Drawing;
+  using System.Timers;
   using Atom;
   using Display;
   using Display.FrontEnd;
   using Structures;
   using Atoms = Atom.Atoms;
 
+  public enum MathKeyboardCaretState : byte {
+    Hidden,
+    TemporarilyHidden,
+    ShownThroughPlaceholder,
+    Shown
+  }
   public class MathKeyboard<TFont, TGlyph> where TFont : IFont<TGlyph> {
-    public MathKeyboard(TypesettingContext<TFont, TGlyph> context, TFont font) =>
+    protected Timer timer;
+    public MathKeyboard(TypesettingContext<TFont, TGlyph> context, TFont font, double blinkMilliseconds = 800) {
       (Context, Font) = (context, font);
+      timer = new Timer(blinkMilliseconds);
+      timer.Elapsed += (sender, e) => {
+        switch (CaretState) {
+          case MathKeyboardCaretState.Shown:
+          case MathKeyboardCaretState.ShownThroughPlaceholder:
+            CaretState = MathKeyboardCaretState.TemporarilyHidden;
+            RedrawRequested?.Invoke(this, EventArgs.Empty);
+            break;
+          case MathKeyboardCaretState.TemporarilyHidden:
+            CaretState = MathKeyboardCaretState.Shown;
+            RedrawRequested?.Invoke(this, EventArgs.Empty);
+            break;
+        }
+      };
+      timer.Start();
+    }
+
     //private readonly List<MathListIndex> highlighted;
     protected TypesettingContext<TFont, TGlyph> Context { get; }
-    public bool ShowCaret { get; protected set; }
+    MathKeyboardCaretState _caretState;
+    public MathKeyboardCaretState CaretState {
+      get => _caretState;
+      protected set {
+        if (value != MathKeyboardCaretState.Hidden &&
+           MathList.AtomAt(_insertionIndex) is Atoms.Placeholder placeholder) {
+          (placeholder.Nucleus, _caretState) =
+            value == MathKeyboardCaretState.TemporarilyHidden
+            ? ("\u25A0", MathKeyboardCaretState.TemporarilyHidden)
+            : ("\u25A1", MathKeyboardCaretState.ShownThroughPlaceholder);
+          RecreateDisplayFromMathList();
+        } else _caretState = value;
+      }
+    }
     public Display.Displays.ListDisplay<TFont, TGlyph>? Display { get; protected set; }
     public MathList MathList { get; } = new MathList();
     public string LaTeX => LaTeXParser.MathListToLaTeX(MathList).ToString();
@@ -111,7 +149,7 @@ namespace CSharpMath.Editor {
             case (var a, _): numerator.Push(a); break;
           }
         }
-stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count));
+        stop: MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count));
         if (numerator.Count == 0)
           // so we didn't really find any numbers before this, so make the numerator 1
           numerator.Push(new Atoms.Number("1"));
@@ -382,11 +420,11 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
           break;
         case MathKeyboardInput.Return:
           ReturnPressed?.Invoke(this, EventArgs.Empty);
-          ShowCaret = false;
+          CaretState = MathKeyboardCaretState.Hidden;
           return;
         case MathKeyboardInput.Dismiss:
           DismissPressed?.Invoke(this, EventArgs.Empty);
-          ShowCaret = false;
+          CaretState = MathKeyboardCaretState.Hidden;
           return;
         case MathKeyboardInput.BothRoundBrackets:
           InsertAtomPair(new Atoms.Open("("), new Atoms.Close(")"));
@@ -763,34 +801,28 @@ stop:   MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count)
     public void MoveCaretToPoint(PointF point) {
       point.Y *= -1; //inverted canvas, blah blah
       InsertionIndex = ClosestIndexToPoint(point) ?? MathListIndex.Level0Index(MathList.Atoms.Count);
-      ShowCaret = true;
+      CaretState = MathKeyboardCaretState.Shown;
     }
 
     /// <summary>Helper method to update caretView when insertion point/selection changes.</summary>
     private void InsertionPointChanged() {
-      static void VisualizePlaceholders(MathList mathList) {
+      static void ResetPlaceholders(MathList mathList) {
         foreach (var mathAtom in mathList.Atoms) {
-          VisualizePlaceholders(mathAtom.Superscript);
-          VisualizePlaceholders(mathAtom.Subscript);
+          ResetPlaceholders(mathAtom.Superscript);
+          ResetPlaceholders(mathAtom.Subscript);
           switch (mathAtom) {
             case Atoms.Placeholder _:
               mathAtom.Nucleus = "\u25A1";
               break;
             case IMathListContainer container:
               foreach (var list in container.InnerLists)
-                VisualizePlaceholders(list);
+                ResetPlaceholders(list);
               break;
           }
         }
       }
-      VisualizePlaceholders(MathList);
-      if (MathList.AtomAt(_insertionIndex) is Atoms.Placeholder placeholder) {
-        placeholder.Nucleus = "\u25A0";
-        ShowCaret = false;
-      } else {
-        // Find the insert point rect and create a caretView to draw the caret at this position.
-        ShowCaret = true;
-      }
+      CaretState = MathKeyboardCaretState.Shown;
+      ResetPlaceholders(MathList);
       // Check that we were returned a valid position before displaying a caret there.
       RecreateDisplayFromMathList();
       RedrawRequested?.Invoke(this, EventArgs.Empty);

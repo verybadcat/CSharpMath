@@ -74,7 +74,7 @@ namespace CSharpMath.Rendering.FrontEnd {
         var font = Fonts;
         if (ErrorFontSize is { } errorSize) font = new Fonts(font, errorSize);
         var errorLines = ErrorMessage.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-        var runs = new System.Collections.Generic.List<Display.Displays.TextRunDisplay<Fonts, Glyph>>();
+        var runs = new List<Display.Displays.TextRunDisplay<Fonts, Glyph>>();
         float y = 0;
         for (var i = 0; i < errorLines.Length; i++) {
           var errorLine = errorLines[i];
@@ -115,8 +115,7 @@ namespace CSharpMath.Rendering.FrontEnd {
         //invert the canvas vertically: displays are drawn with mathematical coordinates, not graphical coordinates
         canvas.Scale(1, -1);
         canvas.Scale(Magnification, Magnification);
-        if (position is { } p)
-          canvas.Translate(p.X, p.Y);
+        if (position is { } p) display.Position = new PointF(p.X, p.Y);
         canvas.DefaultColor = WrapColor(TextColor);
         canvas.CurrentColor = WrapColor(HighlightColor);
         canvas.CurrentStyle = PaintStyle;
@@ -133,10 +132,8 @@ namespace CSharpMath.Rendering.FrontEnd {
           GlyphBoxColor is var (glyph, textRun) ? Nullable((WrapColor(glyph), WrapColor(textRun))) : null
         ));
         canvas.Restore();
-        DrawAfterSuccess(canvas);
       }
     }
-    protected virtual void DrawAfterSuccess(ICanvas c) { }
     #endregion Methods
   }
 }

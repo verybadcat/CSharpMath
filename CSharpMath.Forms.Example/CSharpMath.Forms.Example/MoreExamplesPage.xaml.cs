@@ -6,7 +6,10 @@ namespace CSharpMath.Forms.Example {
   public partial class MoreExamplesPage : ContentPage {
     public MoreExamplesPage() {
       InitializeComponent();
-      foreach (var view in MoreExamples.Views) Stack.Children.Add(view);
+      foreach (var view in MoreExamples.Views) {
+        view.ErrorFontSize = view.FontSize * 0.8f;
+        Stack.Children.Add(view);
+      }
     }
   }
 }
