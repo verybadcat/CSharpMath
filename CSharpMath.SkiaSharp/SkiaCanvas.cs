@@ -1,9 +1,8 @@
-using CSharpMath.Rendering;
 using CSharpMath.Rendering.FrontEnd;
 using CSharpMath.Structures;
 using SkiaSharp;
 namespace CSharpMath.SkiaSharp {
-  public class SkiaCanvas : ICanvas {
+  public sealed class SkiaCanvas : ICanvas {
     public SkiaCanvas(SKCanvas canvas, SKStrokeCap strokeCap, bool antiAlias) {
       Canvas = canvas;
       StrokeCap = strokeCap;

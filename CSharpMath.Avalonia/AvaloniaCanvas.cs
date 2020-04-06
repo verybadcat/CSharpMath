@@ -18,11 +18,26 @@ namespace CSharpMath.Avalonia {
     }
     public float Width { get; }
     public float Height { get; }
-    public CSharpMathColor DefaultColor { get; set; }
-    public CSharpMathColor? CurrentColor { get; set; }
+    internal IBrush CurrentBrush { get; private set; } = Brushes.Transparent;
+    public CSharpMathColor DefaultColor {
+      get => _defaultColor;
+      set {
+        _defaultColor = value;
+        if (_currentColor == null)
+          CurrentBrush = new SolidColorBrush(value.ToAvaloniaColor());
+      }
+    }
+    CSharpMathColor _defaultColor;
+    CSharpMathColor? _currentColor;
+    public CSharpMathColor? CurrentColor {
+      get => _currentColor;
+      set {
+        _currentColor = value;
+        CurrentBrush = new SolidColorBrush((value ?? _defaultColor).ToAvaloniaColor());
+      }
+    }
     public PaintStyle CurrentStyle { get; set; }
     internal DrawingContext DrawingContext { get; }
-    internal IBrush CurrentBrush => new SolidColorBrush((CurrentColor ?? DefaultColor).ToAvaloniaColor());
     public void DrawLine(float x1, float y1, float x2, float y2, float lineThickness) {
       if (CurrentStyle == PaintStyle.Fill)
         DrawingContext.DrawLine(new Pen(CurrentBrush, lineThickness), new Point(x1, y1), new Point(x2, y2));

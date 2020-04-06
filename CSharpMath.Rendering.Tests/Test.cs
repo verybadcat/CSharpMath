@@ -119,5 +119,28 @@ namespace CSharpMath.Rendering.Tests {
       if (FileSizeTolerance == 0)
         Assert.True(TestFixture.StreamsContentsAreEqual(expectedStream, actualStream), "The images differ.");
     }
+    protected void MathPainterSettingsTest<TContent>(string file, Painter<TCanvas, TContent, TColor> painter) where TContent : class =>
+      Run(file, @"\sqrt[3]\frac\color{#F00}a\mathbb C", nameof(MathPainterSettings), painter);
+    [Fact]
+    public virtual void MathPainterSettings() {
+      MathPainterSettingsTest("Baseline", new TMathPainter());
+      MathPainterSettingsTest("Stroke", new TMathPainter { PaintStyle = PaintStyle.Stroke });
+      MathPainterSettingsTest("Magnification", new TMathPainter { Magnification = 2 });
+      using var comicNeue = TestFixture.ThisDirectory.EnumerateFiles("ComicNeue_Bold.otf").Single().OpenRead();
+      MathPainterSettingsTest("LocalTypeface", new TMathPainter {
+        LocalTypefaces = new[] {
+          new Typography.OpenFont.OpenFontReader().Read(comicNeue)
+          ?? throw new Structures.InvalidCodePathException("Invalid font!")
+        }
+      });
+      MathPainterSettingsTest("TextLineStyle", new TMathPainter { LineStyle = Atom.LineStyle.Text });
+      MathPainterSettingsTest("ScriptLineStyle", new TMathPainter { LineStyle = Atom.LineStyle.Script });
+      MathPainterSettingsTest("ScriptScriptLineStyle", new TMathPainter { LineStyle = Atom.LineStyle.ScriptScript });
+      TColor green = new TMathPainter().UnwrapColor(Structures.Color.PredefinedColors[nameof(green)]);
+      TColor blue = new TMathPainter().UnwrapColor(Structures.Color.PredefinedColors[nameof(blue)]);
+      TColor orange = new TMathPainter().UnwrapColor(Structures.Color.PredefinedColors[nameof(orange)]);
+      MathPainterSettingsTest("GlyphBoxColor", new TMathPainter { GlyphBoxColor = (green, blue) });
+      MathPainterSettingsTest("TextColor", new TMathPainter { TextColor = orange });
+    }
   }
 }
