@@ -25,16 +25,17 @@ namespace CSharpMath.Rendering.FrontEnd {
     public override void Draw(TCanvas canvas, TextAlignment alignment = TextAlignment.Center, Thickness padding = default, float offsetX = 0, float offsetY = 0) {
       var c = WrapCanvas(canvas);
       UpdateDisplay(float.NaN);
-      DrawCore(c, Display, Display == null ? new PointF?() : IPainterExtensions.GetDisplayPosition(Display.Width, Display.Ascent, Display.Descent, FontSize, CoordinatesFromBottomLeftInsteadOfTopLeft, c.Width, c.Height, alignment, padding, offsetX, offsetY));
+      DrawCore(c, Display, Display == null ? new PointF?() : IPainterExtensions.GetDisplayPosition(Display.Width, Display.Ascent, Display.Descent, FontSize, c.Width, c.Height, alignment, padding, offsetX, offsetY));
     }
     public void Draw(TCanvas canvas, float x, float y) {
       var c = WrapCanvas(canvas);
       UpdateDisplay(float.NaN);
-      DrawCore(c, Display, new PointF(x, CoordinatesFromBottomLeftInsteadOfTopLeft ? y : -y));
+      DrawCore(c, Display, new PointF(x, -y));
     }
     public void Draw(TCanvas canvas, PointF position) {
       var c = WrapCanvas(canvas);
-      if (CoordinatesFromBottomLeftInsteadOfTopLeft) position.Y *= -1;
+      // Invert the canvas
+      position.Y *= -1;
       UpdateDisplay(float.NaN);
       DrawCore(c, Display, position);
     }

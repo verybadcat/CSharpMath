@@ -11,7 +11,6 @@ namespace CSharpMath.SkiaSharp {
     public SKStrokeCap StrokeCap { get; set; }
     public bool AntiAlias { get; set; } = true;
     public void Draw(SKCanvas canvas, SKPoint point) => Draw(canvas, point.X, point.Y);
-    protected override bool CoordinatesFromBottomLeftInsteadOfTopLeft => false;
     public override SKColor UnwrapColor(Color color) => color.ToNative();
     public override Color WrapColor(SKColor color) => color.FromNative();
     public override ICanvas WrapCanvas(SKCanvas canvas) =>

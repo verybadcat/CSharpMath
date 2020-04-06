@@ -53,8 +53,7 @@ namespace CSharpMath.Rendering.FrontEnd {
         _relativeXCoordDisplay.Position =
           _relativeXCoordDisplay.Position.Plus(IPainterExtensions.GetDisplayPosition(
             _relativeXCoordDisplay.Width, _relativeXCoordDisplay.Ascent,
-            _relativeXCoordDisplay.Descent, FontSize,
-            CoordinatesFromBottomLeftInsteadOfTopLeft, width ?? c.Width,
+            _relativeXCoordDisplay.Descent, FontSize, width ?? c.Width,
             c.Height, alignment, padding, offsetX, offsetY
           ));
         //offsetY is already included in _relativeXCoordDisplay.Position,
@@ -75,10 +74,9 @@ namespace CSharpMath.Rendering.FrontEnd {
     public void DrawOneLine(TCanvas canvas, float x, float y) {
       var c = WrapCanvas(canvas);
       UpdateDisplay(float.PositiveInfinity);
-      if (!CoordinatesFromBottomLeftInsteadOfTopLeft) {
-        y -= _relativeXCoordDisplay.Displays.Max(dp => dp.Ascent);
-        y *= -1;
-      } else y -= _relativeXCoordDisplay.Displays.Max(dp => dp.Descent);
+      y -= _relativeXCoordDisplay.Displays.Max(dp => dp.Ascent);
+      // Invert the canvas
+      y *= -1;
       _relativeXCoordDisplay.Position =
         new PointF(_relativeXCoordDisplay.Position.X + x,
                     _relativeXCoordDisplay.Position.Y + y);

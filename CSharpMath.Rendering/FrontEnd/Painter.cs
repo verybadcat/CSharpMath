@@ -58,8 +58,6 @@ namespace CSharpMath.Rendering.FrontEnd {
     public string? LaTeX { get => Content is null ? "" : ContentToLaTeX(Content); set => (Content, ErrorMessage) = LaTeXToContent(value ?? ""); }
     #endregion Redisplaying properties
 
-    protected abstract bool CoordinatesFromBottomLeftInsteadOfTopLeft { get; }
-    
     #region Methods
     protected abstract Result<TContent> LaTeXToContent(string latex);
     protected abstract string ContentToLaTeX(TContent content);
@@ -128,8 +126,7 @@ namespace CSharpMath.Rendering.FrontEnd {
             nameof(Measure) + " returned null." +
             $"Any conditions leading to this should have already been checked via " +
             nameof(Content) + " != null.");
-        canvas.FillRect(display.Position.X + measure.X, display.Position.Y -
-          (CoordinatesFromBottomLeftInsteadOfTopLeft ? display.Ascent : display.Descent),
+        canvas.FillRect(display.Position.X + measure.X, display.Position.Y - display.Descent,
           measure.Width, measure.Height);
         canvas.CurrentColor = null;
         static T? Nullable<T>(T nonnull) where T : struct => new T?(nonnull);

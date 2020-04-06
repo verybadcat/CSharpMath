@@ -27,18 +27,16 @@ namespace CSharpMath.Rendering.FrontEnd {
   public static class IPainterExtensions {
     public static PointF GetDisplayPosition(
         float displayWidth, float displayAscent, float displayDescent,
-        float fontSize, bool bottomLeftCoords,
+        float fontSize,
         float width, float height,
         TextAlignment alignment, Thickness padding, float offsetX, float offsetY) {
-      if (!bottomLeftCoords) {
-        //Canvas is inverted!
-        if ((alignment & (TextAlignment.Top | TextAlignment.Bottom)) != 0) {
-          alignment ^= TextAlignment.Top;
-          alignment ^= TextAlignment.Bottom;
-        }
-        //invert y-coordinate as canvas is inverted
-        offsetY *= -1;
+      //Canvas is inverted!
+      if ((alignment & (TextAlignment.Top | TextAlignment.Bottom)) != 0) {
+        alignment ^= TextAlignment.Top;
+        alignment ^= TextAlignment.Bottom;
       }
+      //invert y-coordinate as canvas is inverted
+      offsetY *= -1;
       var x =
         (alignment & TextAlignment.Left) != 0
         ? padding.Left
@@ -53,7 +51,7 @@ namespace CSharpMath.Rendering.FrontEnd {
         ? height - padding.Bottom - displayAscent
         : (height - padding.Top - padding.Bottom - contentHeight) / 2
           + padding.Top + displayDescent;
-      return new PointF(x + offsetX, y + offsetY - (bottomLeftCoords ? 0 : height));
+      return new PointF(x + offsetX, y + offsetY - height);
     }
   }
 }

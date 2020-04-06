@@ -78,7 +78,7 @@ namespace CSharpMath.Rendering.Text {
             display = Typesetter.CreateLine(m.Content, fonts, TypesettingContext.Instance, LineStyle.Display);
             var displayX = IPainterExtensions.GetDisplayPosition
               (display.Width, display.Ascent, display.Descent,
-               fonts.PointSize, false, canvasWidth, float.NaN,
+               fonts.PointSize, canvasWidth, float.NaN,
                TextAlignment.Top, default, default, default).X;
             //\because When displayList.LastOrDefault() is null,
             //the false condition is selected
@@ -206,7 +206,7 @@ namespace CSharpMath.Rendering.Text {
           absDisplay.Position = new System.Drawing.PointF(
             IPainterExtensions.GetDisplayPosition
               (absDisplay.Width, absDisplay.Ascent, absDisplay.Descent,
-               inputFont.PointSize, false,
+               inputFont.PointSize,
                Math.Max(relativePositionList.CollectionWidth(), absolutePositionList.Max(d => d.Width)), float.NaN,
                TextAlignment.Top, default, default, default).X,
             absDisplay.Position.Y);
