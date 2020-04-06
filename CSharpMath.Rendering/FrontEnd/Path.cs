@@ -1,5 +1,5 @@
 namespace CSharpMath.Rendering.FrontEnd {
-  public abstract class GlyphPath : Typography.OpenFont.IGlyphTranslator, System.IDisposable {
+  public abstract class Path : Typography.OpenFont.IGlyphTranslator, System.IDisposable {
     // Don't depend on contourCount, it is zero when reading a CFF glyph
     void Typography.OpenFont.IGlyphTranslator.BeginRead(int contourCount) { }
     void Typography.OpenFont.IGlyphTranslator.EndRead() => Dispose();

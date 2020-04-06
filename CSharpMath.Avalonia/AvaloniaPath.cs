@@ -5,7 +5,7 @@ using Avalonia;
 using Avalonia.Media;
 
 namespace CSharpMath.Avalonia {
-  public sealed class AvaloniaPath : GlyphPath {
+  public sealed class AvaloniaPath : Path {
     private readonly AvaloniaCanvas _canvas;
     private readonly PathGeometry _path = new PathGeometry();
     private readonly StreamGeometryContext _context;
@@ -25,12 +25,14 @@ namespace CSharpMath.Avalonia {
         _context.CubicBezierTo(new Point(x1, y1), new Point(x2, y2), new Point(x3, y3));
     public override void CloseContour() { _context.EndFigure(true); _isOpen = false; }
     public override void Dispose() {
-      IBrush? brush = Foreground?.ToSolidColorBrush() ?? _canvas.CurrentBrush;
       if (_isOpen) { _context.EndFigure(false); _isOpen = false; }
       _context.Dispose();
       // Passing a null brush is a workaround for https://github.com/AvaloniaUI/Avalonia/issues/1419
+      IBrush? brush = Foreground?.ToSolidColorBrush() ?? _canvas.CurrentBrush;
       IPen? pen = null;
-      if (_canvas.CurrentStyle == PaintStyle.Stroke) { pen = new Pen(brush); brush = null; }
+      if (_canvas.CurrentStyle == PaintStyle.Stroke) {
+        pen = new Pen(brush); brush = null;
+      }
       _canvas.DrawingContext.DrawGeometry(brush, pen, _path);
     }
   }

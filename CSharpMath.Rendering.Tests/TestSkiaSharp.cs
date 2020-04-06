@@ -13,8 +13,6 @@ namespace CSharpMath.Rendering.Tests {
     [Fact]
     public override void MathPainterSettings() {
       base.MathPainterSettings();
-      MathPainterSettingsTest("SquareStrokeCap", new MathPainter { StrokeCap = SKStrokeCap.Square });
-      MathPainterSettingsTest("RoundStrokeCap", new MathPainter { StrokeCap = SKStrokeCap.Round });
       MathPainterSettingsTest("NoAntiAlias", new MathPainter { AntiAlias = false });
     }
   }

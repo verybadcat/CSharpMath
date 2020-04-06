@@ -3,15 +3,13 @@ using CSharpMath.Structures;
 using SkiaSharp;
 namespace CSharpMath.SkiaSharp {
   public sealed class SkiaCanvas : ICanvas {
-    public SkiaCanvas(SKCanvas canvas, SKStrokeCap strokeCap, bool antiAlias) {
+    public SkiaCanvas(SKCanvas canvas, bool antiAlias) {
       Canvas = canvas;
-      StrokeCap = strokeCap;
       _paint = new SKPaint { IsAntialias = antiAlias };
     }
     public SKCanvas Canvas { get; }
     public float Width => Canvas.LocalClipBounds.Width;
     public float Height => Canvas.LocalClipBounds.Height;
-    public SKStrokeCap StrokeCap { get; set; }
     public Color DefaultColor { get; set; }
     public Color? CurrentColor { get; set; }
     public PaintStyle CurrentStyle { get; set; }
@@ -25,12 +23,9 @@ namespace CSharpMath.SkiaSharp {
         : (CurrentColor ?? DefaultColor).ToNative();
       _paint.Style = (SKPaintStyle)style;
       _paint.StrokeWidth = strokeWidth ?? 0;
-      _paint.StrokeCap = StrokeCap;
       return _paint;
     }
     internal SKPaint Paint => StyledPaint(CurrentStyle);
-    private SKColor Color => CurrentColor?.ToNative() ?? DefaultColor.ToNative();
-
     //Canvas methods
     public void StrokeRect(float left, float top, float width, float height) =>
       Canvas.DrawRect(
@@ -47,6 +42,6 @@ namespace CSharpMath.SkiaSharp {
     public void Translate(float dx, float dy) => Canvas.Translate(dx, dy);
     public void Scale(float sx, float sy) => Canvas.Scale(sx, sy);
     public void Restore() => Canvas.Restore();
-    public GlyphPath StartDrawingNewGlyph() => new SkiaPath(this);
+    public Path StartNewPath() => new SkiaPath(this);
   }
 }

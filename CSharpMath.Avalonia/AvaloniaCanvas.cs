@@ -45,7 +45,7 @@ namespace CSharpMath.Avalonia {
     }
     public void FillRect(float left, float top, float width, float height) =>
         DrawingContext.FillRectangle(CurrentBrush, new Rect(left, top, width, height));
-    public GlyphPath StartDrawingNewGlyph() => new AvaloniaPath(this);
+    public Path StartNewPath() => new AvaloniaPath(this);
     public void Restore() {
       var stateStack = _states.Pop();
       while (stateStack.Count > 0) {

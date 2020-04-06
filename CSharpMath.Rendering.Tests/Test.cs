@@ -98,7 +98,7 @@ namespace CSharpMath.Rendering.Tests {
       painter.FontSize = 50f;
       painter.LaTeX = latex;
       
-      var actualFile = new FileInfo(Path.Combine(folder, inFile + "." + frontEnd + ".png"));
+      var actualFile = new FileInfo(System.IO.Path.Combine(folder, inFile + "." + frontEnd + ".png"));
       Assert.False(actualFile.Exists, $"The actual file was not deleted by test initialization: {actualFile.FullName}");
 
       using (var outFile = actualFile.OpenWrite())
@@ -106,7 +106,7 @@ namespace CSharpMath.Rendering.Tests {
       actualFile.Refresh();
       Assert.True(actualFile.Exists, "The actual image was not created successfully.");
 
-      var expectedFile = new FileInfo(Path.Combine(folder, inFile + ".png"));
+      var expectedFile = new FileInfo(System.IO.Path.Combine(folder, inFile + ".png"));
       if (!expectedFile.Exists) {
         if (FileSizeTolerance != 0) return; // Only let SkiaSharp create the baseline
         actualFile.CopyTo(expectedFile.FullName);

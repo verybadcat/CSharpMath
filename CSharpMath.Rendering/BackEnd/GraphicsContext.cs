@@ -37,7 +37,7 @@ namespace CSharpMath.Rendering.BackEnd {
         Canvas.Save();
         Canvas.CurrentColor = color;
         Canvas.Translate(point.X, point.Y);
-        pathBuilder.ReadShapes(Canvas.StartDrawingNewGlyph());
+        pathBuilder.ReadShapes(Canvas.StartNewPath());
         Canvas.Restore();
       }
     }
@@ -73,7 +73,7 @@ namespace CSharpMath.Rendering.BackEnd {
         var index = glyph.Info.GlyphIndex;
         pathBuilder.BuildFromGlyph(glyph.Info, pointSize);
         Canvas.CurrentColor = foreground ?? color;
-        pathBuilder.ReadShapes(Canvas.StartDrawingNewGlyph());
+        pathBuilder.ReadShapes(Canvas.StartNewPath());
         Canvas.Translate(typeface.GetHAdvanceWidthFromGlyphIndex(index) * scale + kernAfter, 0);
       }
       Canvas.Restore();

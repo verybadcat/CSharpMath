@@ -7,6 +7,6 @@ namespace CSharpMath.SkiaSharp {
     public override Color WrapColor(SKColor color) => color.FromNative();
     public override SKColor UnwrapColor(Color color) => color.ToNative();
     public override ICanvas WrapCanvas(SKCanvas canvas) =>
-      new SkiaCanvas(canvas, SKStrokeCap.Butt, true);
+      new SkiaCanvas(canvas, true);
   }
 }

@@ -17,7 +17,7 @@ namespace CSharpMath.Rendering.FrontEnd {
         return;
       var cursorPosition = Display.PointForIndex(TypesettingContext.Instance, InsertionIndex) ?? Display.Position;
       cursorPosition.Y *= -1; //inverted canvas, blah blah
-      using var path = canvas.StartDrawingNewGlyph();
+      using var path = canvas.StartNewPath();
       path.Foreground = color;
       path.MoveTo(cursorPosition.X, cursorPosition.Y);
       switch (shape) {

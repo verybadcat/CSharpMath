@@ -16,9 +16,5 @@ namespace CSharpMath.Forms {
   using MathPainter = SkiaSharp.MathPainter;
 #endif
   public class MathView : BaseView<MathPainter, Atom.MathList> {
-#if Forms
-    public SKStrokeCap StrokeCap { get => (SKStrokeCap)GetValue(StrokeCapProperty); set => SetValue(StrokeCapProperty, value); }
-    public static readonly XProperty StrokeCapProperty = CreateProperty<MathView, SKStrokeCap>(nameof(StrokeCap), false, p => p.StrokeCap, (p, v) => p.StrokeCap = v);
-#endif
   }
 }

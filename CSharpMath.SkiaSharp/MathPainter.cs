@@ -7,13 +7,12 @@ using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.SkiaSharp {
   public class MathPainter : MathPainter<SKCanvas, SKColor> {
-    public SKStrokeCap StrokeCap { get; set; }
     public bool AntiAlias { get; set; } = true;
     public void Draw(SKCanvas canvas, SKPoint point) => Draw(canvas, point.X, point.Y);
     public override SKColor UnwrapColor(Color color) => color.ToNative();
     public override Color WrapColor(SKColor color) => color.FromNative();
     public override ICanvas WrapCanvas(SKCanvas canvas) =>
-      new SkiaCanvas(canvas, StrokeCap, AntiAlias);
+      new SkiaCanvas(canvas, AntiAlias);
     /// <summary>
     /// Ignores the MathList and LaTeX of the <see cref="MathPainter"/> provided.
     /// Repositions the <paramref name="display"/>.
