@@ -749,26 +749,27 @@ namespace CSharpMath.Atom {
       : throw new InvalidCodePathException("Both error and list are null?");
     }
 
-    public static string HelpfulErrorMessage(string error, string source, int index) {
+    public static string HelpfulErrorMessage(string error, string source, int right) {
       // Just like Xunit's helpful error message in Assert.Equal(string, string)
       const string dots = "···";
       const int lookbehind = 20;
       const int lookahead = 41;
       var sb = new StringBuilder("Error: ").Append(error);
       sb.Append('\n');
-      var startIsFarAway = index > lookbehind;
+      var left = right - 1;
+      var startIsFarAway = left > lookbehind;
       if (startIsFarAway)
-        sb.Append(dots).Append(source, index - lookbehind, lookbehind);
-      else sb.Append(source, 0, index);
-      var endIsFarAway = index < source.Length - lookahead;
+        sb.Append(dots).Append(source, left - lookbehind, lookbehind);
+      else sb.Append(source, 0, left);
+      var endIsFarAway = left < source.Length - lookahead;
       if (endIsFarAway)
-        sb.Append(source, index, lookahead).Append(dots);
-      else sb.Append(source, index, source.Length - index);
+        sb.Append(source, left, lookahead).Append(dots);
+      else sb.Append(source, left, source.Length - left);
       sb.Append('\n');
       if (startIsFarAway)
         sb.Append(' ', lookbehind + dots.Length);
-      else sb.Append(' ', index);
-      sb.Append("↑ (pos ").Append(index).Append(')');
+      else sb.Append(' ', left);
+      sb.Append("↑ (pos ").Append(right).Append(')');
       return sb.ToString();
     }
 

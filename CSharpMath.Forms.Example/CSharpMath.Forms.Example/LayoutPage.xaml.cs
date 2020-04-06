@@ -23,31 +23,46 @@ where \textit{color} stands for one of the LaTeX standard colors.
 The SkiaSharp version of this is located at CSharpMath.SkiaSharp.TextPainter;
 and the Xamarin.Forms version of this is located at CSharpMath.Forms.TextView.
 Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6. \[\frac{Display}{maths} \sqrt\text\mathtt{\ at\ the\ end}^\mathbf{are\ now\ incuded\ in\ Measure!} \]"
-//.Remove(0) + @"display maths skipping: here is abovedisplayskip\[Maths\]shortskip".Remove(0) + @"Maths on the baseline $\rightarrow\int^6_4 x dx$"
+.Remove(0) + @"display maths skipping: here is abovedisplayskip\[Maths\]shortskip"
+.Remove(0) + @"Maths on the baseline $\rightarrow\int^6_4 x dx$"
+.Remove(0) + @"Text 1$$\sum\int^3_2x\ dx$$Text 2"
     };
     bool reset, drawOneLine;
     float x, y, w;
     public LayoutPage() => InitializeComponent();
     private void Canvas_PaintSurface(object sender, SKPaintSurfaceEventArgs e) {
       if (reset) { e.Surface.Canvas.Clear(); reset = false; }
-      var measure = painter.Measure(w) ?? throw new Structures.InvalidCodePathException("Invalid LaTeX");
       e.Surface.Canvas.Clear();
-      if (drawOneLine)
-        painter.DrawOneLine(e.Surface.Canvas, x, y);
-      else {
+      if (drawOneLine) {
+        var measure = painter.Measure(float.PositiveInfinity) ?? throw new Structures.InvalidCodePathException("Invalid LaTeX");
         e.Surface.Canvas.DrawRect(x, y,
           measure.Width, measure.Height, new global::SkiaSharp.SKPaint {
             Color = global::SkiaSharp.SKColors.Orange
           });
+        painter.DrawOneLine(e.Surface.Canvas, x, y);
+      } else {
+        var measure = painter.Measure(w) ?? throw new Structures.InvalidCodePathException("Invalid LaTeX");
+        e.Surface.Canvas.DrawRect(x, y,
+          measure.Width, measure.Height, new global::SkiaSharp.SKPaint {
+            Color = global::SkiaSharp.SKColors.Orange
+          });
+        measure = painter.Display?.Frame() ?? throw new Structures.InvalidCodePathException("Invalid LaTeX");
+        e.Surface.Canvas.DrawRect(x, y,
+          measure.Width, measure.Height, new global::SkiaSharp.SKPaint {
+            Color = global::SkiaSharp.SKColors.Green,
+            IsStroke = true
+          });
         measure = painter._absoluteXCoordDisplay.DisplayBounds();
         e.Surface.Canvas.DrawRect(x, y,
           measure.Width, measure.Height, new global::SkiaSharp.SKPaint {
-            Color = global::SkiaSharp.SKColors.Red, IsStroke = true
+            Color = global::SkiaSharp.SKColors.Red,
+            IsStroke = true
           });
         measure = painter._relativeXCoordDisplay.DisplayBounds();
         e.Surface.Canvas.DrawRect(x, y,
           measure.Width, measure.Height, new global::SkiaSharp.SKPaint {
-            Color = global::SkiaSharp.SKColors.Blue, IsStroke = true
+            Color = global::SkiaSharp.SKColors.Blue,
+            IsStroke = true
           });
         painter.Draw(e.Surface.Canvas, new System.Drawing.PointF(x, y), w);
       }

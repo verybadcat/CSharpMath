@@ -905,41 +905,44 @@ namespace CSharpMath.CoreTests {
       Assert.Equal(@"\color{red}{1}\colorbox{blue}{2}", LaTeXParser.MathListToLaTeX(list).ToString());
     }
     [Theory,
-     InlineData("0", 0, @"Error: Error Message
+     InlineData("0", 1, @"Error: Error Message
 0
-↑ (pos 0)"),
-     InlineData("01", 0, @"Error: Error Message
-01
-↑ (pos 0)"),
+↑ (pos 1)"),
      InlineData("01", 1, @"Error: Error Message
 01
- ↑ (pos 1)"),
-     InlineData("012", 0, @"Error: Error Message
-012
-↑ (pos 0)"),
+↑ (pos 1)"),
+     InlineData("01", 2, @"Error: Error Message
+01
+ ↑ (pos 2)"),
      InlineData("012", 1, @"Error: Error Message
 012
- ↑ (pos 1)"),
+↑ (pos 1)"),
      InlineData("012", 2, @"Error: Error Message
 012
-  ↑ (pos 2)"),
+ ↑ (pos 2)"),
+     InlineData("012", 3, @"Error: Error Message
+012
+  ↑ (pos 3)"),
      InlineData("012345678911234567892123456789", 10, @"Error: Error Message
 012345678911234567892123456789
-          ↑ (pos 10)"),
+         ↑ (pos 10)"),
      InlineData("012345678911234567892123456789", 20, @"Error: Error Message
 012345678911234567892123456789
-                    ↑ (pos 20)"),
+                   ↑ (pos 20)"),
      InlineData("012345678911234567892123456789", 21, @"Error: Error Message
-···12345678911234567892123456789
-                       ↑ (pos 21)"),
+012345678911234567892123456789
+                    ↑ (pos 21)"),
      InlineData("012345678911234567892123456789", 22, @"Error: Error Message
-···2345678911234567892123456789
+···12345678911234567892123456789
                        ↑ (pos 22)"),
-     InlineData("0123456789112345678921234567893123456789412345678951234567896123456789", 0, @"Error: Error Message
+     InlineData("012345678911234567892123456789", 23, @"Error: Error Message
+···2345678911234567892123456789
+                       ↑ (pos 23)"),
+     InlineData("0123456789112345678921234567893123456789412345678951234567896123456789", 1, @"Error: Error Message
 01234567891123456789212345678931234567894···
-↑ (pos 0)"),
+↑ (pos 1)"),
      InlineData("0123456789112345678921234567893123456789412345678951234567896123456789", 22, @"Error: Error Message
-···2345678911234567892123456789312345678941234567895123456789612···
+···1234567891123456789212345678931234567894123456789512345678961···
                        ↑ (pos 22)")]
     public void TestHelpfulErrorMessage(string input, int index, string expected) {
       var actual = LaTeXParser.HelpfulErrorMessage("Error Message", input, index);
@@ -949,151 +952,151 @@ namespace CSharpMath.CoreTests {
     [Theory,
       InlineData(@"x^^2", @"Error: ^ cannot appear as an argument to a command
 x^^2
-   ↑ (pos 3)"),
+  ↑ (pos 3)"),
       InlineData(@"x^_2", @"Error: _ cannot appear as an argument to a command
 x^_2
-   ↑ (pos 3)"),
+  ↑ (pos 3)"),
       InlineData(@"x_^2", @"Error: ^ cannot appear as an argument to a command
 x_^2
-   ↑ (pos 3)"),
+  ↑ (pos 3)"),
       InlineData(@"x__2", @"Error: _ cannot appear as an argument to a command
 x__2
-   ↑ (pos 3)"),
+  ↑ (pos 3)"),
       InlineData(@"x^&2", @"Error: & cannot appear as an argument to a command
 x^&2
-   ↑ (pos 3)"),
+  ↑ (pos 3)"),
       InlineData(@"x^}2", @"Error: } cannot appear as an argument to a command
 x^}2
-   ↑ (pos 3)"),
+  ↑ (pos 3)"),
       InlineData(@"x_&2", @"Error: & cannot appear as an argument to a command
 x_&2
-   ↑ (pos 3)"),
+  ↑ (pos 3)"),
       InlineData(@"x_}2", @"Error: } cannot appear as an argument to a command
 x_}2
-   ↑ (pos 3)"),
+  ↑ (pos 3)"),
       InlineData(@"\sqrt^2", @"Error: ^ cannot appear as an argument to a command
 \sqrt^2
-      ↑ (pos 6)"),
+     ↑ (pos 6)"),
       InlineData(@"\sqrt_2", @"Error: _ cannot appear as an argument to a command
 \sqrt_2
-      ↑ (pos 6)"),
+     ↑ (pos 6)"),
       InlineData(@"\sqrt&2", @"Error: & cannot appear as an argument to a command
 \sqrt&2
-      ↑ (pos 6)"),
+     ↑ (pos 6)"),
       InlineData(@"\sqrt}2", @"Error: } cannot appear as an argument to a command
 \sqrt}2
-      ↑ (pos 6)"),
+     ↑ (pos 6)"),
       InlineData(@"\notacommand", @"Error: Invalid command \notacommand
 \notacommand
-            ↑ (pos 12)"),
+           ↑ (pos 12)"),
       InlineData(@"\sqrt[5+3", @"Error: Expected character not found: ]
 \sqrt[5+3
-         ↑ (pos 9)"),
+        ↑ (pos 9)"),
       InlineData(@"{5+3", @"Error: Missing closing brace
 {5+3
-    ↑ (pos 4)"),
+   ↑ (pos 4)"),
       InlineData(@"5+3}", @"Error: Missing opening brace
 5+3}
-    ↑ (pos 4)"),
+   ↑ (pos 4)"),
       InlineData(@"5+3}12", @"Error: Missing opening brace
 5+3}12
-    ↑ (pos 4)"),
+   ↑ (pos 4)"),
       InlineData(@"{1+\frac{3+2", @"Error: Missing closing brace
 {1+\frac{3+2
-            ↑ (pos 12)"),
+           ↑ (pos 12)"),
       InlineData(@"1+\left", @"Error: Missing delimiter for left
 1+\left
-       ↑ (pos 7)"),
+      ↑ (pos 7)"),
       InlineData(@"\left{", @"Error: Missing \right
 \left{
-      ↑ (pos 6)"),
+     ↑ (pos 6)"),
       InlineData(@"\left(\frac12\right", @"Error: Missing delimiter for right
 \left(\frac12\right
-                   ↑ (pos 19)"),
+                  ↑ (pos 19)"),
       InlineData(@"\left 5 + 3 \right)", @"Error: Invalid delimiter for \left: 5
 \left 5 + 3 \right)
-       ↑ (pos 7)"),
+      ↑ (pos 7)"),
       InlineData(@"\left(\frac12\right + 3", @"Error: Invalid delimiter for \right: +
-···left(\frac12\right + 3
-                       ↑ (pos 21)"),
+\left(\frac12\right + 3
+                    ↑ (pos 21)"),
       InlineData(@"\left\notadelimiter 5 + 3 \right)", @"Error: Invalid delimiter for \left: notadelimiter
 \left\notadelimiter 5 + 3 \right)
-                   ↑ (pos 19)"),
+                  ↑ (pos 19)"),
       InlineData(@"\left(\frac12\right\notadelimiter + 3", @"Error: Invalid delimiter for \right: notadelimiter
-···\right\notadelimiter + 3
+···2\right\notadelimiter + 3
                        ↑ (pos 33)"),
       InlineData(@"5 + 3 \right)", @"Error: Missing \left
 5 + 3 \right)
-            ↑ (pos 12)"),
+           ↑ (pos 12)"),
       InlineData(@"\left(\frac12", @"Error: Missing \right
 \left(\frac12
-             ↑ (pos 13)"),
+            ↑ (pos 13)"),
       InlineData(@"\left(5 + \left| \frac12 \right)", @"Error: Missing \right
-···eft| \frac12 \right)
+···left| \frac12 \right)
                        ↑ (pos 32)"),
       InlineData(@"5+ \left|\frac12\right| \right)", @"Error: Missing \left
-···frac12\right| \right)
+···\frac12\right| \right)
                        ↑ (pos 30)"),
       InlineData(@"\begin matrix \end matrix", @"Error: Missing {
 \begin matrix \end matrix
-       ↑ (pos 7)"),
+      ↑ (pos 7)"),
       InlineData(@"\begin", @"Error: Missing {
 \begin
-      ↑ (pos 6)"),
+     ↑ (pos 6)"),
       InlineData(@"\begin{", @"Error: Missing }
 \begin{
-       ↑ (pos 7)"),
+      ↑ (pos 7)"),
       InlineData(@"\begin{matrix parens}", @"Error: Missing }
 \begin{matrix parens}
-              ↑ (pos 14)"), // no spaces in env
+             ↑ (pos 14)"), // no spaces in env
       InlineData(@"\begin{matrix} x", @"Error: Missing \end
 \begin{matrix} x
-                ↑ (pos 16)"),
+               ↑ (pos 16)"),
       InlineData(@"\begin{matrix} x \end", @"Error: Missing {
-···begin{matrix} x \end
-                       ↑ (pos 21)"),
+\begin{matrix} x \end
+                    ↑ (pos 21)"),
       InlineData(@"\begin{matrix} x \end + 3", @"Error: Missing {
-···egin{matrix} x \end + 3
+···begin{matrix} x \end + 3
                        ↑ (pos 22)"),
       InlineData(@"\begin{matrix} x \end{", @"Error: Missing }
-···egin{matrix} x \end{
+···begin{matrix} x \end{
                        ↑ (pos 22)"),
       InlineData(@"\begin{matrix} x \end{matrix + 3", @"Error: Missing }
-···trix} x \end{matrix + 3
+···atrix} x \end{matrix + 3
                        ↑ (pos 29)"),
       InlineData(@"\begin{matrix} x \end{pmatrix}", @"Error: Begin environment name matrix does not match end environment name pmatrix
-···rix} x \end{pmatrix}
+···trix} x \end{pmatrix}
                        ↑ (pos 30)"),
       InlineData(@"x \end{matrix}", @"Error: Missing \begin
 x \end{matrix}
-      ↑ (pos 6)"),
+     ↑ (pos 6)"),
       InlineData(@"\begin{notanenv} x \end{notanenv}", @"Error: Unknown environment notanenv
-···nv} x \end{notanenv}
+···env} x \end{notanenv}
                        ↑ (pos 33)"),
       InlineData(@"\begin{matrix} \notacommand \end{matrix}", @"Error: Invalid command \notacommand
-···matrix} \notacommand \end{matrix}
+···{matrix} \notacommand \end{matrix}
                        ↑ (pos 27)"),
       InlineData(@"\begin{displaylines} x & y \end{displaylines}", @"Error: displaylines environment can only have 1 column
-···y \end{displaylines}
+··· y \end{displaylines}
                        ↑ (pos 45)"),
       InlineData(@"\begin{eqalign} x \end{eqalign}", @"Error: eqalign environment can only have 2 columns
-···ign} x \end{eqalign}
+···lign} x \end{eqalign}
                        ↑ (pos 31)"),
       InlineData(@"\limits", @"Error: \limits can only be applied to an operator
 \limits
-       ↑ (pos 7)"),
+      ↑ (pos 7)"),
       InlineData(@"\nolimits", @"Error: \nolimits can only be applied to an operator
 \nolimits
-         ↑ (pos 9)"),
+        ↑ (pos 9)"),
       InlineData(@"\frac\limits{1}{2}", @"Error: \limits can only be applied to an operator
 \frac\limits{1}{2}
-            ↑ (pos 12)"),
+           ↑ (pos 12)"),
       InlineData(@"\color{notacolor}{xyz}", @"Error: Invalid color: notacolor
 \color{notacolor}{xyz}
-                ↑ (pos 16)"),
+               ↑ (pos 16)"),
       InlineData(@"\color{red blue}{xyz}", @"Error: Missing }
 \color{red blue}{xyz}
-           ↑ (pos 11)"),
+          ↑ (pos 11)"),
     ]
     public void TestErrors(string badInput, string expected) {
       var (list, actual) = LaTeXParser.MathListFromLaTeX(badInput);

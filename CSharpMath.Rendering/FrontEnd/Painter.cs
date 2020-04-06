@@ -101,10 +101,10 @@ namespace CSharpMath.Rendering.FrontEnd {
                 font),
               Atom.Range.Zero, TypesettingContext.Instance);
           run.SetTextColorRecursive(WrapColor(ErrorColor));
-          y -= run.Run.Glyphs.Max(g => g.Typeface.Ascender * g.Typeface.CalculateScaleToPixelFromPointSize(font.PointSize))
-             - run.Run.Glyphs.Min(g => g.Typeface.Descender * g.Typeface.CalculateScaleToPixelFromPointSize(font.PointSize))
-             + run.Run.Glyphs.Max(g => g.Typeface.LineGap * g.Typeface.CalculateScaleToPixelFromPointSize(font.PointSize));
+          y -= run.Ascent;
           run.Position = new PointF(x, y);
+          y -= run.Descent
+             + run.Run.Glyphs.Max(g => g.Typeface.LineGap * g.Typeface.CalculateScaleToPixelFromPointSize(font.PointSize));
           runs.Add(run);
         }
         Display = new Display.Displays.TextLineDisplay<Fonts, Glyph>(runs, Array.Empty<Atom.MathAtom>(), default);
@@ -114,11 +114,12 @@ namespace CSharpMath.Rendering.FrontEnd {
     public abstract void Draw(TCanvas canvas, TextAlignment alignment, Thickness padding = default, float offsetX = 0, float offsetY = 0);
     protected void DrawCore(ICanvas canvas, IDisplay<Fonts, Glyph>? display, PointF? position = null) {
       if (display != null) {
-        if (position != null) display.Position = position.Value;
         canvas.Save();
         //invert the canvas vertically: displays are drawn with mathematical coordinates, not graphical coordinates
         canvas.Scale(1, -1);
         canvas.Scale(Magnification, Magnification);
+        if (position is { } p)
+          canvas.Translate(p.X, p.Y);
         canvas.DefaultColor = WrapColor(TextColor);
         canvas.CurrentColor = WrapColor(HighlightColor);
         canvas.CurrentStyle = PaintStyle;
