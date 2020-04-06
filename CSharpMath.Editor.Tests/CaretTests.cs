@@ -29,8 +29,8 @@ namespace CSharpMath.Editor.Tests {
       Assert.Equal(MathKeyboardCaretState.Shown, keyboard.CaretState);
 
       keyboard.KeyPress(MathKeyboardInput.Power);
-      var outer = Assert.IsType<Atom.Atoms.Placeholder>(keyboard.MathList[0]);
-      var inner = Assert.IsType<Atom.Atoms.Placeholder>(outer.Superscript[0]);
+      var outer = Assert.IsType<Atom.Atoms.Placeholder>(Assert.Single(keyboard.MathList));
+      var inner = Assert.IsType<Atom.Atoms.Placeholder>(Assert.Single(outer.Superscript));
       Assert.Equal(MathKeyboardCaretState.ShownThroughPlaceholder, keyboard.CaretState);
       Assert.Equal("\u25A1", outer.Nucleus);
       Assert.Equal("\u25A0", inner.Nucleus);
@@ -42,6 +42,34 @@ namespace CSharpMath.Editor.Tests {
 
       await Task.Delay((int)MathKeyboard<TestFont, char>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
       Assert.Equal(MathKeyboardCaretState.ShownThroughPlaceholder, keyboard.CaretState);
+      Assert.Equal("\u25A1", outer.Nucleus);
+      Assert.Equal("\u25A0", inner.Nucleus);
+    }
+  }
+  public class CaretMovesWithPlaceholder {
+    [Fact]
+    public async Task Test() {
+      var keyboard = new MathKeyboard<TestFont, char>(TestTypesettingContexts.Instance, new TestFont()) {
+        CaretState = MathKeyboardCaretState.Shown
+      };
+      Assert.Equal(MathKeyboardCaretState.Shown, keyboard.CaretState);
+
+      keyboard.KeyPress(MathKeyboardInput.Subscript);
+      var outer = Assert.IsType<Atom.Atoms.Placeholder>(Assert.Single(keyboard.MathList));
+      var inner = Assert.IsType<Atom.Atoms.Placeholder>(Assert.Single(outer.Subscript));
+      Assert.Equal(MathKeyboardCaretState.ShownThroughPlaceholder, keyboard.CaretState);
+      Assert.Equal("\u25A1", outer.Nucleus);
+      Assert.Equal("\u25A0", inner.Nucleus);
+
+      await Task.Delay((int)MathKeyboard<TestFont, char>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      Assert.Equal(MathKeyboardCaretState.TemporarilyHidden, keyboard.CaretState);
+      keyboard.KeyPress(MathKeyboardInput.Left);
+      Assert.Equal(MathKeyboardCaretState.ShownThroughPlaceholder, keyboard.CaretState);
+      Assert.Equal("\u25A0", outer.Nucleus);
+      Assert.Equal("\u25A1", inner.Nucleus);
+
+      Assert.Equal(MathKeyboardCaretState.ShownThroughPlaceholder, keyboard.CaretState);
+      keyboard.KeyPress(MathKeyboardInput.Right);
       Assert.Equal("\u25A1", outer.Nucleus);
       Assert.Equal("\u25A0", inner.Nucleus);
     }
