@@ -134,7 +134,7 @@ You would have to implement [ICanvas](CSharpMath.Rendering/FrontEnd/ICanvas.cs) 
 
 ### 3. Referencing CSharpMath.SkiaSharp
 
-You can extend this library to other SkiaSharp-supported platforms by feeding the SKCanvas given in the OnPaintSurface override of a SkiaSharp view into the Draw method of [SkiaMathPainter](CSharpMath.SkiaSharp/MathPainter.cs).
+You can extend this library to other SkiaSharp-supported platforms by feeding the SKCanvas given in the OnPaintSurface override of a SkiaSharp view into the Draw method of [MathPainter](CSharpMath.SkiaSharp/MathPainter.cs).
 
 ### 4. Building on top of CSharpMath.Apple
 
