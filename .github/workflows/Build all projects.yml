@@ -16,7 +16,7 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '3.1.200'
+        dotnet-version: '3.1.201'
     - name: Setup NuGet
       uses: NuGet/setup-nuget@v1.0.2
     - name: Setup MSBuild Path
