@@ -6,7 +6,7 @@ namespace CSharpMath.Forms {
   public static class MathKeyboardExtensions {
     public static void BindDisplay(this MathKeyboard keyboard,
       SKCanvasView view, MathPainter settings, SKColor caretColor,
-      CaretShape caretShape = CaretShape.IBeam, SKStrokeCap cap = SKStrokeCap.Butt) {
+      CaretShape caretShape = CaretShape.IBeam) {
       view.EnableTouchEvents = true;
       view.Touch +=
         (sender, e) => {
@@ -20,7 +20,7 @@ namespace CSharpMath.Forms {
           c.Clear();
           MathPainter.DrawDisplay(settings, keyboard.Display, c);
           keyboard.DrawCaret(
-            new SkiaCanvas(c, cap, settings.AntiAlias), caretColor.FromNative(), caretShape);
+            new SkiaCanvas(c, settings.AntiAlias), caretColor.FromNative(), caretShape);
         };
     }
   }
