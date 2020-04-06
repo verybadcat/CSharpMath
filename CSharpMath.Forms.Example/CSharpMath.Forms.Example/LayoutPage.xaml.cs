@@ -25,7 +25,7 @@ and the Xamarin.Forms version of this is located at CSharpMath.Forms.TextView.
 Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6. \[\frac{Display}{maths} \sqrt\text\mathtt{\ at\ the\ end}^\mathbf{are\ now\ incuded\ in\ Measure!} \]"
 .Remove(0) + @"display maths skipping: here is abovedisplayskip\[Maths\]shortskip"
 .Remove(0) + @"Maths on the baseline $\rightarrow\int^6_4 x dx$"
-.Remove(0) + @"Text 1$$\sum\int^3_2x\ dx$$Text 2"
+.Remove(0) + @"See how the allowed width affects TextPainter$$\sum\int^3_2x\ dx$$Text after maths"
     };
     bool reset, drawOneLine;
     float x, y, w;

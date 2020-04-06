@@ -18,7 +18,7 @@ namespace CSharpMath.Rendering.FrontEnd {
     #region Display-recreating properties
     /// <summary>Unit of measure: points</summary>
     float FontSize { get; set; }
-    ObservableRangeCollection<Typeface> LocalTypefaces { get; }
+    System.Collections.Generic.IEnumerable<Typeface> LocalTypefaces { get; set; }
     Atom.LineStyle LineStyle { get; set; }
     TContent? Content { get; set; }
     string? LaTeX { get; set; }

@@ -9,6 +9,7 @@ using Typography.OpenFont;
 using System.Collections.Specialized;
 
 namespace CSharpMath.Rendering.FrontEnd {
+  using System.Collections.Generic;
   using System.Linq;
   using BackEnd;
 
@@ -19,7 +20,6 @@ namespace CSharpMath.Rendering.FrontEnd {
     public const float DefaultFontSize = PainterConstants.DefaultFontSize;
 
     public Painter() {
-      LocalTypefaces.CollectionChanged += TypefacesChanged;
       ErrorColor = UnwrapColor(new Color(255, 0, 0));
       TextColor = UnwrapColor(new Color(0, 0, 0));
       HighlightColor = UnwrapColor(new Color(0, 0, 0, 0));
@@ -48,9 +48,8 @@ namespace CSharpMath.Rendering.FrontEnd {
     protected Fonts Fonts { get; private set; } = new Fonts(Array.Empty<Typeface>(), DefaultFontSize);
     /// <summary>Unit of measure: points</summary>
     public float FontSize { get => Fonts.PointSize; set { Fonts = new Fonts(Fonts, value); SetRedisplay(); } }
-    public ObservableRangeCollection<Typeface> LocalTypefaces { get; } =
-      new ObservableRangeCollection<Typeface>();
-    void TypefacesChanged(object sender, NotifyCollectionChangedEventArgs e) { Fonts = new Fonts(LocalTypefaces, FontSize); SetRedisplay(); }
+    IEnumerable<Typeface> __localTypefaces = Array.Empty<Typeface>();
+    public IEnumerable<Typeface> LocalTypefaces { get => __localTypefaces; set { Fonts = new Fonts(value, FontSize); __localTypefaces = value; SetRedisplay(); } }
     Atom.LineStyle __style = Atom.LineStyle.Display;
     public Atom.LineStyle LineStyle { get => __style; set { __style = value; SetRedisplay(); } }
     TContent? __content;

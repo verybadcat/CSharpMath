@@ -198,6 +198,29 @@ namespace CSharpMath.Xaml.Tests {
       Test(new TTextView(), (TextAtom)new TextAtom.List(new[] { new TextAtom.Text("α"), new TextAtom.Text("β"), new TextAtom.Text("γ") }));
     }
     [Fact]
+    public void TypefacesAreBindable() {
+      var typeface = new Typography.OpenFont.OpenFontReader().Read(
+        Assembly.GetExecutingAssembly().GetManifestResourceStream("CSharpMath.Xaml.Tests.ComicNeue_Bold.otf")
+        ?? throw new Structures.InvalidCodePathException("Font not found"))
+        ?? throw new Structures.InvalidCodePathException("Font is invalid");
+      void Test<TView, TContent>()
+        where TView : TBaseView, ICSharpMathAPI<TContent, TColor>, new() where TContent : class {
+        var view = new TView();
+        var viewModel = new { LocalTypefaces = new[] { typeface } };
+        SetBindingContext(view, viewModel);
+        Assert.Empty(view.LocalTypefaces);
+
+        using var binding = SetBinding(view, nameof(viewModel.LocalTypefaces));
+        viewModel = new { LocalTypefaces = Array.Empty<Typography.OpenFont.Typeface>() };
+        Assert.Same(typeface, Assert.Single(view.LocalTypefaces));
+
+        SetBindingContext(view, viewModel);
+        Assert.Empty(view.LocalTypefaces);
+      }
+      Test<TMathView, MathList>();
+      Test<TTextView, TextAtom>();
+    }
+    [Fact]
     public void ParseXaml() {
       var xaml = $@"<MathView xmlns=""clr-namespace:CSharpMath.{FrontEndNamespace};assembly=CSharpMath.{FrontEndNamespace}"" LaTeX=""1\leq 2"" />";
       var math = ParseFromXaml<TMathView>(xaml);

@@ -159,6 +159,8 @@ namespace CSharpMath.Forms {
     /// <summary>Unit of measure: points; Defaults to <see cref="FontSize"/>.</summary>
     public float? ErrorFontSize { get => (float?)GetValue(ErrorFontSizeProperty); set => SetValue(ErrorFontSizeProperty, value); }
     public static readonly XProperty ErrorFontSizeProperty = CreateProperty<BaseView<TPainter, TContent>, float?>(nameof(ErrorFontSize), true, p => p.ErrorFontSize, (p, v) => p.ErrorFontSize = v);
+    public IEnumerable<Typeface> LocalTypefaces { get => (IEnumerable<Typeface>)GetValue(LocalTypefacesProperty); set => SetValue(LocalTypefacesProperty, value); }
+    public static readonly XProperty LocalTypefacesProperty = CreateProperty<BaseView<TPainter, TContent>, IEnumerable<Typeface>>(nameof(LocalTypefaces), true, p => p.LocalTypefaces, (p, v) => p.LocalTypefaces = v);
     public XColor TextColor { get => (XColor)GetValue(TextColorProperty); set => SetValue(TextColorProperty, value); }
     public static readonly XProperty TextColorProperty = CreateProperty<BaseView<TPainter, TContent>, XColor>(nameof(TextColor), false, p => XCanvasColorToXColor(p.TextColor), (p, v) => p.TextColor = XColorToXCanvasColor(v));
     public XColor HighlightColor { get => (XColor)GetValue(HighlightColorProperty); set => SetValue(HighlightColorProperty, value); }
@@ -183,7 +185,5 @@ namespace CSharpMath.Forms {
     private static readonly ReadOnlyProperty<BaseView<TPainter, TContent>, string?> ErrorMessagePropertyKey = new ReadOnlyProperty<BaseView<TPainter, TContent>, string?>(nameof(ErrorMessage), p => p.ErrorMessage);
     public static readonly XProperty ErrorMessageProperty = ErrorMessagePropertyKey.Property;
     public string? ErrorMessage { get => (string?)GetValue(ErrorMessageProperty); private set => ErrorMessagePropertyKey.SetValue(this, value); }
-
-    public ObservableRangeCollection<Typeface> LocalTypefaces => Painter.LocalTypefaces;
   }
 }

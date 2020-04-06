@@ -19,9 +19,7 @@ namespace CSharpMath.Forms.Example {
       Entry.TextChanged += (sender, e) => {
         View.LaTeX = Entry.Text;
         (Exit.Text, Exit.TextColor) =
-          View.Painter.Content is Atom.MathList ml
-          ? (Atom.LaTeXParser.MathListToLaTeX(ml).ToString(), Color.Black)
-          : ("Error: " + View.Painter.ErrorMessage, Color.Red);
+          (View.LaTeX, View.ErrorMessage != null ? Color.Red : Color.Black);
       };
     }
   }
