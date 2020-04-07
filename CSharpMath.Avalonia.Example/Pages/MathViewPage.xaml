@@ -44,7 +44,7 @@
                            Text="Taylor" />
 
                 <csmath:MathView FontSize="{Binding #size.SelectedItem}"
-                                  Content="{StaticResource Taylor}" />
+                                 LaTeX="{StaticResource Taylor}" />
 
             </StackPanel>
 
@@ -54,7 +54,7 @@
                            Text="EvalIntegral" />
 
                 <csmath:MathView FontSize="{Binding #size.SelectedItem}"
-                                  Content="{StaticResource EvalIntegral}" />
+                                 LaTeX="{StaticResource EvalIntegral}" />
 
             </StackPanel>
 

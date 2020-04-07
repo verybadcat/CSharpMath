@@ -31,6 +31,9 @@
           <TabItem Header="TextView">
               <pages:TextViewPage/>
           </TabItem>
+          <TabItem Header="MathButton">
+              <pages:MathButtonPage/>
+          </TabItem>
 
       </TabControl>
 

@@ -14,6 +14,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Pages\MathButtonPage.xaml.cs">
+      <DependentUpon>MathButtonPage.xaml</DependentUpon>
+    </Compile>
     <Compile Update="Pages\MathViewPage.xaml.cs">
       <DependentUpon>MathViewPage.xaml</DependentUpon>
     </Compile>

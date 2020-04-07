@@ -21,6 +21,8 @@ using XColor = Xamarin.Forms.Color;
 using XControl = Xamarin.Forms.View;
 using XInheritControl = SkiaSharp.Views.Forms.SKCanvasView;
 using XProperty = Xamarin.Forms.BindableProperty;
+using MathPainter = CSharpMath.SkiaSharp.MathPainter;
+using TextPainter = CSharpMath.SkiaSharp.TextPainter;
 namespace CSharpMath.Forms {
   [Xamarin.Forms.ContentProperty(nameof(LaTeX))]
 #endif
@@ -29,13 +31,13 @@ namespace CSharpMath.Forms {
     public TPainter Painter { get; } = new TPainter();
 
     protected static readonly TPainter staticPainter = new TPainter();
-    internal protected static XProperty CreateProperty<TThis, TValue>(
+    public static XProperty CreateProperty<TThis, TValue>(
       string propertyName,
       bool affectsMeasure,
       Func<TPainter, TValue> defaultValueGet,
       Action<TPainter, TValue> propertySet,
       Action<TThis, TValue>? updateOtherProperty = null)
-      where TThis : XControl, ICSharpMathView<TContent, XColor, XCanvasColor, XCanvas, TPainter> {
+      where TThis : BaseView<TPainter, TContent> {
       var defaultValue = defaultValueGet(staticPainter);
       void PropertyChanged(TThis @this, object newValue) {
         propertySet(@this.Painter, (TValue)newValue);
@@ -109,7 +111,7 @@ namespace CSharpMath.Forms {
         @this.InvalidateSurface();
       }
       return XProperty.Create(propertyName, typeof(TValue), typeof(TThis), defaultValue,
-        propertyChanged: (b, o, n) => PropertyChanged((BaseView<TPainter, TContent>)b, n));
+        propertyChanged: (b, o, n) => PropertyChanged((TThis)b, n));
     }
     protected override Xamarin.Forms.SizeRequest OnMeasure(double widthConstraint, double heightConstraint) =>
       Painter.Measure((float)widthConstraint) is { } rect

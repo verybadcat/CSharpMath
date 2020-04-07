@@ -1,0 +1,31 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:csmath="clr-namespace:CSharpMath.Avalonia;assembly=CSharpMath.Avalonia"
+             x:Class="CSharpMath.Avalonia.Example.Pages.MathButtonPage">
+
+    <ScrollViewer Margin="0, 8">
+
+        <StackPanel Spacing="24">
+
+            <StackPanel Spacing="4">
+
+                <TextBlock Classes="h1"
+                           Text="CSharpMath.Avalonia.MathButton" />
+
+                <TextBlock Classes="h2"
+                           Text="Displays math as a button" />
+
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal"
+                        Spacing="8">
+                <csmath:MathButton LaTeX="{StaticResource Taylor}"/>
+
+            </StackPanel>
+
+        </StackPanel>
+      
+    </ScrollViewer>
+
+</UserControl>
