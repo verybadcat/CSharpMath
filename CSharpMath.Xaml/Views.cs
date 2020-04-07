@@ -26,7 +26,7 @@ using TextPainter = CSharpMath.SkiaSharp.TextPainter;
 namespace CSharpMath.Forms {
   [Xamarin.Forms.ContentProperty(nameof(LaTeX))]
 #endif
-  public class BaseView<TPainter, TContent> : XInheritControl, ICSharpMathView<TContent, XColor, XCanvasColor, XCanvas, TPainter>
+  public class BaseView<TPainter, TContent> : XInheritControl, ICSharpMathAPI<TContent, XColor>
     where TPainter : Painter<XCanvas, TContent, XCanvasColor>, new() where TContent : class {
     public TPainter Painter { get; } = new TPainter();
 

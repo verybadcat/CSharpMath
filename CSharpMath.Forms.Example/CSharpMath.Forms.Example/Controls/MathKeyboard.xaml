@@ -156,7 +156,9 @@
             </ColumnDefinitionCollection>
         </Grid.ColumnDefinitions>
         <f:MathInputButton Input="Left" Grid.Column="0" Keyboard="{StaticResource Keyboard}"/>
-        <f:MathButton LaTeX="123" x:Name="NumbersButton" Grid.Column="1" Command="{e:SwitchToTab Self={Reference this}, Target=Numbers}"/>
+        <f:MathButton x:Name="NumbersButton" Grid.Column="1" Command="{e:SwitchToTab Self={Reference this}, Target=Numbers}">
+            <f:MathView LaTeX="123"/>
+        </f:MathButton>
         <Grid x:Name="Numbers" Style="{StaticResource Tab}" IsVisible="True">
             <f:MathInputButton StyleClass="x"/>
             <f:MathInputButton StyleClass="y"/>
@@ -183,7 +185,9 @@
             <f:MathInputButton StyleClass="Dismiss"/>
             <f:MathInputButton StyleClass="Enter"/>
         </Grid>
-        <f:MathButton LaTeX="()&lt;&gt;" x:Name="SymbolsButton" Grid.Column="2" Command="{e:SwitchToTab Self={Reference this}, Target=Symbols}"/>
+        <f:MathButton x:Name="SymbolsButton" Grid.Column="2" Command="{e:SwitchToTab Self={Reference this}, Target=Symbols}">
+            <f:MathView LaTeX="()&lt;&gt;"/>
+        </f:MathButton>
         <Grid x:Name="Symbols" Style="{StaticResource Tab}">
             <f:MathInputButton StyleClass="x"/>
             <f:MathInputButton StyleClass="y"/>
@@ -210,7 +214,9 @@
             <f:MathInputButton StyleClass="Dismiss"/>
             <f:MathInputButton StyleClass="Enter"/>
         </Grid>
-        <f:MathButton LaTeX="f(x)" x:Name="FunctionsButton" Grid.Column="3" Command="{e:SwitchToTab Self={Reference this}, Target=Functions}"/>
+        <f:MathButton x:Name="FunctionsButton" Grid.Column="3" Command="{e:SwitchToTab Self={Reference this}, Target=Functions}">
+            <f:MathView LaTeX="f(x)"/>
+        </f:MathButton>
         <Grid x:Name="Functions" Style="{StaticResource Tab}">
             <f:MathInputButton StyleClass="x"/>
             <f:MathInputButton StyleClass="y"/>
@@ -237,7 +243,9 @@
             <f:MathInputButton StyleClass="Dismiss"/>
             <f:MathInputButton StyleClass="Enter"/>
         </Grid>
-        <f:MathButton LaTeX="\int\sum" x:Name="OperationsButton" Grid.Column="4" Command="{e:SwitchToTab Self={Reference this}, Target=Operations}"/>
+        <f:MathButton x:Name="OperationsButton" Grid.Column="4" Command="{e:SwitchToTab Self={Reference this}, Target=Operations}">
+            <f:MathView LaTeX="\int\sum"/>
+        </f:MathButton>
         <Grid x:Name="Operations" Style="{StaticResource Tab}">
             <f:MathInputButton StyleClass="x"/>
             <f:MathInputButton StyleClass="y"/>
@@ -264,7 +272,9 @@
             <f:MathInputButton StyleClass="Dismiss"/>
             <f:MathInputButton StyleClass="Enter"/>
         </Grid>
-        <f:MathButton LaTeX="abc" x:Name="LettersButton" Grid.Column="5" Command="{e:SwitchToTab Self={Reference this}, Target=Letters}"/>
+        <f:MathButton x:Name="LettersButton" Grid.Column="5" Command="{e:SwitchToTab Self={Reference this}, Target=Letters}">
+            <f:MathView LaTeX="abc"/>
+        </f:MathButton>
         <Grid x:Name="Letters" Style="{StaticResource Tab_Letters}">
             <f:MathInputButton Input="SmallQ" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
             <f:MathInputButton Input="SmallW" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
@@ -297,7 +307,9 @@
             <f:MathInputButton Input="SmallSigma" Grid.Row="3" Grid.Column="9" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
             <f:MathInputButton Input="SmallMu" Grid.Row="3" Grid.Column="11" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
             <f:MathInputButton Input="SmallLambda" Grid.Row="3" Grid.Column="13" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
-            <f:MathButton LaTeX="⇧" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Command="{e:SwitchToTab Self={Reference this}, Target=LettersCapitals}" x:Name="ShiftButton"/>
+            <f:MathButton Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Command="{e:SwitchToTab Self={Reference this}, Target=LettersCapitals}" x:Name="ShiftButton">
+                <f:MathView LaTeX="⇧"/>
+            </f:MathButton>
             <f:MathInputButton StyleClass="Back" Grid.Row="2" Grid.Column="17" Grid.ColumnSpan="3"/>
             <f:MathInputButton StyleClass="Dismiss" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="5"/>
             <f:MathInputButton StyleClass="Enter" Grid.Row="3" Grid.Column="15" Grid.RowSpan="1" Grid.ColumnSpan="5"/>
@@ -334,7 +346,9 @@
             <f:MathInputButton Input="SmallPhi" Grid.Row="3" Grid.Column="9" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
             <f:MathInputButton Input="SmallNu" Grid.Row="3" Grid.Column="11" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
             <f:MathInputButton Input="SmallBeta" Grid.Row="3" Grid.Column="13" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
-            <f:MathButton LaTeX="⇧" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Command="{e:SwitchToTab Self={Reference this}, Target=Letters}" x:Name="ShiftCapitalsButton"/>
+            <f:MathButton Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Command="{e:SwitchToTab Self={Reference this}, Target=Letters}" x:Name="ShiftCapitalsButton">
+                <f:MathView LaTeX="⇧"/>
+            </f:MathButton>
             <f:MathInputButton StyleClass="Clear" Grid.Row="2" Grid.Column="17" Grid.ColumnSpan="3"/>
             <f:MathInputButton StyleClass="Dismiss" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="5"/>
             <f:MathInputButton StyleClass="Enter" Grid.Row="3" Grid.Column="15" Grid.RowSpan="1" Grid.ColumnSpan="5"/>

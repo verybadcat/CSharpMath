@@ -25,7 +25,11 @@ namespace CSharpMath.Forms {
       }
     }
     public static readonly BindableProperty InputProperty =
-      BindableProperty.Create(nameof(Input), typeof(MathKeyboardInput), typeof(MathInputButton), propertyChanged:(b, o, n) => ((MathInputButton)b).LaTeX = InputToLaTeX((MathKeyboardInput)n));
+      BindableProperty.Create(nameof(Input), typeof(MathKeyboardInput), typeof(MathInputButton), propertyChanged:(b, o, n) => {
+        var button = (MathInputButton)b;
+        button.Content ??= new MathView();
+        button.Content.LaTeX = InputToLaTeX((MathKeyboardInput)n);
+      });
     public MathKeyboardInput Input { get => (MathKeyboardInput)GetValue(InputProperty); set => SetValue(InputProperty, value); }
   }
 }

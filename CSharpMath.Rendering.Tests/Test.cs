@@ -95,7 +95,6 @@ namespace CSharpMath.Rendering.Tests {
 
       // Prevent black background behind black rendered output in File Explorer preview
       painter.HighlightColor = painter.UnwrapColor(new Structures.Color(0xF0, 0xF0, 0xF0));
-      painter.FontSize = 50f;
       painter.LaTeX = latex;
       
       var actualFile = new FileInfo(System.IO.Path.Combine(folder, inFile + "." + frontEnd + ".png"));
