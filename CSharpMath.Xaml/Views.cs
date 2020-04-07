@@ -11,31 +11,33 @@ using XCanvas = CSharpMath.Avalonia.AvaloniaCanvas;
 using XCanvasColor = Avalonia.Media.Color;
 using XColor = Avalonia.Media.Color;
 using XControl = Avalonia.Controls.Control;
+using XInheritControl = Avalonia.Controls.Control;
 using XProperty = Avalonia.AvaloniaProperty;
 namespace CSharpMath.Avalonia {
 #elif Forms
 using XCanvas = SkiaSharp.SKCanvas;
 using XCanvasColor = SkiaSharp.SKColor;
 using XColor = Xamarin.Forms.Color;
-using XControl = SkiaSharp.Views.Forms.SKCanvasView;
+using XControl = Xamarin.Forms.View;
+using XInheritControl = SkiaSharp.Views.Forms.SKCanvasView;
 using XProperty = Xamarin.Forms.BindableProperty;
 namespace CSharpMath.Forms {
   [Xamarin.Forms.ContentProperty(nameof(LaTeX))]
 #endif
-  public class BaseView<TPainter, TContent> : XControl, ICSharpMathAPI<TContent, XColor>
+  public class BaseView<TPainter, TContent> : XInheritControl, ICSharpMathView<TContent, XColor, XCanvasColor, XCanvas, TPainter>
     where TPainter : Painter<XCanvas, TContent, XCanvasColor>, new() where TContent : class {
     public TPainter Painter { get; } = new TPainter();
 
     protected static readonly TPainter staticPainter = new TPainter();
-    protected static XProperty CreateProperty<TThis, TValue>(
+    internal protected static XProperty CreateProperty<TThis, TValue>(
       string propertyName,
       bool affectsMeasure,
       Func<TPainter, TValue> defaultValueGet,
       Action<TPainter, TValue> propertySet,
-      Action<BaseView<TPainter, TContent>, TValue>? updateOtherProperty = null)
-      where TThis : BaseView<TPainter, TContent> {
+      Action<TThis, TValue>? updateOtherProperty = null)
+      where TThis : XControl, ICSharpMathView<TContent, XColor, XCanvasColor, XCanvas, TPainter> {
       var defaultValue = defaultValueGet(staticPainter);
-      void PropertyChanged(BaseView<TPainter, TContent> @this, object newValue) {
+      void PropertyChanged(TThis @this, object newValue) {
         propertySet(@this.Painter, (TValue)newValue);
         updateOtherProperty?.Invoke(@this, (TValue)newValue);
         if (affectsMeasure) @this.InvalidateMeasure();
@@ -48,6 +50,7 @@ namespace CSharpMath.Forms {
       return prop;
     }
     public BaseView() {
+      // Respect built-in styles
       Styles.Add(new global::Avalonia.Styling.Style(global::Avalonia.Styling.Selectors.Is<BaseView<TPainter, TContent>>) {
         Setters = new[]
         {
@@ -72,6 +75,33 @@ namespace CSharpMath.Forms {
     }
     static XCanvasColor XColorToXCanvasColor(XColor color) => color;
     static XColor XCanvasColorToXColor(XCanvasColor color) => color;
+    global::Avalonia.Point _origin;
+    protected override void OnPointerPressed(global::Avalonia.Input.PointerPressedEventArgs e) {
+      var point = e.GetCurrentPoint(this);
+      if (point.Properties.IsLeftButtonPressed && !DisablePanning) {
+        _origin = point.Position;
+        e.Handled = true;
+      }
+      base.OnPointerPressed(e);
+    }
+    protected override void OnPointerMoved(global::Avalonia.Input.PointerEventArgs e) {
+      var point = e.GetCurrentPoint(this);
+      if (point.Properties.IsLeftButtonPressed && !DisablePanning) {
+        var displacement = point.Position - _origin;
+        _origin = point.Position;
+        DisplacementX += (float)displacement.X;
+        DisplacementY += (float)displacement.Y;
+      }
+      base.OnPointerMoved(e);
+    }
+    protected override void OnPointerReleased(global::Avalonia.Input.PointerReleasedEventArgs e) {
+      var point = e.GetCurrentPoint(this);
+      if (point.Properties.IsLeftButtonPressed && !DisablePanning) {
+        _origin = point.Position;
+        e.Handled = true;
+      }
+      base.OnPointerReleased(e);
+    }
     public override void Render(global::Avalonia.Media.DrawingContext context) {
       base.Render(context);
       var canvas = new XCanvas(context, Bounds.Size);
@@ -124,10 +154,6 @@ namespace CSharpMath.Forms {
       }
       base.OnTouch(e);
     }
-    /// <summary>Panning is enabled by default when <see cref="SKCanvasView.EnableTouchEvents"/> is set to true.</summary>
-    public bool DisablePanning { get => (bool)GetValue(DisablePanningProperty); set => SetValue(DisablePanningProperty, value); }
-    public static readonly XProperty DisablePanningProperty = XProperty.Create(nameof(DisablePanning), typeof(bool), typeof(BaseView<TPainter, TContent>), false);
-
     protected sealed override void OnPaintSurface(global::SkiaSharp.Views.Forms.SKPaintSurfaceEventArgs e) {
       base.OnPaintSurface(e);
       e.Surface.Canvas.Clear();
@@ -135,6 +161,10 @@ namespace CSharpMath.Forms {
 #endif
       Painter.Draw(canvas, TextAlignment, Padding, DisplacementX, DisplacementY);
     }
+    /// <summary>Panning is enabled by default when touch events are enabled.</summary>
+    public bool DisablePanning { get => (bool)GetValue(DisablePanningProperty); set => SetValue(DisablePanningProperty, value); }
+    public static readonly XProperty DisablePanningProperty = CreateProperty<BaseView<TPainter, TContent>, bool>(nameof(DisablePanning), false, _ => false, (_, __) => { });
+
     static readonly System.Reflection.ParameterInfo[] drawMethodParams = typeof(TPainter)
       .GetMethod(nameof(Painter<XCanvas, TContent, XColor>.Draw),
         new[] { typeof(XCanvas), typeof(TextAlignment), typeof(Thickness), typeof(float), typeof(float) }).GetParameters();
@@ -186,4 +216,6 @@ namespace CSharpMath.Forms {
     public static readonly XProperty ErrorMessageProperty = ErrorMessagePropertyKey.Property;
     public string? ErrorMessage { get => (string?)GetValue(ErrorMessageProperty); private set => ErrorMessagePropertyKey.SetValue(this, value); }
   }
+  public class MathView : BaseView<MathPainter, MathList> { }
+  public class TextView : BaseView<TextPainter, Rendering.Text.TextAtom> { }
 }

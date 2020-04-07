@@ -221,13 +221,13 @@ namespace CSharpMath.Xaml.Tests {
       Test<TTextView, TextAtom>();
     }
     [Fact]
-    public void ParseXaml() {
-      var xaml = $@"<MathView xmlns=""clr-namespace:CSharpMath.{FrontEndNamespace};assembly=CSharpMath.{FrontEndNamespace}"" LaTeX=""1\leq 2"" />";
+    public void LaTeXIsContent() {
+      var xaml = $@"<MathView xmlns=""clr-namespace:CSharpMath.{FrontEndNamespace};assembly=CSharpMath.{FrontEndNamespace}"">1\leq 2</MathView>";
       var math = ParseFromXaml<TMathView>(xaml);
       Assert.Equal(@"1\leq 2", math.LaTeX);
       Assert.Equal(new MathList(new Atom.Atoms.Number("1"), new Atom.Atoms.Relation("≤"), new Atom.Atoms.Number("2")), math.Content);
 
-      xaml = $@"<TextView xmlns=""clr-namespace:CSharpMath.{FrontEndNamespace};assembly=CSharpMath.{FrontEndNamespace}"" LaTeX=""a b"" />";
+      xaml = $@"<TextView xmlns=""clr-namespace:CSharpMath.{FrontEndNamespace};assembly=CSharpMath.{FrontEndNamespace}"">a b</TextView>";
       var text = ParseFromXaml<TTextView>(xaml);
       Assert.Equal(@"a\ b", text.LaTeX);
       Assert.Equal(new TextAtom.List(new TextAtom[] { new TextAtom.Text("a"), new TextAtom.ControlSpace(), new TextAtom.Text("b") }), text.Content);

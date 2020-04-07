@@ -10,8 +10,7 @@ namespace CSharpMath.Rendering.Text {
   using Display = Display.Displays.ListDisplay<BackEnd.Fonts, BackEnd.Glyph>;
   using CSharpMath.Structures;
   public static class TextTypesetter {
-    public static (Display relative, Display absolute) Layout
-      (TextAtom input, Fonts inputFont, float canvasWidth, float additionalLineSpacing) {
+    public static (Display relative, Display absolute) Layout(TextAtom input, Fonts inputFont, float canvasWidth) {
 #warning Multiply these constants by resolution
       const float abovedisplayskip = 12, abovedisplayshortskip = 0,
                   belowdisplayskip = 12, belowdisplayshortskip = 7;
@@ -31,7 +30,7 @@ namespace CSharpMath.Rendering.Text {
           afterDisplayMaths = false;
         }
         line.Clear(0, -accumulatedHeight, displayList,
-          ref accumulatedHeight, true, appendLineGap, additionalLineSpacing);
+          ref accumulatedHeight, true, appendLineGap);
       }
       //variables captured by this method are currently unchangable by TextAtoms
       void AddDisplaysWithLineBreaks(
@@ -152,7 +151,7 @@ namespace CSharpMath.Rendering.Text {
               accenteeDisplayList, invalidDisplayMaths, style, color);
             float _ = default;
             accentDisplayLine.Clear
-              (0, 0, accenteeDisplayList, ref _, false, false, additionalLineSpacing);
+              (0, 0, accenteeDisplayList, ref _, false, false);
             System.Diagnostics.Debug.Assert(invalidDisplayMaths.Count == 0,
               "Display maths inside an accentee is unsupported -- ignoring display maths");
             var accentee = new Display(accenteeDisplayList);

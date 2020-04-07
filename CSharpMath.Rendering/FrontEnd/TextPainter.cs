@@ -24,7 +24,6 @@ namespace CSharpMath.Rendering.FrontEnd {
       TextLaTeXParser.TextAtomFromLaTeX(latex);
     protected override string ContentToLaTeX(TextAtom mathList) =>
       TextLaTeXParser.TextAtomToLaTeX(mathList).ToString();
-    public float AdditionalLineSpacing { get; set; }
     // Display has to be updated every draw as its position is mutated depending on canvas width
     protected override void SetRedisplay() { }
     protected override void UpdateDisplayCore(float canvasWidth) {
@@ -32,7 +31,7 @@ namespace CSharpMath.Rendering.FrontEnd {
         Display = null;
       } else {
         (_relativeXCoordDisplay, _absoluteXCoordDisplay) =
-          TextTypesetter.Layout(Content ?? new TextAtom.List(System.Array.Empty<TextAtom>()), Fonts, canvasWidth, AdditionalLineSpacing);
+          TextTypesetter.Layout(Content ?? new TextAtom.List(System.Array.Empty<TextAtom>()), Fonts, canvasWidth);
         Display = new ListDisplay<Fonts, Glyph>(new[] { _relativeXCoordDisplay, _absoluteXCoordDisplay });
       }
     }
