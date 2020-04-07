@@ -465,16 +465,16 @@ namespace CSharpMath.Editor {
           HandleScriptButton(false);
           break;
         case MathKeyboardInput.Fraction:
-          InsertAtom(LaTeXSettings.PlaceholderFraction);
+          InsertAtom(new Atoms.Fraction(LaTeXSettings.PlaceholderList, LaTeXSettings.PlaceholderList));
           break;
         case MathKeyboardInput.SquareRoot:
-          InsertAtom(LaTeXSettings.PlaceholderSquareRoot);
+          InsertAtom(new Atoms.Radical(new MathList(), LaTeXSettings.PlaceholderList));
           break;
         case MathKeyboardInput.CubeRoot:
-          InsertAtom(LaTeXSettings.PlaceholderCubeRoot);
+          InsertAtom(new Atoms.Radical(new MathList(new Atoms.Number("3")), LaTeXSettings.PlaceholderList));
           break;
         case MathKeyboardInput.NthRoot:
-          InsertAtom(LaTeXSettings.PlaceholderRadical);
+          InsertAtom(new Atoms.Radical(LaTeXSettings.PlaceholderList, LaTeXSettings.PlaceholderList));
           break;
         case MathKeyboardInput.BothRoundBrackets:
           InsertInner("(", ")");

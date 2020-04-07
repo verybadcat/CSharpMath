@@ -5,6 +5,115 @@ namespace CSharpMath.Atom {
   using Atoms;
   //https://mirror.hmc.edu/ctan/macros/latex/contrib/unicode-math/unimath-symbols.pdf
   public static class LaTeXSettings {
+    public static MathAtom Times => new BinaryOperator("\u00D7");
+    public static MathAtom Divide => new BinaryOperator("\u00F7");
+    public static MathAtom Placeholder => new Placeholder("\u25A1");
+    public static MathList PlaceholderList => new MathList { Placeholder };
+
+    public static MathAtom? ForAscii(sbyte c) {
+      if (c < 0) throw new ArgumentOutOfRangeException(nameof(c), c, "The character cannot be negative");
+      var s = ((char)c).ToStringInvariant();
+      if (char.IsControl((char)c) || char.IsWhiteSpace((char)c)) {
+        return null; // skip spaces
+      }
+      if (c >= '0' && c <= '9') {
+        return new Number(s);
+      }
+      if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
+        return new Variable(s);
+      }
+      switch (c) {
+        case (sbyte)'$':
+        case (sbyte)'%':
+        case (sbyte)'#':
+        case (sbyte)'&':
+        case (sbyte)'~':
+        case (sbyte)'\'':
+        case (sbyte)'^':
+        case (sbyte)'_':
+        case (sbyte)'{':
+        case (sbyte)'}':
+        case (sbyte)'\\': // All these are special characters we don't support.
+          return null;
+        case (sbyte)'(':
+        case (sbyte)'[':
+          return new Open(s);
+        case (sbyte)')':
+        case (sbyte)']':
+          return new Close(s);
+        case (sbyte)'!':
+        case (sbyte)'?':
+          return new Close(s, hasCorrespondingOpen: false);
+        case (sbyte)',':
+        case (sbyte)';':
+          return new Punctuation(s);
+        case (sbyte)'=':
+        case (sbyte)'<':
+        case (sbyte)'>':
+          return new Relation(s);
+        case (sbyte)':': // Colon is a ratio. Regular colon is \colon
+          return new Relation("\u2236");
+        case (sbyte)'-': // Use the math minus sign
+          return new BinaryOperator("\u2212");
+        case (sbyte)'+':
+        case (sbyte)'*': // Star operator, not multiplication
+          return new BinaryOperator(s);
+        case (sbyte)'.':
+          return new Number(s);
+        case (sbyte)'"':
+        case (sbyte)'/':
+        case (sbyte)'@':
+        case (sbyte)'`':
+        case (sbyte)'|':
+          return new Ordinary(s);
+        default:
+          throw new Structures.InvalidCodePathException
+            ($"Ascii character {c} should have been accounted for.");
+      }
+    }
+
+    public static Structures.AliasDictionary<string, Boundary> BoundaryDelimiters { get; } =
+      new Structures.AliasDictionary<string, Boundary> {
+        { ".", Boundary.Empty }, // . means no delimiter
+        { "(", new Boundary("(") },
+        { ")", new Boundary(")") },
+        { "[", new Boundary("[") },
+        { "]", new Boundary("]") },
+        { "{", "lbrace", new Boundary("{") },
+        { "}", "rbrace", new Boundary("}") },
+        { "<", "langle", new Boundary("\u2329") },
+        { ">", "rangle", new Boundary("\u232A") },
+        { "/", new Boundary("/") },
+        { "\\", "backslash", new Boundary("\\") },
+        { "|", "vert", new Boundary("|") },
+        { "||", "Vert", new Boundary("\u2016") },
+        { "uparrow", new Boundary("\u2191") },
+        { "downarrow", new Boundary("\u2193") },
+        { "updownarrow", new Boundary("\u2195") },
+        { "Uparrow", new Boundary("\u21D1") },
+        { "Downarrow", new Boundary("\u21D3") },
+        { "Updownarrow", new Boundary("\u21D5") },
+        { "lgroup", new Boundary("\u27EE") },
+        { "rgroup", new Boundary("\u27EF") },
+        { "lceil", new Boundary("\u2308") },
+        { "rceil", new Boundary("\u2309") },
+        { "lfloor", new Boundary("\u230A") },
+        { "rfloor", new Boundary("\u230B") }
+      };
+
+    public static Structures.AliasDictionary<string, FontStyle> FontStyles { get; } =
+      new Structures.AliasDictionary<string, FontStyle> {
+        { "mathnormal", FontStyle.Default },
+        { "mathrm", "rm", "text", FontStyle.Roman },
+        { "mathbf", "bf", FontStyle.Bold },
+        { "mathcal", "cal", FontStyle.Caligraphic },
+        { "mathtt", FontStyle.Typewriter },
+        { "mathit", "mit", FontStyle.Italic },
+        { "mathsf", FontStyle.SansSerif },
+        { "mathfrak", "frak", FontStyle.Fraktur },
+        { "mathbb", FontStyle.Blackboard },
+        { "mathbfit", "bm", FontStyle.BoldItalic },
+      };
 
     public static MathAtom? AtomForCommand(string symbolName) =>
       Commands.TryGetValue(
@@ -127,7 +236,9 @@ namespace CSharpMath.Atom {
          { "gg", new Relation("\u226A") },
          { "ll", new Relation("\u226B") },
          { "prec", new Relation("\u227A") },
+         { "preceq", new Relation("\u2AAF") }, // not in iosMath
          { "succ", new Relation("\u227B") },
+         { "succeq", new Relation("\u2AB0") }, // not in iosMath
          { "subset", new Relation("\u2282") },
          { "supset", new Relation("\u2283") },
          { "subseteq", new Relation("\u2286") },
@@ -334,120 +445,6 @@ namespace CSharpMath.Atom {
          { "widebridgeabove", new Accent("\u20E9") }, //not in iosMath
          { "asteraccent", new Accent("\u20F0") }, //not in iosMath
          { "threeunderdot", new Accent("\u20E8") } //not in iosMath
-      };
-    public static MathAtom Times => new BinaryOperator("\u00D7");
-    public static MathAtom Divide => new BinaryOperator("\u00F7");
-
-    public static MathAtom Placeholder => new Placeholder("\u25A1");
-    public static MathList PlaceholderList => new MathList { Placeholder };
-    public static Fraction PlaceholderFraction => new Fraction(PlaceholderList, PlaceholderList);
-    public static Radical PlaceholderRadical => new Radical(PlaceholderList, PlaceholderList);
-    public static Radical PlaceholderSquareRoot => new Radical(new MathList(), PlaceholderList);
-    public static Radical PlaceholderCubeRoot => new Radical(new MathList(new Number("3")), PlaceholderList);
-
-    public static MathAtom? ForAscii(sbyte c) {
-      if (c < 0) throw new ArgumentOutOfRangeException(nameof(c), c, "The character cannot be negative");
-      var s = ((char)c).ToStringInvariant();
-      if (char.IsControl((char)c) || char.IsWhiteSpace((char)c)) {
-        return null; // skip spaces
-      }
-      if (c >= '0' && c <= '9') {
-        return new Number(s);
-      }
-      if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
-        return new Variable(s);
-      }
-      switch (c) {
-        case (sbyte)'$':
-        case (sbyte)'%':
-        case (sbyte)'#':
-        case (sbyte)'&':
-        case (sbyte)'~':
-        case (sbyte)'\'':
-        case (sbyte)'^':
-        case (sbyte)'_':
-        case (sbyte)'{':
-        case (sbyte)'}':
-        case (sbyte)'\\': // All these are special characters we don't support.
-          return null;
-        case (sbyte)'(':
-        case (sbyte)'[':
-          return new Open(s);
-        case (sbyte)')':
-        case (sbyte)']':
-          return new Close(s);
-        case (sbyte)'!':
-        case (sbyte)'?':
-          return new Close(s, hasCorrespondingOpen: false);
-        case (sbyte)',':
-        case (sbyte)';':
-          return new Punctuation(s);
-        case (sbyte)'=':
-        case (sbyte)'<':
-        case (sbyte)'>':
-          return new Relation(s);
-        case (sbyte)':': // Colon is a ratio. Regular colon is \colon
-          return new Relation("\u2236");
-        case (sbyte)'-': // Use the math minus sign
-          return new BinaryOperator("\u2212");
-        case (sbyte)'+':
-        case (sbyte)'*': // Star operator, not multiplication
-          return new BinaryOperator(s);
-        case (sbyte)'.':
-          return new Number(s);
-        case (sbyte)'"':
-        case (sbyte)'/':
-        case (sbyte)'@':
-        case (sbyte)'`':
-        case (sbyte)'|':
-          return new Ordinary(s);
-        default:
-          throw new Structures.InvalidCodePathException
-            ($"Ascii character {c} should have been accounted for.");
-      }
-    }
-
-    public static Structures.AliasDictionary<string, Boundary> BoundaryDelimiters { get; } =
-      new Structures.AliasDictionary<string, Boundary> {
-        { ".", Boundary.Empty }, // . means no delimiter
-        { "(", new Boundary("(") },
-        { ")", new Boundary(")") },
-        { "[", new Boundary("[") },
-        { "]", new Boundary("]") },
-        { "{", "lbrace", new Boundary("{") },
-        { "}", "rbrace", new Boundary("}") },
-        { "<", "langle", new Boundary("\u2329") },
-        { ">", "rangle", new Boundary("\u232A") },
-        { "/", new Boundary("/") },
-        { "\\", "backslash", new Boundary("\\") },
-        { "|", "vert", new Boundary("|") },
-        { "||", "Vert", new Boundary("\u2016") },
-        { "uparrow", new Boundary("\u2191") },
-        { "downarrow", new Boundary("\u2193") },
-        { "updownarrow", new Boundary("\u2195") },
-        { "Uparrow", new Boundary("\u21D1") },
-        { "Downarrow", new Boundary("\u21D3") },
-        { "Updownarrow", new Boundary("\u21D5") },
-        { "lgroup", new Boundary("\u27EE") },
-        { "rgroup", new Boundary("\u27EF") },
-        { "lceil", new Boundary("\u2308") },
-        { "rceil", new Boundary("\u2309") },
-        { "lfloor", new Boundary("\u230A") },
-        { "rfloor", new Boundary("\u230B") }
-      };
-
-    public static Structures.AliasDictionary<string, FontStyle> FontStyles { get; } =
-      new Structures.AliasDictionary<string, FontStyle> {
-        { "mathnormal", FontStyle.Default },
-        { "mathrm", "rm", "text", FontStyle.Roman },
-        { "mathbf", "bf", FontStyle.Bold },
-        { "mathcal", "cal", FontStyle.Caligraphic },
-        { "mathtt", FontStyle.Typewriter },
-        { "mathit", "mit", FontStyle.Italic },
-        { "mathsf", FontStyle.SansSerif },
-        { "mathfrak", "frak", FontStyle.Fraktur },
-        { "mathbb", FontStyle.Blackboard },
-        { "mathbfit", "bm", FontStyle.BoldItalic },
       };
   }
 }
