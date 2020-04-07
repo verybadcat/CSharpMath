@@ -8,11 +8,6 @@ namespace CSharpMath {
       for (int i = 0; i < value.Length; i++) sb.Append(value[i]);
       return sb;
     }
-    public static StringBuilder Append(this StringBuilder sb1, StringBuilder sb2) {
-      sb1.EnsureCapacity(sb1.Length + sb2.Length);
-      for (int i = 0; i < sb2.Length; i++) sb1.Append(sb2[i]);
-      return sb1;
-    }
     private enum NullHandling {
       ///<summary>the string "null", without the quotes</summary>
       LiteralNull,
@@ -30,13 +25,13 @@ namespace CSharpMath {
         _ =>
           throw new System.ComponentModel.InvalidEnumArgumentException(nameof(h), (int)h, typeof(NullHandling))
       };
-    public static StringBuilder AppendInBracesOrLiteralNull(this StringBuilder builder, string? appendMe) =>
+    internal static StringBuilder AppendInBracesOrLiteralNull(this StringBuilder builder, string? appendMe) =>
       builder.AppendIn('{', appendMe, '}', NullHandling.LiteralNull);
-    public static StringBuilder AppendInBracesOrEmptyBraces(this StringBuilder builder, string? appendMe) =>
+    internal static StringBuilder AppendInBracesOrEmptyBraces(this StringBuilder builder, string? appendMe) =>
       builder.AppendIn('{', appendMe, '}', NullHandling.EmptyContent);
-    public static StringBuilder AppendInBracketsOrNothing(this StringBuilder builder, string? appendMe) =>
+    internal static StringBuilder AppendInBracketsOrNothing(this StringBuilder builder, string? appendMe) =>
       builder.AppendIn('[', appendMe, ']', NullHandling.EmptyString);
-    public static StringBuilder AppendDebugStringOfScripts(this StringBuilder builder, Atom.MathAtom target) {
+    internal static StringBuilder AppendDebugStringOfScripts(this StringBuilder builder, Atom.MathAtom target) {
       if (target.Subscript.IsNonEmpty()) {
         builder.Append('_').AppendInBracesOrLiteralNull(target.Subscript.DebugString);
       }

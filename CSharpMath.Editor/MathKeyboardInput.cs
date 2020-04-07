@@ -13,7 +13,7 @@ namespace CSharpMath.Editor {
     Ratio = ':', Percentage = '%', Comma = ',', Semicolon = ';', Factorial = '!',
     Infinity = '∞', Angle = '∠', Degree = '°', VerticalBar = '|',
     Logarithm = '㏒', NaturalLogarithm = '㏑', Prime = '\'', PartialDifferential = '∂',
-    LeftArrow = '←', UpArrow = '↑', RightArrow = '→', DownArrow = '↓', Space= ' ',
+    LeftArrow = '←', UpArrow = '↑', RightArrow = '→', DownArrow = '↓', Space = ' ',
 
     // More complicated operators
     Slash = '/', Fraction = '⁄', Power = '^', Subscript = '_', SquareRoot = '√', 
@@ -66,7 +66,7 @@ namespace CSharpMath.Editor {
     AreaHyperbolicSine = '◴', AreaHyperbolicCosine = '◷', AreaHyperbolicTangent = '◵',
     AreaHyperbolicCotangent = '◶', AreaHyperbolicSecant = '⚆', AreaHyperbolicCosecant = '⚇',
 
-    // Large operators
+    // Calculus operators
     LimitWithBase = '≐', 
     Integral = '∫', IntegralLowerLimit= 'ʆ', IntegralUpperLimit = 'ƒ', IntegralBothLimits = 'ʄ',
     Summation = '∑', SummationLowerLimit = 'Ƹ', SummationUpperLimit = 'ⵉ', SummationBothLimits = '⅀',

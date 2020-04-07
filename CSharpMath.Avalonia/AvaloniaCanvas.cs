@@ -24,7 +24,7 @@ namespace CSharpMath.Avalonia {
       set {
         _defaultColor = value;
         if (_currentColor == null)
-          CurrentBrush = new SolidColorBrush(value.ToAvaloniaColor());
+          CurrentBrush = value.ToSolidColorBrush();
       }
     }
     CSharpMathColor _defaultColor;
@@ -33,7 +33,7 @@ namespace CSharpMath.Avalonia {
       get => _currentColor;
       set {
         _currentColor = value;
-        CurrentBrush = new SolidColorBrush((value ?? _defaultColor).ToAvaloniaColor());
+        CurrentBrush = (value ?? _defaultColor).ToSolidColorBrush();
       }
     }
     public PaintStyle CurrentStyle { get; set; }
