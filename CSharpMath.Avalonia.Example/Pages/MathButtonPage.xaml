@@ -13,7 +13,7 @@
                 <TextBlock Classes="h1"
                            Text="CSharpMath.Avalonia.MathButton" />
 
-                <Button Text="Hoi!" Width="230" Height="340"/>
+                <Button Width="230" Height="340">Hoi!</Button>
                 <TextBlock Classes="h2"
                            Text="Displays math as a button" />
 
@@ -21,7 +21,7 @@
 
             <StackPanel Orientation="Horizontal"
                         Spacing="8">
-                <csmath:MathButton LaTeX="{StaticResource Taylor}"/>
+                <!--<csmath:MathButton LaTeX="{StaticResource Taylor}"/>-->
 
             </StackPanel>
 

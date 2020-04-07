@@ -6,7 +6,7 @@ using Avalonia.Controls;
 using Avalonia.Media;
 
 namespace CSharpMath.Avalonia {
-  public class MathButton : Button, ICSharpMathView<Atom.MathList, Color, Color, AvaloniaCanvas, MathPainter> {
+  public class MathButton : Button {
     static MathButton() {
       LaTeXProperty.Changed.AddClassHandler<MathButton>((b, e) => b.Painter.LaTeX = (string)e.NewValue);
       AffectsMeasure<MathButton>(LaTeXProperty);
