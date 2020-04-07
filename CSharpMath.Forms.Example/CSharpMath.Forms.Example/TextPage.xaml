@@ -45,6 +45,7 @@ Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6. \[\f
                        HorizontalOptions="FillAndExpand"
                        VerticalOptions="FillAndExpand"
                        EnableTouchEvents="true"
+                       EnablePanning="True"
                        Grid.Row="2"/>
     </Grid>
 </ContentPage>

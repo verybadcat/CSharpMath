@@ -16,6 +16,7 @@
         <math:MathView x:Name="View"
                        HorizontalOptions="FillAndExpand"
                        VerticalOptions="FillAndExpand"
+                       EnablePanning="True"
                        EnableTouchEvents="True"/>
     </StackLayout>
 </ContentPage>

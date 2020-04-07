@@ -80,15 +80,14 @@ namespace CSharpMath.Forms {
     global::Avalonia.Point _origin;
     protected override void OnPointerPressed(global::Avalonia.Input.PointerPressedEventArgs e) {
       var point = e.GetCurrentPoint(this);
-      if (point.Properties.IsLeftButtonPressed && !DisablePanning) {
+      if (point.Properties.IsLeftButtonPressed && EnablePanning) {
         _origin = point.Position;
-        e.Handled = true;
       }
       base.OnPointerPressed(e);
     }
     protected override void OnPointerMoved(global::Avalonia.Input.PointerEventArgs e) {
       var point = e.GetCurrentPoint(this);
-      if (point.Properties.IsLeftButtonPressed && !DisablePanning) {
+      if (point.Properties.IsLeftButtonPressed && EnablePanning) {
         var displacement = point.Position - _origin;
         _origin = point.Position;
         DisplacementX += (float)displacement.X;
@@ -98,9 +97,8 @@ namespace CSharpMath.Forms {
     }
     protected override void OnPointerReleased(global::Avalonia.Input.PointerReleasedEventArgs e) {
       var point = e.GetCurrentPoint(this);
-      if (point.Properties.IsLeftButtonPressed && !DisablePanning) {
+      if (point.Properties.IsLeftButtonPressed && EnablePanning) {
         _origin = point.Position;
-        e.Handled = true;
       }
       base.OnPointerReleased(e);
     }
@@ -130,7 +128,7 @@ namespace CSharpMath.Forms {
     private protected static XColor XCanvasColorToXColor(XCanvasColor color) => global::SkiaSharp.Views.Forms.Extensions.ToFormsColor(color);
     global::SkiaSharp.SKPoint _origin;
     protected override void OnTouch(global::SkiaSharp.Views.Forms.SKTouchEventArgs e) {
-      if (e.InContact && !DisablePanning) {
+      if (e.InContact && EnablePanning) {
         switch (e.ActionType) {
           case global::SkiaSharp.Views.Forms.SKTouchAction.Pressed:
             _origin = e.Location;
@@ -163,9 +161,9 @@ namespace CSharpMath.Forms {
 #endif
       Painter.Draw(canvas, TextAlignment, Padding, DisplacementX, DisplacementY);
     }
-    /// <summary>Panning is enabled by default when touch events are enabled.</summary>
-    public bool DisablePanning { get => (bool)GetValue(DisablePanningProperty); set => SetValue(DisablePanningProperty, value); }
-    public static readonly XProperty DisablePanningProperty = CreateProperty<BaseView<TPainter, TContent>, bool>(nameof(DisablePanning), false, _ => false, (_, __) => { });
+    /// <summary>Requires touch events to be enabled in SkiaSharp/Xamarin.Forms</summary>
+    public bool EnablePanning { get => (bool)GetValue(DisablePanningProperty); set => SetValue(DisablePanningProperty, value); }
+    public static readonly XProperty DisablePanningProperty = CreateProperty<BaseView<TPainter, TContent>, bool>(nameof(EnablePanning), false, _ => false, (_, __) => { });
 
     static readonly System.Reflection.ParameterInfo[] drawMethodParams = typeof(TPainter)
       .GetMethod(nameof(Painter<XCanvas, TContent, XColor>.Draw),
