@@ -67,10 +67,10 @@ namespace CSharpMath.Editor {
     AreaHyperbolicCotangent = '◶', AreaHyperbolicSecant = '⚆', AreaHyperbolicCosecant = '⚇',
 
     // Calculus operators
-    LimitWithBase = '≐', 
+    LimitWithBase = '㋏', 
     Integral = '∫', IntegralLowerLimit= 'ʆ', IntegralUpperLimit = 'ƒ', IntegralBothLimits = 'ʄ',
     Summation = '∑', SummationLowerLimit = 'Ƹ', SummationUpperLimit = 'ⵉ', SummationBothLimits = '⅀',
-    Product = '∏', ProductLowerLimit = '⫪', ProductUpperLimit = '⥣', ProductBothLimits = '⍡',
+    Product = '∏', ProductLowerLimit = 'ᚂ', ProductUpperLimit = '⥣', ProductBothLimits = '⍡',
     DoubleIntegral = '∬', TripleIntegral = '∭', QuadrupleIntegral = '⨌',
     ContourIntegral = '∮', DoubleContourIntegral = '∯', TripleContourIntegral = '∰',
     ClockwiseIntegral = '∱', ClockwiseContourIntegral = '∲', CounterClockwiseContourIntegral = '∳'

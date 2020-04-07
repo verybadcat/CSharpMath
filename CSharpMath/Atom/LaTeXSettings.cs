@@ -5,8 +5,8 @@ namespace CSharpMath.Atom {
   using Atoms;
   //https://mirror.hmc.edu/ctan/macros/latex/contrib/unicode-math/unimath-symbols.pdf
   public static class LaTeXSettings {
-    public static MathAtom Times => new BinaryOperator("\u00D7");
-    public static MathAtom Divide => new BinaryOperator("\u00F7");
+    public static MathAtom Times => new BinaryOperator("×");
+    public static MathAtom Divide => new BinaryOperator("÷");
     public static MathAtom Placeholder => new Placeholder("\u25A1");
     public static MathList PlaceholderList => new MathList { Placeholder };
 
@@ -132,53 +132,273 @@ namespace CSharpMath.Atom {
 
     public static Structures.AliasDictionary<string, MathAtom> Commands { get; } =
       new Structures.AliasDictionary<string, MathAtom> {
-         { "square", Placeholder },
+         // Custom additions
+         { " ", new Ordinary(" ") },
+         { "degree", new Ordinary("\u00B0") },
+
+         // LaTeX Symbol List: https://rpi.edu/dept/arc/training/latex/LaTeX_symbols.pdf
+         // (Included in the same folder as this file)
+
+         // Command <-> Unicode: https://www.johndcook.com/unicode_latex.html
+         // Unicode char lookup: https://unicode-table.com/en/search/
+
+         // Following tables are from the LaTeX Symbol List
+         // Table 1: Escapable “Special” Characters
+         { "$", new Ordinary("$") },
+         { "%", new Ordinary("%") },
+         { "_", new Ordinary("_") },
+         { "}", "rbrace", new Close("}") },
+         { "&", new Ordinary("&") },
+         { "#", new Ordinary("#") },
+         { "{", "lbrace", new Open("{") },
+
+         // Table 2: LaTeX2ε Commands Deﬁned to Work in Both Math and Text Mode
+         // $ is defined in Table 1
+         { "P", new Ordinary("¶") },
+         { "S", new Ordinary("§") },
+         // _ is defined in Table 1
+         { "copyright", new Ordinary("©") },
+         { "dag", new Ordinary("†") },
+         { "ddag", new Ordinary("‡") },
+         { "dots", new Ordinary("…") },
+         { "pounds", new Ordinary("£") },
+         // { is defined in Table 1
+         // } is defined in Table 1
+
+         // Table 3: Non-ASCII Letters (Excluding Accented Letters)
+         { "aa", new Ordinary("å") },
+         { "AA", "angstrom", new Ordinary("Å") },
+         { "AE", new Ordinary("Æ") },
+         { "ae", new Ordinary("æ") },
+         { "DH", new Ordinary("Ð") },
+         { "dh", new Ordinary("ð") },
+         { "DJ", new Ordinary("Đ") },
+         { "dj", new Ordinary("đ") },
+         { "L", new Ordinary("Ł") },
+         { "l", new Ordinary("ł") },
+         { "NG", new Ordinary("Ŋ") },
+         { "ng", new Ordinary("ŋ") },
+         { "o", new Ordinary("ø") },
+         { "O", new Ordinary("Ø") },
+         { "OE", new Ordinary("Œ") },
+         { "oe", new Ordinary("œ") },
+         { "ss", new Ordinary("ß") },
+         { "SS", new Ordinary("SS") },
+         { "TH", new Ordinary("Þ") },
+         { "th", new Ordinary("þ") },
+
+         // Table 4: Greek Letters
+         { "alpha", new Variable("α") },
+         { "beta", new Variable("β") },
+         { "gamma", new Variable("γ") },
+         { "delta", new Variable("δ") },
+         { "epsilon", new Variable("ε") },
+         { "varepsilon", new Variable("ɛ") },
+         { "zeta", new Variable("ζ") },
+         { "eta", new Variable("η") },
+         { "theta", new Variable("θ") },
+         { "vartheta", new Variable("ϑ") },
+         { "iota", new Variable("ι") },
+         { "kappa", new Variable("κ") },
+         { "lambda", new Variable("λ") },
+         { "mu", new Variable("µ") },
+         { "nu", new Variable("ν") },
+         { "xi", new Variable("ξ") },
+         { "omicron", new Variable("ο") },
+         { "pi", new Variable("π") },
+         { "varpi", new Variable("ϖ") },
+         { "rho", new Variable("ρ") },
+         { "varrho", new Variable("ϱ") },
+         { "sigma", new Variable("σ") },
+         { "varsigma", new Variable("ς") },
+         { "tau", new Variable("τ") },
+         { "upsilon", new Variable("υ") },
+         { "phi", new Variable("φ") },
+         { "varphi", new Variable("ϕ") },
+         { "chi", new Variable("χ") },
+         { "psi", new Variable("ψ") },
+         { "omega", new Variable("ω") },
+
+         { "Gamma", new Variable("Γ") },
+         { "Delta", new Variable("∆") },
+         { "Theta", new Variable("Θ") },
+         { "Lambda", new Variable("Λ") },
+         { "Xi", new Variable("Ξ") },
+         { "Pi", new Variable("Π") },
+         { "Sigma", new Variable("Σ") },
+         { "Upsilon", new Variable("Υ") },
+         { "Phi", new Variable("Φ") },
+         { "Psi", new Variable("Ψ") },
+         { "Omega", new Variable("Ω") },
+         // (The remaining Greek majuscules can be produced with ordinary Latin letters.
+         // The symbol “M”, for instance, is used for both an uppercase “m” and an uppercase “µ”.
+
+         // Table 5: Punctuation Marks Not Found in OT
+         // [Skip text mode commands]
+
+         // Table 6: Predeﬁned LaTeX2ε Text-Mode Commands
+         // [Skip text mode commands]
+
+         // Table 7: Binary Operation Symbols
+         { "pm", new BinaryOperator("±") },
+         { "mp", new BinaryOperator("∓") },
+         { "times", Times },
+         { "div", Divide },
+         { "ast", new BinaryOperator("∗") },
+         { "star" , new BinaryOperator("⋆") },
+         { "circ" , new BinaryOperator("◦") },
+         { "bullet", new BinaryOperator("•") },
+         { "cdot" , new BinaryOperator("·") },
+         // +
+         { "cap", new BinaryOperator("∩") },
+         { "cup", new BinaryOperator("∪") },
+         { "uplus", new BinaryOperator("⊎") },
+         { "sqcap", new BinaryOperator("⊓") },
+         { "sqcup", new BinaryOperator("⊔") },
+         { "vee", "lor", new BinaryOperator("∨") },
+         { "wedge", "land", new BinaryOperator("∧") },
+         { "setminus", new BinaryOperator("∖") },
+         { "wr", new BinaryOperator("≀") },
+         // -
+         { "diamond", new BinaryOperator("⋄") },
+         { "bigtriangleup", new BinaryOperator("△") },
+         { "bigtriangledown", new BinaryOperator("▽") },
+         { "triangleleft", new BinaryOperator("◃") },
+         { "triangleright", new BinaryOperator("▹") },
+         { "lhd", new BinaryOperator("⊲") },
+         { "rhd", new BinaryOperator("⊳") },
+         { "unlhd", new BinaryOperator("⊴") },
+         { "unrhd", new BinaryOperator("⊵") },
+         { "oplus", new BinaryOperator("⊕") },
+         { "ominus", new BinaryOperator("⊖") },
+         { "otimes", new BinaryOperator("⊗") },
+         { "oslash", new BinaryOperator("⊘") },
+         { "odot", new BinaryOperator("⊙") },
+         { "bigcirc", new BinaryOperator("◯") },
+         { "dagger", new BinaryOperator("†") },
+         { "ddagger", new BinaryOperator("‡") },
+         { "amalg", new BinaryOperator("⨿") },
+
+         // Table 8: Relation Symbols
+         { "leq", "le", new Relation("≤") },
+         { "geq", "ge", new Relation("≥") },
+         { "equiv", new Relation("≡") },
+         { "models", new Relation("⊧") },
+         { "prec", new Relation("≺") },
+         { "succ", new Relation("≻") },
+         { "sim", new Relation("∼") },
+         { "perp", new Relation("⟂") },
+         { "preceq", new Relation("⪯") },
+         { "succeq", new Relation("⪰") },
+         { "simeq", new Relation("≃") },
+         { "mid", new Relation("∣") },
+         { "ll", new Relation("≪") },
+         { "gg", new Relation("≫") },
+         { "asymp", new Relation("≍") },
+         { "parallel", new Relation("∥") },
+         { "subset", new Relation("⊂") },
+         { "supset", new Relation("⊃") },
+         { "approx", new Relation("≈") },
+         { "bowtie", new Relation("⋈") },
+         { "subseteq", new Relation("⊆") },
+         { "supseteq", new Relation("⊇") },
+         { "cong", new Relation("≅") },
+         { "Join", new Relation("⨝") }, // Capital J is intentional
+         { "sqsubset", new Relation("⊏") },
+         { "sqsupset", new Relation("⊐") },
+         { "neq", "ne", new Relation("≠") },
+         { "smile", new Relation("⌣") },
+         { "sqsubseteq", new Relation("⊑") },
+         { "sqsupseteq", new Relation("⊒") },
+         { "doteq", new Relation("≐") },
+         { "frown", new Relation("⌢") },
+         { "in", new Relation("∈") },
+         { "ni", new Relation("∋") },
+         { "notin", new Relation("∉") },
+         { "propto", new Relation("∝") },
+         // =
+         { "vdash", new Relation("⊢") },
+         { "dashv", new Relation("⊣") },
+         // <
+         // >
+         // :
          
-         // Greek characters
-         { "alpha", new Variable("\u03B1") },
-         { "beta", new Variable("\u03B2") },
-         { "gamma", new Variable("\u03B3") },
-         { "delta", new Variable("\u03B4") },
-         { "varepsilon", new Variable("\u03B5") },
-         { "zeta", new Variable("\u03B6") },
-         { "eta", new Variable("\u03B7") },
-         { "theta", new Variable("\u03B8") },
-         { "iota", new Variable("\u03B9") },
-         { "kappa", new Variable("\u03BA") },
-         { "lambda", new Variable("\u03BB") },
-         { "mu", new Variable("\u03BC") },
-         { "nu", new Variable("\u03BD") },
-         { "xi", new Variable("\u03BE") },
-         { "omicron", new Variable("\u03BF") },
-         { "pi", new Variable("\u03C0") },
-         { "rho", new Variable("\u03C1") },
-         { "varsigma", new Variable("\u03C2") },
-         { "sigma", new Variable("\u03C3") },
-         { "tau", new Variable("\u03C4") },
-         { "upsilon", new Variable("\u03C5") },
-         { "varphi", new Variable("\u03C6") },
-         { "chi", new Variable("\u03C7") },
-         { "psi", new Variable("\u03C8") },
-         { "omega", new Variable("\u03C9") },
-         { "vartheta", new Variable("\u03D1") },
-         { "phi", new Variable("\u03D5") },
-         { "varpi", new Variable("\u03D6") },
-         { "varkappa", new Variable("\u03F0") },
-         { "varrho", new Variable("\u03F1") },
-         { "epsilon", new Variable("\u03F5") },
-         // Capital greek characters
-         { "Gamma", new Variable("\u0393") },
-         { "Delta", new Variable("\u0394") },
-         { "Theta", new Variable("\u0398") },
-         { "Lambda", new Variable("\u039B") },
-         { "Xi", new Variable("\u039E") },
-         { "Pi", new Variable("\u03A0") },
-         { "Sigma", new Variable("\u03A3") },
-         { "Upsilon", new Variable("\u03A5") },
-         { "Phi", new Variable("\u03A6") },
-         { "Psi", new Variable("\u03A8") },
-         { "Omega", new Variable("\u03A9") },
-         
+         // Table 9: Punctuation Symbols
+         // ,
+         // ;
+         { "colon", new Punctuation(":") }, // \colon is different from : which is a relation
+         { "ldotp", new Punctuation(".") }, // Aka the full stop or decimal dot
+         { "cdotp", new Punctuation("·") },
+
+         // Table 10: Arrow Symbols 
+         { "leftarrow", "gets", new Relation("←") },
+         { "longleftarrow", new Relation("⟵") },
+         { "uparrow", new Relation("↑") },
+         { "Leftarrow", new Relation("⇐") },
+         { "Longleftarrow", new Relation("⟸") },
+         { "Uparrow", new Relation("⇑") },
+         { "rightarrow", "to", new Relation("→") },
+         { "longrightarrow", new Relation("⟶") },
+         { "downarrow", new Relation("↓") },
+         { "Rightarrow", new Relation("⇒") },
+         { "Longrightarrow", new Relation("⟹") },
+         { "Downarrow", new Relation("⇓") },
+         { "leftrightarrow", new Relation("↔") },
+         { "Leftrightarrow", new Relation("⇔") },
+         { "updownarrow", new Relation("↕") },
+         { "longleftrightarrow", new Relation("⟷") },
+         { "Longleftrightarrow", "iff", new Relation("⟺") },
+         { "Updownarrow", new Relation("⇕") },
+         { "mapsto", new Relation("↦") },
+         { "longmapsto", new Relation("⟼") },
+         { "nearrow", new Relation("↗") },
+         { "hookleftarrow", new Relation("↩") },
+         { "hookrightarrow", new Relation("↪") },
+         { "searrow", new Relation("↘") },
+         { "leftharpoonup", new Relation("↼") },
+         { "rightharpoonup", new Relation("⇀") },
+         { "swarrow", new Relation("↙") },
+         { "leftharpoondown", new Relation("↽") },
+         { "rightharpoondown", new Relation("⇁") },
+         { "nwarrow", new Relation("↖") },
+         { "rightleftharpoons", new Relation("⇌") },
+         { "leadsto", new Relation("↝") },
+
+         // Table 11: Miscellaneous Symbols
+         { "ldots", new Ordinary("…") },
+         { "aleph", new Ordinary("ℵ") },
+         { "hbar", new Ordinary("ℏ") },
+         { "imath", new Ordinary("𝚤") },
+         { "jmath", new Ordinary("𝚥") },
+         { "ell", new Ordinary("ℓ") },
+         { "wp", new Ordinary("℘") },
+         { "Re", new Ordinary("ℜ") },
+         { "Im", new Ordinary("ℑ") },
+         { "mho", new Ordinary("℧") },
+         { "cdots", new Ordinary("⋯") },
+         // \prime is removed because Unicode has no matching character
+         { "emptyset", new Ordinary("∅") },
+         { "nabla", new Ordinary("∇") },
+         { "surd", new Ordinary("√") },
+         { "top", new Ordinary("⊤") },
+         { "bot", new Ordinary("⊥") },
+         { "|", "Vert", new Ordinary("‖") },
+         { "angle", new Ordinary("∠") },
+         // .
+         { "vdots", new Ordinary("⋮") },
+         { "forall", new Ordinary("∀") },
+         { "exists", new Ordinary("∃") },
+         { "neg", "lnot", new Ordinary("¬") },
+         { "flat", new Ordinary("♭") },
+         { "natural", new Ordinary("♮") },
+         { "sharp", new Ordinary("♯") },
+         { "backslash", new Ordinary("\\") },
+         { "partial", new Ordinary("𝜕") },
+         { "vert", new Ordinary("|") },
+         { "ddots", new Ordinary("⋱") },
+         { "infty", new Ordinary("∞") },
+         { "triangle", new Ordinary("\u25B3") },
+
          // Open
          { "lceil", new Open("\u2308") },
          { "lfloor", new Open("\u230A") },
@@ -191,92 +411,7 @@ namespace CSharpMath.Atom {
          { "rangle", new Close("\u27E9") },
          { "rgroup", new Close("\u27EF") },
          
-         // Arrows
-         { "leftarrow", "gets", new Relation("\u2190") },
-         { "uparrow", new Relation("\u2191") },
-         { "rightarrow", "to", new Relation("\u2192") },
-         { "downarrow", new Relation("\u2193") },
-         { "leftrightarrow", new Relation("\u2194") },
-         { "updownarrow", new Relation("\u2195") },
-         { "nwarrow", new Relation("\u2196") },
-         { "nearrow", new Relation("\u2197") },
-         { "searrow", new Relation("\u2198") },
-         { "swarrow", new Relation("\u2199") },
-         { "mapsto", new Relation("\u21A6") },
-         { "Leftarrow", new Relation("\u21D0") },
-         { "Uparrow", new Relation("\u21D1") },
-         { "Rightarrow", new Relation("\u21D2") },
-         { "Downarrow", new Relation("\u21D3") },
-         { "Leftrightarrow", new Relation("\u21D4") },
-         { "Updownarrow", new Relation("\u21D5") },
-         { "longleftarrow", new Relation("\u27F5") },
-         { "longrightarrow", new Relation("\u27F6") },
-         { "longleftrightarrow", new Relation("\u27F7") },
-         { "Longleftarrow", new Relation("\u27F8") },
-         { "Longrightarrow", new Relation("\u27F9") },
-         { "Longleftrightarrow", "iff", new Relation("\u27FA") },
          
-         // Relations
-         { "leq", "le", new Relation("\u2264") },
-         { "geq", "ge", new Relation("\u2265") },
-         { "neq", "ne", new Relation("\u2260") },
-         { "in", new Relation("\u2208") },
-         { "notin", new Relation("\u2209") },
-         { "ni", new Relation("\u220B") },
-         { "propto", new Relation("\u221D") },
-         { "mid", new Relation("\u2223") },
-         { "parallel", new Relation("\u2225") },
-         { "sim", new Relation("\u223C") },
-         { "simeq", new Relation("\u2243") },
-         { "cong", new Relation("\u2245") },
-         { "approx", new Relation("\u2248") },
-         { "asymp", new Relation("\u224D") },
-         { "doteq", new Relation("\u2250") },
-         { "equiv", new Relation("\u2261") },
-         { "gg", new Relation("\u226A") },
-         { "ll", new Relation("\u226B") },
-         { "prec", new Relation("\u227A") },
-         { "preceq", new Relation("\u2AAF") }, // not in iosMath
-         { "succ", new Relation("\u227B") },
-         { "succeq", new Relation("\u2AB0") }, // not in iosMath
-         { "subset", new Relation("\u2282") },
-         { "supset", new Relation("\u2283") },
-         { "subseteq", new Relation("\u2286") },
-         { "supseteq", new Relation("\u2287") },
-         { "sqsubset", new Relation("\u228F") },
-         { "sqsupset", new Relation("\u2290") },
-         { "sqsubseteq", new Relation("\u2291") },
-         { "sqsupseteq", new Relation("\u2292") },
-         { "models", new Relation("\u22A7") },
-         { "perp", new Relation("\u27C2") },
-         
-         // operators
-         { "times", Times },
-         { "div"  , Divide },
-         { "pm"   , new BinaryOperator("\u00B1") },
-         { "dagger", new BinaryOperator("\u2020") },
-         { "ddagger", new BinaryOperator("\u2021") },
-         { "mp"   , new BinaryOperator("\u2213") },
-         { "setminus", new BinaryOperator("\u2216") },
-         { "ast"  , new BinaryOperator("\u2217") },
-         { "circ" , new BinaryOperator("\u2218") },
-         { "bullet", new BinaryOperator("\u2219") },
-         { "wedge", "land", new BinaryOperator("\u2227") },
-         { "vee", "lor", new BinaryOperator("\u2228") },
-         { "cap", new BinaryOperator("\u2229") },
-         { "cup", new BinaryOperator("\u222A") },
-         { "wr", new BinaryOperator("\u2240") },
-         { "uplus", new BinaryOperator("\u228E") },
-         { "sqcap", new BinaryOperator("\u2293") },
-         { "sqcup", new BinaryOperator("\u2294") },
-         { "oplus", new BinaryOperator("\u2295") },
-         { "ominus", new BinaryOperator("\u2296") },
-         { "otimes", new BinaryOperator("\u2297") },
-         { "oslash", new BinaryOperator("\u2298") },
-         { "odot", new BinaryOperator("\u2299") },
-         { "star" , new BinaryOperator("\u22C6") },
-         { "cdot" , new BinaryOperator("\u22C5") },
-         { "amalg", new BinaryOperator("\u2A3F") },
          
          // No limit operators
          { "log", new LargeOperator("log", false, true) },
@@ -355,58 +490,7 @@ namespace CSharpMath.Atom {
          { "bigsqcup", new LargeOperator("\u2A06", null) },
          { "bigtimes", new LargeOperator("\u2A09", null) }, //not in iosMath
          
-         // Latex command characters
-         { "{", "lbrace", new Open("{") },
-         { "}", "rbrace", new Close("}") },
-         { "$", new Ordinary("$") },
-         { "&", new Ordinary("&") },
-         { "#", new Ordinary("#") },
-         { "%", new Ordinary("%") },
-         { "_", new Ordinary("_") },
-         { " ", new Ordinary(" ") },
-         { "backslash", new Ordinary("\\") },
          
-         // Punctuation
-         // Note: \colon is different from : which is a relation
-         { "colon", new Punctuation(":") },
-         { "cdotp", new Punctuation("\u00B7") },
-         
-         // Other symbols
-         { "degree", new Ordinary("\u00B0") },
-         { "neg", "lnot", new Ordinary("\u00AC") },
-         { "angstrom", "AA", new Ordinary("\u00C5") },
-         { "|", "Vert", new Ordinary("\u2016") },
-         { "vert", new Ordinary("|") },
-         { "ldots", new Ordinary("\u2026") },
-         // \prime is removed
-         { "hbar", new Ordinary("\u210F") },
-         { "Im", new Ordinary("\u2111") },
-         { "ell", new Ordinary("\u2113") },
-         { "wp", new Ordinary("\u2118") },
-         { "Re", new Ordinary("\u211C") },
-         { "mho", new Ordinary("\u2127") },
-         { "aleph", new Ordinary("\u2135") },
-         { "beth", new Ordinary("\u2136") }, //not in iosMath
-         { "gimel", new Ordinary("\u2137") }, //not in iosMath
-         { "daleth", new Ordinary("\u2138") }, //not in iosMath
-         { "forall", new Ordinary("\u2200") },
-         { "exists", new Ordinary("\u2203") },
-         { "because", new Ordinary("\u2235") }, //not in iosMath
-         { "therefore", new Ordinary("\u2234") }, //not in iosMath
-         { "emptyset", new Ordinary("\u2205") },
-         { "nabla", new Ordinary("\u2207") },
-         { "infty", new Ordinary("\u221E") },
-         { "angle", new Ordinary("\u2220") },
-         { "top", new Ordinary("\u22A4") },
-         { "bot", new Ordinary("\u22A5") },
-         { "vdots", new Ordinary("\u22EE") },
-         { "cdots", new Ordinary("\u22EF") },
-         { "ddots", new Ordinary("\u22F1") },
-         { "diameter", new Ordinary("\u2300") }, // not in iosMath
-         { "triangle", new Ordinary("\u25B3") },
-         { "imath", new Ordinary("\U0001D6A4") },
-         { "jmath", new Ordinary("\U0001D6A5") },
-         { "partial", new Ordinary("\U0001D715") },
          
          // Spacing
          { ",", new Space(Structures.Space.ShortSpace) },
