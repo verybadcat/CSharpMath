@@ -13,6 +13,7 @@
                 <TextBlock Classes="h1"
                            Text="CSharpMath.Avalonia.MathButton" />
 
+                <Button Text="Hoi!" Width="230" Height="340"/>
                 <TextBlock Classes="h2"
                            Text="Displays math as a button" />
 

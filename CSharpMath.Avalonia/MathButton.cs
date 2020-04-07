@@ -18,8 +18,8 @@ namespace CSharpMath.Avalonia {
       ? new global::Avalonia.Size(rect.Width, rect.Height)
       : base.MeasureOverride(availableSize);
     public override void Render(DrawingContext context) {
-      base.Render(context);
       Painter.Draw(new AvaloniaCanvas(context, Bounds.Size));
+      base.Render(context);
     }
     public string? LaTeX { get => (string?)GetValue(LaTeXProperty); set => SetValue(LaTeXProperty, value); }
     public static readonly AvaloniaProperty LaTeXProperty =
