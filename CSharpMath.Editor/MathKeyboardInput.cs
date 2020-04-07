@@ -4,11 +4,6 @@ namespace CSharpMath.Editor {
     Up = '⏶', Down = '⏷', Left = '⏴', Right = '⏵',
     Backspace = '⌫', Clear = '⎚', Return = '\n', Dismiss = '❌',
 
-    // Brackets
-    LeftRoundBracket = '(', RightRoundBracket = ')',
-    LeftSquareBracket = '[', RightSquareBracket = ']',
-    LeftCurlyBracket = '{', RightCurlyBracket = '}',
-
     // Decimals
     D0 = '0', D1 = '1', D2 = '2', D3 = '3', D4 = '4',
     D5 = '5', D6 = '6', D7 = '7', D8 = '8', D9 = '9', Decimal = '.',
@@ -21,8 +16,17 @@ namespace CSharpMath.Editor {
     LeftArrow = '←', UpArrow = '↑', RightArrow = '→', DownArrow = '↓', Space= ' ',
 
     // More complicated operators
-    BothRoundBrackets = '㈾', Slash = '/', Fraction = '⁄', Power = '^', Subscript = '_', SquareRoot = '√', 
-    CubeRoot = '∛', NthRoot = '∜', Absolute = '‖', BaseEPower = 'ℯ', LogarithmWithBase = '㏐',
+    Slash = '/', Fraction = '⁄', Power = '^', Subscript = '_', SquareRoot = '√', 
+    CubeRoot = '∛', NthRoot = '∜', BaseEPower = 'ℯ', LogarithmWithBase = '㏐',
+
+    // Basic Brackets
+    LeftRoundBracket = '(', RightRoundBracket = ')',
+    LeftSquareBracket = '[', RightSquareBracket = ']',
+    LeftCurlyBracket = '{', RightCurlyBracket = '}',
+
+    // Both Brackets
+    BothRoundBrackets = '㈾', BothSquareBrackets = '㈿', BothCurlyBrackets = '㉀',
+    Absolute = '㉁',
 
     // Relations
     Equals = '=', NotEquals = '≠',

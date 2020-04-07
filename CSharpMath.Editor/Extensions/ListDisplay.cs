@@ -193,6 +193,8 @@ namespace CSharpMath.Editor {
                 return fraction.Numerator;
               case MathListSubIndexType.Denominator when display is FractionDisplay<TFont, TGlyph> fraction:
                 return fraction.Denominator;
+              case MathListSubIndexType.Inner when display is InnerDisplay<TFont, TGlyph> inner:
+                return inner.Inner;
               case MathListSubIndexType.Superscript:
               case MathListSubIndexType.Subscript:
                 throw new InvalidCodePathException

@@ -244,30 +244,38 @@ namespace CSharpMath.CoreTests {
 
     [Theory, InlineData('[', ']'), InlineData('(', '}'), InlineData('{', ']')] // Using ) confuses the test explorer...
     public void TestInner(char left, char right) =>
-      TestOuter($@"\left{left}x\right{right}", 1, 14, 4, 30,
-        TestList(1, 14, 4, 30, 0, 0, LinePosition.Regular, Range.UndefinedInt,
-          d => {
-            var glyph = Assert.IsType<GlyphDisplay<TFont, TGlyph>>(d);
-            Assert.Equal(new PointF(), glyph.Position);
-            Assert.Equal(Range.NotFound, glyph.Range);
-            Assert.False(glyph.HasScript);
-            Assert.Equal(left, glyph.Glyph);
-          },
-          TestList(1, 14, 4, 10, 10, 0, LinePosition.Regular, Range.UndefinedInt,
+      TestOuter($@"a\left{left}x\right{right}", 2, 14, 4, 43.333,
+        d => Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d),
+        d => {
+          var inner = Assert.IsType<InnerDisplay<TFont, TGlyph>>(d);
+          Approximately.At(13.333, 0, inner.Position);
+          Assert.Equal(new Range(1, 1), inner.Range);
+          Assert.Equal(14, inner.Ascent);
+          Assert.Equal(4, inner.Descent);
+          Assert.Equal(30, inner.Width);
+          
+          var glyph = Assert.IsType<GlyphDisplay<TFont, TGlyph>>(inner.Left);
+          Approximately.At(13.333, 0, glyph.Position);
+          Assert.Equal(Range.NotFound, glyph.Range);
+          Assert.False(glyph.HasScript);
+          Assert.Equal(left, glyph.Glyph);
+
+          TestList(1, 14, 4, 10, 23.333, 0, LinePosition.Regular, Range.UndefinedInt,
             d => {
               var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
               Assert.Single(line.Atoms);
               AssertText("x", line);
               Assert.Equal(new PointF(), line.Position);
+              Assert.Equal(new Range(0, 1), d.Range);
               Assert.False(line.HasScript);
-            }),
-          d => {
-            var glyph2 = Assert.IsType<GlyphDisplay<TFont, TGlyph>>(d);
-            Approximately.At(20, 0, glyph2.Position);
-            Assert.Equal(Range.NotFound, glyph2.Range);
-            Assert.False(glyph2.HasScript);
-            Assert.Equal(right, glyph2.Glyph);
-          }));
+            })(inner.Inner);
+
+          var glyph2 = Assert.IsType<GlyphDisplay<TFont, TGlyph>>(inner.Right);
+          Approximately.At(33.333, 0, glyph2.Position);
+          Assert.Equal(Range.NotFound, glyph2.Range);
+          Assert.False(glyph2.HasScript);
+          Assert.Equal(right, glyph2.Glyph);
+      });
     [Theory, InlineData("\\sqrt2", "", "2"), InlineData("\\sqrt[3]2", "3", "2")]
     public void TestRadical(string latex, string degree, string radicand) =>
       TestOuter(latex, 1, 18.56, 4, degree.IsEmpty() ? 20 : 21.44, d => {

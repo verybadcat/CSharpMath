@@ -47,6 +47,7 @@ namespace CSharpMath.Editor {
       ListDisplay<TFont, TGlyph> list => list.IndexForPoint(context, point),
       LargeOpLimitsDisplay<TFont, TGlyph> largeOp => largeOp.IndexForPoint(context, point),
       IGlyphDisplay<TFont, TGlyph> glyph => glyph.IndexForPoint(context, point),
+      InnerDisplay<TFont, TGlyph> inner => inner.IndexForPoint(context, point),
       _ => null,
     };
     ///<summary>The bounds of the display indicated by the given index</summary>
@@ -60,6 +61,7 @@ namespace CSharpMath.Editor {
       ListDisplay<TFont, TGlyph> list => list.PointForIndex(context, index),
       LargeOpLimitsDisplay<TFont, TGlyph> largeOp => largeOp.PointForIndex(context, index),
       IGlyphDisplay<TFont, TGlyph> glyph => glyph.PointForIndex(context, index),
+      InnerDisplay<TFont, TGlyph> inner => inner.PointForIndex(context, index),
       _ => null,
     };
     public static void HighlightCharacterAt<TFont, TGlyph>
@@ -83,6 +85,9 @@ namespace CSharpMath.Editor {
           break;
         case IGlyphDisplay<TFont, TGlyph> glyph:
           glyph.HighlightCharacterAt(index, color);
+          break;
+        case InnerDisplay<TFont, TGlyph> inner:
+          inner.HighlightCharacterAt(index, color);
           break;
         default:
           break;
@@ -108,6 +113,9 @@ namespace CSharpMath.Editor {
           break;
         case IGlyphDisplay<TFont, TGlyph> glyph:
           glyph.Highlight(color);
+          break;
+        case InnerDisplay<TFont, TGlyph> inner:
+          inner.Highlight(color);
           break;
         default:
           break;

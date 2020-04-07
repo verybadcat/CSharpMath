@@ -10,6 +10,7 @@ namespace CSharpMath.Rendering.Tests {
             \int^b_au(x)v'(x)\:dx &=& \left[ u(x)v(x) \right]^b_a - \int^b_a u'(x)v(x)\:dx \\
                                   &=& u(b)v(b) - u(a)v(a) - \int^b_a u'(x)v(x)\:dx
         \end{array} $$ or more compactly: \[\int u\:dv = uv - \int v \:du.\]";
-    public const string VeryWideDisplayMaths = @"Text 1$$\sum\int^3_2x\ dx$$Text 2";
+    public const string WideDisplayMaths = @"Text 1$$\sum\int^3_2x\ dx$$Text 2";
+    public const string FontStyles = @"\textnormal F\textrm F\textbf F\textcal F\texttt F\textit F\textsf F\textfrak F\textbb F\textbfit F";
   }
 }

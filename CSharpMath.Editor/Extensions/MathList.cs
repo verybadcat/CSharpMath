@@ -61,8 +61,6 @@ namespace CSharpMath.Editor {
             throw new SubIndexTypeMismatchException(typeof(Atoms.Fraction), index);
           if (index.SubIndexType == MathListSubIndexType.Numerator)
             frac.Numerator.InsertAndAdvance(ref index.SubIndex, atom, advanceType);
-          else if (frac.Denominator is null)
-            throw new SubIndexTypeMismatchException(index);
           else
             frac.Denominator.InsertAndAdvance(ref index.SubIndex, atom, advanceType);
           break;
@@ -71,6 +69,11 @@ namespace CSharpMath.Editor {
           break;
         case MathListSubIndexType.Superscript:
           self.Atoms[index.AtomIndex].Superscript.InsertAndAdvance(ref index.SubIndex, atom, advanceType);
+          break;
+        case MathListSubIndexType.Inner:
+          if (!(self.Atoms[index.AtomIndex] is Atoms.Inner inner))
+            throw new SubIndexTypeMismatchException(typeof(Atoms.Inner), index);
+          inner.InnerList.InsertAndAdvance(ref index.SubIndex, atom, advanceType);
           break;
         default:
           throw new SubIndexTypeMismatchException(index);
@@ -152,6 +155,11 @@ namespace CSharpMath.Editor {
             throw new SubIndexTypeMismatchException(index);
           current.Superscript.RemoveAt(ref index.SubIndex);
           break;
+        case MathListSubIndexType.Inner:
+          if (!(self.Atoms[index.AtomIndex] is Atoms.Inner inner))
+            throw new SubIndexTypeMismatchException(typeof(Atoms.Inner), index);
+          inner.InnerList.RemoveAt(ref index.SubIndex);
+          break;
         default:
           throw new SubIndexTypeMismatchException(index);
       }
@@ -201,6 +209,11 @@ namespace CSharpMath.Editor {
           if (current.Superscript.IsEmpty()) throw new SubIndexTypeMismatchException(start);
           current.Superscript.RemoveAtoms(range.SubIndexRange);
           break;
+        case MathListSubIndexType.Inner:
+          if (!(self.Atoms[start.AtomIndex] is Atoms.Inner inner))
+            throw new SubIndexTypeMismatchException(typeof(Atoms.Inner), start);
+          inner.InnerList.RemoveAtoms(range.SubIndexRange);
+          break;
       }
     }
 
@@ -234,6 +247,8 @@ namespace CSharpMath.Editor {
               ? frac.Denominator.AtomAt(index.SubIndex)
               : frac.Numerator.AtomAt(index.SubIndex)
             : null;
+        case MathListSubIndexType.Inner:
+          return atom is Atoms.Inner inner ? inner.InnerList.AtomAt(index.SubIndex) : null;
         default:
           throw new SubIndexTypeMismatchException(index);
       }

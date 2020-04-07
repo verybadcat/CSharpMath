@@ -233,9 +233,9 @@ namespace CSharpMath.Display {
           case Inner inner:
             AddDisplayLine(false);
             AddInterElementSpace(prevAtom, inner);
-            ListDisplay<TFont, TGlyph> innerDisplay;
+            IDisplay<TFont, TGlyph> innerDisplay;
             if (inner.LeftBoundary != Boundary.Empty || inner.RightBoundary != Boundary.Empty) {
-              innerDisplay = _MakeLeftRight(inner);
+              innerDisplay = _MakeInner(inner, atom.IndexRange);
             } else {
               innerDisplay = CreateLine(inner.InnerList, _font, _context, _style, _cramped);
             }
@@ -675,7 +675,7 @@ namespace CSharpMath.Display {
       };
     }
 
-    private ListDisplay<TFont, TGlyph> _MakeLeftRight(Inner inner) {
+    private InnerDisplay<TFont, TGlyph> _MakeInner(Inner inner, Range range) {
       if (inner.LeftBoundary == Boundary.Empty && inner.RightBoundary == Boundary.Empty) {
         throw new InvalidCodePathException("Inner should have a boundary to call this function.");
       }
@@ -684,29 +684,22 @@ namespace CSharpMath.Display {
       // delta is the max distance from the axis.
       float delta =
         Math.Max(innerListDisplay.Ascent - axisHeight, innerListDisplay.Descent + axisHeight);
-      var d1 = delta / 500 * _delimiterFactor;
-      float d2 = 2 * delta - _delimiterShortfallPoints;
+      var d1 = delta / 500 * _delimiterFactor; // This represents atleast 90% of the formula
+      float d2 = 2 * delta - _delimiterShortfallPoints; // This represents a shortfall of 5pt
+      // The size of the delimiter glyph should cover at least 90% of the formula or
+      // be at most 5pt short.
       float glyphHeight = Math.Max(d1, d2);
 
-      var innerElements = new List<IDisplay<TFont, TGlyph>>();
-      var innerPosition = new PointF();
+      IGlyphDisplay<TFont, TGlyph>? leftGlyph = null;
       if (inner.LeftBoundary is Boundary { Nucleus: var left } && left.Length > 0) {
-        var leftGlyph = _FindGlyphForBoundary(left, glyphHeight);
-        leftGlyph.Position = innerPosition;
-        innerPosition.X += leftGlyph.Width;
-        innerElements.Add(leftGlyph);
+        leftGlyph = _FindGlyphForBoundary(left, glyphHeight);
       }
-      innerListDisplay.Position = innerPosition;
-      innerPosition.X += innerListDisplay.Width;
-      innerElements.Add(innerListDisplay);
 
+      IGlyphDisplay<TFont, TGlyph>? rightGlyph = null;
       if (inner.RightBoundary is Boundary { Nucleus: var right } && right.Length > 0) {
-        var rightGlyph = _FindGlyphForBoundary(right, glyphHeight);
-        rightGlyph.Position = innerPosition;
-        innerPosition.X += rightGlyph.Width;
-        innerElements.Add(rightGlyph);
+        rightGlyph = _FindGlyphForBoundary(right, glyphHeight);
       }
-      return new ListDisplay<TFont, TGlyph>(innerElements);
+      return new InnerDisplay<TFont, TGlyph>(innerListDisplay, leftGlyph, rightGlyph, range);
     }
 
     private IGlyphDisplay<TFont, TGlyph> _FindGlyphForBoundary(

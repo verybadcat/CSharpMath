@@ -12,7 +12,6 @@
          void F(float a, float b, float c, float d) =>
            WriteLine((R(a, R(c, 2)) / 320f, R(b, R(d, 3)) / 180f, R(c, 2) / 320f, R(d, 3) / 180f).ToString().Trim('(', ')')); -->
     <ContentView.Resources>
-        <r:MathKeyboard x:Key="Keyboard" x:Name="keyboard"/>
         <Style TargetType="Grid">
             <Setter Property="RowSpacing" Value="0"/>
             <Setter Property="ColumnSpacing" Value="0"/>
@@ -166,7 +165,7 @@
             <f:MathInputButton Input="D7" Grid.Row="0" Grid.Column="1" Keyboard="{StaticResource Keyboard}"/>
             <f:MathInputButton Input="D8" Grid.Row="0" Grid.Column="2" Keyboard="{StaticResource Keyboard}"/>
             <f:MathInputButton Input="D9" Grid.Row="0" Grid.Column="3" Keyboard="{StaticResource Keyboard}"/>
-            <f:MathInputButton Input="Divide" Grid.Row="0" Grid.Column="4" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="BothRoundBrackets" Grid.Row="0" Grid.Column="4" Keyboard="{StaticResource Keyboard}"/>
             <f:MathInputButton Input="D4" Grid.Row="1" Grid.Column="1" Keyboard="{StaticResource Keyboard}"/>
             <f:MathInputButton Input="D5" Grid.Row="1" Grid.Column="2" Keyboard="{StaticResource Keyboard}"/>
             <f:MathInputButton Input="D6" Grid.Row="1" Grid.Column="3" Keyboard="{StaticResource Keyboard}"/>

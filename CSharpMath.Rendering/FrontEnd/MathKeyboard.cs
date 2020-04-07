@@ -7,7 +7,6 @@ namespace CSharpMath.Rendering.FrontEnd {
 
   public enum CaretShape { IBeam, UpArrow }
   public class MathKeyboard : MathKeyboard<Fonts, Glyph> {
-    public MathKeyboard() : this(PainterConstants.DefaultFontSize * 3 / 2) { }
     public MathKeyboard(float fontSize = PainterConstants.DefaultFontSize * 3 / 2, double blinkMilliseconds = DefaultBlinkMilliseconds)
       : base(TypesettingContext.Instance,
              new Fonts(Array.Empty<Typography.OpenFont.Typeface>(), fontSize), blinkMilliseconds) { }

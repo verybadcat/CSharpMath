@@ -1,11 +1,11 @@
 namespace CSharpMath.Editor {
   ///<summary>The type of the subindex denotes what branch the path to the atom that this index points to takes.</summary>
   public enum MathListSubIndexType : byte {
-    ///<summary>The index denotes the whole atom, subIndex is nil.</summary>
+    ///<summary>The index denotes the whole atom, subIndex is null</summary>
     None = 0,
     ///<summary>The position in the subindex is an index into the nucleus, must be 1</summary>
     BetweenBaseAndScripts,
-    ///<summary>The subindex indexes into the superscript.</summary>
+    ///<summary>The subindex indexes into the superscript</summary>
     Superscript,
     ///<summary>The subindex indexes into the subscript</summary>
     Subscript,
@@ -16,7 +16,9 @@ namespace CSharpMath.Editor {
     ///<summary>The subindex indexes into the radicand (only valid for radicals)</summary>
     Radicand,
     ///<summary>The subindex indexes into the degree (only valid for radicals)</summary>
-    Degree
+    Degree,
+    ///<summary>The subindex indexes into the inner list (only valid for inners)</summary>
+    Inner
   }
 
   /** <summary>

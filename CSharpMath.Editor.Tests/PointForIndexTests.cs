@@ -4,7 +4,7 @@ using Xunit;
 
 namespace CSharpMath.Editor.Tests {
   using static IndexForPointTests;
-  // Use the "CSharpMath.Editor Test Checker" project in the _Utils folder to visualize the test cases
+  // Use CSharpMath.Editor.Tests.Visualizer to visualize the test cases
   using SubIndex = MathListSubIndexType;
   public class PointForIndexTests {
     void Test(string latex, PointF expected, MathListIndex index) =>
@@ -236,5 +236,25 @@ namespace CSharpMath.Editor.Tests {
       };
     [Theory, MemberData(nameof(SummationData))]
     public void Summation(PointF point, MathListIndex expected) => Test(@"77 \sum_{777}^{77} 77", point, expected);
+    public static TestData InnerData =>
+      new TestData {
+        { (0, 0), 0 },
+        { (13.333, 0), 1 },
+        { (26.667, 0), 2 },
+        { (36.667, 0), 2, (SubIndex.Inner, 0) },
+        { (46.667, 0), 2, (SubIndex.Inner, 1) },
+        { (60, 0), 2, (SubIndex.Inner, 2) },
+        { (70, 0), 2, (SubIndex.Inner, 2), (SubIndex.Inner, 0) },
+        { (80, 0), 2, (SubIndex.Inner, 2), (SubIndex.Inner, 1) },
+        { (90, 0), 2, (SubIndex.Inner, 2), (SubIndex.Inner, 2) },
+        { (103.333, 0), 2, (SubIndex.Inner, 3) },
+        { (113.333, 0), 2, (SubIndex.Inner, 4) },
+        { (123.333, 0), 2, (SubIndex.Inner, 5) },
+        { (136.666, 0), 3 },
+        { (150, 0), 4 },
+        { (160, 0), 5 },
+      };
+    [Theory, MemberData(nameof(InnerData))]
+    public void Inner(PointF point, MathListIndex expected) => Test(@"\int a\left(bb\left[cc\right]dd\right)e\sum ", point, expected);
   }
 }

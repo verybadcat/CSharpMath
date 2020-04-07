@@ -25,12 +25,12 @@ namespace CSharpMath.Editor.Tests.Visualizer {
       string? latex = null;
       while (true) {
         try {
-          Console.Title = "CSharpMath.Editor Test Checker";
+          Console.Title = "CSharpMath.Editor.Tests Visualizer";
           Console.Clear();
           if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             Console.SetBufferSize(Console.WindowWidth, Console.BufferHeight); // line wrapping
           Console.ResetColor();
-          Console.WriteLine("Welcome to the CSharpMath.Editor Test Checker!");
+          Console.WriteLine("Welcome to the CSharpMath.Editor.Tests Visualizer!");
           Console.WriteLine();
           Console.WriteLine("Usage:");
           Console.WriteLine("Input the test expression in LaTeX below, and input the click position.");
@@ -65,7 +65,7 @@ namespace CSharpMath.Editor.Tests.Visualizer {
             Console.SetBufferSize(10000, Console.BufferHeight); // no line wrapping
           display.Draw(context);
 moveCursor:var pos = Adjust(new Rectangle(x, y, 0, 0));
-          Console.Title = $"CSharpMath.Editor Test Checker - ({x}, {y}) in {latex}";
+          Console.Title = $"CSharpMath.Editor.Tests Visualizer - ({x}, {y}) in {latex}";
           Console.SetCursorPosition(pos.X, pos.Y);
           switch (Console.ReadKey(true).Key) {
             case ConsoleKey.Q: x--; y++; goto moveCursor;
