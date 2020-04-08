@@ -645,7 +645,42 @@ namespace CSharpMath.Atom {
         { "blacktriangledown", new Ordinary("▼") }, // ▾ not in Latin Modern Math
         { "blacksquare", new Ordinary("▪") },
         { "blacklozenge", new Ordinary("♦") }, // ⧫ not in Latin Modern Math
-        { "bigstar", new Ordinary("▪") },
+        { "bigstar", new Ordinary("⋆") }, // ★ not in Latin Modern Math
+        { "sphericalangle", new Ordinary("∢") },
+        { "complement", new Ordinary("∁") },
+        { "eth", new Ordinary("ð") }, // Same as \dh
+        { "diagup", new Ordinary("/") }, // ╱ not in Latin Modern Math
+        { "diagdown", new Ordinary("\\") }, // ╲ not in Latin Modern Math
+
+        // Table 25: AMS Commands Deﬁned to Work in Both Math and Text Mode
+        { "checkmark", new Ordinary("✓") },
+        { "circledR", new Ordinary("®") },
+        { "maltese", new Ordinary("✠") },
+
+        // Table 26: AMS Binary Operators
+        { "dotplus", new BinaryOperator("∔") },
+        { "smallsetminus", new BinaryOperator("∖") },
+        { "Cap", new BinaryOperator("⋒") },
+        { "Cup", new BinaryOperator("⋓") },
+        { "barwedge", new BinaryOperator("⌅") },
+        { "veebar", new BinaryOperator("⊻") },
+        // { "doublebarwedge", new BinaryOperator("⩞") }, //Glyph not in Latin Modern Math
+        { "boxminus", new BinaryOperator("⊟") },
+        { "boxtimes", new BinaryOperator("⊠") },
+        { "boxdot", new BinaryOperator("⊡") },
+        { "boxplus", new BinaryOperator("⊞") },
+        { "divideontimes", new BinaryOperator("⋇") },
+        { "ltimes", new BinaryOperator("⋉") },
+        { "rtimes", new BinaryOperator("⋊") },
+        { "leftthreetimes", new BinaryOperator("⋋") },
+        { "rightthreetimes", new BinaryOperator("⋌") },
+        { "curlywedge", new BinaryOperator("⋏") },
+        { "curlyvee", new BinaryOperator("⋎") },
+        { "circleddash", new BinaryOperator("⊝") },
+        { "circledast", new BinaryOperator("⊛") },
+        { "circledcirc", new BinaryOperator("⊚") },
+        { "centerdot", new BinaryOperator("·") },
+        { "intercal", new BinaryOperator("⊺") },
       };
   }
 }
