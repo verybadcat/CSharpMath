@@ -141,6 +141,8 @@ namespace CSharpMath.Atom {
 
          // Command <-> Unicode: https://www.johndcook.com/unicode_latex.html
          // Unicode char lookup: https://unicode-table.com/en/search/
+         // Reference LaTeX output for glyph: https://www.codecogs.com/latex/eqneditor.php
+         // Look at what glyphs are in a font: https://github.com/fontforge/fontforge
 
          // Following tables are from the LaTeX Symbol List
          // Table 1: Escapable “Special” Characters
@@ -192,8 +194,8 @@ namespace CSharpMath.Atom {
          { "beta", new Variable("β") },
          { "gamma", new Variable("γ") },
          { "delta", new Variable("δ") },
-         { "epsilon", new Variable("ε") },
-         { "varepsilon", new Variable("ɛ") },
+         { "epsilon", new Variable("ϵ") },
+         { "varepsilon", new Variable("ε") },
          { "zeta", new Variable("ζ") },
          { "eta", new Variable("η") },
          { "theta", new Variable("θ") },
@@ -263,8 +265,8 @@ namespace CSharpMath.Atom {
          { "diamond", new BinaryOperator("⋄") },
          { "bigtriangleup", new BinaryOperator("△") },
          { "bigtriangledown", new BinaryOperator("▽") },
-         { "triangleleft", new BinaryOperator("◃") },
-         { "triangleright", new BinaryOperator("▹") },
+         { "triangleleft", new BinaryOperator("◁") }, // Latin Modern Math doesn't have ◃
+         { "triangleright", new BinaryOperator("▷") }, // Latin Modern Math doesn't have ▹
          { "lhd", new BinaryOperator("⊲") },
          { "rhd", new BinaryOperator("⊳") },
          { "unlhd", new BinaryOperator("⊴") },
@@ -303,7 +305,8 @@ namespace CSharpMath.Atom {
          { "subseteq", new Relation("⊆") },
          { "supseteq", new Relation("⊇") },
          { "cong", new Relation("≅") },
-         { "Join", new Relation("⨝") }, // Capital J is intentional
+         // Latin Modern Math doesn't have ⨝ so we copy the one from \bowtie
+         { "Join", new Relation("⋈") }, // Capital J is intentional
          { "sqsubset", new Relation("⊏") },
          { "sqsupset", new Relation("⊐") },
          { "neq", "ne", new Relation("≠") },
@@ -362,7 +365,7 @@ namespace CSharpMath.Atom {
          { "rightharpoondown", new Relation("⇁") },
          { "nwarrow", new Relation("↖") },
          { "rightleftharpoons", new Relation("⇌") },
-         { "leadsto", new Relation("↝") },
+         { "leadsto", new Relation("⇝") },
 
          // Table 11: Miscellaneous Symbols
          { "ldots", new Ordinary("…") },
