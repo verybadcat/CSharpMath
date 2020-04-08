@@ -747,6 +747,45 @@ namespace CSharpMath.Atom {
         // { "backepsilon", new Relation("϶") }, // Glyph not in Latin Modern Math
         { "blacktriangleright", new Relation("▶") }, // ▸ not in Latin Modern Math
         { "because", new Relation("∵") },
+
+        // Table 28: AMS Negated Binary Relations
+        // U+0338, an overlapping slant, is used as a workaround when Unicode has no matching character
+        { "nless", new Relation("≮") },
+        { "nleq", new Relation("≰") },
+        { "nleqslant", new Relation("⩽\u0338") },
+        { "nleqq", new Relation("≦\u0338") },
+        { "lneq", new Relation("⪇") },
+        { "lneqq", new Relation("≨") },
+        // \lvertneqq -> ≨ + U+FE00 (Variation Selector 1) Not dealing with variation selectors, thank you very much
+        { "lnsim", new Relation("⋦") },
+        { "lnapprox", new Relation("⪉") },
+        { "nprec", new Relation("⊀") },
+        { "npreceq", new Relation("⪯\u0338") },
+        { "precnsim", new Relation("⋨") },
+        { "precnapprox", new Relation("⪹") },
+        { "nsim", new Relation("≁") },
+        { "nshortmid", new Relation("∤") },
+        { "nmid", new Relation("∤") },
+        { "nvdash", new Relation("⊬") },
+        { "nvDash", new Relation("⊭") },
+        { "ntriangleleft", new Relation("⋪") },
+        { "ntrianglelefteq", new Relation("⋬") },
+        { "nsubseteq", new Relation("⊈") },
+        { "subsetneq", new Relation("⊊") },
+        { "varsubsetneq", new Relation("⊊") },
+        { "subsetneqq", new Relation("⫋") },
+        { "varsubsetneqq", new Relation("⫋") },
+        { "ngtr", new Relation("≯") },
+        { "ngeq", new Relation("≱") },
+        { "ngeqslant", new Relation("⩾\u0338") },
+        { "ngeqq", new Relation("≧\u0338") },
+        { "gneq", new Relation("⪈") },
+        { "gneqq", new Relation("≩") },
+        // \gvertneqq -> ≩ + U+FE00 (Variation Selector 1) Not dealing with variation selectors, thank you very much
+        { "gnsim", new Relation("⋧") },
+        { "gnapprox", new Relation("⪊") },
+        { "nsucc", new Relation("⊁") },
+
       };
   }
 }
