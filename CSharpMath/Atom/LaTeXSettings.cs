@@ -148,8 +148,6 @@ namespace CSharpMath.Atom {
     public static Structures.AliasDictionary<string, MathAtom> Commands { get; } =
       new Structures.AliasDictionary<string, MathAtom> {
         // Custom additions
-        { "because", new Ordinary("\u2235") }, //not in iosMath
-        { "therefore", new Ordinary("\u2234") }, //not in iosMath
         { "diameter", new Ordinary("\u2300") }, // not in iosMath
         { "degree", new Ordinary("°") },
         { "iiint", new LargeOperator("∭", false) },
@@ -679,8 +677,76 @@ namespace CSharpMath.Atom {
         { "circleddash", new BinaryOperator("⊝") },
         { "circledast", new BinaryOperator("⊛") },
         { "circledcirc", new BinaryOperator("⊚") },
-        { "centerdot", new BinaryOperator("·") },
+        { "centerdot", new BinaryOperator("·") }, // Same as \cdot
         { "intercal", new BinaryOperator("⊺") },
+
+        // Table 27: AMS Binary Relations
+        { "leqq", new Relation("≦") },
+        { "leqslant", new Relation("⩽") },
+        { "eqslantless", new Relation("⪕") },
+        { "lesssim", new Relation("≲") },
+        { "lessapprox", new Relation("⪅") },
+        { "approxeq", new Relation("≊") },
+        { "lessdot", new Relation("⋖") },
+        { "lll", new Relation("⋘") },
+        { "lessgtr", new Relation("≶") },
+        { "lesseqgtr", new Relation("⋚") },
+        { "lesseqqgtr", new Relation("⪋") },
+        { "doteqdot", new Relation("≑") },
+        { "risingdotseq", new Relation("≓") },
+        { "fallingdotseq", new Relation("≒") },
+        { "backsim", new Relation("∽") },
+        { "backsimeq", new Relation("⋍") },
+        // { "subseteqq", new Relation("⫅") }, // Glyph not in Latin Modern Math
+        { "Subset", new Relation("⋐") },
+        // \sqsubset is defined in Table 8
+        { "preccurlyeq", new Relation("≼") },
+        { "curlyeqprec", new Relation("⋞") },
+        { "precsim", new Relation("≾") },
+        // { "precapprox", new Relation("⪷") }, // Glyph not in Latin Modern Math
+        { "vartriangleleft", new Relation("⊲") },
+        { "trianglelefteq", new Relation("⊴") },
+        { "vDash", new Relation("⊨") },
+        { "Vvdash", new Relation("⊪") },
+        { "smallsmile", new Relation("⌣") }, //Same as \smile
+        { "smallfrown", new Relation("⌢") }, //Same as \frown
+        { "bumpeq", new Relation("≏") },
+        { "Bumpeq", new Relation("≎") },
+        { "geqq", new Relation("≧") },
+        { "geqslant", new Relation("⩾") },
+        { "eqslantgtr", new Relation("⪖") },
+        { "gtrsim", new Relation("≳") },
+        { "gtrapprox", new Relation("⪆") },
+        { "gtrdot", new Relation("⋗") },
+        { "ggg", new Relation("⋙") },
+        { "gtrless", new Relation("≷") },
+        { "gtreqless", new Relation("⋛") },
+        { "gtreqqless", new Relation("⪌") },
+        { "eqcirc", new Relation("≖") },
+        { "circeq", new Relation("≗") },
+        { "triangleq", new Relation("≜") },
+        { "thicksim", new Relation("∼") },
+        { "thickapprox", new Relation("≈") },
+        // { "supseteqq", new Relation("⫆") }, // Glyph not in Latin Modern Math
+        { "Supset", new Relation("⋑") },
+        // \sqsupset is defined in Table 8
+        { "succcurlyeq", new Relation("≽") },
+        { "curlyeqsucc", new Relation("⋟") },
+        { "succsim", new Relation("≿") },
+        // { "succapprox", new Relation("⪸") }, // Glyph not in Latin Modern Math
+        { "vartriangleright", new Relation("⊳") },
+        { "trianglerighteq", new Relation("⊵") },
+        { "Vdash", new Relation("⊩") },
+        { "shortmid", new Relation("∣") },
+        { "shortparallel", new Relation("∥") },
+        { "between", new Relation("≬") },
+        // { "pitchfork", new Relation("⋔") }, // Glyph not in Latin Modern Math
+        { "varpropto", new Relation("∝") },
+        { "blacktriangleleft", new Relation("◀") }, // ◂ not in Latin Modern Math
+        { "therefore", new Relation("∴") },
+        // { "backepsilon", new Relation("϶") }, // Glyph not in Latin Modern Math
+        { "blacktriangleright", new Relation("▶") }, // ▸ not in Latin Modern Math
+        { "because", new Relation("∵") },
       };
   }
 }
