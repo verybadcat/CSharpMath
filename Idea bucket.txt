@@ -1,0 +1,30 @@
+﻿0.5.0 candidates:
+CSharpMath.Unity
+CSharpMath.Uno
+
+Slash before commands in command dictionary
++ merge \frac, \overline etc. into that
++ merge ForAscii into that
+
+Fix XITS Math as custom typeface (\sum, \int get shifted downwards)
+
+Fix CSharpMath.Rendering.Tests, some have incorrect bounding boxes (also #32)
+
+Finish implementing the LaTeX symbol table for TextLaTeXSettings
+
+Undo, redo, select, cut, copy, paste, up, down (#54) for Editor
+
+Solve TODO warnings
+
+Burn through all bugs and enhancements
+
+MathML parser
+
+Math evaluation (MathS, Nerdamer, MathNet)
+
+Singletonify LaTeXSettings and TextLaTeXSettings and provide a way to pass instances into the parsers
+
+0.6.0 candidates:
+CSharpMath website https://csharpmath.app
+Documentation + Schoballs ヽ(^o^)ノ
+CSharpMathApp

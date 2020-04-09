@@ -16,6 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "__GlobalFiles", "__GlobalFi
 		CONTRIBUTING.md = CONTRIBUTING.md
 		Directory.Build.props = Directory.Build.props
 		Icon.png = Icon.png
+		Idea bucket.txt = Idea bucket.txt
 		LICENSE = LICENSE
 		README.md = README.md
 		ReleaseProcedure.txt = ReleaseProcedure.txt
