@@ -36,7 +36,7 @@ namespace CSharpMath.Display.Displays {
         Displays
         .Where(d => !(d is ListDisplay<TFont, TGlyph> ld && ld.LinePosition != LinePosition.Regular))
         .Select(d => d.Range));
-    public float Width => Displays.CollectionMaxX() - Displays.CollectionX();
+    public float Width => Displays.CollectionWidth();
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
       this.DrawBackground(context);
       context.SaveState();

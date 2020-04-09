@@ -11,14 +11,10 @@ namespace CSharpMath {
     public static float CollectionDescent<TFont, TGlyph>
       (this IEnumerable<IDisplay<TFont, TGlyph>> displays) where TFont : IFont<TGlyph> =>
         displays.IsNonEmpty() ? displays.Max(display => display.Descent - display.Position.Y) : 0;
-    public static float CollectionX<TFont, TGlyph>
-      (this IEnumerable<IDisplay<TFont, TGlyph>> displays) where TFont : IFont<TGlyph> =>
-      displays.IsNonEmpty() ? displays.Min(d => d.Position.X) : 0;
-    public static float CollectionMaxX<TFont, TGlyph>
-      (this IEnumerable<IDisplay<TFont, TGlyph>> displays) where TFont : IFont<TGlyph> =>
-      displays.IsNonEmpty() ? displays.Max(d => d.Position.X + d.Width) : 0;
     public static float CollectionWidth<TFont, TGlyph>
       (this IEnumerable<IDisplay<TFont, TGlyph>> displays) where TFont : IFont<TGlyph> =>
-      displays.CollectionMaxX() - displays.CollectionX();
+      displays.IsNonEmpty()
+      ? displays.Max(d => d.Position.X + d.Width) - displays.Min(d => d.Position.X)
+      : 0;
   }
 }

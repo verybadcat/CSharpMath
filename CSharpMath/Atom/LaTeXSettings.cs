@@ -148,19 +148,19 @@ namespace CSharpMath.Atom {
     public static Structures.AliasDictionary<string, MathAtom> Commands { get; } =
       new Structures.AliasDictionary<string, MathAtom> {
         // Custom additions
-        { "diameter", new Ordinary("\u2300") }, // not in iosMath
+        { "diameter", new Ordinary("\u2300") },
         { "degree", new Ordinary("°") },
         { "npreccurlyeq", new Relation("⋠") },
         { "nsucccurlyeq", new Relation("⋡") },
+        { "iint", new LargeOperator("∬", false) },
         { "iiint", new LargeOperator("∭", false) },
         { "iiiint", new LargeOperator("⨌", false) },
+        { "oiint", new LargeOperator("∯", false) },
         { "oiiint", new LargeOperator("∰", false) },
         { "intclockwise", new LargeOperator("∱", false) },
         { "awint", new LargeOperator("⨑", false) },
         { "varointclockwise", new LargeOperator("∲", false) },
         { "ointctrclockwise", new LargeOperator("∳", false) },
-        { "iint", new LargeOperator("∬", false) },
-        { "oiint", new LargeOperator("∯", false) },
         { "bigbot", new LargeOperator("⟘", null) },
         { "bigtop", new LargeOperator("⟙", null) },
         { "bigcupdot", new LargeOperator("⨃", null) },
@@ -286,7 +286,7 @@ namespace CSharpMath.Atom {
         { "iota", new Variable("ι") },
         { "kappa", new Variable("κ") },
         { "lambda", new Variable("λ") },
-        { "mu", new Variable("µ") },
+        { "mu", new Variable("μ") },
         { "nu", new Variable("ν") },
         { "xi", new Variable("ξ") },
         { "omicron", new Variable("ο") },
@@ -298,14 +298,14 @@ namespace CSharpMath.Atom {
         { "varsigma", new Variable("ς") },
         { "tau", new Variable("τ") },
         { "upsilon", new Variable("υ") },
-        { "phi", new Variable("φ") },
-        { "varphi", new Variable("ϕ") },
+        { "phi", new Variable("ϕ") }, // Don't be fooled by Visual Studio!
+        { "varphi", new Variable("φ") }, // The Visual Studio font is wrong!
         { "chi", new Variable("χ") },
         { "psi", new Variable("ψ") },
         { "omega", new Variable("ω") },
 
         { "Gamma", new Variable("Γ") },
-        { "Delta", new Variable("∆") },
+        { "Delta", new Variable("Δ") },
         { "Theta", new Variable("Θ") },
         { "Lambda", new Variable("Λ") },
         { "Xi", new Variable("Ξ") },
@@ -314,7 +314,7 @@ namespace CSharpMath.Atom {
         { "Upsilon", new Variable("Υ") },
         { "Phi", new Variable("Φ") },
         { "Psi", new Variable("Ψ") },
-        { "Omega", new Variable("Ω") },
+        { "Omega", new Variable("Ω") },
         // (The remaining Greek majuscules can be produced with ordinary Latin letters.
         // The symbol “M”, for instance, is used for both an uppercase “m” and an uppercase “µ”.
 
