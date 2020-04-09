@@ -7,7 +7,7 @@ using Xunit;
 namespace CSharpMath.Editor.Tests {
   // Tests in different classes run in parallel, unlike tests in the same class
   public class CaretBlinks {
-    public const int MillisecondBuffer = 200;
+    public const int MillisecondBuffer = 150;
     [Fact]
     public async Task Test() {
       var keyboard = new MathKeyboard<TestFont, char>(TestTypesettingContexts.Instance, new TestFont()) {
@@ -146,7 +146,7 @@ namespace CSharpMath.Editor.Tests {
       await Task.Delay((int)MathKeyboard<TestFont, char>.DefaultBlinkMilliseconds - CaretBlinks.MillisecondBuffer);
 
       Assert.Equal(MathKeyboardCaretState.Shown, keyboard.CaretState);
-      await Task.Delay(CaretBlinks.MillisecondBuffer * 5);
+      await Task.Delay((int)MathKeyboard<TestFont, char>.DefaultBlinkMilliseconds);
       Assert.Equal(MathKeyboardCaretState.TemporarilyHidden, keyboard.CaretState);
     }
   }
