@@ -11,6 +11,17 @@ namespace CSharpMath.Xaml.Tests {
   using Avalonia;
   public class TestAvalonia
     : Test<Color, BindingMode, AvaloniaProperty, Control, MathView, TextView> {
+    protected override Display.IDisplay<Rendering.BackEnd.Fonts, Rendering.BackEnd.Glyph> GetDisplay(Control control) {
+      switch (control) {
+        case MathView { Painter: var p }:
+          p.Measure();
+          return p.Display ?? throw new InvalidOperationException("Invalid content");
+        case TextView { Painter: var p }:
+          p.Measure(float.PositiveInfinity);
+          return p.Display ?? throw new InvalidOperationException("Invalid content");
+        default: throw new NotImplementedException();
+      };
+    }
     protected override string FrontEndNamespace => nameof(Avalonia);
     protected override BindingMode Default => BindingMode.Default;
     protected override BindingMode OneWayToSource => BindingMode.OneWayToSource;

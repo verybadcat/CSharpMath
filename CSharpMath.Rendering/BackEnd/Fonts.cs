@@ -23,17 +23,15 @@ namespace CSharpMath.Rendering.BackEnd {
     public Fonts(IEnumerable<Typeface> localTypefaces, float pointSize) {
       PointSize = pointSize;
       Typefaces = localTypefaces.Concat(GlobalTypefaces);
-      MathTypeface = Typefaces.First(t => t.HasMathTable());
     }
     public Fonts(Fonts cloneMe, float pointSize) {
       PointSize = pointSize;
       Typefaces = cloneMe.Typefaces;
-      MathTypeface = cloneMe.MathTypeface;
     }
     public static Typefaces GlobalTypefaces { get; }
     public float PointSize { get; }
     public IEnumerable<Typeface> Typefaces { get; }
-    public Typeface MathTypeface { get; }
+    public Typeface MathTypeface => Typefaces.First(t => t.HasMathTable());
     public Typography.OpenFont.MathGlyphs.MathConstants MathConsts =>
       MathTypeface.MathConsts ?? throw new Structures.InvalidCodePathException(nameof(MathTypeface) + " doesn't have " + nameof(MathConsts));
     public IEnumerator<Typeface> GetEnumerator() => Typefaces.GetEnumerator();

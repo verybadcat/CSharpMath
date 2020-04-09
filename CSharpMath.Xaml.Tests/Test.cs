@@ -4,7 +4,11 @@ using System.Reflection;
 using Xunit;
 
 namespace CSharpMath.Xaml.Tests {
+  using System.Collections.Generic;
   using Atom;
+  using Display;
+  using Display.Displays;
+  using Rendering.BackEnd;
   using Rendering.FrontEnd;
   using Rendering.Text;
   [CollectionDefinition(nameof(TestFixture))]
@@ -29,6 +33,7 @@ namespace CSharpMath.Xaml.Tests {
       public TContent? Content { get => content; set => SetAndRaise(ref content, value); }
       public event PropertyChangedEventHandler? PropertyChanged;
     }
+    protected abstract IDisplay<Fonts, Glyph> GetDisplay(TBaseView view);
     protected abstract string FrontEndNamespace { get; }
     protected abstract TBindingMode Default { get; }
     protected abstract TBindingMode OneWayToSource { get; }
@@ -219,6 +224,43 @@ namespace CSharpMath.Xaml.Tests {
       }
       Test<TMathView, MathList>();
       Test<TTextView, TextAtom>();
+    }
+    [Fact]
+    public void TypefaceAdditionSeenInDisplay() {
+      var typeface = new Typography.OpenFont.OpenFontReader().Read(
+        Assembly.GetExecutingAssembly().GetManifestResourceStream("CSharpMath.Xaml.Tests.ComicNeue_Bold.otf")
+        ?? throw new Structures.InvalidCodePathException("Font not found"))
+        ?? throw new Structures.InvalidCodePathException("Font is invalid");
+      void Test<TView, TContent>(Action<IDisplay<Fonts, Glyph>> check)
+        where TView : TBaseView, ICSharpMathAPI<TContent, TColor>, new() where TContent : class {
+        var view = new TView();
+        Assert.Empty(view.LocalTypefaces);
+        var list = new List<Typography.OpenFont.Typeface>();
+        view.LocalTypefaces = list; 
+        view.LaTeX = "123";
+        Assert.Throws<Xunit.Sdk.AllException>(() => check(GetDisplay(view)));
+
+        list.Add(typeface);
+        Assert.Same(typeface, Assert.Single(view.LocalTypefaces));
+        check(GetDisplay(view));
+
+        list.Remove(typeface);
+        Assert.Empty(view.LocalTypefaces);
+        Assert.Throws<Xunit.Sdk.AllException>(() => check(GetDisplay(view)));
+      }
+      Test<TMathView, MathList>(outer =>
+        Assert.All(
+          Assert.IsType<ListDisplay<Fonts, Glyph>>(outer).Displays,
+          d => Assert.All(
+            Assert.IsType<TextLineDisplay<Fonts, Glyph>>(d).Runs,
+            r => Assert.Contains(typeface, r.Run.Font))));
+      Test<TTextView, TextAtom>(outer =>
+        Assert.All(
+          Assert.IsType<ListDisplay<Fonts, Glyph>>(
+            Assert.IsType<ListDisplay<Fonts, Glyph>>(outer).Displays[0]
+          ).Displays,
+          d => Assert.Contains(typeface,
+            Assert.IsType<TextRunDisplay<Fonts, Glyph>>(d).Run.Font)));
     }
     [Fact]
     public void LaTeXIsContent() {

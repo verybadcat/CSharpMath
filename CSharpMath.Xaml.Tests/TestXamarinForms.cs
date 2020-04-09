@@ -10,6 +10,17 @@ namespace CSharpMath.Xaml.Tests {
 
   public class TestXamarinForms
     : Test<Color, BindingMode, BindableProperty, SKCanvasView, MathView, TextView> {
+    protected override Display.IDisplay<Rendering.BackEnd.Fonts, Rendering.BackEnd.Glyph> GetDisplay(SKCanvasView view) {
+      switch (view) {
+        case MathView { Painter: var p }:
+          p.Measure();
+          return p.Display ?? throw new InvalidOperationException("Invalid content");
+        case TextView { Painter: var p }:
+          p.Measure(float.PositiveInfinity);
+          return p.Display ?? throw new InvalidOperationException("Invalid content");
+        default: throw new NotImplementedException();
+      };
+    }
     protected override string FrontEndNamespace => nameof(Forms);
     protected override BindingMode Default => BindingMode.Default;
     protected override BindingMode OneWayToSource => BindingMode.OneWayToSource;
