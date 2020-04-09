@@ -319,7 +319,13 @@ namespace CSharpMath.Atom {
         // The symbol “M”, for instance, is used for both an uppercase “m” and an uppercase “µ”.
 
         // Table 5: Punctuation Marks Not Found in OT
-        // [Skip text mode commands]
+        { "guillemotleft", new Punctuation("«") },
+        { "guillemotright", new Punctuation("»") },
+        { "guilsinglleft", new Punctuation("‹") },
+        { "guilsinglright", new Punctuation("›") },
+        { "quotedblbase", new Punctuation("„") },
+        { "quotesinglbase", new Punctuation("‚") }, // This is not the comma
+        { "textquotedbl", new Punctuation("\"") },
 
         // Table 6: Predeﬁned LaTeX2ε Text-Mode Commands
         // [Skip text mode commands]
