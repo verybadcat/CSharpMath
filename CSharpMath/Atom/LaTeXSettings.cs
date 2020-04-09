@@ -150,6 +150,8 @@ namespace CSharpMath.Atom {
         // Custom additions
         { "diameter", new Ordinary("\u2300") }, // not in iosMath
         { "degree", new Ordinary("°") },
+        { "npreccurlyeq", new Relation("⋠") },
+        { "nsucccurlyeq", new Relation("⋡") },
         { "iiint", new LargeOperator("∭", false) },
         { "iiiint", new LargeOperator("⨌", false) },
         { "oiiint", new LargeOperator("∰", false) },
@@ -188,8 +190,7 @@ namespace CSharpMath.Atom {
         { "asteraccent", new Accent("\u20F0") },
         { "threeunderdot", new Accent("\u20E8") },
 
-        // Standard TeX
-        { " ", new Ordinary(" ") },
+        // Delimiters outside \left or \right
         { "lceil", new Open("⌈") },
         { "rceil", new Close("⌉") },
         { "lfloor", new Open("⌊") },
@@ -198,6 +199,13 @@ namespace CSharpMath.Atom {
         { "rangle", new Close("〉") },
         { "lgroup", new Open("⟮") },
         { "rgroup", new Close("⟯") },
+        { "ulcorner", new Open("⌜") },
+        { "urcorner", new Close("⌝") },
+        { "llcorner", new Open("⌞") },
+        { "lrcorner", new Close("⌟") },
+
+        // Standard TeX
+        { " ", new Ordinary(" ") },
         { ",", new Space(Structures.Space.ShortSpace) },
         { ":", ">", new Space(Structures.Space.MediumSpace) },
         { ";", new Space(Structures.Space.LongSpace) },
@@ -762,7 +770,7 @@ namespace CSharpMath.Atom {
         { "nprec", new Relation("⊀") },
         { "npreceq", new Relation("⪯\u0338") },
         { "precnsim", new Relation("⋨") },
-        { "precnapprox", new Relation("⪹") },
+        // { "precnapprox", new Relation("⪹") }, // Glyph not in Latin Modern Math
         { "nsim", new Relation("≁") },
         { "nshortmid", new Relation("∤") },
         { "nmid", new Relation("∤") },
@@ -772,9 +780,9 @@ namespace CSharpMath.Atom {
         { "ntrianglelefteq", new Relation("⋬") },
         { "nsubseteq", new Relation("⊈") },
         { "subsetneq", new Relation("⊊") },
-        { "varsubsetneq", new Relation("⊊") },
-        { "subsetneqq", new Relation("⫋") },
-        { "varsubsetneqq", new Relation("⫋") },
+        // \varsubsetneq -> ⊊ + U+FE00 (Variation Selector 1) Not dealing with variation selectors, thank you very much
+        // { "subsetneqq", new Relation("⫋") }, // Glyph not in Latin Modern Math
+        // \varsubsetneqq -> ⫋ + U+FE00 (Variation Selector 1) Not dealing with variation selectors, thank you very much
         { "ngtr", new Relation("≯") },
         { "ngeq", new Relation("≱") },
         { "ngeqslant", new Relation("⩾\u0338") },
@@ -785,7 +793,23 @@ namespace CSharpMath.Atom {
         { "gnsim", new Relation("⋧") },
         { "gnapprox", new Relation("⪊") },
         { "nsucc", new Relation("⊁") },
-
+        { "nsucceq", new Relation("⪰\u0338") },
+        // Duplicate entry in LaTeX Symbol list: \nsucceq
+        { "succnsim", new Relation("⋩") },
+        // { "succnapprox", new Relation("⪺") }, // Glyph not in Latin Modern Math
+        { "ncong", new Relation("≇") },
+        { "nshortparallel", new Relation("∦") },
+        { "nparallel", new Relation("∦") },
+        { "nVdash", new Relation("⊮") }, // Error in LaTeX Symbol list: defined as \nvDash which duplicates above
+        { "nVDash", new Relation("⊯") },
+        { "ntriangleright", new Relation("⋫") },
+        { "ntrianglerighteq", new Relation("⋭") },
+        { "nsupseteq", new Relation("⊉") },
+        // { "nsupseteqq", new Relation("⫆\u0338") }, // Glyph not in Latin Modern Math
+        { "supsetneq", new Relation("⊋") },
+        // \varsupsetneq -> ⊋ + U+FE00 (Variation Selector 1) Not dealing with variation selectors, thank you very much
+        // { "supsetneqq", new Relation("⫌") }, // Glyph not in Latin Modern Math
+        // \varsupsetneqq -> ⫌ + U+FE00 (Variation Selector 1) Not dealing with variation selectors, thank you very much
       };
   }
 }
