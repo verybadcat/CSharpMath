@@ -28,3 +28,6 @@ Singletonify LaTeXSettings and TextLaTeXSettings and provide a way to pass insta
 CSharpMath website https://csharpmath.app
 Documentation + Schoballs ヽ(^o^)ノ
 CSharpMathApp
+
+Far future:
+Typeset http://www2.math.umd.edu/~jcohen/402/Pinter%20Algebra.pdf
