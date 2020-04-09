@@ -50,7 +50,7 @@ namespace CSharpMath.Avalonia {
        float textPainterCanvasWidth = TextPainter.DefaultCanvasWidth) where TContent : class {
       if (!(painter.Measure(textPainterCanvasWidth) is { } size)) return;
       using var bitmap =
-        new RenderTargetBitmap(new PixelSize((int)(size.X + size.Width), (int)size.Height));
+        new RenderTargetBitmap(new PixelSize((int)size.Width, (int)size.Height));
       bitmap.Render(new DrawVisual<TContent>(painter, size));
       bitmap.Save(target);
     }
