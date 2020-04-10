@@ -6,6 +6,10 @@ Slash before commands in command dictionary
 + merge \frac, \overline etc. into that
 + merge ForAscii into that
 
+Replace CSharpMath.Structures.Color with System.Drawing.Color
+
+Make Painter.Measure() return an empty rectangle instead of null
+
 Fix XITS Math as custom typeface (\sum, \int get shifted downwards)
 
 Fix CSharpMath.Rendering.Tests, some have incorrect bounding boxes (also #32)
