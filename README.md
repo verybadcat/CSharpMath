@@ -114,6 +114,53 @@ somePanel.Children.Add(view);
 
 ![MathViewPage](https://user-images.githubusercontent.com/19922066/78373612-692db400-75fd-11ea-89c3-2f2a4f47784a.png)
 
+## But I want a button instead!
+
+For Xamarin.Forms, you can make use of `CSharpMath.Forms.MathButton` to make a clickable math button. It wraps a `MathView` inside and will use its properties to draw math on the button.
+```xaml
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:math="clr-namespace:CSharpMath.Forms;assembly=CSharpMath.Forms"
+             x:Class="Namespace.Class">
+    <math:MathButton x:Name="MathButton">
+        <math:MathView x:Name="MathView">
+            \frac\sqrt23
+        </math:MathView>
+    </math:MathButton>
+</ContentPage>
+```
+For Avalonia, `Avalonia.Controls.Button` already supports arbitrary content. Use it instead.
+```xaml
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:math="clr-namespace:CSharpMath.Avalonia;assembly=CSharpMath.Avalonia"
+             x:Class="Namespace.Class">
+    <Button x:Name="MathButton">
+        <math:MathView x:Name="MathView">
+            \frac\sqrt23
+        </math:MathView>
+    </Button>
+</UserControl>
+```
+
+## But I want to display a majority of normal text with a minority of math!
+CSharpMath also provides a `TextView` exactly for this purpose. You can use `$`, `\(` and `\)` to delimit inline math and `$$`, `\[` and `\]` to delimit display math.
+There is also a `TextButton` for the Xamarin.Forms equivalent of `MathButton`.
+Xamarin.Forms:
+```xaml
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:math="clr-namespace:CSharpMath.Forms;assembly=CSharpMath.Forms"
+             x:Class="Namespace.Class">
+    <math:TextView LaTeX="Text text text text text \( \frac{\sqrt a}{b} \) text text text text text" />
+</ContentPage>
+```
+Avalonia:
+```xaml
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:math="clr-namespace:CSharpMath.Avalonia;assembly=CSharpMath.Avalonia"
+             x:Class="Namespace.Class">
+    <math:TextView LaTeX="Text text text text text \( \frac{\sqrt a}{b} \) text text text text text" />
+</UserControl>
+```
+
 # [Documentation](https://github.com/verybadcat/CSharpMath/wiki/Documentation-of-public-facing-APIs-of-CSharpMath.Rendering,-CSharpMath.SkiaSharp-and-CSharpMath.Forms-MathViews)
 
 # Extending to more platforms
