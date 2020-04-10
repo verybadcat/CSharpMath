@@ -6,9 +6,12 @@ CSharpMath is a C# port of the wonderful <a href="https://github.com/kostub/iosM
 <i>The icon is a product of this library.</i>
 </p>
 
-Current release|Current pre-release|NuGet Downloads|Number of contributors
--|-|-|-
-[NuGet]: ![NuGet Release shield](https://img.shields.io/nuget/v/CSharpMath.svg)<br/> [GitHub]: ![GitHub Releases shield](https://img.shields.io/github/release/verybadcat/CSharpMath.svg)<br/>![GitHub Release date shield](https://img.shields.io/github/release-date/verybadcat/CSharpMath.svg)<br/>![GitHub commits since last release shield](https://img.shields.io/github/commits-since/verybadcat/CSharpMath/latest.svg)|[NuGet]: ![NuGet pre-release shield](https://img.shields.io/nuget/vpre/CSharpMath.svg)<br/> [GitHub]: ![GitHub Pre-releases shield](https://img.shields.io/github/release-pre/verybadcat/CSharpMath.svg)<br/>![GitHub Pre-release date shield](https://img.shields.io/github/release-date-pre/verybadcat/CSharpMath.svg)<br/>![GitHub commits since last prerelease shield](https://img.shields.io/github/commits-since/verybadcat/CSharpMath/latest.svg?include_prereleases)|![NuGet downloads](https://img.shields.io/nuget/dt/CSharpMath.svg)|![GitHub Contributors shield](https://img.shields.io/github/contributors/verybadcat/CSharpMath.svg)
+Current release|[NuGet]: ![NuGet release shield](https://img.shields.io/nuget/v/CSharpMath.svg) [GitHub]: ![GitHub release shield](https://img.shields.io/github/release/verybadcat/CSharpMath.svg)![GitHub release date shield](https://img.shields.io/github/release-date/verybadcat/CSharpMath.svg)![GitHub commits since last release shield](https://img.shields.io/github/commits-since/verybadcat/CSharpMath/latest.svg)
+-|-
+Current prerelease|[NuGet]: ![NuGet pre-release shield](https://img.shields.io/nuget/vpre/CSharpMath.svg) [GitHub]: ![GitHub pre-release shield](https://img.shields.io/github/release-pre/verybadcat/CSharpMath.svg)![GitHub pre-release date shield](https://img.shields.io/github/release-date-pre/verybadcat/CSharpMath.svg)![GitHub commits since last prerelease shield](https://img.shields.io/github/commits-since/verybadcat/CSharpMath/latest.svg?include_prereleases)
+
+![NuGet downloads shield](https://img.shields.io/nuget/dt/CSharpMath.svg)
+![GitHub contributors shield](https://img.shields.io/github/contributors/verybadcat/CSharpMath.svg)
 
 [NuGet]: https://www.nuget.org/packages/CSharpMath/
 [GitHub]: https://github.com/verybadcat/CSharpMath/releases
