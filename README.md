@@ -171,17 +171,26 @@ Avalonia:
 
 ## What about rendering to an image instead of displaying in a view?
 Warning: There are still some rough edges on image rendering to be resolved. [You can view the latest progress here.](https://github.com/verybadcat/CSharpMath/tree/master/CSharpMath.Rendering.Tests/Display)
+
 For SkiaSharp:
 ```cs
 using CSharpMath.SkiaSharp;
 var painter = new MathPainter { LaTeX = @"\frac23" }; // or TextPainter
 using var png = painter.DrawAsStream();
+// or painter.DrawAsStream(format: SkiaSharp.SKEncodedImageFormat.Jpeg) for JPEG
+// or painter.DrawAsStream(format: SkiaSharp.SKEncodedImageFormat.Gif) for GIF
+// or painter.DrawAsStream(format: SkiaSharp.SKEncodedImageFormat.Bmp) for BMP
+// or... you get it.
 ```
 For Xamarin.Forms:
 ```cs
 using CSharpMath.SkiaSharp;
 var painter = someMathView.Painter; // or someTextView.Painter
 using var png = painter.DrawAsStream();
+// or painter.DrawAsStream(format: SkiaSharp.SKEncodedImageFormat.Jpeg) for JPEG
+// or painter.DrawAsStream(format: SkiaSharp.SKEncodedImageFormat.Gif) for GIF
+// or painter.DrawAsStream(format: SkiaSharp.SKEncodedImageFormat.Bmp) for BMP
+// or... you get it.
 ```
 For Avalonia:
 ```cs
