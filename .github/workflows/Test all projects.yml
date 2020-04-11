@@ -22,6 +22,8 @@ jobs:
         dotnet-version: '3.1.201'
     - name: Build and Test
       run: |
+        dotnet tool install dotnet-outdated
+        dotnet outdated -u CSharpMath.Xaml.Tests.NuGet
         for p in\
           "CSharpMath.CoreTests"\
           "CSharpMath.Editor.Tests"\
@@ -29,9 +31,10 @@ jobs:
           "CSharpMath.Rendering.Tests"\
           "CSharpMath.Rendering.Text.Tests"\
           "CSharpMath.Xaml.Tests"\
+          "CSharpMath.Xaml.Tests.NuGet"\
           "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests"
         do
           dotnet add "$p" package Microsoft.NET.Test.Sdk # Update is required for GitHubActionsTestLogger to print anything
           dotnet add "$p" package GitHubActionsTestLogger
-          dotnet test "$p" --configuration Release --logger GitHubActions
+          dotnet test "$p" -c Release -l GitHubActions
         done
