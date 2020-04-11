@@ -11,11 +11,10 @@
             <StackPanel Spacing="4">
 
                 <TextBlock Classes="h1"
-                           Text="CSharpMath.Avalonia.MathButton" />
+                           Text="CSharpMath.Avalonia.MathView in a Button" />
 
-                <Button>Hoi!</Button>
                 <TextBlock Classes="h2"
-                           Text="Displays math as a button" />
+                           Text="Math displayed in a button" />
 
             </StackPanel>
 
