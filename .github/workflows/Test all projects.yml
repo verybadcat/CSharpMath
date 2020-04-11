@@ -23,7 +23,7 @@ jobs:
     - name: Build and Test
       run: |
         dotnet tool install -g dotnet-outdated
-        dotnet outdated -pre Auto -u CSharpMath.Xaml.Tests.NuGet
+        dotnet outdated -pre Always -u CSharpMath.Xaml.Tests.NuGet
         for p in\
           "CSharpMath.CoreTests"\
           "CSharpMath.Editor.Tests"\
