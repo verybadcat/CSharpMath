@@ -5,6 +5,9 @@ C:/
 # For CSharpMath.Rendering.Tests
 CSharpMath.Rendering.Tests/*/*.*.png
 
+# For CSharpMath.Xaml.Tests.NuGet
+CSharpMath.Xaml.Tests.NuGet/Test.*.png
+
 # Ignore generated .nupkgs
 /.nupkgs
 
