@@ -28,6 +28,8 @@ Math evaluation (MathS, Nerdamer, MathNet)
 
 Singletonify LaTeXSettings and TextLaTeXSettings and provide a way to pass instances into the parsers
 
+Finish off http://texdoc.net/texmf-dist/doc/latex/amsmath/amsldoc.pdf
+
 0.6.0 candidates:
 CSharpMath website https://csharpmath.app
 Documentation + Schoballs ヽ(^o^)ノ
