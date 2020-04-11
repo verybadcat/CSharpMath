@@ -68,8 +68,16 @@ someSuperview.Add(latexView);
 ![Quadratic Formula](CSharpMath/RenderedSamples/Quadratic%20Formula.png)|![Power Series](CSharpMath/RenderedSamples/PowerSeries.png)
 ------------------------------------------------------------------------|-----------------------------------------------------------
 ![Matrix Product](CSharpMath/RenderedSamples/MatrixProduct.png)         |![Continued Fraction](CSharpMath/RenderedSamples/ContinuedFraction.png)
-      
-### 2. CSharpMath.Forms
+    
+### 2. CSharpMath.SkiaSharp
+```cs
+var painter = CSharpMath.SkiaSharp.MathPainter();
+painter.LaTeX = @"\frac\sqrt23";
+paiinter.Draw(someCanvas);
+```
+This is used by CSharpMath.Forms below.
+    
+### 3. CSharpMath.Forms
 
 ```xaml
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
@@ -94,7 +102,7 @@ iOS | Android | Windows UWP
 ----|---------|------------
 ![1/2](https://user-images.githubusercontent.com/19922066/40612166-fd6c5b38-62ab-11e8-9cb1-b2b7eb6883be.png) | ![1+1](https://user-images.githubusercontent.com/19922066/40575043-183a6970-6110-11e8-887f-820e14efc588.jpeg) | ![Panning a view](https://user-images.githubusercontent.com/19922066/40731183-18a09b68-6463-11e8-8095-1a4cc9df9eae.gif) ![Colors!](https://user-images.githubusercontent.com/19922066/40972206-8abc247c-68f2-11e8-8684-561b5e833c21.png)
 
-### 3. CSharpMath.Avalonia
+### 4. CSharpMath.Avalonia
 
 ```xaml
 <UserControl xmlns="https://github.com/avaloniaui"
@@ -159,6 +167,28 @@ Avalonia:
              x:Class="Namespace.Class">
     <math:TextView LaTeX="Text text text text text \( \frac{\sqrt a}{b} \) text text text text text" />
 </UserControl>
+```
+
+## What about rendering to an image instead of displaying in a view?
+Warning: There are still some rough edges on image rendering to be resolved. [You can view the latest progress here.](https://github.com/verybadcat/CSharpMath/tree/master/CSharpMath.Rendering.Tests/Display)
+For SkiaSharp:
+```cs
+using CSharpMath.SkiaSharp;
+var painter = new MathPainter { LaTeX = @"\frac23" }; // or TextPainter
+using var png = painter.DrawAsStream();
+```
+For Xamarin.Forms:
+```cs
+using CSharpMath.SkiaSharp;
+var painter = someMathView.Painter; // or someTextView.Painter
+using var png = painter.DrawAsStream();
+```
+For Avalonia:
+```cs
+using CSharpMath.Avalonia;
+var painter = someMathView.Painter; // or someTextView.Painter
+// Due to limitations of the Avalonia API, you can only render as PNG to a target stream
+painter.DrawAsPng(someStream);
 ```
 
 # [Documentation](https://github.com/verybadcat/CSharpMath/wiki/Documentation-of-public-facing-APIs-of-CSharpMath.Rendering,-CSharpMath.SkiaSharp-and-CSharpMath.Forms-MathViews)
