@@ -16,7 +16,7 @@
         new Avalonia.MathView { LaTeX = "1" }.Painter.DrawAsPng(avalonia);
 
       using (var forms = System.IO.File.OpenRead(File(nameof(Forms))))
-        Xunit.Assert.Equal(797, forms.Length);
+        Xunit.Assert.Contains(new[] { 344, 797 }, forms.Length); // 797 on Mac, 344 on Ubuntu
       using (var avalonia = System.IO.File.OpenRead(File(nameof(Avalonia))))
         Xunit.Assert.Equal(344, avalonia.Length);
     }
