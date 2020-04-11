@@ -22,7 +22,7 @@ jobs:
         dotnet-version: '3.1.201'
     - name: Build and Test
       run: |
-        dotnet tool install dotnet-outdated
+        dotnet tool install -g dotnet-outdated
         dotnet outdated -u CSharpMath.Xaml.Tests.NuGet
         for p in\
           "CSharpMath.CoreTests"\
