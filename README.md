@@ -170,7 +170,7 @@ Avalonia:
 ```
 
 ## What about rendering to an image instead of displaying in a view?
-Warning: There are still some rough edges on image rendering to be resolved. [You can view the latest progress here.](https://github.com/verybadcat/CSharpMath/tree/master/CSharpMath.Rendering.Tests/Display)
+Warning: There are still some rough edges on image rendering to be resolved, such as [this](CSharpMath.Rendering.Tests/Display/AccentOverF.png) and [this](CSharpMath.Rendering.Tests/Text/WideDisplayMaths.png). However, it is already usable for the majority of cases.
 
 For SkiaSharp:
 ```cs
