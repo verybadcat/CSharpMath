@@ -6,11 +6,16 @@ CSharpMath is a C# port of the wonderful <a href="https://github.com/kostub/iosM
 <i>The icon is a product of this library.</i>
 </p>
 
-[Current release](https://www.nuget.org/packages/CSharpMath/)|![NuGet release shield](https://img.shields.io/nuget/v/CSharpMath.svg) ![GitHub release shield](https://img.shields.io/github/release/verybadcat/CSharpMath.svg) ![GitHub release date shield](https://img.shields.io/github/release-date/verybadcat/CSharpMath.svg) ![GitHub commits since last release shield](https://img.shields.io/github/commits-since/verybadcat/CSharpMath/latest.svg)
+[Current release][NuGet]|[![NuGet release shield](https://img.shields.io/nuget/v/CSharpMath.svg)][NuGet] [![GitHub release shield](https://img.shields.io/github/release/verybadcat/CSharpMath.svg)][GitHub] [![GitHub release date shield](https://img.shields.io/github/release-date/verybadcat/CSharpMath.svg)][GitHub] [![GitHub commits since last release shield](https://img.shields.io/github/commits-since/verybadcat/CSharpMath/latest.svg)][GitHub]
 -|-
-[Current prerelease](https://www.nuget.org/packages/CSharpMath/absoluteLatest)|![NuGet pre-release shield](https://img.shields.io/nuget/vpre/CSharpMath.svg) ![GitHub pre-release shield](https://img.shields.io/github/release-pre/verybadcat/CSharpMath.svg) ![GitHub pre-release date shield](https://img.shields.io/github/release-date-pre/verybadcat/CSharpMath.svg) ![GitHub commits since last prerelease shield](https://img.shields.io/github/commits-since/verybadcat/CSharpMath/latest.svg?include_prereleases)
+[Current prerelease][NuGet-pre]|[![NuGet pre-release shield](https://img.shields.io/nuget/vpre/CSharpMath.svg)][NuGet-pre] [![GitHub pre-release shield](https://img.shields.io/github/release-pre/verybadcat/CSharpMath.svg)][GitHub-pre] [![GitHub pre-release date shield](https://img.shields.io/github/release-date-pre/verybadcat/CSharpMath.svg)][GitHub-pre] [![GitHub commits since last prerelease shield](https://img.shields.io/github/commits-since/verybadcat/CSharpMath/latest.svg?include_prereleases)][GitHub-pre]
 
-![NuGet downloads shield](https://img.shields.io/nuget/dt/CSharpMath.svg) ![GitHub contributors shield](https://img.shields.io/github/contributors/verybadcat/CSharpMath.svg)
+[![NuGet downloads shield](https://img.shields.io/nuget/dt/CSharpMath.svg)][NuGet] [![GitHub contributors shield](https://img.shields.io/github/contributors/verybadcat/CSharpMath.svg)](https://github.com/verybadcat/CSharpMath/graphs/contributors) [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/verybadcat/CSharpMath.svg)](http://isitmaintained.com/project/verybadcat/CSharpMath "Average time to resolve an issue") [![Percentage of issues still open](http://isitmaintained.com/badge/open/verybadcat/CSharpMath.svg)](http://isitmaintained.com/project/verybadcat/CSharpMath "Percentage of issues still open")
+
+[NuGet]: https://www.nuget.org/packages/CSharpMath/
+[NuGet-pre]: https://www.nuget.org/packages/CSharpMath/absoluteLatest
+[GitHub]: https://github.com/verybadcat/CSharpMath/releases/latest
+[GitHub-pre]: https://github.com/verybadcat/CSharpMath/releases
 
  <!--
 ## Choose your platform
