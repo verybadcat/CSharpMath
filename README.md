@@ -207,6 +207,38 @@ painter.DrawAsPng(someStream);
 
 # [Documentation](https://github.com/verybadcat/CSharpMath/wiki/Documentation-of-public-facing-APIs-of-CSharpMath.Rendering,-CSharpMath.SkiaSharp-and-CSharpMath.Forms-MathViews)
 
+# Project structure
+
+<!-- ├│─└ -->
+```
+<_Core>
+CSharpMath
+├── CSharpMath.CoreTests
+│   <iOS UI>
+├── CSharpMath.Apple
+│   └── CSharpMath.Ios
+│       └── CSharpMath.Ios.Example
+└── CSharpMath.Editor
+    ├── CSharpMath.Editor.Tests
+    │   └── CSharpMath.Editor.Tests.Visualizer
+    ├── CSharpMath.Editor.Tests.FSharp
+    └── CSharpMath.Rendering
+        │   <Avalonia UI>
+        ├── CSharpMath.Avalonia ─────────────────────────┬───┐
+        │   └── CSharpMath.Avalonia.Example              │   │
+        │   <SkiaSharp front end>                        │   │
+        └── CSharpMath.SkiaSharp ────────────────────────┤   │
+            │   <Xamarin.Forms UI>                       │   │
+            └── CSharpMath.Forms ─────────────────────── │ ──┤
+                └── CSharpMath.Forms.Example             │   │
+                    ├── CSharpMath.Forms.Example.Android │   │
+                    ├── CSharpMath.Forms.Example.iOS     │   │
+                    ├── CSharpMath.Forms.Example.WPF     │   │
+                    └── CSharpMath.Forms.Example.UWP     │   │
+                            CSharpMath.Rendering.Tests ──┘   │
+                                     CSharpMath.Xaml.Tests ──┘
+```
+
 # Extending to more platforms
 
 There are a few ways to extend this to more platforms:
