@@ -209,7 +209,13 @@ painter.DrawAsPng(someStream);
 
 # Project structure
 
-<!-- ├│─└ -->
+<!--
+https://en.wikipedia.org/wiki/Box-drawing_character
+┌─┬┐  ╔═╦╗  ╓─╥╖  ╒═╤╕
+│ ││  ║ ║║  ║ ║║  │ ││
+├─┼┤  ╠═╬╣  ╟─╫╢  ╞═╪╡
+└─┴┘  ╚═╩╝  ╙─╨╜  ╘═╧╛
+-->
 ```
 <_Core>
 CSharpMath
@@ -223,6 +229,7 @@ CSharpMath
     │   └── CSharpMath.Editor.Tests.Visualizer
     ├── CSharpMath.Editor.Tests.FSharp
     └── CSharpMath.Rendering
+        ├── CSharpMath.Rendering.Text.Tests
         │   <Avalonia UI>
         ├── CSharpMath.Avalonia ─────────────────────────┬───┐
         │   └── CSharpMath.Avalonia.Example              │   │

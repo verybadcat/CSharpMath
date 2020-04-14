@@ -18,7 +18,7 @@ namespace CSharpMath.Rendering.Tests {
       painter.TextColor = SKColors.White;
       for (int i = 0; i < count; i++) {
         painter.LaTeX = i.ToString();
-        var m = painter.Measure() ?? throw new Structures.InvalidCodePathException("Invalid LaTeX");
+        var m = painter.Measure();
         painter.Draw(c, cx - m.Width / 2, cy + m.Height / 2 - r);
         c.RotateDegrees(θ, cx, cy);
       }

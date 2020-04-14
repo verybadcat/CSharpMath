@@ -34,14 +34,14 @@ Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6. \[\f
       if (reset) { e.Surface.Canvas.Clear(); reset = false; }
       e.Surface.Canvas.Clear();
       if (drawOneLine) {
-        var measure = painter.Measure(float.PositiveInfinity) ?? throw new Structures.InvalidCodePathException("Invalid LaTeX");
+        var measure = painter.Measure(float.PositiveInfinity);
         e.Surface.Canvas.DrawRect(x, y,
           measure.Width, measure.Height, new global::SkiaSharp.SKPaint {
             Color = global::SkiaSharp.SKColors.Orange
           });
         painter.DrawOneLine(e.Surface.Canvas, x, y);
       } else {
-        var measure = painter.Measure(w) ?? throw new Structures.InvalidCodePathException("Invalid LaTeX");
+        var measure = painter.Measure(w);
         e.Surface.Canvas.DrawRect(x, y,
           measure.Width, measure.Height, new global::SkiaSharp.SKPaint {
             Color = global::SkiaSharp.SKColors.Orange

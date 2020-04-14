@@ -63,9 +63,11 @@ namespace CSharpMath.Rendering.FrontEnd {
     public abstract Color WrapColor(TColor color);
     public abstract TColor UnwrapColor(Color color);
     public abstract ICanvas WrapCanvas(TCanvas canvas);
-    public virtual RectangleF? Measure(float textPainterCanvasWidth) {
+    public virtual RectangleF Measure(float textPainterCanvasWidth) {
       UpdateDisplay(textPainterCanvasWidth);
-      return Display?.DisplayBounds();
+      if (Display != null)
+        return new RectangleF(0, -Display.Ascent, Display.Width, Display.Ascent + Display.Descent);
+      else return RectangleF.Empty;
     }
     protected abstract void UpdateDisplayCore(float textPainterCanvasWidth);
     protected void UpdateDisplay(float textPainterCanvasWidth) {
@@ -119,11 +121,7 @@ namespace CSharpMath.Rendering.FrontEnd {
         canvas.DefaultColor = WrapColor(TextColor);
         canvas.CurrentColor = WrapColor(HighlightColor);
         canvas.CurrentStyle = PaintStyle;
-        var measure = Measure(canvas.Width) ??
-          throw new InvalidCodePathException(
-            nameof(Measure) + " returned null." +
-            $"Any conditions leading to this should have already been checked via " +
-            nameof(Content) + " != null.");
+        var measure = Measure(canvas.Width);
         canvas.FillRect(display.Position.X + measure.X, display.Position.Y - display.Descent,
           measure.Width, measure.Height);
         canvas.CurrentColor = null;

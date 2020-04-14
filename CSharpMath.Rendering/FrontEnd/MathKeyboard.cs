@@ -10,7 +10,9 @@ namespace CSharpMath.Rendering.FrontEnd {
     public MathKeyboard(float fontSize = PainterConstants.DefaultFontSize, double blinkMilliseconds = DefaultBlinkMilliseconds)
       : base(TypesettingContext.Instance,
              new Fonts(Array.Empty<Typography.OpenFont.Typeface>(), fontSize), blinkMilliseconds) { }
-    
+    // Rendering: Convert to 
+    public override RectangleF Measure =>
+      Display != null ? new RectangleF(0, -Display.Ascent, Display.Width, Display.Ascent + Display.Descent) : RectangleF.Empty;
     public void DrawCaret(ICanvas canvas, Structures.Color color, CaretShape shape) {
       if (CaretState != MathKeyboardCaretState.Shown || Display is null)
         return;

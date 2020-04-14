@@ -26,7 +26,10 @@ namespace CSharpMath {
   using Display;
   using Display.FrontEnd;
   partial class Extensions {
-    /// <summary>The display's bounds, in its own coordinate system.</summary> 
+    /// <summary>
+    /// The display's bounds, in its own coordinate system.<br/>
+    /// **Internal only! The Rectangle's position is at the bottom left: not what the outer world expects**
+    /// </summary> 
     public static RectangleF DisplayBounds<TFont, TGlyph>
       (this IDisplay<TFont, TGlyph> display) where TFont : IFont<TGlyph> =>
       new RectangleF(0, -display.Descent, display.Width, display.Ascent + display.Descent);

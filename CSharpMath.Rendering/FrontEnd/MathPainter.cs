@@ -11,7 +11,7 @@ namespace CSharpMath.Rendering.FrontEnd {
       Atom.LaTeXParser.MathListFromLaTeX(latex);
     protected override string ContentToLaTeX(Atom.MathList mathList) =>
       Atom.LaTeXParser.MathListToLaTeX(mathList).ToString();
-    public override RectangleF? Measure(float unused = float.NaN) => base.Measure(unused);
+    public override RectangleF Measure(float unused = float.NaN) => base.Measure(unused);
     protected override void SetRedisplay() => _displayChanged = true;
     protected override void UpdateDisplayCore(float unused) {
       if (_displayChanged)
