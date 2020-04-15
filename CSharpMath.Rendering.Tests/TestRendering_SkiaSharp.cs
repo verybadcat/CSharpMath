@@ -5,7 +5,7 @@ using Xunit;
 namespace CSharpMath.Rendering.Tests {
   using FrontEnd;
   using SkiaSharp;
-  public class TestSkiaSharp : Test<SKCanvas, SKColor, MathPainter, TextPainter> {
+  public class TestRendering_SkiaSharp : TestRendering<SKCanvas, SKColor, MathPainter, TextPainter> {
     protected override string FrontEnd => nameof(SkiaSharp);
     protected override double FileSizeTolerance => 0; // SkiaSharp is the baseline, no deviations allowed
     protected override void DrawToStream<TContent>(Painter<SKCanvas, TContent, SKColor> painter, System.IO.Stream stream, float textPainterCanvasWidth) =>

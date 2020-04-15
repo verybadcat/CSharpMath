@@ -6,8 +6,8 @@
 
   <ItemGroup>
     <Compile Include="..\..\CSharpMath.Rendering.Tests\DrawIcon.cs" Link="Examples\DrawIcon.cs" />
-    <Compile Include="..\..\CSharpMath.Rendering.Tests\MathData.cs" Link="Examples\MathData.cs" />
-    <Compile Include="..\..\CSharpMath.Rendering.Tests\SharedData.cs" Link="Examples\SharedData.cs" />
+    <Compile Include="..\..\CSharpMath.Rendering.Tests\TestRenderingMathData.cs" Link="Examples\TestRenderingMathData.cs" />
+    <Compile Include="..\..\CSharpMath.Rendering.Tests\TestRenderingSharedData.cs" Link="Examples\TestRenderingSharedData.cs" />
   </ItemGroup>
 
   <ItemGroup>

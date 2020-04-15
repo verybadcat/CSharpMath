@@ -1,6 +1,6 @@
 namespace CSharpMath.Rendering.Tests {
   [Android.Runtime.Preserve(AllMembers = true), Foundation.Preserve(AllMembers = true)]
-  public sealed class TextData : SharedData<TextData> {
+  public sealed class TestRenderingTextData : TestRenderingSharedData<TestRenderingTextData> {
     public const string Accent = @"\'a";
     public const string KindergartenQuestion = @"Mary has \$10. Now she has \$20. How much did she earn?";
     public const string IntegrationByParts = @"
@@ -12,5 +12,8 @@ namespace CSharpMath.Rendering.Tests {
         \end{array} $$ or more compactly: \[\int u\:dv = uv - \int v \:du.\]";
     public const string WideDisplayMaths = @"Text 1$$\sum\int^3_2x\ dx$$Text 2";
     public const string FontStyles = @"\textnormal F\textrm F\textbf F\textcal F\texttt F\textit F\textsf F\textfrak F\textbb F\textbfit F";
+    public const string QuadraticPolynomial = @"$$p(x)=ax^2+bx+c, \text{ where } a \neq 0$$ Above is the definition of a quadratic ($2^{nd}$ degree) polynomial.";
+    public const string InlineMath = @"$\int_{a_1^2}^{a_2^2}\sqrt\frac x2dx$";
+    public const string DisplayMath = @"$$\int_{a_1^2}^{a_2^2}\sqrt\frac x2dx$$";
   }
 }

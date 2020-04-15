@@ -51,8 +51,10 @@ namespace CSharpMath.Rendering.FrontEnd {
       if (ErrorMessage == null) {
         _relativeXCoordDisplay.Position =
           _relativeXCoordDisplay.Position.Plus(IPainterExtensions.GetDisplayPosition(
-            _relativeXCoordDisplay.Width, _relativeXCoordDisplay.Ascent,
-            _relativeXCoordDisplay.Descent, FontSize, width ?? c.Width,
+            System.Math.Max(_relativeXCoordDisplay.Width, _absoluteXCoordDisplay.Width),
+            System.Math.Max(_relativeXCoordDisplay.Ascent, _absoluteXCoordDisplay.Ascent),
+            System.Math.Max(_relativeXCoordDisplay.Descent, _absoluteXCoordDisplay.Descent),
+            FontSize, width ?? c.Width,
             c.Height, alignment, padding, offsetX, offsetY
           ));
         //offsetY is already included in _relativeXCoordDisplay.Position,

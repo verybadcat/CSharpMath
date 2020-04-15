@@ -19,9 +19,9 @@ namespace Foundation {
 #endif
 namespace CSharpMath.Rendering.Tests {
   [Android.Runtime.Preserve(AllMembers = true), Foundation.Preserve(AllMembers = true)]
-  public abstract class SharedData<TThis> : IEnumerable<object[]> where TThis : SharedData<TThis> {
+  public abstract class TestRenderingSharedData<TThis> : IEnumerable<object[]> where TThis : TestRenderingSharedData<TThis> {
     public static IReadOnlyDictionary<string, string> AllConstants { get; } =
-      typeof(SharedData<TThis>)
+      typeof(TestRenderingSharedData<TThis>)
       .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
       .Concat(typeof(TThis)
         .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly))

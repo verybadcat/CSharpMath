@@ -14,10 +14,10 @@ namespace CSharpMath.Forms.Example {
       Size.SelectedIndexChanged += (sender, e) =>
         View.FontSize = (float)Size.SelectedItem;
       Size.SelectedItem = 96f;
-      Picker.ItemsSource = Rendering.Tests.MathData.AllConstants.Keys.ToList();
+      Picker.ItemsSource = Rendering.Tests.TestRenderingMathData.AllConstants.Keys.ToList();
       Picker.SelectedIndexChanged += (sender, e) =>
-        View.LaTeX = Label.Text = Rendering.Tests.MathData.AllConstants[(string)Picker.SelectedItem];
-      Picker.SelectedItem = nameof(Rendering.Tests.MathData.ShortIntegral);
+        View.LaTeX = Label.Text = Rendering.Tests.TestRenderingMathData.AllConstants[(string)Picker.SelectedItem];
+      Picker.SelectedItem = nameof(Rendering.Tests.TestRenderingMathData.ShortIntegral);
     }
     protected override void OnDisappearing() {
       //App.AllViews.Remove(View);

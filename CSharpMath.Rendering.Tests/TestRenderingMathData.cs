@@ -1,6 +1,6 @@
 namespace CSharpMath.Rendering.Tests {
   [Android.Runtime.Preserve(AllMembers = true), Foundation.Preserve(AllMembers = true)]
-  public sealed class MathData : SharedData<MathData> {
+  public sealed class TestRenderingMathData : TestRenderingSharedData<TestRenderingMathData> {
     
     public const string AccentOver = @"\acute{x}";
 #warning Fix following line's output
