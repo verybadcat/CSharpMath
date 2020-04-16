@@ -10,10 +10,13 @@ namespace CSharpMath.Rendering.Tests {
     protected override double FileSizeTolerance => 0; // SkiaSharp is the baseline, no deviations allowed
     protected override void DrawToStream<TContent>(Painter<SKCanvas, TContent, SKColor> painter, System.IO.Stream stream, float textPainterCanvasWidth) =>
       painter.DrawAsStream(textPainterCanvasWidth)?.CopyTo(stream);
-    [Fact]
-    public override void MathPainterSettings() {
-      base.MathPainterSettings();
-      MathPainterSettingsTest("NoAntiAlias", new MathPainter { AntiAlias = false });
-    }
+    public static TheoryData<string, MathPainter> MathPainterSettingsDataExtra =>
+      new TheoryData<string, MathPainter> {
+        { "NoAntiAlias", new MathPainter { AntiAlias = false } }
+      };
+    [Theory]
+    [MemberData(nameof(MathPainterSettingsDataExtra))]
+    public override void MathPainterSettings(string file, MathPainter painter) =>
+      base.MathPainterSettings(file, painter);
   }
 }

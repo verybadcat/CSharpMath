@@ -69,7 +69,7 @@ namespace CSharpMath.Rendering.Tests {
   }
   [Collection(nameof(TestRenderingFixture))]
   public abstract class TestRendering<TCanvas, TColor, TMathPainter, TTextPainter>
-    where TMathPainter : MathPainter<TCanvas, TColor>, new() 
+    where TMathPainter : MathPainter<TCanvas, TColor>, new()
     where TTextPainter : TextPainter<TCanvas, TColor>, new() {
     protected abstract string FrontEnd { get; }
     /// <summary>Maximum percentage change from expected file size to actual file size * 100</summary>
@@ -96,7 +96,7 @@ namespace CSharpMath.Rendering.Tests {
       // Prevent black background behind black rendered output in File Explorer preview
       painter.HighlightColor = painter.UnwrapColor(new Structures.Color(0xF0, 0xF0, 0xF0));
       painter.LaTeX = latex;
-      
+
       var actualFile = new FileInfo(System.IO.Path.Combine(folder, inFile + "." + frontEnd + ".png"));
       Assert.False(actualFile.Exists, $"The actual file was not deleted by test initialization: {actualFile.FullName}");
 
@@ -118,37 +118,38 @@ namespace CSharpMath.Rendering.Tests {
       if (FileSizeTolerance == 0)
         Assert.True(TestRenderingFixture.StreamsContentsAreEqual(expectedStream, actualStream), "The images differ.");
     }
-    void PainterSettings<TPainter, TContent>(Action<string, TPainter> run) where TPainter : Painter<TCanvas, TContent, TColor>, new() where TContent : class {
-      run("Baseline", new TPainter());
-      run("Stroke", new TPainter { PaintStyle = PaintStyle.Stroke });
+    public static TheoryData<string, TPainter> PainterSettingsData<TPainter, TContent>() where TPainter : Painter<TCanvas, TContent, TColor>, new() where TContent : class =>
+      new TheoryData<string, TPainter> {
+        { "Baseline", new TPainter() },
+        { "Stroke", new TPainter { PaintStyle = PaintStyle.Stroke } },
 #warning For some reason the Avalonia front end behaves correctly for TextPainter Magnification test but not the SkiaSharp front end??
-      //run("Magnification", new TPainter { Magnification = 2 });
-      using var comicNeue = TestRenderingFixture.ThisDirectory.EnumerateFiles("ComicNeue_Bold.otf").Single().OpenRead();
-      run("LocalTypeface", new TPainter {
-        LocalTypefaces = new[] {
-          new Typography.OpenFont.OpenFontReader().Read(comicNeue)
-          ?? throw new Structures.InvalidCodePathException("Invalid font!")
-        }
-      });
-      run("TextLineStyle", new TPainter { LineStyle = Atom.LineStyle.Text });
-      run("ScriptLineStyle", new TPainter { LineStyle = Atom.LineStyle.Script });
-      run("ScriptScriptLineStyle", new TPainter { LineStyle = Atom.LineStyle.ScriptScript });
-      TColor green = new TPainter().UnwrapColor(Structures.Color.PredefinedColors[nameof(green)]);
-      TColor blue = new TPainter().UnwrapColor(Structures.Color.PredefinedColors[nameof(blue)]);
-      TColor orange = new TPainter().UnwrapColor(Structures.Color.PredefinedColors[nameof(orange)]);
-      run("GlyphBoxColor", new TPainter { GlyphBoxColor = (green, blue) });
-      run("TextColor", new TPainter { TextColor = orange });
-    }
-    protected void MathPainterSettingsTest<TContent>(string file, Painter<TCanvas, TContent, TColor> painter) where TContent : class =>
+        //{"Magnification", new TPainter { Magnification = 2 }},
+        { "LocalTypeface", new TPainter {
+          LocalTypefaces = new[] {
+            new Typography.OpenFont.OpenFontReader().Read(
+              TestRenderingFixture.ThisDirectory.EnumerateFiles("ComicNeue_Bold.otf").Single().OpenRead()
+            ) ?? throw new Structures.InvalidCodePathException("Invalid font!")
+          }
+        } },
+        { "TextLineStyle", new TPainter { LineStyle = Atom.LineStyle.Text } },
+        { "ScriptLineStyle", new TPainter { LineStyle = Atom.LineStyle.Script } },
+        { "ScriptScriptLineStyle", new TPainter { LineStyle = Atom.LineStyle.ScriptScript } },
+        { "GlyphBoxColor", new TPainter { GlyphBoxColor = (
+          new TPainter().UnwrapColor(Structures.Color.PredefinedColors["green"]),
+          new TPainter().UnwrapColor(Structures.Color.PredefinedColors["blue"])
+        ) } },
+        { "TextColor", new TPainter { TextColor =
+          new TPainter().UnwrapColor(Structures.Color.PredefinedColors["orange"]) } },
+    };
+    public static TheoryData<string, TMathPainter> MathPainterSettingsData => PainterSettingsData<TMathPainter, Atom.MathList>();
+    public static TheoryData<string, TTextPainter> TextPainterSettingsData => PainterSettingsData<TTextPainter, Text.TextAtom>();
+    [Theory]
+    [MemberData(nameof(MathPainterSettingsData))]
+    public virtual void MathPainterSettings(string file, TMathPainter painter) =>
       Run(file, @"\sqrt[3]\frac\color{#F00}a\mathbb C", nameof(MathPainterSettings), painter);
-    [Fact]
-    public virtual void MathPainterSettings() =>
-      PainterSettings<TMathPainter, Atom.MathList>(MathPainterSettingsTest);
-    protected void TextPainterSettingsTest<TContent>(string file, Painter<TCanvas, TContent, TColor> painter) where TContent : class =>
+    [Theory]
+    [MemberData(nameof(TextPainterSettingsData))]
+    public void TextPainterSettings(string file, TTextPainter painter) =>
       Run(file, @"Inline \color{red}{Maths}: $\int_{a_1^2}^{a_2^2}\color{green}\sqrt\frac x2dx$Display \color{red}{Maths}: $$\int_{a_1^2}^{a_2^2}\color{green}\sqrt\frac x2dx$$", nameof(TextPainterSettings), painter);
-#warning Fix for CI
-    [Fact(Skip="Awaiting fix for CI")]
-    public virtual void TextPainterSettings() =>
-      PainterSettings<TTextPainter, Text.TextAtom>(TextPainterSettingsTest);
   }
 }
