@@ -147,7 +147,8 @@ namespace CSharpMath.Rendering.Tests {
     [MemberData(nameof(MathPainterSettingsData))]
     public virtual void MathPainterSettings(string file, TMathPainter painter) =>
       Run(file, @"\sqrt[3]\frac\color{#F00}a\mathbb C", nameof(MathPainterSettings), painter);
-    [Theory]
+#warning Awaiting CI fix
+    [Theory(Skip="Awaiting CI fix")]
     [MemberData(nameof(TextPainterSettingsData))]
     public void TextPainterSettings(string file, TTextPainter painter) =>
       Run(file, @"Inline \color{red}{Maths}: $\int_{a_1^2}^{a_2^2}\color{green}\sqrt\frac x2dx$Display \color{red}{Maths}: $$\int_{a_1^2}^{a_2^2}\color{green}\sqrt\frac x2dx$$", nameof(TextPainterSettings), painter);
