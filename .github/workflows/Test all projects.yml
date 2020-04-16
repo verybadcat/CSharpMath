@@ -20,11 +20,13 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '3.1.201'
-    - name: Build and Test
+    - name: Update dependencies in CSharpMath.Xaml.Tests.NuGet
       run: |
         dotnet tool install -g dotnet-outdated
         dotnet outdated -u CSharpMath.Xaml.Tests.NuGet
         dotnet outdated -pre Always -inc CSharpMath -u CSharpMath.Xaml.Tests.NuGet
+    - name: Build and Test
+      run: |
         for p in\
           "CSharpMath.CoreTests"\
           "CSharpMath.Editor.Tests"\
