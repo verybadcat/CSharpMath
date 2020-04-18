@@ -6,6 +6,8 @@ Slash before commands in command dictionary
 + merge \frac, \overline etc. into that
 + merge ForAscii into that
 
+Replace RectangleF with a custom structure to avoid logic problems
+
 Replace CSharpMath.Structures.Color with System.Drawing.Color
 
 Make Painter.Measure() return an empty rectangle instead of null
@@ -24,7 +26,7 @@ Burn through all bugs and enhancements
 
 MathML parser
 
-Math evaluation (MathS, Nerdamer, MathNet)
+Math evaluation (MathS, Nerdamer, MathNet, Symbolism)
 
 Singletonify LaTeXSettings and TextLaTeXSettings and provide a way to pass instances into the parsers
 
@@ -37,7 +39,12 @@ Examples for \underbrace: https://puzzling.stackexchange.com/questions/94116/fou
 0.6.0 candidates:
 CSharpMath website https://csharpmath.app
 Documentation + Schoballs ヽ(^o^)ノ
-CSharpMathApp
+
+CSharpMathApp based on CSharpMath.Forms and Fabulous (F#!)
+- Evaluator
+- Random question generator
+
+CSharpMathGame based on CSharpMath.Unity
 
 Far future:
 Typeset http://www2.math.umd.edu/~jcohen/402/Pinter%20Algebra.pdf
