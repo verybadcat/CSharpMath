@@ -24,6 +24,8 @@ Solve TODO warnings
 
 Burn through all bugs and enhancements
 
+Cases environment in Editor
+
 MathML parser
 
 Math evaluation (MathS, Nerdamer, MathNet, Symbolism)
@@ -42,8 +44,30 @@ Documentation + Schoballs ヽ(^o^)ノ
 
 CSharpMathApp based on CSharpMath.Forms and Fabulous (F#!)
 - Evaluator
+    - Upper half: Select menu (trig etc.), Lower half: Direct input (numbers etc.)
+    - History
+    - Numeric/Symbolic switch
 - Random question generator
-
+- Help
+    - Numbers, complexes, pi, e
+    - Plus, minus, cross, dot, comma, factorial, infinity, degree
+    - Backspace, clear
+    - Variables
+    - Greek
+    - Power, subscript, frac, radical
+    - Trig, Log, Ln
+    - Prev Ans variable
+    - Equations and inequalities
+    - Expand, algebraic factorization, integer factorization
+    - Modulus
+    - Multivariate equations (cases environment)
+    - Different bases
+    - Limit, differentiation, partial differentiation, integration
+    - Summation, product
+    - Vector, matrix, dot, cross, transpose
+    - Permutation, combination
+    - Step by step calculation
+    - Unit conversion
 CSharpMathGame based on CSharpMath.Unity
 
 Far future:
