@@ -4,6 +4,6 @@
 [submodule "Wiki"]
 	path = CSharpMath.Wiki
 	url = https://github.com/verybadcat/CSharpMath.wiki.git
-[submodule "nerdamer"]
-	path = nerdamer
-	url = https://github.com/jiggzson/nerdamer
+[submodule "MathS"]
+	path = MathS
+	url = https://github.com/asc-community/MathS
