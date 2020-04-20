@@ -6,6 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CSharpMath\CSharpMath.csproj" />
+    <ProjectReference Include="..\MathS\AngouriMath\AngouriMath.csproj" />
   </ItemGroup>
 
 </Project>

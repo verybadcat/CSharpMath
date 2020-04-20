@@ -84,7 +84,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Rendering.Tests"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Run 'git submodule update --init' if below unloaded", "Run 'git submodule update --init' if below unloaded", "{15784E9C-7D6D-47C0-B993-A45A964C82F5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Playground.Evaluation", "CSharpMath.Playground.Evaluation\CSharpMath.Playground.Evaluation.csproj", "{039990A9-FBF8-421E-A40A-CAE2A34B7240}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Playground.Evaluation", "CSharpMath.Evaluation\CSharpMath.Playground.Evaluation.csproj", "{039990A9-FBF8-421E-A40A-CAE2A34B7240}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Xaml.Tests", "CSharpMath.Xaml.Tests\CSharpMath.Xaml.Tests.csproj", "{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}"
 EndProject

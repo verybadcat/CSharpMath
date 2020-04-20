@@ -28,7 +28,7 @@ Cases environment in Editor
 
 MathML parser
 
-Math evaluation (MathS, Nerdamer, MathNet, Symbolism)
+Natural string parsing/unparsing
 
 Singletonify LaTeXSettings and TextLaTeXSettings and provide a way to pass instances into the parsers
 
