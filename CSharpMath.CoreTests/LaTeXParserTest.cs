@@ -904,6 +904,16 @@ namespace CSharpMath.CoreTests {
       );
       Assert.Equal(@"\color{red}{1}\colorbox{blue}{2}", LaTeXParser.MathListToLaTeX(list).ToString());
     }
+
+    [Theory]
+    [InlineData("s", @"\operatorname{s} ")]
+    [InlineData("sin", @"\sin ")]
+    public void TestOperatorName(string operatorname, string output) {
+      var list = ParseLaTeX(@$"\operatorname{{{operatorname}}}");
+      Assert.Collection(list, CheckAtom<LargeOperator>(operatorname));
+      Assert.Equal(output, LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+
     [Theory,
      InlineData("0", 1, @"Error: Error Message
 0

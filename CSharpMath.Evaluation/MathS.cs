@@ -9,10 +9,16 @@ namespace CSharpMath.Evaluation {
     enum Precedence {
       // Order matters
       Lowest,
+      Bracket,
       AddSubtract,
+      FunctionApplication,
       MultiplyDivide
     }
-    public static Structures.Result<Entity> ToMathSEntity(MathList mathList) {
+    public static MathList ToMathList(Entity entity) =>
+      LaTeXParser.MathListFromLaTeX(entity.Latexise())
+      // CSharpMath must handle all LaTeX coming from MathS or a bug is present!
+      .Match(list => list, e => throw new Structures.InvalidCodePathException(e));
+    public static Structures.Result<Entity> FromMathList(MathList mathList) {
       return Transform(mathList.Clone(true));
     }
     static Structures.Result<Entity> Transform(MathList mathList) {
@@ -63,6 +69,19 @@ namespace CSharpMath.Evaluation {
             (radicand, error) = Transform(r.Radicand);
             thisEntity = Powf.Hang(radicand, Divf.Hang(new NumberEntity(1), degree));
             goto setEntity;
+          case Atoms.Open { Nucleus: "(" }:
+            i++;
+            (thisEntity, error) = Transform(mathList, ref i, Precedence.Bracket);
+            if (error != null) return error;
+            goto setEntity;
+          case Atoms.Close { Nucleus: ")" }:
+            if (prec == Precedence.Lowest)
+              return "Unexpected closing parenthesis";
+            return prevEntity;
+          case Atoms.Inner { LeftBoundary: { Nucleus: "(" }, InnerList:var inner, RightBoundary: { Nucleus: ")" } }:
+            (thisEntity, error) = Transform(inner);
+            if (error != null) return error;
+            goto setEntity;
           case Atoms.UnaryOperator { Nucleus: "+" }:
             handlePrecendence = Precedence.MultiplyDivide;
             handleUnary = e => e;
@@ -70,6 +89,35 @@ namespace CSharpMath.Evaluation {
           case Atoms.UnaryOperator { Nucleus: "\u2212" }:
             handlePrecendence = Precedence.MultiplyDivide;
             handleUnary = e => -e;
+            goto handleUnary;
+          case Atoms.LargeOperator { Nucleus: "sin" }:
+            handlePrecendence = Precedence.FunctionApplication;
+            handleUnary = Sinf.Hang;
+            goto handleUnary;
+          case Atoms.LargeOperator { Nucleus: "cos" }:
+            handlePrecendence = Precedence.FunctionApplication;
+            handleUnary = Cosf.Hang;
+            goto handleUnary;
+          case Atoms.LargeOperator { Nucleus: "tan" }:
+            handlePrecendence = Precedence.FunctionApplication;
+            handleUnary = Tanf.Hang;
+            goto handleUnary;
+          case Atoms.LargeOperator { Nucleus: "cot" }:
+            handlePrecendence = Precedence.FunctionApplication;
+            handleUnary = Cotanf.Hang;
+            goto handleUnary;
+          case Atoms.LargeOperator { Nucleus: "log", Subscript:var @base }:
+            handlePrecendence = Precedence.FunctionApplication;
+            Entity logBase;
+            if (@base.IsNonEmpty()) {
+              (logBase, error) = Transform(@base);
+              if (error != null) return error;
+            } else logBase = new NumberEntity(10);
+            handleUnary = arg => Logf.Hang(arg, logBase);
+            goto handleUnary;
+          case Atoms.LargeOperator { Nucleus: "ln" }:
+            handlePrecendence = Precedence.FunctionApplication;
+            handleUnary = arg => Logf.Hang(arg, AngouriMath.MathS.e);
             goto handleUnary;
           case Atoms.BinaryOperator { Nucleus: "+" }:
             handlePrecendence = Precedence.AddSubtract;
@@ -79,17 +127,20 @@ namespace CSharpMath.Evaluation {
             handlePrecendence = Precedence.AddSubtract;
             handleBinary = Minusf.Hang;
             goto handleBinary;
+          case Atoms.BinaryOperator { Nucleus: "*" }:
           case Atoms.BinaryOperator { Nucleus: "×" }:
+          case Atoms.BinaryOperator { Nucleus: "·" }:
             handlePrecendence = Precedence.MultiplyDivide;
             handleBinary = Mulf.Hang;
             goto handleBinary;
           case Atoms.BinaryOperator { Nucleus: "÷" }:
+          case Atoms.Ordinary { Nucleus: "/" }:
             handlePrecendence = Precedence.MultiplyDivide;
             handleBinary = Divf.Hang;
             goto handleBinary;
           default:
             return $"Unsupported {atom.TypeName} with nucleus \"{atom.Nucleus}\"";
-            handleUnary:
+          handleUnary:
             i++;
             if (prevEntity is { })
               throw new Structures.InvalidCodePathException("UnaryOperators should be at the start of a new context");
@@ -97,10 +148,16 @@ namespace CSharpMath.Evaluation {
             if (error != null) return error;
             thisEntity = handleUnary(nextEntity);
             goto setEntity;
-            handleBinary:
+          handleBinary:
             if (prevEntity is null) {
               // No previous entity, treat as unary operator (happens for 1---2)
-              mathList[i] = ((Atoms.BinaryOperator)atom).ToUnaryOperator();
+              if (atom is Atoms.BinaryOperator b) {
+                mathList[i] = b.ToUnaryOperator();
+              } else {
+                mathList[i] = new Atoms.UnaryOperator(atom.Nucleus);
+                mathList[i].Superscript.Append(atom.Superscript);
+                mathList[i].Subscript.Append(atom.Subscript);
+              }
               i--;
               continue;
             }
@@ -109,6 +166,7 @@ namespace CSharpMath.Evaluation {
               (nextEntity, error) = Transform(mathList, ref i, handlePrecendence);
               if (error != null) return error;
               thisEntity = handleBinary(prevEntity, nextEntity);
+              prevEntity = null; // We used up the previous entity, don't keep it
               goto setEntity;
             } else {
               i--;

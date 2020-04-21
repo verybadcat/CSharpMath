@@ -101,7 +101,7 @@ namespace CSharpMath.Atom {
           //https://phab.wmfusercontent.org/file/data/xsimlcnvo42siudvwuzk/PHID-FILE-bdcqexocj5b57tj2oezn/math_rendering.png
           //dt, \text{d}t, \partial t, \nabla\psi \\ \underline\overline{dy/dx, \text{d}y/\text{d}x, \frac{dy}{dx}, \frac{\text{d}y}{\text{d}x}, \frac{\partial^2}{\partial x_1\partial x_2}y} \\ \prime,
           case '}' when oneCharOnly || stopChar != 0:
-              throw new InvalidCodePathException("This should have been handled before.");
+            throw new InvalidCodePathException("This should have been handled before.");
           case '}':
             SetError("Missing opening brace");
             return null;
@@ -451,8 +451,13 @@ namespace CSharpMath.Atom {
           innerList = BuildInternal(true);
           if (innerList is null) return null;
           return new RaiseBox(raise, innerList);
-      case "TeX":
+        case "TeX":
           return TeX;
+        case "operatorname":
+          if (!ExpectCharacter('{')) { SetError("Expected {"); return null; }
+          var operatorname = ReadString();
+          if (!ExpectCharacter('}')) { SetError("Expected }"); return null; }
+          return new LargeOperator(operatorname, null);
         default:
           SetError("Invalid command \\" + command);
           return null;
@@ -646,7 +651,7 @@ namespace CSharpMath.Atom {
           }
           return delimiters switch
           {
-            (var left, var right) => new Inner (
+            (var left, var right) => new Inner(
               LaTeXSettings.BoundaryDelimiters[left],
               new MathList(table),
               LaTeXSettings.BoundaryDelimiters[right]
@@ -727,7 +732,7 @@ namespace CSharpMath.Atom {
               }
             }
             // add delimiters
-            return new Inner (
+            return new Inner(
               LaTeXSettings.BoundaryDelimiters["{"],
               new MathList(new Space(Structures.Space.ShortSpace), table),
               Boundary.Empty
@@ -927,7 +932,7 @@ namespace CSharpMath.Atom {
           case LargeOperator op:
             var command = LaTeXSettings.CommandForAtom(op);
             if (command == null) {
-              builder.Append($@"\mathrm{{{command}}} ");
+              builder.Append($@"\operatorname{{{op.Nucleus}}} ");
             } else {
               builder.Append($@"\{command} ");
               if (!(LaTeXSettings.AtomForCommand(command) is LargeOperator originalOperator))
