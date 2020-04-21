@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CSharpMath\CSharpMath.csproj" />
+    <ProjectReference Include="..\CSharpMath.Editor\CSharpMath.Editor.csproj" />
     <ProjectReference Include="..\MathS\AngouriMath\AngouriMath.csproj" />
   </ItemGroup>
 

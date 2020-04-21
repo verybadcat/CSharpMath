@@ -70,7 +70,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Editor.Tests", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Editor.Tests.Visualizer", "CSharpMath.Editor.Tests.Visualizer\CSharpMath.Editor.Tests.Visualizer.csproj", "{C60126CE-A71D-4D11-A4A8-A45B67312E98}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "CSharpMath.Editor.Tests.FSharp", "CSharpMath.Editor.Tests.FSharp\CSharpMath.Editor.Tests.FSharp.fsproj", "{65492AC6-8B98-42FF-AAA1-1DBDC050A25F}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CSharpMath.Editor.Tests.FSharp", "CSharpMath.Editor.Tests.FSharp\CSharpMath.Editor.Tests.FSharp.fsproj", "{65492AC6-8B98-42FF-AAA1-1DBDC050A25F}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "PixelFarm.Typography (Excerpt)", "PixelFarm.Typography (Excerpt)\PixelFarm.Typography (Excerpt).shproj", "{3ECA00B3-0925-4418-B6F2-AC49AA3520BB}"
 EndProject
@@ -84,7 +84,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Rendering.Tests"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Run 'git submodule update --init' if below unloaded", "Run 'git submodule update --init' if below unloaded", "{15784E9C-7D6D-47C0-B993-A45A964C82F5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Playground.Evaluation", "CSharpMath.Evaluation\CSharpMath.Playground.Evaluation.csproj", "{039990A9-FBF8-421E-A40A-CAE2A34B7240}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Playground.Evaluation", "CSharpMath.Evaluation\CSharpMath.Playground.Evaluation.csproj", "{039990A9-FBF8-421E-A40A-CAE2A34B7240}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Xaml.Tests", "CSharpMath.Xaml.Tests\CSharpMath.Xaml.Tests.csproj", "{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}"
 EndProject
