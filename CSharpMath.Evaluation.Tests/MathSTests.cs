@@ -12,6 +12,7 @@ namespace CSharpMath.Evaluation.Tests {
     void Test(string input, string converted, string result) {
       var math = ParseMath(input);
       Assert.Equal(converted, LaTeXParser.MathListToLaTeX(MathS.ToMathList(math)).ToString());
+      // Ensure that the converted entity is valid by simplifying it
       Assert.Equal(result, LaTeXParser.MathListToLaTeX(MathS.ToMathList(math.Simplify())).ToString());
     }
     [Theory]
@@ -203,5 +204,6 @@ namespace CSharpMath.Evaluation.Tests {
       Test(latex, converted, result);
       Test(latex.Replace("(", @"\left(").Replace(")", @"\right)"), converted, result);
     }
+    [Fact] void T() => throw new System.Exception(AngouriMath.MathS.FromString("a+b=c").ToString());
   }
 }
