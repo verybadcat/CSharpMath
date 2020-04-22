@@ -18,14 +18,11 @@ namespace CSharpMath.Evaluation.Tests {
     [Theory]
     [InlineData("1")]
     [InlineData("1234")]
-    [InlineData(" 1234")]
-    [InlineData("1234 ")]
-    [InlineData(" 1234 ")]
-    [InlineData("1234 5678")]
-    [InlineData(" 1234 5678")]
-    [InlineData("1234 5678 ")]
-    [InlineData(" 1234 5678 ")]
-    public void Numbers(string number) => Test(number, number.Replace(" ", null), number.Replace(" ", null));
+    [InlineData("1234.", "1234")]
+    [InlineData(".5678", "0.5678")]
+    [InlineData("1234.5678")]
+    public void Numbers(string number, string? output = null) =>
+      Test(number, output ?? number, output ?? number);
     [Theory]
     [InlineData("a", "a", "a")]
     [InlineData("ab", @"a\times b", @"a\times b")]
@@ -204,6 +201,5 @@ namespace CSharpMath.Evaluation.Tests {
       Test(latex, converted, result);
       Test(latex.Replace("(", @"\left(").Replace(")", @"\right)"), converted, result);
     }
-    [Fact(Skip="Not a real test, this is a playground")] void T() => throw new System.Exception(AngouriMath.MathS.FromString("a+b=c").ToString());
   }
 }
