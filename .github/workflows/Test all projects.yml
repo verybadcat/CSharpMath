@@ -31,6 +31,7 @@ jobs:
           "CSharpMath.CoreTests"\
           "CSharpMath.Editor.Tests"\
           "CSharpMath.Editor.Tests.FSharp"\
+          "CSharpMath.Evaluation.Tests"\
           "CSharpMath.Rendering.Tests"\
           "CSharpMath.Rendering.Text.Tests"\
           "CSharpMath.Xaml.Tests"\
