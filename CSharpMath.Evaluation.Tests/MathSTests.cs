@@ -204,6 +204,6 @@ namespace CSharpMath.Evaluation.Tests {
       Test(latex, converted, result);
       Test(latex.Replace("(", @"\left(").Replace(")", @"\right)"), converted, result);
     }
-    [Fact] void T() => throw new System.Exception(AngouriMath.MathS.FromString("a+b=c").ToString());
+    [Fact(Skip="Not a real test, this is a playground")] void T() => throw new System.Exception(AngouriMath.MathS.FromString("a+b=c").ToString());
   }
 }
