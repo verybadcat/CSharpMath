@@ -186,6 +186,10 @@ namespace CSharpMath {
             handlePrecendence = Precedence.MultiplyDivide;
             handleBinary = (a, b) => a / b;
             goto handleBinary;
+          case Atoms.Ordinary { Nucleus: "%" }:
+            thisEntity = prevEntity / 100;
+            prevEntity = null; // We used up prevEntity
+            goto setEntity;
           case Atoms.Space _:
           case Atoms.Ordinary { Nucleus: var nucleus } when string.IsNullOrWhiteSpace(nucleus):
             continue;
