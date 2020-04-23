@@ -195,6 +195,7 @@ namespace CSharpMath {
     [InlineData(@"(5+6)(-(-2))", @"\left( 5+6\right) \times --2", @"22")]
     [InlineData(@"(5+6)(--2)", @"\left( 5+6\right) \times --2", @"22")]
     [InlineData(@"+(1)", @"1", @"1")]
+    [InlineData(@"+(1)\%", @"\frac{1}{100}", @"0.01")]
     [InlineData(@"+(-1)", @"-1", @"-1")]
     [InlineData(@"-(+1)", @"-1", @"-1")]
     [InlineData(@"-(-1)", @"--1", @"1")]

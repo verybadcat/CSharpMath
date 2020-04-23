@@ -5,7 +5,7 @@ using AngouriMath;
 namespace CSharpMath {
   using Atom;
   using Atoms = Atom.Atoms;
-  public class Evaluation {
+  public static partial class Evaluation {
     enum Precedence {
       // Order matters
       Lowest,

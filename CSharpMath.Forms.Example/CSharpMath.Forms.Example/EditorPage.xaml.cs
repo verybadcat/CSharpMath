@@ -32,24 +32,9 @@ namespace CSharpMath.Forms.Example {
       };
 
       // Evaluation
-      var output = new MathView { FontSize = 35 };
+      var output = new MathView { FontSize = 32, EnableTouchEvents = true, EnablePanning = true };
       keyboard.Keyboard.ReturnPressed += delegate {
-        output.LaTeX = Evaluation.MathListToEntity(keyboard.Keyboard.MathList)
-        .Match(entity => {
-          static void TryOutput(System.Text.StringBuilder sb, System.Func<AngouriMath.Entity> getter) {
-            sb.Append(@"\\=");
-            try {
-              Atom.LaTeXParser.MathListToLaTeX(Evaluation.MathListFromEntity(getter()), sb);
-            }
-            catch (System.Exception e) {
-              sb.Append(@$"\color{{red}}\text{{{e.Message}}}");
-            }
-          }
-          var latex = Atom.LaTeXParser.MathListToLaTeX(Evaluation.MathListFromEntity(entity));
-          TryOutput(latex, entity.Simplify);
-          TryOutput(latex, () => entity.Eval());
-          return latex.ToString();
-        }, e => @$"\color{{red}}\text{{{e}}}");
+        output.LaTeX = Evaluation.Interpret(keyboard.Keyboard.MathList);
       };
 
       // Debug labels
