@@ -2,18 +2,18 @@ using System.Linq;
 using Xunit;
 using AngouriMath;
 
-namespace CSharpMath.Evaluation.Tests {
+namespace CSharpMath {
   using Atom;
-  public class MathSTests {
+  public class EvluationTests {
     MathList ParseLaTeX(string latex) =>
       LaTeXParser.MathListFromLaTeX(latex).Match(list => list, e => throw new Xunit.Sdk.XunitException(e));
     Entity ParseMath(string latex) =>
-      MathS.FromMathList(ParseLaTeX(latex)).Match(entity => entity, e => throw new Xunit.Sdk.XunitException(e));
+      Evaluation.MathListToEntity(ParseLaTeX(latex)).Match(entity => entity, e => throw new Xunit.Sdk.XunitException(e));
     void Test(string input, string converted, string result) {
       var math = ParseMath(input);
-      Assert.Equal(converted, LaTeXParser.MathListToLaTeX(MathS.ToMathList(math)).ToString());
+      Assert.Equal(converted, LaTeXParser.MathListToLaTeX(Evaluation.MathListFromEntity(math)).ToString());
       // Ensure that the converted entity is valid by simplifying it
-      Assert.Equal(result, LaTeXParser.MathListToLaTeX(MathS.ToMathList(math.Simplify())).ToString());
+      Assert.Equal(result, LaTeXParser.MathListToLaTeX(Evaluation.MathListFromEntity(math.Simplify())).ToString());
     }
     [Theory]
     [InlineData("1")]

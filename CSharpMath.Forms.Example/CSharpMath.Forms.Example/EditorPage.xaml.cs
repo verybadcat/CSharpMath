@@ -31,6 +31,27 @@ namespace CSharpMath.Forms.Example {
           viewModel.KeyPress((Editor.MathKeyboardInput)(int)c);
       };
 
+      // Evaluation
+      var output = new MathView { FontSize = 35 };
+      keyboard.Keyboard.ReturnPressed += delegate {
+        output.LaTeX = Evaluation.MathListToEntity(keyboard.Keyboard.MathList)
+        .Match(entity => {
+          static void TryOutput(System.Text.StringBuilder sb, System.Func<AngouriMath.Entity> getter) {
+            sb.Append(@"\\=");
+            try {
+              Atom.LaTeXParser.MathListToLaTeX(Evaluation.MathListFromEntity(getter()), sb);
+            }
+            catch (System.Exception e) {
+              sb.Append(@$"\color{{red}}\text{{{e.Message}}}");
+            }
+          }
+          var latex = Atom.LaTeXParser.MathListToLaTeX(Evaluation.MathListFromEntity(entity));
+          TryOutput(latex, entity.Simplify);
+          TryOutput(latex, () => entity.Eval());
+          return latex.ToString();
+        }, e => @$"\color{{red}}\text{{{e}}}");
+      };
+
       // Debug labels
       var latex = new Label { Text = "LaTeX = " };
       var atomTypes = new Label { Text = "Atom Types = " };
@@ -55,7 +76,9 @@ namespace CSharpMath.Forms.Example {
       Content = new Grid {
         RowDefinitions = {
           new RowDefinition { Height = new GridLength(1, GridUnitType.Star) },
-          new RowDefinition { Height = new GridLength(2, GridUnitType.Star) },
+          new RowDefinition { Height = new GridLength(1.5, GridUnitType.Star) },
+          new RowDefinition { Height = 1 },
+          new RowDefinition { Height = new GridLength(1.5, GridUnitType.Star) },
           new RowDefinition { Height = new GridLength(2, GridUnitType.Star) },
         },
         Children = {
@@ -65,7 +88,9 @@ namespace CSharpMath.Forms.Example {
             }
           }),
           GridItem(1, 0, view),
-          GridItem(2, 0, new StackLayout { Children = { keyboard, entry } })
+          GridItem(2, 0, new BoxView { Color = Color.Gray }),
+          GridItem(3, 0, output),
+          GridItem(4, 0, new StackLayout { Children = { keyboard, entry } })
         }
       };
     }

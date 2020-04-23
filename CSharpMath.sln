@@ -38,7 +38,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms.Example.iO
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms.Example.UWP", "CSharpMath.Forms.Example\CSharpMath.Forms.Example.UWP\CSharpMath.Forms.Example.UWP.csproj", "{B5C64A34-51EA-4948-80FC-505120BA943C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Forms.Example", "CSharpMath.Forms.Example\CSharpMath.Forms.Example\CSharpMath.Forms.Example.csproj", "{B3FA77B8-C6E9-4A78-8BD4-9A167DA36637}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms.Example", "CSharpMath.Forms.Example\CSharpMath.Forms.Example\CSharpMath.Forms.Example.csproj", "{B3FA77B8-C6E9-4A78-8BD4-9A167DA36637}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Rendering", "CSharpMath.Rendering\CSharpMath.Rendering.csproj", "{65016A61-2125-4E0C-90E8-A915230C7826}"
 EndProject

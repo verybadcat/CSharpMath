@@ -8,7 +8,14 @@ namespace CSharpMath.Forms.Example.Ooui {
     static void Main(string[] args) {
       Xamarin.Forms.Forms.Init();
       // Throws unfortuately, needs SkiaSharp renderer
-      var canvas = new Canvas { Style = { BackgroundColor = new global::Ooui.Color(128, 128, 128) } };
+      var canvas = new Canvas { Width = 400, Height = 400, Style = { BackgroundColor = new global::Ooui.Color(128, 128, 128), Color = "#00FF00" } };
+      var context = canvas.GetContext2D();
+      context.Rect(10, 10, canvas.Width - 20, canvas.Height - 20);
+      context.Fill();
+      canvas.Click += (s, e) => {
+        var radius = 10;
+        new MathPainter { FontSize = 10, LaTeX = @"\raisebox{-40pt}a" }.Draw(canvas, TextAlignment.TopLeft);
+      };
       new MathPainter { LaTeX = "1+2" }.Draw(canvas, TextAlignment.TopLeft);
       UI.Publish("/", new Div(new global::Ooui.Button("Hi!"), canvas));
       System.Console.WriteLine("Server ready! Press Enter to terminate...");
@@ -54,6 +61,7 @@ namespace CSharpMath.Forms.Example.Ooui {
         context.MoveTo(x1, y1);
         context.LineTo(x2, y2);
         context.ClosePath();
+        context.Fill();
       }
       public void FillRect(float left, float top, float width, float height) =>
         context.FillRect(left, top, width, height);
