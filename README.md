@@ -173,6 +173,9 @@ Avalonia:
     <math:TextView LaTeX="Text text text text text \( \frac{\sqrt a}{b} \) text text text text text" />
 </UserControl>
 ```
+Xamarin.Forms|Avalonia
+-|-
+![Xamarin.Forms](https://user-images.githubusercontent.com/19922066/80187259-e7e8a080-8641-11ea-8c15-63e36b85047e.png)|![Avalonia](https://user-images.githubusercontent.com/19922066/80187422-31d18680-8642-11ea-81b3-aea7e027a7ea.png)
 
 ## What about rendering to an image instead of displaying in a view?
 Warning: There are still some rough edges on image rendering to be resolved, such as [this](CSharpMath.Rendering.Tests/Display/AccentOverF.png) and [this](CSharpMath.Rendering.Tests/Text/WideDisplayMaths.png). However, it is already usable for the majority of cases.
@@ -205,6 +208,11 @@ var painter = someMathView.Painter; // or someTextView.Painter
 painter.DrawAsPng(someStream);
 ```
 
+![Cell 1](CSharpMath.Rendering.Tests/Display/ExponentWithFraction.png)|![Cell 2](CSharpMath.Rendering.Tests/Display/SummationWithCup.png)|![Cell 3](CSharpMath.Rendering.Tests/Display/Cyrillic.png)
+-|-|-
+![Cell 4](CSharpMath.Rendering.Tests/Display/RaiseBox.png)|![Cell 5](CSharpMath.Rendering.Tests/Display/SomeLimit.png)|![Cell 6](CSharpMath.Rendering.Tests/Display/VectorProjection.png)
+![Cell 7](CSharpMath.Rendering.Tests/Display/Matrix3.png)|![Cell 8](CSharpMath.Rendering.Tests/Display/IntegralColorBoxCorrect.png)|![Cell 9](CSharpMath.Rendering.Tests/Display/Taylor.png)
+
 # [Documentation](https://github.com/verybadcat/CSharpMath/wiki/Documentation-of-public-facing-APIs-of-CSharpMath.Rendering,-CSharpMath.SkiaSharp-and-CSharpMath.Forms-MathViews)
 
 # Project structure
@@ -220,7 +228,7 @@ https://en.wikipedia.org/wiki/Box-drawing_character
 <_Core>
 CSharpMath
 ├── CSharpMath.CoreTests
-│   <iOS UI>
+│   <iOS>
 ├── CSharpMath.Apple
 │   └── CSharpMath.Ios
 │       └── CSharpMath.Ios.Example
@@ -228,18 +236,21 @@ CSharpMath
     ├── CSharpMath.Editor.Tests
     │   └── CSharpMath.Editor.Tests.Visualizer
     ├── CSharpMath.Editor.Tests.FSharp
-    └── CSharpMath.Rendering
-        ├── CSharpMath.Rendering.Text.Tests
-        │   <Avalonia UI>
+    ├── CSharpMath.Evaluation ───────────────────────┐
+    │   └── CSharpMath.Evaluation.Tests              │
+    └── CSharpMath.Rendering                         │
+        ├── CSharpMath.Rendering.Text.Tests          │
+        │   <Avalonia>                               │
         ├── CSharpMath.Avalonia ─────────────────────────┬───┐
-        │   └── CSharpMath.Avalonia.Example              │   │
-        │   <SkiaSharp front end>                        │   │
+        │   └── CSharpMath.Avalonia.Example          │   │   │
+        │   <SkiaSharp>                              │   │   │
         └── CSharpMath.SkiaSharp ────────────────────────┤   │
-            │   <Xamarin.Forms UI>                       │   │
+            │   <Xamarin.Forms>                      │   │   │
             └── CSharpMath.Forms ─────────────────────── │ ──┤
-                └── CSharpMath.Forms.Example             │   │
+                └── CSharpMath.Forms.Example ────────┘   │   │
                     ├── CSharpMath.Forms.Example.Android │   │
                     ├── CSharpMath.Forms.Example.iOS     │   │
+                    ├── CSharpMath.Forms.Example.Ooui    │   │
                     ├── CSharpMath.Forms.Example.WPF     │   │
                     └── CSharpMath.Forms.Example.UWP     │   │
                             CSharpMath.Rendering.Tests ──┘   │

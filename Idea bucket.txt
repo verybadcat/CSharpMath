@@ -6,6 +6,8 @@ Slash before commands in command dictionary
 + merge \frac, \overline etc. into that
 + merge ForAscii into that
 
+Fix display output for evaluation interpretation of x^3+50%x^2=3/(500y)
+
 Replace RectangleF with a custom structure to avoid logic problems
 
 Replace CSharpMath.Structures.Color with a TColor to support arbitrary Brushes
