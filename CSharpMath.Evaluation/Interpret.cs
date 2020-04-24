@@ -18,9 +18,9 @@ namespace CSharpMath {
         mathList.Append(eq.left);
         mathList.Add(new Atom.Atoms.BinaryOperator("\u2212"));
         mathList.Append(eq.right);
-        return Evaluation.MathListToEntity(mathList)
+        return MathListToEntity(mathList)
         .Match(entity => {
-          var latex = new System.Text.StringBuilder("");
+          var latex = new System.Text.StringBuilder();
           var variables = AngouriMath.MathS.GetUniqueVariables(entity);
           if (variables.Count == 0)
             return $@"\text{{{entity.Eval() == 0}}}";
@@ -39,6 +39,7 @@ namespace CSharpMath {
                   latex.Append(@"\begin{cases}");
                   foreach (var solution in solutions)
                     latex.Append(solution.Latexise()).Append(@"\\");
+                  // Remove last \\
                   latex.Remove(latex.Length - 2, 2).Append(@"\end{cases}");
                   break;
               }
@@ -47,6 +48,7 @@ namespace CSharpMath {
               latex.Append(errorLaTeX(e.Message));
             }
           }
+          // Remove last ,
           return latex.Remove(latex.Length - 1, 1).ToString();
         }, errorLaTeX);
       }
