@@ -50,11 +50,11 @@ namespace CSharpMath.Editor {
     Rho = 'Ρ', Sigma = 'Σ', Tau = 'Τ', Upsilon = 'Υ', Phi = 'Φ', Chi = 'Χ', Psi = 'Ψ', Omega = 'Ω',
 
     // Small Greek alphabets
-    SmallAlpha = 'α', SmallBeta = 'β', SmallGamma = 'γ', SmallDelta = 'δ', SmallEpsilon = 'ε',
-    SmallZeta = 'ζ', SmallEta = 'η', SmallTheta = 'θ', SmallIota = 'ι', SmallKappa = 'κ',
-    SmallLambda = 'λ', SmallMu = 'μ', SmallNu = 'ν', SmallXi = 'ξ', SmallOmicron = 'ο',
-    SmallPi = 'π', SmallRho = 'ρ', SmallSigma = 'σ', SmallSigma2 = 'ς', SmallTau = 'τ',
-    SmallUpsilon = 'υ', SmallPhi = 'φ', SmallChi = 'χ', SmallPsi = 'ψ', SmallOmega = 'ω',
+    SmallAlpha = 'α', SmallBeta = 'β', SmallGamma = 'γ', SmallDelta = 'δ', SmallEpsilon = 'ϵ', SmallEpsilon2 = 'ε',
+    SmallZeta = 'ζ', SmallEta = 'η', SmallTheta = 'θ', SmallIota = 'ι', SmallKappa = 'κ', SmallKappa2 = 'ϰ',
+    SmallLambda = 'λ', SmallMu = 'μ', SmallNu = 'ν', SmallXi = 'ξ', SmallOmicron = 'ο', SmallPi = 'π',
+    SmallPi2 = 'ϖ', SmallRho = 'ρ', SmallRho2 = 'ϱ', SmallSigma = 'σ', SmallSigma2 = 'ς', SmallTau = 'τ',
+    SmallUpsilon = 'υ', SmallPhi = 'ϕ', SmallPhi2 = 'φ', SmallChi = 'χ', SmallPsi = 'ψ', SmallOmega = 'ω',
 
     // Trigonometric functions
     Sine = '␖', Cosine = '℅', Tangent = '␘', Cotangent = '␄', Secant = '␎', Cosecant = '␛',

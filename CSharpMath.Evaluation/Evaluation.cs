@@ -48,6 +48,7 @@ namespace CSharpMath {
               "e" => MathS.e,
               "π" => MathS.pi,
               "i" => new NumberEntity(MathS.i),
+              _ when LaTeXSettings.CommandForAtom(atom) is string s => s,
               var name => new VariableEntity(name)
             };
             goto setEntity;
@@ -187,6 +188,7 @@ namespace CSharpMath {
             handleBinary = (a, b) => a / b;
             goto handleBinary;
           case Atoms.Ordinary { Nucleus: "%" }:
+            if (prevEntity == null) return "Missing argument for %";
             thisEntity = prevEntity / 100;
             prevEntity = null; // We used up prevEntity
             goto setEntity;

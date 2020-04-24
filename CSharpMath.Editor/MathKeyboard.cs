@@ -804,23 +804,28 @@ namespace CSharpMath.Editor {
         case MathKeyboardInput.SmallGamma:
         case MathKeyboardInput.SmallDelta:
         case MathKeyboardInput.SmallEpsilon:
+        case MathKeyboardInput.SmallEpsilon2:
         case MathKeyboardInput.SmallZeta:
         case MathKeyboardInput.SmallEta:
         case MathKeyboardInput.SmallTheta:
         case MathKeyboardInput.SmallIota:
         case MathKeyboardInput.SmallKappa:
+        case MathKeyboardInput.SmallKappa2:
         case MathKeyboardInput.SmallLambda:
         case MathKeyboardInput.SmallMu:
         case MathKeyboardInput.SmallNu:
         case MathKeyboardInput.SmallXi:
         case MathKeyboardInput.SmallOmicron:
         case MathKeyboardInput.SmallPi:
+        case MathKeyboardInput.SmallPi2:
         case MathKeyboardInput.SmallRho:
+        case MathKeyboardInput.SmallRho2:
         case MathKeyboardInput.SmallSigma:
         case MathKeyboardInput.SmallSigma2:
         case MathKeyboardInput.SmallTau:
         case MathKeyboardInput.SmallUpsilon:
         case MathKeyboardInput.SmallPhi:
+        case MathKeyboardInput.SmallPhi2:
         case MathKeyboardInput.SmallChi:
         case MathKeyboardInput.SmallPsi:
         case MathKeyboardInput.SmallOmega:

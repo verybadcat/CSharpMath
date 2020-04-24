@@ -74,13 +74,13 @@ namespace CSharpMath.Editor.Tests {
         K.Iota, K.Kappa, K.Lambda, K.Mu, K.Nu, K.Xi, K.Omicron, 
         K.Pi, K.Rho, K.Sigma, K.Tau, K.Upsilon, K.Phi, K.Chi, K.Psi, K.Omega),
       //Small Greek alphabets
-      T(@"\alpha \beta \gamma \delta \varepsilon \zeta \eta \theta \iota \kappa \lambda \mu " +
-        @"\nu \xi \omicron \pi \rho \sigma \varsigma \tau \upsilon \varphi \chi \psi \omega ",
-        K.SmallAlpha, K.SmallBeta, K.SmallGamma, K.SmallDelta, K.SmallEpsilon,
-        K.SmallZeta, K.SmallEta, K.SmallTheta, K.SmallIota, K.SmallKappa,
-        K.SmallLambda, K.SmallMu, K.SmallNu, K.SmallXi, K.SmallOmicron,
-        K.SmallPi, K.SmallRho, K.SmallSigma, K.SmallSigma2, K.SmallTau,
-        K.SmallUpsilon, K.SmallPhi, K.SmallChi, K.SmallPsi, K.SmallOmega),
+      T(@"\alpha \beta \gamma \delta \epsilon \varepsilon \zeta \eta \theta \iota \kappa \varkappa \lambda \mu " +
+        @"\nu \xi \omicron \pi \varpi \rho \varrho \sigma \varsigma \tau \upsilon \phi \varphi \chi \psi \omega ",
+        K.SmallAlpha, K.SmallBeta, K.SmallGamma, K.SmallDelta, K.SmallEpsilon, K.SmallEpsilon2,
+        K.SmallZeta, K.SmallEta, K.SmallTheta, K.SmallIota, K.SmallKappa, K.SmallKappa2,
+        K.SmallLambda, K.SmallMu, K.SmallNu, K.SmallXi, K.SmallOmicron, K.SmallPi,
+      K.SmallPi2, K.SmallRho, K.SmallRho2, K.SmallSigma, K.SmallSigma2, K.SmallTau,
+        K.SmallUpsilon, K.SmallPhi, K.SmallPhi2, K.SmallChi, K.SmallPsi, K.SmallOmega),
       //Trigonometric functions
       T(@"\sin \cos \tan \cot \sec \csc \arcsin \arccos \arctan \arccot \arcsec \arccsc ",
         K.Sine, K.Cosine, K.Tangent, K.Cotangent, K.Secant, K.Cosecant,
