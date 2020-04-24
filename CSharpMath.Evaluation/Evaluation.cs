@@ -31,7 +31,7 @@ namespace CSharpMath {
       Entity nextEntity;
       string? error;
       Precedence handlePrecendence;
-      Func<Entity, Entity> handleUnary;
+      Func<Entity, Entity> handleUnary, handleFunction, handleFunctionInverse;
       Func<Entity, Entity, Entity> handleBinary;
       for (; i < mathList.Count; i++) {
         var atom = mathList[i];
@@ -77,7 +77,7 @@ namespace CSharpMath {
             (thisEntity, error) = Transform(mathList, ref i, Precedence.Bracket);
             if (error != null) return error;
             goto setEntity;
-          case Atoms.Close { Nucleus: ")", Superscript:var super }:
+          case Atoms.Close { Nucleus: ")", Superscript: var super }:
             if (prevEntity == null)
               return "Expected math before )";
             switch (prec) {
@@ -94,7 +94,7 @@ namespace CSharpMath {
                 i--;
                 return prevEntity;
             }
-          case Atoms.Inner { LeftBoundary: { Nucleus: "(" }, InnerList:var inner, RightBoundary: { Nucleus: ")" } }:
+          case Atoms.Inner { LeftBoundary: { Nucleus: "(" }, InnerList: var inner, RightBoundary: { Nucleus: ")" } }:
             (thisEntity, error) = Transform(inner);
             if (error != null) return error;
             goto setEntity;
@@ -107,66 +107,66 @@ namespace CSharpMath {
             handleUnary = e => -e;
             goto handleUnary;
           case Atoms.LargeOperator { Nucleus: "sin" }:
-            handlePrecendence = Precedence.FunctionApplication;
-            handleUnary = MathS.Sin;
-            goto handleUnary;
+            handleFunction = MathS.Sin;
+            handleFunctionInverse = MathS.Arcsin;
+            goto handleFunction;
           case Atoms.LargeOperator { Nucleus: "cos" }:
-            handlePrecendence = Precedence.FunctionApplication;
-            handleUnary = MathS.Cos;
-            goto handleUnary;
+            handleFunction = MathS.Cos;
+            handleFunctionInverse = MathS.Arccos;
+            goto handleFunction;
           case Atoms.LargeOperator { Nucleus: "tan" }:
-            handlePrecendence = Precedence.FunctionApplication;
-            handleUnary = MathS.Tan;
-            goto handleUnary;
+            handleFunction = MathS.Tan;
+            handleFunctionInverse = MathS.Arctan;
+            goto handleFunction;
           case Atoms.LargeOperator { Nucleus: "cot" }:
-            handlePrecendence = Precedence.FunctionApplication;
-            handleUnary = MathS.Cotan;
-            goto handleUnary;
+            handleFunction = MathS.Cotan;
+            handleFunctionInverse = MathS.Arccotan;
+            goto handleFunction;
           case Atoms.LargeOperator { Nucleus: "sec" }:
-            handlePrecendence = Precedence.FunctionApplication;
-            handleUnary = MathS.Sec;
-            goto handleUnary;
+            handleFunction = MathS.Sec;
+            handleFunctionInverse = MathS.Arcsec;
+            goto handleFunction;
           case Atoms.LargeOperator { Nucleus: "csc" }:
-            handlePrecendence = Precedence.FunctionApplication;
-            handleUnary = MathS.Cosec;
-            goto handleUnary;
+            handleFunction = MathS.Cosec;
+            handleFunctionInverse = MathS.Arccosec;
+            goto handleFunction;
           case Atoms.LargeOperator { Nucleus: "arcsin" }:
-            handlePrecendence = Precedence.FunctionApplication;
-            handleUnary = MathS.Arcsin;
-            goto handleUnary;
+            handleFunction = MathS.Arcsin;
+            handleFunctionInverse = MathS.Sin;
+            goto handleFunction;
           case Atoms.LargeOperator { Nucleus: "arccos" }:
-            handlePrecendence = Precedence.FunctionApplication;
-            handleUnary = MathS.Arccos;
-            goto handleUnary;
+            handleFunction = MathS.Arccos;
+            handleFunctionInverse = MathS.Cos;
+            goto handleFunction;
           case Atoms.LargeOperator { Nucleus: "arctan" }:
-            handlePrecendence = Precedence.FunctionApplication;
-            handleUnary = MathS.Arctan;
-            goto handleUnary;
+            handleFunction = MathS.Arctan;
+            handleFunctionInverse = MathS.Tan;
+            goto handleFunction;
           case Atoms.LargeOperator { Nucleus: "arccot" }:
-            handlePrecendence = Precedence.FunctionApplication;
-            handleUnary = MathS.Arccotan;
-            goto handleUnary;
+            handleFunction = MathS.Arccotan;
+            handleFunctionInverse = MathS.Cotan;
+            goto handleFunction;
           case Atoms.LargeOperator { Nucleus: "arcsec" }:
-            handlePrecendence = Precedence.FunctionApplication;
-            handleUnary = MathS.Arcsec;
-            goto handleUnary;
+            handleFunction = MathS.Arcsec;
+            handleFunctionInverse = MathS.Sec;
+            goto handleFunction;
           case Atoms.LargeOperator { Nucleus: "arccsc" }:
-            handlePrecendence = Precedence.FunctionApplication;
-            handleUnary = MathS.Arccosec;
-            goto handleUnary;
-          case Atoms.LargeOperator { Nucleus: "log", Subscript:var @base }:
-            handlePrecendence = Precedence.FunctionApplication;
+            handleFunction = MathS.Arccosec;
+            handleFunctionInverse = MathS.Cosec;
+            goto handleFunction;
+          case Atoms.LargeOperator { Nucleus: "log", Subscript: var @base }:
             Entity logBase;
             if (@base.IsNonEmpty()) {
               (logBase, error) = Transform(@base);
               if (error != null) return error;
             } else logBase = new NumberEntity(10);
-            handleUnary = arg => MathS.Log(arg, logBase);
-            goto handleUnary;
+            handleFunction = arg => MathS.Log(arg, logBase);
+            handleFunctionInverse = arg => MathS.Pow(logBase, arg);
+            goto handleFunction;
           case Atoms.LargeOperator { Nucleus: "ln" }:
-            handlePrecendence = Precedence.FunctionApplication;
-            handleUnary = MathS.Ln;
-            goto handleUnary;
+            handleFunction = MathS.Ln;
+            handleFunctionInverse = arg => MathS.Pow(MathS.e, arg);
+            goto handleFunction;
           case Atoms.BinaryOperator { Nucleus: "+" }:
             handlePrecendence = Precedence.AddSubtract;
             handleBinary = (a, b) => a + b;
@@ -195,67 +195,75 @@ namespace CSharpMath {
             continue;
           default:
             return $"Unsupported {atom.TypeName} {atom.Nucleus}";
-          handleUnary:
+          handleFunction:
+            if (atom.Superscript.EqualsList(new MathList(new Atoms.UnaryOperator("\u2212"), new Atoms.Number("1")))) {
+              atom.Superscript.Clear();
+              handleFunction = handleFunctionInverse;
+            }
             i++;
             MathList? bracketArgument = null;
-            if (handlePrecendence == Precedence.FunctionApplication) {
-              int open = -1;
-              // Steal the exponent of the following argument!
-              // e.g. sin(x)^2 -> sin^2(x) and sin^2(x)^3 -> sin^(2*3)(x)
-              // but sin x^2 remains as-is
-              for (int levelsDeep = 0; i < mathList.Count; i++)
-                switch (mathList[i]) {
-                  case Atoms.Space _:
-                  case Atoms.Ordinary { Nucleus: var nucleus } when string.IsNullOrWhiteSpace(nucleus):
-                    break;
-                  case Atoms.Inner inner:
-                    var superscript = inner.Superscript;
-                    bracketArgument = inner.InnerList;
+            int open = -1;
+            // Steal the exponent of the following argument!
+            // e.g. sin(x)^2 -> sin^2(x) and sin^2(x)^3 -> sin^(2*3)(x)
+            // but sin x^2 remains as-is
+            for (int levelsDeep = 0; i < mathList.Count; i++)
+              switch (mathList[i]) {
+                case Atoms.Space _:
+                case Atoms.Ordinary { Nucleus: var nucleus } when string.IsNullOrWhiteSpace(nucleus):
+                  break;
+                case Atoms.Inner inner:
+                  var superscript = inner.Superscript;
+                  bracketArgument = inner.InnerList;
+                  goto stealExponent;
+                case Atoms.Open _:
+                  if (levelsDeep == 0) open = i;
+                  levelsDeep++;
+                  break;
+                case Atoms.Close { HasCorrespondingOpen: true } close:
+                  levelsDeep--;
+                  if (levelsDeep == 0) {
+                    if (open == -1) return "Missing argument for " + atom.Nucleus;
+                    else bracketArgument = mathList.Slice(open + 1, i - open - 1);
+                    superscript = close.Superscript;
                     goto stealExponent;
-                  case Atoms.Open _:
-                    if (levelsDeep == 0) open = i;
-                    levelsDeep++;
-                    break;
-                  case Atoms.Close { HasCorrespondingOpen:true } close:
-                    levelsDeep--;
-                    if (levelsDeep == 0) {
-                      if (open == -1) return "Missing argument for " + atom.Nucleus;
-                      else bracketArgument = mathList.Slice(open + 1, i - open - 1);
-                      superscript = close.Superscript;
-                      goto stealExponent;
-                    }
-                    break;
-                  default:
-                    if (levelsDeep == 0)
-                      goto exitFor;
-                    break;
-                  stealExponent:
-                    _ = bracketArgument; // Ensure assignment
-                    if (levelsDeep > 0)
-                      break;
-                    if (atom.Superscript.IsNonEmpty() && superscript.IsNonEmpty()) {
-                      var originalSuperscript = new Atoms.Inner(new Boundary("("), new MathList(), new Boundary(")"));
-                      originalSuperscript.InnerList.Append(atom.Superscript);
-                      var newSuperscript = new Atoms.Inner(new Boundary("("), new MathList(), new Boundary(")"));
-                      newSuperscript.InnerList.Append(superscript);
-
-                      atom.Superscript.Clear();
-                      superscript.Clear();
-                      atom.Superscript.Add(originalSuperscript);
-                      atom.Superscript.Add(LaTeXSettings.Times);
-                      atom.Superscript.Add(newSuperscript);
-                    } else {
-                      atom.Superscript.Append(superscript);
-                      superscript.Clear();
-                    }
+                  }
+                  break;
+                default:
+                  if (levelsDeep == 0)
                     goto exitFor;
-                }
-              exitFor:;
-            }
+                  break;
+                  stealExponent:
+                  _ = bracketArgument; // Ensure assignment
+                  if (levelsDeep > 0)
+                    break;
+                  if (atom.Superscript.IsNonEmpty() && superscript.IsNonEmpty()) {
+                    var originalSuperscript = new Atoms.Inner(new Boundary("("), new MathList(), new Boundary(")"));
+                    originalSuperscript.InnerList.Append(atom.Superscript);
+                    var newSuperscript = new Atoms.Inner(new Boundary("("), new MathList(), new Boundary(")"));
+                    newSuperscript.InnerList.Append(superscript);
+
+                    atom.Superscript.Clear();
+                    superscript.Clear();
+                    atom.Superscript.Add(originalSuperscript);
+                    atom.Superscript.Add(LaTeXSettings.Times);
+                    atom.Superscript.Add(newSuperscript);
+                  } else {
+                    atom.Superscript.Append(superscript);
+                    superscript.Clear();
+                  }
+                  goto exitFor;
+              }
+            exitFor:
             (nextEntity, error) =
               bracketArgument == null
-              ? Transform(mathList, ref i, handlePrecendence)
+              ? Transform(mathList, ref i, Precedence.FunctionApplication)
               : Transform(bracketArgument);
+            if (error != null) return error;
+            thisEntity = handleFunction(nextEntity);
+            goto setEntity;
+          handleUnary:
+            i++;
+            (nextEntity, error) = Transform(mathList, ref i, handlePrecendence);
             if (error != null) return error;
             thisEntity = handleUnary(nextEntity);
             goto setEntity;
@@ -283,7 +291,7 @@ namespace CSharpMath {
               i--;
               return prevEntity;
             }
-          setEntity:
+            setEntity:
             if (atom.Superscript.IsNonEmpty()) {
               Entity exponent;
               (exponent, error) = Transform(atom.Superscript);

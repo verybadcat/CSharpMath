@@ -45,7 +45,7 @@ CSharpMathApp based on CSharpMath.Forms and Fabulous (F#!)
     - Upper half: Select menu (trig etc.), Lower half: Direct input (numbers etc.)
     - History
     - Numeric/Symbolic switch
-- Random question generator
+- Random question generator (see https://www.wolframalpha.com/problem-generator)
 - Help
     - Numbers, complexes, pi, e
     - Plus, minus, cross, dot, comma, factorial, infinity, degree
