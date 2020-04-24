@@ -3,7 +3,7 @@ using System.Linq;
 namespace CSharpMath {
   partial class Evaluation {
     public static string Interpret(Atom.MathList mathList, System.Func<string, string>? errorLaTeX = null) {
-      errorLaTeX ??= error => $@"\color{{red}}\text{{{error}}}";
+      errorLaTeX ??= error => $@"\color{{red}}\text{{{error.Replace("%", @"\%")}}}";
 
       (IEnumerable<Atom.MathAtom> left, IEnumerable<Atom.MathAtom> right)? equation = null;
       for (var i = 0; i < mathList.Count; i++) {
@@ -55,12 +55,12 @@ namespace CSharpMath {
 
       return MathListToEntity(mathList)
       .Match(entity => {
-        static void TryOutput(System.Text.StringBuilder sb, System.Func<AngouriMath.Entity> getter) {
+        void TryOutput(System.Text.StringBuilder sb, System.Func<AngouriMath.Entity> getter) {
           sb.Append(@"\\=\ &");
           try {
             sb.Append(getter().Latexise());
           } catch (System.Exception e) {
-            sb.Append(@$"\color{{red}}\text{{{e.Message}}}");
+            sb.Append(errorLaTeX(e.Message));
           }
         }
         var latex = new System.Text.StringBuilder("&");

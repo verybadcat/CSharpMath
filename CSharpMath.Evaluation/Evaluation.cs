@@ -188,7 +188,7 @@ namespace CSharpMath {
             handleBinary = (a, b) => a / b;
             goto handleBinary;
           case Atoms.Ordinary { Nucleus: "%" }:
-            if (prevEntity == null) return "Missing argument for %";
+            if (prevEntity == null) return @"Missing argument for %";
             thisEntity = prevEntity / 100;
             prevEntity = null; // We used up prevEntity
             goto setEntity;
