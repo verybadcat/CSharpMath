@@ -208,7 +208,7 @@ var painter = someMathView.Painter; // or someTextView.Painter
 painter.DrawAsPng(someStream);
 ```
 
-![Cell 1](CSharpMath.Rendering.Tests/Display/ExponentWithFraction.png)|![Cell 2](CSharpMath.Rendering.Tests/Display/SummationWithCup.png)|![Cell 3](CSharpMath.Rendering.Tests/Display/Cyrillic.png)
+![Cell 1](CSharpMath.Rendering.Tests/Display/ExponentWithFraction.png)|![Cell 2](CSharpMath.Rendering.Tests/Display/SummationWithCup.png)|![Cell 3](CSharpMath.Rendering.Tests/Display/Color.png)
 -|-|-
 ![Cell 4](CSharpMath.Rendering.Tests/Display/RaiseBox.png)|![Cell 5](CSharpMath.Rendering.Tests/Display/SomeLimit.png)|![Cell 6](CSharpMath.Rendering.Tests/Display/VectorProjection.png)
 ![Cell 7](CSharpMath.Rendering.Tests/Display/Matrix3.png)|![Cell 8](CSharpMath.Rendering.Tests/Display/IntegralColorBoxCorrect.png)|![Cell 9](CSharpMath.Rendering.Tests/Display/Taylor.png)
