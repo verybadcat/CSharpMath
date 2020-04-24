@@ -213,6 +213,32 @@ painter.DrawAsPng(someStream);
 ![Cell 4](CSharpMath.Rendering.Tests/Display/RaiseBox.png)|![Cell 5](CSharpMath.Rendering.Tests/Display/SomeLimit.png)|![Cell 6](CSharpMath.Rendering.Tests/Display/VectorProjection.png)
 ![Cell 7](CSharpMath.Rendering.Tests/Display/Matrix3.png)|![Cell 8](CSharpMath.Rendering.Tests/Display/IntegralColorBoxCorrect.png)|![Cell 9](CSharpMath.Rendering.Tests/Display/Taylor.png)
 
+
+## This looks great and all, but is there a way to edit and evaluate the math?
+Yes! You can use a `CSharpMath.Rendering.FrontEnd.MathKeyboard` to process key presses and generate a `CSharpMath.Atom.MathList` or a LaTeX string. You can then call `CSharpMath.Evaluation.MathListToEntity` to get an `AngouriMath.Entity` that you can simplify. For all uses of an `AngouriMath.Entity`, check out https://github.com/asc-community/AngouriMath.
+
+NOTE: `CSharpMath.Evaluation` is not released yet. It will be part of the 0.5.0 update.
+```cs
+var keyboard = new CSharpMath.Rendering.FrontEnd.MathKeyboard();
+keyboard.KeyPress(CSharpMath.Editor.MathKeyboardInput.Sine, CSharpMath.Editor.MathKeyboardInput.SmallTheta);
+CSharpMath.Evaluation.MathListToEntity(keyboard.MathList)
+  .Match(entity => {
+    var resultLaTeX = CSharpMath.Evaluation.MathListFromEntity(entity.Simplify());
+  }, error => { /* Handle invalid math */ });
+```
+or more conveniently:
+```cs
+var keyboard = new CSharpMath.Rendering.FrontEnd.MathKeyboard();
+keyboard.KeyPress(CSharpMath.Editor.MathKeyboardInput.Sine, CSharpMath.Editor.MathKeyboardInput.SmallTheta);
+// Displays errors as red text, also automatically chooses between
+// simplifying an expression and solving an equation depending on the presence of an equals sign
+var resultLaTeX = CSharpMath.Evaluation.Interpret(keyboard.MathList);
+```
+
+Simplifying an expression | Solving an equation
+-|-
+![Simplifying an expression](https://user-images.githubusercontent.com/19922066/80185029-3e53e000-863e-11ea-8bea-8b7f96ab2837.jpeg)|![Solving an equation](https://user-images.githubusercontent.com/19922066/80185543-15801a80-863f-11ea-9514-a59072c180b4.jpeg)
+
 # [Documentation](https://github.com/verybadcat/CSharpMath/wiki/Documentation-of-public-facing-APIs-of-CSharpMath.Rendering,-CSharpMath.SkiaSharp-and-CSharpMath.Forms-MathViews)
 
 # Project structure

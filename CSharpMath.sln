@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29201.188
@@ -96,7 +96,7 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSharpMath.Wiki", "CSharpMa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Xaml.Tests.NuGet", "CSharpMath.Xaml.Tests.NuGet\CSharpMath.Xaml.Tests.NuGet.csproj", "{2FD3FBBD-FD06-4E49-BA91-4FC5ADC33BA7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AngouriMath", "MathS\AngouriMath\AngouriMath.csproj", "{F3FE15B5-1995-4444-85FF-6CAC564A9113}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AngouriMath", "AngouriMath\AngouriMath\AngouriMath.csproj", "{F3FE15B5-1995-4444-85FF-6CAC564A9113}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Evaluation.Tests", "CSharpMath.Evaluation.Tests\CSharpMath.Evaluation.Tests.csproj", "{06241755-626A-4992-9CAE-C5A5745CB83C}"
 EndProject

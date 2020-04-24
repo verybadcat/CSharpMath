@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CSharpMath.Editor\CSharpMath.Editor.csproj" />
-    <ProjectReference Include="..\MathS\AngouriMath\AngouriMath.csproj" />
+    <ProjectReference Include="..\AngouriMath\AngouriMath\AngouriMath.csproj" />
   </ItemGroup>
 
 </Project>
