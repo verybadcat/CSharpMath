@@ -1,4 +1,4 @@
-<h3 align="center">Ever wanted to display LaTeX math formulae in C#, <br/> but cannot find any tool to help you? <br/> Here is what you may be looking for.</h3>
+<h3 align="center">Cross-platform LaTeX rendering!</h3>
 
 <p align="center">
 <br/><img src="Icon.png" width="300px" alt="CSharpMath icon"><br/><br/>
@@ -53,6 +53,8 @@ iOS (CSharpMath.Ios) was ironically the first front end, which was added in v0.0
 Xamarin.Forms (CSharpMath.Forms) support via SkiaSharp (CSharpMath.SkiaSharp) was added in v0.1 as development continued.
 
 Avalonia (CSharpMath.Avalonia) support was also added in v0.4.
+
+For Windows platforms, use https://github.com/ForNeVeR/wpf-math.
 
 # Usage and Examples
 
