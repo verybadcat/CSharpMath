@@ -327,6 +327,7 @@ CSharpMath is licensed by [the MIT license](LICENSE).
 Dependency|Used by|License
 -|-|-
 [Typography project](https://github.com/LayoutFarm/Typography)|CSharpMath.Rendering|[MIT](https://github.com/LayoutFarm/Typography/blob/master/LICENSE.md)
+[AngouriMath project](https://github.com/asc-community/AngouriMath)|CSharpMath.Evaluation|[MIT](https://github.com/asc-community/AngouriMath/blob/master/LICENSE.md)
 [Latin Modern Math font](http://www.gust.org.pl/projects/e-foundry/lm-math)|CSharpMath.Ios, CSharpMath.Rendering|[GUST Font License](http://www.gust.org.pl/projects/e-foundry/licenses/GUST-FONT-LICENSE.txt/view)
 [Cyrillic Modern font](https://sourceforge.net/projects/cyrillic-modern/)|CSharpMath.Rendering|[SIL Open Font License](https://ctan.org/license/ofl)
 [AMS Capital Blackboard Bold font](https://github.com/Happypig375/AMSFonts-Ttf-Otf) (extracted by @Happypig375 from [the amsfonts package](https://ctan.org/pkg/amsfonts))|CSharpMath.Rendering|[SIL Open Font License](https://ctan.org/license/ofl)
