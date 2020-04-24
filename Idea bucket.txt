@@ -8,9 +8,7 @@ Slash before commands in command dictionary
 
 Replace RectangleF with a custom structure to avoid logic problems
 
-Replace CSharpMath.Structures.Color with System.Drawing.Color
-
-Make Painter.Measure() return an empty rectangle instead of null
+Replace CSharpMath.Structures.Color with a TColor to support arbitrary Brushes
 
 Fix XITS Math as custom typeface (\sum, \int get shifted downwards)
 
@@ -24,11 +22,11 @@ Solve TODO warnings
 
 Burn through all bugs and enhancements
 
+Number bases for evaluation
+
 Cases environment in Editor
 
 MathML parser
-
-Natural string parsing/unparsing
 
 Singletonify LaTeXSettings and TextLaTeXSettings and provide a way to pass instances into the parsers
 
