@@ -23,7 +23,10 @@ namespace CSharpMath.Forms.Example {
       }, new SKColor(0, 0, 0, 153));
 
       // Input from physical keyboard
-      var entry = new Entry { Placeholder = "Enter keystrokes..." };
+      var entry = new Entry {
+        Placeholder = "Enter keystrokes...",
+        HorizontalOptions = LayoutOptions.FillAndExpand
+      };
       entry.TextChanged += (sender, e) => {
         entry.Text = "";
         foreach (var c in e.NewTextValue)
@@ -75,7 +78,21 @@ namespace CSharpMath.Forms.Example {
           GridItem(1, 0, view),
           GridItem(2, 0, new BoxView { Color = Color.Gray }),
           GridItem(3, 0, output),
-          GridItem(4, 0, new StackLayout { Children = { keyboard, entry } })
+          GridItem(4, 0, new StackLayout {
+            Children = {
+              keyboard,
+              new StackLayout {
+                Orientation = StackOrientation.Horizontal,
+                Children = {
+                  entry,
+                  new Button {
+                    Text = "Reset answer pan",
+                    Command = new Command(() => output.DisplacementX = output.DisplacementY = 0)
+                  }
+                }
+              }
+            }
+          })
         }
       };
     }

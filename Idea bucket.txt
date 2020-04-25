@@ -32,7 +32,7 @@ MathML parser
 
 Singletonify LaTeXSettings and TextLaTeXSettings and provide a way to pass instances into the parsers
 
-Replace the current LaTeXSettings reference with https://mirror-hk.koddos.net/CTAN/info/short-math-guide/short-math-guide.pdf
+Replace the current LaTeXSettings reference with http://mirror.ctan.org/info/short-math-guide
 
 Finish off http://texdoc.net/texmf-dist/doc/latex/amsmath/amsldoc.pdf
 

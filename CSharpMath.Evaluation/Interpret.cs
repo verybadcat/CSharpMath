@@ -5,19 +5,20 @@ namespace CSharpMath {
     public static string Interpret(Atom.MathList mathList, System.Func<string, string>? errorLaTeX = null) {
       errorLaTeX ??= error => $@"\color{{red}}\text{{{error.Replace("%", @"\%")}}}";
 
-      (IEnumerable<Atom.MathAtom> left, IEnumerable<Atom.MathAtom> right)? equation = null;
+      (Atom.MathList left, Atom.MathList right)? equation = null;
       for (var i = 0; i < mathList.Count; i++) {
         if (mathList[i] is Atom.Atoms.Relation { Nucleus: "=" })
           if (equation == null)
-            equation = (mathList.Take(i), mathList.Skip(i + 1));
+            equation = (mathList.Slice(0, i), mathList.Slice(i + 1, mathList.Count - i - 1));
           else
             return errorLaTeX("Only 0 or 1 =s are supported");
       }
       if (equation is { } eq) {
-        mathList = new Atom.MathList();
-        mathList.Append(eq.left);
-        mathList.Add(new Atom.Atoms.BinaryOperator("\u2212"));
-        mathList.Append(eq.right);
+        mathList = new Atom.MathList {
+          new Atom.Atoms.Inner(new Atom.Boundary("("), eq.left, new Atom.Boundary(")")),
+          new Atom.Atoms.BinaryOperator("\u2212"),
+          new Atom.Atoms.Inner(new Atom.Boundary("("), eq.right, new Atom.Boundary(")"))
+        };
         return MathListToEntity(mathList)
         .Match(entity => {
           var latex = new System.Text.StringBuilder();
@@ -37,10 +38,10 @@ namespace CSharpMath {
                   break;
                 default:
                   latex.Append(@"\begin{cases}");
-                  foreach (var solution in solutions)
-                    latex.Append(solution.Latexise()).Append(@"\\");
-                  // Remove last \\
-                  latex.Remove(latex.Length - 2, 2).Append(@"\end{cases}");
+                  latex.Append(solutions[0].Latexise());
+                  foreach (var solution in solutions.Skip(1))
+                    latex.Append(@"\\").Append(solution.Latexise());
+                  latex.Append(@"\end{cases}");
                   break;
               }
               latex.Append(",");

@@ -13,29 +13,30 @@ namespace CSharpMath {
       AddSubtract,
       MultiplyDivide,
       FunctionApplication,
-      UnaryPlusMinus
+      UnaryPlusMinus,
+      PercentDegree
     }
     public static MathList MathListFromEntity(Entity entity) =>
       LaTeXParser.MathListFromLaTeX(entity.Latexise())
       // CSharpMath must handle all LaTeX coming from MathS or a bug is present!
       .Match(list => list, e => throw new Structures.InvalidCodePathException(e));
-    public static Structures.Result<Entity> MathListToEntity(MathList mathList) {
-      return Transform(mathList.Clone(true));
-    }
-    static Structures.Result<Entity> Transform(MathList mathList) {
+    public static Structures.Result<Entity> MathListToEntity(MathList mathList) =>
+      Transform(mathList.Clone(true))
+      .Bind(entity => entity is Entity e ? e : "There is nothing to evaluate");
+    static Structures.Result<Entity?> Transform(MathList mathList) {
       int i = 0;
       return Transform(mathList, ref i, Precedence.Lowest);
     }
-    static Structures.Result<Entity> Transform(MathList mathList, ref int i, Precedence prec) {
+    static Structures.Result<Entity?> Transform(MathList mathList, ref int i, Precedence prec) {
       Entity? prevEntity = null;
-      Entity nextEntity;
+      Entity? nextEntity;
       string? error;
       Precedence handlePrecendence;
       Func<Entity, Entity> handleUnary, handleFunction, handleFunctionInverse;
       Func<Entity, Entity, Entity> handleBinary;
       for (; i < mathList.Count; i++) {
         var atom = mathList[i];
-        Entity thisEntity;
+        Entity? thisEntity;
         switch (atom) {
           case Atoms.Placeholder _:
             return "Placeholders should be filled";
@@ -53,7 +54,7 @@ namespace CSharpMath {
             };
             goto setEntity;
           case Atoms.Fraction f:
-            Entity numerator, denominator;
+            Entity? numerator, denominator;
             (numerator, error) = Transform(f.Numerator);
             if (error != null) return error;
             (denominator, error) = Transform(f.Denominator);
@@ -61,22 +62,20 @@ namespace CSharpMath {
             thisEntity = numerator / denominator;
             goto setEntity;
           case Atoms.Radical r:
-            Entity degree, radicand;
-            if (r.Degree.IsEmpty())
-              degree = new NumberEntity(0.5);
-            else {
-              (degree, error) = Transform(r.Degree);
-              if (error != null) return error;
-              degree = 1 / degree;
-            }
+            Entity? degree, radicand;
+            (degree, error) = Transform(r.Degree).Bind(degree => degree is null ? 0.5 : 1 / degree);
+            if (error != null) return error;
             (radicand, error) = Transform(r.Radicand);
             if (error != null) return error;
+            if (radicand == null) return "Expected radicand";
             thisEntity = MathS.Pow(radicand, degree);
             goto setEntity;
           case Atoms.Open { Nucleus: "(" }:
             i++;
             (thisEntity, error) = Transform(mathList, ref i, Precedence.Bracket);
             if (error != null) return error;
+            if (thisEntity == null)
+              return "Expected ) at the end";
             goto setEntity;
           case Atoms.Close { Nucleus: ")", Superscript: var super }:
             if (prevEntity == null)
@@ -156,11 +155,10 @@ namespace CSharpMath {
             handleFunctionInverse = MathS.Cosec;
             goto handleFunction;
           case Atoms.LargeOperator { Nucleus: "log", Subscript: var @base }:
-            Entity logBase;
-            if (@base.IsNonEmpty()) {
-              (logBase, error) = Transform(@base);
-              if (error != null) return error;
-            } else logBase = new NumberEntity(10);
+            Entity? logBase;
+            (logBase, error) = Transform(@base);
+            if (error != null) return error;
+            logBase ??= new NumberEntity(10);
             handleFunction = arg => MathS.Log(arg, logBase);
             handleFunctionInverse = arg => MathS.Pow(logBase, arg);
             goto handleFunction;
@@ -188,10 +186,13 @@ namespace CSharpMath {
             handleBinary = (a, b) => a / b;
             goto handleBinary;
           case Atoms.Ordinary { Nucleus: "%" }:
-            if (prevEntity == null) return @"Missing argument for %";
-            thisEntity = prevEntity / 100;
-            prevEntity = null; // We used up prevEntity
-            goto setEntity;
+            handlePrecendence = Precedence.PercentDegree;
+            handleUnary = x => x / 100;
+            goto handleUnaryPostfix;
+          case Atoms.Ordinary { Nucleus: "°" }:
+            handlePrecendence = Precedence.PercentDegree;
+            handleUnary = x => x * MathS.pi / 180;
+            goto handleUnaryPostfix;
           case Atoms.Space _:
           case Atoms.Ordinary { Nucleus: var nucleus } when string.IsNullOrWhiteSpace(nucleus):
             continue;
@@ -261,12 +262,14 @@ namespace CSharpMath {
               ? Transform(mathList, ref i, Precedence.FunctionApplication)
               : Transform(bracketArgument);
             if (error != null) return error;
+            if (nextEntity == null) return "Missing argument for " + atom.Nucleus;
             thisEntity = handleFunction(nextEntity);
             goto setEntity;
           handleUnary:
             i++;
             (nextEntity, error) = Transform(mathList, ref i, handlePrecendence);
             if (error != null) return error;
+            if (nextEntity == null) return "Missing right operand for " + atom.Nucleus;
             thisEntity = handleUnary(nextEntity);
             goto setEntity;
           handleBinary:
@@ -286,6 +289,7 @@ namespace CSharpMath {
               i++;
               (nextEntity, error) = Transform(mathList, ref i, handlePrecendence);
               if (error != null) return error;
+              if (nextEntity == null) return "Missing right operand for " + atom.Nucleus;
               thisEntity = handleBinary(prevEntity, nextEntity);
               prevEntity = null; // We used up the previous entity, don't keep it
               goto setEntity;
@@ -293,19 +297,27 @@ namespace CSharpMath {
               i--;
               return prevEntity;
             }
-            setEntity:
-            if (atom.Superscript.IsNonEmpty()) {
-              Entity exponent;
-              (exponent, error) = Transform(atom.Superscript);
-              if (error != null) return error;
-              thisEntity = MathS.Pow(thisEntity, exponent);
+          handleUnaryPostfix:
+            if (prevEntity == null) return "Missing left operand for " + atom.Nucleus;
+            if (prec < handlePrecendence) {
+              thisEntity = handleUnary(prevEntity);
+              prevEntity = null; // We used up prevEntity
+              goto setEntity;
+            } else {
+              i--;
+              return prevEntity;
             }
+          setEntity:
+            Entity? exponent;
+            (exponent, error) = Transform(atom.Superscript);
+            if (error != null) return error;
+            if (exponent != null)
+              thisEntity = MathS.Pow(thisEntity, exponent);
             prevEntity = prevEntity is { } ? prevEntity * thisEntity : thisEntity;
             break;
         }
       }
       if (prec == Precedence.Bracket) return "Missing closing parentheses";
-      if (prevEntity is null) return "Expected math but not found";
       else return prevEntity;
     }
   }

@@ -26,14 +26,26 @@ namespace CSharpMath {
     [Theory]
     [InlineData("a", "a", "a")]
     [InlineData("ab", @"a\times b", @"a\times b")]
-    [InlineData(@"\alpha", @"\alpha ", @"\alpha ")]
-    [InlineData(@"\pi", @"\pi ", @"\pi ")]
-    [InlineData(@"\alpha\pi", @"\alpha \times \pi ", @"\alpha \times \pi ")]
     [InlineData("abc", @"a\times b\times c", @"a\times b\times c")]
     [InlineData("3a", @"3\times a", @"3\times a")]
     [InlineData("3ab", @"3\times a\times b", @"3\times a\times b")]
     [InlineData("3a3", @"3\times a\times 3", @"9\times a")]
     [InlineData("3aa", @"3\times a\times a", @"3\times a^2")]
+    [InlineData(@"\alpha\beta\gamma\delta\epsilon\varepsilon\zeta\eta\theta\iota\kappa\varkappa" +
+      @"\lambda\mu\nu\xi\omicron\pi\varpi\rho\varrho\sigma\varsigma\tau\upsilon\phi\varphi\chi" +
+      @"\psi\omega\Gamma\Delta\Theta\Lambda\Xi\Pi\Sigma\Upsilon\Phi\Psi\Omega",
+      @"\alpha \times \beta \times \gamma \times \delta \times \epsilon \times \varepsilon \times \zeta " +
+      @"\times \eta \times \theta \times \iota \times \kappa \times \varkappa \times \lambda \times \mu " +
+      @"\times \nu \times \xi \times \omicron \times \pi \times \varpi \times \rho \times \varrho " +
+      @"\times \sigma \times \varsigma \times \tau \times \upsilon \times \phi \times \varphi \times \chi " +
+      @"\times \psi \times \omega \times \Gamma \times \Delta \times \Theta \times \Lambda \times \Xi " +
+      @"\times \Pi \times \Sigma \times \Upsilon \times \Phi \times \Psi \times \Omega ",
+      @"\alpha \times \beta \times \chi \times \delta \times \Delta \times \epsilon \times \eta " +
+      @"\times \gamma \times \Gamma \times \iota \times \kappa \times \lambda \times \Lambda \times \mu " +
+      @"\times \nu \times \omega \times \Omega \times \omicron \times \phi \times \Phi \times \pi " +
+      @"\times \Pi \times \psi \times \Psi \times \rho \times \sigma \times \Sigma \times \tau " +
+      @"\times \theta \times \Theta \times \upsilon \times \Upsilon \times \varepsilon \times \varkappa " +
+      @"\times \varphi \times \varpi \times \varrho \times \varsigma \times \xi \times \Xi \times \zeta ")]
     public void Variables(string input, string converted, string result) => Test(input, converted, result);
     [Theory]
     [InlineData("a + b", @"a+b", "a+b")]
@@ -100,6 +112,7 @@ namespace CSharpMath {
     [Theory]
     [InlineData(@"9\%", @"\frac{9}{100}", "0.09")]
     [InlineData(@"a\%", @"\frac{a}{100}", @"0.01\times a")]
+    [InlineData(@"\pi\%", @"\frac{\pi }{100}", @"0.01\times \pi ")]
     [InlineData(@"a\%\%", @"\frac{\frac{a}{100}}{100}", @"0.0001\times a")]
     [InlineData(@"9\%+3", @"\frac{9}{100}+3", "3.09")]
     [InlineData(@"-9\%+3", @"-\frac{9}{100}+3", "2.91")]
@@ -107,6 +120,17 @@ namespace CSharpMath {
     [InlineData(@"2\%^2", @"\left( \frac{2}{100}\right) ^2", "0.0004")]
     [InlineData(@"2\%2", @"\frac{2}{100}\times 2", "0.04")]
     [InlineData(@"1+2\%^2", @"1+\left( \frac{2}{100}\right) ^2", "1.0004")]
+    [InlineData(@"9\degree", @"\frac{9\times \pi }{180}", @"0.05\times \pi ")]
+    [InlineData(@"a\degree", @"\frac{a\times \pi }{180}", @"0.005555555555555556\times a\times \pi ")]
+    [InlineData(@"\pi\degree", @"\frac{\pi \times \pi }{180}", @"0.005555555555555556\times \pi ^2")]
+    [InlineData(@"a\%\degree", @"\frac{\frac{a}{100}\times \pi }{180}", @"5.555555555555556E-05\times a\times \pi ")]
+    [InlineData(@"a\degree\degree", @"\frac{\frac{a\times \pi }{180}\times \pi }{180}", @"3.08641975308642E-05\times a\times \pi ^2")]
+    [InlineData(@"9\degree+3", @"\frac{9\times \pi }{180}+3", @"3+0.05\times \pi ")]
+    [InlineData(@"-9\degree+3", @"-\frac{9\times \pi }{180}+3", @"3+-0.05\times \pi ")]
+    [InlineData(@"2^2\degree", @"\frac{2^2\times \pi }{180}", @"0.022222222222222223\times \pi ")]
+    [InlineData(@"2\degree^2", @"\left( \frac{2\times \pi }{180}\right) ^2", @"0.0001234567901234568\times \pi ^2")]
+    [InlineData(@"2\degree2", @"\frac{2\times \pi }{180}\times 2", @"0.022222222222222223\times \pi ")]
+    [InlineData(@"1+2\degree^2", @"1+\left( \frac{2\times \pi }{180}\right) ^2", @"1+0.0001234567901234568\times \pi ^2")]
     public void PostfixOperators(string latex, string converted, string result) => Test(latex, converted, result);
     [Theory]
     [InlineData("2^2", "2^2", "4")]

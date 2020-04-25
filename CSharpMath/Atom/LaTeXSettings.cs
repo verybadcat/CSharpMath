@@ -149,7 +149,6 @@ namespace CSharpMath.Atom {
       new Structures.AliasDictionary<string, MathAtom> {
         // Custom additions
         { "diameter", new Ordinary("\u2300") },
-        { "degree", new Ordinary("°") },
         { "npreccurlyeq", new Relation("⋠") },
         { "nsucccurlyeq", new Relation("⋡") },
         { "iint", new LargeOperator("∬", false) },
@@ -217,6 +216,13 @@ namespace CSharpMath.Atom {
         { "textstyle", new Style(LineStyle.Text) },
         { "scriptstyle", new Style(LineStyle.Script) },
         { "scriptscriptstyle",  new Style(LineStyle.ScriptScript) },
+
+        // The gensymb package for LaTeX2ε: http://mirrors.ctan.org/macros/latex/contrib/was/gensymb.pdf
+        { "degree", new Ordinary("°") },
+        { "celsius" , new Ordinary("℃") },
+        { "perthousand" , new Ordinary("‰") },
+        { "ohm" , new Ordinary("Ω") },
+        { "micro" , new Ordinary("µ") },
 
         // LaTeX Symbol List: https://rpi.edu/dept/arc/training/latex/LaTeX_symbols.pdf
         // (Included in the same folder as this file)
@@ -454,7 +460,7 @@ namespace CSharpMath.Atom {
         { "rightharpoondown", new Relation("⇁") },
         { "nwarrow", new Relation("↖") },
         { "rightleftharpoons", new Relation("⇌") },
-        { "leadsto", new Relation("⇝") }, // unsure, copied from \rightsquigarrow
+        { "leadsto", new Relation("⇝") }, // same as \rightsquigarrow
 
         // Table 11: Miscellaneous Symbols
         { "ldots", new Ordinary("…") },
@@ -489,8 +495,8 @@ namespace CSharpMath.Atom {
         { "vert", new Ordinary("|") },
         { "ddots", new Ordinary("⋱") },
         { "infty", new Ordinary("∞") },
-        { "Box", new Ordinary("□") }, // unsure, copied from \square
-        { "Diamond", new Ordinary("♢") }, // Unsure, copied from \diamondsuit
+        { "Box", new Ordinary("□") }, // same as \square
+        { "Diamond", new Ordinary("◊") }, // same as \lozenge
         { "triangle", new Ordinary("△") },
         { "clubsuit", new Ordinary("♣") },
         { "diamondsuit", new Ordinary("♢") },
