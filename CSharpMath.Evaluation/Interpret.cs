@@ -1,7 +1,24 @@
-using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 namespace CSharpMath {
   partial class Evaluation {
+    static void LatexiseAll(StringBuilder latex, AngouriMath.EntitySet entities) {
+      switch (entities.Count) {
+        case 0:
+          latex.Append(@"\emptyset");
+          break;
+        case 1:
+          latex.Append(entities[0].Latexise());
+          break;
+        default:
+          latex.Append(@"\begin{cases}");
+          latex.Append(entities[0].Latexise());
+          foreach (var entity in entities.Skip(1))
+            latex.Append(@"\\").Append(entity.Latexise());
+          latex.Append(@"\end{cases}");
+          break;
+      }
+    }
     public static string Interpret(Atom.MathList mathList, System.Func<string, string>? errorLaTeX = null) {
       errorLaTeX ??= error => $@"\color{{red}}\text{{{error.Replace("%", @"\%")}}}";
 
@@ -21,33 +38,18 @@ namespace CSharpMath {
         };
         return MathListToEntity(mathList)
         .Match(entity => {
-          var latex = new System.Text.StringBuilder();
+          var latex = new StringBuilder();
           var variables = AngouriMath.MathS.GetUniqueVariables(entity);
           if (variables.Count == 0)
             return $@"\text{{{entity.Eval() == 0}}}";
           foreach (AngouriMath.VariableEntity variable in variables) {
             latex.Append(variable).Append(@"=");
             try {
-              var solutions = entity.SolveEquation(variable);
-              switch (solutions.Count) {
-                case 0:
-                  latex.Append(@"\emptyset");
-                  break;
-                case 1:
-                  latex.Append(solutions[0].Latexise());
-                  break;
-                default:
-                  latex.Append(@"\begin{cases}");
-                  latex.Append(solutions[0].Latexise());
-                  foreach (var solution in solutions.Skip(1))
-                    latex.Append(@"\\").Append(solution.Latexise());
-                  latex.Append(@"\end{cases}");
-                  break;
-              }
-              latex.Append(",");
+              LatexiseAll(latex, entity.SolveEquation(variable));
             } catch (System.Exception e) {
               latex.Append(errorLaTeX(e.Message));
             }
+            latex.Append(",");
           }
           // Remove last ,
           return latex.Remove(latex.Length - 1, 1).ToString();
@@ -56,18 +58,22 @@ namespace CSharpMath {
 
       return MathListToEntity(mathList)
       .Match(entity => {
-        void TryOutput(System.Text.StringBuilder sb, System.Func<AngouriMath.Entity> getter) {
-          sb.Append(@"\\=\ &");
+        var latex = new StringBuilder(@"\begin{aligned} & \;");
+        latex.Append(entity.Latexise());
+        void TryOutput(string lineName, System.Action appendLaTeX) {
+          latex.Append(@"\\ \text{").Append(lineName).Append(@"} \colon & \;");
           try {
-            sb.Append(getter().Latexise());
+            appendLaTeX();
           } catch (System.Exception e) {
-            sb.Append(errorLaTeX(e.Message));
+            latex.Append(errorLaTeX(e.Message));
           }
         }
-        var latex = new System.Text.StringBuilder("&");
-        latex.Append(entity.Latexise());
-        TryOutput(latex, entity.Simplify);
-        TryOutput(latex, () => entity.Eval());
+        TryOutput(nameof(entity.Simplify), () => latex.Append(entity.Simplify().Latexise()));
+        TryOutput(nameof(entity.Expand), () => latex.Append(entity.Expand().Simplify().Latexise()));
+        TryOutput("Factorize", () => latex.Append(entity.Collapse().Latexise()));
+        TryOutput("Value", () => latex.Append(entity.Eval().ToString()));
+        //TryOutput("Alternate forms", () => LatexiseAll(latex, entity.Alternate(5)));
+        latex.Append(@"\end{aligned}");
         return latex.ToString();
       }, errorLaTeX);
     }

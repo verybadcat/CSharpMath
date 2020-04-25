@@ -41,8 +41,10 @@ namespace CSharpMath {
           case Atoms.Placeholder _:
             return "Placeholders should be filled";
           case Atoms.Number n:
-            thisEntity = new NumberEntity(AngouriMath.Core.Number.Parse(n.Nucleus));
-            goto setEntity;
+            if (AngouriMath.Core.Number.TryParse(n.Nucleus, out var number)) {
+              thisEntity = new NumberEntity(number);
+              goto setEntity;
+            } else return "Invalid number: " + n.Nucleus;
           case Atoms.Variable v:
             thisEntity = v.Nucleus switch
             {
