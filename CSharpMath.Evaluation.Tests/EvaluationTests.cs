@@ -31,6 +31,16 @@ namespace CSharpMath {
     [InlineData("3ab", @"3\times a\times b", @"3\times a\times b")]
     [InlineData("3a3", @"3\times a\times 3", @"9\times a")]
     [InlineData("3aa", @"3\times a\times a", @"3\times a^2")]
+    [InlineData(@"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+      @"a\times b\times c\times d\times e\times f\times g\times h\times i\times j\times k\times l\times m\times " +
+      @"n\times o\times p\times q\times r\times s\times t\times u\times v\times w\times x\times y\times z\times " +
+      @"A\times B\times C\times D\times E\times F\times G\times H\times I\times J\times K\times L\times M\times " +
+      @"N\times O\times P\times Q\times R\times S\times T\times U\times V\times W\times X\times Y\times Z",
+      // i is considered as a number instead of a variable like other alphabets, so it is sorted to the front
+      @"i\times a\times A\times b\times B\times c\times C\times d\times D\times e\times E\times f\times F\times " +
+      @"g\times G\times h\times H\times I\times j\times J\times k\times K\times l\times L\times m\times M\times " +
+      @"n\times N\times o\times O\times p\times P\times q\times Q\times r\times R\times s\times S\times t\times " +
+      @"T\times u\times U\times v\times V\times w\times W\times x\times X\times y\times Y\times z\times Z")]
     [InlineData(@"\alpha\beta\gamma\delta\epsilon\varepsilon\zeta\eta\theta\iota\kappa\varkappa" +
       @"\lambda\mu\nu\xi\omicron\pi\varpi\rho\varrho\sigma\varsigma\tau\upsilon\phi\varphi\chi" +
       @"\psi\omega\Gamma\Delta\Theta\Lambda\Xi\Pi\Sigma\Upsilon\Phi\Psi\Omega",
