@@ -16,13 +16,15 @@ namespace CSharpMath {
       Assert.Equal(result, LaTeXParser.MathListToLaTeX(Evaluation.MathListFromEntity(math.Simplify())).ToString());
     }
     [Theory]
-    [InlineData("1")]
-    [InlineData("1234")]
+    [InlineData("1", "1")]
+    [InlineData("1234", "1234")]
+    [InlineData("0123456789", "123456789")]
     [InlineData("1234.", "1234")]
     [InlineData(".5678", "0.5678")]
-    [InlineData("1234.5678")]
-    public void Numbers(string number, string? output = null) =>
-      Test(number, output ?? number, output ?? number);
+    [InlineData(".9876543210", "0.987654321")]
+    [InlineData("1234.5678", "1234.5678")]
+    public void Numbers(string number, string output) =>
+      Test(number, output, output);
     [Theory]
     [InlineData("a", "a", "a")]
     [InlineData("ab", @"a\times b", @"a\times b")]
