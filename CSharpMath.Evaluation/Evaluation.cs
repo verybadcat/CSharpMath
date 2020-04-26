@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using AngouriMath;
 
 namespace CSharpMath {
@@ -22,7 +23,10 @@ namespace CSharpMath {
       .Match(list => list, e => throw new Structures.InvalidCodePathException(e));
     public static Structures.Result<Entity> MathListToEntity(MathList mathList) =>
       Transform(mathList.Clone(true))
-      .Bind(entity => entity is Entity e ? e : "There is nothing to evaluate");
+      .Bind(entity =>
+        entity is Entity e
+        ? Structures.Result.Ok(e)
+        : Structures.Result.Err("There is nothing to evaluate"));
     static Structures.Result<Entity?> Transform(MathList mathList) {
       int i = 0;
       return Transform(mathList, ref i, Precedence.Lowest);
@@ -59,8 +63,10 @@ namespace CSharpMath {
             Entity? numerator, denominator;
             (numerator, error) = Transform(f.Numerator);
             if (error != null) return error;
+            if (numerator == null) return "Missing numerator";
             (denominator, error) = Transform(f.Denominator);
             if (error != null) return error;
+            if (denominator == null) return "Missing denominator";
             thisEntity = numerator / denominator;
             goto setEntity;
           case Atoms.Radical r:
@@ -69,7 +75,7 @@ namespace CSharpMath {
             if (error != null) return error;
             (radicand, error) = Transform(r.Radicand);
             if (error != null) return error;
-            if (radicand == null) return "Expected radicand";
+            if (radicand == null) return "Missing radicand";
             thisEntity = MathS.Pow(radicand, degree);
             goto setEntity;
           case Atoms.Open { Nucleus: "(" }:
@@ -77,14 +83,14 @@ namespace CSharpMath {
             (thisEntity, error) = Transform(mathList, ref i, Precedence.Bracket);
             if (error != null) return error;
             if (thisEntity == null)
-              return "Expected ) at the end";
+              return "Missing )";
             goto setEntity;
           case Atoms.Close { Nucleus: ")", Superscript: var super }:
             if (prevEntity == null)
-              return "Expected math before )";
+              return "Missing math before )";
             switch (prec) {
               case Precedence.Lowest:
-                return "Unexpected )";
+                return "Missing (";
               case Precedence.Bracket:
                 if (super.IsNonEmpty()) {
                   (degree, error) = Transform(super);
@@ -99,6 +105,7 @@ namespace CSharpMath {
           case Atoms.Inner { LeftBoundary: { Nucleus: "(" }, InnerList: var inner, RightBoundary: { Nucleus: ")" } }:
             (thisEntity, error) = Transform(inner);
             if (error != null) return error;
+            if (thisEntity == null) return "Missing math between ()";
             goto setEntity;
           case Atoms.UnaryOperator { Nucleus: "+" }:
             handlePrecendence = Precedence.UnaryPlusMinus;
@@ -319,8 +326,61 @@ namespace CSharpMath {
             break;
         }
       }
-      if (prec == Precedence.Bracket) return "Missing closing parentheses";
-      else return prevEntity;
+      if (prec == Precedence.Bracket) return "Missing )";
+      return prevEntity;
+    }
+    static double? Predict(Span<double> list) {
+      static void RunningSums(Span<double> numbers, Func<double, double, double> map) {
+        for (var i = 1; i < numbers.Length; i++)
+          numbers[i] = map(numbers[i - 1], numbers[i]);
+      }
+      static void AntiRunningSums(Span<double> numbers, Func<double, double, double> map) {
+        for (var i = numbers.Length - 1; i > 0; i--)
+          numbers[i] = map(numbers[i], numbers[i - 1]);
+      }
+      static ReadOnlySpan<double> RepeatingUnit(ReadOnlySpan<double> numbers) {
+        // The repeating unit must occur at least twice in numbers
+        for (int subLength = 1; subLength <= numbers.Length / 2; subLength++) {
+          var sub = numbers.Slice(0, subLength);
+          for (int subIndex = subLength; subIndex <= numbers.Length; subIndex += subLength) {
+            // Make sure 1,2,1,2,1 has repeating unit 1,2 but not 1,2,1,2,2 so consider sub slices
+            var subSliceLength = Math.Min(subLength, numbers.Length - subIndex);
+            if (!sub.Slice(0, subSliceLength).SequenceEqual(numbers.Slice(subIndex, subSliceLength)))
+              goto notRepeatingUnit;
+          }
+          return sub;
+          notRepeatingUnit:;
+        }
+        return ReadOnlySpan<double>.Empty;
+      }
+      static double? TryInterpretAsSequence(Span<double> originalList,
+        Func<double, double, double> operation, Func<double, double, double> inverse) {
+        Span<double> list = stackalloc double[originalList.Length];
+        originalList.CopyTo(list);
+        for (int deriv = 0; deriv < 10; deriv++) {
+          // Don't consider starting number, e.g. 1,2,4,8 deriv-> 1,2,2,2
+          ReadOnlySpan<double> repeatingUnit = RepeatingUnit(list.Slice(1));
+          int startAt = 1;
+          if (repeatingUnit.IsEmpty) {
+            // Consider starting number, e.g. 1,2,1,2
+            repeatingUnit = RepeatingUnit(list);
+            startAt = 0;
+          }
+          if (!repeatingUnit.IsEmpty) {
+            Span<double> newList = stackalloc double[list.Length + 1];
+            list.CopyTo(newList);
+            newList[newList.Length - 1] = repeatingUnit[(list.Length - startAt) % repeatingUnit.Length];
+            for (int i = 0; i < deriv; i++)
+              RunningSums(newList, operation);
+            return newList[newList.Length - 1];
+          }
+          AntiRunningSums(list, inverse);
+        }
+        return null;
+      }
+      if (TryInterpretAsSequence(list, (a, b) => a + b, (a, b) => a - b) is { } arithmetic) return arithmetic;
+      if (TryInterpretAsSequence(list, (a, b) => a * b, (a, b) => a / b) is { } geometric) return geometric;
+      return null;
     }
   }
 }

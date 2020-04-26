@@ -20,7 +20,7 @@ namespace CSharpMath {
       }
     }
     public static string Interpret(Atom.MathList mathList, System.Func<string, string>? errorLaTeX = null) {
-      errorLaTeX ??= error => $@"\color{{red}}\text{{{error.Replace("%", @"\%")}}}";
+      errorLaTeX ??= error => $@"\color{{red}}\text{{{Atom.LaTeXParser.EscapeAsLaTeX(error)}}}";
 
       (Atom.MathList left, Atom.MathList right)? equation = null;
       for (var i = 0; i < mathList.Count; i++) {
@@ -58,7 +58,7 @@ namespace CSharpMath {
 
       return MathListToEntity(mathList)
       .Match(entity => {
-        var latex = new StringBuilder(@"\begin{aligned} & \;");
+        var latex = new StringBuilder(@"\begin{aligned} &");
         latex.Append(entity.Latexise());
         void TryOutput(string lineName, System.Action appendLaTeX) {
           latex.Append(@"\\ \text{").Append(lineName).Append(@"} \colon & \;");

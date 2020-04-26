@@ -781,6 +781,19 @@ namespace CSharpMath.Atom {
     // ^ LaTeX -> Math atoms
     // v Math atoms -> LaTeX
 
+    public static string EscapeAsLaTeX(string literal) =>
+      new StringBuilder(literal)
+      .Replace("{", @"\{")
+      .Replace("}", @"\}")
+      .Replace(@"\", @"\backslash ")
+      .Replace("#", @"\#")
+      .Replace("$", @"\$")
+      .Replace("%", @"\%")
+      .Replace("&", @"\&")
+      .Replace("^", @"\textasciicircum ")
+      .Replace("_", @"\_")
+      .Replace("~", @"\textasciitilde ")
+      .ToString();
 
     private static void MathListToLaTeX
       (MathList mathList, StringBuilder builder, FontStyle outerFontStyle) {
