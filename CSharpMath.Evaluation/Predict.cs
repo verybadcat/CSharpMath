@@ -2,7 +2,7 @@ namespace CSharpMath {
   using System;
   partial class Evaluation {
     public static double? Predict(Span<double> originalList) {
-      if (originalList.Length < 3) return null; // Prevent 1,4 deriv-> 1,3 deriv-> 1,2 deriv-> 1,1 -> return OK
+      if (originalList.IsEmpty) return null;
       static void RunningSums(Span<double> numbers, Func<double, double, double> map) {
         for (var i = 1; i < numbers.Length; i++)
           numbers[i] = map(numbers[i - 1], numbers[i]);
@@ -40,8 +40,8 @@ namespace CSharpMath {
         // Don't consider starting number, e.g. 1,2,4,8 deriv-> 1,2,2,2
         var repeatingUnit = RepeatingUnit(list.Slice(1));
         var startAt = 1;
-        if (repeatingUnit.IsEmpty) {
-          // Consider starting number, e.g. 1,2,1,2
+        if (repeatingUnit.IsEmpty && depth == 0) {
+          // Only consider starting number when it can be made sense by the user, e.g. 1,2,1,2 or 1,1
           repeatingUnit = RepeatingUnit(list);
           startAt = 0;
         }
@@ -51,24 +51,28 @@ namespace CSharpMath {
           return true;
         }
         if (type == ContinuationType.Geometric && list.IndexOf(0) >= 0)
-          return false;
+          return false; // Do not try to divide by zero
+        foreach (var elem in list) System.Diagnostics.Debug.WriteLine("1/" + new string(' ', depth) + type + elem);
         AntiRunningSums(list, type switch
         {
           ContinuationType.Arithmetic => (a, b) => a - b,
           ContinuationType.Geometric => (a, b) => a / b,
           _ => throw new NotImplementedException()
         });
+        foreach (var elem in list) System.Diagnostics.Debug.WriteLine("2/" + new string(' ', depth) + type + elem);
         foreach (var t in stackalloc ContinuationType[] {
           ContinuationType.Arithmetic,
           ContinuationType.Geometric
         })
           if (depth < 2 && TryInterpretSequence(list, newList, depth + 1, t)) {
+            foreach (var elem in newList) System.Diagnostics.Debug.WriteLine("3/" + new string(' ', depth) + type + elem);
             RunningSums(newList, type switch
             {
               ContinuationType.Arithmetic => (a, b) => a + b,
               ContinuationType.Geometric => (a, b) => a * b,
               _ => throw new NotImplementedException()
             });
+            foreach (var elem in newList) System.Diagnostics.Debug.WriteLine("4/" + new string(' ', depth) + type + elem);
             return true;
           }
         RunningSums(list, type switch
@@ -87,6 +91,6 @@ namespace CSharpMath {
           return newList[newList.Length - 1];
       return null;
     }
-    enum ContinuationType { Uninitialized, Arithmetic, Geometric }
+    enum ContinuationType { Arithmetic, Geometric }
   }
 }

@@ -274,6 +274,7 @@ namespace CSharpMath {
             if (nextEntity == null) return "Missing argument for " + atom.Nucleus;
             thisEntity = handleFunction(nextEntity);
             goto setEntity;
+
             handleUnary:
             i++;
             (nextEntity, error) = Transform(mathList, ref i, handlePrecendence);
@@ -281,6 +282,7 @@ namespace CSharpMath {
             if (nextEntity == null) return "Missing right operand for " + atom.Nucleus;
             thisEntity = handleUnary(nextEntity);
             goto setEntity;
+
             handleBinary:
             if (prevEntity is null) {
               // No previous entity, treat as unary operator (happens for 1---2)
@@ -306,6 +308,7 @@ namespace CSharpMath {
               i--;
               return prevEntity;
             }
+
             handleUnaryPostfix:
             if (prevEntity == null) return "Missing left operand for " + atom.Nucleus;
             if (prec < handlePrecendence) {
@@ -316,6 +319,7 @@ namespace CSharpMath {
               i--;
               return prevEntity;
             }
+
             setEntity:
             Entity? exponent;
             (exponent, error) = Transform(atom.Superscript);

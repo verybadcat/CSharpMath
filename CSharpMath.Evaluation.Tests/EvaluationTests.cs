@@ -400,10 +400,5 @@ namespace CSharpMath {
     public void Error(string badLaTeX, string error) =>
       Evaluation.MathListToEntity(ParseLaTeX(badLaTeX))
       .Match(entity => throw new Xunit.Sdk.XunitException(entity.Latexise()), e => Assert.Equal(error, e));
-    [Fact]
-    public void T() {
-      throw new System.Exception(MathS.FromString("(cos(x)+1)^2").Expand().Simplify().Latexise());
-      throw (MathS.Utils.TryPolynomial(MathS.FromString("(cos(x)+1)^2"), "x", out var entity) ? new System.Exception(entity.Latexise()) : null);
-    }
   }
 }
