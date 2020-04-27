@@ -4,7 +4,7 @@ using AngouriMath;
 
 namespace CSharpMath {
   using Atom;
-  public class EvluationTests {
+  public partial class EvluationTests {
     MathList ParseLaTeX(string latex) =>
       LaTeXParser.MathListFromLaTeX(latex).Match(list => list, e => throw new Xunit.Sdk.XunitException(e));
     Entity ParseMath(string latex) =>
@@ -103,7 +103,7 @@ namespace CSharpMath {
     [InlineData("+++a", "a", "a")]
     [InlineData("---a", "---a", "-a")]
     [InlineData("a++a", "a+a", @"2\times a")]
-    [InlineData("a+-a", "a+-a", "0")]
+    [InlineData("a+-a", "a-a", "0")]
     [InlineData("a-+a", "a-a", "0")]
     [InlineData("a--a", "a--a", @"2\times a")]
     [InlineData("a+++a", "a+a", @"2\times a")]
@@ -116,7 +116,7 @@ namespace CSharpMath {
     [InlineData("a/-a", @"\frac{a}{-a}", "-1")]
     [InlineData("+a/+a", @"\frac{a}{a}", "1")]
     [InlineData("-a/-a", @"\frac{-a}{-a}", "1")]
-    [InlineData("-2+-2+-2", @"-2+-2+-2", "-6")]
+    [InlineData("-2+-2+-2", @"-2-2-2", "-6")]
     [InlineData("-2--2--2", @"-2--2--2", "2")]
     [InlineData("-2*-2*-2", @"-2\times -2\times -2", "-8")]
     [InlineData("-2/-2/-2", @"\frac{\frac{-2}{-2}}{-2}", "-0.5")]
@@ -138,7 +138,7 @@ namespace CSharpMath {
     [InlineData(@"a\%\degree", @"\frac{\frac{a}{100}\times \pi }{180}", @"5.555555555555556E-05\times a\times \pi ")]
     [InlineData(@"a\degree\degree", @"\frac{\frac{a\times \pi }{180}\times \pi }{180}", @"3.08641975308642E-05\times a\times \pi ^2")]
     [InlineData(@"9\degree+3", @"\frac{9\times \pi }{180}+3", @"3+0.05\times \pi ")]
-    [InlineData(@"-9\degree+3", @"-\frac{9\times \pi }{180}+3", @"3+-0.05\times \pi ")]
+    [InlineData(@"-9\degree+3", @"-\frac{9\times \pi }{180}+3", @"3-0.05\times \pi ")]
     [InlineData(@"2^2\degree", @"\frac{2^2\times \pi }{180}", @"0.022222222222222223\times \pi ")]
     [InlineData(@"2\degree^2", @"\left( \frac{2\times \pi }{180}\right) ^2", @"0.0001234567901234568\times \pi ^2")]
     [InlineData(@"2\degree2", @"\frac{2\times \pi }{180}\times 2", @"0.022222222222222223\times \pi ")]
@@ -400,5 +400,10 @@ namespace CSharpMath {
     public void Error(string badLaTeX, string error) =>
       Evaluation.MathListToEntity(ParseLaTeX(badLaTeX))
       .Match(entity => throw new Xunit.Sdk.XunitException(entity.Latexise()), e => Assert.Equal(error, e));
+    [Fact]
+    public void T() {
+      throw new System.Exception(MathS.FromString("(cos(x)+1)^2").Expand().Simplify().Latexise());
+      throw (MathS.Utils.TryPolynomial(MathS.FromString("(cos(x)+1)^2"), "x", out var entity) ? new System.Exception(entity.Latexise()) : null);
+    }
   }
 }

@@ -207,7 +207,7 @@ namespace CSharpMath {
             continue;
           default:
             return $"Unsupported {atom.TypeName} {atom.Nucleus}";
-          handleFunction:
+            handleFunction:
             if (atom.Superscript.EqualsList(new MathList(new Atoms.UnaryOperator("\u2212"), new Atoms.Number("1")))) {
               atom.Superscript.Clear();
               handleFunction = handleFunctionInverse;
@@ -274,14 +274,14 @@ namespace CSharpMath {
             if (nextEntity == null) return "Missing argument for " + atom.Nucleus;
             thisEntity = handleFunction(nextEntity);
             goto setEntity;
-          handleUnary:
+            handleUnary:
             i++;
             (nextEntity, error) = Transform(mathList, ref i, handlePrecendence);
             if (error != null) return error;
             if (nextEntity == null) return "Missing right operand for " + atom.Nucleus;
             thisEntity = handleUnary(nextEntity);
             goto setEntity;
-          handleBinary:
+            handleBinary:
             if (prevEntity is null) {
               // No previous entity, treat as unary operator (happens for 1---2)
               if (atom is Atoms.BinaryOperator b) {
@@ -306,7 +306,7 @@ namespace CSharpMath {
               i--;
               return prevEntity;
             }
-          handleUnaryPostfix:
+            handleUnaryPostfix:
             if (prevEntity == null) return "Missing left operand for " + atom.Nucleus;
             if (prec < handlePrecendence) {
               thisEntity = handleUnary(prevEntity);
@@ -316,7 +316,7 @@ namespace CSharpMath {
               i--;
               return prevEntity;
             }
-          setEntity:
+            setEntity:
             Entity? exponent;
             (exponent, error) = Transform(atom.Superscript);
             if (error != null) return error;
@@ -328,59 +328,6 @@ namespace CSharpMath {
       }
       if (prec == Precedence.Bracket) return "Missing )";
       return prevEntity;
-    }
-    static double? Predict(Span<double> list) {
-      static void RunningSums(Span<double> numbers, Func<double, double, double> map) {
-        for (var i = 1; i < numbers.Length; i++)
-          numbers[i] = map(numbers[i - 1], numbers[i]);
-      }
-      static void AntiRunningSums(Span<double> numbers, Func<double, double, double> map) {
-        for (var i = numbers.Length - 1; i > 0; i--)
-          numbers[i] = map(numbers[i], numbers[i - 1]);
-      }
-      static ReadOnlySpan<double> RepeatingUnit(ReadOnlySpan<double> numbers) {
-        // The repeating unit must occur at least twice in numbers
-        for (int subLength = 1; subLength <= numbers.Length / 2; subLength++) {
-          var sub = numbers.Slice(0, subLength);
-          for (int subIndex = subLength; subIndex <= numbers.Length; subIndex += subLength) {
-            // Make sure 1,2,1,2,1 has repeating unit 1,2 but not 1,2,1,2,2 so consider sub slices
-            var subSliceLength = Math.Min(subLength, numbers.Length - subIndex);
-            if (!sub.Slice(0, subSliceLength).SequenceEqual(numbers.Slice(subIndex, subSliceLength)))
-              goto notRepeatingUnit;
-          }
-          return sub;
-          notRepeatingUnit:;
-        }
-        return ReadOnlySpan<double>.Empty;
-      }
-      static double? TryInterpretAsSequence(Span<double> originalList,
-        Func<double, double, double> operation, Func<double, double, double> inverse) {
-        Span<double> list = stackalloc double[originalList.Length];
-        originalList.CopyTo(list);
-        for (int deriv = 0; deriv < 10; deriv++) {
-          // Don't consider starting number, e.g. 1,2,4,8 deriv-> 1,2,2,2
-          ReadOnlySpan<double> repeatingUnit = RepeatingUnit(list.Slice(1));
-          int startAt = 1;
-          if (repeatingUnit.IsEmpty) {
-            // Consider starting number, e.g. 1,2,1,2
-            repeatingUnit = RepeatingUnit(list);
-            startAt = 0;
-          }
-          if (!repeatingUnit.IsEmpty) {
-            Span<double> newList = stackalloc double[list.Length + 1];
-            list.CopyTo(newList);
-            newList[newList.Length - 1] = repeatingUnit[(list.Length - startAt) % repeatingUnit.Length];
-            for (int i = 0; i < deriv; i++)
-              RunningSums(newList, operation);
-            return newList[newList.Length - 1];
-          }
-          AntiRunningSums(list, inverse);
-        }
-        return null;
-      }
-      if (TryInterpretAsSequence(list, (a, b) => a + b, (a, b) => a - b) is { } arithmetic) return arithmetic;
-      if (TryInterpretAsSequence(list, (a, b) => a * b, (a, b) => a / b) is { } geometric) return geometric;
-      return null;
     }
   }
 }
