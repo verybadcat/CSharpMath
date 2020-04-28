@@ -226,8 +226,8 @@
             <f:MathInputButton Input="Cosine" Grid.Row="0" Grid.Column="2" Keyboard="{StaticResource Keyboard}"/>
             <f:MathInputButton Input="Tangent" Grid.Row="0" Grid.Column="3" Keyboard="{StaticResource Keyboard}"/>
             <f:MathInputButton Input="SmallTheta" Grid.Row="0" Grid.Column="4" Keyboard="{StaticResource Keyboard}"/>
-            <f:MathInputButton Input="Secant" Grid.Row="1" Grid.Column="1" Keyboard="{StaticResource Keyboard}"/>
-            <f:MathInputButton Input="Cosecant" Grid.Row="1" Grid.Column="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Cosecant" Grid.Row="1" Grid.Column="1" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Secant" Grid.Row="1" Grid.Column="2" Keyboard="{StaticResource Keyboard}"/>
             <f:MathInputButton Input="Cotangent" Grid.Row="1" Grid.Column="3" Keyboard="{StaticResource Keyboard}"/>
             <f:MathInputButton Input="SmallPi" Grid.Row="1" Grid.Column="4" Keyboard="{StaticResource Keyboard}"/>
             <f:MathInputButton Input="Logarithm" Grid.Row="2" Grid.Column="1" Keyboard="{StaticResource Keyboard}"/>

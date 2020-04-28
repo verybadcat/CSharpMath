@@ -72,6 +72,9 @@ namespace CSharpMath {
         TryOutput(nameof(entity.Expand), () => latex.Append(entity.Expand().Simplify().Latexise()));
         TryOutput("Factorize", () => latex.Append(entity.Collapse().Latexise()));
         TryOutput("Value", () => latex.Append(entity.Eval().ToString()));
+        foreach (var variable in AngouriMath.MathS.GetUniqueVariables(entity))
+          TryOutput(@"\mathnormal{\frac\partial{\partial " + variable.Latexise() + "}}",
+            () => latex.Append(entity.Derive(variable as AngouriMath.VariableEntity).Simplify().Latexise()));
         //TryOutput("Alternate forms", () => LatexiseAll(latex, entity.Alternate(5)));
         latex.Append(@"\end{aligned}");
         return latex.ToString();
