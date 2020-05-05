@@ -44,5 +44,5 @@ jobs:
         do
           dotnet add "$p" package Microsoft.NET.Test.Sdk # Update is required for GitHubActionsTestLogger to print anything
           dotnet add "$p" package GitHubActionsTestLogger
-          dotnet test "$p" -c Release -l GitHubActions
+          dotnet test "$p" -v diag -c Release -l GitHubActions
         done
