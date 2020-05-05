@@ -20,48 +20,62 @@ namespace CSharpMath {
           new Atom.Atoms.Inner(new Atom.Boundary("("), eq.right, new Atom.Boundary(")"))
         };
         return MathListToEntity(mathList)
-        .Match(entity => {
-          const string variableDelimiter = @"\\";
-          var variables = AngouriMath.MathS.Utils.GetUniqueVariables(entity);
-          if (variables.Count == 0)
-            return $@"\text{{{entity.Eval() == 0}}}";
-          var latex = new StringBuilder();
-          foreach (AngouriMath.VariableEntity variable in variables) {
-            latex.Append(variable).Append(@"\in ");
-            try {
-              latex.Append(entity.SolveEquation(variable).Latexise());
-            } catch (System.Exception e) {
-              latex.Append(errorLaTeX(e.Message));
-            }
-            latex.Append(variableDelimiter);
+        .Match(item => {
+          switch (item) {
+            case MathItem.Entity { Content: var entity }:
+              const string variableDelimiter = @"\\";
+              var variables = AngouriMath.MathS.Utils.GetUniqueVariables(entity).FiniteSet().Cast<AngouriMath.VariableEntity>();
+              if (variables.IsEmpty())
+                return $@"\text{{{entity.Eval() == 0}}}";
+              var latex = new StringBuilder();
+              foreach (AngouriMath.VariableEntity variable in variables) {
+                latex.Append(variable).Append(@"\in ");
+                try {
+                  latex.Append(entity.SolveEquation(variable).Latexise());
+                } catch (System.Exception e) {
+                  latex.Append(errorLaTeX(e.Message));
+                }
+                latex.Append(variableDelimiter);
+              }
+              // Remove last variableDelimiter
+              return latex.Remove(latex.Length - variableDelimiter.Length, variableDelimiter.Length).ToString();
+            case MathItem.Set _:
+              return errorLaTeX("Set equations are unsupported");
+            default:
+              throw new System.NotImplementedException(item.GetType().ToString());
           }
-          // Remove last variableDelimiter
-          return latex.Remove(latex.Length - variableDelimiter.Length, variableDelimiter.Length).ToString();
         }, errorLaTeX);
       }
 
       return MathListToEntity(mathList)
-      .Match(entity => {
-        var latex = new StringBuilder(@"\begin{aligned} &");
-        latex.Append(entity.Latexise());
-        void TryOutput(string lineName, System.Action appendLaTeX) {
-          latex.Append(@"\\ \text{").Append(lineName).Append(@"} \colon & \;");
-          try {
-            appendLaTeX();
-          } catch (System.Exception e) {
-            latex.Append(errorLaTeX(e.Message));
-          }
+      .Match(item => {
+        switch (item) {
+          case MathItem.Entity { Content: var entity }:
+            var latex = new StringBuilder(@"\begin{aligned} &");
+            latex.Append(entity.Latexise());
+            void TryOutput(string lineName, System.Action appendLaTeX) {
+              latex.Append(@"\\ \text{").Append(lineName).Append(@"} \colon & \;");
+              try {
+                appendLaTeX();
+              } catch (System.Exception e) {
+                latex.Append(errorLaTeX(e.Message));
+              }
+            }
+            TryOutput(nameof(entity.Simplify), () => latex.Append(entity.Simplify().Latexise()));
+            TryOutput(nameof(entity.Expand), () => latex.Append(entity.Expand().Simplify().Latexise()));
+            TryOutput("Factorize", () => latex.Append(entity.Collapse().Latexise()));
+            TryOutput("Value", () => latex.Append(entity.Eval().ToString()));
+            foreach (AngouriMath.VariableEntity variable in AngouriMath.MathS.Utils.GetUniqueVariables(entity).FiniteSet())
+              TryOutput(@"\mathnormal{\frac\partial{\partial " + variable.Latexise() + "}}",
+                () => latex.Append(entity.Derive(variable).Simplify().Latexise()));
+            //TryOutput("Alternate forms", () => LatexiseAll(latex, entity.Alternate(5)));
+            latex.Append(@"\end{aligned}");
+            return latex.ToString();
+          case MathItem.Set { Content: var set }:
+            return set.Latexise();
+          default:
+            throw new System.NotImplementedException(item.GetType().ToString());
         }
-        TryOutput(nameof(entity.Simplify), () => latex.Append(entity.Simplify().Latexise()));
-        TryOutput(nameof(entity.Expand), () => latex.Append(entity.Expand().Simplify().Latexise()));
-        TryOutput("Factorize", () => latex.Append(entity.Collapse().Latexise()));
-        TryOutput("Value", () => latex.Append(entity.Eval().ToString()));
-        foreach (AngouriMath.VariableEntity variable in AngouriMath.MathS.Utils.GetUniqueVariables(entity).FiniteSet())
-          TryOutput(@"\mathnormal{\frac\partial{\partial " + variable.Latexise() + "}}",
-            () => latex.Append(entity.Derive(variable).Simplify().Latexise()));
-        //TryOutput("Alternate forms", () => LatexiseAll(latex, entity.Alternate(5)));
-        latex.Append(@"\end{aligned}");
-        return latex.ToString();
       }, errorLaTeX);
     }
   }

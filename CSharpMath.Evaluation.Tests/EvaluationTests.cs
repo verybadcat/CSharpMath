@@ -7,13 +7,14 @@ namespace CSharpMath {
   public partial class EvluationTests {
     MathList ParseLaTeX(string latex) =>
       LaTeXParser.MathListFromLaTeX(latex).Match(list => list, e => throw new Xunit.Sdk.XunitException(e));
-    Entity ParseMath(string latex) =>
+    Evaluation.MathItem ParseMath(string latex) =>
       Evaluation.MathListToEntity(ParseLaTeX(latex)).Match(entity => entity, e => throw new Xunit.Sdk.XunitException(e));
     void Test(string input, string converted, string result) {
       var math = ParseMath(input);
       Assert.Equal(converted, LaTeXParser.MathListToLaTeX(Evaluation.MathListFromEntity(math)).ToString());
       // Ensure that the converted entity is valid by simplifying it
-      Assert.Equal(result, LaTeXParser.MathListToLaTeX(Evaluation.MathListFromEntity(math.Simplify())).ToString());
+      if (math is Evaluation.MathItem.Entity{ Content: var e })
+        Assert.Equal(result, LaTeXParser.MathListToLaTeX(Evaluation.MathListFromEntity(e.Simplify())).ToString());
     }
     [Theory]
     [InlineData("1", "1")]
