@@ -17,16 +17,35 @@ namespace CSharpMath {
       UnaryPlusMinus,
       PercentDegree
     }
+    public abstract class MathItem {
+      private protected MathItem() { }
+      public static implicit operator MathItem(AngouriMath.Entity content) => new Entity(content);
+      public static explicit operator AngouriMath.Entity(MathItem item) => ((Entity)item).Content;
+      public static implicit operator MathItem(AngouriMath.Core.SetNode content) => new Set(content);
+      public static explicit operator AngouriMath.Core.SetNode(MathItem item) => ((Set)item).Content;
+      /// <summary>An real number, complex number, variable or function call</summary>
+      public sealed class Entity : MathItem {
+        public Entity(AngouriMath.Entity content) => Content = content;
+        public AngouriMath.Entity Content { get; }
+      }
+      /// <summary>A set or collection of set operations</summary>
+      public sealed class Set : MathItem {
+        public Set(AngouriMath.Core.SetNode content) => Content = content;
+        public AngouriMath.Core.SetNode Content { get; }
+      }
+    }
     public static MathList MathListFromEntity(Entity entity) =>
       LaTeXParser.MathListFromLaTeX(entity.Latexise())
       // CSharpMath must handle all LaTeX coming from MathS or a bug is present!
       .Match(list => list, e => throw new Structures.InvalidCodePathException(e));
-    public static Structures.Result<Entity> MathListToEntity(MathList mathList) =>
-      Transform(mathList.Clone(true))
+    public static Structures.Result<Entity> MathListToEntity(MathList mathList) {
+      MathS.pi.ToString(); // Call into MathS's static initializer to ensure Entity methods work
+      return Transform(mathList.Clone(true))
       .Bind(entity =>
         entity is Entity e
         ? Structures.Result.Ok(e)
         : Structures.Result.Err("There is nothing to evaluate"));
+    }
     static Structures.Result<Entity?> Transform(MathList mathList) {
       int i = 0;
       return Transform(mathList, ref i, Precedence.Lowest);
