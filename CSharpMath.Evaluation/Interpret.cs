@@ -49,18 +49,18 @@ namespace CSharpMath {
 
       return MathListToEntity(mathList)
       .Match(item => {
+        var latex = new StringBuilder(@"\begin{aligned} &");
+        latex.Append(item.Latexise());
+        void TryOutput(string lineName, System.Action appendLaTeX) {
+          latex.Append(@"\\ \text{").Append(lineName).Append(@"} \colon & \;");
+          try {
+            appendLaTeX();
+          } catch (System.Exception e) {
+            latex.Append(errorLaTeX(e.Message));
+          }
+        }
         switch (item) {
           case MathItem.Entity { Content: var entity }:
-            var latex = new StringBuilder(@"\begin{aligned} &");
-            latex.Append(entity.Latexise());
-            void TryOutput(string lineName, System.Action appendLaTeX) {
-              latex.Append(@"\\ \text{").Append(lineName).Append(@"} \colon & \;");
-              try {
-                appendLaTeX();
-              } catch (System.Exception e) {
-                latex.Append(errorLaTeX(e.Message));
-              }
-            }
             TryOutput(nameof(entity.Simplify), () => latex.Append(entity.Simplify().Latexise()));
             TryOutput(nameof(entity.Expand), () => latex.Append(entity.Expand().Simplify().Latexise()));
             TryOutput("Factorize", () => latex.Append(entity.Collapse().Latexise()));
@@ -69,13 +69,15 @@ namespace CSharpMath {
               TryOutput(@"\mathnormal{\frac\partial{\partial " + variable.Latexise() + "}}",
                 () => latex.Append(entity.Derive(variable).Simplify().Latexise()));
             //TryOutput("Alternate forms", () => LatexiseAll(latex, entity.Alternate(5)));
-            latex.Append(@"\end{aligned}");
-            return latex.ToString();
+            break;
           case MathItem.Set { Content: var set }:
-            return set.Latexise();
+            TryOutput(nameof(set.Eval), () => latex.Append(set.Eval().Latexise()));
+            break;
           default:
             throw new System.NotImplementedException(item.GetType().ToString());
         }
+        latex.Append(@"\end{aligned}");
+        return latex.ToString();
       }, errorLaTeX);
     }
   }
