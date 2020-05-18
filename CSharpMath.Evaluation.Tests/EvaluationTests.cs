@@ -397,7 +397,17 @@ namespace CSharpMath {
     [InlineData(@"\cot^(-1)", "Missing )")]
     [InlineData(@"\sec\csc", "Missing argument for csc")]
     [InlineData(@"\operatorname{dab}", "Unsupported Large Operator dab")]
-    [InlineData(@"=", "Unsupported Relation =")]
+    [InlineData(@"\cap", "Unsupported Unary Operator ∩")]
+    [InlineData(@"\cap1", "Unsupported Unary Operator ∩")]
+    [InlineData(@"1\cap", "Entity cannot be left operand for ∩")]
+    [InlineData(@"\cup", "Unsupported Unary Operator ∪")]
+    [InlineData(@"\cup1", "Unsupported Unary Operator ∪")]
+    [InlineData(@"1\cup", "Entity cannot be left operand for ∪")]
+    [InlineData(@"\setminus", "Unsupported Unary Operator ∖")]
+    [InlineData(@"\setminus1", "Unsupported Unary Operator ∖")]
+    [InlineData(@"1\setminus", "Entity cannot be left operand for ∖")]
+    [InlineData(@"^\complement", "There is nothing to evaluate")]
+    [InlineData(@"1^\complement", "Entity cannot be target of set inversion")]
     public void Error(string badLaTeX, string error) =>
       Evaluation.MathListToEntity(ParseLaTeX(badLaTeX))
       .Match(entity => throw new Xunit.Sdk.XunitException(entity.Latexise()), e => Assert.Equal(error, e));

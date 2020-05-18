@@ -2,29 +2,31 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AngouriMath;
+using AngouriMath.Core;
 
 namespace CSharpMath {
-  using AngouriMath.Core;
   using Atom;
   using Atoms = Atom.Atoms;
   public static partial class Evaluation {
     enum Precedence {
-      // Order matters
+      // Lowest
       Lowest,
-      Bracket,
+      ContextParentheses,
+      SetOperation,
       AddSubtract,
       MultiplyDivide,
       FunctionApplication,
       UnaryPlusMinus,
       PercentDegree
+      // Highest
     }
     public abstract class MathItem : AngouriMath.Core.Sys.Interfaces.ILatexiseable {
       private protected MathItem() { }
       public abstract string Latexise();
       public static implicit operator MathItem(AngouriMath.Entity content) => new Entity(content);
       public static explicit operator AngouriMath.Entity(MathItem item) => ((Entity)item).Content;
-      public static implicit operator MathItem(AngouriMath.Core.SetNode content) => new Set(content);
-      public static explicit operator AngouriMath.Core.SetNode(MathItem item) => ((Set)item).Content;
+      public static implicit operator MathItem(SetNode content) => new Set(content);
+      public static explicit operator SetNode(MathItem item) => ((Set)item).Content;
       /// <summary>An real number, complex number, variable or function call</summary>
       public sealed class Entity : MathItem {
         public Entity(AngouriMath.Entity content) => Content = content;
@@ -33,8 +35,8 @@ namespace CSharpMath {
       }
       /// <summary>A set or collection of set operations</summary>
       public sealed class Set : MathItem {
-        public Set(AngouriMath.Core.SetNode content) => Content = content;
-        public AngouriMath.Core.SetNode Content { get; }
+        public Set(SetNode content) => Content = content;
+        public SetNode Content { get; }
         public override string Latexise() => Content.Latexise();
       }
     }
@@ -78,33 +80,37 @@ namespace CSharpMath {
         null => Structures.Result.Err("Missing " + itemName),
         { } entity => Structures.Result.Ok(entity)
       });
+    static Structures.Result<SetNode> AsSet(this MathItem? item, string itemName) =>
+      Structures.Result.Ok(item).ExpectSet(itemName);
     static Structures.Result<MathItem> ExpectNotNull(this Structures.Result<MathItem?> result, string itemName) =>
       result.Bind(item => item switch {
         null => Structures.Result.Err("Missing " + itemName),
         { } notnull => Structures.Result.Ok(notnull)
       });
     static Structures.Result<MathItem?> Transform(MathList mathList, ref int i, Precedence prec) {
-      MathItem? prevEntity = null;
-      MathItem? nextEntity;
+      MathItem? prev = null;
+      MathItem? next;
       string? error;
       Precedence handlePrecendence;
-      Func<Entity, Entity> handleUnary, handleFunction, handleFunctionInverse;
+      Func<Entity, Entity> handlePrefix, handlePostfix, handleFunction, handleFunctionInverse;
       Func<Entity, Entity, Entity> handleBinary;
-      Func<MathItem?, Structures.Result<MathItem>> handleUnaryInner, handleFunctionInner, handleFunctionInverseInner;
-      Func<MathItem?, MathItem?, Structures.Result<MathItem>> handleBinaryInner;
+      Func<SetNode, SetNode> handlePrefixSet, handlePostfixSet, handleFunctionSet, handleFunctionInverseSet;
+      Func<SetNode, SetNode, SetNode> handleBinarySet;
+      Func<string, MathItem?, Structures.Result<MathItem>> handlePrefixInner, handlePostfixInner, handleFunctionInner, handleFunctionInverseInner;
+      Func<string, MathItem?, string, MathItem?, Structures.Result<MathItem>> handleBinaryInner;
       for (; i < mathList.Count; i++) {
         var atom = mathList[i];
-        MathItem? thisEntity;
+        MathItem? @this;
         switch (atom) {
           case Atoms.Placeholder _:
             return "Placeholders should be filled";
           case Atoms.Number n:
-            if (AngouriMath.Core.Number.TryParse(n.Nucleus, out var number)) {
-              thisEntity = new NumberEntity(number);
+            if (Number.TryParse(n.Nucleus, out var number)) {
+              @this = new NumberEntity(number);
               goto setEntity;
             } else return "Invalid number: " + n.Nucleus;
           case Atoms.Variable v:
-            thisEntity = v.Nucleus switch
+            @this = v.Nucleus switch
             {
               "e" => MathS.e,
               "π" => MathS.pi,
@@ -119,7 +125,7 @@ namespace CSharpMath {
             if (error != null) return error;
             (denominator, error) = Transform(f.Denominator).ExpectEntity(nameof(denominator));
             if (error != null) return error;
-            thisEntity = numerator / denominator;
+            @this = numerator / denominator;
             goto setEntity;
           case Atoms.Radical r:
             Entity degree, radicand;
@@ -128,47 +134,47 @@ namespace CSharpMath {
             if (error != null) return error;
             (radicand, error) = Transform(r.Radicand).ExpectEntity(nameof(radicand));
             if (error != null) return error;
-            thisEntity = MathS.Pow(radicand, degree);
+            @this = MathS.Pow(radicand, degree);
             goto setEntity;
           case Atoms.Open { Nucleus: "(" }:
             i++;
-            (thisEntity, error) = Transform(mathList, ref i, Precedence.Bracket);
+            (@this, error) = Transform(mathList, ref i, Precedence.ContextParentheses);
             if (error != null) return error;
-            if (thisEntity == null)
+            if (@this == null)
               return "Missing )";
             goto setEntity;
           case Atoms.Close { Nucleus: ")", Superscript: var super }:
-            if (prevEntity == null)
+            if (prev == null)
               return "Missing math before )";
             switch (prec) {
               case Precedence.Lowest:
                 return "Missing (";
-              case Precedence.Bracket:
+              case Precedence.ContextParentheses:
                 if (super.IsNonEmpty()) {
                   (degree, error) = Transform(super).ExpectEntity(nameof(degree));
                   if (error != null) return error;
                   return
-                    Structures.Result.Ok((MathItem?)prevEntity).ExpectEntity("base")
+                    Structures.Result.Ok((MathItem?)prev).ExpectEntity("base")
                     .Bind(@base => (MathItem?)MathS.Pow(@base, degree));
                 }
-                return prevEntity;
+                return prev;
               default:
                 i--;
-                return prevEntity;
+                return prev;
             }
           case Atoms.Inner { LeftBoundary: { Nucleus: "(" }, InnerList: var inner, RightBoundary: { Nucleus: ")" } }:
-            (thisEntity, error) = Transform(inner);
+            (@this, error) = Transform(inner);
             if (error != null) return error;
-            if (thisEntity == null) return "Missing math between ()";
+            if (@this == null) return "Missing math between ()";
             goto setEntity;
           case Atoms.UnaryOperator { Nucleus: "+" }:
             handlePrecendence = Precedence.UnaryPlusMinus;
-            handleUnary = e => +e;
-            goto handleUnary;
+            handlePrefix = e => +e;
+            goto handlePrefix;
           case Atoms.UnaryOperator { Nucleus: "\u2212" }:
             handlePrecendence = Precedence.UnaryPlusMinus;
-            handleUnary = e => -e;
-            goto handleUnary;
+            handlePrefix = e => -e;
+            goto handlePrefix;
           case Atoms.LargeOperator { Nucleus: "sin" }:
             handleFunction = MathS.Sin;
             handleFunctionInverse = MathS.Arcsin;
@@ -250,25 +256,42 @@ namespace CSharpMath {
             goto handleBinary;
           case Atoms.Ordinary { Nucleus: "%" }:
             handlePrecendence = Precedence.PercentDegree;
-            handleUnary = x => x / 100;
-            goto handleUnaryPostfix;
+            handlePostfix = x => x / 100;
+            goto handlePostfix;
           case Atoms.Ordinary { Nucleus: "°" }:
             handlePrecendence = Precedence.PercentDegree;
-            handleUnary = x => x * MathS.pi / 180;
-            goto handleUnaryPostfix;
+            handlePostfix = x => x * MathS.pi / 180;
+            goto handlePostfix;
           case Atoms.Space _:
           case Atoms.Ordinary { Nucleus: var nucleus } when string.IsNullOrWhiteSpace(nucleus):
             continue;
+          case Atoms.BinaryOperator { Nucleus: "∩" }:
+            handlePrecendence = Precedence.SetOperation;
+            handleBinarySet = (l, r) => l & r;
+            goto handleBinarySet;
+          case Atoms.BinaryOperator { Nucleus: "∪" }:
+            handlePrecendence = Precedence.SetOperation;
+            handleBinarySet = (l, r) => l | r;
+            goto handleBinarySet;
+          case Atoms.BinaryOperator { Nucleus: "∖" }:
+            handlePrecendence = Precedence.SetOperation;
+            handleBinarySet = (l, r) => l - r;
+            goto handleBinarySet;
           default:
             return $"Unsupported {atom.TypeName} {atom.Nucleus}";
 
             handleFunction:
-            handleFunctionInner = item =>
-              item.AsEntity("argument for " + atom.Nucleus).Bind(e => (MathItem)handleFunction(e));
-            handleFunctionInverseInner = item =>
-              item.AsEntity("argument for " + atom.Nucleus).Bind(e => (MathItem)handleFunctionInverse(e));
+            handleFunctionInner = (itemName, item) =>
+              item.AsEntity(itemName).Bind(e => (MathItem)handleFunction(e));
+            handleFunctionInverseInner = (itemName, item) =>
+              item.AsEntity(itemName).Bind(e => (MathItem)handleFunctionInverse(e));
             goto handleFunctionInner;
-
+            handleFunctionSet:
+            handleFunctionInner = (itemName, item) =>
+              item.AsSet(itemName).Bind(set => (MathItem)handleFunctionSet(set));
+            handleFunctionInverseInner = (itemName, item) =>
+              item.AsSet(itemName).Bind(set => (MathItem)handleFunctionInverseSet(set));
+            goto handleFunctionInner;
             handleFunctionInner:
             if (atom.Superscript.EqualsList(new MathList(new Atoms.UnaryOperator("\u2212"), new Atoms.Number("1")))) {
               atom.Superscript.Clear();
@@ -328,40 +351,51 @@ namespace CSharpMath {
                   goto exitFor;
               }
             exitFor:
-            (nextEntity, error) =
-             (bracketArgument == null
+            (next, error) =
+              bracketArgument == null
               ? Transform(mathList, ref i, Precedence.FunctionApplication)
-              : Transform(bracketArgument));
+              : Transform(bracketArgument);
             if (error != null) return error;
-            (thisEntity, error) = handleFunctionInner(nextEntity);
+            (@this, error) = handleFunctionInner("argument for " + atom.Nucleus, next);
             if (error != null) return error;
             goto setEntity;
 
-            handleUnary:
-            handleUnaryInner = item => item.AsEntity("right operand for " + atom.Nucleus).Bind(e => (MathItem)handleUnary(e));
-            goto handleUnaryInner;
-
-            handleUnaryInner:
+            handlePrefix:
+            handlePrefixInner = (itemName, item) => item.AsEntity(itemName).Bind(e => (MathItem)handlePrefix(e));
+            goto handlePrefixInner;
+            handlePrefixSet:
+            handlePrefixInner = (itemName, item) => item.AsSet(itemName).Bind(set => (MathItem)handlePrefixSet(set));
+            goto handlePrefixInner;
+            handlePrefixInner:
             i++;
-            (nextEntity, error) = Transform(mathList, ref i, handlePrecendence);
+            (next, error) = Transform(mathList, ref i, handlePrecendence);
             if (error != null) return error;
-            (thisEntity, error) = handleUnaryInner(nextEntity);
+            (@this, error) = handlePrefixInner("right operand for " + atom.Nucleus, next);
             if (error != null) return error;
             goto setEntity;
 
             handleBinary:
-            handleBinaryInner = (left, right) => {
+            handleBinaryInner = (leftName, left, rightName, right) => {
               Entity l, r;
-              (l, error) = left.AsEntity("left operand for " + atom.Nucleus);
+              (l, error) = left.AsEntity(leftName);
               if (error != null) return error;
-              (r, error) = right.AsEntity("right operand for " + atom.Nucleus);
+              (r, error) = right.AsEntity(rightName);
               if (error != null) return error;
               return (MathItem)handleBinary(l, r);
             };
             goto handleBinaryInner;
-
+            handleBinarySet:
+            handleBinaryInner = (leftName, left, rightName, right) => {
+              SetNode l, r;
+              (l, error) = left.AsSet(leftName);
+              if (error != null) return error;
+              (r, error) = right.AsSet(rightName);
+              if (error != null) return error;
+              return (MathItem)handleBinarySet(l, r);
+            };
+            goto handleBinaryInner;
             handleBinaryInner:
-            if (prevEntity is null) {
+            if (prev is null) {
               // No previous entity, treat as unary operator (happens for 1---2)
               if (atom is Atoms.BinaryOperator b) {
                 mathList[i] = b.ToUnaryOperator();
@@ -375,58 +409,71 @@ namespace CSharpMath {
             }
             if (prec < handlePrecendence) {
               i++;
-              (nextEntity, error) = Transform(mathList, ref i, handlePrecendence);
+              (next, error) = Transform(mathList, ref i, handlePrecendence);
               if (error != null) return error;
-              (thisEntity, error) = handleBinaryInner(prevEntity, nextEntity);
+              (@this, error) =
+                handleBinaryInner("left operand for " + atom.Nucleus, prev,
+                  "right operand for " + atom.Nucleus, next);
               if (error != null) return error;
-              prevEntity = null; // We used up the previous entity, don't keep it
+              prev = null; // We used up the previous entity, don't keep it
               goto setEntity;
             } else {
               i--;
-              return prevEntity;
+              return prev;
             }
 
-            handleUnaryPostfix:
-            if (prevEntity == null) return "Missing left operand for " + atom.Nucleus;
+            handlePostfix:
+            handlePostfixInner = (itemName, item) => item.AsEntity(itemName).Bind(e => (MathItem)handlePostfix(e));
+            goto handlePostfixInner;
+            handlePostfixSet:
+            handlePostfixInner = (itemName, item) => item.AsSet(itemName).Bind(set => (MathItem)handlePostfixSet(set));
+            goto handlePostfixInner;
+            handlePostfixInner:
+            if (prev == null) return "Missing left operand for " + atom.Nucleus;
             if (prec < handlePrecendence) {
-              (thisEntity, error) =
-                Structures.Result.Ok((MathItem?)prevEntity)
-                .ExpectEntity("left operand for " + atom.Nucleus)
-                .Bind(e => (MathItem?)handleUnary(e));
+              (@this, error) =
+                handlePostfixInner("left operand for " + atom.Nucleus, prev);
               if (error != null) return error;
-              prevEntity = null; // We used up prevEntity
+              prev = null; // We used up prevEntity
               goto setEntity;
             } else {
               i--;
-              return prevEntity;
+              return prev;
             }
 
             setEntity:
-            Entity? exponent;
-            (exponent, error) = Transform(atom.Superscript).ExpectEntityOrNull(nameof(exponent));
-            if (error != null) return error;
-            if (exponent != null) {
-              (thisEntity, error) =
-                Structures.Result.Ok(thisEntity).ExpectEntity("base")
-                .Bind(@base => (MathItem?)MathS.Pow(@base, exponent));
-              if (error != null) return error;
+            switch (atom.Superscript) {
+              case { Count: 1 } superscript when superscript[0] is Atoms.Ordinary { Nucleus: "∁" }:
+                (@this, error) =
+                  @this.AsSet("target of set inversion").Bind(target => (MathItem?)!target);
+                if (error != null) return error;
+                break;
+              case var superscript:
+                Entity? exponent;
+                (exponent, error) = Transform(superscript).ExpectEntityOrNull(nameof(exponent));
+                if (error != null) return error;
+                if (exponent != null) {
+                  (@this, error) =
+                    @this.AsEntity("base of exponentiation").Bind(@base => (MathItem?)MathS.Pow(@base, exponent));
+                  if (error != null) return error;
+                }
+                break;
             }
 
-            Entity? prev, @this;
-            (prev, error) =
-              Structures.Result.Ok(prevEntity).ExpectEntityOrNull("left operand of implicit multiplication");
+            Entity? prevEntity, thisEntity;
+            (prevEntity, error) =
+              Structures.Result.Ok(prev).ExpectEntityOrNull("left operand of implicit multiplication");
             if (error != null) return error;
-            if (prev is null) { prevEntity = thisEntity; break; }
-
-            (@this, error) =
-              Structures.Result.Ok(thisEntity).ExpectEntity("right operand of implicit multiplication");
+            if (prevEntity is null) { prev = @this; break; }
+            (thisEntity, error) =
+              Structures.Result.Ok(@this).ExpectEntity("right operand of implicit multiplication");
             if (error != null) return error;
-            prevEntity = prev * @this;
+            prev = prevEntity * thisEntity;
             break;
         }
       }
-      if (prec == Precedence.Bracket) return "Missing )";
-      return prevEntity;
+      if (prec == Precedence.ContextParentheses) return "Missing )";
+      return prev;
     }
   }
 }
