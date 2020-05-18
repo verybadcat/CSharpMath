@@ -8,13 +8,16 @@ namespace CSharpMath {
     MathList ParseLaTeX(string latex) =>
       LaTeXParser.MathListFromLaTeX(latex).Match(list => list, e => throw new Xunit.Sdk.XunitException(e));
     Evaluation.MathItem ParseMath(string latex) =>
-      Evaluation.MathListToEntity(ParseLaTeX(latex)).Match(entity => entity, e => throw new Xunit.Sdk.XunitException(e));
-    void Test(string input, string converted, string result) {
+      Evaluation.Evaluate(ParseLaTeX(latex)).Match(entity => entity, e => throw new Xunit.Sdk.XunitException(e));
+    void Test(string input, string converted, string? result) {
       var math = ParseMath(input);
-      Assert.Equal(converted, LaTeXParser.MathListToLaTeX(Evaluation.MathListFromEntity(math)).ToString());
+      Assert.NotNull(math);
+      Assert.Equal(converted, LaTeXParser.MathListToLaTeX(Evaluation.Parse(math)).ToString());
       // Ensure that the converted entity is valid by simplifying it
-      if (math is Evaluation.MathItem.Entity{ Content: var e })
-        Assert.Equal(result, LaTeXParser.MathListToLaTeX(Evaluation.MathListFromEntity(e.Simplify())).ToString());
+      if (result != null)
+        Assert.Equal(result,
+          LaTeXParser.MathListToLaTeX(Evaluation.Parse(Assert.IsType<Evaluation.MathItem.Entity>(math).Content.Simplify())).ToString());
+      else Assert.IsNotType<Evaluation.MathItem.Entity>(result);
     }
     [Theory]
     [InlineData("1", "1")]
@@ -352,6 +355,13 @@ namespace CSharpMath {
       Test(latex.Replace("(", @"\left(").Replace(")", @"\right)"), converted, result);
     }
     [Theory]
+    [InlineData(@"1,2", @"1,2")]
+    [InlineData(@"1,2,3", @"1,2,3")]
+    [InlineData(@"a,b,c,d", @"a,b,c,d")]
+    [InlineData(@"\sqrt2,\sqrt[3]2,\frac34", @"\sqrt{2},2^{\frac{1}{3}},\frac{3}{4}")]
+    public void Comma(string latex, string converted) =>
+      Test(latex, converted, null);
+    [Theory]
     [InlineData(@"", "There is nothing to evaluate")]
     [InlineData(@"\ ", "There is nothing to evaluate")]
     [InlineData(@"\;", "There is nothing to evaluate")]
@@ -397,6 +407,15 @@ namespace CSharpMath {
     [InlineData(@"\cot^(-1)", "Missing )")]
     [InlineData(@"\sec\csc", "Missing argument for csc")]
     [InlineData(@"\operatorname{dab}", "Unsupported Large Operator dab")]
+    [InlineData(@",", "Missing left operand for comma")]
+    [InlineData(@"1,", "Missing right operand for comma")]
+    [InlineData(@",1", "Missing left operand for comma")]
+    [InlineData(@",1,2", "Missing left operand for comma")]
+    [InlineData(@"1,,2", "Missing left operand for comma")]
+    [InlineData(@"1,2,", "Missing right operand for comma")]
+    [InlineData(@",,1,2", "Missing left operand for comma")]
+    [InlineData(@"1,,2,", "Missing left operand for comma")]
+    [InlineData(@"1,2,,", "Missing left operand for comma")]
     [InlineData(@"\cap", "Unsupported Unary Operator ∩")]
     [InlineData(@"\cap1", "Unsupported Unary Operator ∩")]
     [InlineData(@"1\cap", "Entity cannot be left operand for ∩")]
@@ -408,8 +427,9 @@ namespace CSharpMath {
     [InlineData(@"1\setminus", "Entity cannot be left operand for ∖")]
     [InlineData(@"^\complement", "There is nothing to evaluate")]
     [InlineData(@"1^\complement", "Entity cannot be target of set inversion")]
+    [InlineData(@"x^\complement", "Entity cannot be target of set inversion")]
     public void Error(string badLaTeX, string error) =>
-      Evaluation.MathListToEntity(ParseLaTeX(badLaTeX))
+      Evaluation.Evaluate(ParseLaTeX(badLaTeX))
       .Match(entity => throw new Xunit.Sdk.XunitException(entity.Latexise()), e => Assert.Equal(error, e));
   }
 }

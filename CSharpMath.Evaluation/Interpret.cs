@@ -19,7 +19,7 @@ namespace CSharpMath {
           new Atom.Atoms.BinaryOperator("\u2212"),
           new Atom.Atoms.Inner(new Atom.Boundary("("), eq.right, new Atom.Boundary(")"))
         };
-        return MathListToEntity(mathList)
+        return Evaluate(mathList)
         .Match(item => {
           switch (item) {
             case MathItem.Entity { Content: var entity }:
@@ -47,7 +47,7 @@ namespace CSharpMath {
         }, errorLaTeX);
       }
 
-      return MathListToEntity(mathList)
+      return Evaluate(mathList)
       .Match(item => {
         var latex = new StringBuilder(@"\begin{aligned} &");
         latex.Append(item.Latexise());

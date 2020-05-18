@@ -5,13 +5,15 @@ using AngouriMath;
 using AngouriMath.Core;
 
 namespace CSharpMath {
+  using System.Collections;
   using Atom;
   using Atoms = Atom.Atoms;
   public static partial class Evaluation {
     enum Precedence {
       // Lowest
       Lowest,
-      ContextParentheses,
+      ParenthesesContext,
+      Comma,
       SetOperation,
       AddSubtract,
       MultiplyDivide,
@@ -33,18 +35,36 @@ namespace CSharpMath {
         public AngouriMath.Entity Content { get; }
         public override string Latexise() => Content.Latexise();
       }
-      /// <summary>A set or collection of set operations</summary>
+      /// <summary>A linked list of comma-delimited items</summary>
+      public sealed class Comma : MathItem, IEnumerable<MathItem> {
+        public Comma(MathItem prev, MathItem? next) {
+          Content = prev;
+          Next = next switch { null => null, Comma c => c, _ => new Comma(next, null) };
+        }
+        public MathItem Content { get; }
+        public Comma? Next { get; set; }
+        public override string Latexise() => string.Join(",", this.Select(item => item.Latexise()));
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        public IEnumerator<MathItem> GetEnumerator() {
+          Comma? current = this;
+          while (current != null) {
+            yield return current.Content;
+            current = current.Next;
+          }
+        }
+      }
+      /// <summary>A set or a combination of set operations</summary>
       public sealed class Set : MathItem {
         public Set(SetNode content) => Content = content;
         public SetNode Content { get; }
         public override string Latexise() => Content.Latexise();
       }
     }
-    public static MathList MathListFromEntity(MathItem entity) =>
+    public static MathList Parse(MathItem entity) =>
       LaTeXParser.MathListFromLaTeX(entity.Latexise())
       // CSharpMath must handle all LaTeX coming from MathS or a bug is present!
       .Match(list => list, e => throw new Structures.InvalidCodePathException(e));
-    public static Structures.Result<MathItem> MathListToEntity(MathList mathList) {
+    public static Structures.Result<MathItem> Evaluate(MathList mathList) {
       MathS.pi.ToString(); // Call into MathS's static initializer to ensure Entity methods work
       return Transform(mathList.Clone(true))
       .Bind(result =>
@@ -107,7 +127,7 @@ namespace CSharpMath {
           case Atoms.Number n:
             if (Number.TryParse(n.Nucleus, out var number)) {
               @this = new NumberEntity(number);
-              goto setEntity;
+              goto handleThis;
             } else return "Invalid number: " + n.Nucleus;
           case Atoms.Variable v:
             @this = v.Nucleus switch
@@ -115,10 +135,11 @@ namespace CSharpMath {
               "e" => MathS.e,
               "π" => MathS.pi,
               "i" => new NumberEntity(MathS.i),
+              // Convert θ to theta
               _ when LaTeXSettings.CommandForAtom(atom) is string s => MathS.Var(s),
               var name => new VariableEntity(name)
             };
-            goto setEntity;
+            goto handleThis;
           case Atoms.Fraction f:
             Entity numerator, denominator;
             (numerator, error) = Transform(f.Numerator).ExpectEntity(nameof(numerator));
@@ -126,7 +147,7 @@ namespace CSharpMath {
             (denominator, error) = Transform(f.Denominator).ExpectEntity(nameof(denominator));
             if (error != null) return error;
             @this = numerator / denominator;
-            goto setEntity;
+            goto handleThis;
           case Atoms.Radical r:
             Entity degree, radicand;
             (degree, error) = Transform(r.Degree).ExpectEntityOrNull(nameof(degree))
@@ -135,21 +156,21 @@ namespace CSharpMath {
             (radicand, error) = Transform(r.Radicand).ExpectEntity(nameof(radicand));
             if (error != null) return error;
             @this = MathS.Pow(radicand, degree);
-            goto setEntity;
+            goto handleThis;
           case Atoms.Open { Nucleus: "(" }:
             i++;
-            (@this, error) = Transform(mathList, ref i, Precedence.ContextParentheses);
+            (@this, error) = Transform(mathList, ref i, Precedence.ParenthesesContext);
             if (error != null) return error;
             if (@this == null)
               return "Missing )";
-            goto setEntity;
+            goto handleThis;
           case Atoms.Close { Nucleus: ")", Superscript: var super }:
             if (prev == null)
               return "Missing math before )";
             switch (prec) {
               case Precedence.Lowest:
                 return "Missing (";
-              case Precedence.ContextParentheses:
+              case Precedence.ParenthesesContext:
                 if (super.IsNonEmpty()) {
                   (degree, error) = Transform(super).ExpectEntity(nameof(degree));
                   if (error != null) return error;
@@ -166,7 +187,7 @@ namespace CSharpMath {
             (@this, error) = Transform(inner);
             if (error != null) return error;
             if (@this == null) return "Missing math between ()";
-            goto setEntity;
+            goto handleThis;
           case Atoms.UnaryOperator { Nucleus: "+" }:
             handlePrecendence = Precedence.UnaryPlusMinus;
             handlePrefix = e => +e;
@@ -262,9 +283,18 @@ namespace CSharpMath {
             handlePrecendence = Precedence.PercentDegree;
             handlePostfix = x => x * MathS.pi / 180;
             goto handlePostfix;
-          case Atoms.Space _:
-          case Atoms.Ordinary { Nucleus: var nucleus } when string.IsNullOrWhiteSpace(nucleus):
-            continue;
+          case Atoms.Punctuation { Nucleus: "," }:
+            if (prec <= Precedence.Comma) {
+              if (prev is null) return "Missing left operand for comma";
+              i++;
+              (next, error) = Transform(mathList, ref i, Precedence.Comma);
+              if (error != null) return error;
+              if (next is null) return "Missing right operand for comma";
+              return new MathItem.Comma(prev, next);
+            } else {
+              i--;
+              return prev;
+            }
           case Atoms.BinaryOperator { Nucleus: "∩" }:
             handlePrecendence = Precedence.SetOperation;
             handleBinarySet = (l, r) => l & r;
@@ -277,6 +307,9 @@ namespace CSharpMath {
             handlePrecendence = Precedence.SetOperation;
             handleBinarySet = (l, r) => l - r;
             goto handleBinarySet;
+          case Atoms.Space _:
+          case Atoms.Ordinary { Nucleus: var nucleus } when string.IsNullOrWhiteSpace(nucleus):
+            continue;
           default:
             return $"Unsupported {atom.TypeName} {atom.Nucleus}";
 
@@ -358,7 +391,7 @@ namespace CSharpMath {
             if (error != null) return error;
             (@this, error) = handleFunctionInner("argument for " + atom.Nucleus, next);
             if (error != null) return error;
-            goto setEntity;
+            goto handleThis;
 
             handlePrefix:
             handlePrefixInner = (itemName, item) => item.AsEntity(itemName).Bind(e => (MathItem)handlePrefix(e));
@@ -372,7 +405,7 @@ namespace CSharpMath {
             if (error != null) return error;
             (@this, error) = handlePrefixInner("right operand for " + atom.Nucleus, next);
             if (error != null) return error;
-            goto setEntity;
+            goto handleThis;
 
             handleBinary:
             handleBinaryInner = (leftName, left, rightName, right) => {
@@ -415,8 +448,8 @@ namespace CSharpMath {
                 handleBinaryInner("left operand for " + atom.Nucleus, prev,
                   "right operand for " + atom.Nucleus, next);
               if (error != null) return error;
-              prev = null; // We used up the previous entity, don't keep it
-              goto setEntity;
+              prev = null; // We used up prev, don't keep it
+              goto handleThis;
             } else {
               i--;
               return prev;
@@ -434,14 +467,14 @@ namespace CSharpMath {
               (@this, error) =
                 handlePostfixInner("left operand for " + atom.Nucleus, prev);
               if (error != null) return error;
-              prev = null; // We used up prevEntity
-              goto setEntity;
+              prev = null; // We used up prev, don't keep it
+              goto handleThis;
             } else {
               i--;
               return prev;
             }
 
-            setEntity:
+            handleThis:
             switch (atom.Superscript) {
               case { Count: 1 } superscript when superscript[0] is Atoms.Ordinary { Nucleus: "∁" }:
                 (@this, error) =
@@ -472,7 +505,7 @@ namespace CSharpMath {
             break;
         }
       }
-      if (prec == Precedence.ContextParentheses) return "Missing )";
+      if (prec == Precedence.ParenthesesContext) return "Missing )";
       return prev;
     }
   }
