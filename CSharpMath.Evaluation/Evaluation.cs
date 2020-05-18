@@ -8,11 +8,14 @@ namespace CSharpMath {
   using System.Collections;
   using Atom;
   using Atoms = Atom.Atoms;
+  using Structures;
   public static partial class Evaluation {
     enum Precedence {
+      DefaultContext,
+      BraceContext,
+      BracketContext,
+      ParenthesisContext,
       // Lowest
-      Lowest,
-      ParenthesesContext,
       Comma,
       SetOperation,
       AddSubtract,
@@ -63,51 +66,78 @@ namespace CSharpMath {
     public static MathList Parse(MathItem entity) =>
       LaTeXParser.MathListFromLaTeX(entity.Latexise())
       // CSharpMath must handle all LaTeX coming from MathS or a bug is present!
-      .Match(list => list, e => throw new Structures.InvalidCodePathException(e));
-    public static Structures.Result<MathItem> Evaluate(MathList mathList) {
+      .Match(list => list, e => throw new InvalidCodePathException(e));
+    public static Result<MathItem> Evaluate(MathList mathList) {
       MathS.pi.ToString(); // Call into MathS's static initializer to ensure Entity methods work
       return Transform(mathList.Clone(true))
       .Bind(result =>
         result is { } r
-        ? Structures.Result.Ok(r)
-        : Structures.Result.Err("There is nothing to evaluate"));
+        ? Result.Ok(r)
+        : Result.Err("There is nothing to evaluate"));
     }
-    static Structures.Result<MathItem?> Transform(MathList mathList) {
+    static Result<MathItem?> Transform(MathList mathList) {
       int i = 0;
-      return Transform(mathList, ref i, Precedence.Lowest);
+      return Transform(mathList, ref i, Precedence.DefaultContext);
     }
-    static Structures.Result<Entity?> ExpectEntityOrNull(this Structures.Result<MathItem?> result, string itemName) =>
+    static Result<Entity?> ExpectEntityOrNull(this Result<MathItem?> result, string itemName) =>
       result.Bind(item => item switch {
-        null => Structures.Result.Ok((Entity?)null),
-        MathItem.Entity entity => Structures.Result.Ok((Entity?)entity.Content),
-        var notEntity => Structures.Result.Err(item.GetType().Name + " cannot be " + itemName)
+        null => Result.Ok((Entity?)null),
+        MathItem.Entity entity => Result.Ok((Entity?)entity.Content),
+        var notEntity => Result.Err(item.GetType().Name + " cannot be " + itemName)
       });
-    static Structures.Result<Entity> ExpectEntity(this Structures.Result<MathItem?> result, string itemName) =>
+    static Result<Entity> ExpectEntity(this Result<MathItem?> result, string itemName) =>
       result.ExpectEntityOrNull(itemName).Bind(item => item switch {
-        null => Structures.Result.Err("Missing " + itemName),
-        { } entity => Structures.Result.Ok(entity)
+        null => Result.Err("Missing " + itemName),
+        { } entity => Result.Ok(entity)
       });
-    static Structures.Result<Entity> AsEntity(this MathItem? item, string itemName) =>
-      Structures.Result.Ok(item).ExpectEntity(itemName);
-    static Structures.Result<SetNode?> ExpectSetOrNull(this Structures.Result<MathItem?> result, string itemName) =>
+    static Result<Entity> AsEntity(this MathItem? item, string itemName) =>
+      Result.Ok(item).ExpectEntity(itemName);
+    static Result<SetNode?> ExpectSetOrNull(this Result<MathItem?> result, string itemName) =>
       result.Bind(item => item switch {
-        null => Structures.Result.Ok((SetNode?)null),
-        MathItem.Set entity => Structures.Result.Ok((SetNode?)entity.Content),
-        var notEntity => Structures.Result.Err(item.GetType().Name + " cannot be " + itemName)
+        null => Result.Ok((SetNode?)null),
+        MathItem.Set entity => Result.Ok((SetNode?)entity.Content),
+        var notEntity => Result.Err(item.GetType().Name + " cannot be " + itemName)
       });
-    static Structures.Result<SetNode> ExpectSet(this Structures.Result<MathItem?> result, string itemName) =>
+    static Result<SetNode> ExpectSet(this Result<MathItem?> result, string itemName) =>
       result.ExpectSetOrNull(itemName).Bind(item => item switch {
-        null => Structures.Result.Err("Missing " + itemName),
-        { } entity => Structures.Result.Ok(entity)
+        null => Result.Err("Missing " + itemName),
+        { } entity => Result.Ok(entity)
       });
-    static Structures.Result<SetNode> AsSet(this MathItem? item, string itemName) =>
-      Structures.Result.Ok(item).ExpectSet(itemName);
-    static Structures.Result<MathItem> ExpectNotNull(this Structures.Result<MathItem?> result, string itemName) =>
+    static Result<SetNode> AsSet(this MathItem? item, string itemName) =>
+      Result.Ok(item).ExpectSet(itemName);
+    static Result<MathItem> ExpectNotNull(this Result<MathItem?> result, string itemName) =>
       result.Bind(item => item switch {
-        null => Structures.Result.Err("Missing " + itemName),
-        { } notnull => Structures.Result.Ok(notnull)
+        null => Result.Err("Missing " + itemName),
+        { } notnull => Result.Ok(notnull)
       });
-    static Structures.Result<MathItem?> Transform(MathList mathList, ref int i, Precedence prec) {
+    static Result<MathItem> TryMakeSet(MathItem.Comma c, bool leftClosed, bool rightClosed) =>
+      c switch {
+        { Content: var l, Next: { Content: var r, Next: null } } =>
+            l.AsEntity("left interval boundary")
+            .Bind(left => r.AsEntity("right interval boundary")
+            .Bind(right => (MathItem)new Set(MathS.Sets.Interval(left, right).SetLeftClosed(leftClosed).SetRightClosed(rightClosed)))),
+        _ => "Unrecognized comma-delimited collection of " + c.Count() + " items"
+      };
+    static readonly Dictionary<(string left, string right), Func<MathItem, Result<MathItem>>> BracketHandlers =
+      new Dictionary<(string left, string right), Func<MathItem, Result<MathItem>>> {
+        { ("(", ")"), item => item switch {
+          MathItem.Comma c => TryMakeSet(c, false, false),
+          _ => item
+        } },
+        { ("[", ")"), item => item switch {
+          MathItem.Comma c => TryMakeSet(c, true, false),
+          _ => "Mismatched brackets: [ )"
+        } },
+        { ("(", "]"), item => item switch {
+          MathItem.Comma c => TryMakeSet(c, false, true),
+          _ => "Mismatched brackets: ( ]"
+        } },
+        { ("[", "]"), item => item switch {
+          MathItem.Comma c => TryMakeSet(c, true, true),
+          _ => "Mismatched brackets: [ ]"
+        } },
+      };
+    static Result<MathItem?> Transform(MathList mathList, ref int i, Precedence prec) {
       MathItem? prev = null;
       MathItem? next;
       string? error;
@@ -116,8 +146,8 @@ namespace CSharpMath {
       Func<Entity, Entity, Entity> handleBinary;
       Func<SetNode, SetNode> handlePrefixSet, handlePostfixSet, handleFunctionSet, handleFunctionInverseSet;
       Func<SetNode, SetNode, SetNode> handleBinarySet;
-      Func<string, MathItem?, Structures.Result<MathItem>> handlePrefixInner, handlePostfixInner, handleFunctionInner, handleFunctionInverseInner;
-      Func<string, MathItem?, string, MathItem?, Structures.Result<MathItem>> handleBinaryInner;
+      Func<string, MathItem?, Result<MathItem>> handlePrefixInner, handlePostfixInner, handleFunctionInner, handleFunctionInverseInner;
+      Func<string, MathItem?, string, MathItem?, Result<MathItem>> handleBinaryInner;
       for (; i < mathList.Count; i++) {
         var atom = mathList[i];
         MathItem? @this;
@@ -159,7 +189,7 @@ namespace CSharpMath {
             goto handleThis;
           case Atoms.Open { Nucleus: "(" }:
             i++;
-            (@this, error) = Transform(mathList, ref i, Precedence.ParenthesesContext);
+            (@this, error) = Transform(mathList, ref i, Precedence.ParenthesisContext);
             if (error != null) return error;
             if (@this == null)
               return "Missing )";
@@ -168,14 +198,14 @@ namespace CSharpMath {
             if (prev == null)
               return "Missing math before )";
             switch (prec) {
-              case Precedence.Lowest:
+              case Precedence.DefaultContext:
                 return "Missing (";
-              case Precedence.ParenthesesContext:
+              case Precedence.ParenthesisContext:
                 if (super.IsNonEmpty()) {
                   (degree, error) = Transform(super).ExpectEntity(nameof(degree));
                   if (error != null) return error;
                   return
-                    Structures.Result.Ok((MathItem?)prev).ExpectEntity("base")
+                    Result.Ok((MathItem?)prev).ExpectEntity("base")
                     .Bind(@base => (MathItem?)MathS.Pow(@base, degree));
                 }
                 return prev;
@@ -495,17 +525,17 @@ namespace CSharpMath {
 
             Entity? prevEntity, thisEntity;
             (prevEntity, error) =
-              Structures.Result.Ok(prev).ExpectEntityOrNull("left operand of implicit multiplication");
+              Result.Ok(prev).ExpectEntityOrNull("left operand of implicit multiplication");
             if (error != null) return error;
             if (prevEntity is null) { prev = @this; break; }
             (thisEntity, error) =
-              Structures.Result.Ok(@this).ExpectEntity("right operand of implicit multiplication");
+              Result.Ok(@this).ExpectEntity("right operand of implicit multiplication");
             if (error != null) return error;
             prev = prevEntity * thisEntity;
             break;
         }
       }
-      if (prec == Precedence.ParenthesesContext) return "Missing )";
+      if (prec == Precedence.ParenthesisContext) return "Missing )";
       return prev;
     }
   }
