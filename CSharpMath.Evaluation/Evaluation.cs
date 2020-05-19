@@ -202,17 +202,36 @@ namespace CSharpMath {
               goto handleThis;
             } else return "Invalid number: " + n.Nucleus;
           case Atoms.Variable v:
-            @this = v.Nucleus switch
+            var subscript = new System.Text.StringBuilder("_");
+            foreach (var subAtom in v.Subscript)
+              switch (subAtom) {
+                case Atoms.Placeholder _:
+                  return "Placeholders should be filled";
+                case { Superscript: { Count: var count } } when count > 0:
+                  return "Unsupported exponentiation in subscript";
+                case { Subscript: { Count: var count } } when count > 0:
+                  return "Unsupported subscript in subscript";
+                case Atoms.Number { Nucleus: var nucleus }:
+                  subscript.Append(nucleus);
+                  break;
+                case Atoms.Variable { Nucleus: var nucleus }:
+                  subscript.Append(nucleus);
+                  break;
+                default:
+                  return $"Unsupported {subAtom.TypeName} {subAtom.Nucleus} in subscript";
+              }
+            @this = (v.Nucleus, v.Subscript.Count) switch
             {
-              "R" when v.FontStyle == FontStyle.Blackboard => MathS.Sets.R(),
-              "C" when v.FontStyle == FontStyle.Blackboard => MathS.Sets.C(),
-              "e" => MathS.e,
-              "π" => MathS.pi,
-              "i" => new NumberEntity(MathS.i),
+              ("R", 0) when v.FontStyle == FontStyle.Blackboard => MathS.Sets.R(),
+              ("C", 0) when v.FontStyle == FontStyle.Blackboard => MathS.Sets.C(),
+              ("e", 0) => MathS.e,
+              ("π", 0) => MathS.pi,
+              ("i", 0) => new NumberEntity(MathS.i),
               // Convert θ to theta
-              _ when LaTeXSettings.CommandForAtom(atom) is string s => MathS.Var(s),
-              var name => new VariableEntity(name)
+              _ when LaTeXSettings.CommandForAtom(atom) is string s => MathS.Var(s + subscript.ToString()),
+              (var name, _) => MathS.Var(name + subscript.ToString())
             };
+            v.Subscript.Clear();
             goto handleThis;
           case Atoms.Ordinary { Nucleus: "∅" }:
             @this = MathS.Sets.Empty();
@@ -242,7 +261,8 @@ namespace CSharpMath {
             if (error != null) return error;
             if (@this == null) return "Missing " + bracketInfo.InferredClosing;
             goto handleThis;
-          case Atoms.Close { Nucleus: var rightBracket, Superscript: var super }:
+          case Atoms.Close { Nucleus: var rightBracket, Superscript: var super, Subscript: var sub }:
+            if (sub.Count > 0) return "Subscripts are unsupported for Close " + rightBracket;
             if (!ContextInfo.TryGetValue(prec, out var contextInfo))
               switch (prec) {
                 case Precedence.DefaultContext:
@@ -342,6 +362,7 @@ namespace CSharpMath {
           case Atoms.LargeOperator { Nucleus: "log", Subscript: var @base }:
             Entity? logBase;
             (logBase, error) = Transform(@base).ExpectEntityOrNull(nameof(logBase));
+            @base.Clear();
             if (error != null) return error;
             logBase ??= new NumberEntity(10);
             handleFunction = arg => MathS.Log(arg, logBase);
@@ -572,6 +593,8 @@ namespace CSharpMath {
             }
 
             handleThis:
+            if (atom.Subscript.Count > 0)
+              return $"Subscripts are unsupported for {atom.TypeName} {atom.Nucleus}";
             error = HandleSuperscript(ref @this, atom.Superscript).Error;
             if (error != null) return error;
             Entity? prevEntity, thisEntity;
