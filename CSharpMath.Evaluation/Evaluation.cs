@@ -269,8 +269,9 @@ namespace CSharpMath {
               BracketHandlers.TryGetValue((contextInfo.KnownOpening, rightBracket), out var handler)
               ? handler(prev).Bind(handled => {
                 MathItem? nullable = handled;
-                HandleSuperscript(ref nullable, super);
-                return nullable;
+                if (HandleSuperscript(ref nullable, super).Error is { } error)
+                  return Result.Err(error);
+                return Result.Ok(nullable);
               })
               : $"Unrecognized bracket pair {contextInfo.KnownOpening} {rightBracket}";
           case Atoms.Inner { LeftBoundary: { Nucleus: var left }, InnerList: var inner, RightBoundary: { Nucleus: var right } }:
@@ -571,7 +572,8 @@ namespace CSharpMath {
             }
 
             handleThis:
-            HandleSuperscript(ref @this, atom.Superscript);
+            error = HandleSuperscript(ref @this, atom.Superscript).Error;
+            if (error != null) return error;
             Entity? prevEntity, thisEntity;
             (prevEntity, error) =
               Result.Ok(prev).ExpectEntityOrNull("left operand of implicit multiplication");
