@@ -361,6 +361,25 @@ namespace CSharpMath {
     [InlineData(@"\sqrt2,\sqrt[3]2,\frac34", @"\sqrt{2},2^{\frac{1}{3}},\frac{3}{4}")]
     public void Comma(string latex, string converted) =>
       Test(latex, converted, null);
+    [Theory(Skip = "https://github.com/asc-community/AngouriMath/pull/94")]
+    [InlineData(@"\emptyset", @"\emptyset ")]
+    [InlineData(@"\mathbb R", @"\emptyset ")] // wip
+    [InlineData(@"\mathbb C", @"\emptyset ")] // wip
+    [InlineData(@"\{\}", @"\emptyset ")]
+    [InlineData(@"\{1\}", @"\left\{ 1\right\} ")]
+    [InlineData(@"\{1,2\}", @"\left\{ 1,2\right\} ")]
+    [InlineData(@"\{x,y\}", @"\left\{ x,y\right\} ")]
+    [InlineData(@"\{\sqrt[3]2,\frac34,\sin^2x\}", @"\left\{ 2^{\frac{1}{3}},\frac{3}{4},\sin \left( x\right) ^2\right\} ")]
+    public void Sets(string latex, string converted) {
+      Test(latex, converted, null);
+      Test(latex.Replace(@"\{", @"\left\{").Replace(@"\}", @"\right\}"), converted, null);
+    }
+    [Theory(Skip = "https://github.com/asc-community/AngouriMath/pull/93")]
+    [InlineData(@"(1,2)", @"\left\{ \left( 1,2\right) \right\} ")] // wip
+    public void Intervals(string latex, string converted) {
+      Test(latex, converted, null);
+      Test(latex.Replace("(", @"\left(").Replace(")", @"\right)"), converted, null);
+    }
     [Theory]
     [InlineData(@"", "There is nothing to evaluate")]
     [InlineData(@"\ ", "There is nothing to evaluate")]
@@ -393,11 +412,43 @@ namespace CSharpMath {
     [InlineData(@"(x", "Missing )")]
     [InlineData(@"((x)", "Missing )")]
     [InlineData(@"(+", "Missing right operand for +")]
-    [InlineData(@")", "Missing math before )")]
+    [InlineData(@")", "Missing (")]
     [InlineData(@"x)", "Missing (")]
     [InlineData(@"(x))", "Missing (")]
-    [InlineData(@"+)", "Missing math before )")]
-    [InlineData(@"\left(\right)", "Missing math between ()")]
+    [InlineData(@"+)", "Missing right operand for +")]
+    [InlineData(@"\left(\right)", "Missing math inside ( )")]
+    [InlineData(@"\left(1+\right)", "Missing right operand for +")]
+    [InlineData(@"[", "Missing ]")]
+    [InlineData(@"[x", "Missing ]")]
+    [InlineData(@"[x)", "Unrecognized bracket pair [ )")]
+    [InlineData(@"[[x)", "Unrecognized bracket pair [ )")]
+    [InlineData(@"[+", "Missing right operand for +")]
+    [InlineData(@"[x))", "Unrecognized bracket pair [ )")]
+    [InlineData(@"\left[\right)", "Unrecognized bracket pair [ )")]
+    [InlineData(@"\left[1+\right)", "Missing right operand for +")]
+    [InlineData(@"((x]", "Unrecognized bracket pair ( ]")]
+    [InlineData(@"(x]", "Unrecognized bracket pair ( ]")]
+    [InlineData(@"]", "Missing [")]
+    [InlineData(@"x]", "Missing [")]
+    [InlineData(@"(x]]", "Unrecognized bracket pair ( ]")]
+    [InlineData(@"+]", "Missing right operand for +")]
+    [InlineData(@"\left(\right]", "Unrecognized bracket pair ( ]")]
+    [InlineData(@"\left(1+\right]", "Missing right operand for +")]
+    [InlineData(@"[]", "Unrecognized bracket pair [ ]")]
+    [InlineData(@"[x]", "Unrecognized bracket pair [ ]")]
+    [InlineData(@"[[x]", "Unrecognized bracket pair [ ]")]
+    [InlineData(@"[x]]", "Unrecognized bracket pair [ ]")]
+    [InlineData(@"\left[\right]", "Unrecognized bracket pair [ ]")]
+    [InlineData(@"\left[1+\right]", "Missing right operand for +")]
+    [InlineData(@"\{", "Missing }")]
+    [InlineData(@"\{x", "Missing }")]
+    [InlineData(@"\{\{x\}", "Missing }")]
+    [InlineData(@"\{+", "Missing right operand for +")]
+    [InlineData(@"\}", "Missing {")]
+    [InlineData(@"x\}", "Missing {")]
+    [InlineData(@"\{x\}\}", "Missing {")]
+    [InlineData(@"+\}", "Missing right operand for +")]
+    [InlineData(@"\left\{1+\right\}", "Missing right operand for +")]
     [InlineData(@"\frac{}{x}", "Missing numerator")]
     [InlineData(@"\frac{x}{}", "Missing denominator")]
     [InlineData(@"\sqrt{}", "Missing radicand")]

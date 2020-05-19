@@ -115,26 +115,48 @@ namespace CSharpMath {
         { Content: var l, Next: { Content: var r, Next: null } } =>
             l.AsEntity("left interval boundary")
             .Bind(left => r.AsEntity("right interval boundary")
-            .Bind(right => (MathItem)new Set(MathS.Sets.Interval(left, right).SetLeftClosed(leftClosed).SetRightClosed(rightClosed)))),
+            .Bind(right => (MathItem)new Set(MathS.Sets.Interval(left, right).SetLeftClosed(leftClosed, leftClosed).SetRightClosed(rightClosed, rightClosed)))),
         _ => "Unrecognized comma-delimited collection of " + c.Count() + " items"
       };
-    static readonly Dictionary<(string left, string right), Func<MathItem, Result<MathItem>>> BracketHandlers =
-      new Dictionary<(string left, string right), Func<MathItem, Result<MathItem>>> {
+    static readonly Dictionary<Precedence, (string KnownOpening, string InferredClosing)> ContextInfo =
+      new Dictionary<Precedence, (string, string)> {
+        { Precedence.ParenthesisContext, ("(", ")") },
+        { Precedence.BracketContext, ("[", "]") },
+        { Precedence.BraceContext, ("{", "}") },
+      };
+    static readonly Dictionary<string, (string InferredClosing, Precedence KnownPrecedence)> OpenBracketInfo =
+      new Dictionary<string, (string, Precedence)> {
+        { "(", (")", Precedence.ParenthesisContext) },
+        { "[", ("]", Precedence.BracketContext) },
+        { "{", ("}", Precedence.BraceContext) },
+      };
+    static readonly Dictionary<(string left, string right), Func<MathItem?, Result<MathItem>>> BracketHandlers =
+      new Dictionary<(string left, string right), Func<MathItem?, Result<MathItem>>> {
         { ("(", ")"), item => item switch {
+          null => "Missing math inside ( )",
           MathItem.Comma c => TryMakeSet(c, false, false),
           _ => item
         } },
         { ("[", ")"), item => item switch {
           MathItem.Comma c => TryMakeSet(c, true, false),
-          _ => "Mismatched brackets: [ )"
+          _ => "Unrecognized bracket pair [ )"
         } },
         { ("(", "]"), item => item switch {
           MathItem.Comma c => TryMakeSet(c, false, true),
-          _ => "Mismatched brackets: ( ]"
+          _ => "Unrecognized bracket pair ( ]"
         } },
         { ("[", "]"), item => item switch {
           MathItem.Comma c => TryMakeSet(c, true, true),
-          _ => "Mismatched brackets: [ ]"
+          _ => "Unrecognized bracket pair [ ]"
+        } },
+        { ("{", "}"), item => item switch {
+          null => (MathItem)MathS.Sets.Empty(),
+          MathItem.Entity { Content:var e } => (MathItem)MathS.Sets.Finite(e),
+          MathItem.Comma c =>
+            c.Aggregate(Result.Ok(MathS.Sets.Empty()), (set, item) =>
+              set.Bind(s => item.AsEntity("set element").Bind(i => { s.Add(i); return s; })),
+              set => set.Bind(s => (MathItem)s)),
+          _ => item.GetType().Name + " cannot be a set element"
         } },
       };
     static Result<MathItem?> Transform(MathList mathList, ref int i, Precedence prec) {
@@ -162,6 +184,8 @@ namespace CSharpMath {
           case Atoms.Variable v:
             @this = v.Nucleus switch
             {
+              "R" when v.FontStyle == FontStyle.Blackboard => MathS.Sets.R(),
+              "C" when v.FontStyle == FontStyle.Blackboard => MathS.Sets.C(),
               "e" => MathS.e,
               "π" => MathS.pi,
               "i" => new NumberEntity(MathS.i),
@@ -169,6 +193,9 @@ namespace CSharpMath {
               _ when LaTeXSettings.CommandForAtom(atom) is string s => MathS.Var(s),
               var name => new VariableEntity(name)
             };
+            goto handleThis;
+          case Atoms.Ordinary { Nucleus: "∅" }:
+            @this = MathS.Sets.Empty();
             goto handleThis;
           case Atoms.Fraction f:
             Entity numerator, denominator;
@@ -187,36 +214,58 @@ namespace CSharpMath {
             if (error != null) return error;
             @this = MathS.Pow(radicand, degree);
             goto handleThis;
-          case Atoms.Open { Nucleus: "(" }:
+          case Atoms.Open { Nucleus: var opening }:
+            if (!OpenBracketInfo.TryGetValue(opening, out var bracketInfo))
+                return "Unsupported opening bracket " + opening;
             i++;
-            (@this, error) = Transform(mathList, ref i, Precedence.ParenthesisContext);
+            (@this, error) = Transform(mathList, ref i, bracketInfo.KnownPrecedence);
             if (error != null) return error;
-            if (@this == null)
-              return "Missing )";
+            if (@this == null) return "Missing " + bracketInfo.InferredClosing;
             goto handleThis;
-          case Atoms.Close { Nucleus: ")", Superscript: var super }:
-            if (prev == null)
-              return "Missing math before )";
-            switch (prec) {
-              case Precedence.DefaultContext:
-                return "Missing (";
-              case Precedence.ParenthesisContext:
+          case Atoms.Close { Nucleus: var rightBracket, Superscript: var super }:
+            if (!ContextInfo.TryGetValue(prec, out var contextInfo))
+              switch (prec) {
+                case Precedence.DefaultContext:
+                  string leftBracket;
+                  switch (rightBracket) {
+                    case ")":
+                      leftBracket = "(";
+                      break;
+                    case "]":
+                      leftBracket = "[";
+                      break;
+                    case "}":
+                      leftBracket = "{";
+                      break;
+                    default:
+                      return "Unsupported closing bracket " + rightBracket;
+                  }
+                  return "Missing " + leftBracket;
+                default:
+                  i--;
+                  return prev;
+              }
+            return
+              BracketHandlers.TryGetValue((contextInfo.KnownOpening, rightBracket), out var handler)
+              ? handler(prev).Bind(handled => {
                 if (super.IsNonEmpty()) {
                   (degree, error) = Transform(super).ExpectEntity(nameof(degree));
                   if (error != null) return error;
                   return
-                    Result.Ok((MathItem?)prev).ExpectEntity("base")
+                    Result.Ok(prev).ExpectEntity("base of exponentiation")
                     .Bind(@base => (MathItem?)MathS.Pow(@base, degree));
                 }
-                return prev;
-              default:
-                i--;
-                return prev;
-            }
-          case Atoms.Inner { LeftBoundary: { Nucleus: "(" }, InnerList: var inner, RightBoundary: { Nucleus: ")" } }:
+                return handled;
+              })
+              : $"Unrecognized bracket pair {contextInfo.KnownOpening} {rightBracket}";
+          case Atoms.Inner { LeftBoundary: { Nucleus: var left }, InnerList: var inner, RightBoundary: { Nucleus: var right } }:
             (@this, error) = Transform(inner);
             if (error != null) return error;
-            if (@this == null) return "Missing math between ()";
+            (@this, error) =
+              BracketHandlers.TryGetValue((left, right), out handler)
+              ? handler(@this)
+              : $"Unrecognized bracket pair {left} {right}";
+            if (error != null) return error;
             goto handleThis;
           case Atoms.UnaryOperator { Nucleus: "+" }:
             handlePrecendence = Precedence.UnaryPlusMinus;
@@ -320,7 +369,9 @@ namespace CSharpMath {
               (next, error) = Transform(mathList, ref i, Precedence.Comma);
               if (error != null) return error;
               if (next is null) return "Missing right operand for comma";
-              return new MathItem.Comma(prev, next);
+              @this = new MathItem.Comma(prev, next);
+              prev = null;
+              goto handleThis;
             } else {
               i--;
               return prev;
@@ -535,7 +586,8 @@ namespace CSharpMath {
             break;
         }
       }
-      if (prec == Precedence.ParenthesisContext) return "Missing )";
+      if (ContextInfo.TryGetValue(prec, out var info))
+        return "Missing " + info.InferredClosing;
       return prev;
     }
   }
