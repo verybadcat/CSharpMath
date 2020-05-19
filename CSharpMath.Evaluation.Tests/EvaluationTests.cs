@@ -374,6 +374,15 @@ namespace CSharpMath {
       Test(latex, converted, null);
       Test(latex.Replace(@"\{", @"\left\{").Replace(@"\}", @"\right\}"), converted, null);
     }
+    [Theory]
+    [InlineData(@"\emptyset\cup\{2\}", @"\left\{ 2\right\} ")]
+    [InlineData(@"\{3,4\}\cap\{4,5\}", @"\left\{ 4\right\} ")]
+    [InlineData(@"\{2,3,4\}\setminus\{4\}", @"\left\{ 2,3\right\} ")]
+    //[InlineData(@"\{3\}^\complement", @"\left\{ 3\right\} ^\complement")] // wip
+    public void SetOperations(string latex, string converted) {
+      Test(latex, converted, null);
+      Test(latex.Replace(@"\{", @"\left\{").Replace(@"\}", @"\right\}"), converted, null);
+    }
     [Theory(Skip = "https://github.com/asc-community/AngouriMath/pull/93")]
     [InlineData(@"(1,2)", @"\left\{ \left( 1,2\right) \right\} ")] // wip
     public void Intervals(string latex, string converted) {
@@ -467,6 +476,13 @@ namespace CSharpMath {
     [InlineData(@",,1,2", "Missing left operand for comma")]
     [InlineData(@"1,,2,", "Missing left operand for comma")]
     [InlineData(@"1,2,,", "Missing left operand for comma")]
+    [InlineData(@"\arcsin(1,2)", "Comma cannot be argument for arcsin")]
+    [InlineData(@"+(3,4]", "Set cannot be right operand for +")]
+    [InlineData(@"[5,6)\times", "Set cannot be left operand for ×")]
+    [InlineData(@"\frac{[7,8]}{9}", "Set cannot be numerator")]
+    [InlineData(@"\sqrt[{[]}]{}", "Unrecognized bracket pair [ ]")]
+    [InlineData(@"\sqrt[{[a,b]}]{}", "Set cannot be degree")]
+    [InlineData(@"\{\{\}\}", "Set cannot be a set element")]
     [InlineData(@"\cap", "Unsupported Unary Operator ∩")]
     [InlineData(@"\cap1", "Unsupported Unary Operator ∩")]
     [InlineData(@"1\cap", "Entity cannot be left operand for ∩")]

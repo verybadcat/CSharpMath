@@ -173,6 +173,26 @@ namespace CSharpMath {
       for (; i < mathList.Count; i++) {
         var atom = mathList[i];
         MathItem? @this;
+        Result HandleSuperscript(ref MathItem? @this, MathList superscript) {
+          switch(superscript) {
+            case { Count: 1 } when superscript[0] is Atoms.Ordinary { Nucleus: "∁" }:
+              (@this, error) =
+                @this.AsSet("target of set inversion").Bind(target => (MathItem?)!target);
+              if (error != null) return error;
+              break;
+            default:
+              Entity? exponent;
+              (exponent, error) = Transform(superscript).ExpectEntityOrNull(nameof(exponent));
+              if (error != null) return error;
+              if (exponent != null) {
+                (@this, error) =
+                  @this.AsEntity("base of exponentiation").Bind(@base => (MathItem?)MathS.Pow(@base, exponent));
+                if (error != null) return error;
+              }
+              break;
+          }
+          return Result.Ok();
+        }
         switch (atom) {
           case Atoms.Placeholder _:
             return "Placeholders should be filled";
@@ -248,14 +268,9 @@ namespace CSharpMath {
             return
               BracketHandlers.TryGetValue((contextInfo.KnownOpening, rightBracket), out var handler)
               ? handler(prev).Bind(handled => {
-                if (super.IsNonEmpty()) {
-                  (degree, error) = Transform(super).ExpectEntity(nameof(degree));
-                  if (error != null) return error;
-                  return
-                    Result.Ok(prev).ExpectEntity("base of exponentiation")
-                    .Bind(@base => (MathItem?)MathS.Pow(@base, degree));
-                }
-                return handled;
+                MathItem? nullable = handled;
+                HandleSuperscript(ref nullable, super);
+                return nullable;
               })
               : $"Unrecognized bracket pair {contextInfo.KnownOpening} {rightBracket}";
           case Atoms.Inner { LeftBoundary: { Nucleus: var left }, InnerList: var inner, RightBoundary: { Nucleus: var right } }:
@@ -556,24 +571,7 @@ namespace CSharpMath {
             }
 
             handleThis:
-            switch (atom.Superscript) {
-              case { Count: 1 } superscript when superscript[0] is Atoms.Ordinary { Nucleus: "∁" }:
-                (@this, error) =
-                  @this.AsSet("target of set inversion").Bind(target => (MathItem?)!target);
-                if (error != null) return error;
-                break;
-              case var superscript:
-                Entity? exponent;
-                (exponent, error) = Transform(superscript).ExpectEntityOrNull(nameof(exponent));
-                if (error != null) return error;
-                if (exponent != null) {
-                  (@this, error) =
-                    @this.AsEntity("base of exponentiation").Bind(@base => (MathItem?)MathS.Pow(@base, exponent));
-                  if (error != null) return error;
-                }
-                break;
-            }
-
+            HandleSuperscript(ref @this, atom.Superscript);
             Entity? prevEntity, thisEntity;
             (prevEntity, error) =
               Result.Ok(prev).ExpectEntityOrNull("left operand of implicit multiplication");
