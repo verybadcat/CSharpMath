@@ -359,6 +359,17 @@ namespace CSharpMath {
       Test(latex.Replace("(", @"\left(").Replace(")", @"\right)"), converted, result);
     }
     [Theory]
+    [InlineData(@"\begin{pmatrix}1\end{pmatrix}", @"\left( \begin{matrix}1\end{matrix}\right) ", @"\left( \begin{matrix}1\end{matrix}\right) ")]
+    [InlineData(@"\begin{pmatrix}1\end{pmatrix}^2", @"\left( \begin{matrix}1\end{matrix}\right) ^2", @"\left( \begin{matrix}1\end{matrix}\right) ^2")]
+    public void Vectors(string latex, string converted, string result) =>
+      Test(latex, converted, result);
+    [Theory]
+    [InlineData(@"\begin{pmatrix}1&2\\3&4\end{pmatrix}", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) ", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) ")]
+    [InlineData(@"\begin{pmatrix}1&2\\3&4\end{pmatrix}^2", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) ^2", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) ^2")]
+    [InlineData(@"\begin{pmatrix}1&2\\3&4\end{pmatrix}+\begin{pmatrix}1&2\\3&5\end{pmatrix}", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) +\left( \begin{matrix}1&2\\ 3&5\end{matrix}\right) ", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) +\left( \begin{matrix}1&2\\ 3&5\end{matrix}\right) ")]
+    public void Matrices(string latex, string converted, string result) =>
+      Test(latex, converted, result);
+    [Theory]
     [InlineData(@"1,2", @"1,2")]
     [InlineData(@"1,2,3", @"1,2,3")]
     [InlineData(@"a,b,c,d", @"a,b,c,d")]
@@ -382,6 +393,8 @@ namespace CSharpMath {
     }
     [Theory]
     [InlineData(@"\emptyset\cup\{2\}", @"\left\{ 2\right\} ")]
+    [InlineData(@"\{1\}\cup\{2\}", @"\left\{ 1,2\right\} ")]
+    [InlineData(@"\{3,4\}\cap\emptyset", @"\emptyset ")]
     [InlineData(@"\{3,4\}\cap\{4,5\}", @"\left\{ 4\right\} ")]
     [InlineData(@"\{2,3,4\}\setminus\{4\}", @"\left\{ 2,3\right\} ")]
     //[InlineData(@"\{3\}^\complement", @"\left\{ 3\right\} ^\complement")] // wip
@@ -509,6 +522,14 @@ namespace CSharpMath {
     [InlineData(@"\sec\csc", "Missing argument for csc")]
     [InlineData(@"\arcsin_2x", "Subscripts are unsupported for Large Operator arcsin")]
     [InlineData(@"\operatorname{dab}", "Unsupported Large Operator dab")]
+    [InlineData(@"\begin{matrix}\end{matrix}", "Missing matrix element")]
+    [InlineData(@"\begin{matrix}2&3\end{matrix}_2", "Subscripts are unsupported for Ordinary")]
+    [InlineData(@"\begin{matrix}2&3\end{matrix}^2", "Exponentiation is unsupported for Ordinary")]
+    [InlineData(@"\begin{pmatrix}2&+\end{pmatrix}", "Missing right operand for +")]
+    [InlineData(@"\begin{pmatrix}2&3\end{pmatrix}_2", "Subscripts are unsupported for Inner ")]
+    [InlineData(@"\begin{Vmatrix}\end{Vmatrix}", "Missing matrix element")]
+    [InlineData(@"\begin{Vmatrix}2&3\end{Vmatrix}", "Unrecognized bracket pair ‖ ‖")]
+    [InlineData(@"\begin{eqnarray}&&\end{eqnarray}", "Unsupported table environment eqnarray")]
     [InlineData(@",", "Missing left operand for comma")]
     [InlineData(@"1,_22", "Subscripts are unsupported for Punctuation ,")]
     [InlineData(@"1,", "Missing right operand for comma")]
@@ -525,7 +546,7 @@ namespace CSharpMath {
     [InlineData(@"\frac{[7,8]}{9}", "Set cannot be numerator")]
     [InlineData(@"\sqrt[{[]}]{}", "Unrecognized bracket pair [ ]")]
     [InlineData(@"\sqrt[{[a,b]}]{}", "Set cannot be degree")]
-    [InlineData(@"\{\{\}\}", "Set cannot be a set element")]
+    [InlineData(@"\{\{\}\}", "Set cannot be set element")]
     [InlineData(@"\cap", "Unsupported Unary Operator ∩")]
     [InlineData(@"\cap1", "Unsupported Unary Operator ∩")]
     [InlineData(@"1\cap", "Entity cannot be left operand for ∩")]
@@ -535,9 +556,14 @@ namespace CSharpMath {
     [InlineData(@"\setminus", "Unsupported Unary Operator ∖")]
     [InlineData(@"\setminus1", "Unsupported Unary Operator ∖")]
     [InlineData(@"1\setminus", "Entity cannot be left operand for ∖")]
-    [InlineData(@"^\complement", "There is nothing to evaluate")]
+    [InlineData(@"^\complement", "Exponentiation is unsupported for Ordinary")]
+    [InlineData(@"_\complement", "Subscripts are unsupported for Ordinary")]
     [InlineData(@"1^\complement", "Entity cannot be target of set inversion")]
+    [InlineData(@"1_\complement", "Subscripts are unsupported for Number 1")]
     [InlineData(@"x^\complement", "Entity cannot be target of set inversion")]
+    [InlineData(@"x_\complement", "Unsupported Ordinary ∁ in subscript")]
+    [InlineData(@"\sin^\complement x", "Entity cannot be target of set inversion")]
+    [InlineData(@"\sin_\complement x", "Subscripts are unsupported for Large Operator sin")]
     public void Error(string badLaTeX, string error) =>
       Evaluation.Evaluate(ParseLaTeX(badLaTeX))
       .Match(entity => throw new Xunit.Sdk.XunitException(entity.Latexise()), e => Assert.Equal(error, e));

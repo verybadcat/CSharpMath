@@ -1,4 +1,3 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29201.188
@@ -38,7 +37,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms.Example.iO
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms.Example.UWP", "CSharpMath.Forms.Example\CSharpMath.Forms.Example.UWP\CSharpMath.Forms.Example.UWP.csproj", "{B5C64A34-51EA-4948-80FC-505120BA943C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms.Example", "CSharpMath.Forms.Example\CSharpMath.Forms.Example\CSharpMath.Forms.Example.csproj", "{B3FA77B8-C6E9-4A78-8BD4-9A167DA36637}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Forms.Example", "CSharpMath.Forms.Example\CSharpMath.Forms.Example\CSharpMath.Forms.Example.csproj", "{B3FA77B8-C6E9-4A78-8BD4-9A167DA36637}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Rendering", "CSharpMath.Rendering\CSharpMath.Rendering.csproj", "{65016A61-2125-4E0C-90E8-A915230C7826}"
 EndProject
@@ -70,7 +69,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Editor.Tests", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Editor.Tests.Visualizer", "CSharpMath.Editor.Tests.Visualizer\CSharpMath.Editor.Tests.Visualizer.csproj", "{C60126CE-A71D-4D11-A4A8-A45B67312E98}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CSharpMath.Editor.Tests.FSharp", "CSharpMath.Editor.Tests.FSharp\CSharpMath.Editor.Tests.FSharp.fsproj", "{65492AC6-8B98-42FF-AAA1-1DBDC050A25F}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "CSharpMath.Editor.Tests.FSharp", "CSharpMath.Editor.Tests.FSharp\CSharpMath.Editor.Tests.FSharp.fsproj", "{65492AC6-8B98-42FF-AAA1-1DBDC050A25F}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "PixelFarm.Typography (Excerpt)", "PixelFarm.Typography (Excerpt)\PixelFarm.Typography (Excerpt).shproj", "{3ECA00B3-0925-4418-B6F2-AC49AA3520BB}"
 EndProject
@@ -84,7 +83,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Rendering.Tests"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Run 'git submodule update --init' if below unloaded", "Run 'git submodule update --init' if below unloaded", "{15784E9C-7D6D-47C0-B993-A45A964C82F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Evaluation", "CSharpMath.Evaluation\CSharpMath.Evaluation.csproj", "{039990A9-FBF8-421E-A40A-CAE2A34B7240}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Evaluation", "CSharpMath.Evaluation\CSharpMath.Evaluation.csproj", "{039990A9-FBF8-421E-A40A-CAE2A34B7240}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Xaml.Tests", "CSharpMath.Xaml.Tests\CSharpMath.Xaml.Tests.csproj", "{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E}"
 EndProject
@@ -96,11 +95,13 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSharpMath.Wiki", "CSharpMa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Xaml.Tests.NuGet", "CSharpMath.Xaml.Tests.NuGet\CSharpMath.Xaml.Tests.NuGet.csproj", "{2FD3FBBD-FD06-4E49-BA91-4FC5ADC33BA7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AngouriMath", "AngouriMath\AngouriMath\AngouriMath.csproj", "{F3FE15B5-1995-4444-85FF-6CAC564A9113}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AngouriMath", "AngouriMath\AngouriMath\AngouriMath.csproj", "{F3FE15B5-1995-4444-85FF-6CAC564A9113}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Evaluation.Tests", "CSharpMath.Evaluation.Tests\CSharpMath.Evaluation.Tests.csproj", "{06241755-626A-4992-9CAE-C5A5745CB83C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Evaluation.Tests", "CSharpMath.Evaluation.Tests\CSharpMath.Evaluation.Tests.csproj", "{06241755-626A-4992-9CAE-C5A5745CB83C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Forms.Example.Ooui", "CSharpMath.Forms.Example\CSharpMath.Forms.Example.Ooui\CSharpMath.Forms.Example.Ooui.csproj", "{338E9ACF-EB26-4D5B-9ADB-B0C4588D71E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Forms.Example.Ooui", "CSharpMath.Forms.Example\CSharpMath.Forms.Example.Ooui\CSharpMath.Forms.Example.Ooui.csproj", "{338E9ACF-EB26-4D5B-9ADB-B0C4588D71E1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unity", "Unity", "{945A9D41-75F7-41DC-B61E-66B193CC2DA9}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

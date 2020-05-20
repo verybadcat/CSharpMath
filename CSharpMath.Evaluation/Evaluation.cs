@@ -32,7 +32,7 @@ namespace CSharpMath {
       public static explicit operator AngouriMath.Entity(MathItem item) => ((Entity)item).Content;
       public static implicit operator MathItem(SetNode content) => new Set(content);
       public static explicit operator SetNode(MathItem item) => ((Set)item).Content;
-      /// <summary>An real number, complex number, variable or function call</summary>
+      /// <summary>A real number, complex number, variable, function call, vector, matrix or higher-dimensional tensor</summary>
       public sealed class Entity : MathItem {
         public Entity(AngouriMath.Entity content) => Content = content;
         public AngouriMath.Entity Content { get; }
@@ -79,6 +79,18 @@ namespace CSharpMath {
       int i = 0;
       return Transform(mathList, ref i, Precedence.DefaultContext);
     }
+    static Result<Entity[]> ExpectEntities(this Result<MathItem?> result, string itemName) =>
+      result.Bind(item => item switch {
+        null => Array.Empty<Entity>(),
+        MathItem.Entity { Content: var e } => new[] { e },
+        MathItem.Comma c =>
+          c.Aggregate((Result: Result.Ok(new Entity[c.Count()]), Index: 0), (acc, item) =>
+            (acc.Result.Bind(s => item.AsEntity(itemName).Bind(i => { s[acc.Index] = i; return s; })), acc.Index + 1),
+            acc => acc.Result),
+        var notEntity => Result.Err(item.GetType().Name + " cannot be " + itemName)
+      });
+    static Result<Entity[]> AsEntities(this MathItem? item, string itemName) =>
+      Result.Ok(item).ExpectEntities(itemName);
     static Result<Entity?> ExpectEntityOrNull(this Result<MathItem?> result, string itemName) =>
       result.Bind(item => item switch {
         null => Result.Ok((Entity?)null),
@@ -149,15 +161,7 @@ namespace CSharpMath {
           MathItem.Comma c => TryMakeSet(c, true, true),
           _ => "Unrecognized bracket pair [ ]"
         } },
-        { ("{", "}"), item => item switch {
-          null => (MathItem)MathS.Sets.Empty(),
-          MathItem.Entity { Content:var e } => (MathItem)MathS.Sets.Finite(e),
-          MathItem.Comma c =>
-            c.Aggregate(Result.Ok(MathS.Sets.Empty()), (set, item) =>
-              set.Bind(s => item.AsEntity("set element").Bind(i => { s.Add(i); return s; })),
-              set => set.Bind(s => (MathItem)s)),
-          _ => item.GetType().Name + " cannot be a set element"
-        } },
+        { ("{", "}"), item => item.AsEntities("set element").Bind(entities => (MathItem)MathS.Sets.Finite(entities)) }
       };
     static Result<MathItem?> Transform(MathList mathList, ref int i, Precedence prec) {
       MathItem? prev = null;
@@ -165,6 +169,7 @@ namespace CSharpMath {
       string? error;
       Precedence handlePrecendence;
       Func<Entity, Entity> handlePrefix, handlePostfix, handleFunction, handleFunctionInverse;
+      Func<Entity[], Entity> handleFunctionN, handleFunctionInverseN;
       Func<Entity, Entity, Entity> handleBinary;
       Func<SetNode, SetNode> handlePrefixSet, handlePostfixSet, handleFunctionSet, handleFunctionInverseSet;
       Func<SetNode, SetNode, SetNode> handleBinarySet;
@@ -232,6 +237,9 @@ namespace CSharpMath {
               (var name, _) => MathS.Var(name + subscript.ToString())
             };
             v.Subscript.Clear();
+            goto handleThis;
+          case Atoms.Ordinary { Nucleus: "∞" }:
+            @this = new NumberEntity(MathS.Num(double.PositiveInfinity));
             goto handleThis;
           case Atoms.Ordinary { Nucleus: "∅" }:
             @this = MathS.Sets.Empty();
@@ -399,6 +407,17 @@ namespace CSharpMath {
             handlePrecendence = Precedence.PercentDegree;
             handlePostfix = x => x * MathS.pi / 180;
             goto handlePostfix;
+          case Atoms.Table { Environment:"matrix", NRows:var rows, NColumns:var cols, Cells:var cells }:
+            var matrixElements = new Entity[rows * cols];
+            for (var row = 0; row < rows; row++)
+              for (var col = 0; col < cols; col++) {
+                if (cells[row].Count <= col)
+                  return $"There are empty slots in the {rows}×{cols} matrix";
+                (matrixElements[row * cols + col], error) = Transform(cells[row][col]).ExpectEntity("matrix element");
+                if (error != null) return error;
+              }
+            @this = MathS.Matrices.Matrix(rows, cols, matrixElements);
+            goto handleThis;
           case Atoms.Punctuation { Nucleus: "," }:
             if (prec <= Precedence.Comma) {
               if (prev is null) return "Missing left operand for comma";
@@ -426,16 +445,31 @@ namespace CSharpMath {
             handleBinarySet = (l, r) => l - r;
             goto handleBinarySet;
           case Atoms.Space _:
+          case Atoms.Style _:
           case Atoms.Ordinary { Nucleus: var nucleus } when string.IsNullOrWhiteSpace(nucleus):
+            if (atom.Superscript.Count > 0)
+              return $"Exponentiation is unsupported for {atom.TypeName}";
+            if (atom.Subscript.Count > 0)
+              return $"Subscripts are unsupported for {atom.TypeName}";
             continue;
+          case Atoms.Table table:
+            return $"Unsupported table environment {table.Environment}";
           default:
             return $"Unsupported {atom.TypeName} {atom.Nucleus}";
 
+#pragma warning disable CS0162 // Unreachable code detected
+#pragma warning disable CS0164 // This label has not been referenced
             handleFunction:
             handleFunctionInner = (itemName, item) =>
               item.AsEntity(itemName).Bind(e => (MathItem)handleFunction(e));
             handleFunctionInverseInner = (itemName, item) =>
               item.AsEntity(itemName).Bind(e => (MathItem)handleFunctionInverse(e));
+            goto handleFunctionInner;
+            handleFunctionN:
+            handleFunctionInner = (itemName, item) =>
+              item.AsEntities(itemName).Bind(e => (MathItem)handleFunctionN(e));
+            handleFunctionInverseInner = (itemName, item) =>
+              item.AsEntities(itemName).Bind(e => (MathItem)handleFunctionInverseN(e));
             goto handleFunctionInner;
             handleFunctionSet:
             handleFunctionInner = (itemName, item) =>
@@ -591,6 +625,8 @@ namespace CSharpMath {
               i--;
               return prev;
             }
+#pragma warning restore CS0162 // Unreachable code detected
+#pragma warning restore CS0164 // This label has not been referenced
 
             handleThis:
             if (atom.Subscript.Count > 0)
