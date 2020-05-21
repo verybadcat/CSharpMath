@@ -56,6 +56,8 @@ Avalonia (CSharpMath.Avalonia) support was also added in v0.4.
 
 For Windows platforms, use https://github.com/ForNeVeR/wpf-math.
 
+For Unity3D, use https://assetstore.unity.com/packages/tools/gui/texdraw-51426. (paid: USD$50)
+
 # Usage and Examples
 
 To get started, do something like this:
