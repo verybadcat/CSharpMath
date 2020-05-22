@@ -150,4 +150,30 @@ namespace CSharpMath.Editor.Tests {
       Assert.Equal(MathKeyboardCaretState.TemporarilyHidden, keyboard.CaretState);
     }
   }
+  public class CaretCanStartAndStopBlinking {
+    // https://github.com/verybadcat/CSharpMath/issues/115
+    [Fact]
+    public async Task Test() {
+      var keyboard = new MathKeyboard<TestFont, char>(TestTypesettingContexts.Instance, new TestFont()) {
+        CaretState = MathKeyboardCaretState.Shown
+      };
+      Assert.Equal(MathKeyboardCaretState.Shown, keyboard.CaretState);
+
+      keyboard.StopBlinking();
+      await Task.Delay((int)MathKeyboard<TestFont, char>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      Assert.Equal(MathKeyboardCaretState.Shown, keyboard.CaretState);
+
+      keyboard.StartBlinking();
+      await Task.Delay((int)MathKeyboard<TestFont, char>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      Assert.Equal(MathKeyboardCaretState.TemporarilyHidden, keyboard.CaretState);
+
+      keyboard.StopBlinking();
+      await Task.Delay((int)MathKeyboard<TestFont, char>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      Assert.Equal(MathKeyboardCaretState.TemporarilyHidden, keyboard.CaretState);
+
+      keyboard.StartBlinking();
+      await Task.Delay((int)MathKeyboard<TestFont, char>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      Assert.Equal(MathKeyboardCaretState.Shown, keyboard.CaretState);
+    }
+  }
 }
