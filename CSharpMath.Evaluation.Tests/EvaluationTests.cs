@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Text.RegularExpressions;
 using Xunit;
 using AngouriMath;
 
@@ -10,14 +11,18 @@ namespace CSharpMath {
     Evaluation.MathItem ParseMath(string latex) =>
       Evaluation.Evaluate(ParseLaTeX(latex)).Match(entity => entity, e => throw new Xunit.Sdk.XunitException(e));
     void Test(string input, string converted, string? result) {
-      var math = ParseMath(input);
-      Assert.NotNull(math);
-      Assert.Equal(converted, LaTeXParser.MathListToLaTeX(Evaluation.Parse(math)).ToString());
-      // Ensure that the converted entity is valid by simplifying it
-      if (result != null)
-        Assert.Equal(result,
-          LaTeXParser.MathListToLaTeX(Evaluation.Parse(Assert.IsType<Evaluation.MathItem.Entity>(math).Content.Simplify())).ToString());
-      else Assert.IsNotType<Evaluation.MathItem.Entity>(result);
+      void Test(string input) {
+        var math = ParseMath(input);
+        Assert.NotNull(math);
+        Assert.Equal(converted, LaTeXParser.MathListToLaTeX(Evaluation.Parse(math)).ToString());
+        // Ensure that the converted entity is valid by simplifying it
+        if (result != null)
+          Assert.Equal(result,
+            LaTeXParser.MathListToLaTeX(Evaluation.Parse(Assert.IsType<Evaluation.MathItem.Entity>(math).Content.Simplify())).ToString());
+        else Assert.IsNotType<Evaluation.MathItem.Entity>(result);
+      }
+      Test(input);
+      Test(Regex.Replace(input, @"(?<!\\sqrt)(\(|\[|\\\{)((?:(?!\(|\[|\\\\{|\)|\]|\\\\}).|(?<open>\(|\[|\\\\{)|(?<-open>\)|\]|\\\\}))+(?(open)(?!)))(\)|\]|\\\\})", @"\left$1$2\right$3"));
     }
     [Theory]
     [InlineData("1", "1")]
@@ -27,6 +32,7 @@ namespace CSharpMath {
     [InlineData(".5678", "0.5678")]
     [InlineData(".9876543210", "0.987654321")]
     [InlineData("1234.5678", "1234.5678")]
+    [InlineData(@"\infty", @"\infty ")]
     public void Numbers(string number, string output) =>
       Test(number, output, output);
     [Theory]
@@ -100,8 +106,20 @@ namespace CSharpMath {
     [InlineData(@"\frac ab*2", @"\frac{a}{b}\times 2", @"\frac{2\times a}{b}")]
     [InlineData(@"2/\frac ab", @"\frac{2}{\frac{a}{b}}", @"\frac{2\times b}{a}")]
     [InlineData(@"\frac ab/2", @"\frac{\frac{a}{b}}{2}", @"\frac{\frac{a}{2}}{b}")]
+    [InlineData(@"1+i", @"1+i", @"1+i")]
+    [InlineData(@"1-i", @"1-i", @"1-i")]
+    [InlineData(@"i+1", @"i+1", @"1+i")]
+    [InlineData(@"i-1", @"i-1", @"-1+i")]
+    [InlineData(@"i\times i", @"i\times i", @"-1")]
+    [InlineData(@"\infty+1", @"\infty +1", @"\infty ")]
+    [InlineData(@"i+\infty", @"i+\infty ", @"\infty +i")]
+    [InlineData(@"\infty+\infty", @"\infty +\infty ", @"\infty ")]
+    [InlineData(@"\frac2\infty", @"\frac{2}{\infty }", @"0")]
+    [InlineData(@"\frac{-2}\infty", @"\frac{-2}{\infty }", @"0")]
     public void BinaryOperators(string latex, string converted, string result) => Test(latex, converted, result);
     [Theory]
+    [InlineData("+i", "i", "i")]
+    [InlineData("-i", "-i", "-i")]
     [InlineData("+a", "a", "a")]
     [InlineData("-a", "-a", "-a")]
     [InlineData("++a", "a", "a")]
@@ -171,6 +189,14 @@ namespace CSharpMath {
     [InlineData("0^x", @"0^x", @"0")]
     [InlineData("1^x", @"1^x", @"1")]
     [InlineData("x^0", @"x^0", @"1")]
+    [InlineData("-i^{-1}", @"-i^{-1}", @"i")]
+    [InlineData("i^{-1}", @"i^{-1}", @"-i")]
+    [InlineData("i^0", @"i^0", @"1")]
+    [InlineData("i^1", @"i^1", @"i")]
+    [InlineData("i^2", @"i^2", @"-1")]
+    [InlineData("i^3", @"i^3", @"-i")]
+    [InlineData("i^4", @"i^4", @"1")]
+    [InlineData("i^5", @"i^5", @"i")]
     [InlineData(@"{\frac 12}^4", @"\left( \frac{1}{2}\right) ^4", "0.0625")]
     [InlineData(@"\sqrt2", @"\sqrt{2}", "1.4142135623730951")]
     [InlineData(@"\sqrt2^2", @"\left( \sqrt{2}\right) ^2", "2.0000000000000004")]
@@ -354,21 +380,18 @@ namespace CSharpMath {
     [InlineData(@"\sin^a\ (x)^2(x)", @"\sin \left( x\right) ^{a\times 2}\times x", @"\sin \left( x\right) ^{2\times a}\times x")]
     [InlineData(@"\sin^a\; (x)^2(x)", @"\sin \left( x\right) ^{a\times 2}\times x", @"\sin \left( x\right) ^{2\times a}\times x")]
     [InlineData(@"\sin^a\ \; (x)^2(x)", @"\sin \left( x\right) ^{a\times 2}\times x", @"\sin \left( x\right) ^{2\times a}\times x")]
-    public void Parentheses(string latex, string converted, string result) {
-      Test(latex, converted, result);
-      Test(latex.Replace("(", @"\left(").Replace(")", @"\right)"), converted, result);
-    }
+    public void Parentheses(string latex, string converted, string result) => Test(latex, converted, result);
     [Theory]
+    [InlineData(@"\begin{matrix}1\end{matrix}", @"\left( \begin{matrix}1\end{matrix}\right) ", @"\left( \begin{matrix}1\end{matrix}\right) ")]
     [InlineData(@"\begin{pmatrix}1\end{pmatrix}", @"\left( \begin{matrix}1\end{matrix}\right) ", @"\left( \begin{matrix}1\end{matrix}\right) ")]
     [InlineData(@"\begin{pmatrix}1\end{pmatrix}^2", @"\left( \begin{matrix}1\end{matrix}\right) ^2", @"\left( \begin{matrix}1\end{matrix}\right) ^2")]
-    public void Vectors(string latex, string converted, string result) =>
-      Test(latex, converted, result);
+    public void Vectors(string latex, string converted, string result) => Test(latex, converted, result);
     [Theory]
+    [InlineData(@"\begin{matrix}1&2\\3&4\end{matrix}", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) ", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) ")]
     [InlineData(@"\begin{pmatrix}1&2\\3&4\end{pmatrix}", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) ", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) ")]
     [InlineData(@"\begin{pmatrix}1&2\\3&4\end{pmatrix}^2", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) ^2", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) ^2")]
     [InlineData(@"\begin{pmatrix}1&2\\3&4\end{pmatrix}+\begin{pmatrix}1&2\\3&5\end{pmatrix}", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) +\left( \begin{matrix}1&2\\ 3&5\end{matrix}\right) ", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) +\left( \begin{matrix}1&2\\ 3&5\end{matrix}\right) ")]
-    public void Matrices(string latex, string converted, string result) =>
-      Test(latex, converted, result);
+    public void Matrices(string latex, string converted, string result) => Test(latex, converted, result);
     [Theory]
     [InlineData(@"1,2", @"1,2")]
     [InlineData(@"1,2,3", @"1,2,3")]
@@ -376,9 +399,8 @@ namespace CSharpMath {
     [InlineData(@"\sqrt2,\sqrt[3]2,\frac34", @"\sqrt{2},2^{\frac{1}{3}},\frac{3}{4}")]
     [InlineData(@"\sin a,\cos b^2,\tan c_3,\cot de,\sec 12f,\csc g+h",
       @"\sin \left( a\right) ,\cos \left( b^2\right) ,\tan \left( c_3\right) ,\cot \left( d\times e\right) ,\frac{1}{\cos \left( 12\times f\right) },\frac{1}{\sin \left( g\right) }+h")]
-    public void Comma(string latex, string converted) =>
-      Test(latex, converted, null);
-    [Theory(Skip = "https://github.com/asc-community/AngouriMath/pull/94")]
+    public void Comma(string latex, string converted) => Test(latex, converted, null);
+    [Theory(Skip = "https://github.com/asc-community/AngouriMath/pull/97")]
     [InlineData(@"\emptyset", @"\emptyset ")]
     [InlineData(@"\mathbb R", @"\emptyset ")] // wip
     [InlineData(@"\mathbb C", @"\emptyset ")] // wip
@@ -387,27 +409,18 @@ namespace CSharpMath {
     [InlineData(@"\{1,2\}", @"\left\{ 1,2\right\} ")]
     [InlineData(@"\{x,y\}", @"\left\{ x,y\right\} ")]
     [InlineData(@"\{\sqrt[3]2,\frac34,\sin^2x\}", @"\left\{ 2^{\frac{1}{3}},\frac{3}{4},\sin \left( x\right) ^2\right\} ")]
-    public void Sets(string latex, string converted) {
-      Test(latex, converted, null);
-      Test(latex.Replace(@"\{", @"\left\{").Replace(@"\}", @"\right\}"), converted, null);
-    }
+    public void Sets(string latex, string converted) => Test(latex, converted, null);
     [Theory]
     [InlineData(@"\emptyset\cup\{2\}", @"\left\{ 2\right\} ")]
     [InlineData(@"\{1\}\cup\{2\}", @"\left\{ 1,2\right\} ")]
-    [InlineData(@"\{3,4\}\cap\emptyset", @"\emptyset ")]
+    [InlineData(@"\{3,4\}\cap\emptyset", @"\left( \left\{ 3,4\right\} \cap \right) \left( \emptyset \right) ")]
     [InlineData(@"\{3,4\}\cap\{4,5\}", @"\left\{ 4\right\} ")]
     [InlineData(@"\{2,3,4\}\setminus\{4\}", @"\left\{ 2,3\right\} ")]
     //[InlineData(@"\{3\}^\complement", @"\left\{ 3\right\} ^\complement")] // wip
-    public void SetOperations(string latex, string converted) {
-      Test(latex, converted, null);
-      Test(latex.Replace(@"\{", @"\left\{").Replace(@"\}", @"\right\}"), converted, null);
-    }
-    [Theory(Skip = "https://github.com/asc-community/AngouriMath/pull/93")]
+    public void SetOperations(string latex, string converted) => Test(latex, converted, null);
+    [Theory(Skip = "https://github.com/asc-community/AngouriMath/pull/97")]
     [InlineData(@"(1,2)", @"\left\{ \left( 1,2\right) \right\} ")] // wip
-    public void Intervals(string latex, string converted) {
-      Test(latex, converted, null);
-      Test(latex.Replace("(", @"\left(").Replace(")", @"\right)"), converted, null);
-    }
+    public void Intervals(string latex, string converted) => Test(latex, converted, null);
     [Theory]
     [InlineData(@"", "There is nothing to evaluate")]
     [InlineData(@"\ ", "There is nothing to evaluate")]
