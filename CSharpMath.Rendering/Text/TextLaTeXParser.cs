@@ -72,7 +72,6 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                 displayMath = null;
                 break;
               case null:
-                mathLaTeX.Clear();
                 displayMath = false;
                 break;
             }
@@ -89,7 +88,6 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
               case false:
                 return "Cannot close inline math mode with $$";
               case null:
-                mathLaTeX.Clear();
                 displayMath = true;
                 break;
             }
@@ -157,12 +155,13 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                 Ok(value) :
               Err("Invalid color: " + color.ToString())
             );
-          ReadOnlySpan<char> NextSectionUntilPunc(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section) {
+          ///<summary>Get punctutation after current section</summary>
+          ReadOnlySpan<char> NextSectionWhilePunc(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section) {
             int start = endAt;
             ReadOnlySpan<char> specialChars = stackalloc[] { '#', '$', '%', '&', '\\', '^', '_', '{', '}', '~' };
             while (NextSection(latexInput, ref section))
               if (wordKind != WordKind.Punc || specialChars.IndexOf(section[0]) != -1) {
-                //We have overlooked by one
+                // We have overlooked by one when non-punctuation or special character is encountered
                 PreviousSection(latexInput, ref section);
                 break;
               }
@@ -173,7 +172,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
           if (textSection.Is('$')) {
             if (backslashEscape)
               if (displayMath != null) mathLaTeX.Append(@"\$");
-              else atoms.Text("$", NextSectionUntilPunc(latex, ref textSection));
+              else atoms.Text("$", NextSectionWhilePunc(latex, ref textSection));
             else {
               dollarCount++;
               continue;
@@ -254,7 +253,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                       //Need to allocate in the end :(
                       //Don't look ahead for punc; we are looking for one char only
                       atoms.Text(textSection[0].ToString(), default);
-                    } else atoms.Text(textSection.ToString(), NextSectionUntilPunc(latex, ref textSection));
+                    } else atoms.Text(textSection.ToString(), NextSectionWhilePunc(latex, ref textSection));
                     break;
                 }
                 afterCommand = false;
@@ -320,13 +319,11 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     atoms.ControlSpace();
                     break;
                   case "(":
-                    mathLaTeX = new StringBuilder();
                     displayMath = false;
                     break;
                   case ")":
                     return "Cannot close inline math mode outside of math mode";
                   case "[":
-                    mathLaTeX = new StringBuilder();
                     displayMath = true;
                     break;
                   case "]":
@@ -431,7 +428,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     }
                   //case "textasciicircum", "textless", ...
                   case var textSymbol when TextLaTeXSettings.PredefinedTextSymbols.TryGetValue(textSymbol, out var replaceResult):
-                    atoms.Text(replaceResult, NextSectionUntilPunc(latex, ref textSection));
+                    atoms.Text(replaceResult, NextSectionWhilePunc(latex, ref textSection));
                     break;
                   case var command:
                     if (displayMath != null) mathLaTeX.Append(command); //don't eat the command when parsing math

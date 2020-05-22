@@ -20,11 +20,21 @@ namespace CSharpMath.Rendering.Text.Tests {
     [InlineData("abc")]
     [InlineData("abc", "123")]
     [InlineData("12", "a.m.")]
+    [InlineData("1,", "2,", "3")]
+    [InlineData("1,,", "2,,", "3")]
+    [InlineData("1,,,")]
+    [InlineData("1,,,", "2")]
+    [InlineData("1()", "a")]
+    [InlineData("a,", "b,", "c")]
+    [InlineData("a,,", "b,,", "c")]
+    [InlineData("1/", "2/", "3")]
+    [InlineData("!@*()")]
     [InlineData("ก", "ข", "ฃ")]
     [InlineData("中", "文")]
     [InlineData("😀", "Text")]
     [InlineData("Chinese", "中", "文")]
     [InlineData("Chinese", "中", "12345", "文", "😄")]
+    [InlineData("a", "😀", "😄", "b")]
     public void Text(params string[] text) {
       var input = string.Concat(text);
       var atom = Parse(input);
@@ -222,6 +232,16 @@ namespace CSharpMath.Rendering.Text.Tests {
     [InlineData(@"\$\[\$$$\$", @"\$", @"\$", true, @"\$", @"\$\[\$ \]\$")]
     [InlineData(@"\$$$\$\]\$", @"\$", @"\$", true, @"\$", @"\$\[\$ \]\$")]
     [InlineData(@"\$\[\$\]\$", @"\$", @"\$", true, @"\$", @"\$\[\$ \]\$")]
+
+    // https://github.com/verybadcat/CSharpMath/issues/113
+    //[InlineData(@",$,$,", @",", @",,", false, @"", @",\(,, \)")]
+    //[InlineData(@",\(,$,", @",", @",,", false, @"", @",\(,, \)")]
+    //[InlineData(@",$,\),", @",", @",,", false, @"", @",\(,, \)")]
+    //[InlineData(@",\(,\),", @",", @",,", false, @"", @",\(,, \)")]
+    //[InlineData(@",$$,$$,", @",", @",,", true, @"", @",\[,, \]")]
+    //[InlineData(@",\[,$$,", @",", @",,", true, @"", @",\[,, \]")]
+    //[InlineData(@",$$,\],", @",", @",,", true, @"", @",\[,, \]")]
+    //[InlineData(@",\[,\],", @",", @",,", true, @"", @",\[,, \]")]
     public void Math(string input, string? textBefore, string math, bool display, string? textAfter, string output) {
       var atom = Parse(input);
       var list = new List<TextAtom>();
