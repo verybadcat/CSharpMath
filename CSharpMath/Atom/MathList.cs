@@ -4,7 +4,7 @@ using System.Collections;
 
 namespace CSharpMath.Atom {
 #pragma warning disable CA1710 // Identifiers should have correct suffix
-  // WTF CA1710, you want types inheriting IList to have the Collection suffix?
+  // WTF CA1710, you want types implementing IList to have the Collection suffix?
   class DisabledMathList : MathList {
     internal DisabledMathList() { }
     public override void Add(MathAtom item) => throw new InvalidOperationException("Scripts are not allowed!");

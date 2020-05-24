@@ -80,6 +80,12 @@ namespace CSharpMath.Editor {
       MathListSubIndexType.None => AtomIndex > 0 ? Level0Index(AtomIndex - 1) : null,
       _ => SubIndex?.Previous is MathListIndex prevSubIndex ? IndexAtLocation(AtomIndex, SubIndexType, prevSubIndex) : null,
     };
+    internal bool IsBeforeSubList => SubIndex is { AtomIndex: -1, SubIndexType: MathListSubIndexType.None };
+    internal MathListIndex? PreviousOrBeforeWholeList => SubIndexType switch
+    {
+      MathListSubIndexType.None => AtomIndex > -1 ? Level0Index(AtomIndex - 1) : null,
+      _ => SubIndex?.PreviousOrBeforeWholeList is MathListIndex prevSubIndex ? IndexAtLocation(AtomIndex, SubIndexType, prevSubIndex) : null,
+    };
 
     ///<summary>Returns the next index.</summary>
     public MathListIndex Next => SubIndexType switch

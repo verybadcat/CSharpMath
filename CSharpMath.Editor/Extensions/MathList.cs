@@ -4,6 +4,8 @@ namespace CSharpMath.Editor {
   using Atom;
   using Atoms = Atom.Atoms;
   using Structures;
+  using System.Linq;
+
   partial class Extensions {
     static void InsertAtAtomIndexAndAdvance(this MathList self, int atomIndex, MathAtom atom, ref MathListIndex advance, MathListSubIndexType advanceType) {
       if (atomIndex < 0 || atomIndex > self.Count)
@@ -81,6 +83,46 @@ namespace CSharpMath.Editor {
     }
 
     public static void RemoveAt(this MathList self, ref MathListIndex index) {
+      void RemoveAtInnerList<TAtom>(ref MathListIndex index, TAtom atom, int innerListIndex) where TAtom : MathAtom, IMathListContainer {
+        if (index.SubIndex is null) throw new InvalidCodePathException($"{nameof(index.SubIndex)} should exist");
+        if (index.IsBeforeSubList) {
+          index = index.LevelDown()
+            ?? throw new InvalidCodePathException($"{nameof(index.SubIndex)} is not null but {nameof(index.LevelDown)} is null");
+          self.RemoveAt(ref index);
+          MathListIndex tempIndex = index;
+          int i = 0;
+          foreach (var innerList in atom.InnerLists)
+            if (!(innerList.Count == 1 && innerList[0] is Atoms.Placeholder))
+              if (i++ < innerListIndex) {
+                foreach (var inner in innerList)
+                  self.InsertAndAdvance(ref index, inner, MathListSubIndexType.None);
+                tempIndex = index;
+              }
+              else
+                foreach (var inner in innerList)
+                  self.InsertAndAdvance(ref tempIndex, inner, MathListSubIndexType.None);
+          if(index.SubIndexType != MathListSubIndexType.None && tempIndex.AtomIndex == 0 // We deleted an atom only consisting of placeholders
+             || atom.Superscript.Count > 0 || atom.Subscript.Count > 0)
+            self.InsertAndAdvance(ref tempIndex, LaTeXSettings.Placeholder, MathListSubIndexType.None);
+          if(atom.Superscript.Count > 0) self[tempIndex.AtomIndex - 1].Superscript.Append(atom.Superscript);
+          if(atom.Subscript.Count > 0) self[tempIndex.AtomIndex - 1].Subscript.Append(atom.Subscript);
+        } else atom.InnerLists.ElementAt(innerListIndex).RemoveAt(ref index.SubIndex);
+      }
+      void RemoveAtInnerScript(ref MathListIndex index, MathAtom atom, bool superscript) {
+        if (index.SubIndex is null) throw new InvalidCodePathException($"{nameof(index.SubIndex)} should exist");
+        if (index.IsBeforeSubList) {
+          index = index.LevelDown()
+            ?? throw new InvalidCodePathException($"{nameof(index.SubIndex)} is not null but {nameof(index.LevelDown)} is null");
+          var tempIndex = index;
+          if (superscript) { 
+            if (atom.Superscript.Count == 1 && atom.Superscript[0] is Atoms.Placeholder)
+              foreach (var inner in atom.Superscript)
+                self.InsertAndAdvance(ref tempIndex, inner, MathListSubIndexType.None);
+            atom.Superscript.Clear();
+          }
+        } else (superscript ? atom.Superscript : atom.Subscript).RemoveAt(ref index.SubIndex);
+      }
+
       index ??= MathListIndex.Level0Index(0);
       if (index.AtomIndex > self.Atoms.Count)
         throw new IndexOutOfRangeException($"Index {index.AtomIndex} is out of bounds for list of size {self.Atoms.Count}");
@@ -132,28 +174,30 @@ namespace CSharpMath.Editor {
           if (!(self.Atoms[index.AtomIndex] is Atoms.Radical radical))
             throw new SubIndexTypeMismatchException(typeof(Atoms.Radical), index);
           if (index.SubIndexType == MathListSubIndexType.Degree)
-            radical.Degree.RemoveAt(ref index.SubIndex);
-          else radical.Radicand.RemoveAt(ref index.SubIndex);
+            RemoveAtInnerList(ref index, radical, 0);
+          else
+            RemoveAtInnerList(ref index, radical, 1);
           break;
         case MathListSubIndexType.Numerator:
         case MathListSubIndexType.Denominator:
           if (!(self.Atoms[index.AtomIndex] is Atoms.Fraction frac))
             throw new SubIndexTypeMismatchException(typeof(Atoms.Fraction), index);
           if (index.SubIndexType == MathListSubIndexType.Numerator)
-            frac.Numerator.RemoveAt(ref index.SubIndex);
-          else frac.Denominator.RemoveAt(ref index.SubIndex);
+            RemoveAtInnerList(ref index, frac, 0);
+          else
+            RemoveAtInnerList(ref index, frac, 1);
           break;
         case MathListSubIndexType.Subscript:
           var current = self.Atoms[index.AtomIndex];
           if (current.Subscript.IsEmpty())
             throw new SubIndexTypeMismatchException(index);
-          current.Subscript.RemoveAt(ref index.SubIndex);
+          RemoveAtInnerScript(ref index, current, false);
           break;
         case MathListSubIndexType.Superscript:
           current = self.Atoms[index.AtomIndex];
           if (current.Superscript.IsEmpty())
             throw new SubIndexTypeMismatchException(index);
-          current.Superscript.RemoveAt(ref index.SubIndex);
+          RemoveAtInnerScript(ref index, current, true);
           break;
         case MathListSubIndexType.Inner:
           if (!(self.Atoms[index.AtomIndex] is Atoms.Inner inner))
@@ -167,7 +211,7 @@ namespace CSharpMath.Editor {
         // We have deleted to the beginning of the line and it is not the outermost line
         if (self.AtomAt(index) is null) {
           self.InsertAndAdvance(ref index, LaTeXSettings.Placeholder, MathListSubIndexType.None);
-          index = index.Previous ?? throw new InvalidCodePathException("Cannot go back after insertion?"); ;
+          index = index.Previous ?? throw new InvalidCodePathException("Cannot go back after insertion?");
         }
       }
     }
