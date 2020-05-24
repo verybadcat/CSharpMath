@@ -339,6 +339,7 @@ namespace CSharpMath.Editor.Tests {
       T(@"\sqrt[■]{\square }", K.NthRoot, K.SmallA, K.Backspace),
       T(@"\sqrt{■}", K.SquareRoot, K.SmallA, K.Backspace),
       T(@"\frac{1}{■}", K.Slash, K.D6, K.Backspace),
+      T(@"", K.Power, K.D5, K.Left, K.Left, K.Backspace),
       T(@"", K.Subscript, K.D5, K.Left, K.Left, K.Backspace),
       T(@"7+1^X", K.D7, K.Plus, K.D1, K.D2, K.Power, K.X, K.Left, K.Left, K.Backspace),
       T(@"7.^X", K.D7, K.Decimal, K.D1, K.Power, K.X, K.Left, K.Left, K.Backspace),
