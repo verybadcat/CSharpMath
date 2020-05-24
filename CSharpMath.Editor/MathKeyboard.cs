@@ -392,14 +392,6 @@ namespace CSharpMath.Editor {
         if (HasText && _insertionIndex.PreviousOrBeforeWholeList is MathListIndex previous) {
           _insertionIndex = previous;
           MathList.RemoveAt(ref _insertionIndex);
-        } else {
-          var index = _insertionIndex.LevelDown();
-          if (index != null) {
-            switch (_insertionIndex.FinalSubIndexType) {
-              default:
-                break;
-            }
-          }
         }
       }
 
