@@ -80,7 +80,9 @@ namespace CSharpMath.Editor {
       MathListSubIndexType.None => AtomIndex > 0 ? Level0Index(AtomIndex - 1) : null,
       _ => SubIndex?.Previous is MathListIndex prevSubIndex ? IndexAtLocation(AtomIndex, SubIndexType, prevSubIndex) : null,
     };
+    /// <summary>Should be used inside <see cref="Extensions.RemoveAt(Atom.MathList, ref MathListIndex)"/> only!</summary>
     internal bool IsBeforeSubList => SubIndex is { AtomIndex: -1, SubIndexType: MathListSubIndexType.None };
+    /// <summary>Valid for <see cref="Extensions.RemoveAt(Atom.MathList, ref MathListIndex)"/> only!</summary>
     internal MathListIndex? PreviousOrBeforeWholeList => SubIndexType switch
     {
       MathListSubIndexType.None => AtomIndex > -1 ? Level0Index(AtomIndex - 1) : null,

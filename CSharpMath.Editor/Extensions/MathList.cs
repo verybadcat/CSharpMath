@@ -110,25 +110,31 @@ namespace CSharpMath.Editor {
       }
       void RemoveAtInnerScript(ref MathListIndex index, MathAtom atom, bool superscript) {
         if (index.SubIndex is null) throw new InvalidCodePathException($"{nameof(index.SubIndex)} should exist");
+        var script = superscript ? atom.Superscript : atom.Subscript;
         if (index.IsBeforeSubList) {
           index = index.LevelDown()
             ?? throw new InvalidCodePathException($"{nameof(index.SubIndex)} is not null but {nameof(index.LevelDown)} is null");
+          if (atom is Atoms.Placeholder && (superscript ? atom.Subscript : atom.Superscript).Count == 0)
+            self.RemoveAt(index.AtomIndex);
+          else index = index.Next;
           var tempIndex = index;
-          if (superscript) { 
-            if (atom.Superscript.Count == 1 && atom.Superscript[0] is Atoms.Placeholder)
-              foreach (var inner in atom.Superscript)
-                self.InsertAndAdvance(ref tempIndex, inner, MathListSubIndexType.None);
-            atom.Superscript.Clear();
-          }
-        } else (superscript ? atom.Superscript : atom.Subscript).RemoveAt(ref index.SubIndex);
+          if (!(script.Count == 1 && script[0] is Atoms.Placeholder))
+            foreach (var inner in script)
+              self.InsertAndAdvance(ref tempIndex, inner, MathListSubIndexType.None);
+          script.Clear();
+        } else script.RemoveAt(ref index.SubIndex);
       }
 
-      index ??= MathListIndex.Level0Index(0);
       if (index.AtomIndex > self.Atoms.Count)
         throw new IndexOutOfRangeException($"Index {index.AtomIndex} is out of bounds for list of size {self.Atoms.Count}");
       switch (index.SubIndexType) {
         case MathListSubIndexType.None:
-          self.RemoveAt(index.AtomIndex);
+          if (index.AtomIndex == -1) {
+            index = index.Next;
+            if (self.Atoms[index.AtomIndex] is Atoms.Placeholder)
+              self.RemoveAt(index.AtomIndex);
+          } else
+            self.RemoveAt(index.AtomIndex);
           break;
         case var _ when index.SubIndex is null:
           throw new InvalidCodePathException("index.SubIndex is null despite non-None subindex type");
@@ -202,7 +208,7 @@ namespace CSharpMath.Editor {
         case MathListSubIndexType.Inner:
           if (!(self.Atoms[index.AtomIndex] is Atoms.Inner inner))
             throw new SubIndexTypeMismatchException(typeof(Atoms.Inner), index);
-          inner.InnerList.RemoveAt(ref index.SubIndex);
+          RemoveAtInnerList(ref index, inner, 0);
           break;
         default:
           throw new SubIndexTypeMismatchException(index);

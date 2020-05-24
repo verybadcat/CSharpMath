@@ -499,7 +499,7 @@ namespace CSharpMath.Editor {
           break;
         case MathKeyboardInput.BaseEPower:
           InsertAtom(LaTeXSettings.ForAscii((sbyte)'e')
-            ?? throw new InvalidCodePathException("LaTeXDefaults.ForAscii((byte)'e') is null"));
+            ?? throw new InvalidCodePathException($"{nameof(LaTeXSettings.ForAscii)}((sbyte)'e') is null"));
           HandleScriptButton(true);
           break;
         case MathKeyboardInput.Logarithm:
