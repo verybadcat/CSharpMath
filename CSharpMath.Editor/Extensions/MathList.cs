@@ -131,8 +131,16 @@ namespace CSharpMath.Editor {
         case MathListSubIndexType.None:
           if (index.AtomIndex == -1) {
             index = index.Next;
-            if (self.Atoms[index.AtomIndex] is Atoms.Placeholder)
+            if (self.Atoms[index.AtomIndex] is Atoms.Placeholder { Superscript: var super, Subscript: var sub }) {
               self.RemoveAt(index.AtomIndex);
+              var tempIndex = index;
+              if (!(sub.Count == 1 && sub[0] is Atoms.Placeholder))
+                foreach (var s in sub)
+                  self.InsertAndAdvance(ref tempIndex, s, MathListSubIndexType.None);
+              if (!(super.Count == 1 && super[0] is Atoms.Placeholder))
+                foreach (var s in super)
+                  self.InsertAndAdvance(ref tempIndex, s, MathListSubIndexType.None);
+            }
           } else
             self.RemoveAt(index.AtomIndex);
           break;
