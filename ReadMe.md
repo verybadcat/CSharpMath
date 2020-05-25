@@ -58,6 +58,8 @@ For Windows platforms, use https://github.com/ForNeVeR/wpf-math.
 
 For Unity3D, use https://assetstore.unity.com/packages/tools/gui/texdraw-51426. (paid: USD$50)
 
+_The above projects are independent of CSharpMath._
+
 # Usage and Examples
 
 To get started, do something like this:
@@ -219,16 +221,28 @@ painter.DrawAsPng(someStream);
 
 
 ## This looks great and all, but is there a way to edit and evaluate the math?
-Yes! You can use a `CSharpMath.Rendering.FrontEnd.MathKeyboard` to process key presses and generate a `CSharpMath.Atom.MathList` or a LaTeX string. You can then call `CSharpMath.Evaluation.MathListToEntity` to get an `AngouriMath.Entity` that you can simplify. For all uses of an `AngouriMath.Entity`, check out https://github.com/asc-community/AngouriMath.
+Yes! You can use a `CSharpMath.Rendering.FrontEnd.MathKeyboard` to process key presses and generate a `CSharpMath.Atom.MathList` or a LaTeX string. You can then call `CSharpMath.Evaluation.Evaluate` to get a `CSharpMath.Evaluation.MathItem`, which can be a `CSharpMath.Evaluation.MathItem.Entity` containing an `AngouriMath.Entity` that you can simplify, a `CSharpMath.Evaluation.Comma` containing a comma-delimited collection of `CSharpMath.Evaluation.MathItem`, or a `CSharpMath.Evaluation.MathItem.SetNode` containing an `AngouriMath.Core.SetNode`. For all uses of an `AngouriMath.Entity` or an `AngouriMath.Core.SetNode`, check out https://github.com/asc-community/AngouriMath.
 
 NOTE: `CSharpMath.Evaluation` is not released yet. It will be part of the 0.5.0 update.
 ```cs
 var keyboard = new CSharpMath.Rendering.FrontEnd.MathKeyboard();
 keyboard.KeyPress(CSharpMath.Editor.MathKeyboardInput.Sine, CSharpMath.Editor.MathKeyboardInput.SmallTheta);
-CSharpMath.Evaluation.MathListToEntity(keyboard.MathList)
-  .Match(entity => {
-    var resultLaTeX = CSharpMath.Evaluation.MathListFromEntity(entity.Simplify());
-  }, error => { /* Handle invalid math */ });
+var (math, error) = CSharpMath.Evaluation.Evaluate(keyboard.MathList);
+if (error != null) { /*Handle invalid input by displaying error which is a string*/ }
+else
+    switch (math)
+	{
+	    case CSharpMath.Evaluation.MathItem.Entity { Content: var entity }:
+		    // entity is an AngouriMath.Entity
+			var simplifiedEntity = entity.Simplify();
+		    break;
+		case CSharpMath.Evaluation.MathItem.Comma comma:
+		    // comma is a System.Collections.Generic.IEnumerable<CSharpMath.Evaluation.MathItem>
+			break;
+		case CSharpMath.Evaluation.MathItem.Set { Content: var set }:
+		    // set is an AngouriMath.Core.Set
+			break;
+	}
 ```
 or more conveniently:
 ```cs
@@ -239,53 +253,23 @@ keyboard.KeyPress(CSharpMath.Editor.MathKeyboardInput.Sine, CSharpMath.Editor.Ma
 var resultLaTeX = CSharpMath.Evaluation.Interpret(keyboard.MathList);
 ```
 
-Simplifying an expression | Solving an equation
+Analyzing an expression | Solving an equation
 -|-
-![Simplifying an expression](https://user-images.githubusercontent.com/19922066/80185029-3e53e000-863e-11ea-8bea-8b7f96ab2837.jpeg)|![Solving an equation](https://user-images.githubusercontent.com/19922066/80185543-15801a80-863f-11ea-9514-a59072c180b4.jpeg)
+![Analyzing an expression](https://user-images.githubusercontent.com/19922066/82801930-a8b3a680-9eb0-11ea-9947-8da278d24e9f.jpeg)|![Solving an equation](https://user-images.githubusercontent.com/19922066/82801937-abae9700-9eb0-11ea-8c3e-82fa27463ff4.jpeg)
 
 # [Documentation](https://github.com/verybadcat/CSharpMath/wiki/Documentation-of-public-facing-APIs-of-CSharpMath.Rendering,-CSharpMath.SkiaSharp-and-CSharpMath.Forms-MathViews)
 
 # Project structure
 
 <!--
-https://en.wikipedia.org/wiki/Box-drawing_character
-┌─┬┐  ╔═╦╗  ╓─╥╖  ╒═╤╕
-│ ││  ║ ║║  ║ ║║  │ ││
-├─┼┤  ╠═╬╣  ╟─╫╢  ╞═╪╡
-└─┴┘  ╚═╩╝  ╙─╨╜  ╘═╧╛
+Tracking issue for using an open source charting service instead:
+https://github.com/typpo/quickchart/issues/57
 -->
-```
-<_Core>
-CSharpMath
-├── CSharpMath.CoreTests
-│   <iOS>
-├── CSharpMath.Apple
-│   └── CSharpMath.Ios
-│       └── CSharpMath.Ios.Example
-└── CSharpMath.Editor
-    ├── CSharpMath.Editor.Tests
-    │   └── CSharpMath.Editor.Tests.Visualizer
-    ├── CSharpMath.Editor.Tests.FSharp
-    ├── CSharpMath.Evaluation ───────────────────────┐
-    │   └── CSharpMath.Evaluation.Tests              │
-    └── CSharpMath.Rendering                         │
-        ├── CSharpMath.Rendering.Text.Tests          │
-        │   <Avalonia>                               │
-        ├── CSharpMath.Avalonia ─────────────────────────┬───┐
-        │   └── CSharpMath.Avalonia.Example          │   │   │
-        │   <SkiaSharp>                              │   │   │
-        └── CSharpMath.SkiaSharp ────────────────────────┤   │
-            │   <Xamarin.Forms>                      │   │   │
-            └── CSharpMath.Forms ─────────────────────── │ ──┤
-                └── CSharpMath.Forms.Example ────────┘   │   │
-                    ├── CSharpMath.Forms.Example.Android │   │
-                    ├── CSharpMath.Forms.Example.iOS     │   │
-                    ├── CSharpMath.Forms.Example.Ooui    │   │
-                    ├── CSharpMath.Forms.Example.WPF     │   │
-                    └── CSharpMath.Forms.Example.UWP     │   │
-                            CSharpMath.Rendering.Tests ──┘   │
-                                     CSharpMath.Xaml.Tests ──┘
-```
+![Project structure](https://image-charts.com/chart?cht=gv&chl=digraph{node[shape=box];{rank=same;AngouriMath;"Typography.OpenFont";"Typography.TextBreak";CSharpMath};AngouriMath[shape=record,label="{_Dependencies|AngouriMath}"];"Typography.OpenFont"[shape=record,label="{_Dependencies|Typography.OpenFont}"];"Typography.TextBreak"[shape=record,label="{_Dependencies|Typography.TextBreak}"];CSharpMath[shape=record,label="{_Core|CSharpMath}"];"CSharpMath.Apple"[shape=record,label="{iOS|CSharpMath.Apple}"];"CSharpMath.Avalonia"[shape=record,label="{Avalonia|CSharpMath.Avalonia}"];"CSharpMath.SkiaSharp"[shape=record,label="{SkiaSharp|CSharpMath.SkiaSharp}"];"CSharpMath.Forms"[shape=record,label="{Xamarin.Forms|CSharpMath.Forms}"];"Typography.OpenFont"->"Typography.GlyphLayout";CSharpMath->"CSharpMath.CoreTests";CSharpMath->"CSharpMath.Apple"->"CSharpMath.Ios"->"CSharpMath.Ios.Example";CSharpMath->"CSharpMath.Editor"->"CSharpMath.Editor.Tests"->"CSharpMath.Editor.Tests.Visualizer";"CSharpMath.Editor"->"CSharpMath.Editor.Tests.FSharp";{"CSharpMath.Editor";AngouriMath}->"CSharpMath.Evaluation"->{"CSharpMath.Evaluation.Tests";"CSharpMath.Forms.Example"};{"CSharpMath.Editor";"Typography.GlyphLayout";"Typography.TextBreak"}->"CSharpMath.Rendering"->"CSharpMath.Rendering.Text.Tests";"CSharpMath.Rendering"->"CSharpMath.Avalonia"->"CSharpMath.Avalonia.Example";"CSharpMath.Rendering"->"CSharpMath.SkiaSharp"->"CSharpMath.Forms"->"CSharpMath.Forms.Example";"CSharpMath.Forms.Example"->{"CSharpMath.Forms.Example.Android";"CSharpMath.Forms.Example.iOS";"CSharpMath.Forms.Example.UWP";"CSharpMath.Forms.Example.WPF";"CSharpMath.Forms.Example.Ooui"};{"CSharpMath.Avalonia";"CSharpMath.SkiaSharp"}->"CSharpMath.Rendering.Tests";"CSharpMath.Xaml"->{"CSharpMath.Avalonia";"CSharpMath.Forms"}->"CSharpMath.Xaml.Tests"})
+
+## Major processes of drawing LaTeX
+<!--For some reason taillabel is the only way to position a label to the left-->
+![Major processes of drawing LaTeX](https://image-charts.com/chart?cht=gv&chl=digraph{edge[label="%20"];"string%20(LaTeX)"->"CSharpMath.Atoms.MathList"[taillabel="CSharpMath.Atoms.LaTeXParser.MathListFromLaTeX%20"];"CSharpMath.Atoms.MathList"->"string%20(LaTeX)"[label="CSharpMath.Atoms.LaTeXParser.MathListToLaTeX"];"CSharpMath.Atoms.MathList"->"CSharpMath.Evaluation.MathItem"[taillabel="CSharpMath.Evaluation.Evaluate%20%20"];"CSharpMath.Evaluation.MathItem"->"CSharpMath.Atoms.MathList"[label="CSharpMath.Evaluation.Parse"];"CSharpMath.Atoms.MathList"->"CSharpMath.Display.IDisplay%3CTFonts,%20TGlyph>"[label="CSharpMath.Display.Typesetter.CreateLine"];"CSharpMath.Display.IDisplay%3CTFonts,%20TGlyph>"->"(Rendered%20output)"[label="CSharpMath.Display.IDisplay%3CTFonts,%20TGlyph>.Draw"];"(Platform%20canvas)"->"CSharpMath.Rendering.FrontEnd.ICanvas"[taillabel="CSharpMath.Rendering.FrontEnd.MathPainter.WrapCanvas%20"];"CSharpMath.Rendering.FrontEnd.ICanvas"->"CSharpMath.Rendering.BackEnd.GraphicsContext"[taillabel="new%20CSharpMath.Rendering.BackEnd.GraphicsContext%20"];"CSharpMath.Rendering.BackEnd.GraphicsContext"->"(Rendered%20output)"})
 
 # Extending to more platforms
 
@@ -306,13 +290,9 @@ You would have to define your own [TypesettingContext](CSharpMath/Display/FrontE
 
 The TypesettingContext in turn has several components, including choosing a font.
 
-### 3. Referencing CSharpMath.SkiaSharp
+### 3. Building on top of CSharpMath.SkiaSharp
 
 You can extend this library to other SkiaSharp-supported platforms by feeding the SKCanvas given in the OnPaintSurface override of a SkiaSharp view into the Draw method of [MathPainter](CSharpMath.SkiaSharp/MathPainter.cs).
-
-### 4. Building on top of CSharpMath.Apple
-
-You can use this library on other appleOSes by making use of [AppleMathView](CSharpMath.Apple/AppleMathView.cs).
       
 # Project needs
 
