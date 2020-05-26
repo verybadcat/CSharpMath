@@ -231,18 +231,18 @@ var (math, error) = CSharpMath.Evaluation.Evaluate(keyboard.MathList);
 if (error != null) { /*Handle invalid input by displaying error which is a string*/ }
 else
     switch (math)
-	{
-	    case CSharpMath.Evaluation.MathItem.Entity { Content: var entity }:
-		    // entity is an AngouriMath.Entity
-			var simplifiedEntity = entity.Simplify();
-		    break;
-		case CSharpMath.Evaluation.MathItem.Comma comma:
-		    // comma is a System.Collections.Generic.IEnumerable<CSharpMath.Evaluation.MathItem>
-			break;
-		case CSharpMath.Evaluation.MathItem.Set { Content: var set }:
-		    // set is an AngouriMath.Core.Set
-			break;
-	}
+    {
+        case CSharpMath.Evaluation.MathItem.Entity { Content: var entity }:
+            // entity is an AngouriMath.Entity
+            var simplifiedEntity = entity.Simplify();
+            break;
+        case CSharpMath.Evaluation.MathItem.Comma comma:
+            // comma is a System.Collections.Generic.IEnumerable<CSharpMath.Evaluation.MathItem>
+            break;
+        case CSharpMath.Evaluation.MathItem.Set { Content: var set }:
+            // set is an AngouriMath.Core.Set
+            break;
+    }
 ```
 or more conveniently:
 ```cs
@@ -262,14 +262,14 @@ Analyzing an expression | Solving an equation
 # Project structure
 
 <!--
-Tracking issue for using an open source charting service instead:
+quickchart.io is open source, here is the tracking issue for experimental GraphViz support:
 https://github.com/typpo/quickchart/issues/57
 -->
-![Project structure](https://image-charts.com/chart?cht=gv&chl=digraph{node[shape=box];{rank=same;AngouriMath;"Typography.OpenFont";"Typography.TextBreak";CSharpMath};AngouriMath[shape=record,label="{_Dependencies|AngouriMath}"];"Typography.OpenFont"[shape=record,label="{_Dependencies|Typography.OpenFont}"];"Typography.TextBreak"[shape=record,label="{_Dependencies|Typography.TextBreak}"];CSharpMath[shape=record,label="{_Core|CSharpMath}"];"CSharpMath.Apple"[shape=record,label="{iOS|CSharpMath.Apple}"];"CSharpMath.Avalonia"[shape=record,label="{Avalonia|CSharpMath.Avalonia}"];"CSharpMath.SkiaSharp"[shape=record,label="{SkiaSharp|CSharpMath.SkiaSharp}"];"CSharpMath.Forms"[shape=record,label="{Xamarin.Forms|CSharpMath.Forms}"];"Typography.OpenFont"->"Typography.GlyphLayout";CSharpMath->"CSharpMath.CoreTests";CSharpMath->"CSharpMath.Apple"->"CSharpMath.Ios"->"CSharpMath.Ios.Example";CSharpMath->"CSharpMath.Editor"->"CSharpMath.Editor.Tests"->"CSharpMath.Editor.Tests.Visualizer";"CSharpMath.Editor"->"CSharpMath.Editor.Tests.FSharp";{"CSharpMath.Editor";AngouriMath}->"CSharpMath.Evaluation"->{"CSharpMath.Evaluation.Tests";"CSharpMath.Forms.Example"};{"CSharpMath.Editor";"Typography.GlyphLayout";"Typography.TextBreak"}->"CSharpMath.Rendering"->"CSharpMath.Rendering.Text.Tests";"CSharpMath.Rendering"->"CSharpMath.Avalonia"->"CSharpMath.Avalonia.Example";"CSharpMath.Rendering"->"CSharpMath.SkiaSharp"->"CSharpMath.Forms"->"CSharpMath.Forms.Example";"CSharpMath.Forms.Example"->{"CSharpMath.Forms.Example.Android";"CSharpMath.Forms.Example.iOS";"CSharpMath.Forms.Example.UWP";"CSharpMath.Forms.Example.WPF";"CSharpMath.Forms.Example.Ooui"};{"CSharpMath.Avalonia";"CSharpMath.SkiaSharp"}->"CSharpMath.Rendering.Tests";"CSharpMath.Xaml"->{"CSharpMath.Avalonia";"CSharpMath.Forms"}->"CSharpMath.Xaml.Tests"})
+![Project structure](https://quickchart.io/chart?cht=gv&chl=digraph{node[shape=box];{rank=same;AngouriMath;"Typography.OpenFont";"Typography.TextBreak";CSharpMath};AngouriMath[shape=record,label="{_Dependencies|AngouriMath}"];"Typography.OpenFont"[shape=record,label="{_Dependencies|Typography.OpenFont}"];"Typography.TextBreak"[shape=record,label="{_Dependencies|Typography.TextBreak}"];CSharpMath[shape=record,label="{_Core|CSharpMath}"];"CSharpMath.Apple"[shape=record,label="{iOS|CSharpMath.Apple}"];"CSharpMath.Avalonia"[shape=record,label="{Avalonia|CSharpMath.Avalonia}"];"CSharpMath.SkiaSharp"[shape=record,label="{SkiaSharp|CSharpMath.SkiaSharp}"];"CSharpMath.Forms"[shape=record,label="{Xamarin.Forms|CSharpMath.Forms}"];"Typography.OpenFont"->"Typography.GlyphLayout";CSharpMath->"CSharpMath.CoreTests";CSharpMath->"CSharpMath.Apple"->"CSharpMath.Ios"->"CSharpMath.Ios.Example";CSharpMath->"CSharpMath.Editor"->"CSharpMath.Editor.Tests"->"CSharpMath.Editor.Tests.Visualizer";"CSharpMath.Editor"->"CSharpMath.Editor.Tests.FSharp";{"CSharpMath.Editor";AngouriMath}->"CSharpMath.Evaluation"->{"CSharpMath.Evaluation.Tests";"CSharpMath.Forms.Example"};{"CSharpMath.Editor";"Typography.GlyphLayout";"Typography.TextBreak"}->"CSharpMath.Rendering"->"CSharpMath.Rendering.Text.Tests";"CSharpMath.Rendering"->"CSharpMath.Avalonia"->"CSharpMath.Avalonia.Example";"CSharpMath.Rendering"->"CSharpMath.SkiaSharp"->"CSharpMath.Forms"->"CSharpMath.Forms.Example";"CSharpMath.Forms.Example"->{"CSharpMath.Forms.Example.Android";"CSharpMath.Forms.Example.iOS";"CSharpMath.Forms.Example.UWP";"CSharpMath.Forms.Example.WPF";"CSharpMath.Forms.Example.Ooui"};{"CSharpMath.Avalonia";"CSharpMath.SkiaSharp"}->"CSharpMath.Rendering.Tests";"CSharpMath.Xaml"->{"CSharpMath.Avalonia";"CSharpMath.Forms"}->"CSharpMath.Xaml.Tests"})
 
 ## Major processes of drawing LaTeX
 <!--For some reason taillabel is the only way to position a label to the left-->
-![Major processes of drawing LaTeX](https://image-charts.com/chart?cht=gv&chl=digraph{edge[label="%20"];"string%20(LaTeX)"->"CSharpMath.Atoms.MathList"[taillabel="CSharpMath.Atoms.LaTeXParser.MathListFromLaTeX%20"];"CSharpMath.Atoms.MathList"->"string%20(LaTeX)"[label="CSharpMath.Atoms.LaTeXParser.MathListToLaTeX"];"CSharpMath.Atoms.MathList"->"CSharpMath.Evaluation.MathItem"[taillabel="CSharpMath.Evaluation.Evaluate%20%20"];"CSharpMath.Evaluation.MathItem"->"CSharpMath.Atoms.MathList"[label="CSharpMath.Evaluation.Parse"];"CSharpMath.Atoms.MathList"->"CSharpMath.Display.IDisplay%3CTFonts,%20TGlyph>"[label="CSharpMath.Display.Typesetter.CreateLine"];"CSharpMath.Display.IDisplay%3CTFonts,%20TGlyph>"->"(Rendered%20output)"[label="CSharpMath.Display.IDisplay%3CTFonts,%20TGlyph>.Draw"];"(Platform%20canvas)"->"CSharpMath.Rendering.FrontEnd.ICanvas"[taillabel="CSharpMath.Rendering.FrontEnd.MathPainter.WrapCanvas%20"];"CSharpMath.Rendering.FrontEnd.ICanvas"->"CSharpMath.Rendering.BackEnd.GraphicsContext"[taillabel="new%20CSharpMath.Rendering.BackEnd.GraphicsContext%20"];"CSharpMath.Rendering.BackEnd.GraphicsContext"->"(Rendered%20output)"})
+![Major processes of drawing LaTeX](https://quickchart.io/chart?cht=gv&chl=digraph{edge[label="%20"];"string%20(LaTeX)"->"CSharpMath.Atoms.MathList"[taillabel="CSharpMath.Atoms.LaTeXParser.MathListFromLaTeX%20"];"CSharpMath.Atoms.MathList"->"string%20(LaTeX)"[label="CSharpMath.Atoms.LaTeXParser.MathListToLaTeX"];"CSharpMath.Atoms.MathList"->"CSharpMath.Evaluation.MathItem"[taillabel="CSharpMath.Evaluation.Evaluate%20%20"];"CSharpMath.Evaluation.MathItem"->"CSharpMath.Atoms.MathList"[label="CSharpMath.Evaluation.Parse"];"CSharpMath.Atoms.MathList"->"CSharpMath.Display.IDisplay%3CTFonts,%20TGlyph>"[label="CSharpMath.Display.Typesetter.CreateLine"];"CSharpMath.Display.IDisplay%3CTFonts,%20TGlyph>"->"(Rendered%20output)"[label="CSharpMath.Display.IDisplay%3CTFonts,%20TGlyph>.Draw"];"(Platform%20canvas)"->"CSharpMath.Rendering.FrontEnd.ICanvas"[taillabel="CSharpMath.Rendering.FrontEnd.MathPainter.WrapCanvas%20"];"CSharpMath.Rendering.FrontEnd.ICanvas"->"CSharpMath.Rendering.BackEnd.GraphicsContext"[taillabel="new%20CSharpMath.Rendering.BackEnd.GraphicsContext%20"];"CSharpMath.Rendering.BackEnd.GraphicsContext"->"(Rendered%20output)"})
 
 # Extending to more platforms
 
