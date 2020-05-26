@@ -22,8 +22,12 @@ jobs:
     - name: Update dependencies in CSharpMath.Xaml.Tests.NuGet
       run: |
         dotnet tool install -g dotnet-outdated
-        dotnet outdated -u CSharpMath.Xaml.Tests.NuGet
-        dotnet outdated -pre Always -inc CSharpMath -u CSharpMath.Xaml.Tests.NuGet
+        update() {
+          dotnet outdated -u CSharpMath.Xaml.Tests.NuGet
+          dotnet outdated -pre Always -inc CSharpMath -u CSharpMath.Xaml.Tests.NuGet
+        }
+        # retry 5 times since dotnet outdated fails often: https://github.com/jerriep/dotnet-outdated/issues/299
+        update || update || update || update || update
     - name: Build and Test
       run: |
         for p in\
