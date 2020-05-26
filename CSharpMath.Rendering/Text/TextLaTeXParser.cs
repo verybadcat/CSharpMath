@@ -45,11 +45,11 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
       bool? displayMath = null;
       var mathLaTeX = new StringBuilder();
       bool backslashEscape = false;
-      bool afterCommand = false; //ignore spaces after command
+      bool afterCommand = false; // ignore spaces after command
       bool afterNewline = false;
       int dollarCount = 0;
       var globalAtoms = new TextAtomListBuilder();
-      var breakList = new List<BreakAtInfo>();
+      List<BreakAtInfo> breakList = new List<BreakAtInfo>(); // Roslyn bug that assumes breakList is nullable resulting in warnings so var is not used
       var breaker = new CustomBreaker(v => breakList.Add(new BreakAtInfo(v.LatestBreakAt, v.LatestWordKind))) {
         BreakNumberAfterText = true,
         ThrowIfCharOutOfRange = false

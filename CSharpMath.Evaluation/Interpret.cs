@@ -51,27 +51,27 @@ namespace CSharpMath {
       .Match(item => {
         var latex = new StringBuilder(@"\begin{aligned} &");
         latex.Append(item.Latexise());
-        void TryOutput(string lineName, System.Action appendLaTeX) {
+        void TryOutput(string lineName, System.Func<AngouriMath.Core.Sys.Interfaces.ILatexiseable> get) {
           latex.Append(@"\\ \text{").Append(lineName).Append(@"} \colon & \;");
           try {
-            appendLaTeX();
+            latex.Append(get().Latexise());
           } catch (System.Exception e) {
             latex.Append(errorLaTeX(e.Message));
           }
         }
         switch (item) {
           case MathItem.Entity { Content: var entity }:
-            TryOutput(nameof(entity.Simplify), () => latex.Append(entity.Simplify().Latexise()));
-            TryOutput(nameof(entity.Expand), () => latex.Append(entity.Expand().Simplify().Latexise()));
-            TryOutput("Factorize", () => latex.Append(entity.Collapse().Latexise()));
-            TryOutput("Value", () => latex.Append(entity.Eval().ToString()));
+            TryOutput(nameof(entity.Simplify), entity.Simplify);
+            TryOutput(nameof(entity.Expand), () => entity.Expand().Simplify());
+            TryOutput("Factorize", entity.Collapse);
+            TryOutput("Value", entity.Eval);
             foreach (AngouriMath.VariableEntity variable in AngouriMath.MathS.Utils.GetUniqueVariables(entity).FiniteSet())
               TryOutput(@"\mathnormal{\frac\partial{\partial " + variable.Latexise() + "}}",
-                () => latex.Append(entity.Derive(variable).Simplify().Latexise()));
+                () => entity.Derive(variable).Simplify());
             //TryOutput("Alternate forms", () => LatexiseAll(latex, entity.Alternate(5)));
             break;
           case MathItem.Set { Content: var set }:
-            TryOutput(nameof(set.Eval), () => latex.Append(set.Eval().Latexise()));
+            TryOutput(nameof(set.Eval), set.Eval);
             break;
           default:
             throw new System.NotImplementedException(item.GetType().ToString());
