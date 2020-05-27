@@ -33,7 +33,8 @@ namespace CSharpMath.Rendering.Text {
     public void Comment(string comment) => Add(new TextAtom.Comment(comment));
     public TextAtom Build() => _list.Count == 1 ? _list[0] : new TextAtom.List(this);
     public int TextLength { get; set; } = 0;
-    public TextAtom? Last => Count == 0 ? null : _list[Count - 1];
+    [System.Diagnostics.CodeAnalysis.DisallowNull] // setter value cannot be null
+    public TextAtom? Last { get => Count == 0 ? null : _list[Count - 1]; set => _list[Count - 1] = value; }
     public TextAtom this[int index] => _list[index];
     public int Count => _list.Count;
     public List<TextAtom>.Enumerator GetEnumerator() => _list.GetEnumerator();
