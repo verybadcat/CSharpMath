@@ -155,24 +155,12 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                 Ok(value) :
               Err("Invalid color: " + color.ToString())
             );
-          ///<summary>Get punctutation after current section</summary>
-          ReadOnlySpan<char> NextSectionWhilePunc(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section) {
-            int start = endAt;
-            ReadOnlySpan<char> specialChars = stackalloc[] { '#', '$', '%', '&', '\\', '^', '_', '{', '}', '~' };
-            while (NextSection(latexInput, ref section))
-              if (wordKind != WordKind.Punc || specialChars.IndexOf(section[0]) != -1) {
-                // We have overlooked by one when non-punctuation or special character is encountered
-                PreviousSection(latexInput, ref section);
-                break;
-              }
-            return latexInput.Slice(start, endAt - start);
-          }
           //Nothing should be before dollar sign checking -- dollar sign checking uses continue;
           atoms.TextLength = startAt;
           if (textSection.Is('$')) {
             if (backslashEscape)
               if (displayMath != null) mathLaTeX.Append(@"\$");
-              else atoms.Text("$", NextSectionWhilePunc(latex, ref textSection));
+              else atoms.Text("$");
             else {
               dollarCount++;
               continue;
@@ -244,6 +232,20 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     if (afterCommand) continue;
                     else atoms.ControlSpace();
                     break;
+                  case var _ when wordKind == WordKind.Punc && stackalloc[] { '#', '$', '%', '&', '\\', '^', '_', '{', '}', '~' }.IndexOf(textSection[0]) == -1:
+                    //Stick punctuation to previous text atom or inline math atom
+                    switch (atoms.Last) {
+                      case TextAtom.Text { Content:var text }:
+                        atoms.Last = new TextAtom.Text(text + textSection.ToString());
+                        break;
+                      case TextAtom.Math { DisplayStyle:false, Content:var mathList }:
+                        mathList.Add(new Atom.Atoms.Punctuation(textSection.ToString()));
+                        break;
+                      default:
+                        atoms.Text(textSection.ToString());
+                        break;
+                    }
+                    break;
                   default: //Just ordinary text
                     if (oneCharOnly) {
                       if (startAt + 1 < endAt) { //Only re-read if current break span is more than 1 long
@@ -252,8 +254,8 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                       }
                       //Need to allocate in the end :(
                       //Don't look ahead for punc; we are looking for one char only
-                      atoms.Text(textSection[0].ToString(), default);
-                    } else atoms.Text(textSection.ToString(), NextSectionWhilePunc(latex, ref textSection));
+                      atoms.Text(textSection[0].ToString());
+                    } else atoms.Text(textSection.ToString());
                     break;
                 }
                 afterCommand = false;
@@ -428,7 +430,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     }
                   //case "textasciicircum", "textless", ...
                   case var textSymbol when TextLaTeXSettings.PredefinedTextSymbols.TryGetValue(textSymbol, out var replaceResult):
-                    atoms.Text(replaceResult, NextSectionWhilePunc(latex, ref textSection));
+                    atoms.Text(replaceResult);
                     break;
                   case var command:
                     if (displayMath != null) mathLaTeX.Append(command); //don't eat the command when parsing math
