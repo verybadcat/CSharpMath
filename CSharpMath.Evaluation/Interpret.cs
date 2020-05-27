@@ -39,6 +39,8 @@ namespace CSharpMath {
               }
               // Remove last variableDelimiter
               return latex.Remove(latex.Length - variableDelimiter.Length, variableDelimiter.Length).ToString();
+            case MathItem.Comma _:
+              return errorLaTeX("Comma equations are unsupported");
             case MathItem.Set _:
               return errorLaTeX("Set equations are unsupported");
             default:
@@ -68,10 +70,10 @@ namespace CSharpMath {
             foreach (AngouriMath.VariableEntity variable in AngouriMath.MathS.Utils.GetUniqueVariables(entity).FiniteSet())
               TryOutput(@"\mathnormal{\frac\partial{\partial " + variable.Latexise() + "}}",
                 () => entity.Derive(variable).Simplify());
-            //TryOutput("Alternate forms", () => LatexiseAll(latex, entity.Alternate(5)));
+            // TryOutput("Alternate forms", () => entity.Alternate(5));
             break;
-          case MathItem.Set { Content: var set }:
-            TryOutput(nameof(set.Eval), set.Eval);
+          case MathItem.Set _:
+          case MathItem.Comma _:
             break;
           default:
             throw new System.NotImplementedException(item.GetType().ToString());
