@@ -39,6 +39,7 @@ jobs:
           "CSharpMath.Rendering.Text.Tests"\
           "CSharpMath.Xaml.Tests"\
           "CSharpMath.Xaml.Tests.NuGet"\
+          "AngouriMath/Tests/UnitTests"\
           "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests"
         do
           dotnet add "$p" package Microsoft.NET.Test.Sdk # Update is required for GitHubActionsTestLogger to print anything
