@@ -9,7 +9,7 @@ namespace CSharpMath.Editor {
   partial class Extensions {
     static void InsertAtAtomIndexAndAdvance(this MathList self, int atomIndex, MathAtom atom, ref MathListIndex advance, MathListSubIndexType advanceType) {
       if (atomIndex < 0 || atomIndex > self.Count)
-        throw new IndexOutOfRangeException($"Index {atomIndex} is out of bounds for list of size {self.Atoms.Count}");
+        throw new IndexOutOfRangeException($"Insertion index {atomIndex} is out of bounds for list of size {self.Atoms.Count}");
       // Test for placeholder to the right of index, e.g. \sqrt{‸■} -> \sqrt{2‸}
       if (atomIndex < self.Count && self[atomIndex] is Atoms.Placeholder placeholder) {
         atom.Superscript.Append(placeholder.Superscript);
@@ -25,8 +25,8 @@ namespace CSharpMath.Editor {
     /// <summary>Inserts <paramref name="atom"/> and modifies <paramref name="index"/> to advance to the next position.</summary>
     public static void InsertAndAdvance(this MathList self, ref MathListIndex index, MathAtom atom, MathListSubIndexType advanceType) {
       index ??= MathListIndex.Level0Index(0);
-      if (index.AtomIndex > self.Atoms.Count)
-        throw new IndexOutOfRangeException($"Index {index.AtomIndex} is out of bounds for list of size {self.Atoms.Count}");
+      if (index.AtomIndex < 0 || index.AtomIndex > self.Atoms.Count)
+        throw new IndexOutOfRangeException($"Insertion index {index.AtomIndex} is out of bounds for list of size {self.Atoms.Count}");
       switch (index.SubIndexType) {
         case MathListSubIndexType.None:
           self.InsertAtAtomIndexAndAdvance(index.AtomIndex, atom, ref index, advanceType);
@@ -125,8 +125,8 @@ namespace CSharpMath.Editor {
         } else script.RemoveAt(ref index.SubIndex);
       }
 
-      if (index.AtomIndex > self.Atoms.Count)
-        throw new IndexOutOfRangeException($"Index {index.AtomIndex} is out of bounds for list of size {self.Atoms.Count}");
+      if (index.AtomIndex < -1 || index.AtomIndex >= self.Atoms.Count)
+        throw new IndexOutOfRangeException($"Deletion index {index.AtomIndex} is out of bounds for list of size {self.Atoms.Count}");
       switch (index.SubIndexType) {
         case MathListSubIndexType.None:
           if (index.AtomIndex == -1) {
