@@ -264,6 +264,13 @@ Analyzing an expression | Solving an equation
 <!--
 quickchart.io is open source, here is the tracking issue for experimental GraphViz support:
 https://github.com/typpo/quickchart/issues/57
+
+https://quickchart.io/chart?chof=png&cht=gv&chl=graph{...}
+chof: chart format, defaults to SVG where text renders differently on different platforms, e.g. renders perfectly on Windows but not on Android, but PNG looks even worse
+cht: chart type, gv stands for GraphViz which produces organizational charts
+chl: chart labels, here a graph written in https://en.wikipedia.org/wiki/DOT_language is used. Special characters such as spaces and less-than symbols must be escaped to %20 and %3C respectively or GitHub markdown will fail to parse the URL
+
+For all uses and possible values of the API parameters, see https://developers.google.com/chart/image/docs/chart_params
 -->
 ![Project structure](https://quickchart.io/chart?cht=gv&chl=graph{node[shape=box];{rank=same;AngouriMath;"Typography.OpenFont";"Typography.TextBreak";CSharpMath};AngouriMath[shape=record,label="{_Dependencies|AngouriMath}"];"Typography.OpenFont"[shape=record,label="{_Dependencies|Typography.OpenFont}"];"Typography.TextBreak"[shape=record,label="{_Dependencies|Typography.TextBreak}"];CSharpMath[shape=record,label="{_Core|CSharpMath}"];"CSharpMath.Apple"[shape=record,label="{iOS|CSharpMath.Apple}"];"CSharpMath.Avalonia"[shape=record,label="{Avalonia|CSharpMath.Avalonia}"];"CSharpMath.SkiaSharp"[shape=record,label="{SkiaSharp|CSharpMath.SkiaSharp}"];"CSharpMath.Forms"[shape=record,label="{Xamarin.Forms|CSharpMath.Forms}"];"Typography.OpenFont"--"Typography.GlyphLayout";"Typography.TextBreak"--"TextBreakTests";AngouriMath--UnitTests;CSharpMath--"CSharpMath.CoreTests";CSharpMath--"CSharpMath.Apple"--"CSharpMath.Ios"--"CSharpMath.Ios.Example";CSharpMath--"CSharpMath.Editor"--"CSharpMath.Editor.Tests"--"CSharpMath.Editor.Tests.Visualizer";"CSharpMath.Editor"--"CSharpMath.Editor.Tests.FSharp";{"CSharpMath.Editor";AngouriMath}--"CSharpMath.Evaluation"--{"CSharpMath.Evaluation.Tests";"CSharpMath.Forms.Example"};{"CSharpMath.Editor";"Typography.GlyphLayout";"Typography.TextBreak"}--"CSharpMath.Rendering"--"CSharpMath.Rendering.Text.Tests";"CSharpMath.Rendering"--"CSharpMath.Avalonia"--"CSharpMath.Avalonia.Example";"CSharpMath.Rendering"--"CSharpMath.SkiaSharp"--"CSharpMath.Forms"--"CSharpMath.Forms.Example";"CSharpMath.Forms.Example"--{"CSharpMath.Forms.Example.Android";"CSharpMath.Forms.Example.iOS";"CSharpMath.Forms.Example.UWP";"CSharpMath.Forms.Example.WPF";"CSharpMath.Forms.Example.Ooui"};{"CSharpMath.Avalonia";"CSharpMath.SkiaSharp"}--"CSharpMath.Rendering.Tests";"CSharpMath.Xaml"--{"CSharpMath.Avalonia";"CSharpMath.Forms"}--"CSharpMath.Xaml.Tests"})
 
