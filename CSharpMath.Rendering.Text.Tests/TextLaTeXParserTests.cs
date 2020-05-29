@@ -235,14 +235,14 @@ namespace CSharpMath.Rendering.Text.Tests {
     [InlineData(@"\$\[\$\]\$", @"\$", @"\$", true, @"\$", @"\$\[\$ \]\$")]
 
     // https://github.com/verybadcat/CSharpMath/issues/113
-    [InlineData(@",$,$,", @",", @",,", false, @"", @",\(,, \)")]
-    [InlineData(@",\(,$,", @",", @",,", false, @"", @",\(,, \)")]
-    [InlineData(@",$,\),", @",", @",,", false, @"", @",\(,, \)")]
-    [InlineData(@",\(,\),", @",", @",,", false, @"", @",\(,, \)")]
-    [InlineData(@",$$,$$,", @",", @",,", true, @"", @",\[,, \]")]
-    [InlineData(@",\[,$$,", @",", @",,", true, @"", @",\[,, \]")]
-    [InlineData(@",$$,\],", @",", @",,", true, @"", @",\[,, \]")]
-    [InlineData(@",\[,\],", @",", @",,", true, @"", @",\[,, \]")]
+    [InlineData(@",$,$,", @",", @",,", false, null, @",\(,,\)")]
+    [InlineData(@",\(,$,", @",", @",,", false, null, @",\(,,\)")]
+    [InlineData(@",$,\),", @",", @",,", false, null, @",\(,,\)")]
+    [InlineData(@",\(,\),", @",", @",,", false, null, @",\(,,\)")]
+    [InlineData(@",$$,$$,", @",", @",", true, @",", @",\[,\],")]
+    [InlineData(@",\[,$$,", @",", @",", true, @",", @",\[,\],")]
+    [InlineData(@",$$,\],", @",", @",", true, @",", @",\[,\],")]
+    [InlineData(@",\[,\],", @",", @",", true, @",", @",\[,\],")]
     public void Math(string input, string? textBefore, string math, bool display, string? textAfter, string output) {
       var atom = Parse(input);
       var list = new List<TextAtom>();

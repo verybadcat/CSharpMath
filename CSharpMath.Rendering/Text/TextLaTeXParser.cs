@@ -111,11 +111,6 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
             kind = breakList[index].wordKind;
           }
           ObtainSection(latex, i, out var startAt, out endAt, out var textSection, out var wordKind);
-          bool PreviousSection(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section) {
-            bool success = i-- > 0;
-            if (success) ObtainSection(latexInput, i, out startAt, out endAt, out section, out wordKind);
-            return success;
-          }
           bool NextSection(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section) {
             bool success = ++i < breakList.Count;
             if (success) ObtainSection(latexInput, i, out startAt, out endAt, out section, out wordKind);
@@ -232,29 +227,14 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     if (afterCommand) continue;
                     else atoms.ControlSpace();
                     break;
-                  case var _ when wordKind == WordKind.Punc && stackalloc[] { '#', '$', '%', '&', '\\', '^', '_', '{', '}', '~' }.IndexOf(textSection[0]) == -1:
-                    //Stick punctuation to previous text atom or inline math atom
-                    switch (atoms.Last) {
-                      case TextAtom.Text { Content:var text }:
-                        atoms.Last = new TextAtom.Text(text + textSection.ToString());
-                        break;
-                      case TextAtom.Math { DisplayStyle:false, Content:var mathList }:
-                        mathList.Add(new Atom.Atoms.Punctuation(textSection.ToString()));
-                        break;
-                      default:
-                        atoms.Text(textSection.ToString());
-                        break;
-                    }
-                    break;
                   default: //Just ordinary text
                     if (oneCharOnly) {
-                      if (startAt + 1 < endAt) { //Only re-read if current break span is more than 1 long
+                      var firstCodepointLength = char.IsHighSurrogate(textSection[0]) ? 2 : 1;
+                      if (startAt + firstCodepointLength < endAt) { //Only re-read if current break span is more than 1 long
                         i--;
-                        breakList[i] = new BreakAtInfo(breakList[i].breakAt + 1, breakList[i].wordKind);
+                        breakList[i] = new BreakAtInfo(breakList[i].breakAt + firstCodepointLength, breakList[i].wordKind);
                       }
-                      //Need to allocate in the end :(
-                      //Don't look ahead for punc; we are looking for one char only
-                      atoms.Text(textSection[0].ToString());
+                      atoms.Text(textSection.Slice(0, firstCodepointLength).ToString());
                     } else atoms.Text(textSection.ToString());
                     break;
                 }
