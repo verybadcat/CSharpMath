@@ -210,7 +210,9 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     break;
                   case var _ when textSection.Is('}'):
                     return "Missing opening brace";
-                  case var _ when wordKind == WordKind.NewLine:
+                  // !char.IsSurrogate(textSection[0]) is result of https://github.com/LayoutFarm/Typography/issues/206
+                  case var _ when wordKind == WordKind.NewLine && !char.IsSurrogate(textSection[0]):
+                    if (oneCharOnly) continue;
                     // Consume newlines after commands
                     // Double newline == paragraph break
                     if (afterNewline) {
@@ -222,9 +224,9 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                       afterNewline = true;
                       continue;
                     }
-                  case var _ when wordKind == WordKind.Whitespace:
+                  case var _ when wordKind == WordKind.Whitespace && !char.IsSurrogate(textSection[0]):
                     //Collpase spaces
-                    if (afterCommand) continue;
+                    if (afterCommand || oneCharOnly) continue;
                     else atoms.ControlSpace();
                     break;
                   default: //Just ordinary text
