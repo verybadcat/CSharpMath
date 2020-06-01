@@ -11,12 +11,12 @@ namespace CSharpMath.Editor.Tests {
   public class KeyPressTests {
     private static readonly TypesettingContext<TestFont, char> context = TestTypesettingContexts.Instance;
     static void Test(string latex, K[] inputs) {
-      var keyboard = new MathKeyboard<TestFont, char>(context, new TestFont());
+      var keyboard = new MathKeyboard<TestFont, char>(context, new TestFont(20));
       keyboard.KeyPress(inputs);
       Assert.Equal(latex, keyboard.LaTeX);
     }
     static void TestEvent(EventInteractor attach, EventInteractor detach, K[] inputs) {
-      var keyboard = new MathKeyboard<TestFont, char>(context, new TestFont());
+      var keyboard = new MathKeyboard<TestFont, char>(context, new TestFont(20));
       Assert.Raises<EventArgs>(
         h => attach(keyboard, new EventHandler(h)),
         h => detach(keyboard, new EventHandler(h)),
@@ -153,6 +153,8 @@ namespace CSharpMath.Editor.Tests {
     [
       Theory,
       T(@"", K.Left, K.Left, K.Left, K.Right, K.Right, K.Right),
+      T(@"1", K.Left, K.D1),
+      T(@"1", K.Right, K.D1),
       T(@"\square ^■2", K.Power, K.Left, K.Left, K.Right, K.Right, K.Right, K.D2, K.Left, K.Left),
       T(@"+-\times \div ", K.Divide, K.Left, K.Multiply, K.Left, K.Minus, K.Left, K.Plus),
       T(@"\sin \cos \tan \arcsin \arccos \arctan ", K.ArcSine, K.ArcCosine, K.Left, K.Left,
@@ -193,6 +195,32 @@ namespace CSharpMath.Editor.Tests {
       T(@"1\left[ 2\right] a_3^4", K.BothSquareBrackets, K.Right, K.Power, K.Right, K.Subscript, K.Left, K.Left, K.Left, K.D1, K.Right, K.D2, K.Right, K.SmallA, K.Right, K.D3, K.Right, K.D4),
     ]
     public void LeftRightNavigation(string latex, params K[] inputs) => Test(latex, inputs);
+
+    [
+      Theory,
+      T(@"", K.Up, K.Up, K.Up, K.Down, K.Down, K.Down),
+      T(@"1", K.Up, K.D1),
+      T(@"1", K.Down, K.D1),
+      T(@"\frac{\square }{■}", K.Fraction, K.Down),
+      T(@"\frac{\square }{1}", K.Fraction, K.Down, K.D1),
+      T(@"\frac{■}{\square }", K.Fraction, K.Down, K.Up),
+      T(@"\frac{1}{\square }", K.Fraction, K.Down, K.Up, K.D1),
+      T(@"\frac{\square }{■}", K.Fraction, K.Down, K.Up, K.Down),
+      T(@"\frac{\square }{1}", K.Fraction, K.Down, K.Up, K.Down, K.D1),
+      T(@"\frac{123x456}{y}", K.Fraction, K.D1, K.D2, K.D3, K.D4, K.D5, K.D6, K.Down, K.Up, K.SmallX, K.Down, K.SmallY),
+      T(@"\frac{y}{123x456}", K.Fraction, K.Down, K.D1, K.D2, K.D3, K.D4, K.D5, K.D6, K.Up, K.Down, K.SmallX, K.Up, K.SmallY),
+      T(@"\frac{1234z56}{xy}", K.Fraction, K.D1, K.D2, K.D3, K.D4, K.D5, K.D6, K.Down, K.SmallX, K.SmallY, K.Up, K.SmallZ),
+      T(@"\frac{xy}{1234z56}", K.Fraction, K.Down, K.D1, K.D2, K.D3, K.D4, K.D5, K.D6, K.Up, K.SmallX, K.SmallY, K.Down, K.SmallZ),
+      T(@"\frac{\sqrt{2}}{■}", K.Fraction, K.SquareRoot, K.D2, K.Down),
+      T(@"\frac{■}{\sqrt{2}}", K.Fraction, K.Down, K.SquareRoot, K.D2, K.Up),
+      T(@"\frac{\sqrt{789}}{\square }", K.Fraction, K.SquareRoot, K.D8, K.D9, K.Down, K.Up, K.D7),
+      T(@"\frac{\square }{\sqrt{789}}", K.Fraction, K.Down, K.SquareRoot, K.D8, K.D9, K.Up, K.Down, K.D7),
+      T(@"2^{ab}c", K.D2, K.Power, K.SmallA, K.Up, K.SmallB, K.Down, K.SmallC),
+      T(@"2_{ab}c", K.D2, K.Subscript, K.SmallA, K.Down, K.SmallB, K.Up, K.SmallC),
+      T(@"2_{cab}^{\square }", K.D2, K.Subscript, K.SmallA, K.SmallB, K.Up, K.Power, K.Down, K.SmallC),
+      T(@"2c_{\square }^{ab}", K.D2, K.Power, K.SmallA, K.SmallB, K.Down, K.Subscript, K.Up, K.SmallC),
+    ]
+    public void UpDownNavigation(string latex, params K[] inputs) => Test(latex, inputs);
 
     [
       Theory,
