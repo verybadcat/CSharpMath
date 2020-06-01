@@ -10,7 +10,7 @@ namespace CSharpMath.Rendering.Text {
   using Display = Display.Displays.ListDisplay<BackEnd.Fonts, BackEnd.Glyph>;
   using CSharpMath.Structures;
   public static class TextTypesetter {
-    public static (Display relative, Display absolute) Layout(TextAtom input, Fonts inputFont, float canvasWidth) {
+    public static (Display relative, Display absolute) Layout(TextAtom input, Fonts inputFont, TextAlignment alignment, float canvasWidth) {
 #warning Multiply these constants by resolution
       const float abovedisplayskip = 12, abovedisplayshortskip = 0,
                   belowdisplayskip = 12, belowdisplayshortskip = 7;

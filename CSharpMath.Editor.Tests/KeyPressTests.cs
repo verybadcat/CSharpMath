@@ -219,8 +219,26 @@ namespace CSharpMath.Editor.Tests {
       T(@"2_{ab}c", K.D2, K.Subscript, K.SmallA, K.Down, K.SmallB, K.Up, K.SmallC),
       T(@"2_{cab}^{\square }", K.D2, K.Subscript, K.SmallA, K.SmallB, K.Up, K.Power, K.Down, K.SmallC),
       T(@"2c_{\square }^{ab}", K.D2, K.Power, K.SmallA, K.SmallB, K.Down, K.Subscript, K.Up, K.SmallC),
+      T(@"\square _1^3", K.Subscript, K.Up, K.Power, K.Down, K.D1, K.Up, K.D3),
+      T(@"1^■", K.Power, K.Down, K.D1, K.Up),
+      T(@"1_■", K.Subscript, K.Up, K.D1, K.Down),
     ]
     public void UpDownNavigation(string latex, params K[] inputs) => Test(latex, inputs);
+
+    [
+      Theory,
+      T(@"\square ^21", K.Power, K.D2, K.Left, K.Down, K.D1),
+      T(@"01^2", K.D0, K.Power, K.D2, K.Left, K.Down, K.D1),
+      T(@"1^{23}", K.Power, K.D2, K.D3, K.Left, K.Left, K.Down, K.D1),
+      T(@"x^{zy}", K.SmallX, K.Power, K.SmallY, K.Left, K.Left, K.Up, K.SmallZ),
+      T(@"1^23", K.D1, K.Power, K.Right, K.D3, K.Left, K.Left, K.Up, K.D2),
+      T(@"\square _21", K.Subscript, K.D2, K.Left, K.Up, K.D1),
+      T(@"01_2", K.D0, K.Subscript, K.D2, K.Left, K.Up, K.D1),
+      T(@"1_{23}", K.Subscript, K.D2, K.D3, K.Left, K.Left, K.Up, K.D1),
+      T(@"x_{zy}", K.SmallX, K.Subscript, K.SmallY, K.Left, K.Left, K.Down, K.SmallZ),
+      T(@"1_23", K.D1, K.Subscript, K.Right, K.D3, K.Left, K.Left, K.Down, K.D2),
+    ]
+    public void FourDirectionalNavigation(string latex, params K[] inputs) => Test(latex, inputs);
 
     [
       Theory,

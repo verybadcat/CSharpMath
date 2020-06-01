@@ -276,7 +276,7 @@ namespace CSharpMath.Editor {
     }
 
     public static MathAtom? AtomAt(this MathList self, MathListIndex? index) {
-      if (index is null || index.AtomIndex >= self.Atoms.Count) return null;
+      if (index is null || index.AtomIndex < 0 || index.AtomIndex >= self.Atoms.Count) return null;
       var atom = self.Atoms[index.AtomIndex];
       switch (index.SubIndexType) {
         case MathListSubIndexType.None:
