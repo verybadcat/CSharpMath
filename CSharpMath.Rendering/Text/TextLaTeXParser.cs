@@ -111,11 +111,6 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
             kind = breakList[index].wordKind;
           }
           ObtainSection(latex, i, out var startAt, out endAt, out var textSection, out var wordKind);
-          bool PreviousSection(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section) {
-            bool success = i-- > 0;
-            if (success) ObtainSection(latexInput, i, out startAt, out endAt, out section, out wordKind);
-            return success;
-          }
           bool NextSection(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section) {
             bool success = ++i < breakList.Count;
             if (success) ObtainSection(latexInput, i, out startAt, out endAt, out section, out wordKind);
@@ -155,24 +150,12 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                 Ok(value) :
               Err("Invalid color: " + color.ToString())
             );
-          ///<summary>Get punctutation after current section</summary>
-          ReadOnlySpan<char> NextSectionWhilePunc(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section) {
-            int start = endAt;
-            ReadOnlySpan<char> specialChars = stackalloc[] { '#', '$', '%', '&', '\\', '^', '_', '{', '}', '~' };
-            while (NextSection(latexInput, ref section))
-              if (wordKind != WordKind.Punc || specialChars.IndexOf(section[0]) != -1) {
-                // We have overlooked by one when non-punctuation or special character is encountered
-                PreviousSection(latexInput, ref section);
-                break;
-              }
-            return latexInput.Slice(start, endAt - start);
-          }
           //Nothing should be before dollar sign checking -- dollar sign checking uses continue;
           atoms.TextLength = startAt;
           if (textSection.Is('$')) {
             if (backslashEscape)
               if (displayMath != null) mathLaTeX.Append(@"\$");
-              else atoms.Text("$", NextSectionWhilePunc(latex, ref textSection));
+              else atoms.Text("$");
             else {
               dollarCount++;
               continue;
@@ -227,7 +210,9 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     break;
                   case var _ when textSection.Is('}'):
                     return "Missing opening brace";
-                  case var _ when wordKind == WordKind.NewLine:
+                  // !char.IsSurrogate(textSection[0]) is result of https://github.com/LayoutFarm/Typography/issues/206
+                  case var _ when wordKind == WordKind.NewLine && !char.IsSurrogate(textSection[0]):
+                    if (oneCharOnly) continue;
                     // Consume newlines after commands
                     // Double newline == paragraph break
                     if (afterNewline) {
@@ -239,21 +224,20 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                       afterNewline = true;
                       continue;
                     }
-                  case var _ when wordKind == WordKind.Whitespace:
+                  case var _ when wordKind == WordKind.Whitespace && !char.IsSurrogate(textSection[0]):
                     //Collpase spaces
-                    if (afterCommand) continue;
+                    if (afterCommand || oneCharOnly) continue;
                     else atoms.ControlSpace();
                     break;
                   default: //Just ordinary text
                     if (oneCharOnly) {
-                      if (startAt + 1 < endAt) { //Only re-read if current break span is more than 1 long
+                      var firstCodepointLength = char.IsHighSurrogate(textSection[0]) ? 2 : 1;
+                      if (startAt + firstCodepointLength < endAt) { //Only re-read if current break span is more than 1 long
                         i--;
-                        breakList[i] = new BreakAtInfo(breakList[i].breakAt + 1, breakList[i].wordKind);
+                        breakList[i] = new BreakAtInfo(breakList[i].breakAt + firstCodepointLength, breakList[i].wordKind);
                       }
-                      //Need to allocate in the end :(
-                      //Don't look ahead for punc; we are looking for one char only
-                      atoms.Text(textSection[0].ToString(), default);
-                    } else atoms.Text(textSection.ToString(), NextSectionWhilePunc(latex, ref textSection));
+                      atoms.Text(textSection.Slice(0, firstCodepointLength).ToString());
+                    } else atoms.Text(textSection.ToString());
                     break;
                 }
                 afterCommand = false;
@@ -428,7 +412,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     }
                   //case "textasciicircum", "textless", ...
                   case var textSymbol when TextLaTeXSettings.PredefinedTextSymbols.TryGetValue(textSymbol, out var replaceResult):
-                    atoms.Text(replaceResult, NextSectionWhilePunc(latex, ref textSection));
+                    atoms.Text(replaceResult);
                     break;
                   case var command:
                     if (displayMath != null) mathLaTeX.Append(command); //don't eat the command when parsing math
