@@ -15,12 +15,22 @@ namespace CSharpMath.Editor {
         atom.Superscript.Append(placeholder.Superscript);
         atom.Subscript.Append(placeholder.Subscript);
         self[atomIndex] = atom;
-      } else self.Insert(atomIndex, atom);
-      advance = advanceType switch
-      {
-        MathListSubIndexType.None => advance.Next,
-        _ => advance.LevelUpWithSubIndex(advanceType, MathListIndex.Level0Index(0)),
-      };
+        advance = advanceType switch
+        {
+          MathListSubIndexType.None =>
+            atom.Superscript.IsEmpty() && atom.Subscript.IsEmpty()
+            ? advance.Next
+            : advance.LevelUpWithSubIndex(MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1)),
+          _ => advance.LevelUpWithSubIndex(advanceType, MathListIndex.Level0Index(0)),
+        };
+      } else {
+        self.Insert(atomIndex, atom);
+        advance = advanceType switch
+        {
+          MathListSubIndexType.None => advance.Next,
+          _ => advance.LevelUpWithSubIndex(advanceType, MathListIndex.Level0Index(0)),
+        };
+      }
     }
     /// <summary>Inserts <paramref name="atom"/> and modifies <paramref name="index"/> to advance to the next position.</summary>
     public static void InsertAndAdvance(this MathList self, ref MathListIndex index, MathAtom atom, MathListSubIndexType advanceType) {
