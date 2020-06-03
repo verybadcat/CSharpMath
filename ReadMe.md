@@ -214,10 +214,10 @@ var painter = someMathView.Painter; // or someTextView.Painter
 painter.DrawAsPng(someStream);
 ```
 
-![Cell 1](CSharpMath.Rendering.Tests/Display/ExponentWithFraction.png)|![Cell 2](CSharpMath.Rendering.Tests/Display/SummationWithCup.png)|![Cell 3](CSharpMath.Rendering.Tests/Display/Color.png)
+![Cell 1](CSharpMath.Rendering.Tests/MathDisplay/ExponentWithFraction.png)|![Cell 2](CSharpMath.Rendering.Tests/MathDisplay/SummationWithCup.png)|![Cell 3](CSharpMath.Rendering.Tests/MathDisplay/Color.png)
 -|-|-
-![Cell 4](CSharpMath.Rendering.Tests/Display/RaiseBox.png)|![Cell 5](CSharpMath.Rendering.Tests/Display/SomeLimit.png)|![Cell 6](CSharpMath.Rendering.Tests/Display/VectorProjection.png)
-![Cell 7](CSharpMath.Rendering.Tests/Display/Matrix3.png)|![Cell 8](CSharpMath.Rendering.Tests/Display/IntegralColorBoxCorrect.png)|![Cell 9](CSharpMath.Rendering.Tests/Display/Taylor.png)
+![Cell 4](CSharpMath.Rendering.Tests/MathDisplay/RaiseBox.png)|![Cell 5](CSharpMath.Rendering.Tests/MathDisplay/SomeLimit.png)|![Cell 6](CSharpMath.Rendering.Tests/MathDisplay/VectorProjection.png)
+![Cell 7](CSharpMath.Rendering.Tests/MathDisplay/Matrix3.png)|![Cell 8](CSharpMath.Rendering.Tests/MathDisplay/IntegralColorBoxCorrect.png)|![Cell 9](CSharpMath.Rendering.Tests/MathDisplay/Taylor.png)
 
 
 ## This looks great and all, but is there a way to edit and evaluate the math?
