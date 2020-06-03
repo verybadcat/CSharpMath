@@ -65,7 +65,7 @@ namespace CSharpMath.Rendering.FrontEnd {
             _absoluteXCoordDisplay.Displays.IsNonEmpty() ? _absoluteXCoordDisplay.Displays.Max(d => d.Width) : 0)
           : c.Width;
         float Δx = 0;
-        var y = -float.PositiveInfinity;
+        var y = float.NegativeInfinity;
         if ((alignment & (TextAlignment.Left | TextAlignment.Right)) != TextAlignment.Left)
           foreach (var relDisplay in _relativeXCoordDisplay.Displays.Reverse()) {
             if (relDisplay.Position.Y > y) {
