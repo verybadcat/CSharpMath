@@ -2,7 +2,7 @@
 name: Outdated information
 about: Request an update for outdated information.
 title: ''
-labels: Type/Housekeeping
+labels: Status/0. New, Type/Housekeeping
 assignees: ''
 
 ---

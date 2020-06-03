@@ -8,10 +8,19 @@ namespace CSharpMath.Rendering.Text {
     readonly List<TextAtom> _list = new List<TextAtom>();
     private void Add(TextAtom atom) => _list.Add(atom);
     public void ControlSpace() => Add(new TextAtom.ControlSpace());
-    public void Accent(TextAtom atom, string accent) =>
-      Add(new TextAtom.Accent(atom, accent));
-    public void Text(string text, ReadOnlySpan<char> lookAheadForPunc) =>
-      Add(new TextAtom.Text(text + lookAheadForPunc.ToString()));
+    public void Accent(TextAtom atom, string accent) => Add(new TextAtom.Accent(atom, accent));
+    public void Text(string text) {
+      if (char.IsPunctuation(text, 0))
+        switch (Last) {
+          case TextAtom.Text { Content: var prevText }:
+            Last = new TextAtom.Text(prevText + text);
+            return;
+          case TextAtom.Math { DisplayStyle: false, Content: var mathList }:
+            mathList.Add(new Atom.Atoms.Punctuation(text));
+            return;
+        }
+      Add(new TextAtom.Text(text));
+    }
     public void Space(Space space) => Add(new TextAtom.Space(space));
     public void Style(TextAtom atom, Atom.FontStyle style) => Add(new TextAtom.Style(atom, style));
     public void Size(TextAtom atom, float fontSize) => Add(new TextAtom.Size(atom, fontSize));
