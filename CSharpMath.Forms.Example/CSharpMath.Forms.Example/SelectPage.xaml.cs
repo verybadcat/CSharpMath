@@ -9,7 +9,7 @@ namespace CSharpMath.Forms.Example {
   public partial class SelectPage : ContentPage {
     public SelectPage() {
       InitializeComponent();
-      App.AllViews.Add(View);
+      App.AllMathViews.Add(View);
       Size.ItemsSource = TryPage.FontSizes;
       Size.SelectedIndexChanged += (sender, e) =>
         View.FontSize = (float)Size.SelectedItem;

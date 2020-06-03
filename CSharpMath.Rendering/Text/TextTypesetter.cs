@@ -198,6 +198,11 @@ namespace CSharpMath.Rendering.Text {
         null
       );
       BreakLine(globalLine, relativePositionList, absolutePositionList); //remember to finalize the last line
+      var adjustedCanvasWidth =
+        float.IsInfinity(canvasWidth) || float.IsNaN(canvasWidth)
+        ? Math.Max(relativePositionList.CollectionWidth(),
+                   absolutePositionList.IsNonEmpty() ? absolutePositionList.Max(d => d.Width) : 0)
+        : canvasWidth;
       if (float.IsInfinity(canvasWidth) || float.IsNaN(canvasWidth))
         // In this case X of every display in absolutePositionList will be Infinity or NaN
         // Use max(width of relativePositionList, width of absolutePositionList) as canvasWidth instead
@@ -205,8 +210,7 @@ namespace CSharpMath.Rendering.Text {
           absDisplay.Position = new System.Drawing.PointF(
             IPainterExtensions.GetDisplayPosition
               (absDisplay.Width, absDisplay.Ascent, absDisplay.Descent,
-               inputFont.PointSize,
-               Math.Max(relativePositionList.CollectionWidth(), absolutePositionList.Max(d => d.Width)), float.NaN,
+               inputFont.PointSize, adjustedCanvasWidth, float.NaN,
                TextAlignment.Top, default, default, default).X,
             absDisplay.Position.Y);
       return (new Display(relativePositionList), new Display(absolutePositionList));

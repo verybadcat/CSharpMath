@@ -33,25 +33,28 @@ namespace CSharpMath.Avalonia {
     class DrawVisual<TContent> : Visual where TContent : class {
       readonly Painter<AvaloniaCanvas, TContent, AvaloniaColor> painter;
       readonly System.Drawing.RectangleF measure;
+      readonly CSharpMathTextAlignment alignment;
       public DrawVisual(Painter<AvaloniaCanvas, TContent, AvaloniaColor> painter,
-        System.Drawing.RectangleF measure) {
+        System.Drawing.RectangleF measure, CSharpMathTextAlignment alignment) {
         this.painter = painter;
         this.measure = measure;
+        this.alignment = alignment;
       }
       public override void Render(DrawingContext context) {
         base.Render(context);
         var canvas = new AvaloniaCanvas(context, new Size(measure.Width, measure.Height));
-        painter.Draw(canvas, CSharpMathTextAlignment.TopLeft);
+        painter.Draw(canvas, alignment);
       }
     }
     public static void DrawAsPng<TContent>
       (this Painter<AvaloniaCanvas, TContent, AvaloniaColor> painter,
        System.IO.Stream target,
-       float textPainterCanvasWidth = TextPainter.DefaultCanvasWidth) where TContent : class {
+       float textPainterCanvasWidth = TextPainter.DefaultCanvasWidth,
+       CSharpMathTextAlignment alignment = CSharpMathTextAlignment.TopLeft) where TContent : class {
       if (!(painter.Measure(textPainterCanvasWidth) is { } size)) return;
       using var bitmap =
         new RenderTargetBitmap(new PixelSize((int)size.Width, (int)size.Height));
-      bitmap.Render(new DrawVisual<TContent>(painter, size));
+      bitmap.Render(new DrawVisual<TContent>(painter, size, alignment));
       bitmap.Save(target);
     }
   }
