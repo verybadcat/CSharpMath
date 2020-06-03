@@ -392,7 +392,7 @@ namespace CSharpMath.Editor {
             _insertionIndex = prev2;
           return;
         }
-        for (var verticalIndex = _insertionIndex; verticalIndex != null; verticalIndex = verticalIndex.LevelDown()) {
+        for (MathListIndex? verticalIndex = _insertionIndex; verticalIndex != null; verticalIndex = verticalIndex.LevelDown()) {
           switch (verticalIndex.FinalSubIndexType) {
             case MathListSubIndexType.Denominator:
               var numerator =
@@ -465,7 +465,7 @@ namespace CSharpMath.Editor {
             _insertionIndex = prev2;
           return;
         }
-        for (var verticalIndex = _insertionIndex; verticalIndex != null; verticalIndex = verticalIndex.LevelDown()) {
+        for (MathListIndex? verticalIndex = _insertionIndex; verticalIndex != null; verticalIndex = verticalIndex.LevelDown()) {
           switch (verticalIndex.FinalSubIndexType) {
             case MathListSubIndexType.Numerator:
               var denominator =
