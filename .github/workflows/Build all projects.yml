@@ -23,7 +23,7 @@ jobs:
     - name: Restore NuGet Packages
       run: nuget restore CSharpMath.sln
     - name: Build
-      run: msbuild CSharpMath.sln /p:Configuration=Release;
+      run: msbuild CSharpMath.sln /p:Configuration=Release
     - uses: actions/upload-artifact@v2
       with:
         name: NuGet packages
