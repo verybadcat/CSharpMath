@@ -12,6 +12,9 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '3.1.201'
+        source-url: https://nuget.pkg.github.com/verybadcat/index.json
+      env:
+        NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}   
     - name: Setup JDK # Needed to run ANTLR for AngouriMath
       uses: actions/setup-java@v1
       with:
@@ -28,3 +31,5 @@ jobs:
       with:
         name: NuGet packages
         path: .nupkgs/
+    - name: Push generated package to GitHub registry
+      run: dotnet nuget push .nupkgs/*.nupkg --skip-duplicate
