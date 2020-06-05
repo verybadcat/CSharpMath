@@ -55,4 +55,12 @@
     And $(GeneratePackageOnBuild)">
     <None Include="$(MSBuildThisFileDirectory)Icon.png" Pack="true" PackagePath="" />
   </ItemGroup>
+  <Target Name="AppendCISignatureToPackageVersion" Condition="$(CI)" BeforeTargets="BeforeBuild">
+    <Exec Command="git rev-parse HEAD" ConsoleToMSBuild="true">
+      <Output TaskParameter="ConsoleOutput" PropertyName="GitCommit" />
+    </Exec>
+    <CreateProperty Value="$(PackageVersion)-ci$([System.DateTime]::UtcNow.ToString('yyyy.MM.dd-HH.mm.ss'))+$(GitCommit)">
+      <Output TaskParameter="Value" PropertyName="PackageVersion"/>
+    </CreateProperty>
+  </Target>
 </Project>
