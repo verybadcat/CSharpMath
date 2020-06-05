@@ -29,4 +29,4 @@ jobs:
         # retry 5 times since dotnet outdated fails often: https://github.com/jerriep/dotnet-outdated/issues/299
         update || update || update || update || update
     - name: Build and Test
-      run: dotnet test
+      run: dotnet test CSharpMath.CrossPlatform.slnf
