@@ -20,6 +20,17 @@ jobs:
       uses: NuGet/setup-nuget@v1.0.2
     - name: Setup MSBuild Path
       uses: warrenbuckley/Setup-MSBuild@v1
+    - name: Get current time
+      uses: 1466587594/get-current-time@v1
+      id: current-time
+      with:
+        format: YYYYMMDD-HH
+        utcOffset: "+00:00"
+    - name: Use current time
+      env:
+        TIME: "${{ steps.current-time.outputs.time }}"
+        F_TIME: "${{ steps.current-time.outputs.formattedTime }}"
+      run: echo %TIME% %F_TIME%
     - name: Restore NuGet Packages
       run: nuget restore CSharpMath.sln
     - name: Build
@@ -28,14 +39,3 @@ jobs:
       with:
         name: NuGet packages
         path: .nupkgs/
-    - name: Get current time
-      uses: 1466587594/get-current-time@v1
-      id: current-time
-      with:
-        format: YYYYMMDD-HH
-        utcOffset: "+08:00"
-    - name: Use current time
-      env:
-        TIME: "${{ steps.current-time.outputs.time }}"
-        F_TIME: "${{ steps.current-time.outputs.formattedTime }}"
-      run: echo $TIME $F_TIME
