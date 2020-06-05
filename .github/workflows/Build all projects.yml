@@ -31,5 +31,5 @@ jobs:
       with:
         name: NuGet packages
         path: .nupkgs/
-    - name: Push generated package to GitHub registry
+    - name: Push generated packages to GitHub registry
       run: dotnet nuget push .nupkgs/*.nupkg --skip-duplicate
