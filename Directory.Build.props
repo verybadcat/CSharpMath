@@ -62,7 +62,7 @@
     <Exec Command="git name-rev --name-only HEAD" ConsoleToMSBuild="true">
       <Output TaskParameter="ConsoleOutput" PropertyName="GitBranch" />
     </Exec>
-    <CreateProperty Value="$(PackageVersion)-ci-$(GitBranch)-$(GitCommit)+$([System.DateTime]::UtcNow.ToString('yyyy.MM.dd-HH.mm.ss'))+">
+    <CreateProperty Value="$(PackageVersion)-ci-$(GitBranch)-$(GitCommit)+$([System.DateTime]::UtcNow.ToString('yyyy.MM.dd-HH.mm.ss'))">
       <Output TaskParameter="Value" PropertyName="PackageVersion"/>
     </CreateProperty>
   </Target>
