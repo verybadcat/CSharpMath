@@ -29,4 +29,21 @@ jobs:
         # retry 5 times since dotnet outdated fails often: https://github.com/jerriep/dotnet-outdated/issues/299
         update || update || update || update || update
     - name: Build and Test
-      run: dotnet test
+      # run: dotnet test CSharpMath.CrossPlatform.slnf
+      run: | # https://github.com/dotnet/sdk/issues/10409, https://github.com/dotnet/sdk/issues/11417
+        for p in\
+          "CSharpMath.CoreTests"\
+          "CSharpMath.Editor.Tests"\
+          "CSharpMath.Editor.Tests.FSharp"\
+          "CSharpMath.Evaluation.Tests"\
+          "CSharpMath.Rendering.Tests"\
+          "CSharpMath.Rendering.Text.Tests"\
+          "CSharpMath.Xaml.Tests"\
+          "CSharpMath.Xaml.Tests.NuGet"\
+          "AngouriMath/Tests/UnitTests"\
+          "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests"
+        do
+          dotnet add "$p" package Microsoft.NET.Test.Sdk # Update is required for GitHubActionsTestLogger to print anything
+          dotnet add "$p" package GitHubActionsTestLogger
+          dotnet test "$p" -c Release -l GitHubActions
+        done
