@@ -64,7 +64,7 @@
       <Output TaskParameter="ConsoleOutput" PropertyName="GitCommit" />
     </Exec>
     <CreateProperty Value="$(PackageVersion)-ci-$(GitCommit)+$([System.DateTime]::UtcNow.ToString('yyyy.MM.dd-HH.mm.ss'))">
-      <Output TaskParameter="Value" PropertyName="PackageVersion"/>
+      <Output TaskParameter="Value" PropertyName="PackageVersion" />
     </CreateProperty>
   </Target>
 </Project>
