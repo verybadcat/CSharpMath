@@ -55,7 +55,11 @@
     And $(GeneratePackageOnBuild)">
     <None Include="$(MSBuildThisFileDirectory)Icon.png" Pack="true" PackagePath="" />
   </ItemGroup>
-  <Target Name="AppendCISignatureToPackageVersion" Condition="$(CI)" BeforeTargets="BeforeBuild">
+  <Target Name="AppendCISignatureToPackageVersion" BeforeTargets="BeforeBuild" Condition="
+    $(MSBuildProjectName.StartsWith('CSharpMath'))
+    And !$([System.String]::IsNullOrEmpty($(GeneratePackageOnBuild)))
+    And $(GeneratePackageOnBuild)
+    And $(CI)">
     <Exec Command="git rev-parse HEAD" ConsoleToMSBuild="true">
       <Output TaskParameter="ConsoleOutput" PropertyName="GitCommit" />
     </Exec>
