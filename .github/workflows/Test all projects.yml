@@ -1,11 +1,6 @@
 name: Test
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
-
+on: [push, pull_request]
 jobs:
   all_projects:
     runs-on: ${{ matrix.os }}
@@ -20,13 +15,22 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '3.1.201'
+    - name: Setup JDK # Needed to run ANTLR for AngouriMath
+      uses: actions/setup-java@v1
+      with:
+        java-version: '8'
     - name: Update dependencies in CSharpMath.Xaml.Tests.NuGet
       run: |
         dotnet tool install -g dotnet-outdated
-        dotnet outdated -u CSharpMath.Xaml.Tests.NuGet
-        dotnet outdated -pre Always -inc CSharpMath -u CSharpMath.Xaml.Tests.NuGet
+        update() {
+          dotnet outdated -u CSharpMath.Xaml.Tests.NuGet
+          dotnet outdated -pre Always -inc CSharpMath -u CSharpMath.Xaml.Tests.NuGet
+        }
+        # retry 5 times since dotnet outdated fails often: https://github.com/jerriep/dotnet-outdated/issues/299
+        update || update || update || update || update
     - name: Build and Test
-      run: |
+      # run: dotnet test CSharpMath.CrossPlatform.slnf
+      run: | # https://github.com/dotnet/sdk/issues/10409, https://github.com/dotnet/sdk/issues/11417
         for p in\
           "CSharpMath.CoreTests"\
           "CSharpMath.Editor.Tests"\
@@ -36,6 +40,7 @@ jobs:
           "CSharpMath.Rendering.Text.Tests"\
           "CSharpMath.Xaml.Tests"\
           "CSharpMath.Xaml.Tests.NuGet"\
+          "AngouriMath/Tests/UnitTests"\
           "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests"
         do
           dotnet add "$p" package Microsoft.NET.Test.Sdk # Update is required for GitHubActionsTestLogger to print anything

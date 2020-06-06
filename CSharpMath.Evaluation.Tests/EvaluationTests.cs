@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Text.RegularExpressions;
 using Xunit;
 using AngouriMath;
 
@@ -7,13 +8,21 @@ namespace CSharpMath {
   public partial class EvluationTests {
     MathList ParseLaTeX(string latex) =>
       LaTeXParser.MathListFromLaTeX(latex).Match(list => list, e => throw new Xunit.Sdk.XunitException(e));
-    Entity ParseMath(string latex) =>
-      Evaluation.MathListToEntity(ParseLaTeX(latex)).Match(entity => entity, e => throw new Xunit.Sdk.XunitException(e));
-    void Test(string input, string converted, string result) {
-      var math = ParseMath(input);
-      Assert.Equal(converted, LaTeXParser.MathListToLaTeX(Evaluation.MathListFromEntity(math)).ToString());
-      // Ensure that the converted entity is valid by simplifying it
-      Assert.Equal(result, LaTeXParser.MathListToLaTeX(Evaluation.MathListFromEntity(math.Simplify())).ToString());
+    Evaluation.MathItem ParseMath(string latex) =>
+      Evaluation.Evaluate(ParseLaTeX(latex)).Match(entity => entity, e => throw new Xunit.Sdk.XunitException(e));
+    void Test(string input, string converted, string? result) {
+      void Test(string input) {
+        var math = ParseMath(input);
+        Assert.NotNull(math);
+        Assert.Equal(converted, LaTeXParser.MathListToLaTeX(Evaluation.Parse(math)).ToString());
+        // Ensure that the converted entity is valid by simplifying it
+        if (result != null)
+          Assert.Equal(result,
+            LaTeXParser.MathListToLaTeX(Evaluation.Parse(Assert.IsType<Evaluation.MathItem.Entity>(math).Content.Simplify())).ToString());
+        else Assert.IsNotType<Evaluation.MathItem.Entity>(result);
+      }
+      Test(input);
+      Test(Regex.Replace(input, @"(?<!\\sqrt)(\(|\[|\\\{)((?:(?!\(|\[|\\\\{|\)|\]|\\\\}).|(?<open>\(|\[|\\\\{)|(?<-open>\)|\]|\\\\}))+(?(open)(?!)))(\)|\]|\\\\})", @"\left$1$2\right$3"));
     }
     [Theory]
     [InlineData("1", "1")]
@@ -23,6 +32,7 @@ namespace CSharpMath {
     [InlineData(".5678", "0.5678")]
     [InlineData(".9876543210", "0.987654321")]
     [InlineData("1234.5678", "1234.5678")]
+    [InlineData(@"\infty", @"\infty ")]
     public void Numbers(string number, string output) =>
       Test(number, output, output);
     [Theory]
@@ -58,6 +68,10 @@ namespace CSharpMath {
       @"\times \Pi \times \psi \times \Psi \times \rho \times \sigma \times \Sigma \times \tau " +
       @"\times \theta \times \Theta \times \upsilon \times \Upsilon \times \varepsilon \times \varkappa " +
       @"\times \varphi \times \varpi \times \varrho \times \varsigma \times \xi \times \Xi \times \zeta ")]
+    [InlineData(@"a_2", @"a_2", @"a_2")]
+    [InlineData(@"a_2+a_2", @"a_2+a_2", @"2\times a_2")]
+    [InlineData(@"a_{23}", @"a_{23}", @"a_{23}")]
+    [InlineData(@"\pi_a", @"\pi _a", @"\pi _a")]
     public void Variables(string input, string converted, string result) => Test(input, converted, result);
     [Theory]
     [InlineData("a + b", @"a+b", "a+b")]
@@ -92,8 +106,20 @@ namespace CSharpMath {
     [InlineData(@"\frac ab*2", @"\frac{a}{b}\times 2", @"\frac{2\times a}{b}")]
     [InlineData(@"2/\frac ab", @"\frac{2}{\frac{a}{b}}", @"\frac{2\times b}{a}")]
     [InlineData(@"\frac ab/2", @"\frac{\frac{a}{b}}{2}", @"\frac{\frac{a}{2}}{b}")]
+    [InlineData(@"1+i", @"1+i", @"1+i")]
+    [InlineData(@"1-i", @"1-i", @"1-i")]
+    [InlineData(@"i+1", @"i+1", @"1+i")]
+    [InlineData(@"i-1", @"i-1", @"-1+i")]
+    [InlineData(@"i\times i", @"i\times i", @"-1")]
+    [InlineData(@"\infty+1", @"\infty +1", @"\infty ")]
+    [InlineData(@"i+\infty", @"i+\infty ", @"\infty +i")]
+    [InlineData(@"\infty+\infty", @"\infty +\infty ", @"\infty ")]
+    [InlineData(@"\frac2\infty", @"\frac{2}{\infty }", @"0")]
+    [InlineData(@"\frac{-2}\infty", @"\frac{-2}{\infty }", @"0")]
     public void BinaryOperators(string latex, string converted, string result) => Test(latex, converted, result);
     [Theory]
+    [InlineData("+i", "i", "i")]
+    [InlineData("-i", "-i", "-i")]
     [InlineData("+a", "a", "a")]
     [InlineData("-a", "-a", "-a")]
     [InlineData("++a", "a", "a")]
@@ -163,6 +189,14 @@ namespace CSharpMath {
     [InlineData("0^x", @"0^x", @"0")]
     [InlineData("1^x", @"1^x", @"1")]
     [InlineData("x^0", @"x^0", @"1")]
+    [InlineData("-i^{-1}", @"-i^{-1}", @"i")]
+    [InlineData("i^{-1}", @"i^{-1}", @"-i")]
+    [InlineData("i^0", @"i^0", @"1")]
+    [InlineData("i^1", @"i^1", @"i")]
+    [InlineData("i^2", @"i^2", @"-1")]
+    [InlineData("i^3", @"i^3", @"-i")]
+    [InlineData("i^4", @"i^4", @"1")]
+    [InlineData("i^5", @"i^5", @"i")]
     [InlineData(@"{\frac 12}^4", @"\left( \frac{1}{2}\right) ^4", "0.0625")]
     [InlineData(@"\sqrt2", @"\sqrt{2}", "1.4142135623730951")]
     [InlineData(@"\sqrt2^2", @"\left( \sqrt{2}\right) ^2", "2.0000000000000004")]
@@ -261,7 +295,7 @@ namespace CSharpMath {
     [InlineData(@"\sin^{--1} x", @"\sin \left( x\right) ^{--1}", @"\sin \left( x\right) ")]
     [InlineData(@"\sin^{-1^2} x", @"\sin \left( x\right) ^{-1^2}", @"\sin \left( x\right) ^{-1}")]
     [InlineData(@"\sin^{-1+3} xy+\cos^{-1+3} yx", @"\sin \left( x\times y\right) ^{-1+3}+\cos \left( y\times x\right) ^{-1+3}", @"1")]
-    [InlineData(@"\log^{-1_2} x", @"\log \left( x\right) ^{-1}", @"\log \left( x\right) ^{-1}")]
+    [InlineData(@"\log^{-a_2} x", @"\log \left( x\right) ^{-a_2}", @"\log \left( x\right) ^{-a_2}")]
     [InlineData(@"\ln^{3-1} x", @"\ln \left( x\right) ^{3-1}", @"\ln \left( x\right) ^2")]
     public void FunctionInverses(string latex, string converted, string result) => Test(latex, converted, result);
     [Theory]
@@ -346,10 +380,47 @@ namespace CSharpMath {
     [InlineData(@"\sin^a\ (x)^2(x)", @"\sin \left( x\right) ^{a\times 2}\times x", @"\sin \left( x\right) ^{2\times a}\times x")]
     [InlineData(@"\sin^a\; (x)^2(x)", @"\sin \left( x\right) ^{a\times 2}\times x", @"\sin \left( x\right) ^{2\times a}\times x")]
     [InlineData(@"\sin^a\ \; (x)^2(x)", @"\sin \left( x\right) ^{a\times 2}\times x", @"\sin \left( x\right) ^{2\times a}\times x")]
-    public void Parentheses(string latex, string converted, string result) {
-      Test(latex, converted, result);
-      Test(latex.Replace("(", @"\left(").Replace(")", @"\right)"), converted, result);
-    }
+    public void Parentheses(string latex, string converted, string result) => Test(latex, converted, result);
+    [Theory]
+    [InlineData(@"\begin{matrix}1\end{matrix}", @"\left( \begin{matrix}1\end{matrix}\right) ", @"\left( \begin{matrix}1\end{matrix}\right) ")]
+    [InlineData(@"\begin{pmatrix}1\end{pmatrix}", @"\left( \begin{matrix}1\end{matrix}\right) ", @"\left( \begin{matrix}1\end{matrix}\right) ")]
+    [InlineData(@"\begin{pmatrix}1\end{pmatrix}^2", @"\left( \begin{matrix}1\end{matrix}\right) ^2", @"\left( \begin{matrix}1\end{matrix}\right) ^2")]
+    public void Vectors(string latex, string converted, string result) => Test(latex, converted, result);
+    [Theory]
+    [InlineData(@"\begin{matrix}1&2\\3&4\end{matrix}", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) ", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) ")]
+    [InlineData(@"\begin{pmatrix}1&2\\3&4\end{pmatrix}", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) ", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) ")]
+    [InlineData(@"\begin{pmatrix}1&2\\3&4\end{pmatrix}^2", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) ^2", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) ^2")]
+    [InlineData(@"\begin{pmatrix}1&2\\3&4\end{pmatrix}+\begin{pmatrix}1&2\\3&5\end{pmatrix}", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) +\left( \begin{matrix}1&2\\ 3&5\end{matrix}\right) ", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) +\left( \begin{matrix}1&2\\ 3&5\end{matrix}\right) ")]
+    public void Matrices(string latex, string converted, string result) => Test(latex, converted, result);
+    [Theory]
+    [InlineData(@"1,2", @"1,2")]
+    [InlineData(@"1,2,3", @"1,2,3")]
+    [InlineData(@"a,b,c,d", @"a,b,c,d")]
+    [InlineData(@"\sqrt2,\sqrt[3]2,\frac34", @"\sqrt{2},2^{\frac{1}{3}},\frac{3}{4}")]
+    [InlineData(@"\sin a,\cos b^2,\tan c_3,\cot de,\sec 12f,\csc g+h",
+      @"\sin \left( a\right) ,\cos \left( b^2\right) ,\tan \left( c_3\right) ,\cot \left( d\times e\right) ,\frac{1}{\cos \left( 12\times f\right) },\frac{1}{\sin \left( g\right) }+h")]
+    public void Comma(string latex, string converted) => Test(latex, converted, null);
+    [Theory(Skip = "https://github.com/asc-community/AngouriMath/pull/97")]
+    [InlineData(@"\emptyset", @"\emptyset ")]
+    [InlineData(@"\mathbb R", @"\emptyset ")] // wip
+    [InlineData(@"\mathbb C", @"\emptyset ")] // wip
+    [InlineData(@"\{\}", @"\emptyset ")]
+    [InlineData(@"\{1\}", @"\left\{ 1\right\} ")]
+    [InlineData(@"\{1,2\}", @"\left\{ 1,2\right\} ")]
+    [InlineData(@"\{x,y\}", @"\left\{ x,y\right\} ")]
+    [InlineData(@"\{\sqrt[3]2,\frac34,\sin^2x\}", @"\left\{ 2^{\frac{1}{3}},\frac{3}{4},\sin \left( x\right) ^2\right\} ")]
+    public void Sets(string latex, string converted) => Test(latex, converted, null);
+    [Theory]
+    [InlineData(@"\emptyset\cup\{2\}", @"\left\{ 2\right\} ")]
+    [InlineData(@"\{1\}\cup\{2\}", @"\left\{ 1,2\right\} ")]
+    [InlineData(@"\{3,4\}\cap\emptyset", @"\left( \left\{ 3,4\right\} \cap \right) \left( \emptyset \right) ")]
+    [InlineData(@"\{3,4\}\cap\{4,5\}", @"\left\{ 4\right\} ")]
+    [InlineData(@"\{2,3,4\}\setminus\{4\}", @"\left\{ 2,3\right\} ")]
+    //[InlineData(@"\{3\}^\complement", @"\left\{ 3\right\} ^\complement")] // wip
+    public void SetOperations(string latex, string converted) => Test(latex, converted, null);
+    [Theory(Skip = "https://github.com/asc-community/AngouriMath/pull/97")]
+    [InlineData(@"(1,2)", @"\left\{ \left( 1,2\right) \right\} ")] // wip
+    public void Intervals(string latex, string converted) => Test(latex, converted, null);
     [Theory]
     [InlineData(@"", "There is nothing to evaluate")]
     [InlineData(@"\ ", "There is nothing to evaluate")]
@@ -371,22 +442,89 @@ namespace CSharpMath {
     [InlineData(@"x\times", "Missing right operand for ×")]
     [InlineData(@"x\div", "Missing right operand for ÷")]
     [InlineData(@"x\dagger", "Unsupported Binary Operator †")]
+    [InlineData(@"1+_21", "Subscripts are unsupported for Binary Operator +")]
+    [InlineData(@"-_31", "Subscripts are unsupported for Unary Operator −")]
+    [InlineData(@"1\times_41", "Subscripts are unsupported for Binary Operator ×")]
+    [InlineData(@"\div_51", "Unsupported Unary Operator ÷")]
+    [InlineData(@"1\%_6", "Subscripts are unsupported for Ordinary %")]
+    [InlineData(@"1\degree_7", "Subscripts are unsupported for Ordinary °")]
+    [InlineData(@"\dagger_8", "Unsupported Unary Operator †")]
     [InlineData(@".", "Invalid number: .")]
+    [InlineData(@"1._2", "Subscripts are unsupported for Number 1.")]
     [InlineData(@"..", "Invalid number: ..")]
     [InlineData(@"1..", "Invalid number: 1..")]
     [InlineData(@"..1", "Invalid number: ..1")]
+    [InlineData(@"a_+", "Unsupported Unary Operator + in subscript")]
+    [InlineData(@"a_|", "Unsupported Ordinary | in subscript")]
+    [InlineData(@"a_{1+1}", "Unsupported Binary Operator + in subscript")]
+    [InlineData(@"a_{2^3}", "Unsupported exponentiation in subscript")]
+    [InlineData(@"a_{a2^3}", "Unsupported exponentiation in subscript")]
+    [InlineData(@"a_{a^32}", "Unsupported exponentiation in subscript")]
+    [InlineData(@"a_{2_3}", "Unsupported subscript in subscript")]
+    [InlineData(@"a_{a2_3}", "Unsupported subscript in subscript")]
+    [InlineData(@"a_{a_32}", "Unsupported subscript in subscript")]
     [InlineData(@"\square", "Placeholders should be filled")]
     [InlineData(@"x^\square", "Placeholders should be filled")]
     [InlineData(@"\square^x", "Placeholders should be filled")]
+    [InlineData(@"a_\square", "Placeholders should be filled")]
+    [InlineData(@"\square_a", "Placeholders should be filled")]
     [InlineData(@"(", "Missing )")]
+    [InlineData(@"(_21)", "Subscripts are unsupported for Open (")]
     [InlineData(@"(x", "Missing )")]
     [InlineData(@"((x)", "Missing )")]
     [InlineData(@"(+", "Missing right operand for +")]
-    [InlineData(@")", "Missing math before )")]
+    [InlineData(@")", "Missing (")]
+    [InlineData(@"(1)_2", "Subscripts are unsupported for Close )")]
     [InlineData(@"x)", "Missing (")]
     [InlineData(@"(x))", "Missing (")]
-    [InlineData(@"+)", "Missing math before )")]
-    [InlineData(@"\left(\right)", "Missing math between ()")]
+    [InlineData(@"+)", "Missing right operand for +")]
+    [InlineData(@"\left(\right)", "Missing math inside ( )")]
+    [InlineData(@"\left(1+\right)", "Missing right operand for +")]
+    [InlineData(@"\left(2,3\right)^\square", "Placeholders should be filled")]
+    [InlineData(@"(2,3)^\square", "Placeholders should be filled")]
+    [InlineData(@"[", "Missing ]")]
+    [InlineData(@"[_21)", "Unrecognized bracket pair [ )")]
+    [InlineData(@"[x", "Missing ]")]
+    [InlineData(@"[x)", "Unrecognized bracket pair [ )")]
+    [InlineData(@"[[x)", "Unrecognized bracket pair [ )")]
+    [InlineData(@"[+", "Missing right operand for +")]
+    [InlineData(@"[x))", "Unrecognized bracket pair [ )")]
+    [InlineData(@"\left[\right)", "Unrecognized bracket pair [ )")]
+    [InlineData(@"\left[1+\right)", "Missing right operand for +")]
+    [InlineData(@"\left[2,3\right)^\square", "Placeholders should be filled")]
+    [InlineData(@"[2,3)^\square", "Placeholders should be filled")]
+    [InlineData(@"((x]", "Unrecognized bracket pair ( ]")]
+    [InlineData(@"(x]", "Unrecognized bracket pair ( ]")]
+    [InlineData(@"]", "Missing [")]
+    [InlineData(@"]_2", "Subscripts are unsupported for Close ]")]
+    [InlineData(@"x]", "Missing [")]
+    [InlineData(@"(x]]", "Unrecognized bracket pair ( ]")]
+    [InlineData(@"+]", "Missing right operand for +")]
+    [InlineData(@"\left(\right]", "Unrecognized bracket pair ( ]")]
+    [InlineData(@"\left(1+\right]", "Missing right operand for +")]
+    [InlineData(@"\left(2,3\right]^\square", "Placeholders should be filled")]
+    [InlineData(@"(2,3]^\square", "Placeholders should be filled")]
+    [InlineData(@"[]", "Unrecognized bracket pair [ ]")]
+    [InlineData(@"[x]", "Unrecognized bracket pair [ ]")]
+    [InlineData(@"[[x]", "Unrecognized bracket pair [ ]")]
+    [InlineData(@"[x]]", "Unrecognized bracket pair [ ]")]
+    [InlineData(@"\left[\right]", "Unrecognized bracket pair [ ]")]
+    [InlineData(@"\left[1+\right]", "Missing right operand for +")]
+    [InlineData(@"\left[2,3\right]^\square", "Placeholders should be filled")]
+    [InlineData(@"[2,3]^\square", "Placeholders should be filled")]
+    [InlineData(@"\{", "Missing }")]
+    [InlineData(@"\{_2\}", "Subscripts are unsupported for Open {")]
+    [InlineData(@"\{x", "Missing }")]
+    [InlineData(@"\{\{x\}", "Missing }")]
+    [InlineData(@"\{+", "Missing right operand for +")]
+    [InlineData(@"\}", "Missing {")]
+    [InlineData(@"\}_2", "Subscripts are unsupported for Close }")]
+    [InlineData(@"x\}", "Missing {")]
+    [InlineData(@"\{x\}\}", "Missing {")]
+    [InlineData(@"+\}", "Missing right operand for +")]
+    [InlineData(@"\left\{1+\right\}", "Missing right operand for +")]
+    [InlineData(@"\{2,3\}^\square", "Placeholders should be filled")]
+    [InlineData(@"\left\{2,3\right\}^\square", "Placeholders should be filled")]
     [InlineData(@"\frac{}{x}", "Missing numerator")]
     [InlineData(@"\frac{x}{}", "Missing denominator")]
     [InlineData(@"\sqrt{}", "Missing radicand")]
@@ -395,10 +533,52 @@ namespace CSharpMath {
     [InlineData(@"\tan\times", "Unsupported Unary Operator ×")]
     [InlineData(@"\cot^(-1)", "Missing )")]
     [InlineData(@"\sec\csc", "Missing argument for csc")]
+    [InlineData(@"\arcsin_2x", "Subscripts are unsupported for Large Operator arcsin")]
     [InlineData(@"\operatorname{dab}", "Unsupported Large Operator dab")]
-    [InlineData(@"=", "Unsupported Relation =")]
+    [InlineData(@"\begin{matrix}\end{matrix}", "Missing matrix element")]
+    [InlineData(@"\begin{matrix}2&3\end{matrix}_2", "Subscripts are unsupported for Ordinary")]
+    [InlineData(@"\begin{matrix}2&3\end{matrix}^2", "Exponentiation is unsupported for Ordinary")]
+    [InlineData(@"\begin{pmatrix}2&+\end{pmatrix}", "Missing right operand for +")]
+    [InlineData(@"\begin{pmatrix}2&3\end{pmatrix}_2", "Subscripts are unsupported for Inner ")]
+    [InlineData(@"\begin{Vmatrix}\end{Vmatrix}", "Missing matrix element")]
+    [InlineData(@"\begin{Vmatrix}2&3\end{Vmatrix}", "Unrecognized bracket pair ‖ ‖")]
+    [InlineData(@"\begin{eqnarray}&&\end{eqnarray}", "Unsupported table environment eqnarray")]
+    [InlineData(@",", "Missing left operand for comma")]
+    [InlineData(@"1,_22", "Subscripts are unsupported for Punctuation ,")]
+    [InlineData(@"1,", "Missing right operand for comma")]
+    [InlineData(@",1", "Missing left operand for comma")]
+    [InlineData(@",1,2", "Missing left operand for comma")]
+    [InlineData(@"1,,2", "Missing left operand for comma")]
+    [InlineData(@"1,2,", "Missing right operand for comma")]
+    [InlineData(@",,1,2", "Missing left operand for comma")]
+    [InlineData(@"1,,2,", "Missing left operand for comma")]
+    [InlineData(@"1,2,,", "Missing left operand for comma")]
+    [InlineData(@"\arcsin(1,2)", "Comma cannot be argument for arcsin")]
+    [InlineData(@"+(3,4]", "Set cannot be right operand for +")]
+    [InlineData(@"[5,6)\times", "Set cannot be left operand for ×")]
+    [InlineData(@"\frac{[7,8]}{9}", "Set cannot be numerator")]
+    [InlineData(@"\sqrt[{[]}]{}", "Unrecognized bracket pair [ ]")]
+    [InlineData(@"\sqrt[{[a,b]}]{}", "Set cannot be degree")]
+    [InlineData(@"\{\{\}\}", "Set cannot be set element")]
+    [InlineData(@"\cap", "Unsupported Unary Operator ∩")]
+    [InlineData(@"\cap1", "Unsupported Unary Operator ∩")]
+    [InlineData(@"1\cap", "Entity cannot be left operand for ∩")]
+    [InlineData(@"\cup", "Unsupported Unary Operator ∪")]
+    [InlineData(@"\cup1", "Unsupported Unary Operator ∪")]
+    [InlineData(@"1\cup", "Entity cannot be left operand for ∪")]
+    [InlineData(@"\setminus", "Unsupported Unary Operator ∖")]
+    [InlineData(@"\setminus1", "Unsupported Unary Operator ∖")]
+    [InlineData(@"1\setminus", "Entity cannot be left operand for ∖")]
+    [InlineData(@"^\complement", "Exponentiation is unsupported for Ordinary")]
+    [InlineData(@"_\complement", "Subscripts are unsupported for Ordinary")]
+    [InlineData(@"1^\complement", "Entity cannot be target of set inversion")]
+    [InlineData(@"1_\complement", "Subscripts are unsupported for Number 1")]
+    [InlineData(@"x^\complement", "Entity cannot be target of set inversion")]
+    [InlineData(@"x_\complement", "Unsupported Ordinary ∁ in subscript")]
+    [InlineData(@"\sin^\complement x", "Entity cannot be target of set inversion")]
+    [InlineData(@"\sin_\complement x", "Subscripts are unsupported for Large Operator sin")]
     public void Error(string badLaTeX, string error) =>
-      Evaluation.MathListToEntity(ParseLaTeX(badLaTeX))
+      Evaluation.Evaluate(ParseLaTeX(badLaTeX))
       .Match(entity => throw new Xunit.Sdk.XunitException(entity.Latexise()), e => Assert.Equal(error, e));
   }
 }

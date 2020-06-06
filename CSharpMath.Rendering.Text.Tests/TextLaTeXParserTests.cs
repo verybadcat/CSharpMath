@@ -19,12 +19,24 @@ namespace CSharpMath.Rendering.Text.Tests {
     [InlineData("123.456")]
     [InlineData("abc")]
     [InlineData("abc", "123")]
+    [InlineData("123", "abc")]
     [InlineData("12", "a.m.")]
+    [InlineData("1,", "2,", "3")]
+    [InlineData("1,,", "2,,", "3")]
+    [InlineData("1,,,")]
+    [InlineData("1,,,", "2")]
+    [InlineData("1()", "a")]
+    [InlineData("a,", "b,", "c")]
+    [InlineData("a,.", "b,.", "c")]
+    [InlineData("a,,", "b,,", "c")]
+    [InlineData("1/", "2/", "3")]
+    [InlineData("!@*()")]
     [InlineData("ก", "ข", "ฃ")]
     [InlineData("中", "文")]
     [InlineData("😀", "Text")]
     [InlineData("Chinese", "中", "文")]
     [InlineData("Chinese", "中", "12345", "文", "😄")]
+    [InlineData("a", "😀", "😄", "b")]
     public void Text(params string[] text) {
       var input = string.Concat(text);
       var atom = Parse(input);
@@ -45,6 +57,51 @@ namespace CSharpMath.Rendering.Text.Tests {
         ? (TextAtom)new TextAtom.Text(text[0])
         : new TextAtom.List(text.Select(t => new TextAtom.Text(t)).ToArray()), atom);
       Assert.Equal(output, TextLaTeXParser.TextAtomToLaTeX(atom).ToString());
+    }
+    [Theory]
+    [InlineData(@"\color{red}␣a", "a", null, @"\color{red}{a}")]
+    [InlineData(@"\color{red}␣{a}", "a", null, @"\color{red}{a}")]
+    [InlineData(@"\color{red}␣😀", "😀", null, @"\color{red}{😀}")]
+    [InlineData(@"\color{red}␣{😀}", "😀", null, @"\color{red}{😀}")]
+    [InlineData(@"\color{red}␣\textbar", "|", null, @"\color{red}{\textbar }")]
+    [InlineData(@"\color{red}␣{\textbar}", "|", null, @"\color{red}{\textbar }")]
+    [InlineData(@"\color{red}␣aa", "a", "a", @"\color{red}{a}a")]
+    [InlineData(@"\color{red}␣{a}a", "a", "a", @"\color{red}{a}a")]
+    [InlineData(@"\color{red}␣a😄", "a", "😄", @"\color{red}{a}😄")]
+    [InlineData(@"\color{red}␣{a}😄", "a", "😄", @"\color{red}{a}😄")]
+    [InlineData(@"\color{red}␣😀a", "😀", "a", @"\color{red}{😀}a")]
+    [InlineData(@"\color{red}␣{😀}a", "😀", "a", @"\color{red}{😀}a")]
+    [InlineData(@"\color{red}␣😀😄", "😀", "😄", @"\color{red}{😀}😄")]
+    [InlineData(@"\color{red}␣{😀}😄", "😀", "😄", @"\color{red}{😀}😄")]
+    [InlineData(@"\color{red}␣\textbar a", "|", "a", @"\color{red}{\textbar }a")]
+    [InlineData(@"\color{red}␣{\textbar}a", "|", "a", @"\color{red}{\textbar }a")]
+    [InlineData(@"\color{red}␣a\textbar", "a", "|", @"\color{red}{a}\textbar ")]
+    [InlineData(@"\color{red}␣{a}\textbar", "a", "|", @"\color{red}{a}\textbar ")]
+    [InlineData(@"\color{red}␣\textbar\textbar", "|", "|", @"\color{red}{\textbar }\textbar ")]
+    [InlineData(@"\color{red}␣{\textbar}\textbar", "|", "|", @"\color{red}{\textbar }\textbar ")]
+    [InlineData(@"\color{red}␣\textbar😄", "|", "😄", @"\color{red}{\textbar }😄")]
+    [InlineData(@"\color{red}␣{\textbar}😄", "|", "😄", @"\color{red}{\textbar }😄")]
+    [InlineData(@"\color{red}␣😀\textbar", "😀", "|", @"\color{red}{😀}\textbar ")]
+    [InlineData(@"\color{red}␣{😀}\textbar", "😀", "|", @"\color{red}{😀}\textbar ")]
+    public void CommandArguments(string input, string colored, string? after, string output) {
+      void Test(string input) {
+        var atom = Parse(input);
+        var list = new List<TextAtom> {
+          new TextAtom.Color(new TextAtom.Text(colored), Structures.Color.PredefinedColors["red"])
+        };
+        if (after != null) list.Add(new TextAtom.Text(after));
+        Assert.Equal(list.Count == 1 ? list[0] : new TextAtom.List(list), atom);
+        Assert.Equal(output, TextLaTeXParser.TextAtomToLaTeX(atom).ToString());
+      }
+      Test(input.Replace("␣", ""));
+      Test(input.Replace("␣", " "));
+      Test(input.Replace("␣", "  "));
+      Test(input.Replace("␣", "\r"));
+      Test(input.Replace("␣", "\n"));
+      Test(input.Replace("␣", "\r\n"));
+      Test(input.Replace("␣", " \r "));
+      Test(input.Replace("␣", " \n "));
+      Test(input.Replace("␣", " \r\n "));
     }
     [Theory]
     [InlineData(@"\textbb", Atom.FontStyle.Blackboard)]
@@ -222,6 +279,16 @@ namespace CSharpMath.Rendering.Text.Tests {
     [InlineData(@"\$\[\$$$\$", @"\$", @"\$", true, @"\$", @"\$\[\$ \]\$")]
     [InlineData(@"\$$$\$\]\$", @"\$", @"\$", true, @"\$", @"\$\[\$ \]\$")]
     [InlineData(@"\$\[\$\]\$", @"\$", @"\$", true, @"\$", @"\$\[\$ \]\$")]
+
+    // https://github.com/verybadcat/CSharpMath/issues/113
+    [InlineData(@",$,$,", @",", @",,", false, null, @",\(,,\)")]
+    [InlineData(@",\(,$,", @",", @",,", false, null, @",\(,,\)")]
+    [InlineData(@",$,\),", @",", @",,", false, null, @",\(,,\)")]
+    [InlineData(@",\(,\),", @",", @",,", false, null, @",\(,,\)")]
+    [InlineData(@",$$,$$,", @",", @",", true, @",", @",\[,\],")]
+    [InlineData(@",\[,$$,", @",", @",", true, @",", @",\[,\],")]
+    [InlineData(@",$$,\],", @",", @",", true, @",", @",\[,\],")]
+    [InlineData(@",\[,\],", @",", @",", true, @",", @",\[,\],")]
     public void Math(string input, string? textBefore, string math, bool display, string? textAfter, string output) {
       var atom = Parse(input);
       var list = new List<TextAtom>();

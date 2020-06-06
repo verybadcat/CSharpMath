@@ -1,0 +1,35 @@
+{
+  "solution": {
+    "path": "CSharpMath.sln",
+    "projects": [
+      "AngouriMath\\AngouriMath\\AngouriMath.csproj",
+      "AngouriMath\\Tests\\UnitTests\\UnitTests.csproj",
+      "CSharpMath.Avalonia.Example\\CSharpMath.Avalonia.Example.csproj",
+      "CSharpMath.Avalonia\\CSharpMath.Avalonia.csproj",
+      "CSharpMath.CoreTests\\CSharpMath.CoreTests.csproj",
+      "CSharpMath.Editor.Tests.FSharp\\CSharpMath.Editor.Tests.FSharp.fsproj",
+      "CSharpMath.Editor.Tests.Visualizer\\CSharpMath.Editor.Tests.Visualizer.csproj",
+      "CSharpMath.Editor.Tests\\CSharpMath.Editor.Tests.csproj",
+      "CSharpMath.Editor\\CSharpMath.Editor.csproj",
+      "CSharpMath.Evaluation.Tests\\CSharpMath.Evaluation.Tests.csproj",
+      "CSharpMath.Evaluation\\CSharpMath.Evaluation.csproj",
+      "CSharpMath.Forms.Example\\CSharpMath.Forms.Example\\CSharpMath.Forms.Example.csproj",
+      "CSharpMath.Forms\\CSharpMath.Forms.csproj",
+      "CSharpMath.Playground\\CSharpMath.Playground.csproj",
+      "CSharpMath.Rendering.Tests\\CSharpMath.Rendering.Tests.csproj",
+      "CSharpMath.Rendering.Text.Tests\\CSharpMath.Rendering.Text.Tests.csproj",
+      "CSharpMath.Rendering\\CSharpMath.Rendering.csproj",
+      "CSharpMath.SkiaSharp\\CSharpMath.SkiaSharp.csproj",
+      "CSharpMath.Wiki\\CSharpMath.Wiki.shproj",
+      "CSharpMath.Xaml.Tests.NuGet\\CSharpMath.Xaml.Tests.NuGet.csproj",
+      "CSharpMath.Xaml.Tests\\CSharpMath.Xaml.Tests.csproj",
+      "CSharpMath.Xaml\\CSharpMath.Xaml.shproj",
+      "CSharpMath\\CSharpMath.csproj",
+      "PixelFarm.Typography (Excerpt)\\PixelFarm.Typography (Excerpt).shproj",
+      "Typography\\Typography.GlyphLayout\\Typography.GlyphLayout.shproj",
+      "Typography\\Typography.OpenFont\\Typography.OpenFont.shproj",
+      "Typography\\Typography.TextBreak\\Typography.TextBreak.UnitTests\\TextBreakTests.csproj",
+      "Typography\\Typography.TextBreak\\Typography.TextBreak\\Typography.TextBreak.shproj"
+    ]
+  }
+}

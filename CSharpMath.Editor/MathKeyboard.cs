@@ -35,7 +35,8 @@ namespace CSharpMath.Editor {
       };
       blinkTimer.Start();
     }
-
+    public void StartBlinking() => blinkTimer.Start();
+    public void StopBlinking() => blinkTimer.Stop();
     //private readonly List<MathListIndex> highlighted;
     protected TypesettingContext<TFont, TGlyph> Context { get; }
     static void ResetPlaceholders(MathList mathList) {

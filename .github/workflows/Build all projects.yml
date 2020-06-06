@@ -1,11 +1,6 @@
 name: Build
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
-
+on: [push, pull_request]
 jobs:
   all_projects:
     runs-on: windows-latest
@@ -17,6 +12,10 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '3.1.201'
+    - name: Setup JDK # Needed to run ANTLR for AngouriMath
+      uses: actions/setup-java@v1
+      with:
+        java-version: '8'
     - name: Setup NuGet
       uses: NuGet/setup-nuget@v1.0.2
     - name: Setup MSBuild Path
@@ -25,3 +24,12 @@ jobs:
       run: nuget restore CSharpMath.sln
     - name: Build
       run: msbuild CSharpMath.sln /p:Configuration=Release
+    - uses: actions/upload-artifact@v2
+      with:
+        name: NuGet packages
+        path: .nupkgs/
+    - name: Push generated packages to GitHub registry
+      if: github.ref == 'refs/heads/master'
+      run: |
+        nuget sources add -name "GPR" -Source https://nuget.pkg.github.com/verybadcat/index.json -Username verybadcat -Password ${{ secrets.GITHUB_TOKEN }}
+        nuget push .nupkgs/ -Source "GPR" -SkipDuplicate

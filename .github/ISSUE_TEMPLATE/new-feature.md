@@ -2,7 +2,7 @@
 name: New feature
 about: Suggest an idea for CSharpMath.
 title: ''
-labels: Type/Enhancement
+labels: Status/0. New, Type/Enhancement
 assignees: ''
 
 ---
