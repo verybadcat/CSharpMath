@@ -25,7 +25,7 @@ namespace CSharpMath.CoreTests {
     [InlineData("(", new[] { typeof(Open) }, "(")]
     [InlineData(")", new[] { typeof(Close) }, ")")]
     [InlineData(",", new[] { typeof(Punctuation) }, ",")]
-    [InlineData("?!", new[] { typeof(Close), typeof(Close) }, "?!")]
+    [InlineData("?!", new[] { typeof(Punctuation), typeof(Punctuation) }, "?!")]
     [InlineData("=", new[] { typeof(Relation) }, "=")]
     [InlineData("x+2", new[] { typeof(Variable), typeof(BinaryOperator), typeof(Number) }, "x+2")]
     [InlineData("(2.3 * 8)", new[] { typeof(Open), typeof(Number), typeof(Number), typeof(Number), typeof(BinaryOperator), typeof(Number), typeof(Close) }, "(2.3*8)")]

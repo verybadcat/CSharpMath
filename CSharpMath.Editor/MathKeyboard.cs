@@ -164,7 +164,7 @@ namespace CSharpMath.Editor {
             case (null, _): throw new InvalidCodePathException("Invalid _insertionIndex");
             // Stop looking behind upon encountering these atoms unparenthesized
             case (Atoms.Open _, _) when --parenDepth < 0: goto stop;
-            case (Atoms.Close { HasCorrespondingOpen: true } a, _): parenDepth++; numerator.Push(a); break;
+            case (Atoms.Close a, _): parenDepth++; numerator.Push(a); break;
             case (Atoms.UnaryOperator _, 0): goto stop;
             case (Atoms.BinaryOperator _, 0): goto stop;
             case (Atoms.Relation _, 0): goto stop;

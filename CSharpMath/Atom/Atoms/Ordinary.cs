@@ -1,4 +1,5 @@
 namespace CSharpMath.Atom.Atoms {
+  /// <summary>AMSMath class 0: Simple/Ordinary (noun), e.g. \infty</summary>
   public sealed class Ordinary : MathAtom {
     public Ordinary(string nucleus) : base(nucleus) { }
     public override bool ScriptsAllowed => true;
