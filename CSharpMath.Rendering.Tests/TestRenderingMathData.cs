@@ -29,15 +29,15 @@ namespace CSharpMath.Rendering.Tests {
     public const string LeftSide = @"\frac{1}{\left(\sqrt{\phi \sqrt{5}}-\phi\right) e^{\frac25 \pi}}";
 
     public const string Matrix = @"\begin{pmatrix}
-                           a & b\\ c & d
-                            \end{pmatrix}
-                            \begin{pmatrix}
-                            \alpha & \beta \\ \gamma & \delta
-                            \end{pmatrix} = 
-                            \begin{pmatrix}
-                            a\alpha + b\gamma & a\beta + b \delta \\
-                            c\alpha + d\gamma & c\beta + d \delta 
-                            \end{pmatrix}";
+a & b\\ c & d
+\end{pmatrix}
+\begin{pmatrix}
+\alpha & \beta \\ \gamma & \delta
+\end{pmatrix} = 
+\begin{pmatrix}
+a\alpha + b\gamma & a\beta + b \delta \\
+c\alpha + d\gamma & c\beta + d \delta 
+\end{pmatrix}";
     public const string Matrix0 = @"\begin{pmatrix}\end{pmatrix}";
     public const string Matrix1 = @"\begin{pmatrix}2\end{pmatrix}";
     public const string Matrix2 = @"\begin{pmatrix}a&b\\c&d\end{pmatrix}";
@@ -94,5 +94,11 @@ namespace CSharpMath.Rendering.Tests {
     public const string IntegralColorBoxCorrect = @"\colorbox{red}{\int^\colorbox{yellow}\infty_\colorbox{purple}{-\infty}}\colorbox{green}x\ \colorbox{blue}{dx}";
     public const string RaiseBox = @"a\raisebox{1mu}a\raisebox{2mu}a\raisebox{3mu}a\raisebox{4mu}a";
     public const string FontStyles = @"\mathnormal F\mathrm F\mathbf F\mathcal F\mathtt F\mathit F\mathsf F\mathfrak F\mathbb F\mathbfit F";
+    // Solve x^3+50%*x^2=3/(500y) for x
+    /*public const string InnersAndCases = @"\begin{cases}
+\frac{-\left(50+{\left(\frac{250000+27\times -\frac{3}{500\times y}+\sqrt{{\left(250000+27\times -\frac{3}{500\times y}\right)}^{2}-62500000000}}{2}\right)}^{0.3333333333333333}+\frac{2500}{{\left(\frac{250000+27\times -\frac{3}{500\times y}+\sqrt{{\left(250000+27\times -\frac{3}{500\times y}\right)}^{2}-62500000000}}{2}\right)}^{0.3333333333333333}}\right)}{3}\\
+\frac{-\left(50+-0.5 + 0.8660254037844386i\times {\left(\frac{250000+27\times -\frac{3}{500\times y}+\sqrt{{\left(250000+27\times -\frac{3}{500\times y}\right)}^{2}-62500000000}}{2}\right)}^{0.3333333333333333}+\frac{\frac{2500}{{\left(\frac{250000+27\times -\frac{3}{500\times y}+\sqrt{{\left(250000+27\times -\frac{3}{500\times y}\right)}^{2}-62500000000}}{2}\right)}^{0.3333333333333333}}}{-0.5 + 0.8660254037844386i}\right)}{3}\\
+\frac{-\left(50+-0.5 - 0.8660254037844386i\times {\left(\frac{250000+27\times -\frac{3}{500\times y}+\sqrt{{\left(250000+27\times -\frac{3}{500\times y}\right)}^{2}-62500000000}}{2}\right)}^{0.3333333333333333}+\frac{\frac{2500}{{\left(\frac{250000+27\times -\frac{3}{500\times y}+\sqrt{{\left(250000+27\times -\frac{3}{500\times y}\right)}^{2}-62500000000}}{2}\right)}^{0.3333333333333333}}}{-0.5 - 0.8660254037844386i}\right)}{3}
+\end{cases}";*/
   }
 }

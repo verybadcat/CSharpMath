@@ -202,7 +202,7 @@ namespace CSharpMath {
           case Atoms.Placeholder _:
             return "Placeholders should be filled";
           case Atoms.Number n:
-            if (Number.TryParse(n.Nucleus, out var number)) {
+            if (AngouriMath.Core.Numerix.ComplexNumber.TryParse(n.Nucleus, out var number)) {
               @this = new NumberEntity(number);
               goto handleThis;
             } else return "Invalid number: " + n.Nucleus;
@@ -239,7 +239,7 @@ namespace CSharpMath {
             v.Subscript.Clear();
             goto handleThis;
           case Atoms.Ordinary { Nucleus: "∞" }:
-            @this = new NumberEntity(MathS.Num(double.PositiveInfinity));
+            @this = new NumberEntity(AngouriMath.Core.Numerix.RealNumber.PositiveInfinity());
             goto handleThis;
           case Atoms.Ordinary { Nucleus: "∅" }:
             @this = MathS.Sets.Empty();
@@ -370,10 +370,10 @@ namespace CSharpMath {
           case Atoms.LargeOperator { Nucleus: "log", Subscript: var @base }:
             Entity? logBase;
             (logBase, error) = Transform(@base).ExpectEntityOrNull(nameof(logBase));
-            @base.Clear();
             if (error != null) return error;
+            @base.Clear();
             logBase ??= new NumberEntity(10);
-            handleFunction = arg => MathS.Log(arg, logBase);
+            handleFunction = arg => MathS.Log(logBase, arg);
             handleFunctionInverse = arg => MathS.Pow(logBase, arg);
             goto handleFunction;
           case Atoms.LargeOperator { Nucleus: "ln" }:
