@@ -449,6 +449,17 @@ namespace CSharpMath {
     public void SetOperations(string latex, string converted) => Test(latex, converted, null);
     [Theory]
     [InlineData(@"(1,2)", @"\left\{ \left( 1,2\right) \right\} ")]
+    [InlineData(@"[1,2)", @"\left\{ \left[ 1,2\right) \right\} ")]
+    [InlineData(@"(1,2]", @"\left\{ \left( 1,2\right] \right\} ")]
+    [InlineData(@"[1,2]", @"\left\{ \left[ 1,2\right] \right\} ")]
+    [InlineData(@"(2,1)", @"\left\{ \left( 2,1\right) \right\} ")]
+    [InlineData(@"[2,1)", @"\left\{ \left[ 2,1\right) \right\} ")]
+    [InlineData(@"(2,1]", @"\left\{ \left( 2,1\right] \right\} ")]
+    [InlineData(@"[2,1]", @"\left\{ \left[ 2,1\right] \right\} ")]
+    [InlineData(@"[1,2]\setminus\{1\}", @"\left\{ \left( 1,2\right] \right\} ")]
+    [InlineData(@"[1,2]\setminus\{2\}", @"\left\{ \left[ 1,2\right) \right\} ")]
+    [InlineData(@"[1,2]\cup(2,3)", @"\left\{ \left[ 1,2\right] ,\left( 2,3\right) \right\} ")]
+    [InlineData(@"[1,2]\cap[1.5,1.5]", @"\left\{ \frac{3}{2} \right\} ")]
     public void Intervals(string latex, string converted) => Test(latex, converted, null);
     [Theory]
     [InlineData(@"", "There is nothing to evaluate")]
@@ -609,5 +620,6 @@ namespace CSharpMath {
     public void Error(string badLaTeX, string error) =>
       Evaluation.Evaluate(ParseLaTeX(badLaTeX))
       .Match(entity => throw new Xunit.Sdk.XunitException(entity.Latexise()), e => Assert.Equal(error, e));
+    [Fact] public void M() => throw new System.Exception(MathS.Pow(new NumberEntity(10), "x").Latexise());
   }
 }

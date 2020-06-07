@@ -127,7 +127,7 @@ namespace CSharpMath {
         { Content: var l, Next: { Content: var r, Next: null } } =>
             l.AsEntity("left interval boundary")
             .Bind(left => r.AsEntity("right interval boundary")
-            .Bind(right => (MathItem)new Set(MathS.Sets.Interval(left, right).SetLeftClosed(leftClosed, leftClosed).SetRightClosed(rightClosed, rightClosed)))),
+            .Bind(right => (MathItem)new Set(MathS.Sets.Interval(left, right).SetLeftClosed(leftClosed).SetRightClosed(rightClosed)))),
         _ => "Unrecognized comma-delimited collection of " + c.Count() + " items"
       };
     static readonly Dictionary<Precedence, (string KnownOpening, string InferredClosing)> ContextInfo =
