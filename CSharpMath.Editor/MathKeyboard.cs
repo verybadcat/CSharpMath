@@ -22,17 +22,17 @@ namespace CSharpMath.Editor {
       Context = context;
       Font = font;
       blinkTimer = new Timer(blinkMilliseconds);
-      blinkTimer.Elapsed += (sender, e) => {
-        switch (CaretState) {
-          case MathKeyboardCaretState.Shown:
-          case MathKeyboardCaretState.ShownThroughPlaceholder:
-            CaretState = MathKeyboardCaretState.TemporarilyHidden;
-            break;
-          case MathKeyboardCaretState.TemporarilyHidden:
-            CaretState = MathKeyboardCaretState.Shown;
-            break;
-        }
-      };
+      //blinkTimer.Elapsed += (sender, e) => {
+      //  switch (CaretState) {
+      //    case MathKeyboardCaretState.Shown:
+      //    case MathKeyboardCaretState.ShownThroughPlaceholder:
+      //      CaretState = MathKeyboardCaretState.TemporarilyHidden;
+      //      break;
+      //    case MathKeyboardCaretState.TemporarilyHidden:
+      //      CaretState = MathKeyboardCaretState.Shown;
+      //      break;
+      //  }
+      //};
       blinkTimer.Start();
     }
     public void StartBlinking() => blinkTimer.Start();
