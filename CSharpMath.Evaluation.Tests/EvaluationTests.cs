@@ -15,11 +15,11 @@ namespace CSharpMath {
       void Test(string input) {
         var math = ParseMath(input);
         Assert.NotNull(math);
-        Assert.Equal(converted, LaTeXParser.MathListToLaTeX(Evaluation.Parse(math)).ToString());
+        Assert.Equal(converted, LaTeXParser.MathListToLaTeX(Evaluation.Visualize(math)).ToString());
         // Ensure that the converted entity is valid by simplifying it
         if (result != null)
           Assert.Equal(result,
-            LaTeXParser.MathListToLaTeX(Evaluation.Parse(Assert.IsType<Evaluation.MathItem.Entity>(math).Content.Simplify())).ToString());
+            LaTeXParser.MathListToLaTeX(Evaluation.Visualize(Assert.IsType<Evaluation.MathItem.Entity>(math).Content.Simplify())).ToString());
         else Assert.IsNotType<Evaluation.MathItem.Entity>(result);
       }
       Test(input);
@@ -459,7 +459,7 @@ namespace CSharpMath {
     [InlineData(@"[1,2]\setminus\{1\}", @"\left\{ \left( 1,2\right] \right\} ")]
     [InlineData(@"[1,2]\setminus\{2\}", @"\left\{ \left[ 1,2\right) \right\} ")]
     [InlineData(@"[1,2]\cup(2,3)", @"\left\{ \left[ 1,2\right] ,\left( 2,3\right) \right\} ")]
-    [InlineData(@"[1,2]\cap[1.5,1.5]", @"\left\{ \frac{3}{2} \right\} ")]
+    [InlineData(@"[1,2]\cap[1.5,1.6]", @"\left\{ \left[ \frac{3}{2},\frac{8}{5}\right] \right\} ")]
     public void Intervals(string latex, string converted) => Test(latex, converted, null);
     [Theory]
     [InlineData(@"", "There is nothing to evaluate")]

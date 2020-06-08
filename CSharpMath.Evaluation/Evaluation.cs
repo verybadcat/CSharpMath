@@ -63,7 +63,7 @@ namespace CSharpMath {
         public override string Latexise() => Content.Latexise();
       }
     }
-    public static MathList Parse(MathItem entity) =>
+    public static MathList Visualize(MathItem entity) =>
       LaTeXParser.MathListFromLaTeX(entity.Latexise())
       // CSharpMath must handle all LaTeX coming from MathS or a bug is present!
       .Match(list => list, e => throw new InvalidCodePathException(e));
