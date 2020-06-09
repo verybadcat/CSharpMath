@@ -473,6 +473,54 @@ namespace CSharpMath.CoreTests {
       Assert.Equal(@"x\\ y", LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
+    [Theory]
+    [InlineData(@"\left(x\\\right)")]
+    [InlineData(@"\left(x \\ \right)")]
+    [InlineData(@"\left( x\\ \right)")]
+    [InlineData(@"\left( x\\ \right) ")]
+    public void TestDefaultTableInInner(string input) {
+      var list = ParseLaTeX(input);
+      CheckAtom<Inner>("", inner => {
+        Assert.Equal(new Boundary("("), inner.LeftBoundary);
+        Assert.Equal(new Boundary(")"), inner.RightBoundary);
+        CheckAtom<Table>("", table => {
+          Assert.Null(table.Environment);
+          Assert.Equal(1, table.InterRowAdditionalSpacing);
+          Assert.Equal(0, table.InterColumnSpacing);
+          Assert.Equal(2, table.NRows);
+          Assert.Equal(1, table.NColumns);
+          Assert.Equal(ColumnAlignment.Left, table.GetAlignment(0));
+          Assert.IsType<Variable>(Assert.Single(table.Cells[0][0]));
+          Assert.Empty(table.Cells[1][0]);
+        })(Assert.Single(inner.InnerList));
+      })(Assert.Single(list));
+      Assert.Equal(@"\left( x\\ \right) ", LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+    [Theory]
+    [InlineData(@"\left(\\\right)")]
+    [InlineData(@"\left( \\ \right) ")]
+    public void TestEmptyTableInInner(string input) {
+      var list = ParseLaTeX(input);
+      CheckAtom<Inner>("", inner => {
+        Assert.Equal(new Boundary("("), inner.LeftBoundary);
+        Assert.Equal(new Boundary(")"), inner.RightBoundary);
+        CheckAtom<Table>("", table => {
+          Assert.Null(table.Environment);
+          Assert.Equal(1, table.InterRowAdditionalSpacing);
+          Assert.Equal(0, table.InterColumnSpacing);
+          Assert.Equal(2, table.NRows);
+          Assert.Equal(1, table.NColumns);
+          for (int col = 0; col < 1; col++) {
+            Assert.Equal(ColumnAlignment.Left, table.GetAlignment(col));
+            for (int row = 0; row < 2; row++) {
+              Assert.Empty(table.Cells[row][col]);
+            }
+          }
+        })(Assert.Single(inner.InnerList));
+      })(Assert.Single(list));
+      Assert.Equal(@"\left( \\ \right) ", LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+
     [Fact]
     public void TestTableWithColumns() {
       var list = ParseLaTeX(@"x & y \\ z & w");

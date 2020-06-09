@@ -690,15 +690,15 @@ namespace CSharpMath.Display {
       // be at most 5pt short.
       float glyphHeight = Math.Max(d1, d2);
 
-      IGlyphDisplay<TFont, TGlyph>? leftGlyph = null;
-      if (inner.LeftBoundary is Boundary { Nucleus: var left } && left.Length > 0) {
-        leftGlyph = _FindGlyphForBoundary(left, glyphHeight);
-      }
+      var leftGlyph =
+        inner.LeftBoundary is Boundary { Nucleus: var left } && left.Length > 0
+        ? _FindGlyphForBoundary(left, glyphHeight)
+        : null;
 
-      IGlyphDisplay<TFont, TGlyph>? rightGlyph = null;
-      if (inner.RightBoundary is Boundary { Nucleus: var right } && right.Length > 0) {
-        rightGlyph = _FindGlyphForBoundary(right, glyphHeight);
-      }
+      var rightGlyph =
+        inner.RightBoundary is Boundary { Nucleus: var right } && right.Length > 0
+        ? _FindGlyphForBoundary(right, glyphHeight)
+        : null;
       return new InnerDisplay<TFont, TGlyph>(innerListDisplay, leftGlyph, rightGlyph, range);
     }
 

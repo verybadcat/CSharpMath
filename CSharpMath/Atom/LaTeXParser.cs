@@ -491,6 +491,8 @@ namespace CSharpMath.Atom {
           if (_currentInner.RightBoundary == null) {
             return null;
           }
+          if (_currentEnvironment is { Name: null })
+            _currentEnvironment.Ended = true; // \right terminates the \\ inside \left(x\\y\right)
           return list;
         case var _ when fractionCommands.ContainsKey(command):
           var denominator = BuildInternal(false, stopChar);
