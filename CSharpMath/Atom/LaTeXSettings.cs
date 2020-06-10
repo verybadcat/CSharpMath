@@ -41,11 +41,10 @@ namespace CSharpMath.Atom {
         case (sbyte)')':
         case (sbyte)']':
           return new Close(s);
-        case (sbyte)'!':
-        case (sbyte)'?':
-          return new Close(s, hasCorrespondingOpen: false);
         case (sbyte)',':
         case (sbyte)';':
+        case (sbyte)'!':
+        case (sbyte)'?':
           return new Punctuation(s);
         case (sbyte)'=':
         case (sbyte)'<':
@@ -61,6 +60,9 @@ namespace CSharpMath.Atom {
         case (sbyte)'.':
           return new Number(s);
         case (sbyte)'"':
+        // AMSMath: Although / is (semantically speaking) of class 2: Binary Operator,
+        // we write k/2 with no space around the slash rather than k / 2.
+        // And compare p|q -> p|q (no space) with p\mid q -> p | q (class-3 spacing).
         case (sbyte)'/':
         case (sbyte)'@':
         case (sbyte)'`':

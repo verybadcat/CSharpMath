@@ -24,3 +24,12 @@ jobs:
       run: nuget restore CSharpMath.sln
     - name: Build
       run: msbuild CSharpMath.sln /p:Configuration=Release
+    - uses: actions/upload-artifact@v2
+      with:
+        name: NuGet packages
+        path: .nupkgs/
+    - name: Push generated packages to GitHub registry
+      if: github.ref == 'refs/heads/master'
+      run: |
+        nuget sources add -name "GPR" -Source https://nuget.pkg.github.com/verybadcat/index.json -Username verybadcat -Password ${{ secrets.GITHUB_TOKEN }}
+        nuget push .nupkgs/ -Source "GPR" -SkipDuplicate

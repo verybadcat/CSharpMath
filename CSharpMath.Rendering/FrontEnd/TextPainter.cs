@@ -66,16 +66,17 @@ namespace CSharpMath.Rendering.FrontEnd {
           : c.Width;
         float Δx = 0;
         var y = float.NegativeInfinity;
-        if ((alignment & (TextAlignment.Left | TextAlignment.Right)) != TextAlignment.Left)
+        var leftRightFlags = alignment & (TextAlignment.Left | TextAlignment.Right);
+        if (leftRightFlags != TextAlignment.Left)
           foreach (var relDisplay in _relativeXCoordDisplay.Displays.Reverse()) {
             if (relDisplay.Position.Y > y) {
               y = relDisplay.Position.Y;
               var rightSpace = adjustedCanvasWidth - (relDisplay.Position.X + relDisplay.Width);
-              Δx = (alignment & (TextAlignment.Left | TextAlignment.Right)) switch
+              Δx = leftRightFlags switch
               {
                 TextAlignment.Center => rightSpace / 2,
                 TextAlignment.Right => rightSpace,
-                _ => throw new InvalidCodePathException("The left flag has been set. This foreach loop should be skipped."),
+                _ => throw new InvalidCodePathException("The left flag has been set. This foreach loop should have been skipped.")
               };
             }
             relDisplay.Position = new PointF(relDisplay.Position.X + Δx, y);
