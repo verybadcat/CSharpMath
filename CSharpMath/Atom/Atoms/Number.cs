@@ -1,4 +1,5 @@
 namespace CSharpMath.Atom.Atoms {
+  /// <summary>Class 0: ordinary for Arabic numerals 0–9 and the decimal dot .</summary>
   public sealed class Number : MathAtom {
     public Number(string number) : base(number) { }
     public override bool ScriptsAllowed => true;

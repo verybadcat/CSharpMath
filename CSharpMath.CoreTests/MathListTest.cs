@@ -5,7 +5,7 @@ using System.Linq;
 using Xunit;
 
 namespace CSharpMath.CoreTests {
-  using Range = CSharpMath.Atom.Range;
+  using Range = Atom.Range;
   public class MathListTest {
     internal static void CheckClone(MathAtom? original, MathAtom? clone) {
       Assert.Equal(original, clone);
@@ -197,7 +197,7 @@ namespace CSharpMath.CoreTests {
         );
         var radical = Assert.IsType<Radical>(Assert.Single(integral.Superscript));
         Assert.Collection(radical.Degree,
-          CheckAtomNucleusAndRange<Close>("!", 0, 1),
+          CheckAtomNucleusAndRange<Punctuation>("!", 0, 1),
           CheckAtomNucleusAndRange<Ordinary>(" ", 1, 1)
         );
         Assert.Collection(radical.Radicand,

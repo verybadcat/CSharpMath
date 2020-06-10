@@ -1,5 +1,5 @@
 namespace CSharpMath.Atom.Atoms {
-  /// <summary>A binary operator</summary>
+  /// <summary>AMSMath class 2: Binary Operator (conjunction), e.g. +, \cup, \wedge</summary>
   public sealed class BinaryOperator : MathAtom {
     public BinaryOperator(string nucleus) : base(nucleus) { }
     public override bool ScriptsAllowed => true;
