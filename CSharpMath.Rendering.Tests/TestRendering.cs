@@ -5,6 +5,7 @@ using System.Linq;
 using Xunit;
 
 namespace CSharpMath.Rendering.Tests {
+  using System.Runtime.CompilerServices;
   using Rendering.FrontEnd;
   [CollectionDefinition(nameof(TestRenderingFixture))]
   public class TestRenderingFixture : ICollectionFixture<TestRenderingFixture> {
@@ -21,8 +22,7 @@ namespace CSharpMath.Rendering.Tests {
       global::Avalonia.Skia.SkiaPlatform.Initialize();
     }
     // https://www.codecogs.com/latex/eqneditor.php
-    static string ThisFilePath
-      ([System.Runtime.CompilerServices.CallerFilePath] string? path = null) =>
+    static string ThisFilePath([CallerFilePath] string? path = null) =>
       path ?? throw new ArgumentNullException(nameof(path));
     public static DirectoryInfo ThisDirectory = new FileInfo(ThisFilePath()).Directory;
     public static string GetFolder(string folderName) =>
@@ -74,22 +74,35 @@ namespace CSharpMath.Rendering.Tests {
     protected abstract string FrontEnd { get; }
     /// <summary>Maximum percentage change from expected file size to actual file size * 100</summary>
     protected abstract double FileSizeTolerance { get; }
-    protected abstract void DrawToStream<TContent>(Painter<TCanvas, TContent, TColor> painter, Stream stream, float textPainterCanvasWidth) where TContent : class;
+    protected abstract void DrawToStream<TContent>(Painter<TCanvas, TContent, TColor> painter,
+      Stream stream, float textPainterCanvasWidth, TextAlignment alignment) where TContent : class;
     [Theory, ClassData(typeof(TestRenderingMathData))]
-    public void Display(string file, string latex) =>
-      Run(file, latex, nameof(Display), new TMathPainter { LineStyle = Atom.LineStyle.Display });
+    public void MathDisplay(string file, string latex) =>
+      Run(file, latex, new TMathPainter { LineStyle = Atom.LineStyle.Display });
     [Theory, ClassData(typeof(TestRenderingMathData))]
-    public void Inline(string file, string latex) =>
-      Run(file, latex, nameof(Inline), new TMathPainter { LineStyle = Atom.LineStyle.Text });
+    public void MathInline(string file, string latex) =>
+      Run(file, latex, new TMathPainter { LineStyle = Atom.LineStyle.Text });
     [Theory, ClassData(typeof(TestRenderingTextData))]
-    public void Text(string file, string latex) =>
-      Run(file, latex, nameof(Text), new TTextPainter());
+    public void TextLeft(string file, string latex) =>
+      Run(file, latex, new TTextPainter());
     [Theory, ClassData(typeof(TestRenderingTextData))]
-    public void TextInfiniteWidth(string file, string latex) =>
-      Run(file, latex, nameof(TextInfiniteWidth), new TTextPainter(), float.PositiveInfinity);
+    public void TextCenter(string file, string latex) =>
+      Run(file, latex, new TTextPainter(), TextAlignment.Top);
+    [Theory, ClassData(typeof(TestRenderingTextData))]
+    public void TextRight(string file, string latex) =>
+      Run(file, latex, new TTextPainter(), TextAlignment.TopRight);
+    [Theory, ClassData(typeof(TestRenderingTextData))]
+    public void TextLeftInfiniteWidth(string file, string latex) =>
+      Run(file, latex, new TTextPainter(), textPainterCanvasWidth: float.PositiveInfinity);
+    [Theory, ClassData(typeof(TestRenderingTextData))]
+    public void TextCenterInfiniteWidth(string file, string latex) =>
+      Run(file, latex, new TTextPainter(), TextAlignment.Top, textPainterCanvasWidth: float.PositiveInfinity);
+    [Theory, ClassData(typeof(TestRenderingTextData))]
+    public void TextRightInfiniteWidth(string file, string latex) =>
+      Run(file, latex, new TTextPainter(), TextAlignment.TopRight, textPainterCanvasWidth: float.PositiveInfinity);
     protected void Run<TContent>(
-      string inFile, string latex, string folder, Painter<TCanvas, TContent, TColor> painter,
-      float textPainterCanvasWidth = TextPainter<TCanvas, TColor>.DefaultCanvasWidth) where TContent : class {
+      string inFile, string latex, Painter<TCanvas, TContent, TColor> painter, TextAlignment alignment = TextAlignment.TopLeft,
+      float textPainterCanvasWidth = TextPainter<TCanvas, TColor>.DefaultCanvasWidth, [CallerMemberName]string folder = "") where TContent : class {
       folder = TestRenderingFixture.GetFolder(folder);
       var frontEnd = FrontEnd.ToLowerInvariant();
 
@@ -101,7 +114,7 @@ namespace CSharpMath.Rendering.Tests {
       Assert.False(actualFile.Exists, $"The actual file was not deleted by test initialization: {actualFile.FullName}");
 
       using (var outFile = actualFile.OpenWrite())
-        DrawToStream(painter, outFile, textPainterCanvasWidth);
+        DrawToStream(painter, outFile, textPainterCanvasWidth, alignment);
       actualFile.Refresh();
       Assert.True(actualFile.Exists, "The actual image was not created successfully.");
 
@@ -123,7 +136,7 @@ namespace CSharpMath.Rendering.Tests {
         { "Baseline", new TPainter() },
         { "Stroke", new TPainter { PaintStyle = PaintStyle.Stroke } },
 #warning For some reason the Avalonia front end behaves correctly for TextPainter Magnification test but not the SkiaSharp front end??
-        //{"Magnification", new TPainter { Magnification = 2 }},
+        { "Magnification", new TPainter { Magnification = 2 } },
         { "LocalTypeface", new TPainter {
           LocalTypefaces = new[] {
             new Typography.OpenFont.OpenFontReader().Read(
@@ -146,11 +159,11 @@ namespace CSharpMath.Rendering.Tests {
     [Theory]
     [MemberData(nameof(MathPainterSettingsData))]
     public virtual void MathPainterSettings(string file, TMathPainter painter) =>
-      Run(file, @"\sqrt[3]\frac\color{#F00}a\mathbb C", nameof(MathPainterSettings), painter);
+      Run(file, @"\sqrt[3]\frac\color{#F00}a\mathbb C", painter);
 #warning Awaiting CI fix
     [Theory(Skip="Awaiting CI fix")]
     [MemberData(nameof(TextPainterSettingsData))]
     public void TextPainterSettings(string file, TTextPainter painter) =>
-      Run(file, @"Inline \color{red}{Maths}: $\int_{a_1^2}^{a_2^2}\color{green}\sqrt\frac x2dx$Display \color{red}{Maths}: $$\int_{a_1^2}^{a_2^2}\color{green}\sqrt\frac x2dx$$", nameof(TextPainterSettings), painter);
+      Run(file, @"Inline \color{red}{Maths}: $\int_{a_1^2}^{a_2^2}\color{green}\sqrt\frac x2dx$Display \color{red}{Maths}: $$\int_{a_1^2}^{a_2^2}\color{green}\sqrt\frac x2dx$$", painter);
   }
 }

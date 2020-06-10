@@ -7,6 +7,8 @@ namespace CSharpMath.Rendering.FrontEnd {
   using BackEnd;
   using Structures;
   using Text;
+  using CSharpMath.Atom.Atoms;
+
   /// <summary>
   /// Unlike <see cref="Typesetter{TFont, TGlyph}"/>,
   /// <see cref="TextPainter{TCanvas, TColor}"/>'s coordinates are inverted by default.
@@ -57,6 +59,28 @@ namespace CSharpMath.Rendering.FrontEnd {
             FontSize, width ?? c.Width,
             c.Height, alignment, padding, offsetX, offsetY
           ));
+        var adjustedCanvasWidth =
+          float.IsInfinity(c.Width) || float.IsNaN(c.Width)
+          ? System.Math.Max(_relativeXCoordDisplay.Displays.CollectionWidth(),
+            _absoluteXCoordDisplay.Displays.IsNonEmpty() ? _absoluteXCoordDisplay.Displays.Max(d => d.Width) : 0)
+          : c.Width;
+        float Δx = 0;
+        var y = float.NegativeInfinity;
+        var leftRightFlags = alignment & (TextAlignment.Left | TextAlignment.Right);
+        if (leftRightFlags != TextAlignment.Left)
+          foreach (var relDisplay in _relativeXCoordDisplay.Displays.Reverse()) {
+            if (relDisplay.Position.Y > y) {
+              y = relDisplay.Position.Y;
+              var rightSpace = adjustedCanvasWidth - (relDisplay.Position.X + relDisplay.Width);
+              Δx = leftRightFlags switch
+              {
+                TextAlignment.Center => rightSpace / 2,
+                TextAlignment.Right => rightSpace,
+                _ => throw new InvalidCodePathException("The left flag has been set. This foreach loop should have been skipped.")
+              };
+            }
+            relDisplay.Position = new PointF(relDisplay.Position.X + Δx, y);
+          }
         //offsetY is already included in _relativeXCoordDisplay.Position,
         //no need to add it again below
         _absoluteXCoordDisplay.Position =

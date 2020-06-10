@@ -184,7 +184,7 @@ Xamarin.Forms|Avalonia
 ![Xamarin.Forms](https://user-images.githubusercontent.com/19922066/80187259-e7e8a080-8641-11ea-8c15-63e36b85047e.png)|![Avalonia](https://user-images.githubusercontent.com/19922066/80187422-31d18680-8642-11ea-81b3-aea7e027a7ea.png)
 
 ## What about rendering to an image instead of displaying in a view?
-Warning: There are still some rough edges on image rendering to be resolved, such as [this](CSharpMath.Rendering.Tests/Display/AccentOverF.png) and [this](CSharpMath.Rendering.Tests/Text/WideDisplayMaths.png). However, it is already usable for the majority of cases.
+Warning: There are still some rough edges on image rendering to be resolved, such as [this](CSharpMath.Rendering.Tests/MathDisplay/AccentOverF.png) and [this](CSharpMath.Rendering.Tests/TextLeft/WideDisplayMaths.png). However, it is already usable for the majority of cases.
 
 For SkiaSharp:
 ```cs
@@ -214,10 +214,10 @@ var painter = someMathView.Painter; // or someTextView.Painter
 painter.DrawAsPng(someStream);
 ```
 
-![Cell 1](CSharpMath.Rendering.Tests/Display/ExponentWithFraction.png)|![Cell 2](CSharpMath.Rendering.Tests/Display/SummationWithCup.png)|![Cell 3](CSharpMath.Rendering.Tests/Display/Color.png)
+![Cell 1](CSharpMath.Rendering.Tests/MathDisplay/ExponentWithFraction.png)|![Cell 2](CSharpMath.Rendering.Tests/MathDisplay/SummationWithCup.png)|![Cell 3](CSharpMath.Rendering.Tests/MathDisplay/Color.png)
 -|-|-
-![Cell 4](CSharpMath.Rendering.Tests/Display/RaiseBox.png)|![Cell 5](CSharpMath.Rendering.Tests/Display/SomeLimit.png)|![Cell 6](CSharpMath.Rendering.Tests/Display/VectorProjection.png)
-![Cell 7](CSharpMath.Rendering.Tests/Display/Matrix3.png)|![Cell 8](CSharpMath.Rendering.Tests/Display/IntegralColorBoxCorrect.png)|![Cell 9](CSharpMath.Rendering.Tests/Display/Taylor.png)
+![Cell 4](CSharpMath.Rendering.Tests/MathDisplay/RaiseBox.png)|![Cell 5](CSharpMath.Rendering.Tests/MathDisplay/SomeLimit.png)|![Cell 6](CSharpMath.Rendering.Tests/MathDisplay/VectorProjection.png)
+![Cell 7](CSharpMath.Rendering.Tests/MathDisplay/Matrix3.png)|![Cell 8](CSharpMath.Rendering.Tests/MathDisplay/IntegralColorBoxCorrect.png)|![Cell 9](CSharpMath.Rendering.Tests/MathDisplay/Taylor.png)
 
 
 ## This looks great and all, but is there a way to edit and evaluate the math?

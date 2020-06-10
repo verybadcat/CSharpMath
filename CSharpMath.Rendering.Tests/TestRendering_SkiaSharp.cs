@@ -8,8 +8,9 @@ namespace CSharpMath.Rendering.Tests {
   public class TestRendering_SkiaSharp : TestRendering<SKCanvas, SKColor, MathPainter, TextPainter> {
     protected override string FrontEnd => nameof(SkiaSharp);
     protected override double FileSizeTolerance => 0; // SkiaSharp is the baseline, no deviations allowed
-    protected override void DrawToStream<TContent>(Painter<SKCanvas, TContent, SKColor> painter, System.IO.Stream stream, float textPainterCanvasWidth) =>
-      painter.DrawAsStream(textPainterCanvasWidth)?.CopyTo(stream);
+    protected override void DrawToStream<TContent>(Painter<SKCanvas, TContent, SKColor> painter,
+      System.IO.Stream stream, float textPainterCanvasWidth, TextAlignment alignment) =>
+      painter.DrawAsStream(textPainterCanvasWidth, alignment)?.CopyTo(stream);
     public static TheoryData<string, MathPainter> MathPainterSettingsDataExtra =>
       new TheoryData<string, MathPainter> {
         { "NoAntiAlias", new MathPainter { AntiAlias = false } }
