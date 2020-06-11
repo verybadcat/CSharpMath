@@ -2,7 +2,7 @@
 <!--Info: https://docs.microsoft.com/en-us/visualstudio/msbuild/customize-your-build?view=vs-2019#directorybuildprops-and-directorybuildtargets-->
 <Project InitialTargets="AppendCISignatureToPackageVersion">
   <PropertyGroup Condition="$(MSBuildProjectName.StartsWith('CSharpMath'))"> <!--Don't apply to Typography projects-->
-    <LangVersion Condition="$(MSBuildProjectExtension) == '.csproj'">8.0</LangVersion> <!--Don't apply to F# projects-->
+    <LangVersion>preview</LangVersion>
     <Nullable>enable</Nullable>
     <NoWarn>
       CA1062,<!--Obsolete with C# 8 nullability annotations-->
