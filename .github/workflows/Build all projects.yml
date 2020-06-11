@@ -32,4 +32,4 @@ jobs:
       if: github.ref == 'refs/heads/master'
       run: |
         nuget sources add -name "GPR" -Source https://nuget.pkg.github.com/verybadcat/index.json -Username verybadcat -Password ${{ secrets.GITHUB_TOKEN }}
-        nuget push .nupkgs/*.nupkg -Source "GPR" -SkipDuplicate
+        nuget push .nupkgs/ -Source "GPR" -SkipDuplicate
