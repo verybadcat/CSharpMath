@@ -9,9 +9,11 @@
       CA1303,<!--Who localizes exception messages, anyway?-->
     </NoWarn>
 
-    <!--NuGet properties: Ordered according to https://docs.microsoft.com/en-us/nuget/reference/msbuild-targets#pack-target-->
+    <!--This is the same output as 'git rev-parse HEAD' or current commit SHA-->
+    <RepositoryCommit>$([System.IO.File]::ReadAllText($([System.IO.Path]::Combine($(MSBuildThisFileDirectory), ".git", "ORIG_HEAD"))))</RepositoryCommit>
+    <!--NuGet properties: Except RepositoryCommit, ordered according to https://docs.microsoft.com/en-us/nuget/reference/msbuild-targets#pack-target-->
     <PackageId>$(MSBuildProjectName)</PackageId>
-    <PackageVersionRaw>0.4.2</PackageVersionRaw>
+    <PackageVersion>0.4.2-ci-$(RepositoryCommit)</PackageVersion> <!--Please don't use the 4th version slot for CI versioning needs (see AppendCISignatureToPackageVersion below)-->
     <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie, FoggyFinder)</Authors>
     <Title>$(PackageId)</Title>
     <!--Description property is defined in individual projects-->
@@ -59,17 +61,15 @@
     And $(GeneratePackageOnBuild)">
     <None Include="$(MSBuildThisFileDirectory)Icon.png" Pack="true" PackagePath="" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="GitInfo" Version="2.0.26" PrivateAssets="All" />
   </ItemGroup>
-  <Target Name="AppendCISignatureToPackageVersion" BeforeTargets="BeforeBuild" Condition="$(MSBuildProjectName.StartsWith('CSharpMath'))">
-    <Exec Command="git rev-parse HEAD" ConsoleToMSBuild="true">
+  <Target Name="AppendCISignatureToPackageVersion" BeforeTargets="BeforeBuild" Condition="False And $(MSBuildProjectName.StartsWith('CSharpMath'))">
+    <Exec Command="git rev-parse HEAD" ConsoleToMSBuild="true" EchoOff="true">
       <Output TaskParameter="ConsoleOutput" PropertyName="RepositoryCommit" />
     </Exec>
     <!-- Appending build date and time as metadata for version is blocked on https://github.community/t/bug-nuget-support-build-metadata-properly/117606 -->
-    <!-- <CreateProperty Value="$(PackageVersionRaw)-ci-$(RepositoryCommit)+$([System.DateTime]::UtcNow.ToString('yyyy.MM.dd-HH.mm.ss'))"> -->
-    <CreateProperty Condition="!$([System.String]::IsNullOrEmpty($(CI))) And $(CI)" Value="$(PackageVersionRaw)-ci-$(RepositoryCommit)">
-      <Output TaskParameter="Value" PropertyName="PackageVersion" />
-    </CreateProperty>
-    <CreateProperty Condition="$([System.String]::IsNullOrEmpty($(CI))) Or !$(CI)" Value="$(PackageVersionRaw)">
+    <!-- <CreateProperty Value="$(PackageVersion).1-ci-$(RepositoryCommit)+$([System.DateTime]::UtcNow.ToString('yyyy.MM.dd-HH.mm.ss'))"> -->
+    <CreateProperty Condition="!$([System.String]::IsNullOrEmpty($(CI))) And $(CI)" Value="$(PackageVersion).1-ci-$(RepositoryCommit)">
       <Output TaskParameter="Value" PropertyName="PackageVersion" />
     </CreateProperty>
   </Target>
