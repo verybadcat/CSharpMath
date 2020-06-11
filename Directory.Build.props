@@ -61,7 +61,7 @@
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
   <Target Name="AppendCISignatureToPackageVersion" Condition="$(MSBuildProjectName.StartsWith('CSharpMath'))">
-    <Exec Command="git rev-parse HEAD" ConsoleToMSBuild="true" EchoOff="true">
+    <Exec Command="git rev-parse HEAD" ConsoleToMSBuild="true" EchoOff="true" StandardOutputImportance="Low">
       <Output TaskParameter="ConsoleOutput" PropertyName="RepositoryCommit" />
     </Exec>
     <!-- Appending build date and time as metadata for version is blocked on https://github.community/t/bug-nuget-support-build-metadata-properly/117606 -->
