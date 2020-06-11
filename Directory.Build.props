@@ -9,9 +9,9 @@
       CA1303,<!--Who localizes exception messages, anyway?-->
     </NoWarn>
 
-    <!--Ordered according to https://docs.microsoft.com/en-us/nuget/reference/msbuild-targets#pack-target-->
+    <!--NuGet properties: Ordered according to https://docs.microsoft.com/en-us/nuget/reference/msbuild-targets#pack-target-->
     <PackageId>$(MSBuildProjectName)</PackageId>
-    <PackageVersion>0.4.2</PackageVersion>
+    <PackageVersionRaw>0.4.2</PackageVersionRaw>
     <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie, FoggyFinder)</Authors>
     <Title>$(PackageId)</Title>
     <!--Description property is defined in individual projects-->
@@ -33,6 +33,10 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryBranch>master</RepositoryBranch>
     <!--RepositoryCommit property is set dynamically below-->
+    
+    <!--SourceLink properties: Ordered according to https://github.com/dotnet/sourcelink#using-source-link-in-net-projects-->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     
@@ -54,14 +58,18 @@
     And !$([System.String]::IsNullOrEmpty($(GeneratePackageOnBuild)))
     And $(GeneratePackageOnBuild)">
     <None Include="$(MSBuildThisFileDirectory)Icon.png" Pack="true" PackagePath="" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
   <Target Name="AppendCISignatureToPackageVersion" BeforeTargets="BeforeBuild" Condition="$(MSBuildProjectName.StartsWith('CSharpMath'))">
     <Exec Command="git rev-parse HEAD" ConsoleToMSBuild="true">
       <Output TaskParameter="ConsoleOutput" PropertyName="RepositoryCommit" />
     </Exec>
     <!-- Appending build date and time as metadata for version is blocked on https://github.community/t/bug-nuget-support-build-metadata-properly/117606 -->
-    <!-- <CreateProperty Value="$(PackageVersion)-ci-$(RepositoryCommit)+$([System.DateTime]::UtcNow.ToString('yyyy.MM.dd-HH.mm.ss'))"> -->
-    <CreateProperty Condition="$(CI)" Value="$(PackageVersion)-ci-$(RepositoryCommit)">
+    <!-- <CreateProperty Value="$(PackageVersionRaw)-ci-$(RepositoryCommit)+$([System.DateTime]::UtcNow.ToString('yyyy.MM.dd-HH.mm.ss'))"> -->
+    <CreateProperty Condition="!$([System.String]::IsNullOrEmpty($(CI))) And $(CI)" Value="$(PackageVersionRaw)-ci-$(RepositoryCommit)">
+      <Output TaskParameter="Value" PropertyName="PackageVersion" />
+    </CreateProperty>
+    <CreateProperty Condition="$([System.String]::IsNullOrEmpty($(CI))) Or !$(CI)" Value="$(PackageVersionRaw)">
       <Output TaskParameter="Value" PropertyName="PackageVersion" />
     </CreateProperty>
   </Target>
