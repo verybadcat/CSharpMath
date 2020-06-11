@@ -262,6 +262,37 @@ Analyzing an expression | Solving an equation
 
 # [Documentation](https://github.com/verybadcat/CSharpMath/wiki/Documentation-of-public-facing-APIs-of-CSharpMath.Rendering,-CSharpMath.SkiaSharp-and-CSharpMath.Forms-MathViews)
 
+# Opting in to the nightly feed
+
+For those who wish to be even more updated than prereleases, you can opt in to the nightly feed which is updated whenever the master branch has a new commit.
+
+1. Log in to GitHub
+2. Generate a new token (a 40-digit hexadecimal number) in https://github.com/settings/tokens/new with the `read:packages` scope
+3. Create a new file called `NuGet.Config` or `nuget.config` in the same folder as your solution with content
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+    <packageSources>
+        <add key="CSharpMathNightly" value="https://nuget.pkg.github.com/verybadcat/index.json" />
+    </packageSources>
+    <packageSourceCredentials>
+        <CSharpMathNightly>
+            <add key="Username" value="USERNAME" />
+            <add key="ClearTextPassword" value="TOKEN" />
+        </CSharpMathNightly>
+    </packageSourceCredentials>
+</configuration>
+```
+4. Replace `USERNAME` in the above file with your GitHub username and `TOKEN` with your generated token.
+5. Open a package webpage in https://github.com/verybadcat/CSharpMath/packages
+6. Insert the following into your `.csproj`:
+```xml
+<ItemGroup>
+  <PackageReference Include="PACKAGE" Version="VERSION" />
+</ItemGroup>
+```
+7. Replace `PACKAGE` in the above file by the package name in the webpage, e.g. `CSharpMath.SkiaSharp`, and `VERSION` by the version in the webpage, e.g. `0.4.2-ci-9db8a6dec29202804764fab9d6f7f19e43c3c083`. The 40-digit hexadecimal number at the end of the version is the Git commit that was the package was built on. CI versions are after the current version, aka `0.4.1-ci-xxx` → `0.4.2` → `0.4.2-ci-xxx`.
+
 # Project structure
 
 <!--

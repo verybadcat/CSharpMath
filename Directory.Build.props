@@ -63,7 +63,9 @@
     <Exec Command="git rev-parse HEAD" ConsoleToMSBuild="true">
       <Output TaskParameter="ConsoleOutput" PropertyName="GitCommit" />
     </Exec>
-    <CreateProperty Value="$(PackageVersion)-ci-$(GitCommit)+$([System.DateTime]::UtcNow.ToString('yyyy.MM.dd-HH.mm.ss'))">
+    <!-- Appending build date and time as metadata for version is blocked on https://github.community/t/bug-nuget-support-build-metadata-properly/117606 -->
+    <!-- <CreateProperty Value="$(PackageVersion)-ci-$(GitCommit)+$([System.DateTime]::UtcNow.ToString('yyyy.MM.dd-HH.mm.ss'))"> -->
+    <CreateProperty Value="$(PackageVersion)-ci-$(GitCommit)">
       <Output TaskParameter="Value" PropertyName="PackageVersion" />
     </CreateProperty>
   </Target>
