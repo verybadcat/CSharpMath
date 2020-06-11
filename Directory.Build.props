@@ -32,9 +32,7 @@
     <RepositoryUrl>https://github.com/verybadcat/CSharpMath.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryBranch>master</RepositoryBranch>
-    <RepositoryCommit>
-      6678311f2f4f711ce6992e20ea31cd095205f651
-    </RepositoryCommit>
+    <!--RepositoryCommit property is set dynamically below-->
     
     <!--Info on NuGet packaging properties: https://github.com/NuGet/Home/wiki/Adding-nuget-pack-as-a-msbuild-target-->
     <GeneratePackageOnBuild Condition="
@@ -55,17 +53,13 @@
     And $(GeneratePackageOnBuild)">
     <None Include="$(MSBuildThisFileDirectory)Icon.png" Pack="true" PackagePath="" />
   </ItemGroup>
-  <Target Name="AppendCISignatureToPackageVersion" BeforeTargets="BeforeBuild" Condition="
-    $(MSBuildProjectName.StartsWith('CSharpMath'))
-    And !$([System.String]::IsNullOrEmpty($(GeneratePackageOnBuild)))
-    And $(GeneratePackageOnBuild)
-    And $(CI)">
+  <Target Name="AppendCISignatureToPackageVersion" BeforeTargets="BeforeBuild" Condition="$(MSBuildProjectName.StartsWith('CSharpMath'))">
     <Exec Command="git rev-parse HEAD" ConsoleToMSBuild="true">
-      <Output TaskParameter="ConsoleOutput" PropertyName="GitCommit" />
+      <Output TaskParameter="ConsoleOutput" PropertyName="RepositoryCommit" />
     </Exec>
     <!-- Appending build date and time as metadata for version is blocked on https://github.community/t/bug-nuget-support-build-metadata-properly/117606 -->
-    <!-- <CreateProperty Value="$(PackageVersion)-ci-$(GitCommit)+$([System.DateTime]::UtcNow.ToString('yyyy.MM.dd-HH.mm.ss'))"> -->
-    <CreateProperty Value="$(PackageVersion)-ci-$(GitCommit)">
+    <!-- <CreateProperty Value="$(PackageVersion)-ci-$(RepositoryCommit)+$([System.DateTime]::UtcNow.ToString('yyyy.MM.dd-HH.mm.ss'))"> -->
+    <CreateProperty Condition="$(CI)" Value="$(PackageVersion)-ci-$(RepositoryCommit)">
       <Output TaskParameter="Value" PropertyName="PackageVersion" />
     </CreateProperty>
   </Target>
