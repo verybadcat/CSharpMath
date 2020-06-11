@@ -291,7 +291,14 @@ For those who wish to be even more updated than prereleases, you can opt in to t
   <PackageReference Include="PACKAGE" Version="VERSION" />
 </ItemGroup>
 ```
-7. Replace `PACKAGE` in the above file by the package name in the webpage, e.g. `CSharpMath.SkiaSharp`, and `VERSION` by the version in the webpage, e.g. `0.4.2-ci-9db8a6dec29202804764fab9d6f7f19e43c3c083`. The 40-digit hexadecimal number at the end of the version is the Git commit that was the package was built on. CI versions are after the current version, aka `0.4.1-ci-xxx` → `0.4.2` → `0.4.2-ci-xxx`.
+7. Replace `PACKAGE` in the above file by the package name in the webpage, e.g. `CSharpMath.SkiaSharp`, and `VERSION` by the version in the webpage, e.g. `0.4.2-ci-9db8a6dec29202804764fab9d6f7f19e43c3c083`. The 40-digit hexadecimal number at the end of the version is the Git commit that was the package was built on. CI versions for a version are newer than that version, aka chronologically `0.4.1-ci-xxx` → `0.4.2` → `0.4.2-ci-xxx`.
+### SourceLink for CI packages
+
+Unfortunately, non-NuGet.org feeds do not support `.snupkg`s, so you will have to download all the packages yourself.
+1. Go to https://github.com/verybadcat/CSharpMath/actions?query=workflow%3ABuild and open the latest build
+2. Download artifacts
+3. Extract the files a folder
+4. Add the folder as a local NuGet feed to Visual Studio according to https://docs.microsoft.com/en-gb/nuget/consume-packages/install-use-packages-visual-studio#package-sources
 
 # Project structure
 
