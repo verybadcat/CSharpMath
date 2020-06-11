@@ -295,10 +295,11 @@ For those who wish to be even more updated than prereleases, you can opt in to t
 ### SourceLink for CI packages
 
 Unfortunately, non-NuGet.org feeds do not support `.snupkg`s, so you will have to download all the packages yourself.
-1. Go to https://github.com/verybadcat/CSharpMath/actions?query=workflow%3ABuild and open the latest build
-2. Download artifacts
-3. Extract the files a folder
-4. Add the folder as a local NuGet feed to Visual Studio according to https://docs.microsoft.com/en-gb/nuget/consume-packages/install-use-packages-visual-studio#package-sources
+1. Go to https://github.com/verybadcat/CSharpMath/actions?query=workflow%3ABuild
+2. Open the latest build
+3. Download artifacts
+4. Extract the files to a folder
+5. Add the folder as a local NuGet feed to Visual Studio according to https://docs.microsoft.com/en-gb/nuget/consume-packages/install-use-packages-visual-studio#package-sources
 
 # Project structure
 
