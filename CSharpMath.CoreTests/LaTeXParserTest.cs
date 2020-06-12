@@ -421,6 +421,7 @@ namespace CSharpMath.CoreTests {
     }
     [Theory]
     [InlineData(@"\color{red}\begin{pmatrix}1&2\\3&4\end{pmatrix}")]
+    [InlineData(@"\color{red}\begin{pmatrix}{1}&2\\3&{4}\end{pmatrix}")]
     [InlineData(@"\color{red}{\begin{pmatrix}1&2\\3&4\end{pmatrix}}")]
     [InlineData(@"\color{red}{{\begin{pmatrix}1&2\\3&4\end{pmatrix}}}")]
     [InlineData(@"\color{red}\left(\begin{matrix}1&2\\3&4\end{matrix}\right)")]
