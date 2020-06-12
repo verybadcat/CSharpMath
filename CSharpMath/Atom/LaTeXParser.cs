@@ -614,7 +614,7 @@ namespace CSharpMath.Atom {
           return null;
         }
       }
-      while (HasCharacters && !environment.Ended && (stopChar == '\0' || Chars[CurrentChar - 1] != stopChar)) {
+      while (HasCharacters && !environment.Ended) {
         var list = BuildInternal(false, stopChar);
         if (list == null) {
           return null;
@@ -626,6 +626,8 @@ namespace CSharpMath.Atom {
           rows.Add(new List<MathList>());
           currentColumn = 0;
         }
+        // The } in \begin{matrix} is not stopChar so this line is not written in the while-condition
+        if (stopChar != '\0' && Chars[CurrentChar - 1] == stopChar) break;
       }
       if (environment.Name != null && !environment.Ended) {
         SetError($@"Missing \end for \begin{{{environment.Name}}}");

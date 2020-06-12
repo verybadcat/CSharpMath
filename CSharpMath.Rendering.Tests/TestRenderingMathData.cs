@@ -98,5 +98,6 @@ namespace CSharpMath.Rendering.Tests {
     public const string ItalicScripts = @"U_3^2UY_3^2U_3Y^2f_1f^2ff";
     public const string IntegralScripts = @"\int\int\int^{\infty}\int_0\int^{\infty}_0\int";
     public const string Logic = @"\neg(P\land Q) \iff (\neg P)\lor(\neg Q)";
+    public const string LargerDelimiters = @"\left(\left[\left\{\left(\left[\left\{\left(\left[\left\{\left(\left[\left\{\square\right\}^\square\right]^\square\right)^\square\right\}^\square\right]^\square\right)^\square\right\}^\square\right]^\square\right)^\square\right\}^\square\right]^\square\right)^\square";
   }
 }

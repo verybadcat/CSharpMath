@@ -22,5 +22,8 @@ namespace CSharpMath.Forms.Example {
           (View.LaTeX, View.ErrorMessage != null ? Color.Red : Color.Black);
       };
     }
+    private void Button_Clicked(object sender, System.EventArgs e) {
+      View.DisplacementX = View.DisplacementY = 0;
+    }
   }
 }
