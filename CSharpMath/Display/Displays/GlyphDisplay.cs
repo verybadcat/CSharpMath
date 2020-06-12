@@ -6,20 +6,26 @@ namespace CSharpMath.Display.Displays {
   using FrontEnd;
   public class GlyphDisplay<TFont, TGlyph> : IGlyphDisplay<TFont, TGlyph>
     where TFont : IFont<TGlyph> {
-    
-    public float Ascent { get; set; }
-    public float Descent { get; set; }
-    public float Width { get; set; }
+
+    readonly float _ascent;
+    readonly float _descent;
+    public float Ascent => _ascent - ShiftDown;
+    public float Descent => _descent + ShiftDown;
+    public float Width { get; }
     public Range Range { get; }
     public PointF Position { get; set; }
     public bool HasScript { get; set; }
     public float ShiftDown { get; set; }
     public TGlyph Glyph { get; }
     public TFont Font { get; }
-    public GlyphDisplay(TGlyph glyph, Range range, TFont font) {
+    public GlyphDisplay(TGlyph glyph, Range range, TFont font,
+      float ascent, float descent, float width) {
       Glyph = glyph;
       Range = range;
       Font = font;
+      _ascent = ascent;
+      _descent = descent;
+      Width = width;
     }
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
       this.DrawBackground(context);

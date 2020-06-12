@@ -22,10 +22,11 @@ namespace CSharpMath.Rendering.BackEnd {
         {
           0 => 0,
           1 => advances.Single(),
-          _ => advances.Take(nGlyphs - 1).Sum() +
-              System.Math.Max(
-                last.Info.Bounds.XMax * last.Typeface.CalculateScaleToPixelFromPointSize(font.PointSize),
-                advances.Last())
+          _ => advances//.Take(nGlyphs - 1)
+               .Sum()
+               //+ System.Math.Max(
+               // last.Info.Bounds.XMax * last.Typeface.CalculateScaleToPixelFromPointSize(font.PointSize),
+               // advances.Last())
         });
     }
     public IEnumerable<RectangleF> GetBoundingRectsForGlyphs

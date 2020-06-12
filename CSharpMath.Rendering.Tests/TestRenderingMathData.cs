@@ -95,5 +95,8 @@ namespace CSharpMath.Rendering.Tests {
     public const string RaiseBox = @"a\raisebox{1mu}a\raisebox{2mu}a\raisebox{3mu}a\raisebox{4mu}a";
     public const string FontStyles = @"\mathnormal F\mathrm F\mathbf F\mathcal F\mathtt F\mathit F\mathsf F\mathfrak F\mathbb F\mathbfit F";
     public const string ItalicAlignment = @"\colorbox{yellow}P\\\begin{array}{r}\colorbox{yellow}{PF}\\\colorbox{yellow}F\end{array}";
+    public const string ItalicScripts = @"U_3^2UY_3^2U_3Y^2f_1f^2ff";
+    public const string IntegralScripts = @"\int\int\int^{\infty}\int_0\int^{\infty}_0\int";
+    public const string Logic = @"\neg(P\land Q) \iff (\neg P)\lor(\neg Q)";
   }
 }
