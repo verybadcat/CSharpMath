@@ -1,15 +1,15 @@
 <!--Directory.Build.props: MSBuild properties that are included in every project-->
 <!--Info: https://docs.microsoft.com/en-us/visualstudio/msbuild/customize-your-build?view=vs-2019#directorybuildprops-and-directorybuildtargets-->
-<Project>
+<Project InitialTargets="AppendCISignatureToPackageVersion">
   <PropertyGroup Condition="$(MSBuildProjectName.StartsWith('CSharpMath'))"> <!--Don't apply to Typography projects-->
-    <LangVersion Condition="$(MSBuildProjectExtension) == '.csproj'">8.0</LangVersion> <!--Don't apply to F# projects-->
+    <LangVersion>preview</LangVersion>
     <Nullable>enable</Nullable>
     <NoWarn>
       CA1062,<!--Obsolete with C# 8 nullability annotations-->
       CA1303,<!--Who localizes exception messages, anyway?-->
     </NoWarn>
 
-    <!--Ordered according to https://docs.microsoft.com/en-us/nuget/reference/msbuild-targets#pack-target-->
+    <!--NuGet properties: Ordered according to https://docs.microsoft.com/en-us/nuget/reference/msbuild-targets#pack-target-->
     <PackageId>$(MSBuildProjectName)</PackageId>
     <PackageVersion>0.4.2</PackageVersion>
     <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie, FoggyFinder)</Authors>
@@ -32,9 +32,13 @@
     <RepositoryUrl>https://github.com/verybadcat/CSharpMath.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryBranch>master</RepositoryBranch>
-    <RepositoryCommit>
-      6678311f2f4f711ce6992e20ea31cd095205f651
-    </RepositoryCommit>
+    <!--RepositoryCommit property is set dynamically below-->
+    
+    <!--SourceLink properties: Ordered according to https://github.com/dotnet/sourcelink#using-source-link-in-net-projects-->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     
     <!--Info on NuGet packaging properties: https://github.com/NuGet/Home/wiki/Adding-nuget-pack-as-a-msbuild-target-->
     <GeneratePackageOnBuild Condition="
@@ -54,16 +58,16 @@
     And !$([System.String]::IsNullOrEmpty($(GeneratePackageOnBuild)))
     And $(GeneratePackageOnBuild)">
     <None Include="$(MSBuildThisFileDirectory)Icon.png" Pack="true" PackagePath="" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
-  <Target Name="AppendCISignatureToPackageVersion" BeforeTargets="BeforeBuild" Condition="
-    $(MSBuildProjectName.StartsWith('CSharpMath'))
-    And !$([System.String]::IsNullOrEmpty($(GeneratePackageOnBuild)))
-    And $(GeneratePackageOnBuild)
-    And $(CI)">
-    <Exec Command="git rev-parse HEAD" ConsoleToMSBuild="true">
-      <Output TaskParameter="ConsoleOutput" PropertyName="GitCommit" />
+  <Target Name="AppendCISignatureToPackageVersion" Condition="$(MSBuildProjectName.StartsWith('CSharpMath'))">
+    <!--Setting StandardOutputImportance to Low ensures that EchoOff works: https://github.com/Microsoft/msbuild/issues/2826-->
+    <Exec Command="git rev-parse HEAD" ConsoleToMSBuild="true" EchoOff="true" StandardOutputImportance="Low">
+      <Output TaskParameter="ConsoleOutput" PropertyName="RepositoryCommit" />
     </Exec>
-    <CreateProperty Value="$(PackageVersion)-ci-$(GitCommit)+$([System.DateTime]::UtcNow.ToString('yyyy.MM.dd-HH.mm.ss'))">
+    <!-- Appending build date and time as metadata for version is blocked on https://github.community/t/bug-nuget-support-build-metadata-properly/117606 -->
+    <!-- <CreateProperty Value="$(PackageVersion)-ci-$(RepositoryCommit)+$([System.DateTime]::UtcNow.ToString('yyyy.MM.dd-HH.mm.ss'))"> -->
+    <CreateProperty Condition="!$([System.String]::IsNullOrEmpty($(CI))) And $(CI)" Value="$(PackageVersion)-ci-$(RepositoryCommit)">
       <Output TaskParameter="Value" PropertyName="PackageVersion" />
     </CreateProperty>
   </Target>
