@@ -50,15 +50,14 @@ namespace CSharpMath.Rendering.BackEnd {
       var textPosition = offset;
       if (GlyphBoxColor != null) {
         Bounds bounds;
-        float advance, scale, width = 0, ascent = 0, descent = 0;
+        float scale, ascent = 0, descent = 0;
         foreach (var (glyph, kernAfter, _) in run.GlyphInfos) {
           bounds = glyph.Info.Bounds;
-          advance = glyph.Typeface.GetHAdvanceWidthFromGlyphIndex(glyph.Info.GlyphIndex);
           scale = glyph.Typeface.CalculateScaleToPixelFromPointSize(run.Font.PointSize);
-          width += advance * scale + kernAfter;
           ascent = System.Math.Max(ascent, bounds.YMax * scale);
           descent = System.Math.Min(descent, bounds.YMin * scale);
         }
+        var width = GlyphBoundsProvider.Instance.GetTypographicWidth(run.Font, run);
         Canvas.CurrentColor = GlyphBoxColor?.textRun;
         Canvas.StrokeRect(textPosition.X, textPosition.Y + descent, width, ascent - descent);
       }

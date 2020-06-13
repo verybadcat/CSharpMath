@@ -7,22 +7,22 @@ namespace CSharpMath.Atom {
   using Atoms;
   using InvalidCodePathException = Structures.InvalidCodePathException;
   public class LaTeXParser {
-    class TableEnvironmentProperties {
+    interface IEnvironment { }
+    class TableEnvironment : IEnvironment {
+      public TableEnvironment(string? name) => Name = name;
       public string? Name { get; set; }
       public bool Ended { get; set; }
       public int NRows { get; set; }
       public string? ArrayAlignments { get; set; }
-      public TableEnvironmentProperties(string? name) => Name = name;
     }
-    class InnerEnvironment {
+    class InnerEnvironment : IEnvironment {
       public Boundary? RightBoundary { get; set; }
     }
     public string Chars { get; }
     public int CurrentChar { get; private set; }
     private bool _textMode; //_spacesAllowed in iosMath
     private FontStyle _currentFontStyle;
-    private TableEnvironmentProperties? _currentEnvironment;
-    private InnerEnvironment? _currentInner;
+    private readonly Stack<IEnvironment> _environments = new Stack<IEnvironment>();
     public string? Error { get; private set; }
     public LaTeXParser(string str) {
       Chars = str;
@@ -80,12 +80,11 @@ namespace CSharpMath.Atom {
             continue;
           case '{':
             MathList? sublist;
-            if (_currentEnvironment != null && _currentEnvironment.Name == null) {
+            if (_environments.PeekOrDefault() is TableEnvironment { Name: null }) {
               // \\ or \cr which do not have a corrosponding \end
-              var oldEnv = _currentEnvironment;
-              _currentEnvironment = null;
+              var oldEnv = _environments.Pop();
               sublist = BuildInternal(false, '}');
-              _currentEnvironment = oldEnv;
+              _environments.Push(oldEnv);
             } else {
               sublist = BuildInternal(false, '}');
             }
@@ -100,7 +99,7 @@ namespace CSharpMath.Atom {
           //https://phabricator.wikimedia.org/T99369
           //https://phab.wmfusercontent.org/file/data/xsimlcnvo42siudvwuzk/PHID-FILE-bdcqexocj5b57tj2oezn/math_rendering.png
           //dt, \text{d}t, \partial t, \nabla\psi \\ \underline\overline{dy/dx, \text{d}y/\text{d}x, \frac{dy}{dx}, \frac{\text{d}y}{\text{d}x}, \frac{\partial^2}{\partial x_1\partial x_2}y} \\ \prime,
-          case '}' when oneCharOnly || stopChar != 0:
+          case '}' when oneCharOnly || stopChar != '\0':
             throw new InvalidCodePathException("This should have been handled before.");
           case '}':
             SetError("Missing opening brace");
@@ -143,7 +142,7 @@ namespace CSharpMath.Atom {
             }
             break;
           case '&': // column separation in tables
-            if (_currentEnvironment != null) {
+            if (_environments.PeekOrDefault() is TableEnvironment) {
               return r;
             }
             var table = BuildTable(null, r, false, stopChar);
@@ -377,17 +376,16 @@ namespace CSharpMath.Atom {
           var radicand = BuildInternal(true);
           return radicand != null ? new Radical(degree, radicand) : null;
         case "left":
-          var oldInner = _currentInner;
           var leftBoundary = BoundaryAtomForDelimiterType("left");
           if (!(leftBoundary is Boundary left)) return null;
-          _currentInner = new InnerEnvironment();
+          _environments.Push(new InnerEnvironment());
           var innerList = BuildInternal(false, stopChar);
           if (innerList is null) return null;
-          if (!(_currentInner.RightBoundary is Boundary right)) {
-            SetError("Missing \\right");
+          if (!(_environments.PeekOrDefault() is InnerEnvironment { RightBoundary: { } right })) {
+            SetError($@"Missing \right for \left with delimiter {leftBoundary}");
             return null;
           }
-          _currentInner = oldInner;
+          _environments.Pop();
           return new Inner(left, innerList, right);
         case "overline":
           innerList = BuildInternal(true);
@@ -483,12 +481,20 @@ namespace CSharpMath.Atom {
     private MathList? StopCommand(string command, MathList list, char stopChar) {
       switch (command) {
         case "right":
-          if (_currentInner == null) {
+          while (_environments.PeekOrDefault() is TableEnvironment table)
+            if (table.Name is null) {
+              table.Ended = true;
+              _environments.Pop(); // Get out of \\ or \cr before looking for \right
+            } else {
+              SetError($"Missing \\end{{{table.Name}}}");
+              return null;
+            }
+          if (!(_environments.PeekOrDefault() is InnerEnvironment inner)) {
             SetError("Missing \\left");
             return null;
           }
-          _currentInner.RightBoundary = BoundaryAtomForDelimiterType("right");
-          if (_currentInner.RightBoundary == null) {
+          inner.RightBoundary = BoundaryAtomForDelimiterType("right");
+          if (inner.RightBoundary == null) {
             return null;
           }
           return list;
@@ -503,17 +509,17 @@ namespace CSharpMath.Atom {
           return new MathList(fraction);
         case "\\":
         case "cr":
-          if (_currentEnvironment == null) {
+          if (!(_environments.PeekOrDefault() is TableEnvironment environment)) {
             var table = BuildTable(null, list, true, stopChar);
             if (table == null) return null;
             return new MathList(table);
           } else {
             // stop the current list and increment the row count
-            _currentEnvironment.NRows++;
+            environment.NRows++;
             return list;
           }
         case "end":
-          if (_currentEnvironment == null) {
+          if (!(_environments.PeekOrDefault() is TableEnvironment endEnvironment)) {
             SetError(@"Missing \begin");
             return null;
           }
@@ -521,11 +527,11 @@ namespace CSharpMath.Atom {
           if (env == null) {
             return null;
           }
-          if (env != _currentEnvironment.Name) {
-            SetError($"Begin environment name {_currentEnvironment.Name} does not match end environment name {env}");
+          if (env != endEnvironment.Name) {
+            SetError($"Begin environment name {endEnvironment.Name} does not match end environment name {env}");
             return null;
           }
-          _currentEnvironment.Ended = true;
+          endEnvironment.Ended = true;
           return list;
       }
       return null;
@@ -562,23 +568,23 @@ namespace CSharpMath.Atom {
         { "Vmatrix", ("Vert", "Vert") }
       };
     private MathAtom? BuildTable
-      (string? environment, MathList? firstList, bool isRow, char stopChar) {
-      var oldEnv = _currentEnvironment;
-      _currentEnvironment = new TableEnvironmentProperties(environment);
+      (string? name, MathList? firstList, bool isRow, char stopChar) {
+      var environment = new TableEnvironment(name);
+      _environments.Push(environment);
       int currentRow = 0;
       int currentColumn = 0;
       var rows = new List<List<MathList>> { new List<MathList>() };
       if (firstList != null) {
         rows[currentRow].Add(firstList);
         if (isRow) {
-          _currentEnvironment.NRows++;
+          environment.NRows++;
           currentRow++;
           rows.Add(new List<MathList>());
         } else {
           currentColumn++;
         }
       }
-      if (_currentEnvironment.Name == "array") {
+      if (environment.Name == "array") {
         if (!ExpectCharacter('{')) {
           SetError("Missing array alignment");
           return null;
@@ -595,7 +601,7 @@ namespace CSharpMath.Atom {
               builder.Append(ch);
               break;
             case '}':
-              _currentEnvironment.ArrayAlignments = builder.ToString();
+              environment.ArrayAlignments = builder.ToString();
               done = true;
               break;
             default:
@@ -608,38 +614,42 @@ namespace CSharpMath.Atom {
           return null;
         }
       }
-      while (HasCharacters && !_currentEnvironment.Ended) {
+      while (HasCharacters && !environment.Ended) {
         var list = BuildInternal(false, stopChar);
         if (list == null) {
           return null;
         }
         rows[currentRow].Add(list);
         currentColumn++;
-        if (_currentEnvironment.NRows > currentRow) {
-          currentRow = _currentEnvironment.NRows;
+        if (environment.NRows > currentRow) {
+          currentRow = environment.NRows;
           rows.Add(new List<MathList>());
           currentColumn = 0;
         }
+        // The } in \begin{matrix} is not stopChar so this line is not written in the while-condition
+        if (stopChar != '\0' && Chars[CurrentChar - 1] == stopChar) break;
       }
-      if (_currentEnvironment.Name != null && !_currentEnvironment.Ended) {
-        SetError(@"Missing \end");
+      if (environment.Name != null && !environment.Ended) {
+        SetError($@"Missing \end for \begin{{{environment.Name}}}");
         return null;
       }
 
       // We have finished parsing the table, now interpret the environment
-      environment = _currentEnvironment.Name;
-      var arrayAlignments = _currentEnvironment.ArrayAlignments;
-      _currentEnvironment = oldEnv;
+      name = environment.Name;
+      var arrayAlignments = environment.ArrayAlignments;
+      // Table environments with { Name: null } may have been popped by \right
+      if (_environments.PeekOrDefault() == environment)
+        _environments.Pop();
 
-      var table = new Table(environment, rows);
-      switch (environment) {
+      var table = new Table(name, rows);
+      switch (name) {
         case null:
           table.InterRowAdditionalSpacing = 1;
           for (int i = 0; i < table.NColumns; i++) {
             table.SetAlignment(ColumnAlignment.Left, i);
           }
           return table;
-        case var _ when _matrixEnvironments.TryGetValue(environment, out var delimiters):
+        case var _ when _matrixEnvironments.TryGetValue(name, out var delimiters):
           table.Environment = "matrix"; // TableEnvironment is set to matrix as delimiters are converted to latex outside the table.
           table.InterColumnSpacing = 18;
 
@@ -679,7 +689,7 @@ namespace CSharpMath.Atom {
         case "split":
         case "aligned":
           if (table.NColumns != 2) {
-            SetError(environment + " environment can only have 2 columns");
+            SetError(name + " environment can only have 2 columns");
             return null;
           } else {
             // add a spacer before each of the second column elements, in order to create the correct spacing for "=" and other relations.
@@ -697,7 +707,7 @@ namespace CSharpMath.Atom {
         case "displaylines":
         case "gather":
           if (table.NColumns != 1) {
-            SetError(environment + " environment can only have 1 column");
+            SetError(name + " environment can only have 1 column");
             return null;
           }
           table.InterRowAdditionalSpacing = 1;
@@ -706,7 +716,7 @@ namespace CSharpMath.Atom {
           return table;
         case "eqnarray":
           if (table.NColumns != 3) {
-            SetError(environment + " must have exactly 3 columns");
+            SetError(name + " must have exactly 3 columns");
             return null;
           } else {
             table.InterRowAdditionalSpacing = 1;
@@ -739,7 +749,7 @@ namespace CSharpMath.Atom {
             );
           }
         default:
-          SetError("Unknown environment " + environment);
+          SetError("Unknown environment " + name);
           return null;
       }
     }
