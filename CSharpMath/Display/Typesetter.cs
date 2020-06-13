@@ -741,10 +741,10 @@ namespace CSharpMath.Display {
       var offsets = new List<float>();
       float height = _ConstructGlyphWithParts(parts, glyphHeight, glyphs, offsets);
       using var singleGlyph = new Structures.RentedArray<TGlyph>(glyphs[0]);
+      // descent:0 because it's up to the rendering to adjust the display glyph up or down by setting ShiftDown
       return new GlyphConstructionDisplay<TFont, TGlyph>
         (glyphs, offsets, _styleFont, height, 0, _context.GlyphBoundsProvider
           .GetAdvancesForGlyphs(_styleFont, singleGlyph.Result, 1).Total);
-      // it's up to the rendering to adjust the display glyph up or down
     }
 
     private float _ConstructGlyphWithParts(IEnumerable<GlyphPart<TGlyph>> parts,
