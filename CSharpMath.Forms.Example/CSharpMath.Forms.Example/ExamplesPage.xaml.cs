@@ -10,7 +10,7 @@ namespace CSharpMath.Forms.Example {
   public partial class ExamplesPage : ContentPage {
     public ExamplesPage() {
       InitializeComponent();
-      App.AllViews.Add(View);
+      App.AllMathViews.Add(View);
       View.FontSize = 30;
       View.LaTeX = latex;
     }

@@ -10,7 +10,7 @@ namespace CSharpMath.CoreTests {
   public class LaTeXParserTest {
     public static MathList ParseLaTeX(string latex) {
       var builder = new LaTeXParser(latex);
-      if(builder.Build() is { } mathList) {
+      if (builder.Build() is { } mathList) {
         Assert.Null(builder.Error);
         return mathList;
       } else throw new Xunit.Sdk.NotNullException();
@@ -25,7 +25,7 @@ namespace CSharpMath.CoreTests {
     [InlineData("(", new[] { typeof(Open) }, "(")]
     [InlineData(")", new[] { typeof(Close) }, ")")]
     [InlineData(",", new[] { typeof(Punctuation) }, ",")]
-    [InlineData("?!", new[] { typeof(Close), typeof(Close) }, "?!")]
+    [InlineData("?!", new[] { typeof(Punctuation), typeof(Punctuation) }, "?!")]
     [InlineData("=", new[] { typeof(Relation) }, "=")]
     [InlineData("x+2", new[] { typeof(Variable), typeof(BinaryOperator), typeof(Number) }, "x+2")]
     [InlineData("(2.3 * 8)", new[] { typeof(Open), typeof(Number), typeof(Number), typeof(Number), typeof(BinaryOperator), typeof(Number), typeof(Close) }, "(2.3*8)")]
@@ -419,6 +419,47 @@ namespace CSharpMath.CoreTests {
       Assert.Equal($@"{leftOutput}\begin{{matrix}}x&y\\ z&w\end{{matrix}}{rightOutput}",
         LaTeXParser.MathListToLaTeX(list).ToString());
     }
+    [Theory]
+    [InlineData(@"\color{red}\begin{pmatrix}1&2\\3&4\end{pmatrix}")]
+    [InlineData(@"\color{red}\begin{pmatrix}{1}&2\\3&{4}\end{pmatrix}")]
+    [InlineData(@"\color{red}{\begin{pmatrix}1&2\\3&4\end{pmatrix}}")]
+    [InlineData(@"\color{red}{{\begin{pmatrix}1&2\\3&4\end{pmatrix}}}")]
+    [InlineData(@"\color{red}\left(\begin{matrix}1&2\\3&4\end{matrix}\right)")]
+    [InlineData(@"\color{red}\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) ")]
+    [InlineData(@"\color{red}{\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) }")]
+    [InlineData(@"\color{red}{{\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) }}")]
+    public void TestRedMatrix(string input) {
+      var list = ParseLaTeX(input);
+      Assert.Collection(list, CheckAtom<Color>("", color => {
+        Assert.Equal(new Structures.Color(255, 0, 0), color.Colour);
+        Assert.Collection(color.InnerList,
+          CheckAtom<Inner>("", inner => {
+            Assert.Equal(new Boundary("("), inner.LeftBoundary);
+            Assert.Equal(new Boundary(")"), inner.RightBoundary);
+            Assert.Collection(inner.InnerList,
+              CheckAtom<Table>("", table => {
+                Assert.Equal("matrix", table.Environment);
+                Assert.Equal(0, table.InterRowAdditionalSpacing);
+                Assert.Equal(18, table.InterColumnSpacing);
+                Assert.Equal(2, table.NRows);
+                Assert.Equal(2, table.NColumns);
+                for (int col = 0; col < 2; col++) {
+                  Assert.Equal(ColumnAlignment.Center, table.GetAlignment(col));
+                  for (int row = 0; row < 2; row++) {
+                    Assert.Collection(table.Cells[row][col],
+                      CheckAtom<Style>("", style => Assert.Equal(LineStyle.Text, style.LineStyle)),
+                      atom => Assert.IsType<Number>(atom)
+                    );
+                  }
+                }
+              })
+            );
+          })
+        );
+      }));
+      Assert.Equal(@"\color{red}{\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) }",
+        LaTeXParser.MathListToLaTeX(list).ToString());
+    }
 
     [Fact]
     public void TestDeterminant() {
@@ -455,6 +496,21 @@ namespace CSharpMath.CoreTests {
     }
 
     [Fact]
+    public void TestDefaultEmptyTable() {
+      var list = ParseLaTeX(@"\\");
+      var table = Assert.IsType<Table>(Assert.Single(list));
+      CheckAtom<Table>("")(table);
+      Assert.Null(table.Environment);
+      Assert.Equal(1, table.InterRowAdditionalSpacing);
+      Assert.Equal(0, table.InterColumnSpacing);
+      Assert.Equal(2, table.NRows);
+      Assert.Equal(1, table.NColumns);
+      Assert.Equal(ColumnAlignment.Left, table.GetAlignment(0));
+      Assert.Equal(ColumnAlignment.Center, table.GetAlignment(1));
+      Assert.Collection(table.Cells, row0 => Assert.Empty(Assert.Single(row0)), Assert.Empty);
+      Assert.Equal(@"\\ ", LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+    [Fact]
     public void TestDefaultTable() {
       var list = ParseLaTeX(@"x \\ y");
       var table = Assert.IsType<Table>(Assert.Single(list));
@@ -471,6 +527,181 @@ namespace CSharpMath.CoreTests {
         }
       }
       Assert.Equal(@"x\\ y", LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+
+    [Theory]
+    [InlineData(@"\left(x\\\right)")]
+    [InlineData(@"\left(x \\ \right)")]
+    [InlineData(@"\left( x\\ \right)")]
+    [InlineData(@"\left( x\\ \right) ")]
+    [InlineData(@"\left({x\\}\right) ")]
+    [InlineData(@"\left({{x\\}}\right) ")]
+    public void TestDefaultTableInInner(string input) {
+      var list = ParseLaTeX(input);
+      CheckAtom<Inner>("", inner => {
+        Assert.Equal(new Boundary("("), inner.LeftBoundary);
+        Assert.Equal(new Boundary(")"), inner.RightBoundary);
+        CheckAtom<Table>("", table => {
+          Assert.Null(table.Environment);
+          Assert.Equal(1, table.InterRowAdditionalSpacing);
+          Assert.Equal(0, table.InterColumnSpacing);
+          Assert.Equal(2, table.NRows);
+          Assert.Equal(1, table.NColumns);
+          Assert.Equal(ColumnAlignment.Left, table.GetAlignment(0));
+          Assert.IsType<Variable>(Assert.Single(table.Cells[0][0]));
+          Assert.Empty(table.Cells[1][0]);
+        })(Assert.Single(inner.InnerList));
+      })(Assert.Single(list));
+      Assert.Equal(@"\left( x\\ \right) ", LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+    [Theory]
+    [InlineData(@"\left(\\\right)")]
+    [InlineData(@"\left( \\ \right) ")]
+    [InlineData(@"\left({\\}\right) ")]
+    [InlineData(@"\left({{\\}}\right) ")]
+    public void TestEmptyTableInInner(string input) {
+      var list = ParseLaTeX(input);
+      CheckAtom<Inner>("", inner => {
+        Assert.Equal(new Boundary("("), inner.LeftBoundary);
+        Assert.Equal(new Boundary(")"), inner.RightBoundary);
+        CheckAtom<Table>("", table => {
+          Assert.Null(table.Environment);
+          Assert.Equal(1, table.InterRowAdditionalSpacing);
+          Assert.Equal(0, table.InterColumnSpacing);
+          Assert.Equal(2, table.NRows);
+          Assert.Equal(1, table.NColumns);
+          for (int col = 0; col < 1; col++) {
+            Assert.Equal(ColumnAlignment.Left, table.GetAlignment(col));
+            for (int row = 0; row < 2; row++) {
+              Assert.Empty(table.Cells[row][col]);
+            }
+          }
+        })(Assert.Single(inner.InnerList));
+      })(Assert.Single(list));
+      Assert.Equal(@"\left( \\ \right) ", LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+    [Theory]
+    [InlineData(@"x\\1\left(2\right)3\\x")]
+    [InlineData(@"x\\ 1\left( 2\right) 3\\ x")]
+    public void TestInnerInTable(string input) {
+      var list = ParseLaTeX(input);
+      CheckAtom<Table>("", table => {
+        Assert.Null(table.Environment);
+        Assert.Equal(1, table.InterRowAdditionalSpacing);
+        Assert.Equal(0, table.InterColumnSpacing);
+        Assert.Equal(3, table.NRows);
+        Assert.Equal(1, table.NColumns);
+        for (int col = 0; col < 1; col++) {
+          Assert.Equal(ColumnAlignment.Left, table.GetAlignment(col));
+          for (int row = 0; row < 3; row++) {
+            if (row == 1)
+              Assert.Collection(
+                table.Cells[row][col],
+                CheckAtom<Number>("1"),
+                CheckAtom<Inner>("", inner => {
+                  Assert.Equal(new Boundary("("), inner.LeftBoundary);
+                  Assert.Collection(inner.InnerList, CheckAtom<Number>("2"));
+                  Assert.Equal(new Boundary(")"), inner.RightBoundary);
+                }),
+                CheckAtom<Number>("3")
+              );
+            else
+              Assert.Collection(
+                table.Cells[row][col],
+                CheckAtom<Variable>("x")
+              );
+          }
+        }
+      })(Assert.Single(list));
+      Assert.Equal(@"x\\ 1\left( 2\right) 3\\ x", LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+    [Theory]
+    [InlineData(@"1\\2\left(3\begin{array}{ll}4&\left[5\\6\right]\\\left\{7\begin{cases}8\\9\end{cases}0\right\}a\end{array}b\right)c\\d", 0)]
+    [InlineData(@"1\\ 2\left( 3\begin{array}{ll}4&\left[ 5\\ 6\right] \\ \left\{ 7\left\{ \, \begin{array}{l}\textstyle 8\\ \textstyle 9\end{array}\right. 0\right\} a\end{array}b\right) c\\ d", 1)]
+    public void TestTablesAndInners(string input, float casesInterRowAdditionalSpacing) {
+      var list = ParseLaTeX(input);
+      CheckAtom<Table>("", table => {
+        Assert.Null(table.Environment);
+        Assert.Equal(1, table.InterRowAdditionalSpacing);
+        Assert.Equal(0, table.InterColumnSpacing);
+        Assert.Equal(3, table.NRows);
+        Assert.Equal(1, table.NColumns);
+        Assert.Equal(ColumnAlignment.Left, table.GetAlignment(0));
+        Assert.Equal(ColumnAlignment.Center, table.GetAlignment(1));
+        Assert.Collection(table.Cells[0][0], CheckAtom<Number>("1"));
+        Assert.Collection(table.Cells[1][0],
+          CheckAtom<Number>("2"),
+          CheckAtom<Inner>("", inner => {
+            Assert.Equal(new Boundary("("), inner.LeftBoundary);
+            Assert.Equal(new Boundary(")"), inner.RightBoundary);
+            Assert.Collection(inner.InnerList,
+              CheckAtom<Number>("3"),
+              CheckAtom<Table>("", array => {
+                Assert.Equal("array", array.Environment);
+                Assert.Equal(1, array.InterRowAdditionalSpacing);
+                Assert.Equal(18, array.InterColumnSpacing);
+                Assert.Equal(2, array.NRows);
+                Assert.Equal(2, array.NColumns);
+                Assert.Equal(ColumnAlignment.Left, array.GetAlignment(0));
+                Assert.Equal(ColumnAlignment.Left, array.GetAlignment(1));
+                Assert.Equal(ColumnAlignment.Center, array.GetAlignment(2));
+                Assert.Collection(array.Cells[0][0], CheckAtom<Number>("4"));
+                Assert.Collection(array.Cells[0][1], CheckAtom<Inner>("", inner56 => {
+                  Assert.Equal(new Boundary("["), inner56.LeftBoundary);
+                  Assert.Equal(new Boundary("]"), inner56.RightBoundary);
+                  Assert.Collection(inner56.InnerList, CheckAtom<Table>("", table56 => {
+                    Assert.Null(table56.Environment);
+                    Assert.Equal(1, table56.InterRowAdditionalSpacing);
+                    Assert.Equal(0, table56.InterColumnSpacing);
+                    Assert.Equal(2, table56.NRows);
+                    Assert.Equal(1, table56.NColumns);
+                    Assert.Equal(ColumnAlignment.Left, table56.GetAlignment(0));
+                    Assert.Equal(ColumnAlignment.Center, table56.GetAlignment(1));
+                    Assert.Collection(table56.Cells[0][0], CheckAtom<Number>("5"));
+                    Assert.Collection(table56.Cells[1][0], CheckAtom<Number>("6"));
+                  }));
+                }));
+                Assert.Collection(array.Cells[1][0],
+                  CheckAtom<Inner>("", innerCases => {
+                    Assert.Equal(new Boundary("{"), innerCases.LeftBoundary);
+                    Assert.Equal(new Boundary("}"), innerCases.RightBoundary);
+                    Assert.Collection(innerCases.InnerList,
+                      CheckAtom<Number>("7"),
+                      CheckAtom<Inner>("", innerCasesInner => {
+                        Assert.Equal(new Boundary("{"), innerCasesInner.LeftBoundary);
+                        Assert.Equal(Boundary.Empty, innerCasesInner.RightBoundary);
+                        Assert.Collection(innerCasesInner.InnerList,
+                          CheckAtom<Space>("", space => Assert.Equal(3, space.Length)),
+                          CheckAtom<Table>("", tableCases => {
+                            Assert.Equal("array", tableCases.Environment);
+                            Assert.Equal(casesInterRowAdditionalSpacing, tableCases.InterRowAdditionalSpacing);
+                            Assert.Equal(18, tableCases.InterColumnSpacing);
+                            Assert.Equal(2, tableCases.NRows);
+                            Assert.Equal(1, tableCases.NColumns);
+                            Assert.Equal(ColumnAlignment.Left, tableCases.GetAlignment(0));
+                            Assert.Equal(ColumnAlignment.Center, tableCases.GetAlignment(1));
+                            Assert.Collection(tableCases.Cells[0][0],
+                              CheckAtom<Style>("", style => Assert.Equal(LineStyle.Text, style.LineStyle)),
+                              CheckAtom<Number>("8"));
+                            Assert.Collection(tableCases.Cells[1][0],
+                              CheckAtom<Style>("", style => Assert.Equal(LineStyle.Text, style.LineStyle)),
+                              CheckAtom<Number>("9"));
+                          })
+                        );
+                      }),
+                      CheckAtom<Number>("0")
+                    );
+                  }),
+                  CheckAtom<Variable>("a")
+                );
+              }),
+              CheckAtom<Variable>("b")
+            );
+          }),
+          CheckAtom<Variable>("c"));
+        Assert.Collection(table.Cells[2][0], CheckAtom<Variable>("d"));
+      })(Assert.Single(list));
+      Assert.Equal(@"1\\ 2\left( 3\begin{array}{ll}4&\left[ 5\\ 6\right] \\ \left\{ 7\left\{ \, \begin{array}{l}\textstyle 8\\ \textstyle 9\end{array}\right. 0\right\} a\end{array}b\right) c\\ d", LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
     [Fact]
@@ -1017,7 +1248,7 @@ x_}2
       InlineData(@"1+\left", @"Error: Missing delimiter for left
 1+\left
       ↑ (pos 7)"),
-      InlineData(@"\left{", @"Error: Missing \right
+      InlineData(@"\left{", @"Error: Missing \right for \left with delimiter {
 \left{
      ↑ (pos 6)"),
       InlineData(@"\left(\frac12\right", @"Error: Missing delimiter for right
@@ -1038,10 +1269,10 @@ x_}2
       InlineData(@"5 + 3 \right)", @"Error: Missing \left
 5 + 3 \right)
            ↑ (pos 12)"),
-      InlineData(@"\left(\frac12", @"Error: Missing \right
+      InlineData(@"\left(\frac12", @"Error: Missing \right for \left with delimiter (
 \left(\frac12
             ↑ (pos 13)"),
-      InlineData(@"\left(5 + \left| \frac12 \right)", @"Error: Missing \right
+      InlineData(@"\left(5 + \left| \frac12 \right)", @"Error: Missing \right for \left with delimiter (
 ···left| \frac12 \right)
                        ↑ (pos 32)"),
       InlineData(@"5+ \left|\frac12\right| \right)", @"Error: Missing \left
@@ -1059,7 +1290,10 @@ x_}2
       InlineData(@"\begin{matrix parens}", @"Error: Missing }
 \begin{matrix parens}
              ↑ (pos 14)"), // no spaces in env
-      InlineData(@"\begin{matrix} x", @"Error: Missing \end
+      InlineData(@"\begin{matrix}", @"Error: Missing \end for \begin{matrix}
+\begin{matrix}
+             ↑ (pos 14)"),
+      InlineData(@"\begin{matrix} x", @"Error: Missing \end for \begin{matrix}
 \begin{matrix} x
                ↑ (pos 16)"),
       InlineData(@"\begin{matrix} x \end", @"Error: Missing {
@@ -1107,6 +1341,9 @@ x \end{matrix}
       InlineData(@"\color{red blue}{xyz}", @"Error: Missing }
 \color{red blue}{xyz}
           ↑ (pos 11)"),
+      InlineData(@"\left(\begin{matrix}\right)", @"Error: Missing \end{matrix}
+···(\begin{matrix}\right)
+                       ↑ (pos 26)"),
     ]
     public void TestErrors(string badInput, string expected) {
       var (list, actual) = LaTeXParser.MathListFromLaTeX(badInput);

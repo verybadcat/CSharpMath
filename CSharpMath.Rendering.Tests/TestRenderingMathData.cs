@@ -94,6 +94,11 @@ c\alpha + d\gamma & c\beta + d \delta
     public const string IntegralColorBoxCorrect = @"\colorbox{red}{\int^\colorbox{yellow}\infty_\colorbox{purple}{-\infty}}\colorbox{green}x\ \colorbox{blue}{dx}";
     public const string RaiseBox = @"a\raisebox{1mu}a\raisebox{2mu}a\raisebox{3mu}a\raisebox{4mu}a";
     public const string FontStyles = @"\mathnormal F\mathrm F\mathbf F\mathcal F\mathtt F\mathit F\mathsf F\mathfrak F\mathbb F\mathbfit F";
+    public const string ItalicAlignment = @"\colorbox{yellow}P\\\begin{array}{r}\colorbox{yellow}{PF}\\\colorbox{yellow}F\end{array}";
+    public const string ItalicScripts = @"U_3^2UY_3^2U_3Y^2f_1f^2ff";
+    public const string IntegralScripts = @"\int\int\int^{\infty}\int_0\int^{\infty}_0\int";
+    public const string Logic = @"\neg(P\land Q) \iff (\neg P)\lor(\neg Q)";
+    public const string LargerDelimiters = @"\left(\left[\left\{\left(\left[\left\{\left(\left[\left\{\left(\left[\left\{\square\right\}^\square\right]^\square\right)^\square\right\}^\square\right]^\square\right)^\square\right\}^\square\right]^\square\right)^\square\right\}^\square\right]^\square\right)^\square";
     // Solve x^3+50%*x^2=3/(500y) for x
     /*public const string InnersAndCases = @"\begin{cases}
 \frac{-\left(50+{\left(\frac{250000+27\times -\frac{3}{500\times y}+\sqrt{{\left(250000+27\times -\frac{3}{500\times y}\right)}^{2}-62500000000}}{2}\right)}^{0.3333333333333333}+\frac{2500}{{\left(\frac{250000+27\times -\frac{3}{500\times y}+\sqrt{{\left(250000+27\times -\frac{3}{500\times y}\right)}^{2}-62500000000}}{2}\right)}^{0.3333333333333333}}\right)}{3}\\

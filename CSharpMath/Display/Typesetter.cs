@@ -77,10 +77,8 @@ namespace CSharpMath.Display {
       float skew = accenteeAdjustment - accentAdjustment;
       var height = accentee.Ascent - delta;
       var accentPosition = new PointF(skew, height);
-      return new GlyphDisplay<TFont, TGlyph>(accentGlyph, atomRange, styleFont) {
-        Ascent = glyphAscent,
-        Descent = glyphDescent,
-        Width = glyphWidth,
+      return new GlyphDisplay<TFont, TGlyph>(
+        accentGlyph, atomRange, styleFont, glyphAscent, glyphDescent, glyphWidth) {
         Position = accentPosition
       };
     }
@@ -690,15 +688,15 @@ namespace CSharpMath.Display {
       // be at most 5pt short.
       float glyphHeight = Math.Max(d1, d2);
 
-      IGlyphDisplay<TFont, TGlyph>? leftGlyph = null;
-      if (inner.LeftBoundary is Boundary { Nucleus: var left } && left.Length > 0) {
-        leftGlyph = _FindGlyphForBoundary(left, glyphHeight);
-      }
+      var leftGlyph =
+        inner.LeftBoundary is Boundary { Nucleus: var left } && left.Length > 0
+        ? _FindGlyphForBoundary(left, glyphHeight)
+        : null;
 
-      IGlyphDisplay<TFont, TGlyph>? rightGlyph = null;
-      if (inner.RightBoundary is Boundary { Nucleus: var right } && right.Length > 0) {
-        rightGlyph = _FindGlyphForBoundary(right, glyphHeight);
-      }
+      var rightGlyph =
+        inner.RightBoundary is Boundary { Nucleus: var right } && right.Length > 0
+        ? _FindGlyphForBoundary(right, glyphHeight)
+        : null;
       return new InnerDisplay<TFont, TGlyph>(innerListDisplay, leftGlyph, rightGlyph, range);
     }
 
@@ -711,11 +709,8 @@ namespace CSharpMath.Display {
         glyphAscent + glyphDescent < glyphHeight
         && _ConstructGlyph(leftGlyph, glyphHeight) is IGlyphDisplay<TFont, TGlyph> constructed
         ? constructed
-        : new GlyphDisplay<TFont, TGlyph>(glyph, Range.NotFound, _styleFont) {
-          Ascent = glyphAscent, // 26
-                Descent = glyphDescent,// 18
-                Width = glyphWidth
-        };
+        : new GlyphDisplay<TFont, TGlyph>
+          (glyph, Range.NotFound, _styleFont, glyphAscent, glyphDescent, glyphWidth);
       // Center the glyph on the axis
       var shiftDown =
         0.5f * (glyphDisplay.Ascent - glyphDisplay.Descent)
@@ -735,11 +730,8 @@ namespace CSharpMath.Display {
         // the glyphs are not big enough, so we construct one using extenders
         && _ConstructGlyph(radicalGlyph, radicalHeight) is IGlyphDisplay<TFont, TGlyph> constructed
         ? constructed
-        : new GlyphDisplay<TFont, TGlyph>(glyph, Range.NotFound, _styleFont) {
-          Ascent = glyphAscent,
-          Descent = glyphDescent,
-          Width = glyphWidth
-        };
+        : new GlyphDisplay<TFont, TGlyph>
+          (glyph, Range.NotFound, _styleFont, glyphAscent, glyphDescent, glyphWidth);
     }
 
     private GlyphConstructionDisplay<TFont, TGlyph>? _ConstructGlyph(TGlyph glyph, float glyphHeight) {
@@ -749,12 +741,10 @@ namespace CSharpMath.Display {
       var offsets = new List<float>();
       float height = _ConstructGlyphWithParts(parts, glyphHeight, glyphs, offsets);
       using var singleGlyph = new Structures.RentedArray<TGlyph>(glyphs[0]);
-      return new GlyphConstructionDisplay<TFont, TGlyph>(glyphs, offsets, _styleFont) {
-        Width = _context.GlyphBoundsProvider
-          .GetAdvancesForGlyphs(_styleFont, singleGlyph.Result, 1).Total,
-        Ascent = height,
-        Descent = 0 // it's up to the rendering to adjust the display glyph up or down
-      };
+      // descent:0 because it's up to the rendering to adjust the display glyph up or down by setting ShiftDown
+      return new GlyphConstructionDisplay<TFont, TGlyph>
+        (glyphs, offsets, _styleFont, height, 0, _context.GlyphBoundsProvider
+          .GetAdvancesForGlyphs(_styleFont, singleGlyph.Result, 1).Total);
     }
 
     private float _ConstructGlyphWithParts(IEnumerable<GlyphPart<TGlyph>> parts,
@@ -944,16 +934,14 @@ namespace CSharpMath.Display {
               (_styleFont, glyphsArray.Result, 1).Total;
             boundingBox.GetAscentDescentWidth(out float ascent, out float descent, out _);
             var shiftDown = 0.5 * (ascent - descent) - _mathTable.AxisHeight(_styleFont);
-            var glyphDisplay = new GlyphDisplay<TFont, TGlyph>(glyph, op.IndexRange, _styleFont) {
-              Ascent = ascent,
-              Descent = descent,
-              Width = width
-            };
             if (op.Subscript.IsNonEmpty() && !(op.Limits ?? _style == LineStyle.Display))
               // remove italic correction in this case
-              glyphDisplay.Width -= delta;
-            glyphDisplay.ShiftDown = (float)shiftDown;
-            glyphDisplay.Position = _currentPosition;
+              width -= delta;
+            var glyphDisplay =
+              new GlyphDisplay<TFont, TGlyph>(glyph, op.IndexRange, _styleFont, ascent, descent, width) {
+                ShiftDown = (float)shiftDown,
+                Position = _currentPosition
+              };
             return AddLimitsToDisplay(glyphDisplay, op, delta);
           }
 

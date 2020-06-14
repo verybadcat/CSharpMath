@@ -13,7 +13,7 @@ namespace CSharpMath.Rendering.BackEnd {
       var advances = new List<float>(nGlyphs);
       foreach (var glyph in glyphs)
         advances.Add(glyph.Typeface.GetHAdvanceWidthFromGlyphIndex(glyph.Info.GlyphIndex) *
-        glyph.Typeface.CalculateScaleToPixelFromPointSize(font.PointSize));
+          glyph.Typeface.CalculateScaleToPixelFromPointSize(font.PointSize));
       return (advances, advances.Sum());
     }
     public IEnumerable<RectangleF> GetBoundingRectsForGlyphs

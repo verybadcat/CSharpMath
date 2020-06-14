@@ -501,7 +501,7 @@ namespace CSharpMath {
                   if (levelsDeep == 0) open = i;
                   levelsDeep++;
                   break;
-                case Atoms.Close { HasCorrespondingOpen: true } close:
+                case Atoms.Close close:
                   levelsDeep--;
                   if (levelsDeep == 0) {
                     if (open == -1) return "Missing argument for " + atom.Nucleus;

@@ -9,6 +9,6 @@
             <Label Text="Pan to view more!" HorizontalOptions="FillAndExpand"/>
             <Button Text="Reset pan" Clicked="Button_Clicked" HorizontalOptions="End"/>
         </StackLayout>
-        <math:MathView x:Name="View" EnableTouchEvents="true"/>
+        <math:MathView x:Name="View" EnableTouchEvents="true" EnablePanning="true"/>
     </StackLayout>
 </ContentPage>

@@ -8,9 +8,12 @@
     <StackLayout>
         <Entry x:Name="Entry" HorizontalOptions="FillAndExpand"/>
         <Label x:Name="Exit" HorizontalOptions="FillAndExpand"/>
-        <Picker x:Name="Size"
-                HorizontalOptions="Fill"
-                ItemsSource="{x:Static local:TryPage.FontSizes}"/>
+        <StackLayout Orientation="Horizontal">
+            <Picker x:Name="Size"
+                    HorizontalOptions="FillAndExpand"
+                    ItemsSource="{x:Static local:TryPage.FontSizes}"/>
+            <Button Text="Reset pan" Clicked="Button_Clicked" HorizontalOptions="End"/>
+        </StackLayout>
         <math:MathView x:Name="View"
                        HorizontalOptions="FillAndExpand"
                        VerticalOptions="FillAndExpand"

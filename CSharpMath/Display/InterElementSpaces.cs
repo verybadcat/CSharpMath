@@ -14,18 +14,6 @@ namespace CSharpMath.Display {
       ///<summary>Thick if not in script mode, else none</summary> 
       NsThick
     }
-    private static int SpacingInMu(this InterElementSpaceType type, LineStyle _style) =>
-      type switch
-      {
-        Invalid => -1,
-        None => 0,
-        Thin => 3,
-        NsThin => _style < LineStyle.Script ? 3 : 0,
-        NsMedium => _style < LineStyle.Script ? 4 : 0,
-        NsThick => _style < LineStyle.Script ? 5 : 0,
-        _ => throw new System.ComponentModel.InvalidEnumArgumentException
-                (nameof(_style), (int)_style, typeof(LineStyle))
-      };
     // CA1814 is TRASH: https://github.com/MicrosoftDocs/visualstudio-docs/issues/3139
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
     private static readonly InterElementSpaceType[,] Spaces = {
@@ -62,10 +50,19 @@ namespace CSharpMath.Display {
         };
       var leftIndex = GetInterElementSpaceArrayIndexForType(left, true);
       var rightIndex = GetInterElementSpaceArrayIndexForType(right, false);
-      var spaceType = Spaces[leftIndex, rightIndex];
-      if (spaceType == Invalid)
-        throw new Structures.InvalidCodePathException($"Invalid space between {left.TypeName} and {right.TypeName}");
-      var multiplier = spaceType.SpacingInMu(style);
+      var multiplier =
+        Spaces[leftIndex, rightIndex] switch
+        {
+          Invalid => throw new Structures.InvalidCodePathException
+                       ($"Invalid space between {left.TypeName} and {right.TypeName}"),
+          None => 0,
+          Thin => 3,
+          NsThin => style < LineStyle.Script ? 3 : 0,
+          NsMedium => style < LineStyle.Script ? 4 : 0,
+          NsThick => style < LineStyle.Script ? 5 : 0,
+          _ => throw new System.ComponentModel.InvalidEnumArgumentException
+                  (nameof(style), (int)style, typeof(LineStyle))
+        };
       return multiplier > 0 ? multiplier * mathTable.MuUnit(styleFont) : 0;
     }
   }
