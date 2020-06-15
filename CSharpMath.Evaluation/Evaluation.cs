@@ -125,9 +125,16 @@ namespace CSharpMath {
     static Result<MathItem> TryMakeSet(MathItem.Comma c, bool leftClosed, bool rightClosed) =>
       c switch {
         { Content: var l, Next: { Content: var r, Next: null } } =>
-            l.AsEntity("left interval boundary")
-            .Bind(left => r.AsEntity("right interval boundary")
-            .Bind(right => (MathItem)new Set(MathS.Sets.Interval(left, right).SetLeftClosed(leftClosed).SetRightClosed(rightClosed)))),
+          l.AsEntity("left interval boundary")
+          .Bind(left => r.AsEntity("right interval boundary")
+          .Bind(right =>
+            (MathItem)(
+              left == right // MathS.Sets.Interval throws when both edges are equal
+              ? leftClosed && rightClosed
+                ? new Set(MathS.Sets.Element(left))
+                : MathS.Sets.Empty()
+              : new Set(MathS.Sets.Interval(left, right).SetLeftClosed(leftClosed).SetRightClosed(rightClosed)
+           )))),
         _ => "Unrecognized comma-delimited collection of " + c.Count() + " items"
       };
     static readonly Dictionary<Precedence, (string KnownOpening, string InferredClosing)> ContextInfo =
