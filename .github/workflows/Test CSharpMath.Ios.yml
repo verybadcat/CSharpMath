@@ -8,5 +8,5 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: 'recursive'
-    - run: nuget restore CSharpMath.Ios.Tests
+    - run: nuget restore CSharpMath.sln
     - run: msbuild CSharpMath.Ios.Tests
