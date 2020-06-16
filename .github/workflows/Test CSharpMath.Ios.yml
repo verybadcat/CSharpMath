@@ -2,14 +2,11 @@ name: Test
 
 on: [push, pull_request]
 jobs:
-  CSharpMath_Ios:
+  CSharpMath.Ios:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
       with:
         submodules: 'recursive'
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '3.1.201'
+    - run: nuget restore CSharpMath.Ios.Tests
     - run: msbuild CSharpMath.Ios.Tests
