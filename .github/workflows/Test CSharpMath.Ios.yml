@@ -2,7 +2,7 @@ name: Test
 
 on: [push, pull_request]
 jobs:
-  CSharpMath.Ios:
+  CSharpMath-Ios:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
