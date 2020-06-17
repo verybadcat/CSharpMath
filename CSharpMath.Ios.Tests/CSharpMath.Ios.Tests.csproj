@@ -111,7 +111,8 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.iOS" />
-    <Reference Include="MonoTouch.NUnitLite" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.devices" Version="2.5.25" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="LaunchScreen.storyboard" />
@@ -121,9 +122,12 @@
     <None Include="Entitlements.plist" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ImgurAPI.cs" />
     <Compile Include="Main.cs" />
-    <Compile Include="UnitTestAppDelegate.cs" />
+    <Compile Include="AppDelegate.cs" />
     <Compile Include="Tests.cs" />
+    <EmbeddedResource Include="..\CSharpMath.Rendering.Tests\MathDisplay\*" Exclude="..\CSharpMath.Rendering.Tests\MathDisplay\*.*.*" Link="MathDisplay\%(RecursiveDir)%(Filename)%(Extension)" />
+    <EmbeddedResource Include="..\CSharpMath.Rendering.Tests\MathInline\*" Exclude="..\CSharpMath.Rendering.Tests\MathInline\*.*.*" Link="MathInline\%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CSharpMath.Ios.Example\CSharpMath.Ios.Example.csproj">
@@ -136,6 +140,11 @@
       <Project>{11D4E6C7-C8E2-449C-A1E7-18BBBCE4E6F3}</Project>
       <Name>CSharpMath.Ios</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Imgur.API">
+      <Version>5.0.0-beta1</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>
