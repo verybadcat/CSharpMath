@@ -389,7 +389,7 @@ namespace CSharpMath.Editor {
 
       void DeleteBackwards() {
         // delete the last atom from the list
-        if (HasText && _insertionIndex.PreviousOrBeforeWholeList is MathListIndex previous) {
+        if (HasText && (Extensions.PreviousOrBeforeWholeList(_insertionIndex)) is MathListIndex previous) {
           _insertionIndex = previous;
           MathList.RemoveAt(_insertionIndex);
         }

@@ -81,11 +81,25 @@ namespace CSharpMath.Editor {
           throw new SubIndexTypeMismatchException(index);
       }
     }
-
+  public static MathListIndex? PreviousOrBeforeWholeList(MathListIndex index) {
+    return
+      index.SubIndexType switch
+      {
+        MathListSubIndexType.None => index.AtomIndex > -1 ? MathListIndex.Level0Index(index.AtomIndex - 1) : null,
+        _ =>
+        (index.SubIndex == null) ? null :
+          PreviousOrBeforeWholeList(index.SubIndex) is MathListIndex prevSubIndex
+          ? MathListIndex.IndexAtLocation(index.AtomIndex, index.SubIndexType, prevSubIndex) : null,
+      };
+    }
     public static void RemoveAt(this MathList self, MathListIndex index) {
+      static bool IsBeforeSubList(MathListIndex index) {
+        return (index.SubIndex != null && index.SubIndex.AtomIndex == -1) && index.SubIndexType == MathListSubIndexType.None;
+      }
+
       void RemoveAtInnerList<TAtom>(TAtom atom, int innerListIndex) where TAtom : MathAtom, IMathListContainer {
         if (index.SubIndex is null) throw new InvalidCodePathException($"{nameof(index.SubIndex)} should exist");
-        if (index.IsBeforeSubList) {
+        if (IsBeforeSubList(index)) {
           index.SetTo(
             index.LevelDown()
             ?? throw new InvalidCodePathException($"{nameof(index.SubIndex)} is not null but {nameof(index.LevelDown)} is null"));
@@ -112,7 +126,7 @@ namespace CSharpMath.Editor {
       void RemoveAtInnerScript(ref MathListIndex index, MathAtom atom, bool superscript) {
         if (index.SubIndex is null) throw new InvalidCodePathException($"{nameof(index.SubIndex)} should exist");
         var script = superscript ? atom.Superscript : atom.Subscript;
-        if (index.IsBeforeSubList) {
+        if (IsBeforeSubList(index)) {
           index.SetTo(
             index.LevelDown()
             ?? throw new InvalidCodePathException($"{nameof(index.SubIndex)} is not null but {nameof(index.LevelDown)} is null"));
