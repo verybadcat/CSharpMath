@@ -22,7 +22,7 @@
     <PackageIcon>Icon.png</PackageIcon>
     <PackageTags>
       math mathematics mathematical formula equation equations
-      expression tex latex render rendering display beautiful
+      expression tex latex render rendering display beautiful CSharpMath
     </PackageTags>
     <PackageReleaseNotes>
       The 0.4 Avalonia Update brings the Avalonia front end!

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -27,16 +27,20 @@
     <MtouchArch>x86_64</MtouchArch>
     <MtouchHttpClientHandler>NSUrlSessionHandler</MtouchHttpClientHandler>
     <DeviceSpecificBuild>false</DeviceSpecificBuild>
-    <MtouchVerbosity></MtouchVerbosity>
-    <NoWarn></NoWarn>
+    <MtouchVerbosity>
+    </MtouchVerbosity>
+    <NoWarn>
+    </NoWarn>
     <LangVersion>Default</LangVersion>
-    <Nullable></Nullable>
+    <Nullable>
+    </Nullable>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\iPhone\Release</OutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodesignKey>iPhone Developer</CodesignKey>
@@ -46,16 +50,20 @@
     <MtouchLink>SdkOnly</MtouchLink>
     <MtouchArch>ARM64</MtouchArch>
     <MtouchHttpClientHandler>NSUrlSessionHandler</MtouchHttpClientHandler>
-    <MtouchVerbosity></MtouchVerbosity>
-    <NoWarn></NoWarn>
+    <MtouchVerbosity>
+    </MtouchVerbosity>
+    <NoWarn>
+    </NoWarn>
     <LangVersion>Default</LangVersion>
-    <Nullable></Nullable>
+    <Nullable>
+    </Nullable>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\iPhoneSimulator\Release</OutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodesignKey>iPhone Developer</CodesignKey>
@@ -63,10 +71,13 @@
     <MtouchLink>None</MtouchLink>
     <MtouchArch>x86_64</MtouchArch>
     <MtouchHttpClientHandler>NSUrlSessionHandler</MtouchHttpClientHandler>
-    <MtouchVerbosity></MtouchVerbosity>
-    <NoWarn></NoWarn>
+    <MtouchVerbosity>
+    </MtouchVerbosity>
+    <NoWarn>
+    </NoWarn>
     <LangVersion>Default</LangVersion>
-    <Nullable></Nullable>
+    <Nullable>
+    </Nullable>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
     <DebugSymbols>true</DebugSymbols>
@@ -87,10 +98,13 @@
     <MtouchLink>SdkOnly</MtouchLink>
     <MtouchArch>ARM64</MtouchArch>
     <MtouchHttpClientHandler>NSUrlSessionHandler</MtouchHttpClientHandler>
-    <MtouchVerbosity></MtouchVerbosity>
-    <NoWarn></NoWarn>
+    <MtouchVerbosity>
+    </MtouchVerbosity>
+    <NoWarn>
+    </NoWarn>
     <LangVersion>Default</LangVersion>
-    <Nullable></Nullable>
+    <Nullable>
+    </Nullable>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -115,6 +129,8 @@
     <ProjectReference Include="..\CSharpMath.Ios.Example\CSharpMath.Ios.Example.csproj">
       <Project>{664EAD44-C19D-462B-9127-FD1106B4F3C6}</Project>
       <Name>CSharpMath.Ios.Example</Name>
+      <IsAppExtension>false</IsAppExtension>
+      <IsWatchApp>false</IsWatchApp>
     </ProjectReference>
     <ProjectReference Include="..\CSharpMath.Ios\CSharpMath.Ios.csproj">
       <Project>{11D4E6C7-C8E2-449C-A1E7-18BBBCE4E6F3}</Project>
