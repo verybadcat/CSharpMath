@@ -391,7 +391,7 @@ namespace CSharpMath.Editor {
         // delete the last atom from the list
         if (HasText && _insertionIndex.PreviousOrBeforeWholeList is MathListIndex previous) {
           _insertionIndex = previous;
-          MathList.RemoveAt(ref _insertionIndex);
+          MathList.RemoveAt(_insertionIndex);
         }
       }
 

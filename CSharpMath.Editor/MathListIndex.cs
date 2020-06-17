@@ -43,8 +43,14 @@ namespace CSharpMath.Editor {
     public int AtomIndex { get; set; }
     ///<summary>The type of subindex, e.g. superscript, numerator etc.</summary>
     public MathListSubIndexType SubIndexType { get; set; }
+
     ///<summary>The index into the sublist.</summary>
     public MathListIndex? SubIndex;
+    public void SetTo(MathListIndex replacement) {
+      AtomIndex = replacement.AtomIndex;
+      SubIndexType = replacement.SubIndexType;
+      SubIndex = replacement.SubIndex;
+    }
 
     /** <summary>Factory function to create a `MathListIndex` with no subindexes.</summary>
         <param name="index">The index of the atom that the `MathListIndex` points at.</param>
