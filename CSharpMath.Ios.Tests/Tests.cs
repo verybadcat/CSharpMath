@@ -4,28 +4,18 @@ using Xunit;
 
 namespace CSharpMath.Ios.Tests {
   public class Tests {
-    static readonly Imgur.API.Endpoints.IImageEndpoint endpoint = null;
     static readonly Func<string, System.IO.Stream> GetManifestResourceStream =
       System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream;
-    static Tests() {
-      if (ImgurAPI.ImgurCredentials is var (id, secret)) 
-        endpoint ??=
-          new Imgur.API.Endpoints.Impl.ImageEndpoint(new Imgur.API.Authentication.Impl.ImgurClient(id, secret));
-      else
-        Foundation.NSRunLoop.Main.BeginInvokeOnMainThread(async () => {
-          using var alert = UIKit.UIAlertController.Create($"Imgur Credentials not provided", $"Imgur Credentials are not provided in ImgurAPI.cs. Uploading of failed images are disabled.", UIKit.UIAlertControllerStyle.Alert);
-          alert.AddAction(UIKit.UIAlertAction.Create("OK", UIKit.UIAlertActionStyle.Default, null));
-          await UIKit.UIApplication.SharedApplication.KeyWindow.RootViewController.PresentViewControllerAsync(alert, true);
-        });
-    }
     async Task Test(string directory, string file, string latex) {
       var source = new TaskCompletionSource<UIKit.UIImage>();
       Foundation.NSRunLoop.Main.BeginInvokeOnMainThread(() => {
         try {
           using var v = IosMathLabels.MathView(latex, 50);
-          UIKit.UIApplication.SharedApplication.KeyWindow.AddSubview(v);
-          UIKit.UIGraphics.BeginImageContext(v.SizeThatFits(default));
-          UIKit.UIApplication.SharedApplication.KeyWindow.DrawViewHierarchy(v.Bounds, true);
+          var window = UIKit.UIApplication.SharedApplication.KeyWindow;
+          window.AddSubview(v);
+          UIKit.UIGraphics.BeginImageContext(new CoreGraphics.CGSize(1000, 1000));
+          if (!window.DrawViewHierarchy(new CoreGraphics.CGRect(0, 0, 1000, 1000), true))
+            throw new Exception(nameof(window.DrawViewHierarchy) + " has failed.");
           source.SetResult(UIKit.UIGraphics.GetImageFromCurrentImageContext());
           UIKit.UIGraphics.EndImageContext();
           v.RemoveFromSuperview();
@@ -33,14 +23,14 @@ namespace CSharpMath.Ios.Tests {
           source.SetException(e);
         }
       });
-      using var actual = (await source.Task).AsPNG().AsStream();
+      using var data = (await source.Task).AsPNG();
+      using var actual = data.AsStream();
       using var expected = GetManifestResourceStream($"CSharpMath.Ios.Tests.{directory}.{file}.png");
-      try {
-        Assert.InRange(actual.Length, expected.Length * 0.99, expected.Length * 1.01);
-      } catch (Exception e) when (endpoint is { }) {
-        var image = await endpoint.UploadImageStreamAsync(actual, name: $"Failed test {directory} {file}", description: latex);
-        throw new Exception($"Test failed for {directory} {file}: Actual image uploaded at https://imgur.com/{image.Id}", e);
-      }
+      var dir = Foundation.NSSearchPath.GetDirectories(Foundation.NSSearchPathDirectory.DocumentDirectory, Foundation.NSSearchPathDomain.User, true)[0];
+      var path = new Foundation.NSUrl(dir).Append($"{directory}.{file}.png", false).Path;
+      if (!Foundation.NSFileManager.DefaultManager.CreateFile(path, data, (Foundation.NSDictionary)null))
+        throw new System.IO.IOException($"Creation of {path} has failed.");
+      Assert.InRange(actual.Length, expected.Length * 0.99, expected.Length * 1.01);
     }
     [Theory]
     [ClassData(typeof(Rendering.Tests.TestRenderingMathData))]
