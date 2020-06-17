@@ -46,7 +46,7 @@ namespace CSharpMath.Editor {
 
     ///<summary>The index into the sublist.</summary>
     public MathListIndex? SubIndex;
-    public void SetTo(MathListIndex replacement) {
+    public void ReplaceWith(MathListIndex replacement) {
       AtomIndex = replacement.AtomIndex;
       SubIndexType = replacement.SubIndexType;
       SubIndex = replacement.SubIndex;
