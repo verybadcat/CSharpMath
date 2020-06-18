@@ -26,18 +26,20 @@ namespace CSharpMath.Ios.Tests {
     public override bool FinishedLaunching(UIApplication app, NSDictionary options) {
       // We need this to ensure the execution assembly is part of the app bundle
       AddExecutionAssembly(typeof(ExtensibilityPointFactory).Assembly);
-
-
+      
+      
       // tests can be inside the main assembly
       AddTestAssembly(Assembly.GetExecutingAssembly());
       // otherwise you need to ensure that the test assemblies will 
       // become part of the app bundle
-      //AddTestAssembly(typeof(PortableTests).Assembly);
-
-			// // start running the test suites as soon as the application is loaded
-			AutoStart = true;
-			// // crash the application (to ensure it's ended) and return to springboard
-			// TerminateAfterExecution = true;
+      // AddTestAssembly(typeof(PortableTests).Assembly);
+      
+      // start running the test suites as soon as the application is loaded
+      AutoStart = true;
+      // crash the application (to ensure it's ended) and return to springboard
+#if CI
+      TerminateAfterExecution = true;
+#endif
       return base.FinishedLaunching(app, options);
     }
   }
