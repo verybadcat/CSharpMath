@@ -24,6 +24,9 @@ namespace CSharpMath.Ios.Tests {
     // You have 17 seconds to return from this method, or iOS will terminate your application.
     //
     public override bool FinishedLaunching(UIApplication app, NSDictionary options) {
+      // Write Debug.WriteLine to StdErr: https://github.com/dotnet/runtime/blob/1cfa461bbf071fbc71ceb5e105e1d39d0c077f25/src/libraries/System.Private.CoreLib/src/System/Diagnostics/DebugProvider.Unix.cs#L9
+      Environment.SetEnvironmentVariable("COMPlus_DebugWriteToStdErr", "1");
+
       // We need this to ensure the execution assembly is part of the app bundle
       AddExecutionAssembly(typeof(ExtensibilityPointFactory).Assembly);
       
