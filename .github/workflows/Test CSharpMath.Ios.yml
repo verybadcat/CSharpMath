@@ -72,8 +72,6 @@ jobs:
         xcrun simctl install booted $APP_PATH
 
         # Launch the app program into the booted sim
-        # - Pipe the output to a log file
-        # - Run in the background
         TESTS_OUTPUT=`xcrun simctl launch --console booted $BUNDLE_IDENTIFIER 2>&1`
         # 2>&1 means "redirect stderr to stdout": https://stackoverflow.com/a/818284/5429648
 
