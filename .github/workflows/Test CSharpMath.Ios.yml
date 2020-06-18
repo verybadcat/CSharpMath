@@ -12,11 +12,13 @@ jobs:
     - run: msbuild CSharpMath.Ios.Tests
     - name: Run https://gist.github.com/jerrymarino/1f9eb6a06c423f9744ea297d80193a9b
       env:
-        IOS_SIM_UDID: 67864C3A-1C15-48B9-96E5-EA9B279F2253 # iPhone 11 # https://github.com/actions/virtual-environments/blob/master/images/macos/macos-10.15-Readme.md#installed-simulators
+        IOS_SIM_NAME: iPhone 11 # https://github.com/actions/virtual-environments/blob/master/images/macos/macos-10.15-Readme.md#installed-simulators
         BUNDLE_IDENTIFIER: CSharpMath.Ios.Unit-Tests # Located inside CSharpMath.Ios.Tests Info.plist file
         APP_PATH: CSharpMath.Ios.Tests/bin/iPhoneSimulator/Debug/CSharpMath.Ios.Tests.app
       run: |
-        #!/bin/bash
+        IOS_SIM_UDID=`xcrun simctl list | grep -w $SIMULATOR_NAME | awk 'match($0, /\(([-0-9A-F]+)\)/) { print substr( $0, RSTART + 1, RLENGTH - 2 )}'`
+        SIMULATOR_PATH='/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/Contents/MacOS/Simulator'
+        
         # run_ios_sim builds and runs an iOS app on the simulator
         #
         # It is designed to replicate the behavior of "Run" in Xcode and assumes basic
@@ -41,21 +43,21 @@ jobs:
         APP_NAME=`echo ""${APP_PATH##*/}"" | cut -d'.' -f1`
 
         echo "Running sim for $APP_NAME - $BUNDLE_IDENTIFIER"
-
-        # # If the booted simulator does not match, then we need to restart it. Expect an
-        # # output list of the form
-        # # "Phone: iPhone 7 Plus (342F9A20-DF48-41A9-BE60-C6B35F47E97F) (Booted)"
-        # BOOTED_UDID=`xcrun simctl list | grep Booted | perl -pe 's/(.*\()(.*)\)+ (.*)/\2/' | sed -n 1p`
-        # if [[ $BOOTED_UDID != $IOS_SIM_UDID ]]; then
-        #   killall 'Simulator'
-        # else
-        #   # FIXME: We don't need to do this for all cases and
-        #   # it is slow
-        #   killall 'Simulator'
-        # fi
+        
+        # If the booted simulator does not match, then we need to restart it. Expect an
+        # output list of the form
+        # "Phone: iPhone 7 Plus (342F9A20-DF48-41A9-BE60-C6B35F47E97F) (Booted)"
+        BOOTED_UDID=`xcrun simctl list | grep Booted | perl -pe 's/(.*\()(.*)\)+ (.*)/\2/' | sed -n 1p`
+        if [[ $BOOTED_UDID != $IOS_SIM_UDID ]]; then
+          killall $SIMULATOR_PATH
+        else
+          # FIXME: We don't need to do this for all cases and
+          # it is slow
+          killall $SIMULATOR_PATH
+        fi
 
         # Open the simulator
-        open -a 'Simulator' --args -CurrentDeviceUDID $IOS_SIM_UDID
+        open -a $SIMULATOR_PATH --args -CurrentDeviceUDID $IOS_SIM_UDID
 
         # Wait until there is a device booted
 
