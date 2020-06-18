@@ -16,7 +16,7 @@ jobs:
         BUNDLE_IDENTIFIER: CSharpMath.Ios.Unit-Tests # Located inside CSharpMath.Ios.Tests Info.plist file
         APP_PATH: CSharpMath.Ios.Tests/bin/iPhoneSimulator/Debug/CSharpMath.Ios.Tests.app
       run: |
-        IOS_SIM_UDID=`xcrun simctl list | grep -w $SIMULATOR_NAME | awk 'match($0, /\(([-0-9A-F]+)\)/) { print substr( $0, RSTART + 1, RLENGTH - 2 )}'`
+        IOS_SIM_UDID=`xcrun simctl list | grep -w $IOS_SIM_NAME | awk 'match($0, /\(([-0-9A-F]+)\)/) { print substr( $0, RSTART + 1, RLENGTH - 2 )}'`
         SIMULATOR_PATH='/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/Contents/MacOS/Simulator'
         
         # run_ios_sim builds and runs an iOS app on the simulator
