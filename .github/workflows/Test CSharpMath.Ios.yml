@@ -92,7 +92,7 @@ jobs:
         LAUNCH_SHELL_PID=$!
         
         function newest_related_process() {
-          echo `pgrep $APP_NAME | head -1`
+          echo `pgrep $APP_NAME -P $LAUNCH_SHELL_PID | head -1`
         }
         
         # Wait for the process to launch. We need to get the PID of the launched App
