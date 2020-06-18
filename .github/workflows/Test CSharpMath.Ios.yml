@@ -72,10 +72,11 @@ jobs:
         xcrun simctl install booted $APP_PATH
 
         # Launch the app program into the booted sim
-        xcrun simctl launch --console booted "$BUNDLE_IDENTIFIER" 2>&1 | pbcopy
+        TESTS_OUTPUT=`xcrun simctl launch --console booted "$BUNDLE_IDENTIFIER" 2>&1`
         # 2>&1 means "redirect stderr to stdout": https://stackoverflow.com/a/818284/5429648
-        # pbcopy-pbpaste to reuse command output: https://stackoverflow.com/a/44122307/5429648
 
-        if [[ $(pbpaste) == *"[FAIL]"* ]]
+        echo "$TESTS_OUTPUT"
+
+        if [[ "$TESTS_OUTPUT" == *"[FAIL]"* ]]
         then exit 1 # Fail this workflow
         fi
