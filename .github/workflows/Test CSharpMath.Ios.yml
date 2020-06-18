@@ -33,10 +33,6 @@ jobs:
         # Note that the UDID must match a device where runtime is installed See
         # available devices with "simctl list"
         #
-        # Additionally, it supports the ability to wait and attach LLDB in a similar
-        # fashion that Xcode does.
-        # export DEBUGGER_ENABLED=1|0
-        #
         # Tested on Xcode 8.3.1 a few times
         # Author: Jerry Marino - @jerrymarino
 
@@ -72,14 +68,6 @@ jobs:
 
         echo "Installing app at path $APP_PATH"
         xcrun simctl install booted $APP_PATH
-
-        if [[ $DEBUGGER_ENABLED == "1" ]]; then
-          LAUNCH_DEBUGGER_ENABLED_FLAG=--wait-for-debugger
-          USE_CONSOLE_FLAG=""
-        else
-          USE_CONSOLE_FLAG=--console
-          LAUNCH_DEBUGGER_ENABLED_FLAG=""
-        fi
 
         LOG_FILE=/tmp/run_ios_sim.log
         echo "Starting Sim for $APP_PATH" > $LOG_FILE
