@@ -114,9 +114,7 @@ jobs:
           lldb -p $APP_PID
         else
           # If not debugging read the log file
-          # when the log closes, the app will terminate
           echo "$APP_NAME running at pid $APP_PID"
-          tail -f $LOG_FILE
+          lsof -p $APP_PID +r 1 &>/dev/null # https://stackoverflow.com/a/41613532/5429648
+          cat $LOG_FILE
         fi
-
-        wait $APP_PID
