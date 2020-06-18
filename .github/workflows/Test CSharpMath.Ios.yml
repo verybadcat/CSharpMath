@@ -49,11 +49,11 @@ jobs:
         # "Phone: iPhone 7 Plus (342F9A20-DF48-41A9-BE60-C6B35F47E97F) (Booted)"
         BOOTED_UDID=`xcrun simctl list | grep Booted | perl -pe 's/(.*\()(.*)\)+ (.*)/\2/' | sed -n 1p`
         if [[ $BOOTED_UDID != $IOS_SIM_UDID ]]; then
-          killall $SIMULATOR_PATH
+          killall Simulator
         else
           # FIXME: We don't need to do this for all cases and
           # it is slow
-          killall $SIMULATOR_PATH
+          killall Simulator
         fi
 
         # Open the simulator
