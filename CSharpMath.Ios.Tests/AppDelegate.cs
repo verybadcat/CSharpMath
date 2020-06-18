@@ -35,7 +35,7 @@ namespace CSharpMath.Ios.Tests {
       //AddTestAssembly(typeof(PortableTests).Assembly);
 
 			// // start running the test suites as soon as the application is loaded
-			// AutoStart = true;
+			AutoStart = true;
 			// // crash the application (to ensure it's ended) and return to springboard
 			// TerminateAfterExecution = true;
       return base.FinishedLaunching(app, options);

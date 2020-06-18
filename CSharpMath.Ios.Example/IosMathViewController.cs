@@ -4,7 +4,7 @@ namespace CSharpMath.Ios.Example {
   public class IosMathViewController : UIViewController {
     public override void ViewDidLoad() {
       var scrollView = new UIScrollView { BackgroundColor = UIColor.White, ScrollEnabled = true };
-      System.nfloat y = 40, w = 0;
+      System.nfloat y = 0, w = 0;
       foreach (var latex in Rendering.Tests.TestRenderingMathData.AllConstants.Values) {
         var latexView = IosMathLabels.MathView(latex, 50);  // WJWJWJ latex here
         var size = latexView.SizeThatFits(new CoreGraphics.CGSize(370, 280));
