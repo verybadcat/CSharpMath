@@ -115,3 +115,5 @@ jobs:
           echo "$APP_NAME running at pid $APP_PID"
           tail -f $LOG_FILE
         fi
+
+        wait $APP_PID
