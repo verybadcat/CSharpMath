@@ -18,7 +18,7 @@ jobs:
       run: |
         # This script is a heavily modified version of https://gist.github.com/jerrymarino/1f9eb6a06c423f9744ea297d80193a9b
         
-        IOS_SIM_UDID=`xcrun simctl list | grep -w $IOS_SIM_NAME | awk 'match($0, /\(([-0-9A-F]+)\)/) { print substr( $0, RSTART + 1, RLENGTH - 2 )}' | head -1`
+        IOS_SIM_UDID=`xcrun simctl list | grep -w "$IOS_SIM_NAME" | awk 'match($0, /\(([-0-9A-F]+)\)/) { print substr( $0, RSTART + 1, RLENGTH - 2 )}' | head -1`
         SIMULATOR_PATH='/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/Contents/MacOS/Simulator'
         
         # run_ios_sim builds and runs an iOS app on the simulator
@@ -55,7 +55,7 @@ jobs:
         fi
 
         # Open the simulator
-        open -a $SIMULATOR_PATH --args -CurrentDeviceUDID $IOS_SIM_UDID
+        open -a "$SIMULATOR_PATH" --args -CurrentDeviceUDID $IOS_SIM_UDID
 
         # Wait until there is a device booted
 
@@ -72,11 +72,11 @@ jobs:
         xcrun simctl install booted $APP_PATH
 
         # Launch the app program into the booted sim
-        TESTS_OUTPUT=`xcrun simctl launch --console booted $BUNDLE_IDENTIFIER 2>&1`
+        TESTS_OUTPUT=`xcrun simctl launch --console booted "$BUNDLE_IDENTIFIER" 2>&1`
         # 2>&1 means "redirect stderr to stdout": https://stackoverflow.com/a/818284/5429648
 
-        echo $TESTS_OUTPUT
+        echo "$TESTS_OUTPUT"
 
-        if [[ $TESTS_OUTPUT == *"[FAIL]"* ]]
+        if [[ "$TESTS_OUTPUT" == *"[FAIL]"* ]]
         then exit 1 # Fail this workflow
         fi
