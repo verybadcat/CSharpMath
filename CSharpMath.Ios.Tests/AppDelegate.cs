@@ -15,10 +15,6 @@ namespace CSharpMath.Ios.Tests {
   // application events from iOS.
   [Register("AppDelegate")]
   public partial class AppDelegate : RunnerAppDelegate {
-    static AppDelegate() =>
-      // Write Debug.WriteLine to StdErr: https://github.com/dotnet/runtime/blob/1cfa461bbf071fbc71ceb5e105e1d39d0c077f25/src/libraries/System.Private.CoreLib/src/System/Diagnostics/DebugProvider.Unix.cs#L9
-      Environment.SetEnvironmentVariable("COMPlus_DebugWriteToStdErr", "1");
-
     //
     // This method is invoked when the application has loaded and is ready to run. In this 
     // method you should instantiate the window, load the UI into it and then make the window
