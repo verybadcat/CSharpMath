@@ -10,7 +10,7 @@ jobs:
         submodules: 'recursive'
     - run: nuget restore CSharpMath.sln
     - run: msbuild CSharpMath.Ios.Tests
-    - name: Run a modified version of https://gist.github.com/jerrymarino/1f9eb6a06c423f9744ea297d80193a9b
+    - name: Run a heavily modified version of https://gist.github.com/jerrymarino/1f9eb6a06c423f9744ea297d80193a9b
       env:
         IOS_SIM_NAME: iPhone 11 # https://github.com/actions/virtual-environments/blob/master/images/macos/macos-10.15-Readme.md#installed-simulators
         BUNDLE_IDENTIFIER: CSharpMath.Ios.Unit-Tests # Located inside CSharpMath.Ios.Tests Info.plist file
@@ -87,34 +87,5 @@ jobs:
         # Launch the app program into the booted sim
         # - Pipe the output to a log file
         # - Run in the background
-        `xcrun simctl launch $LAUNCH_DEBUGGER_ENABLED_FLAG $USE_CONSOLE_FLAG booted $BUNDLE_IDENTIFIER 2>&1 >> $LOG_FILE` &
-
-        LAUNCH_SHELL_PID=$!
-        
-        function newest_related_process() {
-          echo `pgrep $APP_NAME -P $LAUNCH_SHELL_PID | head -1`
-        }
-        
-        # Wait for the process to launch. We need to get the PID of the launched App
-        _Z=`newest_related_process`
-        _X=0
-        while [[ "$_Z" != "$_X" ]]
-        do
-          sleep 1
-          _Z=$_X
-          _X=`newest_related_process`
-          echo "waiting for process.."
-        done
-        
-        APP_PID=$_X
-
-        if [[ $DEBUGGER_ENABLED == "1" ]]; then
-          # Manually startup LLDB.
-          echo "$APP_NAME running at pid $APP_PID, waiting for lldb.."
-          lldb -p $APP_PID
-        else
-          # If not debugging read the log file
-          echo "$APP_NAME running at pid $APP_PID"
-          lsof -p $APP_PID +r 1 &>/dev/null # https://stackoverflow.com/a/41613532/5429648
-          cat $LOG_FILE
-        fi
+        xcrun simctl launch $LAUNCH_DEBUGGER_ENABLED_FLAG $USE_CONSOLE_FLAG booted $BUNDLE_IDENTIFIER 2>&1
+        # 2>&1 means "redirect stderr to stdout": https://stackoverflow.com/a/818284/5429648
