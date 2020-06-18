@@ -91,19 +91,23 @@ jobs:
         `xcrun simctl launch $LAUNCH_DEBUGGER_ENABLED_FLAG $USE_CONSOLE_FLAG booted $BUNDLE_IDENTIFIER 2>&1 >> $LOG_FILE` &
 
         LAUNCH_SHELL_PID=$!
-
+        
         function newest_related_process() {
-          echo `ps aux | grep $APP_NAME.app/$APP_NAME | grep -v -e "*.grep" | sort -k 4nr,4  | awk '{ print ( $2 > '$LAUNCH_SHELL_PID' ) ? $2 : "" }' | grep -v -e '^$' | head -1`
+          echo `pgrep $APP_NAME | head -1`
         }
-
+        
         # Wait for the process to launch. We need to get the PID of the launched App
-        APP_PID=`newest_related_process`
-        while [[ "$APP_PID" -eq "" ]]
+        _Z=`newest_related_process`
+        _X=0
+        while [[ "$_Z" != "$_X" ]]
         do
           sleep 1
-          APP_PID=`newest_related_process`
+          _Z=$_X
+          _X=`newest_related_process`
           echo "waiting for process.."
         done
+        
+        APP_PID=$_X
 
         if [[ $DEBUGGER_ENABLED == "1" ]]; then
           # Manually startup LLDB.
