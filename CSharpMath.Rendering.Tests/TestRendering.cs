@@ -72,7 +72,7 @@ namespace CSharpMath.Rendering.Tests {
     where TMathPainter : MathPainter<TCanvas, TColor>, new()
     where TTextPainter : TextPainter<TCanvas, TColor>, new() {
     protected abstract string FrontEnd { get; }
-    /// <summary>Maximum percentage change from expected file size to actual file size * 100</summary>
+    /// <summary>Maximum percentage change from expected file size to actual file size / 100</summary>
     protected abstract double FileSizeTolerance { get; }
     protected abstract void DrawToStream<TContent>(Painter<TCanvas, TContent, TColor> painter,
       Stream stream, float textPainterCanvasWidth, TextAlignment alignment) where TContent : class;
