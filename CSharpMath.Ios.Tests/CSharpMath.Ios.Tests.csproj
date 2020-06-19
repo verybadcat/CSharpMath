@@ -132,21 +132,10 @@
     <EmbeddedResource Include="..\CSharpMath.Rendering.Tests\MathInline\*" Exclude="..\CSharpMath.Rendering.Tests\MathInline\*.*.*" Link="MathInline\%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CSharpMath.Ios.Example\CSharpMath.Ios.Example.csproj">
-      <Project>{664EAD44-C19D-462B-9127-FD1106B4F3C6}</Project>
-      <Name>CSharpMath.Ios.Example</Name>
-      <IsAppExtension>false</IsAppExtension>
-      <IsWatchApp>false</IsWatchApp>
-    </ProjectReference>
     <ProjectReference Include="..\CSharpMath.Ios\CSharpMath.Ios.csproj">
       <Project>{11D4E6C7-C8E2-449C-A1E7-18BBBCE4E6F3}</Project>
       <Name>CSharpMath.Ios</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Imgur.API">
-      <Version>5.0.0-beta1</Version>
-    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>
