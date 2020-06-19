@@ -5,7 +5,7 @@ using TestData = CSharpMath.Rendering.Tests.TestRenderingMathData;
 
 namespace CSharpMath.Ios.Tests {
   public class Tests {
-    /// <summary>Maximum percentage change from expected file size to actual file size * 100</summary>
+    /// <summary>Maximum percentage change from expected file size to actual file size / 100</summary>
     /// <remarks>Same idea as CSharpMath.Rendering.Tests.TestRendering.FileSizeTolerance.</remarks>
     const double FileSizeTolerance = 0.95; // This is too large... We need to devise an alternative test mechanism
     static readonly Func<string, System.IO.Stream> GetManifestResourceStream =
