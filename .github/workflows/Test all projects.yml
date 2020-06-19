@@ -47,6 +47,10 @@ jobs:
           dotnet add "$p" package GitHubActionsTestLogger
           dotnet test "$p" -c Release -l GitHubActions
         done
+    - uses: actions/upload-artifact@v2
+      with:
+        name: CSharpMath.Rendering.Tests results
+        path: CSharpMath.Rendering.Tests/*/*.png
   Ios:
     runs-on: macos-latest
     steps:
@@ -125,3 +129,12 @@ jobs:
         if [[ "$TESTS_OUTPUT" == *"[FAIL]"* ]]
         then exit 1 # Fail this workflow
         fi
+        
+        # Move artifacts (generated pictures) to a known path for uploading
+        TESTS_ARTIFACTS="`xcrun simctl get_app_container booted $BUNDLE_IDENTIFIER data`/Documents/*"
+        mkdir -p /tmp/tests_artifacts
+        mv $TESTS_ARTIFACTS /tmp/tests_artifacts
+    - uses: actions/upload-artifact@v2
+      with:
+        name: CSharpMath.Ios.Tests Results
+        path: /tmp/tests_artifacts
