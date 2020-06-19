@@ -2,7 +2,7 @@ name: Test
 
 on: [push, pull_request]
 jobs:
-  all_projects:
+  Core:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -47,7 +47,7 @@ jobs:
           dotnet add "$p" package GitHubActionsTestLogger
           dotnet test "$p" -c Release -l GitHubActions
         done
-  CSharpMath-Ios:
+  Ios:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
