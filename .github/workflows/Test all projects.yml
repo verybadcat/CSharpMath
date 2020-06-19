@@ -132,8 +132,9 @@ jobs:
         mkdir -p /tmp/tests_artifacts
         mv "$TESTS_ARTIFACTS" /tmp/tests_artifacts
 
+        # We fail this workflow if the debug output contains [FAIL] (i.e. a test has failed).
         if [[ "$TESTS_OUTPUT" == *"[FAIL]"* ]]
-        then exit 1 # Fail this workflow
+        then exit 1
         fi
     - uses: actions/upload-artifact@v2
       if: always() # Run even when a previous step failed: https://stackoverflow.com/a/58859404/5429648
