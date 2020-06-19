@@ -34,8 +34,9 @@ namespace CSharpMath.Ios.Tests {
       using var actual = (await source.Task).AsPNG().AsStream();
 
       // Save the generated image
-      var dir = Foundation.NSSearchPath.GetDirectories(Foundation.NSSearchPathDirectory.DocumentDirectory, Foundation.NSSearchPathDomain.User, true)[0];
-      using var save = System.IO.File.Create(System.IO.Path.Combine(dir, directory, $"{file}.ios.png"));
+      var documents = Foundation.NSSearchPath.GetDirectories(Foundation.NSSearchPathDirectory.DocumentDirectory, Foundation.NSSearchPathDomain.User, true)[0];
+      var dir = new System.IO.DirectoryInfo(documents).CreateSubdirectory(directory).FullName;
+      using var save = System.IO.File.Create(System.IO.Path.Combine(dir, $"{file}.ios.png"));
       actual.CopyTo(save);
 
       switch (file) {
