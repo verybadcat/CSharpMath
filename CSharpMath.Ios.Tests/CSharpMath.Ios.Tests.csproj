@@ -138,6 +138,10 @@
     <EmbeddedResource Include="..\CSharpMath.Rendering.Tests\MathInline\*" Exclude="..\CSharpMath.Rendering.Tests\MathInline\*.*.*" Link="MathInline\%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CSharpMath\CSharpMath.csproj">
+      <Project>{5157367B-F03E-4ACB-83A1-0DE414A3BFCA}</Project>
+      <Name>CSharpMath</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CSharpMath.Ios\CSharpMath.Ios.csproj">
       <Project>{11D4E6C7-C8E2-449C-A1E7-18BBBCE4E6F3}</Project>
       <Name>CSharpMath.Ios</Name>
