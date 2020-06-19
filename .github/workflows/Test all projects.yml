@@ -128,9 +128,9 @@ jobs:
         echo "$TESTS_OUTPUT"
         
         # Move artifacts (generated pictures) to a known path for uploading
-        TESTS_ARTIFACTS="`xcrun simctl get_app_container booted $BUNDLE_IDENTIFIER data`/Documents/"
+        TESTS_ARTIFACTS="`xcrun simctl get_app_container booted $BUNDLE_IDENTIFIER data`/Documents/*"
         mkdir -p /tmp/tests_artifacts
-        mv "$TESTS_ARTIFACTS" /tmp/tests_artifacts
+        mv $TESTS_ARTIFACTS /tmp/tests_artifacts # We don't put $TESTS_ARTIFACTS in double quotes because we need path expansion
 
         # We fail this workflow if the debug output contains [FAIL] (i.e. a test has failed).
         if [[ "$TESTS_OUTPUT" == *"[FAIL]"* ]]
