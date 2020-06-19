@@ -128,6 +128,12 @@
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
     <Compile Include="Tests.cs" />
+    <Compile Include="..\CSharpMath.Rendering.Tests\TestRenderingMathData.cs">
+      <Link>TestRenderingMathData.cs</Link>
+    </Compile>
+    <Compile Include="..\CSharpMath.Rendering.Tests\TestRenderingSharedData.cs">
+      <Link>TestRenderingSharedData.cs</Link>
+    </Compile>
     <EmbeddedResource Include="..\CSharpMath.Rendering.Tests\MathDisplay\*" Exclude="..\CSharpMath.Rendering.Tests\MathDisplay\*.*.*" Link="MathDisplay\%(RecursiveDir)%(Filename)%(Extension)" />
     <EmbeddedResource Include="..\CSharpMath.Rendering.Tests\MathInline\*" Exclude="..\CSharpMath.Rendering.Tests\MathInline\*.*.*" Link="MathInline\%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
