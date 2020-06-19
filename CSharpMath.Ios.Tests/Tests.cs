@@ -29,13 +29,15 @@ namespace CSharpMath.Ios.Tests {
           source.SetException(e);
         }
       });
-      using var data = (await source.Task).AsPNG();
-      using var actual = data.AsStream();
+
       using var expected = GetManifestResourceStream($"CSharpMath.Ios.Tests.{directory}.{file}.png");
+      using var actual = (await source.Task).AsPNG().AsStream();
+
+      // Save the generated image
       var dir = Foundation.NSSearchPath.GetDirectories(Foundation.NSSearchPathDirectory.DocumentDirectory, Foundation.NSSearchPathDomain.User, true)[0];
-      var path = new Foundation.NSUrl(dir).Append($"{directory}.{file}.png", false).Path;
-      if (!Foundation.NSFileManager.DefaultManager.CreateFile(path, data, (Foundation.NSDictionary)null))
-        throw new System.IO.IOException($"Creation of {path} has failed.");
+      using var save = System.IO.File.Create(System.IO.Path.Combine(dir, directory, $"{file}.ios.png"));
+      actual.CopyTo(save);
+
       switch (file) {
         // The following are produced by inherently different implementations, so they are not comparable
         case nameof(TestData.Cyrillic):
