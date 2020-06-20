@@ -99,5 +99,9 @@ namespace CSharpMath.Rendering.Tests {
     public const string IntegralScripts = @"\int\int\int^{\infty}\int_0\int^{\infty}_0\int";
     public const string Logic = @"\neg(P\land Q) \iff (\neg P)\lor(\neg Q)";
     public const string LargerDelimiters = @"\left(\left[\left\{\left(\left[\left\{\left(\left[\left\{\left(\left[\left\{\square\right\}^\square\right]^\square\right)^\square\right\}^\square\right]^\square\right)^\square\right\}^\square\right]^\square\right)^\square\right\}^\square\right]^\square\right)^\square";
+    public const string BraSum = @"\frac{1}{\sqrt{2^n}} \sum_{i=0}^{2^n-1} \Bra{i}";
+    public const string KetSum = @"\frac{1}{\sqrt{2^n}} \sum_{i=0}^{2^n-1} \Ket{i}";
+    public const string LargeBra = @"\Bra{\frac{a}{2}+\frac{b}{3}}";
+    public const string LargeKet = @"\Ket{\frac{a}{2}+\frac{b}{3}}";
   }
 }
