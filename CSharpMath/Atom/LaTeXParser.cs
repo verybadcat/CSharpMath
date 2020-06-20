@@ -456,6 +456,12 @@ namespace CSharpMath.Atom {
           var operatorname = ReadString();
           if (!ExpectCharacter('}')) { SetError("Expected }"); return null; }
           return new LargeOperator(operatorname, null);
+        case "bra":
+          var braContents = BuildInternal(true);
+          return new Inner(new Boundary("〈"), braContents ?? new MathList(), new Boundary("|"));
+        case "ket":
+          var ketContents = BuildInternal(true);
+          return new Inner(new Boundary("|"), ketContents ?? new MathList(), new Boundary("〉"));
         default:
           SetError("Invalid command \\" + command);
           return null;
@@ -862,6 +868,14 @@ namespace CSharpMath.Atom {
               builder.Append('{');
               MathListToLaTeX(inner.InnerList, builder, currentFontStyle);
               builder.Append('}');
+            } else if (inner.LeftBoundary.Nucleus == "〈" && inner.RightBoundary.Nucleus == "|") {
+              builder.Append(@"\bra{");
+              MathListToLaTeX(inner.InnerList, builder, currentFontStyle);
+              builder.Append("}");
+            } else if (inner.LeftBoundary.Nucleus == "|" && inner.RightBoundary.Nucleus == "〉") {
+              builder.Append(@"\ket{");
+              MathListToLaTeX(inner.InnerList, builder, currentFontStyle);
+              builder.Append("}");
             } else {
               static string BoundaryToLaTeX(Boundary delimiter) {
                 var command = LaTeXSettings.BoundaryDelimiters[delimiter];

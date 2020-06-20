@@ -193,6 +193,32 @@ namespace CSharpMath.CoreTests {
       Assert.Equal(@"\sqrt[3]{2}", LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
+    [Fact]
+    public void TestBra() {
+      var list = ParseLaTeX(@"\bra{i}");
+      Assert.Collection(list,
+        CheckAtom<Inner>("", inner => {
+          Assert.Equal("〈", inner.LeftBoundary.Nucleus);
+          Assert.Equal("|", inner.RightBoundary.Nucleus);
+          Assert.Collection(inner.InnerList, CheckAtom<Variable>("i"));
+        })
+      );
+      Assert.Equal(@"\bra{i}", LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+
+    [Fact]
+    public void TestKet() {
+      var list = ParseLaTeX(@"\ket{i}");
+      Assert.Collection(list,
+        CheckAtom<Inner>("", inner => {
+          Assert.Equal("|", inner.LeftBoundary.Nucleus);
+          Assert.Equal("〉", inner.RightBoundary.Nucleus);
+          Assert.Collection(inner.InnerList, CheckAtom<Variable>("i"));
+        })
+      );
+      Assert.Equal(@"\ket{i}", LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+
     [
       Theory,
       InlineData(@"\left( 2 \right)", new[] { typeof(Inner) }, new[] { typeof(Number) }, @"(", @")", @"\left( 2\right) "),
