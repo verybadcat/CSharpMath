@@ -456,12 +456,16 @@ namespace CSharpMath.Atom {
           var operatorname = ReadString();
           if (!ExpectCharacter('}')) { SetError("Expected }"); return null; }
           return new LargeOperator(operatorname, null);
-        case "bra":
+        // Bra and Ket implementations are derived from Donald Arseneau's braket LaTeX package.
+        // See: https://www.ctan.org/pkg/braket
+        case "Bra":
           var braContents = BuildInternal(true);
-          return new Inner(new Boundary("〈"), braContents ?? new MathList(), new Boundary("|"));
-        case "ket":
+          if (braContents is null) return null;
+          return new Inner(new Boundary("〈"), braContents, new Boundary("|"));
+        case "Ket":
           var ketContents = BuildInternal(true);
-          return new Inner(new Boundary("|"), ketContents ?? new MathList(), new Boundary("〉"));
+          if (ketContents is null) return null;
+          return new Inner(new Boundary("|"), ketContents, new Boundary("〉"));
         default:
           SetError("Invalid command \\" + command);
           return null;
@@ -869,11 +873,11 @@ namespace CSharpMath.Atom {
               MathListToLaTeX(inner.InnerList, builder, currentFontStyle);
               builder.Append('}');
             } else if (inner.LeftBoundary.Nucleus == "〈" && inner.RightBoundary.Nucleus == "|") {
-              builder.Append(@"\bra{");
+              builder.Append(@"\Bra{");
               MathListToLaTeX(inner.InnerList, builder, currentFontStyle);
               builder.Append("}");
             } else if (inner.LeftBoundary.Nucleus == "|" && inner.RightBoundary.Nucleus == "〉") {
-              builder.Append(@"\ket{");
+              builder.Append(@"\Ket{");
               MathListToLaTeX(inner.InnerList, builder, currentFontStyle);
               builder.Append("}");
             } else {
