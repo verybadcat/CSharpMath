@@ -456,6 +456,16 @@ namespace CSharpMath.Atom {
           var operatorname = ReadString();
           if (!ExpectCharacter('}')) { SetError("Expected }"); return null; }
           return new LargeOperator(operatorname, null);
+        // Bra and Ket implementations are derived from Donald Arseneau's braket LaTeX package.
+        // See: https://www.ctan.org/pkg/braket
+        case "Bra":
+          var braContents = BuildInternal(true);
+          if (braContents is null) return null;
+          return new Inner(new Boundary("〈"), braContents, new Boundary("|"));
+        case "Ket":
+          var ketContents = BuildInternal(true);
+          if (ketContents is null) return null;
+          return new Inner(new Boundary("|"), ketContents, new Boundary("〉"));
         default:
           SetError("Invalid command \\" + command);
           return null;
@@ -862,6 +872,14 @@ namespace CSharpMath.Atom {
               builder.Append('{');
               MathListToLaTeX(inner.InnerList, builder, currentFontStyle);
               builder.Append('}');
+            } else if (inner.LeftBoundary.Nucleus == "〈" && inner.RightBoundary.Nucleus == "|") {
+              builder.Append(@"\Bra{");
+              MathListToLaTeX(inner.InnerList, builder, currentFontStyle);
+              builder.Append("}");
+            } else if (inner.LeftBoundary.Nucleus == "|" && inner.RightBoundary.Nucleus == "〉") {
+              builder.Append(@"\Ket{");
+              MathListToLaTeX(inner.InnerList, builder, currentFontStyle);
+              builder.Append("}");
             } else {
               static string BoundaryToLaTeX(Boundary delimiter) {
                 var command = LaTeXSettings.BoundaryDelimiters[delimiter];

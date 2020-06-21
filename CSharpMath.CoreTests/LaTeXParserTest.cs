@@ -193,6 +193,32 @@ namespace CSharpMath.CoreTests {
       Assert.Equal(@"\sqrt[3]{2}", LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
+    [Fact]
+    public void TestBra() {
+      var list = ParseLaTeX(@"\Bra{i}");
+      Assert.Collection(list,
+        CheckAtom<Inner>("", inner => {
+          Assert.Equal("〈", inner.LeftBoundary.Nucleus);
+          Assert.Equal("|", inner.RightBoundary.Nucleus);
+          Assert.Collection(inner.InnerList, CheckAtom<Variable>("i"));
+        })
+      );
+      Assert.Equal(@"\Bra{i}", LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+
+    [Fact]
+    public void TestKet() {
+      var list = ParseLaTeX(@"\Ket{i}");
+      Assert.Collection(list,
+        CheckAtom<Inner>("", inner => {
+          Assert.Equal("|", inner.LeftBoundary.Nucleus);
+          Assert.Equal("〉", inner.RightBoundary.Nucleus);
+          Assert.Collection(inner.InnerList, CheckAtom<Variable>("i"));
+        })
+      );
+      Assert.Equal(@"\Ket{i}", LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+
     [
       Theory,
       InlineData(@"\left( 2 \right)", new[] { typeof(Inner) }, new[] { typeof(Number) }, @"(", @")", @"\left( 2\right) "),
@@ -1344,6 +1370,30 @@ x \end{matrix}
       InlineData(@"\left(\begin{matrix}\right)", @"Error: Missing \end{matrix}
 ···(\begin{matrix}\right)
                        ↑ (pos 26)"),
+      InlineData(@"\Bra^2", @"Error: ^ cannot appear as an argument to a command
+\Bra^2
+    ↑ (pos 5)"),
+      InlineData(@"\Bra_2", @"Error: _ cannot appear as an argument to a command
+\Bra_2
+    ↑ (pos 5)"),
+      InlineData(@"\Bra&2", @"Error: & cannot appear as an argument to a command
+\Bra&2
+    ↑ (pos 5)"),
+      InlineData(@"\Bra}2", @"Error: } cannot appear as an argument to a command
+\Bra}2
+    ↑ (pos 5)"),
+      InlineData(@"\Ket^2", @"Error: ^ cannot appear as an argument to a command
+\Ket^2
+    ↑ (pos 5)"),
+      InlineData(@"\Ket_2", @"Error: _ cannot appear as an argument to a command
+\Ket_2
+    ↑ (pos 5)"),
+      InlineData(@"\Ket&2", @"Error: & cannot appear as an argument to a command
+\Ket&2
+    ↑ (pos 5)"),
+      InlineData(@"\Ket}2", @"Error: } cannot appear as an argument to a command
+\Ket}2
+    ↑ (pos 5)"),
     ]
     public void TestErrors(string badInput, string expected) {
       var (list, actual) = LaTeXParser.MathListFromLaTeX(badInput);
