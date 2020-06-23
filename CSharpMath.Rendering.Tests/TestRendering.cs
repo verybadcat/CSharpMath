@@ -137,7 +137,7 @@ namespace CSharpMath.Rendering.Tests {
         { "Stroke", new TPainter { PaintStyle = PaintStyle.Stroke } },
 #warning For some reason the Avalonia front end behaves correctly for TextPainter Magnification test but not the SkiaSharp front end??
         { "Magnification", new TPainter { Magnification = 2 } },
-#warning For some reason SkiaSharp produces an errornous image only on Ubuntu??
+#warning For some reason SkiaSharp produces an erroneous image only on Ubuntu??
         //{ "LocalTypeface", new TPainter {
         //  LocalTypefaces = new[] {
         //    new Typography.OpenFont.OpenFontReader().Read(
