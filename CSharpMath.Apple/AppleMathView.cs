@@ -23,6 +23,19 @@ namespace CSharpMath.Apple {
     public float FontSize { get; set; } = 20f;
     public ColumnAlignment TextAlignment { get; set; } = ColumnAlignment.Left;
     public NContentInsets ContentInsets { get; set; }
+    private LineStyle _style = LineStyle.Display;
+    public LineStyle LineStyle {
+      get => _style;
+      set {
+        _style = value;
+        if (_mathList != null) {
+          _displayList = Typesetter.CreateLine(_mathList,
+            TFont.LatinMath(FontSize), _typesettingContext, _style);
+        }
+        InvalidateIntrinsicContentSize();
+        SetNeedsLayout();
+      }
+    }
     private MathList _mathList = new MathList();
     public MathList MathList {
       get => _mathList;
@@ -41,7 +54,7 @@ namespace CSharpMath.Apple {
         (_mathList, ErrorMessage) = LaTeXParser.MathListFromLaTeX(value);
         if (_mathList != null) {
           _displayList = Typesetter.CreateLine(_mathList,
-            TFont.LatinMath(FontSize), _typesettingContext, LineStyle.Display);
+            TFont.LatinMath(FontSize), _typesettingContext, _style);
         }
         InvalidateIntrinsicContentSize();
         SetNeedsLayout();

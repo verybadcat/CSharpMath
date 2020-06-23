@@ -10,11 +10,12 @@ namespace CSharpMath.Ios.Tests {
     const double FileSizeTolerance = 0.95; // This is too large... We need to devise an alternative test mechanism
     static readonly Func<string, System.IO.Stream> GetManifestResourceStream =
       System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream;
-    async Task Test(string directory, string file, string latex) {
+    async Task Test(string directory, Action<Apple.AppleMathView> init, string file, string latex) {
       var source = new TaskCompletionSource<UIKit.UIImage>();
       Foundation.NSRunLoop.Main.BeginInvokeOnMainThread(() => {
         try {
           using var v = IosMathLabels.MathView(latex, 50);
+          init(v);
           var size = v.SizeThatFits(default);
           v.Frame = new CoreGraphics.CGRect(default, size);
           UIKit.UIGraphics.BeginImageContext(size);
@@ -54,10 +55,10 @@ namespace CSharpMath.Ios.Tests {
     [Theory]
     [ClassData(typeof(TestData))]
     public Task MathInline(string file, string latex) =>
-      Test(nameof(MathInline), file, latex);
+      Test(nameof(MathInline), v => v.LineStyle = Atom.LineStyle.Text, file, latex);
     [Theory]
     [ClassData(typeof(TestData))]
     public Task MathDisplay(string file, string latex) =>
-      Test(nameof(MathDisplay), file, latex);
+      Test(nameof(MathDisplay), v => { }, file, latex);
   }
 }
