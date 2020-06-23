@@ -50,7 +50,7 @@ jobs:
     - uses: actions/upload-artifact@v2
       if: always() # Run even when a previous step failed: https://stackoverflow.com/a/58859404/5429648
       with:
-        name: CSharpMath.Rendering.Tests results
+        name: CSharpMath.Rendering.Tests results (${{ matrix.os }})
         path: CSharpMath.Rendering.Tests/*/*.png
   Ios:
     runs-on: macos-latest
