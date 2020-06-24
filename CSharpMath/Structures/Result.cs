@@ -26,6 +26,9 @@ namespace CSharpMath.Structures {
     public TResult Match<TResult>(Func<TResult> successFunc, Func<string, TResult> errorFunc) {
       if (Error != null) return errorFunc(Error); else return successFunc();
     }
+    public Result Bind<T>(Action successAction) {
+      if (Error != null) return Error; else { successAction(); return Ok(); }
+    }
     public Result<T> Bind<T>(Func<T> successAction) {
       if (Error != null) return Error; else return successAction();
     }
@@ -137,33 +140,6 @@ namespace CSharpMath.Structures {
       if (method is null) throw new ArgumentNullException(nameof(method));
       if (Error is string error) return error;
       else return method(_value);
-    }
-    public Result Bind<TOther>(Result<TOther> other, Action<TOther> method) {
-      if (method is null) throw new ArgumentNullException(nameof(method));
-      if (Error is string error) return error;
-      else if (other.Error is string otherError) return otherError;
-      else method(_value, other._value);
-      return Result.Ok();
-    }
-    public Result Bind<TOther>(Result<TOther> other, Func<TOther, Result> method) {
-      if (method is null) throw new ArgumentNullException(nameof(method));
-      if (Error is string error) return error;
-      else if (other.Error is string otherError) return otherError;
-      else return method(_value, other._value);
-    }
-    public Result<TResult> Bind<TOther, TResult>
-      (Result<TOther> other, Func<TOther, TResult> method) {
-      if (method is null) throw new ArgumentNullException(nameof(method));
-      if (Error is string error) return error;
-      else if (other.Error is string otherError) return otherError;
-      else return method(_value, other._value);
-    }
-    public Result<TResult> Bind<TOther, TResult>
-      (Result<TOther> other, Func<TOther, Result<TResult>> method) {
-      if (method is null) throw new ArgumentNullException(nameof(method));
-      if (Error is string error) return error;
-      else if (other.Error is string otherError) return otherError;
-      else return method(_value, other._value);
     }
   }
 }

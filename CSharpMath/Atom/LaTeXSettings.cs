@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace CSharpMath.Atom {
   using Atoms;
+  using static Structures.Result;
   //https://mirror.hmc.edu/ctan/macros/latex/contrib/unicode-math/unimath-symbols.pdf
   public static class LaTeXSettings {
     public static MathAtom Times => new BinaryOperator("×");
@@ -133,7 +134,7 @@ namespace CSharpMath.Atom {
       };
 
     public static MathAtom? AtomForCommand(string symbolName) =>
-      Commands.TryGetValue(
+      Symbols.TryGetValue(
         symbolName ?? throw new ArgumentNullException(nameof(symbolName)),
         out var symbol) ? symbol.Clone(false) : null;
 
@@ -144,10 +145,10 @@ namespace CSharpMath.Atom {
       if (atomWithoutScripts is IMathListContainer container)
         foreach (var list in container.InnerLists)
           list.Clear();
-      return Commands.TryGetKey(atomWithoutScripts, out var name) ? name : null;
+      return Symbols.TryGetKey(atomWithoutScripts, out var name) ? name : null;
     }
 
-    public static Structures.AliasDictionary<string, MathAtom> Commands { get; } =
+    public static Structures.AliasDictionary<string, MathAtom> Symbols { get; } =
       new Structures.AliasDictionary<string, MathAtom> {
         // Custom additions
         { "diameter", new Ordinary("\u2300") },
@@ -824,6 +825,12 @@ namespace CSharpMath.Atom {
         // \varsupsetneq -> ⊋ + U+FE00 (Variation Selector 1) Not dealing with variation selectors, thank you very much
         // { "supsetneqq", new Relation("⫌") }, // Glyph not in Latin Modern Math
         // \varsupsetneqq -> ⫌ + U+FE00 (Variation Selector 1) Not dealing with variation selectors, thank you very much
+      };
+    public static Dictionary<string, Func<LaTeXParser, Structures.Result>> Commands { get; } =
+      new Dictionary<string, Func<LaTeXParser, Structures.Result>> {
+        { @"\frac", p => {
+          return Ok();
+        } }
       };
   }
 }

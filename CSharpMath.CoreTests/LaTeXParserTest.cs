@@ -10,10 +10,10 @@ namespace CSharpMath.CoreTests {
   public class LaTeXParserTest {
     public static MathList ParseLaTeX(string latex) {
       var builder = new LaTeXParser(latex);
-      if (builder.Build() is { } mathList) {
-        Assert.Null(builder.Error);
-        return mathList;
-      } else throw new Xunit.Sdk.NotNullException();
+      var (mathList, error) = builder.Build();
+      Assert.Null(error);
+      Assert.NotNull(mathList);
+      return mathList;
     }
 
     [Theory]
@@ -951,11 +951,11 @@ namespace CSharpMath.CoreTests {
     public void TestCustom() {
       var input = @"\lcm(a,b)";
       var builder = new LaTeXParser(input);
-      var list = builder.Build();
+      var (list, error) = builder.Build();
       Assert.Null(list);
-      Assert.NotNull(builder.Error);
+      Assert.NotNull(error);
 
-      LaTeXSettings.Commands.Add("lcm", new LargeOperator("lcm", false));
+      LaTeXSettings.Symbols.Add("lcm", new LargeOperator("lcm", false));
       var list2 = ParseLaTeX(input);
       Assert.Collection(list2,
         CheckAtom<LargeOperator>("lcm"),
