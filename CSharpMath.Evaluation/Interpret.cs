@@ -29,7 +29,7 @@ namespace CSharpMath {
                 return $@"\text{{{entity.Eval() == 0}}}";
               var latex = new StringBuilder();
               foreach (AngouriMath.VariableEntity variable in variables) {
-                latex.Append(variable).Append(@"\in ");
+                latex.Append(variable.Latexise()).Append(@"\in ");
                 try {
                   latex.Append(entity.SolveEquation(variable).Latexise());
                 } catch (System.Exception e) {

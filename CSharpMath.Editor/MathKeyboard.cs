@@ -61,7 +61,7 @@ namespace CSharpMath.Editor {
         blinkTimer.Stop();
         blinkTimer.Start();
         if (value != MathKeyboardCaretState.Hidden &&
-           MathList.AtomAt(_insertionIndex) is Atoms.Placeholder placeholder) 
+           MathList.AtomAt(_insertionIndex) is Atoms.Placeholder placeholder)
           (placeholder.Nucleus, _caretState) =
             value == MathKeyboardCaretState.TemporarilyHidden
             ? ("\u25A1", MathKeyboardCaretState.TemporarilyHidden)
@@ -87,7 +87,7 @@ namespace CSharpMath.Editor {
     public LineStyle LineStyle { get; set; }
     public Structures.Color SelectColor { get; set; }
     public virtual RectangleF Measure => Display?.DisplayBounds() ?? RectangleF.Empty;
-    public bool HasText => MathList?.Atoms?.Count > 0;
+    public bool HasText => MathList.Atoms.Count > 0;
     public void RecreateDisplayFromMathList() {
       var position = Display?.Position ?? default;
       Display = Typesetter.CreateLine(MathList, Font, Context, LineStyle);
@@ -279,8 +279,6 @@ namespace CSharpMath.Editor {
             _insertionIndex = prev;
             break;
         }
-        if (_insertionIndex is null)
-          throw new InvalidOperationException($"{nameof(_insertionIndex)} is null.");
         if (_insertionIndex.FinalSubIndexType is MathListSubIndexType.BetweenBaseAndScripts) {
           var prevInd = _insertionIndex.LevelDown();
           if (prevInd != null && MathList.AtomAt(prevInd) is Atoms.Placeholder)
@@ -292,8 +290,6 @@ namespace CSharpMath.Editor {
         }
       }
       void MoveCursorRight() {
-        if (_insertionIndex is null)
-          throw new InvalidOperationException($"{nameof(_insertionIndex)} is null.");
         switch (MathList.AtomAt(_insertionIndex)) {
           case null: //After Count
             var levelDown = _insertionIndex.LevelDown();
@@ -380,16 +376,159 @@ namespace CSharpMath.Editor {
             _insertionIndex = _insertionIndex.Next;
             break;
         }
-        if (_insertionIndex is null)
-          throw new InvalidOperationException($"{nameof(_insertionIndex)} is null.");
         if (_insertionIndex.FinalSubIndexType is MathListSubIndexType.BetweenBaseAndScripts
             && MathList.AtomAt(_insertionIndex.LevelDown()) is Atoms.Placeholder)
           MoveCursorRight();
       }
-
+      void MoveCursorUp() {
+        if (Display is null) RecreateDisplayFromMathList();
+        if (MathList.AtomAt(_insertionIndex) is Atoms.Placeholder { Superscript: { Count: var superCount } } && superCount > 0) {
+          _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListSubIndexType.Superscript, MathListIndex.Level0Index(0));
+          return;
+        }
+        if (_insertionIndex.Previous is { } prev && MathList.AtomAt(prev) is { Superscript: var super } && super.Count > 0) {
+          _insertionIndex = prev.LevelUpWithSubIndex(MathListSubIndexType.Superscript, MathListIndex.Level0Index(super.Count));
+          if (_insertionIndex.Previous is { } prev2 && MathList.AtomAt(prev2) is Atoms.Placeholder p && p.Superscript.IsEmpty() && p.Subscript.IsEmpty())
+            _insertionIndex = prev2;
+          return;
+        }
+        for (MathListIndex? verticalIndex = _insertionIndex; verticalIndex != null; verticalIndex = verticalIndex.LevelDown()) {
+          switch (verticalIndex.FinalSubIndexType) {
+            case MathListSubIndexType.Denominator:
+              var numerator =
+                verticalIndex.LevelDown()?.LevelUpWithSubIndex(MathListSubIndexType.Numerator, MathListIndex.Level0Index(0))
+                ?? throw new InvalidCodePathException("Null levelDown despite non-None " + nameof(verticalIndex.FinalSubIndexType));
+              var x =
+                ClosestPointToIndex(_insertionIndex)?.X
+                ?? throw new InvalidCodePathException("Null closest point despite valid " + nameof(MathListIndex));
+              var y =
+                ClosestPointToIndex(numerator)?.Y
+                ?? throw new InvalidCodePathException("Null closest point despite valid " + nameof(MathListIndex));
+              _insertionIndex =
+                ClosestIndexToPoint(new PointF(x, y))
+                ?? throw new InvalidCodePathException("Null closest index despite valid point");
+              return;
+            case MathListSubIndexType.Subscript:
+              var levelDown =
+                verticalIndex.LevelDown()
+                ?? throw new InvalidCodePathException("Null levelDown despite non-None " + nameof(verticalIndex.FinalSubIndexType));
+              x =
+                ClosestPointToIndex(_insertionIndex)?.X
+                ?? throw new InvalidCodePathException("Null closest point despite valid " + nameof(MathListIndex));
+              if (MathList.AtomAt(levelDown) is { Superscript: { Count: 0 } } atom) {
+                var left =
+                  atom is Atoms.Placeholder
+                  ? levelDown
+                  : levelDown.LevelUpWithSubIndex(MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1));
+                var leftX =
+                  ClosestPointToIndex(left)?.X
+                  ?? throw new InvalidCodePathException("Null closest point despite valid " + nameof(MathListIndex));
+                var right = levelDown.Next;
+                var rightX =
+                  ClosestPointToIndex(right)?.X
+                  ?? throw new InvalidCodePathException("Null closest point despite valid " + nameof(MathListIndex));
+                _insertionIndex = x - leftX <= rightX - x ? left : right;
+              } else {
+                var superscript =
+                  levelDown?.LevelUpWithSubIndex(MathListSubIndexType.Superscript, MathListIndex.Level0Index(0))
+                  ?? throw new InvalidCodePathException("Null levelDown despite non-None " + nameof(verticalIndex.FinalSubIndexType));
+                y =
+                  ClosestPointToIndex(superscript)?.Y
+                  ?? throw new InvalidCodePathException("Null closest point despite valid " + nameof(MathListIndex));
+                _insertionIndex =
+                  ClosestIndexToPoint(new PointF(x, y))
+                  ?? throw new InvalidCodePathException("Null closest index despite valid point");
+              }
+              return;
+            case MathListSubIndexType.BetweenBaseAndScripts:
+              levelDown =
+                verticalIndex.LevelDown()
+                ?? throw new InvalidCodePathException("Null levelDown despite non-None " + nameof(verticalIndex.FinalSubIndexType));
+              if (MathList.AtomAt(levelDown)?.Superscript.IsNonEmpty()
+                ?? throw new InvalidCodePathException(nameof(levelDown) + " is invalid for " + nameof(MathList))) {
+                _insertionIndex = levelDown.LevelUpWithSubIndex(MathListSubIndexType.Superscript, MathListIndex.Level0Index(0));
+                return;
+              }
+              break;
+          }
+        }
+      }
+      void MoveCursorDown() {
+        if (Display is null) RecreateDisplayFromMathList();
+        if (MathList.AtomAt(_insertionIndex) is Atoms.Placeholder { Subscript: { Count: var subCount } } && subCount > 0) {
+          _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListSubIndexType.Subscript, MathListIndex.Level0Index(0));
+          return;
+        }
+        if (_insertionIndex.Previous is { } prev && MathList.AtomAt(prev) is { Subscript: var sub } && sub.Count > 0) {
+          _insertionIndex = prev.LevelUpWithSubIndex(MathListSubIndexType.Subscript, MathListIndex.Level0Index(sub.Count));
+          if (_insertionIndex.Previous is { } prev2 && MathList.AtomAt(prev2) is Atoms.Placeholder p && p.Superscript.IsEmpty() && p.Subscript.IsEmpty())
+            _insertionIndex = prev2;
+          return;
+        }
+        for (MathListIndex? verticalIndex = _insertionIndex; verticalIndex != null; verticalIndex = verticalIndex.LevelDown()) {
+          switch (verticalIndex.FinalSubIndexType) {
+            case MathListSubIndexType.Numerator:
+              var denominator =
+                verticalIndex.LevelDown()?.LevelUpWithSubIndex(MathListSubIndexType.Denominator, MathListIndex.Level0Index(0))
+                ?? throw new InvalidCodePathException("Null levelDown despite non-None " + nameof(verticalIndex.FinalSubIndexType));
+              var x =
+                ClosestPointToIndex(_insertionIndex)?.X
+                ?? throw new InvalidCodePathException("Null closest point despite valid " + nameof(MathListIndex));
+              var y =
+                ClosestPointToIndex(denominator)?.Y
+                ?? throw new InvalidCodePathException("Null closest point despite valid " + nameof(MathListIndex));
+              _insertionIndex =
+                ClosestIndexToPoint(new PointF(x, y))
+                ?? throw new InvalidCodePathException("Null closest index despite valid point");
+              return;
+            case MathListSubIndexType.Superscript:
+              var levelDown =
+                verticalIndex.LevelDown()
+                ?? throw new InvalidCodePathException("Null levelDown despite non-None " + nameof(verticalIndex.FinalSubIndexType));
+              x =
+                ClosestPointToIndex(_insertionIndex)?.X
+                ?? throw new InvalidCodePathException("Null closest point despite valid " + nameof(MathListIndex));
+              if (MathList.AtomAt(levelDown) is { Subscript: { Count: 0 } } atom) {
+                var left =
+                  atom is Atoms.Placeholder
+                  ? levelDown
+                  : levelDown.LevelUpWithSubIndex(MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1));
+                var leftX =
+                  ClosestPointToIndex(left)?.X
+                  ?? throw new InvalidCodePathException("Null closest point despite valid " + nameof(MathListIndex));
+                var right = levelDown.Next;
+                var rightX =
+                  ClosestPointToIndex(right)?.X
+                  ?? throw new InvalidCodePathException("Null closest point despite valid " + nameof(MathListIndex));
+                _insertionIndex = x - leftX <= rightX - x ? left : right;
+              } else {
+                var subscript =
+                  levelDown?.LevelUpWithSubIndex(MathListSubIndexType.Subscript, MathListIndex.Level0Index(0))
+                  ?? throw new InvalidCodePathException("Null levelDown despite non-None " + nameof(verticalIndex.FinalSubIndexType));
+                y =
+                  ClosestPointToIndex(subscript)?.Y
+                  ?? throw new InvalidCodePathException("Null closest point despite valid " + nameof(MathListIndex));
+                _insertionIndex =
+                  ClosestIndexToPoint(new PointF(x, y))
+                  ?? throw new InvalidCodePathException("Null closest index despite valid point");
+              }
+              return;
+            case MathListSubIndexType.BetweenBaseAndScripts:
+              levelDown =
+                verticalIndex.LevelDown()
+                ?? throw new InvalidCodePathException("Null levelDown despite non-None " + nameof(verticalIndex.FinalSubIndexType));
+              if (MathList.AtomAt(levelDown)?.Subscript.IsNonEmpty()
+                ?? throw new InvalidCodePathException(nameof(levelDown) + " is invalid for " + nameof(MathList))) {
+                _insertionIndex = levelDown.LevelUpWithSubIndex(MathListSubIndexType.Subscript, MathListIndex.Level0Index(0));
+                return;
+              }
+              break;
+          }
+        }
+      }
       void DeleteBackwards() {
         // delete the last atom from the list
-        if (HasText && _insertionIndex.Previous is MathListIndex previous) {
+        if (HasText && _insertionIndex.PreviousOrBeforeWholeList is MathListIndex previous) {
           _insertionIndex = previous;
           MathList.RemoveAt(ref _insertionIndex);
         }
@@ -430,10 +569,11 @@ namespace CSharpMath.Editor {
       }
 
       switch (input) {
-#warning Unimplemented up/down buttons
         case MathKeyboardInput.Up:
+          MoveCursorUp();
           break;
         case MathKeyboardInput.Down:
+          MoveCursorDown();
           break;
         case MathKeyboardInput.Left:
           MoveCursorLeft();
@@ -491,7 +631,7 @@ namespace CSharpMath.Editor {
           break;
         case MathKeyboardInput.BaseEPower:
           InsertAtom(LaTeXSettings.ForAscii((sbyte)'e')
-            ?? throw new InvalidCodePathException("LaTeXDefaults.ForAscii((byte)'e') is null"));
+            ?? throw new InvalidCodePathException($"{nameof(LaTeXSettings.ForAscii)}((sbyte)'e') is null"));
           HandleScriptButton(true);
           break;
         case MathKeyboardInput.Logarithm:
