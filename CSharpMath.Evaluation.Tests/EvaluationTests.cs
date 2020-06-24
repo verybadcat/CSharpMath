@@ -126,7 +126,7 @@ namespace CSharpMath {
     [InlineData(@"2*\frac ab", @"2\times \frac{a}{b}", @"2\times \frac{a}{b}")]
     [InlineData(@"\frac ab*2", @"\frac{a}{b}\times 2", @"\frac{a}{b}\times 2")]
     [InlineData(@"2/\frac ab", @"\frac{2}{\frac{a}{b}}", @"2\times \frac{b}{a}")]
-    [InlineData(@"\frac ab/2", @"\frac{\frac{a}{b}}{2}", @"\frac{\frac{a}{b}}{2}")]
+    [InlineData(@"\frac ab/2", @"\frac{\frac{a}{b}}{2}", @"\frac{\frac{1}{2}\times a}{b}")]
     [InlineData(@"1+i", @"1+i", @"1+i")]
     [InlineData(@"1-i", @"1-i", @"1-i")]
     [InlineData(@"i+1", @"i+1", @"1+i")]
