@@ -137,13 +137,14 @@ namespace CSharpMath.Rendering.Tests {
         { "Stroke", new TPainter { PaintStyle = PaintStyle.Stroke } },
 #warning For some reason the Avalonia front end behaves correctly for TextPainter Magnification test but not the SkiaSharp front end??
         { "Magnification", new TPainter { Magnification = 2 } },
-        { "LocalTypeface", new TPainter {
-          LocalTypefaces = new[] {
-            new Typography.OpenFont.OpenFontReader().Read(
-              TestRenderingFixture.ThisDirectory.EnumerateFiles("ComicNeue_Bold.otf").Single().OpenRead()
-            ) ?? throw new Structures.InvalidCodePathException("Invalid font!")
-          }
-        } },
+#warning For some reason SkiaSharp produces an erroneous image only on Ubuntu??
+        //{ "LocalTypeface", new TPainter {
+        //  LocalTypefaces = new[] {
+        //    new Typography.OpenFont.OpenFontReader().Read(
+        //      TestRenderingFixture.ThisDirectory.EnumerateFiles("ComicNeue_Bold.otf").Single().OpenRead()
+        //    ) ?? throw new Structures.InvalidCodePathException("Invalid font!")
+        //  }
+        //} },
         { "TextLineStyle", new TPainter { LineStyle = Atom.LineStyle.Text } },
         { "ScriptLineStyle", new TPainter { LineStyle = Atom.LineStyle.Script } },
         { "ScriptScriptLineStyle", new TPainter { LineStyle = Atom.LineStyle.ScriptScript } },
@@ -160,8 +161,7 @@ namespace CSharpMath.Rendering.Tests {
     [MemberData(nameof(MathPainterSettingsData))]
     public virtual void MathPainterSettings(string file, TMathPainter painter) =>
       Run(file, @"\sqrt[3]\frac\color{#F00}a\mathbb C", painter);
-#warning Awaiting CI fix
-    [SkippableTheory(Skip="Awaiting CI fix")]
+    [SkippableTheory]
     [MemberData(nameof(TextPainterSettingsData))]
     public void TextPainterSettings(string file, TTextPainter painter) =>
       Run(file, @"Inline \color{red}{Maths}: $\int_{a_1^2}^{a_2^2}\color{green}\sqrt\frac x2dx$Display \color{red}{Maths}: $$\int_{a_1^2}^{a_2^2}\color{green}\sqrt\frac x2dx$$", painter);
