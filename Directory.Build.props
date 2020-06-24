@@ -8,6 +8,7 @@
       CA1062,<!--Obsolete with C# 8 nullability annotations-->
       CA1303,<!--Who localizes exception messages, anyway?-->
     </NoWarn>
+    <WarningsAsErrors Condition="$(MSBuildProjectExtension) == '.csproj'">nullable</WarningsAsErrors>
 
     <!--NuGet properties: Ordered according to https://docs.microsoft.com/en-us/nuget/reference/msbuild-targets#pack-target-->
     <PackageId>$(MSBuildProjectName)</PackageId>

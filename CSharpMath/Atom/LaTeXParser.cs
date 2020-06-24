@@ -73,7 +73,7 @@ namespace CSharpMath.Atom {
             if (error != null) return error;
             continue;
           case '{':
-            MathList? sublist;
+            MathList sublist;
             if (_environments.PeekOrDefault() is TableEnvironment { Name: null }) {
               // \\ or \cr which do not have a corrosponding \end
               var oldEnv = _environments.Pop();
@@ -114,13 +114,11 @@ namespace CSharpMath.Atom {
               var oldFontStyle = _currentFontStyle;
               _textMode = (command == "text");
               _currentFontStyle = fontStyle;
-              MathList childList;
-              (childList, error) = BuildInternal(true);
+              (_, error) = BuildInternal(true, r: r);
               if (error != null) return error;
               _currentFontStyle = oldFontStyle;
               _textMode = oldSpacesAllowed;
-              prevAtom = childList.Atoms.LastOrDefault();
-              r.Append(childList);
+              prevAtom = r.Atoms.LastOrDefault();
               if (oneCharOnly) {
                 return r;
               }
