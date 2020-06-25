@@ -80,12 +80,12 @@ namespace CSharpMath.Rendering.Text {
       public override bool Equals(TextAtom atom) => atom is Size s && s.PointSize == PointSize && s.Content.Equals(Content);
       public override int GetHashCode() => (PointSize, Content).GetHashCode();
     }
-    public sealed class Color : TextAtom {
-      public Color(TextAtom content, Structures.Color colour) => (Content, Colour) = (content, colour);
+    public sealed class ColoredTextAtom : TextAtom {
+      public ColoredTextAtom(TextAtom content, System.Drawing.Color colour) => (Content, Colour) = (content, colour);
       public TextAtom Content { get; }
-      public Structures.Color Colour { get; }
+      public System.Drawing.Color Colour { get; }
       public override int? SingleChar(FontStyle style) => Content.SingleChar(style);
-      public override bool Equals(TextAtom atom) => atom is Color c && c.Colour == Colour && c.Content.Equals(Content);
+      public override bool Equals(TextAtom atom) => atom is ColoredTextAtom c && c.Colour == Colour && c.Content.Equals(Content);
       public override int GetHashCode() => (Colour, Content).GetHashCode();
     }
     public sealed class List : TextAtom {

@@ -1,4 +1,5 @@
 using SKPath = SkiaSharp.SKPath;
+using System.Drawing;
 
 namespace CSharpMath.SkiaSharp {
   using Structures;

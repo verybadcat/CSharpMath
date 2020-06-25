@@ -5,7 +5,6 @@ using CSharpMath.Display.FrontEnd;
 using CSharpMath.Rendering.FrontEnd;
 using CSharpMath.Structures;
 using Typography.OpenFont;
-using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Rendering.BackEnd {
   public class GraphicsContext : IGraphicsContext<Fonts, Glyph> {

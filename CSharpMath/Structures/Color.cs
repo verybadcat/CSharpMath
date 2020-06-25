@@ -3,7 +3,7 @@ using System;
 using System.Globalization;
 
 namespace CSharpMath.Structures {
-  static class ColorExtensions {
+  public static class ColorExtensions {
     //public override string ToString() =>
     //  PredefinedColors.TryGetBySecond(this, out var name)
     //  ? name : $"#{A:X2}{R:X2}{G:X2}{B:X2}";

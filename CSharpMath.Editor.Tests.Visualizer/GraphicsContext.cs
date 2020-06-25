@@ -10,7 +10,7 @@ namespace CSharpMath.Editor.Tests.Visualizer {
     readonly Stack<PointF> stack = new Stack<PointF>();
     PointF trans = new PointF();
     public void DrawGlyphRunWithOffset(AttributedGlyphRun<TestFont, char> text,
-      PointF point, Structures.Color? color) {
+      PointF point, Color? color) {
       var advance = 0.0;
       foreach (var ((glyph, kernAfter, foreground), bounds) in
         text.GlyphInfos.Zip(
@@ -25,7 +25,7 @@ namespace CSharpMath.Editor.Tests.Visualizer {
       }
     }
     public void DrawGlyphsAtPoints(IReadOnlyList<char> glyphs,
-      TestFont font, IEnumerable<PointF> points, Structures.Color? color) {
+      TestFont font, IEnumerable<PointF> points, Color? color) {
       var zipped = glyphs.Zip(points, ValueTuple.Create);
       var bounds = TestTypesettingContexts.Instance.GlyphBoundsProvider
         .GetBoundingRectsForGlyphs(font, glyphs, glyphs.Count);
@@ -37,10 +37,10 @@ namespace CSharpMath.Editor.Tests.Visualizer {
         );
       }
     }
-    public void FillRect(RectangleF rect, Structures.Color color) =>
+    public void FillRect(RectangleF rect, Color color) =>
       Checker.ConsoleFillRectangle(new Rectangle((int)(rect.X + trans.X), (int)(rect.Y + trans.Y), (int)rect.Width, (int)rect.Height), color);
     public void DrawLine
-      (float x1, float y1, float x2, float y2, float strokeWidth, Structures.Color? color) {
+      (float x1, float y1, float x2, float y2, float strokeWidth, Color? color) {
       if (y1 != y2) throw new NotImplementedException("Non-horizontal lines currently not supported");
       if (!Checker.OutputLines) return;
       Checker.ConsoleDrawHorizontal((int)(x1 + trans.X), (int)(y1 + trans.Y), (int)(x2 + trans.X),

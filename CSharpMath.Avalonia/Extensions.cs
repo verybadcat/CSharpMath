@@ -7,16 +7,15 @@ using AvaloniaColor = Avalonia.Media.Color;
 using AvaloniaTextAlignment = Avalonia.Media.TextAlignment;
 
 using CSharpMath.Rendering.FrontEnd;
-using CSharpMathColor = CSharpMath.Structures.Color;
 using CSharpMathTextAlignment = CSharpMath.Rendering.FrontEnd.TextAlignment;
 
 namespace CSharpMath.Avalonia {
   public static class Extensions {
-    public static AvaloniaColor ToAvaloniaColor(this CSharpMathColor color) =>
+    public static AvaloniaColor ToAvaloniaColor(this System.Drawing.Color color) =>
         new AvaloniaColor(color.A, color.R, color.G, color.B);
 
-    internal static CSharpMathColor ToCSharpMathColor(this AvaloniaColor color) =>
-        new CSharpMathColor(color.R, color.G, color.B, color.A);
+    internal static System.Drawing.Color ToCSharpMathColor(this AvaloniaColor color) =>
+        System.Drawing.Color.FromArgb(color.A, color.R, color.G, color.B);
 
     internal static CSharpMathTextAlignment ToCSharpMathTextAlignment(this AvaloniaTextAlignment alignment) =>
       alignment switch
@@ -27,7 +26,7 @@ namespace CSharpMath.Avalonia {
         _ => CSharpMathTextAlignment.Left
       };
 
-    public static SolidColorBrush ToSolidColorBrush(this CSharpMathColor color) =>
+    public static SolidColorBrush ToSolidColorBrush(this System.Drawing.Color color) =>
         new SolidColorBrush(color.ToAvaloniaColor());
 
     class DrawVisual<TContent> : Visual where TContent : class {

@@ -423,7 +423,7 @@ namespace CSharpMath.Atom {
             if (error != null) {
               SetError(error);
               return null;
-            } else return new Space(space);
+            } else return new Atoms.Space(space);
           }
           SetError($@"\{command} is not allowed in math mode");
           return null;
@@ -434,7 +434,7 @@ namespace CSharpMath.Atom {
             if (error != null) {
               SetError(error);
               return null;
-            } else return new Space(space);
+            } else return new Atoms.Space(space);
           }
           SetError($@"\{command} is not allowed in text mode");
           return null;
@@ -754,7 +754,7 @@ namespace CSharpMath.Atom {
             // add delimiters
             return new Inner(
               LaTeXSettings.BoundaryDelimiters["{"],
-              new MathList(new Space(Structures.Space.ShortSpace), table),
+              new MathList(new Atoms.Space(Structures.Space.ShortSpace), table),
               Boundary.Empty
             );
           }
@@ -1020,7 +1020,7 @@ namespace CSharpMath.Atom {
           case var _ when LaTeXSettings.CommandForAtom(atom) is string name:
             builder.Append(@"\").Append(name).Append(" ");
             break;
-          case Space space:
+          case Atoms.Space space:
             var intSpace = (int)space.Length;
             if (space.IsMu)
               builder.Append(@"\mkern")

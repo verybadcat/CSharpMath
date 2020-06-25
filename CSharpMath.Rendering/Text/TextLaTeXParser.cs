@@ -6,6 +6,7 @@ using Typography.TextBreak;
 namespace CSharpMath.Rendering.Text {
   using Atom;
   using CSharpMath.Structures;
+  using System.Drawing;
   using static CSharpMath.Structures.Result;
   public static class TextLaTeXParser {
     /* //Paste this into the C# Interactive, fill <username> yourself
@@ -146,7 +147,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
           }
           Result<Color> ReadColor(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section)  =>
             ReadArgumentString(latexInput, ref section).Bind(color =>
-              Color.Create(color, !NoEnhancedColors) is Color value ?
+              ColorExtensions.ParseColor(color.ToString()) is Color value ? // TODO: use or remove NoEnhancedColors
                 Ok(value) :
               Err("Invalid color: " + color.ToString())
             );
@@ -381,7 +382,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     }
                   //case "red", "yellow", ...
                   case var shortColor when
-                    !NoEnhancedColors && Color.PredefinedColors.TryGetByFirst(shortColor, out var color): {
+                    !NoEnhancedColors && ColorExtensions.PredefinedColors.TryGetByFirst(shortColor, out var color): {
                       int tmp_commandLength = shortColor.Length;
                       if (ReadArgumentAtom(latex).Bind(
                           coloredContent => atoms.Color(coloredContent, color)
@@ -486,7 +487,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
         case TextAtom.Size z:
           b.Append(@"\fontsize{").Append(z.PointSize).Append("}{");
           return TextAtomToLaTeX(z.Content, b).Append('}');
-        case TextAtom.Color c:
+        case TextAtom.ColoredTextAtom c:
           b.Append(@"\color{").Append(c.Colour).Append("}{");
           return TextAtomToLaTeX(c.Content, b).Append('}');
         case TextAtom.List l:

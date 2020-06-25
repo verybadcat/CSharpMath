@@ -1,5 +1,6 @@
 namespace CSharpMath {
   using System.Collections.Generic;
+  using CSharpMath.Structures;
   public static class Settings {
     public static bool DisableEnhancedTextPainterColors {
       get => Rendering.Text.TextLaTeXParser.NoEnhancedColors;
@@ -7,19 +8,19 @@ namespace CSharpMath {
     }
     public static Rendering.BackEnd.Typefaces GlobalTypefaces =>
       Rendering.BackEnd.Fonts.GlobalTypefaces;
-    public static Structures.BiDictionary<string, Structures.Color> PredefinedColors =>
-      Structures.Color.PredefinedColors;
-    public static Structures.AliasDictionary<string, Atom.Boundary> PredefinedLaTeXBoundaryDelimiters =>
+    public static BiDictionary<string, System.Drawing.Color> PredefinedColors =>
+      ColorExtensions.PredefinedColors;
+    public static AliasDictionary<string, Atom.Boundary> PredefinedLaTeXBoundaryDelimiters =>
       Atom.LaTeXSettings.BoundaryDelimiters;
-    public static Structures.AliasDictionary<string, Atom.FontStyle> PredefinedLaTeXFontStyles =>
+    public static AliasDictionary<string, Atom.FontStyle> PredefinedLaTeXFontStyles =>
       Atom.LaTeXSettings.FontStyles;
-    public static Structures.AliasDictionary<string, Atom.MathAtom> PredefinedLaTeXCommands =>
+    public static AliasDictionary<string, Atom.MathAtom> PredefinedLaTeXCommands =>
       Atom.LaTeXSettings.Commands;
-    public static Structures.BiDictionary<string, string> PredefinedLaTeXTextAccents =>
+    public static BiDictionary<string, string> PredefinedLaTeXTextAccents =>
       Rendering.Text.TextLaTeXSettings.PredefinedAccents;
-    public static Structures.AliasDictionary<string, string> PredefinedLaTeXTextSymbols =>
+    public static AliasDictionary<string, string> PredefinedLaTeXTextSymbols =>
       Rendering.Text.TextLaTeXSettings.PredefinedTextSymbols;
-    public static Dictionary<string, Structures.Space> PredefinedLengthUnits =>
-      Structures.Space.PredefinedLengthUnits;
+    public static Dictionary<string, Space> PredefinedLengthUnits =>
+      Space.PredefinedLengthUnits;
   }
 }

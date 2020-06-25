@@ -107,7 +107,7 @@ namespace CSharpMath.Rendering.Tests {
       var frontEnd = FrontEnd.ToLowerInvariant();
 
       // Prevent black background behind black rendered output in File Explorer preview
-      painter.HighlightColor = painter.UnwrapColor(new Structures.Color(0xF0, 0xF0, 0xF0));
+      painter.HighlightColor = painter.UnwrapColor(System.Drawing.Color.FromArgb(0xF0, 0xF0, 0xF0));
       painter.LaTeX = latex;
 
       var actualFile = new FileInfo(System.IO.Path.Combine(folder, inFile + "." + frontEnd + ".png"));
@@ -149,11 +149,11 @@ namespace CSharpMath.Rendering.Tests {
         { "ScriptLineStyle", new TPainter { LineStyle = Atom.LineStyle.Script } },
         { "ScriptScriptLineStyle", new TPainter { LineStyle = Atom.LineStyle.ScriptScript } },
         { "GlyphBoxColor", new TPainter { GlyphBoxColor = (
-          new TPainter().UnwrapColor(Structures.Color.PredefinedColors["green"]),
-          new TPainter().UnwrapColor(Structures.Color.PredefinedColors["blue"])
+          new TPainter().UnwrapColor(Structures.ColorExtensions.PredefinedColors["green"]),
+          new TPainter().UnwrapColor(Structures.ColorExtensions.PredefinedColors["blue"])
         ) } },
         { "TextColor", new TPainter { TextColor =
-          new TPainter().UnwrapColor(Structures.Color.PredefinedColors["orange"]) } },
+          new TPainter().UnwrapColor(Structures.ColorExtensions.PredefinedColors["orange"]) } },
     };
     public static TheoryData<string, TMathPainter> MathPainterSettingsData => PainterSettingsData<TMathPainter, Atom.MathList>();
     public static TheoryData<string, TTextPainter> TextPainterSettingsData => PainterSettingsData<TTextPainter, Text.TextAtom>();

@@ -1,4 +1,4 @@
-using System;
+using System.Drawing;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -24,7 +24,7 @@ namespace CSharpMath.Rendering.Text {
     public void Space(Space space) => Add(new TextAtom.Space(space));
     public void Style(TextAtom atom, Atom.FontStyle style) => Add(new TextAtom.Style(atom, style));
     public void Size(TextAtom atom, float fontSize) => Add(new TextAtom.Size(atom, fontSize));
-    public void Color(TextAtom atom, Color color) => Add(new TextAtom.Color(atom, color));
+    public void Color(TextAtom atom, Color color) => Add(new TextAtom.ColoredTextAtom(atom, color));
     public Result Math(string mathLaTeX, bool displayStyle, int startAt, ref int endAt) {
       var builder = new Atom.LaTeXParser(mathLaTeX);
       var mathList = builder.Build();

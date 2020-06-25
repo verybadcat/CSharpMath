@@ -85,7 +85,7 @@ namespace CSharpMath.Editor {
     }
     public TFont Font { get; set; }
     public LineStyle LineStyle { get; set; }
-    public Structures.Color SelectColor { get; set; }
+    public Color SelectColor { get; set; }
     public virtual RectangleF Measure => Display?.DisplayBounds() ?? RectangleF.Empty;
     public bool HasText => MathList?.Atoms?.Count > 0;
     public void RecreateDisplayFromMathList() {
@@ -861,7 +861,7 @@ namespace CSharpMath.Editor {
       InsertionIndex = index; // move the index to the end of the new list.
     }
 
-    public void HighlightCharacterAt(MathListIndex index, Structures.Color color) {
+    public void HighlightCharacterAt(MathListIndex index, Color color) {
       // setup highlights before drawing the MTLine
       Display?.HighlightCharacterAt(index, color);
       RedrawRequested?.Invoke(this, EventArgs.Empty);

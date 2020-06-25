@@ -9,6 +9,7 @@ namespace CSharpMath.Rendering.Text {
   using FrontEnd;
   using Display = Display.Displays.ListDisplay<BackEnd.Fonts, BackEnd.Glyph>;
   using CSharpMath.Structures;
+  using System.Drawing;
   public static class TextTypesetter {
     public static (Display relative, Display absolute) Layout(TextAtom input, Fonts inputFont, float canvasWidth) {
 #warning Multiply these constants by resolution
@@ -59,7 +60,7 @@ namespace CSharpMath.Rendering.Text {
               (sz.Content, new Fonts(fonts, sz.PointSize), line, displayList,
                displayMathList, style, color);
             break;
-          case TextAtom.Color c:
+          case TextAtom.ColoredTextAtom c:
             AddDisplaysWithLineBreaks
               (c.Content, fonts, line, displayList, displayMathList, style, c.Colour);
             break;
