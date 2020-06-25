@@ -6,6 +6,7 @@ using System.Drawing;
 
 namespace CSharpMath.Atom {
   using Atoms;
+  using CSharpMath.Structures;
   using InvalidCodePathException = Structures.InvalidCodePathException;
   public class LaTeXParser {
     interface IEnvironment { }
@@ -217,16 +218,14 @@ namespace CSharpMath.Atom {
         }
       }
       var str = builder.ToString();
-      if (!(Color.Create(str.AsSpan()) is { } color)) {
-        SetError("Invalid color: " + str);
-        return null;
-      }
-      SkipSpaces();
-      if (!ExpectCharacter('}')) {
-        SetError("Missing }");
-        return null;
-      }
-      return color;
+      if (ColorExtensions.ParseColor(str) is { } color) {
+        SkipSpaces();
+        if (!ExpectCharacter('}')) {
+          SetError("Missing }");
+          return null;
+        }
+        return color;
+      } else { return null; }
     }
 
     private void SkipSpaces() {
