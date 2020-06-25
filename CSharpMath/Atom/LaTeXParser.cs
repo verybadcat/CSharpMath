@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Drawing;
 
 namespace CSharpMath.Atom {
   using Atoms;
@@ -198,7 +199,7 @@ namespace CSharpMath.Atom {
       return builder.ToString();
     }
 
-    private Structures.Color? ReadColor() {
+    private Color? ReadColor() {
       if (!ExpectCharacter('{')) {
         SetError("Missing {");
         return null;
@@ -216,7 +217,7 @@ namespace CSharpMath.Atom {
         }
       }
       var str = builder.ToString();
-      if (!(Structures.Color.Create(str.AsSpan()) is { } color)) {
+      if (!(Color.Create(str.AsSpan()) is { } color)) {
         SetError("Invalid color: " + str);
         return null;
       }
@@ -404,7 +405,7 @@ namespace CSharpMath.Atom {
         case "color":
           return (ReadColor()) switch
           {
-            { } color when BuildInternal(true) is { } ml => new Color(color, ml),
+            { } color when BuildInternal(true) is { } ml => new ColoredAtom(color, ml),
             _ => null,
           };
         case "colorbox":
@@ -992,7 +993,7 @@ namespace CSharpMath.Atom {
                 break;
             }
             break;
-          case Color color:
+          case ColoredAtom color:
             builder.Append(@"\color{")
               .Append(color.Colour)
               .Append("}{");

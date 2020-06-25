@@ -4,7 +4,6 @@ using CSharpMath.Atom;
 using CSharpMath.Atom.Atoms;
 using CSharpMath.Display.Displays;
 using CSharpMath.Display.FrontEnd;
-using Color = CSharpMath.Atom.Atoms.Color;
 using InvalidCodePathException = CSharpMath.Structures.InvalidCodePathException;
 using System.Drawing;
 using System.Linq;
@@ -183,11 +182,11 @@ namespace CSharpMath.Display {
             // We need to preserve the prevAtom for any inter-element space changes,
             // so we skip to the next node.
             continue;
-          case Color color:
+          case ColoredAtom coloredAtom:
             AddDisplayLine(false);
-            AddInterElementSpace(prevAtom, color);
-            var colorDisplay = CreateLine(color.InnerList, _font, _context, _style, false);
-            colorDisplay.SetTextColorRecursive(color.Colour);
+            AddInterElementSpace(prevAtom, coloredAtom);
+            var colorDisplay = CreateLine(coloredAtom.InnerList, _font, _context, _style, false);
+            colorDisplay.SetTextColorRecursive(coloredAtom.Colour);
             colorDisplay.Position = _currentPosition;
             _currentPosition.X += colorDisplay.Width;
             _displayAtoms.Add(colorDisplay);

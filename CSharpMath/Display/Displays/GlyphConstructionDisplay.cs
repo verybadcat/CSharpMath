@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using CSharpMath.Atom;
-using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Display.Displays {
   using FrontEnd;

@@ -185,15 +185,15 @@ namespace CSharpMath.CoreTests {
     }
     [Fact]
     public void TestCopyColor() {
-      var color = new Color(new Structures.Color(255, 0, 0), new MathList(new Open("(")));
+      var color = new ColoredAtom(new Structures.Color(255, 0, 0), new MathList(new Open("(")));
       var clone = color.Clone(false);
-      Assert.Equal(new Structures.Color(255, 0, 0), clone.Colour);
+      Assert.Equal(new Structures.Color(255, 0, 0), clone.ColouredAtom);
       CheckClone(color, clone);
       CheckClone(color.InnerList, clone.InnerList);
 
       var colorBox = new ColorBox(new Structures.Color(128, 0, 0), new MathList(new Close(")")));
       var cloneBox = colorBox.Clone(false);
-      Assert.Equal(new Structures.Color(128, 0, 0), cloneBox.Colour);
+      Assert.Equal(new Structures.Color(128, 0, 0), cloneBox.ColouredAtom);
       CheckClone(colorBox, cloneBox);
       CheckClone(colorBox.InnerList, cloneBox.InnerList);
     }

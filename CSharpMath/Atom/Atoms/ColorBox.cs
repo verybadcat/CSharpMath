@@ -1,12 +1,13 @@
 using System.Text;
+using System.Drawing;
 
 namespace CSharpMath.Atom.Atoms {
   public sealed class ColorBox : MathAtom, IMathListContainer {
-    public Structures.Color Colour { get; set; }
+    public Color Colour { get; set; }
     public MathList InnerList { get; }
     System.Collections.Generic.IEnumerable<MathList> IMathListContainer.InnerLists =>
       new[] { InnerList };
-    public ColorBox(Structures.Color color, MathList innerList) : base(string.Empty) =>
+    public ColorBox(Color color, MathList innerList) : base(string.Empty) =>
       (Colour, InnerList) = (color, innerList);
     public override string DebugString =>
       new StringBuilder(@"\colorbox")

@@ -1,5 +1,4 @@
 using CSharpMath.Atom;
-using Color = CSharpMath.Structures.Color;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
