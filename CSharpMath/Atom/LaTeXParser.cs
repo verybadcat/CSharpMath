@@ -30,7 +30,7 @@ namespace CSharpMath.Atom {
 #pragma warning restore CA1034 // Nested types should not be visible
     public string Chars { get; }
     public int NextChar { get; private set; }
-    private bool _textMode; //_spacesAllowed in iosMath
+    public bool TextMode { get; private set; } //_spacesAllowed in iosMath
     private FontStyle _currentFontStyle;
     public Stack<IEnvironment> Environments { get; } = new Stack<IEnvironment>();
     public LaTeXParser(string str) {
@@ -46,7 +46,7 @@ namespace CSharpMath.Atom {
     private bool HasCharacters => NextChar < Chars.Length;
     public Result<MathList> ReadArgument() => BuildInternal(true);
     public Result<MathList?> ReadArgumentOptional() =>
-      ExpectCharacter('[')
+      ReadCharIfAvailable('[')
       ? BuildInternal(false, ']').Bind(mathList => (MathList?)mathList)
       : (MathList?)null;
     public Result<MathList> ReadUntil(char stopChar) => BuildInternal(false, stopChar);
@@ -131,22 +131,33 @@ namespace CSharpMath.Atom {
             if (modifierApplied) continue;
 
             if (LaTeXSettings.FontStyles.TryGetValue(command, out var fontStyle)) {
-              var oldSpacesAllowed = _textMode;
+              var oldSpacesAllowed = TextMode;
               var oldFontStyle = _currentFontStyle;
-              _textMode = (command == "text");
+              TextMode = (command == "text");
               _currentFontStyle = fontStyle;
               (_, error) = BuildInternal(true, r: r);
               if (error != null) return error;
               _currentFontStyle = oldFontStyle;
-              _textMode = oldSpacesAllowed;
+              TextMode = oldSpacesAllowed;
               prevAtom = r.Atoms.LastOrDefault();
               if (oneCharOnly) {
                 return r;
               }
               continue;
             }
-            (atom, error) = AtomForCommand(command, stopChar);
-            if (error != null) return error;
+            switch (LaTeXSettings.AtomForCommand(command)) {
+              case Accent accent:
+                MathList innerList;
+                (innerList, error) = BuildInternal(true);
+                if (error != null) return error;
+                atom = new Accent(accent.Nucleus, innerList);
+                break;
+              case MathAtom a:
+                atom = a;
+                break;
+              case null:
+                return "Invalid command \\" + command;
+            }
             break;
           case '&': // column separation in tables
             if (Environments.PeekOrDefault() is TableEnvironment) {
@@ -158,10 +169,10 @@ namespace CSharpMath.Atom {
             return new MathList(table);
           case '\'': // this case is NOT in iosMath
             int i = 1;
-            while (ExpectCharacter('\'')) i++;
+            while (ReadCharIfAvailable('\'')) i++;
             atom = new Prime(i);
             break;
-          case ' ' when _textMode:
+          case ' ' when TextMode:
             atom = new Ordinary(" ");
             break;
           case var ch when ch <= sbyte.MaxValue:
@@ -207,7 +218,7 @@ namespace CSharpMath.Atom {
     }
 
     public Result<Structures.Color> ReadColor() {
-      if (!ExpectCharacter('{')) {
+      if (!ReadCharIfAvailable('{')) {
         return "Missing {";
       }
       SkipSpaces();
@@ -227,7 +238,7 @@ namespace CSharpMath.Atom {
         return "Invalid color: " + str;
       }
       SkipSpaces();
-      if (!ExpectCharacter('}')) {
+      if (!ReadCharIfAvailable('}')) {
         return "Missing }";
       }
       return color;
@@ -252,7 +263,9 @@ namespace CSharpMath.Atom {
       }
     }
 
-    private bool ExpectCharacter(char ch) {
+    /// <summary>Advances <see cref="NextChar"/> if <paramref name="ch"/> is available.</summary>
+    /// <returns>Whether the char was read.</returns>
+    public bool ReadCharIfAvailable(char ch) {
       AssertNotSpace(ch);
       SkipSpaces();
       if (HasCharacters) {
@@ -282,13 +295,13 @@ namespace CSharpMath.Atom {
       return ReadString();
     }
     public Result<string> ReadEnvironment() {
-      if (!ExpectCharacter('{')) {
+      if (!ReadCharIfAvailable('{')) {
         return Err("Missing {");
       }
       SkipSpaces();
       var env = ReadString();
       SkipSpaces();
-      if (!ExpectCharacter('}')) {
+      if (!ReadCharIfAvailable('}')) {
         return Err("Missing }");
       }
       return Ok(env);
@@ -314,7 +327,7 @@ namespace CSharpMath.Atom {
       for (int i = 0; i < 2 && HasCharacters; i++) {
         unit[i] = GetNextCharacter();
       }
-      return Structures.Space.Create(length, new string(unit), _textMode);
+      return Structures.Space.Create(length, new string(unit), TextMode);
     }
     public Result<Boundary> ReadDelimiter(string commandName) {
       string? ReadDelimiterLiteral() {
@@ -344,84 +357,6 @@ namespace CSharpMath.Atom {
       return boundary;
     }
 
-    private Result<MathAtom> AtomForCommand(string command, char stopChar) {
-      switch (LaTeXSettings.AtomForCommand(command)) {
-        case Accent accent:
-          var (innerList, error) = BuildInternal(true);
-          if (error != null) return error;
-          return new Accent(accent.Nucleus, innerList);
-        case MathAtom atom:
-          return atom;
-      }
-      switch (command) {
-        case "begin":
-          string env;
-          (env, error) = ReadEnvironment();
-          if (error != null) return error;
-          return ReadTable(env, null, false, stopChar);
-        case "color":
-          Structures.Color color;
-          (color, error) = ReadColor();
-          if (error != null) return error;
-          (innerList, error) = BuildInternal(true);
-          if (error != null) return error;
-          return new Color(color, innerList);
-        case "colorbox":
-          (color, error) = ReadColor();
-          if (error != null) return error;
-          (innerList, error) = BuildInternal(true);
-          if (error != null) return error;
-          return new ColorBox(color, innerList);
-        case "prime":
-          return @"\prime won't be supported as Unicode has no matching character. Use ' instead.";
-        case "kern":
-        case "hskip":
-          Structures.Space space;
-          if (_textMode) {
-            (space, error) = ReadSpace();
-            if (error != null) return error;
-            return new Space(space);
-          }
-          return $@"\{command} is not allowed in math mode";
-        case "mkern":
-        case "mskip":
-          if (!_textMode) {
-            (space, error) = ReadSpace();
-            if (error != null) return error;
-            return new Space(space);
-          }
-          return $@"\{command} is not allowed in text mode";
-        case "raisebox":
-          if (!ExpectCharacter('{')) return "Expected {";
-          Structures.Space raise;
-          (raise, error) = ReadSpace();
-          if (error != null) return error;
-          if (!ExpectCharacter('}')) return "Expected }";
-          (innerList, error) = BuildInternal(true);
-          if (error != null) return error;
-          return new RaiseBox(raise, innerList);
-        case "TeX":
-          return TeX;
-        case "operatorname":
-          if (!ExpectCharacter('{')) return "Expected {";
-          var operatorname = ReadString();
-          if (!ExpectCharacter('}')) return "Expected }";
-          return new LargeOperator(operatorname, null);
-        // Bra and Ket implementations are derived from Donald Arseneau's braket LaTeX package.
-        // See: https://www.ctan.org/pkg/braket
-        case "Bra":
-          (innerList, error) = BuildInternal(true);
-          if (error != null) return error;
-          return new Inner(new Boundary("〈"), innerList, new Boundary("|"));
-        case "Ket":
-          (innerList, error) = BuildInternal(true);
-          if (error != null) return error;
-          return new Inner(new Boundary("|"), innerList, new Boundary("〉"));
-        default:
-          return "Invalid command \\" + command;
-      }
-    }
-
     private static readonly Dictionary<string, (string left, string right)?> fractionCommands =
       new Dictionary<string, (string, string)?> {
         { "over", null },
@@ -430,13 +365,6 @@ namespace CSharpMath.Atom {
         { "brack", ("[", "]") },
         { "brace", ("{", "}") }
       };
-
-    //should be \textrm instead of \text
-    private static readonly MathAtom TeX = new Inner(Boundary.Empty,
-      MathListFromLaTeX(@"\text{T\kern-.1667em\raisebox{-.5ex}{E}\kern-.125emX}")
-      .Match(mathList => mathList, e =>
-        throw new FormatException(@"A syntax error is present in the definition of \TeX.")),
-      Boundary.Empty);
 
     private Result<MathList?> StopCommand(string command, MathList list, char stopChar) {
       string? error;
@@ -536,7 +464,7 @@ namespace CSharpMath.Atom {
         }
       }
       if (environment.Name == "array") {
-        if (!ExpectCharacter('{')) {
+        if (!ReadCharIfAvailable('{')) {
           return "Missing array alignment";
         }
         var builder = new StringBuilder();

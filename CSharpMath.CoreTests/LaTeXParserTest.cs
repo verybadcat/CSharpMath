@@ -1271,13 +1271,13 @@ x_}2
       InlineData(@"{1+\frac{3+2", @"Error: Missing closing brace
 {1+\frac{3+2
            ↑ (pos 12)"),
-      InlineData(@"1+\left", @"Error: Missing delimiter for left
+      InlineData(@"1+\left", @"Error: Missing delimiter for \left
 1+\left
       ↑ (pos 7)"),
       InlineData(@"\left{", @"Error: Missing \right for \left with delimiter {
 \left{
      ↑ (pos 6)"),
-      InlineData(@"\left(\frac12\right", @"Error: Missing delimiter for right
+      InlineData(@"\left(\frac12\right", @"Error: Missing delimiter for \right
 \left(\frac12\right
                   ↑ (pos 19)"),
       InlineData(@"\left 5 + 3 \right)", @"Error: Invalid delimiter for \left: 5
