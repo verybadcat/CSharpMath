@@ -67,23 +67,19 @@ namespace CSharpMath.Structures {
     public static implicit operator Result<T>(ResultImplicitError error) =>
       new Result<T>(error.Error);
     public Result Bind(Action<T> method) {
-      if (method is null) throw new ArgumentNullException(nameof(method));
       if (Error is string error) return error;
       else method(_value);
       return Result.Ok();
     }
     public Result Bind(Func<T, Result> method) {
-      if (method is null) throw new ArgumentNullException(nameof(method));
       if (Error is string error) return error;
       else return method(_value);
     }
     public Result<TResult> Bind<TResult>(Func<T, TResult> method) {
-      if (method is null) throw new ArgumentNullException(nameof(method));
       if (Error is string error) return error;
       else return method(_value);
     }
     public Result<TResult> Bind<TResult>(Func<T, Result<TResult>> method) {
-      if (method is null) throw new ArgumentNullException(nameof(method));
       if (Error is string error) return error;
       else return method(_value);
     }

@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 
 namespace CSharpMath.Atom {
+  using System.Linq;
   using Atoms;
-  using static Structures.Result;
   //https://mirror.hmc.edu/ctan/macros/latex/contrib/unicode-math/unimath-symbols.pdf
   public static class LaTeXSettings {
     public static MathAtom Times => new BinaryOperator("×");
@@ -833,89 +833,86 @@ namespace CSharpMath.Atom {
         // { "supsetneqq", new Relation("⫌") }, // Glyph not in Latin Modern Math
         // \varsupsetneqq -> ⫌ + U+FE00 (Variation Selector 1) Not dealing with variation selectors, thank you very much
       };
-#warning Use (var mathList, error) = ... once https://github.com/dotnet/roslyn/pull/44476 is available
-    // Yes, the (MathAtom?) casts are painful. However, this is the same case as converting Task<TDerived> to Task<TBase> using ContinueWith.
-    public static Dictionary<string, Func<LaTeXParser, MathList, char, Structures.Result<MathAtom?>>> Commands { get; } =
-      new Dictionary<string, Func<LaTeXParser, MathList, char, Structures.Result<MathAtom?>>> { {
-        // Section: Commands that produce atoms
+    static Structures.Result<(MathAtom? Atom, bool Stop)> Ok(MathAtom? atom) => Structures.Result.Ok((atom, false));
+    static Structures.Result<(MathAtom? Atom, bool Stop)> OkThenStop(MathAtom? atom) => Structures.Result.Ok((atom, true));
+    static Structures.ResultImplicitError Err(string error) => Structures.Result.Err(error);
+    public static Dictionary<string, Func<LaTeXParser, MathList, char, Structures.Result<(MathAtom? Atom, bool Stop)>>> Commands { get; } =
+      new Dictionary<string, Func<LaTeXParser, MathList, char, Structures.Result<(MathAtom? Atom, bool Stop)>>> { {
+          #region Commands that produce atoms
           @"frac", (parser, accumulate, stopChar) =>
-            parser.ReadArgument().Bind( 
-            numerator => parser.ReadArgument().Bind(
-            denominator => (MathAtom?)new Fraction(numerator, denominator)))
+            parser.ReadArgument().Bind(numerator =>
+              parser.ReadArgument().Bind(denominator =>
+                Ok(new Fraction(numerator, denominator))))
         }, {
           @"binom", (parser, accumulate, stopChar) =>
-            parser.ReadArgument().Bind(
-            numerator => parser.ReadArgument().Bind(
-            denominator => (MathAtom?)new Fraction(numerator, denominator, false) {
-              LeftDelimiter = "(",
-              RightDelimiter = ")"
-            }))
+            parser.ReadArgument().Bind(numerator =>
+              parser.ReadArgument().Bind(denominator =>
+                Ok(new Fraction(numerator, denominator, false) {
+                  LeftDelimiter = "(",
+                  RightDelimiter = ")"
+                })))
         }, {
           @"sqrt", (parser, accumulate, stopChar) =>
-            parser.ReadArgumentOptional().Bind(
-            degree => parser.ReadArgument().Bind(
-            radicand => (MathAtom?)new Radical(degree ?? new MathList(), radicand)))
+            parser.ReadArgumentOptional().Bind(degree =>
+              parser.ReadArgument().Bind(radicand =>
+                Ok(new Radical(degree ?? new MathList(), radicand))))
         }, {
           @"left", (parser, accumulate, stopChar) =>
-            parser.ReadDelimiter("left").Bind(
-            left => {
+            parser.ReadDelimiter("left").Bind(left => {
               parser.Environments.Push(new LaTeXParser.InnerEnvironment());
-              return parser.ReadUntil(stopChar).Bind(
-              innerList => {
+              return parser.ReadUntil(stopChar).Bind(innerList => {
                 if (!(parser.Environments.PeekOrDefault() is
                   LaTeXParser.InnerEnvironment { RightBoundary: { } right })) {
                   return Err($@"Missing \right for \left with delimiter {left}");
                 }
                 parser.Environments.Pop();
-                return Ok((MathAtom?)new Inner(left, innerList, right));
+                return Ok(new Inner(left, innerList, right));
               });
             })
         }, {
           @"overline", (parser, accumulate, stopChar) =>
-          parser.ReadArgument().Bind(mathList => (MathAtom?)new Overline(mathList))
+          parser.ReadArgument().Bind(mathList => Ok(new Overline(mathList)))
         }, {
           @"underline", (parser, accumulate, stopChar) =>
-          parser.ReadArgument().Bind(mathList => (MathAtom?)new Underline(mathList))
+          parser.ReadArgument().Bind(mathList => Ok(new Underline(mathList)))
         }, {
           @"begin", (parser, accumulate, stopChar) =>
-          parser.ReadEnvironment().Bind(
-            env => parser.ReadTable(env, null, false, stopChar)).Bind(
-            atom => (MathAtom?)atom)
+          parser.ReadEnvironment().Bind(env =>
+            parser.ReadTable(env, null, false, stopChar)).Bind(Ok)
         }, {
           @"color", (parser, accumulate, stopChar) =>
           parser.ReadColor().Bind(
             color => parser.ReadArgument().Bind(
-            colored => (MathAtom?)new Color(color, colored)))
+            colored => Ok(new Color(color, colored))))
         }, {
           @"colorbox", (parser, accumulate, stopChar) =>
           parser.ReadColor().Bind(
             color => parser.ReadArgument().Bind(
-            colored => (MathAtom?)new ColorBox(color, colored)))
+            colored => Ok(new ColorBox(color, colored))))
         }, {
           @"prime", (parser, accumulate, stopChar) =>
-          @"\prime won't be supported as Unicode has no matching character. Use ' instead."
+          Err(@"\prime won't be supported as Unicode has no matching character. Use ' instead.")
         }, {
           @"kern", (parser, accumulate, stopChar) =>
-          parser.TextMode ? parser.ReadSpace().Bind(kern => (MathAtom?)new Space(kern)) : @"\kern is not allowed in math mode"
+          parser.TextMode ? parser.ReadSpace().Bind(kern => Ok(new Space(kern))) : @"\kern is not allowed in math mode"
         }, {
           @"hskip", (parser, accumulate, stopChar) =>
 #warning \hskip: Implement plus and minus for expansion
-          parser.TextMode ? parser.ReadSpace().Bind(kern => (MathAtom?)new Space(kern)) : @"\hskip is not allowed in math mode"
+          parser.TextMode ? parser.ReadSpace().Bind(kern => Ok(new Space(kern))) : @"\hskip is not allowed in math mode"
         }, {
           @"mkern", (parser, accumulate, stopChar) =>
-          !parser.TextMode ? parser.ReadSpace().Bind(kern => (MathAtom?)new Space(kern)) : @"\kern is not allowed in text mode"
+          !parser.TextMode ? parser.ReadSpace().Bind(kern => Ok(new Space(kern))) : @"\kern is not allowed in text mode"
         }, {
           @"mskip", (parser, accumulate, stopChar) =>
 #warning \mskip: Implement plus and minus for expansion
-          !parser.TextMode ? parser.ReadSpace().Bind(kern => (MathAtom?)new Space(kern)) : @"\hskip is not allowed in text mode"
+          !parser.TextMode ? parser.ReadSpace().Bind(kern => Ok(new Space(kern))) : @"\hskip is not allowed in text mode"
         }, {
           @"raisebox", (parser, accumulate, stopChar) => {
             if (!parser.ReadCharIfAvailable('{')) return "Expected {";
-            return parser.ReadSpace().Bind(
-            raise => {
+            return parser.ReadSpace().Bind(raise => {
               if (!parser.ReadCharIfAvailable('}')) return "Expected }";
-              return parser.ReadArgument().Bind(
-                innerList => (MathAtom?)new RaiseBox(raise, innerList));
+              return parser.ReadArgument().Bind(innerList =>
+                Ok(new RaiseBox(raise, innerList)));
             });
           }
         }, {
@@ -923,19 +920,36 @@ namespace CSharpMath.Atom {
             if (!parser.ReadCharIfAvailable('{')) return "Expected {";
             var operatorname = parser.ReadString();
             if (!parser.ReadCharIfAvailable('}')) return "Expected }";
-            return (MathAtom?)new LargeOperator(operatorname, null);
+            return Ok(new LargeOperator(operatorname, null));
           }
         }, {
         // Bra and Ket implementations are derived from Donald Arseneau's braket LaTeX package.
         // See: https://www.ctan.org/pkg/braket
           @"Bra", (parser, accumulate, stopChar) =>
           parser.ReadArgument().Bind(
-          innerList => (MathAtom?)new Inner(new Boundary("〈"), innerList, new Boundary("|")))
+          innerList => Ok(new Inner(new Boundary("〈"), innerList, new Boundary("|"))))
         }, {
           @"Ket", (parser, accumulate, stopChar) =>
           parser.ReadArgument().Bind(
-          innerList => (MathAtom?)new Inner(new Boundary("|"), innerList, new Boundary("〉")))
-        },
+          innerList => Ok(new Inner(new Boundary("|"), innerList, new Boundary("〉"))))
+        }, {
+          #endregion Commands that produce atoms
+          #region Commands that modify the previous atom
+          @"limits", (parser, accumulate, stopChar) => {
+            if (accumulate.LastOrDefault() is LargeOperator largeOp) {
+              largeOp.Limits = true;
+              return Ok(null);
+            } else return @"\limits can only be applied to an operator";
+          }
+        }, {
+          @"nolimits", (parser, accumulate, stopChar) => {
+            if (accumulate.LastOrDefault() is LargeOperator largeOp) {
+              largeOp.Limits = false;
+              return Ok(null);
+            } else return @"\nolimits can only be applied to an operator";
+          }
+          #endregion Commands that modify the previous atom
+        }
       };
   }
 }

@@ -113,8 +113,10 @@ namespace CSharpMath.Atom {
 
             if (LaTeXSettings.Commands.TryGetValue(command, out var handler)) {
               MathAtom? handlerResult;
-              (handlerResult, error) = handler(this, r, stopChar);
+              bool stop;
+              ((handlerResult, stop), error) = handler(this, r, stopChar);
               if (error != null) return error;
+              if (stop) return r;
               if (handlerResult == null) continue;
               atom = handlerResult;
               break;
@@ -124,11 +126,6 @@ namespace CSharpMath.Atom {
             (done, error) = StopCommand(command, r, stopChar);
             if (error != null) return error;
             if (done != null) return done;
-
-            bool modifierApplied;
-            (modifierApplied, error) = ApplyModifier(command, prevAtom);
-            if (error != null) return error;
-            if (modifierApplied) continue;
 
             if (LaTeXSettings.FontStyles.TryGetValue(command, out var fontStyle)) {
               var oldSpacesAllowed = TextMode;
@@ -416,25 +413,6 @@ namespace CSharpMath.Atom {
           return list;
       }
       return (MathList?)null;
-    }
-    private Result<bool> ApplyModifier(string modifier, MathAtom? atom) {
-      switch (modifier) {
-        case "limits":
-          if (atom is LargeOperator limitsOp) {
-            limitsOp.Limits = true;
-          } else {
-            return @"\limits can only be applied to an operator";
-          }
-          return true;
-        case "nolimits":
-          if (atom is LargeOperator noLimitsOp) {
-            noLimitsOp.Limits = false;
-          } else {
-            return @"\nolimits can only be applied to an operator";
-          }
-          return true;
-      }
-      return false;
     }
 
     private static readonly Dictionary<string, (string left, string right)?> _matrixEnvironments =
