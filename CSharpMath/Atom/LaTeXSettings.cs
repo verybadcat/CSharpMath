@@ -134,7 +134,7 @@ namespace CSharpMath.Atom {
       };
 
     public static MathAtom? AtomForCommand(string symbolName) =>
-      Symbols.TryGetValue(
+      CommandSymbols.TryGetValue(
         symbolName ?? throw new ArgumentNullException(nameof(symbolName)),
         out var symbol) ? symbol.Clone(false) : null;
 
@@ -145,10 +145,10 @@ namespace CSharpMath.Atom {
       if (atomWithoutScripts is IMathListContainer container)
         foreach (var list in container.InnerLists)
           list.Clear();
-      return Symbols.TryGetKey(atomWithoutScripts, out var name) ? name : null;
+      return CommandSymbols.TryGetKey(atomWithoutScripts, out var name) ? name : null;
     }
 
-    public static Structures.AliasDictionary<string, MathAtom> Symbols { get; } =
+    public static Structures.AliasDictionary<string, MathAtom> CommandSymbols { get; } =
       new Structures.AliasDictionary<string, MathAtom> {
         // Custom additions
         { "diameter", new Ordinary("\u2300") },
@@ -826,11 +826,53 @@ namespace CSharpMath.Atom {
         // { "supsetneqq", new Relation("⫌") }, // Glyph not in Latin Modern Math
         // \varsupsetneqq -> ⫌ + U+FE00 (Variation Selector 1) Not dealing with variation selectors, thank you very much
       };
-    public static Dictionary<string, Func<LaTeXParser, Structures.Result>> Commands { get; } =
-      new Dictionary<string, Func<LaTeXParser, Structures.Result>> {
-        { @"\frac", p => {
-          return Ok();
-        } }
+#warning Use (var mathList, error) = ... once https://github.com/dotnet/roslyn/pull/44476 is available
+    // Yes, the (MathAtom?) cases are painful. However, this is the same case as converting Task<TDerived> to Task<TBase>.
+    public static Dictionary<string, Func<LaTeXParser, MathList, char, Structures.Result<MathAtom?>>> Commands { get; } =
+      new Dictionary<string, Func<LaTeXParser, MathList, char, Structures.Result<MathAtom?>>> { {
+          @"frac", (parser, mathList, stopChar) =>
+            parser.ReadArgument().Bind( 
+            numerator => parser.ReadArgument().Bind(
+            denominator => (MathAtom?)new Fraction(numerator, denominator)))
+        }, {
+          @"binom", (parser, mathList, stopChar) =>
+            parser.ReadArgument().Bind(
+            numerator => parser.ReadArgument().Bind(
+            denominator => (MathAtom?)new Fraction(numerator, denominator, false) {
+              LeftDelimiter = "(",
+              RightDelimiter = ")"
+            }))
+        }, {
+          @"sqrt", (parser, mathList, stopChar) =>
+            parser.ReadArgumentOptional().Bind(
+            degree => parser.ReadArgument().Bind(
+            radicand => (MathAtom?)new Radical(degree ?? new MathList(), radicand)))
+        }, {
+          @"left", (parser, mathList, stopChar) => {
+            var (left, error) = parser.ReadDelimiter("left");
+            if (error != null) return error;
+            parser.Environments.Push(new LaTeXParser.InnerEnvironment());
+            MathList innerList;
+            (innerList, error) = parser.ReadUntil(stopChar);
+            if (error != null) return error;
+            if (!(parser.Environments.PeekOrDefault() is
+              LaTeXParser.InnerEnvironment { RightBoundary: { } right })) {
+              return $@"Missing \right for \left with delimiter {left}";
+            }
+            parser.Environments.Pop();
+            return new Inner(left, innerList, right);
+          }
+        }, {
+          @"overline", (parser, mathList, stopChar) =>
+          parser.ReadArgument().Bind(mathList => (MathAtom?)new Overline(mathList))
+        }, {
+          @"underline", (parser, mathList, stopChar) =>
+          parser.ReadArgument().Bind(mathList => (MathAtom?)new Underline(mathList))
+        }, {
+          @"begin", (parser, mathList, stopChar) =>
+          parser.ReadEnvironment().Bind(env => parser.ReadTable(env, null, false, stopChar))
+            .Bind(atom => (MathAtom?)atom)
+        },
       };
   }
 }

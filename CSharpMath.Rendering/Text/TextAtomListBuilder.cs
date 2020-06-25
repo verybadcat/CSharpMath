@@ -29,7 +29,7 @@ namespace CSharpMath.Rendering.Text {
       var builder = new Atom.LaTeXParser(mathLaTeX);
       var (mathList, error) = builder.Build();
       if (error != null) {
-        endAt = startAt - mathLaTeX.Length + builder.CurrentChar - 1;
+        endAt = startAt - mathLaTeX.Length + builder.NextChar - 1;
         return Result.Err("[Math] " + error);
       } else {
         Add(new TextAtom.Math(mathList, displayStyle));

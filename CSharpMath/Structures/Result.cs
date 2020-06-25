@@ -1,9 +1,11 @@
 using System;
+using CSharpMath.Structures;
 
 #pragma warning disable CA1815 // Override equals and operator equals on value types
 // Justification for CA1815: Results are not meant to be equated
 #pragma warning disable CA2225 // Operator overloads have named alternates
 // Justification for CA2225: Use the constructors instead
+
 namespace CSharpMath.Structures {
   //For Result<string> where both implicit conversions fight over each other,
   //use Err(string) there instead

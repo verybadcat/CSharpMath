@@ -7,38 +7,49 @@ namespace CSharpMath.Atom {
   using Atoms;
   using Structures;
   using static Structures.Result;
-  using Color = Atom.Atoms.Color;
-  using Space = Atom.Atoms.Space;
+  using Color = Atoms.Color;
+  using Space = Atoms.Space;
   using InvalidCodePathException = Structures.InvalidCodePathException;
-#warning Use (var mathList, error) = ... once https://github.com/dotnet/roslyn/pull/44476 is available
   public class LaTeXParser {
-    interface IEnvironment { }
-    class TableEnvironment : IEnvironment {
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1040:Avoid empty interfaces",
+      Justification = "This is a marker interface to enable compile-time type checking")]
+#pragma warning disable CA1034 // Nested types should not be visible
+    // Justification: Implementation details exposed for extensibility
+    public interface IEnvironment { }
+    public class TableEnvironment : IEnvironment {
       public TableEnvironment(string? name) => Name = name;
       public string? Name { get; set; }
       public bool Ended { get; set; }
       public int NRows { get; set; }
       public string? ArrayAlignments { get; set; }
     }
-    class InnerEnvironment : IEnvironment {
+    public class InnerEnvironment : IEnvironment {
       public Boundary? RightBoundary { get; set; }
     }
+#pragma warning restore CA1034 // Nested types should not be visible
     public string Chars { get; }
-    public int CurrentChar { get; private set; }
+    public int NextChar { get; private set; }
     private bool _textMode; //_spacesAllowed in iosMath
     private FontStyle _currentFontStyle;
-    private readonly Stack<IEnvironment> _environments = new Stack<IEnvironment>();
+    public Stack<IEnvironment> Environments { get; } = new Stack<IEnvironment>();
     public LaTeXParser(string str) {
       Chars = str;
       _currentFontStyle = FontStyle.Default;
     }
     public Result<MathList> Build() => BuildInternal(false);
-    private char GetNextCharacter() => Chars[CurrentChar++];
-    private void UnlookCharacter() =>
-      _ = CurrentChar == 0
+    public char GetNextCharacter() => Chars[NextChar++];
+    public void UnlookCharacter() =>
+      _ = NextChar == 0
       ? throw new InvalidCodePathException("Can't unlook below character 0")
-      : CurrentChar--;
-    private bool HasCharacters => CurrentChar < Chars.Length;
+      : NextChar--;
+    private bool HasCharacters => NextChar < Chars.Length;
+    public Result<MathList> ReadArgument() => BuildInternal(true);
+    public Result<MathList?> ReadArgumentOptional() =>
+      ExpectCharacter('[')
+      ? BuildInternal(false, ']').Bind(mathList => (MathList?)mathList)
+      : (MathList?)null;
+    public Result<MathList> ReadUntil(char stopChar) => BuildInternal(false, stopChar);
     private Result<MathList> BuildInternal(bool oneCharOnly, char stopChar = '\0', MathList? r = null) {
       if (oneCharOnly && stopChar > '\0') {
         throw new InvalidCodePathException("Cannot set both oneCharOnly and stopChar");
@@ -74,11 +85,11 @@ namespace CSharpMath.Atom {
             continue;
           case '{':
             MathList sublist;
-            if (_environments.PeekOrDefault() is TableEnvironment { Name: null }) {
+            if (Environments.PeekOrDefault() is TableEnvironment { Name: null }) {
               // \\ or \cr which do not have a corrosponding \end
-              var oldEnv = _environments.Pop();
+              var oldEnv = Environments.Pop();
               (sublist, error) = BuildInternal(false, '}');
-              _environments.Push(oldEnv);
+              Environments.Push(oldEnv);
             } else {
               (sublist, error) = BuildInternal(false, '}');
             }
@@ -99,6 +110,16 @@ namespace CSharpMath.Atom {
             return "Missing opening brace";
           case '\\':
             var command = ReadCommand();
+
+            if (LaTeXSettings.Commands.TryGetValue(command, out var handler)) {
+              MathAtom? handlerResult;
+              (handlerResult, error) = handler(this, r, stopChar);
+              if (error != null) return error;
+              if (handlerResult == null) continue;
+              atom = handlerResult;
+              break;
+            }
+
             MathList? done;
             (done, error) = StopCommand(command, r, stopChar);
             if (error != null) return error;
@@ -128,11 +149,11 @@ namespace CSharpMath.Atom {
             if (error != null) return error;
             break;
           case '&': // column separation in tables
-            if (_environments.PeekOrDefault() is TableEnvironment) {
+            if (Environments.PeekOrDefault() is TableEnvironment) {
               return r;
             }
             MathAtom table;
-            (table, error) = BuildTable(null, r, false, stopChar);
+            (table, error) = ReadTable(null, r, false, stopChar);
             if (error != null) return error;
             return new MathList(table);
           case '\'': // this case is NOT in iosMath
@@ -171,7 +192,7 @@ namespace CSharpMath.Atom {
       return r;
     }
 
-    private string ReadString() {
+    public string ReadString() {
       var builder = new StringBuilder();
       while (HasCharacters) {
         var ch = GetNextCharacter();
@@ -185,7 +206,7 @@ namespace CSharpMath.Atom {
       return builder.ToString();
     }
 
-    private Result<Structures.Color> ReadColor() {
+    public Result<Structures.Color> ReadColor() {
       if (!ExpectCharacter('{')) {
         return "Missing {";
       }
@@ -249,7 +270,7 @@ namespace CSharpMath.Atom {
 
 
     //static readonly char[] _singleCharCommands = @"{}$#%_| ,:>;!\".ToCharArray();
-    private string ReadCommand() {
+    public string ReadCommand() {
       if (HasCharacters) {
         var ch = GetNextCharacter();
         if ((ch < 'a' || ch > 'z') && (ch < 'A' || ch > 'Z')) {
@@ -260,26 +281,7 @@ namespace CSharpMath.Atom {
       }
       return ReadString();
     }
-
-    private string? ReadDelimiter() {
-      SkipSpaces();
-      while (HasCharacters) {
-        var ch = GetNextCharacter();
-        AssertNotSpace(ch);
-        if (ch == '\\') {
-          // a command
-          var command = ReadCommand();
-          if (command == "|") {
-            return @"||";
-          }
-          return command;
-        }
-        return ch.ToStringInvariant();
-      }
-      return null;
-    }
-
-    private Result<string> ReadEnvironment() {
+    public Result<string> ReadEnvironment() {
       if (!ExpectCharacter('{')) {
         return Err("Missing {");
       }
@@ -291,8 +293,7 @@ namespace CSharpMath.Atom {
       }
       return Ok(env);
     }
-
-    private Result<Structures.Space> ReadSpace() {
+    public Result<Structures.Space> ReadSpace() {
       SkipSpaces();
       var sb = new StringBuilder();
       while (HasCharacters) {
@@ -315,13 +316,30 @@ namespace CSharpMath.Atom {
       }
       return Structures.Space.Create(length, new string(unit), _textMode);
     }
-    private Result<Boundary> BoundaryAtomForDelimiterType(string delimiterType) {
-      var delim = ReadDelimiter();
+    public Result<Boundary> ReadDelimiter(string commandName) {
+      string? ReadDelimiterLiteral() {
+        SkipSpaces();
+        while (HasCharacters) {
+          var ch = GetNextCharacter();
+          AssertNotSpace(ch);
+          if (ch == '\\') {
+            // a command
+            var command = ReadCommand();
+            if (command == "|") {
+              return @"||";
+            }
+            return command;
+          }
+          return ch.ToStringInvariant();
+        }
+        return null;
+      }
+      var delim = ReadDelimiterLiteral();
       if (delim == null) {
-        return "Missing delimiter for " + delimiterType;
+        return @"Missing delimiter for \" + commandName;
       }
       if (!LaTeXSettings.BoundaryDelimiters.TryGetValue(delim, out var boundary)) {
-        return @"Invalid delimiter for \" + delimiterType + ": " + delim;
+        return @"Invalid delimiter for \" + commandName + ": " + delim;
       }
       return boundary;
     }
@@ -336,57 +354,11 @@ namespace CSharpMath.Atom {
           return atom;
       }
       switch (command) {
-        case "frac":
-          MathList denominator;
-          var (numerator, error) = BuildInternal(true);
-          if (error != null) return error;
-          (denominator, error) = BuildInternal(true);
-          if (error != null) return error;
-          return new Fraction(numerator, denominator);
-        case "binom":
-          (numerator, error) = BuildInternal(true);
-          if (error != null) return error;
-          (denominator, error) = BuildInternal(true);
-          if (error != null) return error;
-          return new Fraction(numerator, denominator, false) {
-            LeftDelimiter = "(",
-            RightDelimiter = ")"
-          };
-        case "sqrt":
-          MathList degree, radicand;
-          if (ExpectCharacter('[')) {
-            (degree, error) = BuildInternal(false, ']');
-            if (error != null) return error;
-          } else degree = new MathList();
-          (radicand, error) = BuildInternal(true);
-          if (error != null) return error;
-          return new Radical(degree, radicand);
-        case "left":
-          Boundary left;
-          (left, error) = BoundaryAtomForDelimiterType("left");
-          if (error != null) return error;
-          _environments.Push(new InnerEnvironment());
-          MathList innerList;
-          (innerList, error) = BuildInternal(false, stopChar);
-          if (error != null) return error;
-          if (!(_environments.PeekOrDefault() is InnerEnvironment { RightBoundary: { } right })) {
-            return $@"Missing \right for \left with delimiter {left}";
-          }
-          _environments.Pop();
-          return new Inner(left, innerList, right);
-        case "overline":
-          (innerList, error) = BuildInternal(true);
-          if (error != null) return error;
-          return new Overline(innerList);
-        case "underline":
-          (innerList, error) = BuildInternal(true);
-          if (error != null) return error;
-          return new Underline(innerList);
         case "begin":
           string env;
           (env, error) = ReadEnvironment();
           if (error != null) return error;
-          return BuildTable(env, null, false, stopChar);
+          return ReadTable(env, null, false, stopChar);
         case "color":
           Structures.Color color;
           (color, error) = ReadColor();
@@ -470,17 +442,17 @@ namespace CSharpMath.Atom {
       string? error;
       switch (command) {
         case "right":
-          while (_environments.PeekOrDefault() is TableEnvironment table)
+          while (Environments.PeekOrDefault() is TableEnvironment table)
             if (table.Name is null) {
               table.Ended = true;
-              _environments.Pop(); // Get out of \\ or \cr before looking for \right
+              Environments.Pop(); // Get out of \\ or \cr before looking for \right
             } else {
               return $"Missing \\end{{{table.Name}}}";
             }
-          if (!(_environments.PeekOrDefault() is InnerEnvironment inner)) {
+          if (!(Environments.PeekOrDefault() is InnerEnvironment inner)) {
             return "Missing \\left";
           }
-          (inner.RightBoundary!, error) = BoundaryAtomForDelimiterType("right");
+          (inner.RightBoundary!, error) = ReadDelimiter("right");
           if (error != null) return error;
           return list;
         case var _ when fractionCommands.ContainsKey(command):
@@ -495,15 +467,15 @@ namespace CSharpMath.Atom {
           return new MathList(fraction);
         case "\\":
         case "cr":
-          if (!(_environments.PeekOrDefault() is TableEnvironment environment)) {
-            return BuildTable(null, list, true, stopChar).Bind(table => (MathList?)new MathList(table));
+          if (!(Environments.PeekOrDefault() is TableEnvironment environment)) {
+            return ReadTable(null, list, true, stopChar).Bind(table => (MathList?)new MathList(table));
           } else {
             // stop the current list and increment the row count
             environment.NRows++;
             return list;
           }
         case "end":
-          if (!(_environments.PeekOrDefault() is TableEnvironment endEnvironment)) {
+          if (!(Environments.PeekOrDefault() is TableEnvironment endEnvironment)) {
             return @"Missing \begin";
           }
           string env;
@@ -546,10 +518,10 @@ namespace CSharpMath.Atom {
         { "vmatrix", ("vert", "vert") },
         { "Vmatrix", ("Vert", "Vert") }
       };
-    private Result<MathAtom> BuildTable
+    public Result<MathAtom> ReadTable
       (string? name, MathList? firstList, bool isRow, char stopChar) {
       var environment = new TableEnvironment(name);
-      _environments.Push(environment);
+      Environments.Push(environment);
       int currentRow = 0;
       int currentColumn = 0;
       var rows = new List<List<MathList>> { new List<MathList>() };
@@ -601,7 +573,7 @@ namespace CSharpMath.Atom {
           currentColumn = 0;
         }
         // The } in \begin{matrix} is not stopChar so this line is not written in the while-condition
-        if (stopChar != '\0' && Chars[CurrentChar - 1] == stopChar) break;
+        if (stopChar != '\0' && Chars[NextChar - 1] == stopChar) break;
       }
       if (environment.Name != null && !environment.Ended) {
         return $@"Missing \end for \begin{{{environment.Name}}}";
@@ -611,8 +583,8 @@ namespace CSharpMath.Atom {
       name = environment.Name;
       var arrayAlignments = environment.ArrayAlignments;
       // Table environments with { Name: null } may have been popped by \right
-      if (_environments.PeekOrDefault() == environment)
-        _environments.Pop();
+      if (Environments.PeekOrDefault() == environment)
+        Environments.Pop();
 
       var table = new Table(name, rows);
       switch (name) {
@@ -725,7 +697,7 @@ namespace CSharpMath.Atom {
     public static Result<MathList> MathListFromLaTeX(string str) {
       var builder = new LaTeXParser(str);
       return builder.Build().Match(Ok,
-        error => Err(HelpfulErrorMessage(error, builder.Chars, builder.CurrentChar)));
+        error => Err(HelpfulErrorMessage(error, builder.Chars, builder.NextChar)));
     }
 
     public static string HelpfulErrorMessage(string error, string source, int right) {

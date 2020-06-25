@@ -955,7 +955,7 @@ namespace CSharpMath.CoreTests {
       Assert.Null(list);
       Assert.NotNull(error);
 
-      LaTeXSettings.Symbols.Add("lcm", new LargeOperator("lcm", false));
+      LaTeXSettings.CommandSymbols.Add("lcm", new LargeOperator("lcm", false));
       var list2 = ParseLaTeX(input);
       Assert.Collection(list2,
         CheckAtom<LargeOperator>("lcm"),
