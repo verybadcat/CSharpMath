@@ -241,7 +241,9 @@ namespace CSharpMath.CoreTests {
       // Scripts on left
       InlineData(@"\left(^2 \right )", new[] { typeof(Inner) }, new[] { typeof(Ordinary) }, @"(", @")", @"\left( {}^2\right) "),
       // Dot
-      InlineData(@"\left( 2 \right.", new[] { typeof(Inner) }, new[] { typeof(Number) }, @"(", @"", @"\left( 2\right. ")
+      InlineData(@"\left( 2 \right.", new[] { typeof(Inner) }, new[] { typeof(Number) }, @"(", @"", @"\left( 2\right. "),
+      // Dot both sides
+      InlineData(@"\left.2\right.", new[] { typeof(Inner) }, new[] { typeof(Number) }, @"", @"", @"{2}"),
     ]
     public void TestLeftRight(
       string input, Type[] expectedOutputTypes, Type[] expectedInnerTypes,
@@ -1394,6 +1396,18 @@ x \end{matrix}
       InlineData(@"\Ket}2", @"Error: } cannot appear as an argument to a command
 \Ket}2
     ↑ (pos 5)"),
+      InlineData(@"\operatorname", @"Error: Expected {
+\operatorname
+            ↑ (pos 13)"),
+      InlineData(@"\operatorname {", @"Error: Expected }
+\operatorname {
+              ↑ (pos 15)"),
+      InlineData(@"\operatorname{a", @"Error: Expected }
+\operatorname{a
+              ↑ (pos 15)"),
+      InlineData(@"\operatorname {a|}", @"Error: Expected }
+\operatorname {a|}
+               ↑ (pos 16)"),
     ]
     public void TestErrors(string badInput, string expected) {
       var (list, actual) = LaTeXParser.MathListFromLaTeX(badInput);
