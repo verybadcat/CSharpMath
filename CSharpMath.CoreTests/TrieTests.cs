@@ -478,6 +478,7 @@ namespace CSharpMath.CoreTests {
       }
 
       stopwatch.Stop();
+      Console.WriteLine(nameof(ExhaustiveAddTimeMeasurement) + ": " + stopwatch.Elapsed);
       Assert.InRange(stopwatch.Elapsed, TimeSpan.Zero, TimeSpan.FromMilliseconds(0.2));
     }
     [Fact]
@@ -491,6 +492,7 @@ namespace CSharpMath.CoreTests {
       }
 
       stopwatch.Stop();
+      Console.WriteLine(nameof(ExhaustiveAddTimeMeasurementLong) + ": " + stopwatch.Elapsed);
       Assert.InRange(stopwatch.Elapsed, TimeSpan.Zero, TimeSpan.FromMilliseconds(0.4));
     }
 
