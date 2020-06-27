@@ -35,22 +35,23 @@ namespace CSharpMath.Structures {
       StringPartition.Empty,
       new Queue<TValue>(),
       new Dictionary<char, PatriciaTrieNode<TValue>>()) { }
-    public IEnumerable<TValue> this[string query] => Retrieve(query, 0);
+    public IEnumerable<TValue> this[string query] => Retrieve(query.AsMemory(), 0);
     public void Add(string key, TValue value) =>
       Add((key ?? throw new ArgumentNullException(nameof(key))).AsMemory(), value);
     private protected override void Add(StringPartition keyRest, TValue value) => GetOrCreateChild(keyRest, value);
+    public bool Remove(string key) => Remove(key.AsMemory());
   }
   [Serializable]
   [DebuggerDisplay("'{m_Key}'")]
   public class PatriciaTrieNode<TValue> {
     #region Originally TrieNodeBase<TValue>
-    protected IEnumerable<TValue> Retrieve(string query, int position) =>
+    protected IEnumerable<TValue> Retrieve(StringPartition query, int position) =>
       EndOfString(position, query) ? ValuesDeep() : SearchDeep(query, position);
-    protected IEnumerable<TValue> SearchDeep(string query, int position) =>
+    protected IEnumerable<TValue> SearchDeep(StringPartition query, int position) =>
       GetChildOrNull(query, position) is { } nextNode
       ? nextNode.Retrieve(query, position + nextNode.m_Key.Length)
       : Enumerable.Empty<TValue>();
-    private static bool EndOfString(int position, string text) => position >= text.Length;
+    private static bool EndOfString(int position, StringPartition text) => position >= text.Length;
     private IEnumerable<TValue> ValuesDeep() => Subtree().SelectMany(node => node.Values());
     protected IEnumerable<PatriciaTrieNode<TValue>> Subtree() =>
       Enumerable.Repeat(this, 1).Concat(Children().SelectMany(child => child.Subtree()));
@@ -116,15 +117,34 @@ namespace CSharpMath.Structures {
       }
     }
 
-    protected PatriciaTrieNode<TValue>? GetChildOrNull(string query, int position) {
-      if (query == null) throw new ArgumentNullException(nameof(query));
-      if (m_Children.TryGetValue(query[position], out var child)) {
-        var queryPartition = query.AsSpan(position, Math.Min(query.Length - position, child.m_Key.Length));
+    protected PatriciaTrieNode<TValue>? GetChildOrNull(StringPartition query, int position) {
+      if (m_Children.TryGetValue(query.Span[position], out var child)) {
+        var queryPartition = query.Span.Slice(position, Math.Min(query.Length - position, child.m_Key.Length));
         if (child.m_Key.Span.StartsWith(queryPartition)) {
           return child;
         }
       }
       return null;
+    }
+
+    protected bool Remove(StringPartition keyRest) {
+      var (_, thisRest, otherRest) = m_Key.ZipWith(keyRest);
+      switch (thisRest.Length, otherRest.Length) {
+        case (0, 0) when m_Values.Count > 0:
+          m_Values.Clear();
+          return true;
+        case (0, 0):
+          return false;
+        case (0, _) when GetChildOrNull(otherRest, 0) is { } child:
+          var success = child.Remove(otherRest);
+          // Get rid of empty nodes
+          if (success && child.m_Values.Count == 0 && child.m_Children.Count == 0)
+            if (!m_Children.Remove(otherRest.Span[0]))
+              throw new InvalidCodePathException($"{nameof(child)} should exist in {nameof(m_Children)}!");
+          return success;
+        default:
+          return false;
+      }
     }
 
     public string Traversal() {

@@ -21,14 +21,6 @@ namespace CSharpMath.CoreTests {
 
     // Based on https://github.com/gmamaladze/trienet/blob/f0961ebec078f65184d3bc85de8454919b335236/TrieNet.Test/BaseTrieTest.cs
 
-    static Structures.PatriciaTrie<int> Trie { get; }
-    static TrieTests() {
-      Trie = new Structures.PatriciaTrie<int>();
-      for (int i = 0; i < Words40.Length; i++) {
-        Trie.Add(Words40[i], i);
-      }
-    }
-
     static readonly string[] Words40 = new[] {
       "daubreelite",
       "daubingly",
@@ -71,6 +63,15 @@ namespace CSharpMath.CoreTests {
       "comodato",
       "cognoscibility"
     };
+    static Structures.PatriciaTrie<int> CreateWords40Trie() {
+      var trie = new Structures.PatriciaTrie<int>();
+      for (int i = 0; i < Words40.Length; i++) {
+        trie.Add(Words40[i], i);
+      }
+      return trie;
+    }
+    static Structures.PatriciaTrie<int> SharedTrie { get; } = CreateWords40Trie();
+
 
     [Theory]
     [InlineData("d", new[] { 0, 1, 2 })]
@@ -462,13 +463,39 @@ namespace CSharpMath.CoreTests {
     [InlineData("cognoscibility", new[] { 39 })]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "xUnit1025:InlineData should be unique within the Theory it belongs to",
       Justification = "These test cases are extracted from the original source (TrieNet). They should not be modified.")]
-    public void Test(string query, IEnumerable<int> expected) {
-      IEnumerable<int> actual = Trie[query];
-      Assert.Equal(expected.ToHashSet(), actual.ToHashSet());
+    public void Test(string query, int[] expected) {
+      static void AssertSetEqual<T>(IEnumerable<T> expected, IEnumerable<T> actual) =>
+        Assert.Equal(expected.ToHashSet(), actual.ToHashSet());
+      IEnumerable<int> Words40IndicesOf(string word) =>
+        Words40.SelectMany((w, i) => w == word ? new[] { i } : Array.Empty<int>());
+
+      void TestRetrieve() {
+        IEnumerable<int> actual = SharedTrie[query];
+        AssertSetEqual(expected, actual);
+      }
+      TestRetrieve();
+
+      void TestRemove() {
+        var trie = CreateWords40Trie();
+        var success = trie.Remove(query);
+        Assert.Equal(Words40.Contains(query), success);
+        AssertSetEqual(expected.Except(Words40IndicesOf(query)), trie[query]);
+      }
+      TestRemove();
+
+      void TestRetrieveFromRemoved(Structures.PatriciaTrie<int> removed, IEnumerable<int> removedIndices) {
+        IEnumerable<int> actual = removed[query];
+        AssertSetEqual(expected.Except(removedIndices), actual);
+      }
+      foreach (var word in Words40) {
+        var trie = CreateWords40Trie();
+        Assert.True(trie.Remove(word));
+        TestRetrieveFromRemoved(trie, Words40IndicesOf(word));
+      }
     }
 
     [Fact]
-    public void ExhaustiveAddTimeMeasurement() {
+    public void TimeAdd() {
       var stopwatch = new Stopwatch();
       stopwatch.Start();
 
@@ -478,11 +505,11 @@ namespace CSharpMath.CoreTests {
       }
 
       stopwatch.Stop();
-      Console.WriteLine(nameof(ExhaustiveAddTimeMeasurement) + ": " + stopwatch.Elapsed);
+      Console.WriteLine(nameof(TimeAdd) + ": " + stopwatch.Elapsed);
       Assert.InRange(stopwatch.Elapsed, TimeSpan.Zero, TimeSpan.FromMilliseconds(0.2));
     }
     [Fact]
-    public void ExhaustiveAddTimeMeasurementLong() {
+    public void TimeAddLongWords() {
       var stopwatch = new Stopwatch();
       stopwatch.Start();
 
@@ -492,7 +519,7 @@ namespace CSharpMath.CoreTests {
       }
 
       stopwatch.Stop();
-      Console.WriteLine(nameof(ExhaustiveAddTimeMeasurementLong) + ": " + stopwatch.Elapsed);
+      Console.WriteLine(nameof(TimeAddLongWords) + ": " + stopwatch.Elapsed);
       Assert.InRange(stopwatch.Elapsed, TimeSpan.Zero, TimeSpan.FromMilliseconds(0.4));
     }
 
