@@ -478,7 +478,7 @@ namespace CSharpMath.CoreTests {
       }
 
       stopwatch.Stop();
-      Assert.InRange(stopwatch.Elapsed, TimeSpan.Zero, TimeSpan.FromMilliseconds(0.1));
+      Assert.InRange(stopwatch.Elapsed, TimeSpan.Zero, TimeSpan.FromMilliseconds(0.2));
     }
     [Fact]
     public void ExhaustiveAddTimeMeasurementLong() {
@@ -491,7 +491,7 @@ namespace CSharpMath.CoreTests {
       }
 
       stopwatch.Stop();
-      Assert.InRange(stopwatch.Elapsed, TimeSpan.Zero, TimeSpan.FromMilliseconds(0.2));
+      Assert.InRange(stopwatch.Elapsed, TimeSpan.Zero, TimeSpan.FromMilliseconds(0.4));
     }
 
     public static string[] LongPhrases40 = new[] {
