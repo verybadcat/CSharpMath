@@ -11,19 +11,16 @@ namespace CSharpMath {
       (@this.Slice(0, splitAt), @this.Slice(splitAt));
     public static (StringPartition CommonHead, StringPartition ThisRest, StringPartition OtherRest)
       ZipWith(this StringPartition @this, StringPartition other) {
-      int splitIndex = 0;
-      var thisEnumerator = @this.Span.GetEnumerator();
-      var otherEnumerator = other.Span.GetEnumerator();
-      while (thisEnumerator.MoveNext() && otherEnumerator.MoveNext()) {
-        if (thisEnumerator.Current != otherEnumerator.Current) {
-          break;
-        }
-        splitIndex++;
-      }
-
+      var thisSpan = @this.Span;
+      var otherSpan = other.Span;
+      var splitIndex = 0;
+      while (
+        splitIndex < thisSpan.Length
+        && splitIndex < otherSpan.Length
+        && thisSpan[splitIndex] == otherSpan[splitIndex]
+      ) splitIndex++;
       var (commonHead, restThis) = @this.Split(splitIndex);
       var (_, restOther) = other.Split(splitIndex);
-
       return (commonHead, restThis, restOther);
     }
   }
@@ -51,7 +48,7 @@ namespace CSharpMath.Structures {
       EndOfString(position, query) ? ValuesDeep() : SearchDeep(query, position);
     protected IEnumerable<TValue> SearchDeep(string query, int position) =>
       GetChildOrNull(query, position) is { } nextNode
-      ? nextNode.Retrieve(query, position + nextNode.KeyLength)
+      ? nextNode.Retrieve(query, position + nextNode.m_Key.Length)
       : Enumerable.Empty<TValue>();
     private static bool EndOfString(int position, string text) => position >= text.Length;
     private IEnumerable<TValue> ValuesDeep() => Subtree().SelectMany(node => node.Values());
@@ -72,7 +69,6 @@ namespace CSharpMath.Structures {
       m_Children = children;
     }
 
-    protected int KeyLength => m_Key.Length;
     protected IEnumerable<TValue> Values() => m_Values;
     protected IEnumerable<PatriciaTrieNode<TValue>> Children() => m_Children.Values;
     protected void AddValue(TValue value) => m_Values.Enqueue(value);
@@ -123,8 +119,8 @@ namespace CSharpMath.Structures {
     protected PatriciaTrieNode<TValue>? GetChildOrNull(string query, int position) {
       if (query == null) throw new ArgumentNullException(nameof(query));
       if (m_Children.TryGetValue(query[position], out var child)) {
-        var queryPartition = query.AsMemory(position, Math.Min(query.Length - position, child.m_Key.Length));
-        if (child.m_Key.Span.StartsWith(queryPartition.Span)) {
+        var queryPartition = query.AsSpan(position, Math.Min(query.Length - position, child.m_Key.Length));
+        if (child.m_Key.Span.StartsWith(queryPartition)) {
           return child;
         }
       }
