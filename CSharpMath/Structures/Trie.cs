@@ -1,10 +1,40 @@
-namespace CSharpMath.Structures {
-  using System;
-  using System.Collections.Generic;
-  using System.Diagnostics;
-  using System.Linq;
-  using System.Text;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using StringPartition = System.ReadOnlyMemory<char>;
 
+namespace CSharpMath {
+  partial class Extensions {
+    public static Structures.SplitResult Split(this StringPartition @this, int splitAt) {
+      var head = @this.Slice(0, splitAt);
+      var rest = @this.Slice(splitAt);
+      return new Structures.SplitResult(head, rest);
+    }
+    public static Structures.ZipResult ZipWith(this StringPartition @this, StringPartition other) {
+      int splitIndex = 0;
+      var thisEnumerator = @this.Span.GetEnumerator();
+      var otherEnumerator = other.Span.GetEnumerator();
+      while (thisEnumerator.MoveNext() && otherEnumerator.MoveNext()) {
+        if (thisEnumerator.Current != otherEnumerator.Current) {
+          break;
+        }
+        splitIndex++;
+      }
+
+      var thisSplitted = @this.Split(splitIndex);
+      var otherSplitted = other.Split(splitIndex);
+
+      StringPartition commonHead = thisSplitted.Head;
+      StringPartition restThis = thisSplitted.Rest;
+      StringPartition restOther = otherSplitted.Rest;
+      return new Structures.ZipResult(commonHead, restThis, restOther);
+    }
+  }
+}
+
+namespace CSharpMath.Structures {
   // Based on https://github.com/gmamaladze/trienet/tree/f0cce5f980d85e445188b3eb025821fcdb740144/TrieNet/_PatriciaTrie
   // Can't use the TrieNet NuGet package because the .NET Standard 2.0 version is not uploaded: https://github.com/gmamaladze/trienet/issues/12
   public enum MatchKind {
@@ -16,12 +46,12 @@ namespace CSharpMath.Structures {
   [Serializable]
   public class PatriciaTrie<TValue> : PatriciaTrieNode<TValue> {
     public PatriciaTrie() : base(
-      new StringPartition(string.Empty),
+      StringPartition.Empty,
       new Queue<TValue>(),
       new Dictionary<char, PatriciaTrieNode<TValue>>()) { }
     public IEnumerable<TValue> this[string query] => Retrieve(query, 0);
     public void Add(string key, TValue value) =>
-      Add(new StringPartition(key ?? throw new ArgumentNullException(nameof(key))), value);
+      Add((key ?? throw new ArgumentNullException(nameof(key))).AsMemory(), value);
     private protected override void Add(StringPartition keyRest, TValue value) => GetOrCreateChild(keyRest, value);
   }
   [Serializable]
@@ -82,7 +112,7 @@ namespace CSharpMath.Structures {
       AddValue(value);
       m_Key = zipResult.CommonHead;
 
-      m_Children.Add(zipResult.ThisRest[0], leftChild);
+      m_Children.Add(zipResult.ThisRest.Span[0], leftChild);
     }
 
     private void SplitTwo(ZipResult zipResult, TValue value) {
@@ -93,16 +123,16 @@ namespace CSharpMath.Structures {
       m_Values = new Queue<TValue>();
       m_Key = zipResult.CommonHead;
 
-      char leftKey = zipResult.ThisRest[0];
+      char leftKey = zipResult.ThisRest.Span[0];
       m_Children.Add(leftKey, leftChild);
-      char rightKey = zipResult.OtherRest[0];
+      char rightKey = zipResult.OtherRest.Span[0];
       m_Children.Add(rightKey, rightChild);
     }
 
     protected void GetOrCreateChild(StringPartition key, TValue value) {
-      if (!m_Children.TryGetValue(key[0], out var child)) {
+      if (!m_Children.TryGetValue(key.Span[0], out var child)) {
         child = new PatriciaTrieNode<TValue>(key, value);
-        m_Children.Add(key[0], child);
+        m_Children.Add(key.Span[0], child);
       } else {
         child.Add(key, value);
       }
@@ -111,8 +141,8 @@ namespace CSharpMath.Structures {
     protected PatriciaTrieNode<TValue>? GetChildOrNull(string query, int position) {
       if (query == null) throw new ArgumentNullException(nameof(query));
       if (m_Children.TryGetValue(query[position], out var child)) {
-        var queryPartition = new StringPartition(query, position, child.m_Key.Length);
-        if (child.m_Key.StartsWith(queryPartition)) {
+        var queryPartition = query.AsMemory(position, Math.Min(query.Length - position, child.m_Key.Length));
+        if (child.m_Key.Span.StartsWith(queryPartition.Span)) {
           return child;
         }
       }
@@ -143,115 +173,11 @@ namespace CSharpMath.Structures {
 
     public StringPartition Rest { get; }
     public StringPartition Head { get; }
-    public bool Equals(SplitResult other) => Head == other.Head && Rest == other.Rest;
+    public bool Equals(SplitResult other) => Head.Span.SequenceEqual(other.Head.Span) && Rest.Span.SequenceEqual(other.Rest.Span);
     public override bool Equals(object obj) => obj is SplitResult result && Equals(result);
     public override int GetHashCode() => unchecked((Head.GetHashCode() * 397) ^ Rest.GetHashCode());
     public static bool operator ==(SplitResult left, SplitResult right) => left.Equals(right);
     public static bool operator !=(SplitResult left, SplitResult right) => !(left == right);
-  }
-  [Serializable]
-  [DebuggerDisplay(
-   "{m_Origin.Substring(0,m_StartIndex)} [ {m_Origin.Substring(m_StartIndex,m_PartitionLength)} ] {m_Origin.Substring(m_StartIndex + m_PartitionLength)}"
-   )]
-  [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1710:Identifiers should have correct suffix", Justification = "Copied from original source")]
-  public readonly struct StringPartition : IEquatable<StringPartition>, IEnumerable<char> {
-    private readonly string m_Origin;
-    private readonly int m_PartitionLength;
-    private readonly int m_StartIndex;
-
-    public StringPartition(string origin)
-        : this(origin, 0, origin == null ? 0 : origin.Length) { }
-
-    public StringPartition(string origin, int startIndex)
-        : this(origin, startIndex, origin == null ? 0 : origin.Length - startIndex) { }
-
-    public StringPartition(string origin, int startIndex, int partitionLength) {
-      if (origin == null) throw new ArgumentNullException(nameof(origin));
-      if (startIndex < 0) throw new ArgumentOutOfRangeException(nameof(startIndex), "The value must be non negative.");
-      if (partitionLength < 0)
-        throw new ArgumentOutOfRangeException(nameof(partitionLength), "The value must be non negative.");
-      m_Origin = string.Intern(origin);
-      m_StartIndex = startIndex;
-      int availableLength = m_Origin.Length - startIndex;
-      m_PartitionLength = Math.Min(partitionLength, availableLength);
-    }
-
-    public char this[int index] => m_Origin[m_StartIndex + index];
-
-    public int Length => m_PartitionLength;
-
-    #region IEnumerable<char> Members
-
-    public IEnumerator<char> GetEnumerator() {
-      for (int i = 0; i < m_PartitionLength; i++) {
-        yield return this[i];
-      }
-    }
-
-    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
-
-    #endregion
-
-    public bool Equals(StringPartition other) =>
-      m_Origin == other.m_Origin
-      && m_PartitionLength == other.m_PartitionLength
-      && m_StartIndex == other.m_StartIndex;
-
-    public override bool Equals(object obj) => obj is StringPartition partition && Equals(partition);
-    public override int GetHashCode() {
-      unchecked {
-        int hashCode = (m_Origin != null ? m_Origin.GetHashCode() : 0);
-        hashCode = (hashCode * 397) ^ m_PartitionLength;
-        hashCode = (hashCode * 397) ^ m_StartIndex;
-        return hashCode;
-      }
-    }
-
-    public bool StartsWith(StringPartition other) {
-      if (Length < other.Length) {
-        return false;
-      }
-
-      for (int i = 0; i < other.Length; i++) {
-        if (this[i] != other[i]) {
-          return false;
-        }
-      }
-      return true;
-    }
-
-    public SplitResult Split(int splitAt) {
-      var head = new StringPartition(m_Origin, m_StartIndex, splitAt);
-      var rest = new StringPartition(m_Origin, m_StartIndex + splitAt, Length - splitAt);
-      return new SplitResult(head, rest);
-    }
-
-    public ZipResult ZipWith(StringPartition other) {
-      int splitIndex = 0;
-      using (IEnumerator<char> thisEnumerator = GetEnumerator())
-      using (IEnumerator<char> otherEnumerator = other.GetEnumerator()) {
-        while (thisEnumerator.MoveNext() && otherEnumerator.MoveNext()) {
-          if (thisEnumerator.Current != otherEnumerator.Current) {
-            break;
-          }
-          splitIndex++;
-        }
-      }
-
-      SplitResult thisSplitted = Split(splitIndex);
-      SplitResult otherSplitted = other.Split(splitIndex);
-
-      StringPartition commonHead = thisSplitted.Head;
-      StringPartition restThis = thisSplitted.Rest;
-      StringPartition restOther = otherSplitted.Rest;
-      return new ZipResult(commonHead, restThis, restOther);
-    }
-    public override string ToString() {
-      var result = new string(this.ToArray());
-      return string.Intern(result);
-    }
-    public static bool operator ==(StringPartition left, StringPartition right) => left.Equals(right);
-    public static bool operator !=(StringPartition left, StringPartition right) => !(left == right);
   }
   [Serializable]
   [DebuggerDisplay("Head: '{CommonHead}', This: '{ThisRest}', Other: '{OtherRest}', Kind: {MatchKind}")]
@@ -273,9 +199,9 @@ namespace CSharpMath.Structures {
     public StringPartition ThisRest { get; }
     public StringPartition CommonHead { get; }
     public bool Equals(ZipResult other) =>
-      CommonHead == other.CommonHead
-      && OtherRest == other.OtherRest
-      && ThisRest == other.ThisRest;
+      CommonHead.Span.SequenceEqual(other.CommonHead.Span)
+      && OtherRest.Span.SequenceEqual(other.OtherRest.Span)
+      && ThisRest.Span.SequenceEqual(other.ThisRest.Span);
     public override bool Equals(object obj) => obj is ZipResult result && Equals(result);
     public override int GetHashCode() => (CommonHead, OtherRest, ThisRest).GetHashCode();
     public static bool operator ==(ZipResult left, ZipResult right) => left.Equals(right);
