@@ -6,7 +6,53 @@ namespace CSharpMath.Atom {
   using Atoms;
   //https://mirror.hmc.edu/ctan/macros/latex/contrib/unicode-math/unimath-symbols.pdf
   public static class LaTeXSettings {
+    public static Structures.AliasDictionary<string, Boundary> BoundaryDelimiters { get; } =
+      new Structures.AliasDictionary<string, Boundary> {
+        { ".", Boundary.Empty }, // . means no delimiter
+
+        // Table 14: Delimiters
+        { "(", new Boundary("(") },
+        { ")", new Boundary(")") },
+        { "uparrow", new Boundary("↑") },
+        { "Uparrow", new Boundary("⇑") },
+        { "[", new Boundary("[") },
+        { "]", new Boundary("]") },
+        { "downarrow", new Boundary("↓") },
+        { "Downarrow", new Boundary("⇓") },
+        { "{", "lbrace", new Boundary("{") },
+        { "}", "rbrace", new Boundary("}") },
+        { "updownarrow", new Boundary("↕") },
+        { "Updownarrow", new Boundary("⇕") },
+        { "lfloor", new Boundary("⌊") },
+        { "rfloor", new Boundary("⌋") },
+        { "lceil", new Boundary("⌈") },
+        { "rceil", new Boundary("⌉") },
+        { "<", "langle", new Boundary("〈") },
+        { ">", "rangle", new Boundary("〉") },
+        { "/", new Boundary("/") },
+        { "\\", "backslash", new Boundary("\\") },
+        { "|", "vert", new Boundary("|") },
+        { "||", "Vert", new Boundary("‖") },
+
+        // Table 15: Large Delimiters
+        // { "lmoustache", new Boundary("⎰") }, // Glyph not in Latin Modern Math
+        // { "rmoustache", new Boundary("⎱") }, // Glyph not in Latin Modern Math
+        { "rgroup", new Boundary("⟯") },
+        { "lgroup", new Boundary("⟮") },
+        { "arrowvert", new Boundary("|") }, // unsure, copied from \vert
+        { "Arrowvert", new Boundary("‖") }, // unsure, copied from \Vert
+        { "bracevert", new Boundary("|") }, // unsure, copied from \vert
+
+        // Table 19: AMS Delimiters
+        { "ulcorner", new Boundary("⌜") },
+        { "urcorner", new Boundary("⌝") },
+        { "llcorner", new Boundary("⌞") },
+        { "lrcorner", new Boundary("⌟") },
+      };
+
+    static readonly MathAtom? Dummy = Placeholder;
     public static Structures.Result<(MathAtom? Atom, MathList? Return)> Ok(MathAtom? atom) => Structures.Result.Ok((atom, (MathList?)null));
+    public static Structures.Result<(MathAtom? Atom, MathList? Return)> OkStyled(MathList styled) => Structures.Result.Ok((Dummy, (MathList?)styled));
     public static Structures.Result<(MathAtom? Atom, MathList? Return)> OkStop(MathList @return) => Structures.Result.Ok(((MathAtom?)null, (MathList?)@return));
     public static Structures.ResultImplicitError Err(string error) => Structures.Result.Err(error);
     public static Dictionary<string, Func<LaTeXParser, MathList, char, Structures.Result<(MathAtom? Atom, MathList? Return)>>> Commands { get; } =
@@ -20,8 +66,8 @@ namespace CSharpMath.Atom {
           parser.ReadArgument().Bind(numerator =>
             parser.ReadArgument().Bind(denominator =>
               Ok(new Fraction(numerator, denominator, false) {
-                LeftDelimiter = "(",
-                RightDelimiter = ")"
+                LeftDelimiter = BoundaryDelimiters["("],
+                RightDelimiter = BoundaryDelimiters[")"]
               }))),
         [@"sqrt"] = (parser, accumulate, stopChar) =>
           parser.ReadArgumentOptional().Bind(degree =>
@@ -111,19 +157,19 @@ namespace CSharpMath.Atom {
             OkStop(new MathList(new Fraction(accumulate, denominator, false)))),
         [@"choose"] = (parser, accumulate, stopChar) =>
           parser.ReadUntil(stopChar).Bind(denominator =>
-            OkStop(new MathList(new Fraction(accumulate, denominator, false) { LeftDelimiter = "(", RightDelimiter = ")" }))),
+            OkStop(new MathList(new Fraction(accumulate, denominator, false) { LeftDelimiter = BoundaryDelimiters["("], RightDelimiter = BoundaryDelimiters[")"] }))),
         [@"brack"] = (parser, accumulate, stopChar) =>
           parser.ReadUntil(stopChar).Bind(denominator =>
-            OkStop(new MathList(new Fraction(accumulate, denominator, false) { LeftDelimiter = "[", RightDelimiter = "]" }))),
+            OkStop(new MathList(new Fraction(accumulate, denominator, false) { LeftDelimiter = BoundaryDelimiters["["], RightDelimiter = BoundaryDelimiters["]"] }))),
         [@"brace"] = (parser, accumulate, stopChar) =>
           parser.ReadUntil(stopChar).Bind(denominator =>
-            OkStop(new MathList(new Fraction(accumulate, denominator, false) { LeftDelimiter = "{", RightDelimiter = "}" }))),
+            OkStop(new MathList(new Fraction(accumulate, denominator, false) { LeftDelimiter = BoundaryDelimiters["{"], RightDelimiter = BoundaryDelimiters["}"] }))),
 #warning Make \atopwithdelims a thing: MathListFromLaTeX should be able to consume LaTeX from MathListToLaTeX
-        //[@"atopwithdelims"] = (parser, accumulate, stopChar) =>
-        //  parser.ReadDelimiter(@"atomwithdelims").Bind(left =>
-        //    parser.ReadDelimiter(@"atomwithdelims").Bind(right =>
-        //      parser.ReadUntil(stopChar).Bind(denominator =>
-        //        OkStop(new MathList(new Fraction(accumulate, denominator, false) { LeftDelimiter = left, RightDelimiter = right }))))),
+        [@"atopwithdelims"] = (parser, accumulate, stopChar) =>
+          parser.ReadDelimiter(@"atomwithdelims").Bind(left =>
+            parser.ReadDelimiter(@"atomwithdelims").Bind(right =>
+              parser.ReadUntil(stopChar).Bind(denominator =>
+                OkStop(new MathList(new Fraction(accumulate, denominator, false) { LeftDelimiter = left, RightDelimiter = right }))))),
         [@"right"] = (parser, accumulate, stopChar) => {
           while (parser.Environments.PeekOrDefault() is LaTeXParser.TableEnvironment table)
             if (table.Name is null) {
@@ -233,52 +279,20 @@ namespace CSharpMath.Atom {
       }
     }
 
-    public static Structures.AliasDictionary<string, Boundary> BoundaryDelimiters { get; } =
-      new Structures.AliasDictionary<string, Boundary> {
-        { ".", Boundary.Empty }, // . means no delimiter
-
-        // Table 14: Delimiters
-        { "(", new Boundary("(") },
-        { ")", new Boundary(")") },
-        { "uparrow", new Boundary("↑") },
-        { "Uparrow", new Boundary("⇑") },
-        { "[", new Boundary("[") },
-        { "]", new Boundary("]") },
-        { "downarrow", new Boundary("↓") },
-        { "Downarrow", new Boundary("⇓") },
-        { "{", "lbrace", new Boundary("{") },
-        { "}", "rbrace", new Boundary("}") },
-        { "updownarrow", new Boundary("↕") },
-        { "Updownarrow", new Boundary("⇕") },
-        { "lfloor", new Boundary("⌊") },
-        { "rfloor", new Boundary("⌋") },
-        { "lceil", new Boundary("⌈") },
-        { "rceil", new Boundary("⌉") },
-        { "<", "langle", new Boundary("〈") },
-        { ">", "rangle", new Boundary("〉") },
-        { "/", new Boundary("/") },
-        { "\\", "backslash", new Boundary("\\") },
-        { "|", "vert", new Boundary("|") },
-        { "||", "Vert", new Boundary("‖") },
-
-        // Table 15: Large Delimiters
-        // { "lmoustache", new Boundary("⎰") }, // Glyph not in Latin Modern Math
-        // { "rmoustache", new Boundary("⎱") }, // Glyph not in Latin Modern Math
-        { "rgroup", new Boundary("⟯") },
-        { "lgroup", new Boundary("⟮") },
-        { "arrowvert", new Boundary("|") }, // unsure, copied from \vert
-        { "Arrowvert", new Boundary("‖") }, // unsure, copied from \Vert
-        { "bracevert", new Boundary("|") }, // unsure, copied from \vert
-
-        // Table 19: AMS Delimiters
-        { "ulcorner", new Boundary("⌜") },
-        { "urcorner", new Boundary("⌝") },
-        { "llcorner", new Boundary("⌞") },
-        { "lrcorner", new Boundary("⌟") },
-      };
 
     public static Structures.AliasDictionary<string, FontStyle> FontStyles { get; } =
-      new Structures.AliasDictionary<string, FontStyle> {
+      new Structures.AliasDictionary<string, FontStyle>((command, fontStyle) =>
+        Commands.Add(command, (parser, accumulate, stopChar) => {
+          var oldSpacesAllowed = parser.TextMode;
+          var oldFontStyle = parser.CurrentFontStyle;
+          parser.TextMode = command == "text";
+          parser.CurrentFontStyle = fontStyle;
+          return parser.ReadArgument().Bind(r => {
+            parser.CurrentFontStyle = oldFontStyle;
+            parser.TextMode = oldSpacesAllowed;
+            return OkStyled(r);
+          });
+        })) {
         { "mathnormal", FontStyle.Default },
         { "mathrm", "rm", "text", FontStyle.Roman },
         { "mathbf", "bf", FontStyle.Bold },
@@ -307,7 +321,11 @@ namespace CSharpMath.Atom {
     }
 
     public static Structures.AliasDictionary<string, MathAtom> CommandSymbols { get; } =
-      new Structures.AliasDictionary<string, MathAtom> {
+      new Structures.AliasDictionary<string, MathAtom>((command, atom) =>
+        Commands.Add(command, (parser, accumulate, stopChar) =>
+          atom is Accent accent
+          ? parser.ReadArgument().Bind(accentee => Ok(new Accent(accent.Nucleus, accentee)))
+          : Ok(atom.Clone(false)))) {
         // Custom additions
         { "diameter", new Ordinary("\u2300") },
         { "npreccurlyeq", new Relation("⋠") },

@@ -12,9 +12,10 @@ namespace CSharpMath.CoreTests {
     // Based on https://github.com/gmamaladze/trienet/blob/f0961ebec078f65184d3bc85de8454919b335236/TrieNet.Test/PatriciaTrieTest.cs
     [Fact]
     public void TestNotExactMatched() {
-      var trie = new Structures.PatriciaTrie<char, int>();
-      trie.Add("aaabbb".AsMemory(), 1);
-      trie.Add("aaaccc".AsMemory(), 2);
+      var trie = new Structures.PatriciaTrie<char, int> {
+        { "aaabbb".AsMemory(), 1 },
+        { "aaaccc".AsMemory(), 2 }
+      };
 
       var actual = trie["aab"];
       Assert.Empty(actual);

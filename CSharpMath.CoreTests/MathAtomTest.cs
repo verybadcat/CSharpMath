@@ -56,8 +56,8 @@ namespace CSharpMath.CoreTests {
       var list = new MathList { atom, atom2, atom3 };
       var list2 = new MathList { atom3, atom2 };
       var frac = new Fraction(list, list2, false) {
-        LeftDelimiter = "a",
-        RightDelimiter = "b"
+        LeftDelimiter = new Boundary("a"),
+        RightDelimiter = new Boundary("b")
       };
 
       Assert.IsType<Fraction>(frac);
@@ -66,8 +66,8 @@ namespace CSharpMath.CoreTests {
       CheckClone(copy, frac);
       CheckClone(copy.Numerator, frac.Numerator);
       Assert.False(copy.HasRule);
-      Assert.Equal("a", copy.LeftDelimiter);
-      Assert.Equal("b", copy.RightDelimiter);
+      Assert.Equal(new Boundary("a"), copy.LeftDelimiter);
+      Assert.Equal(new Boundary("b"), copy.RightDelimiter);
     }
     [Fact]
     public void TestCopyRadical() {

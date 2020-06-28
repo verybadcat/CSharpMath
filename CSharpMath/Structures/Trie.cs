@@ -147,13 +147,6 @@ namespace CSharpMath.Structures {
       }
     }
 
-    sealed class MemorySequenceSegment : ReadOnlySequenceSegment<TKeyElement> {
-      public MemorySequenceSegment(ReadOnlyMemory<TKeyElement> memory, long runningIndex) {
-        Memory = memory;
-        RunningIndex = runningIndex;
-      }
-      public new ReadOnlySequenceSegment<TKeyElement>? Next { get => base.Next; set => base.Next = value; }
-    }
     // Can't use Stack<T> because it iterates from the newest element to the oldest, unlike List<T> which iterates the other way around
     private IEnumerable<KeyValuePair<ReadOnlyMemory<TKeyElement>, TValue>> ToEnumerable(List<ReadOnlyMemory<TKeyElement>> stack, int stackLength) {
       stack.Add(Key);

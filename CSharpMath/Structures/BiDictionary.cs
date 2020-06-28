@@ -7,6 +7,9 @@ using System.Linq;
 
 namespace CSharpMath.Structures {
   public class AliasDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue> {
+    public AliasDictionary(Action<TKey, TValue>? itemAdded = null) => ItemAdded += itemAdded;
+    public event Action<TKey, TValue>? ItemAdded;
+
     readonly Dictionary<TKey, TValue> k2v = new Dictionary<TKey, TValue>();
     readonly Dictionary<TValue, TKey> v2k = new Dictionary<TValue, TKey>();
     public TValue this[TKey key] { get => k2v[key]; set { k2v[key] = value; v2k[value] = key; } }
@@ -18,8 +21,10 @@ namespace CSharpMath.Structures {
     #region AliasDictionary<K, V>.Add
     public void Add(ReadOnlySpan<TKey> keys, TValue value) {
       if (!v2k.ContainsKey(value) && !keys.IsEmpty) v2k.Add(value, keys[0]);
-      foreach (var key in keys)
+      foreach (var key in keys) {
         k2v.Add(key, value);
+        ItemAdded?.Invoke(key, value);
+      }
     }
     //Array renting may result in larger arrays than normal -> the unused slots are nulls.
     //Therefore, slicing prevents nulls from propagating through.

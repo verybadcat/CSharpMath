@@ -30,7 +30,7 @@ namespace CSharpMath.Atom {
 #pragma warning restore CA1034 // Nested types should not be visible
     public string Chars { get; }
     public int NextChar { get; private set; }
-    public bool TextMode { get; private set; } //_spacesAllowed in iosMath
+    public bool TextMode { get; set; } //_spacesAllowed in iosMath
     public FontStyle CurrentFontStyle { get; set; }
     public Stack<IEnvironment> Environments { get; } = new Stack<IEnvironment>();
     public LaTeXParser(string str) {
@@ -112,45 +112,27 @@ namespace CSharpMath.Atom {
             var command = ReadCommand();
 
             if (LaTeXSettings.Commands.TryGetValue(command, out var handler)) {
-              MathAtom? handlerResult;
-              MathList? @return;
-              ((handlerResult, @return), error) = handler(this, r, stopChar);
+              (MathAtom?, MathList?) handlerResult;
+              (handlerResult, error) = handler(this, r, stopChar);
               if (error != null) return error;
-              if (@return != null) return @return;
-              if (handlerResult == null) continue;
-              atom = handlerResult;
-              break;
-            }
-
-            if (LaTeXSettings.FontStyles.TryGetValue(command, out var fontStyle)) {
-              var oldSpacesAllowed = TextMode;
-              var oldFontStyle = CurrentFontStyle;
-              TextMode = (command == "text");
-              CurrentFontStyle = fontStyle;
-              (_, error) = BuildInternal(true, r: r);
-              if (error != null) return error;
-              CurrentFontStyle = oldFontStyle;
-              TextMode = oldSpacesAllowed;
-              prevAtom = r.Atoms.LastOrDefault();
-              if (oneCharOnly) {
-                return r;
+              switch (handlerResult) {
+                case ({ } /* dummy */, { } atoms): // Pre-styled atoms
+                  r.Append(atoms);
+                  prevAtom = r.Atoms.LastOrDefault();
+                  if (oneCharOnly) {
+                    return r;
+                  }
+                  continue;
+                case (null, { } @return): // Environment ender
+                  return @return;
+                case (null, null): // Atom modifier
+                  continue;
+                case ({ } resultAtom, null): // Atom producer
+                  atom = resultAtom;
+                  break;
               }
-              continue;
-            }
-            switch (LaTeXSettings.AtomForCommand(command)) {
-              case Accent accent:
-                MathList innerList;
-                (innerList, error) = BuildInternal(true);
-                if (error != null) return error;
-                atom = new Accent(accent.Nucleus, innerList);
-                break;
-              case MathAtom a:
-                atom = a;
-                break;
-              case null:
-                return "Invalid command \\" + command;
-            }
-            break;
+              break;
+            } else return "Invalid command \\" + command;
           case '&': // column separation in tables
             if (Environments.PeekOrDefault() is TableEnvironment) {
               return r;
@@ -581,6 +563,19 @@ namespace CSharpMath.Atom {
       .Replace("~", @"\textasciitilde ")
       .ToString();
 
+    static string BoundaryToLaTeX(Boundary delimiter) {
+      var command = LaTeXSettings.BoundaryDelimiters[delimiter];
+      if (command is null) {
+        return string.Empty;
+      }
+      if ("()[]<>|./".Contains(command) && command.Length == 1)
+        return command;
+      if (command == "||") {
+        return @"\|";
+      } else {
+        return @"\" + command;
+      }
+    }
     private static void MathListToLaTeX
       (MathList mathList, StringBuilder builder, FontStyle outerFontStyle) {
       if (mathList is null) throw new ArgumentNullException(nameof(mathList));
@@ -612,11 +607,11 @@ namespace CSharpMath.Atom {
               builder.Append(@" \").Append(
                 (fraction.LeftDelimiter, fraction.RightDelimiter) switch
                 {
-                  (null, null) => "atop",
-                  ("(", ")") => "choose",
-                  ("{", "}") => "brace",
-                  ("[", "]") => "brack",
-                  (var left, var right) => $"atopwithdelims{left}{right}",
+                  ({ Nucleus: null }, { Nucleus: null }) => "atop",
+                  ({ Nucleus: "(" }, { Nucleus: ")" }) => "choose",
+                  ({ Nucleus: "{" }, { Nucleus: "}" }) => "brace",
+                  ({ Nucleus: "[" }, { Nucleus: "]" }) => "brack",
+                  (var left, var right) => $"atopwithdelims{BoundaryToLaTeX(left)}{BoundaryToLaTeX(right)}",
                 }).Append(" ");
               MathListToLaTeX(fraction.Denominator, builder, currentFontStyle);
               builder.Append("}");
@@ -633,7 +628,7 @@ namespace CSharpMath.Atom {
             MathListToLaTeX(radical.Radicand, builder, currentFontStyle);
             builder.Append('}');
             break;
-          case Inner { LeftBoundary: { Nucleus: "" }, InnerList: var list, RightBoundary: { Nucleus: "" } }:
+          case Inner { LeftBoundary: { Nucleus: null }, InnerList: var list, RightBoundary: { Nucleus: null } }:
             builder.Append('{');
             MathListToLaTeX(list, builder, currentFontStyle);
             builder.Append('}');
@@ -649,19 +644,6 @@ namespace CSharpMath.Atom {
             builder.Append("}");
             break;
           case Inner { LeftBoundary: var left, InnerList: var list, RightBoundary: var right }:
-            static string BoundaryToLaTeX(Boundary delimiter) {
-              var command = LaTeXSettings.BoundaryDelimiters[delimiter];
-              if (command == null) {
-                return string.Empty;
-              }
-              if ("()[]<>|./".Contains(command) && command.Length == 1)
-                return command;
-              if (command == "||") {
-                return @"\|";
-              } else {
-                return @"\" + command;
-              }
-            }
             builder.Append(@"\left").Append(BoundaryToLaTeX(left)).Append(' ');
             MathListToLaTeX(list, builder, currentFontStyle);
             builder.Append(@"\right").Append(BoundaryToLaTeX(right)).Append(' ');

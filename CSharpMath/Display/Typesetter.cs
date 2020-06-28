@@ -648,13 +648,13 @@ namespace CSharpMath.Display {
 
       // Add delimiters to fraction display
 
-      if (fraction.LeftDelimiter is null && fraction.RightDelimiter is null)
+      if (fraction.LeftDelimiter == Boundary.Empty && fraction.RightDelimiter == Boundary.Empty)
         return display;
       var glyphHeight = _FractionDelimiterHeight;
       var position = new PointF();
       var innerGlyphs = new List<IDisplay<TFont, TGlyph>>();
-      if (fraction.LeftDelimiter?.Length > 0) {
-        var leftGlyph = _FindGlyphForBoundary(fraction.LeftDelimiter, glyphHeight);
+      if (fraction.LeftDelimiter.Nucleus?.Length > 0) {
+        var leftGlyph = _FindGlyphForBoundary(fraction.LeftDelimiter.Nucleus, glyphHeight);
         leftGlyph.Position = position;
         innerGlyphs.Add(leftGlyph);
         position.X += leftGlyph.Width;
@@ -662,8 +662,8 @@ namespace CSharpMath.Display {
       display.Position = position;
       position.X += display.Width;
       innerGlyphs.Add(display);
-      if (fraction.RightDelimiter?.Length > 0) {
-        var rightGlyph = _FindGlyphForBoundary(fraction.RightDelimiter, glyphHeight);
+      if (fraction.RightDelimiter.Nucleus?.Length > 0) {
+        var rightGlyph = _FindGlyphForBoundary(fraction.RightDelimiter.Nucleus, glyphHeight);
         rightGlyph.Position = position;
         innerGlyphs.Add(rightGlyph);
         position.X += rightGlyph.Width;
@@ -689,12 +689,12 @@ namespace CSharpMath.Display {
       float glyphHeight = Math.Max(d1, d2);
 
       var leftGlyph =
-        inner.LeftBoundary is Boundary { Nucleus: var left } && left.Length > 0
+        inner.LeftBoundary is Boundary { Nucleus: var left } && left?.Length > 0
         ? _FindGlyphForBoundary(left, glyphHeight)
         : null;
 
       var rightGlyph =
-        inner.RightBoundary is Boundary { Nucleus: var right } && right.Length > 0
+        inner.RightBoundary is Boundary { Nucleus: var right } && right?.Length > 0
         ? _FindGlyphForBoundary(right, glyphHeight)
         : null;
       return new InnerDisplay<TFont, TGlyph>(innerListDisplay, leftGlyph, rightGlyph, range);

@@ -128,8 +128,8 @@ namespace CSharpMath.CoreTests {
       Assert.Collection(list,
         CheckAtom<Fraction>("", fraction => {
           Assert.True(fraction.HasRule);
-          Assert.Null(fraction.LeftDelimiter);
-          Assert.Null(fraction.RightDelimiter);
+          Assert.Equal(Boundary.Empty, fraction.LeftDelimiter);
+          Assert.Equal(Boundary.Empty, fraction.RightDelimiter);
           Assert.Collection(fraction.Numerator, CheckAtom<Number>("1"));
           Assert.Collection(fraction.Denominator, CheckAtom<Variable>("c"));
         })
@@ -241,13 +241,13 @@ namespace CSharpMath.CoreTests {
       // Scripts on left
       InlineData(@"\left(^2 \right )", new[] { typeof(Inner) }, new[] { typeof(Ordinary) }, @"(", @")", @"\left( {}^2\right) "),
       // Dot
-      InlineData(@"\left( 2 \right.", new[] { typeof(Inner) }, new[] { typeof(Number) }, @"(", @"", @"\left( 2\right. "),
+      InlineData(@"\left( 2 \right.", new[] { typeof(Inner) }, new[] { typeof(Number) }, @"(", null, @"\left( 2\right. "),
       // Dot both sides
-      InlineData(@"\left.2\right.", new[] { typeof(Inner) }, new[] { typeof(Number) }, @"", @"", @"{2}"),
+      InlineData(@"\left.2\right.", new[] { typeof(Inner) }, new[] { typeof(Number) }, null, null, @"{2}"),
     ]
     public void TestLeftRight(
       string input, Type[] expectedOutputTypes, Type[] expectedInnerTypes,
-      string leftBoundary, string rightBoundary, string expectedLatex) {
+      string? leftBoundary, string? rightBoundary, string expectedLatex) {
       var list = ParseLaTeX(input);
 
       CheckAtomTypes(list, expectedOutputTypes);
@@ -268,8 +268,8 @@ namespace CSharpMath.CoreTests {
       Assert.Collection(list,
         CheckAtom<Fraction>("", fraction => {
           Assert.Equal(hasRule, fraction.HasRule);
-          Assert.Null(fraction.LeftDelimiter);
-          Assert.Null(fraction.RightDelimiter);
+          Assert.Equal(Boundary.Empty, fraction.LeftDelimiter);
+          Assert.Equal(Boundary.Empty, fraction.RightDelimiter);
           Assert.Collection(fraction.Numerator, CheckAtom<Number>("1"));
           Assert.Collection(fraction.Denominator, CheckAtom<Variable>("c"));
         })
@@ -287,8 +287,8 @@ namespace CSharpMath.CoreTests {
         CheckAtom<BinaryOperator>("+"),
         CheckAtom<Fraction>("", fraction => {
           Assert.Equal(hasRule, fraction.HasRule);
-          Assert.Null(fraction.LeftDelimiter);
-          Assert.Null(fraction.RightDelimiter);
+          Assert.Equal(Boundary.Empty, fraction.LeftDelimiter);
+          Assert.Equal(Boundary.Empty, fraction.RightDelimiter);
           Assert.Collection(fraction.Numerator, CheckAtom<Number>("1"));
           Assert.Collection(fraction.Denominator, CheckAtom<Variable>("c"));
         }),
@@ -303,13 +303,20 @@ namespace CSharpMath.CoreTests {
     [InlineData(@"n \brack k", @"{n \brack k}", "[", "]")]
     [InlineData(@"n \brace k", @"{n \brace k}", "{", "}")]
     [InlineData(@"\binom{n}{k}", @"{n \choose k}", "(", ")")]
-    public void TestChooseBrackBraceBinomial(string input, string output, string left, string right) {
+    [InlineData(@"n \atopwithdelims() k", @"{n \choose k}", "(", ")")]
+    [InlineData(@"n \atopwithdelims[] k", @"{n \brack k}", "[", "]")]
+    [InlineData(@"n \atopwithdelims\{\} k", @"{n \brace k}", "{", "}")]
+    [InlineData(@"n \atopwithdelims<> k", @"{n \atopwithdelims<> k}", "〈", "〉")]
+    [InlineData(@"n \atopwithdelims\Uparrow\downarrow k", @"{n \atopwithdelims\Uparrow\downarrow k}", "⇑", "↓")]
+    [InlineData(@"n \atopwithdelims.. k", @"{n \atop k}", null, null)]
+    [InlineData(@"n \atopwithdelims|. k", @"{n \atopwithdelims|. k}", "|", null)]
+    public void TestChooseBrackBraceBinomial(string input, string output, string? left, string? right) {
       var list = ParseLaTeX(input);
       Assert.Collection(list,
         CheckAtom<Fraction>("", fraction => {
           Assert.False(fraction.HasRule);
-          Assert.Equal(left, fraction.LeftDelimiter);
-          Assert.Equal(right, fraction.RightDelimiter);
+          Assert.Equal(left, fraction.LeftDelimiter.Nucleus);
+          Assert.Equal(right, fraction.RightDelimiter.Nucleus);
           Assert.Collection(fraction.Numerator, CheckAtom<Variable>("n"));
           Assert.Collection(fraction.Denominator, CheckAtom<Variable>("k"));
         })
