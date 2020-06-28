@@ -87,7 +87,7 @@ namespace CSharpMath.Rendering.Text.Tests {
       void Test(string input) {
         var atom = Parse(input);
         var list = new List<TextAtom> {
-          new TextAtom.ColoredTextAtom(new TextAtom.Text(colored), Structures.ColorExtensions.PredefinedColors["red"])
+          new TextAtom.Colored(new TextAtom.Text(colored), Structures.ColorExtensions.PredefinedColors["red"])
         };
         if (after != null) list.Add(new TextAtom.Text(after));
         Assert.Equal(list.Count == 1 ? list[0] : new TextAtom.List(list), atom);
@@ -172,7 +172,7 @@ namespace CSharpMath.Rendering.Text.Tests {
       var atom = Parse($@"\color{{{inColor}}}ab");
       CheckAtom<TextAtom.List>(l =>
         Assert.Collection(l.Content,
-          CheckAtom<TextAtom.ColoredTextAtom>(color => {
+          CheckAtom<TextAtom.Colored>(color => {
             Assert.Equal(r, color.Colour.R);
             Assert.Equal(g, color.Colour.G);
             Assert.Equal(b, color.Colour.B);

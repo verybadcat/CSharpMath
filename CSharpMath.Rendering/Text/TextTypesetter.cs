@@ -60,7 +60,7 @@ namespace CSharpMath.Rendering.Text {
               (sz.Content, new Fonts(fonts, sz.PointSize), line, displayList,
                displayMathList, style, color);
             break;
-          case TextAtom.ColoredTextAtom c:
+          case TextAtom.Colored c:
             AddDisplaysWithLineBreaks
               (c.Content, fonts, line, displayList, displayMathList, style, c.Colour);
             break;

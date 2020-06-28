@@ -487,7 +487,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
         case TextAtom.Size z:
           b.Append(@"\fontsize{").Append(z.PointSize).Append("}{");
           return TextAtomToLaTeX(z.Content, b).Append('}');
-        case TextAtom.ColoredTextAtom c:
+        case TextAtom.Colored c:
           b.Append(@"\color{").Append(c.Colour).Append("}{"); // TODO: convert c.Colour to a string or hex
           return TextAtomToLaTeX(c.Content, b).Append('}');
         case TextAtom.List l:
