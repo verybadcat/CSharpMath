@@ -456,9 +456,9 @@ namespace CSharpMath.CoreTests {
     [InlineData(@"\color{red}{{\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) }}")]
     public void TestRedMatrix(string input) {
       var list = ParseLaTeX(input);
-      Assert.Collection(list, CheckAtom<Colored>("", Colored => {
-        Assert.Equal(System.Drawing.Color.FromArgb(255, 0, 0), Colored.Colour);
-        Assert.Collection(Colored.InnerList,
+      Assert.Collection(list, CheckAtom<Colored>("", colored => {
+        Assert.Equal(System.Drawing.Color.FromArgb(255, 0, 0), colored.Colour);
+        Assert.Collection(colored.InnerList,
           CheckAtom<Inner>("", inner => {
             Assert.Equal(new Boundary("("), inner.LeftBoundary);
             Assert.Equal(new Boundary(")"), inner.RightBoundary);
