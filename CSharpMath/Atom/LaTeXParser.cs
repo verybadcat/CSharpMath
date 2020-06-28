@@ -992,16 +992,16 @@ namespace CSharpMath.Atom {
                 break;
             }
             break;
-          case Colored color:
+          case Colored colored:
             builder.Append(@"\color{")
-              .Append(color.Colour)
+              .Append(ColorExtensions.ToTexString(colored.Colour))
               .Append("}{");
-            MathListToLaTeX(color.InnerList, builder, currentFontStyle);
+            MathListToLaTeX(colored.InnerList, builder, currentFontStyle);
             builder.Append("}");
             break;
           case ColorBox colorBox:
             builder.Append(@"\colorbox{")
-              .Append(colorBox.Colour)
+              .Append(ColorExtensions.ToTexString(colorBox.Colour))
               .Append("}{");
             MathListToLaTeX(colorBox.InnerList, builder, currentFontStyle);
             builder.Append("}");
