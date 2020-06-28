@@ -38,7 +38,6 @@ string BreakText(string text, string seperator = "|")
 }
 BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
      */
-    public static bool NoEnhancedColors { get; set; }
     public static Result<TextAtom> TextAtomFromLaTeX(string latexSource) {
       if (string.IsNullOrEmpty(latexSource))
         return new TextAtom.List(Array.Empty<TextAtom>());
@@ -147,7 +146,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
           }
           Result<Color> ReadColor(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section)  =>
             ReadArgumentString(latexInput, ref section).Bind(color =>
-              ColorExtensions.ParseColor(color.ToString()) is Color value ? // TODO: use or remove NoEnhancedColors
+              ColorExtensions.ParseColor(color.ToString()) is Color value ?
                 Ok(value) :
               Err("Invalid color: " + color.ToString())
             );
@@ -382,7 +381,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     }
                   //case "red", "yellow", ...
                   case var shortColor when
-                    !NoEnhancedColors && ColorExtensions.PredefinedColors.TryGetByFirst(shortColor, out var color): {
+                    ColorExtensions.PredefinedColors.TryGetByFirst(shortColor, out var color): {
                       int tmp_commandLength = shortColor.Length;
                       if (ReadArgumentAtom(latex).Bind(
                           coloredContent => atoms.Color(coloredContent, color)
