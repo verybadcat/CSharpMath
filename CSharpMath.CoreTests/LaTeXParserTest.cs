@@ -456,9 +456,9 @@ namespace CSharpMath.CoreTests {
     [InlineData(@"\color{red}{{\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) }}")]
     public void TestRedMatrix(string input) {
       var list = ParseLaTeX(input);
-      Assert.Collection(list, CheckAtom<ColoredAtom>("", coloredAtom => {
-        Assert.Equal(System.Drawing.Color.FromArgb(255, 0, 0), coloredAtom.Colour);
-        Assert.Collection(coloredAtom.InnerList,
+      Assert.Collection(list, CheckAtom<Colored>("", Colored => {
+        Assert.Equal(System.Drawing.Color.FromArgb(255, 0, 0), Colored.Colour);
+        Assert.Collection(Colored.InnerList,
           CheckAtom<Inner>("", inner => {
             Assert.Equal(new Boundary("("), inner.LeftBoundary);
             Assert.Equal(new Boundary(")"), inner.RightBoundary);
@@ -1107,13 +1107,13 @@ namespace CSharpMath.CoreTests {
     public void TestColor(string inColor, string outColor, byte r, byte g, byte b, byte a = 0xFF) {
       var list = ParseLaTeX($@"\color{{{inColor}}}ab");
       Assert.Collection(list,
-        CheckAtom<ColoredAtom>("", coloredAtom => {
-          Assert.Equal(r, coloredAtom.Colour.R);
-          Assert.Equal(g, coloredAtom.Colour.G);
-          Assert.Equal(b, coloredAtom.Colour.B);
-          Assert.Equal(a, coloredAtom.Colour.A);
-          Assert.False(coloredAtom.ScriptsAllowed);
-          Assert.Collection(coloredAtom.InnerList, CheckAtom<Variable>("a"));
+        CheckAtom<Colored>("", Colored => {
+          Assert.Equal(r, Colored.Colour.R);
+          Assert.Equal(g, Colored.Colour.G);
+          Assert.Equal(b, Colored.Colour.B);
+          Assert.Equal(a, Colored.Colour.A);
+          Assert.False(Colored.ScriptsAllowed);
+          Assert.Collection(Colored.InnerList, CheckAtom<Variable>("a"));
         }),
         CheckAtom<Variable>("b")
       );
@@ -1138,15 +1138,15 @@ namespace CSharpMath.CoreTests {
     public void TestColorScripts() {
       var list = ParseLaTeX(@"\color{red}1\colorbox{blue}2");
       Assert.Collection(list,
-        CheckAtom<ColoredAtom>("", coloredAtom => {
-          Assert.Equal("red", coloredAtom.Colour.ToString());
-          Assert.Empty(coloredAtom.Superscript);
-          Assert.Throws<InvalidOperationException>(() => coloredAtom.Superscript.Add(new Variable("a")));
-          Assert.Throws<InvalidOperationException>(() => coloredAtom.Superscript.Append(new MathList(new Variable("a"))));
-          Assert.Empty(coloredAtom.Subscript);
-          Assert.Throws<InvalidOperationException>(() => coloredAtom.Subscript.Add(new Variable("b")));
-          Assert.Throws<InvalidOperationException>(() => coloredAtom.Subscript.Append(new MathList(new Variable("b"))));
-          Assert.Collection(coloredAtom.InnerList, CheckAtom<Number>("1"));
+        CheckAtom<Colored>("", Colored => {
+          Assert.Equal("red", Colored.Colour.ToString());
+          Assert.Empty(Colored.Superscript);
+          Assert.Throws<InvalidOperationException>(() => Colored.Superscript.Add(new Variable("a")));
+          Assert.Throws<InvalidOperationException>(() => Colored.Superscript.Append(new MathList(new Variable("a"))));
+          Assert.Empty(Colored.Subscript);
+          Assert.Throws<InvalidOperationException>(() => Colored.Subscript.Add(new Variable("b")));
+          Assert.Throws<InvalidOperationException>(() => Colored.Subscript.Append(new MathList(new Variable("b"))));
+          Assert.Collection(Colored.InnerList, CheckAtom<Number>("1"));
         }),
         CheckAtom<ColorBox>("", colorBox => {
           Assert.Equal("blue", colorBox.Colour.ToString());

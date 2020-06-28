@@ -185,7 +185,7 @@ namespace CSharpMath.CoreTests {
     }
     [Fact]
     public void TestCopyColor() {
-      var color = new ColoredAtom(System.Drawing.Color.FromArgb(255, 0, 0), new MathList(new Open("(")));
+      var color = new Colored(System.Drawing.Color.FromArgb(255, 0, 0), new MathList(new Open("(")));
       var clone = color.Clone(false);
       Assert.Equal(System.Drawing.Color.FromArgb(255, 0, 0), clone.Colour);
       CheckClone(color, clone);

@@ -404,7 +404,7 @@ namespace CSharpMath.Atom {
         case "color":
           return (ReadColor()) switch
           {
-            { } color when BuildInternal(true) is { } ml => new ColoredAtom(color, ml),
+            { } color when BuildInternal(true) is { } ml => new Colored(color, ml),
             _ => null,
           };
         case "colorbox":
@@ -992,7 +992,7 @@ namespace CSharpMath.Atom {
                 break;
             }
             break;
-          case ColoredAtom color:
+          case Colored color:
             builder.Append(@"\color{")
               .Append(color.Colour)
               .Append("}{");
