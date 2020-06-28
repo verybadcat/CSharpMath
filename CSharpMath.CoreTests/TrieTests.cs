@@ -11,9 +11,9 @@ namespace CSharpMath.CoreTests {
     // Based on https://github.com/gmamaladze/trienet/blob/f0961ebec078f65184d3bc85de8454919b335236/TrieNet.Test/PatriciaTrieTest.cs
     [Fact]
     public void TestNotExactMatched() {
-      var trie = new Structures.PatriciaTrie<int>();
-      trie.Add("aaabbb", 1);
-      trie.Add("aaaccc", 2);
+      var trie = new Structures.PatriciaTrie<char, int>();
+      trie.Add("aaabbb".AsMemory(), 1);
+      trie.Add("aaaccc".AsMemory(), 2);
 
       var actual = trie["aab"];
       Assert.Empty(actual);
@@ -63,14 +63,14 @@ namespace CSharpMath.CoreTests {
       "comodato",
       "cognoscibility"
     };
-    static Structures.PatriciaTrie<int> CreateWords40Trie() {
-      var trie = new Structures.PatriciaTrie<int>();
+    static Structures.PatriciaTrie<char, int> CreateWords40Trie() {
+      var trie = new Structures.PatriciaTrie<char, int>();
       for (int i = 0; i < Words40.Length; i++) {
-        trie.Add(Words40[i], i);
+        trie.Add(Words40[i].AsMemory(), i);
       }
       return trie;
     }
-    static Structures.PatriciaTrie<int> SharedTrie { get; } = CreateWords40Trie();
+    static Structures.PatriciaTrie<char, int> SharedTrie { get; } = CreateWords40Trie();
 
 
     [Theory]
@@ -483,7 +483,7 @@ namespace CSharpMath.CoreTests {
       }
       TestRemove();
 
-      void TestRetrieveFromRemoved(Structures.PatriciaTrie<int> removed, IEnumerable<int> removedIndices) {
+      void TestRetrieveFromRemoved(Structures.PatriciaTrie<char, int> removed, IEnumerable<int> removedIndices) {
         IEnumerable<int> actual = removed[query];
         AssertSetEqual(expected.Except(removedIndices), actual);
       }
@@ -499,10 +499,7 @@ namespace CSharpMath.CoreTests {
       var stopwatch = new Stopwatch();
       stopwatch.Start();
 
-      var trie = new Structures.PatriciaTrie<int>();
-      foreach (var phrase in Words40) {
-        trie.Add(phrase, phrase.GetHashCode());
-      }
+      var trie = CreateWords40Trie();
 
       stopwatch.Stop();
       Console.WriteLine(nameof(TimeAdd) + ": " + stopwatch.Elapsed);
@@ -513,9 +510,9 @@ namespace CSharpMath.CoreTests {
       var stopwatch = new Stopwatch();
       stopwatch.Start();
 
-      var trie = new Structures.PatriciaTrie<int>();
+      var trie = new Structures.PatriciaTrie<char, int>();
       foreach (var phrase in LongPhrases40) {
-        trie.Add(phrase, phrase.GetHashCode());
+        trie.Add(phrase.AsMemory(), phrase.GetHashCode());
       }
 
       stopwatch.Stop();
