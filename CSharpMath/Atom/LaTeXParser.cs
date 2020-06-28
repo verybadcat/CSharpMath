@@ -218,7 +218,7 @@ namespace CSharpMath.Atom {
         }
       }
       var str = builder.ToString();
-      if (ColorExtensions.ParseColor(str) is { } color) {
+      if (ColorExtensions.ParseColor(str) is Color color) {
         SkipSpaces();
         if (!ExpectCharacter('}')) {
           SetError("Missing }");
@@ -404,7 +404,7 @@ namespace CSharpMath.Atom {
         case "color":
           return (ReadColor()) switch
           {
-            { } color when BuildInternal(true) is { } ml => new Colored(color, ml),
+            Color color when BuildInternal(true) is MathList ml => new Colored(color, ml),
             _ => null,
           };
         case "colorbox":
