@@ -1,6 +1,8 @@
 using System.Drawing;
 using System;
 using System.Globalization;
+using System.Security.Cryptography.X509Certificates;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace CSharpMath.Structures {
   public static class ColorExtensions {
@@ -21,9 +23,29 @@ namespace CSharpMath.Structures {
       return null;
       static Color? FromHexString(string hex) {
 #pragma warning disable CA1305 // Specify IFormatProvider
-        return Color.FromArgb(int.Parse(hex,NumberStyles.HexNumber));
+        if (hex.Length > 7) {
+          return Color.FromArgb(int.Parse(hex, NumberStyles.HexNumber));
+        } else {
+          var c = Color.FromArgb(int.Parse(hex, NumberStyles.HexNumber));
+          return Color.FromArgb(c.R,c.G,c.B);
+        }
+        
 #pragma warning restore CA1305 // Specify IFormatProvider
       }
+    }
+    public static string ToTexString(Color color) {
+      if (PredefinedColors.TryGetBySecond(color, out var outString)) {
+        return outString;
+      } else {
+#pragma warning disable CA1305 // Specify IFormatProvider
+        string a = (color.A == 255) ? "" : color.A.ToString("X2");
+        string r = color.R.ToString("X2");
+        string g = color.G.ToString("X2");
+        string b = color.B.ToString("X2");
+#pragma warning restore CA1305 // Specify IFormatProvider
+        return "#" + a + r + g + b;
+      }
+
     }
     //https://en.wikibooks.org/wiki/LaTeX/Colors#Predefined_colors
     public static BiDictionary<string, Color> PredefinedColors { get; } =
