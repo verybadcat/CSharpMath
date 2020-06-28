@@ -1,14 +1,9 @@
 using System.Drawing;
 using System;
 using System.Globalization;
-using System.Security.Cryptography.X509Certificates;
-using System.Runtime.InteropServices.ComTypes;
 
 namespace CSharpMath.Structures {
   public static class ColorExtensions {
-    //public override string ToString() =>
-    //  PredefinedColors.TryGetBySecond(this, out var name)
-    //  ? name : $"#{A:X2}{R:X2}{G:X2}{B:X2}";
     public static Color? ParseColor(string? hexOrName) {
       if (hexOrName == null) return null;
       if (hexOrName.StartsWith("#", StringComparison.InvariantCulture))
