@@ -186,7 +186,7 @@ namespace CSharpMath.Display {
             AddDisplayLine(false);
             AddInterElementSpace(prevAtom, Colored);
             var colorDisplay = CreateLine(Colored.InnerList, _font, _context, _style, false);
-            colorDisplay.SetTextColorRecursive(Colored.Colour);
+            colorDisplay.SetTextColorRecursive(Colored.Color);
             colorDisplay.Position = _currentPosition;
             _currentPosition.X += colorDisplay.Width;
             _displayAtoms.Add(colorDisplay);
@@ -195,7 +195,7 @@ namespace CSharpMath.Display {
             AddDisplayLine(false);
             AddInterElementSpace(prevAtom, colorBox);
             colorDisplay = CreateLine(colorBox.InnerList, _font, _context, _style, false);
-            colorDisplay.BackColor = colorBox.Colour;
+            colorDisplay.BackColor = colorBox.Color;
             colorDisplay.Position = _currentPosition;
             _currentPosition.X += colorDisplay.Width;
             _displayAtoms.Add(colorDisplay);
