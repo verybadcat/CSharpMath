@@ -1107,13 +1107,13 @@ namespace CSharpMath.CoreTests {
     public void TestColor(string inColor, string outColor, byte r, byte g, byte b, byte a = 0xFF) {
       var list = ParseLaTeX($@"\color{{{inColor}}}ab");
       Assert.Collection(list,
-        CheckAtom<Colored>("", Colored => {
-          Assert.Equal(r, Colored.Color.R);
-          Assert.Equal(g, Colored.Color.G);
-          Assert.Equal(b, Colored.Color.B);
-          Assert.Equal(a, Colored.Color.A);
-          Assert.False(Colored.ScriptsAllowed);
-          Assert.Collection(Colored.InnerList, CheckAtom<Variable>("a"));
+        CheckAtom<Colored>("", colored => {
+          Assert.Equal(r, colored.Color.R);
+          Assert.Equal(g, colored.Color.G);
+          Assert.Equal(b, colored.Color.B);
+          Assert.Equal(a, colored.Color.A);
+          Assert.False(colored.ScriptsAllowed);
+          Assert.Collection(colored.InnerList, CheckAtom<Variable>("a"));
         }),
         CheckAtom<Variable>("b")
       );
@@ -1138,15 +1138,15 @@ namespace CSharpMath.CoreTests {
     public void TestColorScripts() {
       var list = ParseLaTeX(@"\color{red}1\colorbox{blue}2");
       Assert.Collection(list,
-        CheckAtom<Colored>("", Colored => {
-          Assert.Equal("red", Colored.Color.ToString());
-          Assert.Empty(Colored.Superscript);
-          Assert.Throws<InvalidOperationException>(() => Colored.Superscript.Add(new Variable("a")));
-          Assert.Throws<InvalidOperationException>(() => Colored.Superscript.Append(new MathList(new Variable("a"))));
-          Assert.Empty(Colored.Subscript);
-          Assert.Throws<InvalidOperationException>(() => Colored.Subscript.Add(new Variable("b")));
-          Assert.Throws<InvalidOperationException>(() => Colored.Subscript.Append(new MathList(new Variable("b"))));
-          Assert.Collection(Colored.InnerList, CheckAtom<Number>("1"));
+        CheckAtom<Colored>("", colored => {
+          Assert.Equal("red", colored.Color.ToString());
+          Assert.Empty(colored.Superscript);
+          Assert.Throws<InvalidOperationException>(() => colored.Superscript.Add(new Variable("a")));
+          Assert.Throws<InvalidOperationException>(() => colored.Superscript.Append(new MathList(new Variable("a"))));
+          Assert.Empty(colored.Subscript);
+          Assert.Throws<InvalidOperationException>(() => colored.Subscript.Add(new Variable("b")));
+          Assert.Throws<InvalidOperationException>(() => colored.Subscript.Append(new MathList(new Variable("b"))));
+          Assert.Collection(colored.InnerList, CheckAtom<Number>("1"));
         }),
         CheckAtom<ColorBox>("", colorBox => {
           Assert.Equal("blue", colorBox.Color.ToString());
