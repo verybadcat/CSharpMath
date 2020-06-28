@@ -3,11 +3,11 @@ namespace CSharpMath.Rendering.Tests {
   public sealed class TestRenderingMathData : TestRenderingSharedData<TestRenderingMathData> {
     
     public const string AccentOver = @"\acute{x}";
-#warning Fix following line's output
+    //TODO: Fix following line's output
     public const string AccentOverF = @"\hat{f}";
     public const string AccentOverMultiple = @"\widehat{ABcd}";
     public const string AccentUnder = @"\threeunderdot{x}";
-#warning Fix following line's output
+    //TODO: Fix following line's output
     public const string AccentUnderThin = @"\threeunderdot{i}";
     public const string Choose = @"{6 \choose x}";
     public const string Commands = @"5\times(-2 \div 1) = -10";
@@ -80,7 +80,7 @@ namespace CSharpMath.Rendering.Tests {
     public const string SummationWithBigLimits = @"\sum^{4^{5^{6^{7^{8^{9^{10^{11^{12^{13}}}}}}}}}}_{i=3_{2_{1_{0_{-1_{-2_{-3}}}}}}}i";
     //\sum^{a^{s^{c^{e^{n^{d^{i^{n^g}}}}}}}}_{d_{e_{s_{c_{e_{n_{d_{i_{n_g}}}}}}}}}normal
     public const string EvalIntegral = @"\int_1^2 x\; dx=\left.\frac{x^2}{2}\right|_1^2=2-\frac{1}{2}=\frac{3}{2}";
-#warning Uncomment when \middle is implemented
+    //TODO: Uncomment when \middle is implemented
     //public const string MiddleDelimiter = @"A = \left\{ \frac{x_i}{i} \middle| i\in \mathcal{I} \right\}";
     public const string VectorProjection = @"Proj_\vec{v}\vec{u}=|\vec u|\cos\theta\times\frac\vec v{|\vec v|}=|\vec u|\frac{\vec u \cdot \vec v}{|\vec u||\vec v|}\times\frac\vec v{|\vec v|}\\\text{Suppose \mathit{u} and \mathit v are unit vectors, }Proj_\vec v\vec u = (\vec u\cdot\vec v)\vec v";
     public const string SimpleShortProof = @"\begin{aligned}&\because x+3=5\\&\therefore x=2\end{aligned}";

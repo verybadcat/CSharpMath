@@ -97,7 +97,7 @@ namespace CSharpMath.Atom {
               return r;
             }
             continue;
-#warning TODO Example
+          // TODO: Example
           //https://phabricator.wikimedia.org/T99369
           //https://phab.wmfusercontent.org/file/data/xsimlcnvo42siudvwuzk/PHID-FILE-bdcqexocj5b57tj2oezn/math_rendering.png
           //dt, \text{d}t, \partial t, \nabla\psi \\ \underline\overline{dy/dx, \text{d}y/\text{d}x, \frac{dy}{dx}, \frac{\text{d}y}{\text{d}x}, \frac{\partial^2}{\partial x_1\partial x_2}y} \\ \prime,
@@ -684,7 +684,7 @@ namespace CSharpMath.Atom {
           table.InterRowAdditionalSpacing = 1;
           table.InterColumnSpacing = 18;
           for (int i = 0, j = 0; i < arrayAlignments.Length && j < table.NColumns; i++, j++) {
-#warning vertical lines in array currently unsupported
+            // TODO: vertical lines in array currently unsupported
             while (arrayAlignments[i] == '|') i++;
             table.SetAlignment(arrayAlignments[i] switch
             {

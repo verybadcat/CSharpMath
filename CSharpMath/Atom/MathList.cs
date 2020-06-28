@@ -31,7 +31,7 @@ namespace CSharpMath.Atom {
               prevNode?.IndexRange.Location + prevNode?.IndexRange.Length ?? 0;
             newNode.IndexRange = new Range(prevIndex, 1);
           }
-#warning One day when C# receives "or patterns", simplify this abomination
+          //TODO: One day when C# receives "or patterns", simplify this abomination
           switch (prevNode, newNode) {
             case (null, Atoms.BinaryOperator b):
               newNode = b.ToUnaryOperator();
