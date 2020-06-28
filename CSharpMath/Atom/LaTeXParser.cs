@@ -5,6 +5,7 @@ using System.Text;
 using System.Drawing;
 
 namespace CSharpMath.Atom {
+  using System.Diagnostics;
   using Atoms;
   using CSharpMath.Structures;
   using InvalidCodePathException = Structures.InvalidCodePathException;
@@ -218,6 +219,7 @@ namespace CSharpMath.Atom {
         }
       }
       var str = builder.ToString();
+      Debug.WriteLine("str: " + str);
       if (ColorExtensions.ParseColor(str) is Color color) {
         SkipSpaces();
         if (!ExpectCharacter('}')) {
@@ -401,12 +403,17 @@ namespace CSharpMath.Atom {
             return null;
           }
           return BuildTable(env, null, false, stopChar);
-        case "color":
-          return (ReadColor()) switch
-          {
-            Color color when BuildInternal(true) is MathList ml => new Colored(color, ml),
-            _ => null,
-          };
+        case "color": {
+            Color? c = ReadColor();
+            if (c.HasValue) {
+              Debug.WriteLine("c NonNull");
+              MathList? ml = BuildInternal(true);
+              if (ml != null) { return new Colored(c.Value, ml); } else { Debug.WriteLine("ml null");  return null; }
+            } else {
+              Debug.WriteLine("c Null");
+              return null;
+            }
+          }
         case "colorbox":
           return (ReadColor()) switch
           {
