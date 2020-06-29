@@ -86,7 +86,7 @@ namespace CSharpMath.Rendering.Tests {
     public const string SimpleShortProof = @"\begin{aligned}&\because x+3=5\\&\therefore x=2\end{aligned}";
     public const string FunctionDomainCodomain = @"f\colon\mathbb N\rightarrow\mathbb N";
     public const string LnEquation = @"\ln(P) = a_0 - \frac{a_1}{a_2 + T}";
-    public const string ArcsinSin = @"\arcsin(\sin x)=x\quad\rm{for}\quad|x|\le\frac\pi2";
+    public const string ArcsinSin = @"\arcsin(\sin x)=x\quad\mathrm{for}\quad|x|\le\frac\pi2";
     public const string TangentPeriodShift = @"\tan(\theta\pm\frac\pi4)=\frac{\tan\theta\pm1}{1\mp\tan\theta}";
     public const string LineStyles = @"a \displaystyle a \textstyle a \scriptstyle a \scriptscriptstyle a";
     public const string Cases = @" w \equiv \begin{cases} 0 & \text{for}\ c = d = 0\\ \sqrt{|c|}\,\sqrt{\frac{1+\sqrt{1+(d/c)^2}}{2}} &\text{for}\ |c| \geq |d|\\ \sqrt{|d|}\,\sqrt{\frac{|c/d| + \sqrt{1+(c/d)^2}}{2}} &\text{for}\ |c|<|d| \end{cases}";
