@@ -112,17 +112,19 @@ namespace CSharpMath.Atom {
             var command = ReadCommand();
 
             if (LaTeXSettings.Commands.TryGetValue(command, out var handler)) {
+              SkipSpaces(); // Ignore spaces after commands regardless of text mode
+
               (MathAtom?, MathList?) handlerResult;
               (handlerResult, error) = handler(this, r, stopChar);
               if (error != null) return error;
+
               switch (handlerResult) {
                 case ({ } /* dummy */, { } atoms): // Pre-styled atoms
                   r.Append(atoms);
                   prevAtom = r.Atoms.LastOrDefault();
-                  if (oneCharOnly) {
+                  if (oneCharOnly)
                     return r;
-                  }
-                  continue;
+                  else continue;
                 case (null, { } @return): // Environment ender
                   return @return;
                 case (null, null): // Atom modifier
@@ -148,6 +150,7 @@ namespace CSharpMath.Atom {
             break;
           case ' ' when TextMode:
             atom = new Ordinary(" ");
+            SkipSpaces(); // Multiple spaces are collapsed into one in text mode
             break;
           case var ch when ch <= sbyte.MaxValue:
             if (LaTeXSettings.ForAscii((sbyte)ch) is MathAtom asciiAtom)

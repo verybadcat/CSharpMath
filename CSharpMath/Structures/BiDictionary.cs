@@ -6,6 +6,11 @@ using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace CSharpMath.Structures {
+  public class LaTeXCommandDictionary<TValue> {
+    
+    PatriciaTrie<char, (string Key, TValue Value)> nonCommands = new PatriciaTrie<char, (string Key, TValue Value)>();
+    AliasDictionary<string, TValue> commands = new AliasDictionary<string, TValue>();
+  }
   public class AliasDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IReadOnlyDictionary<TKey, TValue> {
     public AliasDictionary(Action<TKey, TValue>? itemAdded = null) => ItemAdded += itemAdded;
     public event Action<TKey, TValue>? ItemAdded;

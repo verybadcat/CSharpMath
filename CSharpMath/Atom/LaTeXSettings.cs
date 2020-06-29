@@ -164,7 +164,6 @@ namespace CSharpMath.Atom {
         [@"brace"] = (parser, accumulate, stopChar) =>
           parser.ReadUntil(stopChar).Bind(denominator =>
             OkStop(new MathList(new Fraction(accumulate, denominator, false) { LeftDelimiter = BoundaryDelimiters["{"], RightDelimiter = BoundaryDelimiters["}"] }))),
-#warning Make \atopwithdelims a thing: MathListFromLaTeX should be able to consume LaTeX from MathListToLaTeX
         [@"atopwithdelims"] = (parser, accumulate, stopChar) =>
           parser.ReadDelimiter(@"atomwithdelims").Bind(left =>
             parser.ReadDelimiter(@"atomwithdelims").Bind(right =>
@@ -281,27 +280,35 @@ namespace CSharpMath.Atom {
 
 
     public static Structures.AliasDictionary<string, FontStyle> FontStyles { get; } =
-      new Structures.AliasDictionary<string, FontStyle>((command, fontStyle) =>
+      new Structures.AliasDictionary<string, FontStyle>((command, fontStyle) => {
         Commands.Add(command, (parser, accumulate, stopChar) => {
           var oldSpacesAllowed = parser.TextMode;
           var oldFontStyle = parser.CurrentFontStyle;
           parser.TextMode = command == "text";
           parser.CurrentFontStyle = fontStyle;
-          return parser.ReadArgument().Bind(r => {
+          var readsToEnd =
+            !command.AsSpan().StartsWithInvariant("math")
+            && !command.AsSpan().StartsWithInvariant("text");
+          return (readsToEnd ? parser.ReadUntil(stopChar) : parser.ReadArgument()).Bind(r => {
             parser.CurrentFontStyle = oldFontStyle;
             parser.TextMode = oldSpacesAllowed;
-            return OkStyled(r);
+            if (readsToEnd) {
+              accumulate.Append(r);
+              return OkStop(accumulate);
+            }
+            else return OkStyled(r);
           });
-        })) {
+        });
+      }) {
         { "mathnormal", FontStyle.Default },
         { "mathrm", "rm", "text", FontStyle.Roman },
         { "mathbf", "bf", FontStyle.Bold },
         { "mathcal", "cal", FontStyle.Caligraphic },
-        { "mathtt", FontStyle.Typewriter },
-        { "mathit", "mit", FontStyle.Italic },
-        { "mathsf", FontStyle.SansSerif },
+        { "mathtt", "tt", FontStyle.Typewriter },
+        { "mathit", "it", "mit", FontStyle.Italic },
+        { "mathsf", "sf", FontStyle.SansSerif },
         { "mathfrak", "frak", FontStyle.Fraktur },
-        { "mathbb", FontStyle.Blackboard },
+        { "mathbb", "bb", FontStyle.Blackboard },
         { "mathbfit", "bm", FontStyle.BoldItalic },
       };
 

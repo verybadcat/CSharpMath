@@ -304,12 +304,13 @@ namespace CSharpMath.CoreTests {
     [InlineData(@"n \brace k", @"{n \brace k}", "{", "}")]
     [InlineData(@"\binom{n}{k}", @"{n \choose k}", "(", ")")]
     [InlineData(@"n \atopwithdelims() k", @"{n \choose k}", "(", ")")]
-    [InlineData(@"n \atopwithdelims[] k", @"{n \brack k}", "[", "]")]
-    [InlineData(@"n \atopwithdelims\{\} k", @"{n \brace k}", "{", "}")]
-    [InlineData(@"n \atopwithdelims<> k", @"{n \atopwithdelims<> k}", "〈", "〉")]
+    [InlineData(@"n \atopwithdelims [ ] k", @"{n \brack k}", "[", "]")]
+    [InlineData(@"n \atopwithdelims\{   \} k", @"{n \brace k}", "{", "}")]
+    [InlineData(@"n \atopwithdelims     <> k", @"{n \atopwithdelims<> k}", "〈", "〉")]
     [InlineData(@"n \atopwithdelims\Uparrow\downarrow k", @"{n \atopwithdelims\Uparrow\downarrow k}", "⇑", "↓")]
-    [InlineData(@"n \atopwithdelims.. k", @"{n \atop k}", null, null)]
-    [InlineData(@"n \atopwithdelims|. k", @"{n \atopwithdelims|. k}", "|", null)]
+    [InlineData(@"n \atopwithdelims..    k", @"{n \atop k}", null, null)]
+    [InlineData(@"n \atopwithdelims|   . k", @"{n \atopwithdelims|. k}", "|", null)]
+    [InlineData(@"n \atopwithdelims   .( k", @"{n \atopwithdelims.( k}", null, "(")]
     public void TestChooseBrackBraceBinomial(string input, string output, string? left, string? right) {
       var list = ParseLaTeX(input);
       Assert.Collection(list,
@@ -977,22 +978,61 @@ namespace CSharpMath.CoreTests {
       Assert.Equal(@"\lcm (a,b)", LaTeXParser.MathListToLaTeX(list2).ToString());
     }
 
-    [Fact]
-    public void TestFontSingle() {
-      var list = ParseLaTeX(@"\mathbf x");
-      Assert.Collection(list, CheckAtom<Variable>("x",
-        variable => Assert.Equal(FontStyle.Bold, variable.FontStyle)));
-      Assert.Equal(@"\mathbf{x}", LaTeXParser.MathListToLaTeX(list).ToString());
+    [Theory]
+    [InlineData("mathnormal", false, FontStyle.Default, null)]
+    [InlineData("mathrm", false, FontStyle.Roman, "mathrm")]
+    [InlineData("rm", true, FontStyle.Roman, "mathrm")]
+    [InlineData("text", false, FontStyle.Roman, "mathrm")]
+    [InlineData("mathbf", false, FontStyle.Bold, "mathbf")]
+    [InlineData("bf", true, FontStyle.Bold, "mathbf")]
+    [InlineData("mathcal", false, FontStyle.Caligraphic, "mathcal")]
+    [InlineData("cal", true, FontStyle.Caligraphic, "mathcal")]
+    [InlineData("mathtt", false, FontStyle.Typewriter, "mathtt")]
+    [InlineData("tt", true, FontStyle.Typewriter, "mathtt")]
+    [InlineData("mathit", false, FontStyle.Italic, "mathit")]
+    [InlineData("mit", true, FontStyle.Italic, "mathit")]
+    [InlineData("it", true, FontStyle.Italic, "mathit")]
+    [InlineData("mathsf", false, FontStyle.SansSerif, "mathsf")]
+    [InlineData("sf", true, FontStyle.SansSerif, "mathsf")]
+    [InlineData("mathfrak", false, FontStyle.Fraktur, "mathfrak")]
+    [InlineData("frak", true, FontStyle.Fraktur, "mathfrak")]
+    [InlineData("mathbb", false, FontStyle.Blackboard, "mathbb")]
+    [InlineData("bb", true, FontStyle.Blackboard, "mathbb")]
+    [InlineData("mathbfit", false, FontStyle.BoldItalic, "mathbfit")]
+    [InlineData("bm", true, FontStyle.BoldItalic, "mathbfit")]
+    public void TestFont(string inputCommand, bool readsToEnd, FontStyle style, string? outputCommand) {
+      // Without braces
+      var list = ParseLaTeX($@"w\{inputCommand} xyz");
+      Assert.Collection(list,
+        CheckAtom<Variable>("w", w => Assert.Equal(FontStyle.Default, w.FontStyle)),
+        CheckAtom<Variable>("x", x => Assert.Equal(style, x.FontStyle)),
+        CheckAtom<Variable>("y", y => Assert.Equal(readsToEnd ? style : FontStyle.Default, y.FontStyle)),
+        CheckAtom<Variable>("z", z => Assert.Equal(readsToEnd ? style : FontStyle.Default, z.FontStyle)));
+      Assert.Equal(outputCommand is null ? "wxyz" :
+                   readsToEnd ? $@"w\{outputCommand}{{xyz}}" : $@"w\{outputCommand}{{x}}yz", LaTeXParser.MathListToLaTeX(list).ToString());
+
+      // With braces
+      list = ParseLaTeX(readsToEnd ? $@"w{{\{inputCommand} xy}}z" : $@"w\{inputCommand}{{xy}}z");
+      Assert.Collection(list,
+        CheckAtom<Variable>("w", w => Assert.Equal(FontStyle.Default, w.FontStyle)),
+        CheckAtom<Variable>("x", x => Assert.Equal(style, x.FontStyle)),
+        CheckAtom<Variable>("y", y => Assert.Equal(style, y.FontStyle)),
+        CheckAtom<Variable>("z", z => Assert.Equal(FontStyle.Default, z.FontStyle)));
+      Assert.Equal(outputCommand is null ? "wxyz" : $@"w\{outputCommand}{{xy}}z", LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
-    [Fact]
-    public void TestFontMultipleCharacters() {
-      var list = ParseLaTeX(@"\frak{xy}");
+    [Theory]
+    [InlineData(@"\mathit\mathrm xy")]
+    [InlineData(@"\mathit\mathrm{x}y")]
+    [InlineData(@"\mathit{\mathrm x}y")]
+    [InlineData(@"\mathit{\mathrm{x}}y")]
+    public void TestFontRecursive(string input) {
+      var list = ParseLaTeX(input);
       Assert.Collection(list,
-        CheckAtom<Variable>("x", variable => Assert.Equal(FontStyle.Fraktur, variable.FontStyle)),
-        CheckAtom<Variable>("y", variable => Assert.Equal(FontStyle.Fraktur, variable.FontStyle))
+        CheckAtom<Variable>("x", variable => Assert.Equal(FontStyle.Roman, variable.FontStyle)),
+        CheckAtom<Variable>("y", variable => Assert.Equal(FontStyle.Default, variable.FontStyle))
       );
-      Assert.Equal(@"\mathfrak{xy}", LaTeXParser.MathListToLaTeX(list).ToString());
+      Assert.Equal(@"\mathrm{x}y", LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
     [Fact]
@@ -1027,13 +1067,14 @@ namespace CSharpMath.CoreTests {
 
     [Fact]
     public void TestText() {
-      var list = ParseLaTeX(@"\text{x y}");
+      var list = ParseLaTeX(@"\text {\pounds  x  y}");
       Assert.Collection(list,
-        CheckAtom<Variable>(@"x", variable => Assert.Equal(FontStyle.Roman, variable.FontStyle)),
-        CheckAtom<Ordinary>(" "),
-        CheckAtom<Variable>(@"y", variable => Assert.Equal(FontStyle.Roman, variable.FontStyle))
+        CheckAtom<Ordinary>("£", pounds => Assert.Equal(FontStyle.Roman, pounds.FontStyle)),
+        CheckAtom<Variable>("x", x => Assert.Equal(FontStyle.Roman, x.FontStyle)),
+        CheckAtom<Ordinary>(" ", space => Assert.Equal(FontStyle.Roman, space.FontStyle)),
+        CheckAtom<Variable>("y", y => Assert.Equal(FontStyle.Roman, y.FontStyle))
       );
-      Assert.Equal(@"\mathrm{x\  y}", LaTeXParser.MathListToLaTeX(list).ToString());
+      Assert.Equal(@"\mathrm{\pounds x\  y}", LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
     [Fact]
@@ -1232,9 +1273,9 @@ x^^2
       InlineData(@"x^_2", @"Error: _ cannot appear as an argument to a command
 x^_2
   ↑ (pos 3)"),
-      InlineData(@"x_^2", @"Error: ^ cannot appear as an argument to a command
-x_^2
-  ↑ (pos 3)"),
+      InlineData(@"x_ ^2", @"Error: ^ cannot appear as an argument to a command
+x_ ^2
+   ↑ (pos 4)"),
       InlineData(@"x__2", @"Error: _ cannot appear as an argument to a command
 x__2
   ↑ (pos 3)"),
@@ -1264,6 +1305,9 @@ x_}2
      ↑ (pos 6)"),
       InlineData(@"\notacommand", @"Error: Invalid command \notacommand
 \notacommand
+           ↑ (pos 12)"),
+      InlineData(@"\notacommand    x", @"Error: Invalid command \notacommand
+\notacommand    x
            ↑ (pos 12)"),
       InlineData(@"\sqrt[5+3", @"Error: Expected character not found: ]
 \sqrt[5+3
@@ -1313,6 +1357,12 @@ x_}2
       InlineData(@"5+ \left|\frac12\right| \right)", @"Error: Missing \left
 ···\frac12\right| \right)
                        ↑ (pos 30)"),
+      InlineData(@"{\it", @"Error: Missing closing brace
+{\it
+   ↑ (pos 4)"),
+      InlineData(@"\it}", @"Error: Missing opening brace
+\it}
+   ↑ (pos 4)"),
       InlineData(@"\begin matrix \end matrix", @"Error: Missing {
 \begin matrix \end matrix
       ↑ (pos 7)"),

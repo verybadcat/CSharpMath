@@ -519,7 +519,7 @@ namespace CSharpMath.CoreTests {
 
       stopwatch.Stop();
       Console.WriteLine(nameof(TimeAdd) + ": " + stopwatch.Elapsed);
-      Assert.InRange(stopwatch.Elapsed, TimeSpan.Zero, TimeSpan.FromMilliseconds(0.3));
+      Assert.InRange(stopwatch.Elapsed, TimeSpan.Zero, TimeSpan.FromMilliseconds(0.4));
     }
     [Fact]
     public void TimeAddLongWords() {
