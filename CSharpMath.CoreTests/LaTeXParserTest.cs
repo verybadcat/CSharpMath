@@ -1312,6 +1312,9 @@ x_}2
       InlineData(@"\sqrt[5+3", @"Error: Expected character not found: ]
 \sqrt[5+3
         ↑ (pos 9)"),
+      InlineData(@"\sqrt[5+3}", @"Error: Missing opening brace
+\sqrt[5+3}
+         ↑ (pos 10)"),
       InlineData(@"{5+3", @"Error: Missing closing brace
 {5+3
    ↑ (pos 4)"),

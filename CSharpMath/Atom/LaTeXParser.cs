@@ -104,8 +104,6 @@ namespace CSharpMath.Atom {
           //https://phabricator.wikimedia.org/T99369
           //https://phab.wmfusercontent.org/file/data/xsimlcnvo42siudvwuzk/PHID-FILE-bdcqexocj5b57tj2oezn/math_rendering.png
           //dt, \text{d}t, \partial t, \nabla\psi \\ \underline\overline{dy/dx, \text{d}y/\text{d}x, \frac{dy}{dx}, \frac{\text{d}y}{\text{d}x}, \frac{\partial^2}{\partial x_1\partial x_2}y} \\ \prime,
-          case '}' when oneCharOnly || stopChar != '\0':
-            throw new InvalidCodePathException("This should have been handled before.");
           case '}':
             return "Missing opening brace";
           case '\\':
@@ -119,7 +117,7 @@ namespace CSharpMath.Atom {
               if (error != null) return error;
 
               switch (handlerResult) {
-                case ({ } /* dummy */, { } atoms): // Pre-styled atoms
+                case ({ } /* dummy */, { } atoms): // Atoms producer (pre-styled)
                   r.Append(atoms);
                   prevAtom = r.Atoms.LastOrDefault();
                   if (oneCharOnly)
@@ -169,15 +167,12 @@ namespace CSharpMath.Atom {
           return r; // we consumed our character.
         }
       }
-      if (stopChar > 0) {
-        if (stopChar == '}') {
-          return "Missing closing brace";
-        } else {
-          // we never found our stop character.
-          return "Expected character not found: " + stopChar.ToStringInvariant();
-        }
-      }
-      return r;
+      return stopChar switch
+      {
+        '\0' => r,
+        '}' => "Missing closing brace",
+        _ => "Expected character not found: " + stopChar.ToStringInvariant(),
+      };
     }
 
     public string ReadString() {
