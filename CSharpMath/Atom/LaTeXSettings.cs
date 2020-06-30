@@ -375,11 +375,13 @@ namespace CSharpMath.Atom {
         { "asteraccent", new Accent("\u20F0") },
         { "threeunderdot", new Accent("\u20E8") },
         { "TeX", new Inner(Boundary.Empty, new MathList(
-            new Ordinary("T"),
-            new Space(-.1667f * Structures.Space.EmWidth),
-            new RaiseBox(-.5f * Structures.Space.ExHeight, new MathList(new Ordinary("E"))),
-            new Space(-.125f * Structures.Space.EmWidth),
-            new Ordinary("X")
+            new Variable("T") { FontStyle = FontStyle.Roman },
+            new Space(-1/6f * Structures.Space.EmWidth) { FontStyle = FontStyle.Roman },
+            new RaiseBox(-1/2f * Structures.Space.ExHeight,
+              new MathList(new Variable("E") { FontStyle = FontStyle.Roman })
+            ) { FontStyle = FontStyle.Roman },
+            new Space(-1/8f * Structures.Space.EmWidth) { FontStyle = FontStyle.Roman },
+            new Variable("X") { FontStyle = FontStyle.Roman }
           ), Boundary.Empty) },
 
         // Delimiters outside \left or \right

@@ -243,7 +243,7 @@ namespace CSharpMath.CoreTests {
       // Dot
       InlineData(@"\left( 2 \right.", new[] { typeof(Inner) }, new[] { typeof(Number) }, @"(", null, @"\left( 2\right. "),
       // Dot both sides
-      InlineData(@"\left.2\right.", new[] { typeof(Inner) }, new[] { typeof(Number) }, null, null, @"{2}"),
+      InlineData(@"\left.2\right.", new[] { typeof(Inner) }, new[] { typeof(Number) }, null, null, @"2"),
     ]
     public void TestLeftRight(
       string input, Type[] expectedOutputTypes, Type[] expectedInnerTypes,
@@ -1219,6 +1219,44 @@ namespace CSharpMath.CoreTests {
       var list = ParseLaTeX(@$"\operatorname{{{operatorname}}}");
       Assert.Collection(list, CheckAtom<LargeOperator>(operatorname));
       Assert.Equal(output, LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+
+    [Theory]
+    [InlineData(@"\TeX")]
+    [InlineData(@"\left.\mathrm{T\! \raisebox{-4.5mu}{E}\mkern-2.25muX}\right.")]
+    public void TestTeX(string input) {
+      var list = ParseLaTeX(input);
+      Assert.Collection(list,
+        CheckAtom<Inner>("", inner => {
+          Assert.Equal(Boundary.Empty, inner.LeftBoundary);
+          Assert.Equal(Boundary.Empty, inner.RightBoundary);
+          Assert.Equal(FontStyle.Default, inner.FontStyle);
+          Assert.Collection(inner.InnerList,
+              CheckAtom<Variable>("T", t => Assert.Equal(FontStyle.Roman, t.FontStyle)),
+              CheckAtom<Space>("", space => {
+                Assert.Equal(FontStyle.Roman, space.FontStyle);
+                var expected = -1 / 6f * Structures.Space.EmWidth;
+                Assert.Equal(expected.Length, space.Length);
+                Assert.Equal(expected.IsMu, space.IsMu);
+              }),
+              CheckAtom<RaiseBox>("", raise => {
+                Assert.Equal(FontStyle.Roman, raise.FontStyle);
+                Assert.Equal(-1 / 2f * Structures.Space.ExHeight, raise.Raise);
+                Assert.Collection(raise.InnerList,
+                  CheckAtom<Variable>("E", e => Assert.Equal(FontStyle.Roman, e.FontStyle)));
+              }),
+              CheckAtom<Space>("", space => {
+                Assert.Equal(FontStyle.Roman, space.FontStyle);
+                var expected = -1 / 8f * Structures.Space.EmWidth;
+                Assert.Equal(expected.Length, space.Length);
+                Assert.Equal(expected.IsMu, space.IsMu);
+              }),
+              CheckAtom<Variable>("X", x => Assert.Equal(FontStyle.Roman, x.FontStyle))
+            );
+        })
+      );
+      Assert.Equal(@"\mathrm{T\! \raisebox{-4.5mu}{E}\mkern-2.25muX}",
+        LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
     [Theory,

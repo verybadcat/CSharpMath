@@ -146,7 +146,7 @@ namespace CSharpMath.Atom {
             while (ReadCharIfAvailable('\'')) i++;
             atom = new Prime(i);
             break;
-          case ' ' when TextMode:
+          case var ch when (char.IsControl(ch) || char.IsWhiteSpace(ch)) && TextMode:
             atom = new Ordinary(" ");
             SkipSpaces(); // Multiple spaces are collapsed into one in text mode
             break;
@@ -627,9 +627,7 @@ namespace CSharpMath.Atom {
             builder.Append('}');
             break;
           case Inner { LeftBoundary: { Nucleus: null }, InnerList: var list, RightBoundary: { Nucleus: null } }:
-            builder.Append('{');
             MathListToLaTeX(list, builder, currentFontStyle);
-            builder.Append('}');
             break;
           case Inner { LeftBoundary: { Nucleus: "〈" }, InnerList: var list, RightBoundary: { Nucleus: "|" } }:
             builder.Append(@"\Bra{");
@@ -768,7 +766,6 @@ namespace CSharpMath.Atom {
             builder.Append(@"\").Append(name).Append(" ");
             break;
           case Space space:
-            var intSpace = (int)space.Length;
             if (space.IsMu)
               builder.Append(@"\mkern")
                 .Append(space.Length.ToStringInvariant("0.0####"))
