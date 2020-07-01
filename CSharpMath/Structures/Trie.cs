@@ -183,6 +183,21 @@ namespace CSharpMath.Structures {
     public IEnumerator<KeyValuePair<ReadOnlyMemory<TKeyElement>, TValue>> GetEnumerator() =>
       ToEnumerable(new List<ReadOnlyMemory<TKeyElement>>(), 0).GetEnumerator();
     System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
+
+    public (TValue Result, int SplitIndex)? TryLookup(ReadOnlySpan<TKeyElement> consume) {
+      int lookupLength = 0;
+      var (result, splitIndex) = (default(TValue), -1);
+      var trie = this;
+      do {
+        trie.Key.Span.ZipWith(consume, out var commonHead, out var thisRest, out consume);
+        if (!thisRest.IsEmpty)
+          break;
+        lookupLength += commonHead.Length;
+        if (trie.Values.Count > 0)
+          (result, splitIndex) = (trie.Values.Peek(), lookupLength);
+      } while (!consume.IsEmpty && trie.Children.TryGetValue(consume[0], out trie));
+      return splitIndex >= 0 ? (result, splitIndex) : ((TValue Result, int SplitIndex)?)null;
+    }
     public string Traversal() {
       var result = new StringBuilder();
       result.Append(Key.Span.ToString());

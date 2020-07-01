@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -1026,6 +1026,24 @@ namespace CSharpMath.CoreTests {
       Assert.Equal(@"\lcm (a,b)", LaTeXParser.MathListToLaTeX(list).ToString());
 
       LaTeXSettings.CommandSymbols.Add(@"lcm", new LargeOperator("lcm", false));
+      LaTeXSettings.CommandSymbols.Add(@"lcm12", new LargeOperator("lcm12", false));
+      LaTeXSettings.CommandSymbols.Add(@"lcm1234", new LargeOperator("lcm1234", false));
+      LaTeXSettings.CommandSymbols.Add(@"lcm1235", new LargeOperator("lcm1235", false));
+
+      // Does not match custom atoms added above
+      list = ParseLaTeX("lc(a,b)");
+      Assert.Collection(list,
+        CheckAtom<Variable>("l"),
+        CheckAtom<Variable>("c"),
+        CheckAtom<Open>("("),
+        CheckAtom<Variable>("a"),
+        CheckAtom<Punctuation>(","),
+        CheckAtom<Variable>("b"),
+        CheckAtom<Close>(")")
+      );
+      Assert.Equal(@"lc(a,b)", LaTeXParser.MathListToLaTeX(list).ToString());
+
+      // Baseline for lookup as a non-command (not starting with \)
       list = ParseLaTeX("lcm(a,b)");
       Assert.Collection(list,
         CheckAtom<LargeOperator>("lcm"),
@@ -1036,6 +1054,50 @@ namespace CSharpMath.CoreTests {
         CheckAtom<Close>(")")
       );
       Assert.Equal(@"\lcm (a,b)", LaTeXParser.MathListToLaTeX(list).ToString());
+
+      // We are testing a trie with nodes [l] -> l[cm] -> lcm[12] -> @lcm12[3] -> lcm123[4]
+      // (l is predefined, i.e. non-custom)                                  ^--> lcm123[5]
+      // where [square brackets] denote added characters compared to previous node
+      // and the @at sign denotes the node without an atom to provide
+      // The trie will match as much characters from input as possible and here we ensure this behavior
+
+      // Test lookup fallbacks when trie node key (lcm12) does not fully match input (lcm1)
+      list = ParseLaTeX("lcm1(a,b)");
+      Assert.Collection(list,
+        CheckAtom<LargeOperator>("lcm"),
+        CheckAtom<Number>("1"),
+        CheckAtom<Open>("("),
+        CheckAtom<Variable>("a"),
+        CheckAtom<Punctuation>(","),
+        CheckAtom<Variable>("b"),
+        CheckAtom<Close>(")")
+      );
+      Assert.Equal(@"\lcm 1(a,b)", LaTeXParser.MathListToLaTeX(list).ToString());
+
+      // Test lookup success for trie node between above case and below case
+      list = ParseLaTeX("lcm12(a,b)");
+      Assert.Collection(list,
+        CheckAtom<LargeOperator>("lcm12"),
+        CheckAtom<Open>("("),
+        CheckAtom<Variable>("a"),
+        CheckAtom<Punctuation>(","),
+        CheckAtom<Variable>("b"),
+        CheckAtom<Close>(")")
+      );
+      Assert.Equal(@"lcm12(a,b)", LaTeXParser.MathListToLaTeX(list).ToString());
+
+      // Test lookup fallbacks when trie node key (lcm123) fully matches input (lcm123) but has no atoms to provide
+      list = ParseLaTeX("lcm123(a,b)");
+      Assert.Collection(list,
+        CheckAtom<LargeOperator>("lcm12"),
+        CheckAtom<Number>("3"),
+        CheckAtom<Open>("("),
+        CheckAtom<Variable>("a"),
+        CheckAtom<Punctuation>(","),
+        CheckAtom<Variable>("b"),
+        CheckAtom<Close>(")")
+      );
+      Assert.Equal(@"lcm123(a,b)", LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
     [Theory]

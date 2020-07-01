@@ -69,13 +69,13 @@ namespace CSharpMath.Structures {
           if (SplitCommand(key.AsSpan()) != key.Length - 1)
             commands.Add(key, value);
           else throw new ArgumentException("Key is unreachable: " + key, nameof(key));
-        else nonCommands.Add(key.AsMemory(), (key, value));
+        else nonCommands.Add(key.AsMemory(), value);
       };
     }
     readonly DefaultDelegate @default;
     readonly DefaultDelegate defaultForCommands;
 
-    readonly PatriciaTrie<char, (string Key, TValue Value)> nonCommands = new PatriciaTrie<char, (string Key, TValue Value)>();
+    readonly PatriciaTrie<char, TValue> nonCommands = new PatriciaTrie<char, TValue>();
     readonly Dictionary<string, TValue> commands = new Dictionary<string, TValue>();
 
     public void Clear() {
@@ -86,7 +86,7 @@ namespace CSharpMath.Structures {
       nonCommands.ContainsKey(key) || commands.ContainsKey(key.ToString());
 
     public IEnumerator<KeyValuePair<ReadOnlyMemory<char>, TValue>> GetEnumerator() =>
-      nonCommands.Select(kvp => new KeyValuePair<ReadOnlyMemory<char>, TValue>(kvp.Key, kvp.Value.Value))
+      nonCommands.Select(kvp => new KeyValuePair<ReadOnlyMemory<char>, TValue>(kvp.Key, kvp.Value))
       .Concat(commands.Select(kvp => new KeyValuePair<ReadOnlyMemory<char>, TValue>(kvp.Key.AsMemory(), kvp.Value)))
       .GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
@@ -128,23 +128,8 @@ namespace CSharpMath.Structures {
         return commands.TryGetValue(lookup.ToString(), out var result)
                ? Result.Ok((result, splitIndex))
                : defaultForCommands(lookup);
-      } else {
-        int splitIndex = 0;
-        TValue result = default!;
-        for (var lookupLength = 1; lookupLength <= consume.Length; lookupLength++) {
-          var lookup = consume.Slice(0, lookupLength);
-          var iterated = false;
-          foreach (var (lookupKey, lookupValue) in nonCommands[lookup]) {
-            iterated = true;
-            if (lookup.SequenceEqual(lookupKey.AsSpan())) {
-              result = lookupValue;
-              splitIndex = lookupLength;
-            }
-          }
-          if (!iterated) break;
-        }
-        return splitIndex != 0 ? (result, splitIndex) : @default(consume);
-      }
+      } else
+        return nonCommands.TryLookup(consume) is { } result ? result : @default(consume);
     }
   }
 
