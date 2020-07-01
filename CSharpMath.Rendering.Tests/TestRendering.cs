@@ -160,7 +160,7 @@ namespace CSharpMath.Rendering.Tests {
     [SkippableTheory]
     [MemberData(nameof(MathPainterSettingsData))]
     public virtual void MathPainterSettings(string file, TMathPainter painter) =>
-      Run(file, @"\sqrt[3]\frac\color{#F00}a\mathbb C", painter);
+      Run(file, @"\sqrt[3]\frac\color{#FF0000}a\mathbb C", painter);
     [SkippableTheory]
     [MemberData(nameof(TextPainterSettingsData))]
     public void TextPainterSettings(string file, TTextPainter painter) =>
