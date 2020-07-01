@@ -9,15 +9,19 @@ namespace CSharpMath {
       Rendering.BackEnd.Fonts.GlobalTypefaces;
     public static Structures.BiDictionary<string, Structures.Color> PredefinedColors =>
       Structures.Color.PredefinedColors;
-    public static Structures.AliasDictionary<string, Atom.Boundary> PredefinedLaTeXBoundaryDelimiters =>
+    public static Structures.LaTeXCommandDictionary<Atom.Boundary> PredefinedLaTeXBoundaryDelimiters =>
       Atom.LaTeXSettings.BoundaryDelimiters;
-    public static Structures.AliasDictionary<string, Atom.FontStyle> PredefinedLaTeXFontStyles =>
+    public static Structures.BiDictionary<string, Atom.FontStyle> PredefinedLaTeXFontStyles =>
       Atom.LaTeXSettings.FontStyles;
-    public static Structures.AliasDictionary<string, Atom.MathAtom> PredefinedLaTeXCommands =>
+    public static Structures.LaTeXCommandDictionary<System.Func
+      <Atom.LaTeXParser, Atom.MathList, char, Structures.Result<(Atom.MathAtom? Atom, Atom.MathList? Return)>>
+    > PredefinedLaTeXCommands =>
+      Atom.LaTeXSettings.Commands;
+    public static Structures.BiDictionary<string, Atom.MathAtom> PredefinedLaTeXCommandSymbols =>
       Atom.LaTeXSettings.CommandSymbols;
     public static Structures.BiDictionary<string, string> PredefinedLaTeXTextAccents =>
       Rendering.Text.TextLaTeXSettings.PredefinedAccents;
-    public static Structures.AliasDictionary<string, string> PredefinedLaTeXTextSymbols =>
+    public static Structures.BiDictionary<string, string> PredefinedLaTeXTextSymbols =>
       Rendering.Text.TextLaTeXSettings.PredefinedTextSymbols;
     public static Dictionary<string, Structures.Space> PredefinedLengthUnits =>
       Structures.Space.PredefinedLengthUnits;

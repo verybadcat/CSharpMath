@@ -1,8 +1,8 @@
 namespace CSharpMath.Rendering.Text {
   using CSharpMath.Structures;
   public static class TextLaTeXSettings {
-    public static AliasDictionary<string, string> PredefinedTextSymbols { get; } =
-      new AliasDictionary<string, string> {
+    public static BiDictionary<string, string> PredefinedTextSymbols { get; } =
+      new BiDictionary<string, string> {
         /*Ten special characters and their commands:
          & \&
          % \%

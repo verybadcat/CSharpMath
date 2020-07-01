@@ -11,7 +11,7 @@ namespace CSharpMath.Rendering.Tests {
       typefaces = Fonts.GlobalTypefaces.ToArray();
     readonly Typography.OpenFont.Typeface[] typefaces;
     public static IEnumerable<object[]> AllCommandValues =>
-      Atom.LaTeXSettings.CommandSymbols.Values
+      Atom.LaTeXSettings.CommandSymbols.Seconds
       .SelectMany(v => v.Nucleus.EnumerateRunes())
       .Distinct()
       .OrderBy(r => r.Value)

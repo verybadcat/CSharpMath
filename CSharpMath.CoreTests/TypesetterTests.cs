@@ -242,8 +242,8 @@ namespace CSharpMath.CoreTests {
         Assert.Equal(80, line.Width);
       });
 
-    [Theory, InlineData('[', ']'), InlineData('(', '}'), InlineData('{', ']')] // Using ) confuses the test explorer...
-    public void TestInner(char left, char right) =>
+    [Theory, InlineData("[", "]"), InlineData("(", @"\}"), InlineData(@"\{", "]")] // Using ) confuses the test explorer...
+    public void TestInner(string left, string right) =>
       TestOuter($@"a\left{left}x\right{right}", 2, 14, 4, 43.333,
         d => Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d),
         d => {
@@ -258,7 +258,7 @@ namespace CSharpMath.CoreTests {
           Approximately.At(13.333, 0, glyph.Position);
           Assert.Equal(Range.NotFound, glyph.Range);
           Assert.False(glyph.HasScript);
-          Assert.Equal(left, glyph.Glyph);
+          Assert.Equal(left[^1], glyph.Glyph);
 
           TestList(1, 14, 4, 10, 23.333, 0, LinePosition.Regular, Range.UndefinedInt,
             d => {
@@ -274,7 +274,7 @@ namespace CSharpMath.CoreTests {
           Approximately.At(33.333, 0, glyph2.Position);
           Assert.Equal(Range.NotFound, glyph2.Range);
           Assert.False(glyph2.HasScript);
-          Assert.Equal(right, glyph2.Glyph);
+          Assert.Equal(right[^1], glyph2.Glyph);
       });
     [Theory, InlineData("\\sqrt2", "", "2"), InlineData("\\sqrt[3]2", "3", "2")]
     public void TestRadical(string latex, string degree, string radicand) =>

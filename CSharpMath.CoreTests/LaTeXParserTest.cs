@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -46,14 +46,18 @@ namespace CSharpMath.CoreTests {
       Assert.Equal(output, LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
+    /// new[] { Base list }, new[] { Script of first atom }, new[] { Script of first atom inside script of first atom }
     [Theory]
     [InlineData("x^2", "x^2", new[] { typeof(Variable) }, new[] { typeof(Number) })]
     [InlineData("x^23", "x^23", new[] { typeof(Variable), typeof(Number) }, new[] { typeof(Number) })]
     [InlineData("x^{23}", "x^{23}", new[] { typeof(Variable) }, new[] { typeof(Number), typeof(Number) })]
     [InlineData("x^2^3", "x^2{}^3", new[] { typeof(Variable), typeof(Ordinary) }, new[] { typeof(Number) })]
+    [InlineData("x^^3", "x^{{}^3}", new[] { typeof(Variable), }, new[] { typeof(Ordinary) }, new[] { typeof(Number) })]
     [InlineData("x^{2^3}", "x^{2^3}", new[] { typeof(Variable) }, new[] { typeof(Number) }, new[] { typeof(Number) })]
     [InlineData("x^{^2*}", "x^{{}^2*}", new[] { typeof(Variable) }, new[] { typeof(Ordinary), typeof(BinaryOperator) }, new[] { typeof(Number) })]
     [InlineData("^2", "{}^2", new[] { typeof(Ordinary) }, new[] { typeof(Number) })]
+    [InlineData("^{^3}", "{}^{{}^3}", new[] { typeof(Ordinary), }, new[] { typeof(Ordinary) }, new[] { typeof(Number) })]
+    [InlineData("^^3", "{}^{{}^3}", new[] { typeof(Ordinary), }, new[] { typeof(Ordinary) }, new[] { typeof(Number) })]
     [InlineData("{}^2", "{}^2", new[] { typeof(Ordinary) }, new[] { typeof(Number) })]
     [InlineData("5{x}^2", "5x^2", new[] { typeof(Number), typeof(Variable) }, new Type[] { })]
     public void TestScript(string input, string output, params Type[][] atomTypes) {
@@ -120,6 +124,50 @@ namespace CSharpMath.CoreTests {
         )
       );
       Assert.Equal(@"5\times 3^{2\div 2}", LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+
+    [Theory]
+    [InlineData("%\n", false, "", false, "%\n")]
+    [InlineData("%\f", false, "", false, "%\n")]
+    [InlineData("%\r", false, "", false, "%\n")]
+    [InlineData("%\r\n", false, "", false, "%\n")]
+    [InlineData("%\v", false, "", false, "%\n")]
+    [InlineData("%\u0085", false, "", false, "%\n")]
+    [InlineData("%\u2028", false, "", false, "%\n")]
+    [InlineData("%\u2029", false, "", false, "%\n")]
+    [InlineData("1%1234\n", true, "1234", false, "1%1234\n")]
+    [InlineData("1%1234\f", true, "1234", false, "1%1234\n")]
+    [InlineData("1%1234\r", true, "1234", false, "1%1234\n")]
+    [InlineData("1%1234\r\n", true, "1234", false, "1%1234\n")]
+    [InlineData("1%1234\v", true, "1234", false, "1%1234\n")]
+    [InlineData("1%1234\u0085", true, "1234", false, "1%1234\n")]
+    [InlineData("1%1234\u2028", true, "1234", false, "1%1234\n")]
+    [InlineData("1%1234\u2029", true, "1234", false, "1%1234\n")]
+    [InlineData("%    \na", false, "    ", true, "%    \na")]
+    [InlineData("%    \fa", false, "    ", true, "%    \na")]
+    [InlineData("%    \ra", false, "    ", true, "%    \na")]
+    [InlineData("%    \r\na", false, "    ", true, "%    \na")]
+    [InlineData("%    \va", false, "    ", true, "%    \na")]
+    [InlineData("%    \u0085a", false, "    ", true, "%    \na")]
+    [InlineData("%    \u2028a", false, "    ", true, "%    \na")]
+    [InlineData("%    \u2029a", false, "    ", true, "%    \na")]
+    [InlineData("1% comment!! \\notacommand \na", true, " comment!! \\notacommand ", true, "1% comment!! \\notacommand \na")]
+    [InlineData("1% comment!! \\notacommand \fa", true, " comment!! \\notacommand ", true, "1% comment!! \\notacommand \na")]
+    [InlineData("1% comment!! \\notacommand \ra", true, " comment!! \\notacommand ", true, "1% comment!! \\notacommand \na")]
+    [InlineData("1% comment!! \\notacommand \r\na", true, " comment!! \\notacommand ", true, "1% comment!! \\notacommand \na")]
+    [InlineData("1% comment!! \\notacommand \va", true, " comment!! \\notacommand ", true, "1% comment!! \\notacommand \na")]
+    [InlineData("1% comment!! \\notacommand \u0085a", true, " comment!! \\notacommand ", true, "1% comment!! \\notacommand \na")]
+    [InlineData("1% comment!! \\notacommand \u2028a", true, " comment!! \\notacommand ", true, "1% comment!! \\notacommand \na")]
+    [InlineData("1% comment!! \\notacommand \u2029a", true, " comment!! \\notacommand ", true, "1% comment!! \\notacommand \na")]
+    public void TestComment(string input, bool hasBefore, string comment, bool hasAfter, string output) {
+      var list = ParseLaTeX(input);
+      IEnumerable<Action<MathAtom>> GetInspectors() {
+        if (hasBefore) yield return CheckAtom<Number>("1");
+        yield return CheckAtom<Comment>(comment);
+        if (hasAfter) yield return CheckAtom<Variable>("a");
+      }
+      Assert.Collection(list, GetInspectors().ToArray());
+      Assert.Equal(output, LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
     [Fact]
@@ -355,7 +403,7 @@ namespace CSharpMath.CoreTests {
           Assert.Collection(accent.InnerList, CheckAtom<Variable>("x"))
         )
       );
-      Assert.Equal(@"\bar{x}", LaTeXParser.MathListToLaTeX(list).ToString());
+      Assert.Equal(@"\bar {x}", LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
     [Fact]
@@ -963,11 +1011,11 @@ namespace CSharpMath.CoreTests {
       var builder = new LaTeXParser(input);
       var (list, error) = builder.Build();
       Assert.Null(list);
-      Assert.NotNull(error);
+      Assert.Equal(@"Invalid command \lcm", error);
 
-      LaTeXSettings.CommandSymbols.Add("lcm", new LargeOperator("lcm", false));
-      var list2 = ParseLaTeX(input);
-      Assert.Collection(list2,
+      LaTeXSettings.CommandSymbols.Add(@"\lcm", new LargeOperator("lcm", false));
+      list = ParseLaTeX(input);
+      Assert.Collection(list,
         CheckAtom<LargeOperator>("lcm"),
         CheckAtom<Open>("("),
         CheckAtom<Variable>("a"),
@@ -975,7 +1023,19 @@ namespace CSharpMath.CoreTests {
         CheckAtom<Variable>("b"),
         CheckAtom<Close>(")")
       );
-      Assert.Equal(@"\lcm (a,b)", LaTeXParser.MathListToLaTeX(list2).ToString());
+      Assert.Equal(@"\lcm (a,b)", LaTeXParser.MathListToLaTeX(list).ToString());
+
+      LaTeXSettings.CommandSymbols.Add(@"lcm", new LargeOperator("lcm", false));
+      list = ParseLaTeX("lcm(a,b)");
+      Assert.Collection(list,
+        CheckAtom<LargeOperator>("lcm"),
+        CheckAtom<Open>("("),
+        CheckAtom<Variable>("a"),
+        CheckAtom<Punctuation>(","),
+        CheckAtom<Variable>("b"),
+        CheckAtom<Close>(")")
+      );
+      Assert.Equal(@"\lcm (a,b)", LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
     [Theory]
@@ -1304,49 +1364,35 @@ namespace CSharpMath.CoreTests {
       Assert.Equal(expected.Replace("\r", null), actual);
     }
 
+    const string EnquiryControlChar = "\x5"; // https://en.wikipedia.org/wiki/Enquiry_character
     [Theory,
-      InlineData(@"x^^2", @"Error: ^ cannot appear as an argument to a command
-x^^2
-  ↑ (pos 3)"),
-      InlineData(@"x^_2", @"Error: _ cannot appear as an argument to a command
-x^_2
-  ↑ (pos 3)"),
-      InlineData(@"x_ ^2", @"Error: ^ cannot appear as an argument to a command
-x_ ^2
-   ↑ (pos 4)"),
-      InlineData(@"x__2", @"Error: _ cannot appear as an argument to a command
-x__2
-  ↑ (pos 3)"),
-      InlineData(@"x^&2", @"Error: & cannot appear as an argument to a command
-x^&2
-  ↑ (pos 3)"),
-      InlineData(@"x^}2", @"Error: } cannot appear as an argument to a command
+      InlineData(@"\", @"Error: Invalid command \
+\
+↑ (pos 1)"),
+      InlineData(@"\" + EnquiryControlChar, @"Error: Invalid command \" + EnquiryControlChar + @"
+\" + EnquiryControlChar + @"
+↑ (pos 1)"),
+      InlineData(@"\" + EnquiryControlChar + "a", @"Error: Invalid command \" + EnquiryControlChar + @"
+\" + EnquiryControlChar + @"a
+↑ (pos 1)"),
+      InlineData(@"x^}2", @"Error: Missing opening brace
 x^}2
   ↑ (pos 3)"),
-      InlineData(@"x_&2", @"Error: & cannot appear as an argument to a command
-x_&2
-  ↑ (pos 3)"),
-      InlineData(@"x_}2", @"Error: } cannot appear as an argument to a command
-x_}2
-  ↑ (pos 3)"),
-      InlineData(@"\sqrt^2", @"Error: ^ cannot appear as an argument to a command
-\sqrt^2
-     ↑ (pos 6)"),
-      InlineData(@"\sqrt_2", @"Error: _ cannot appear as an argument to a command
-\sqrt_2
-     ↑ (pos 6)"),
-      InlineData(@"\sqrt&2", @"Error: & cannot appear as an argument to a command
-\sqrt&2
-     ↑ (pos 6)"),
-      InlineData(@"\sqrt}2", @"Error: } cannot appear as an argument to a command
+      InlineData(@"x_ }2", @"Error: Missing opening brace
+x_ }2
+   ↑ (pos 4)"),
+      InlineData(@"{x_}", @"Error: Missing opening brace
+{x_}
+   ↑ (pos 4)"),
+      InlineData(@"\sqrt}2", @"Error: Missing opening brace
 \sqrt}2
      ↑ (pos 6)"),
       InlineData(@"\notacommand", @"Error: Invalid command \notacommand
 \notacommand
-           ↑ (pos 12)"),
+↑ (pos 1)"),
       InlineData(@"\notacommand    x", @"Error: Invalid command \notacommand
 \notacommand    x
-           ↑ (pos 12)"),
+↑ (pos 1)"),
       InlineData(@"\sqrt[5+3", @"Error: Expected character not found: ]
 \sqrt[5+3
         ↑ (pos 9)"),
@@ -1368,24 +1414,24 @@ x_}2
       InlineData(@"1+\left", @"Error: Missing delimiter for \left
 1+\left
       ↑ (pos 7)"),
-      InlineData(@"\left{", @"Error: Missing \right for \left with delimiter {
-\left{
-     ↑ (pos 6)"),
+      InlineData(@"\left\{", @"Error: Missing \right for \left with delimiter {
+\left\{
+      ↑ (pos 7)"),
       InlineData(@"\left(\frac12\right", @"Error: Missing delimiter for \right
 \left(\frac12\right
                   ↑ (pos 19)"),
-      InlineData(@"\left 5 + 3 \right)", @"Error: Invalid delimiter for \left: 5
+      InlineData(@"\left 5 + 3 \right)", @"Error: Invalid delimiter 5
 \left 5 + 3 \right)
       ↑ (pos 7)"),
-      InlineData(@"\left(\frac12\right + 3", @"Error: Invalid delimiter for \right: +
+      InlineData(@"\left(\frac12\right + 3", @"Error: Invalid delimiter +
 \left(\frac12\right + 3
                     ↑ (pos 21)"),
-      InlineData(@"\left\notadelimiter 5 + 3 \right)", @"Error: Invalid delimiter for \left: notadelimiter
+      InlineData(@"\left\notadelimiter 5 + 3 \right)", @"Error: Invalid delimiter \notadelimiter
 \left\notadelimiter 5 + 3 \right)
-                  ↑ (pos 19)"),
-      InlineData(@"\left(\frac12\right\notadelimiter + 3", @"Error: Invalid delimiter for \right: notadelimiter
-···2\right\notadelimiter + 3
-                       ↑ (pos 33)"),
+     ↑ (pos 6)"),
+      InlineData(@"\left(\frac12\right\notadelimiter + 3", @"Error: Invalid delimiter \notadelimiter
+\left(\frac12\right\notadelimiter + 3
+                   ↑ (pos 20)"),
       InlineData(@"5 + 3 \right)", @"Error: Missing \left
 5 + 3 \right)
            ↑ (pos 12)"),
@@ -1444,8 +1490,8 @@ x \end{matrix}
 ···env} x \end{notanenv}
                        ↑ (pos 33)"),
       InlineData(@"\begin{matrix} \notacommand \end{matrix}", @"Error: Invalid command \notacommand
-···{matrix} \notacommand \end{matrix}
-                       ↑ (pos 27)"),
+\begin{matrix} \notacommand \end{matrix}
+               ↑ (pos 16)"),
       InlineData(@"\begin{displaylines} x & y \end{displaylines}", @"Error: displaylines environment can only have 1 column
 ··· y \end{displaylines}
                        ↑ (pos 45)"),
@@ -1470,30 +1516,18 @@ x \end{matrix}
       InlineData(@"\left(\begin{matrix}\right)", @"Error: Missing \end{matrix}
 ···(\begin{matrix}\right)
                        ↑ (pos 26)"),
-      InlineData(@"\Bra^2", @"Error: ^ cannot appear as an argument to a command
-\Bra^2
-    ↑ (pos 5)"),
-      InlineData(@"\Bra_2", @"Error: _ cannot appear as an argument to a command
-\Bra_2
-    ↑ (pos 5)"),
-      InlineData(@"\Bra&2", @"Error: & cannot appear as an argument to a command
-\Bra&2
-    ↑ (pos 5)"),
-      InlineData(@"\Bra}2", @"Error: } cannot appear as an argument to a command
+      InlineData(@"\Bra}2", @"Error: Missing opening brace
 \Bra}2
     ↑ (pos 5)"),
-      InlineData(@"\Ket^2", @"Error: ^ cannot appear as an argument to a command
-\Ket^2
-    ↑ (pos 5)"),
-      InlineData(@"\Ket_2", @"Error: _ cannot appear as an argument to a command
-\Ket_2
-    ↑ (pos 5)"),
-      InlineData(@"\Ket&2", @"Error: & cannot appear as an argument to a command
-\Ket&2
-    ↑ (pos 5)"),
-      InlineData(@"\Ket}2", @"Error: } cannot appear as an argument to a command
+      InlineData(@"\Ket}2", @"Error: Missing opening brace
 \Ket}2
     ↑ (pos 5)"),
+      InlineData(@"\Bra{\notacommand}", @"Error: Invalid command \notacommand
+\Bra{\notacommand}
+     ↑ (pos 6)"),
+      InlineData(@"\Ket{\notacommand}", @"Error: Invalid command \notacommand
+\Ket{\notacommand}
+     ↑ (pos 6)"),
       InlineData(@"\operatorname", @"Error: Expected {
 \operatorname
             ↑ (pos 13)"),

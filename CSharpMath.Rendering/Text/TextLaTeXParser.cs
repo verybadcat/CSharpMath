@@ -124,8 +124,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
           }
           SpanResult<char> ReadArgumentString(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section) {
             afterCommand = false;
-            if (!NextSection(latexInput, ref section)) return Err("Missing argument");
-            if (section.IsNot('{')) return Err("Missing {");
+            if (!NextSection(latexInput, ref section) || section.IsNot('{')) return Err("Missing {");
             int endingIndex = -1;
             //startAt + 1 to not start at the { we started at
             bool isEscape = false;
@@ -391,7 +390,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     }
                   //case "textbf", "textit", ...
                   case var textStyle when !textStyle.StartsWith("math")
-                    && LaTeXSettings.FontStyles.TryGetValue(
+                    && LaTeXSettings.FontStyles.TryGetByFirst(
                         textStyle.StartsWith("text") ? textStyle.Replace("text", "math") : textStyle,
                         out var fontStyle): {
                       int tmp_commandLength = textStyle.Length;
@@ -411,7 +410,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                       break;
                     }
                   //case "textasciicircum", "textless", ...
-                  case var textSymbol when TextLaTeXSettings.PredefinedTextSymbols.TryGetValue(textSymbol, out var replaceResult):
+                  case var textSymbol when TextLaTeXSettings.PredefinedTextSymbols.TryGetByFirst(textSymbol, out var replaceResult):
                     atoms.Text(replaceResult);
                     break;
                   case var command:
@@ -443,7 +442,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
         case TextAtom.Text t:
           foreach (var ch in t.Content) {
             var c = ch.ToStringInvariant();
-            if (TextLaTeXSettings.PredefinedTextSymbols.TryGetKey(c, out var v))
+            if (TextLaTeXSettings.PredefinedTextSymbols.TryGetBySecond(c, out var v))
               if ('a' <= v[0] && v[0] <= 'z' || 'A' <= v[0] && v[0] <= 'Z')
                 b.Append('\\').Append(v).Append(' ');
               else b.Append('\\').Append(v);

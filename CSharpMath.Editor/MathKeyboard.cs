@@ -490,207 +490,207 @@ namespace CSharpMath.Editor {
           InsertInner("|", "|");
           break;
         case MathKeyboardInput.BaseEPower:
-          InsertAtom(LaTeXSettings.ForAscii((sbyte)'e')
-            ?? throw new InvalidCodePathException("LaTeXDefaults.ForAscii((byte)'e') is null"));
+          InsertAtom(LaTeXSettings.AtomForCommand("e")
+            ?? throw new InvalidCodePathException($"{nameof(LaTeXSettings.AtomForCommand)} returned null for e"));
           HandleScriptButton(true);
           break;
         case MathKeyboardInput.Logarithm:
-          InsertSymbolName("log");
+          InsertSymbolName(@"\log");
           break;
         case MathKeyboardInput.NaturalLogarithm:
-          InsertSymbolName("ln");
+          InsertSymbolName(@"\ln");
           break;
         case MathKeyboardInput.LogarithmWithBase:
-          InsertSymbolName("log", subscript: true);
+          InsertSymbolName(@"\log", subscript: true);
           break;
         case MathKeyboardInput.Sine:
-          InsertSymbolName("sin");
+          InsertSymbolName(@"\sin");
           break;
         case MathKeyboardInput.Cosine:
-          InsertSymbolName("cos");
+          InsertSymbolName(@"\cos");
           break;
         case MathKeyboardInput.Tangent:
-          InsertSymbolName("tan");
+          InsertSymbolName(@"\tan");
           break;
         case MathKeyboardInput.Cotangent:
-          InsertSymbolName("cot");
+          InsertSymbolName(@"\cot");
           break;
         case MathKeyboardInput.Secant:
-          InsertSymbolName("sec");
+          InsertSymbolName(@"\sec");
           break;
         case MathKeyboardInput.Cosecant:
-          InsertSymbolName("csc");
+          InsertSymbolName(@"\csc");
           break;
         case MathKeyboardInput.ArcSine:
-          InsertSymbolName("arcsin");
+          InsertSymbolName(@"\arcsin");
           break;
         case MathKeyboardInput.ArcCosine:
-          InsertSymbolName("arccos");
+          InsertSymbolName(@"\arccos");
           break;
         case MathKeyboardInput.ArcTangent:
-          InsertSymbolName("arctan");
+          InsertSymbolName(@"\arctan");
           break;
         case MathKeyboardInput.ArcCotangent:
-          InsertSymbolName("arccot");
+          InsertSymbolName(@"\arccot");
           break;
         case MathKeyboardInput.ArcSecant:
-          InsertSymbolName("arcsec");
+          InsertSymbolName(@"\arcsec");
           break;
         case MathKeyboardInput.ArcCosecant:
-          InsertSymbolName("arccsc");
+          InsertSymbolName(@"\arccsc");
           break;
         case MathKeyboardInput.HyperbolicSine:
-          InsertSymbolName("sinh");
+          InsertSymbolName(@"\sinh");
           break;
         case MathKeyboardInput.HyperbolicCosine:
-          InsertSymbolName("cosh");
+          InsertSymbolName(@"\cosh");
           break;
         case MathKeyboardInput.HyperbolicTangent:
-          InsertSymbolName("tanh");
+          InsertSymbolName(@"\tanh");
           break;
         case MathKeyboardInput.HyperbolicCotangent:
-          InsertSymbolName("coth");
+          InsertSymbolName(@"\coth");
           break;
         case MathKeyboardInput.HyperbolicSecant:
-          InsertSymbolName("sech");
+          InsertSymbolName(@"\sech");
           break;
         case MathKeyboardInput.HyperbolicCosecant:
-          InsertSymbolName("csch");
+          InsertSymbolName(@"\csch");
           break;
         case MathKeyboardInput.AreaHyperbolicSine:
-          InsertSymbolName("arsinh");
+          InsertSymbolName(@"\arsinh");
           break;
         case MathKeyboardInput.AreaHyperbolicCosine:
-          InsertSymbolName("arcosh");
+          InsertSymbolName(@"\arcosh");
           break;
         case MathKeyboardInput.AreaHyperbolicTangent:
-          InsertSymbolName("artanh");
+          InsertSymbolName(@"\artanh");
           break;
         case MathKeyboardInput.AreaHyperbolicCotangent:
-          InsertSymbolName("arcoth");
+          InsertSymbolName(@"\arcoth");
           break;
         case MathKeyboardInput.AreaHyperbolicSecant:
-          InsertSymbolName("arsech");
+          InsertSymbolName(@"\arsech");
           break;
         case MathKeyboardInput.AreaHyperbolicCosecant:
-          InsertSymbolName("arcsch");
+          InsertSymbolName(@"\arcsch");
           break;
         case MathKeyboardInput.LimitWithBase:
-          InsertSymbolName("lim", subscript: true);
+          InsertSymbolName(@"\lim", subscript: true);
           break;
         case MathKeyboardInput.Integral:
-          InsertSymbolName("int");
+          InsertSymbolName(@"\int");
           break;
         case MathKeyboardInput.IntegralLowerLimit:
-          InsertSymbolName("int", subscript: true);
+          InsertSymbolName(@"\int", subscript: true);
           break;
         case MathKeyboardInput.IntegralUpperLimit:
-          InsertSymbolName("int", superscript: true);
+          InsertSymbolName(@"\int", superscript: true);
           break;
         case MathKeyboardInput.IntegralBothLimits:
-          InsertSymbolName("int", subscript: true, superscript: true);
+          InsertSymbolName(@"\int", subscript: true, superscript: true);
           break;
         case MathKeyboardInput.Summation:
-          InsertSymbolName("sum");
+          InsertSymbolName(@"\sum");
           break;
         case MathKeyboardInput.SummationLowerLimit:
-          InsertSymbolName("sum", subscript: true);
+          InsertSymbolName(@"\sum", subscript: true);
           break;
         case MathKeyboardInput.SummationUpperLimit:
-          InsertSymbolName("sum", superscript: true);
+          InsertSymbolName(@"\sum", superscript: true);
           break;
         case MathKeyboardInput.SummationBothLimits:
-          InsertSymbolName("sum", subscript: true, superscript: true);
+          InsertSymbolName(@"\sum", subscript: true, superscript: true);
           break;
         case MathKeyboardInput.Product:
-          InsertSymbolName("prod");
+          InsertSymbolName(@"\prod");
           break;
         case MathKeyboardInput.ProductLowerLimit:
-          InsertSymbolName("prod", subscript: true);
+          InsertSymbolName(@"\prod", subscript: true);
           break;
         case MathKeyboardInput.ProductUpperLimit:
-          InsertSymbolName("prod", superscript: true);
+          InsertSymbolName(@"\prod", superscript: true);
           break;
         case MathKeyboardInput.ProductBothLimits:
-          InsertSymbolName("prod", subscript: true, superscript: true);
+          InsertSymbolName(@"\prod", subscript: true, superscript: true);
           break;
         case MathKeyboardInput.DoubleIntegral:
-          InsertSymbolName("iint");
+          InsertSymbolName(@"\iint");
           break;
         case MathKeyboardInput.TripleIntegral:
-          InsertSymbolName("iiint");
+          InsertSymbolName(@"\iiint");
           break;
         case MathKeyboardInput.QuadrupleIntegral:
-          InsertSymbolName("iiiint");
+          InsertSymbolName(@"\iiiint");
           break;
         case MathKeyboardInput.ContourIntegral:
-          InsertSymbolName("oint");
+          InsertSymbolName(@"\oint");
           break;
         case MathKeyboardInput.DoubleContourIntegral:
-          InsertSymbolName("oiint");
+          InsertSymbolName(@"\oiint");
           break;
         case MathKeyboardInput.TripleContourIntegral:
-          InsertSymbolName("oiiint");
+          InsertSymbolName(@"\oiiint");
           break;
         case MathKeyboardInput.ClockwiseIntegral:
-          InsertSymbolName("intclockwise");
+          InsertSymbolName(@"\intclockwise");
           break;
         case MathKeyboardInput.ClockwiseContourIntegral:
-          InsertSymbolName("varointclockwise");
+          InsertSymbolName(@"\varointclockwise");
           break;
         case MathKeyboardInput.CounterClockwiseContourIntegral:
-          InsertSymbolName("ointctrclockwise");
+          InsertSymbolName(@"\ointctrclockwise");
           break;
         case MathKeyboardInput.LeftArrow:
-          InsertSymbolName("leftarrow");
+          InsertSymbolName(@"\leftarrow");
           break;
         case MathKeyboardInput.UpArrow:
-          InsertSymbolName("uparrow");
+          InsertSymbolName(@"\uparrow");
           break;
         case MathKeyboardInput.RightArrow:
-          InsertSymbolName("rightarrow");
+          InsertSymbolName(@"\rightarrow");
           break;
         case MathKeyboardInput.DownArrow:
-          InsertSymbolName("downarrow");
+          InsertSymbolName(@"\downarrow");
           break;
         case MathKeyboardInput.PartialDifferential:
-          InsertSymbolName("partial");
+          InsertSymbolName(@"\partial");
           break;
         case MathKeyboardInput.NotEquals:
-          InsertSymbolName("neq");
+          InsertSymbolName(@"\neq");
           break;
         case MathKeyboardInput.LessOrEquals:
-          InsertSymbolName("leq");
+          InsertSymbolName(@"\leq");
           break;
         case MathKeyboardInput.GreaterOrEquals:
-          InsertSymbolName("geq");
+          InsertSymbolName(@"\geq");
           break;
         case MathKeyboardInput.Multiply:
-          InsertSymbolName("times");
+          InsertSymbolName(@"\times");
           break;
         case MathKeyboardInput.Divide:
-          InsertSymbolName("div");
+          InsertSymbolName(@"\div");
           break;
         case MathKeyboardInput.Infinity:
-          InsertSymbolName("infty");
+          InsertSymbolName(@"\infty");
           break;
         case MathKeyboardInput.Degree:
-          InsertSymbolName("degree");
+          InsertSymbolName(@"\degree");
           break;
         case MathKeyboardInput.Angle:
-          InsertSymbolName("angle");
+          InsertSymbolName(@"\angle");
           break;
         case MathKeyboardInput.LeftCurlyBracket:
-          InsertSymbolName("{");
+          InsertSymbolName(@"\{");
           break;
         case MathKeyboardInput.RightCurlyBracket:
-          InsertSymbolName("}");
+          InsertSymbolName(@"\}");
           break;
         case MathKeyboardInput.Percentage:
-          InsertSymbolName("%");
+          InsertSymbolName(@"\%");
           break;
         case MathKeyboardInput.Space:
-          InsertSymbolName(" ");
+          InsertSymbolName(@"\ ");
           break;
         case MathKeyboardInput.Prime:
           InsertAtom(new Atoms.Prime(1));
@@ -772,9 +772,8 @@ namespace CSharpMath.Editor {
         case MathKeyboardInput.SmallX:
         case MathKeyboardInput.SmallY:
         case MathKeyboardInput.SmallZ:
-          InsertAtom(LaTeXSettings.ForAscii(checked((sbyte)input))
-            ?? throw new InvalidCodePathException
-              ($"Invalid LaTeX character {input} was handled by ascii case"));
+          InsertAtom(LaTeXSettings.AtomForCommand(new string((char)input, 1))
+            ?? throw new InvalidCodePathException($"{nameof(LaTeXSettings.AtomForCommand)} returned null for {input}"));
           break;
         case MathKeyboardInput.Alpha:
         case MathKeyboardInput.Beta:

@@ -146,6 +146,21 @@ namespace CSharpMath.Structures {
           return false;
       }
     }
+    public bool ContainsKey(ReadOnlySpan<TKeyElement> keyRest) {
+      Key.Span.ZipWith(keyRest, out _, out var thisRest, out var otherRest);
+      return (thisRest.Length, otherRest.Length) switch
+      {
+        (0, 0) when Values.Count > 0 => true,
+        (0, 0) => false,
+        (0, _) when GetChildOrNull(otherRest) is { } child => child.ContainsKey(otherRest),
+        _ => false,
+      };
+    }
+
+    public void Clear() {
+      Children.Clear();
+      Values.Clear();
+    }
 
     // Can't use Stack<T> because it iterates from the newest element to the oldest, unlike List<T> which iterates the other way around
     private IEnumerable<KeyValuePair<ReadOnlyMemory<TKeyElement>, TValue>> ToEnumerable(List<ReadOnlyMemory<TKeyElement>> stack, int stackLength) {
@@ -165,9 +180,9 @@ namespace CSharpMath.Structures {
           yield return element;
       stack.RemoveAt(stack.Count - 1);
     }
-    public IEnumerable<KeyValuePair<ReadOnlyMemory<TKeyElement>, TValue>> ToEnumerable() => ToEnumerable(new List<ReadOnlyMemory<TKeyElement>>(), 0);
-    public IEnumerator<KeyValuePair<ReadOnlyMemory<TKeyElement>, TValue>> GetEnumerator() => ToEnumerable().GetEnumerator();
-    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => ToEnumerable().GetEnumerator();
+    public IEnumerator<KeyValuePair<ReadOnlyMemory<TKeyElement>, TValue>> GetEnumerator() =>
+      ToEnumerable(new List<ReadOnlyMemory<TKeyElement>>(), 0).GetEnumerator();
+    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
     public string Traversal() {
       var result = new StringBuilder();
       result.Append(Key.Span.ToString());
