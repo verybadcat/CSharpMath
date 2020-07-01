@@ -16,12 +16,12 @@ namespace CSharpMath.Structures {
       return null;
       static Color? FromHexString(string hex) {
 #pragma warning disable CA1305 // Specify IFormatProvider
-        if (hex.Length > 7) {
+        if (hex.Length == 8) {
           if (int.TryParse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var i))
             { return Color.FromArgb(i); }
           else { return null; };
         } else {
-          if (int.TryParse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var i)) {
+          if (hex.Length == 6 && int.TryParse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var i)) {
             var c = Color.FromArgb(i);
             return Color.FromArgb(c.R, c.G, c.B);
           } else { return null; }

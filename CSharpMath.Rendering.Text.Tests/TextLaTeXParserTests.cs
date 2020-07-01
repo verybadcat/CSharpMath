@@ -155,18 +155,18 @@ namespace CSharpMath.Rendering.Text.Tests {
 
     // Sync with CSharpMath.CoreTests LaTeXParserTests
     [Theory]
-    [InlineData("0xFFF", "white", 0xFF, 0xFF, 0xFF)]
-    [InlineData("#ff0", "yellow", 0xFF, 0xFF, 0x00)]
-    [InlineData("0xf00f", "blue", 0x00, 0x00, 0xFF)]
-    [InlineData("#F0F0", "lime", 0x00, 0xFF, 0x00)]
-    [InlineData("0x008000", "green", 0x00, 0x80, 0x00)]
+    [InlineData("#FFFFFF", "white", 0xFF, 0xFF, 0xFF)]
+    [InlineData("#ffff00", "yellow", 0xFF, 0xFF, 0x00)]
+    [InlineData("#ff0000ff", "blue", 0x00, 0x00, 0xFF)]
+    [InlineData("#FF00FF00", "lime", 0x00, 0xFF, 0x00)]
+    [InlineData("#008000", "green", 0x00, 0x80, 0x00)]
     [InlineData("#d3D3d3", "lightgray", 0xD3, 0xD3, 0xD3)]
-    [InlineData("0xFf000000", "black", 0x00, 0x00, 0x00)]
+    [InlineData("#Ff000000", "black", 0x00, 0x00, 0x00)]
     [InlineData("#fFa9A9a9", "gray", 0xA9, 0xA9, 0xA9)]
     [InlineData("cyan", "cyan", 0x00, 0xFF, 0xFF)]
     [InlineData("BROWN", "brown", 0x96, 0x4B, 0x00)]
     [InlineData("oLIve", "olive", 0x80, 0x80, 0x00)]
-    [InlineData("0x12345678", "#12345678", 0x34, 0x56, 0x78, 0x12)]
+    [InlineData("#12345678", "#12345678", 0x34, 0x56, 0x78, 0x12)]
     [InlineData("#fedcba98", "#FEDCBA98", 0xDC, 0xBA, 0x98, 0xFE)]
     public void Color(string inColor, string outColor, byte r, byte g, byte b, byte a = 0xFF) {
       var atom = Parse($@"\color{{{inColor}}}ab");
