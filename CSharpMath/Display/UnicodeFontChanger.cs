@@ -4,10 +4,10 @@ using CSharpMath.Atom;
 namespace CSharpMath.Display {
   using FrontEnd;
   public class UnicodeFontChanger : IFontChanger {
-    private const char UnicodeGreekLowerStart = '\x03B1';
-    private const char UnicodeGreekLowerEnd = '\x03C9';
-    private const char UnicodeGreekUpperStart = '\x0391';
-    private const char UnicodeGreekUpperEnd = '\x03A9';
+    private const char UnicodeGreekLowerStart = 'α'; // 03B1
+    private const char UnicodeGreekLowerEnd = 'ω'; // 03C9
+    private const char UnicodeGreekUpperStart = 'Α'; // 0391
+    private const char UnicodeGreekUpperEnd = 'Ω'; // 03A9
 
     private const int UnicodeMathCapitalBoldStart = 0x1D400;
     private const int UnicodeMathLowerBoldStart = 0x1D41A;
@@ -52,8 +52,14 @@ namespace CSharpMath.Display {
     public static bool IsLowerGreek(char c) => c >= UnicodeGreekLowerStart && c <= UnicodeGreekLowerEnd;
     public static bool IsUpperGreek(char c) => c >= UnicodeGreekUpperStart && c <= UnicodeGreekUpperEnd;
 
-    static readonly char[] greekSymbols =
-      { '\x03F5', '\x03D1', '\x03F0', '\x03D5', '\x03F1', '\x03D6' };
+    static readonly char[] greekSymbols = {
+      'ϵ', // 03F5
+      'ϑ', // 03D1
+      'ϰ', // 03F0
+      'ϕ', // 03D5
+      'ϱ', // 03F1
+      'ϖ' // 03D6
+    };
     private static int GreekSymbolOrder(char c) =>
       // These greek symbols that always appear in unicode in this particular order
       // after the alphabet. 

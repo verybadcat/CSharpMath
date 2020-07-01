@@ -1,5 +1,12 @@
 namespace CSharpMath.Rendering.BackEnd {
+
   public readonly struct Glyph {
+    //public enum FontStyle {
+    //  Normal = 0,
+    //  Bold = 1,
+    //  Italic = 2,
+    //  BoldItalic = 3
+    //}
     public Glyph(Typography.OpenFont.Typeface typeface, Typography.OpenFont.Glyph info) {
       Typeface = typeface ?? throw new System.ArgumentNullException(nameof(typeface));
       Info = info ?? throw new System.ArgumentNullException(nameof(info));
