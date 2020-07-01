@@ -719,7 +719,7 @@ namespace CSharpMath.Display {
     }
 
     private IGlyphDisplay<TFont, TGlyph> _GetRadicalGlyph(float radicalHeight) {
-#warning GlyphFinder.FindGlyph
+      // TODO: something related to GlyphFinder.FindGlyph
       var radicalGlyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, 0, "\u221A");
       var glyph = _FindGlyph(radicalGlyph, radicalHeight,
         out float glyphAscent, out float glyphDescent, out float glyphWidth);

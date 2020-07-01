@@ -12,7 +12,7 @@ namespace CSharpMath.Rendering.Text {
   using System.Drawing;
   public static class TextTypesetter {
     public static (Display relative, Display absolute) Layout(TextAtom input, Fonts inputFont, float canvasWidth) {
-#warning Multiply these constants by resolution
+      // TODO: Multiply these constants by resolution
       const float abovedisplayskip = 12, abovedisplayshortskip = 0,
                   belowdisplayskip = 12, belowdisplayshortskip = 7;
       if (input == null) return

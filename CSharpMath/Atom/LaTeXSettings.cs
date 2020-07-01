@@ -575,7 +575,7 @@ namespace CSharpMath.Atom {
         // Table 17: Some Other Constructions
         { "widehat", new Accent("\u0302") },
         { "widetilde", new Accent("\u0303") },
-#warning implement \overleftarrow, \overrightarrow, \overbrace, \underbrace
+        // TODO: implement \overleftarrow, \overrightarrow, \overbrace, \underbrace
         // \overleftarrow{}
         // \overrightarrow{}
         // \overline{}

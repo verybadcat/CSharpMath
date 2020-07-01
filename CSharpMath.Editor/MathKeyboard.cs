@@ -430,7 +430,7 @@ namespace CSharpMath.Editor {
       }
 
       switch (input) {
-#warning Unimplemented up/down buttons
+      // TODO: Implement up/down buttons
         case MathKeyboardInput.Up:
           break;
         case MathKeyboardInput.Down:
