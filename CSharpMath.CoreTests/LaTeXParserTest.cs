@@ -1139,7 +1139,7 @@ namespace CSharpMath.CoreTests {
       var list = ParseLaTeX(@"\color{red}1\colorbox{blue}2");
       Assert.Collection(list,
         CheckAtom<Colored>("", colored => {
-          Assert.Equal("red", colored.Color.ToString());
+          Assert.Equal("red", Structures.ColorExtensions.ToTexString(colored.Color));
           Assert.Empty(colored.Superscript);
           Assert.Throws<InvalidOperationException>(() => colored.Superscript.Add(new Variable("a")));
           Assert.Throws<InvalidOperationException>(() => colored.Superscript.Append(new MathList(new Variable("a"))));
@@ -1149,7 +1149,7 @@ namespace CSharpMath.CoreTests {
           Assert.Collection(colored.InnerList, CheckAtom<Number>("1"));
         }),
         CheckAtom<ColorBox>("", colorBox => {
-          Assert.Equal("blue", colorBox.Color.ToString());
+          Assert.Equal("blue", Structures.ColorExtensions.ToTexString(colorBox.Color));
           Assert.Empty(colorBox.Superscript);
           Assert.Throws<InvalidOperationException>(() => colorBox.Superscript.Add(new Variable("a")));
           Assert.Throws<InvalidOperationException>(() => colorBox.Superscript.Append(new MathList(new Variable("a"))));

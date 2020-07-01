@@ -225,7 +225,10 @@ namespace CSharpMath.Atom {
           return null;
         }
         return color;
-      } else { return null; }
+      } else {
+        SetError("Invalid color: " + str);
+        return null;
+      }
     }
 
     private void SkipSpaces() {

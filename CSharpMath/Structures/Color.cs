@@ -19,20 +19,21 @@ namespace CSharpMath.Structures {
       static Color? FromHexString(string hex) {
 #pragma warning disable CA1305 // Specify IFormatProvider
         if (hex.Length > 7) {
-          return Color.FromArgb(int.Parse(hex, NumberStyles.HexNumber));
+          if (int.TryParse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var i))
+            { return Color.FromArgb(i); }
+          else { return null; };
         } else {
-          var c = Color.FromArgb(int.Parse(hex, NumberStyles.HexNumber));
-          return Color.FromArgb(c.R,c.G,c.B);
+          if (int.TryParse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var i)) {
+            var c = Color.FromArgb(i);
+            return Color.FromArgb(c.R, c.G, c.B);
+          } else { return null; }
         }
-        
-#pragma warning restore CA1305 // Specify IFormatProvider
       }
     }
     public static string ToTexString(Color color) {
       if (PredefinedColors.TryGetBySecond(color, out var outString)) {
         return outString;
       } else {
-#pragma warning disable CA1305 // Specify IFormatProvider
         string a = (color.A == 255) ? "" : color.A.ToString("X2");
         string r = color.R.ToString("X2");
         string g = color.G.ToString("X2");
