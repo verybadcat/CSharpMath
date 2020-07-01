@@ -8,8 +8,6 @@ namespace CSharpMath.Structures {
       if (hexOrName == null) return null;
       if (hexOrName.StartsWith("#", StringComparison.InvariantCulture))
         return FromHexString(hexOrName.Substring(1));
-      if (hexOrName.StartsWith("0x", StringComparison.InvariantCulture))
-        return FromHexString(hexOrName.Substring(2));
 #pragma warning disable CA1308 // Normalize strings to uppercase
       string loweredName = hexOrName.ToLowerInvariant();
 #pragma warning restore CA1308 // Normalize strings to uppercase
