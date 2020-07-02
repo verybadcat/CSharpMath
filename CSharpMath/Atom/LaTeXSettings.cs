@@ -148,10 +148,10 @@ namespace CSharpMath.Atom {
       } else {
         sb.Append('#');
         if (color.A != 255)
-          sb.AppendFormat("{0:X2}", color.A);
-        return sb.AppendFormat("{0:X2}", color.R)
-                 .AppendFormat("{0:X2}", color.G)
-                 .AppendFormat("{0:X2}", color.B);
+          sb.Append(color.A.ToStringInvariant("X2"));
+        return sb.Append(color.R.ToStringInvariant("X2"))
+                 .Append(color.G.ToStringInvariant("X2"))
+                 .Append(color.B.ToStringInvariant("X2"));
       }
     }
     //https://en.wikibooks.org/wiki/LaTeX/Colors#Predefined_colors

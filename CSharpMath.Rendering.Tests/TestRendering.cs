@@ -102,7 +102,7 @@ namespace CSharpMath.Rendering.Tests {
       Run(file, latex, new TTextPainter(), TextAlignment.TopRight, textPainterCanvasWidth: float.PositiveInfinity);
     protected void Run<TContent>(
       string inFile, string latex, Painter<TCanvas, TContent, TColor> painter, TextAlignment alignment = TextAlignment.TopLeft,
-      float textPainterCanvasWidth = TextPainter<TCanvas, TColor>.DefaultCanvasWidth, [CallerMemberName]string folder = "") where TContent : class {
+      float textPainterCanvasWidth = TextPainter<TCanvas, TColor>.DefaultCanvasWidth, [CallerMemberName] string folder = "") where TContent : class {
       folder = TestRenderingFixture.GetFolder(folder);
       var frontEnd = FrontEnd.ToLowerInvariant();
 
@@ -135,9 +135,9 @@ namespace CSharpMath.Rendering.Tests {
       new TheoryData<string, TPainter> {
         { "Baseline", new TPainter() },
         { "Stroke", new TPainter { PaintStyle = PaintStyle.Stroke } },
-#warning For some reason the Avalonia front end behaves correctly for TextPainter Magnification test but not the SkiaSharp front end??
+        // TODO: For some reason the Avalonia front end behaves correctly for TextPainter Magnification test but not the SkiaSharp front end??
         { "Magnification", new TPainter { Magnification = 2 } },
-#warning For some reason SkiaSharp produces an erroneous image only on Ubuntu??
+        // TODO: For some reason SkiaSharp produces an erroneous image only on Ubuntu??
         //{ "LocalTypeface", new TPainter {
         //  LocalTypefaces = new[] {
         //    new Typography.OpenFont.OpenFontReader().Read(
