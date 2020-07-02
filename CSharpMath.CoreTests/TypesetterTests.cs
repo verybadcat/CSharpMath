@@ -51,13 +51,32 @@ namespace CSharpMath.CoreTests {
           Assert.Equal(10, line.Width);
         });
 
-    [Theory, InlineData("xyzw"), InlineData("xy2w"), InlineData("1234")]
-    public void TestVariablesAndNumbers(string latex) =>
+    [Theory, InlineData("xyzw"), InlineData("xy2w"), InlineData("12.3"), InlineData("|`@/"), InlineData("1`y.")]
+    public void TestVariablesNumbersAndOrdinaries(string latex) =>
       TestOuter(latex, 4, 14, 4, 40,
         d => {
           var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
           Assert.Equal(4, line.Atoms.Count);
           AssertText(latex, line);
+          Assert.Equal(new PointF(), line.Position);
+          Assert.Equal(new Range(0, 4), line.Range);
+          Assert.False(line.HasScript);
+
+          Assert.Equal(14, line.Ascent);
+          Assert.Equal(4, line.Descent);
+          Assert.Equal(40, line.Width);
+        });
+    [Theory]
+    [InlineData("%\n1234", "1234")]
+    [InlineData("12.b% comment ", "12.b")]
+    [InlineData("|`% \\notacommand \u2028@/", "|`@/")]
+    public void TestComments(string latex, string resultText) =>
+      TestOuter(latex, 4, 14, 4, 40,
+        d => {
+          var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
+          Assert.Equal(4, line.Atoms.Count);
+          Assert.All(line.Atoms, Assert.IsNotType<Atom.Atoms.Comment>);
+          AssertText(resultText, line);
           Assert.Equal(new PointF(), line.Position);
           Assert.Equal(new Range(0, 4), line.Range);
           Assert.False(line.HasScript);

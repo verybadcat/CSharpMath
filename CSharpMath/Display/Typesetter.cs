@@ -133,6 +133,7 @@ namespace CSharpMath.Display {
         MathAtom? prevAtom = null;
         var r = new List<MathAtom>();
         foreach (var atom in list.Atoms) {
+          if (atom is Comment) continue;
           // These are not a TeX type nodes. TeX does this during parsing the input.
           // switch to using the font specified in the atom and convert it to ordinary
           var newAtom = atom switch
@@ -167,8 +168,9 @@ namespace CSharpMath.Display {
           case Number _:
           case Variable _:
           case UnaryOperator _:
+          case Comment _:
             throw new InvalidCodePathException
-              ($"Type {atom.GetType()} should have been removed by preprocessing");
+              ($"Type {atom.TypeName} should have been removed by preprocessing");
           case Space space:
             AddDisplayLine(false);
             _currentPosition.X += space.ActualLength(_mathTable, _font);

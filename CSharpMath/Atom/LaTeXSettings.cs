@@ -13,9 +13,9 @@ namespace CSharpMath.Atom {
   public static class LaTeXSettings {
     static readonly Dictionary<Boundary, string> boundaryDelimitersReverse = new Dictionary<Boundary, string>();
     public static IReadOnlyDictionary<Boundary, string> BoundaryDelimitersReverse => boundaryDelimitersReverse;
-    public static Structures.LaTeXCommandDictionary<Boundary> BoundaryDelimiters { get; } =
-      new Structures.LaTeXCommandDictionary<Boundary>(consume => {
-        if (consume.IsEmpty) throw new Structures.InvalidCodePathException("Unexpected empty " + nameof(consume));
+    public static LaTeXCommandDictionary<Boundary> BoundaryDelimiters { get; } =
+      new LaTeXCommandDictionary<Boundary>(consume => {
+        if (consume.IsEmpty) throw new InvalidCodePathException("Unexpected empty " + nameof(consume));
         if (char.IsHighSurrogate(consume[0])) {
           if (consume.Length == 1)
             return "Unexpected single high surrogate without its counterpart";
@@ -74,13 +74,13 @@ namespace CSharpMath.Atom {
       };
 
     static readonly MathAtom? Dummy = Placeholder;
-    public static Structures.Result<(MathAtom? Atom, MathList? Return)> Ok(MathAtom? atom) => Structures.Result.Ok((atom, (MathList?)null));
-    public static Structures.Result<(MathAtom? Atom, MathList? Return)> OkStyled(MathList styled) => Structures.Result.Ok((Dummy, (MathList?)styled));
-    public static Structures.Result<(MathAtom? Atom, MathList? Return)> OkStop(MathList @return) => Structures.Result.Ok(((MathAtom?)null, (MathList?)@return));
-    public static Structures.ResultImplicitError Err(string error) => Structures.Result.Err(error);
-    public static Structures.LaTeXCommandDictionary<Func<LaTeXParser, MathList, char, Structures.Result<(MathAtom? Atom, MathList? Return)>>> Commands { get; } =
-      new Structures.LaTeXCommandDictionary<Func<LaTeXParser, MathList, char, Structures.Result<(MathAtom? Atom, MathList? Return)>>>(consume => {
-        if (consume.IsEmpty) throw new Structures.InvalidCodePathException("Unexpected empty " + nameof(consume));
+    public static Result<(MathAtom? Atom, MathList? Return)> Ok(MathAtom? atom) => Result.Ok((atom, (MathList?)null));
+    public static Result<(MathAtom? Atom, MathList? Return)> OkStyled(MathList styled) => Result.Ok((Dummy, (MathList?)styled));
+    public static Result<(MathAtom? Atom, MathList? Return)> OkStop(MathList @return) => Result.Ok(((MathAtom?)null, (MathList?)@return));
+    public static ResultImplicitError Err(string error) => Result.Err(error);
+    public static LaTeXCommandDictionary<Func<LaTeXParser, MathList, char, Result<(MathAtom? Atom, MathList? Return)>>> Commands { get; } =
+      new LaTeXCommandDictionary<Func<LaTeXParser, MathList, char, Result<(MathAtom? Atom, MathList? Return)>>>(consume => {
+        if (consume.IsEmpty) throw new InvalidCodePathException("Unexpected empty " + nameof(consume));
         if (char.IsHighSurrogate(consume[0])) {
           if (consume.Length == 1)
             return "Unexpected single high surrogate without its counterpart";
@@ -206,7 +206,7 @@ namespace CSharpMath.Atom {
         #endregion Atom producers
         #region Atom modifiers
         { @"^", (parser, accumulate, stopChar) => {
-          var prevAtom = accumulate.LastOrDefault();
+          var prevAtom = accumulate.Last;
           if (prevAtom == null || prevAtom.Superscript.IsNonEmpty() || !prevAtom.ScriptsAllowed) {
             prevAtom = new Ordinary(string.Empty);
             accumulate.Add(prevAtom);
@@ -216,7 +216,7 @@ namespace CSharpMath.Atom {
           return parser.ReadArgument(prevAtom.Superscript).Bind(_ => Ok(null));
         } },
         { @"_", (parser, accumulate, stopChar) => {
-          var prevAtom = accumulate.LastOrDefault();
+          var prevAtom = accumulate.Last;
           if (prevAtom == null || prevAtom.Subscript.IsNonEmpty() || !prevAtom.ScriptsAllowed) {
             prevAtom = new Ordinary(string.Empty);
             accumulate.Add(prevAtom);
@@ -239,13 +239,13 @@ namespace CSharpMath.Atom {
         } },
         { @"}", (parser, accumulate, stopChar) => "Missing opening brace" },
         { @"\limits", (parser, accumulate, stopChar) => {
-          if (accumulate.LastOrDefault() is LargeOperator largeOp) {
+          if (accumulate.Last is LargeOperator largeOp) {
             largeOp.Limits = true;
             return Ok(null);
           } else return @"\limits can only be applied to an operator";
         } },
         { @"\nolimits", (parser, accumulate, stopChar) => {
-          if (accumulate.LastOrDefault() is LargeOperator largeOp) {
+          if (accumulate.Last is LargeOperator largeOp) {
             largeOp.Limits = false;
             return Ok(null);
           } else return @"\nolimits can only be applied to an operator";
@@ -320,8 +320,8 @@ namespace CSharpMath.Atom {
     public static MathAtom Placeholder => new Placeholder("\u25A1");
     public static MathList PlaceholderList => new MathList { Placeholder };
 
-    public static Structures.BiDictionary<string, FontStyle> FontStyles { get; } =
-      new Structures.BiDictionary<string, FontStyle>((command, fontStyle) => {
+    public static BiDictionary<string, FontStyle> FontStyles { get; } =
+      new BiDictionary<string, FontStyle>((command, fontStyle) => {
         Commands.Add(@"\" + command, (parser, accumulate, stopChar) => {
           var oldSpacesAllowed = parser.TextMode;
           var oldFontStyle = parser.CurrentFontStyle;
@@ -420,8 +420,8 @@ namespace CSharpMath.Atom {
       return CommandSymbols.TryGetBySecond(atomWithoutScripts, out var name) ? name : null;
     }
 
-    public static Structures.BiDictionary<string, MathAtom> CommandSymbols { get; } =
-      new Structures.BiDictionary<string, MathAtom>((command, atom) =>
+    public static BiDictionary<string, MathAtom> CommandSymbols { get; } =
+      new BiDictionary<string, MathAtom>((command, atom) =>
         Commands.Add(command, (parser, accumulate, stopChar) =>
           atom is Accent accent
           ? parser.ReadArgument().Bind(accentee => Ok(new Accent(accent.Nucleus, accentee)))

@@ -127,6 +127,8 @@ namespace CSharpMath.CoreTests {
     }
 
     [Theory]
+    [InlineData("%", false, "", false, "%\n")]
+    [InlineData("1%", true, "", false, "1%\n")]
     [InlineData("%\n", false, "", false, "%\n")]
     [InlineData("%\f", false, "", false, "%\n")]
     [InlineData("%\r", false, "", false, "%\n")]
@@ -167,6 +169,18 @@ namespace CSharpMath.CoreTests {
         if (hasAfter) yield return CheckAtom<Variable>("a");
       }
       Assert.Collection(list, GetInspectors().ToArray());
+      Assert.Equal(output, LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+    [Theory]
+    [InlineData("\\sum%\\limits\n\\limits", true, "\\sum \\limits %\\limits\n")]
+    [InlineData("\\sum%\\limits\n\\nolimits", false, "\\sum \\nolimits %\\limits\n")]
+    [InlineData("\\sum \\limits %\\limits\n \\nolimits", false, "\\sum \\nolimits %\\limits\n")]
+    [InlineData("\\sum \\nolimits %\\limits\n \\limits", true, "\\sum \\limits %\\limits\n")]
+    public void TestCommentWithLimits(string input, bool limits, string output) {
+      var list = ParseLaTeX(input);
+      Assert.Collection(list,
+        CheckAtom<LargeOperator>("∑", op => Assert.Equal(limits, op.Limits)),
+        CheckAtom<Comment>("\\limits"));
       Assert.Equal(output, LaTeXParser.MathListToLaTeX(list).ToString());
     }
 

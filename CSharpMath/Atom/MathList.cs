@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections;
 
 namespace CSharpMath.Atom {
+  using Atoms;
 #pragma warning disable CA1710 // Identifiers should have correct suffix
   // WTF CA1710, you want types inheriting IList to have the Collection suffix?
   class DisabledMathList : MathList {
@@ -16,6 +17,33 @@ namespace CSharpMath.Atom {
     public MathList() => Atoms = new List<MathAtom>();
     public MathList(IEnumerable<MathAtom> atoms) => Atoms = new List<MathAtom>(atoms);
     public MathList(params MathAtom[] atoms) => Atoms = new List<MathAtom>(atoms);
+
+    /// <returns>The last <see cref="MathAtom"/> that is not a <see cref="Comment"/>,
+    /// or <see cref="null"/> when <see cref="Atoms"/> is empty.</returns>
+    [System.Diagnostics.CodeAnalysis.DisallowNull]
+    public MathAtom? Last {
+      get {
+        for (int i = Atoms.Count - 1; i >= 0; i--)
+          switch (Atoms[i]) {
+            case Comment _:
+              continue;
+            case var atom:
+              return atom;
+          }
+        return null;
+      }
+      set {
+        for (int i = Atoms.Count - 1; i >= 0; i--)
+          switch (Atoms[i]) {
+            case Comment _:
+              continue;
+            default:
+              Atoms[i] = value;
+              return;
+          }
+        Atoms.Add(value);
+      }
+    }
     /// <summary>Just a deep copy if finalize is false; A finalized list if finalize is true</summary>
     public MathList Clone(bool finalize) {
       var newList = new MathList();
@@ -24,7 +52,11 @@ namespace CSharpMath.Atom {
           newList.Add(atom.Clone(finalize));
       } else {
         foreach (var atom in Atoms) {
-          var prevNode = newList.Count > 0 ? newList[newList.Count - 1] : null;
+          if (atom is Comment) {
+            newList.Add(atom.Clone(finalize));
+            continue;
+          }
+          var prevNode = newList.Last;
           var newNode = atom.Clone(finalize);
           if (atom.IndexRange == Range.Zero) {
             int prevIndex =
@@ -33,34 +65,34 @@ namespace CSharpMath.Atom {
           }
           //TODO: One day when C# receives "or patterns", simplify this abomination
           switch (prevNode, newNode) {
-            case (null, Atoms.BinaryOperator b):
+            case (null, BinaryOperator b):
               newNode = b.ToUnaryOperator();
               break;
-            case (Atoms.BinaryOperator _, Atoms.BinaryOperator b):
+            case (BinaryOperator _, BinaryOperator b):
               newNode = b.ToUnaryOperator();
               break;
-            case (Atoms.Relation _, Atoms.BinaryOperator b):
+            case (Relation _, BinaryOperator b):
               newNode = b.ToUnaryOperator();
               break;
-            case (Atoms.Open _, Atoms.BinaryOperator b):
+            case (Open _, BinaryOperator b):
               newNode = b.ToUnaryOperator();
               break;
-            case (Atoms.Punctuation _, Atoms.BinaryOperator b):
+            case (Punctuation _, BinaryOperator b):
               newNode = b.ToUnaryOperator();
               break;
-            case (Atoms.LargeOperator _, Atoms.BinaryOperator b):
+            case (LargeOperator _, BinaryOperator b):
               newNode = b.ToUnaryOperator();
               break;
-            case (Atoms.BinaryOperator b, Atoms.Relation _):
-              newList[newList.Count - 1] = b.ToUnaryOperator();
+            case (BinaryOperator b, Relation _):
+              newList.Last = b.ToUnaryOperator();
               break;
-            case (Atoms.BinaryOperator b, Atoms.Punctuation _):
-              newList[newList.Count - 1] = b.ToUnaryOperator();
+            case (BinaryOperator b, Punctuation _):
+              newList.Last = b.ToUnaryOperator();
               break;
-            case (Atoms.BinaryOperator b, Atoms.Close _):
-              newList[newList.Count - 1] = b.ToUnaryOperator();
+            case (BinaryOperator b, Close _):
+              newList.Last = b.ToUnaryOperator();
               break;
-            case (Atoms.Number n, Atoms.Number _) when n.Superscript.IsEmpty() && n.Subscript.IsEmpty():
+            case (Number n, Number _) when n.Superscript.IsEmpty() && n.Subscript.IsEmpty():
               n.Fuse(newNode);
               continue; // do not add the new node; we fused it instead.
           }
