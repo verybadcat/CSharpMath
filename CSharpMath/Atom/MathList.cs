@@ -53,7 +53,9 @@ namespace CSharpMath.Atom {
       } else {
         foreach (var atom in Atoms) {
           if (atom is Comment) {
-            newList.Add(atom.Clone(finalize));
+            var newComment = atom.Clone(finalize);
+            newComment.IndexRange = Range.NotFound;
+            newList.Add(newComment);
             continue;
           }
           var prevNode = newList.Last;

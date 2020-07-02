@@ -142,7 +142,7 @@ namespace CSharpMath.CoreTests {
 
     [Fact]
     public void TestListFinalizedCopy() {
-      var input = @"-52x^{13+y}_{15-} + (-12.3 *)\frac{-12}{15.2}\int^\sqrt[!\ ]{=(}_0 \theta";
+      var input = @"-52x^{13+y}_{15-} + (-12.3 *)\frac{-12}{15.2}\int^\sqrt[!\ ]{=(}_0 \theta%:)" + "\n" + @",";
       var list = LaTeXParserTest.ParseLaTeX(input);
       Assert.ThrowsAny<Xunit.Sdk.XunitException>(() => CheckListContents(list));
       Assert.ThrowsAny<Xunit.Sdk.XunitException>(() => CheckListContents(list.Clone(false)));
@@ -172,7 +172,10 @@ namespace CSharpMath.CoreTests {
           CheckAtomNucleusAndRange<Close>(")", 12, 1),
           CheckAtomNucleusAndRange<Fraction>("", 13, 1),
           CheckAtomNucleusAndRange<LargeOperator>("∫", 14, 1),
-          CheckAtomNucleusAndRange<Variable>("θ", 15, 1)
+          CheckAtomNucleusAndRange<Variable>("θ", 15, 1),
+          // Comments are not given ranges as they won't affect typesetting
+          CheckAtomNucleusAndRange<Comment>(":)", Range.UndefinedInt, Range.UndefinedInt),
+          CheckAtomNucleusAndRange<Punctuation>(",", 16, 1)
         );
         Assert.Collection(list.Atoms[2].Superscript,
           CheckAtomNucleusAndRange<Number>("13", 0, 2),
