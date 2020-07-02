@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 
 namespace CSharpMath.Atom {
   using Atoms;
+  using Space = Atoms.Space;
   using Structures;
   using static Structures.Result;
-  using Color = Atoms.Color;
-  using Space = Atoms.Space;
   using InvalidCodePathException = Structures.InvalidCodePathException;
   public class LaTeXParser {
 
@@ -51,7 +51,7 @@ namespace CSharpMath.Atom {
       : (MathList?)null;
     public Result<MathList> ReadUntil(char stopChar, MathList? appendTo = null) =>
       BuildInternal(false, stopChar, r: appendTo);
-#warning TODO Example
+    // TODO: Example
     //https://phabricator.wikimedia.org/T99369
     //https://phab.wmfusercontent.org/file/data/xsimlcnvo42siudvwuzk/PHID-FILE-bdcqexocj5b57tj2oezn/math_rendering.png
     //dt, \text{d}t, \partial t, \nabla\psi \\ \underline\overline{dy/dx, \text{d}y/\text{d}x, \frac{dy}{dx}, \frac{\text{d}y}{\text{d}x}, \frac{\partial^2}{\partial x_1\partial x_2}y} \\ \prime,
@@ -122,31 +122,32 @@ namespace CSharpMath.Atom {
       return builder.ToString();
     }
 
-    public Result<Structures.Color> ReadColor() {
+    public Result<Color> ReadColor() {
       if (!ReadCharIfAvailable('{')) {
         return "Missing {";
       }
       SkipSpaces();
-      var builder = new StringBuilder();
+      var index = NextChar;
+      var length = 0;
       while (HasCharacters) {
         var ch = ReadChar();
         if (char.IsLetterOrDigit(ch) || ch == '#') {
-          builder.Append(ch);
+          length++;
         } else {
           // we went too far
           UndoReadChar();
           break;
         }
       }
-      var str = builder.ToString();
-      if (!(Structures.Color.Create(str.AsSpan()) is { } color)) {
+      var str = Chars.Substring(index, length);
+      if (LaTeXSettings.ParseColor(str) is Color color) {
+        SkipSpaces();
+        if (!ReadCharIfAvailable('}'))
+          return "Missing }";
+        return color;
+      } else {
         return "Invalid color: " + str;
       }
-      SkipSpaces();
-      if (!ReadCharIfAvailable('}')) {
-        return "Missing }";
-      }
-      return color;
     }
 
     public void SkipSpaces() {
@@ -345,7 +346,7 @@ namespace CSharpMath.Atom {
           table.InterRowAdditionalSpacing = 1;
           table.InterColumnSpacing = 18;
           for (int i = 0, j = 0; i < arrayAlignments.Length && j < table.NColumns; i++, j++) {
-#warning vertical lines in array currently unsupported
+            // TODO: vertical lines in array currently unsupported
             while (arrayAlignments[i] == '|') i++;
             table.SetAlignment(arrayAlignments[i] switch
             {
@@ -649,16 +650,16 @@ namespace CSharpMath.Atom {
                 break;
             }
             break;
-          case Color color:
-            builder.Append(@"\color{")
-              .Append(color.Colour)
+          case Colored colored:
+            builder.Append(@"\color{");
+            LaTeXSettings.ColorToString(colored.Color, builder)
               .Append("}{");
-            MathListToLaTeX(color.InnerList, builder, currentFontStyle);
+            MathListToLaTeX(colored.InnerList, builder, currentFontStyle);
             builder.Append("}");
             break;
           case ColorBox colorBox:
-            builder.Append(@"\colorbox{")
-              .Append(colorBox.Colour)
+            builder.Append(@"\colorbox{");
+            LaTeXSettings.ColorToString(colorBox.Color, builder)
               .Append("}{");
             MathListToLaTeX(colorBox.InnerList, builder, currentFontStyle);
             builder.Append("}");
@@ -676,7 +677,8 @@ namespace CSharpMath.Atom {
             break;
           case var _ when MathAtomToLaTeX(atom, builder, out _):
             break;
-          case Space space:
+          case Atoms.Space space:
+            var intSpace = (int)space.Length;
             if (space.IsMu)
               builder.Append(@"\mkern")
                 .Append(space.Length.ToStringInvariant("0.0####"))

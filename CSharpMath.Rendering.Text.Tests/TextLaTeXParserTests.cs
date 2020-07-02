@@ -87,7 +87,7 @@ namespace CSharpMath.Rendering.Text.Tests {
       void Test(string input) {
         var atom = Parse(input);
         var list = new List<TextAtom> {
-          new TextAtom.Color(new TextAtom.Text(colored), Structures.Color.PredefinedColors["red"])
+          new TextAtom.Colored(new TextAtom.Text(colored), Atom.LaTeXSettings.PredefinedColors["red"])
         };
         if (after != null) list.Add(new TextAtom.Text(after));
         Assert.Equal(list.Count == 1 ? list[0] : new TextAtom.List(list), atom);
@@ -155,29 +155,29 @@ namespace CSharpMath.Rendering.Text.Tests {
 
     // Sync with CSharpMath.CoreTests LaTeXParserTests
     [Theory]
-    [InlineData("0xFFF", "white", 0xFF, 0xFF, 0xFF)]
-    [InlineData("#ff0", "yellow", 0xFF, 0xFF, 0x00)]
-    [InlineData("0xf00f", "blue", 0x00, 0x00, 0xFF)]
-    [InlineData("#F0F0", "lime", 0x00, 0xFF, 0x00)]
-    [InlineData("0x008000", "green", 0x00, 0x80, 0x00)]
+    [InlineData("#FFFFFF", "white", 0xFF, 0xFF, 0xFF)]
+    [InlineData("#ffff00", "yellow", 0xFF, 0xFF, 0x00)]
+    [InlineData("#ff0000ff", "blue", 0x00, 0x00, 0xFF)]
+    [InlineData("#FF00FF00", "lime", 0x00, 0xFF, 0x00)]
+    [InlineData("#008000", "green", 0x00, 0x80, 0x00)]
     [InlineData("#d3D3d3", "lightgray", 0xD3, 0xD3, 0xD3)]
-    [InlineData("0xFf000000", "black", 0x00, 0x00, 0x00)]
+    [InlineData("#Ff000000", "black", 0x00, 0x00, 0x00)]
     [InlineData("#fFa9A9a9", "gray", 0xA9, 0xA9, 0xA9)]
     [InlineData("cyan", "cyan", 0x00, 0xFF, 0xFF)]
     [InlineData("BROWN", "brown", 0x96, 0x4B, 0x00)]
     [InlineData("oLIve", "olive", 0x80, 0x80, 0x00)]
-    [InlineData("0x12345678", "#12345678", 0x34, 0x56, 0x78, 0x12)]
+    [InlineData("#12345678", "#12345678", 0x34, 0x56, 0x78, 0x12)]
     [InlineData("#fedcba98", "#FEDCBA98", 0xDC, 0xBA, 0x98, 0xFE)]
     public void Color(string inColor, string outColor, byte r, byte g, byte b, byte a = 0xFF) {
       var atom = Parse($@"\color{{{inColor}}}ab");
       CheckAtom<TextAtom.List>(l =>
         Assert.Collection(l.Content,
-          CheckAtom<TextAtom.Color>(color => {
-            Assert.Equal(r, color.Colour.R);
-            Assert.Equal(g, color.Colour.G);
-            Assert.Equal(b, color.Colour.B);
-            Assert.Equal(a, color.Colour.A);
-            CheckAtom<TextAtom.Text>(t => Assert.Equal("a", t.Content))(color.Content);
+          CheckAtom<TextAtom.Colored>(colored => {
+            Assert.Equal(r, colored.Colour.R);
+            Assert.Equal(g, colored.Colour.G);
+            Assert.Equal(b, colored.Colour.B);
+            Assert.Equal(a, colored.Colour.A);
+            CheckAtom<TextAtom.Text>(t => Assert.Equal("a", t.Content))(colored.Content);
           }),
           CheckAtom<TextAtom.Text>(t => Assert.Equal("b", t.Content))
         )

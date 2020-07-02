@@ -26,8 +26,7 @@ namespace CSharpMath.Atom.Atoms {
         .AppendInBracesOrEmptyBraces(Numerator?.DebugString)
         .AppendInBracesOrEmptyBraces(Denominator?.DebugString)
         .AppendDebugStringOfScripts(this).ToString();
-    public override bool Equals(object obj) =>
-      obj is Fraction f ? EqualsFraction(f) : false;
+    public override bool Equals(object obj) => obj is Fraction f && EqualsFraction(f);
     public bool EqualsFraction(Fraction other) =>
       EqualsAtom(other)
       && Numerator.NullCheckingStructuralEquality(other.Numerator)

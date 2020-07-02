@@ -154,7 +154,7 @@ moveCursor:var pos = Adjust(new Rectangle(x, y, 0, 0));
       Console.ResetColor();
     }
     public static void ConsoleDrawHorizontal
-      (int x1_, int y_, int x2_, int thickness, Structures.Color? color) {
+      (int x1_, int y_, int x2_, int thickness, Color? color) {
       var rect = Adjust(Rectangle.FromLTRB(x1_, y_ - thickness / 2, x2_, y_ + thickness / 2));
       SetConsoleColor(color);
       for (int i = 0; i < thickness; i++) {

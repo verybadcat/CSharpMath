@@ -1,10 +1,8 @@
 namespace CSharpMath.Editor {
   using System;
   using System.Drawing;
-
   using Display;
   using Display.FrontEnd;
-  using Color = Structures.Color;
 
   partial class Extensions {
     public static MathListIndex IndexForPoint<TFont, TGlyph>(
