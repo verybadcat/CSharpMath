@@ -182,11 +182,11 @@ namespace CSharpMath.Display {
             // We need to preserve the prevAtom for any inter-element space changes,
             // so we skip to the next node.
             continue;
-          case Colored Colored:
+          case Colored colored:
             AddDisplayLine(false);
-            AddInterElementSpace(prevAtom, Colored);
-            var colorDisplay = CreateLine(Colored.InnerList, _font, _context, _style, false);
-            colorDisplay.SetTextColorRecursive(Colored.Color);
+            AddInterElementSpace(prevAtom, colored);
+            var colorDisplay = CreateLine(colored.InnerList, _font, _context, _style, false);
+            colorDisplay.SetTextColorRecursive(colored.Color);
             colorDisplay.Position = _currentPosition;
             _currentPosition.X += colorDisplay.Width;
             _displayAtoms.Add(colorDisplay);
