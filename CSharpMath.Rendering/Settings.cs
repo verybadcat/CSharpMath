@@ -5,7 +5,7 @@ namespace CSharpMath {
     public static Rendering.BackEnd.Typefaces GlobalTypefaces =>
       Rendering.BackEnd.Fonts.GlobalTypefaces;
     public static BiDictionary<string, System.Drawing.Color> PredefinedColors =>
-      ColorExtensions.PredefinedColors;
+      Atom.LaTeXSettings.PredefinedColors;
     public static AliasDictionary<string, Atom.Boundary> PredefinedLaTeXBoundaryDelimiters =>
       Atom.LaTeXSettings.BoundaryDelimiters;
     public static AliasDictionary<string, Atom.FontStyle> PredefinedLaTeXFontStyles =>

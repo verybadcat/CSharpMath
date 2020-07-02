@@ -146,7 +146,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
           }
           Result<Color> ReadColor(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section)  =>
             ReadArgumentString(latexInput, ref section).Bind(color =>
-              ColorExtensions.ParseColor(color.ToString()) is Color value ?
+              LaTeXSettings.ParseColor(color.ToString()) is Color value ?
                 Ok(value) :
               Err("Invalid color: " + color.ToString())
             );
@@ -381,7 +381,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     }
                   //case "red", "yellow", ...
                   case var shortColor when
-                    ColorExtensions.PredefinedColors.TryGetByFirst(shortColor, out var color): {
+                    LaTeXSettings.PredefinedColors.TryGetByFirst(shortColor, out var color): {
                       int tmp_commandLength = shortColor.Length;
                       if (ReadArgumentAtom(latex).Bind(
                           coloredContent => atoms.Color(coloredContent, color)
@@ -487,7 +487,8 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
           b.Append(@"\fontsize{").Append(z.PointSize).Append("}{");
           return TextAtomToLaTeX(z.Content, b).Append('}');
         case TextAtom.Colored c:
-          b.Append(@"\color{").Append(ColorExtensions.ToTexString(c.Colour)).Append("}{");
+          b.Append(@"\color{");
+          LaTeXSettings.ColorToString(c.Colour, b).Append("}{");
           return TextAtomToLaTeX(c.Content, b).Append('}');
         case TextAtom.List l:
           foreach (var a in l.Content)

@@ -149,11 +149,11 @@ namespace CSharpMath.Rendering.Tests {
         { "ScriptLineStyle", new TPainter { LineStyle = Atom.LineStyle.Script } },
         { "ScriptScriptLineStyle", new TPainter { LineStyle = Atom.LineStyle.ScriptScript } },
         { "GlyphBoxColor", new TPainter { GlyphBoxColor = (
-          new TPainter().UnwrapColor(Structures.ColorExtensions.PredefinedColors["green"]),
-          new TPainter().UnwrapColor(Structures.ColorExtensions.PredefinedColors["blue"])
+          new TPainter().UnwrapColor(Atom.LaTeXSettings.PredefinedColors["green"]),
+          new TPainter().UnwrapColor(Atom.LaTeXSettings.PredefinedColors["blue"])
         ) } },
         { "TextColor", new TPainter { TextColor =
-          new TPainter().UnwrapColor(Structures.ColorExtensions.PredefinedColors["orange"]) } },
+          new TPainter().UnwrapColor(Atom.LaTeXSettings.PredefinedColors["orange"]) } },
     };
     public static TheoryData<string, TMathPainter> MathPainterSettingsData => PainterSettingsData<TMathPainter, Atom.MathList>();
     public static TheoryData<string, TTextPainter> TextPainterSettingsData => PainterSettingsData<TTextPainter, Text.TextAtom>();

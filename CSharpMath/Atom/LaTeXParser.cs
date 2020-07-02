@@ -218,7 +218,7 @@ namespace CSharpMath.Atom {
         }
       }
       var str = builder.ToString();
-      if (ColorExtensions.ParseColor(str) is Color color) {
+      if (LaTeXSettings.ParseColor(str) is Color color) {
         SkipSpaces();
         if (!ExpectCharacter('}')) {
           SetError("Missing }");
@@ -996,15 +996,15 @@ namespace CSharpMath.Atom {
             }
             break;
           case Colored colored:
-            builder.Append(@"\color{")
-              .Append(ColorExtensions.ToTexString(colored.Color))
+            builder.Append(@"\color{");
+            LaTeXSettings.ColorToString(colored.Color, builder)
               .Append("}{");
             MathListToLaTeX(colored.InnerList, builder, currentFontStyle);
             builder.Append("}");
             break;
           case ColorBox colorBox:
-            builder.Append(@"\colorbox{")
-              .Append(ColorExtensions.ToTexString(colorBox.Color))
+            builder.Append(@"\colorbox{");
+            LaTeXSettings.ColorToString(colorBox.Color, builder)
               .Append("}{");
             MathListToLaTeX(colorBox.InnerList, builder, currentFontStyle);
             builder.Append("}");

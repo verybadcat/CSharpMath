@@ -462,11 +462,11 @@ namespace CSharpMath.CoreTests {
       TestOuter(@"\color{red}\color{blue}x\colorbox{yellow}\colorbox{green}yz", 3, 14, 4, 30,
         l1 => {
           Assert.Null(l1.BackColor);
-          Assert.Equal(Structures.ColorExtensions.PredefinedColors["red"], l1.TextColor);
+          Assert.Equal(LaTeXSettings.PredefinedColors["red"], l1.TextColor);
           TestList(1, 14, 4, 10, 0, 0, LinePosition.Regular, Range.UndefinedInt,
              l2 => {
                Assert.Null(l2.BackColor);
-               Assert.Equal(Structures.ColorExtensions.PredefinedColors["blue"], l2.TextColor);
+               Assert.Equal(LaTeXSettings.PredefinedColors["blue"], l2.TextColor);
                TestList(1, 14, 4, 10, 0, 0, LinePosition.Regular, Range.UndefinedInt, d => {
                  var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
                  Assert.Single(line.Atoms);
@@ -474,16 +474,16 @@ namespace CSharpMath.CoreTests {
                  Assert.Equal(new PointF(), line.Position);
                  Assert.False(line.HasScript);
                  Assert.Null(line.BackColor);
-                 Assert.Equal(Structures.ColorExtensions.PredefinedColors["blue"], line.TextColor);
+                 Assert.Equal(LaTeXSettings.PredefinedColors["blue"], line.TextColor);
                })(l2);
              })(l1);
         },
         l1 => {
-          Assert.Equal(Structures.ColorExtensions.PredefinedColors["yellow"], l1.BackColor);
+          Assert.Equal(LaTeXSettings.PredefinedColors["yellow"], l1.BackColor);
           Assert.Null(l1.TextColor);
           TestList(1, 14, 4, 10, 10, 0, LinePosition.Regular, Range.UndefinedInt,
              l2 => {
-               Assert.Equal(Structures.ColorExtensions.PredefinedColors["green"], l2.BackColor);
+               Assert.Equal(LaTeXSettings.PredefinedColors["green"], l2.BackColor);
                Assert.Null(l2.TextColor);
                TestList(1, 14, 4, 10, 0, 0, LinePosition.Regular, Range.UndefinedInt, d => {
                  var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
