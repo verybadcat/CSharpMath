@@ -1,5 +1,3 @@
-using SizeF = System.Drawing.SizeF;
-
 using Avalonia;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
