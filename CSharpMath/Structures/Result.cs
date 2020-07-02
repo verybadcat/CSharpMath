@@ -11,35 +11,26 @@ namespace CSharpMath.Structures {
   //use Err(string) there instead
   public readonly struct ResultImplicitError {
     public string Error { get; }
-    public ResultImplicitError(string error) =>
-      Error = error ?? throw new ArgumentNullException(nameof(error));
+    public ResultImplicitError(string error) => Error = error ?? throw new ArgumentNullException(nameof(error));
   }
   public readonly struct Result {
     public static Result Ok() => new Result();
     public static Result<T> Ok<T>(T value) => new Result<T>(value);
     public static SpanResult<T> Ok<T>(ReadOnlySpan<T> value) => new SpanResult<T>(value);
     public static ResultImplicitError Err(string error) => new ResultImplicitError(error);
-    public Result(string error) =>
-      Error = error ?? throw new ArgumentNullException(nameof(error));
+    public Result(string error) => Error = error ?? throw new ArgumentNullException(nameof(error));
     public string? Error { get; }
     public void Match(Action successAction, Action<string> errorAction) {
       if (Error != null) errorAction(Error); else successAction();
     }
-    public TResult Match<TResult>(Func<TResult> successFunc, Func<string, TResult> errorFunc) {
-      if (Error != null) return errorFunc(Error); else return successFunc();
-    }
+    public TResult Match<TResult>(Func<TResult> successFunc, Func<string, TResult> errorFunc) =>
+      Error != null ? errorFunc(Error) : successFunc();
     public Result Bind<T>(Action successAction) {
       if (Error != null) return Error; else { successAction(); return Ok(); }
     }
-    public Result<T> Bind<T>(Func<T> successAction) {
-      if (Error != null) return Error; else return successAction();
-    }
-    public Result Bind(Func<Result> successAction) {
-      if (Error != null) return Error; else return successAction();
-    }
-    public Result<T> Bind<T>(Func<Result<T>> successAction) {
-      if (Error != null) return Error; else return successAction();
-    }
+    public Result<T> Bind<T>(Func<T> successAction) => Error ?? (Result<T>)successAction();
+    public Result Bind(Func<Result> successAction) => Error ?? successAction();
+    public Result<T> Bind<T>(Func<Result<T>> successAction) => Error ?? successAction();
     public static implicit operator Result(string error) => new Result(error);
     public static implicit operator Result(ResultImplicitError error) => new Result(error.Error);
   }
@@ -52,14 +43,10 @@ namespace CSharpMath.Structures {
     public void Deconstruct(out T value, out string? error) =>
       (value, error) = (_value, Error);
     public void Match(Action<T> successAction, Action<string> errorAction) {
-      if (successAction is null) throw new ArgumentNullException(nameof(successAction));
-      if (errorAction is null) throw new ArgumentNullException(nameof(errorAction));
       if (Error != null) errorAction(Error); else successAction(_value);
     }
     public TResult Match<TResult>(Func<T, TResult> successFunc, Func<string, TResult> errorFunc) =>
-      successFunc is null ? throw new ArgumentNullException(nameof(successFunc))
-      : errorFunc is null ? throw new ArgumentNullException(nameof(errorFunc))
-      : Error != null ? errorFunc(Error) : successFunc(_value);
+      Error != null ? errorFunc(Error) : successFunc(_value);
     public static implicit operator Result<T>(T value) =>
       new Result<T>(value);
     public static implicit operator Result<T>(string error) =>
@@ -71,18 +58,9 @@ namespace CSharpMath.Structures {
       else method(_value);
       return Result.Ok();
     }
-    public Result Bind(Func<T, Result> method) {
-      if (Error is string error) return error;
-      else return method(_value);
-    }
-    public Result<TResult> Bind<TResult>(Func<T, TResult> method) {
-      if (Error is string error) return error;
-      else return method(_value);
-    }
-    public Result<TResult> Bind<TResult>(Func<T, Result<TResult>> method) {
-      if (Error is string error) return error;
-      else return method(_value);
-    }
+    public Result Bind(Func<T, Result> method) => Error ?? method(_value);
+    public Result<TResult> Bind<TResult>(Func<T, TResult> method) => Error ?? (Result<TResult>)method(_value);
+    public Result<TResult> Bind<TResult>(Func<T, Result<TResult>> method) => Error ?? method(_value);
   }
   public readonly ref struct SpanResult<T> {
     public SpanResult(ReadOnlySpan<T> value) {
@@ -100,14 +78,10 @@ namespace CSharpMath.Structures {
       error = Error;
     }
     public void Match(Action successAction, System.Action<string> errorAction) {
-      if (successAction is null) throw new ArgumentNullException(nameof(successAction));
-      if (errorAction is null) throw new ArgumentNullException(nameof(errorAction));
       if (Error != null) errorAction(Error); else successAction(_value);
     }
     public TResult Match<TResult>(Func<TResult> successAction, System.Func<string, TResult> errorAction) =>
-      successAction is null ? throw new ArgumentNullException(nameof(successAction))
-      : errorAction is null ? throw new ArgumentNullException(nameof(errorAction))
-      : Error != null ? errorAction(Error) : successAction(_value);
+      Error != null ? errorAction(Error) : successAction(_value);
     public static implicit operator SpanResult<T>(ReadOnlySpan<T> value) =>
       new SpanResult<T>(value);
     public static implicit operator SpanResult<T>(string error) =>
@@ -119,25 +93,12 @@ namespace CSharpMath.Structures {
     public delegate TResult Func<TResult>(ReadOnlySpan<T> result);
     public delegate TResult Func<TOther, TResult>(ReadOnlySpan<T> thisResult, TOther otherResult);
     public Result Bind(Action method) {
-      if (method is null) throw new ArgumentNullException(nameof(method));
       if (Error is string error) return error;
       else method(_value);
       return Result.Ok();
     }
-    public Result Bind(Func<Result> method) {
-      if (method is null) throw new ArgumentNullException(nameof(method));
-      if (Error is string error) return error;
-      else return method(_value);
-    }
-    public Result<TResult> Bind<TResult>(Func<TResult> method) {
-      if (method is null) throw new ArgumentNullException(nameof(method));
-      if (Error is string error) return error;
-      else return method(_value);
-    }
-    public Result<TResult> Bind<TResult>(Func<Result<TResult>> method) {
-      if (method is null) throw new ArgumentNullException(nameof(method));
-      if (Error is string error) return error;
-      else return method(_value);
-    }
+    public Result Bind(Func<Result> method) => Error ?? method(_value);
+    public Result<TResult> Bind<TResult>(Func<TResult> method) => Error ?? (Result<TResult>)method(_value);
+    public Result<TResult> Bind<TResult>(Func<Result<TResult>> method) => Error ?? method(_value);
   }
 }

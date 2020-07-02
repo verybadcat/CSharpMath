@@ -1,10 +1,10 @@
 using Xunit;
 
 namespace CSharpMath.CoreTests {
-  public class BiDictionaryTests {
+  public class DictionaryTests {
     [Fact]
     public void TestRemove() {
-      var testBiDictionary = new CSharpMath.Structures.BiDictionary<int, string> {
+      var testBiDictionary = new Structures.BiDictionary<int, string> {
         { 0, "0" },
         { 1, "1" },
         { 2, "8" },
@@ -43,7 +43,7 @@ namespace CSharpMath.CoreTests {
 
     [Fact]
     public void TestAddOrReplace() {
-      var testBiDictionary = new CSharpMath.Structures.BiDictionary<int, string>();
+      var testBiDictionary = new Structures.BiDictionary<int, string>();
 
       testBiDictionary.AddOrReplace(0, "Value1");
       Assert.Equal("Value1", testBiDictionary[0]);
