@@ -172,12 +172,12 @@ namespace CSharpMath.Rendering.Text.Tests {
       var atom = Parse($@"\color{{{inColor}}}ab");
       CheckAtom<TextAtom.List>(l =>
         Assert.Collection(l.Content,
-          CheckAtom<TextAtom.Colored>(color => {
-            Assert.Equal(r, color.Colour.R);
-            Assert.Equal(g, color.Colour.G);
-            Assert.Equal(b, color.Colour.B);
-            Assert.Equal(a, color.Colour.A);
-            CheckAtom<TextAtom.Text>(t => Assert.Equal("a", t.Content))(color.Content);
+          CheckAtom<TextAtom.Colored>(colored => {
+            Assert.Equal(r, colored.Colour.R);
+            Assert.Equal(g, colored.Colour.G);
+            Assert.Equal(b, colored.Colour.B);
+            Assert.Equal(a, colored.Colour.A);
+            CheckAtom<TextAtom.Text>(t => Assert.Equal("a", t.Content))(colored.Content);
           }),
           CheckAtom<TextAtom.Text>(t => Assert.Equal("b", t.Content))
         )
