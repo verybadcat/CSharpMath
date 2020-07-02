@@ -13,11 +13,11 @@ namespace CSharpMath.Rendering.Tests {
 
       public PointF Position { get => PointF.Empty; set => throw new NotImplementedException(); }
       public Atom.Range Range => throw new NotImplementedException();
-      public Structures.Color? TextColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-      public Structures.Color? BackColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+      public Color? TextColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+      public Color? BackColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
       public bool HasScript { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
       public void Draw(IGraphicsContext<Fonts, Glyph> context) => throw new NotImplementedException();
-      public void SetTextColorRecursive(Structures.Color? textColor) => throw new NotImplementedException();
+      public void SetTextColorRecursive(Color? textColor) => throw new NotImplementedException();
     }
     class DEditorKeyboard : Editor.MathKeyboard<Fonts, Glyph> {
       public DEditorKeyboard() : base(TypesettingContext.Instance, new Fonts()) =>

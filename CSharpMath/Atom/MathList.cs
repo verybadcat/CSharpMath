@@ -31,7 +31,7 @@ namespace CSharpMath.Atom {
               prevNode?.IndexRange.Location + prevNode?.IndexRange.Length ?? 0;
             newNode.IndexRange = new Range(prevIndex, 1);
           }
-#warning One day when C# receives "or patterns", simplify this abomination
+          //TODO: One day when C# receives "or patterns", simplify this abomination
           switch (prevNode, newNode) {
             case (null, Atoms.BinaryOperator b):
               newNode = b.ToUnaryOperator();
@@ -90,7 +90,7 @@ namespace CSharpMath.Atom {
       }
       return true;
     }
-    public override bool Equals(object obj) => obj is MathList l ? EqualsList(l) : false;
+    public override bool Equals(object obj) => obj is MathList l && EqualsList(l);
     public override int GetHashCode() =>
       Atoms.Count == 0 ? 0 : Atoms.GetHashCode(); // Special case empty list for LaTeXDefaults
     bool IEquatable<MathList>.Equals(MathList otherList) => EqualsList(otherList);

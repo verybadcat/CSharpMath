@@ -1,8 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Globalization;
 
 namespace CSharpMath.Atom {
+  using System.Text;
   using Atoms;
+  using Structures;
+  using Space = Atoms.Space;
   //https://mirror.hmc.edu/ctan/macros/latex/contrib/unicode-math/unimath-symbols.pdf
   public static class LaTeXSettings {
     public static MathAtom Times => new BinaryOperator("×");
@@ -116,6 +121,61 @@ namespace CSharpMath.Atom {
         { "urcorner", new Boundary("⌝") },
         { "llcorner", new Boundary("⌞") },
         { "lrcorner", new Boundary("⌟") },
+      };
+
+
+    public static Color? ParseColor(string? hexOrName) {
+      if (hexOrName == null) return null;
+      if (hexOrName.StartsWith("#", StringComparison.InvariantCulture)) {
+        var hex = hexOrName.Substring(1);
+        return
+          (hex.Length, int.TryParse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var i)) switch
+          {
+            (8, true) => Color.FromArgb(i),
+            (6, true) => Color.FromArgb(unchecked((int)0xff000000) + i),
+            _ => null
+          };
+      }
+#pragma warning disable CA1308 // Normalize strings to uppercase
+      if (PredefinedColors.TryGetByFirst(hexOrName.ToLowerInvariant(), out var predefined))
+        return predefined;
+#pragma warning restore CA1308 // Normalize strings to uppercase
+      return null;
+    }
+    public static StringBuilder ColorToString(Color color, StringBuilder sb) {
+      if (PredefinedColors.TryGetBySecond(color, out var outString)) {
+        return sb.Append(outString);
+      } else {
+        sb.Append('#');
+        if (color.A != 255)
+          sb.Append(color.A.ToStringInvariant("X2"));
+        return sb.Append(color.R.ToStringInvariant("X2"))
+                 .Append(color.G.ToStringInvariant("X2"))
+                 .Append(color.B.ToStringInvariant("X2"));
+      }
+    }
+    //https://en.wikibooks.org/wiki/LaTeX/Colors#Predefined_colors
+    public static BiDictionary<string, Color> PredefinedColors { get; } =
+      new BiDictionary<string, Color> {
+        { "black", Color.FromArgb(0, 0, 0) },
+        { "blue", Color.FromArgb(0, 0, 255) },
+        { "brown", Color.FromArgb(150, 75, 0) },
+        { "cyan", Color.FromArgb(0, 255, 255) },
+        { "darkgray", Color.FromArgb(128, 128, 128) },
+        { "gray", Color.FromArgb(169, 169, 169) },
+        { "green", Color.FromArgb(0, 128, 0) },
+        { "lightgray", Color.FromArgb(211, 211, 211) },
+        { "lime", Color.FromArgb(0, 255, 0) },
+        { "magenta", Color.FromArgb(255, 0, 255) },
+        { "olive", Color.FromArgb(128, 128, 0) },
+        { "orange", Color.FromArgb(255, 128, 0) },
+        { "pink", Color.FromArgb(255, 192, 203) },
+        { "purple", Color.FromArgb(128, 0, 128) },
+        { "red", Color.FromArgb(255, 0,0) },
+        { "teal", Color.FromArgb(0, 128, 128) },
+        { "violet", Color.FromArgb(128, 0, 255) },
+        { "white", Color.FromArgb(255, 255, 255) },
+        { "yellow", Color.FromArgb(255, 255, 0) }
       };
 
     public static Structures.AliasDictionary<string, FontStyle> FontStyles { get; } =
@@ -575,7 +635,7 @@ namespace CSharpMath.Atom {
         // Table 17: Some Other Constructions
         { "widehat", new Accent("\u0302") },
         { "widetilde", new Accent("\u0303") },
-#warning implement \overleftarrow, \overrightarrow, \overbrace, \underbrace
+        // TODO: implement \overleftarrow, \overrightarrow, \overbrace, \underbrace
         // \overleftarrow{}
         // \overrightarrow{}
         // \overline{}

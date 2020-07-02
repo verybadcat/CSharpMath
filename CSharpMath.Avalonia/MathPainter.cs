@@ -1,7 +1,7 @@
 using AvaloniaColor = Avalonia.Media.Color;
 
 using CSharpMath.Rendering.FrontEnd;
-using CSharpMathColor = CSharpMath.Structures.Color;
+using CSharpMathColor = System.Drawing.Color;
 
 namespace CSharpMath.Avalonia {
   public sealed class MathPainter : MathPainter<AvaloniaCanvas, AvaloniaColor> {

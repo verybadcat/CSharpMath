@@ -3,11 +3,11 @@ namespace CSharpMath.Rendering.Tests {
   public sealed class TestRenderingMathData : TestRenderingSharedData<TestRenderingMathData> {
     
     public const string AccentOver = @"\acute{x}";
-#warning Fix following line's output
+    //TODO: Fix following line's output
     public const string AccentOverF = @"\hat{f}";
     public const string AccentOverMultiple = @"\widehat{ABcd}";
     public const string AccentUnder = @"\threeunderdot{x}";
-#warning Fix following line's output
+    //TODO: Fix following line's output
     public const string AccentUnderThin = @"\threeunderdot{i}";
     public const string Choose = @"{6 \choose x}";
     public const string Commands = @"5\times(-2 \div 1) = -10";
@@ -80,7 +80,7 @@ c\alpha + d\gamma & c\beta + d \delta
     public const string SummationWithBigLimits = @"\sum^{4^{5^{6^{7^{8^{9^{10^{11^{12^{13}}}}}}}}}}_{i=3_{2_{1_{0_{-1_{-2_{-3}}}}}}}i";
     //\sum^{a^{s^{c^{e^{n^{d^{i^{n^g}}}}}}}}_{d_{e_{s_{c_{e_{n_{d_{i_{n_g}}}}}}}}}normal
     public const string EvalIntegral = @"\int_1^2 x\; dx=\left.\frac{x^2}{2}\right|_1^2=2-\frac{1}{2}=\frac{3}{2}";
-#warning Uncomment when \middle is implemented
+    //TODO: Uncomment when \middle is implemented
     //public const string MiddleDelimiter = @"A = \left\{ \frac{x_i}{i} \middle| i\in \mathcal{I} \right\}";
     public const string VectorProjection = @"Proj_\vec{v}\vec{u}=|\vec u|\cos\theta\times\frac\vec v{|\vec v|}=|\vec u|\frac{\vec u \cdot \vec v}{|\vec u||\vec v|}\times\frac\vec v{|\vec v|}\\\text{Suppose \mathit{u} and \mathit v are unit vectors, }Proj_\vec v\vec u = (\vec u\cdot\vec v)\vec v";
     public const string SimpleShortProof = @"\begin{aligned}&\because x+3=5\\&\therefore x=2\end{aligned}";
@@ -99,6 +99,10 @@ c\alpha + d\gamma & c\beta + d \delta
     public const string IntegralScripts = @"\int\int\int^{\infty}\int_0\int^{\infty}_0\int";
     public const string Logic = @"\neg(P\land Q) \iff (\neg P)\lor(\neg Q)";
     public const string LargerDelimiters = @"\left(\left[\left\{\left(\left[\left\{\left(\left[\left\{\left(\left[\left\{\square\right\}^\square\right]^\square\right)^\square\right\}^\square\right]^\square\right)^\square\right\}^\square\right]^\square\right)^\square\right\}^\square\right]^\square\right)^\square";
+    public const string BraSum = @"\frac{1}{\sqrt{2^n}} \sum_{i=0}^{2^n-1} \Bra{i}";
+    public const string KetSum = @"\frac{1}{\sqrt{2^n}} \sum_{i=0}^{2^n-1} \Ket{i}";
+    public const string LargeBra = @"\Bra{\frac{a}{2}+\frac{b}{3}}";
+    public const string LargeKet = @"\Ket{\frac{a}{2}+\frac{b}{3}}";
     // Solve x^3+50%*x^2=3/(500y) for x
     /*public const string InnersAndCases = @"\begin{cases}
 \frac{-\left(50+{\left(\frac{250000+27\times -\frac{3}{500\times y}+\sqrt{{\left(250000+27\times -\frac{3}{500\times y}\right)}^{2}-62500000000}}{2}\right)}^{0.3333333333333333}+\frac{2500}{{\left(\frac{250000+27\times -\frac{3}{500\times y}+\sqrt{{\left(250000+27\times -\frac{3}{500\times y}\right)}^{2}-62500000000}}{2}\right)}^{0.3333333333333333}}\right)}{3}\\

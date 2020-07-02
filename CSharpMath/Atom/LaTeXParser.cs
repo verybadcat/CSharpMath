@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Drawing;
 
 namespace CSharpMath.Atom {
   using Atoms;
+  using CSharpMath.Structures;
   using InvalidCodePathException = Structures.InvalidCodePathException;
   public class LaTeXParser {
     interface IEnvironment { }
@@ -95,7 +97,7 @@ namespace CSharpMath.Atom {
               return r;
             }
             continue;
-#warning TODO Example
+          // TODO: Example
           //https://phabricator.wikimedia.org/T99369
           //https://phab.wmfusercontent.org/file/data/xsimlcnvo42siudvwuzk/PHID-FILE-bdcqexocj5b57tj2oezn/math_rendering.png
           //dt, \text{d}t, \partial t, \nabla\psi \\ \underline\overline{dy/dx, \text{d}y/\text{d}x, \frac{dy}{dx}, \frac{\text{d}y}{\text{d}x}, \frac{\partial^2}{\partial x_1\partial x_2}y} \\ \prime,
@@ -198,7 +200,7 @@ namespace CSharpMath.Atom {
       return builder.ToString();
     }
 
-    private Structures.Color? ReadColor() {
+    private Color? ReadColor() {
       if (!ExpectCharacter('{')) {
         SetError("Missing {");
         return null;
@@ -216,16 +218,17 @@ namespace CSharpMath.Atom {
         }
       }
       var str = builder.ToString();
-      if (!(Structures.Color.Create(str.AsSpan()) is { } color)) {
+      if (LaTeXSettings.ParseColor(str) is Color color) {
+        SkipSpaces();
+        if (!ExpectCharacter('}')) {
+          SetError("Missing }");
+          return null;
+        }
+        return color;
+      } else {
         SetError("Invalid color: " + str);
         return null;
       }
-      SkipSpaces();
-      if (!ExpectCharacter('}')) {
-        SetError("Missing }");
-        return null;
-      }
-      return color;
     }
 
     private void SkipSpaces() {
@@ -404,7 +407,7 @@ namespace CSharpMath.Atom {
         case "color":
           return (ReadColor()) switch
           {
-            { } color when BuildInternal(true) is { } ml => new Color(color, ml),
+            Color color when BuildInternal(true) is MathList ml => new Colored(color, ml),
             _ => null,
           };
         case "colorbox":
@@ -423,7 +426,7 @@ namespace CSharpMath.Atom {
             if (error != null) {
               SetError(error);
               return null;
-            } else return new Space(space);
+            } else return new Atoms.Space(space);
           }
           SetError($@"\{command} is not allowed in math mode");
           return null;
@@ -434,7 +437,7 @@ namespace CSharpMath.Atom {
             if (error != null) {
               SetError(error);
               return null;
-            } else return new Space(space);
+            } else return new Atoms.Space(space);
           }
           SetError($@"\{command} is not allowed in text mode");
           return null;
@@ -456,6 +459,16 @@ namespace CSharpMath.Atom {
           var operatorname = ReadString();
           if (!ExpectCharacter('}')) { SetError("Expected }"); return null; }
           return new LargeOperator(operatorname, null);
+        // Bra and Ket implementations are derived from Donald Arseneau's braket LaTeX package.
+        // See: https://www.ctan.org/pkg/braket
+        case "Bra":
+          var braContents = BuildInternal(true);
+          if (braContents is null) return null;
+          return new Inner(new Boundary("〈"), braContents, new Boundary("|"));
+        case "Ket":
+          var ketContents = BuildInternal(true);
+          if (ketContents is null) return null;
+          return new Inner(new Boundary("|"), ketContents, new Boundary("〉"));
         default:
           SetError("Invalid command \\" + command);
           return null;
@@ -674,7 +687,7 @@ namespace CSharpMath.Atom {
           table.InterRowAdditionalSpacing = 1;
           table.InterColumnSpacing = 18;
           for (int i = 0, j = 0; i < arrayAlignments.Length && j < table.NColumns; i++, j++) {
-#warning vertical lines in array currently unsupported
+            // TODO: vertical lines in array currently unsupported
             while (arrayAlignments[i] == '|') i++;
             table.SetAlignment(arrayAlignments[i] switch
             {
@@ -744,7 +757,7 @@ namespace CSharpMath.Atom {
             // add delimiters
             return new Inner(
               LaTeXSettings.BoundaryDelimiters["{"],
-              new MathList(new Space(Structures.Space.ShortSpace), table),
+              new MathList(new Atoms.Space(Structures.Space.ShortSpace), table),
               Boundary.Empty
             );
           }
@@ -862,6 +875,14 @@ namespace CSharpMath.Atom {
               builder.Append('{');
               MathListToLaTeX(inner.InnerList, builder, currentFontStyle);
               builder.Append('}');
+            } else if (inner.LeftBoundary.Nucleus == "〈" && inner.RightBoundary.Nucleus == "|") {
+              builder.Append(@"\Bra{");
+              MathListToLaTeX(inner.InnerList, builder, currentFontStyle);
+              builder.Append("}");
+            } else if (inner.LeftBoundary.Nucleus == "|" && inner.RightBoundary.Nucleus == "〉") {
+              builder.Append(@"\Ket{");
+              MathListToLaTeX(inner.InnerList, builder, currentFontStyle);
+              builder.Append("}");
             } else {
               static string BoundaryToLaTeX(Boundary delimiter) {
                 var command = LaTeXSettings.BoundaryDelimiters[delimiter];
@@ -974,16 +995,16 @@ namespace CSharpMath.Atom {
                 break;
             }
             break;
-          case Color color:
-            builder.Append(@"\color{")
-              .Append(color.Colour)
+          case Colored colored:
+            builder.Append(@"\color{");
+            LaTeXSettings.ColorToString(colored.Color, builder)
               .Append("}{");
-            MathListToLaTeX(color.InnerList, builder, currentFontStyle);
+            MathListToLaTeX(colored.InnerList, builder, currentFontStyle);
             builder.Append("}");
             break;
           case ColorBox colorBox:
-            builder.Append(@"\colorbox{")
-              .Append(colorBox.Colour)
+            builder.Append(@"\colorbox{");
+            LaTeXSettings.ColorToString(colorBox.Color, builder)
               .Append("}{");
             MathListToLaTeX(colorBox.InnerList, builder, currentFontStyle);
             builder.Append("}");
@@ -1002,7 +1023,7 @@ namespace CSharpMath.Atom {
           case var _ when LaTeXSettings.CommandForAtom(atom) is string name:
             builder.Append(@"\").Append(name).Append(" ");
             break;
-          case Space space:
+          case Atoms.Space space:
             var intSpace = (int)space.Length;
             if (space.IsMu)
               builder.Append(@"\mkern")

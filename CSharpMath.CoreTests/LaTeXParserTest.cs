@@ -193,6 +193,32 @@ namespace CSharpMath.CoreTests {
       Assert.Equal(@"\sqrt[3]{2}", LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
+    [Fact]
+    public void TestBra() {
+      var list = ParseLaTeX(@"\Bra{i}");
+      Assert.Collection(list,
+        CheckAtom<Inner>("", inner => {
+          Assert.Equal("〈", inner.LeftBoundary.Nucleus);
+          Assert.Equal("|", inner.RightBoundary.Nucleus);
+          Assert.Collection(inner.InnerList, CheckAtom<Variable>("i"));
+        })
+      );
+      Assert.Equal(@"\Bra{i}", LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+
+    [Fact]
+    public void TestKet() {
+      var list = ParseLaTeX(@"\Ket{i}");
+      Assert.Collection(list,
+        CheckAtom<Inner>("", inner => {
+          Assert.Equal("|", inner.LeftBoundary.Nucleus);
+          Assert.Equal("〉", inner.RightBoundary.Nucleus);
+          Assert.Collection(inner.InnerList, CheckAtom<Variable>("i"));
+        })
+      );
+      Assert.Equal(@"\Ket{i}", LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+
     [
       Theory,
       InlineData(@"\left( 2 \right)", new[] { typeof(Inner) }, new[] { typeof(Number) }, @"(", @")", @"\left( 2\right) "),
@@ -430,9 +456,9 @@ namespace CSharpMath.CoreTests {
     [InlineData(@"\color{red}{{\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) }}")]
     public void TestRedMatrix(string input) {
       var list = ParseLaTeX(input);
-      Assert.Collection(list, CheckAtom<Color>("", color => {
-        Assert.Equal(new Structures.Color(255, 0, 0), color.Colour);
-        Assert.Collection(color.InnerList,
+      Assert.Collection(list, CheckAtom<Colored>("", colored => {
+        Assert.Equal(System.Drawing.Color.FromArgb(255, 0, 0), colored.Color);
+        Assert.Collection(colored.InnerList,
           CheckAtom<Inner>("", inner => {
             Assert.Equal(new Boundary("("), inner.LeftBoundary);
             Assert.Equal(new Boundary(")"), inner.RightBoundary);
@@ -1065,29 +1091,29 @@ namespace CSharpMath.CoreTests {
 
     // Sync with CSharpMath.Rendering.Text.Tests TextLaTeXParserTests
     [Theory]
-    [InlineData("0xFFF", "white", 0xFF, 0xFF, 0xFF)]
-    [InlineData("#ff0", "yellow", 0xFF, 0xFF, 0x00)]
-    [InlineData("0xf00f", "blue", 0x00, 0x00, 0xFF)]
-    [InlineData("#F0F0", "lime", 0x00, 0xFF, 0x00)]
-    [InlineData("0x008000", "green", 0x00, 0x80, 0x00)]
+    [InlineData("#FFFFFF", "white", 0xFF, 0xFF, 0xFF)]
+    [InlineData("#ffff00", "yellow", 0xFF, 0xFF, 0x00)]
+    [InlineData("#ff0000ff", "blue", 0x00, 0x00, 0xFF)]
+    [InlineData("#FF00FF00", "lime", 0x00, 0xFF, 0x00)]
+    [InlineData("#008000", "green", 0x00, 0x80, 0x00)]
     [InlineData("#d3D3d3", "lightgray", 0xD3, 0xD3, 0xD3)]
-    [InlineData("0xFf000000", "black", 0x00, 0x00, 0x00)]
+    [InlineData("#Ff000000", "black", 0x00, 0x00, 0x00)]
     [InlineData("#fFa9A9a9", "gray", 0xA9, 0xA9, 0xA9)]
     [InlineData("cyan", "cyan", 0x00, 0xFF, 0xFF)]
     [InlineData("BROWN", "brown", 0x96, 0x4B, 0x00)]
     [InlineData("oLIve", "olive", 0x80, 0x80, 0x00)]
-    [InlineData("0x12345678", "#12345678", 0x34, 0x56, 0x78, 0x12)]
+    [InlineData("#12345678", "#12345678", 0x34, 0x56, 0x78, 0x12)]
     [InlineData("#fedcba98", "#FEDCBA98", 0xDC, 0xBA, 0x98, 0xFE)]
     public void TestColor(string inColor, string outColor, byte r, byte g, byte b, byte a = 0xFF) {
       var list = ParseLaTeX($@"\color{{{inColor}}}ab");
       Assert.Collection(list,
-        CheckAtom<Color>("", color => {
-          Assert.Equal(r, color.Colour.R);
-          Assert.Equal(g, color.Colour.G);
-          Assert.Equal(b, color.Colour.B);
-          Assert.Equal(a, color.Colour.A);
-          Assert.False(color.ScriptsAllowed);
-          Assert.Collection(color.InnerList, CheckAtom<Variable>("a"));
+        CheckAtom<Colored>("", colored => {
+          Assert.Equal(r, colored.Color.R);
+          Assert.Equal(g, colored.Color.G);
+          Assert.Equal(b, colored.Color.B);
+          Assert.Equal(a, colored.Color.A);
+          Assert.False(colored.ScriptsAllowed);
+          Assert.Collection(colored.InnerList, CheckAtom<Variable>("a"));
         }),
         CheckAtom<Variable>("b")
       );
@@ -1095,13 +1121,13 @@ namespace CSharpMath.CoreTests {
 
       list = ParseLaTeX($@"\colorbox{{{inColor}}}ab");
       Assert.Collection(list,
-        CheckAtom<ColorBox>("", color => {
-          Assert.Equal(r, color.Colour.R);
-          Assert.Equal(g, color.Colour.G);
-          Assert.Equal(b, color.Colour.B);
-          Assert.Equal(a, color.Colour.A);
-          Assert.False(color.ScriptsAllowed);
-          Assert.Collection(color.InnerList, CheckAtom<Variable>("a"));
+        CheckAtom<ColorBox>("", colorBox => {
+          Assert.Equal(r, colorBox.Color.R);
+          Assert.Equal(g, colorBox.Color.G);
+          Assert.Equal(b, colorBox.Color.B);
+          Assert.Equal(a, colorBox.Color.A);
+          Assert.False(colorBox.ScriptsAllowed);
+          Assert.Collection(colorBox.InnerList, CheckAtom<Variable>("a"));
         }),
         CheckAtom<Variable>("b")
       );
@@ -1112,18 +1138,18 @@ namespace CSharpMath.CoreTests {
     public void TestColorScripts() {
       var list = ParseLaTeX(@"\color{red}1\colorbox{blue}2");
       Assert.Collection(list,
-        CheckAtom<Color>("", color => {
-          Assert.Equal("red", color.Colour.ToString());
-          Assert.Empty(color.Superscript);
-          Assert.Throws<InvalidOperationException>(() => color.Superscript.Add(new Variable("a")));
-          Assert.Throws<InvalidOperationException>(() => color.Superscript.Append(new MathList(new Variable("a"))));
-          Assert.Empty(color.Subscript);
-          Assert.Throws<InvalidOperationException>(() => color.Subscript.Add(new Variable("b")));
-          Assert.Throws<InvalidOperationException>(() => color.Subscript.Append(new MathList(new Variable("b"))));
-          Assert.Collection(color.InnerList, CheckAtom<Number>("1"));
+        CheckAtom<Colored>("", colored => {
+          Assert.Equal("red", LaTeXSettings.ColorToString(colored.Color, new StringBuilder()).ToString());
+          Assert.Empty(colored.Superscript);
+          Assert.Throws<InvalidOperationException>(() => colored.Superscript.Add(new Variable("a")));
+          Assert.Throws<InvalidOperationException>(() => colored.Superscript.Append(new MathList(new Variable("a"))));
+          Assert.Empty(colored.Subscript);
+          Assert.Throws<InvalidOperationException>(() => colored.Subscript.Add(new Variable("b")));
+          Assert.Throws<InvalidOperationException>(() => colored.Subscript.Append(new MathList(new Variable("b"))));
+          Assert.Collection(colored.InnerList, CheckAtom<Number>("1"));
         }),
         CheckAtom<ColorBox>("", colorBox => {
-          Assert.Equal("blue", colorBox.Colour.ToString());
+          Assert.Equal("blue", LaTeXSettings.ColorToString(colorBox.Color, new StringBuilder()).ToString());
           Assert.Empty(colorBox.Superscript);
           Assert.Throws<InvalidOperationException>(() => colorBox.Superscript.Add(new Variable("a")));
           Assert.Throws<InvalidOperationException>(() => colorBox.Superscript.Append(new MathList(new Variable("a"))));
@@ -1344,6 +1370,30 @@ x \end{matrix}
       InlineData(@"\left(\begin{matrix}\right)", @"Error: Missing \end{matrix}
 ···(\begin{matrix}\right)
                        ↑ (pos 26)"),
+      InlineData(@"\Bra^2", @"Error: ^ cannot appear as an argument to a command
+\Bra^2
+    ↑ (pos 5)"),
+      InlineData(@"\Bra_2", @"Error: _ cannot appear as an argument to a command
+\Bra_2
+    ↑ (pos 5)"),
+      InlineData(@"\Bra&2", @"Error: & cannot appear as an argument to a command
+\Bra&2
+    ↑ (pos 5)"),
+      InlineData(@"\Bra}2", @"Error: } cannot appear as an argument to a command
+\Bra}2
+    ↑ (pos 5)"),
+      InlineData(@"\Ket^2", @"Error: ^ cannot appear as an argument to a command
+\Ket^2
+    ↑ (pos 5)"),
+      InlineData(@"\Ket_2", @"Error: _ cannot appear as an argument to a command
+\Ket_2
+    ↑ (pos 5)"),
+      InlineData(@"\Ket&2", @"Error: & cannot appear as an argument to a command
+\Ket&2
+    ↑ (pos 5)"),
+      InlineData(@"\Ket}2", @"Error: } cannot appear as an argument to a command
+\Ket}2
+    ↑ (pos 5)"),
     ]
     public void TestErrors(string badInput, string expected) {
       var (list, actual) = LaTeXParser.MathListFromLaTeX(badInput);

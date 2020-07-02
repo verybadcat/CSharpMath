@@ -13,7 +13,7 @@ namespace CSharpMath.Rendering.FrontEnd {
     // Rendering: Convert to 
     public override RectangleF Measure =>
       Display != null ? new RectangleF(0, -Display.Ascent, Display.Width, Display.Ascent + Display.Descent) : RectangleF.Empty;
-    public void DrawCaret(ICanvas canvas, Structures.Color color, CaretShape shape) {
+    public void DrawCaret(ICanvas canvas, Color color, CaretShape shape) {
       if (CaretState != MathKeyboardCaretState.Shown || Display is null)
         return;
       var cursorPosition = Display.PointForIndex(TypesettingContext.Instance, InsertionIndex) ?? Display.Position;
