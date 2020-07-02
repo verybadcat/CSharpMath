@@ -3,7 +3,6 @@ using System.Drawing;
 
 using CSharpMath.Display;
 using CSharpMath.Structures;
-using Color = CSharpMath.Structures.Color;
 
 using Typography.OpenFont;
 using System.Collections.Specialized;
@@ -20,9 +19,9 @@ namespace CSharpMath.Rendering.FrontEnd {
     public const float DefaultFontSize = PainterConstants.DefaultFontSize;
 
     public Painter() {
-      ErrorColor = UnwrapColor(new Color(255, 0, 0));
-      TextColor = UnwrapColor(new Color(0, 0, 0));
-      HighlightColor = UnwrapColor(new Color(0, 0, 0, 0));
+      ErrorColor = UnwrapColor(Color.FromArgb(255, 0, 0));
+      TextColor = UnwrapColor(Color.FromArgb(0, 0, 0));
+      HighlightColor = UnwrapColor(Color.FromArgb(0, 0, 0, 0));
     }
 
     #region Non-redisplaying properties

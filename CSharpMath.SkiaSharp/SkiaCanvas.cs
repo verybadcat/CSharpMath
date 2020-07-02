@@ -1,6 +1,7 @@
 using CSharpMath.Rendering.FrontEnd;
-using CSharpMath.Structures;
+using System.Drawing;
 using SkiaSharp;
+
 namespace CSharpMath.SkiaSharp {
   public sealed class SkiaCanvas : ICanvas {
     public SkiaCanvas(SKCanvas canvas, bool antiAlias) {
@@ -16,7 +17,7 @@ namespace CSharpMath.SkiaSharp {
 
     private readonly SKPaint _paint;
     private SKPaint StyledPaint(PaintStyle style, float? strokeWidth = null) {
-      //In SkiaSharp, line will still be visible even if width is 0
+      // In SkiaSharp, line will still be visible even if width is 0
       _paint.Color =
         strokeWidth == 0
         ? SKColors.Transparent
@@ -26,7 +27,7 @@ namespace CSharpMath.SkiaSharp {
       return _paint;
     }
     internal SKPaint Paint => StyledPaint(CurrentStyle);
-    //Canvas methods
+    // Canvas methods
     public void StrokeRect(float left, float top, float width, float height) =>
       Canvas.DrawRect(
         SKRect.Create(left, top, width, height), StyledPaint(PaintStyle.Stroke));

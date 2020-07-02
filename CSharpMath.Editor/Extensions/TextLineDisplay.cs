@@ -2,12 +2,10 @@ namespace CSharpMath.Editor {
   using System;
   using System.Drawing;
   using System.Linq;
-
   using Display;
   using Display.Displays;
   using Display.FrontEnd;
   using Structures;
-  using Color = Structures.Color;
 
   partial class Extensions {
     public static int? GlyphIndexForXOffset<TFont, TGlyph>

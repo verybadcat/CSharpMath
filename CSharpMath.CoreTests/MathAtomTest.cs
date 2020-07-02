@@ -184,16 +184,16 @@ namespace CSharpMath.CoreTests {
       CheckClone(open.Subscript, clone.Subscript);
     }
     [Fact]
-    public void TestCopyColor() {
-      var color = new Color(new Structures.Color(255, 0, 0), new MathList(new Open("(")));
-      var clone = color.Clone(false);
-      Assert.Equal(new Structures.Color(255, 0, 0), clone.Colour);
-      CheckClone(color, clone);
-      CheckClone(color.InnerList, clone.InnerList);
+    public void TestCopyColored() {
+      var colored = new Colored(System.Drawing.Color.FromArgb(255, 0, 0), new MathList(new Open("(")));
+      var clone = colored.Clone(false);
+      Assert.Equal(System.Drawing.Color.FromArgb(255, 0, 0), clone.Color);
+      CheckClone(colored, clone);
+      CheckClone(colored.InnerList, clone.InnerList);
 
-      var colorBox = new ColorBox(new Structures.Color(128, 0, 0), new MathList(new Close(")")));
+      var colorBox = new ColorBox(System.Drawing.Color.FromArgb(128, 0, 0), new MathList(new Close(")")));
       var cloneBox = colorBox.Clone(false);
-      Assert.Equal(new Structures.Color(128, 0, 0), cloneBox.Colour);
+      Assert.Equal(System.Drawing.Color.FromArgb(128, 0, 0), cloneBox.Color);
       CheckClone(colorBox, cloneBox);
       CheckClone(colorBox.InnerList, cloneBox.InnerList);
     }

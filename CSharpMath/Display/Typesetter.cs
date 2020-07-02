@@ -4,7 +4,6 @@ using CSharpMath.Atom;
 using CSharpMath.Atom.Atoms;
 using CSharpMath.Display.Displays;
 using CSharpMath.Display.FrontEnd;
-using Color = CSharpMath.Atom.Atoms.Color;
 using InvalidCodePathException = CSharpMath.Structures.InvalidCodePathException;
 using System.Drawing;
 using System.Linq;
@@ -183,11 +182,11 @@ namespace CSharpMath.Display {
             // We need to preserve the prevAtom for any inter-element space changes,
             // so we skip to the next node.
             continue;
-          case Color color:
+          case Colored colored:
             AddDisplayLine(false);
-            AddInterElementSpace(prevAtom, color);
-            var colorDisplay = CreateLine(color.InnerList, _font, _context, _style, false);
-            colorDisplay.SetTextColorRecursive(color.Colour);
+            AddInterElementSpace(prevAtom, colored);
+            var colorDisplay = CreateLine(colored.InnerList, _font, _context, _style, false);
+            colorDisplay.SetTextColorRecursive(colored.Color);
             colorDisplay.Position = _currentPosition;
             _currentPosition.X += colorDisplay.Width;
             _displayAtoms.Add(colorDisplay);
@@ -196,7 +195,7 @@ namespace CSharpMath.Display {
             AddDisplayLine(false);
             AddInterElementSpace(prevAtom, colorBox);
             colorDisplay = CreateLine(colorBox.InnerList, _font, _context, _style, false);
-            colorDisplay.BackColor = colorBox.Colour;
+            colorDisplay.BackColor = colorBox.Color;
             colorDisplay.Position = _currentPosition;
             _currentPosition.X += colorDisplay.Width;
             _displayAtoms.Add(colorDisplay);
@@ -720,7 +719,7 @@ namespace CSharpMath.Display {
     }
 
     private IGlyphDisplay<TFont, TGlyph> _GetRadicalGlyph(float radicalHeight) {
-#warning GlyphFinder.FindGlyph
+      // TODO: something related to GlyphFinder.FindGlyph
       var radicalGlyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, 0, "\u221A");
       var glyph = _FindGlyph(radicalGlyph, radicalHeight,
         out float glyphAscent, out float glyphDescent, out float glyphWidth);

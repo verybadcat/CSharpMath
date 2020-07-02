@@ -4,7 +4,6 @@ using System.Linq;
 using CoreGraphics;
 using CoreText;
 using CSharpMath.Display;
-using Color = CSharpMath.Structures.Color;
 using TFont = CSharpMath.Apple.AppleMathFont;
 using TGlyph = System.UInt16;
 
