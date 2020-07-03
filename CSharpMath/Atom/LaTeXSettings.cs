@@ -176,7 +176,7 @@ namespace CSharpMath.Atom {
           parser.TextMode ? parser.ReadSpace().Bind(kern => Ok(new Space(kern))) : @"\kern is not allowed in math mode" },
         { @"\hskip", (parser, accumulate, stopChar) =>
 #warning \hskip and \mskip: Implement plus and minus for expansion
-          parser.TextMode ? parser.ReadSpace().Bind(kern => Ok(new Space(kern))) : @"\hskip is not allowed in math mode" },
+          parser.TextMode ? parser.ReadSpace().Bind(skip => Ok(new Space(skip))) : @"\hskip is not allowed in math mode" },
         { @"\mkern", (parser, accumulate, stopChar) =>
           !parser.TextMode ? parser.ReadSpace().Bind(kern => Ok(new Space(kern))) : @"\mkern is not allowed in text mode" },
         { @"\mskip", (parser, accumulate, stopChar) =>
