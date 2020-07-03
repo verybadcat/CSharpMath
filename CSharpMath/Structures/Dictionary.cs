@@ -6,7 +6,14 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace CSharpMath.Structures {
-
+  /// <summary>
+  /// Funnels collection initializers to <see cref="Added"/>.
+  /// Implements <see cref="IEnumerable"/> but throws upon enumeration because it is there only to enable collection initializers.
+  /// </summary>
+  /// <example>
+  /// <code>new ProxyAdder&lt;int, string&gt;((key, value) => Console.WriteLine(value))
+  /// { { 1, 2, 3, "1 to 3" }, { Enumerable.Range(7, 10), i => i.ToString() } }</code>
+  /// </example>
   [SuppressMessage("Naming", "CA1710:Identifiers should have correct suffix", Justification = NotACollection)]
   [SuppressMessage("Design", "CA1010:Collections should implement generic interface", Justification = NotACollection)]
   public class ProxyAdder<TKey, TValue> : IEnumerable {
