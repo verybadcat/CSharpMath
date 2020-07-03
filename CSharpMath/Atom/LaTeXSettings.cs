@@ -178,9 +178,9 @@ namespace CSharpMath.Atom {
 #warning \hskip and \mskip: Implement plus and minus for expansion
           parser.TextMode ? parser.ReadSpace().Bind(kern => Ok(new Space(kern))) : @"\hskip is not allowed in math mode" },
         { @"\mkern", (parser, accumulate, stopChar) =>
-          !parser.TextMode ? parser.ReadSpace().Bind(kern => Ok(new Space(kern))) : @"\kern is not allowed in text mode" },
+          !parser.TextMode ? parser.ReadSpace().Bind(kern => Ok(new Space(kern))) : @"\mkern is not allowed in text mode" },
         { @"\mskip", (parser, accumulate, stopChar) =>
-          !parser.TextMode ? parser.ReadSpace().Bind(kern => Ok(new Space(kern))) : @"\hskip is not allowed in text mode" },
+          !parser.TextMode ? parser.ReadSpace().Bind(skip => Ok(new Space(skip))) : @"\mskip is not allowed in text mode" },
         { @"\raisebox", (parser, accumulate, stopChar) => {
           if (!parser.ReadCharIfAvailable('{')) return "Expected {";
           return parser.ReadSpace().Bind(raise => {
@@ -221,13 +221,13 @@ namespace CSharpMath.Atom {
             prevAtom = new Ordinary(string.Empty);
             accumulate.Add(prevAtom);
           }
-          // this is a superscript for the previous atom.
+          // this is a subscript for the previous atom.
           // note, if the next char is StopChar, it will be consumed and doesn't count as stop.
           return parser.ReadArgument(prevAtom.Subscript).Bind(_ => Ok(null));
         } },
         { @"{", (parser, accumulate, stopChar) => {
             if (parser.Environments.PeekOrDefault() is LaTeXParser.TableEnvironment { Name: null }) {
-              // \\ or \cr which do not have a corrosponding \end
+              // \\ or \cr which do not have a corresponding \end
               var oldEnv = parser.Environments.Pop();
               return parser.ReadUntil('}').Bind(sublist => {
                 parser.Environments.Push(oldEnv);
