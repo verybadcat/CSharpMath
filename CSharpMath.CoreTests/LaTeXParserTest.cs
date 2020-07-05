@@ -487,7 +487,7 @@ namespace CSharpMath.CoreTests {
     [InlineData("Bmatrix", "{", "}", @"\left\{ ", @"\right\} ")]
     [InlineData("vmatrix", "|", "|", @"\left| ", @"\right| ")]
     [InlineData("Vmatrix", "‖", "‖", @"\left\| ", @"\right\| ")]
-    public void TestMatrix(string env, string left, string right, string leftOutput, string rightOutput) {
+    public void TestMatrix(string env, string? left, string? right, string? leftOutput, string? rightOutput) {
       var list = ParseLaTeX($@"\begin{{{env}}} x & y \\ z & w \end{{{env}}}");
       Table table;
       if (left is null && right is null)
