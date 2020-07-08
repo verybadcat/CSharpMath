@@ -65,7 +65,7 @@ namespace CSharpMath {
     }
     public static MathList Visualize(MathItem entity) =>
       LaTeXParser.MathListFromLaTeX(entity.Latexise())
-      // CSharpMath must handle all LaTeX coming from MathS or a bug is present!
+      // CSharpMath must handle all LaTeX coming from AngouriMath or a bug is present!
       .Match(list => list, e => throw new InvalidCodePathException(e));
     public static Result<MathItem> Evaluate(MathList mathList) {
       MathS.pi.ToString(); // Call into MathS's static initializer to ensure Entity methods work
