@@ -60,25 +60,11 @@ namespace CSharpMath.Structures {
     readonly PatriciaTrie<char, TValue> nonCommands = new PatriciaTrie<char, TValue>();
     readonly Dictionary<string, TValue> commands = new Dictionary<string, TValue>();
 
-    public void Clear() {
-      nonCommands.Clear();
-      commands.Clear();
-    }
-    public bool ContainsKey(ReadOnlySpan<char> key) =>
-      nonCommands.ContainsKey(key) || commands.ContainsKey(key.ToString());
-
     public IEnumerator<KeyValuePair<ReadOnlyMemory<char>, TValue>> GetEnumerator() =>
       nonCommands.Select(kvp => new KeyValuePair<ReadOnlyMemory<char>, TValue>(kvp.Key, kvp.Value))
       .Concat(commands.Select(kvp => new KeyValuePair<ReadOnlyMemory<char>, TValue>(kvp.Key.AsMemory(), kvp.Value)))
       .GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-    // Lookup a Dictionary<char, TValue> with a ReadOnlySpan<char> in the future:
-    // https://github.com/dotnet/runtime/issues/27229
-    public bool Remove(ReadOnlySpan<char> key) =>
-      key.StartsWithInvariant(@"\")
-      ? commands.Remove(key.ToString())
-      : nonCommands.Remove(key);
 
     static int SplitCommand(ReadOnlySpan<char> consume) {
       // https://stackoverflow.com/questions/29217603/extracting-all-latex-commands-from-a-latex-code-file#comment47075515_29218404
