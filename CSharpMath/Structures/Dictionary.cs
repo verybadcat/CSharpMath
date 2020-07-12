@@ -204,42 +204,4 @@ namespace CSharpMath.Structures {
     IEnumerable<TSecond> IReadOnlyDictionary<TFirst, TSecond>.Values => Seconds;
 #pragma warning restore CA1033 // Interface methods should be callable by child types
   }
-#pragma warning disable CA1710 // Identifiers should have correct suffix
-  public class MultiDictionary<TFirst, TSecond> : IEnumerable<KeyValuePair<TFirst, TSecond>> {
-#pragma warning restore CA1710 // Identifiers should have correct suffix
-    readonly Dictionary<TFirst, IList<TSecond>> firstToSecond = new Dictionary<TFirst, IList<TSecond>>();
-    readonly Dictionary<TSecond, IList<TFirst>> secondToFirst = new Dictionary<TSecond, IList<TFirst>>();
-    public void Add(TFirst first, TSecond second) {
-      if (!firstToSecond.TryGetValue(first, out var seconds)) {
-        seconds = new List<TSecond>();
-        firstToSecond[first] = seconds;
-      }
-      if (!secondToFirst.TryGetValue(second, out var firsts)) {
-        firsts = new List<TFirst>();
-        secondToFirst[second] = firsts;
-      }
-      seconds.Add(second);
-      firsts.Add(first);
-    }
-    public bool TryGetByFirst(TFirst first, out TSecond second) {
-      if (firstToSecond.TryGetValue(first, out var list) && list.Count > 0) {
-        second = list[0];
-        return true;
-      }
-      second = default!;
-      return false;
-    }
-    public bool TryGetBySecond(TSecond second, out TFirst first) {
-      if (secondToFirst.TryGetValue(second, out var list) && list.Count > 0) {
-        first = list[0];
-        return true;
-      }
-      first = default!;
-      return false;
-    }
-    public IEnumerator<KeyValuePair<TFirst, TSecond>> GetEnumerator() =>
-      firstToSecond.SelectMany(p => p.Value.Select(v => new KeyValuePair<TFirst, TSecond>(p.Key, v)))
-        .GetEnumerator();
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-  }
 }
