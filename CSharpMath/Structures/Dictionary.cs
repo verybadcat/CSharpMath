@@ -39,7 +39,7 @@ namespace CSharpMath.Structures {
   }
   [SuppressMessage("Naming", "CA1710:Identifiers should have correct suffix",
     Justification = "This is conceptually a dictionary but has different lookup behavior")]
-  public class LaTeXCommandDictionary<TValue> : ProxyAdder<string, TValue>, IEnumerable<KeyValuePair<ReadOnlyMemory<char>, TValue>> {
+  public class LaTeXCommandDictionary<TValue> : ProxyAdder<string, TValue>, IEnumerable<KeyValuePair<string, TValue>> {
     public delegate Result<(TValue Result, int SplitIndex)> DefaultDelegate(ReadOnlySpan<char> consume);
 
     public LaTeXCommandDictionary(DefaultDelegate @default,
@@ -51,18 +51,18 @@ namespace CSharpMath.Structures {
           if (SplitCommand(key.AsSpan()) != key.Length - 1)
             commands.Add(key, value);
           else throw new ArgumentException("Key is unreachable: " + key, nameof(key));
-        else nonCommands.Add(key.AsMemory(), value);
+        else nonCommands.Add(key, value);
       };
     }
     readonly DefaultDelegate @default;
     readonly DefaultDelegate defaultForCommands;
 
-    readonly PatriciaTrie<char, TValue> nonCommands = new PatriciaTrie<char, TValue>();
+    readonly Dictionary<string, TValue> nonCommands = new Dictionary<string, TValue>();
     readonly Dictionary<string, TValue> commands = new Dictionary<string, TValue>();
 
-    public IEnumerator<KeyValuePair<ReadOnlyMemory<char>, TValue>> GetEnumerator() =>
-      nonCommands.Select(kvp => new KeyValuePair<ReadOnlyMemory<char>, TValue>(kvp.Key, kvp.Value))
-      .Concat(commands.Select(kvp => new KeyValuePair<ReadOnlyMemory<char>, TValue>(kvp.Key.AsMemory(), kvp.Value)))
+    public IEnumerator<KeyValuePair<string, TValue>> GetEnumerator() =>
+      nonCommands.Select(kvp => new KeyValuePair<string, TValue>(kvp.Key, kvp.Value))
+      .Concat(commands.Select(kvp => new KeyValuePair<string, TValue>(kvp.Key, kvp.Value)))
       .GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
@@ -99,7 +99,14 @@ namespace CSharpMath.Structures {
                ? Result.Ok((result, splitIndex))
                : defaultForCommands(lookup);
       } else
-        return nonCommands.TryLookup(chars) is { } result ? result : @default(chars);
+        return TryLookupNonCommand(chars);
+    }
+    Result<(TValue Result, int SplitIndex)> TryLookupNonCommand(ReadOnlySpan<char> chars) {
+      string? commandFound = null; // TODO:short-circuit when found
+      foreach (string command in nonCommands.Keys) {
+        if (chars.StartsWithInvariant(command)) { commandFound = command; }
+      }
+      return commandFound == null ? @default(chars) : Result.Ok((nonCommands[commandFound],commandFound.Length));
     }
   }
 
