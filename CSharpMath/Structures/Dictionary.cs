@@ -125,7 +125,7 @@ namespace CSharpMath.Structures {
 #pragma warning restore CA1010 // Collections should implement generic interface
 #pragma warning restore CA1710 // Identifiers should have correct suffix
     : ProxyAdder<TFirst, TSecond>
-    where TFirst: class, IEquatable<TFirst> {
+    where TFirst: IEquatable<TFirst> {
     public BiDictionary() : base() =>
       Added += (first, second) => {
         switch (firstToSecond.ContainsKey(first), secondToFirst.ContainsKey(second)) {
@@ -156,11 +156,11 @@ namespace CSharpMath.Structures {
       if (exists) {
         firstToSecond.Remove(first);
         if (secondToFirst[svalue].Equals(first)) {
-          TFirst? newFirst =
+          TFirst[] otherFirsts =
             firstToSecond
             .Where(kvp => EqualityComparer<TSecond>.Default.Equals(kvp.Value!,svalue))
-            .Select(kvp => kvp.Key).FirstOrDefault();
-          if (newFirst == null) { secondToFirst.Remove(svalue); } else { secondToFirst[svalue] = newFirst; }
+            .Select(kvp => kvp.Key).ToArray();
+          if (otherFirsts.IsEmpty()) { secondToFirst.Remove(svalue); } else { secondToFirst[svalue] = otherFirsts[0]; }
         }
       }
       return exists;
