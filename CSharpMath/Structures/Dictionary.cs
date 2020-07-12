@@ -115,18 +115,20 @@ namespace CSharpMath.Structures {
     }
   }
 
-  //https://stackoverflow.com/questions/255341/getting-key-of-value-of-a-generic-dictionary/255638#255638
+  // Taken from https://stackoverflow.com/questions/255341/getting-key-of-value-of-a-generic-dictionary/255638#255638
+  /// <summary>
+  /// Represents a many to one relationship between TFirsts and TSeconds, allowing fast lookup of the first TFirst corresponding to any TSecond.
+  /// </summary>
+#pragma warning disable CA1710 // Identifiers should have correct suffix
   public class BiDictionary<TFirst, TSecond>
-    : ProxyAdder<TFirst, TSecond>, IDictionary<TFirst, TSecond>, IReadOnlyDictionary<TFirst, TSecond> {
+#pragma warning restore CA1710 // Identifiers should have correct suffix
+    : ProxyAdder<TFirst, TSecond>, IReadOnlyDictionary<TFirst, TSecond>
+    where TFirst : IEquatable<TFirst> {
     public BiDictionary() : base() =>
       Added += (first, second) => {
         switch (firstToSecond.ContainsKey(first), secondToFirst.ContainsKey(second)) {
-          case (true, true):
-            firstToSecond.Add(first, second); // Throw: key and value both exist
-            break;
-          case (true, false):
-            secondToFirst.Add(second, first);
-            break;
+          case (true, _):
+            throw new Exception("Key already exists in BiDictionary.");
           case (false, true):
             firstToSecond.Add(first, second);
             break;
@@ -141,73 +143,64 @@ namespace CSharpMath.Structures {
     readonly Dictionary<TSecond, TFirst> secondToFirst = new Dictionary<TSecond, TFirst>();
     public TSecond this[TFirst first] {
       get => firstToSecond[first];
-      set => AddOrReplace(first, value);
     }
     public TFirst this[TSecond second] {
       get => secondToFirst[second];
-      set => AddOrReplace(value, second);
     }
     public int Count => firstToSecond.Count;
     public Dictionary<TFirst, TSecond>.KeyCollection Firsts => firstToSecond.Keys;
     public bool IsReadOnly => false;
     public Dictionary<TSecond, TFirst>.KeyCollection Seconds => secondToFirst.Keys;
     public void Add(KeyValuePair<TFirst, TSecond> item) => Add(item.Key, item.Value);
-    public void AddOrReplace(TFirst first, TSecond second) {
-      if (firstToSecond.ContainsKey(first))
-        RemoveByFirst(first);
-      if (secondToFirst.ContainsKey(second))
-        RemoveBySecond(second);
-      firstToSecond.Add(first, second);
-      secondToFirst.Add(second, first);
-    }
-    public void AddOrReplace(KeyValuePair<TFirst, TSecond> item) => AddOrReplace(item.Key, item.Value);
-    public void Clear() {
-      firstToSecond.Clear();
-      secondToFirst.Clear();
-    }
     public bool ContainsByFirst(TFirst first) => firstToSecond.ContainsKey(first);
     public bool ContainsBySecond(TSecond second) => secondToFirst.ContainsKey(second);
     public bool Contains(KeyValuePair<TFirst, TSecond> pair) =>
       firstToSecond.TryGetValue(pair.Key, out var second)
       && EqualityComparer<TSecond>.Default.Equals(second, pair.Value);
     public void CopyTo(KeyValuePair<TFirst, TSecond>[] array, int arrayIndex) {
-      if (array is null) throw new ArgumentNullException(nameof(array));
       foreach (var pair in firstToSecond)
         array[arrayIndex++] = pair;
     }
     public Dictionary<TFirst, TSecond>.Enumerator GetEnumerator() =>
       firstToSecond.GetEnumerator();
-    public bool Remove(TFirst first, TSecond second) {
-      if (TryGetByFirst(first, out var svalue) && TryGetBySecond(second, out var fvalue)) {
+    public bool RemoveByFirst(TFirst first) {
+      bool exists = TryGetByFirst(first, out var svalue);
+      if (exists) {
         firstToSecond.Remove(first);
-        firstToSecond.Remove(fvalue);
-        secondToFirst.Remove(second);
-        secondToFirst.Remove(svalue);
-        return true;
+        if (secondToFirst[svalue].Equals(first)) {
+          var newFirst = firstToSecond.Where(kvp => kvp.Value!.Equals(svalue)).Select(kvp => kvp.Key).First();
+          secondToFirst[svalue] = newFirst;
+        } else { secondToFirst.Remove(svalue); }
       }
-      return false;
+      return exists;
     }
-    public bool Remove(KeyValuePair<TFirst, TSecond> pair) => Remove(pair.Key, pair.Value);
-    public bool RemoveByFirst(TFirst first) => Remove(first, firstToSecond[first]);
-    public bool RemoveBySecond(TSecond second) => Remove(secondToFirst[second], second);
+    public bool RemoveBySecond(TSecond second) {
+      bool exists = TryGetBySecond(second, out var _);
+      if (exists) {
+        secondToFirst.Remove(second);
+        var firsts = firstToSecond.Where(kvp => kvp.Value!.Equals(second)).Select(kvp => kvp.Key).ToArray();
+        foreach (TFirst first in firsts) { firstToSecond.Remove(first); };
+      }
+      return exists;
+    }
     public bool TryGetByFirst(TFirst first, out TSecond second) =>
       firstToSecond.TryGetValue(first, out second);
     public bool TryGetBySecond(TSecond second, out TFirst first) =>
       secondToFirst.TryGetValue(second, out first);
 #pragma warning disable CA1033 // Interface methods should be callable by child types
-    bool IDictionary<TFirst, TSecond>.ContainsKey(TFirst first) => firstToSecond.ContainsKey(first);
+    //bool IDictionary<TFirst, TSecond>.ContainsKey(TFirst first) => firstToSecond.ContainsKey(first);
     bool IReadOnlyDictionary<TFirst, TSecond>.ContainsKey(TFirst first) => firstToSecond.ContainsKey(first);
     IEnumerator IEnumerable.GetEnumerator() => firstToSecond.GetEnumerator();
     IEnumerator<KeyValuePair<TFirst, TSecond>> IEnumerable<KeyValuePair<TFirst, TSecond>>.GetEnumerator() =>
       firstToSecond.GetEnumerator();
-    ICollection<TFirst> IDictionary<TFirst, TSecond>.Keys => Firsts;
+    //ICollection<TFirst> IDictionary<TFirst, TSecond>.Keys => Firsts;
     IEnumerable<TFirst> IReadOnlyDictionary<TFirst, TSecond>.Keys => Firsts;
-    bool IDictionary<TFirst, TSecond>.Remove(TFirst first) => Remove(first, firstToSecond[first]);
-    bool IDictionary<TFirst, TSecond>.TryGetValue(TFirst first, out TSecond second) =>
-      firstToSecond.TryGetValue(first, out second);
+    //bool IDictionary<TFirst, TSecond>.Remove(TFirst first) => Remove(first, firstToSecond[first]);
+    //bool IDictionary<TFirst, TSecond>.TryGetValue(TFirst first, out TSecond second) =>
+    //  firstToSecond.TryGetValue(first, out second);
     bool IReadOnlyDictionary<TFirst, TSecond>.TryGetValue(TFirst first, out TSecond second) =>
       firstToSecond.TryGetValue(first, out second);
-    ICollection<TSecond> IDictionary<TFirst, TSecond>.Values => Seconds;
+    //ICollection<TSecond> IDictionary<TFirst, TSecond>.Values => Seconds;
     IEnumerable<TSecond> IReadOnlyDictionary<TFirst, TSecond>.Values => Seconds;
 #pragma warning restore CA1033 // Interface methods should be callable by child types
   }
@@ -216,14 +209,6 @@ namespace CSharpMath.Structures {
 #pragma warning restore CA1710 // Identifiers should have correct suffix
     readonly Dictionary<TFirst, IList<TSecond>> firstToSecond = new Dictionary<TFirst, IList<TSecond>>();
     readonly Dictionary<TSecond, IList<TFirst>> secondToFirst = new Dictionary<TSecond, IList<TFirst>>();
-    private static readonly ReadOnlyCollection<TFirst> EmptyFirstList =
-      new ReadOnlyCollection<TFirst>(Array.Empty<TFirst>());
-    private static readonly ReadOnlyCollection<TSecond> EmptySecondList =
-      new ReadOnlyCollection<TSecond>(Array.Empty<TSecond>());
-    public ReadOnlyCollection<TSecond> this[TFirst first] =>
-      firstToSecond.TryGetValue(first, out var list) ? new ReadOnlyCollection<TSecond>(list) : EmptySecondList;
-    public ReadOnlyCollection<TFirst> this[TSecond second] =>
-      secondToFirst.TryGetValue(second, out var list) ? new ReadOnlyCollection<TFirst>(list) : EmptyFirstList;
     public void Add(TFirst first, TSecond second) {
       if (!firstToSecond.TryGetValue(first, out var seconds)) {
         seconds = new List<TSecond>();
