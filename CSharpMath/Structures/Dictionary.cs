@@ -66,17 +66,18 @@ namespace CSharpMath.Structures {
       .GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    static int SplitCommand(ReadOnlySpan<char> consume) {
-      // https://stackoverflow.com/questions/29217603/extracting-all-latex-commands-from-a-latex-code-file#comment47075515_29218404
+    /// <summary>Finds the number of characters corresponding to a LaTeX command at the beginning of chars.</summary>
+    static int SplitCommand(ReadOnlySpan<char> chars) {
+      // Note on '@': https://stackoverflow.com/questions/29217603/extracting-all-latex-commands-from-a-latex-code-file#comment47075515_29218404
       static bool IsEnglishAlphabetOrAt(char c) => 'A' <= c && c <= 'Z' || 'a' <= c && c <= 'z' || c == '@';
 
-      System.Diagnostics.Debug.Assert(consume[0] == '\\');
+      System.Diagnostics.Debug.Assert(chars[0] == '\\');
       var splitIndex = 1;
-      if (splitIndex < consume.Length)
-        if (IsEnglishAlphabetOrAt(consume[splitIndex])) {
-          do splitIndex++; while (splitIndex < consume.Length && IsEnglishAlphabetOrAt(consume[splitIndex]));
-          if (splitIndex < consume.Length)
-            switch (consume[splitIndex]) {
+      if (splitIndex < chars.Length)
+        if (IsEnglishAlphabetOrAt(chars[splitIndex])) {
+          do splitIndex++; while (splitIndex < chars.Length && IsEnglishAlphabetOrAt(chars[splitIndex]));
+          if (splitIndex < chars.Length)
+            switch (chars[splitIndex]) {
               case '*':
               case '=':
               case '\'':
@@ -86,18 +87,19 @@ namespace CSharpMath.Structures {
         } else splitIndex++;
       return splitIndex;
     }
-    public Result<(TValue Result, int SplitIndex)> TryLookup(ReadOnlySpan<char> consume) {
-      if (consume.IsEmpty) throw new ArgumentException("There are no characters to read.", nameof(consume));
-      if (consume.StartsWithInvariant(@"\")) {
-        var splitIndex = SplitCommand(consume);
-        var lookup = consume.Slice(0, splitIndex);
-        while (splitIndex < consume.Length && char.IsWhiteSpace(consume[splitIndex]))
+    /// <summary>Tries to find a command at the beginning of chars, returning the Value corresponding to the command Key, and the length of the command.</summary>
+    public Result<(TValue Result, int SplitIndex)> TryLookup(ReadOnlySpan<char> chars) {
+      if (chars.IsEmpty) throw new ArgumentException("There are no characters to read.", nameof(chars));
+      if (chars.StartsWithInvariant(@"\")) {
+        var splitIndex = SplitCommand(chars);
+        var lookup = chars.Slice(0, splitIndex);
+        while (splitIndex < chars.Length && char.IsWhiteSpace(chars[splitIndex]))
           splitIndex++;
         return commands.TryGetValue(lookup.ToString(), out var result)
                ? Result.Ok((result, splitIndex))
                : defaultForCommands(lookup);
       } else
-        return nonCommands.TryLookup(consume) is { } result ? result : @default(consume);
+        return nonCommands.TryLookup(chars) is { } result ? result : @default(chars);
     }
   }
 
