@@ -380,7 +380,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     }
                   //case "red", "yellow", ...
                   case var shortColor when
-                    LaTeXSettings.PredefinedColors.TryGetByFirst(shortColor, out var color): {
+                    LaTeXSettings.PredefinedColors.FirstToSecond.TryGetValue(shortColor, out var color): {
                       int tmp_commandLength = shortColor.Length;
                       if (ReadArgumentAtom(latex).Bind(
                           coloredContent => atoms.Color(coloredContent, color)
@@ -390,7 +390,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     }
                   //case "textbf", "textit", ...
                   case var textStyle when !textStyle.StartsWith("math")
-                    && LaTeXSettings.FontStyles.TryGetByFirst(
+                    && LaTeXSettings.FontStyles.FirstToSecond.TryGetValue(
                         textStyle.StartsWith("text") ? textStyle.Replace("text", "math") : textStyle,
                         out var fontStyle): {
                       int tmp_commandLength = textStyle.Length;
@@ -402,7 +402,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     }
                   //case "^", "\"", ...
                   case var textAccent when
-                    TextLaTeXSettings.PredefinedAccents.TryGetByFirst(textAccent, out var accent): {
+                    TextLaTeXSettings.PredefinedAccents.FirstToSecond.TryGetValue(textAccent, out var accent): {
                       if (ReadArgumentAtom(latex)
                         .Bind(builtContent => atoms.Accent(builtContent, accent))
                         .Error is string error)
@@ -410,7 +410,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                       break;
                     }
                   //case "textasciicircum", "textless", ...
-                  case var textSymbol when TextLaTeXSettings.PredefinedTextSymbols.TryGetByFirst(textSymbol, out var replaceResult):
+                  case var textSymbol when TextLaTeXSettings.PredefinedTextSymbols.FirstToSecond.TryGetValue(textSymbol, out var replaceResult):
                     atoms.Text(replaceResult);
                     break;
                   case var command:
@@ -442,7 +442,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
         case TextAtom.Text t:
           foreach (var ch in t.Content) {
             var c = ch.ToStringInvariant();
-            if (TextLaTeXSettings.PredefinedTextSymbols.TryGetBySecond(c, out var v))
+            if (TextLaTeXSettings.PredefinedTextSymbols.SecondToFirst.TryGetValue(c, out var v))
               if ('a' <= v[0] && v[0] <= 'z' || 'A' <= v[0] && v[0] <= 'Z')
                 b.Append('\\').Append(v).Append(' ');
               else b.Append('\\').Append(v);

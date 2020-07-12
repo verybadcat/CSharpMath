@@ -372,13 +372,13 @@ namespace CSharpMath.Atom {
           };
       }
 #pragma warning disable CA1308 // Normalize strings to uppercase
-      if (PredefinedColors.TryGetByFirst(hexOrName.ToLowerInvariant(), out var predefined))
+      if (PredefinedColors.FirstToSecond.TryGetValue(hexOrName.ToLowerInvariant(), out var predefined))
         return predefined;
 #pragma warning restore CA1308 // Normalize strings to uppercase
       return null;
     }
     public static StringBuilder ColorToString(Color color, StringBuilder sb) {
-      if (PredefinedColors.TryGetBySecond(color, out var outString)) {
+      if (PredefinedColors.SecondToFirst.TryGetValue(color, out var outString)) {
         return sb.Append(outString);
       } else {
         sb.Append('#');
@@ -414,7 +414,7 @@ namespace CSharpMath.Atom {
       };
 
     public static MathAtom? AtomForCommand(string symbolName) =>
-      CommandSymbols.TryGetByFirst(
+      CommandSymbols.FirstToSecond.TryGetValue(
         symbolName ?? throw new ArgumentNullException(nameof(symbolName)),
         out var symbol) ? symbol.Clone(false) : null;
 
@@ -425,7 +425,7 @@ namespace CSharpMath.Atom {
       if (atomWithoutScripts is IMathListContainer container)
         foreach (var list in container.InnerLists)
           list.Clear();
-      return CommandSymbols.TryGetBySecond(atomWithoutScripts, out var name) ? name : null;
+      return CommandSymbols.SecondToFirst.TryGetValue(atomWithoutScripts, out var name) ? name : null;
     }
 
     public static BiDictionary<string, MathAtom> CommandSymbols {

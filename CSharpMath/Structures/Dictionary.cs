@@ -120,9 +120,11 @@ namespace CSharpMath.Structures {
   /// Represents a many to one relationship between TFirsts and TSeconds, allowing fast lookup of the first TFirst corresponding to any TSecond.
   /// </summary>
 #pragma warning disable CA1710 // Identifiers should have correct suffix
+#pragma warning disable CA1010 // Collections should implement generic interface
   public class BiDictionary<TFirst, TSecond>
+#pragma warning restore CA1010 // Collections should implement generic interface
 #pragma warning restore CA1710 // Identifiers should have correct suffix
-    : ProxyAdder<TFirst, TSecond>, IReadOnlyDictionary<TFirst, TSecond>
+    : ProxyAdder<TFirst, TSecond>
     where TFirst : IEquatable<TFirst> {
     public BiDictionary() : base() =>
       Added += (first, second) => {
@@ -152,9 +154,7 @@ namespace CSharpMath.Structures {
     public Dictionary<TFirst, TSecond>.KeyCollection Firsts => firstToSecond.Keys;
     public bool IsReadOnly => false;
     public Dictionary<TSecond, TFirst>.KeyCollection Seconds => secondToFirst.Keys;
-    public void Add(KeyValuePair<TFirst, TSecond> item) => Add(item.Key, item.Value);
-    public bool ContainsByFirst(TFirst first) => firstToSecond.ContainsKey(first);
-    public bool ContainsBySecond(TSecond second) => secondToFirst.ContainsKey(second);
+    //public void Add(KeyValuePair<TFirst, TSecond> item) => Add(item.Key, item.Value);
     public bool Contains(KeyValuePair<TFirst, TSecond> pair) =>
       firstToSecond.TryGetValue(pair.Key, out var second)
       && EqualityComparer<TSecond>.Default.Equals(second, pair.Value);
@@ -167,7 +167,7 @@ namespace CSharpMath.Structures {
     public Dictionary<TFirst, TSecond>.Enumerator GetEnumerator() =>
       firstToSecond.GetEnumerator();
     public bool RemoveByFirst(TFirst first) {
-      bool exists = TryGetByFirst(first, out var svalue);
+      bool exists = firstToSecond.TryGetValue(first, out var svalue);
       if (exists) {
         firstToSecond.Remove(first);
         if (secondToFirst[svalue].Equals(first)) {
@@ -178,7 +178,7 @@ namespace CSharpMath.Structures {
       return exists;
     }
     public bool RemoveBySecond(TSecond second) {
-      bool exists = TryGetBySecond(second, out var _);
+      bool exists = secondToFirst.TryGetValue(second, out var _);
       if (exists) {
         secondToFirst.Remove(second);
         var firsts = firstToSecond.Where(kvp => kvp.Value!.Equals(second)).Select(kvp => kvp.Key).ToArray();
@@ -186,19 +186,11 @@ namespace CSharpMath.Structures {
       }
       return exists;
     }
-    public bool TryGetByFirst(TFirst first, out TSecond second) =>
-      firstToSecond.TryGetValue(first, out second);
-    public bool TryGetBySecond(TSecond second, out TFirst first) =>
-      secondToFirst.TryGetValue(second, out first);
-#pragma warning disable CA1033 // Interface methods should be callable by child types
-    bool IReadOnlyDictionary<TFirst, TSecond>.ContainsKey(TFirst first) => firstToSecond.ContainsKey(first);
-    IEnumerator IEnumerable.GetEnumerator() => firstToSecond.GetEnumerator();
-    IEnumerator<KeyValuePair<TFirst, TSecond>> IEnumerable<KeyValuePair<TFirst, TSecond>>.GetEnumerator() =>
-      firstToSecond.GetEnumerator();
-    IEnumerable<TFirst> IReadOnlyDictionary<TFirst, TSecond>.Keys => Firsts;
-    bool IReadOnlyDictionary<TFirst, TSecond>.TryGetValue(TFirst first, out TSecond second) =>
-      firstToSecond.TryGetValue(first, out second);
-    IEnumerable<TSecond> IReadOnlyDictionary<TFirst, TSecond>.Values => Seconds;
-#pragma warning restore CA1033 // Interface methods should be callable by child types
+    public IReadOnlyDictionary<TFirst, TSecond> FirstToSecond {
+      get { return firstToSecond; }
+    }
+    public IReadOnlyDictionary<TSecond, TFirst> SecondToFirst {
+      get { return secondToFirst; }
+    }
   }
 }
