@@ -500,7 +500,7 @@ namespace CSharpMath.Atom {
           }
           if (atom.FontStyle != outerFontStyle) {
             // open a new font style
-            builder.Append(@"\").Append(LaTeXSettings.FontStyles[atom.FontStyle]).Append("{");
+            builder.Append(@"\").Append(LaTeXSettings.FontStyles.SecondToFirst[atom.FontStyle]).Append("{");
           }
         }
         currentFontStyle = atom.FontStyle;

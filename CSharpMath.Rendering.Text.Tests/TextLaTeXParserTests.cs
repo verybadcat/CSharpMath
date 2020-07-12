@@ -87,7 +87,7 @@ namespace CSharpMath.Rendering.Text.Tests {
       void Test(string input) {
         var atom = Parse(input);
         var list = new List<TextAtom> {
-          new TextAtom.Colored(new TextAtom.Text(colored), Atom.LaTeXSettings.PredefinedColors["red"])
+          new TextAtom.Colored(new TextAtom.Text(colored), Atom.LaTeXSettings.PredefinedColors.FirstToSecond["red"])
         };
         if (after != null) list.Add(new TextAtom.Text(after));
         Assert.Equal(list.Count == 1 ? list[0] : new TextAtom.List(list), atom);

@@ -143,21 +143,6 @@ namespace CSharpMath.Structures {
 
     readonly Dictionary<TFirst, TSecond> firstToSecond = new Dictionary<TFirst, TSecond>();
     readonly Dictionary<TSecond, TFirst> secondToFirst = new Dictionary<TSecond, TFirst>();
-    public TSecond this[TFirst first] {
-      get => firstToSecond[first];
-    }
-    public TFirst this[TSecond second] {
-      get => secondToFirst[second];
-    }
-    /// <summary> The count of firsts </summary>
-    public int Count => firstToSecond.Count;
-    public Dictionary<TFirst, TSecond>.KeyCollection Firsts => firstToSecond.Keys;
-    public bool IsReadOnly => false;
-    public Dictionary<TSecond, TFirst>.KeyCollection Seconds => secondToFirst.Keys;
-    //public void Add(KeyValuePair<TFirst, TSecond> item) => Add(item.Key, item.Value);
-    public bool Contains(KeyValuePair<TFirst, TSecond> pair) =>
-      firstToSecond.TryGetValue(pair.Key, out var second)
-      && EqualityComparer<TSecond>.Default.Equals(second, pair.Value);
     // TODO: Delete if this is not absolutely necessary. If it is absolutely necessary, then document:
     // indicate purpose of copyto, what it does, and what the arrayIndex argument refers to.
     public void CopyTo(KeyValuePair<TFirst, TSecond>[] array, int arrayIndex) {
@@ -171,7 +156,10 @@ namespace CSharpMath.Structures {
       if (exists) {
         firstToSecond.Remove(first);
         if (secondToFirst[svalue].Equals(first)) {
-          var newFirst = firstToSecond.Where(kvp => kvp.Value!.Equals(svalue)).Select(kvp => kvp.Key).First();
+          var newFirst =
+            firstToSecond
+            .Where(kvp => EqualityComparer<TSecond>.Default.Equals(kvp.Value!,svalue))
+            .Select(kvp => kvp.Key).First();
           secondToFirst[svalue] = newFirst;
         } else { secondToFirst.Remove(svalue); }
       }
@@ -181,7 +169,10 @@ namespace CSharpMath.Structures {
       bool exists = secondToFirst.TryGetValue(second, out var _);
       if (exists) {
         secondToFirst.Remove(second);
-        var firsts = firstToSecond.Where(kvp => kvp.Value!.Equals(second)).Select(kvp => kvp.Key).ToArray();
+        var firsts =
+          firstToSecond
+          .Where(kvp => EqualityComparer<TSecond>.Default.Equals(kvp.Value!,second))
+          .Select(kvp => kvp.Key).ToArray();
         foreach (TFirst first in firsts) { firstToSecond.Remove(first); };
       }
       return exists;

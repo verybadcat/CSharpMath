@@ -10,8 +10,8 @@ namespace CSharpMath.CoreTests {
         { 2, "8" },
         { 3, "10" }
       };
-      Assert.Equal(4, testBiDictionary.Firsts.Count);
-      Assert.Equal(4, testBiDictionary.Seconds.Count);
+      Assert.Equal(4, testBiDictionary.FirstToSecond.Count);
+      Assert.Equal(4, testBiDictionary.SecondToFirst.Count);
     }
   }
 }

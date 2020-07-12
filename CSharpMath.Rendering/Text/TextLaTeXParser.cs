@@ -474,11 +474,11 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
         case TextAtom.ControlSpace _:
           return b.Append(@"\ ");
         case TextAtom.Accent a:
-          b.Append('\\').Append(TextLaTeXSettings.PredefinedAccents[second: a.AccentChar]).Append('{');
+          b.Append('\\').Append(TextLaTeXSettings.PredefinedAccents.SecondToFirst[a.AccentChar]).Append('{');
           return TextAtomToLaTeX(a.Content, b).Append('}');
         case TextAtom.Style t:
           b.Append('\\')
-            .Append(LaTeXSettings.FontStyles[t.FontStyle] is var style && style.StartsWith("math")
+            .Append(LaTeXSettings.FontStyles.SecondToFirst[t.FontStyle] is var style && style.StartsWith("math")
                     ? style.Replace("math", "text") : style)
             .Append('{');
           return TextAtomToLaTeX(t.Content, b).Append('}');
