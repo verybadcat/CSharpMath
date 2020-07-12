@@ -147,6 +147,7 @@ namespace CSharpMath.Structures {
     public TFirst this[TSecond second] {
       get => secondToFirst[second];
     }
+    /// <summary> The count of firsts </summary>
     public int Count => firstToSecond.Count;
     public Dictionary<TFirst, TSecond>.KeyCollection Firsts => firstToSecond.Keys;
     public bool IsReadOnly => false;
@@ -157,6 +158,8 @@ namespace CSharpMath.Structures {
     public bool Contains(KeyValuePair<TFirst, TSecond> pair) =>
       firstToSecond.TryGetValue(pair.Key, out var second)
       && EqualityComparer<TSecond>.Default.Equals(second, pair.Value);
+    // TODO: Delete if this is not absolutely necessary. If it is absolutely necessary, then document:
+    // indicate purpose of copyto, what it does, and what the arrayIndex argument refers to.
     public void CopyTo(KeyValuePair<TFirst, TSecond>[] array, int arrayIndex) {
       foreach (var pair in firstToSecond)
         array[arrayIndex++] = pair;
