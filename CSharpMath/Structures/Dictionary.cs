@@ -30,35 +30,10 @@ namespace CSharpMath.Structures {
     public void Add(TKey key1, TKey key2, TKey key3, TValue value) {
       Add(key1, value); Add(key2, value); Add(key3, value);
     }
-    public void Add(TKey key1, TKey key2, TKey key3, TKey key4, TValue value) {
-      Add(key1, value); Add(key2, value); Add(key3, value); Add(key4, value);
-    }
-    public void Add(TKey key1, TKey key2, TKey key3, TKey key4, TKey key5, TValue value) {
-      Add(key1, value); Add(key2, value); Add(key3, value); Add(key4, value);
-      Add(key5, value);
-    }
-    public void Add(TKey key1, TKey key2, TKey key3, TKey key4, TKey key5, TKey key6, TValue value) {
-      Add(key1, value); Add(key2, value); Add(key3, value); Add(key4, value);
-      Add(key5, value); Add(key6, value);
-    }
-    public void Add(TKey key1, TKey key2, TKey key3, TKey key4, TKey key5, TKey key6, TKey key7, TValue value) {
-      Add(key1, value); Add(key2, value); Add(key3, value); Add(key4, value);
-      Add(key5, value); Add(key6, value); Add(key7, value);
-    }
-    public void Add(TKey key1, TKey key2, TKey key3, TKey key4, TKey key5, TKey key6, TKey key7, TKey key8, TValue value) {
-      Add(key1, value); Add(key2, value); Add(key3, value); Add(key4, value);
-      Add(key5, value); Add(key6, value); Add(key7, value); Add(key8, value);
-    }
     public void Add<TCollection>(TCollection keys, TValue value) where TCollection : IEnumerable<TKey> {
       foreach (var key in keys) Add(key, value);
     }
     public void Add<TCollection>(TCollection keys, Func<TKey, TValue> valueFunc) where TCollection : IEnumerable<TKey> {
-      foreach (var key in keys) Add(key, valueFunc(key));
-    }
-    public void Add(ReadOnlySpan<TKey> keys, TValue value) {
-      foreach (var key in keys) Add(key, value);
-    }
-    public void Add(ReadOnlySpan<TKey> keys, Func<TKey, TValue> valueFunc) {
       foreach (var key in keys) Add(key, valueFunc(key));
     }
   }
