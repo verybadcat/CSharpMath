@@ -356,7 +356,7 @@ namespace CSharpMath.Atom {
       }
       return bd;
     }
-    public static BiDictionary<string, FontStyle> FontStyles = GetFontStyles();
+    public static readonly BiDictionary<string, FontStyle> FontStyles = GetFontStyles();
 
     public static Color? ParseColor(string? hexOrName) {
       if (hexOrName == null) return null;
@@ -1149,6 +1149,6 @@ namespace CSharpMath.Atom {
       };
       return bd;
     }
-    public static BiDictionary<string, MathAtom> CommandSymbols = GetCommandSymbolsInitializingCommands();
+    public static readonly BiDictionary<string, MathAtom> CommandSymbols = GetCommandSymbolsInitializingCommands();
   }
 }
