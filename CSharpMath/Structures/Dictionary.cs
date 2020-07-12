@@ -161,7 +161,7 @@ namespace CSharpMath.Structures {
             .Where(kvp => EqualityComparer<TSecond>.Default.Equals(kvp.Value!,svalue))
             .Select(kvp => kvp.Key).FirstOrDefault();
           if (newFirst == null) { secondToFirst.Remove(svalue); } else { secondToFirst[svalue] = newFirst; }
-        } else { secondToFirst.Remove(svalue); }
+        }
       }
       return exists;
     }
