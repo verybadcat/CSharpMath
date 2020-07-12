@@ -188,19 +188,13 @@ namespace CSharpMath.Structures {
     public bool TryGetBySecond(TSecond second, out TFirst first) =>
       secondToFirst.TryGetValue(second, out first);
 #pragma warning disable CA1033 // Interface methods should be callable by child types
-    //bool IDictionary<TFirst, TSecond>.ContainsKey(TFirst first) => firstToSecond.ContainsKey(first);
     bool IReadOnlyDictionary<TFirst, TSecond>.ContainsKey(TFirst first) => firstToSecond.ContainsKey(first);
     IEnumerator IEnumerable.GetEnumerator() => firstToSecond.GetEnumerator();
     IEnumerator<KeyValuePair<TFirst, TSecond>> IEnumerable<KeyValuePair<TFirst, TSecond>>.GetEnumerator() =>
       firstToSecond.GetEnumerator();
-    //ICollection<TFirst> IDictionary<TFirst, TSecond>.Keys => Firsts;
     IEnumerable<TFirst> IReadOnlyDictionary<TFirst, TSecond>.Keys => Firsts;
-    //bool IDictionary<TFirst, TSecond>.Remove(TFirst first) => Remove(first, firstToSecond[first]);
-    //bool IDictionary<TFirst, TSecond>.TryGetValue(TFirst first, out TSecond second) =>
-    //  firstToSecond.TryGetValue(first, out second);
     bool IReadOnlyDictionary<TFirst, TSecond>.TryGetValue(TFirst first, out TSecond second) =>
       firstToSecond.TryGetValue(first, out second);
-    //ICollection<TSecond> IDictionary<TFirst, TSecond>.Values => Seconds;
     IEnumerable<TSecond> IReadOnlyDictionary<TFirst, TSecond>.Values => Seconds;
 #pragma warning restore CA1033 // Interface methods should be callable by child types
   }
