@@ -94,10 +94,11 @@ namespace CSharpMath.Atom {
           var atom = new Ordinary(consume[0].ToStringInvariant());
           return ((parser, accumulate, stopChar) => Ok(atom), 1);
         }
-      }, command => "Invalid command " + command.ToString()) {
+      }, command => "Invalid command " + command.ToString())
+      {
         #region Atom producers
         { Enumerable.Range(0, 33).Concat(new[] { 127 }).Select(c => ((char)c).ToStringInvariant()),
-          _ => (parser, accumulate, stopChar) => {
+          (parser, accumulate, stopChar) => {
           if (parser.TextMode) {
             parser.SkipSpaces(); // Multiple spaces are collapsed into one in text mode
             return Ok(new Ordinary(" "));
