@@ -118,7 +118,7 @@ namespace CSharpMath.Structures {
   //https://stackoverflow.com/questions/255341/getting-key-of-value-of-a-generic-dictionary/255638#255638
   public class BiDictionary<TFirst, TSecond>
     : ProxyAdder<TFirst, TSecond>, IDictionary<TFirst, TSecond>, IReadOnlyDictionary<TFirst, TSecond> {
-    public BiDictionary(Action<TFirst, TSecond>? added = null) : base(added) =>
+    public BiDictionary() : base() =>
       Added += (first, second) => {
         switch (firstToSecond.ContainsKey(first), secondToFirst.ContainsKey(second)) {
           case (true, true):
