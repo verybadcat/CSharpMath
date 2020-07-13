@@ -1,17 +1,37 @@
 using Xunit;
+using CSharpMath.Structures;
 
 namespace CSharpMath.CoreTests {
   public class DictionaryTests {
-    [Fact]
-    public void TestRemove() {
-      var testBiDictionary = new Structures.BiDictionary<int, string> {
-        { 0, "0" },
-        { 1, "1" },
-        { 2, "8" },
-        { 3, "10" }
+    private BiDictionary<string, int> InitTestDict() {
+      return new BiDictionary<string, int>{
+        { "0", 0 },
+        { "zero", 0 },
+        { "1", 1 }
       };
-      Assert.Equal(4, testBiDictionary.FirstToSecond.Count);
-      Assert.Equal(4, testBiDictionary.SecondToFirst.Count);
+    }
+    [Theory]
+    [InlineData("0", 2, 2, true)]
+    [InlineData("zero", 2, 2, true)]
+    [InlineData("1", 2, 1, true)]
+    [InlineData("2", 3, 2, false)]
+    public void TestRemoveByFirst(string remove, int expectedFTS, int expectedSTF, bool expectedRemoved) {
+      var bd = InitTestDict();
+      var removed = bd.RemoveByFirst(remove);
+      Assert.Equal(expectedFTS, bd.FirstToSecond.Count);
+      Assert.Equal(expectedSTF, bd.SecondToFirst.Count);
+      Assert.Equal(expectedRemoved, removed);
+    }
+    [Theory]
+    [InlineData(0, 1, 1, true)]
+    [InlineData(1, 2, 1, true)]
+    [InlineData(2, 3, 2, false)]
+    public void TestRemoveBySecond(int remove, int expectedFTS, int expectedSTF, bool expectedRemoved) {
+      var bd = InitTestDict();
+      var removed = bd.RemoveBySecond(remove);
+      Assert.Equal(expectedFTS, bd.FirstToSecond.Count);
+      Assert.Equal(expectedSTF, bd.SecondToFirst.Count);
+      Assert.Equal(expectedRemoved, removed);
     }
   }
 }
