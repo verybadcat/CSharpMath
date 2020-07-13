@@ -151,6 +151,9 @@ namespace CSharpMath.Structures {
       bool exists = firstToSecond.TryGetValue(first, out var svalue);
       if (exists) {
         firstToSecond.Remove(first);
+        // if first is currently mapped to from svalue,
+        // then try to reconnect svalue to another TFirst mapping to it;
+        // otherwise delete the svalue record in secondToFirst
         if (secondToFirst[svalue].Equals(first)) {
           TFirst[] otherFirsts =
             firstToSecond
@@ -165,6 +168,7 @@ namespace CSharpMath.Structures {
       bool exists = secondToFirst.TryGetValue(second, out var _);
       if (exists) {
         secondToFirst.Remove(second);
+        // Remove all TFirsts pointing to second
         var firsts =
           firstToSecond
           .Where(kvp => EqualityComparer<TSecond>.Default.Equals(kvp.Value!,second))
