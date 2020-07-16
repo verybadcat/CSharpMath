@@ -12,10 +12,10 @@ namespace CSharpMath.CoreTests {
           case '$': // Unimplemented
           case '#': // Unimplemented
           case '~': // Unimplemented
-            //Assert.False(LaTeXSettings.Commands.ContainsKey(stackalloc[] { i }));
+            Assert.False(LaTeXSettings.Commands.Where(kvp => kvp.Key == i.ToString()).Any());
             break;
           default:
-            //Assert.True(LaTeXSettings.Commands.ContainsKey(stackalloc[] { i }));
+            Assert.True(LaTeXSettings.Commands.Where(kvp => kvp.Key == i.ToString()).Any());
             break;
         }
     }
