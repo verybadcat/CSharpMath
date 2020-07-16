@@ -364,7 +364,7 @@ namespace CSharpMath.Atom {
           };
       }
 #pragma warning disable CA1308 // Normalize strings to uppercase
-      if (PredefinedColors.TryGetByFirst(hexOrName.ToLowerInvariant(), out var predefined))
+      if (PredefinedColors.FirstToSecond.TryGetValue(hexOrName.ToLowerInvariant(), out var predefined))
         return predefined;
 #pragma warning restore CA1308 // Normalize strings to uppercase
       return null;

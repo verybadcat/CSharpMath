@@ -122,7 +122,7 @@ namespace CSharpMath.Structures {
 #pragma warning restore CA1710 // Identifiers should have correct suffix
     : ProxyAdder<TFirst, TSecond>
     where TFirst: IEquatable<TFirst> {
-    public BiDictionary() : base() =>
+    public BiDictionary(Action<TFirst, TSecond>? added = null) : base(added) =>
       Added += (first, second) => {
         switch (firstToSecond.ContainsKey(first), secondToFirst.ContainsKey(second)) {
           case (true, _):
