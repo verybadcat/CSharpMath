@@ -37,15 +37,21 @@ namespace CSharpMath.Structures {
       foreach (var key in keys) Add(key, valueFunc(key));
     }
   }
+  /// <summary>
+  ///  A dictionary-based helper where the keys are classes of LaTeX strings, with special treatment
+  ///  for commands (starting "\"). The start of an inputted char Span is parsed, and an arbitrary object
+  ///  TValue is returned, along with the number of matching characters. Processing is based on dictionary lookup
+  ///  with fallack to specified default functions for command and non-commands when lookup fails.
+  /// </summary>
   [SuppressMessage("Naming", "CA1710:Identifiers should have correct suffix",
     Justification = "This is conceptually a dictionary but has different lookup behavior")]
   public class LaTeXCommandDictionary<TValue> : ProxyAdder<string, TValue>, IEnumerable<KeyValuePair<string, TValue>> {
     public delegate Result<(TValue Result, int SplitIndex)> DefaultDelegate(ReadOnlySpan<char> consume);
 
-    public LaTeXCommandDictionary(DefaultDelegate @default,
-      DefaultDelegate defaultForCommands, Action<string, TValue>? extraCommandToPerformWhenAdding = null) : base(extraCommandToPerformWhenAdding) {
-      this.@default = @default;
-      this.defaultForCommands = defaultForCommands;
+    public LaTeXCommandDictionary(DefaultDelegate @defaultParser,
+      DefaultDelegate defaultParserForCommands, Action<string, TValue>? extraCommandToPerformWhenAdding = null) : base(extraCommandToPerformWhenAdding) {
+      this.@defaultParser = @defaultParser;
+      this.defaultParserForCommands = defaultParserForCommands;
       Added += (key, value) => {
         if (key.AsSpan().StartsWithInvariant(@"\"))
           if (SplitCommand(key.AsSpan()) != key.Length - 1)
@@ -54,8 +60,8 @@ namespace CSharpMath.Structures {
         else nonCommands.Add(key, value);
       };
     }
-    readonly DefaultDelegate @default;
-    readonly DefaultDelegate defaultForCommands;
+    readonly DefaultDelegate @defaultParser;
+    readonly DefaultDelegate defaultParserForCommands;
 
     readonly Dictionary<string, TValue> nonCommands = new Dictionary<string, TValue>();
     readonly Dictionary<string, TValue> commands = new Dictionary<string, TValue>();
@@ -97,7 +103,7 @@ namespace CSharpMath.Structures {
           splitIndex++;
         return commands.TryGetValue(lookup.ToString(), out var result)
                ? Result.Ok((result, splitIndex))
-               : defaultForCommands(lookup);
+               : defaultParserForCommands(lookup);
       } else
         return TryLookupNonCommand(chars);
     }
@@ -107,7 +113,7 @@ namespace CSharpMath.Structures {
         if (chars.StartsWith(command.AsSpan(), StringComparison.InvariantCulture)) {
           commandFound = command; }
       }
-      return commandFound == null ? @default(chars) : Result.Ok((nonCommands[commandFound],commandFound.Length));
+      return commandFound == null ? @defaultParser(chars) : Result.Ok((nonCommands[commandFound],commandFound.Length));
     }
   }
 

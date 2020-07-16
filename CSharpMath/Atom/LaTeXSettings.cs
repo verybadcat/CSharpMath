@@ -14,23 +14,27 @@ namespace CSharpMath.Atom {
     static readonly Dictionary<Boundary, string> boundaryDelimitersReverse = new Dictionary<Boundary, string>();
     public static IReadOnlyDictionary<Boundary, string> BoundaryDelimitersReverse => boundaryDelimitersReverse;
     public static LaTeXCommandDictionary<Boundary> BoundaryDelimiters { get; } =
-      new LaTeXCommandDictionary<Boundary>(consume => {
-        if (consume.IsEmpty) throw new InvalidCodePathException("Unexpected empty " + nameof(consume));
-        if (char.IsHighSurrogate(consume[0])) {
-          if (consume.Length == 1)
-            return "Unexpected single high surrogate without its counterpart";
-          if (!char.IsLowSurrogate(consume[1]))
-            return "Low surrogate not found after high surrogate";
-          return "Invalid delimiter " + consume.Slice(0, 2).ToString();
-        } else {
-          if (char.IsLowSurrogate(consume[0]))
-            return "Unexpected low surrogate without its counterpart";
-          return "Invalid delimiter " + consume[0];
-        }
-      }, command => "Invalid delimiter " + command.ToString(), (key, value) => {
-        if (!boundaryDelimitersReverse.ContainsKey(value))
-          boundaryDelimitersReverse.Add(value, key);
-      }) {
+      new LaTeXCommandDictionary<Boundary>(
+        consume => {
+          if (consume.IsEmpty) throw new InvalidCodePathException("Unexpected empty " + nameof(consume));
+          if (char.IsHighSurrogate(consume[0])) {
+            if (consume.Length == 1)
+              return "Unexpected single high surrogate without its counterpart";
+            if (!char.IsLowSurrogate(consume[1]))
+              return "Low surrogate not found after high surrogate";
+            return "Invalid delimiter " + consume.Slice(0, 2).ToString();
+          } else {
+            if (char.IsLowSurrogate(consume[0]))
+              return "Unexpected low surrogate without its counterpart";
+            return "Invalid delimiter " + consume[0];
+          }
+        },
+        command => "Invalid delimiter " + command.ToString(),
+        (key, value) => {
+          if (!boundaryDelimitersReverse.ContainsKey(value))
+            boundaryDelimitersReverse.Add(value, key);
+        })
+      {
         { @".", Boundary.Empty }, // . means no delimiter
 
         // Table 14: Delimiters
