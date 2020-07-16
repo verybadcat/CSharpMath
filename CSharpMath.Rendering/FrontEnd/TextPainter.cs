@@ -64,6 +64,8 @@ namespace CSharpMath.Rendering.FrontEnd {
           ? System.Math.Max(_relativeXCoordDisplay.Displays.CollectionWidth(),
             _absoluteXCoordDisplay.Displays.IsNonEmpty() ? _absoluteXCoordDisplay.Displays.Max(d => d.Width) : 0)
           : c.Width;
+        // Take into account padding, offset etc. on both sides
+        adjustedCanvasWidth -= _relativeXCoordDisplay.Position.X * 2;
         float Δx = 0;
         var y = float.NegativeInfinity;
         var leftRightFlags = alignment & (TextAlignment.Left | TextAlignment.Right);

@@ -156,8 +156,9 @@ namespace CSharpMath.Forms {
     }
     protected sealed override void OnPaintSurface(global::SkiaSharp.Views.Forms.SKPaintSurfaceEventArgs e) {
       base.OnPaintSurface(e);
-      e.Surface.Canvas.Clear();
       var canvas = e.Surface.Canvas;
+      canvas.Clear();
+      canvas.Scale(e.Info.Width / (float)Width);
 #endif
       Painter.Draw(canvas, TextAlignment, Padding, DisplacementX, DisplacementY);
     }
