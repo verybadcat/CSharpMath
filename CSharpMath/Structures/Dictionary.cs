@@ -21,7 +21,7 @@ namespace CSharpMath.Structures {
     [Obsolete(NotACollection, true)]
     [SuppressMessage("Design", "CA1033:Interface methods should be callable by child types", Justification = NotACollection)]
     IEnumerator IEnumerable.GetEnumerator() => throw new NotSupportedException(NotACollection);
-    public ProxyAdder(Action<TKey, TValue>? added = null) => Added += added;
+    public ProxyAdder(Action<TKey, TValue>? extraCommandToPerformWhenAdding = null) => Added += extraCommandToPerformWhenAdding;
     public event Action<TKey, TValue>? Added;
     public void Add(TKey key1, TValue value) => Added?.Invoke(key1, value);
     public void Add(TKey key1, TKey key2, TValue value) {
@@ -43,7 +43,7 @@ namespace CSharpMath.Structures {
     public delegate Result<(TValue Result, int SplitIndex)> DefaultDelegate(ReadOnlySpan<char> consume);
 
     public LaTeXCommandDictionary(DefaultDelegate @default,
-      DefaultDelegate defaultForCommands, Action<string, TValue>? added = null) : base(added) {
+      DefaultDelegate defaultForCommands, Action<string, TValue>? extraCommandToPerformWhenAdding = null) : base(extraCommandToPerformWhenAdding) {
       this.@default = @default;
       this.defaultForCommands = defaultForCommands;
       Added += (key, value) => {
@@ -122,7 +122,7 @@ namespace CSharpMath.Structures {
 #pragma warning restore CA1710 // Identifiers should have correct suffix
     : ProxyAdder<TFirst, TSecond>
     where TFirst: IEquatable<TFirst> {
-    public BiDictionary(Action<TFirst, TSecond>? added = null) : base(added) =>
+    public BiDictionary(Action<TFirst, TSecond>? extraCommandToPerformWhenAdding = null) : base(extraCommandToPerformWhenAdding) =>
       Added += (first, second) => {
         switch (firstToSecond.ContainsKey(first), secondToFirst.ContainsKey(second)) {
           case (true, _):
