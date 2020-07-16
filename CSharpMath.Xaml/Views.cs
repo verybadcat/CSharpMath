@@ -54,10 +54,10 @@ namespace CSharpMath.Forms {
     public BaseView() {
       // Respect built-in styles
       Styles.Add(new global::Avalonia.Styling.Style(global::Avalonia.Styling.Selectors.Is<BaseView<TPainter, TContent>>) {
-        Setters = new[]
+        Setters =
         {
-          new global::Avalonia.Styling.Setter(TextColorProperty, new global::Avalonia.Markup.Xaml.MarkupExtensions.DynamicResourceExtension("ThemeForegroundColor")),
-          new global::Avalonia.Styling.Setter(FontSizeProperty, new global::Avalonia.Markup.Xaml.MarkupExtensions.DynamicResourceExtension("FontSizeNormal"))
+          new global::Avalonia.Styling.Setter(TextColorProperty, new global::Avalonia.Markup.Xaml.MarkupExtensions.DynamicResourceExtension("SystemBaseHighColor")),
+          new global::Avalonia.Styling.Setter(FontSizeProperty, 14.0f)
         }
       });
     }

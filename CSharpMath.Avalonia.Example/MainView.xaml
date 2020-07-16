@@ -6,35 +6,32 @@
              Foreground="{DynamicResource ThemeForegroundBrush}"
              FontSize="{DynamicResource FontSizeNormal}">
 
-      <TabControl x:Name="Sidebar"
-                  Classes="sidebar">
+    <DockPanel>
 
-          <TabControl.Tag>
-          
-              <ComboBox x:Name="Themes"
-                        DockPanel.Dock="Bottom"
-                        SelectedIndex="0"
-                        Width="100"
-                        Margin="8">
 
-                  <ComboBoxItem>Light</ComboBoxItem>
-                  <ComboBoxItem>Dark</ComboBoxItem>
+        <ComboBox x:Name="Themes"
+                  DockPanel.Dock="Bottom"
+                  HorizontalAlignment="Right"
+                  SelectedIndex="0"
+                  Width="100"
+                  Margin="8">
+            <ComboBoxItem>Light</ComboBoxItem>
+            <ComboBoxItem>Dark</ComboBoxItem>
+        </ComboBox>
 
-              </ComboBox>
+        <TabControl x:Name="Sidebar"
+                    Padding="16">
+            <TabItem Header="MathView">
+                <pages:MathViewPage/>
+            </TabItem>
+            <TabItem Header="TextView">
+                <pages:TextViewPage/>
+            </TabItem>
+            <TabItem Header="MathButton">
+                <pages:MathButtonPage/>
+            </TabItem>
+        </TabControl>
 
-          </TabControl.Tag>
-
-          <TabItem Header="MathView">
-              <pages:MathViewPage/>
-          </TabItem>
-
-          <TabItem Header="TextView">
-              <pages:TextViewPage/>
-          </TabItem>
-          <TabItem Header="MathButton">
-              <pages:MathButtonPage/>
-          </TabItem>
-
-      </TabControl>
+    </DockPanel>
 
 </UserControl>
