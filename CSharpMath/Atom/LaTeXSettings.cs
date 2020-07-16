@@ -94,11 +94,10 @@ namespace CSharpMath.Atom {
           var atom = new Ordinary(consume[0].ToStringInvariant());
           return ((parser, accumulate, stopChar) => Ok(atom), 1);
         }
-      }, command => "Invalid command " + command.ToString())
-      {
+      }, command => "Invalid command " + command.ToString()) {
         #region Atom producers
         { Enumerable.Range(0, 33).Concat(new[] { 127 }).Select(c => ((char)c).ToStringInvariant()),
-          (parser, accumulate, stopChar) => {
+          _ => (parser, accumulate, stopChar) => {
           if (parser.TextMode) {
             parser.SkipSpaces(); // Multiple spaces are collapsed into one in text mode
             return Ok(new Ordinary(" "));
@@ -321,22 +320,8 @@ namespace CSharpMath.Atom {
     public static MathAtom Placeholder => new Placeholder("\u25A1");
     public static MathList PlaceholderList => new MathList { Placeholder };
 
-    private static BiDictionary<string, FontStyle> GetFontStyles() {
-      var bd = new BiDictionary<string, FontStyle>() {
-        { "mathnormal", FontStyle.Default},
-        { "mathrm", "rm", "text", FontStyle.Roman},
-        { "mathbf", "bf", FontStyle.Bold },
-        { "mathcal", "cal", FontStyle.Caligraphic },
-        { "mathtt", "tt", FontStyle.Typewriter },
-        { "mathit", "it", "mit", FontStyle.Italic },
-        { "mathsf", "sf", FontStyle.SansSerif },
-        { "mathfrak", "frak", FontStyle.Fraktur },
-        { "mathbb", "bb", FontStyle.Blackboard },
-        { "mathbfit", "bm", FontStyle.BoldItalic }
-      };
-      foreach (var kvp in bd) {
-        var command = kvp.Key;
-        var fontStyle = kvp.Value;
+    public static BiDictionary<string, FontStyle> FontStyles { get; } =
+      new BiDictionary<string, FontStyle>((command, fontStyle) => {
         Commands.Add(@"\" + command, (parser, accumulate, stopChar) => {
           var oldSpacesAllowed = parser.TextMode;
           var oldFontStyle = parser.CurrentFontStyle;
@@ -353,10 +338,18 @@ namespace CSharpMath.Atom {
             else return OkStyled(r);
           });
         });
-      }
-      return bd;
-    }
-    public static readonly BiDictionary<string, FontStyle> FontStyles = GetFontStyles();
+      }) {
+        { "mathnormal", FontStyle.Default },
+        { "mathrm", "rm", "text", FontStyle.Roman },
+        { "mathbf", "bf", FontStyle.Bold },
+        { "mathcal", "cal", FontStyle.Caligraphic },
+        { "mathtt", "tt", FontStyle.Typewriter },
+        { "mathit", "it", "mit", FontStyle.Italic },
+        { "mathsf", "sf", FontStyle.SansSerif },
+        { "mathfrak", "frak", FontStyle.Fraktur },
+        { "mathbb", "bb", FontStyle.Blackboard },
+        { "mathbfit", "bm", FontStyle.BoldItalic },
+      };
 
     public static Color? ParseColor(string? hexOrName) {
       if (hexOrName == null) return null;
@@ -371,7 +364,7 @@ namespace CSharpMath.Atom {
           };
       }
 #pragma warning disable CA1308 // Normalize strings to uppercase
-      if (PredefinedColors.FirstToSecond.TryGetValue(hexOrName.ToLowerInvariant(), out var predefined))
+      if (PredefinedColors.TryGetByFirst(hexOrName.ToLowerInvariant(), out var predefined))
         return predefined;
 #pragma warning restore CA1308 // Normalize strings to uppercase
       return null;
@@ -426,8 +419,13 @@ namespace CSharpMath.Atom {
           list.Clear();
       return CommandSymbols.SecondToFirst.TryGetValue(atomWithoutScripts, out var name) ? name : null;
     }
-    private static BiDictionary<string, MathAtom> GetCommandSymbols() {
-      return new BiDictionary<string, MathAtom>() {
+
+    public static BiDictionary<string, MathAtom> CommandSymbols { get; } =
+      new BiDictionary<string, MathAtom>((command, atom) =>
+        Commands.Add(command, (parser, accumulate, stopChar) =>
+          atom is Accent accent
+          ? parser.ReadArgument().Bind(accentee => Ok(new Accent(accent.Nucleus, accentee)))
+          : Ok(atom.Clone(false)))) {
         // Custom additions
         { @"\diameter", new Ordinary("\u2300") },
         { @"\npreccurlyeq", new Relation("⋠") },
@@ -471,11 +469,11 @@ namespace CSharpMath.Atom {
         { @"\threeunderdot", new Accent("\u20E8") },
         { @"\TeX", new Inner(Boundary.Empty, new MathList(
             new Variable("T") { FontStyle = FontStyle.Roman },
-            new Space(-1 / 6f * Structures.Space.EmWidth) { FontStyle = FontStyle.Roman },
-            new RaiseBox(-1 / 2f * Structures.Space.ExHeight,
+            new Space(-1/6f * Structures.Space.EmWidth) { FontStyle = FontStyle.Roman },
+            new RaiseBox(-1/2f * Structures.Space.ExHeight,
               new MathList(new Variable("E") { FontStyle = FontStyle.Roman })
             ) { FontStyle = FontStyle.Roman },
-            new Space(-1 / 8f * Structures.Space.EmWidth) { FontStyle = FontStyle.Roman },
+            new Space(-1/8f * Structures.Space.EmWidth) { FontStyle = FontStyle.Roman },
             new Variable("X") { FontStyle = FontStyle.Roman }
           ), Boundary.Empty) },
 
@@ -498,9 +496,9 @@ namespace CSharpMath.Atom {
         { @"\lrcorner", new Close("⌟") },
 
         // Standard TeX
-        { Enumerable.Range('0', 10).Select(c => ((char) c).ToStringInvariant()),
+        { Enumerable.Range('0', 10).Select(c => ((char)c).ToStringInvariant()),
           n => new Number(n) },
-        { Enumerable.Range('A', 26).Concat(Enumerable.Range('a', 26)).Select(c => ((char) c).ToStringInvariant()),
+        { Enumerable.Range('A', 26).Concat(Enumerable.Range('a', 26)).Select(c => ((char)c).ToStringInvariant()),
           v => new Variable(v) },
         { @"\ ", new Ordinary(" ") },
         { @"\,", new Space(Structures.Space.ShortSpace) },
@@ -509,7 +507,7 @@ namespace CSharpMath.Atom {
         { @"\!", new Space(-Structures.Space.ShortSpace) },
         { @"\enspace", new Space(Structures.Space.EmWidth / 2) },
         { @"\quad", new Space(Structures.Space.EmWidth) },
-        { @"\qquad", new Space(Structures.Space.EmWidth* 2) },
+        { @"\qquad", new Space(Structures.Space.EmWidth * 2) },
         { @"\displaystyle", new Style(LineStyle.Display) },
         { @"\textstyle", new Style(LineStyle.Text) },
         { @"\scriptstyle", new Style(LineStyle.Script) },
@@ -728,7 +726,7 @@ namespace CSharpMath.Atom {
         { @"<", new Relation("<") },
         { @">", new Relation(">") },
         { @":", new Relation("∶") }, // Colon is a ratio. Regular colon is \colon
-
+        
         // Table 9: Punctuation Symbols
         { @",", new Punctuation(",") },
         { @";", new Punctuation(";") },
@@ -737,7 +735,7 @@ namespace CSharpMath.Atom {
         { @"\cdotp", new Punctuation("·") },
         { @"!", new Punctuation("!") }, // ADDED: According to https://latex.wikia.org/wiki/List_of_LaTeX_symbols#Class_6_.28Pun.29_symbols:_postfix_.2F_punctuation
         { @"?", new Punctuation("?") }, // ADDED: According to https://latex.wikia.org/wiki/List_of_LaTeX_symbols#Class_6_.28Pun.29_symbols:_postfix_.2F_punctuation
-
+        
         // Table 10: Arrow Symbols 
         { @"\leftarrow", @"\gets", new Relation("←") },
         { @"\longleftarrow", new Relation("⟵") },
@@ -1136,19 +1134,5 @@ namespace CSharpMath.Atom {
         // { @"\supsetneqq", new Relation("⫌") }, // Glyph not in Latin Modern Math
         // \varsupsetneqq -> ⫌ + U+FE00 (Variation Selector 1) Not dealing with variation selectors, thank you very much
       };
-    }
-    private static BiDictionary<string, MathAtom> GetCommandSymbolsInitializingCommands() {
-      var bd = GetCommandSymbols();
-      foreach (var kvp in bd) {
-        var command = kvp.Key;
-        var atom = kvp.Value;
-        Commands.Add(command, (parser, accumulate, stopChar) =>
-          atom is Accent accent
-          ? parser.ReadArgument().Bind(accentee => Ok(new Accent(accent.Nucleus, accentee)))
-          : Ok(atom.Clone(false)));
-      };
-      return bd;
-    }
-    public static readonly BiDictionary<string, MathAtom> CommandSymbols = GetCommandSymbolsInitializingCommands();
   }
 }
