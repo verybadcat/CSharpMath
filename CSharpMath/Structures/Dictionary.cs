@@ -165,7 +165,7 @@ namespace CSharpMath.Structures {
         if (secondToFirst[svalue].Equals(first)) {
           TFirst[] otherFirsts =
             firstToSecond
-            .Where(kvp => EqualityComparer<TSecond>.Default.Equals(kvp.Value!,svalue))
+            .Where(kvp => EqualityComparer<TSecond>.Default.Equals(kvp.Value,svalue))
             .Select(kvp => kvp.Key).ToArray();
           if (otherFirsts.IsEmpty()) { secondToFirst.Remove(svalue); } else { secondToFirst[svalue] = otherFirsts[0]; }
         }
@@ -179,17 +179,13 @@ namespace CSharpMath.Structures {
         // Remove all TFirsts pointing to second
         var firsts =
           firstToSecond
-          .Where(kvp => EqualityComparer<TSecond>.Default.Equals(kvp.Value!,second))
+          .Where(kvp => EqualityComparer<TSecond>.Default.Equals(kvp.Value,second))
           .Select(kvp => kvp.Key).ToArray();
         foreach (TFirst first in firsts) { firstToSecond.Remove(first); };
       }
       return exists;
     }
-    public IReadOnlyDictionary<TFirst, TSecond> FirstToSecond {
-      get { return firstToSecond; }
-    }
-    public IReadOnlyDictionary<TSecond, TFirst> SecondToFirst {
-      get { return secondToFirst; }
-    }
+    public IReadOnlyDictionary<TFirst, TSecond> FirstToSecond => firstToSecond;
+    public IReadOnlyDictionary<TSecond, TFirst> SecondToFirst => secondToFirst;
   }
 }
