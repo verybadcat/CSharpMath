@@ -147,12 +147,6 @@ namespace CSharpMath.Structures {
 
     readonly Dictionary<TFirst, TSecond> firstToSecond = new Dictionary<TFirst, TSecond>();
     readonly Dictionary<TSecond, TFirst> secondToFirst = new Dictionary<TSecond, TFirst>();
-    // TODO: Delete if this is not absolutely necessary. If it is absolutely necessary, then document:
-    // indicate purpose of copyto, what it does, and what the arrayIndex argument refers to.
-    public void CopyTo(KeyValuePair<TFirst, TSecond>[] array, int arrayIndex) {
-      foreach (var pair in firstToSecond)
-        array[arrayIndex++] = pair;
-    }
     public Dictionary<TFirst, TSecond>.Enumerator GetEnumerator() =>
       firstToSecond.GetEnumerator();
     public bool RemoveByFirst(TFirst first) {
