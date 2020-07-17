@@ -119,7 +119,9 @@ namespace CSharpMath.Structures {
 
   // Taken from https://stackoverflow.com/questions/255341/getting-key-of-value-of-a-generic-dictionary/255638#255638
   /// <summary>
-  /// Represents a many to one relationship between TFirsts and TSeconds, allowing fast lookup of the first TFirst corresponding to any TSecond.
+  /// Represents a many to one relationship between TFirsts and TSeconds,
+  /// allowing fast lookup of the first TFirst corresponding to any TSecond,
+  /// in addition to the usual lookup of a TSeconds by a TFirst.
   /// </summary>
 #pragma warning disable CA1710 // Identifiers should have correct suffix
 #pragma warning disable CA1010 // Collections should implement generic interface
