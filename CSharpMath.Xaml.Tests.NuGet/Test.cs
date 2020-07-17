@@ -1,4 +1,4 @@
-﻿namespace CSharpMath.Xaml.Tests.NuGet {
+namespace CSharpMath.Xaml.Tests.NuGet {
   using Avalonia;
   using SkiaSharp;
   using Forms;
@@ -11,9 +11,9 @@
       Xamarin.Forms.Device.PlatformServices = new Xamarin.Forms.Core.UnitTests.MockPlatformServices();
 
       using (var forms = System.IO.File.OpenWrite(File(nameof(Forms))))
-        new Forms.MathView { LaTeX = "1" }.Painter.DrawAsStream()?.CopyTo(forms);
+        new Forms.MathView { LaTeX = "1", FontSize = 50 }.Painter.DrawAsStream()?.CopyTo(forms);
       using (var avalonia = System.IO.File.OpenWrite(File(nameof(Avalonia))))
-        new Avalonia.MathView { LaTeX = "1" }.Painter.DrawAsPng(avalonia);
+        new Avalonia.MathView { LaTeX = "1", FontSize = 50 }.Painter.DrawAsPng(avalonia);
 
       using (var forms = System.IO.File.OpenRead(File(nameof(Forms))))
         Xunit.Assert.Contains(forms.Length, new[] { 344L, 797 }); // 797 on Mac, 344 on Ubuntu

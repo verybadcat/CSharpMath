@@ -39,9 +39,12 @@ namespace CSharpMath.Forms {
       Action<TThis, TValue>? updateOtherProperty = null)
       where TThis : BaseView<TPainter, TContent> {
       var defaultValue = defaultValueGet(staticPainter);
-      void PropertyChanged(TThis @this, object newValue) {
-        propertySet(@this.Painter, (TValue)newValue);
-        updateOtherProperty?.Invoke(@this, (TValue)newValue);
+      void PropertyChanged(TThis @this, object? newValue) {
+        // We need to support nullable classes and structs, so we cannot forbid null here
+        // So this use of the null-forgiving operator should be blamed on non-generic PropertyChanged handlers
+        var @new = (TValue)newValue!;
+        propertySet(@this.Painter, @new);
+        updateOtherProperty?.Invoke(@this, @new);
         if (affectsMeasure) @this.InvalidateMeasure();
         // Redraw immediately! No deferred drawing
 #if Avalonia
@@ -56,8 +59,7 @@ namespace CSharpMath.Forms {
       Styles.Add(new global::Avalonia.Styling.Style(global::Avalonia.Styling.Selectors.Is<BaseView<TPainter, TContent>>) {
         Setters =
         {
-          new global::Avalonia.Styling.Setter(TextColorProperty, new global::Avalonia.Markup.Xaml.MarkupExtensions.DynamicResourceExtension("SystemBaseHighColor")),
-          new global::Avalonia.Styling.Setter(FontSizeProperty, 14.0f)
+          new global::Avalonia.Styling.Setter(TextColorProperty, new global::Avalonia.Markup.Xaml.MarkupExtensions.DynamicResourceExtension("SystemBaseHighColor"))
         }
       });
     }
