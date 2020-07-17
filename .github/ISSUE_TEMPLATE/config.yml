@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Issue with AngouriMath
+    url:  https://github.com/asc-community/AngouriMath/issues/new/choose
+    about: Please open issues relating to AngouriMath in asc-community/AngouriMath.
+  - name: Issue with Typography
+    url:  https://github.com/dotnet/sdk/issues/new/choose
+    about: Please open issues relating to Typography in LayoutFarm/Typography.
