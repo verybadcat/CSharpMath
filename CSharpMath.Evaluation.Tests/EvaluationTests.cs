@@ -23,6 +23,8 @@ namespace CSharpMath {
         else Assert.IsNotType<Evaluation.MathItem.Entity>(result);
       }
       Test(input);
+      // This regex balances (, [ and \{ with ), ] and \} into one group, then inserts \left and \right
+      // But does not do this for \sqrt's [ and ]
       Test(Regex.Replace(input, @"(?<!\\sqrt)(\(|\[|\\\{)((?:(?!\(|\[|\\\\{|\)|\]|\\\\}).|(?<open>\(|\[|\\\\{)|(?<-open>\)|\]|\\\\}))+(?(open)(?!)))(\)|\]|\\\\})", @"\left$1$2\right$3"));
     }
     [Theory]
@@ -32,18 +34,18 @@ namespace CSharpMath {
     [InlineData("010", "10", "10")]
     [InlineData("1.", "1", "1")]
     [InlineData("01.", "1", "1")]
-    [InlineData("1.0", "1.0", "1")]
-    [InlineData("01.0", "1.0", "1")]
-    [InlineData(".1", "0.1", @"\frac{1}{10}")]
-    [InlineData(".10", "0.10", @"\frac{1}{10}")]
-    [InlineData("1.1", "1.1", @"\frac{11}{10}")]
-    [InlineData("01.1", "1.1", @"\frac{11}{10}")]
-    [InlineData("1.10", "1.10", @"\frac{11}{10}")]
-    [InlineData("01.10", "1.10", @"\frac{11}{10}")]
-    [InlineData("0.1", "0.1", @"\frac{1}{10}")]
-    [InlineData("00.1", "0.1", @"\frac{1}{10}")]
-    [InlineData("0.10", "0.10", @"\frac{1}{10}")]
-    [InlineData("00.10", "0.10", @"\frac{1}{10}")]
+    [InlineData("1.0", "1", "1")]
+    [InlineData("01.0", "1", "1")]
+    [InlineData(".1", @"\frac{1}{10}", @"\frac{1}{10}")]
+    [InlineData(".10", @"\frac{1}{10}", @"\frac{1}{10}")]
+    [InlineData("1.1", @"\frac{11}{10}", @"\frac{11}{10}")]
+    [InlineData("01.1", @"\frac{11}{10}", @"\frac{11}{10}")]
+    [InlineData("1.10", @"\frac{11}{10}", @"\frac{11}{10}")]
+    [InlineData("01.10", @"\frac{11}{10}", @"\frac{11}{10}")]
+    [InlineData("0.1", @"\frac{1}{10}", @"\frac{1}{10}")]
+    [InlineData("00.1", @"\frac{1}{10}", @"\frac{1}{10}")]
+    [InlineData("0.10", @"\frac{1}{10}", @"\frac{1}{10}")]
+    [InlineData("00.10", @"\frac{1}{10}", @"\frac{1}{10}")]
     [InlineData("1234", "1234", "1234")]
     [InlineData("0123456789", "123456789", "123456789")]
     [InlineData("1234.", "1234", "1234")]
@@ -138,14 +140,16 @@ namespace CSharpMath {
     [InlineData(@"i\times \infty", @"i\times \infty ", @"\infty i")]
     [InlineData(@"\infty\times i", @"\infty \times i", @"\infty i")]
     [InlineData(@"i\times i", @"i\times i", @"-1")]
-    [InlineData(@"\frac00", @"\frac{0}{0}", @"\mathrm{NaN}")]
+    [InlineData(@"\frac00", @"\frac{0}{0}", @"\mathrm{undefined}")]
     [InlineData(@"\frac0\infty", @"\frac{0}{\infty }", @"0")]
     [InlineData(@"\frac2\infty", @"\frac{2}{\infty }", @"0")]
     [InlineData(@"\frac{-2}\infty", @"\frac{-2}{\infty }", @"0")]
-    [InlineData(@"\frac20", @"\frac{2}{0}", @"\infty ")]
-    [InlineData(@"\frac{-2}0", @"\frac{-2}{0}", @"-\infty ")]
-    [InlineData(@"\frac\infty0", @"\frac{\infty }{0}", @"\mathrm{NaN}")]
-    [InlineData(@"\frac{-\infty}0", @"\frac{-\infty }{0}", @"\mathrm{NaN}")]
+    [InlineData(@"\frac20", @"\frac{2}{0}", @"\mathrm{undefined}")]
+    [InlineData(@"\frac{-2}0", @"\frac{-2}{0}", @"\mathrm{undefined}")]
+    [InlineData(@"\frac\infty0", @"\frac{\infty }{0}", @"\mathrm{undefined}")]
+    [InlineData(@"\frac{-\infty}0", @"\frac{-\infty }{0}", @"\mathrm{undefined}")]
+    [InlineData(@"\frac\infty\infty", @"\frac{\infty }{\infty }", @"\mathrm{undefined}")]
+    [InlineData(@"\frac{-\infty}{\infty}", @"\frac{-\infty }{\infty }", @"\mathrm{undefined}")]
     public void BinaryOperators(string latex, string converted, string result) => Test(latex, converted, result);
     [Theory]
     [InlineData("+i", "i", "i")]
@@ -202,9 +206,9 @@ namespace CSharpMath {
     public void PostfixOperators(string latex, string converted, string result) => Test(latex, converted, result);
     [Theory]
     [InlineData("2^2", "2^2", "4")]
-    [InlineData(".2^2", "0.2^2", @"\frac{1}{25}")]
+    [InlineData(".2^2", @"\left( \frac{1}{5}\right) ^2", @"\frac{1}{25}")]
     [InlineData("2.^2", "2^2", "4")]
-    [InlineData("2.1^2", "2.1^2", @"\frac{441}{100}")]
+    [InlineData("2.1^2", @"\left( \frac{21}{10}\right) ^2", @"\frac{441}{100}")]
     [InlineData("a^a", "a^a", "a^a")]
     [InlineData("a^{a+b}", "a^{a+b}", "a^{a+b}")]
     [InlineData("a^{-2}", "a^{-2}", "a^{-2}")]
@@ -230,7 +234,7 @@ namespace CSharpMath {
     [InlineData("i^4", @"i^4", @"1")]
     [InlineData("i^5", @"i^5", @"i")]
     [InlineData("10^2", @"10^2", @"100")]
-    [InlineData(".1^2", @"0.1^2", @"\frac{1}{100}")]
+    [InlineData(".1^2", @"\left( \frac{1}{10}\right) ^2", @"\frac{1}{100}")]
     [InlineData("10^x", @"10^x", @"10^x")]
     [InlineData(@"{\frac 12}^4", @"\left( \frac{1}{2}\right) ^4", @"\frac{1}{16}")]
     [InlineData(@"\sqrt2", @"\sqrt{2}", @"\sqrt{2}")]
@@ -350,9 +354,9 @@ namespace CSharpMath {
     [InlineData(@"(5+6)x", @"\left( 5+6\right) \times x", @"11\times x")]
     [InlineData(@"x(5+6)", @"x\times \left( 5+6\right) ", @"11\times x")]
     [InlineData(@"x(5+6)x", @"x\times \left( 5+6\right) \times x", @"11\times x^2")]
-    [InlineData(@"(5+6).2", @"\left( 5+6\right) \times 0.2", @"\frac{11}{5}")]
-    [InlineData(@".2(5+6)", @"0.2\times \left( 5+6\right) ", @"\frac{11}{5}")]
-    [InlineData(@".2(5+6).2", @"0.2\times \left( 5+6\right) \times 0.2", @"\frac{11}{25}")]
+    [InlineData(@"(5+6).2", @"\left( 5+6\right) \times \frac{1}{5}", @"\frac{11}{5}")]
+    [InlineData(@".2(5+6)", @"\frac{1}{5}\times \left( 5+6\right) ", @"\frac{11}{5}")]
+    [InlineData(@".2(5+6).2", @"\frac{1}{5}\times \left( 5+6\right) \times \frac{1}{5}", @"\frac{11}{25}")]
     [InlineData(@"(5+6)2.", @"\left( 5+6\right) \times 2", @"22")]
     [InlineData(@"2.(5+6)", @"2\times \left( 5+6\right) ", @"22")]
     [InlineData(@"2.(5+6)2.", @"2\times \left( 5+6\right) \times 2", @"44")]
@@ -472,7 +476,7 @@ namespace CSharpMath {
     [InlineData(@"[1,2]\setminus\{2\}", @"\left\{ \left[ 1,2\right) \right\} ")]
     [InlineData(@"[1,2]\cup(2,3)", @"\left\{ \left[ 1,2\right] ,\left( 2,3\right) \right\} ")]
     [InlineData(@"[1,2]\cap[1.5,1.6]", @"\left\{ \left[ \frac{3}{2},\frac{8}{5}\right] \right\} ")]
-    [InlineData(@"[1.5,1.5]", @"\left\{ 1.5\right\} ")]
+    [InlineData(@"[1.5,1.5]", @"\left\{ \frac{3}{2}\right\} ")]
     [InlineData(@"(1.5,1.5]", @"\emptyset ")]
     [InlineData(@"[1.5,1.5)", @"\emptyset ")]
     [InlineData(@"(1.5,1.5)", @"\emptyset ")]
@@ -640,6 +644,18 @@ namespace CSharpMath {
     public void Error(string badLaTeX, string error) =>
       Evaluation.Evaluate(ParseLaTeX(badLaTeX))
       .Match(entity => throw new Xunit.Sdk.XunitException(entity.Latexise()), e => Assert.Equal(error, e));
-    [Fact] public void M() => throw new System.Exception(MathS.Pow(new NumberEntity(10), "x").Latexise());
+    // https://github.com/ForNeVeR/wpf-math/issues/42
+    [Theory]
+    [InlineData("1 + 1 - 1", @"1+1-1")]
+    [InlineData("3 / 2", @"\frac{3}{2}")]
+    [InlineData("2 * 3 / 5", @"\frac{2\times 3}{5}")]
+    [InlineData("sin(x+pi)", @"\sin \left( x+\pi \right) ")]
+    [InlineData("log(alpha)", @"\log \left( \alpha \right) ")]
+    [InlineData("2e9", @"2000000000")]
+    [InlineData("-3e4^x", @"-30000^x")]
+    [InlineData("(-3e4)^x", @"\left( -30000\right) ^x")]
+    [InlineData("i+2i", @"i+2i")]
+    public void SimpleArithmeticSyntax(string simpleSyntax, string latex) =>
+      Assert.Equal(latex, LaTeXParser.MathListToLaTeX(Evaluation.Visualize((Entity)simpleSyntax)).ToString());
   }
 }

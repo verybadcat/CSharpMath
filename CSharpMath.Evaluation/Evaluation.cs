@@ -246,7 +246,7 @@ namespace CSharpMath {
             v.Subscript.Clear();
             goto handleThis;
           case Atoms.Ordinary { Nucleus: "∞" }:
-            @this = new NumberEntity(AngouriMath.Core.Numerix.RealNumber.PositiveInfinity());
+            @this = new NumberEntity(AngouriMath.Core.Numerix.RealNumber.PositiveInfinity);
             goto handleThis;
           case Atoms.Ordinary { Nucleus: "∅" }:
             @this = MathS.Sets.Empty();
