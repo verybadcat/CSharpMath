@@ -30,6 +30,9 @@ namespace CSharpMath.Structures {
     public void Add(TKey key1, TKey key2, TKey key3, TValue value) {
       Add(key1, value); Add(key2, value); Add(key3, value);
     }
+    public void Add(TKey key1, TKey key2, TKey key3, TKey key4, TValue value) {
+      Add(key1, value); Add(key2, value); Add(key3, value); Add(key4, value);
+    }
     public void Add<TCollection>(TCollection keys, TValue value) where TCollection : IEnumerable<TKey> {
       foreach (var key in keys) Add(key, value);
     }
