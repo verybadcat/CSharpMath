@@ -39,7 +39,7 @@ namespace CSharpMath.Structures {
   }
   /// <summary>
   ///  A dictionary-based helper where the keys are classes of LaTeX strings, with special treatment
-  ///  for commands (starting "\"). The start of an inputted char Span is parsed, and an arbitrary object
+  ///  for commands (starting "\"). The start of an inputted <see cref="Span{Char}"/> is parsed, and an arbitrary object
   ///  TValue is returned, along with the number of matching characters. Processing is based on dictionary lookup
   ///  with fallack to specified default functions for command and non-commands when lookup fails.
   /// </summary>
@@ -48,9 +48,9 @@ namespace CSharpMath.Structures {
   public class LaTeXCommandDictionary<TValue> : ProxyAdder<string, TValue>, IEnumerable<KeyValuePair<string, TValue>> {
     public delegate Result<(TValue Result, int SplitIndex)> DefaultDelegate(ReadOnlySpan<char> consume);
 
-    public LaTeXCommandDictionary(DefaultDelegate @defaultParser,
+    public LaTeXCommandDictionary(DefaultDelegate defaultParser,
       DefaultDelegate defaultParserForCommands, Action<string, TValue>? extraCommandToPerformWhenAdding = null) : base(extraCommandToPerformWhenAdding) {
-      this.@defaultParser = @defaultParser;
+      this.defaultParser = defaultParser;
       this.defaultParserForCommands = defaultParserForCommands;
       Added += (key, value) => {
         if (key.AsSpan().StartsWithInvariant(@"\"))
@@ -60,7 +60,7 @@ namespace CSharpMath.Structures {
         else nonCommands.Add(key, value);
       };
     }
-    readonly DefaultDelegate @defaultParser;
+    readonly DefaultDelegate defaultParser;
     readonly DefaultDelegate defaultParserForCommands;
 
     readonly Dictionary<string, TValue> nonCommands = new Dictionary<string, TValue>();
@@ -113,7 +113,7 @@ namespace CSharpMath.Structures {
         if (chars.StartsWith(command.AsSpan(), StringComparison.InvariantCulture)) {
           commandFound = command; }
       }
-      return commandFound == null ? @defaultParser(chars) : Result.Ok((nonCommands[commandFound],commandFound.Length));
+      return commandFound == null ? defaultParser(chars) : Result.Ok((nonCommands[commandFound],commandFound.Length));
     }
   }
 
