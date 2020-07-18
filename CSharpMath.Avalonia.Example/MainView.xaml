@@ -16,9 +16,15 @@
             <RadioButton
                 x:Name="lightThemeRbn"
                 Margin="2,8"
+                Padding="8,0"
+                VerticalContentAlignment="Center"
                 Content="Light"
                 IsChecked="true" />
-            <RadioButton Margin="2,8" Content="Dark" />
+            <RadioButton
+                Margin="2,8"
+                Padding="8,0"
+                VerticalContentAlignment="Center"
+                Content="Dark" />
         </StackPanel>
 
         <TabControl x:Name="Sidebar" Padding="16">
