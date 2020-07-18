@@ -1,34 +1,35 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:pages="clr-namespace:CSharpMath.Avalonia.Example.Pages"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="CSharpMath.Avalonia.Example.MainView"
-             Background="{DynamicResource ThemeBackgroundBrush}"
-             Foreground="{DynamicResource ThemeForegroundBrush}"
-             FontSize="{DynamicResource FontSizeNormal}">
+<UserControl
+    x:Class="CSharpMath.Avalonia.Example.MainView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:pages="clr-namespace:CSharpMath.Avalonia.Example.Pages"
+    Background="{DynamicResource ThemeBackgroundBrush}"
+    FontSize="{DynamicResource FontSizeNormal}"
+    Foreground="{DynamicResource ThemeForegroundBrush}">
 
     <DockPanel>
 
+        <StackPanel
+            HorizontalAlignment="Right"
+            DockPanel.Dock="Bottom"
+            Orientation="Horizontal">
+            <RadioButton
+                x:Name="lightThemeRbn"
+                Margin="2,8"
+                Content="Light"
+                IsChecked="true" />
+            <RadioButton Margin="2,8" Content="Dark" />
+        </StackPanel>
 
-        <ComboBox x:Name="Themes"
-                  DockPanel.Dock="Bottom"
-                  HorizontalAlignment="Right"
-                  SelectedIndex="0"
-                  Width="100"
-                  Margin="8">
-            <ComboBoxItem>Light</ComboBoxItem>
-            <ComboBoxItem>Dark</ComboBoxItem>
-        </ComboBox>
-
-        <TabControl x:Name="Sidebar"
-                    Padding="16">
+        <TabControl x:Name="Sidebar" Padding="16">
             <TabItem Header="MathView">
-                <pages:MathViewPage/>
+                <pages:MathViewPage />
             </TabItem>
             <TabItem Header="TextView">
-                <pages:TextViewPage/>
+                <pages:TextViewPage />
             </TabItem>
             <TabItem Header="MathButton">
-                <pages:MathButtonPage/>
+                <pages:MathButtonPage />
             </TabItem>
         </TabControl>
 

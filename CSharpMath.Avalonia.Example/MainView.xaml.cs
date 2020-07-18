@@ -10,17 +10,9 @@ namespace CSharpMath.Avalonia.Example {
 
       var light = AvaloniaXamlLoader.Parse<StyleInclude>(@"<StyleInclude xmlns='https://github.com/avaloniaui' Source='avares://Avalonia.Themes.Fluent/Accents/FluentLight.xaml'/>");
       var dark = AvaloniaXamlLoader.Parse<StyleInclude>(@"<StyleInclude xmlns='https://github.com/avaloniaui' Source='avares://Avalonia.Themes.Fluent/Accents/FluentDark.xaml'/>");
-      var themes = this.Find<ComboBox>("Themes");
-      themes.SelectionChanged += (sender, e) => {
-        switch (themes.SelectedIndex) {
-          case 0:
-            Application.Current.Styles[0] = light;
-            break;
-          case 1:
-            Application.Current.Styles[0] = dark;
-            break;
-        }
-      };
+      var themes = this.Find<RadioButton>("lightThemeRbn");
+      themes.Checked += (sender, e) => Application.Current.Styles[0] = light;
+      themes.Unchecked += (sender, e) => Application.Current.Styles[0] = dark;
     }
 
     private void InitializeComponent() {
