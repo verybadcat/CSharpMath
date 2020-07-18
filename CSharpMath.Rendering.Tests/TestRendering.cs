@@ -100,6 +100,33 @@ namespace CSharpMath.Rendering.Tests {
     [SkippableTheory, ClassData(typeof(TestRenderingTextData))]
     public void TextRightInfiniteWidth(string file, string latex) =>
       Run(file, latex, new TTextPainter(), TextAlignment.TopRight, textPainterCanvasWidth: float.PositiveInfinity);
+    public static TheoryData<float, TextAlignment> TextFontSizesData() {
+      var data = new TheoryData<float, TextAlignment>();
+      // TODO: Fix font sizes at 100 and 300
+      foreach (var fontSize in stackalloc[] { 20, 40, 60 })
+        foreach (var alignment in typeof(TextAlignment).GetEnumValues().Cast<TextAlignment>())
+          data.Add(fontSize, alignment); 
+      return data;
+    }
+    [SkippableTheory, MemberData(nameof(TextFontSizesData))]
+    public void TextFontSizes(float fontSize, TextAlignment alignment) =>
+      Run((fontSize, alignment).ToString(), @"Here are some text.
+This text is made to be long enough to have the TextPainter of CSharpMath add a line break to this text automatically.
+To demonstrate the capabilities of the TextPainter,
+here are some math content:
+First, a fraction in inline mode: $\frac34$
+Next, a summation in inline mode: $\sum_{i=0}^3i^i$
+Then, a summation in display mode: $$\sum_{i=0}^3i^i$$
+After that, an integral in display mode: $$\int^6_{-56}x\ dx$$
+Finally, an escaped dollar sign \$ that represents the start/end of math mode when it is unescaped.
+Colors can be achieved via \backslash color\textit{\{color\}\{content\}}, or \backslash \textit{color\{content\}},
+where \textit{color} stands for one of the LaTeX standard colors.
+\red{Colored text in text mode are able to automatically break up when spaces are inside the colored text, which the equivalent in math mode cannot do.}
+\textbf{Styled} \texttt{text} can be achieved via the LaTeX styling commands.
+The SkiaSharp version of this is located at CSharpMath.SkiaSharp.TextPainter;
+and the Xamarin.Forms version of this is located at CSharpMath.Forms.TextView.
+Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6. \[\frac{Display}{maths} \sqrt\text\mathtt{\ at\ the\ end}^\mathbf{are\ now\ incuded\ in\ Measure!} \]",
+        new TTextPainter { FontSize = fontSize }, alignment);
     protected void Run<TContent>(
       string inFile, string latex, Painter<TCanvas, TContent, TColor> painter, TextAlignment alignment = TextAlignment.TopLeft,
       float textPainterCanvasWidth = TextPainter<TCanvas, TColor>.DefaultCanvasWidth, [CallerMemberName] string folder = "") where TContent : class {
@@ -120,7 +147,7 @@ namespace CSharpMath.Rendering.Tests {
 
       var expectedFile = new FileInfo(System.IO.Path.Combine(folder, inFile + ".png"));
       if (!expectedFile.Exists) {
-        Skip.If(FileSizeTolerance != 0, "Baseline images may only be created by SkiaSharp.");
+        Skip.IfNot(FileSizeTolerance is 0, "Baseline images may only be created by SkiaSharp.");
         actualFile.CopyTo(expectedFile.FullName);
         expectedFile.Refresh();
       }

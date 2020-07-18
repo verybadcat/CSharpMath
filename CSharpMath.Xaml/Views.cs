@@ -156,8 +156,12 @@ namespace CSharpMath.Forms {
     }
     protected sealed override void OnPaintSurface(global::SkiaSharp.Views.Forms.SKPaintSurfaceEventArgs e) {
       base.OnPaintSurface(e);
-      e.Surface.Canvas.Clear();
       var canvas = e.Surface.Canvas;
+      canvas.Clear();
+      // https://github.com/verybadcat/CSharpMath/issues/136 and https://github.com/verybadcat/CSharpMath/issues/137
+      // SkiaSharp deals with raw pixels as opposed to Xamarin.Forms's device-independent units.
+      // We should scale to occupy the full view size.
+      canvas.Scale(e.Info.Width / (float)Width);
 #endif
       Painter.Draw(canvas, TextAlignment, Padding, DisplacementX, DisplacementY);
     }

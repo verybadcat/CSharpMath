@@ -6,7 +6,7 @@ namespace CSharpMath.Forms {
     public MathInputButton() => Command = new Command(() => Keyboard?.KeyPress(Input));
     public static readonly BindableProperty KeyboardProperty =
       BindableProperty.Create(nameof(Keyboard), typeof(MathKeyboard), typeof(MathInputButton));
-    public MathKeyboard Keyboard { get => (MathKeyboard)GetValue(KeyboardProperty); set => SetValue(KeyboardProperty, value); }
+    public MathKeyboard? Keyboard { get => (MathKeyboard?)GetValue(KeyboardProperty); set => SetValue(KeyboardProperty, value); }
     static string InputToLaTeX(MathKeyboardInput input) {
       switch (input) {
         case MathKeyboardInput.Left: return "\u25C0";
