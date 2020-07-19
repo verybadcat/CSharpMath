@@ -81,8 +81,7 @@ namespace CSharpMath.Structures {
 
     public IEnumerator<KeyValuePair<string, TValue>> GetEnumerator() =>
       nonCommands.Select(t => new KeyValuePair<string, TValue>(t.Item1, t.Item2))
-      .Concat(commands.Select(kvp => new KeyValuePair<string, TValue>(kvp.Key, kvp.Value)))
-      .GetEnumerator();
+      .Concat(commands).GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     /// <summary>Finds the number of characters corresponding to a LaTeX command at the beginning of chars.</summary>
