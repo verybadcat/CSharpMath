@@ -118,7 +118,7 @@ namespace CSharpMath.Structures {
         return TryLookupNonCommand(chars);
     }
     Result<(TValue Result, int SplitIndex)> TryLookupNonCommand(ReadOnlySpan<char> chars) {
-      foreach ((string NonCommand, TValue Value) in nonCommands) {
+      foreach (var (NonCommand, Value) in nonCommands) {
         if (chars.StartsWith(NonCommand.AsSpan(), StringComparison.Ordinal)) {
           return Result.Ok((Value, NonCommand.Length)); }
       }
