@@ -74,7 +74,7 @@ namespace CSharpMath.Structures {
     readonly DefaultDelegate defaultParserForCommands;
 
     readonly SortedSet<(string NonCommand, TValue Value)> nonCommands =
-      new SortedSet<(string NonCommand, TValue Value)>(new DescendingStringLengthComparer<TValue>());
+      new SortedSet<(string NonCommand, TValue Value)>(new DescendingStringComparer<TValue>());
     readonly Dictionary<string, TValue> commands = new Dictionary<string, TValue>();
 
     public IEnumerator<KeyValuePair<string, TValue>> GetEnumerator() =>
