@@ -115,19 +115,19 @@ namespace CSharpMath.Structures {
                : defaultParserForCommands(lookup);
       }
       Result<(TValue Result, int SplitIndex)> TryLookupNonCommand(ReadOnlySpan<char> chars) {
-        foreach (var (NonCommand, Value) in nonCommands) {
-          if (chars.StartsWith(NonCommand.AsSpan(), StringComparison.Ordinal)) {
-            return Result.Ok((Value, NonCommand.Length));
+        foreach (var (nonCommand, value) in nonCommands) {
+          if (chars.StartsWith(nonCommand.AsSpan(), StringComparison.Ordinal)) {
+            return Result.Ok((value, nonCommand.Length));
           }
         }
         return defaultParser(chars);
       }
 
       if (chars.IsEmpty) throw new ArgumentException("There are no characters to read.", nameof(chars));
-      if (chars.StartsWithInvariant(@"\")) {
-        return TryLookupCommand(chars);
-      } else
-        return TryLookupNonCommand(chars);
+      return
+        chars.StartsWithInvariant(@"\")
+        ? TryLookupCommand(chars)
+        : TryLookupNonCommand(chars);
     }
   }
 
