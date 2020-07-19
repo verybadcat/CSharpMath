@@ -40,11 +40,20 @@ namespace CSharpMath.Structures {
       foreach (var key in keys) Add(key, valueFunc(key));
     }
   }
+  class DescendingStringLengthIComparer<TValue> : IComparer<Tuple<string, TValue>> {
+    int IComparer<Tuple<string, TValue>>.Compare(Tuple<string, TValue> x, Tuple<string, TValue> y) {
+      if (x.Item1.Length > y.Item1.Length) { return -1; }
+      else if (x.Item1.Length < y.Item1.Length) { return 1; }
+      else { return string.CompareOrdinal(x.Item1, y.Item1); }
+    }
+  }
+
   /// <summary>
   ///  A dictionary-based helper where the keys are classes of LaTeX <see cref="string"/>s, with special treatment
   ///  for commands (starting "\"). The start of an inputted <see cref="Span{Char}"/> is parsed, and an arbitrary object
-  ///  <typeparamref name="TValue"/> is returned, along with the number of matching characters. Processing is based on dictionary lookup
-  ///  with fallack to specified default functions for command and non-commands when lookup fails.
+  ///  <typeparamref name="TValue"/> is returned, along with the number of matching characters. Processing is based on
+  ///  dictionary lookup with fallack to specified default functions for command and non-commands when lookup fails.
+  ///  For non-commands, dictionary lookup finds the longest matching non-command.
   /// </summary>
   [SuppressMessage("Naming", "CA1710:Identifiers should have correct suffix",
     Justification = "This is conceptually a dictionary but has different lookup behavior")]
@@ -60,17 +69,18 @@ namespace CSharpMath.Structures {
           if (SplitCommand(key.AsSpan()) != key.Length - 1)
             commands.Add(key, value);
           else throw new ArgumentException("Key is unreachable: " + key, nameof(key));
-        else nonCommands.Add(key, value);
+        else nonCommands.Add(new Tuple<string, TValue>(key, value));
       };
     }
     readonly DefaultDelegate defaultParser;
     readonly DefaultDelegate defaultParserForCommands;
 
-    readonly Dictionary<string, TValue> nonCommands = new Dictionary<string, TValue>();
+    readonly SortedSet<Tuple<string, TValue>> nonCommands =
+      new SortedSet<Tuple<string, TValue>>(new DescendingStringLengthIComparer<TValue>());
     readonly Dictionary<string, TValue> commands = new Dictionary<string, TValue>();
 
     public IEnumerator<KeyValuePair<string, TValue>> GetEnumerator() =>
-      nonCommands.Select(kvp => new KeyValuePair<string, TValue>(kvp.Key, kvp.Value))
+      nonCommands.Select(t => new KeyValuePair<string, TValue>(t.Item1, t.Item2))
       .Concat(commands.Select(kvp => new KeyValuePair<string, TValue>(kvp.Key, kvp.Value)))
       .GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
@@ -111,12 +121,11 @@ namespace CSharpMath.Structures {
         return TryLookupNonCommand(chars);
     }
     Result<(TValue Result, int SplitIndex)> TryLookupNonCommand(ReadOnlySpan<char> chars) {
-      string? commandFound = null; // TODO:short-circuit when found
-      foreach (string command in nonCommands.Keys) {
-        if (chars.StartsWith(command.AsSpan(), StringComparison.Ordinal)) {
-          commandFound = command; }
+      foreach (Tuple<string,TValue> t in nonCommands) {
+        if (chars.StartsWith(t.Item1.AsSpan(), StringComparison.Ordinal)) {
+          return Result.Ok((t.Item2, t.Item1.Length)); }
       }
-      return commandFound == null ? defaultParser(chars) : Result.Ok((nonCommands[commandFound],commandFound.Length));
+      return defaultParser(chars);
     }
   }
 
