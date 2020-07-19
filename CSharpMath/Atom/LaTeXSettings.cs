@@ -357,7 +357,7 @@ namespace CSharpMath.Atom {
 
     public static Color? ParseColor(string? hexOrName) {
       if (hexOrName == null) return null;
-      if (hexOrName.StartsWith("#", StringComparison.InvariantCulture)) {
+      if (hexOrName.StartsWith("#", StringComparison.Ordinal)) {
         var hex = hexOrName.Substring(1);
         return
           (hex.Length, int.TryParse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var i)) switch
