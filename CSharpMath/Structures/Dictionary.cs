@@ -105,8 +105,7 @@ namespace CSharpMath.Structures {
     }
     /// <summary>Tries to find a command at the beginning of chars, returning the Value corresponding to the command Key, and the length of the command.</summary>
     public Result<(TValue Result, int SplitIndex)> TryLookup(ReadOnlySpan<char> chars) {
-      if (chars.IsEmpty) throw new ArgumentException("There are no characters to read.", nameof(chars));
-      if (chars.StartsWithInvariant(@"\")) {
+      Result<(TValue Result, int SplitIndex)> TryLookupCommand(ReadOnlySpan<char> chars) {
         var splitIndex = SplitCommand(chars);
         var lookup = chars.Slice(0, splitIndex);
         while (splitIndex < chars.Length && char.IsWhiteSpace(chars[splitIndex]))
@@ -114,15 +113,21 @@ namespace CSharpMath.Structures {
         return commands.TryGetValue(lookup.ToString(), out var result)
                ? Result.Ok((result, splitIndex))
                : defaultParserForCommands(lookup);
+      }
+      Result<(TValue Result, int SplitIndex)> TryLookupNonCommand(ReadOnlySpan<char> chars) {
+        foreach (var (NonCommand, Value) in nonCommands) {
+          if (chars.StartsWith(NonCommand.AsSpan(), StringComparison.Ordinal)) {
+            return Result.Ok((Value, NonCommand.Length));
+          }
+        }
+        return defaultParser(chars);
+      }
+
+      if (chars.IsEmpty) throw new ArgumentException("There are no characters to read.", nameof(chars));
+      if (chars.StartsWithInvariant(@"\")) {
+        return TryLookupCommand(chars);
       } else
         return TryLookupNonCommand(chars);
-    }
-    Result<(TValue Result, int SplitIndex)> TryLookupNonCommand(ReadOnlySpan<char> chars) {
-      foreach (var (NonCommand, Value) in nonCommands) {
-        if (chars.StartsWith(NonCommand.AsSpan(), StringComparison.Ordinal)) {
-          return Result.Ok((Value, NonCommand.Length)); }
-      }
-      return defaultParser(chars);
     }
   }
 
