@@ -17,7 +17,7 @@ namespace CSharpMath.Structures {
   [SuppressMessage("Naming", "CA1710:Identifiers should have correct suffix", Justification = NotACollection)]
   [SuppressMessage("Design", "CA1010:Collections should implement generic interface", Justification = NotACollection)]
   public class ProxyAdder<TKey, TValue> : IEnumerable {
-    const string NotACollection = "This is not a collection. It implements IEnumerable just to support collection initializers.";
+    internal const string NotACollection = "This is not a collection. It implements IEnumerable just to support collection initializers.";
     [Obsolete(NotACollection, true)]
     [SuppressMessage("Design", "CA1033:Interface methods should be callable by child types", Justification = NotACollection)]
     IEnumerator IEnumerable.GetEnumerator() => throw new NotSupportedException(NotACollection);
@@ -137,11 +137,9 @@ namespace CSharpMath.Structures {
   /// allowing fast lookup of the first TFirst corresponding to any TSecond,
   /// in addition to the usual lookup of a TSeconds by a TFirst.
   /// </summary>
-#pragma warning disable CA1710 // Identifiers should have correct suffix
-#pragma warning disable CA1010 // Collections should implement generic interface
+  [SuppressMessage("Naming", "CA1710:Identifiers should have correct suffix", Justification = NotACollection)]
+  [SuppressMessage("Design", "CA1010:Collections should implement generic interface", Justification = NotACollection)]
   public class AliasBiDictionary<TFirst, TSecond>
-#pragma warning restore CA1010 // Collections should implement generic interface
-#pragma warning restore CA1710 // Identifiers should have correct suffix
     : ProxyAdder<TFirst, TSecond>
     where TFirst: IEquatable<TFirst> {
     public AliasBiDictionary(Action<TFirst, TSecond>? extraCommandToPerformWhenAdding = null) : base(extraCommandToPerformWhenAdding) =>
