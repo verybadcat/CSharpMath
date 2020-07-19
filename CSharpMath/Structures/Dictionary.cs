@@ -128,16 +128,16 @@ namespace CSharpMath.Structures {
   /// </summary>
 #pragma warning disable CA1710 // Identifiers should have correct suffix
 #pragma warning disable CA1010 // Collections should implement generic interface
-  public class BiDictionary<TFirst, TSecond>
+  public class AliasBiDictionary<TFirst, TSecond>
 #pragma warning restore CA1010 // Collections should implement generic interface
 #pragma warning restore CA1710 // Identifiers should have correct suffix
     : ProxyAdder<TFirst, TSecond>
     where TFirst: IEquatable<TFirst> {
-    public BiDictionary(Action<TFirst, TSecond>? extraCommandToPerformWhenAdding = null) : base(extraCommandToPerformWhenAdding) =>
+    public AliasBiDictionary(Action<TFirst, TSecond>? extraCommandToPerformWhenAdding = null) : base(extraCommandToPerformWhenAdding) =>
       Added += (first, second) => {
         switch (firstToSecond.ContainsKey(first), secondToFirst.ContainsKey(second)) {
           case (true, _):
-            throw new Exception("Key already exists in BiDictionary.");
+            throw new Exception("Key already exists in AliasBiDictionary.");
           case (false, true):
             firstToSecond.Add(first, second);
             break;

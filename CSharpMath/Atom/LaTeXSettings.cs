@@ -324,8 +324,8 @@ namespace CSharpMath.Atom {
     public static MathAtom Placeholder => new Placeholder("\u25A1");
     public static MathList PlaceholderList => new MathList { Placeholder };
 
-    public static BiDictionary<string, FontStyle> FontStyles { get; } =
-      new BiDictionary<string, FontStyle>((command, fontStyle) => {
+    public static AliasBiDictionary<string, FontStyle> FontStyles { get; } =
+      new AliasBiDictionary<string, FontStyle>((command, fontStyle) => {
         Commands.Add(@"\" + command, (parser, accumulate, stopChar) => {
           var oldSpacesAllowed = parser.TextMode;
           var oldFontStyle = parser.CurrentFontStyle;
@@ -386,8 +386,8 @@ namespace CSharpMath.Atom {
       }
     }
     //https://en.wikibooks.org/wiki/LaTeX/Colors#Predefined_colors
-    public static BiDictionary<string, Color> PredefinedColors { get; } =
-      new BiDictionary<string, Color> {
+    public static AliasBiDictionary<string, Color> PredefinedColors { get; } =
+      new AliasBiDictionary<string, Color> {
         { "black", Color.FromArgb(0, 0, 0) },
         { "blue", Color.FromArgb(0, 0, 255) },
         { "brown", Color.FromArgb(150, 75, 0) },
@@ -424,8 +424,8 @@ namespace CSharpMath.Atom {
       return CommandSymbols.SecondToFirst.TryGetValue(atomWithoutScripts, out var name) ? name : null;
     }
 
-    public static BiDictionary<string, MathAtom> CommandSymbols { get; } =
-      new BiDictionary<string, MathAtom>((command, atom) =>
+    public static AliasBiDictionary<string, MathAtom> CommandSymbols { get; } =
+      new AliasBiDictionary<string, MathAtom>((command, atom) =>
         Commands.Add(command, (parser, accumulate, stopChar) =>
           atom is Accent accent
           ? parser.ReadArgument().Bind(accentee => Ok(new Accent(accent.Nucleus, accentee)))

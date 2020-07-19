@@ -3,8 +3,8 @@ using CSharpMath.Structures;
 
 namespace CSharpMath.CoreTests {
   public class DictionaryTests {
-    private BiDictionary<string, int> InitTestDict() {
-      return new BiDictionary<string, int>{
+    private AliasBiDictionary<string, int> InitTestDict() {
+      return new AliasBiDictionary<string, int>{
         { "0", 0 },
         { "zero", 0 },
         { "1", 1 }
