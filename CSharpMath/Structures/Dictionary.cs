@@ -40,11 +40,11 @@ namespace CSharpMath.Structures {
       foreach (var key in keys) Add(key, valueFunc(key));
     }
   }
-  class DescendingStringLengthIComparer<TValue> : IComparer<Tuple<string, TValue>> {
-    int IComparer<Tuple<string, TValue>>.Compare(Tuple<string, TValue> x, Tuple<string, TValue> y) {
-      if (x.Item1.Length > y.Item1.Length) { return -1; }
-      else if (x.Item1.Length < y.Item1.Length) { return 1; }
-      else { return string.CompareOrdinal(x.Item1, y.Item1); }
+  class DescendingStringLengthIComparer<TValue> : IComparer<(string NonCommand, TValue Value)> {
+    public int Compare((string NonCommand, TValue Value) x, (string NonCommand, TValue Value) y) {
+      if (x.NonCommand.Length > y.NonCommand.Length) { return -1; }
+      else if (x.NonCommand.Length < y.NonCommand.Length) { return 1; }
+      else { return string.CompareOrdinal(x.NonCommand, y.NonCommand); }
     }
   }
 
@@ -69,18 +69,18 @@ namespace CSharpMath.Structures {
           if (SplitCommand(key.AsSpan()) != key.Length - 1)
             commands.Add(key, value);
           else throw new ArgumentException("Key is unreachable: " + key, nameof(key));
-        else nonCommands.Add(new Tuple<string, TValue>(key, value));
+        else nonCommands.Add((key, value));
       };
     }
     readonly DefaultDelegate defaultParser;
     readonly DefaultDelegate defaultParserForCommands;
 
-    readonly SortedSet<Tuple<string, TValue>> nonCommands =
-      new SortedSet<Tuple<string, TValue>>(new DescendingStringLengthIComparer<TValue>());
+    readonly SortedSet<(string NonCommand, TValue Value)> nonCommands =
+      new SortedSet<(string NonCommand, TValue Value)>(new DescendingStringLengthIComparer<TValue>());
     readonly Dictionary<string, TValue> commands = new Dictionary<string, TValue>();
 
     public IEnumerator<KeyValuePair<string, TValue>> GetEnumerator() =>
-      nonCommands.Select(t => new KeyValuePair<string, TValue>(t.Item1, t.Item2))
+      nonCommands.Select(t => new KeyValuePair<string, TValue>(t.NonCommand, t.Value))
       .Concat(commands).GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
@@ -120,9 +120,9 @@ namespace CSharpMath.Structures {
         return TryLookupNonCommand(chars);
     }
     Result<(TValue Result, int SplitIndex)> TryLookupNonCommand(ReadOnlySpan<char> chars) {
-      foreach (Tuple<string,TValue> t in nonCommands) {
-        if (chars.StartsWith(t.Item1.AsSpan(), StringComparison.Ordinal)) {
-          return Result.Ok((t.Item2, t.Item1.Length)); }
+      foreach ((string NonCommand, TValue Value) t in nonCommands) {
+        if (chars.StartsWith(t.NonCommand.AsSpan(), StringComparison.Ordinal)) {
+          return Result.Ok((t.Value, t.NonCommand.Length)); }
       }
       return defaultParser(chars);
     }
