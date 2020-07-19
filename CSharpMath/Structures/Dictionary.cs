@@ -48,7 +48,7 @@ namespace CSharpMath.Structures {
 
   /// <summary>
   ///  A dictionary-based helper where the keys are classes of LaTeX <see cref="string"/>s, with special treatment
-  ///  for commands (starting "\"). The start of an inputted <see cref="Span{Char}"/> is parsed, and an arbitrary object
+  ///  for commands (starting with "\"). The start of an inputted <see cref="Span{Char}"/> is parsed, and an arbitrary object
   ///  <typeparamref name="TValue"/> is returned, along with the number of matching characters. Processing is based on
   ///  dictionary lookup with fallack to specified default functions for command and non-commands when lookup fails.
   ///  For non-commands, dictionary lookup finds the longest matching non-command.
