@@ -650,7 +650,7 @@ namespace CSharpMath {
     [InlineData("3 / 2", @"\frac{3}{2}")]
     [InlineData("2 * 3 / 5", @"\frac{2\times 3}{5}")]
     [InlineData("sin(x+pi)", @"\sin \left( x+\pi \right) ")]
-    [InlineData("log(alpha)", @"\log \left( \alpha \right) ")]
+    [InlineData("log(3,alpha)", @"\log _3\left( \alpha \right) ")]
     [InlineData("2e9", @"2000000000")]
     [InlineData("-3e4^x", @"-30000^x")]
     [InlineData("(-3e4)^x", @"\left( -30000\right) ^x")]
