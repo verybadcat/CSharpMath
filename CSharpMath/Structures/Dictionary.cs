@@ -113,7 +113,7 @@ namespace CSharpMath.Structures {
     Result<(TValue Result, int SplitIndex)> TryLookupNonCommand(ReadOnlySpan<char> chars) {
       string? commandFound = null; // TODO:short-circuit when found
       foreach (string command in nonCommands.Keys) {
-        if (chars.StartsWith(command.AsSpan(), StringComparison.InvariantCulture)) {
+        if (chars.StartsWith(command.AsSpan(), StringComparison.Ordinal)) {
           commandFound = command; }
       }
       return commandFound == null ? defaultParser(chars) : Result.Ok((nonCommands[commandFound],commandFound.Length));
