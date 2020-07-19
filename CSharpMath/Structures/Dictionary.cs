@@ -40,12 +40,10 @@ namespace CSharpMath.Structures {
       foreach (var key in keys) Add(key, valueFunc(key));
     }
   }
-  class DescendingStringLengthComparer<TValue> : IComparer<(string NonCommand, TValue Value)> {
-    public int Compare((string NonCommand, TValue Value) x, (string NonCommand, TValue Value) y) {
-      if (x.NonCommand.Length > y.NonCommand.Length) { return -1; }
-      else if (x.NonCommand.Length < y.NonCommand.Length) { return 1; }
-      else { return string.CompareOrdinal(x.NonCommand, y.NonCommand); }
-    }
+  /// <summary>Ensures that longer strings with same beginnings are listed first, to be matched first.</summary>
+  class DescendingStringComparer<TValue> : IComparer<(string NonCommand, TValue Value)> {
+    public int Compare((string NonCommand, TValue Value) x, (string NonCommand, TValue Value) y) =>
+      string.CompareOrdinal(y.NonCommand, x.NonCommand);
   }
 
   /// <summary>
