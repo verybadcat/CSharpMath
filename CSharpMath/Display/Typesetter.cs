@@ -702,7 +702,7 @@ namespace CSharpMath.Display {
 
       var leftGlyph =
         inner.LeftBoundary is Boundary { Nucleus: var left } && left?.Length > 0
-        ? _FindGlyphForBoundary(left, glyphHeight)
+        ? FindGlyphForBoundary(left, glyphHeight)
         : null;
 
       var rightGlyph =
