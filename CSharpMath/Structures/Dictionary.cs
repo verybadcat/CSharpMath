@@ -40,7 +40,7 @@ namespace CSharpMath.Structures {
       foreach (var key in keys) Add(key, valueFunc(key));
     }
   }
-  class DescendingStringLengthIComparer<TValue> : IComparer<(string NonCommand, TValue Value)> {
+  class DescendingStringLengthComparer<TValue> : IComparer<(string NonCommand, TValue Value)> {
     public int Compare((string NonCommand, TValue Value) x, (string NonCommand, TValue Value) y) {
       if (x.NonCommand.Length > y.NonCommand.Length) { return -1; }
       else if (x.NonCommand.Length < y.NonCommand.Length) { return 1; }
@@ -76,7 +76,7 @@ namespace CSharpMath.Structures {
     readonly DefaultDelegate defaultParserForCommands;
 
     readonly SortedSet<(string NonCommand, TValue Value)> nonCommands =
-      new SortedSet<(string NonCommand, TValue Value)>(new DescendingStringLengthIComparer<TValue>());
+      new SortedSet<(string NonCommand, TValue Value)>(new DescendingStringLengthComparer<TValue>());
     readonly Dictionary<string, TValue> commands = new Dictionary<string, TValue>();
 
     public IEnumerator<KeyValuePair<string, TValue>> GetEnumerator() =>
