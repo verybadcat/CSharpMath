@@ -1,40 +1,44 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:pages="clr-namespace:CSharpMath.Avalonia.Example.Pages"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="CSharpMath.Avalonia.Example.MainView"
-             Background="{DynamicResource ThemeBackgroundBrush}"
-             Foreground="{DynamicResource ThemeForegroundBrush}"
-             FontSize="{DynamicResource FontSizeNormal}">
+<UserControl
+    x:Class="CSharpMath.Avalonia.Example.MainView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:pages="clr-namespace:CSharpMath.Avalonia.Example.Pages"
+    Background="{DynamicResource ThemeBackgroundBrush}"
+    FontSize="{DynamicResource FontSizeNormal}"
+    Foreground="{DynamicResource ThemeForegroundBrush}">
 
-      <TabControl x:Name="Sidebar"
-                  Classes="sidebar">
+    <DockPanel>
 
-          <TabControl.Tag>
-          
-              <ComboBox x:Name="Themes"
-                        DockPanel.Dock="Bottom"
-                        SelectedIndex="0"
-                        Width="100"
-                        Margin="8">
+        <StackPanel
+            HorizontalAlignment="Right"
+            DockPanel.Dock="Bottom"
+            Orientation="Horizontal">
+            <RadioButton
+                x:Name="lightThemeRbn"
+                Margin="2,8"
+                Padding="8,0"
+                VerticalContentAlignment="Center"
+                Content="Light"
+                IsChecked="true" />
+            <RadioButton
+                Margin="2,8"
+                Padding="8,0"
+                VerticalContentAlignment="Center"
+                Content="Dark" />
+        </StackPanel>
 
-                  <ComboBoxItem>Light</ComboBoxItem>
-                  <ComboBoxItem>Dark</ComboBoxItem>
+        <TabControl x:Name="Sidebar" Padding="16">
+            <TabItem Header="MathView">
+                <pages:MathViewPage />
+            </TabItem>
+            <TabItem Header="TextView">
+                <pages:TextViewPage />
+            </TabItem>
+            <TabItem Header="MathButton">
+                <pages:MathButtonPage />
+            </TabItem>
+        </TabControl>
 
-              </ComboBox>
-
-          </TabControl.Tag>
-
-          <TabItem Header="MathView">
-              <pages:MathViewPage/>
-          </TabItem>
-
-          <TabItem Header="TextView">
-              <pages:TextViewPage/>
-          </TabItem>
-          <TabItem Header="MathButton">
-              <pages:MathButtonPage/>
-          </TabItem>
-
-      </TabControl>
+    </DockPanel>
 
 </UserControl>
