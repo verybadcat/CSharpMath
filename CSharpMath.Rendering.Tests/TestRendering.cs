@@ -135,6 +135,10 @@ Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6. \[\f
 
       // Prevent black background behind black rendered output in File Explorer preview
       painter.HighlightColor = painter.UnwrapColor(System.Drawing.Color.FromArgb(0xF0, 0xF0, 0xF0));
+      if (painter.FontSize is PainterConstants.DefaultFontSize)
+        // We want a large and clear output so we increase the font size
+        // If we really want to test PainterConstants.DefaultFontSize = 14, choose e.g. 14.001 instead
+        painter.FontSize = 50;
       painter.LaTeX = latex;
 
       var actualFile = new FileInfo(System.IO.Path.Combine(folder, inFile + "." + frontEnd + ".png"));
