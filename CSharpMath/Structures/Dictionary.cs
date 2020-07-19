@@ -120,9 +120,9 @@ namespace CSharpMath.Structures {
         return TryLookupNonCommand(chars);
     }
     Result<(TValue Result, int SplitIndex)> TryLookupNonCommand(ReadOnlySpan<char> chars) {
-      foreach ((string NonCommand, TValue Value) t in nonCommands) {
-        if (chars.StartsWith(t.NonCommand.AsSpan(), StringComparison.Ordinal)) {
-          return Result.Ok((t.Value, t.NonCommand.Length)); }
+      foreach ((string NonCommand, TValue Value) in nonCommands) {
+        if (chars.StartsWith(NonCommand.AsSpan(), StringComparison.Ordinal)) {
+          return Result.Ok((Value, NonCommand.Length)); }
       }
       return defaultParser(chars);
     }
