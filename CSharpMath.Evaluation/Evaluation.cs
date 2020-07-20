@@ -133,8 +133,9 @@ namespace CSharpMath {
               ? leftClosed && rightClosed
                 ? new Set(MathS.Sets.Element(left))
                 : MathS.Sets.Empty()
-              : new Set(MathS.Sets.Interval(left, right).SetLeftClosed(leftClosed).SetRightClosed(rightClosed)
-           )))),
+              : new Set(MathS.Sets.Interval(left, right).SetLeftClosed(leftClosed).SetRightClosed(rightClosed))
+            )
+          )),
         _ => "Unrecognized comma-delimited collection of " + c.Count() + " items"
       };
     static readonly Dictionary<Precedence, (string KnownOpening, string InferredClosing)> ContextInfo =

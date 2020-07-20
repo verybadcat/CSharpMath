@@ -11,6 +11,7 @@
     <Compile Update="**\*.xaml.cs" DependentUpon="%(Filename)" />
     <AvaloniaResource Include="**\*.xaml" />
     <PackageReference Include="Avalonia" Version="0.10.0-preview1" />
+    <ProjectReference Include="..\CSharpMath.Evaluation\CSharpMath.Evaluation.csproj" />
     <ProjectReference Include="..\CSharpMath.Rendering\CSharpMath.Rendering.csproj" />
   </ItemGroup>
   

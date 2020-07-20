@@ -12,6 +12,7 @@
     <PackageReference Include="Avalonia.Desktop" Version="0.10.0-preview1" />
     <PackageReference Include="Avalonia.Diagnostics" Version="0.10.0-preview1" />
     <ProjectReference Include="..\CSharpMath.Avalonia\CSharpMath.Avalonia.csproj" />
+    <ProjectReference Include="..\CSharpMath.Evaluation\CSharpMath.Evaluation.csproj" />
   </ItemGroup>
 
 </Project>

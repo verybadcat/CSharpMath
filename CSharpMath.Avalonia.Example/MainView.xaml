@@ -37,6 +37,9 @@
             <TabItem Header="MathButton">
                 <pages:MathButtonPage />
             </TabItem>
+            <TabItem Header="Calculator">
+                <pages:CalculatorPage />
+            </TabItem>
         </TabControl>
 
     </DockPanel>
