@@ -124,8 +124,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
           }
           SpanResult<char> ReadArgumentString(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section) {
             afterCommand = false;
-            if (!NextSection(latexInput, ref section)) return Err("Missing argument");
-            if (section.IsNot('{')) return Err("Missing {");
+            if (!NextSection(latexInput, ref section) || section.IsNot('{')) return Err("Missing {");
             int endingIndex = -1;
             //startAt + 1 to not start at the { we started at
             bool isEscape = false;
@@ -381,7 +380,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     }
                   //case "red", "yellow", ...
                   case var shortColor when
-                    LaTeXSettings.PredefinedColors.TryGetByFirst(shortColor, out var color): {
+                    LaTeXSettings.PredefinedColors.FirstToSecond.TryGetValue(shortColor, out var color): {
                       int tmp_commandLength = shortColor.Length;
                       if (ReadArgumentAtom(latex).Bind(
                           coloredContent => atoms.Color(coloredContent, color)
@@ -391,7 +390,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     }
                   //case "textbf", "textit", ...
                   case var textStyle when !textStyle.StartsWith("math")
-                    && LaTeXSettings.FontStyles.TryGetValue(
+                    && LaTeXSettings.FontStyles.FirstToSecond.TryGetValue(
                         textStyle.StartsWith("text") ? textStyle.Replace("text", "math") : textStyle,
                         out var fontStyle): {
                       int tmp_commandLength = textStyle.Length;
@@ -403,7 +402,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     }
                   //case "^", "\"", ...
                   case var textAccent when
-                    TextLaTeXSettings.PredefinedAccents.TryGetByFirst(textAccent, out var accent): {
+                    TextLaTeXSettings.PredefinedAccents.FirstToSecond.TryGetValue(textAccent, out var accent): {
                       if (ReadArgumentAtom(latex)
                         .Bind(builtContent => atoms.Accent(builtContent, accent))
                         .Error is string error)
@@ -411,7 +410,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                       break;
                     }
                   //case "textasciicircum", "textless", ...
-                  case var textSymbol when TextLaTeXSettings.PredefinedTextSymbols.TryGetValue(textSymbol, out var replaceResult):
+                  case var textSymbol when TextLaTeXSettings.PredefinedTextSymbols.FirstToSecond.TryGetValue(textSymbol, out var replaceResult):
                     atoms.Text(replaceResult);
                     break;
                   case var command:
@@ -443,7 +442,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
         case TextAtom.Text t:
           foreach (var ch in t.Content) {
             var c = ch.ToStringInvariant();
-            if (TextLaTeXSettings.PredefinedTextSymbols.TryGetKey(c, out var v))
+            if (TextLaTeXSettings.PredefinedTextSymbols.SecondToFirst.TryGetValue(c, out var v))
               if ('a' <= v[0] && v[0] <= 'z' || 'A' <= v[0] && v[0] <= 'Z')
                 b.Append('\\').Append(v).Append(' ');
               else b.Append('\\').Append(v);
@@ -475,11 +474,11 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
         case TextAtom.ControlSpace _:
           return b.Append(@"\ ");
         case TextAtom.Accent a:
-          b.Append('\\').Append(TextLaTeXSettings.PredefinedAccents[second: a.AccentChar]).Append('{');
+          b.Append('\\').Append(TextLaTeXSettings.PredefinedAccents.SecondToFirst[a.AccentChar]).Append('{');
           return TextAtomToLaTeX(a.Content, b).Append('}');
         case TextAtom.Style t:
           b.Append('\\')
-            .Append(LaTeXSettings.FontStyles[t.FontStyle] is var style && style.StartsWith("math")
+            .Append(LaTeXSettings.FontStyles.SecondToFirst[t.FontStyle] is var style && style.StartsWith("math")
                     ? style.Replace("math", "text") : style)
             .Append('{');
           return TextAtomToLaTeX(t.Content, b).Append('}');

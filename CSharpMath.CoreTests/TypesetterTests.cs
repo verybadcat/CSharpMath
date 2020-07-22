@@ -51,13 +51,32 @@ namespace CSharpMath.CoreTests {
           Assert.Equal(10, line.Width);
         });
 
-    [Theory, InlineData("xyzw"), InlineData("xy2w"), InlineData("1234")]
-    public void TestVariablesAndNumbers(string latex) =>
+    [Theory, InlineData("xyzw"), InlineData("xy2w"), InlineData("12.3"), InlineData("|`@/"), InlineData("1`y.")]
+    public void TestVariablesNumbersAndOrdinaries(string latex) =>
       TestOuter(latex, 4, 14, 4, 40,
         d => {
           var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
           Assert.Equal(4, line.Atoms.Count);
           AssertText(latex, line);
+          Assert.Equal(new PointF(), line.Position);
+          Assert.Equal(new Range(0, 4), line.Range);
+          Assert.False(line.HasScript);
+
+          Assert.Equal(14, line.Ascent);
+          Assert.Equal(4, line.Descent);
+          Assert.Equal(40, line.Width);
+        });
+    [Theory]
+    [InlineData("%\n1234", "1234")]
+    [InlineData("12.b% comment ", "12.b")]
+    [InlineData("|`% \\notacommand \u2028@/", "|`@/")]
+    public void TestComments(string latex, string resultText) =>
+      TestOuter(latex, 4, 14, 4, 40,
+        d => {
+          var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
+          Assert.Equal(4, line.Atoms.Count);
+          Assert.All(line.Atoms, Assert.IsNotType<Atom.Atoms.Comment>);
+          AssertText(resultText, line);
           Assert.Equal(new PointF(), line.Position);
           Assert.Equal(new Range(0, 4), line.Range);
           Assert.False(line.HasScript);
@@ -242,8 +261,8 @@ namespace CSharpMath.CoreTests {
         Assert.Equal(80, line.Width);
       });
 
-    [Theory, InlineData('[', ']'), InlineData('(', '}'), InlineData('{', ']')] // Using ) confuses the test explorer...
-    public void TestInner(char left, char right) =>
+    [Theory, InlineData("[", "]"), InlineData("(", @"\}"), InlineData(@"\{", "]")] // Using ) confuses the test explorer...
+    public void TestInner(string left, string right) =>
       TestOuter($@"a\left{left}x\right{right}", 2, 14, 4, 43.333,
         d => Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d),
         d => {
@@ -258,7 +277,7 @@ namespace CSharpMath.CoreTests {
           Approximately.At(13.333, 0, glyph.Position);
           Assert.Equal(Range.NotFound, glyph.Range);
           Assert.False(glyph.HasScript);
-          Assert.Equal(left, glyph.Glyph);
+          Assert.Equal(left[^1], glyph.Glyph);
 
           TestList(1, 14, 4, 10, 23.333, 0, LinePosition.Regular, Range.UndefinedInt,
             d => {
@@ -274,7 +293,7 @@ namespace CSharpMath.CoreTests {
           Approximately.At(33.333, 0, glyph2.Position);
           Assert.Equal(Range.NotFound, glyph2.Range);
           Assert.False(glyph2.HasScript);
-          Assert.Equal(right, glyph2.Glyph);
+          Assert.Equal(right[^1], glyph2.Glyph);
       });
     [Theory, InlineData("\\sqrt2", "", "2"), InlineData("\\sqrt[3]2", "3", "2")]
     public void TestRadical(string latex, string degree, string radicand) =>
@@ -462,11 +481,11 @@ namespace CSharpMath.CoreTests {
       TestOuter(@"\color{red}\color{blue}x\colorbox{yellow}\colorbox{green}yz", 3, 14, 4, 30,
         l1 => {
           Assert.Null(l1.BackColor);
-          Assert.Equal(LaTeXSettings.PredefinedColors["red"], l1.TextColor);
+          Assert.Equal(LaTeXSettings.PredefinedColors.FirstToSecond["red"], l1.TextColor);
           TestList(1, 14, 4, 10, 0, 0, LinePosition.Regular, Range.UndefinedInt,
              l2 => {
                Assert.Null(l2.BackColor);
-               Assert.Equal(LaTeXSettings.PredefinedColors["blue"], l2.TextColor);
+               Assert.Equal(LaTeXSettings.PredefinedColors.FirstToSecond["blue"], l2.TextColor);
                TestList(1, 14, 4, 10, 0, 0, LinePosition.Regular, Range.UndefinedInt, d => {
                  var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
                  Assert.Single(line.Atoms);
@@ -474,16 +493,16 @@ namespace CSharpMath.CoreTests {
                  Assert.Equal(new PointF(), line.Position);
                  Assert.False(line.HasScript);
                  Assert.Null(line.BackColor);
-                 Assert.Equal(LaTeXSettings.PredefinedColors["blue"], line.TextColor);
+                 Assert.Equal(LaTeXSettings.PredefinedColors.FirstToSecond["blue"], line.TextColor);
                })(l2);
              })(l1);
         },
         l1 => {
-          Assert.Equal(LaTeXSettings.PredefinedColors["yellow"], l1.BackColor);
+          Assert.Equal(LaTeXSettings.PredefinedColors.FirstToSecond["yellow"], l1.BackColor);
           Assert.Null(l1.TextColor);
           TestList(1, 14, 4, 10, 10, 0, LinePosition.Regular, Range.UndefinedInt,
              l2 => {
-               Assert.Equal(LaTeXSettings.PredefinedColors["green"], l2.BackColor);
+               Assert.Equal(LaTeXSettings.PredefinedColors.FirstToSecond["green"], l2.BackColor);
                Assert.Null(l2.TextColor);
                TestList(1, 14, 4, 10, 0, 0, LinePosition.Regular, Range.UndefinedInt, d => {
                  var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);

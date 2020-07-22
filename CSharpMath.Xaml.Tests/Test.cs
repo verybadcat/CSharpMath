@@ -148,10 +148,10 @@ namespace CSharpMath.Xaml.Tests {
         SetBindingContext(view, viewModel);
         using (var binding = SetBinding(view, nameof(viewModel.LaTeX))) {
 
-          viewModel.LaTeX = @"\alpha\beta\gamme";
-          Assert.Equal(@"\alpha\beta\gamme", view.LaTeX);
+          viewModel.LaTeX = @"\alpha\beta\color";
+          Assert.Equal(@"\alpha\beta\color", view.LaTeX);
           Assert.Null(view.Content);
-          Assert.Equal("Error: Invalid command \\gamme\n\\alpha\\beta\\gamme\n                ↑ (pos 17)", view.ErrorMessage);
+          Assert.Equal("Error: Missing {\n\\alpha\\beta\\color\n                ↑ (pos 17)", view.ErrorMessage);
         }
         using (var binding = SetBinding(view, nameof(viewModel.LaTeX), OneWayToSource)) {
           view.LaTeX = @"123";

@@ -1,8 +1,8 @@
 namespace CSharpMath.Rendering.Text {
   using CSharpMath.Structures;
   public static class TextLaTeXSettings {
-    public static AliasDictionary<string, string> PredefinedTextSymbols { get; } =
-      new AliasDictionary<string, string> {
+    public static AliasBiDictionary<string, string> PredefinedTextSymbols { get; } =
+      new AliasBiDictionary<string, string> {
         /*Ten special characters and their commands:
          & \&
          % \%
@@ -131,8 +131,8 @@ namespace CSharpMath.Rendering.Text {
         { "textvisiblespace", "␣" },
         { "textgreater", ">" },
       };
-    public static BiDictionary<string, string> PredefinedAccents { get; } =
-      new BiDictionary<string, string> {
+    public static AliasBiDictionary<string, string> PredefinedAccents { get; } =
+      new AliasBiDictionary<string, string> {
         //textsuperscript, textsubscript
         //textcircled
         { "`", "\u0300" }, //grave

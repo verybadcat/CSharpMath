@@ -64,10 +64,10 @@ namespace CSharpMath {
       @"\times \Pi \times \Sigma \times \Upsilon \times \Phi \times \Psi \times \Omega ",
       @"\alpha \times \beta \times \chi \times \delta \times \Delta \times \epsilon \times \eta " +
       @"\times \gamma \times \Gamma \times \iota \times \kappa \times \lambda \times \Lambda \times \mu " +
-      @"\times \nu \times \omega \times \Omega \times \omicron \times \phi \times \Phi \times \pi " +
-      @"\times \Pi \times \psi \times \Psi \times \rho \times \sigma \times \Sigma \times \tau " +
-      @"\times \theta \times \Theta \times \upsilon \times \Upsilon \times \varepsilon \times \varkappa " +
-      @"\times \varphi \times \varpi \times \varrho \times \varsigma \times \xi \times \Xi \times \zeta ")]
+      @"\times \nu \times \omega \times \Omega \times \omicron \times \phi \times \Phi \times \Pi " +
+      @"\times \psi \times \Psi \times \rho \times \sigma \times \Sigma \times \tau \times \theta " +
+      @"\times \Theta \times \upsilon \times \Upsilon \times \varepsilon \times \varkappa \times \varphi " +
+      @"\times \varpi \times \varrho \times \varsigma \times \xi \times \Xi \times \zeta \times \pi ")]
     [InlineData(@"a_2", @"a_2", @"a_2")]
     [InlineData(@"a_2+a_2", @"a_2+a_2", @"2\times a_2")]
     [InlineData(@"a_{23}", @"a_{23}", @"a_{23}")]

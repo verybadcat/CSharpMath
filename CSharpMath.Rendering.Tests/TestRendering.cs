@@ -180,11 +180,11 @@ Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6. \[\f
         { "ScriptLineStyle", new TPainter { LineStyle = Atom.LineStyle.Script } },
         { "ScriptScriptLineStyle", new TPainter { LineStyle = Atom.LineStyle.ScriptScript } },
         { "GlyphBoxColor", new TPainter { GlyphBoxColor = (
-          new TPainter().UnwrapColor(Atom.LaTeXSettings.PredefinedColors["green"]),
-          new TPainter().UnwrapColor(Atom.LaTeXSettings.PredefinedColors["blue"])
+          new TPainter().UnwrapColor(Atom.LaTeXSettings.PredefinedColors.FirstToSecond["green"]),
+          new TPainter().UnwrapColor(Atom.LaTeXSettings.PredefinedColors.FirstToSecond["blue"])
         ) } },
         { "TextColor", new TPainter { TextColor =
-          new TPainter().UnwrapColor(Atom.LaTeXSettings.PredefinedColors["orange"]) } },
+          new TPainter().UnwrapColor(Atom.LaTeXSettings.PredefinedColors.FirstToSecond["orange"]) } },
     };
     public static TheoryData<string, TMathPainter> MathPainterSettingsData => PainterSettingsData<TMathPainter, Atom.MathList>();
     public static TheoryData<string, TTextPainter> TextPainterSettingsData => PainterSettingsData<TTextPainter, Text.TextAtom>();
