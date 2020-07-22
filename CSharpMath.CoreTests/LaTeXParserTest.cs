@@ -1069,11 +1069,13 @@ namespace CSharpMath.CoreTests {
       );
       Assert.Equal(@"\lcm (a,b)", LaTeXParser.MathListToLaTeX(list).ToString());
 
-      // We are testing a trie with nodes [l] -> l[cm] -> lcm[12] -> @lcm12[3] -> lcm123[4]
-      // (l is predefined, i.e. non-custom)                                  ^--> lcm123[5]
+      // Originally in https://github.com/verybadcat/CSharpMath/pull/143, the non-commands were implemented
+      // with a trie. With the above LaTeXSettings.CommandSymbols.Add calls, it would have looked like
+      // [l] -> l[cm] -> lcm[12] -> @lcm12[3] -> lcm123[4]
+      //                                    ^--> lcm123[5]
       // where [square brackets] denote added characters compared to previous node
       // and the @at sign denotes the node without an atom to provide
-      // The trie will match as much characters from input as possible and here we ensure this behavior
+      // Here we ensure that all behaviours of the trie carry over to the new SortedSet implementation
 
       // Test lookup fallbacks when trie node key (lcm12) does not fully match input (lcm1)
       list = ParseLaTeX("lcm1(a,b)");
@@ -1112,6 +1114,19 @@ namespace CSharpMath.CoreTests {
         CheckAtom<Close>(")")
       );
       Assert.Equal(@"lcm123(a,b)", LaTeXParser.MathListToLaTeX(list).ToString());
+      
+      // Add a new shorter entry to ensure that the longest key matches instead of the last one
+      LaTeXSettings.CommandSymbols.Add(@"lcm123", new LargeOperator("lcm123", false));
+      list = ParseLaTeX("lcm1234(a,b)");
+      Assert.Collection(list,
+        CheckAtom<LargeOperator>("lcm1234"),
+        CheckAtom<Open>("("),
+        CheckAtom<Variable>("a"),
+        CheckAtom<Punctuation>(","),
+        CheckAtom<Variable>("b"),
+        CheckAtom<Close>(")")
+      );
+      Assert.Equal(@"lcm1234(a,b)", LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
     [Theory]
