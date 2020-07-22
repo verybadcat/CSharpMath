@@ -1069,8 +1069,9 @@ namespace CSharpMath.CoreTests {
       );
       Assert.Equal(@"\lcm (a,b)", LaTeXParser.MathListToLaTeX(list).ToString());
 
-      // Originally in https://github.com/verybadcat/CSharpMath/pull/143, the non-commands were implemented
-      // with a trie. With the above LaTeXSettings.CommandSymbols.Add calls, it would have looked like
+      // Originally in https://github.com/verybadcat/CSharpMath/pull/143,
+      // the non-command dictionary of LaTeXCommandDictionary were implemented with a trie.
+      // With the above LaTeXSettings.CommandSymbols.Add calls, it would have looked like:
       // [l] -> l[cm] -> lcm[12] -> @lcm12[3] -> lcm123[4]
       //                                    ^--> lcm123[5]
       // where [square brackets] denote added characters compared to previous node
