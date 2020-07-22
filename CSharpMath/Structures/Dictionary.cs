@@ -48,9 +48,10 @@ namespace CSharpMath.Structures {
 
   /// <summary>
   ///  A dictionary-based helper where the keys are classes of LaTeX <see cref="string"/>s, with special treatment
-  ///  for commands (starting with "\"). The start of an inputted <see cref="Span{Char}"/> is parsed, and an arbitrary object
-  ///  <typeparamref name="TValue"/> is returned, along with the number of matching characters. Processing is based on
-  ///  dictionary lookup with fallack to specified default functions for command and non-commands when lookup fails.
+  ///  for commands (starting with "\"). The start of an inputted <see cref="Span{T}"/> with type argument
+  ///  <see cref="char"/> is parsed, and an arbitrary object <typeparamref name="TValue"/> is returned,
+  ///  along with the number of matching characters. Processing is based on dictionary lookup with fallack
+  ///  to specified default functions for command and non-commands when lookup fails.
   ///  For non-commands, dictionary lookup finds the longest matching non-command.
   /// </summary>
   [SuppressMessage("Naming", "CA1710:Identifiers should have correct suffix",
@@ -82,7 +83,7 @@ namespace CSharpMath.Structures {
       .Concat(commands).GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    /// <summary>Finds the number of characters corresponding to a LaTeX command at the beginning of chars.</summary>
+    /// <summary>Finds the number of characters corresponding to a LaTeX command at the beginning of <see cref="char"/>s.</summary>
     static int SplitCommand(ReadOnlySpan<char> chars) {
       // Note on '@': https://stackoverflow.com/questions/29217603/extracting-all-latex-commands-from-a-latex-code-file#comment47075515_29218404
       static bool IsEnglishAlphabetOrAt(char c) => 'A' <= c && c <= 'Z' || 'a' <= c && c <= 'z' || c == '@';
@@ -103,7 +104,8 @@ namespace CSharpMath.Structures {
         } else splitIndex++;
       return splitIndex;
     }
-    /// <summary>Tries to find a command at the beginning of chars, returning the Value corresponding to the command Key, and the length of the command.</summary>
+    /// <summary>Tries to find a command at the beginning of <see cref="char"/>s, returning the
+    /// <typeparamref name="TValue"/> corresponding to the command Key, and the length of the command.</summary>
     public Result<(TValue Result, int SplitIndex)> TryLookup(ReadOnlySpan<char> chars) {
       Result<(TValue Result, int SplitIndex)> TryLookupCommand(ReadOnlySpan<char> chars) {
         var splitIndex = SplitCommand(chars);
@@ -124,30 +126,26 @@ namespace CSharpMath.Structures {
       }
 
       if (chars.IsEmpty) throw new ArgumentException("There are no characters to read.", nameof(chars));
-      return
-        chars.StartsWithInvariant(@"\")
-        ? TryLookupCommand(chars)
-        : TryLookupNonCommand(chars);
+      return chars.StartsWithInvariant(@"\") ? TryLookupCommand(chars) : TryLookupNonCommand(chars);
     }
   }
 
   // Taken from https://stackoverflow.com/questions/255341/getting-key-of-value-of-a-generic-dictionary/255638#255638
   /// <summary>
-  /// Represents a many to one relationship between TFirsts and TSeconds,
-  /// allowing fast lookup of the first TFirst corresponding to any TSecond,
-  /// in addition to the usual lookup of a TSeconds by a TFirst.
+  /// Represents a many to one relationship between <typeparamref name="TFirst"/>s and <typeparamref name="TSecond"/>s,
+  /// allowing fast lookup of the first <typeparamref name="TFirst"/> corresponding to any <typeparamref name="TSecond"/>,
+  /// in addition to the usual lookup of a <typeparamref name="TSecond"/>s by a <typeparamref name="TFirst"/>.
   /// </summary>
   [SuppressMessage("Naming", "CA1710:Identifiers should have correct suffix", Justification = IDictionaryNoLongerImplemented)]
   [SuppressMessage("Design", "CA1010:Collections should implement generic interface", Justification = IDictionaryNoLongerImplemented)]
-  public class AliasBiDictionary<TFirst, TSecond>
-    : ProxyAdder<TFirst, TSecond>
-    where TFirst: IEquatable<TFirst> {
+  public class AliasBiDictionary<TFirst, TSecond> : ProxyAdder<TFirst, TSecond> where TFirst : notnull where TSecond : notnull {
     const string IDictionaryNoLongerImplemented = "This is two dictionaries in one so a single IReadOnlyDictionary interface isn't appropriate. Instead both are provided.";
     public AliasBiDictionary(Action<TFirst, TSecond>? extraCommandToPerformWhenAdding = null) : base(extraCommandToPerformWhenAdding) =>
       Added += (first, second) => {
         switch (firstToSecond.ContainsKey(first), secondToFirst.ContainsKey(second)) {
           case (true, _):
-            throw new Exception("Key already exists in AliasBiDictionary.");
+            // There cannot be multiple TSeconds linked to the same TFirst
+            throw new Exception($"Key already exists in {nameof(AliasBiDictionary<TFirst, TSecond>)}.");
           case (false, true):
             firstToSecond.Add(first, second);
             break;
@@ -174,7 +172,9 @@ namespace CSharpMath.Structures {
             firstToSecond
             .Where(kvp => EqualityComparer<TSecond>.Default.Equals(kvp.Value,svalue))
             .Select(kvp => kvp.Key).ToArray();
-          if (otherFirsts.IsEmpty()) { secondToFirst.Remove(svalue); } else { secondToFirst[svalue] = otherFirsts[0]; }
+          if (otherFirsts.IsEmpty())
+            secondToFirst.Remove(svalue);
+          else secondToFirst[svalue] = otherFirsts[0];
         }
       }
       return exists;
@@ -188,7 +188,8 @@ namespace CSharpMath.Structures {
           firstToSecond
           .Where(kvp => EqualityComparer<TSecond>.Default.Equals(kvp.Value,second))
           .Select(kvp => kvp.Key).ToArray();
-        foreach (TFirst first in firsts) { firstToSecond.Remove(first); };
+        foreach (var first in firsts)
+          firstToSecond.Remove(first);
       }
       return exists;
     }
