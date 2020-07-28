@@ -87,7 +87,7 @@ namespace CSharpMath.Rendering.Text.Tests {
       void Test(string input) {
         var atom = Parse(input);
         var list = new List<TextAtom> {
-          new TextAtom.Colored(new TextAtom.Text(colored), Atom.LaTeXSettings.PredefinedColors["red"])
+          new TextAtom.Colored(new TextAtom.Text(colored), Atom.LaTeXSettings.PredefinedColors.FirstToSecond["red"])
         };
         if (after != null) list.Add(new TextAtom.Text(after));
         Assert.Equal(list.Count == 1 ? list[0] : new TextAtom.List(list), atom);
@@ -431,7 +431,7 @@ $$$$
                        ↑ (pos 24)"),
       InlineData(@"\(\notacommand \frac12\)", @"Error: [Math] Invalid command \notacommand
 \(\notacommand \frac12\)
-             ↑ (pos 14)"),
+  ↑ (pos 3)"),
       InlineData(@"\(\notacommand \frac12\[", @"Error: Cannot open display math mode in inline math mode
 ···notacommand \frac12\[
                        ↑ (pos 24)"),
@@ -440,7 +440,7 @@ $$$$
                        ↑ (pos 24)"),
       InlineData(@"\(\notacommand \frac12$", @"Error: [Math] Invalid command \notacommand
 \(\notacommand \frac12$
-             ↑ (pos 14)"),
+  ↑ (pos 3)"),
       InlineData(@"\(\notacommand \frac12$$", @"Error: Cannot close inline math mode with $$
 ···notacommand \frac12$$
                        ↑ (pos 24)"),
@@ -455,14 +455,14 @@ $$$$
                        ↑ (pos 24)"),
       InlineData(@"\[\notacommand \frac12\]", @"Error: [Math] Invalid command \notacommand
 \[\notacommand \frac12\]
-             ↑ (pos 14)"),
+  ↑ (pos 3)"),
       InlineData(@"\[\notacommand \frac12$", @"Error: Cannot close display math mode with $
 ···\notacommand \frac12$
                        ↑ (pos 23)"),
       InlineData(@"\[\notacommand \frac12$$", @"Error: [Math] Invalid command \notacommand
 \[\notacommand \frac12$$
-             ↑ (pos 14)"),
-      InlineData(@"\color", @"Error: Missing argument
+  ↑ (pos 3)"),
+      InlineData(@"\color", @"Error: Missing {
 \color
      ↑ (pos 6)"),
       InlineData(@"\color{", @"Error: Missing }
@@ -480,7 +480,7 @@ $$$$
       InlineData(@"\color{#12345}a", @"Error: Invalid color: #12345
 \color{#12345}a
              ↑ (pos 14)"),
-      InlineData(@"\fontsize", @"Error: Missing argument
+      InlineData(@"\fontsize", @"Error: Missing {
 \fontsize
         ↑ (pos 9)"),
       InlineData(@"\fontsize{", @"Error: Missing }

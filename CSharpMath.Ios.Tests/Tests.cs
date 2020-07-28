@@ -44,7 +44,7 @@ namespace CSharpMath.Ios.Tests {
         // The following are produced by inherently different implementations, so they are not comparable
         case nameof(TestData.Cyrillic):
         case nameof(TestData.ErrorInvalidColor):
-        case nameof(TestData.ErrorInvalidCommand):
+        case nameof(TestData.ErrorMissingArgument):
         case nameof(TestData.ErrorMissingBrace):
           break;
         default:

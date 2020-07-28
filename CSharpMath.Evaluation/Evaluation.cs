@@ -150,8 +150,8 @@ namespace CSharpMath {
         { "[", ("]", Precedence.BracketContext) },
         { "{", ("}", Precedence.BraceContext) },
       };
-    static readonly Dictionary<(string left, string right), Func<MathItem?, Result<MathItem>>> BracketHandlers =
-      new Dictionary<(string left, string right), Func<MathItem?, Result<MathItem>>> {
+    static readonly Dictionary<(string? left, string? right), Func<MathItem?, Result<MathItem>>> BracketHandlers =
+      new Dictionary<(string? left, string? right), Func<MathItem?, Result<MathItem>>> {
         { ("(", ")"), item => item switch {
           null => "Missing math inside ( )",
           MathItem.Comma c => TryMakeSet(c, false, false),
@@ -316,7 +316,7 @@ namespace CSharpMath {
             (@this, error) =
               BracketHandlers.TryGetValue((left, right), out handler)
               ? handler(@this)
-              : $"Unrecognized bracket pair {left} {right}";
+              : $"Unrecognized bracket pair {left ?? "(empty)"} {right ?? "(empty)"}";
             if (error != null) return error;
             goto handleThis;
           case Atoms.UnaryOperator { Nucleus: "+" }:

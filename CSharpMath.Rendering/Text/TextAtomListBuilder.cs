@@ -27,15 +27,14 @@ namespace CSharpMath.Rendering.Text {
     public void Color(TextAtom atom, Color color) => Add(new TextAtom.Colored(atom, color));
     public Result Math(string mathLaTeX, bool displayStyle, int startAt, ref int endAt) {
       var builder = new Atom.LaTeXParser(mathLaTeX);
-      var mathList = builder.Build();
-      if (builder.Error is { } error) {
-        endAt = startAt - mathLaTeX.Length + builder.CurrentChar - 1;
+      var (mathList, error) = builder.Build();
+      if (error != null) {
+        endAt = startAt - mathLaTeX.Length + builder.NextChar - 1;
         return Result.Err("[Math] " + error);
-      } else if (mathList != null) {
+      } else {
         Add(new TextAtom.Math(mathList, displayStyle));
         return Result.Ok();
       }
-      throw new InvalidCodePathException("Both error and list are null?");
     }
     public void List(IReadOnlyList<TextAtom> textAtoms) => Add(new TextAtom.List(textAtoms));
     public void Break() => Add(new TextAtom.Newline());
