@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CSharpMath.Editor\CSharpMath.Editor.csproj" />
+    <ProjectReference Include="..\CSharpMath\CSharpMath.csproj" />
     <PackageReference Include="AngouriMath" Version="1.1.0.3-beta" />
   </ItemGroup>
 
