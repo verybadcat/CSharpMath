@@ -452,6 +452,7 @@ namespace CSharpMath {
             goto handleThis;
           case Atoms.Space _:
           case Atoms.Style _:
+          case Atoms.Comment _:
           case Atoms.Ordinary { Nucleus: var nucleus } when string.IsNullOrWhiteSpace(nucleus):
             if (atom.Superscript.Count > 0)
               return $"Exponentiation is unsupported for {atom.TypeName}";

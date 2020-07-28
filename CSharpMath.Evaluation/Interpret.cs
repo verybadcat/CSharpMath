@@ -30,8 +30,8 @@ namespace CSharpMath {
           Evaluate(right).Bind(x => (MathItem?)x).ExpectEntity("right side of equation").Bind(right => {
             latex.AppendLaTeXHeader("Input", false).AppendLaTeX(left).Append("=").AppendLaTeX(right);
             var entity = left - right;
-            var variables = AngouriMath.MathS.Utils.GetUniqueVariables(entity).FiniteSet().Cast<AngouriMath.VariableEntity>();
-            if (variables.IsEmpty())
+            var variables = AngouriMath.MathS.Utils.GetUniqueVariables(entity).FiniteSet();
+            if (variables.Count == 0)
               latex.AppendLaTeXHeader("Result").Append($@"\text{{{entity.Eval() == 0}}}");
             else {
               latex.AppendLaTeXHeader("Solutions");

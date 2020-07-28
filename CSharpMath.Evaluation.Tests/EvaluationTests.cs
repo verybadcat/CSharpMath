@@ -491,6 +491,13 @@ namespace CSharpMath {
     [InlineData(@"(xy,xy)", @"\emptyset ")]
     public void Intervals(string latex, string converted) => Test(latex, converted, null);
     [Theory]
+    [InlineData(@"\>\:\pi", @"\pi ", @"\pi ")]
+    [InlineData(@"3\quad 2", @"3\times 2", "6")]
+    [InlineData(@"a\textstyle b\displaystyle", @"a\times b", @"a\times b")]
+    [InlineData(@"a^6+2a^6 % should be 3a^6", @"a^6+2\times a^6", @"3\times a^6")]
+    [InlineData(@"4+\ \mkern1.5mu3", @"4+3", "7")]
+    public void SkipInvisible(string latex, string converted, string output) => Test(latex, converted, output);
+    [Theory]
     [InlineData(@"", "There is nothing to evaluate")]
     [InlineData(@"\ ", "There is nothing to evaluate")]
     [InlineData(@"\;", "There is nothing to evaluate")]
