@@ -4,7 +4,6 @@ using Xunit;
 using AngouriMath;
 
 namespace CSharpMath {
-  using AngouriMath.Core.Numerix;
   using Atom;
   public partial class EvluationTests {
     MathList ParseLaTeX(string latex) =>
@@ -49,9 +48,9 @@ namespace CSharpMath {
     [InlineData("1234", "1234", "1234")]
     [InlineData("0123456789", "123456789", "123456789")]
     [InlineData("1234.", "1234", "1234")]
-    [InlineData(".5678", "0.5678", "0.5678")]
+    [InlineData(".5678", @"\frac{2839}{5000}", @"\frac{2839}{5000}")]
     [InlineData(".9876543210", "0.9876543210", "0.9876543210")]
-    [InlineData("1234.5678", "1234.5678", "1234.5678")]
+    [InlineData("1234.5678", @"\frac{6172839}{5000}", @"\frac{6172839}{5000}")]
     [InlineData(@"\infty", @"\infty ", @"\infty ")]
     public void Numbers(string input, string converted, string output) =>
       Test(input, converted, output);
