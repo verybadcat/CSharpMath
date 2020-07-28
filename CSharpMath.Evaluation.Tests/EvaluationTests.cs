@@ -429,7 +429,6 @@ namespace CSharpMath {
     [InlineData(@"\begin{matrix}1\end{matrix}", @"\left( \begin{matrix}1\end{matrix}\right) ", @"\left( \begin{matrix}1\end{matrix}\right) ")]
     [InlineData(@"\begin{pmatrix}1\end{pmatrix}", @"\left( \begin{matrix}1\end{matrix}\right) ", @"\left( \begin{matrix}1\end{matrix}\right) ")]
     [InlineData(@"\begin{bmatrix}1\end{bmatrix}", @"\left( \begin{matrix}1\end{matrix}\right) ", @"\left( \begin{matrix}1\end{matrix}\right) ")]
-    [InlineData(@"\begin{matrix}1\end{matrix}^2", @"\left( \begin{matrix}1\end{matrix}\right) ^2", @"\left( \begin{matrix}1\end{matrix}\right) ^2")]
     [InlineData(@"\begin{pmatrix}1\end{pmatrix}^2", @"\left( \begin{matrix}1\end{matrix}\right) ^2", @"\left( \begin{matrix}1\end{matrix}\right) ^2")]
     [InlineData(@"\begin{bmatrix}1\end{bmatrix}^2", @"\left( \begin{matrix}1\end{matrix}\right) ^2", @"\left( \begin{matrix}1\end{matrix}\right) ^2")]
     public void Vectors(string latex, string converted, string result) => Test(latex, converted, result);
@@ -437,7 +436,6 @@ namespace CSharpMath {
     [InlineData(@"\begin{matrix}1&2\\3&4\end{matrix}", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) ", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) ")]
     [InlineData(@"\begin{pmatrix}1&2\\3&4\end{pmatrix}", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) ", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) ")]
     [InlineData(@"\begin{bmatrix}1&2\\3&4\end{bmatrix}", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) ", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) ")]
-    [InlineData(@"\begin{matrix}1&2\\3&4\end{matrix}^2", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) ^2", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) ^2")]
     [InlineData(@"\begin{pmatrix}1&2\\3&4\end{pmatrix}^2", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) ^2", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) ^2")]
     [InlineData(@"\begin{bmatrix}1&2\\3&4\end{bmatrix}^2", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) ^2", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) ^2")]
     [InlineData(@"\begin{matrix}1&2\\3&4\end{matrix}+\begin{bmatrix}1&2\\3&5\end{bmatrix}", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) +\left( \begin{matrix}1&2\\ 3&5\end{matrix}\right) ", @"\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) +\left( \begin{matrix}1&2\\ 3&5\end{matrix}\right) ")]
