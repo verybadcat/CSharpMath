@@ -9,6 +9,7 @@ namespace CSharpMath {
   using Atom;
   using Atoms = Atom.Atoms;
   using Structures;
+
   public static partial class Evaluation {
     enum Precedence {
       DefaultContext,
@@ -269,56 +270,6 @@ namespace CSharpMath {
             if (error != null) return error;
             @this = MathS.Pow(radicand, degree);
             goto handleThis;
-          case Atoms.Open { Nucleus: var opening }:
-            if (!OpenBracketInfo.TryGetValue(opening, out var bracketInfo))
-                return "Unsupported opening bracket " + opening;
-            i++;
-            (@this, error) = Transform(mathList, ref i, bracketInfo.KnownPrecedence);
-            if (error != null) return error;
-            if (@this == null) return "Missing " + bracketInfo.InferredClosing;
-            goto handleThis;
-          case Atoms.Close { Nucleus: var rightBracket, Superscript: var super, Subscript: var sub }:
-            if (sub.Count > 0) return "Subscripts are unsupported for Close " + rightBracket;
-            if (!ContextInfo.TryGetValue(prec, out var contextInfo))
-              switch (prec) {
-                case Precedence.DefaultContext:
-                  string leftBracket;
-                  switch (rightBracket) {
-                    case ")":
-                      leftBracket = "(";
-                      break;
-                    case "]":
-                      leftBracket = "[";
-                      break;
-                    case "}":
-                      leftBracket = "{";
-                      break;
-                    default:
-                      return "Unsupported closing bracket " + rightBracket;
-                  }
-                  return "Missing " + leftBracket;
-                default:
-                  i--;
-                  return prev;
-              }
-            return
-              BracketHandlers.TryGetValue((contextInfo.KnownOpening, rightBracket), out var handler)
-              ? handler(prev).Bind(handled => {
-                MathItem? nullable = handled;
-                if (HandleSuperscript(ref nullable, super).Error is { } error)
-                  return Result.Err(error);
-                return Result.Ok(nullable);
-              })
-              : $"Unrecognized bracket pair {contextInfo.KnownOpening} {rightBracket}";
-          case Atoms.Inner { LeftBoundary: { Nucleus: var left }, InnerList: var inner, RightBoundary: { Nucleus: var right } }:
-            (@this, error) = Transform(inner);
-            if (error != null) return error;
-            (@this, error) =
-              BracketHandlers.TryGetValue((left, right), out handler)
-              ? handler(@this)
-              : $"Unrecognized bracket pair {left ?? "(empty)"} {right ?? "(empty)"}";
-            if (error != null) return error;
-            goto handleThis;
           case Atoms.UnaryOperator { Nucleus: "+" }:
             handlePrecendence = Precedence.UnaryPlusMinus;
             handlePrefix = e => +e;
@@ -415,17 +366,6 @@ namespace CSharpMath {
             handlePrecendence = Precedence.PercentDegree;
             handlePostfix = x => x * MathS.pi / 180;
             goto handlePostfix;
-          case Atoms.Table { Environment:"matrix", NRows:var rows, NColumns:var cols, Cells:var cells }:
-            var matrixElements = new Entity[rows * cols];
-            for (var row = 0; row < rows; row++)
-              for (var col = 0; col < cols; col++) {
-                if (cells[row].Count <= col)
-                  return $"There are empty slots in the {rows}×{cols} matrix";
-                (matrixElements[row * cols + col], error) = Transform(cells[row][col]).ExpectEntity("matrix element");
-                if (error != null) return error;
-              }
-            @this = MathS.Matrices.Matrix(rows, cols, matrixElements);
-            goto handleThis;
           case Atoms.Punctuation { Nucleus: "," }:
             if (prec <= Precedence.Comma) {
               if (prev is null) return "Missing left operand for comma";
@@ -452,6 +392,64 @@ namespace CSharpMath {
             handlePrecendence = Precedence.SetOperation;
             handleBinarySet = (l, r) => l - r;
             goto handleBinarySet;
+          // Until C# allows declaring variables under "or pattern"s...
+          case Atoms.Inner { LeftBoundary:{ Nucleus:"[" }, InnerList:{ Count:1 } inner, RightBoundary:{ Nucleus:"]" } }
+            when inner[0] is Atoms.Table { Environment: "matrix" } table:
+            var matrix = table;
+            goto handleMatrix;
+          case Atoms.Table { Environment: "matrix" } table:
+            matrix = table;
+            goto handleMatrix;
+          case Atoms.Open { Nucleus: var opening }:
+            if (!OpenBracketInfo.TryGetValue(opening, out var bracketInfo))
+              return "Unsupported opening bracket " + opening;
+            i++;
+            (@this, error) = Transform(mathList, ref i, bracketInfo.KnownPrecedence);
+            if (error != null) return error;
+            if (@this == null) return "Missing " + bracketInfo.InferredClosing;
+            goto handleThis;
+          case Atoms.Close { Nucleus: var rightBracket, Superscript: var super, Subscript: var sub }:
+            if (sub.Count > 0) return "Subscripts are unsupported for Close " + rightBracket;
+            if (!ContextInfo.TryGetValue(prec, out var contextInfo))
+              switch (prec) {
+                case Precedence.DefaultContext:
+                  string leftBracket;
+                  switch (rightBracket) {
+                    case ")":
+                      leftBracket = "(";
+                      break;
+                    case "]":
+                      leftBracket = "[";
+                      break;
+                    case "}":
+                      leftBracket = "{";
+                      break;
+                    default:
+                      return "Unsupported closing bracket " + rightBracket;
+                  }
+                  return "Missing " + leftBracket;
+                default:
+                  i--;
+                  return prev;
+              }
+            return
+              BracketHandlers.TryGetValue((contextInfo.KnownOpening, rightBracket), out var handler)
+              ? handler(prev).Bind(handled => {
+                MathItem? nullable = handled;
+                if (HandleSuperscript(ref nullable, super).Error is { } error)
+                  return Result.Err(error);
+                return Result.Ok(nullable);
+              })
+              : $"Unrecognized bracket pair {contextInfo.KnownOpening} {rightBracket}";
+          case Atoms.Inner { LeftBoundary: { Nucleus: var left }, InnerList: var inner, RightBoundary: { Nucleus: var right } }:
+            (@this, error) = Transform(inner);
+            if (error != null) return error;
+            (@this, error) =
+              BracketHandlers.TryGetValue((left, right), out handler)
+              ? handler(@this)
+              : $"Unrecognized bracket pair {left ?? "(empty)"} {right ?? "(empty)"}";
+            if (error != null) return error;
+            goto handleThis;
           case Atoms.Space _:
           case Atoms.Style _:
           case Atoms.Ordinary { Nucleus: var nucleus } when string.IsNullOrWhiteSpace(nucleus):
@@ -465,6 +463,18 @@ namespace CSharpMath {
           default:
             return $"Unsupported {atom.TypeName} {atom.Nucleus}";
 
+            handleMatrix:
+            var (rows, cols, cells) = (matrix.NRows, matrix.NColumns, matrix.Cells);
+            var matrixElements = new Entity[rows * cols];
+            for (var row = 0; row < rows; row++)
+              for (var col = 0; col < cols; col++) {
+                if (cells[row].Count <= col)
+                  return $"There are empty slots in the {rows}×{cols} matrix";
+                (matrixElements[row * cols + col], error) = Transform(cells[row][col]).ExpectEntity("matrix element");
+                if (error != null) return error;
+              }
+            @this = MathS.Matrices.Matrix(rows, cols, matrixElements);
+            goto handleThis;
 #pragma warning disable CS0162 // Unreachable code detected
 #pragma warning disable CS0164 // This label has not been referenced
             handleFunction:
