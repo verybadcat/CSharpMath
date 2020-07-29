@@ -59,8 +59,8 @@ jobs:
     - name: Push CI artifacts to GitHub Packages registry
       if: github.ref == 'refs/heads/master'
       run: |
-        nuget sources add -name "GPR" -Source https://nuget.pkg.github.com/verybadcat/index.json -Username verybadcat -Password ${{ secrets.GITHUB_TOKEN }}
-        nuget push .nupkgs/ -Source "GPR" -SkipDuplicate
+        dotnet nuget add source https://nuget.pkg.github.com/verybadcat/index.json -n github -u verybadcat -p ${{ secrets.GITHUB_TOKEN }}
+        dotnet nuget push .nupkgs/ --source "github" --skip-duplicate
     - name: Delete local CI artifacts
       if: github.ref == 'refs/heads/master'
       uses: JesseTG/rm@v1.0.0
