@@ -24,7 +24,7 @@ jobs:
     - name: Restore NuGet Packages
       run: nuget restore CSharpMath.sln
     - name: Build CI artifacts
-      run: msbuild CSharpMath.sln /p:Configuration=Release /p:PackageVersion=${{ steps.release_drafter.output.tag_name }}-ci-${{ GITHUB_SHA }}
+      run: msbuild CSharpMath.sln /p:Configuration=Release /p:PackageVersion=${{ steps.release_drafter.output.tag_name }}-ci-${{ github.sha }}
     - name: Upload CI artifacts
       uses: actions/upload-artifact@v2
       if: always() # Run even when a previous step failed: https://stackoverflow.com/a/58859404/5429648
