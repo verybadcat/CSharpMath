@@ -12,8 +12,7 @@
 
     <!--NuGet properties: Ordered according to https://docs.microsoft.com/en-us/nuget/reference/msbuild-targets#pack-target-->
     <PackageId>$(MSBuildProjectName)</PackageId>
-    <!--PackageVersion is modified additionally in the SetDefaultPackageVersion target below-->
-    <PackageVersion>$(PackageVersion.TrimStart('v'))</PackageVersion>
+    <!--PackageVersion is set in the SetDefaultPackageVersion target below-->
     <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie, FoggyFinder)</Authors>
     <Title>$(PackageId)</Title>
     <!--Description property is defined in individual projects-->
@@ -64,7 +63,12 @@
     <Exec Command="git rev-parse HEAD" ConsoleToMSBuild="true" EchoOff="true" StandardOutputImportance="Low">
       <Output TaskParameter="ConsoleOutput" PropertyName="RepositoryCommit" />
     </Exec>
-    <CreateProperty Condition="$([System.String]::IsNullOrEmpty($(PackageVersion)))" Value="99.99.99-localbuild-$(RepositoryCommit)">
+    <!--For local builds-->
+    <CreateProperty Condition="$(PackageVersion) == '1.0.0'" Value="99.99.99-localbuild-$(RepositoryCommit)">
+      <Output TaskParameter="Value" PropertyName="PackageVersion" />
+    </CreateProperty>
+    <!--For CI builds-->
+    <CreateProperty Value="$(PackageVersion.TrimStart('v'))">
       <Output TaskParameter="Value" PropertyName="PackageVersion" />
     </CreateProperty>
   </Target>
