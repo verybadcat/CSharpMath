@@ -3,22 +3,20 @@ name: Test
 on: [push, pull_request]
 jobs:
   Core:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
+    runs-on: ubuntu-latest # release-drafter/release-drafter@v5 only works on Linux
     steps:
+    - name: Update draft on GitHub Releases
+      id: release_drafter
+      uses: release-drafter/release-drafter@v5
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - uses: actions/checkout@v2
       with:
         submodules: 'recursive'
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '3.1.301'
-    - name: Setup JDK # Needed to run ANTLR for AngouriMath
-      uses: actions/setup-java@v1
-      with:
-        java-version: '8'
+        dotnet-version: '3.1.302'
     - name: Update dependencies in CSharpMath.Xaml.Tests.NuGet
       run: |
         dotnet tool install -g dotnet-outdated
@@ -44,13 +42,56 @@ jobs:
         do
           dotnet add "$p" package Microsoft.NET.Test.Sdk # Update is required for GitHubActionsTestLogger to print anything
           dotnet add "$p" package GitHubActionsTestLogger
-          dotnet test "$p" -c Release -l GitHubActions
+          dotnet msbuild -p:Configuration=Release -p:PackageVersion=${{ steps.release_drafter.output.tag_name }}-ci-${{ github.sha }} "$p"
+          dotnet test "$p" -c Release -l GitHubActions --blame
         done
     - uses: actions/upload-artifact@v2
       if: always() # Run even when a previous step failed: https://stackoverflow.com/a/58859404/5429648
       with:
-        name: CSharpMath.Rendering.Tests results (${{ matrix.os }})
+        name: CSharpMath.Rendering.Tests results
         path: CSharpMath.Rendering.Tests/*/*.png
+    - name: Upload CI artifacts
+      uses: actions/upload-artifact@v2
+      if: always()
+      with:
+        name: NuGet packages
+        path: .nupkgs/
+    - name: Push CI artifacts to GitHub Packages registry
+      if: github.ref == 'refs/heads/master'
+      run: |
+        nuget sources add -name "GPR" -Source https://nuget.pkg.github.com/verybadcat/index.json -Username verybadcat -Password ${{ secrets.GITHUB_TOKEN }}
+        nuget push .nupkgs/ -Source "GPR" -SkipDuplicate
+    - name: Delete local CI artifacts
+      if: github.ref == 'refs/heads/master'
+      uses: JesseTG/rm@v1.0.0
+      with:
+        path: .nupkgs/
+    - name: Build GitHub Releases draft artifacts
+      if: github.ref == 'refs/heads/master'
+      # run: dotnet test CSharpMath.CrossPlatform.slnf
+      run: | # https://github.com/dotnet/sdk/issues/10409, https://github.com/dotnet/sdk/issues/11417
+        for p in\
+          "CSharpMath.CoreTests"\
+          "CSharpMath.Editor.Tests"\
+          "CSharpMath.Editor.Tests.FSharp"\
+          "CSharpMath.Evaluation.Tests"\
+          "CSharpMath.Rendering.Tests"\
+          "CSharpMath.Rendering.Text.Tests"\
+          "CSharpMath.Xaml.Tests"\
+          "CSharpMath.Xaml.Tests.NuGet"\
+          "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests"
+        do
+          dotnet msbuild -p:Configuration=Release -p:PackageVersion=${{ steps.release_drafter.output.tag_name }} "$p"
+        done
+    - name: Update GitHub Releases draft artifacts
+      if: github.ref == 'refs/heads/master'
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ steps.release_drafter.outputs.tag_name }}
+        file: .nupkgs/*
+        file_glob: true
+        overwrite: true
   Ios:
     runs-on: macos-latest
     steps:
