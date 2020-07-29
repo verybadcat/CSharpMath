@@ -14,6 +14,7 @@ namespace CSharpMath.Rendering.FrontEnd {
 
   public static class PainterConstants {
     public const float DefaultFontSize = 14;
+    public const float LargerFontSize = 50;
   }
   public abstract class Painter<TCanvas, TContent, TColor> : ICSharpMathAPI<TContent, TColor> where TContent : class {
     public const float DefaultFontSize = PainterConstants.DefaultFontSize;

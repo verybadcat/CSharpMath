@@ -14,6 +14,9 @@ namespace CSharpMath.Forms {
       Source = ImageSource.FromStream(() => {
         if (Content is { } c) {
           var latex = c.Painter.LaTeX;
+          if (c.Painter.FontSize is Rendering.FrontEnd.PainterConstants.DefaultFontSize)
+            // Have a clear output by default
+            c.Painter.FontSize = Rendering.FrontEnd.PainterConstants.LargerFontSize;
           // Appropriate positioning for non-full characters, e.g. prime, degree
           // Also acts as spacing between MathButtons next to each other
           // TODO: Implement and use \phantom

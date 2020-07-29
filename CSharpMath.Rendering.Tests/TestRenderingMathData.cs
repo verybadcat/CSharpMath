@@ -29,15 +29,15 @@ namespace CSharpMath.Rendering.Tests {
     public const string LeftSide = @"\frac{1}{\left(\sqrt{\phi \sqrt{5}}-\phi\right) e^{\frac25 \pi}}";
 
     public const string Matrix = @"\begin{pmatrix}
-                           a & b\\ c & d
-                            \end{pmatrix}
-                            \begin{pmatrix}
-                            \alpha & \beta \\ \gamma & \delta
-                            \end{pmatrix} = 
-                            \begin{pmatrix}
-                            a\alpha + b\gamma & a\beta + b \delta \\
-                            c\alpha + d\gamma & c\beta + d \delta 
-                            \end{pmatrix}";
+a & b\\ c & d
+\end{pmatrix}
+\begin{pmatrix}
+\alpha & \beta \\ \gamma & \delta
+\end{pmatrix} = 
+\begin{pmatrix}
+a\alpha + b\gamma & a\beta + b \delta \\
+c\alpha + d\gamma & c\beta + d \delta 
+\end{pmatrix}";
     public const string Matrix0 = @"\begin{pmatrix}\end{pmatrix}";
     public const string Matrix1 = @"\begin{pmatrix}2\end{pmatrix}";
     public const string Matrix2 = @"\begin{pmatrix}a&b\\c&d\end{pmatrix}";
@@ -103,5 +103,30 @@ namespace CSharpMath.Rendering.Tests {
     public const string KetSum = @"\frac{1}{\sqrt{2^n}} \sum_{i=0}^{2^n-1} \Ket{i}";
     public const string LargeBra = @"\Bra{\frac{a}{2}+\frac{b}{3}}";
     public const string LargeKet = @"\Ket{\frac{a}{2}+\frac{b}{3}}";
+    // Solution of x for x^4+4x^3+16x^2+4x+1=y
+    public const string QuarticSolution = @"\left\{-1+\frac{-\sqrt{10+2\times \left(\frac{-25}{3}+\sqrt[3]{\frac{-\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}{2}+\sqrt{\frac{{\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}^{2}}{4}+\frac{{\left(\frac{-25}{3}-\left(9+1-\right)\right)}^{3}}{27}}}
++\frac{-\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}{3\times \sqrt[3]{\frac{-\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}{2}+\sqrt{\frac{{\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}^{2}}{4}+\frac{{\left(\frac{-25}{3}-\left(9+1-\right)\right)}^{3}}{27}}}
+}\right)}-\sqrt{-\left(30+2\times\left(\frac{-25}{3}+\sqrt[3]{\frac{-\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}{2}+\sqrt{\frac{{\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}^{2}}{4}+\frac{{\left(\frac{-25}{3}-\left(9+1-\right)\right)}^{3}}{27}}}
++\frac{-\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}{3\times \sqrt[3]{\frac{-\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}{2}+\sqrt{\frac{{\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}^{2}}{4}+\frac{{\left(\frac{-25}{3}-\left(9+1-\right)\right)}^{3}}{27}}}
+}\right)+\frac{40}{\sqrt{10+2\times \left(\frac{-25}{3}+\sqrt[3]{\frac{-\left(\frac{-250}{27}+\frac{10\times\left(9+1-y_{}\right)}{3}-50\right)}{2}+\sqrt{\frac{{\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}^{2}}{4}+\frac{{\left(\frac{-25}{3}-\left(9+1-\right)\right)}^{3}}{27}}}
++\frac{-\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}{3\times \sqrt[3]{\frac{-\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}{2}+\sqrt{\frac{{\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}^{2}}{4}+\frac{{\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}^{3}}{27}}}}\right)}}\right)}}{2},\\
+-1+\frac{-\sqrt{10+2\times \left(\frac{-25}{3}+\sqrt[3]{\frac{-\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}{2}+\sqrt{\frac{{\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}^{2}}{4}+\frac{{\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}^{3}}{27}}}
++\frac{-\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}{3\times \sqrt[3]{\frac{-\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}{2}+\sqrt{\frac{{\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}^{2}}{4}+\frac{{\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}^{3}}{27}}}
+}\right)}+\sqrt{-\left(30+2\times\left(\frac{-25}{3}+\sqrt[3]{\frac{-\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}{2}+\sqrt{\frac{{\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}^{2}}{4}+\frac{{\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}^{3}}{27}}}
++\frac{-\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}{3\times \sqrt[3]{\frac{-\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}{2}+\sqrt{\frac{{\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}^{2}}{4}+\frac{{\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}^{3}}{27}}}
+}\right)+\frac{40}{\sqrt{10+2\times \left(\frac{-25}{3}+\sqrt[3]{\frac{-\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}{2}+\sqrt{\frac{{\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}^{2}}{4}+\frac{{\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}^{3}}{27}}}
++\frac{-\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}{3\times \sqrt[3]{\frac{-\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}{2}+\sqrt{\frac{{\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}^{2}}{4}+\frac{{\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}^{3}}{27}}}}\right)}}\right)}}{2},\\
+-1+\frac{\sqrt{10+2\times \left(\frac{-25}{3}+\sqrt[3]{\frac{-\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}{2}+\sqrt{\frac{{\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}^{2}}{4}+\frac{{\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}^{3}}{27}}}
++\frac{-\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}{3\times \sqrt[3]{\frac{-\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}{2}+\sqrt{\frac{{\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}^{2}}{4}+\frac{{\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}^{3}}{27}}}
+}\right)}-\sqrt{-\left(30+2\times \left(\frac{-25}{3}+\sqrt[3]{\frac{-\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}{2}+\sqrt{\frac{{\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}^{2}}{4}+\frac{{\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}^{3}}{27}}}
++\frac{-\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}{3\times \sqrt[3]{\frac{-\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}{2}+\sqrt{\frac{{\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}^{2}}{4}+\frac{{\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}^{3}}{27}}}
+}\right)+\frac{-40}{\sqrt{10+2\times \left(\frac{-25}{3}+\sqrt[3]{\frac{-\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}{2}+\sqrt{\frac{{\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}^{2}}{4}+\frac{{\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}^{3}}{27}}}
++\frac{-\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}{3\times \sqrt[3]{\frac{-\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}{2}+\sqrt{\frac{{\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}^{2}}{4}+\frac{{\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}^{3}}{27}}}}\right)}}\right)}}{2},\\
+-1+\frac{\sqrt{10+2\times \left(\frac{-25}{3}+\sqrt[3]{\frac{-\left(\frac{-250}{27}+\frac{10\times\left(9+1-y_{}\right)}{3}-50\right)}{2}+\sqrt{\frac{{\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}^{2}}{4}+\frac{{\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}^{3}}{27}}}
++\frac{-\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}{3\times \sqrt[3]{\frac{-\left(\frac{-250}{27}+\frac{10\times\left(9+1-y_{}\right)}{3}-50\right)}{2}+\sqrt{\frac{{\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}^{2}}{4}+\frac{{\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}^{3}}{27}}}
+}\right)}+\sqrt{-\left(30+2\times \left(\frac{-25}{3}+\sqrt[3]{\frac{-\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}{2}+\sqrt{\frac{{\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}^{2}}{4}+\frac{{\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}^{3}}{27}}}
++\frac{-\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}{3\times \sqrt[3]{\frac{-\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}{2}+\sqrt{\frac{{\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}^{2}}{4}+\frac{{\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}^{3}}{27}}}
+}\right)+\frac{-40}{\sqrt{10+2\times \left(\frac{-25}{3}+\sqrt[3]{\frac{-\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}{2}+\sqrt{\frac{{\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}^{2}}{4}+\frac{{\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}^{3}}{27}}}
++\frac{-\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}{3\times \sqrt[3]{\frac{-\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}{2}+\sqrt{\frac{{\left(\frac{-250}{27}+\frac{10\times \left(9+1-y_{}\right)}{3}-50\right)}^{2}}{4}+\frac{{\left(\frac{-25}{3}-\left(9+1-y_{}\right)\right)}^{3}}{27}}}}\right)}}\right)}}{2}\right\}";
   }
 }

@@ -960,7 +960,7 @@ namespace CSharpMath.Atom {
         // Table 24: AMS Miscellaneous
         // \hbar defined in Table 11
         { @"\hslash", new Ordinary("ℏ") }, // Same as \hbar
-        { @"\vartriangle", new Ordinary("△") }, // ▵ not in Latin Modern Math // ▵ is actually a triangle, not an inverted v as displayed in Visual Studio
+        { @"\vartriangle", new Ordinary("△") }, // ▵ not in Latin Modern Math
         { @"\triangledown", new Ordinary("▽") }, // ▿ not in Latin Modern Math
         { @"\square", Placeholder },
         { @"\lozenge", new Ordinary("◊") },
