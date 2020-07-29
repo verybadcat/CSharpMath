@@ -5,32 +5,50 @@ jobs:
   all_projects:
     runs-on: windows-latest
     steps:
+    - name: Update draft on GitHub Releases
+      id: release_drafter
+      uses: release-drafter/release-drafter@v5
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - uses: actions/checkout@v2
       with:
         submodules: 'recursive'
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '3.1.201'
-    - name: Setup JDK # Needed to run ANTLR for AngouriMath
-      uses: actions/setup-java@v1
-      with:
-        java-version: '8'
+        dotnet-version: '3.1.302'
     - name: Setup NuGet
       uses: NuGet/setup-nuget@v1.0.2
     - name: Setup MSBuild Path
       uses: warrenbuckley/Setup-MSBuild@v1
     - name: Restore NuGet Packages
       run: nuget restore CSharpMath.sln
-    - name: Build
-      run: msbuild CSharpMath.sln /p:Configuration=Release
-    - uses: actions/upload-artifact@v2
+    - name: Build CI artifacts
+      run: msbuild CSharpMath.sln /p:Configuration=Release /p:PackageVersion=${{ steps.release_drafter.output.tag_name }}-ci-${{ GITHUB_SHA }}
+    - name: Upload CI artifacts
+      uses: actions/upload-artifact@v2
       if: always() # Run even when a previous step failed: https://stackoverflow.com/a/58859404/5429648
       with:
         name: NuGet packages
         path: .nupkgs/
-    - name: Push generated packages to GitHub registry
+    - name: Push CI artifacts to GitHub Packages registry
       if: github.ref == 'refs/heads/master'
       run: |
         nuget sources add -name "GPR" -Source https://nuget.pkg.github.com/verybadcat/index.json -Username verybadcat -Password ${{ secrets.GITHUB_TOKEN }}
         nuget push .nupkgs/ -Source "GPR" -SkipDuplicate
+    - name: Delete local CI artifacts
+      if: github.ref == 'refs/heads/master'
+      uses: JesseTG/rm@v1.0.0
+      with:
+        path: .nupkgs/
+    - name: Build GitHub Releases draft artifacts
+      run: msbuild CSharpMath.sln /p:Configuration=Release /p:PackageVersion=${{ steps.release_drafter.output.tag_name }}
+    - name: Update GitHub Releases draft artifacts
+      if: github.ref == 'refs/heads/master'
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ steps.release_drafter.outputs.tag_name }}
+        file: .nupkgs/*
+        file_glob: true
+        overwrite: true
