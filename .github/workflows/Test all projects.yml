@@ -13,7 +13,6 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: 'recursive'
-        token: ${{ steps.release_drafter.output.tag_name }} 
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
@@ -43,7 +42,7 @@ jobs:
         do
           dotnet add "$p" package Microsoft.NET.Test.Sdk # Update is required for GitHubActionsTestLogger to print anything
           dotnet add "$p" package GitHubActionsTestLogger
-          dotnet msbuild -r -p:Configuration=Release -p:PackageVersion=${{ steps.release_drafter.output.tag_name }}-ci-${{ github.sha }} "$p"
+          dotnet msbuild -r -p:Configuration=Release -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name }}-ci-${{ github.sha }} "$p"
           dotnet test "$p" -c Release -l GitHubActions --blame
         done
     - uses: actions/upload-artifact@v2
@@ -82,7 +81,7 @@ jobs:
           "CSharpMath.Xaml.Tests.NuGet"\
           "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests"
         do
-          dotnet msbuild -p:Configuration=Release -p:PackageVersion=${{ steps.release_drafter.output.tag_name }} "$p"
+          dotnet msbuild -p:Configuration=Release -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name }} "$p"
         done
     - name: Update GitHub Releases draft artifacts
       if: github.ref == 'refs/heads/master'
