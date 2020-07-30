@@ -34,6 +34,7 @@ jobs:
           "CSharpMath.Editor.Tests"\
           "CSharpMath.Editor.Tests.FSharp"\
           "CSharpMath.Evaluation.Tests"\
+          "CSharpMath.Ios"\
           "CSharpMath.Rendering.Tests"\
           "CSharpMath.Rendering.Text.Tests"\
           "CSharpMath.Xaml.Tests"\
@@ -75,6 +76,7 @@ jobs:
           "CSharpMath.Editor.Tests"\
           "CSharpMath.Editor.Tests.FSharp"\
           "CSharpMath.Evaluation.Tests"\
+          "CSharpMath.Ios"\
           "CSharpMath.Rendering.Tests"\
           "CSharpMath.Rendering.Text.Tests"\
           "CSharpMath.Xaml.Tests"\
