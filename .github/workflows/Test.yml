@@ -65,38 +65,6 @@ jobs:
         # Non-Windows platforms require --store-password-in-clear-text: https://github.com/NuGet/Home/issues/1851
         dotnet nuget add source https://nuget.pkg.github.com/verybadcat/index.json -n github -u verybadcat -p ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text
         dotnet nuget push .nupkgs/ --source "github" --skip-duplicate
-    - name: Delete local CI artifacts
-      if: github.ref == 'refs/heads/master'
-      uses: JesseTG/rm@v1.0.0
-      with:
-        path: .nupkgs/
-    - name: Build GitHub Releases draft artifacts
-      if: github.ref == 'refs/heads/master'
-      # run: dotnet test CSharpMath.CrossPlatform.slnf
-      run: | # https://github.com/dotnet/sdk/issues/10409, https://github.com/dotnet/sdk/issues/11417
-        for p in\
-          "CSharpMath.CoreTests"\
-          "CSharpMath.Editor.Tests"\
-          "CSharpMath.Editor.Tests.FSharp"\
-          "CSharpMath.Evaluation.Tests"\
-        `# "CSharpMath.Ios" # https://github.com/dotnet/sdk/issues/11108 + https://github.com/release-drafter/release-drafter/issues/558`\
-          "CSharpMath.Rendering.Tests"\
-          "CSharpMath.Rendering.Text.Tests"\
-          "CSharpMath.Xaml.Tests"\
-          "CSharpMath.Xaml.Tests.NuGet"\
-          "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests"
-        do
-          dotnet msbuild -p:Configuration=Release -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name }} "$p"
-        done
-    - name: Update GitHub Releases draft artifacts
-      if: github.ref == 'refs/heads/master'
-      uses: svenstaro/upload-release-action@v2
-      with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ steps.release_drafter.outputs.tag_name }}
-        file: .nupkgs/*
-        file_glob: true
-        overwrite: true
   Ios:
     runs-on: macos-latest
     steps:
