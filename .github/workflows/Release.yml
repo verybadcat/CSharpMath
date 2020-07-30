@@ -7,11 +7,6 @@ jobs:
   all_projects:
     runs-on: ubuntu-latest
     steps:
-    - name: Update draft on GitHub Releases
-      id: release_drafter
-      uses: release-drafter/release-drafter@v5
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
@@ -22,7 +17,7 @@ jobs:
       with:
         owner: verybadcat
         repo: CSharpMath
-        tag: ${{ steps.release_drafter.outputs.tag_name }}
+        tag: ${{ github.ref }}
         file: /.*/
     - name: Upload to NuGet
       run: dotnet nuget push * -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
