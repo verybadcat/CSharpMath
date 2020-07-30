@@ -43,8 +43,10 @@ jobs:
         do
           dotnet add "$p" package Microsoft.NET.Test.Sdk # Update is required for GitHubActionsTestLogger to print anything
           dotnet add "$p" package GitHubActionsTestLogger
+          # -r for restore
           dotnet msbuild -r -p:Configuration=Release -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name }}-ci-${{ github.sha }} "$p"
-          dotnet test "$p" -c Release -l GitHubActions --blame
+          # --no-build because building again will produce additional NuGet packages without the PackageVersion setting above
+          dotnet test "$p" --no-build -c Release -l GitHubActions --blame
         done
     - uses: actions/upload-artifact@v2
       if: always() # Run even when a previous step failed: https://stackoverflow.com/a/58859404/5429648
