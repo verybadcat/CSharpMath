@@ -60,7 +60,8 @@ jobs:
     - name: Push CI artifacts to GitHub Packages registry
       if: github.ref == 'refs/heads/master'
       run: |
-        dotnet nuget add source https://nuget.pkg.github.com/verybadcat/index.json -n github -u verybadcat -p ${{ secrets.GITHUB_TOKEN }}
+        # Non-Windows platforms require --store-password-in-clear-text: https://github.com/NuGet/Home/issues/1851
+        dotnet nuget add source https://nuget.pkg.github.com/verybadcat/index.json -n github -u verybadcat -p ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text
         dotnet nuget push .nupkgs/ --source "github" --skip-duplicate
     - name: Delete local CI artifacts
       if: github.ref == 'refs/heads/master'
