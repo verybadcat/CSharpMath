@@ -7,17 +7,37 @@ jobs:
   all_projects:
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '3.1.302'
-    - name: Download Release Asset
-      id: download_release_asset
-      uses: i3h/download-release-asset@v1
+    - name: Build GitHub Releases draft artifacts
+      # run: dotnet test CSharpMath.CrossPlatform.slnf
+      run: | # https://github.com/dotnet/sdk/issues/10409, https://github.com/dotnet/sdk/issues/11417
+        for p in\
+          "CSharpMath.CoreTests"\
+          "CSharpMath.Editor.Tests"\
+          "CSharpMath.Editor.Tests.FSharp"\
+          "CSharpMath.Evaluation.Tests"\
+        `# "CSharpMath.Ios" # https://github.com/dotnet/sdk/issues/11108 + https://github.com/release-drafter/release-drafter/issues/558`\
+          "CSharpMath.Rendering.Tests"\
+          "CSharpMath.Rendering.Text.Tests"\
+          "CSharpMath.Xaml.Tests"\
+          "CSharpMath.Xaml.Tests.NuGet"\
+          "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests"
+        do
+          dotnet msbuild -p:Configuration=Release -p:PackageVersion=${{ github.ref }} "$p"
+        done
+    - name: Upload to GitHub Releases
+      uses: svenstaro/upload-release-action@v2
       with:
-        owner: verybadcat
-        repo: CSharpMath
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ github.ref }}
-        file: /.*/
+        file: .nupkgs/*
+        file_glob: true
+        overwrite: true
     - name: Upload to NuGet
-      run: dotnet nuget push * -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
+      run: dotnet nuget push .nupkgs/* -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
