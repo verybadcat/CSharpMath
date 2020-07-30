@@ -16,6 +16,8 @@ exclude-labels:
   - 'Version/None'
 prerelease: true
 template: |
+  <!--Please release immediately after modifying as any changes will be overwritten on next run of the Test workflow-->
+
   ## Changes from $PREVIOUS_TAG (Recently merged first)
   $CHANGES
   
