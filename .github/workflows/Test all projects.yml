@@ -3,7 +3,7 @@ name: Test
 on: [push, pull_request]
 jobs:
   Core:
-    runs-on: ubuntu-latest # release-drafter/release-drafter@v5 only works on Linux
+    runs-on: ubuntu-latest # release-drafter/release-drafter@v5 only works on Linux: https://github.com/release-drafter/release-drafter/issues/558
     steps:
     - name: Update draft on GitHub Releases
       id: release_drafter
@@ -34,7 +34,7 @@ jobs:
           "CSharpMath.Editor.Tests"\
           "CSharpMath.Editor.Tests.FSharp"\
           "CSharpMath.Evaluation.Tests"\
-          "CSharpMath.Ios"\
+        # "CSharpMath.Ios"\ # https://github.com/dotnet/sdk/issues/11108 + https://github.com/release-drafter/release-drafter/issues/558
           "CSharpMath.Rendering.Tests"\
           "CSharpMath.Rendering.Text.Tests"\
           "CSharpMath.Xaml.Tests"\
@@ -76,7 +76,7 @@ jobs:
           "CSharpMath.Editor.Tests"\
           "CSharpMath.Editor.Tests.FSharp"\
           "CSharpMath.Evaluation.Tests"\
-          "CSharpMath.Ios"\
+        # "CSharpMath.Ios"\ # https://github.com/dotnet/sdk/issues/11108 + https://github.com/release-drafter/release-drafter/issues/558
           "CSharpMath.Rendering.Tests"\
           "CSharpMath.Rendering.Text.Tests"\
           "CSharpMath.Xaml.Tests"\
