@@ -34,7 +34,7 @@ jobs:
           "CSharpMath.Editor.Tests"\
           "CSharpMath.Editor.Tests.FSharp"\
           "CSharpMath.Evaluation.Tests"\
-        # "CSharpMath.Ios"\ # https://github.com/dotnet/sdk/issues/11108 + https://github.com/release-drafter/release-drafter/issues/558
+        `# "CSharpMath.Ios" # https://github.com/dotnet/sdk/issues/11108 + https://github.com/release-drafter/release-drafter/issues/558`\
           "CSharpMath.Rendering.Tests"\
           "CSharpMath.Rendering.Text.Tests"\
           "CSharpMath.Xaml.Tests"\
@@ -76,7 +76,7 @@ jobs:
           "CSharpMath.Editor.Tests"\
           "CSharpMath.Editor.Tests.FSharp"\
           "CSharpMath.Evaluation.Tests"\
-        # "CSharpMath.Ios"\ # https://github.com/dotnet/sdk/issues/11108 + https://github.com/release-drafter/release-drafter/issues/558
+        `# "CSharpMath.Ios" # https://github.com/dotnet/sdk/issues/11108 + https://github.com/release-drafter/release-drafter/issues/558`\
           "CSharpMath.Rendering.Tests"\
           "CSharpMath.Rendering.Text.Tests"\
           "CSharpMath.Xaml.Tests"\
