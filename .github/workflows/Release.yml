@@ -1,0 +1,28 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+jobs:
+  all_projects:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Update draft on GitHub Releases
+      id: release_drafter
+      uses: release-drafter/release-drafter@v5
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.302'
+    - name: Download Release Asset
+      id: download_release_asset
+      uses: i3h/download-release-asset@v1
+      with:
+        owner: verybadcat
+        repo: CSharpMath
+        tag: ${{ steps.release_drafter.outputs.tag_name }}
+        file: /.*/
+    - name: Upload to NuGet
+      run: dotnet nuget push * -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
