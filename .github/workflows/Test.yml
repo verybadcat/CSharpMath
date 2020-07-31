@@ -15,7 +15,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag: ${{ steps.release_drafter.outputs.tag_name }}
+        id: ${{ steps.release_drafter.outputs.id }}
     - uses: actions/checkout@v2
       with:
         submodules: 'recursive'
