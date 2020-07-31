@@ -18,6 +18,7 @@ prerelease: true
 template: |
   <!--Example release name: $RESOLVED_VERSION xxx Update [Alpha|Beta]-->
   <!--Please release immediately after modifying as any changes will be overwritten on next run of the Test workflow-->
+  <!--Remove these comments, they will be visible in the released NuGet packages!-->
 
   ## Changes from $PREVIOUS_TAG (Recently merged first)
   $CHANGES
