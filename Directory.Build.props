@@ -25,11 +25,7 @@
       math mathematics mathematical formula equation equations
       expression tex latex render rendering display beautiful CSharpMath
     </PackageTags>
-    <PackageReleaseNotes>
-      The 0.4 Avalonia Update brings the Avalonia front end!
-      0.4.1: Fixed Measure in CSharpMath.Rendering
-      0.4.2: Fixed TextPainter setting the position of display maths in the first line to above the canvas bounds
-    </PackageReleaseNotes>
+    <!--PackageReleaseNotes is not set by default and is set by CI-->
     <RepositoryUrl>https://github.com/verybadcat/CSharpMath.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryBranch>master</RepositoryBranch>
