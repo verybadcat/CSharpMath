@@ -1,5 +1,5 @@
 # https://github.com/marketplace/actions/release-drafter#configuration
-name-template: '$RESOLVED_VERSION xxx Update [Alpha|Beta]'
+name-template: '$RESOLVED_VERSION CI'
 tag-template: 'v$RESOLVED_VERSION'
 version-resolver:
   major:
@@ -16,6 +16,7 @@ exclude-labels:
   - 'Version/None'
 prerelease: true
 template: |
+  <!--Example release name: $RESOLVED_VERSION xxx Update [Alpha|Beta]-->
   <!--Please release immediately after modifying as any changes will be overwritten on next run of the Test workflow-->
 
   ## Changes from $PREVIOUS_TAG (Recently merged first)
