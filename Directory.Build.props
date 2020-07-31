@@ -1,6 +1,6 @@
 <!--Directory.Build.props: MSBuild properties that are included in every project-->
 <!--Info: https://docs.microsoft.com/en-us/visualstudio/msbuild/customize-your-build?view=vs-2019#directorybuildprops-and-directorybuildtargets-->
-<Project InitialTargets="AppendCISignatureToPackageVersion">
+<Project InitialTargets="SetDefaultPackageVersion">
   <PropertyGroup Condition="$(MSBuildProjectName.StartsWith('CSharpMath'))"> <!--Don't apply to Typography projects-->
     <LangVersion>preview</LangVersion>
     <Nullable>enable</Nullable>
@@ -12,7 +12,7 @@
 
     <!--NuGet properties: Ordered according to https://docs.microsoft.com/en-us/nuget/reference/msbuild-targets#pack-target-->
     <PackageId>$(MSBuildProjectName)</PackageId>
-    <PackageVersion>0.4.2</PackageVersion>
+    <!--PackageVersion is set in the SetDefaultPackageVersion target below-->
     <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie, FoggyFinder)</Authors>
     <Title>$(PackageId)</Title>
     <!--Description property is defined in individual projects-->
@@ -25,15 +25,11 @@
       math mathematics mathematical formula equation equations
       expression tex latex render rendering display beautiful CSharpMath
     </PackageTags>
-    <PackageReleaseNotes>
-      The 0.4 Avalonia Update brings the Avalonia front end!
-      0.4.1: Fixed Measure in CSharpMath.Rendering
-      0.4.2: Fixed TextPainter setting the position of display maths in the first line to above the canvas bounds
-    </PackageReleaseNotes>
+    <!--PackageReleaseNotes is not set by default and is set by CI-->
     <RepositoryUrl>https://github.com/verybadcat/CSharpMath.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryBranch>master</RepositoryBranch>
-    <!--RepositoryCommit property is set dynamically below-->
+    <!--RepositoryCommit property is set in the SetDefaultPackageVersion target below-->
     
     <!--SourceLink properties: Ordered according to https://github.com/dotnet/sourcelink#using-source-link-in-net-projects-->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -50,9 +46,6 @@
     <NeutralLanguage>en</NeutralLanguage>
     <RootNamespace>$(MSBuildProjectName)</RootNamespace> <!--Prefix namespace for embedded resources-->
     <AssemblyName>$(MSBuildProjectName)</AssemblyName>
-    <AssemblyVersion>$(PackageVersion.Split('-')[0])</AssemblyVersion>
-    <FileVersion>$(AssemblyVersion)</FileVersion> <!--"File version" in DLL Details, $(AssemblyVersion) if unset-->
-    <Version>$(AssemblyVersion)</Version> <!--"Product version" in DLL Details, '1.0.0' if unset-->
   </PropertyGroup>
   <ItemGroup Condition="
     $(MSBuildProjectName.StartsWith('CSharpMath'))
@@ -61,14 +54,18 @@
     <None Include="$(MSBuildThisFileDirectory)Icon.png" Pack="true" PackagePath="" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
-  <Target Name="AppendCISignatureToPackageVersion" Condition="$(MSBuildProjectName.StartsWith('CSharpMath'))">
+  <!--Also run for non-CSharpMath projects: Normalize PackageVersion or else error-->
+  <Target Name="SetDefaultPackageVersion">
     <!--Setting StandardOutputImportance to Low ensures that EchoOff works: https://github.com/Microsoft/msbuild/issues/2826-->
     <Exec Command="git rev-parse HEAD" ConsoleToMSBuild="true" EchoOff="true" StandardOutputImportance="Low">
       <Output TaskParameter="ConsoleOutput" PropertyName="RepositoryCommit" />
     </Exec>
-    <!-- Appending build date and time as metadata for version is blocked on https://github.community/t/bug-nuget-support-build-metadata-properly/117606 -->
-    <!-- <CreateProperty Value="$(PackageVersion)-ci-$(RepositoryCommit)+$([System.DateTime]::UtcNow.ToString('yyyy.MM.dd-HH.mm.ss'))"> -->
-    <CreateProperty Condition="!$([System.String]::IsNullOrEmpty($(CI))) And $(CI)" Value="$(PackageVersion)-ci-$(RepositoryCommit)">
+    <!--For local builds-->
+    <CreateProperty Condition="$(PackageVersion) == '1.0.0'" Value="99.99.99-localbuild-$(RepositoryCommit)">
+      <Output TaskParameter="Value" PropertyName="PackageVersion" />
+    </CreateProperty>
+    <!--For CI builds-->
+    <CreateProperty Value="$(PackageVersion.TrimStart('v'))">
       <Output TaskParameter="Value" PropertyName="PackageVersion" />
     </CreateProperty>
   </Target>
