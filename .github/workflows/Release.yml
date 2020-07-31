@@ -25,8 +25,8 @@ jobs:
         # .NET Core MSBuild cannot parse , and ; correctly so we replace them with substitutions: https://github.com/dotnet/msbuild/issues/471#issuecomment-366268743
         # https://www.gnu.org/software/bash/manual/bash.html#Shell-Parameter-Expansion
         # ${parameter/pattern/string} If pattern begins with ‘/’, all matches of pattern are replaced with string. Normally only the first match is replaced.
-        RELEEASE_NOTES=${RELEASE_NOTES//,/%2C}
-        RELEEASE_NOTES=${RELEASE_NOTES//;/%3B}
+        RELEASE_NOTES=${RELEASE_NOTES//,/%2C}
+        RELEASE_NOTES=${RELEASE_NOTES//;/%3B}
         for p in\
           "CSharpMath.CoreTests"\
           "CSharpMath.Editor.Tests"\
