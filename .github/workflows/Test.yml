@@ -13,6 +13,7 @@ jobs:
     - uses: cardinalby/git-get-release-action@v1
       id: release_info
       with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ steps.release_drafter.outputs.tag_name }}
     - uses: actions/checkout@v2
       with:
