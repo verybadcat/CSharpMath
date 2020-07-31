@@ -8,8 +8,10 @@ jobs:
     - name: Update draft on GitHub Releases
       id: release_drafter
       uses: release-drafter/release-drafter@v5
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - uses: cardinalby/git-get-release-action@v1
+      id: release_info
+      with:
+        tag: ${{ steps.release_drafter.outputs.tag_name }}
     - uses: actions/checkout@v2
       with:
         submodules: 'recursive'
@@ -27,6 +29,11 @@ jobs:
         # retry 5 times since dotnet outdated fails often: https://github.com/jerriep/dotnet-outdated/issues/299
         update || update || update || update || update
     - name: Build and Test
+      env:
+        RELEASE_NOTES: |
+          # ${{ steps.release_info.outputs.name }}
+          
+          ${{ steps.release_info.outputs.body }}
       # run: dotnet test CSharpMath.CrossPlatform.slnf
       run: | # https://github.com/dotnet/sdk/issues/10409, https://github.com/dotnet/sdk/issues/11417
         for p in\
@@ -44,7 +51,7 @@ jobs:
           dotnet add "$p" package Microsoft.NET.Test.Sdk # Update is required for GitHubActionsTestLogger to print anything
           dotnet add "$p" package GitHubActionsTestLogger
           # -r for restore
-          dotnet msbuild -r -p:Configuration=Release -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name }}-ci-${{ github.sha }} "$p"
+          dotnet msbuild -r -p:Configuration=Release -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name }}-ci-${{ github.sha }} -p:PackageReleaseNotes="$RELEASE_NOTES" "$p"
           # --no-build because building again will produce additional NuGet packages without the PackageVersion setting above
           dotnet test "$p" --no-build -c Release -l GitHubActions --blame
         done
