@@ -15,6 +15,11 @@ jobs:
       with:
         dotnet-version: '3.1.302'
     - name: Build GitHub Releases draft artifacts
+      env:
+        RELEASE_NOTES: |
+          # ${{ github.event.release.name }}
+          
+          ${{ github.event.release.body }}
       # run: dotnet test CSharpMath.CrossPlatform.slnf
       run: | # https://github.com/dotnet/sdk/issues/10409, https://github.com/dotnet/sdk/issues/11417
         for p in\
@@ -29,7 +34,7 @@ jobs:
           "CSharpMath.Xaml.Tests.NuGet"\
           "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests"
         do
-          dotnet msbuild -p:Configuration=Release -p:PackageVersion=${{ github.ref }} "$p"
+          dotnet msbuild -p:Configuration=Release -p:PackageVersion="${{ github.ref }}" -p:PackageReleaseNotes="$RELEASE_NOTES" "$p"
         done
     - name: Upload to GitHub Releases
       uses: svenstaro/upload-release-action@v2
@@ -40,4 +45,4 @@ jobs:
         file_glob: true
         overwrite: true
     - name: Upload to NuGet
-      run: dotnet nuget push .nupkgs/* -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
+      run: dotnet nuget push .nupkgs/* # -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
