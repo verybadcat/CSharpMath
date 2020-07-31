@@ -34,7 +34,8 @@ jobs:
           "CSharpMath.Xaml.Tests.NuGet"\
           "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests"
         do
-          dotnet msbuild -p:Configuration=Release -p:PackageVersion="${{ github.ref }}" -p:PackageReleaseNotes="$RELEASE_NOTES" "$p"
+          # -r for restore
+          dotnet msbuild -r -p:Configuration=Release -p:PackageVersion="${{ github.ref }}" -p:PackageReleaseNotes="$RELEASE_NOTES" "$p"
         done
     - name: Upload to GitHub Releases
       uses: svenstaro/upload-release-action@v2
