@@ -35,7 +35,7 @@ jobs:
           "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests"
         do
           # -r for restore
-          dotnet msbuild -r -p:Configuration=Release -p:PackageVersion="${{ github.ref }}" -p:PackageReleaseNotes="$RELEASE_NOTES" "$p"
+          dotnet msbuild -r -p:Configuration=Release -p:PackageVersion="${{ github.event.release.tag_name }}" -p:PackageReleaseNotes="$RELEASE_NOTES" "$p"
         done
     - name: Upload to GitHub Releases
       uses: svenstaro/upload-release-action@v2
