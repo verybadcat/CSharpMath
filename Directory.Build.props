@@ -37,23 +37,25 @@
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     
-    <!--https://github.com/clairernovotny/DeterministicBuilds
-        Deterministic builds are important as they enable verification that the resulting binary was built from the specified source and provides traceability.
-        It should not be enabled during local dev or the debugger won't be able to find the local source files.
-        Also, this requires SourceLink to be enabled or else error: https://github.com/dotnet/sourcelink/issues/91#issuecomment-400787926-->
-    <ContinuousIntegrationBuild>$(Configuration.Equals('Release'))</ContinuousIntegrationBuild>
-    
     <!--Info on NuGet packaging properties: https://github.com/NuGet/Home/wiki/Adding-nuget-pack-as-a-msbuild-target-->
     <GeneratePackageOnBuild Condition="
       !$(MSBuildProjectName.Contains('Test'))
       And !$(MSBuildProjectName.Contains('Example'))
       And !$(MSBuildProjectName.Contains('Playground'))">$(Configuration.Equals('Release'))</GeneratePackageOnBuild>
+    
+    <!--https://github.com/clairernovotny/DeterministicBuilds
+        Deterministic builds are important as they enable verification that the resulting binary was built from the specified source and provides traceability.
+        It should not be enabled during local dev or the debugger won't be able to find the local source files.
+        Also, this requires SourceLink to be enabled or else error: https://github.com/dotnet/sourcelink/issues/91#issuecomment-400787926-->
+    <ContinuousIntegrationBuild>$(GeneratePackageOnBuild)</ContinuousIntegrationBuild>
+    
     <PackageOutputPath>$(MSBuildThisFileDirectory).nupkgs</PackageOutputPath>
     <NeutralLanguage>en</NeutralLanguage>
     <RootNamespace>$(MSBuildProjectName)</RootNamespace> <!--Prefix namespace for embedded resources-->
     <AssemblyName>$(MSBuildProjectName)</AssemblyName>
   </PropertyGroup>
-  <ItemGroup Condition="$(MSBuildProjectName.StartsWith('CSharpMath')) And $(Configuration.Equals('Release'))">
+  <ItemGroup Condition="$(MSBuildProjectName.StartsWith('CSharpMath'))
+             And !$([System.String]::IsNullOrEmpty($(GeneratePackageOnBuild))) And $(GeneratePackageOnBuild)">
     <None Include="$(MSBuildThisFileDirectory)Icon.png" Pack="true" PackagePath="" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
