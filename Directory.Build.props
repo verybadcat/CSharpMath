@@ -37,6 +37,11 @@
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     
+    <!--https://github.com/clairernovotny/DeterministicBuilds
+        Deterministic builds are important as they enable verification that the resulting binary was built from the specified source and provides traceability.
+        It should not be enabled during local dev or the debugger won't be able to find the local source files.-->
+    <ContinuousIntegrationBuild>$(Configuration.Equals('Release'))</ContinuousIntegrationBuild>
+    
     <!--Info on NuGet packaging properties: https://github.com/NuGet/Home/wiki/Adding-nuget-pack-as-a-msbuild-target-->
     <GeneratePackageOnBuild Condition="
       !$(MSBuildProjectName.Contains('Test'))

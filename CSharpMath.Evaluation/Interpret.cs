@@ -53,10 +53,6 @@ namespace CSharpMath {
                 latex.AppendLaTeXHeader("Expanded").AppendLaTeX(entity.Expand());
                 latex.AppendLaTeXHeader("Factorized").AppendLaTeX(entity.Collapse());
               }
-              foreach (AngouriMath.VariableEntity variable in AngouriMath.MathS.Utils.GetUniqueVariables(entity).FiniteSet())
-                latex.AppendLaTeXHeader(@"\mathnormal\frac\partial{\partial " + variable.Latexise() + @"}")
-                  .AppendLaTeX(entity.Derive(variable).Simplify());
-              // TryOutput("Alternate forms", () => entity.Alternate(5));
               break;
             case MathItem.Set _:
             case MathItem.Comma _:

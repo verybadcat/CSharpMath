@@ -3,12 +3,12 @@ using System.Text.RegularExpressions;
 using Xunit;
 using AngouriMath;
 
-namespace CSharpMath {
+namespace CSharpMath.EvaluationTests {
   using Atom;
-  public partial class EvluationTests {
-    MathList ParseLaTeX(string latex) =>
+  public class EvaluationTests {
+    internal static MathList ParseLaTeX(string latex) =>
       LaTeXParser.MathListFromLaTeX(latex).Match(list => list, e => throw new Xunit.Sdk.XunitException(e));
-    Evaluation.MathItem ParseMath(string latex) =>
+    static Evaluation.MathItem ParseMath(string latex) =>
       Evaluation.Evaluate(ParseLaTeX(latex)).Match(entity => entity, e => throw new Xunit.Sdk.XunitException(e));
     void Test(string input, string converted, string? result) {
       void Test(string input) {
@@ -424,7 +424,10 @@ namespace CSharpMath {
     [InlineData(@"\sin^a\ \; (x)^2(x)", @"\sin \left( x\right) ^{a\times 2}\times x", @"\sin \left( x\right) ^{2\times a}\times x")]
     [InlineData(@"\sin (\frac\pi2)", @"\sin \left( \frac{\pi }{2}\right) ", @"1")]
     [InlineData(@"\sin (\frac\pi2)+1", @"\sin \left( \frac{\pi }{2}\right) +1", @"2")]
-    public void Parentheses(string latex, string converted, string result) => Test(latex, converted, result);
+    public void Parentheses(string latex, string converted, string result) {
+      Test(latex, converted, result);
+      Test(latex.Replace('(', '[').Replace(')', ']'), converted, result);
+    }
     [Theory]
     [InlineData(@"\begin{matrix}1\end{matrix}", @"\left( \begin{matrix}1\end{matrix}\right) ", @"\left( \begin{matrix}1\end{matrix}\right) ")]
     [InlineData(@"\begin{pmatrix}1\end{pmatrix}", @"\left( \begin{matrix}1\end{matrix}\right) ", @"\left( \begin{matrix}1\end{matrix}\right) ")]
@@ -580,11 +583,12 @@ namespace CSharpMath {
     [InlineData(@"\left(1+\right]", "Missing right operand for +")]
     [InlineData(@"\left(2,3\right]^\square", "Placeholders should be filled")]
     [InlineData(@"(2,3]^\square", "Placeholders should be filled")]
-    [InlineData(@"[]", "Unrecognized bracket pair [ ]")]
-    [InlineData(@"[x]", "Unrecognized bracket pair [ ]")]
-    [InlineData(@"[[x]", "Unrecognized bracket pair [ ]")]
-    [InlineData(@"[x]]", "Unrecognized bracket pair [ ]")]
-    [InlineData(@"\left[\right]", "Unrecognized bracket pair [ ]")]
+    [InlineData(@"[]", "Missing math inside [ ]")]
+    [InlineData(@"[[x]", "Missing ]")]
+    [InlineData(@"[x]]", "Missing [")]
+    [InlineData(@"[_\square x]", "Subscripts are unsupported for Open [")]
+    [InlineData(@"[x]_\square", "Subscripts are unsupported for Close ]")]
+    [InlineData(@"\left[\right]", "Missing math inside [ ]")]
     [InlineData(@"\left[1+\right]", "Missing right operand for +")]
     [InlineData(@"\left[2,3\right]^\square", "Placeholders should be filled")]
     [InlineData(@"[2,3]^\square", "Placeholders should be filled")]
@@ -633,7 +637,7 @@ namespace CSharpMath {
     [InlineData(@"+(3,4]", "Set cannot be right operand for +")]
     [InlineData(@"[5,6)\times", "Set cannot be left operand for ×")]
     [InlineData(@"\frac{[7,8]}{9}", "Set cannot be numerator")]
-    [InlineData(@"\sqrt[{[]}]{}", "Unrecognized bracket pair [ ]")]
+    [InlineData(@"\sqrt[{[)}]{}", "Unrecognized bracket pair [ )")]
     [InlineData(@"\sqrt[{[a,b]}]{}", "Set cannot be degree")]
     [InlineData(@"\{\{\}\}", "Set cannot be set element")]
     [InlineData(@"\cap", "Unsupported Unary Operator ∩")]

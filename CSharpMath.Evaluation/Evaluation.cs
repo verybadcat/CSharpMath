@@ -167,8 +167,9 @@ namespace CSharpMath {
           _ => "Unrecognized bracket pair ( ]"
         } },
         { ("[", "]"), item => item switch {
+          null => "Missing math inside [ ]",
           MathItem.Comma c => TryMakeSet(c, true, true),
-          _ => "Unrecognized bracket pair [ ]"
+          _ => item
         } },
         { ("{", "}"), item => item.AsEntities("set element").Bind(entities => (MathItem)MathS.Sets.Finite(entities)) }
       };
@@ -392,14 +393,18 @@ namespace CSharpMath {
             handlePrecendence = Precedence.SetOperation;
             handleBinarySet = (l, r) => l - r;
             goto handleBinarySet;
-          // Until C# allows declaring variables under "or pattern"s...
-          case Atoms.Inner { LeftBoundary:{ Nucleus:"[" }, InnerList:{ Count:1 } inner, RightBoundary:{ Nucleus:"]" } }
-            when inner[0] is Atoms.Table { Environment: "matrix" } table:
-            var matrix = table;
-            goto handleMatrix;
-          case Atoms.Table { Environment: "matrix" } table:
-            matrix = table;
-            goto handleMatrix;
+          case Atoms.Table { Environment: "matrix" } matrix:
+            var (rows, cols, cells) = (matrix.NRows, matrix.NColumns, matrix.Cells);
+            var matrixElements = new Entity[rows * cols];
+            for (var row = 0; row < rows; row++)
+              for (var col = 0; col < cols; col++) {
+                if (cells[row].Count <= col)
+                  return $"There are empty slots in the {rows}×{cols} matrix";
+                (matrixElements[row * cols + col], error) = Transform(cells[row][col]).ExpectEntity("matrix element");
+                if (error != null) return error;
+              }
+            @this = MathS.Matrices.Matrix(rows, cols, matrixElements);
+            goto handleThis;
           case Atoms.Open { Nucleus: var opening }:
             if (!OpenBracketInfo.TryGetValue(opening, out var bracketInfo))
               return "Unsupported opening bracket " + opening;
@@ -463,19 +468,6 @@ namespace CSharpMath {
             return $"Unsupported table environment {table.Environment}";
           default:
             return $"Unsupported {atom.TypeName} {atom.Nucleus}";
-
-            handleMatrix:
-            var (rows, cols, cells) = (matrix.NRows, matrix.NColumns, matrix.Cells);
-            var matrixElements = new Entity[rows * cols];
-            for (var row = 0; row < rows; row++)
-              for (var col = 0; col < cols; col++) {
-                if (cells[row].Count <= col)
-                  return $"There are empty slots in the {rows}×{cols} matrix";
-                (matrixElements[row * cols + col], error) = Transform(cells[row][col]).ExpectEntity("matrix element");
-                if (error != null) return error;
-              }
-            @this = MathS.Matrices.Matrix(rows, cols, matrixElements);
-            goto handleThis;
 #pragma warning disable CS0162 // Unreachable code detected
 #pragma warning disable CS0164 // This label has not been referenced
             handleFunction:
