@@ -19,4 +19,4 @@ jobs:
     - name: Restore NuGet Packages
       run: nuget restore CSharpMath.sln
     - name: Build Everything
-      run: msbuild CSharpMath.sln /p:Configuration=Release
+      run: msbuild CSharpMath.sln /p:Configuration=Debug
