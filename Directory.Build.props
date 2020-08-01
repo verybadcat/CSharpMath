@@ -56,7 +56,7 @@
     <RootNamespace>$(MSBuildProjectName)</RootNamespace> <!--Prefix namespace for embedded resources-->
     <AssemblyName>$(MSBuildProjectName)</AssemblyName>
   </PropertyGroup>
-  <ItemGroup Condition="$(MSBuildProjectName.StartsWith('CSharpMath')) And $(GeneratePackageOnBuild)">
+  <ItemGroup Condition="$(MSBuildProjectName.StartsWith('CSharpMath'))">
     <None Include="$(MSBuildThisFileDirectory)Icon.png" Pack="true" PackagePath="" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
