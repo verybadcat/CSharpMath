@@ -49,7 +49,8 @@
         Deterministic builds are important as they enable verification that the resulting binary was built from the specified source and provides traceability.
         It should not be enabled during local dev or the debugger won't be able to find the local source files.
         Also, this requires SourceLink to be enabled or else error: https://github.com/dotnet/sourcelink/issues/91#issuecomment-400787926-->
-    <ContinuousIntegrationBuild>$(GeneratePackageOnBuild)</ContinuousIntegrationBuild>
+    <!--But this only works well with dotnet msbuild, not the Windows full MSBuild-->
+    <ContinuousIntegrationBuild Condition="'$(MSBuildRuntimeType)'=='Core'">$(GeneratePackageOnBuild)</ContinuousIntegrationBuild>
     
     <PackageOutputPath>$(MSBuildThisFileDirectory).nupkgs</PackageOutputPath>
     <NeutralLanguage>en</NeutralLanguage>
