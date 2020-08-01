@@ -5,11 +5,6 @@ jobs:
   Core:
     runs-on: ubuntu-latest # release-drafter/release-drafter@v5 only works on Linux: https://github.com/release-drafter/release-drafter/issues/558
     steps:
-    - name: Sleep for 30 seconds
-      if: github.event_name == 'pull_request' # Avoid Release Drafter running in parallel and failing to update the draft release
-      uses: jakejarvis/wait-action@master
-      with:
-        time: '30s'
     - name: Update draft on GitHub Releases
       id: release_drafter
       uses: release-drafter/release-drafter@v5
