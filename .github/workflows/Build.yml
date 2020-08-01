@@ -18,5 +18,5 @@ jobs:
       uses: warrenbuckley/Setup-MSBuild@v1
     - name: Restore NuGet Packages
       run: nuget restore CSharpMath.sln
-    - name: Build everything
+    - name: Build Everything
       run: msbuild CSharpMath.sln /p:Configuration=Release
