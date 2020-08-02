@@ -38,19 +38,27 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     
     <!--Info on NuGet packaging properties: https://github.com/NuGet/Home/wiki/Adding-nuget-pack-as-a-msbuild-target-->
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <GeneratePackageOnBuild Condition="
       !$(MSBuildProjectName.Contains('Test'))
       And !$(MSBuildProjectName.Contains('Example'))
-      And !$(MSBuildProjectName.Contains('Playground'))">$(Configuration.Equals('Release'))</GeneratePackageOnBuild>
+      And !$(MSBuildProjectName.Contains('Playground'))
+      And $(Configuration.Equals('Release'))">true</GeneratePackageOnBuild>
+    
+    <!--https://github.com/clairernovotny/DeterministicBuilds
+        Deterministic builds are important as they enable verification that the resulting binary was built from the specified source and provides traceability.
+        It should not be enabled during local dev or the debugger won't be able to find the local source files.
+        Also, this requires SourceLink to be enabled or else error: https://github.com/dotnet/sourcelink/issues/91#issuecomment-400787926-->
+    <!--But this only works well with dotnet msbuild, not the Windows full MSBuild-->
+    <ContinuousIntegrationBuild Condition="'$(MSBuildRuntimeType)'=='Core'">$(GeneratePackageOnBuild)</ContinuousIntegrationBuild>
+    
     <PackageOutputPath>$(MSBuildThisFileDirectory).nupkgs</PackageOutputPath>
     <NeutralLanguage>en</NeutralLanguage>
     <RootNamespace>$(MSBuildProjectName)</RootNamespace> <!--Prefix namespace for embedded resources-->
     <AssemblyName>$(MSBuildProjectName)</AssemblyName>
   </PropertyGroup>
-  <ItemGroup Condition="
-    $(MSBuildProjectName.StartsWith('CSharpMath'))
-    And !$([System.String]::IsNullOrEmpty($(GeneratePackageOnBuild)))
-    And $(GeneratePackageOnBuild)">
+  <!--SourceLink does not work well with WPF projects so we don't add it unconditionally-->
+  <ItemGroup Condition="$(MSBuildProjectName.StartsWith('CSharpMath')) And $(GeneratePackageOnBuild)">
     <None Include="$(MSBuildThisFileDirectory)Icon.png" Pack="true" PackagePath="" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
@@ -61,7 +69,7 @@
       <Output TaskParameter="ConsoleOutput" PropertyName="RepositoryCommit" />
     </Exec>
     <!--For local builds-->
-    <CreateProperty Condition="$(PackageVersion) == '1.0.0'" Value="99.99.99-localbuild-$(RepositoryCommit)">
+    <CreateProperty Condition="$(PackageVersion) == '1.0.0'" Value="2147483647.2147483647.2147483647-localbuild-$(RepositoryCommit)">
       <Output TaskParameter="Value" PropertyName="PackageVersion" />
     </CreateProperty>
     <!--For CI builds-->
