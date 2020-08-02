@@ -10,12 +10,6 @@ jobs:
       uses: release-drafter/release-drafter@v5
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - uses: cardinalby/git-get-release-action@v1
-      id: release_info
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        releaseId: ${{ steps.release_drafter.outputs.id }}
     - uses: actions/checkout@v2
       with:
         submodules: 'recursive'
@@ -35,9 +29,9 @@ jobs:
     - name: Build and Test
       env:
         RELEASE_NOTES: |
-          # ${{ steps.release_info.outputs.name }}
+          # ${{ steps.release_drafter.outputs.name }}
           
-          ${{ steps.release_info.outputs.body }}
+          ${{ steps.release_drafter.outputs.body }}
       # run: dotnet test CSharpMath.CrossPlatform.slnf
       run: | # https://github.com/dotnet/sdk/issues/10409, https://github.com/dotnet/sdk/issues/11417
         # .NET Core MSBuild cannot parse , and ; correctly so we replace them with substitutions: https://github.com/dotnet/msbuild/issues/471#issuecomment-366268743
