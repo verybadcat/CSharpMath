@@ -51,6 +51,10 @@ jobs:
         file_glob: true
         overwrite: true
     - name: Upload to NuGet
-      run: dotnet nuget push .nupkgs/ -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
-      # If .nupkgs/* is used instead of .nupkg/ as the path, then not all files will be uploaded
-      # So CSharpMath.0.5.0-alpha.nupkg and CSharpMath.0.5.0-alpha.snupkg will be uploaded but not others e.g. CSharpMath.Rendering.0.5.0-alpha.nupkg
+      run: |
+         for nupkg in `ls .nupkgs/*.nupkg`
+         do
+           dotnet nuget push $x -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
+         done
+      # Following command does not work... https://github.com/NuGet/Home/issues/9867
+      # dotnet nuget push .nupkgs/ -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
