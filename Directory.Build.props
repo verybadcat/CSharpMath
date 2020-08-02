@@ -68,7 +68,7 @@
       <Output TaskParameter="ConsoleOutput" PropertyName="RepositoryCommit" />
     </Exec>
     <!--For local builds-->
-    <CreateProperty Condition="$(PackageVersion) == '1.0.0'" Value="99.99.99-localbuild-$(RepositoryCommit)">
+    <CreateProperty Condition="$(PackageVersion) == '1.0.0'" Value="2147483647.2147483647.2147483647-localbuild-$(RepositoryCommit)">
       <Output TaskParameter="Value" PropertyName="PackageVersion" />
     </CreateProperty>
     <!--For CI builds-->
