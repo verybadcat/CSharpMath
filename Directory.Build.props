@@ -57,7 +57,8 @@
     <RootNamespace>$(MSBuildProjectName)</RootNamespace> <!--Prefix namespace for embedded resources-->
     <AssemblyName>$(MSBuildProjectName)</AssemblyName>
   </PropertyGroup>
-  <ItemGroup Condition="$(MSBuildProjectName.StartsWith('CSharpMath'))">
+  <!--SourceLink does not work well with WPF projects so we don't add it unconditionally-->
+  <ItemGroup Condition="$(MSBuildProjectName.StartsWith('CSharpMath')) And $(GeneratePackageOnBuild)">
     <None Include="$(MSBuildThisFileDirectory)Icon.png" Pack="true" PackagePath="" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
