@@ -51,4 +51,4 @@ jobs:
         file_glob: true
         overwrite: true
     - name: Upload to NuGet
-      run: dotnet nuget push .nupkgs/* -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
+      run: dotnet nuget push .nupkgs/ -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
