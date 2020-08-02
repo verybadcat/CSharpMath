@@ -54,7 +54,7 @@ jobs:
           dotnet add "$p" package Microsoft.NET.Test.Sdk # Update is required for GitHubActionsTestLogger to print anything
           dotnet add "$p" package GitHubActionsTestLogger
           # -r for restore
-          dotnet msbuild -r -p:Configuration=Release -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name }}-ci-${{ github.sha }} -p:PackageReleaseNotes="$RELEASE_NOTES" "$p"
+          dotnet msbuild -r -p:Configuration=Release -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }} -p:PackageReleaseNotes="$RELEASE_NOTES" "$p"
           # --no-build because building again will produce additional NuGet packages without the PackageVersion setting above
           dotnet test "$p" --no-build -c Release -l GitHubActions --blame
         done
