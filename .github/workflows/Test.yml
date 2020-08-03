@@ -64,6 +64,12 @@ jobs:
       with:
         name: CSharpMath.Rendering.Tests results
         path: CSharpMath.Rendering.Tests/*/*.png
+    - name: Upload CSharpMath.Xaml.Tests.NuGet results as CI artifacts
+      uses: actions/upload-artifact@v2
+      if: always()
+      with:
+        name: CSharpMath.Xaml.Tests.NuGet results
+        path: CSharpMath.Xaml.Tests.NuGet/*.png
     - name: Upload NuGet packages as CI artifacts
       uses: actions/upload-artifact@v2
       if: always()
