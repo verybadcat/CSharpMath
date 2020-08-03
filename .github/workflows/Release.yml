@@ -54,7 +54,8 @@ jobs:
       run: |
          for x in `ls .nupkgs/*.nupkg`
          do
-           dotnet nuget push $x -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
+           # Use --skip-duplicate since we want re-runs of this workflow to succeed in case of network issues
+           dotnet nuget push $x -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json  --skip-duplicate
          done
       # Following command does not work... https://github.com/NuGet/Home/issues/9867
-      # dotnet nuget push .nupkgs/ -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
+      # dotnet nuget push .nupkgs/ -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json  --skip-duplicate
