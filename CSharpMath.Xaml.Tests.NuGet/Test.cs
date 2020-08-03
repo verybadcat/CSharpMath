@@ -18,7 +18,7 @@ namespace CSharpMath.Xaml.Tests.NuGet {
       using (var forms = System.IO.File.OpenRead(File(nameof(Forms))))
         Xunit.Assert.Equal(292, forms.Length);
       using (var avalonia = System.IO.File.OpenRead(File(nameof(Avalonia))))
-        Xunit.Assert.Equal(344, avalonia.Length);
+        Xunit.Assert.Equal(292, avalonia.Length);
     }
   }
 }
