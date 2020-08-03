@@ -16,9 +16,9 @@ namespace CSharpMath.Xaml.Tests.NuGet {
         new Avalonia.MathView { LaTeX = "1", FontSize = 50 }.Painter.DrawAsPng(avalonia);
 
       using (var forms = System.IO.File.OpenRead(File(nameof(Forms))))
-        Xunit.Assert.Contains(forms.Length, new[] { 344L, 797 }); // 797 on Mac, 344 on Ubuntu
+        Xunit.Assert.Equal(292, forms.Length);
       using (var avalonia = System.IO.File.OpenRead(File(nameof(Avalonia))))
-        Xunit.Assert.Equal(344, avalonia.Length);
+        Xunit.Assert.Equal(292, avalonia.Length);
     }
   }
 }

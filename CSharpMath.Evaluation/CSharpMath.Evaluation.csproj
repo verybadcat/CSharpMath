@@ -3,6 +3,12 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>
+      Can convert CSharpMath.Atom.MathList parsed from LaTeX with CSharpMath.Atom.LaTeXParser
+      into actual mathematical expressions that are evaluatable with AngouriMath.
+      Supports arithmetic, trigonometry, symbolic simplification and expansion,
+      as well as matrices, sets, and equation solving.
+    </Description>
   </PropertyGroup>
 
   <ItemGroup>
