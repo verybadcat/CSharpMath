@@ -1,16 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="CSharpMath.Avalonia" Version="0.4.0" />
     <PackageReference Include="CSharpMath.Forms" Version="0.4.0.1" />
     <PackageReference Include="Avalonia.Skia" Version="0.9.6" />
-    <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
     <Compile Include="../CSharpMath.Xaml.Tests/XamarinFormsCrc64.cs" Link="XamarinFormsCrc64.cs" />
     <Compile Include="../CSharpMath.Xaml.Tests/XamarinFormsMockPlatformServices.cs" Link="XamarinFormsMockPlatformServices.cs" />
   </ItemGroup>

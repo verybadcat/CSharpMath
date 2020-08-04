@@ -77,4 +77,16 @@
       <Output TaskParameter="Value" PropertyName="PackageVersion" />
     </CreateProperty>
   </Target>
+
+  <PropertyGroup Condition="$(MSBuildProjectName.StartsWith('CSharpMath')) And $(MSBuildProjectName.Contains('Test'))">
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup Condition="$(MSBuildProjectName.StartsWith('CSharpMath')) And $(MSBuildProjectName.Contains('Test'))">
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
+    <PackageReference Include="Xunit.SkippableFact" Version="1.4.13" />
+    <PackageReference Include="coverlet.collector" Version="1.3.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="*" />
+    <PackageReference Include="GitHubActionsTestLogger" Version="1.1.0" />
+  </ItemGroup>
 </Project>

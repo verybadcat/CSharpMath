@@ -12,9 +12,6 @@
     <Compile Include="..\CSharpMath.Apple\Resources\ManifestResources.cs" Link="_Helpers\Resources\ManifestResources.cs" />
     <Compile Include="..\CSharpMath.Apple\Resources\ManifestResourceProvider.cs" Link="_Helpers\Resources\ManifestResourceProvider.cs" />
     <EmbeddedResource Include="_Helpers\Resources\latinmodern-math.json" />
-    <Content Include="Xunit.runner.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <ProjectReference Include="..\CSharpMath\CSharpMath.csproj" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="xunit" Version="2.4.1" />
