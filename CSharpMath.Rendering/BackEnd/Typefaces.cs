@@ -5,7 +5,7 @@ using System.Linq;
 using Typography.OpenFont;
 
 namespace CSharpMath.Rendering.BackEnd {
-  public class Typefaces : ICollection<Typeface>, IReadOnlyList<Typeface> {
+  public class Typefaces : ICollection<Typeface> {
     internal Typefaces(Typeface _default) =>
       _typefaces = new Dictionary<sbyte, Typeface> { [0] = _default };
     private readonly IDictionary<sbyte, Typeface> _typefaces;
@@ -13,7 +13,6 @@ namespace CSharpMath.Rendering.BackEnd {
       { get => _typefaces[index]; set { if (index != 0) _typefaces[index] = value; } }
     public int Count => _typefaces.Count;
     public bool IsReadOnly => false;
-    Typeface IReadOnlyList<Typeface>.this[int index] => this[(sbyte)index];
     public void Add(Typeface item) => AddSupplement(item);
     public void AddOverride(Typeface item) =>
       _typefaces.Add(checked((sbyte)(_typefaces.Keys.Min() - 1)), item);
