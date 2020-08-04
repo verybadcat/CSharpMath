@@ -3,7 +3,7 @@ using CSharpMath.Atom;
 
 namespace CSharpMath.Display {
   using FrontEnd;
-  public class UnicodeFontChanger : IFontChanger {
+  public static class UnicodeFontChanger {
     private const char UnicodeGreekLowerStart = 'α'; // 03B1
     private const char UnicodeGreekLowerEnd = 'ω'; // 03C9
     private const char UnicodeGreekUpperStart = 'Α'; // 0391
@@ -44,13 +44,11 @@ namespace CSharpMath.Display {
     private const int UnicodeNumberBlackboardStart = 0x1D7D8;
 
     private const int UnicodeMathCapitalScriptStart = 0x1D49C;
-    private UnicodeFontChanger() { }
-    public static UnicodeFontChanger Instance { get; } = new UnicodeFontChanger();
-    public static bool IsLowerEn(char c) => c >= 'a' && c <= 'z';
-    public static bool IsUpperEn(char c) => c >= 'A' && c <= 'Z';
-    public static bool IsNumber(char c) => c >= '0' && c <= '9';
-    public static bool IsLowerGreek(char c) => c >= UnicodeGreekLowerStart && c <= UnicodeGreekLowerEnd;
-    public static bool IsUpperGreek(char c) => c >= UnicodeGreekUpperStart && c <= UnicodeGreekUpperEnd;
+    private static bool IsLowerEn(char c) => c >= 'a' && c <= 'z';
+    private static bool IsUpperEn(char c) => c >= 'A' && c <= 'Z';
+    private static bool IsNumber(char c) => c >= '0' && c <= '9';
+    private static bool IsLowerGreek(char c) => c >= UnicodeGreekLowerStart && c <= UnicodeGreekLowerEnd;
+    private static bool IsUpperGreek(char c) => c >= UnicodeGreekUpperStart && c <= UnicodeGreekUpperEnd;
 
     static readonly char[] greekSymbols = {
       'ϵ', // 03F5
@@ -164,7 +162,7 @@ namespace CSharpMath.Display {
         var _ when IsNumber(c) => UnicodeNumberBlackboardStart + c - '0',
         _ => GetDefaultStyle(c),
       };
-    public int StyleCharacter(char c, FontStyle fontStyle) =>
+    public static int StyleCharacter(char c, FontStyle fontStyle) =>
       fontStyle switch
       {
         FontStyle.Default => GetDefaultStyle(c),
@@ -179,5 +177,14 @@ namespace CSharpMath.Display {
         FontStyle.Blackboard => GetBlackboard(c),
         _ => throw new NotImplementedException("Unknown font style " + fontStyle),
       };
+    public static string ChangeFont(string inputString, FontStyle outputFontStyle) {
+      var builder = new System.Text.StringBuilder();
+      foreach (var c in inputString) {
+        int unicode = StyleCharacter(c, outputFontStyle);
+        builder.Append(char.IsSurrogate(c)
+          ? ((char)unicode).ToStringInvariant() : char.ConvertFromUtf32(unicode));
+      }
+      return builder.ToString();
+    }
   }
 }

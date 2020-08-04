@@ -138,8 +138,8 @@ namespace CSharpMath.Display {
           // switch to using the font specified in the atom and convert it to ordinary
           var newAtom = atom switch
           {
-            Variable v => v.ToOrdinary(context.FontChanger.ChangeFont),
-            Number n => n.ToOrdinary(context.FontChanger.ChangeFont),
+            Variable v => v.ToOrdinary(UnicodeFontChanger.ChangeFont),
+            Number n => n.ToOrdinary(UnicodeFontChanger.ChangeFont),
             // TeX treats unary operators as Ordinary. So will we.
             UnaryOperator u => u.ToOrdinary(),
             _ => atom

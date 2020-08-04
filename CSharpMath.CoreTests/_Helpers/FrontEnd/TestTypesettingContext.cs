@@ -5,7 +5,6 @@ namespace CSharpMath.CoreTests.FrontEnd {
         (font, size) => new TestFont(size),
         TestGlyphBoundsProvider.Instance,
         TestGlyphFinder.Instance,
-        DoNothingFontChanger.Instance,
         new Apple.JsonMathTable<TestFont, char>(
           TestFontMeasurer.Instance,
           Resources.ManifestResources.LatinMath,
