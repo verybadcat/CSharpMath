@@ -6,18 +6,19 @@ namespace CSharpMath.CoreTests {
   public class LaTeXSettingsTests {
     [Fact]
     public void ForAsciiHandlesAllInputs() {
-      for (char i = '\0'; i <= sbyte.MaxValue; i++)
-        switch (i) {
-          case '\\': // The command character is handled specially
-          case '$': // Unimplemented
-          case '#': // Unimplemented
-          case '~': // Unimplemented
-            Assert.DoesNotContain(LaTeXSettings.Commands, kvp => kvp.Key == i.ToString());
-            break;
-          default:
-            Assert.Contains(LaTeXSettings.Commands, kvp => kvp.Key == i.ToString());
-            break;
-        }
+      lock (LaTeXSettings.Commands)
+        for (char i = '\0'; i <= sbyte.MaxValue; i++)
+          switch (i) {
+            case '\\': // The command character is handled specially
+            case '$': // Unimplemented
+            case '#': // Unimplemented
+            case '~': // Unimplemented
+              Assert.DoesNotContain(LaTeXSettings.Commands, kvp => kvp.Key == i.ToString());
+              break;
+            default:
+              Assert.Contains(LaTeXSettings.Commands, kvp => kvp.Key == i.ToString());
+              break;
+          }
     }
     [Fact]
     public void CommandForAtomIgnoresInnerLists() {
