@@ -78,7 +78,7 @@
       <Output TaskParameter="Value" PropertyName="PackageVersion" />
     </CreateProperty>
   </Target>
-
+  <!--Also apply to Typography unit tests-->
   <ItemGroup Condition="$(MSBuildProjectName.Contains('Test'))">
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
