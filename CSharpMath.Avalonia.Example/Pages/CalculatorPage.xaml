@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:csmath="clr-namespace:CSharpMath.Avalonia;assembly=CSharpMath.Avalonia"
+             xmlns:local="clr-namespace:CSharpMath.Avalonia.Example.Pages"
+             x:Class="CSharpMath.Avalonia.Example.Pages.CalculatorPage">
+
+    <ScrollViewer Margin="0, 8" HorizontalScrollBarVisibility="Auto">
+
+        <StackPanel Spacing="24">
+
+            <StackPanel Spacing="4">
+
+                <TextBlock Classes="h1"
+                           Text="CSharpMath.Evaluation.Evaluate" />
+
+                <TextBlock Classes="h2"
+                           Text="Evaluates a MathList that can be constructed from LaTeX" />
+
+            </StackPanel>
+
+            <TextBox Name="input" AcceptsReturn="True" TextWrapping="Wrap" Text="x^4+4x^3+16x^2+4x+1=y" />
+            
+            <csmath:MathView LaTeX="{Binding #input.Text, Converter={x:Static local:CalculatorPageConverter.Singleton}}" />
+
+        </StackPanel>
+
+    </ScrollViewer>
+
+</UserControl>

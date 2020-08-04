@@ -23,7 +23,7 @@ namespace CSharpMath.Apple {
         if (kernedGlyphs[i].KernAfterGlyph is var kern && !(kern is 0))
           attributedString.AddAttribute
             (CTStringAttributeKey.KerningAdjustment, new NSNumber(kern), range);
-        if (kernedGlyphs[i].Foreground is Structures.Color foreground)
+        if (kernedGlyphs[i].Foreground is System.Drawing.Color foreground)
           attributedString.AddAttribute(CTStringAttributeKey.ForegroundColor,
             ObjCRuntime.Runtime.GetNSObject(foreground.ToCGColor().Handle), range);
       }

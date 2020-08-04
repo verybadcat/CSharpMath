@@ -1,5 +1,5 @@
 using System;
-using CSharpMath.Structures;
+using System.Drawing;
 
 namespace CSharpMath.Rendering.FrontEnd {
   public interface ICanvas {

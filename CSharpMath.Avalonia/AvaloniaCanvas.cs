@@ -4,7 +4,7 @@ using Avalonia;
 using Avalonia.Media;
 
 using CSharpMath.Rendering.FrontEnd;
-using CSharpMathColor = CSharpMath.Structures.Color;
+using CSharpMathColor = System.Drawing.Color;
 
 namespace CSharpMath.Avalonia {
   public sealed class AvaloniaCanvas : ICanvas {

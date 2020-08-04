@@ -39,9 +39,12 @@ namespace CSharpMath.Forms {
       Action<TThis, TValue>? updateOtherProperty = null)
       where TThis : BaseView<TPainter, TContent> {
       var defaultValue = defaultValueGet(staticPainter);
-      void PropertyChanged(TThis @this, object newValue) {
-        propertySet(@this.Painter, (TValue)newValue);
-        updateOtherProperty?.Invoke(@this, (TValue)newValue);
+      void PropertyChanged(TThis @this, object? newValue) {
+        // We need to support nullable classes and structs, so we cannot forbid null here
+        // So this use of the null-forgiving operator should be blamed on non-generic PropertyChanged handlers
+        var @new = (TValue)newValue!;
+        propertySet(@this.Painter, @new);
+        updateOtherProperty?.Invoke(@this, @new);
         if (affectsMeasure) @this.InvalidateMeasure();
         // Redraw immediately! No deferred drawing
 #if Avalonia
@@ -54,10 +57,9 @@ namespace CSharpMath.Forms {
     public BaseView() {
       // Respect built-in styles
       Styles.Add(new global::Avalonia.Styling.Style(global::Avalonia.Styling.Selectors.Is<BaseView<TPainter, TContent>>) {
-        Setters = new[]
+        Setters =
         {
-          new global::Avalonia.Styling.Setter(TextColorProperty, new global::Avalonia.Markup.Xaml.MarkupExtensions.DynamicResourceExtension("ThemeForegroundColor")),
-          new global::Avalonia.Styling.Setter(FontSizeProperty, new global::Avalonia.Markup.Xaml.MarkupExtensions.DynamicResourceExtension("FontSizeNormal"))
+          new global::Avalonia.Styling.Setter(TextColorProperty, new global::Avalonia.Markup.Xaml.MarkupExtensions.DynamicResourceExtension("SystemBaseHighColor"))
         }
       });
     }
@@ -156,8 +158,12 @@ namespace CSharpMath.Forms {
     }
     protected sealed override void OnPaintSurface(global::SkiaSharp.Views.Forms.SKPaintSurfaceEventArgs e) {
       base.OnPaintSurface(e);
-      e.Surface.Canvas.Clear();
       var canvas = e.Surface.Canvas;
+      canvas.Clear();
+      // https://github.com/verybadcat/CSharpMath/issues/136 and https://github.com/verybadcat/CSharpMath/issues/137
+      // SkiaSharp deals with raw pixels as opposed to Xamarin.Forms's device-independent units.
+      // We should scale to occupy the full view size.
+      canvas.Scale(e.Info.Width / (float)Width);
 #endif
       Painter.Draw(canvas, TextAlignment, Padding, DisplacementX, DisplacementY);
     }

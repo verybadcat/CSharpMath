@@ -10,10 +10,10 @@ namespace CSharpMath.CoreTests {
   public class LaTeXParserTest {
     public static MathList ParseLaTeX(string latex) {
       var builder = new LaTeXParser(latex);
-      if (builder.Build() is { } mathList) {
-        Assert.Null(builder.Error);
-        return mathList;
-      } else throw new Xunit.Sdk.NotNullException();
+      var (mathList, error) = builder.Build();
+      Assert.Null(error);
+      Assert.NotNull(mathList);
+      return mathList;
     }
 
     [Theory]
@@ -46,14 +46,18 @@ namespace CSharpMath.CoreTests {
       Assert.Equal(output, LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
+    /// new[] { Base list }, new[] { Script of first atom }, new[] { Script of first atom inside script of first atom }
     [Theory]
     [InlineData("x^2", "x^2", new[] { typeof(Variable) }, new[] { typeof(Number) })]
     [InlineData("x^23", "x^23", new[] { typeof(Variable), typeof(Number) }, new[] { typeof(Number) })]
     [InlineData("x^{23}", "x^{23}", new[] { typeof(Variable) }, new[] { typeof(Number), typeof(Number) })]
     [InlineData("x^2^3", "x^2{}^3", new[] { typeof(Variable), typeof(Ordinary) }, new[] { typeof(Number) })]
+    [InlineData("x^^3", "x^{{}^3}", new[] { typeof(Variable), }, new[] { typeof(Ordinary) }, new[] { typeof(Number) })]
     [InlineData("x^{2^3}", "x^{2^3}", new[] { typeof(Variable) }, new[] { typeof(Number) }, new[] { typeof(Number) })]
     [InlineData("x^{^2*}", "x^{{}^2*}", new[] { typeof(Variable) }, new[] { typeof(Ordinary), typeof(BinaryOperator) }, new[] { typeof(Number) })]
     [InlineData("^2", "{}^2", new[] { typeof(Ordinary) }, new[] { typeof(Number) })]
+    [InlineData("^{^3}", "{}^{{}^3}", new[] { typeof(Ordinary), }, new[] { typeof(Ordinary) }, new[] { typeof(Number) })]
+    [InlineData("^^3", "{}^{{}^3}", new[] { typeof(Ordinary), }, new[] { typeof(Ordinary) }, new[] { typeof(Number) })]
     [InlineData("{}^2", "{}^2", new[] { typeof(Ordinary) }, new[] { typeof(Number) })]
     [InlineData("5{x}^2", "5x^2", new[] { typeof(Number), typeof(Variable) }, new Type[] { })]
     public void TestScript(string input, string output, params Type[][] atomTypes) {
@@ -122,14 +126,72 @@ namespace CSharpMath.CoreTests {
       Assert.Equal(@"5\times 3^{2\div 2}", LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
+    [Theory]
+    [InlineData("%", false, "", false, "%\n")]
+    [InlineData("1%", true, "", false, "1%\n")]
+    [InlineData("%\n", false, "", false, "%\n")]
+    [InlineData("%\f", false, "", false, "%\n")]
+    [InlineData("%\r", false, "", false, "%\n")]
+    [InlineData("%\r\n", false, "", false, "%\n")]
+    [InlineData("%\v", false, "", false, "%\n")]
+    [InlineData("%\u0085", false, "", false, "%\n")]
+    [InlineData("%\u2028", false, "", false, "%\n")]
+    [InlineData("%\u2029", false, "", false, "%\n")]
+    [InlineData("1%1234\n", true, "1234", false, "1%1234\n")]
+    [InlineData("1%1234\f", true, "1234", false, "1%1234\n")]
+    [InlineData("1%1234\r", true, "1234", false, "1%1234\n")]
+    [InlineData("1%1234\r\n", true, "1234", false, "1%1234\n")]
+    [InlineData("1%1234\v", true, "1234", false, "1%1234\n")]
+    [InlineData("1%1234\u0085", true, "1234", false, "1%1234\n")]
+    [InlineData("1%1234\u2028", true, "1234", false, "1%1234\n")]
+    [InlineData("1%1234\u2029", true, "1234", false, "1%1234\n")]
+    [InlineData("%    \na", false, "    ", true, "%    \na")]
+    [InlineData("%    \fa", false, "    ", true, "%    \na")]
+    [InlineData("%    \ra", false, "    ", true, "%    \na")]
+    [InlineData("%    \r\na", false, "    ", true, "%    \na")]
+    [InlineData("%    \va", false, "    ", true, "%    \na")]
+    [InlineData("%    \u0085a", false, "    ", true, "%    \na")]
+    [InlineData("%    \u2028a", false, "    ", true, "%    \na")]
+    [InlineData("%    \u2029a", false, "    ", true, "%    \na")]
+    [InlineData("1% comment!! \\notacommand \na", true, " comment!! \\notacommand ", true, "1% comment!! \\notacommand \na")]
+    [InlineData("1% comment!! \\notacommand \fa", true, " comment!! \\notacommand ", true, "1% comment!! \\notacommand \na")]
+    [InlineData("1% comment!! \\notacommand \ra", true, " comment!! \\notacommand ", true, "1% comment!! \\notacommand \na")]
+    [InlineData("1% comment!! \\notacommand \r\na", true, " comment!! \\notacommand ", true, "1% comment!! \\notacommand \na")]
+    [InlineData("1% comment!! \\notacommand \va", true, " comment!! \\notacommand ", true, "1% comment!! \\notacommand \na")]
+    [InlineData("1% comment!! \\notacommand \u0085a", true, " comment!! \\notacommand ", true, "1% comment!! \\notacommand \na")]
+    [InlineData("1% comment!! \\notacommand \u2028a", true, " comment!! \\notacommand ", true, "1% comment!! \\notacommand \na")]
+    [InlineData("1% comment!! \\notacommand \u2029a", true, " comment!! \\notacommand ", true, "1% comment!! \\notacommand \na")]
+    public void TestComment(string input, bool hasBefore, string comment, bool hasAfter, string output) {
+      var list = ParseLaTeX(input);
+      IEnumerable<Action<MathAtom>> GetInspectors() {
+        if (hasBefore) yield return CheckAtom<Number>("1");
+        yield return CheckAtom<Comment>(comment);
+        if (hasAfter) yield return CheckAtom<Variable>("a");
+      }
+      Assert.Collection(list, GetInspectors().ToArray());
+      Assert.Equal(output, LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+    [Theory]
+    [InlineData("\\sum%\\limits\n\\limits", true, "\\sum \\limits %\\limits\n")]
+    [InlineData("\\sum%\\limits\n\\nolimits", false, "\\sum \\nolimits %\\limits\n")]
+    [InlineData("\\sum \\limits %\\limits\n \\nolimits", false, "\\sum \\nolimits %\\limits\n")]
+    [InlineData("\\sum \\nolimits %\\limits\n \\limits", true, "\\sum \\limits %\\limits\n")]
+    public void TestCommentWithLimits(string input, bool limits, string output) {
+      var list = ParseLaTeX(input);
+      Assert.Collection(list,
+        CheckAtom<LargeOperator>("∑", op => Assert.Equal(limits, op.Limits)),
+        CheckAtom<Comment>("\\limits"));
+      Assert.Equal(output, LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+
     [Fact]
     public void TestFraction() {
       var list = ParseLaTeX(@"\frac1c");
       Assert.Collection(list,
         CheckAtom<Fraction>("", fraction => {
           Assert.True(fraction.HasRule);
-          Assert.Null(fraction.LeftDelimiter);
-          Assert.Null(fraction.RightDelimiter);
+          Assert.Equal(Boundary.Empty, fraction.LeftDelimiter);
+          Assert.Equal(Boundary.Empty, fraction.RightDelimiter);
           Assert.Collection(fraction.Numerator, CheckAtom<Number>("1"));
           Assert.Collection(fraction.Denominator, CheckAtom<Variable>("c"));
         })
@@ -241,11 +303,13 @@ namespace CSharpMath.CoreTests {
       // Scripts on left
       InlineData(@"\left(^2 \right )", new[] { typeof(Inner) }, new[] { typeof(Ordinary) }, @"(", @")", @"\left( {}^2\right) "),
       // Dot
-      InlineData(@"\left( 2 \right.", new[] { typeof(Inner) }, new[] { typeof(Number) }, @"(", @"", @"\left( 2\right. ")
+      InlineData(@"\left( 2 \right.", new[] { typeof(Inner) }, new[] { typeof(Number) }, @"(", null, @"\left( 2\right. "),
+      // Dot both sides
+      InlineData(@"\left.2\right.", new[] { typeof(Inner) }, new[] { typeof(Number) }, null, null, @"2"),
     ]
     public void TestLeftRight(
       string input, Type[] expectedOutputTypes, Type[] expectedInnerTypes,
-      string leftBoundary, string rightBoundary, string expectedLatex) {
+      string? leftBoundary, string? rightBoundary, string expectedLatex) {
       var list = ParseLaTeX(input);
 
       CheckAtomTypes(list, expectedOutputTypes);
@@ -266,8 +330,8 @@ namespace CSharpMath.CoreTests {
       Assert.Collection(list,
         CheckAtom<Fraction>("", fraction => {
           Assert.Equal(hasRule, fraction.HasRule);
-          Assert.Null(fraction.LeftDelimiter);
-          Assert.Null(fraction.RightDelimiter);
+          Assert.Equal(Boundary.Empty, fraction.LeftDelimiter);
+          Assert.Equal(Boundary.Empty, fraction.RightDelimiter);
           Assert.Collection(fraction.Numerator, CheckAtom<Number>("1"));
           Assert.Collection(fraction.Denominator, CheckAtom<Variable>("c"));
         })
@@ -285,8 +349,8 @@ namespace CSharpMath.CoreTests {
         CheckAtom<BinaryOperator>("+"),
         CheckAtom<Fraction>("", fraction => {
           Assert.Equal(hasRule, fraction.HasRule);
-          Assert.Null(fraction.LeftDelimiter);
-          Assert.Null(fraction.RightDelimiter);
+          Assert.Equal(Boundary.Empty, fraction.LeftDelimiter);
+          Assert.Equal(Boundary.Empty, fraction.RightDelimiter);
           Assert.Collection(fraction.Numerator, CheckAtom<Number>("1"));
           Assert.Collection(fraction.Denominator, CheckAtom<Variable>("c"));
         }),
@@ -301,13 +365,21 @@ namespace CSharpMath.CoreTests {
     [InlineData(@"n \brack k", @"{n \brack k}", "[", "]")]
     [InlineData(@"n \brace k", @"{n \brace k}", "{", "}")]
     [InlineData(@"\binom{n}{k}", @"{n \choose k}", "(", ")")]
-    public void TestChooseBrackBraceBinomial(string input, string output, string left, string right) {
+    [InlineData(@"n \atopwithdelims() k", @"{n \choose k}", "(", ")")]
+    [InlineData(@"n \atopwithdelims [ ] k", @"{n \brack k}", "[", "]")]
+    [InlineData(@"n \atopwithdelims\{   \} k", @"{n \brace k}", "{", "}")]
+    [InlineData(@"n \atopwithdelims     <> k", @"{n \atopwithdelims<> k}", "〈", "〉")]
+    [InlineData(@"n \atopwithdelims\Uparrow\downarrow k", @"{n \atopwithdelims\Uparrow\downarrow k}", "⇑", "↓")]
+    [InlineData(@"n \atopwithdelims..    k", @"{n \atop k}", null, null)]
+    [InlineData(@"n \atopwithdelims|   . k", @"{n \atopwithdelims|. k}", "|", null)]
+    [InlineData(@"n \atopwithdelims   .( k", @"{n \atopwithdelims.( k}", null, "(")]
+    public void TestChooseBrackBraceBinomial(string input, string output, string? left, string? right) {
       var list = ParseLaTeX(input);
       Assert.Collection(list,
         CheckAtom<Fraction>("", fraction => {
           Assert.False(fraction.HasRule);
-          Assert.Equal(left, fraction.LeftDelimiter);
-          Assert.Equal(right, fraction.RightDelimiter);
+          Assert.Equal(left, fraction.LeftDelimiter.Nucleus);
+          Assert.Equal(right, fraction.RightDelimiter.Nucleus);
           Assert.Collection(fraction.Numerator, CheckAtom<Variable>("n"));
           Assert.Collection(fraction.Denominator, CheckAtom<Variable>("k"));
         })
@@ -345,7 +417,7 @@ namespace CSharpMath.CoreTests {
           Assert.Collection(accent.InnerList, CheckAtom<Variable>("x"))
         )
       );
-      Assert.Equal(@"\bar{x}", LaTeXParser.MathListToLaTeX(list).ToString());
+      Assert.Equal(@"\bar {x}", LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
     [Fact]
@@ -415,7 +487,7 @@ namespace CSharpMath.CoreTests {
     [InlineData("Bmatrix", "{", "}", @"\left\{ ", @"\right\} ")]
     [InlineData("vmatrix", "|", "|", @"\left| ", @"\right| ")]
     [InlineData("Vmatrix", "‖", "‖", @"\left\| ", @"\right\| ")]
-    public void TestMatrix(string env, string left, string right, string leftOutput, string rightOutput) {
+    public void TestMatrix(string env, string? left, string? right, string? leftOutput, string? rightOutput) {
       var list = ParseLaTeX($@"\begin{{{env}}} x & y \\ z & w \end{{{env}}}");
       Table table;
       if (left is null && right is null)
@@ -456,9 +528,9 @@ namespace CSharpMath.CoreTests {
     [InlineData(@"\color{red}{{\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) }}")]
     public void TestRedMatrix(string input) {
       var list = ParseLaTeX(input);
-      Assert.Collection(list, CheckAtom<Color>("", color => {
-        Assert.Equal(new Structures.Color(255, 0, 0), color.Colour);
-        Assert.Collection(color.InnerList,
+      Assert.Collection(list, CheckAtom<Colored>("", colored => {
+        Assert.Equal(System.Drawing.Color.FromArgb(255, 0, 0), colored.Color);
+        Assert.Collection(colored.InnerList,
           CheckAtom<Inner>("", inner => {
             Assert.Equal(new Boundary("("), inner.LeftBoundary);
             Assert.Equal(new Boundary(")"), inner.RightBoundary);
@@ -951,13 +1023,13 @@ namespace CSharpMath.CoreTests {
     public void TestCustom() {
       var input = @"\lcm(a,b)";
       var builder = new LaTeXParser(input);
-      var list = builder.Build();
+      var (list, error) = builder.Build();
       Assert.Null(list);
-      Assert.NotNull(builder.Error);
+      Assert.Equal(@"Invalid command \lcm", error);
 
-      LaTeXSettings.Commands.Add("lcm", new LargeOperator("lcm", false));
-      var list2 = ParseLaTeX(input);
-      Assert.Collection(list2,
+      LaTeXSettings.CommandSymbols.Add(@"\lcm", new LargeOperator("lcm", false));
+      list = ParseLaTeX(input);
+      Assert.Collection(list,
         CheckAtom<LargeOperator>("lcm"),
         CheckAtom<Open>("("),
         CheckAtom<Variable>("a"),
@@ -965,25 +1037,154 @@ namespace CSharpMath.CoreTests {
         CheckAtom<Variable>("b"),
         CheckAtom<Close>(")")
       );
-      Assert.Equal(@"\lcm (a,b)", LaTeXParser.MathListToLaTeX(list2).ToString());
-    }
+      Assert.Equal(@"\lcm (a,b)", LaTeXParser.MathListToLaTeX(list).ToString());
 
-    [Fact]
-    public void TestFontSingle() {
-      var list = ParseLaTeX(@"\mathbf x");
-      Assert.Collection(list, CheckAtom<Variable>("x",
-        variable => Assert.Equal(FontStyle.Bold, variable.FontStyle)));
-      Assert.Equal(@"\mathbf{x}", LaTeXParser.MathListToLaTeX(list).ToString());
-    }
+      LaTeXSettings.CommandSymbols.Add(@"lcm", new LargeOperator("lcm", false));
+      LaTeXSettings.CommandSymbols.Add(@"lcm12", new LargeOperator("lcm12", false));
+      LaTeXSettings.CommandSymbols.Add(@"lcm1234", new LargeOperator("lcm1234", false));
+      LaTeXSettings.CommandSymbols.Add(@"lcm1235", new LargeOperator("lcm1235", false));
 
-    [Fact]
-    public void TestFontMultipleCharacters() {
-      var list = ParseLaTeX(@"\frak{xy}");
+      // Does not match custom atoms added above
+      list = ParseLaTeX("lc(a,b)");
       Assert.Collection(list,
-        CheckAtom<Variable>("x", variable => Assert.Equal(FontStyle.Fraktur, variable.FontStyle)),
-        CheckAtom<Variable>("y", variable => Assert.Equal(FontStyle.Fraktur, variable.FontStyle))
+        CheckAtom<Variable>("l"),
+        CheckAtom<Variable>("c"),
+        CheckAtom<Open>("("),
+        CheckAtom<Variable>("a"),
+        CheckAtom<Punctuation>(","),
+        CheckAtom<Variable>("b"),
+        CheckAtom<Close>(")")
       );
-      Assert.Equal(@"\mathfrak{xy}", LaTeXParser.MathListToLaTeX(list).ToString());
+      Assert.Equal(@"lc(a,b)", LaTeXParser.MathListToLaTeX(list).ToString());
+
+      // Baseline for lookup as a non-command (not starting with \)
+      list = ParseLaTeX("lcm(a,b)");
+      Assert.Collection(list,
+        CheckAtom<LargeOperator>("lcm"),
+        CheckAtom<Open>("("),
+        CheckAtom<Variable>("a"),
+        CheckAtom<Punctuation>(","),
+        CheckAtom<Variable>("b"),
+        CheckAtom<Close>(")")
+      );
+      Assert.Equal(@"\lcm (a,b)", LaTeXParser.MathListToLaTeX(list).ToString());
+
+      // Originally in https://github.com/verybadcat/CSharpMath/pull/143,
+      // the non-command dictionary of LaTeXCommandDictionary were implemented with a trie.
+      // With the above LaTeXSettings.CommandSymbols.Add calls, it would have looked like:
+      // [l] -> l[cm] -> lcm[12] -> @lcm12[3] -> lcm123[4]
+      //                                    ^--> lcm123[5]
+      // where [square brackets] denote added characters compared to previous node
+      // and the @at sign denotes the node without an atom to provide
+      // Here we ensure that all behaviours of the trie carry over to the new SortedSet implementation
+
+      // Test lookup fallbacks when trie node key (lcm12) does not fully match input (lcm1)
+      list = ParseLaTeX("lcm1(a,b)");
+      Assert.Collection(list,
+        CheckAtom<LargeOperator>("lcm"),
+        CheckAtom<Number>("1"),
+        CheckAtom<Open>("("),
+        CheckAtom<Variable>("a"),
+        CheckAtom<Punctuation>(","),
+        CheckAtom<Variable>("b"),
+        CheckAtom<Close>(")")
+      );
+      Assert.Equal(@"\lcm 1(a,b)", LaTeXParser.MathListToLaTeX(list).ToString());
+
+      // Test lookup success for trie node between above case and below case
+      list = ParseLaTeX("lcm12(a,b)");
+      Assert.Collection(list,
+        CheckAtom<LargeOperator>("lcm12"),
+        CheckAtom<Open>("("),
+        CheckAtom<Variable>("a"),
+        CheckAtom<Punctuation>(","),
+        CheckAtom<Variable>("b"),
+        CheckAtom<Close>(")")
+      );
+      Assert.Equal(@"lcm12(a,b)", LaTeXParser.MathListToLaTeX(list).ToString());
+
+      // Test lookup fallbacks when trie node key (lcm123) fully matches input (lcm123) but has no atoms to provide
+      list = ParseLaTeX("lcm123(a,b)");
+      Assert.Collection(list,
+        CheckAtom<LargeOperator>("lcm12"),
+        CheckAtom<Number>("3"),
+        CheckAtom<Open>("("),
+        CheckAtom<Variable>("a"),
+        CheckAtom<Punctuation>(","),
+        CheckAtom<Variable>("b"),
+        CheckAtom<Close>(")")
+      );
+      Assert.Equal(@"lcm123(a,b)", LaTeXParser.MathListToLaTeX(list).ToString());
+      
+      // Add a new shorter entry to ensure that the longest key matches instead of the last one
+      LaTeXSettings.CommandSymbols.Add(@"lcm123", new LargeOperator("lcm123", false));
+      list = ParseLaTeX("lcm1234(a,b)");
+      Assert.Collection(list,
+        CheckAtom<LargeOperator>("lcm1234"),
+        CheckAtom<Open>("("),
+        CheckAtom<Variable>("a"),
+        CheckAtom<Punctuation>(","),
+        CheckAtom<Variable>("b"),
+        CheckAtom<Close>(")")
+      );
+      Assert.Equal(@"lcm1234(a,b)", LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+
+    [Theory]
+    [InlineData("mathnormal", false, FontStyle.Default, null)]
+    [InlineData("mathrm", false, FontStyle.Roman, "mathrm")]
+    [InlineData("rm", true, FontStyle.Roman, "mathrm")]
+    [InlineData("text", false, FontStyle.Roman, "mathrm")]
+    [InlineData("mathbf", false, FontStyle.Bold, "mathbf")]
+    [InlineData("bf", true, FontStyle.Bold, "mathbf")]
+    [InlineData("mathcal", false, FontStyle.Caligraphic, "mathcal")]
+    [InlineData("cal", true, FontStyle.Caligraphic, "mathcal")]
+    [InlineData("mathtt", false, FontStyle.Typewriter, "mathtt")]
+    [InlineData("tt", true, FontStyle.Typewriter, "mathtt")]
+    [InlineData("mathit", false, FontStyle.Italic, "mathit")]
+    [InlineData("mit", true, FontStyle.Italic, "mathit")]
+    [InlineData("it", true, FontStyle.Italic, "mathit")]
+    [InlineData("mathsf", false, FontStyle.SansSerif, "mathsf")]
+    [InlineData("sf", true, FontStyle.SansSerif, "mathsf")]
+    [InlineData("mathfrak", false, FontStyle.Fraktur, "mathfrak")]
+    [InlineData("frak", true, FontStyle.Fraktur, "mathfrak")]
+    [InlineData("mathbb", false, FontStyle.Blackboard, "mathbb")]
+    [InlineData("bb", true, FontStyle.Blackboard, "mathbb")]
+    [InlineData("mathbfit", false, FontStyle.BoldItalic, "mathbfit")]
+    [InlineData("bm", true, FontStyle.BoldItalic, "mathbfit")]
+    public void TestFont(string inputCommand, bool readsToEnd, FontStyle style, string? outputCommand) {
+      // Without braces
+      var list = ParseLaTeX($@"w\{inputCommand} xyz");
+      Assert.Collection(list,
+        CheckAtom<Variable>("w", w => Assert.Equal(FontStyle.Default, w.FontStyle)),
+        CheckAtom<Variable>("x", x => Assert.Equal(style, x.FontStyle)),
+        CheckAtom<Variable>("y", y => Assert.Equal(readsToEnd ? style : FontStyle.Default, y.FontStyle)),
+        CheckAtom<Variable>("z", z => Assert.Equal(readsToEnd ? style : FontStyle.Default, z.FontStyle)));
+      Assert.Equal(outputCommand is null ? "wxyz" :
+                   readsToEnd ? $@"w\{outputCommand}{{xyz}}" : $@"w\{outputCommand}{{x}}yz", LaTeXParser.MathListToLaTeX(list).ToString());
+
+      // With braces
+      list = ParseLaTeX(readsToEnd ? $@"w{{\{inputCommand} xy}}z" : $@"w\{inputCommand}{{xy}}z");
+      Assert.Collection(list,
+        CheckAtom<Variable>("w", w => Assert.Equal(FontStyle.Default, w.FontStyle)),
+        CheckAtom<Variable>("x", x => Assert.Equal(style, x.FontStyle)),
+        CheckAtom<Variable>("y", y => Assert.Equal(style, y.FontStyle)),
+        CheckAtom<Variable>("z", z => Assert.Equal(FontStyle.Default, z.FontStyle)));
+      Assert.Equal(outputCommand is null ? "wxyz" : $@"w\{outputCommand}{{xy}}z", LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+
+    [Theory]
+    [InlineData(@"\mathit\mathrm xy")]
+    [InlineData(@"\mathit\mathrm{x}y")]
+    [InlineData(@"\mathit{\mathrm x}y")]
+    [InlineData(@"\mathit{\mathrm{x}}y")]
+    public void TestFontRecursive(string input) {
+      var list = ParseLaTeX(input);
+      Assert.Collection(list,
+        CheckAtom<Variable>("x", variable => Assert.Equal(FontStyle.Roman, variable.FontStyle)),
+        CheckAtom<Variable>("y", variable => Assert.Equal(FontStyle.Default, variable.FontStyle))
+      );
+      Assert.Equal(@"\mathrm{x}y", LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
     [Fact]
@@ -1018,13 +1219,14 @@ namespace CSharpMath.CoreTests {
 
     [Fact]
     public void TestText() {
-      var list = ParseLaTeX(@"\text{x y}");
+      var list = ParseLaTeX(@"\text {\pounds  x  y}");
       Assert.Collection(list,
-        CheckAtom<Variable>(@"x", variable => Assert.Equal(FontStyle.Roman, variable.FontStyle)),
-        CheckAtom<Ordinary>(" "),
-        CheckAtom<Variable>(@"y", variable => Assert.Equal(FontStyle.Roman, variable.FontStyle))
+        CheckAtom<Ordinary>("£", pounds => Assert.Equal(FontStyle.Roman, pounds.FontStyle)),
+        CheckAtom<Variable>("x", x => Assert.Equal(FontStyle.Roman, x.FontStyle)),
+        CheckAtom<Ordinary>(" ", space => Assert.Equal(FontStyle.Roman, space.FontStyle)),
+        CheckAtom<Variable>("y", y => Assert.Equal(FontStyle.Roman, y.FontStyle))
       );
-      Assert.Equal(@"\mathrm{x\  y}", LaTeXParser.MathListToLaTeX(list).ToString());
+      Assert.Equal(@"\mathrm{\pounds x\  y}", LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
     [Fact]
@@ -1091,29 +1293,29 @@ namespace CSharpMath.CoreTests {
 
     // Sync with CSharpMath.Rendering.Text.Tests TextLaTeXParserTests
     [Theory]
-    [InlineData("0xFFF", "white", 0xFF, 0xFF, 0xFF)]
-    [InlineData("#ff0", "yellow", 0xFF, 0xFF, 0x00)]
-    [InlineData("0xf00f", "blue", 0x00, 0x00, 0xFF)]
-    [InlineData("#F0F0", "lime", 0x00, 0xFF, 0x00)]
-    [InlineData("0x008000", "green", 0x00, 0x80, 0x00)]
+    [InlineData("#FFFFFF", "white", 0xFF, 0xFF, 0xFF)]
+    [InlineData("#ffff00", "yellow", 0xFF, 0xFF, 0x00)]
+    [InlineData("#ff0000ff", "blue", 0x00, 0x00, 0xFF)]
+    [InlineData("#FF00FF00", "lime", 0x00, 0xFF, 0x00)]
+    [InlineData("#008000", "green", 0x00, 0x80, 0x00)]
     [InlineData("#d3D3d3", "lightgray", 0xD3, 0xD3, 0xD3)]
-    [InlineData("0xFf000000", "black", 0x00, 0x00, 0x00)]
+    [InlineData("#Ff000000", "black", 0x00, 0x00, 0x00)]
     [InlineData("#fFa9A9a9", "gray", 0xA9, 0xA9, 0xA9)]
     [InlineData("cyan", "cyan", 0x00, 0xFF, 0xFF)]
     [InlineData("BROWN", "brown", 0x96, 0x4B, 0x00)]
     [InlineData("oLIve", "olive", 0x80, 0x80, 0x00)]
-    [InlineData("0x12345678", "#12345678", 0x34, 0x56, 0x78, 0x12)]
+    [InlineData("#12345678", "#12345678", 0x34, 0x56, 0x78, 0x12)]
     [InlineData("#fedcba98", "#FEDCBA98", 0xDC, 0xBA, 0x98, 0xFE)]
     public void TestColor(string inColor, string outColor, byte r, byte g, byte b, byte a = 0xFF) {
       var list = ParseLaTeX($@"\color{{{inColor}}}ab");
       Assert.Collection(list,
-        CheckAtom<Color>("", color => {
-          Assert.Equal(r, color.Colour.R);
-          Assert.Equal(g, color.Colour.G);
-          Assert.Equal(b, color.Colour.B);
-          Assert.Equal(a, color.Colour.A);
-          Assert.False(color.ScriptsAllowed);
-          Assert.Collection(color.InnerList, CheckAtom<Variable>("a"));
+        CheckAtom<Colored>("", colored => {
+          Assert.Equal(r, colored.Color.R);
+          Assert.Equal(g, colored.Color.G);
+          Assert.Equal(b, colored.Color.B);
+          Assert.Equal(a, colored.Color.A);
+          Assert.False(colored.ScriptsAllowed);
+          Assert.Collection(colored.InnerList, CheckAtom<Variable>("a"));
         }),
         CheckAtom<Variable>("b")
       );
@@ -1121,13 +1323,13 @@ namespace CSharpMath.CoreTests {
 
       list = ParseLaTeX($@"\colorbox{{{inColor}}}ab");
       Assert.Collection(list,
-        CheckAtom<ColorBox>("", color => {
-          Assert.Equal(r, color.Colour.R);
-          Assert.Equal(g, color.Colour.G);
-          Assert.Equal(b, color.Colour.B);
-          Assert.Equal(a, color.Colour.A);
-          Assert.False(color.ScriptsAllowed);
-          Assert.Collection(color.InnerList, CheckAtom<Variable>("a"));
+        CheckAtom<ColorBox>("", colorBox => {
+          Assert.Equal(r, colorBox.Color.R);
+          Assert.Equal(g, colorBox.Color.G);
+          Assert.Equal(b, colorBox.Color.B);
+          Assert.Equal(a, colorBox.Color.A);
+          Assert.False(colorBox.ScriptsAllowed);
+          Assert.Collection(colorBox.InnerList, CheckAtom<Variable>("a"));
         }),
         CheckAtom<Variable>("b")
       );
@@ -1138,18 +1340,18 @@ namespace CSharpMath.CoreTests {
     public void TestColorScripts() {
       var list = ParseLaTeX(@"\color{red}1\colorbox{blue}2");
       Assert.Collection(list,
-        CheckAtom<Color>("", color => {
-          Assert.Equal("red", color.Colour.ToString());
-          Assert.Empty(color.Superscript);
-          Assert.Throws<InvalidOperationException>(() => color.Superscript.Add(new Variable("a")));
-          Assert.Throws<InvalidOperationException>(() => color.Superscript.Append(new MathList(new Variable("a"))));
-          Assert.Empty(color.Subscript);
-          Assert.Throws<InvalidOperationException>(() => color.Subscript.Add(new Variable("b")));
-          Assert.Throws<InvalidOperationException>(() => color.Subscript.Append(new MathList(new Variable("b"))));
-          Assert.Collection(color.InnerList, CheckAtom<Number>("1"));
+        CheckAtom<Colored>("", colored => {
+          Assert.Equal("red", LaTeXSettings.ColorToString(colored.Color, new StringBuilder()).ToString());
+          Assert.Empty(colored.Superscript);
+          Assert.Throws<InvalidOperationException>(() => colored.Superscript.Add(new Variable("a")));
+          Assert.Throws<InvalidOperationException>(() => colored.Superscript.Append(new MathList(new Variable("a"))));
+          Assert.Empty(colored.Subscript);
+          Assert.Throws<InvalidOperationException>(() => colored.Subscript.Add(new Variable("b")));
+          Assert.Throws<InvalidOperationException>(() => colored.Subscript.Append(new MathList(new Variable("b"))));
+          Assert.Collection(colored.InnerList, CheckAtom<Number>("1"));
         }),
         CheckAtom<ColorBox>("", colorBox => {
-          Assert.Equal("blue", colorBox.Colour.ToString());
+          Assert.Equal("blue", LaTeXSettings.ColorToString(colorBox.Color, new StringBuilder()).ToString());
           Assert.Empty(colorBox.Superscript);
           Assert.Throws<InvalidOperationException>(() => colorBox.Superscript.Add(new Variable("a")));
           Assert.Throws<InvalidOperationException>(() => colorBox.Superscript.Append(new MathList(new Variable("a"))));
@@ -1169,6 +1371,44 @@ namespace CSharpMath.CoreTests {
       var list = ParseLaTeX(@$"\operatorname{{{operatorname}}}");
       Assert.Collection(list, CheckAtom<LargeOperator>(operatorname));
       Assert.Equal(output, LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+
+    [Theory]
+    [InlineData(@"\TeX")]
+    [InlineData(@"\left.\mathrm{T\! \raisebox{-4.5mu}{E}\mkern-2.25muX}\right.")]
+    public void TestTeX(string input) {
+      var list = ParseLaTeX(input);
+      Assert.Collection(list,
+        CheckAtom<Inner>("", inner => {
+          Assert.Equal(Boundary.Empty, inner.LeftBoundary);
+          Assert.Equal(Boundary.Empty, inner.RightBoundary);
+          Assert.Equal(FontStyle.Default, inner.FontStyle);
+          Assert.Collection(inner.InnerList,
+              CheckAtom<Variable>("T", t => Assert.Equal(FontStyle.Roman, t.FontStyle)),
+              CheckAtom<Space>("", space => {
+                Assert.Equal(FontStyle.Roman, space.FontStyle);
+                var expected = -1 / 6f * Structures.Space.EmWidth;
+                Assert.Equal(expected.Length, space.Length);
+                Assert.Equal(expected.IsMu, space.IsMu);
+              }),
+              CheckAtom<RaiseBox>("", raise => {
+                Assert.Equal(FontStyle.Roman, raise.FontStyle);
+                Assert.Equal(-1 / 2f * Structures.Space.ExHeight, raise.Raise);
+                Assert.Collection(raise.InnerList,
+                  CheckAtom<Variable>("E", e => Assert.Equal(FontStyle.Roman, e.FontStyle)));
+              }),
+              CheckAtom<Space>("", space => {
+                Assert.Equal(FontStyle.Roman, space.FontStyle);
+                var expected = -1 / 8f * Structures.Space.EmWidth;
+                Assert.Equal(expected.Length, space.Length);
+                Assert.Equal(expected.IsMu, space.IsMu);
+              }),
+              CheckAtom<Variable>("X", x => Assert.Equal(FontStyle.Roman, x.FontStyle))
+            );
+        })
+      );
+      Assert.Equal(@"\mathrm{T\! \raisebox{-4.5mu}{E}\mkern-2.25muX}",
+        LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
     [Theory,
@@ -1216,49 +1456,41 @@ namespace CSharpMath.CoreTests {
       Assert.Equal(expected.Replace("\r", null), actual);
     }
 
+    const string EnquiryControlChar = "\x5"; // https://en.wikipedia.org/wiki/Enquiry_character
     [Theory,
-      InlineData(@"x^^2", @"Error: ^ cannot appear as an argument to a command
-x^^2
-  ↑ (pos 3)"),
-      InlineData(@"x^_2", @"Error: _ cannot appear as an argument to a command
-x^_2
-  ↑ (pos 3)"),
-      InlineData(@"x_^2", @"Error: ^ cannot appear as an argument to a command
-x_^2
-  ↑ (pos 3)"),
-      InlineData(@"x__2", @"Error: _ cannot appear as an argument to a command
-x__2
-  ↑ (pos 3)"),
-      InlineData(@"x^&2", @"Error: & cannot appear as an argument to a command
-x^&2
-  ↑ (pos 3)"),
-      InlineData(@"x^}2", @"Error: } cannot appear as an argument to a command
+      InlineData(@"\", @"Error: Invalid command \
+\
+↑ (pos 1)"),
+      InlineData(@"\" + EnquiryControlChar, @"Error: Invalid command \" + EnquiryControlChar + @"
+\" + EnquiryControlChar + @"
+↑ (pos 1)"),
+      InlineData(@"\" + EnquiryControlChar + "a", @"Error: Invalid command \" + EnquiryControlChar + @"
+\" + EnquiryControlChar + @"a
+↑ (pos 1)"),
+      InlineData(@"x^}2", @"Error: Missing opening brace
 x^}2
   ↑ (pos 3)"),
-      InlineData(@"x_&2", @"Error: & cannot appear as an argument to a command
-x_&2
-  ↑ (pos 3)"),
-      InlineData(@"x_}2", @"Error: } cannot appear as an argument to a command
-x_}2
-  ↑ (pos 3)"),
-      InlineData(@"\sqrt^2", @"Error: ^ cannot appear as an argument to a command
-\sqrt^2
-     ↑ (pos 6)"),
-      InlineData(@"\sqrt_2", @"Error: _ cannot appear as an argument to a command
-\sqrt_2
-     ↑ (pos 6)"),
-      InlineData(@"\sqrt&2", @"Error: & cannot appear as an argument to a command
-\sqrt&2
-     ↑ (pos 6)"),
-      InlineData(@"\sqrt}2", @"Error: } cannot appear as an argument to a command
+      InlineData(@"x_ }2", @"Error: Missing opening brace
+x_ }2
+   ↑ (pos 4)"),
+      InlineData(@"{x_}", @"Error: Missing opening brace
+{x_}
+   ↑ (pos 4)"),
+      InlineData(@"\sqrt}2", @"Error: Missing opening brace
 \sqrt}2
      ↑ (pos 6)"),
       InlineData(@"\notacommand", @"Error: Invalid command \notacommand
 \notacommand
-           ↑ (pos 12)"),
+↑ (pos 1)"),
+      InlineData(@"\notacommand    x", @"Error: Invalid command \notacommand
+\notacommand    x
+↑ (pos 1)"),
       InlineData(@"\sqrt[5+3", @"Error: Expected character not found: ]
 \sqrt[5+3
         ↑ (pos 9)"),
+      InlineData(@"\sqrt[5+3}", @"Error: Missing opening brace
+\sqrt[5+3}
+         ↑ (pos 10)"),
       InlineData(@"{5+3", @"Error: Missing closing brace
 {5+3
    ↑ (pos 4)"),
@@ -1271,27 +1503,27 @@ x_}2
       InlineData(@"{1+\frac{3+2", @"Error: Missing closing brace
 {1+\frac{3+2
            ↑ (pos 12)"),
-      InlineData(@"1+\left", @"Error: Missing delimiter for left
+      InlineData(@"1+\left", @"Error: Missing delimiter for \left
 1+\left
       ↑ (pos 7)"),
-      InlineData(@"\left{", @"Error: Missing \right for \left with delimiter {
-\left{
-     ↑ (pos 6)"),
-      InlineData(@"\left(\frac12\right", @"Error: Missing delimiter for right
+      InlineData(@"\left\{", @"Error: Missing \right for \left with delimiter {
+\left\{
+      ↑ (pos 7)"),
+      InlineData(@"\left(\frac12\right", @"Error: Missing delimiter for \right
 \left(\frac12\right
                   ↑ (pos 19)"),
-      InlineData(@"\left 5 + 3 \right)", @"Error: Invalid delimiter for \left: 5
+      InlineData(@"\left 5 + 3 \right)", @"Error: Invalid delimiter 5
 \left 5 + 3 \right)
       ↑ (pos 7)"),
-      InlineData(@"\left(\frac12\right + 3", @"Error: Invalid delimiter for \right: +
+      InlineData(@"\left(\frac12\right + 3", @"Error: Invalid delimiter +
 \left(\frac12\right + 3
                     ↑ (pos 21)"),
-      InlineData(@"\left\notadelimiter 5 + 3 \right)", @"Error: Invalid delimiter for \left: notadelimiter
+      InlineData(@"\left\notadelimiter 5 + 3 \right)", @"Error: Invalid delimiter \notadelimiter
 \left\notadelimiter 5 + 3 \right)
-                  ↑ (pos 19)"),
-      InlineData(@"\left(\frac12\right\notadelimiter + 3", @"Error: Invalid delimiter for \right: notadelimiter
-···2\right\notadelimiter + 3
-                       ↑ (pos 33)"),
+     ↑ (pos 6)"),
+      InlineData(@"\left(\frac12\right\notadelimiter + 3", @"Error: Invalid delimiter \notadelimiter
+\left(\frac12\right\notadelimiter + 3
+                   ↑ (pos 20)"),
       InlineData(@"5 + 3 \right)", @"Error: Missing \left
 5 + 3 \right)
            ↑ (pos 12)"),
@@ -1304,6 +1536,12 @@ x_}2
       InlineData(@"5+ \left|\frac12\right| \right)", @"Error: Missing \left
 ···\frac12\right| \right)
                        ↑ (pos 30)"),
+      InlineData(@"{\it", @"Error: Missing closing brace
+{\it
+   ↑ (pos 4)"),
+      InlineData(@"\it}", @"Error: Missing opening brace
+\it}
+   ↑ (pos 4)"),
       InlineData(@"\begin matrix \end matrix", @"Error: Missing {
 \begin matrix \end matrix
       ↑ (pos 7)"),
@@ -1344,8 +1582,8 @@ x \end{matrix}
 ···env} x \end{notanenv}
                        ↑ (pos 33)"),
       InlineData(@"\begin{matrix} \notacommand \end{matrix}", @"Error: Invalid command \notacommand
-···{matrix} \notacommand \end{matrix}
-                       ↑ (pos 27)"),
+\begin{matrix} \notacommand \end{matrix}
+               ↑ (pos 16)"),
       InlineData(@"\begin{displaylines} x & y \end{displaylines}", @"Error: displaylines environment can only have 1 column
 ··· y \end{displaylines}
                        ↑ (pos 45)"),
@@ -1370,30 +1608,30 @@ x \end{matrix}
       InlineData(@"\left(\begin{matrix}\right)", @"Error: Missing \end{matrix}
 ···(\begin{matrix}\right)
                        ↑ (pos 26)"),
-      InlineData(@"\Bra^2", @"Error: ^ cannot appear as an argument to a command
-\Bra^2
-    ↑ (pos 5)"),
-      InlineData(@"\Bra_2", @"Error: _ cannot appear as an argument to a command
-\Bra_2
-    ↑ (pos 5)"),
-      InlineData(@"\Bra&2", @"Error: & cannot appear as an argument to a command
-\Bra&2
-    ↑ (pos 5)"),
-      InlineData(@"\Bra}2", @"Error: } cannot appear as an argument to a command
+      InlineData(@"\Bra}2", @"Error: Missing opening brace
 \Bra}2
     ↑ (pos 5)"),
-      InlineData(@"\Ket^2", @"Error: ^ cannot appear as an argument to a command
-\Ket^2
-    ↑ (pos 5)"),
-      InlineData(@"\Ket_2", @"Error: _ cannot appear as an argument to a command
-\Ket_2
-    ↑ (pos 5)"),
-      InlineData(@"\Ket&2", @"Error: & cannot appear as an argument to a command
-\Ket&2
-    ↑ (pos 5)"),
-      InlineData(@"\Ket}2", @"Error: } cannot appear as an argument to a command
+      InlineData(@"\Ket}2", @"Error: Missing opening brace
 \Ket}2
     ↑ (pos 5)"),
+      InlineData(@"\Bra{\notacommand}", @"Error: Invalid command \notacommand
+\Bra{\notacommand}
+     ↑ (pos 6)"),
+      InlineData(@"\Ket{\notacommand}", @"Error: Invalid command \notacommand
+\Ket{\notacommand}
+     ↑ (pos 6)"),
+      InlineData(@"\operatorname", @"Error: Expected {
+\operatorname
+            ↑ (pos 13)"),
+      InlineData(@"\operatorname {", @"Error: Expected }
+\operatorname {
+              ↑ (pos 15)"),
+      InlineData(@"\operatorname{a", @"Error: Expected }
+\operatorname{a
+              ↑ (pos 15)"),
+      InlineData(@"\operatorname {a|}", @"Error: Expected }
+\operatorname {a|}
+               ↑ (pos 16)"),
     ]
     public void TestErrors(string badInput, string expected) {
       var (list, actual) = LaTeXParser.MathListFromLaTeX(badInput);

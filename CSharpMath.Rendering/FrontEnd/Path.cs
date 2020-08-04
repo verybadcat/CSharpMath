@@ -9,6 +9,6 @@ namespace CSharpMath.Rendering.FrontEnd {
     public abstract void Curve4(float x1, float y1, float x2, float y2, float x3, float y3);
     public abstract void CloseContour();
     public abstract void Dispose();
-    public abstract Structures.Color? Foreground { get; set; }
+    public abstract System.Drawing.Color? Foreground { get; set; }
   }
 }

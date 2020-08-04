@@ -54,7 +54,7 @@ namespace CSharpMath.Editor.Tests {
       //Decimals
       T(@"0123456789.", K.D0, K.D1, K.D2, K.D3, K.D4, K.D5, K.D6, K.D7, K.D8, K.D9, K.Decimal),
       //Basic operators
-      T(@"+-\times \div :\% ,!\infty \angle \degree \vert \log \ln ",
+      T(@"+-\times \div :\% ,!\infty \angle \degree |\log \ln ",
         K.Plus, K.Minus, K.Multiply, K.Divide, K.Ratio, K.Percentage, 
         K.Comma, K.Factorial, K.Infinity, K.Angle, K.Degree, K.VerticalBar, K.Logarithm, K.NaturalLogarithm),
       T(@"''\partial \leftarrow \uparrow \rightarrow \downarrow \  ",
@@ -159,7 +159,7 @@ namespace CSharpMath.Editor.Tests {
         K.Sine, K.Cosine, K.Right, K.Right, K.ArcTangent, K.Left, K.Left, K.Left, K.Tangent),
       T(@"e^{\square }", K.Power, K.Left, K.SmallE, K.Right),
       T(@"e^■", K.Power, K.Left, K.SmallE, K.Left),
-      T(@"\left| x\right| \vert y\vert ", K.Absolute, K.SmallX, K.Right, K.VerticalBar, K.SmallY, K.VerticalBar),
+      T(@"\left| x\right| |y|", K.Absolute, K.SmallX, K.Right, K.VerticalBar, K.SmallY, K.VerticalBar),
       T(@"\left( 1\right) (2)", K.BothRoundBrackets, K.D1, K.Right, K.LeftRoundBracket, K.D2, K.RightRoundBracket),
       T(@"1\left( 2\left[ 3\left\{ ■\right\} \right] \right) ", K.BothRoundBrackets, K.BothSquareBrackets, K.BothCurlyBrackets, K.Left,
          K.D3, K.Left, K.Left, K.D2, K.Left, K.Left, K.D1, K.Left, K.Left, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right),
@@ -373,7 +373,7 @@ namespace CSharpMath.Editor.Tests {
       
       T(@"\frac{(1+2)}{■}", K.LeftRoundBracket, K.D1, K.Plus, K.D2, K.RightRoundBracket, K.Slash),
       T(@"\frac{\left( 1+2\right) }{■}", K.BothRoundBrackets, K.D1, K.Plus, K.D2, K.Right, K.Slash),
-      T(@"\vert 1+\frac{2\vert }{■}", K.VerticalBar, K.D1, K.Plus, K.D2, K.VerticalBar, K.Slash),
+      T(@"|1+\frac{2|}{■}", K.VerticalBar, K.D1, K.Plus, K.D2, K.VerticalBar, K.Slash),
       T(@"\frac{\left| 1+2\right| }{■}", K.Absolute, K.D1, K.Plus, K.D2, K.Right, K.Slash),
       T(@"1+\frac{2}{■}", K.D1, K.Plus, K.D2, K.Slash),
       T(@"1-\frac{2}{■}", K.D1, K.Minus, K.D2, K.Slash),

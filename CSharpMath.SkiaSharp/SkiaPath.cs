@@ -1,7 +1,7 @@
 using SKPath = SkiaSharp.SKPath;
+using System.Drawing;
 
 namespace CSharpMath.SkiaSharp {
-  using Structures;
   public sealed class SkiaPath : Rendering.FrontEnd.Path {
     public SkiaPath(SkiaCanvas owner) => _owner = owner;
     public override Color? Foreground { get; set; }

@@ -16,7 +16,7 @@ namespace CSharpMath.Forms.Example {
     public EditorView() {
       // Basic functionality
       var view = new SKCanvasView { HeightRequest = 225 };
-      var keyboard = new MathKeyboard();
+      var keyboard = new MathKeyboard(Rendering.FrontEnd.PainterConstants.LargerFontSize);
       var viewModel = keyboard.Keyboard;
       viewModel.BindDisplay(view, new SkiaSharp.MathPainter {
         TextColor = SKColors.Black

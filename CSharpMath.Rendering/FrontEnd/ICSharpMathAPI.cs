@@ -30,12 +30,12 @@ namespace CSharpMath.Rendering.FrontEnd {
         float fontSize,
         float width, float height,
         TextAlignment alignment, Thickness padding, float offsetX, float offsetY) {
-      //Canvas is inverted!
+      // Canvas is inverted!
       if ((alignment & (TextAlignment.Top | TextAlignment.Bottom)) != 0) {
         alignment ^= TextAlignment.Top;
         alignment ^= TextAlignment.Bottom;
       }
-      //invert y-coordinate as canvas is inverted
+      // Invert y-coordinate as canvas is inverted
       offsetY *= -1;
       var x =
         (alignment & TextAlignment.Left) != 0
