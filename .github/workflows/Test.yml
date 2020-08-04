@@ -52,13 +52,13 @@ jobs:
           "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests"
         do
           # --collect:"XPlat Code Coverage" means collect test coverage with https://github.com/coverlet-coverage/coverlet
-          dotnet test "$p" -c Release -l GitHubActions --blame --collect:"XPlat Code Coverage" -r .testresults -p:PackageReleaseNotes="$RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }}
+          dotnet test "$p" -c Release -l GitHubActions --blame --collect:"XPlat Code Coverage" -r .testcoverage -p:PackageReleaseNotes="$RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }}
         done
     - name: Run ReportGenerator on Test Coverage results
       uses: danielpalme/ReportGenerator-GitHub-Action@4.6.4
       with:
-        reports: '.testresults/*/*.xml' # REQUIRED # The coverage reports that should be parsed (separated by semicolon). Globbing is supported.
-        targetdir: '.testreport' # REQUIRED # The directory where the generated report should be saved.
+        reports: '.testcoverage/**/*.*' # REQUIRED # The coverage reports that should be parsed (separated by semicolon). Globbing is supported.
+        targetdir: '.testcoverage/report' # REQUIRED # The directory where the generated report should be saved.
         reporttypes: 'Html' # The output formats and scope (separated by semicolon) Values: Badges, Clover, Cobertura, CsvSummary, Html, HtmlChart, HtmlInline, HtmlInline_AzurePipelines, HtmlInline_AzurePipelines_Dark, HtmlSummary, JsonSummary, Latex, LatexSummary, lcov, MHtml, PngChart, SonarQube, TeamCitySummary, TextSummary, Xml, XmlSummary
         title: 'CSharpMath test coverage results' # Optional title.
         tag: ${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }} # Optional tag or build version.
@@ -66,7 +66,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: CSharpMath test coverage results
-        path: .testreport/*
+        path: .testcoverage/
     - name: Upload CSharpMath.Rendering.Tests results as CI artifacts
       uses: actions/upload-artifact@v2
       if: always() # Run even when a previous step failed: https://stackoverflow.com/a/58859404/5429648
