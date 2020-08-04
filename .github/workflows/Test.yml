@@ -13,7 +13,7 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: 'recursive'
-    - name: Setup .NET Core
+    - name: Setup .NET Core # Required to execute ReportGenerator
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '3.1.302'
@@ -51,13 +51,22 @@ jobs:
           "CSharpMath.Xaml.Tests.NuGet"\
           "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests"
         do
-          dotnet add "$p" package Microsoft.NET.Test.Sdk # Update is required for GitHubActionsTestLogger to print anything
-          dotnet add "$p" package GitHubActionsTestLogger
-          # -r for restore
-          dotnet msbuild -r -p:Configuration=Release -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }} -p:PackageReleaseNotes="$RELEASE_NOTES" "$p"
-          # --no-build because building again will produce additional NuGet packages without the PackageVersion setting above
-          dotnet test "$p" --no-build -c Release -l GitHubActions --blame
+          # --collect:"XPlat Code Coverage" means collect test coverage with https://github.com/coverlet-coverage/coverlet
+          dotnet test "$p" -c Release -l GitHubActions --blame --collect:"XPlat Code Coverage" -r .testresults -p:PackageReleaseNotes="$RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }}
         done
+    - name: Run ReportGenerator on Test Coverage results
+      uses: danielpalme/ReportGenerator-GitHub-Action@4.6.4
+      with:
+        reports: '.testresults/*/*.xml' # REQUIRED # The coverage reports that should be parsed (separated by semicolon). Globbing is supported.
+        targetdir: '.testreport' # REQUIRED # The directory where the generated report should be saved.
+        reporttypes: 'Html' # The output formats and scope (separated by semicolon) Values: Badges, Clover, Cobertura, CsvSummary, Html, HtmlChart, HtmlInline, HtmlInline_AzurePipelines, HtmlInline_AzurePipelines_Dark, HtmlSummary, JsonSummary, Latex, LatexSummary, lcov, MHtml, PngChart, SonarQube, TeamCitySummary, TextSummary, Xml, XmlSummary
+        title: 'CSharpMath test coverage results' # Optional title.
+        tag: ${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }} # Optional tag or build version.
+    - name: Upload CSharpMath test coverage results as CI artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: CSharpMath test coverage results
+        path: .testreport/*
     - name: Upload CSharpMath.Rendering.Tests results as CI artifacts
       uses: actions/upload-artifact@v2
       if: always() # Run even when a previous step failed: https://stackoverflow.com/a/58859404/5429648
