@@ -33,11 +33,11 @@ namespace CSharpMath.Structures {
       ? "Only the length unit mu is allowed in math mode"
       : (Result<Space>)(MathUnit * value);
     private static bool UnifyIsMu(Space left, Space right) =>
-      left.IsMu && right.IsMu ? true
-      : left.IsMu || right.IsMu
-      ? throw new ArgumentException("The IsMu property of two Spaces must not differ " +
-          "in order to perform addition or subtraction on them.")
-      : false;
+      left.IsMu && right.IsMu
+      || (left.IsMu || right.IsMu
+          ? throw new ArgumentException("The IsMu property of two Spaces must not differ " +
+              "in order to perform addition or subtraction on them.")
+          : false);
     public override bool Equals(object obj) => obj is Space s && this == s;
     public bool EqualsSpace(Space otherSpace) => this == otherSpace;
     bool IEquatable<Space>.Equals(Space other) => EqualsSpace(other);

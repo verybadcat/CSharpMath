@@ -4,7 +4,6 @@ using CSharpMath.Atom;
 using CSharpMath.Atom.Atoms;
 using CSharpMath.Display.Displays;
 using CSharpMath.Display.FrontEnd;
-using Color = CSharpMath.Atom.Atoms.Color;
 using InvalidCodePathException = CSharpMath.Structures.InvalidCodePathException;
 using System.Drawing;
 using System.Linq;
@@ -77,10 +76,8 @@ namespace CSharpMath.Display {
       float skew = accenteeAdjustment - accentAdjustment;
       var height = accentee.Ascent - delta;
       var accentPosition = new PointF(skew, height);
-      return new GlyphDisplay<TFont, TGlyph>(accentGlyph, atomRange, styleFont) {
-        Ascent = glyphAscent,
-        Descent = glyphDescent,
-        Width = glyphWidth,
+      return new GlyphDisplay<TFont, TGlyph>(
+        accentGlyph, atomRange, styleFont, glyphAscent, glyphDescent, glyphWidth) {
         Position = accentPosition
       };
     }
@@ -136,6 +133,7 @@ namespace CSharpMath.Display {
         MathAtom? prevAtom = null;
         var r = new List<MathAtom>();
         foreach (var atom in list.Atoms) {
+          if (atom is Comment) continue;
           // These are not a TeX type nodes. TeX does this during parsing the input.
           // switch to using the font specified in the atom and convert it to ordinary
           var newAtom = atom switch
@@ -170,8 +168,9 @@ namespace CSharpMath.Display {
           case Number _:
           case Variable _:
           case UnaryOperator _:
+          case Comment _:
             throw new InvalidCodePathException
-              ($"Type {atom.GetType()} should have been removed by preprocessing");
+              ($"Type {atom.TypeName} should have been removed by preprocessing");
           case Space space:
             AddDisplayLine(false);
             _currentPosition.X += space.ActualLength(_mathTable, _font);
@@ -185,11 +184,11 @@ namespace CSharpMath.Display {
             // We need to preserve the prevAtom for any inter-element space changes,
             // so we skip to the next node.
             continue;
-          case Color color:
+          case Colored colored:
             AddDisplayLine(false);
-            AddInterElementSpace(prevAtom, color);
-            var colorDisplay = CreateLine(color.InnerList, _font, _context, _style, false);
-            colorDisplay.SetTextColorRecursive(color.Colour);
+            AddInterElementSpace(prevAtom, colored);
+            var colorDisplay = CreateLine(colored.InnerList, _font, _context, _style, false);
+            colorDisplay.SetTextColorRecursive(colored.Color);
             colorDisplay.Position = _currentPosition;
             _currentPosition.X += colorDisplay.Width;
             _displayAtoms.Add(colorDisplay);
@@ -198,7 +197,7 @@ namespace CSharpMath.Display {
             AddDisplayLine(false);
             AddInterElementSpace(prevAtom, colorBox);
             colorDisplay = CreateLine(colorBox.InnerList, _font, _context, _style, false);
-            colorDisplay.BackColor = colorBox.Colour;
+            colorDisplay.BackColor = colorBox.Color;
             colorDisplay.Position = _currentPosition;
             _currentPosition.X += colorDisplay.Width;
             _displayAtoms.Add(colorDisplay);
@@ -235,7 +234,7 @@ namespace CSharpMath.Display {
             AddInterElementSpace(prevAtom, inner);
             IDisplay<TFont, TGlyph> innerDisplay;
             if (inner.LeftBoundary != Boundary.Empty || inner.RightBoundary != Boundary.Empty) {
-              innerDisplay = _MakeInner(inner, atom.IndexRange);
+              innerDisplay = MakeInner(inner, atom.IndexRange);
             } else {
               innerDisplay = CreateLine(inner.InnerList, _font, _context, _style, _cramped);
             }
@@ -525,6 +524,20 @@ namespace CSharpMath.Display {
       return null;
     }
     private RadicalDisplay<TFont, TGlyph> MakeRadical(MathList radicand, Range range) {
+      IGlyphDisplay<TFont, TGlyph> _GetRadicalGlyph(float radicalHeight) {
+        // TODO: something related to GlyphFinder.FindGlyph
+        var radicalGlyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, 0, "\u221A");
+        var glyph = FindGlyph(radicalGlyph, radicalHeight,
+          out float glyphAscent, out float glyphDescent, out float glyphWidth);
+
+        return
+          glyphAscent + glyphDescent < radicalHeight
+          // the glyphs are not big enough, so we construct one using extenders
+          && ConstructGlyph(radicalGlyph, radicalHeight) is IGlyphDisplay<TFont, TGlyph> constructed
+          ? constructed
+          : new GlyphDisplay<TFont, TGlyph>
+            (glyph, Range.NotFound, _styleFont, glyphAscent, glyphDescent, glyphWidth);
+      }
       var innerDisplay = CreateLine(radicand, _font, _context, _style, true);
       var radicalVerticalGap =
         _style == LineStyle.Display
@@ -565,46 +578,43 @@ namespace CSharpMath.Display {
       };
     }
 
-    private float _NumeratorShiftUp(bool hasRule) =>
-      (hasRule, _style) switch
-      {
-        (true, LineStyle.Display) => _mathTable.FractionNumeratorDisplayStyleShiftUp(_styleFont),
-        (true, _) => _mathTable.FractionNumeratorShiftUp(_styleFont),
-        (false, LineStyle.Display) => _mathTable.StackTopDisplayStyleShiftUp(_styleFont),
-        (false, _) => _mathTable.StackTopShiftUp(_styleFont)
-      };
-    private float _NumeratorGapMin =>
-      _style == LineStyle.Display
-      ? _mathTable.FractionNumDisplayStyleGapMin(_styleFont)
-      : _mathTable.FractionNumeratorGapMin(_styleFont);
-
-    private float _DenominatorShiftDown(bool hasRule) =>
-      (hasRule, _style) switch
-      {
-        (true, LineStyle.Display) => _mathTable.FractionDenominatorDisplayStyleShiftDown(_styleFont),
-        (true, _) => _mathTable.FractionDenominatorShiftDown(_styleFont),
-        (false, LineStyle.Display) => _mathTable.StackBottomDisplayStyleShiftDown(_styleFont),
-        (false, _) => _mathTable.StackBottomShiftDown(_styleFont)
-      };
-
-    private float _DenominatorGapMin =>
-      _style == LineStyle.Display
-      ? _mathTable.FractionDenomDisplayStyleGapMin(_styleFont)
-      : _mathTable.FractionDenominatorGapMin(_styleFont);
-
-    private float _StackGapMin =>
-      _style == LineStyle.Display
-      ? _mathTable.StackDisplayStyleGapMin(_styleFont)
-      : _mathTable.StackGapMin(_styleFont);
-
-    private float _FractionDelimiterHeight =>
-      _style == LineStyle.Display
-      ? _mathTable.FractionDelimiterDisplayStyleSize(_styleFont)
-      : _mathTable.FractionDelimiterSize(_styleFont);
-
     private IDisplay<TFont, TGlyph> MakeFraction(Fraction fraction) {
+      float _NumeratorShiftUp(bool hasRule) =>
+        (hasRule, _style) switch
+        {
+          (true, LineStyle.Display) => _mathTable.FractionNumeratorDisplayStyleShiftUp(_styleFont),
+          (true, _) => _mathTable.FractionNumeratorShiftUp(_styleFont),
+          (false, LineStyle.Display) => _mathTable.StackTopDisplayStyleShiftUp(_styleFont),
+          (false, _) => _mathTable.StackTopShiftUp(_styleFont)
+        };
+      float _NumeratorGapMin() =>
+        _style == LineStyle.Display
+        ? _mathTable.FractionNumDisplayStyleGapMin(_styleFont)
+        : _mathTable.FractionNumeratorGapMin(_styleFont);
+
+      float _DenominatorShiftDown(bool hasRule) =>
+        (hasRule, _style) switch
+        {
+          (true, LineStyle.Display) => _mathTable.FractionDenominatorDisplayStyleShiftDown(_styleFont),
+          (true, _) => _mathTable.FractionDenominatorShiftDown(_styleFont),
+          (false, LineStyle.Display) => _mathTable.StackBottomDisplayStyleShiftDown(_styleFont),
+          (false, _) => _mathTable.StackBottomShiftDown(_styleFont)
+        };
+      float _DenominatorGapMin() =>
+        _style == LineStyle.Display
+        ? _mathTable.FractionDenomDisplayStyleGapMin(_styleFont)
+        : _mathTable.FractionDenominatorGapMin(_styleFont);
+      float _StackGapMin() =>
+        _style == LineStyle.Display
+        ? _mathTable.StackDisplayStyleGapMin(_styleFont)
+        : _mathTable.StackGapMin(_styleFont);
+      float _FractionDelimiterHeight() =>
+          _style == LineStyle.Display
+          ? _mathTable.FractionDelimiterDisplayStyleSize(_styleFont)
+          : _mathTable.FractionDelimiterSize(_styleFont);
+
       var numeratorDisplay =
-        CreateLine(fraction.Numerator, _font, _context, _fractionStyle, false);
+          CreateLine(fraction.Numerator, _font, _context, _fractionStyle, false);
       var denominatorDisplay =
         CreateLine(fraction.Denominator, _font, _context, _fractionStyle, true);
 
@@ -619,20 +629,20 @@ namespace CSharpMath.Display {
         var distanceFromNumeratorToBar =
           numeratorShiftUp - numeratorDisplay.Descent - (barLocation + barThickness / 2);
         // The distance should be at least displayGap
-        if (distanceFromNumeratorToBar < _NumeratorGapMin) {
-          numeratorShiftUp += (_NumeratorGapMin - distanceFromNumeratorToBar);
+        if (distanceFromNumeratorToBar < _NumeratorGapMin()) {
+          numeratorShiftUp += (_NumeratorGapMin() - distanceFromNumeratorToBar);
         }
         // now, do the same for the denominator
         var distanceFromDenominatorToBar =
           barLocation - barThickness / 2 - (denominatorDisplay.Ascent - denominatorShiftDown);
-        if (distanceFromDenominatorToBar < _DenominatorGapMin) {
-          denominatorShiftDown += _DenominatorGapMin - distanceFromDenominatorToBar;
+        if (distanceFromDenominatorToBar < _DenominatorGapMin()) {
+          denominatorShiftDown += _DenominatorGapMin() - distanceFromDenominatorToBar;
         }
       } else {
         float clearance =
           numeratorShiftUp - numeratorDisplay.Descent
           - (denominatorDisplay.Ascent - denominatorShiftDown);
-        float minClearance = _StackGapMin;
+        float minClearance = _StackGapMin();
         if (clearance < minClearance) {
           numeratorShiftUp += (minClearance - clearance / 2);
           denominatorShiftDown += (minClearance - clearance) / 2;
@@ -650,13 +660,13 @@ namespace CSharpMath.Display {
 
       // Add delimiters to fraction display
 
-      if (fraction.LeftDelimiter is null && fraction.RightDelimiter is null)
+      if (fraction.LeftDelimiter == Boundary.Empty && fraction.RightDelimiter == Boundary.Empty)
         return display;
-      var glyphHeight = _FractionDelimiterHeight;
+      var glyphHeight = _FractionDelimiterHeight();
       var position = new PointF();
       var innerGlyphs = new List<IDisplay<TFont, TGlyph>>();
-      if (fraction.LeftDelimiter?.Length > 0) {
-        var leftGlyph = _FindGlyphForBoundary(fraction.LeftDelimiter, glyphHeight);
+      if (fraction.LeftDelimiter.Nucleus?.Length > 0) {
+        var leftGlyph = FindGlyphForBoundary(fraction.LeftDelimiter.Nucleus, glyphHeight);
         leftGlyph.Position = position;
         innerGlyphs.Add(leftGlyph);
         position.X += leftGlyph.Width;
@@ -664,8 +674,8 @@ namespace CSharpMath.Display {
       display.Position = position;
       position.X += display.Width;
       innerGlyphs.Add(display);
-      if (fraction.RightDelimiter?.Length > 0) {
-        var rightGlyph = _FindGlyphForBoundary(fraction.RightDelimiter, glyphHeight);
+      if (fraction.RightDelimiter.Nucleus?.Length > 0) {
+        var rightGlyph = FindGlyphForBoundary(fraction.RightDelimiter.Nucleus, glyphHeight);
         rightGlyph.Position = position;
         innerGlyphs.Add(rightGlyph);
         position.X += rightGlyph.Width;
@@ -675,7 +685,7 @@ namespace CSharpMath.Display {
       };
     }
 
-    private InnerDisplay<TFont, TGlyph> _MakeInner(Inner inner, Range range) {
+    private InnerDisplay<TFont, TGlyph> MakeInner(Inner inner, Range range) {
       if (inner.LeftBoundary == Boundary.Empty && inner.RightBoundary == Boundary.Empty) {
         throw new InvalidCodePathException("Inner should have a boundary to call this function.");
       }
@@ -690,32 +700,29 @@ namespace CSharpMath.Display {
       // be at most 5pt short.
       float glyphHeight = Math.Max(d1, d2);
 
-      IGlyphDisplay<TFont, TGlyph>? leftGlyph = null;
-      if (inner.LeftBoundary is Boundary { Nucleus: var left } && left.Length > 0) {
-        leftGlyph = _FindGlyphForBoundary(left, glyphHeight);
-      }
+      var leftGlyph =
+        inner.LeftBoundary is Boundary { Nucleus: var left } && left?.Length > 0
+        ? FindGlyphForBoundary(left, glyphHeight)
+        : null;
 
-      IGlyphDisplay<TFont, TGlyph>? rightGlyph = null;
-      if (inner.RightBoundary is Boundary { Nucleus: var right } && right.Length > 0) {
-        rightGlyph = _FindGlyphForBoundary(right, glyphHeight);
-      }
+      var rightGlyph =
+        inner.RightBoundary is Boundary { Nucleus: var right } && right?.Length > 0
+        ? FindGlyphForBoundary(right, glyphHeight)
+        : null;
       return new InnerDisplay<TFont, TGlyph>(innerListDisplay, leftGlyph, rightGlyph, range);
     }
 
-    private IGlyphDisplay<TFont, TGlyph> _FindGlyphForBoundary(
+    private IGlyphDisplay<TFont, TGlyph> FindGlyphForBoundary(
       string delimiter, float glyphHeight) {
       var leftGlyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, 0, delimiter);
-      var glyph = _FindGlyph(leftGlyph, glyphHeight,
+      var glyph = FindGlyph(leftGlyph, glyphHeight,
         out float glyphAscent, out float glyphDescent, out float glyphWidth);
       var glyphDisplay =
         glyphAscent + glyphDescent < glyphHeight
-        && _ConstructGlyph(leftGlyph, glyphHeight) is IGlyphDisplay<TFont, TGlyph> constructed
+        && ConstructGlyph(leftGlyph, glyphHeight) is IGlyphDisplay<TFont, TGlyph> constructed
         ? constructed
-        : new GlyphDisplay<TFont, TGlyph>(glyph, Range.NotFound, _styleFont) {
-          Ascent = glyphAscent, // 26
-                Descent = glyphDescent,// 18
-                Width = glyphWidth
-        };
+        : new GlyphDisplay<TFont, TGlyph>
+          (glyph, Range.NotFound, _styleFont, glyphAscent, glyphDescent, glyphWidth);
       // Center the glyph on the axis
       var shiftDown =
         0.5f * (glyphDisplay.Ascent - glyphDisplay.Descent)
@@ -724,40 +731,21 @@ namespace CSharpMath.Display {
       return glyphDisplay;
     }
 
-    private IGlyphDisplay<TFont, TGlyph> _GetRadicalGlyph(float radicalHeight) {
-#warning GlyphFinder.FindGlyph
-      var radicalGlyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, 0, "\u221A");
-      var glyph = _FindGlyph(radicalGlyph, radicalHeight,
-        out float glyphAscent, out float glyphDescent, out float glyphWidth);
 
-      return
-        glyphAscent + glyphDescent < radicalHeight
-        // the glyphs are not big enough, so we construct one using extenders
-        && _ConstructGlyph(radicalGlyph, radicalHeight) is IGlyphDisplay<TFont, TGlyph> constructed
-        ? constructed
-        : new GlyphDisplay<TFont, TGlyph>(glyph, Range.NotFound, _styleFont) {
-          Ascent = glyphAscent,
-          Descent = glyphDescent,
-          Width = glyphWidth
-        };
-    }
-
-    private GlyphConstructionDisplay<TFont, TGlyph>? _ConstructGlyph(TGlyph glyph, float glyphHeight) {
+    private GlyphConstructionDisplay<TFont, TGlyph>? ConstructGlyph(TGlyph glyph, float glyphHeight) {
       var parts = _mathTable.GetVerticalGlyphAssembly(glyph, _styleFont);
       if (parts is null) return null;
       var glyphs = new List<TGlyph>();
       var offsets = new List<float>();
-      float height = _ConstructGlyphWithParts(parts, glyphHeight, glyphs, offsets);
+      float height = ConstructGlyphWithParts(parts, glyphHeight, glyphs, offsets);
       using var singleGlyph = new Structures.RentedArray<TGlyph>(glyphs[0]);
-      return new GlyphConstructionDisplay<TFont, TGlyph>(glyphs, offsets, _styleFont) {
-        Width = _context.GlyphBoundsProvider
-          .GetAdvancesForGlyphs(_styleFont, singleGlyph.Result, 1).Total,
-        Ascent = height,
-        Descent = 0 // it's up to the rendering to adjust the display glyph up or down
-      };
+      // descent:0 because it's up to the rendering to adjust the display glyph up or down by setting ShiftDown
+      return new GlyphConstructionDisplay<TFont, TGlyph>
+        (glyphs, offsets, _styleFont, height, 0, _context.GlyphBoundsProvider
+          .GetAdvancesForGlyphs(_styleFont, singleGlyph.Result, 1).Total);
     }
 
-    private float _ConstructGlyphWithParts(IEnumerable<GlyphPart<TGlyph>> parts,
+    private float ConstructGlyphWithParts(IEnumerable<GlyphPart<TGlyph>> parts,
       float glyphHeight, List<TGlyph> glyphs, List<float> offsets) {
       for (int nExtenders = 0; ; nExtenders++) {
         glyphs.Clear();
@@ -811,7 +799,7 @@ namespace CSharpMath.Display {
       }
     }
 
-    private TGlyph _FindGlyph(TGlyph rawGlyph, float height,
+    private TGlyph FindGlyph(TGlyph rawGlyph, float height,
       out float glyphAscent, out float glyphDescent, out float glyphWidth) {
       // in iosMath.
       glyphAscent = glyphDescent = glyphWidth = float.NaN;
@@ -944,16 +932,14 @@ namespace CSharpMath.Display {
               (_styleFont, glyphsArray.Result, 1).Total;
             boundingBox.GetAscentDescentWidth(out float ascent, out float descent, out _);
             var shiftDown = 0.5 * (ascent - descent) - _mathTable.AxisHeight(_styleFont);
-            var glyphDisplay = new GlyphDisplay<TFont, TGlyph>(glyph, op.IndexRange, _styleFont) {
-              Ascent = ascent,
-              Descent = descent,
-              Width = width
-            };
             if (op.Subscript.IsNonEmpty() && !(op.Limits ?? _style == LineStyle.Display))
               // remove italic correction in this case
-              glyphDisplay.Width -= delta;
-            glyphDisplay.ShiftDown = (float)shiftDown;
-            glyphDisplay.Position = _currentPosition;
+              width -= delta;
+            var glyphDisplay =
+              new GlyphDisplay<TFont, TGlyph>(glyph, op.IndexRange, _styleFont, ascent, descent, width) {
+                ShiftDown = (float)shiftDown,
+                Position = _currentPosition
+              };
             return AddLimitsToDisplay(glyphDisplay, op, delta);
           }
 

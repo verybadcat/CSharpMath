@@ -6,8 +6,9 @@ namespace CSharpMath.Rendering.Tests {
   using FrontEnd;
   public class TestRendering_Avalonia : TestRendering<AvaloniaCanvas, AvaloniaColor, MathPainter, TextPainter> {
     protected override string FrontEnd => nameof(Avalonia);
-    protected override double FileSizeTolerance => 0.00466580472;
-    protected override void DrawToStream<TContent>(Painter<AvaloniaCanvas, TContent, AvaloniaColor> painter, Stream stream, float textPainterCanvasWidth) =>
-      painter.DrawAsPng(stream, textPainterCanvasWidth);
+    protected override double FileSizeTolerance => 0.0472;
+    protected override void DrawToStream<TContent>(Painter<AvaloniaCanvas, TContent, AvaloniaColor> painter,
+      Stream stream, float textPainterCanvasWidth, TextAlignment alignment) =>
+      painter.DrawAsPng(stream, textPainterCanvasWidth, alignment);
   }
 }

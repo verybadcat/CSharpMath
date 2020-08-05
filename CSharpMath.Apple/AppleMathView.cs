@@ -19,11 +19,23 @@ using NView = AppKit.NSView;
 namespace CSharpMath.Apple {
   public class AppleMathView : NView {
     public string? ErrorMessage { get; set; }
-    private IDisplay<TFont, TGlyph> _displayList =
-      new Display.Displays.ListDisplay<TFont, TGlyph>(Array.Empty<IDisplay<TFont, TGlyph>>());
+    private IDisplay<TFont, TGlyph>? _displayList = null;
     public float FontSize { get; set; } = 20f;
     public ColumnAlignment TextAlignment { get; set; } = ColumnAlignment.Left;
     public NContentInsets ContentInsets { get; set; }
+    private LineStyle _style = LineStyle.Display;
+    public LineStyle LineStyle {
+      get => _style;
+      set {
+        _style = value;
+        if (_mathList != null) {
+          _displayList = Typesetter.CreateLine(_mathList,
+            TFont.LatinMath(FontSize), _typesettingContext, _style);
+        }
+        InvalidateIntrinsicContentSize();
+        SetNeedsLayout();
+      }
+    }
     private MathList _mathList = new MathList();
     public MathList MathList {
       get => _mathList;
@@ -42,7 +54,7 @@ namespace CSharpMath.Apple {
         (_mathList, ErrorMessage) = LaTeXParser.MathListFromLaTeX(value);
         if (_mathList != null) {
           _displayList = Typesetter.CreateLine(_mathList,
-            TFont.LatinMath(FontSize), _typesettingContext, LineStyle.Display);
+            TFont.LatinMath(FontSize), _typesettingContext, _style);
         }
         InvalidateIntrinsicContentSize();
         SetNeedsLayout();
@@ -71,7 +83,7 @@ namespace CSharpMath.Apple {
       return r;
     }
     public override void LayoutSubviews() {
-      if (_mathList != null) {
+      if (_mathList != null && _displayList != null) {
         float displayWidth = _displayList.Width;
         var textX = TextAlignment switch
         {
@@ -95,7 +107,7 @@ namespace CSharpMath.Apple {
     public override void Draw(CGRect rect) {
       base.Draw(rect);
       var cgContext = UIGraphics.GetCurrentContext();
-      if (_mathList != null) {
+      if (_mathList != null && _displayList != null) {
         cgContext.SaveState();
         cgContext.SetStrokeColor(TextColor.CGColor);
         cgContext.SetFillColor(TextColor.CGColor);

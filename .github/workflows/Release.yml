@@ -1,0 +1,61 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+jobs:
+  all_projects:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.302'
+    - name: Build GitHub Releases draft artifacts
+      env:
+        RELEASE_NOTES: |
+          # ${{ github.event.release.name }}
+          
+          ${{ github.event.release.body }}
+      # run: dotnet test CSharpMath.CrossPlatform.slnf
+      run: | # https://github.com/dotnet/sdk/issues/10409, https://github.com/dotnet/sdk/issues/11417
+        # .NET Core MSBuild cannot parse , and ; correctly so we replace them with substitutions: https://github.com/dotnet/msbuild/issues/471#issuecomment-366268743
+        # https://www.gnu.org/software/bash/manual/bash.html#Shell-Parameter-Expansion
+        # ${parameter/pattern/string} If pattern begins with ‘/’, all matches of pattern are replaced with string. Normally only the first match is replaced.
+        RELEASE_NOTES=${RELEASE_NOTES//,/%2C}
+        RELEASE_NOTES=${RELEASE_NOTES//;/%3B}
+        for p in\
+          "CSharpMath.CoreTests"\
+          "CSharpMath.Editor.Tests"\
+          "CSharpMath.Editor.Tests.FSharp"\
+          "CSharpMath.Evaluation.Tests"\
+        `# "CSharpMath.Ios" # https://github.com/dotnet/sdk/issues/11108 + https://github.com/release-drafter/release-drafter/issues/558`\
+          "CSharpMath.Rendering.Tests"\
+          "CSharpMath.Rendering.Text.Tests"\
+          "CSharpMath.Xaml.Tests"\
+          "CSharpMath.Xaml.Tests.NuGet"\
+          "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests"
+        do
+          # -r for restore
+          dotnet msbuild -r -p:Configuration=Release -p:PackageVersion="${{ github.event.release.tag_name }}" -p:PackageReleaseNotes="$RELEASE_NOTES" "$p"
+        done
+    - name: Upload to GitHub Releases
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ github.ref }}
+        file: .nupkgs/*
+        file_glob: true
+        overwrite: true
+    - name: Upload to NuGet
+      run: |
+         for x in `ls .nupkgs/*.nupkg`
+         do
+           # Use --skip-duplicate since we want re-runs of this workflow to succeed in case of network issues
+           dotnet nuget push $x -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json  --skip-duplicate
+         done
+      # Following command does not work... https://github.com/NuGet/Home/issues/9867
+      # dotnet nuget push .nupkgs/ -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json  --skip-duplicate

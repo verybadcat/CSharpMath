@@ -4,6 +4,3 @@
 [submodule "Wiki"]
 	path = CSharpMath.Wiki
 	url = https://github.com/verybadcat/CSharpMath.wiki.git
-[submodule "AngouriMath"]
-	path = AngouriMath
-	url = https://github.com/asc-community/AngouriMath

@@ -1,7 +1,6 @@
 using System;
 using System.Drawing;
 using CSharpMath.Atom;
-using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Display.Displays {
   using FrontEnd;

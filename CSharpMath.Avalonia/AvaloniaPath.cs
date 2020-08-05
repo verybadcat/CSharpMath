@@ -1,5 +1,5 @@
 using CSharpMath.Rendering.FrontEnd;
-using CSharpMathColor = CSharpMath.Structures.Color;
+using CSharpMathColor = System.Drawing.Color;
 
 using Avalonia;
 using Avalonia.Media;

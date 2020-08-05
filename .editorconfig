@@ -18,19 +18,18 @@ trim_trailing_whitespace = true
 dotnet_sort_system_directives_first = true
 # C# formatting settings
 # https://docs.microsoft.com/en-us/visualstudio/ide/editorconfig-code-style-settings-reference#c-formatting-settings
-csharp_new_line_before_open_brace = none
-csharp_new_line_before_else = false
 csharp_new_line_before_catch = false
+csharp_new_line_before_else = false
 csharp_new_line_before_finally = false
-csharp_new_line_before_members_in_object_initializers = true
-csharp_new_line_before_members_in_anonymous_types = true
+csharp_new_line_before_members_in_object_initializers = false
+csharp_new_line_before_members_in_anonymous_types = false
+csharp_new_line_before_open_brace = none
 csharp_new_line_between_query_expression_clauses = false
 
 # Indentation options
 # https://docs.microsoft.com/en-us/visualstudio/ide/editorconfig-code-style-settings-reference#indent
 csharp_indent_case_contents = true
 csharp_indent_switch_labels = true
-csharp_indent_labels = false
 # Spacing options
 # https://docs.microsoft.com/en-us/visualstudio/ide/editorconfig-code-style-settings-reference#spacing
 csharp_space_after_cast = false

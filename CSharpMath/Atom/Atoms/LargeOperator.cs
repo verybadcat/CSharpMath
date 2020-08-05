@@ -1,5 +1,5 @@
 namespace CSharpMath.Atom.Atoms {
-  /// <summary>A large operator such as sin/cos, integral, etc.</summary>
+  /// <summary>AMSMath class 1: Prefix operator, e.g. \sin, \cos, \sum, \prod, \int</summary>
   public sealed class LargeOperator : MathAtom {
     bool? _limits;
     /// <summary>

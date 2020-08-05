@@ -5,7 +5,6 @@ using CSharpMath.Display.FrontEnd;
 using CSharpMath.Rendering.FrontEnd;
 using CSharpMath.Structures;
 using Typography.OpenFont;
-using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Rendering.BackEnd {
   public class GraphicsContext : IGraphicsContext<Fonts, Glyph> {
@@ -18,7 +17,7 @@ namespace CSharpMath.Rendering.BackEnd {
     }
     public (Color glyph, Color textRun)? GlyphBoxColor { get; set; }
     public ICanvas Canvas { get; set; }
-#warning Remove (Must have a Mac to test)
+    // TODO: Remove (Must have a Mac to test)
     void IGraphicsContext<Fonts, Glyph>.SetTextPosition(PointF position) => Translate(position);
     public void DrawGlyphsAtPoints
       (IReadOnlyList<Glyph> glyphs, Fonts font, IEnumerable<PointF> points, Color? color) {
@@ -50,15 +49,14 @@ namespace CSharpMath.Rendering.BackEnd {
       var textPosition = offset;
       if (GlyphBoxColor != null) {
         Bounds bounds;
-        float advance, scale, width = 0, ascent = 0, descent = 0;
+        float scale, ascent = 0, descent = 0;
         foreach (var (glyph, kernAfter, _) in run.GlyphInfos) {
           bounds = glyph.Info.Bounds;
-          advance = glyph.Typeface.GetHAdvanceWidthFromGlyphIndex(glyph.Info.GlyphIndex);
           scale = glyph.Typeface.CalculateScaleToPixelFromPointSize(run.Font.PointSize);
-          width += advance * scale + kernAfter;
           ascent = System.Math.Max(ascent, bounds.YMax * scale);
           descent = System.Math.Min(descent, bounds.YMin * scale);
         }
+        var width = GlyphBoundsProvider.Instance.GetTypographicWidth(run.Font, run);
         Canvas.CurrentColor = GlyphBoxColor?.textRun;
         Canvas.StrokeRect(textPosition.X, textPosition.Y + descent, width, ascent - descent);
       }

@@ -65,7 +65,7 @@ namespace CSharpMath.Editor {
       _ => null,
     };
     public static void HighlightCharacterAt<TFont, TGlyph>
-      (this IDisplay<TFont, TGlyph> display, MathListIndex index, Structures.Color color)
+      (this IDisplay<TFont, TGlyph> display, MathListIndex index, Color color)
       where TFont : IFont<TGlyph> {
       switch (display) {
         case TextLineDisplay<TFont, TGlyph> text:
@@ -93,7 +93,7 @@ namespace CSharpMath.Editor {
           break;
       }
     }
-    public static void Highlight<TFont, TGlyph>(this IDisplay<TFont, TGlyph> display, Structures.Color color)
+    public static void Highlight<TFont, TGlyph>(this IDisplay<TFont, TGlyph> display, Color color)
       where TFont : IFont<TGlyph> {
       switch (display) {
         case TextLineDisplay<TFont, TGlyph> text:

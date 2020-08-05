@@ -56,8 +56,8 @@ namespace CSharpMath.CoreTests {
       var list = new MathList { atom, atom2, atom3 };
       var list2 = new MathList { atom3, atom2 };
       var frac = new Fraction(list, list2, false) {
-        LeftDelimiter = "a",
-        RightDelimiter = "b"
+        LeftDelimiter = new Boundary("a"),
+        RightDelimiter = new Boundary("b")
       };
 
       Assert.IsType<Fraction>(frac);
@@ -66,8 +66,8 @@ namespace CSharpMath.CoreTests {
       CheckClone(copy, frac);
       CheckClone(copy.Numerator, frac.Numerator);
       Assert.False(copy.HasRule);
-      Assert.Equal("a", copy.LeftDelimiter);
-      Assert.Equal("b", copy.RightDelimiter);
+      Assert.Equal(new Boundary("a"), copy.LeftDelimiter);
+      Assert.Equal(new Boundary("b"), copy.RightDelimiter);
     }
     [Fact]
     public void TestCopyRadical() {
@@ -184,16 +184,16 @@ namespace CSharpMath.CoreTests {
       CheckClone(open.Subscript, clone.Subscript);
     }
     [Fact]
-    public void TestCopyColor() {
-      var color = new Color(new Structures.Color(255, 0, 0), new MathList(new Open("(")));
-      var clone = color.Clone(false);
-      Assert.Equal(new Structures.Color(255, 0, 0), clone.Colour);
-      CheckClone(color, clone);
-      CheckClone(color.InnerList, clone.InnerList);
+    public void TestCopyColored() {
+      var colored = new Colored(System.Drawing.Color.FromArgb(255, 0, 0), new MathList(new Open("(")));
+      var clone = colored.Clone(false);
+      Assert.Equal(System.Drawing.Color.FromArgb(255, 0, 0), clone.Color);
+      CheckClone(colored, clone);
+      CheckClone(colored.InnerList, clone.InnerList);
 
-      var colorBox = new ColorBox(new Structures.Color(128, 0, 0), new MathList(new Close(")")));
+      var colorBox = new ColorBox(System.Drawing.Color.FromArgb(128, 0, 0), new MathList(new Close(")")));
       var cloneBox = colorBox.Clone(false);
-      Assert.Equal(new Structures.Color(128, 0, 0), cloneBox.Colour);
+      Assert.Equal(System.Drawing.Color.FromArgb(128, 0, 0), cloneBox.Color);
       CheckClone(colorBox, cloneBox);
       CheckClone(colorBox.InnerList, cloneBox.InnerList);
     }

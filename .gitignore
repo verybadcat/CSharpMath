@@ -8,8 +8,9 @@ CSharpMath.Rendering.Tests/*/*.*.png
 # For CSharpMath.Xaml.Tests.NuGet
 CSharpMath.Xaml.Tests.NuGet/Test.*.png
 
-# Ignore generated .nupkgs
+# Ignore generated content
 /.nupkgs
+/.testcoverage
 
 ## END Specifically added for CSharpMath
 

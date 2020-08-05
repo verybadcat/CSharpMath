@@ -12,7 +12,7 @@ namespace CSharpMath.Forms.Example {
     };
     public TryPage() {
       InitializeComponent();
-      App.AllViews.Add(View);
+      App.AllMathViews.Add(View);
       Size.SelectedItem = View.FontSize;
       Size.SelectedIndexChanged += (sender, e) =>
         View.FontSize = (float)Size.SelectedItem;
@@ -21,6 +21,9 @@ namespace CSharpMath.Forms.Example {
         (Exit.Text, Exit.TextColor) =
           (View.LaTeX, View.ErrorMessage != null ? Color.Red : Color.Black);
       };
+    }
+    private void Button_Clicked(object sender, System.EventArgs e) {
+      View.DisplacementX = View.DisplacementY = 0;
     }
   }
 }

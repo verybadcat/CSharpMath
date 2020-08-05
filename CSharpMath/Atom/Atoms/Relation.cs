@@ -1,4 +1,5 @@
 namespace CSharpMath.Atom.Atoms {
+  /// <summary>AMSMath class 3: Relation/Comparison (verb), e.g. =, &lt;, \subset</summary>
   /// <summary>A relation -- =, &lt; etc.</summary>
   public sealed class Relation : MathAtom {
     public Relation(string nucleus) : base(nucleus) { }

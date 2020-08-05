@@ -8,8 +8,9 @@ namespace CSharpMath.Forms.Example {
     public enum Tab {
       Numbers = 1, Symbols, Functions, Operations, Letters, LettersCapitals
     }
-    public Rendering.FrontEnd.MathKeyboard Keyboard { get; } = new Rendering.FrontEnd.MathKeyboard();
-    public MathKeyboard() {
+    public Rendering.FrontEnd.MathKeyboard Keyboard { get; }
+    public MathKeyboard(float fontSize = Rendering.FrontEnd.PainterConstants.DefaultFontSize) {
+      Keyboard = new Rendering.FrontEnd.MathKeyboard(fontSize);
       Resources.Add(nameof(Keyboard), Keyboard);
       InitializeComponent();
       CurrentTab = Tab.Numbers;
