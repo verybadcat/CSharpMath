@@ -82,6 +82,7 @@ namespace CSharpMath.Atom {
     public static Result<(MathAtom? Atom, MathList? Return)> OkStyled(MathList styled) => Result.Ok((Dummy, (MathList?)styled));
     public static Result<(MathAtom? Atom, MathList? Return)> OkStop(MathList @return) => Result.Ok(((MathAtom?)null, (MathList?)@return));
     public static ResultImplicitError Err(string error) => Result.Err(error);
+    // Lock this object in tests in case threading exceptions happen between command reading and writing
     public static LaTeXCommandDictionary<Func<LaTeXParser, MathList, char, Result<(MathAtom? Atom, MathList? Return)>>> Commands { get; } =
       new LaTeXCommandDictionary<Func<LaTeXParser, MathList, char, Result<(MathAtom? Atom, MathList? Return)>>>(consume => {
         if (consume.IsEmpty) throw new InvalidCodePathException("Unexpected empty " + nameof(consume));
