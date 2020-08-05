@@ -88,16 +88,23 @@ jobs:
     - name: Push CI artifacts to GitHub Packages registry
       if: github.ref == 'refs/heads/master'
       run: |
-        # Non-Windows platforms require --store-password-in-clear-text: https://github.com/NuGet/Home/issues/1851
-        dotnet nuget add source https://nuget.pkg.github.com/verybadcat/index.json -n github -u verybadcat -p ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text
-        for x in `ls .nupkgs/*.nupkg` # Don't let GitHub Releases interpret .snupkg as .nupkg
-        do
-          # The GitHub Package registry does not support .snupkg files so we specify --no-symbols
-          # Use --skip-duplicate since we want re-runs of this workflow to succeed in case of network issues
-          dotnet nuget push $x --no-symbols --source "github" --skip-duplicate
-        done
-      # Following command does not work... https://github.com/NuGet/Home/issues/9867
-      # dotnet nuget push .nupkgs/*.nupkg --no-symbols --source "github" --skip-duplicate # Don't let GitHub Releases interpret .snupkg as .nupkg
+        # dotnet nuget push to GitHub Packages in unstable: https://github.com/NuGet/Home/issues/9775
+        # So someone wrote a .NET Core tool to workaround this: https://github.com/NuGet/Home/issues/9775#issuecomment-660947350
+        # Currently this tool will never return a non-0 exit code: https://github.com/jcansdale/gpr/issues/69 (nice)
+        dotnet tool install -g gpr
+        gpr push .nupkgs/*.nupkg -k ${{ secrets.GITHUB_TOKEN }}
+        
+        # Original code before using this tool:
+        # # Non-Windows platforms require --store-password-in-clear-text: https://github.com/NuGet/Home/issues/1851
+        # dotnet nuget add source https://nuget.pkg.github.com/verybadcat/index.json -n github -u verybadcat -p ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text
+        # for x in `ls .nupkgs/*.nupkg` # Don't let GitHub Releases interpret .snupkg as .nupkg
+        # do
+        #   # The GitHub Package registry does not support .snupkg files so we specify --no-symbols
+        #   # Use --skip-duplicate since we want re-runs of this workflow to succeed in case of network issues
+        #   dotnet nuget push $x --source "github" --skip-duplicate --no-symbols
+        # done
+        # # Following command does not work... https://github.com/NuGet/Home/issues/9867
+        # # dotnet nuget push .nupkgs/*.nupkg --source "github" --skip-duplicate --no-symbols # Don't let GitHub Releases interpret .snupkg as .nupkg
   Ios:
     runs-on: macos-latest
     steps:
