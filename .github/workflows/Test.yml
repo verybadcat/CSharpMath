@@ -91,6 +91,7 @@ jobs:
         # dotnet nuget push to GitHub Packages is unstable for project names with a dot: https://github.com/NuGet/Home/issues/9775
         # So someone wrote a .NET Core tool to workaround this: https://github.com/NuGet/Home/issues/9775#issuecomment-660947350
         # Currently this tool will never return a non-0 exit code: https://github.com/jcansdale/gpr/issues/69 (nice)
+        # But we must not include .snupkg files in globbing or a duplicate version error will occur: https://github.com/jcansdale/gpr/issues/83
         dotnet tool install -g gpr
         gpr push .nupkgs/*.nupkg -k ${{ secrets.GITHUB_TOKEN }}
         
