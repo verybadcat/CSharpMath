@@ -1,4 +1,4 @@
-using System;
+using System.Drawing;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -8,25 +8,33 @@ namespace CSharpMath.Rendering.Text {
     readonly List<TextAtom> _list = new List<TextAtom>();
     private void Add(TextAtom atom) => _list.Add(atom);
     public void ControlSpace() => Add(new TextAtom.ControlSpace());
-    public void Accent(TextAtom atom, string accent) =>
-      Add(new TextAtom.Accent(atom, accent));
-    public void Text(string text, ReadOnlySpan<char> lookAheadForPunc) =>
-      Add(new TextAtom.Text(text + lookAheadForPunc.ToString()));
+    public void Accent(TextAtom atom, string accent) => Add(new TextAtom.Accent(atom, accent));
+    public void Text(string text) {
+      if (char.IsPunctuation(text, 0))
+        switch (Last) {
+          case TextAtom.Text { Content: var prevText }:
+            Last = new TextAtom.Text(prevText + text);
+            return;
+          case TextAtom.Math { DisplayStyle: false, Content: var mathList }:
+            mathList.Add(new Atom.Atoms.Punctuation(text));
+            return;
+        }
+      Add(new TextAtom.Text(text));
+    }
     public void Space(Space space) => Add(new TextAtom.Space(space));
     public void Style(TextAtom atom, Atom.FontStyle style) => Add(new TextAtom.Style(atom, style));
     public void Size(TextAtom atom, float fontSize) => Add(new TextAtom.Size(atom, fontSize));
-    public void Color(TextAtom atom, Color color) => Add(new TextAtom.Color(atom, color));
+    public void Color(TextAtom atom, Color color) => Add(new TextAtom.Colored(atom, color));
     public Result Math(string mathLaTeX, bool displayStyle, int startAt, ref int endAt) {
       var builder = new Atom.LaTeXParser(mathLaTeX);
-      var mathList = builder.Build();
-      if (builder.Error is { } error) {
-        endAt = startAt - mathLaTeX.Length + builder.CurrentChar - 1;
+      var (mathList, error) = builder.Build();
+      if (error != null) {
+        endAt = startAt - mathLaTeX.Length + builder.NextChar - 1;
         return Result.Err("[Math] " + error);
-      } else if (mathList != null) {
+      } else {
         Add(new TextAtom.Math(mathList, displayStyle));
         return Result.Ok();
       }
-      throw new InvalidCodePathException("Both error and list are null?");
     }
     public void List(IReadOnlyList<TextAtom> textAtoms) => Add(new TextAtom.List(textAtoms));
     public void Break() => Add(new TextAtom.Newline());

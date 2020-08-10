@@ -6,6 +6,7 @@ using Typography.TextBreak;
 namespace CSharpMath.Rendering.Text {
   using Atom;
   using CSharpMath.Structures;
+  using System.Drawing;
   using static CSharpMath.Structures.Result;
   public static class TextLaTeXParser {
     /* //Paste this into the C# Interactive, fill <username> yourself
@@ -37,7 +38,6 @@ string BreakText(string text, string seperator = "|")
 }
 BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
      */
-    public static bool NoEnhancedColors { get; set; }
     public static Result<TextAtom> TextAtomFromLaTeX(string latexSource) {
       if (string.IsNullOrEmpty(latexSource))
         return new TextAtom.List(Array.Empty<TextAtom>());
@@ -111,11 +111,6 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
             kind = breakList[index].wordKind;
           }
           ObtainSection(latex, i, out var startAt, out endAt, out var textSection, out var wordKind);
-          bool PreviousSection(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section) {
-            bool success = i-- > 0;
-            if (success) ObtainSection(latexInput, i, out startAt, out endAt, out section, out wordKind);
-            return success;
-          }
           bool NextSection(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section) {
             bool success = ++i < breakList.Count;
             if (success) ObtainSection(latexInput, i, out startAt, out endAt, out section, out wordKind);
@@ -129,8 +124,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
           }
           SpanResult<char> ReadArgumentString(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section) {
             afterCommand = false;
-            if (!NextSection(latexInput, ref section)) return Err("Missing argument");
-            if (section.IsNot('{')) return Err("Missing {");
+            if (!NextSection(latexInput, ref section) || section.IsNot('{')) return Err("Missing {");
             int endingIndex = -1;
             //startAt + 1 to not start at the { we started at
             bool isEscape = false;
@@ -151,28 +145,16 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
           }
           Result<Color> ReadColor(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section)  =>
             ReadArgumentString(latexInput, ref section).Bind(color =>
-              Color.Create(color, !NoEnhancedColors) is Color value ?
+              LaTeXSettings.ParseColor(color.ToString()) is Color value ?
                 Ok(value) :
               Err("Invalid color: " + color.ToString())
             );
-          ///<summary>Get punctutation after current section</summary>
-          ReadOnlySpan<char> NextSectionWhilePunc(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section) {
-            int start = endAt;
-            ReadOnlySpan<char> specialChars = stackalloc[] { '#', '$', '%', '&', '\\', '^', '_', '{', '}', '~' };
-            while (NextSection(latexInput, ref section))
-              if (wordKind != WordKind.Punc || specialChars.IndexOf(section[0]) != -1) {
-                // We have overlooked by one when non-punctuation or special character is encountered
-                PreviousSection(latexInput, ref section);
-                break;
-              }
-            return latexInput.Slice(start, endAt - start);
-          }
           //Nothing should be before dollar sign checking -- dollar sign checking uses continue;
           atoms.TextLength = startAt;
           if (textSection.Is('$')) {
             if (backslashEscape)
               if (displayMath != null) mathLaTeX.Append(@"\$");
-              else atoms.Text("$", NextSectionWhilePunc(latex, ref textSection));
+              else atoms.Text("$");
             else {
               dollarCount++;
               continue;
@@ -227,7 +209,9 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     break;
                   case var _ when textSection.Is('}'):
                     return "Missing opening brace";
-                  case var _ when wordKind == WordKind.NewLine:
+                  // !char.IsSurrogate(textSection[0]) is result of https://github.com/LayoutFarm/Typography/issues/206
+                  case var _ when wordKind == WordKind.NewLine && !char.IsSurrogate(textSection[0]):
+                    if (oneCharOnly) continue;
                     // Consume newlines after commands
                     // Double newline == paragraph break
                     if (afterNewline) {
@@ -239,21 +223,20 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                       afterNewline = true;
                       continue;
                     }
-                  case var _ when wordKind == WordKind.Whitespace:
+                  case var _ when wordKind == WordKind.Whitespace && !char.IsSurrogate(textSection[0]):
                     //Collpase spaces
-                    if (afterCommand) continue;
+                    if (afterCommand || oneCharOnly) continue;
                     else atoms.ControlSpace();
                     break;
                   default: //Just ordinary text
                     if (oneCharOnly) {
-                      if (startAt + 1 < endAt) { //Only re-read if current break span is more than 1 long
+                      var firstCodepointLength = char.IsHighSurrogate(textSection[0]) ? 2 : 1;
+                      if (startAt + firstCodepointLength < endAt) { //Only re-read if current break span is more than 1 long
                         i--;
-                        breakList[i] = new BreakAtInfo(breakList[i].breakAt + 1, breakList[i].wordKind);
+                        breakList[i] = new BreakAtInfo(breakList[i].breakAt + firstCodepointLength, breakList[i].wordKind);
                       }
-                      //Need to allocate in the end :(
-                      //Don't look ahead for punc; we are looking for one char only
-                      atoms.Text(textSection[0].ToString(), default);
-                    } else atoms.Text(textSection.ToString(), NextSectionWhilePunc(latex, ref textSection));
+                      atoms.Text(textSection.Slice(0, firstCodepointLength).ToString());
+                    } else atoms.Text(textSection.ToString());
                     break;
                 }
                 afterCommand = false;
@@ -397,7 +380,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     }
                   //case "red", "yellow", ...
                   case var shortColor when
-                    !NoEnhancedColors && Color.PredefinedColors.TryGetByFirst(shortColor, out var color): {
+                    LaTeXSettings.PredefinedColors.FirstToSecond.TryGetValue(shortColor, out var color): {
                       int tmp_commandLength = shortColor.Length;
                       if (ReadArgumentAtom(latex).Bind(
                           coloredContent => atoms.Color(coloredContent, color)
@@ -407,7 +390,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     }
                   //case "textbf", "textit", ...
                   case var textStyle when !textStyle.StartsWith("math")
-                    && LaTeXSettings.FontStyles.TryGetValue(
+                    && LaTeXSettings.FontStyles.FirstToSecond.TryGetValue(
                         textStyle.StartsWith("text") ? textStyle.Replace("text", "math") : textStyle,
                         out var fontStyle): {
                       int tmp_commandLength = textStyle.Length;
@@ -419,7 +402,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     }
                   //case "^", "\"", ...
                   case var textAccent when
-                    TextLaTeXSettings.PredefinedAccents.TryGetByFirst(textAccent, out var accent): {
+                    TextLaTeXSettings.PredefinedAccents.FirstToSecond.TryGetValue(textAccent, out var accent): {
                       if (ReadArgumentAtom(latex)
                         .Bind(builtContent => atoms.Accent(builtContent, accent))
                         .Error is string error)
@@ -427,8 +410,8 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                       break;
                     }
                   //case "textasciicircum", "textless", ...
-                  case var textSymbol when TextLaTeXSettings.PredefinedTextSymbols.TryGetValue(textSymbol, out var replaceResult):
-                    atoms.Text(replaceResult, NextSectionWhilePunc(latex, ref textSection));
+                  case var textSymbol when TextLaTeXSettings.PredefinedTextSymbols.FirstToSecond.TryGetValue(textSymbol, out var replaceResult):
+                    atoms.Text(replaceResult);
                     break;
                   case var command:
                     if (displayMath != null) mathLaTeX.Append(command); //don't eat the command when parsing math
@@ -459,7 +442,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
         case TextAtom.Text t:
           foreach (var ch in t.Content) {
             var c = ch.ToStringInvariant();
-            if (TextLaTeXSettings.PredefinedTextSymbols.TryGetKey(c, out var v))
+            if (TextLaTeXSettings.PredefinedTextSymbols.SecondToFirst.TryGetValue(c, out var v))
               if ('a' <= v[0] && v[0] <= 'z' || 'A' <= v[0] && v[0] <= 'Z')
                 b.Append('\\').Append(v).Append(' ');
               else b.Append('\\').Append(v);
@@ -491,19 +474,20 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
         case TextAtom.ControlSpace _:
           return b.Append(@"\ ");
         case TextAtom.Accent a:
-          b.Append('\\').Append(TextLaTeXSettings.PredefinedAccents[second: a.AccentChar]).Append('{');
+          b.Append('\\').Append(TextLaTeXSettings.PredefinedAccents.SecondToFirst[a.AccentChar]).Append('{');
           return TextAtomToLaTeX(a.Content, b).Append('}');
         case TextAtom.Style t:
           b.Append('\\')
-            .Append(LaTeXSettings.FontStyles[t.FontStyle] is var style && style.StartsWith("math")
+            .Append(LaTeXSettings.FontStyles.SecondToFirst[t.FontStyle] is var style && style.StartsWith("math")
                     ? style.Replace("math", "text") : style)
             .Append('{');
           return TextAtomToLaTeX(t.Content, b).Append('}');
         case TextAtom.Size z:
           b.Append(@"\fontsize{").Append(z.PointSize).Append("}{");
           return TextAtomToLaTeX(z.Content, b).Append('}');
-        case TextAtom.Color c:
-          b.Append(@"\color{").Append(c.Colour).Append("}{");
+        case TextAtom.Colored c:
+          b.Append(@"\color{");
+          LaTeXSettings.ColorToString(c.Colour, b).Append("}{");
           return TextAtomToLaTeX(c.Content, b).Append('}');
         case TextAtom.List l:
           foreach (var a in l.Content)

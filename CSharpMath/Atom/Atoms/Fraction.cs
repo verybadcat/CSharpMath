@@ -6,8 +6,8 @@ namespace CSharpMath.Atom.Atoms {
     public MathList Denominator { get; }
     System.Collections.Generic.IEnumerable<MathList> IMathListContainer.InnerLists =>
       new[] { Numerator, Denominator };
-    public string? LeftDelimiter { get; set; }
-    public string? RightDelimiter { get; set; }
+    public Boundary LeftDelimiter { get; set; }
+    public Boundary RightDelimiter { get; set; }
     /// <summary>In this context, a "rule" is a fraction line.</summary>
     public bool HasRule { get; }
     public Fraction(MathList numerator, MathList denominator, bool hasRule = true) =>
@@ -21,13 +21,12 @@ namespace CSharpMath.Atom.Atoms {
     };
     public override string DebugString =>
       new StringBuilder(HasRule ? @"\frac" : @"\atop")
-        .AppendInBracketsOrNothing(LeftDelimiter)
-        .AppendInBracketsOrNothing(RightDelimiter)
+        .AppendInBracketsOrNothing(LeftDelimiter.Nucleus)
+        .AppendInBracketsOrNothing(RightDelimiter.Nucleus)
         .AppendInBracesOrEmptyBraces(Numerator?.DebugString)
         .AppendInBracesOrEmptyBraces(Denominator?.DebugString)
         .AppendDebugStringOfScripts(this).ToString();
-    public override bool Equals(object obj) =>
-      obj is Fraction f ? EqualsFraction(f) : false;
+    public override bool Equals(object obj) => obj is Fraction f && EqualsFraction(f);
     public bool EqualsFraction(Fraction other) =>
       EqualsAtom(other)
       && Numerator.NullCheckingStructuralEquality(other.Numerator)

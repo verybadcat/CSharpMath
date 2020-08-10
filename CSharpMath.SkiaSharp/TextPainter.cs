@@ -1,6 +1,6 @@
 using CSharpMath.Rendering.FrontEnd;
 using SkiaSharp;
-using Color = CSharpMath.Structures.Color;
+using System.Drawing;
 
 namespace CSharpMath.SkiaSharp {
   public class TextPainter : TextPainter<SKCanvas, SKColor> {

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Drawing;
-using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Display.FrontEnd {
   /// <summary>Represents a front-end graphics context. Used for drawing.</summary>

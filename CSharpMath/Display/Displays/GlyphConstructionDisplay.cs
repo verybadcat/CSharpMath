@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using CSharpMath.Atom;
-using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.Display.Displays {
   using FrontEnd;
@@ -12,12 +11,12 @@ namespace CSharpMath.Display.Displays {
 
     public float ShiftDown { get; set; }
 
+    readonly float _ascent;
+    readonly float _descent;
+    public float Ascent => _ascent - ShiftDown;
+    public float Descent => _descent + ShiftDown;
 
-    public float Ascent { get; set; }
-
-    public float Descent { get; set; }
-
-    public float Width { get; set; }
+    public float Width { get; }
 
     public Range Range { get; set; }
 
@@ -27,10 +26,15 @@ namespace CSharpMath.Display.Displays {
 
     public bool HasScript { get; set; }
 
-    public GlyphConstructionDisplay(IReadOnlyList<TGlyph> glyphs, IEnumerable<float> offsets, TFont font) {
+    public GlyphConstructionDisplay(
+      IReadOnlyList<TGlyph> glyphs, IEnumerable<float> offsets, TFont font,
+      float ascent, float descent, float width) {
       _glyphs = glyphs;
       _glyphPositions = offsets.Select(x => new PointF(0, x));
       Font = font;
+      _ascent = ascent;
+      _descent = descent;
+      Width = width;
     }
 
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {

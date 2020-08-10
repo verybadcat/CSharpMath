@@ -9,11 +9,11 @@ namespace CSharpMath.Forms.Example {
   public partial class SelectPage : ContentPage {
     public SelectPage() {
       InitializeComponent();
-      App.AllViews.Add(View);
+      App.AllMathViews.Add(View);
       Size.ItemsSource = TryPage.FontSizes;
+      Size.SelectedItem = View.FontSize;
       Size.SelectedIndexChanged += (sender, e) =>
         View.FontSize = (float)Size.SelectedItem;
-      Size.SelectedItem = 96f;
       Picker.ItemsSource = Rendering.Tests.TestRenderingMathData.AllConstants.Keys.ToList();
       Picker.SelectedIndexChanged += (sender, e) =>
         View.LaTeX = Label.Text = Rendering.Tests.TestRenderingMathData.AllConstants[(string)Picker.SelectedItem];

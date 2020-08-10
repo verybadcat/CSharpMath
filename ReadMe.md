@@ -9,8 +9,11 @@ CSharpMath is a C# port of the wonderful <a href="https://github.com/kostub/iosM
 [Current release][NuGet]|[![NuGet release shield](https://img.shields.io/nuget/v/CSharpMath.svg)][NuGet] [![GitHub release shield](https://img.shields.io/github/release/verybadcat/CSharpMath.svg)][GitHub] [![GitHub release date shield](https://img.shields.io/github/release-date/verybadcat/CSharpMath.svg)][GitHub] [![GitHub commits since last release shield](https://img.shields.io/github/commits-since/verybadcat/CSharpMath/latest.svg)][GitHub]
 -|-
 [Current prerelease][NuGet-pre]|[![NuGet pre-release shield](https://img.shields.io/nuget/vpre/CSharpMath.svg)][NuGet-pre] [![GitHub pre-release shield](https://img.shields.io/github/release-pre/verybadcat/CSharpMath.svg)][GitHub-pre] [![GitHub pre-release date shield](https://img.shields.io/github/release-date-pre/verybadcat/CSharpMath.svg)][GitHub-pre] [![GitHub commits since last prerelease shield](https://img.shields.io/github/commits-since/verybadcat/CSharpMath/latest.svg?include_prereleases)][GitHub-pre]
+<!-- The "Current nightly" badge is blocked on https://github.com/badges/shields/pull/4184 -->
 
-[![NuGet downloads shield](https://img.shields.io/nuget/dt/CSharpMath.svg)][NuGet] [![GitHub contributors shield](https://img.shields.io/github/contributors/verybadcat/CSharpMath.svg)](https://github.com/verybadcat/CSharpMath/graphs/contributors) [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/verybadcat/CSharpMath.svg)](http://isitmaintained.com/project/verybadcat/CSharpMath "Average time to resolve an issue") [![Percentage of issues still open](http://isitmaintained.com/badge/open/verybadcat/CSharpMath.svg)](http://isitmaintained.com/project/verybadcat/CSharpMath "Percentage of issues still open") [![❤](https://img.shields.io/badge/made%20with-%e2%9d%a4-ff69b4.svg)](https://www.youtube.com/watch?v=dQw4w9WgXcQ "")
+[![NuGet downloads shield](https://img.shields.io/nuget/dt/CSharpMath.svg)][NuGet] [![GitHub contributors shield](https://img.shields.io/github/contributors/verybadcat/CSharpMath.svg)](https://github.com/verybadcat/CSharpMath/graphs/contributors) [![GitHub license shield](https://img.shields.io/github/license/verybadcat/CSharpMath.svg)](https://github.com/verybadcat/CSharpMath/blob/master/License) [![GitHub last commit shield](https://img.shields.io/github/last-commit/verybadcat/CSharpMath.svg)](https://github.com/verybadcat/CSharpMath/commits/master) [![GitHub Build workflow shield](https://img.shields.io/github/workflow/status/verybadcat/CSharpMath/Build.svg)](https://github.com/verybadcat/CSharpMath/actions?query=workflow%3ABuild+branch%3Amaster) [![GitHub Test workflow shield](https://img.shields.io/github/workflow/status/verybadcat/CSharpMath/Test.svg?label=tests)](https://github.com/verybadcat/CSharpMath/actions?query=workflow%3ATest+branch%3Amaster)
+
+[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/verybadcat/CSharpMath.svg)](http://isitmaintained.com/project/verybadcat/CSharpMath "Average time to resolve an issue") [![Percentage of issues still open](http://isitmaintained.com/badge/open/verybadcat/CSharpMath.svg)](http://isitmaintained.com/project/verybadcat/CSharpMath "Percentage of issues still open") [![Issues welcome](https://img.shields.io/badge/issues-welcome-success)](https://github.com/verybadcat/CSharpMath/issues) [![Pull Requests welcome](https://img.shields.io/badge/pull_requests-welcome-success)](https://github.com/verybadcat/CSharpMath/issues) [![❤](https://img.shields.io/badge/made%20with-%e2%9d%a4-ff69b4.svg)](https://www.youtube.com/watch?v=dQw4w9WgXcQ "")
 
 [NuGet]: https://www.nuget.org/packages/CSharpMath/
 [NuGet-pre]: https://www.nuget.org/packages/CSharpMath/absoluteLatest
@@ -44,7 +47,7 @@ Really, any one you like!
 
 [Unity](wiki/@GettingStarted~Unity.md)
 [ASP.NET](wiki/@GettingStarted~ASP.md)
-[Ooui.Wasm](wiki/@GettingStarted~Ooui.md)-->
+-->
 
 # Platform support
 
@@ -184,7 +187,7 @@ Xamarin.Forms|Avalonia
 ![Xamarin.Forms](https://user-images.githubusercontent.com/19922066/80187259-e7e8a080-8641-11ea-8c15-63e36b85047e.png)|![Avalonia](https://user-images.githubusercontent.com/19922066/80187422-31d18680-8642-11ea-81b3-aea7e027a7ea.png)
 
 ## What about rendering to an image instead of displaying in a view?
-Warning: There are still some rough edges on image rendering to be resolved, such as [this](CSharpMath.Rendering.Tests/Display/AccentOverF.png) and [this](CSharpMath.Rendering.Tests/Text/WideDisplayMaths.png). However, it is already usable for the majority of cases.
+Warning: There are still some rough edges on image rendering to be resolved, such as [this](CSharpMath.Rendering.Tests/MathDisplay/AccentOverF.png) and [this](CSharpMath.Rendering.Tests/TextLeft/WideDisplayMaths.png). However, it is already usable for the majority of cases.
 
 For SkiaSharp:
 ```cs
@@ -214,10 +217,10 @@ var painter = someMathView.Painter; // or someTextView.Painter
 painter.DrawAsPng(someStream);
 ```
 
-![Cell 1](CSharpMath.Rendering.Tests/Display/ExponentWithFraction.png)|![Cell 2](CSharpMath.Rendering.Tests/Display/SummationWithCup.png)|![Cell 3](CSharpMath.Rendering.Tests/Display/Color.png)
+![Cell 1](CSharpMath.Rendering.Tests/MathDisplay/ExponentWithFraction.png)|![Cell 2](CSharpMath.Rendering.Tests/MathDisplay/SummationWithCup.png)|![Cell 3](CSharpMath.Rendering.Tests/MathDisplay/Color.png)
 -|-|-
-![Cell 4](CSharpMath.Rendering.Tests/Display/RaiseBox.png)|![Cell 5](CSharpMath.Rendering.Tests/Display/SomeLimit.png)|![Cell 6](CSharpMath.Rendering.Tests/Display/VectorProjection.png)
-![Cell 7](CSharpMath.Rendering.Tests/Display/Matrix3.png)|![Cell 8](CSharpMath.Rendering.Tests/Display/IntegralColorBoxCorrect.png)|![Cell 9](CSharpMath.Rendering.Tests/Display/Taylor.png)
+![Cell 4](CSharpMath.Rendering.Tests/MathDisplay/RaiseBox.png)|![Cell 5](CSharpMath.Rendering.Tests/MathDisplay/SomeLimit.png)|![Cell 6](CSharpMath.Rendering.Tests/MathDisplay/VectorProjection.png)
+![Cell 7](CSharpMath.Rendering.Tests/MathDisplay/Matrix3.png)|![Cell 8](CSharpMath.Rendering.Tests/MathDisplay/IntegralColorBoxCorrect.png)|![Cell 9](CSharpMath.Rendering.Tests/MathDisplay/Taylor.png)
 
 
 ## This looks great and all, but is there a way to edit and evaluate the math?
@@ -259,6 +262,45 @@ Analyzing an expression | Solving an equation
 
 # [Documentation](https://github.com/verybadcat/CSharpMath/wiki/Documentation-of-public-facing-APIs-of-CSharpMath.Rendering,-CSharpMath.SkiaSharp-and-CSharpMath.Forms-MathViews)
 
+# Opting in to the nightly feed
+
+For those who wish to be even more updated than prereleases, you can opt in to the nightly feed which is updated whenever the master branch has a new commit.
+
+1. Log in to GitHub
+2. Generate a new token (a 40-digit hexadecimal number) in https://github.com/settings/tokens/new with the `read:packages` scope
+3. Create a new file called `NuGet.Config` or `nuget.config` in the same folder as your solution with content
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+    <packageSources>
+        <add key="CSharpMathNightly" value="https://nuget.pkg.github.com/verybadcat/index.json" />
+    </packageSources>
+    <packageSourceCredentials>
+        <CSharpMathNightly>
+            <add key="Username" value="USERNAME" />
+            <add key="ClearTextPassword" value="TOKEN" />
+        </CSharpMathNightly>
+    </packageSourceCredentials>
+</configuration>
+```
+4. Replace `USERNAME` in the above file with your GitHub username and `TOKEN` with your generated token.
+5. Open a package webpage in https://github.com/verybadcat/CSharpMath/packages
+6. Insert the following into your `.csproj`:
+```xml
+<ItemGroup>
+  <PackageReference Include="PACKAGE" Version="VERSION" />
+</ItemGroup>
+```
+7. Replace `PACKAGE` in the above file by the package name in the webpage, e.g. `CSharpMath.SkiaSharp`, and `VERSION` by the version in the webpage, e.g. `0.4.2-ci-9db8a6dec29202804764fab9d6f7f19e43c3c083`. The 40-digit hexadecimal number at the end of the version is the Git commit that was the package was built on. CI versions for a version are older than that version, aka chronologically `0.4.2-ci-xxx` → `0.4.2` → `0.4.3-ci-xxx` → `0.5.0` → `0.5.1-ci-xxx`.
+### SourceLink for CI packages
+
+Unfortunately, non-NuGet.org feeds do not support `.snupkg`s, so you will have to download all the packages yourself.
+1. Go to https://github.com/verybadcat/CSharpMath/actions?query=workflow%3ABuild
+2. Open the latest build
+3. Download artifacts
+4. Extract the files to a folder
+5. Add the folder as a local NuGet feed to Visual Studio according to https://docs.microsoft.com/en-gb/nuget/consume-packages/install-use-packages-visual-studio#package-sources
+
 # Project structure
 
 <!--
@@ -272,11 +314,11 @@ chl: chart labels, here a graph written in https://en.wikipedia.org/wiki/DOT_lan
 
 For all uses and possible values of the API parameters, see https://developers.google.com/chart/image/docs/chart_params
 -->
-![Project structure](https://quickchart.io/chart?cht=gv&chl=graph{node[shape=box];{rank=same;AngouriMath;"Typography.OpenFont";"Typography.TextBreak";CSharpMath};AngouriMath[shape=record,label="{_Dependencies|AngouriMath}"];"Typography.OpenFont"[shape=record,label="{_Dependencies|Typography.OpenFont}"];"Typography.TextBreak"[shape=record,label="{_Dependencies|Typography.TextBreak}"];CSharpMath[shape=record,label="{_Core|CSharpMath}"];"CSharpMath.Apple"[shape=record,label="{iOS|CSharpMath.Apple}"];"CSharpMath.Avalonia"[shape=record,label="{Avalonia|CSharpMath.Avalonia}"];"CSharpMath.SkiaSharp"[shape=record,label="{SkiaSharp|CSharpMath.SkiaSharp}"];"CSharpMath.Forms"[shape=record,label="{Xamarin.Forms|CSharpMath.Forms}"];"Typography.OpenFont"--"Typography.GlyphLayout";"Typography.TextBreak"--"TextBreakTests";AngouriMath--UnitTests;CSharpMath--"CSharpMath.CoreTests";CSharpMath--"CSharpMath.Apple"--"CSharpMath.Ios"--"CSharpMath.Ios.Example";CSharpMath--"CSharpMath.Editor"--"CSharpMath.Editor.Tests"--"CSharpMath.Editor.Tests.Visualizer";"CSharpMath.Editor"--"CSharpMath.Editor.Tests.FSharp";{"CSharpMath.Editor";AngouriMath}--"CSharpMath.Evaluation"--{"CSharpMath.Evaluation.Tests";"CSharpMath.Forms.Example"};{"CSharpMath.Editor";"Typography.GlyphLayout";"Typography.TextBreak"}--"CSharpMath.Rendering"--"CSharpMath.Rendering.Text.Tests";"CSharpMath.Rendering"--"CSharpMath.Avalonia"--"CSharpMath.Avalonia.Example";"CSharpMath.Rendering"--"CSharpMath.SkiaSharp"--"CSharpMath.Forms"--"CSharpMath.Forms.Example";"CSharpMath.Forms.Example"--{"CSharpMath.Forms.Example.Android";"CSharpMath.Forms.Example.iOS";"CSharpMath.Forms.Example.UWP";"CSharpMath.Forms.Example.WPF";"CSharpMath.Forms.Example.Ooui"};{"CSharpMath.Avalonia";"CSharpMath.SkiaSharp"}--"CSharpMath.Rendering.Tests";"CSharpMath.Xaml"--{"CSharpMath.Avalonia";"CSharpMath.Forms"}--"CSharpMath.Xaml.Tests"})
+![Project structure](https://quickchart.io/chart?cht=gv&chl=graph{node[shape=box];{rank=same;"Typography.OpenFont";"Typography.TextBreak";CSharpMath};"Typography.OpenFont"[shape=record,label="{_Dependencies|Typography.OpenFont}"];"Typography.TextBreak"[shape=record,label="{_Dependencies|Typography.TextBreak}"];CSharpMath[shape=record,label="{_Core|CSharpMath}"];"CSharpMath.Apple"[shape=record,label="{iOS|CSharpMath.Apple}"];"CSharpMath.Avalonia"[shape=record,label="{Avalonia|CSharpMath.Avalonia}"];"CSharpMath.SkiaSharp"[shape=record,label="{SkiaSharp|CSharpMath.SkiaSharp}"];"CSharpMath.Forms"[shape=record,label="{Xamarin.Forms|CSharpMath.Forms}"];"Typography.OpenFont"--"Typography.GlyphLayout";"Typography.TextBreak"--"TextBreakTests";CSharpMath--"CSharpMath.CoreTests";CSharpMath--"CSharpMath.Apple"--"CSharpMath.Ios"--{"CSharpMath.Ios.Example";"CSharpMath.Ios.Tests"};CSharpMath--"CSharpMath.Editor"--"CSharpMath.Editor.Tests"--"CSharpMath.Editor.Tests.Visualizer";"CSharpMath.Editor"--"CSharpMath.Editor.Tests.FSharp";CSharpMath--"CSharpMath.Evaluation"--{"CSharpMath.Evaluation.Tests";"CSharpMath.Forms.Example"};{"CSharpMath.Editor";"Typography.GlyphLayout";"Typography.TextBreak"}--"CSharpMath.Rendering"--"CSharpMath.Rendering.Text.Tests";"CSharpMath.Rendering"--"CSharpMath.Avalonia"--"CSharpMath.Avalonia.Example";"CSharpMath.Rendering"--"CSharpMath.SkiaSharp"--"CSharpMath.Forms"--"CSharpMath.Forms.Example";"CSharpMath.Forms.Example"--{"CSharpMath.Forms.Example.Android";"CSharpMath.Forms.Example.iOS";"CSharpMath.Forms.Example.UWP";"CSharpMath.Forms.Example.WPF"};{"CSharpMath.Avalonia";"CSharpMath.SkiaSharp"}--"CSharpMath.Rendering.Tests";"CSharpMath.Xaml"--{"CSharpMath.Avalonia";"CSharpMath.Forms"}--"CSharpMath.Xaml.Tests"})
 
 ## Major processes of drawing LaTeX
 <!--For some reason taillabel is the only way to position a label to the left-->
-![Major processes of drawing LaTeX](https://quickchart.io/chart?cht=gv&chl=digraph{edge[label="%20"];{rank=same;"string%20(LaTeX%20math)";"string%20(LaTeX%20text)"};"string%20(LaTeX%20math)"->"CSharpMath.Atom.MathList"[taillabel="CSharpMath.Atom.LaTeXParser.MathListFromLaTeX%20"];"CSharpMath.Atom.MathList"->"string%20(LaTeX%20math)"[label="CSharpMath.Atom.LaTeXParser.MathListToLaTeX"];"CSharpMath.Atom.MathList"->"CSharpMath.Evaluation.MathItem"[label="CSharpMath.Evaluation.Evaluate"];"CSharpMath.Evaluation.MathItem"->"CSharpMath.Atom.MathList"[taillabel="CSharpMath.Evaluation.Parse%20%20"];"CSharpMath.Atom.MathList"->"CSharpMath.Display.IDisplay%3CTFont,%20TGlyph>"[label="CSharpMath.Display.Typesetter.CreateLine"];"string%20(LaTeX%20text)"->"CSharpMath.Rendering.Text.TextAtom"[label="CSharpMath.Rendering.Text.TextLaTeXParser.TextAtomFromLaTeX"];"CSharpMath.Rendering.Text.TextAtom"->"string%20(LaTeX%20text)"[taillabel="CSharpMath.Rendering.Text.TextLaTeXParser.TextAtomToLaTeX%20"];"CSharpMath.Rendering.Text.TextAtom"->"CSharpMath.Display.IDisplay%3CTFont,%20TGlyph>"[label="CSharpMath.Rendering.Text.TextTypesetter.Layout"];"CSharpMath.Display.IDisplay%3CTFont,%20TGlyph>"->"(Rendered%20output)"[label="CSharpMath.Display.IDisplay%3CTFont,%20TGlyph>.Draw"];"(Platform%20canvas)"->"CSharpMath.Rendering.FrontEnd.ICanvas"[label="%20CSharpMath.Rendering.FrontEnd.Painter%3CTCanvas,%20TContent,%20TColor>.WrapCanvas"];"CSharpMath.Rendering.FrontEnd.ICanvas"->"CSharpMath.Rendering.BackEnd.GraphicsContext"[label="%20new%20CSharpMath.Rendering.BackEnd.GraphicsContext"];"CSharpMath.Rendering.BackEnd.GraphicsContext"->"(Rendered%20output)"})
+![Major processes of drawing LaTeX](https://quickchart.io/chart?cht=gv&chl=digraph{edge[label="%20"];{rank=same;"string%20(LaTeX%20math)";"string%20(LaTeX%20text)"};"string%20(LaTeX%20math)"->"CSharpMath.Atom.MathList"[taillabel="CSharpMath.Atom.LaTeXParser.MathListFromLaTeX%20"];"CSharpMath.Atom.MathList"->"string%20(LaTeX%20math)"[label="CSharpMath.Atom.LaTeXParser.MathListToLaTeX"];"CSharpMath.Atom.MathList"->"CSharpMath.Evaluation.MathItem"[label="CSharpMath.Evaluation.Evaluate"];"CSharpMath.Evaluation.MathItem"->"CSharpMath.Atom.MathList"[taillabel="CSharpMath.Evaluation.Visualize%20%20"];"CSharpMath.Atom.MathList"->"CSharpMath.Display.IDisplay%3CTFont,%20TGlyph>"[label="CSharpMath.Display.Typesetter.CreateLine"];"string%20(LaTeX%20text)"->"CSharpMath.Rendering.Text.TextAtom"[label="CSharpMath.Rendering.Text.TextLaTeXParser.TextAtomFromLaTeX"];"CSharpMath.Rendering.Text.TextAtom"->"string%20(LaTeX%20text)"[taillabel="CSharpMath.Rendering.Text.TextLaTeXParser.TextAtomToLaTeX%20"];"CSharpMath.Rendering.Text.TextAtom"->"CSharpMath.Display.IDisplay%3CTFont,%20TGlyph>"[label="CSharpMath.Rendering.Text.TextTypesetter.Layout"];"CSharpMath.Display.IDisplay%3CTFont,%20TGlyph>"->"(Rendered%20output)"[label="CSharpMath.Display.IDisplay%3CTFont,%20TGlyph>.Draw"];"(Platform%20canvas)"->"CSharpMath.Rendering.FrontEnd.ICanvas"[label="%20CSharpMath.Rendering.FrontEnd.Painter%3CTCanvas,%20TContent,%20TColor>.WrapCanvas"];"CSharpMath.Rendering.FrontEnd.ICanvas"->"CSharpMath.Rendering.BackEnd.GraphicsContext"[label="%20new%20CSharpMath.Rendering.BackEnd.GraphicsContext"];"CSharpMath.Rendering.BackEnd.GraphicsContext"->"(Rendered%20output)"})
 
 # Extending to more platforms
 

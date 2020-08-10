@@ -87,7 +87,7 @@ namespace CSharpMath.Atom {
       //FontStyle == otherAtom.FontStyle &&
       Superscript.NullCheckingStructuralEquality(otherAtom.Superscript) &&
       Subscript.NullCheckingStructuralEquality(otherAtom.Subscript);
-    public override bool Equals(object obj) => obj is MathAtom a ? EqualsAtom(a) : false;
+    public override bool Equals(object obj) => obj is MathAtom a && EqualsAtom(a);
     bool IEquatable<MathAtom>.Equals(MathAtom otherAtom) => EqualsAtom(otherAtom);
     public override int GetHashCode() => (Superscript, Subscript, Nucleus).GetHashCode();
   }

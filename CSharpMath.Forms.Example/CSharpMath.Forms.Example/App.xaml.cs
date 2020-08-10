@@ -5,8 +5,10 @@ using Xamarin.Forms.Xaml;
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
 namespace CSharpMath.Forms.Example {
   public partial class App : Application {
-    public static ObservableCollection<MathView> AllViews =
+    public static ObservableCollection<MathView> AllMathViews =
       new ObservableCollection<MathView>();
+    public static ObservableCollection<TextView> AllTextViews =
+      new ObservableCollection<TextView>();
     public App() => InitializeComponent();
     int index = -1;
     void Handle_ChildAdded(object sender, ElementEventArgs e) {

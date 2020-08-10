@@ -1,5 +1,6 @@
 namespace CSharpMath.Atom.Atoms {
-  /// <summary>A unary operator</summary>
+  /// <summary>AMSMath class 2: Binary Operator (conjunction) when no suitable left operand
+  /// (at beginning or after open), typesetted as class 0: Ordinary to remove spacing</summary>
   public sealed class UnaryOperator : MathAtom {
     public UnaryOperator(string nucleus) : base(nucleus) { }
     public override bool ScriptsAllowed => true;

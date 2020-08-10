@@ -2,7 +2,7 @@
 name: New platform
 about: Suggest a new platform for CSharpMath.
 title: ''
-labels: Type/Platform
+labels: Status/0. New, Type/Platform
 assignees: ''
 
 ---

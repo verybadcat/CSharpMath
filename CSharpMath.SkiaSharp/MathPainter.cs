@@ -3,7 +3,6 @@ using CSharpMath.Structures;
 using CSharpMath.Rendering.BackEnd;
 using CSharpMath.Rendering.FrontEnd;
 using SkiaSharp;
-using Color = CSharpMath.Structures.Color;
 
 namespace CSharpMath.SkiaSharp {
   public class MathPainter : MathPainter<SKCanvas, SKColor> {
