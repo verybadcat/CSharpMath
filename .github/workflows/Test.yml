@@ -85,6 +85,10 @@ jobs:
       with:
         name: NuGet packages
         path: .nupkgs/
+    - run: |
+        curl -s https://codecov.io/bash > codecov
+        chmod +x codecov
+        ./codecov -f ".testcoverage/**/*.xml"
     - name: Push CI artifacts to GitHub Packages registry
       if: github.ref == 'refs/heads/master'
       run: |
