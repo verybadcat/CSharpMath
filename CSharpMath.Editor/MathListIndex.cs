@@ -22,7 +22,7 @@ namespace CSharpMath.Editor {
   }
 
   /** <summary>
-* An index that points to a particular character in the MathList. The index is a LinkedList that represents
+* An index that points to a particular atom in the MathList. The index is a LinkedList that represents
 * a path from the beginning of the MathList to reach a particular atom in the list. The next node of the path
 * is represented by the subIndex. The path terminates when the subIndex is nil.
 *
