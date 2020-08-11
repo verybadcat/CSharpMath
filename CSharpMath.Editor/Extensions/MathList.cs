@@ -214,7 +214,7 @@ namespace CSharpMath.Editor {
           {
             if (!(self.Atoms[start.AtomIndex] is Atoms.Radical radical))
               throw new SubIndexTypeMismatchException(typeof(Atoms.Radical), start);
-            radical.Radicand.RemoveAtoms(range.SubIndexRange);
+            radical.Degree.RemoveAtoms(range.SubIndexRange);
             break;
           }
         case (MathListSubIndexType.Numerator,_):
