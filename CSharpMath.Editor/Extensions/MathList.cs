@@ -228,9 +228,7 @@ namespace CSharpMath.Editor {
           {
             if (!(self.Atoms[start.AtomIndex] is Atoms.Fraction frac))
               throw new SubIndexTypeMismatchException(typeof(Atoms.Fraction), start);
-            if (start.SubIndexInfo is (MathListSubIndexType.Numerator,_))
-              frac.Numerator.RemoveAtoms(range.SubIndexRange);
-            else frac.Denominator.RemoveAtoms(range.SubIndexRange);
+            frac.Denominator.RemoveAtoms(range.SubIndexRange);
             break;
           }
         case (MathListSubIndexType.Subscript,_):
