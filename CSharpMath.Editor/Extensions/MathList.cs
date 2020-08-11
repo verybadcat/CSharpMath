@@ -7,6 +7,7 @@ namespace CSharpMath.Editor {
   using System.Linq;
 
   partial class Extensions {
+    // TODO: document this function. The name sounds is reasonable but the inputs are not transparent.
     static void InsertAtAtomIndexAndAdvance(this MathList self, int atomIndex, MathAtom atom, ref MathListIndex advance, MathListSubIndexType advanceType) {
       if (atomIndex < 0 || atomIndex > self.Count)
         throw new IndexOutOfRangeException($"Insertion index {atomIndex} is out of bounds for list of size {self.Atoms.Count}");
@@ -81,6 +82,7 @@ namespace CSharpMath.Editor {
           throw new SubIndexTypeMismatchException(index);
       }
     }
+  // TODO document this function
   public static MathListIndex? PreviousOrBeforeWholeList(MathListIndex index) {
     return
       index.SubIndexType switch
@@ -94,6 +96,7 @@ namespace CSharpMath.Editor {
     }
     public static void RemoveAt(this MathList self, MathListIndex index) {
       static bool IsBeforeSubList(MathListIndex index) {
+        // TODO: remove the index.SubIndex.AtomIndex == -1 condition as this is not valid
         return (index.SubIndex != null && index.SubIndex.AtomIndex == -1) && index.SubIndexType == MathListSubIndexType.None;
       }
 
