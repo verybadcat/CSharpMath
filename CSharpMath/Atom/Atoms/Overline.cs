@@ -16,8 +16,8 @@ namespace CSharpMath.Atom.Atoms {
       .AppendInBracesOrLiteralNull(InnerList?.DebugString)
       .ToString();
     public bool EqualsOverline(Overline other) =>
-      EqualsAtom(other) && InnerList.NullCheckingStructuralEquality(other?.InnerList);
-    public override bool Equals(object obj) => obj is Overline o ? EqualsOverline(o) : false;
+      EqualsAtom(other) && InnerList.Equals(other.InnerList);
+    public override bool Equals(object obj) => obj is Overline o && EqualsOverline(o);
     public override int GetHashCode() =>
       (base.GetHashCode(), InnerList).GetHashCode();
   }

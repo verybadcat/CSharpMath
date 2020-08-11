@@ -31,12 +31,6 @@ namespace CSharpMath.CoreTests {
     }
 
     [Fact]
-    public void TestAddErrors() {
-      var list = new MathList();
-      Assert.Throws<ArgumentNullException>(() => list.Add(null!));
-    }
-
-    [Fact]
     public void TestInsert() {
       var list = new MathList();
       Assert.Empty(list);

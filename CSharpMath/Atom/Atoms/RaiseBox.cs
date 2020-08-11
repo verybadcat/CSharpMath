@@ -13,7 +13,7 @@ namespace CSharpMath.Atom.Atoms {
     public override int GetHashCode() =>
       (base.GetHashCode(), Raise, InnerList).GetHashCode();
     public override bool Equals(object obj) =>
-      obj is RaiseBox r ? EqualsAtom(r) && Raise == r.Raise
-      && InnerList.NullCheckingStructuralEquality(r.InnerList) : false;
+      obj is RaiseBox r && EqualsAtom(r) && Raise == r.Raise
+      && InnerList.Equals(r.InnerList);
   }
 }
