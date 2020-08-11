@@ -95,11 +95,15 @@ namespace CSharpMath.Editor {
       };
     }
     public static void RemoveAt(this MathList self, MathListIndex index) {
+      // TODO: document this function
       static bool IsBeforeSubList(MathListIndex index) {
         // TODO: remove the index.SubIndex.AtomIndex == -1 condition as this is not valid
         return (index.SubIndex != null && index.SubIndex.AtomIndex == -1) && index.SubIndexType == MathListSubIndexType.None;
       }
-
+      // TODO: document this function
+      // From github conv so far:
+      // "atom is a MathAtom directly contained in self that contains(index.SubIndex.AtomIndex > -1)
+      // is(index.SubIndex.AtomIndex = -1) the atom to remove."
       void RemoveAtInnerList<TAtom>(TAtom atom, int innerListIndex) where TAtom : MathAtom, IMathListContainer {
         if (index.SubIndex is null) throw new InvalidCodePathException($"{nameof(index.SubIndex)} should exist");
         if (IsBeforeSubList(index)) {
@@ -126,6 +130,7 @@ namespace CSharpMath.Editor {
           if(atom.Subscript.Count > 0) self[tempIndex.AtomIndex - 1].Subscript.Append(atom.Subscript);
         } else atom.InnerLists.ElementAt(innerListIndex).RemoveAt(index.SubIndex);
       }
+      // TODO: document this function
       void RemoveAtInnerScript(ref MathListIndex index, MathAtom atom, bool superscript) {
         if (index.SubIndex is null) throw new InvalidCodePathException($"{nameof(index.SubIndex)} should exist");
         var script = superscript ? atom.Superscript : atom.Subscript;
@@ -148,6 +153,7 @@ namespace CSharpMath.Editor {
         throw new IndexOutOfRangeException($"Deletion index {index.AtomIndex} is out of bounds for list of size {self.Atoms.Count}");
       switch (index.SubIndexType) {
         case MathListSubIndexType.None:
+          // TODO: remove the index.SubIndex.AtomIndex == -1 condition as this is not valid
           if (index.AtomIndex == -1) {
             index.ReplaceWith(index.Next);
             if (self.Atoms[index.AtomIndex] is Atoms.Placeholder { Superscript: var super, Subscript: var sub }) {
