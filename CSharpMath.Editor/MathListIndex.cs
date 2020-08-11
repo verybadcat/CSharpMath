@@ -63,16 +63,20 @@ namespace CSharpMath.Editor {
       SubIndexInfo switch
       {
         null => new MathListIndex(AtomIndex, (type, subIndex)),
-        (MathListSubIndexType thisSubIndType, MathListIndex thisSubIndex) =>
+        (MathListSubIndexType thisType, MathListIndex thisSubIndex) =>
           new MathListIndex(AtomIndex,
-            (thisSubIndType, thisSubIndex.LevelUpWithSubIndex(type, subIndex)))
+            (thisType, thisSubIndex.LevelUpWithSubIndex(type, subIndex)))
       };
     ///<summary>Creates a new index by removing the last index item. If this is the last one, then returns nil.</summary>
     public MathListIndex? LevelDown() =>
-      SubIndexInfo is null ? null :
-        SubIndexInfo.Value.SubIndex.LevelDown() is MathListIndex subIndex
-        ? new MathListIndex(AtomIndex, (SubIndexInfo.Value.SubIndexType, subIndex)) :
-        Level0Index(AtomIndex);
+      SubIndexInfo switch
+      {
+        null => null,
+        (MathListSubIndexType type, MathListIndex subIndex) =>
+          subIndex.LevelDown() is MathListIndex levelledDownSubIndex
+          ? new MathListIndex(AtomIndex, (type, levelledDownSubIndex)) :
+          Level0Index(AtomIndex)
+      };
 
     /** <summary>
      * Returns the previous index if this index is not at the beginning of a line.
@@ -84,9 +88,9 @@ namespace CSharpMath.Editor {
     public MathListIndex? Previous => SubIndexInfo switch
     {
       null => AtomIndex > 0 ? Level0Index(AtomIndex - 1) : null,
-      (MathListSubIndexType SubIndexType, MathListIndex SubIndex) =>
-        SubIndex.Previous is MathListIndex prevSubIndex
-        ? new MathListIndex(AtomIndex, (SubIndexType, prevSubIndex))
+      (MathListSubIndexType type, MathListIndex subIndex) =>
+        subIndex.Previous is MathListIndex prevSubIndex
+        ? new MathListIndex(AtomIndex, (type, prevSubIndex))
         : null,
     };
 
@@ -105,8 +109,8 @@ namespace CSharpMath.Editor {
       SubIndexInfo switch
       {
         null => false,
-        (MathListSubIndexType subIndexType2, MathListIndex subIndex) =>
-          subIndexType == subIndexType2 || subIndex.HasSubIndexOfType(subIndexType)
+        (MathListSubIndexType type, MathListIndex subIndex) =>
+          subIndexType == type || subIndex.HasSubIndexOfType(subIndexType)
       };
     /// <summary>Same, or differing only with respect to the final AtomIdex.</summary>
     public bool AtSameLevel(MathListIndex other) =>
