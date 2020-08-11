@@ -142,7 +142,7 @@ return c.Length + strIndex; //offset for target char in its containing string
       (this TextLineDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, MathListIndex index)
       where TFont : IFont<TGlyph> {
       float offset;
-      if (!(index.SubIndexType is MathListSubIndexType.None))
+      if (!(index.SubIndexInfo is null))
         throw new ArgumentException
           ($"An index in a {nameof(TextLineDisplay<TFont, TGlyph>)} cannot have sub-indexes.", nameof(index));
       if (index.AtomIndex == self.Range.End)
@@ -165,10 +165,10 @@ return c.Length + strIndex; //offset for target char in its containing string
       if (!self.Range.Contains(index.AtomIndex))
         throw new ArgumentOutOfRangeException
           (nameof(index), index, $"The index is not in the range {self.Range}.");
-      if (index.SubIndexType is MathListSubIndexType.None)
+      if (index.SubIndexInfo is null)
         throw new ArgumentException
           ("The subindex type must not be none to be able to highlight it.", nameof(index));
-      if (index.SubIndexType is MathListSubIndexType.BetweenBaseAndScripts)
+      if (index.SubIndexInfo is (MathListSubIndexType.BetweenBaseAndScripts,_))
         throw new ArgumentException("Nucleus highlighting is not supported.", nameof(index));
       // index is in unicode code points, while attrString is not
       var (run, charIndex) = self.GetRunAndCharIndexFromCodepointIndex(index.AtomIndex - self.Range.Location);

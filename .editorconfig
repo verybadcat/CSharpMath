@@ -19,11 +19,11 @@ dotnet_sort_system_directives_first = true
 # C# formatting settings
 # https://docs.microsoft.com/en-us/visualstudio/ide/editorconfig-code-style-settings-reference#c-formatting-settings
 csharp_new_line_before_catch = false
-csharp_new_line_before_else = false
+#csharp_new_line_before_else = false
 csharp_new_line_before_finally = false
 csharp_new_line_before_members_in_object_initializers = false
 csharp_new_line_before_members_in_anonymous_types = false
-csharp_new_line_before_open_brace = none
+#csharp_new_line_before_open_brace = none
 csharp_new_line_between_query_expression_clauses = false
 
 # Indentation options

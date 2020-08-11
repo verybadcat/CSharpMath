@@ -138,14 +138,18 @@ namespace CSharpMath.Editor {
     
     public static void HighlightCharacterAt<TFont, TGlyph>(this ListDisplay<TFont, TGlyph> self,
       MathListIndex index, Color color) where TFont : IFont<TGlyph> {
-      if (self.Range.Contains(index.AtomIndex)
-        && self.SubDisplayForIndex(index) is IDisplay<TFont, TGlyph> display)
-        if (index.SubIndexType is MathListSubIndexType.BetweenBaseAndScripts
-            || index.SubIndexType is MathListSubIndexType.None)
-          display.HighlightCharacterAt(index, color);
-        else if (index.SubIndex != null)
-          // Recurse
-          display.HighlightCharacterAt(index.SubIndex, color);
+      if (self.Range.Contains(index.AtomIndex) && self.SubDisplayForIndex(index) is IDisplay<TFont, TGlyph> display)
+      {
+        switch (index.SubIndexInfo) {
+          case (MathListSubIndexType.BetweenBaseAndScripts, _):
+          case null:
+            display.HighlightCharacterAt(index, color); break;
+          case (_, MathListIndex subIndex):
+            // Recurse
+            display.HighlightCharacterAt(subIndex, color); break;
+          default:break;
+        }
+      }
     }
 
     public static void Highlight<TFont, TGlyph>(this ListDisplay<TFont, TGlyph> self, Color color)
@@ -157,43 +161,43 @@ namespace CSharpMath.Editor {
     public static IDisplay<TFont, TGlyph>? SubDisplayForIndex<TFont, TGlyph>(
       this ListDisplay<TFont, TGlyph> self, MathListIndex index) where TFont : IFont<TGlyph> {
       // Inside the range
-      if (index.SubIndexType is MathListSubIndexType.Superscript
-         || index.SubIndexType is MathListSubIndexType.Subscript)
+      if (index.SubIndexInfo is (MathListSubIndexType.Superscript,_)
+         || index.SubIndexInfo is (MathListSubIndexType.Subscript,_))
         foreach (var display in self.Displays)
           switch (display) {
             case ListDisplay<TFont, TGlyph> list
               when index.AtomIndex == list.IndexInParent
               // This is the right character for the sub/superscript, check that it's type matches the index
               && (list.LinePosition is LinePosition.Subscript
-               && index.SubIndexType is MathListSubIndexType.Subscript
+               && index.SubIndexInfo is (MathListSubIndexType.Subscript,_)
                || list.LinePosition is LinePosition.Superscript
-               && index.SubIndexType is MathListSubIndexType.Superscript):
+               && index.SubIndexInfo is (MathListSubIndexType.Superscript,_)):
               return list;
             case LargeOpLimitsDisplay<TFont, TGlyph> largeOps
               when largeOps.Range.Contains(index.AtomIndex):
-              return index.SubIndexType is MathListSubIndexType.Subscript
+              return index.SubIndexInfo is (MathListSubIndexType.Subscript,_)
               ? largeOps.LowerLimit : largeOps.UpperLimit;
           }
       else
         foreach (var display in self.Displays)
           if (!(display is ListDisplay<TFont, TGlyph>) && display.Range.Contains(index.AtomIndex))
             //not a subscript/superscript and ... jackpot, the the index is in the range of this atom.
-            switch (index.SubIndexType) {
-              case MathListSubIndexType.None:
-              case MathListSubIndexType.BetweenBaseAndScripts:
+            switch (index.SubIndexInfo) {
+              case null:
+              case (MathListSubIndexType.BetweenBaseAndScripts, _):
                 return display;
-              case MathListSubIndexType.Degree when display is RadicalDisplay<TFont, TGlyph> radical:
+              case (MathListSubIndexType.Degree, _) when display is RadicalDisplay<TFont, TGlyph> radical:
                   return radical.Degree;
-              case MathListSubIndexType.Radicand when display is RadicalDisplay<TFont, TGlyph> radical:
+              case (MathListSubIndexType.Radicand, _) when display is RadicalDisplay<TFont, TGlyph> radical:
                 return radical.Radicand;
-              case MathListSubIndexType.Numerator when display is FractionDisplay<TFont, TGlyph> fraction:
+              case (MathListSubIndexType.Numerator, _) when display is FractionDisplay<TFont, TGlyph> fraction:
                 return fraction.Numerator;
-              case MathListSubIndexType.Denominator when display is FractionDisplay<TFont, TGlyph> fraction:
+              case (MathListSubIndexType.Denominator, _) when display is FractionDisplay<TFont, TGlyph> fraction:
                 return fraction.Denominator;
-              case MathListSubIndexType.Inner when display is InnerDisplay<TFont, TGlyph> inner:
+              case (MathListSubIndexType.Inner, _) when display is InnerDisplay<TFont, TGlyph> inner:
                 return inner.Inner;
-              case MathListSubIndexType.Superscript:
-              case MathListSubIndexType.Subscript:
+              case (MathListSubIndexType.Superscript, _):
+              case (MathListSubIndexType.Subscript, _):
                 throw new InvalidCodePathException
                   ("Superscripts and subscripts should have been handled in a separate case above.");
               default:
