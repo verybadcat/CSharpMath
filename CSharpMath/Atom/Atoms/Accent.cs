@@ -18,8 +18,8 @@ namespace CSharpMath.Atom.Atoms {
       new Accent(Nucleus, InnerList.Clone(finalize));
     public override bool ScriptsAllowed => true;
     public bool EqualsAccent(Accent other) =>
-      EqualsAtom(other) && InnerList.NullCheckingStructuralEquality(other?.InnerList);
-    public override bool Equals(object obj) => obj is Accent a ? EqualsAccent(a) : false;
+      EqualsAtom(other) && InnerList.Equals(other.InnerList);
+    public override bool Equals(object obj) => obj is Accent a && EqualsAccent(a);
     public override int GetHashCode() => (base.GetHashCode(), InnerList).GetHashCode();
   }
 }

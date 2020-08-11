@@ -16,10 +16,10 @@ namespace CSharpMath.Atom.Atoms {
       new Inner(LeftBoundary, InnerList.Clone(finalize), RightBoundary);
     public bool EqualsInner(Inner otherInner) =>
       EqualsAtom(otherInner)
-      && InnerList.NullCheckingStructuralEquality(otherInner.InnerList)
-      && LeftBoundary.NullCheckingStructuralEquality(otherInner.LeftBoundary)
-      && RightBoundary.NullCheckingStructuralEquality(otherInner.RightBoundary);
-    public override bool Equals(object obj) => obj is Inner i ? EqualsInner(i) : false;
+      && InnerList.Equals(otherInner.InnerList)
+      && LeftBoundary.Equals(otherInner.LeftBoundary)
+      && RightBoundary.Equals(otherInner.RightBoundary);
+    public override bool Equals(object obj) => obj is Inner i && EqualsInner(i);
     public override int GetHashCode() =>
       (base.GetHashCode(), InnerList, LeftBoundary, RightBoundary).GetHashCode();
     public override string DebugString =>
