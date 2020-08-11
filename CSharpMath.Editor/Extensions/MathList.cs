@@ -97,46 +97,44 @@ namespace CSharpMath.Editor {
         case null:
           self.RemoveAt(index.AtomIndex);
           break;
-        case (MathListSubIndexType.BetweenBaseAndScripts,_):
+        case (MathListSubIndexType.BetweenBaseAndScripts,_): {
+          var currentAtom = self.Atoms[index.AtomIndex];
+          if (currentAtom.Subscript.IsEmpty() && currentAtom.Superscript.IsEmpty())
+            throw new SubIndexTypeMismatchException(index);
+          var downIndex = index.LevelDown();
+          if (downIndex is null) throw new InvalidCodePathException("downIndex is null");
+          if (index.AtomIndex > 0 &&
+              self.Atoms[index.AtomIndex - 1] is MathAtom previous &&
+              previous.Subscript.IsEmpty() &&
+              previous.Superscript.IsEmpty() &&
+              previous switch
+              {
+                Atoms.BinaryOperator _ => false,
+                Atoms.UnaryOperator _ => false,
+                Atoms.Relation _ => false,
+                Atoms.Punctuation _ => false,
+                Atoms.Space _ => false,
+                _ => true
+              })
           {
-            var currentAtom = self.Atoms[index.AtomIndex];
-            if (currentAtom.Subscript.IsEmpty() && currentAtom.Superscript.IsEmpty())
-              throw new SubIndexTypeMismatchException(index);
-            var downIndex = index.LevelDown();
-            if (downIndex is null) throw new InvalidCodePathException("downIndex is null");
-            if (index.AtomIndex > 0 &&
-                self.Atoms[index.AtomIndex - 1] is MathAtom previous &&
-                previous.Subscript.IsEmpty() &&
-                previous.Superscript.IsEmpty() &&
-                previous switch
-                {
-                  Atoms.BinaryOperator _ => false,
-                  Atoms.UnaryOperator _ => false,
-                  Atoms.Relation _ => false,
-                  Atoms.Punctuation _ => false,
-                  Atoms.Space _ => false,
-                  _ => true
-                })
-            {
-              previous.Superscript.Append(currentAtom.Superscript);
-              previous.Subscript.Append(currentAtom.Subscript);
-              self.RemoveAt(index.AtomIndex);
-              // it was in the nucleus and we removed it, get out of the nucleus and get in the nucleus of the previous one.
-              index = downIndex.Previous is MathListIndex downPrev
-                ? downPrev.LevelUpWithSubIndex(MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1))
-                : downIndex;
-              break;
-            }
-            // insert placeholder since we couldn't place the scripts in previous atom
-            var insertionAtom = LaTeXSettings.Placeholder;
-            insertionAtom.Subscript.Append(currentAtom.Subscript);
-            insertionAtom.Superscript.Append(currentAtom.Superscript);
+            previous.Superscript.Append(currentAtom.Superscript);
+            previous.Subscript.Append(currentAtom.Subscript);
             self.RemoveAt(index.AtomIndex);
-            index = downIndex;
-            self.InsertAndAdvance(ref index, insertionAtom, null);
-            index = index.Previous ?? throw new InvalidCodePathException("Cannot go back after insertion?");
-            return;
+            // it was in the nucleus and we removed it, get out of the nucleus and get in the nucleus of the previous one.
+            index = downIndex.Previous is MathListIndex downPrev
+              ? downPrev.LevelUpWithSubIndex(MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1))
+              : downIndex;
+            break;
           }
+          // insert placeholder since we couldn't place the scripts in previous atom
+          var insertionAtom = LaTeXSettings.Placeholder;
+          insertionAtom.Subscript.Append(currentAtom.Subscript);
+          insertionAtom.Superscript.Append(currentAtom.Superscript);
+          self.RemoveAt(index.AtomIndex);
+          index = downIndex;
+          self.InsertAndAdvance(ref index, insertionAtom, null);
+          index = index.Previous ?? throw new InvalidCodePathException("Cannot go back after insertion?");
+          return; }
         case (MathListSubIndexType.Radicand, MathListIndex subIndex):
           {
             if (!(self.Atoms[index.AtomIndex] is Atoms.Radical radical))
