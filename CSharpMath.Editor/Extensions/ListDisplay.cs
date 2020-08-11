@@ -1,8 +1,11 @@
 namespace CSharpMath.Editor {
   using System;
   using System.Collections.Generic;
+  using System.Diagnostics;
   using System.Drawing;
   using System.Linq;
+  using System.Threading;
+  using CSharpMath.Atom;
   using Display;
   using Display.Displays;
   using Display.FrontEnd;
@@ -89,43 +92,38 @@ namespace CSharpMath.Editor {
         if (closestLine.IndexInParent is int.MinValue)
           throw new ArgumentException
             ($"Index was not set for a {indexType} in the {nameof(ListDisplay<TFont, TGlyph>)}.", nameof(self));
-        return MathListIndex.IndexAtLocation(closestLine.IndexInParent, indexType, index);
+        return new MathListIndex(closestLine.IndexInParent, (indexType, index!)); // TODO: verify non-null
       } else if (displayWithPoint.HasScript)
         // The display list has a subscript or a superscript.
         // If the index is at the end of the atom,
         // then we need to put it before the sub/super script rather than after.
         if (index?.AtomIndex == displayWithPoint.Range.End)
-          return MathListIndex.IndexAtLocation
-            (index.AtomIndex - 1, MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1));
+          return new MathListIndex(
+            index.AtomIndex - 1, (MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1)));
       return index;
     }
 
     public static PointF? PointForIndex<TFont, TGlyph>
       (this ListDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, MathListIndex index)
       where TFont : IFont<TGlyph> {
-      if (index is null) return null;
 
       PointF? position;
       if (index.AtomIndex == self.Range.End) {
         // Special case the edge of the range
         position = new PointF(self.Width, 0);
-      } else if (self.Range.Contains(index.AtomIndex)
+      }
+      else if (self.Range.Contains(index.AtomIndex)
                  && self.SubDisplayForIndex(index) is IDisplay<TFont, TGlyph> display)
-        switch (index.SubIndexType) {
-          case MathListSubIndexType.BetweenBaseAndScripts when index.SubIndex != null:
-            var nucleusPosition = index.AtomIndex + index.SubIndex.AtomIndex;
-            position = display.PointForIndex(context, MathListIndex.Level0Index(nucleusPosition));
-            break;
-          case MathListSubIndexType.None:
-            position = display.PointForIndex(context, index);
-            break;
-          case var _ when index.SubIndex != null:
-            // Recurse
-            position = display.PointForIndex(context, index.SubIndex);
-            break;
-          default:
-            throw new ArgumentException("index.Subindex is null despite a non-None subindex type");
-        } else
+      {
+        position = index.SubIndexInfo switch
+        {
+          (MathListSubIndexType.BetweenBaseAndScripts, MathListIndex subIndex) =>
+            display.PointForIndex(context, MathListIndex.Level0Index(index.AtomIndex + subIndex.AtomIndex)),
+          null => display.PointForIndex(context, index),
+          (_, MathListIndex subIndex) => display.PointForIndex(context, subIndex)
+        };
+      }
+        else
         // Outside the range
         return null;
       if (position is PointF found) {

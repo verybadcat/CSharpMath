@@ -148,7 +148,7 @@ namespace CSharpMath.Editor {
               SetScript(prevAtom, LaTeXSettings.PlaceholderList);
             }
             _insertionIndex = prevIndexCorrected.LevelUpWithSubIndex
-              (subIndexType, MathListIndex.Level0Index(0));
+              ((subIndexType, MathListIndex.Level0Index(0)));
           }
         }
       }
