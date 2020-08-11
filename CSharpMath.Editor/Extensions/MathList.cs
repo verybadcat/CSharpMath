@@ -87,6 +87,7 @@ namespace CSharpMath.Editor {
     return
       index.SubIndexType switch
       {
+        // TODO: remove the index.SubIndex.AtomIndex == -1 possibility as this is not valid
         MathListSubIndexType.None => index.AtomIndex > -1 ? MathListIndex.Level0Index(index.AtomIndex - 1) : null,
         _ =>
         (index.SubIndex == null) ? null :
