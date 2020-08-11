@@ -95,6 +95,7 @@ namespace CSharpMath.Editor {
           ? MathListIndex.IndexAtLocation(index.AtomIndex, index.SubIndexType, prevSubIndex) : null,
       };
     }
+    // TODO: document this function
     public static void RemoveAt(this MathList self, MathListIndex index) {
       // TODO: document this function
       static bool IsBeforeSubList(MathListIndex index) {
