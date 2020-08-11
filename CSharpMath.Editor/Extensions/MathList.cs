@@ -17,7 +17,7 @@ namespace CSharpMath.Editor {
       advance = advanceType switch
       {
         null => advance.Next,
-        MathListSubIndexType advanceT => advance.LevelUpWithSubIndex((advanceT, MathListIndex.Level0Index(0))),
+        MathListSubIndexType advanceT => advance.LevelUpWithSubIndex(advanceT, MathListIndex.Level0Index(0)),
       };
     }
     /// <summary>Inserts <paramref name="atom"/> and modifies <paramref name="index"/> to advance to the next position.</summary>
@@ -123,7 +123,7 @@ namespace CSharpMath.Editor {
               self.RemoveAt(index.AtomIndex);
               // it was in the nucleus and we removed it, get out of the nucleus and get in the nucleus of the previous one.
               index = downIndex.Previous is MathListIndex downPrev
-                ? downPrev.LevelUpWithSubIndex((MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1)))
+                ? downPrev.LevelUpWithSubIndex(MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1))
                 : downIndex;
               break;
             }

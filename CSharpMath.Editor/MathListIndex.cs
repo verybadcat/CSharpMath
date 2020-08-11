@@ -59,10 +59,14 @@ namespace CSharpMath.Editor {
     }
 
     ///<summary>Creates a new index by attaching this index at the end of the current one.</summary>
-    public MathListIndex LevelUpWithSubIndex((MathListSubIndexType SubIndexType, MathListIndex SubIndex)? subIndexInfo) =>
-      SubIndexInfo == null ? new MathListIndex(AtomIndex, subIndexInfo) :
-      new MathListIndex(AtomIndex,
-        (SubIndexInfo.Value.SubIndexType, SubIndexInfo.Value.SubIndex.LevelUpWithSubIndex(subIndexInfo)));
+    public MathListIndex LevelUpWithSubIndex(MathListSubIndexType subIndexType, MathListIndex subIndex) =>
+      SubIndexInfo switch
+      {
+        null => new MathListIndex(AtomIndex, (subIndexType, subIndex)),
+        (MathListSubIndexType thisSubIndType, MathListIndex thisSubIndex) =>
+          new MathListIndex(AtomIndex,
+            (thisSubIndType, thisSubIndex.LevelUpWithSubIndex(subIndexType, subIndex)))
+      };
     ///<summary>Creates a new index by removing the last index item. If this is the last one, then returns nil.</summary>
     public MathListIndex? LevelDown() =>
       SubIndexInfo is null ? null :
