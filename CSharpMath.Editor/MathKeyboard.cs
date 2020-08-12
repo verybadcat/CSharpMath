@@ -148,7 +148,7 @@ namespace CSharpMath.Editor {
               SetScript(prevAtom, LaTeXSettings.PlaceholderList);
             }
             _insertionIndex = prevIndexCorrected.LevelUpWithSubIndex
-              (subIndexType, MathListIndex.Level0Index(0));
+              (subIndexType, 0);
           }
         }
       }
@@ -209,41 +209,37 @@ namespace CSharpMath.Editor {
                   throw new InvalidCodePathException("Invalid levelDown");
                 if (scriptAtom.Subscript.IsNonEmpty())
                   _insertionIndex = levelDown.LevelUpWithSubIndex
-                    (MathListSubIndexType.Subscript,
-                     MathListIndex.Level0Index(scriptAtom.Subscript.Count));
+                    (MathListSubIndexType.Subscript, scriptAtom.Subscript.Count);
                 else
                   goto case MathListSubIndexType.Subscript;
                 break;
               case MathListSubIndexType.Subscript:
                 _insertionIndex = levelDown.LevelUpWithSubIndex
-                  (MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1));
+                  (MathListSubIndexType.BetweenBaseAndScripts, 1);
                 break;
               case MathListSubIndexType.BetweenBaseAndScripts:
                 if (MathList.AtomAt(levelDown) is Atoms.Radical rad && rad.Radicand.IsNonEmpty())
                   _insertionIndex = levelDown.LevelUpWithSubIndex
-                    (MathListSubIndexType.Radicand,
-                     MathListIndex.Level0Index(rad.Radicand.Count));
+                    (MathListSubIndexType.Radicand, rad.Radicand.Count);
                 else if (MathList.AtomAt(levelDown) is Atoms.Fraction frac && frac.Denominator.IsNonEmpty())
                   _insertionIndex = levelDown.LevelUpWithSubIndex
-                    (MathListSubIndexType.Denominator,
-                     MathListIndex.Level0Index(frac.Denominator.Count));
+                    (MathListSubIndexType.Denominator, frac.Denominator.Count);
                 else if (MathList.AtomAt(levelDown) is Atoms.Inner inner && inner.InnerList.IsNonEmpty())
                   _insertionIndex = levelDown.LevelUpWithSubIndex
-                    (MathListSubIndexType.Inner,
-                     MathListIndex.Level0Index(inner.InnerList.Count));
+                    (MathListSubIndexType.Inner, inner.InnerList.Count);
                 else goto case MathListSubIndexType.Radicand;
                 break;
               case MathListSubIndexType.Radicand:
                 if (MathList.AtomAt(levelDown) is Atoms.Radical radDeg && radDeg.Degree.IsNonEmpty())
                   _insertionIndex = levelDown.LevelUpWithSubIndex
-                    (MathListSubIndexType.Degree, MathListIndex.Level0Index(radDeg.Degree.Count));
+                    (MathListSubIndexType.Degree, radDeg.Degree.Count);
                 else
                   goto case MathListSubIndexType.Denominator;
                 break;
               case MathListSubIndexType.Denominator:
                 if (MathList.AtomAt(levelDown) is Atoms.Fraction fracNum && fracNum.Numerator.IsNonEmpty())
                   _insertionIndex = levelDown.LevelUpWithSubIndex
-                    (MathListSubIndexType.Numerator, MathListIndex.Level0Index(fracNum.Numerator.Count));
+                    (MathListSubIndexType.Numerator, fracNum.Numerator.Count);
                 else
                   goto default;
                 break;
@@ -257,23 +253,23 @@ namespace CSharpMath.Editor {
             break;
           case { Superscript: var s } when s.IsNonEmpty():
             _insertionIndex = prev.LevelUpWithSubIndex
-              (MathListSubIndexType.Superscript, MathListIndex.Level0Index(s.Count));
+              (MathListSubIndexType.Superscript, s.Count);
             break;
           case { Subscript: var s } when s.IsNonEmpty():
             _insertionIndex = prev.LevelUpWithSubIndex
-              (MathListSubIndexType.Subscript, MathListIndex.Level0Index(s.Count));
+              (MathListSubIndexType.Subscript, s.Count);
             break;
           case Atoms.Inner { InnerList: var l }:
             _insertionIndex = prev.LevelUpWithSubIndex
-              (MathListSubIndexType.Inner, MathListIndex.Level0Index(l.Count));
+              (MathListSubIndexType.Inner, l.Count);
             break;
           case Atoms.Radical { Radicand: var r }:
             _insertionIndex = prev.LevelUpWithSubIndex
-              (MathListSubIndexType.Radicand, MathListIndex.Level0Index(r.Count));
+              (MathListSubIndexType.Radicand, r.Count);
             break;
           case Atoms.Fraction { Denominator: var d }:
             _insertionIndex = prev.LevelUpWithSubIndex
-              (MathListSubIndexType.Denominator, MathListIndex.Level0Index(d.Count));
+              (MathListSubIndexType.Denominator, d.Count);
             break;
           default:
             _insertionIndex = prev;
@@ -308,14 +304,14 @@ namespace CSharpMath.Editor {
               case MathListSubIndexType.Degree:
                 if (levelDownAtom is Atoms.Radical)
                   _insertionIndex = levelDown.LevelUpWithSubIndex
-                    (MathListSubIndexType.Radicand, MathListIndex.Level0Index(0));
+                    (MathListSubIndexType.Radicand, 0);
                 else
                   throw new SubIndexTypeMismatchException(typeof(Atoms.Radical), levelDown);
                 break;
               case MathListSubIndexType.Numerator:
                 if (levelDownAtom is Atoms.Fraction)
                   _insertionIndex = levelDown.LevelUpWithSubIndex
-                    (MathListSubIndexType.Denominator, MathListIndex.Level0Index(0));
+                    (MathListSubIndexType.Denominator, 0);
                 else
                   throw new SubIndexTypeMismatchException(typeof(Atoms.Fraction), levelDown);
                 break;
@@ -324,21 +320,21 @@ namespace CSharpMath.Editor {
               case MathListSubIndexType.Inner:
                 if (levelDownAtom.Superscript.IsNonEmpty() || levelDownAtom.Subscript.IsNonEmpty())
                   _insertionIndex = levelDown.LevelUpWithSubIndex
-                    (MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1));
+                    (MathListSubIndexType.BetweenBaseAndScripts, 1);
                 else
                   goto default;
                 break;
               case MathListSubIndexType.BetweenBaseAndScripts:
                 if (levelDownAtom.Subscript.IsNonEmpty())
                   _insertionIndex = levelDown.LevelUpWithSubIndex
-                    (MathListSubIndexType.Subscript, MathListIndex.Level0Index(0));
+                    (MathListSubIndexType.Subscript, 0);
                 else
                   goto case MathListSubIndexType.Subscript;
                 break;
               case MathListSubIndexType.Subscript:
                 if (levelDownAtom.Superscript.IsNonEmpty())
                   _insertionIndex = levelDown.LevelUpWithSubIndex
-                    (MathListSubIndexType.Superscript, MathListIndex.Level0Index(0));
+                    (MathListSubIndexType.Superscript, 0);
                 else
                   goto default;
                 break;
@@ -355,23 +351,23 @@ namespace CSharpMath.Editor {
                 ("_insertionIndex.FinalSubIndexType is BetweenBaseAndScripts but levelDown is null");
             _insertionIndex = levelDown.LevelUpWithSubIndex(
               a.Subscript.IsNonEmpty() ? MathListSubIndexType.Subscript : MathListSubIndexType.Superscript,
-              MathListIndex.Level0Index(0));
+              0);
             break;
           case Atoms.Inner _:
-            _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListSubIndexType.Inner, MathListIndex.Level0Index(0));
+            _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListSubIndexType.Inner, 0);
             break;
           case Atoms.Fraction _:
             _insertionIndex = _insertionIndex.LevelUpWithSubIndex
-              (MathListSubIndexType.Numerator, MathListIndex.Level0Index(0));
+              (MathListSubIndexType.Numerator, 0);
             break;
           case Atoms.Radical rad:
             _insertionIndex = _insertionIndex.LevelUpWithSubIndex(
               rad.Degree.IsNonEmpty() ? MathListSubIndexType.Degree : MathListSubIndexType.Radicand,
-              MathListIndex.Level0Index(0));
+              0);
             break;
           case var a when a.Superscript.IsNonEmpty() || a.Subscript.IsNonEmpty():
             _insertionIndex = _insertionIndex.LevelUpWithSubIndex
-              (MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1));
+              (MathListSubIndexType.BetweenBaseAndScripts, 1);
             break;
           case Atoms.Placeholder _ when MathList.AtomAt(_insertionIndex.Next) is null:
             // Skip right side of placeholders when end of line

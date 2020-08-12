@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices.ComTypes;
+
 namespace CSharpMath.Editor {
   ///<summary>The type of the subindex denotes what branch the path to the atom that this index points to takes.</summary>
   public enum MathListSubIndexType : byte {
@@ -49,14 +51,14 @@ namespace CSharpMath.Editor {
       SubIndexInfo = subIndexInfo;
     }
 
-    ///<summary>Creates a new index by replacing the leaf with IndexInfo (type, subIndex).</summary>
-    public MathListIndex LevelUpWithSubIndex(MathListSubIndexType type, MathListIndex subIndex) =>
+    ///<summary>Creates a new index by replacing the leaf with IndexInfo (type, Level0Index(innerAtomIndex)).</summary>
+    public MathListIndex LevelUpWithSubIndex(MathListSubIndexType type, int innerAtomIndex) =>
       SubIndexInfo switch
       {
-        null => new MathListIndex(AtomIndex, (type, subIndex)),
+        null => new MathListIndex(AtomIndex, (type, Level0Index(innerAtomIndex))),
         (MathListSubIndexType thisType, MathListIndex thisSubIndex) =>
           new MathListIndex(AtomIndex,
-            (thisType, thisSubIndex.LevelUpWithSubIndex(type, subIndex)))
+            (thisType, thisSubIndex.LevelUpWithSubIndex(type, innerAtomIndex)))
       };
     ///<summary>Creates a new index by removing the last index item. If this is the last one, then returns nil.</summary>
     public MathListIndex? LevelDown() =>
