@@ -95,6 +95,7 @@ namespace CSharpMath.Editor {
             default:
               throw new SubIndexTypeMismatchException(index);
           }
+        default: throw new Exception("Can switch expressions be nested?");
       }
     }
 
