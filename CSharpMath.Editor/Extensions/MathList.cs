@@ -4,6 +4,7 @@ namespace CSharpMath.Editor {
   using Atom;
   using Atoms = Atom.Atoms;
   using Structures;
+  using System.Diagnostics;
   partial class Extensions {
     static void InsertAtAtomIndexAndAdvance(this MathList self, int atomIndex, MathAtom atom, ref MathListIndex advance, MathListSubIndexType? advanceType) {
       if (atomIndex < 0 || atomIndex > self.Count)
@@ -14,18 +15,18 @@ namespace CSharpMath.Editor {
         atom.Subscript.Append(placeholder.Subscript);
         self[atomIndex] = atom;
       } else self.Insert(atomIndex, atom);
-      System.Diagnostics.Debug.WriteLine("atom: " + atom.ToString());
-      System.Diagnostics.Debug.WriteLine("advance: " + advance.ToString());
+      Debug.WriteLine("InsertAtAtomIndexAndAdvance atom: " + atom.ToString());
+      Debug.WriteLine("InsertAtAtomIndexAndAdvance advance before: " + advance.ToString());
       advance = advanceType switch
       {
         null => advance.Next,
         MathListSubIndexType advanceT => advance.LevelUpWithSubIndex(advanceT, MathListIndex.Level0Index(0)),
       };
-      System.Diagnostics.Debug.WriteLine("advance: " + advance.ToString());
+      Debug.WriteLine("InsertAtAtomIndexAndAdvance advance after: " + advance.ToString());
     }
     /// <summary>Inserts <paramref name="atom"/> and modifies <paramref name="index"/> to advance to the next position.</summary>
     public static void InsertAndAdvance(this MathList self, ref MathListIndex index, MathAtom atom, MathListSubIndexType? advanceType) {
-      index ??= MathListIndex.Level0Index(0);
+      Debug.WriteLine("InsertAndAdvance index before: " + index.ToString());
       if (index.AtomIndex > self.Atoms.Count)
         throw new IndexOutOfRangeException($"Index {index.AtomIndex} is out of bounds for list of size {self.Atoms.Count}");
       switch (index.SubIndexInfo) {
@@ -90,6 +91,7 @@ namespace CSharpMath.Editor {
         default:
           throw new SubIndexTypeMismatchException(index);
       }
+      Debug.WriteLine("InsertAndAdvance index at end: " + index.ToString());
     }
 
     public static void RemoveAt(this MathList self, ref MathListIndex index) {
