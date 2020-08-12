@@ -49,7 +49,7 @@ namespace CSharpMath.Editor {
       SubIndexInfo = subIndexInfo;
     }
 
-    ///<summary>Creates a new index by attaching this index at the end of the current one.</summary>
+    ///<summary>Creates a new index by replacing the leaf with IndexInfo (type, subIndex).</summary>
     public MathListIndex LevelUpWithSubIndex(MathListSubIndexType type, MathListIndex subIndex) =>
       SubIndexInfo switch
       {
@@ -85,7 +85,8 @@ namespace CSharpMath.Editor {
         : null,
     };
 
-    ///<summary>Returns the next index.</summary>
+    ///<summary>Returns the next index. With the exception of BetweenBaseAndScripts,
+    ///this adds 1 to the AtomIndex of the leaf.</summary>
     public MathListIndex Next => SubIndexInfo switch
     {
       null => Level0Index(AtomIndex + 1),
