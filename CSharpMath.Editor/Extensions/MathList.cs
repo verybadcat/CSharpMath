@@ -14,11 +14,14 @@ namespace CSharpMath.Editor {
         atom.Subscript.Append(placeholder.Subscript);
         self[atomIndex] = atom;
       } else self.Insert(atomIndex, atom);
+      System.Diagnostics.Debug.WriteLine("atom: " + atom.ToString());
+      System.Diagnostics.Debug.WriteLine("advance: " + advance.ToString());
       advance = advanceType switch
       {
         null => advance.Next,
         MathListSubIndexType advanceT => advance.LevelUpWithSubIndex(advanceT, MathListIndex.Level0Index(0)),
       };
+      System.Diagnostics.Debug.WriteLine("advance: " + advance.ToString());
     }
     /// <summary>Inserts <paramref name="atom"/> and modifies <paramref name="index"/> to advance to the next position.</summary>
     public static void InsertAndAdvance(this MathList self, ref MathListIndex index, MathAtom atom, MathListSubIndexType? advanceType) {

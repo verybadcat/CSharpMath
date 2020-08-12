@@ -1,6 +1,3 @@
-using System;
-using System.Text.RegularExpressions;
-
 namespace CSharpMath.Editor {
   ///<summary>The type of the subindex denotes what branch the path to the atom that this index points to takes.</summary>
   public enum MathListSubIndexType : byte {
@@ -44,14 +41,8 @@ namespace CSharpMath.Editor {
 
     public (MathListSubIndexType SubIndexType, MathListIndex SubIndex)? SubIndexInfo;
 
-    public void ReplaceWith(MathListIndex replacement) {
-      AtomIndex = replacement.AtomIndex;
-      SubIndexInfo = replacement.SubIndexInfo;
-    }
-
-    /** <summary>Factory function to create a `MathListIndex` with no subindexes.</summary>
-        <param name="index">The index of the atom that the `MathListIndex` points at.</param>
-     */
+    /// <summary>Factory function to create a `MathListIndex` with no subindexes.</summary>
+    /// <param name="index">The index of the atom that the `MathListIndex` points at.</param>
     public static MathListIndex Level0Index(int index) => new MathListIndex(index, null);
     public MathListIndex(int atomIndex, (MathListSubIndexType SubIndexType, MathListIndex SubIndex)? subIndexInfo) {
       AtomIndex = atomIndex;
