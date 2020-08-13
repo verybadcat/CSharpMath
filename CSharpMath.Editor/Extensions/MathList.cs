@@ -34,7 +34,7 @@ namespace CSharpMath.Editor {
           return self.InsertAtAtomIndexAndAdvance(atomIndex, atom, advanceType);
         case (MathListSubIndexType type, MathListIndex subIndex):
           switch (type) {
-            case MathListSubIndexType.BetweenBaseAndScripts:
+            case MathListSubIndexType.BetweenBaseAndScripts: // TODO: finish this section
               {
                 var currentAtom = self.Atoms[index.AtomIndex];
                 if (currentAtom.Subscript.IsEmpty() && currentAtom.Superscript.IsEmpty())
