@@ -85,7 +85,7 @@ namespace CSharpMath.Editor {
             case MathListSubIndexType.Superscript:
               return new MathListIndex(atomIndex,
                 ( MathListSubIndexType.Superscript,
-                  self.Atoms[index.AtomIndex].Subscript.InsertAndAdvance(subIndex, atom, advanceType)));
+                  self.Atoms[index.AtomIndex].Superscript.InsertAndAdvance(subIndex, atom, advanceType)));
             case MathListSubIndexType.Inner:
               if (!(self.Atoms[index.AtomIndex] is Atoms.Inner inner))
                 throw new SubIndexTypeMismatchException(typeof(Atoms.Inner), index);
@@ -99,14 +99,14 @@ namespace CSharpMath.Editor {
       }
     }
 
-    public static void RemoveAt(this MathList self, ref MathListIndex index) {
+    public static void RemoveAt(this MathList self, MathListIndex index) {
       if (index.AtomIndex > self.Atoms.Count)
         throw new IndexOutOfRangeException($"Index {index.AtomIndex} is out of bounds for list of size {self.Atoms.Count}");
       switch (index.SubIndexInfo) {
         case null:
           self.RemoveAt(index.AtomIndex);
           break;
-        case (MathListSubIndexType.BetweenBaseAndScripts,_): {
+        case (MathListSubIndexType.BetweenBaseAndScripts,_): { // TODO fix this
           var currentAtom = self.Atoms[index.AtomIndex];
           if (currentAtom.Subscript.IsEmpty() && currentAtom.Superscript.IsEmpty())
             throw new SubIndexTypeMismatchException(index);
@@ -141,53 +141,53 @@ namespace CSharpMath.Editor {
           insertionAtom.Superscript.Append(currentAtom.Superscript);
           self.RemoveAt(index.AtomIndex);
           index = downIndex;
-          self.InsertAndAdvance(ref index, insertionAtom, null);
+          self.InsertAndAdvance(index, insertionAtom, null);
           index = index.Previous ?? throw new InvalidCodePathException("Cannot go back after insertion?");
           return; }
         case (MathListSubIndexType.Radicand, MathListIndex subIndex):
           {
             if (!(self.Atoms[index.AtomIndex] is Atoms.Radical radical))
               throw new SubIndexTypeMismatchException(typeof(Atoms.Radical), index);
-            radical.Radicand.RemoveAt(ref subIndex);
+            radical.Radicand.RemoveAt(subIndex);
             break;
           }
         case (MathListSubIndexType.Degree, MathListIndex subIndex):
           {
             if (!(self.Atoms[index.AtomIndex] is Atoms.Radical radical))
               throw new SubIndexTypeMismatchException(typeof(Atoms.Radical), index);
-            radical.Degree.RemoveAt(ref subIndex);
+            radical.Degree.RemoveAt(subIndex);
             break;
           }
         case (MathListSubIndexType.Numerator, MathListIndex subIndex):
           {
             if (!(self.Atoms[index.AtomIndex] is Atoms.Fraction frac))
               throw new SubIndexTypeMismatchException(typeof(Atoms.Fraction), index);
-            frac.Numerator.RemoveAt(ref subIndex);
+            frac.Numerator.RemoveAt(subIndex);
             break;
           }
         case (MathListSubIndexType.Denominator, MathListIndex subIndex):
           {
             if (!(self.Atoms[index.AtomIndex] is Atoms.Fraction frac))
               throw new SubIndexTypeMismatchException(typeof(Atoms.Fraction), index);
-            frac.Denominator.RemoveAt(ref subIndex);
+            frac.Denominator.RemoveAt(subIndex);
             break;
           }
         case (MathListSubIndexType.Subscript, MathListIndex subIndex):
           var current = self.Atoms[index.AtomIndex];
           if (current.Subscript.IsEmpty())
             throw new SubIndexTypeMismatchException(index);
-          current.Subscript.RemoveAt(ref subIndex);
+          current.Subscript.RemoveAt(subIndex);
           break;
         case (MathListSubIndexType.Superscript, MathListIndex subIndex):
           current = self.Atoms[index.AtomIndex];
           if (current.Superscript.IsEmpty())
             throw new SubIndexTypeMismatchException(index);
-          current.Superscript.RemoveAt(ref subIndex);
+          current.Superscript.RemoveAt(subIndex);
           break;
         case (MathListSubIndexType.Inner, MathListIndex subIndex):
           if (!(self.Atoms[index.AtomIndex] is Atoms.Inner inner))
             throw new SubIndexTypeMismatchException(typeof(Atoms.Inner), index);
-          inner.InnerList.RemoveAt(ref subIndex);
+          inner.InnerList.RemoveAt(subIndex);
           break;
         default:
           throw new SubIndexTypeMismatchException(index);
@@ -195,8 +195,8 @@ namespace CSharpMath.Editor {
       if (index.Previous is null && index.SubIndexInfo != null) {
         // We have deleted to the beginning of the line and it is not the outermost line
         if (self.AtomAt(index) is null) {
-          self.InsertAndAdvance(ref index, LaTeXSettings.Placeholder, null);
-          index = index.Previous ?? throw new InvalidCodePathException("Cannot go back after insertion?"); ;
+          self.InsertAndAdvance(index, LaTeXSettings.Placeholder, null);
+          //index = index.Previous ?? throw new InvalidCodePathException("Cannot go back after insertion?"); ;
         }
       }
     }

@@ -115,7 +115,7 @@ namespace CSharpMath.Editor {
           // Create an empty atom and move the insertion index up.
           var emptyAtom = LaTeXSettings.Placeholder;
           SetScript(emptyAtom, LaTeXSettings.PlaceholderList);
-          MathList.InsertAndAdvance(ref _insertionIndex, emptyAtom, subIndexType);
+          _insertionIndex = MathList.InsertAndAdvance(_insertionIndex, emptyAtom, subIndexType);
         }
         static bool IsFullPlaceholderRequired(MathAtom mathAtom) =>
           mathAtom switch
@@ -181,14 +181,14 @@ namespace CSharpMath.Editor {
           numerator.Push(new Atoms.Number("1"));
         if (MathList.AtomAt(_insertionIndex.Previous) is Atoms.Fraction)
           // Add a times symbol
-          MathList.InsertAndAdvance(ref _insertionIndex, LaTeXSettings.Times, null);
-        MathList.InsertAndAdvance(ref _insertionIndex, new Atoms.Fraction(
+          _insertionIndex = MathList.InsertAndAdvance(_insertionIndex, LaTeXSettings.Times, null);
+        _insertionIndex = MathList.InsertAndAdvance(_insertionIndex, new Atoms.Fraction(
           new MathList(numerator),
           LaTeXSettings.PlaceholderList
         ), MathListSubIndexType.Denominator);
       }
       void InsertInner(string left, string right) =>
-        MathList.InsertAndAdvance(ref _insertionIndex,
+        _insertionIndex = MathList.InsertAndAdvance(_insertionIndex,
           new Atoms.Inner(new Boundary(left), LaTeXSettings.PlaceholderList, new Boundary(right)),
           MathListSubIndexType.Inner);
 
@@ -387,13 +387,13 @@ namespace CSharpMath.Editor {
         // delete the last atom from the list
         if (HasText && _insertionIndex.Previous is MathListIndex previous) {
           _insertionIndex = previous;
-          MathList.RemoveAt(ref _insertionIndex);
+          MathList.RemoveAt(_insertionIndex);
         }
       }
 
       static bool IsPlaceholderList(MathList ml) => ml.Count == 1 && ml[0] is Atoms.Placeholder;
       void InsertAtom(MathAtom a) =>
-        MathList.InsertAndAdvance(ref _insertionIndex, a,
+        _insertionIndex = MathList.InsertAndAdvance(_insertionIndex, a,
           a switch
           {
             Atoms.Fraction _ => MathListSubIndexType.Numerator,
@@ -851,7 +851,7 @@ namespace CSharpMath.Editor {
       // insert at the given index - but don't consider sublevels at this point
       var index = MathListIndex.Level0Index(detailedIndex.AtomIndex);
       foreach (var atom in list.Atoms) {
-        MathList.InsertAndAdvance(ref index, atom, null);
+        index = MathList.InsertAndAdvance(index, atom, null);
       }
       InsertionIndex = index; // move the index to the end of the new list.
     }
