@@ -39,9 +39,9 @@ namespace CSharpMath.Editor {
   public class MathListIndex {
 
     ///<summary>The index of the associated atom.</summary>
-    public int AtomIndex { get; set; }
+    public int AtomIndex { get; }
 
-    public (MathListSubIndexType SubIndexType, MathListIndex SubIndex)? SubIndexInfo;
+    public readonly (MathListSubIndexType SubIndexType, MathListIndex SubIndex)? SubIndexInfo;
 
     /// <summary>Factory function to create a `MathListIndex` with no subindexes.</summary>
     /// <param name="index">The index of the atom that the `MathListIndex` points at.</param>
