@@ -1,0 +1,24 @@
+name: Benchmark
+
+on: push
+jobs:
+  Core:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.302'
+    - run: dotnet run -p CSharpMath.Rendering.Benchmarks
+    - name: Store benchmark result
+      uses: Happypig375/github-action-benchmark@v1.8.1
+      with:
+        name: CSharpMath.Rendering.Benchmarks
+        tool: 'benchmarkdotnet'
+        output-file-path: .benchmarkresults/results/CSharpMath.Rendering.Benchmarks.Program-report-full-compressed.json
+        github-token: ${{ github.token }}
+        # Push and deploy GitHub pages branch automatically
+        auto-push: true

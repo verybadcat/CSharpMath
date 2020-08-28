@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <EmbeddedResource Include="..\CSharpMath.Rendering.Tests\ComicNeue_Bold.otf" Link="ComicNeue_Bold.otf" />
-    <PackageReference Include="Avalonia.Markup.Xaml.Loader" Version="0.10.0-preview2" />
+    <PackageReference Include="Avalonia.Markup.Xaml.Loader" Version="$(AvaloniaVersion)" />
     <ProjectReference Include="..\CSharpMath.Avalonia\CSharpMath.Avalonia.csproj" />
     <ProjectReference Include="..\CSharpMath.Forms\CSharpMath.Forms.csproj" />
   </ItemGroup>

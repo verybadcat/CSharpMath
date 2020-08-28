@@ -1020,6 +1020,10 @@ namespace CSharpMath.CoreTests {
     }
 
     [Fact]
+    public void TestEmptyLookup() =>
+      Assert.Throws<ArgumentException>(() => LaTeXSettings.Commands.TryLookup(ReadOnlySpan<char>.Empty));
+
+    [Fact]
     public void TestCustom() {
       lock (LaTeXSettings.Commands) {
         var input = @"\lcm(a,b)";
@@ -1459,6 +1463,8 @@ namespace CSharpMath.CoreTests {
     }
 
     const string EnquiryControlChar = "\x5"; // https://en.wikipedia.org/wiki/Enquiry_character
+    const string HighSurrogate = "\uD83F"; // High surrogate for U+1FFFF (Noncharacter)
+    const string LowSurrogate = "\uDFFF"; // Low surrogate for U+1FFFF (Noncharacter)
     [Theory,
       InlineData(@"\", @"Error: Invalid command \
 \
@@ -1639,6 +1645,40 @@ x \end{matrix}
       var (list, actual) = LaTeXParser.MathListFromLaTeX(badInput);
       Assert.Null(list);
       Assert.Equal(expected.Replace("\r", null), actual);
+    }
+    // With InlineData, strings are normalized so invalid surrogate pairs will be replaced with U+FFFD
+    [Fact]
+    public void TestErrorSurrogates() {
+      foreach (var (badInput, expected) in new[] {
+         (HighSurrogate, @$"Error: Low surrogate not found after high surrogate
+{HighSurrogate}
+↑ (pos 1)"),
+         (LowSurrogate, @$"Error: High surrogate not found before low surrogate
+{LowSurrogate}
+↑ (pos 1)"),
+         ($"{HighSurrogate}a", @$"Error: Low surrogate not found after high surrogate
+{HighSurrogate}a
+↑ (pos 1)"),
+         ($"{LowSurrogate}a", @$"Error: High surrogate not found before low surrogate
+{LowSurrogate}a
+↑ (pos 1)"),
+         ($"a{HighSurrogate}", @$"Error: Low surrogate not found after high surrogate
+a{HighSurrogate}
+ ↑ (pos 2)"),
+         ($"a{LowSurrogate}", @$"Error: High surrogate not found before low surrogate
+a{LowSurrogate}
+ ↑ (pos 2)"),
+         ($"a{HighSurrogate}a", @$"Error: Low surrogate not found after high surrogate
+a{HighSurrogate}a
+ ↑ (pos 2)"),
+         ($"a{LowSurrogate}a", @$"Error: High surrogate not found before low surrogate
+a{LowSurrogate}a
+ ↑ (pos 2)"),
+      }) {
+        var (list, actual) = LaTeXParser.MathListFromLaTeX(badInput);
+        Assert.Null(list);
+        Assert.Equal(expected.Replace("\r", null), actual);
+      }
     }
   }
 }

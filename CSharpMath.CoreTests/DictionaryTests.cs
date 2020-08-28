@@ -3,13 +3,12 @@ using CSharpMath.Structures;
 
 namespace CSharpMath.CoreTests {
   public class DictionaryTests {
-    private AliasBiDictionary<string, int> InitTestDict() {
-      return new AliasBiDictionary<string, int>{
+    private AliasBiDictionary<string, int> InitTestDict() =>
+      new AliasBiDictionary<string, int> {
         { "0", 0 },
         { "zero", 0 },
         { "1", 1 }
       };
-    }
     [Theory]
     [InlineData("0", 2, 2, true)]
     [InlineData("zero", 2, 2, true)]
