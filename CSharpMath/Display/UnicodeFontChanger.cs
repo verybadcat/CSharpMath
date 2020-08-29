@@ -119,7 +119,7 @@ namespace CSharpMath.Display {
     private static int GetSansSerif(char c) =>
       IsUpperEn(c) ? UnicodeMathCapitalSansSerifStart + c - 'A'
       : IsLowerEn(c) ? UnicodeMathLowerSansSerifStart + c - 'a'
-      : IsNumber(c) ? UnicodeNumberSansSerifStart + c - 0
+      : IsNumber(c) ? UnicodeNumberSansSerifStart + c - '0'
       // SansSerif doesn't exist for greek
       : GetDefaultStyle(c);
 
