@@ -1,12 +1,13 @@
 namespace CSharpMath.CoreTests.FrontEnd {
-  class TestGlyphFinder : Display.FrontEnd.IGlyphFinder<TestFont, char> {
+  using TGlyph = System.Text.Rune;
+  class TestGlyphFinder : Display.FrontEnd.IGlyphFinder<TestFont, TGlyph> {
     TestGlyphFinder() { }
     public static TestGlyphFinder Instance { get; } = new TestGlyphFinder();
-    public char FindGlyphForCharacterAtIndex
-      (TestFont font, int index, string str) => str[index];
-    public System.Collections.Generic.IEnumerable<char> FindGlyphs
-     (TestFont font, string str) => str;
-    public bool GlyphIsEmpty(char glyph) => glyph is '\0';
-    public char EmptyGlyph => '\0';
+    public TGlyph FindGlyphForCharacterAtIndex
+      (TestFont font, int index, string str) => TGlyph.GetRuneAt(str, index);
+    public System.Collections.Generic.IEnumerable<TGlyph> FindGlyphs
+     (TestFont font, string str) => str.EnumerateRunes();
+    public bool GlyphIsEmpty(TGlyph glyph) => glyph == new TGlyph();
+    public TGlyph EmptyGlyph => new TGlyph();
   }
 }

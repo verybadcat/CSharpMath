@@ -1,8 +1,9 @@
 namespace CSharpMath.CoreTests.FrontEnd {
-  class TestGlyphNameProvider : Display.FrontEnd.IGlyphNameProvider<char> {
+  using TGlyph = System.Text.Rune;
+  class TestGlyphNameProvider : Display.FrontEnd.IGlyphNameProvider<TGlyph> {
     TestGlyphNameProvider() { }
     public static TestGlyphNameProvider Instance { get; } = new TestGlyphNameProvider();
-    public char GetGlyph(string glyphName) => System.Linq.Enumerable.FirstOrDefault(glyphName);
-    public string GetGlyphName(char glyph) => glyph.ToString();
+    public TGlyph GetGlyph(string glyphName) => TGlyph.GetRuneAt(glyphName, 0);
+    public string GetGlyphName(TGlyph glyph) => glyph.ToString();
   }
 }

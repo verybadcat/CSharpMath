@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Drawing;
-using TGlyph = System.Char;
+using System.Linq;
+using System.Text;
+using TGlyph = System.Text.Rune;
 using CSharpMath.Display;
 
 namespace CSharpMath.CoreTests.FrontEnd {
@@ -15,10 +16,12 @@ namespace CSharpMath.CoreTests.FrontEnd {
     TestGlyphBoundsProvider() { }
     public static TestGlyphBoundsProvider Instance { get; } = new TestGlyphBoundsProvider();
 
+    static readonly Rune M = new Rune('M');
+    static readonly Rune m = new Rune('m');
     private int GetEffectiveLength(IEnumerable<TGlyph> enumerable) {
       int length = 0;
       foreach (var c in enumerable)
-        if (c is 'M' || c is 'm') length += 2;
+        if (c == M || c == m) length += 2;
         else length++;
       return length;
     }
@@ -26,7 +29,7 @@ namespace CSharpMath.CoreTests.FrontEnd {
     private int GetEffectiveLength(ReadOnlySpan<TGlyph> span) {
       int length = 0;
       for(int i = 0; i < span.Length; i++)
-        if (span[i] is 'M' || span[i] is 'm') length += 2;
+        if (span[i] == M || span[i] == m) length += 2;
         else length++;
       return length;
     }

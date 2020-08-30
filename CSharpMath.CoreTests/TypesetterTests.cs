@@ -5,8 +5,9 @@ using CSharpMath.Display.FrontEnd;
 using CSharpMath.CoreTests.FrontEnd;
 using System.Drawing;
 using Xunit;
-using TGlyph = System.Char;
+using TGlyph = System.Text.Rune;
 using TFont = CSharpMath.CoreTests.FrontEnd.TestFont;
+using System.Linq;
 
 namespace CSharpMath.CoreTests {
   public class TypesetterTests {
@@ -277,7 +278,7 @@ namespace CSharpMath.CoreTests {
           Approximately.At(13.333, 0, glyph.Position);
           Assert.Equal(Range.NotFound, glyph.Range);
           Assert.False(glyph.HasScript);
-          Assert.Equal(left[^1], glyph.Glyph);
+          Assert.Equal(left.EnumerateRunes().Last(), glyph.Glyph);
 
           TestList(1, 14, 4, 10, 23.333, 0, LinePosition.Regular, Range.UndefinedInt,
             d => {
@@ -293,7 +294,7 @@ namespace CSharpMath.CoreTests {
           Approximately.At(33.333, 0, glyph2.Position);
           Assert.Equal(Range.NotFound, glyph2.Range);
           Assert.False(glyph2.HasScript);
-          Assert.Equal(right[^1], glyph2.Glyph);
+          Assert.Equal(right.EnumerateRunes().Last(), glyph2.Glyph);
       });
     [Theory, InlineData("\\sqrt2", "", "2"), InlineData("\\sqrt[3]2", "3", "2")]
     public void TestRadical(string latex, string degree, string radicand) =>
@@ -359,7 +360,7 @@ namespace CSharpMath.CoreTests {
           }),
         d => {
           var glyph = Assert.IsType<GlyphDisplay<TFont, TGlyph>>(d);
-          Assert.Equal('∫', glyph.Glyph);
+          Assert.Equal((TGlyph)'∫', glyph.Glyph);
           Assert.Equal(new PointF(), glyph.Position);
           Assert.True(glyph.HasScript);
         },
@@ -375,7 +376,7 @@ namespace CSharpMath.CoreTests {
           var largeOp = Assert.IsType<LargeOpLimitsDisplay<TFont, TGlyph>>(d);
           Assert.Equal(new Range(0, 1), largeOp.Range);
           var glyph = Assert.IsType<GlyphDisplay<TFont, TGlyph>>(largeOp.NucleusDisplay);
-          Assert.Equal('∫', glyph.Glyph);
+          Assert.Equal((TGlyph)'∫', glyph.Glyph);
           Assert.Equal(new PointF(), glyph.Position);
           Assert.False(glyph.HasScript);
           TestList(1, 9.8, 2.8, 7, 1.5, 20.8, LinePosition.Regular, Range.UndefinedInt,
@@ -463,7 +464,7 @@ namespace CSharpMath.CoreTests {
       TestOuter(@"\bar{x}", 1, 19, 9, 10.16, d => {
         var accent = Assert.IsType<AccentDisplay<TFont, TGlyph>>(d);
         Assert.Equal(0, accent.Accent.ShiftDown);
-        Assert.Equal('\u0304', accent.Accent.Glyph);
+        Assert.Equal((TGlyph)'\u0304', accent.Accent.Glyph);
         Approximately.Equal(new PointF(0.16f, 5), accent.Accent.Position);
         Assert.False(accent.Accent.HasScript);
         Assert.Equal(new Range(0, 1), accent.Accent.Range);
