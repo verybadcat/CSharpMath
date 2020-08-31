@@ -466,11 +466,11 @@ namespace CSharpMath.CoreTests {
         });
     [Fact]
     public void TestAccent() =>
-      TestOuter(@"\bar{x}", 1, 19, 9, 10.16, d => {
+      TestOuter(@"\bar{x}", 1, 19, 9, 20.26, d => {
         var accent = Assert.IsType<AccentDisplay<TFont, TGlyph>>(d);
         Assert.Equal(0, accent.Accent.ShiftDown);
         Assert.Equal((TGlyph)'\u0304', accent.Accent.Glyph);
-        Approximately.Equal(new PointF(0.16f, 5), accent.Accent.Position);
+        Approximately.Equal(new PointF(10.26f, 5), accent.Accent.Position);
         Assert.False(accent.Accent.HasScript);
         Assert.Equal(new Range(0, 1), accent.Accent.Range);
         TestList(1, 14, 4, 10, 0, 0, LinePosition.Regular, Range.UndefinedInt,
