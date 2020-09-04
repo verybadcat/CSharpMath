@@ -70,7 +70,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Editor.Tests", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Editor.Tests.Visualizer", "CSharpMath.Editor.Tests.Visualizer\CSharpMath.Editor.Tests.Visualizer.csproj", "{C60126CE-A71D-4D11-A4A8-A45B67312E98}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "CSharpMath.Editor.Tests.FSharp", "CSharpMath.Editor.Tests.FSharp\CSharpMath.Editor.Tests.FSharp.fsproj", "{65492AC6-8B98-42FF-AAA1-1DBDC050A25F}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "CSharpMath.Rendering.Tests.FSharp", "CSharpMath.Rendering.Tests.FSharp\CSharpMath.Rendering.Tests.FSharp.fsproj", "{65492AC6-8B98-42FF-AAA1-1DBDC050A25F}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "PixelFarm.Typography (Excerpt)", "PixelFarm.Typography (Excerpt)\PixelFarm.Typography (Excerpt).shproj", "{3ECA00B3-0925-4418-B6F2-AC49AA3520BB}"
 EndProject
