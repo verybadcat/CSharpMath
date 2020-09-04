@@ -25,7 +25,6 @@
       "CSharpMath.Playground\\CSharpMath.Playground.csproj",
       "CSharpMath.Avalonia\\CSharpMath.Avalonia.csproj",
       "CSharpMath.Avalonia.Example\\CSharpMath.Avalonia.Example.csproj",
-      "CSharpMath.Ios\\CSharpMath.Ios.csproj",
       "CSharpMath.SkiaSharp\\CSharpMath.SkiaSharp.csproj",
       "CSharpMath.Forms\\CSharpMath.Forms.csproj",
       "CSharpMath.Forms.Example\\CSharpMath.Forms.Example\\CSharpMath.Forms.Example.csproj"
