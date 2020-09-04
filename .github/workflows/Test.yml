@@ -16,7 +16,7 @@ jobs:
     - name: Setup .NET Core # Required to execute ReportGenerator
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '3.1.302'
+        dotnet-version: '3.1.401'
     - name: Update dependencies in CSharpMath.Xaml.Tests.NuGet
       run: |
         dotnet tool install -g dotnet-outdated
@@ -32,28 +32,16 @@ jobs:
           # ${{ steps.release_drafter.outputs.name }}
           
           ${{ steps.release_drafter.outputs.body }}
-      # run: dotnet test CSharpMath.CrossPlatform.slnf
+      # run: dotnet test 
       run: | # https://github.com/dotnet/sdk/issues/10409, https://github.com/dotnet/sdk/issues/11417
         # .NET Core MSBuild cannot parse , and ; correctly so we replace them with substitutions: https://github.com/dotnet/msbuild/issues/471#issuecomment-366268743
         # https://www.gnu.org/software/bash/manual/bash.html#Shell-Parameter-Expansion
         # ${parameter/pattern/string} If pattern begins with ‘/’, all matches of pattern are replaced with string. Normally only the first match is replaced.
         RELEASE_NOTES=${RELEASE_NOTES//,/%2C}
         RELEASE_NOTES=${RELEASE_NOTES//;/%3B}
-        for p in\
-          "CSharpMath.CoreTests"\
-          "CSharpMath.Editor.Tests"\
-          "CSharpMath.Editor.Tests.FSharp"\
-          "CSharpMath.Evaluation.Tests"\
-        `# "CSharpMath.Ios" # https://github.com/dotnet/sdk/issues/11108 + https://github.com/release-drafter/release-drafter/issues/558`\
-          "CSharpMath.Rendering.Tests"\
-          "CSharpMath.Rendering.Text.Tests"\
-          "CSharpMath.Xaml.Tests"\
-          "CSharpMath.Xaml.Tests.NuGet"\
-          "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests"
-        do
-          # --collect:"XPlat Code Coverage" means collect test coverage with https://github.com/coverlet-coverage/coverlet
-          dotnet test "$p" -c Release -l GitHubActions --blame --collect:"XPlat Code Coverage" -r .testcoverage -p:PackageReleaseNotes="$RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }}
-        done
+        
+        # --collect:"XPlat Code Coverage" means collect test coverage with https://github.com/coverlet-coverage/coverlet
+        dotnet test CSharpMath.CrossPlatform.slnf -c Release -l GitHubActions --blame --collect:"XPlat Code Coverage" -r .testcoverage -p:PackageReleaseNotes="$RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }}
     - name: Run ReportGenerator on Test Coverage results
       uses: danielpalme/ReportGenerator-GitHub-Action@4.6.4
       with:
@@ -98,14 +86,8 @@ jobs:
         # Original code before using this tool:
         # # Non-Windows platforms require --store-password-in-clear-text: https://github.com/NuGet/Home/issues/1851
         # dotnet nuget add source https://nuget.pkg.github.com/verybadcat/index.json -n github -u verybadcat -p ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text
-        # for x in `ls .nupkgs/*.nupkg` # Don't let GitHub Releases interpret .snupkg as .nupkg
-        # do
-        #   # The GitHub Package registry does not support .snupkg files so we specify --no-symbols
-        #   # Use --skip-duplicate since we want re-runs of this workflow to succeed in case of network issues
-        #   dotnet nuget push $x --source "github" --skip-duplicate --no-symbols
-        # done
-        # # Following command does not work... https://github.com/NuGet/Home/issues/9867
-        # # dotnet nuget push .nupkgs/*.nupkg --source "github" --skip-duplicate --no-symbols # Don't let GitHub Releases interpret .snupkg as .nupkg
+        # # We use double quotes to avoid shell globbing: https://github.com/NuGet/Home/issues/4393#issuecomment-667618120
+        # dotnet nuget push ".nupkgs/*.nupkg" --source "github" --skip-duplicate --no-symbols # Don't let GitHub Releases interpret .snupkg as .nupkg
   Ios:
     runs-on: macos-latest
     steps:
