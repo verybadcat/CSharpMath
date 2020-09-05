@@ -1,6 +1,6 @@
 name: Benchmark
 
-on: push
+on: [push, pull_request]
 jobs:
   Rendering:
     runs-on: windows-latest
@@ -11,7 +11,7 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '3.1.401'
+        dotnet-version: 3.1.401
     - run: dotnet run -p CSharpMath.Rendering.Benchmarks
     - name: Store benchmark result
       uses: Happypig375/github-action-benchmark@v1
@@ -20,5 +20,8 @@ jobs:
         tool: 'benchmarkdotnet'
         output-file-path: .benchmarkresults/results/CSharpMath.Rendering.Benchmarks.Program-report-full-compressed.json
         github-token: ${{ github.token }}
-        # Push and deploy GitHub pages branch automatically
-        auto-push: true
+        auto-push: ${{ github.ref == 'refs/heads/master' }} # Push and deploy GitHub pages branch automatically
+        alert-threshold: 125% # Show alert with commit comment on detecting possible performance regression
+        comment-on-alert: true
+        fail-on-alert: true
+        alert-comment-cc-users: '@Happypig375'
