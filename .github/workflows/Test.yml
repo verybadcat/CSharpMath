@@ -42,7 +42,7 @@ jobs:
         
         # --collect:"XPlat Code Coverage" means collect test coverage with https://github.com/coverlet-coverage/coverlet
         # Coverlet settings come after --: https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/VSTestIntegration.md#advanced-options-supported-via-runsettings
-        dotnet test CSharpMath.CrossPlatform.slnf -c Release -l GitHubActions --blame --collect:"XPlat Code Coverage" -r .testcoverage -p:PackageReleaseNotes="$RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }}  -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.IncludeTestAssembly=true
+        dotnet test CSharpMath.CrossPlatform.slnf -c Release -l GitHubActions --blame --collect:"XPlat Code Coverage" -r .testcoverage -p:PackageReleaseNotes="$RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }} -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.IncludeTestAssembly=true
     - name: Run ReportGenerator on Test Coverage results
       uses: danielpalme/ReportGenerator-GitHub-Action@4.6.4
       with:
@@ -74,10 +74,11 @@ jobs:
       with:
         name: NuGet packages
         path: .nupkgs/
-    - run: |
-        curl -s https://codecov.io/bash > codecov
-        chmod +x codecov
-        ./codecov -f ".testcoverage/**/*.xml"
+    - uses: codecov/codecov-action@v1
+      with:
+        file: .testcoverage/**/*.xml # optional
+        name: CSharpMath test coverage # optional
+        fail_ci_if_error: true # optional (default = false)
     - name: Push CI artifacts to GitHub Packages registry
       if: github.ref == 'refs/heads/master'
       run: |

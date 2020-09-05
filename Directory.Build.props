@@ -4,7 +4,7 @@
   <PropertyGroup Condition="$(MSBuildProjectName.Contains('Test')) And !$(MSBuildProjectName.Contains('Ios'))">
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
-  <ItemGroup Condition="$(MSBuildProjectName.Contains('Test'))">
+  <ItemGroup Condition="$(MSBuildProjectName.Contains('Test')) And !$(MSBuildProjectName.Contains('Visualizer'))">
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
     <PackageReference Include="Xunit.SkippableFact" Version="1.4.13" />
