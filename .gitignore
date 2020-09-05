@@ -9,6 +9,7 @@ CSharpMath.Rendering.Tests/*/*.*.png
 CSharpMath.Xaml.Tests.NuGet/Test.*.png
 
 # Ignore generated content
+/.benchmarkresults
 /.nupkgs
 /.testcoverage
 

@@ -1,13 +1,11 @@
-﻿module CSharpMath.Editor.Tests.FSharp.RandomKeyboardInputsTest
+﻿module CSharpMath.Rendering.Tests.FSharp.RandomKeyboardInputsTest
 
 open Xunit
 open CSharpMath.Editor
 
-let private mathKeyboardInputs =
-    typeof<MathKeyboardInput>.GetEnumValues() :?> MathKeyboardInput[]
-
 // can use Hedgehog or FSCheck instead for random testing
-let private getRandomMathKeyboardInput =
+let getRandomMathKeyboardInput =
+    let mathKeyboardInputs = typeof<MathKeyboardInput>.GetEnumValues() :?> MathKeyboardInput[]
     let r = System.Random()
     let n = mathKeyboardInputs.Length
     fun () -> mathKeyboardInputs.[r.Next(n)]
@@ -46,8 +44,7 @@ let rec private findShortening(kl:MathKeyboardInput list) =
     | None -> kl
     | Some sl -> findShortening sl
 
-[<Fact>]
-let ``random inputs don't crash editor``() =
+let [<Fact>] ``random inputs don't crash editor``() =
     let results = List.init 100 (fun _ -> test100keypresses())
     let shortestError =
         results
@@ -59,5 +56,3 @@ let ``random inputs don't crash editor``() =
         let shortestSublist = findShortening kl
         try tryList shortestSublist
         with ex -> failwithf "Exeption: %s inputs: %A" ex.Message shortestSublist
-
-let [<EntryPoint>] main _ = 0

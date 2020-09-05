@@ -49,6 +49,9 @@ namespace CSharpMath.Avalonia {
        float textPainterCanvasWidth = TextPainter.DefaultCanvasWidth,
        CSharpMathTextAlignment alignment = CSharpMathTextAlignment.TopLeft) where TContent : class {
       if (!(painter.Measure(textPainterCanvasWidth) is { } size)) return;
+      // RenderTargetBitmap does not support zero width/height. ArgumentException will be thrown.
+      if (size.Width is 0) size.Width = 1;
+      if (size.Height is 0) size.Height = 1;
       using var bitmap =
         new RenderTargetBitmap(new PixelSize((int)size.Width, (int)size.Height));
       bitmap.Render(new DrawVisual<TContent>(painter, size, alignment));

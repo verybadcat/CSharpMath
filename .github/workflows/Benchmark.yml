@@ -1,0 +1,27 @@
+name: Benchmark
+
+on: [push, pull_request]
+jobs:
+  Rendering:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.401
+    - run: dotnet run -p CSharpMath.Rendering.Benchmarks
+    - name: Store benchmark result
+      uses: Happypig375/github-action-benchmark@v1
+      with:
+        name: CSharpMath.Rendering.Benchmarks
+        tool: 'benchmarkdotnet'
+        output-file-path: .benchmarkresults/results/CSharpMath.Rendering.Benchmarks.Program-report-full-compressed.json
+        github-token: ${{ github.token }}
+        auto-push: ${{ github.ref == 'refs/heads/master' }} # Push and deploy GitHub pages branch automatically
+        alert-threshold: 140% # Should not be lower than 140% to take account of fluctuations of CI load, see https://github.com/verybadcat/CSharpMath/commit/51a3c066372ab486edb44a424c6ba61ea35914c5
+        comment-on-alert: true # Show alert with commit comment on detecting possible performance regression
+        fail-on-alert: true
+        alert-comment-cc-users: '@Happypig375'
