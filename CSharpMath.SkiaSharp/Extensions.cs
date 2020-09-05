@@ -14,7 +14,10 @@ namespace CSharpMath.SkiaSharp {
        TextAlignment alignment = TextAlignment.TopLeft,
        SKEncodedImageFormat format = SKEncodedImageFormat.Png,
        int quality = 100) where TContent : class {
-      if (!(painter.Measure(textPainterCanvasWidth) is { } size)) return null;
+      var size = painter.Measure(textPainterCanvasWidth).Size;
+      // SKSurface does not support zero width/height. Null will be returned from SKSurface.Create.
+      if (size.Width is 0) size.Width = 1;
+      if (size.Height is 0) size.Height = 1;
       using var surface = SKSurface.Create(new SKImageInfo((int)size.Width, (int)size.Height));
       painter.Draw(surface.Canvas, alignment);
       using var snapshot = surface.Snapshot();

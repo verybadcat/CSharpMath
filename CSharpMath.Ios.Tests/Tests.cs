@@ -17,6 +17,9 @@ namespace CSharpMath.Ios.Tests {
           using var v = IosMathLabels.MathView(latex, 50);
           init(v);
           var size = v.SizeThatFits(default);
+          // BeginImageContext does not support zero width/height. GetCurrentContext will return null.
+          if (size.Width < 1) size.Width = 1;
+          if (size.Height < 1) size.Height = 1;
           v.Frame = new CoreGraphics.CGRect(default, size);
           UIKit.UIGraphics.BeginImageContext(size);
           var context = UIKit.UIGraphics.GetCurrentContext();

@@ -31,23 +31,17 @@ namespace CSharpMath.Rendering.Tests {
       typeof(TestRenderingFixture)
       .Assembly
       .GetTypes()
-      .Where(t => IsSubclassOfRawGeneric(typeof(TestRendering<,,,>), t))
+      .Where(t => {
+        for (var toCheck = t; toCheck != null; toCheck = toCheck.BaseType)
+          if (typeof(TestRendering<,,,>) == (toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck))
+            return true;
+        return false;
+      })
       .SelectMany(t => t.GetMethods())
       .Where(method => method.IsDefined(typeof(SkippableFactAttribute), false)
                     || method.IsDefined(typeof(SkippableTheoryAttribute), false))
       .Select(method => GetFolder(method.Name))
       .Distinct();
-    // https://stackoverflow.com/a/457708/5429648
-    static bool IsSubclassOfRawGeneric(Type generic, Type? toCheck) {
-      while (toCheck != null && toCheck != typeof(object)) {
-        var cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
-        if (generic == cur) {
-          return true;
-        }
-        toCheck = toCheck.BaseType;
-      }
-      return false;
-    }
     // https://stackoverflow.com/a/2637303/5429648
     public static bool StreamsContentsAreEqual(Stream stream1, Stream stream2) {
       const int bufferSize = 2048 * 2;
@@ -59,11 +53,9 @@ namespace CSharpMath.Rendering.Tests {
         if (count1 != count2) return false;
         if (count1 == 0) return true;
         int iterations = (int)Math.Ceiling((double)count1 / sizeof(long));
-        for (int i = 0; i < iterations; i++) {
-          if (BitConverter.ToInt64(buffer1, i * sizeof(long)) != BitConverter.ToInt64(buffer2, i * sizeof(long))) {
+        for (int i = 0; i < iterations; i++)
+          if (BitConverter.ToInt64(buffer1, i * sizeof(long)) != BitConverter.ToInt64(buffer2, i * sizeof(long)))
             return false;
-          }
-        }
       }
     }
   }
