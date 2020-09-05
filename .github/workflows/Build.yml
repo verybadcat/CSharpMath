@@ -2,7 +2,7 @@ name: Build
 
 on: [push, pull_request]
 jobs:
-  all_projects:
+  Everything:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
