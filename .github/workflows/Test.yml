@@ -56,6 +56,12 @@ jobs:
       with:
         name: CSharpMath test coverage results
         path: .testcoverage/
+    - name: Upload CSharpMath test coverage results to codecov.io
+      uses: codecov/codecov-action@v1
+      with:
+        file: .testcoverage/**/*.xml # optional
+        name: CSharpMath test coverage # optional
+        fail_ci_if_error: true # optional (default = false)
     - name: Upload CSharpMath.Rendering.Tests results as CI artifacts
       uses: actions/upload-artifact@v2
       if: always() # Run even when a previous step failed: https://stackoverflow.com/a/58859404/5429648
@@ -74,11 +80,6 @@ jobs:
       with:
         name: NuGet packages
         path: .nupkgs/
-    - uses: codecov/codecov-action@v1
-      with:
-        file: .testcoverage/**/*.xml # optional
-        name: CSharpMath test coverage # optional
-        fail_ci_if_error: true # optional (default = false)
     - name: Push CI artifacts to GitHub Packages registry
       if: github.ref == 'refs/heads/master'
       run: |
