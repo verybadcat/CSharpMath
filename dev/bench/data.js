@@ -68,18 +68,6 @@ window.BENCHMARK_DATA = {
             "range": "± 101121.81549938902"
           },
           {
-            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Nothing\")",
-            "value": 23486.703084309895,
-            "unit": "ns",
-            "range": "± 310.2940872076305"
-          },
-          {
-            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Phi\")",
-            "value": 285134.44444444444,
-            "unit": "ns",
-            "range": "± 40687.1764606439"
-          },
-          {
             "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuadraticFormula\")",
             "value": 1468408.3333333333,
             "unit": "ns",
@@ -168,18 +156,6 @@ window.BENCHMARK_DATA = {
             "value": 3380126.25,
             "unit": "ns",
             "range": "± 175296.4142431869"
-          },
-          {
-            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Nothing\")",
-            "value": 23413.77705891927,
-            "unit": "ns",
-            "range": "± 429.58948068567605"
-          },
-          {
-            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Phi\")",
-            "value": 292902.1978021978,
-            "unit": "ns",
-            "range": "± 35915.62946072976"
           },
           {
             "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuadraticFormula\")",
@@ -272,18 +248,6 @@ window.BENCHMARK_DATA = {
             "range": "± 67845.51724709832"
           },
           {
-            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Nothing\")",
-            "value": 23511.97008405413,
-            "unit": "ns",
-            "range": "± 252.8312499159158"
-          },
-          {
-            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Phi\")",
-            "value": 239664.13043478262,
-            "unit": "ns",
-            "range": "± 23727.406055796444"
-          },
-          {
             "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuadraticFormula\")",
             "value": 1372044.4444444445,
             "unit": "ns",
@@ -372,18 +336,6 @@ window.BENCHMARK_DATA = {
             "value": 3056400,
             "unit": "ns",
             "range": "± 37305.7017708471"
-          },
-          {
-            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Nothing\")",
-            "value": 18880.33687046596,
-            "unit": "ns",
-            "range": "± 288.49479711976517"
-          },
-          {
-            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Phi\")",
-            "value": 96708.29345703125,
-            "unit": "ns",
-            "range": "± 1703.1043669736946"
           },
           {
             "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuadraticFormula\")",
@@ -476,18 +428,6 @@ window.BENCHMARK_DATA = {
             "range": "± 254594.2311297414"
           },
           {
-            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Nothing\")",
-            "value": 25823.577769886364,
-            "unit": "ns",
-            "range": "± 1100.6317131009268"
-          },
-          {
-            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Phi\")",
-            "value": 133047.79411764705,
-            "unit": "ns",
-            "range": "± 4214.237197023387"
-          },
-          {
             "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuadraticFormula\")",
             "value": 1277145.5555555555,
             "unit": "ns",
@@ -578,18 +518,6 @@ window.BENCHMARK_DATA = {
             "range": "± 156851.81233019888"
           },
           {
-            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Nothing\")",
-            "value": 23636.39373779297,
-            "unit": "ns",
-            "range": "± 520.4685300385"
-          },
-          {
-            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Phi\")",
-            "value": 132165.21199544272,
-            "unit": "ns",
-            "range": "± 1516.3940895324554"
-          },
-          {
             "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuadraticFormula\")",
             "value": 1297105.6818181819,
             "unit": "ns",
@@ -674,22 +602,10 @@ window.BENCHMARK_DATA = {
             "range": "± 52528.7676285236"
           },
           {
-            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Exponential\")",
-            "value": 303793.9759036145,
-            "unit": "ns",
-            "range": "± 24185.327891490837"
-          },
-          {
             "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Matrix\")",
             "value": 3238316.6666666665,
             "unit": "ns",
             "range": "± 48804.61664699976"
-          },
-          {
-            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Nothing\")",
-            "value": 23756.98002406529,
-            "unit": "ns",
-            "range": "± 865.3809694924065"
           },
           {
             "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuadraticFormula\")",
@@ -776,22 +692,10 @@ window.BENCHMARK_DATA = {
             "range": "± 68249.22851565764"
           },
           {
-            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Exponential\")",
-            "value": 401250.6024096386,
-            "unit": "ns",
-            "range": "± 34591.52008553251"
-          },
-          {
             "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Matrix\")",
             "value": 3442333.3333333335,
             "unit": "ns",
             "range": "± 62969.77355011197"
-          },
-          {
-            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Nothing\")",
-            "value": 23262.45839972245,
-            "unit": "ns",
-            "range": "± 507.39232657725364"
           },
           {
             "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuadraticFormula\")",
@@ -878,22 +782,10 @@ window.BENCHMARK_DATA = {
             "range": "± 36220.72021772969"
           },
           {
-            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Exponential\")",
-            "value": 140263.62591911765,
-            "unit": "ns",
-            "range": "± 2826.149594837757"
-          },
-          {
             "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Matrix\")",
             "value": 3061733.3333333335,
             "unit": "ns",
             "range": "± 30156.962395977167"
-          },
-          {
-            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Nothing\")",
-            "value": 19306.220458984375,
-            "unit": "ns",
-            "range": "± 498.3545068451161"
           },
           {
             "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuadraticFormula\")",
