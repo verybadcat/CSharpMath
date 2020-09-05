@@ -11,8 +11,11 @@ using System.Linq;
 
 namespace CSharpMath.CoreTests {
   public class TypesetterTests {
-    private readonly TFont _font = new TFont(20);
-    private readonly TypesettingContext<TFont, TGlyph> _context = TestTypesettingContexts.Instance;
+    internal static ListDisplay<TFont, TGlyph> ParseLaTeXToDisplay(string latex) =>
+      Typesetter.CreateLine(LaTeXParserTest.ParseLaTeX(latex), _font, _context, LineStyle.Display);
+
+    private static readonly TFont _font = new TFont(20);
+    private static readonly TypesettingContext<TFont, TGlyph> _context = TestTypesettingContexts.Instance;
 
     System.Action<IDisplay<TFont, TGlyph>?> TestList(int rangeMax, double ascent, double descent, double width, double x, double y,
       LinePosition linePos, int indexInParent, params System.Action<IDisplay<TFont, TGlyph>>[] inspectors) => d => {
@@ -30,7 +33,7 @@ namespace CSharpMath.CoreTests {
     void TestOuter(string latex, int rangeMax, double ascent, double descent, double width,
         params System.Action<IDisplay<TFont, TGlyph>>[] inspectors) =>
       TestList(rangeMax, ascent, descent, width, 0, 0, LinePosition.Regular, Range.UndefinedInt, inspectors)
-      (Typesetter.CreateLine(LaTeXParserTest.ParseLaTeX(latex), _font, _context, LineStyle.Display));
+      (ParseLaTeXToDisplay(latex));
 
     [Theory, InlineData("x", "𝑥"), InlineData("2", "2"), InlineData(".", "."), InlineData("𝑥", "𝑥")]
     public void TestSingleCharacter(string latex, string text) =>
