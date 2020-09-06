@@ -70,7 +70,7 @@ namespace CSharpMath.CoreTests {
     [InlineData("%\n1234", "1234")]
     [InlineData("12.b% comment ", "12.𝑏")]
     [InlineData("|`% \\notacommand \u2028@/", "|`@/")]
-    public void TestComments(string latex, string text) =>
+    public void TestIgnoreComments(string latex, string text) =>
       TestOuter(latex, 4, 14, 4, 40,
         d => {
           var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
