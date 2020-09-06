@@ -10,6 +10,7 @@
       "CSharpMath.Editor.Tests.Visualizer/CSharpMath.Editor.Tests.Visualizer.csproj",
       "CSharpMath.Evaluation/CSharpMath.Evaluation.csproj",
       "CSharpMath.Evaluation.Tests/CSharpMath.Evaluation.Tests.csproj",
+      "CSharpMath.Rendering.Benchmarks/CSharpMath.Rendering.Benchmarks.csproj",
       "CSharpMath.Rendering.Tests/CSharpMath.Rendering.Tests.csproj",
       "CSharpMath.Rendering.Tests.FSharp/CSharpMath.Rendering.Tests.FSharp.fsproj",
       "CSharpMath.Rendering.Text.Tests/CSharpMath.Rendering.Text.Tests.csproj",
