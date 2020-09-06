@@ -43,7 +43,7 @@ jobs:
         # --collect:"XPlat Code Coverage" means collect test coverage with https://github.com/coverlet-coverage/coverlet
         dotnet test CSharpMath.CrossPlatform.slnf -c Release -l GitHubActions --blame --collect:"XPlat Code Coverage" -r .testcoverage -p:PackageReleaseNotes="$RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }}
     - name: Run ReportGenerator on Test Coverage results
-      uses: danielpalme/ReportGenerator-GitHub-Action@4.6.4
+      uses: danielpalme/ReportGenerator-GitHub-Action@4.6.6
       with:
         reports: '.testcoverage/**/*.*' # REQUIRED # The coverage reports that should be parsed (separated by semicolon). Globbing is supported.
         targetdir: '.testcoverage/report' # REQUIRED # The directory where the generated report should be saved.
