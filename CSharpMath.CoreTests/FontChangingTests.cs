@@ -46,7 +46,6 @@ namespace CSharpMath.CoreTests {
     [InlineData("~!@<$`|=*();+", "~!@<$`|=*();+")]
     [InlineData("!2|a@A<β$Δ`ϖ|", "!2|a@A<β$Δ`ϖ|")]
     public void Roman(string input, string output) => Test(input, output, "mathrm");
-    // The default appearance for characters is Roman
     [Theory]
     [InlineData("", "")]
     [InlineData("1", "𝟏")]
