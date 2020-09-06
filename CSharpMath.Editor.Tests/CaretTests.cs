@@ -147,7 +147,7 @@ namespace CSharpMath.Editor.Tests {
       await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds - CaretBlinks.MillisecondBuffer);
 
       Assert.Equal(MathKeyboardCaretState.Shown, keyboard.CaretState);
-      await Task.Delay(3 * CaretBlinks.MillisecondBuffer);
+      await Task.Delay(4 * CaretBlinks.MillisecondBuffer);
       Assert.Equal(MathKeyboardCaretState.TemporarilyHidden, keyboard.CaretState);
     }
   }
