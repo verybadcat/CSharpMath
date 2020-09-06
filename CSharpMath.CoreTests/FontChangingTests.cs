@@ -2,7 +2,7 @@ namespace CSharpMath.CoreTests {
   using Xunit;
   using Atom;
   public class FontChangingTests {
-    // Tests are ordered by numeric value of the Atom.FontStlye enumeration
+    // Tests are ordered by numeric value of the Atom.FontStyle enumeration
     void Test(string input, string output, string command) {
       var displays = TypesetterTests.ParseLaTeXToDisplay(@"\" + command + "{" + input + "}").Displays;
       if (input is "")
