@@ -85,17 +85,15 @@ namespace CSharpMath.Atom {
     // Lock this object in tests in case threading exceptions happen between command reading and writing
     public static LaTeXCommandDictionary<Func<LaTeXParser, MathList, char, Result<(MathAtom? Atom, MathList? Return)>>> Commands { get; } =
       new LaTeXCommandDictionary<Func<LaTeXParser, MathList, char, Result<(MathAtom? Atom, MathList? Return)>>>(consume => {
-        if (consume.IsEmpty) throw new InvalidCodePathException("Unexpected empty " + nameof(consume));
+        if (consume.IsEmpty) throw new ArgumentException("Unexpected empty " + nameof(consume));
         if (char.IsHighSurrogate(consume[0])) {
-          if (consume.Length == 1)
-            return "Unexpected single high surrogate without its counterpart";
-          if (!char.IsLowSurrogate(consume[1]))
+          if (consume.Length == 1 || !char.IsLowSurrogate(consume[1]))
             return "Low surrogate not found after high surrogate";
           var atom = new Ordinary(consume.Slice(0, 2).ToString());
           return ((parser, accumulate, stopChar) => Ok(atom), 2);
         } else {
           if (char.IsLowSurrogate(consume[0]))
-            return "Unexpected low surrogate without its counterpart";
+            return "High surrogate not found before low surrogate";
           var atom = new Ordinary(consume[0].ToStringInvariant());
           return ((parser, accumulate, stopChar) => Ok(atom), 1);
         }
