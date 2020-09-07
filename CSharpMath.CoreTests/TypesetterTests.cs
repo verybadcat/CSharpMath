@@ -336,7 +336,7 @@ namespace CSharpMath.CoreTests {
 
     [Theory, InlineData(3), InlineData(-3), InlineData(0.1), InlineData(-0.1)]
     public void TestRaiseBox(double height) =>
-      TestOuter($@"\text\raisebox{{{height}pt}}r", 1, 14 + height, 4 - height, 10,
+      TestOuter($@"\text\raisebox{{{height.ToStringInvariant()}pt}}r", 1, 14 + height, 4 - height, 10,
         TestList(1, 14, 4, 10, 0, height, LinePosition.Regular, Range.UndefinedInt,
           d => {
             var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
