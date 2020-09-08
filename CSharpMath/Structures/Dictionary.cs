@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
@@ -145,7 +144,7 @@ namespace CSharpMath.Structures {
         switch (firstToSecond.ContainsKey(first), secondToFirst.ContainsKey(second)) {
           case (true, _):
             // There cannot be multiple TSeconds linked to the same TFirst
-            throw new Exception($"Key already exists in {nameof(AliasBiDictionary<TFirst, TSecond>)}.");
+            throw new ArgumentException($"Key already exists in {nameof(AliasBiDictionary<TFirst, TSecond>)}: {first}");
           case (false, true):
             firstToSecond.Add(first, second);
             break;
