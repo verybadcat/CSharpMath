@@ -38,6 +38,9 @@ namespace CSharpMath.Structures {
     public void Add<TCollection>(TCollection keys, Func<TKey, TValue> valueFunc) where TCollection : IEnumerable<TKey> {
       foreach (var key in keys) Add(key, valueFunc(key));
     }
+    public void Add<TCollection>(TCollection keys) where TCollection : IEnumerable<(TKey, TValue)> {
+      foreach (var (key, value) in keys) Add(key, value);
+    }
   }
   /// <summary>Ensures that longer <see cref="string"/>s with same beginnings are listed first, to be matched first.</summary>
   class DescendingStringComparer<TValue> : IComparer<(string NonCommand, TValue Value)> {

@@ -664,9 +664,6 @@ namespace CSharpMath.Atom {
             MathListToLaTeX(colorBox.InnerList, builder, currentFontStyle);
             builder.Append("}");
             break;
-          case Prime prime:
-            builder.Append('\'', prime.Length);
-            break;
           case RaiseBox r:
             builder.Append(@"\raisebox{")
               .Append(r.Raise.Length.ToStringInvariant("0.0####"))
@@ -677,7 +674,7 @@ namespace CSharpMath.Atom {
             break;
           case var _ when MathAtomToLaTeX(atom, builder, out _):
             break;
-          case Atoms.Space space:
+          case Space space:
             var intSpace = (int)space.Length;
             if (space.IsMu)
               builder.Append(@"\mkern")

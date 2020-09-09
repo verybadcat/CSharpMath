@@ -693,7 +693,7 @@ namespace CSharpMath.Editor {
           InsertSymbolName(@"\ ");
           break;
         case MathKeyboardInput.Prime:
-          InsertAtom(new Atoms.Prime(1));
+          InsertSymbolName(@"'");
           break;
         case MathKeyboardInput.LeftRoundBracket:
         case MathKeyboardInput.RightRoundBracket:

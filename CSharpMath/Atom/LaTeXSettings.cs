@@ -350,7 +350,7 @@ namespace CSharpMath.Atom {
         { "mathit", "it", "mit", FontStyle.Italic },
         { "mathsf", "sf", FontStyle.SansSerif },
         { "mathfrak", "frak", FontStyle.Fraktur },
-        { "mathbb", "bb", FontStyle.Blackboard },
+        { "mathbb", "bb", "Bbb", FontStyle.Blackboard },
         { "mathbfit", "bm", FontStyle.BoldItalic },
       };
 
@@ -503,11 +503,15 @@ namespace CSharpMath.Atom {
           n => new Number(n) },
         { Enumerable.Range('A', 26).Concat(Enumerable.Range('a', 26)).Select(c => ((char)c).ToStringInvariant()),
           v => new Variable(v) },
+        { typeof(FontSize.SizePercentage).GetEnumValues().Cast<FontSize.SizePercentage>()
+          .Select(s => ($"\\{s}", (MathAtom)new FontSize(s))) },
         { @"\ ", new Ordinary(" ") },
-        { @"\,", "\u2006", "\u2009", new Space(Structures.Space.ShortSpace) }, // six-per-em space
-        { @"\:", @"\>", "\u205F", new Space(Structures.Space.MediumSpace) },
-        { @"\;", new Space(Structures.Space.LongSpace) },
-        { @"\!", new Space(-Structures.Space.ShortSpace) },
+        { @"\,", @"\thinspace", "\u2006", "\u2009", new Space(Structures.Space.ShortSpace) }, // six-per-em space
+        { @"\:", @"\>", @"\medspace", "\u205F", new Space(Structures.Space.MediumSpace) },
+        { @"\;", @"\thickspace", new Space(Structures.Space.LongSpace) },
+        { @"\!", @"\negthinspace", new Space(-Structures.Space.ShortSpace) },
+        { @"\negmedspace", new Space(-Structures.Space.MediumSpace) },
+        { @"\negthickspace", new Space(-Structures.Space.LongSpace) },
         { @"\enspace", "\u2000", "\u2002", new Space(Structures.Space.EmWidth / 2) },
         { @"\quad", "\u2001", "\u2003", new Space(Structures.Space.EmWidth) },
         { @"\qquad", new Space(Structures.Space.EmWidth * 2) },
@@ -540,6 +544,9 @@ namespace CSharpMath.Atom {
         // Unicode char lookup: https://unicode-table.com/en/search/
         // Reference LaTeX output for glyph: https://www.codecogs.com/latex/eqneditor.php
         // Look at what glyphs are in a font: https://github.com/fontforge/fontforge
+        // FontForge can also edit a font and create glyphs, AMS-Supplements.otf was created and is modified with it
+        // Remember to use File>Open instead of opening from File Explorer for copying glyphs across fonts to work:
+        // https://stackoverflow.com/questions/8585220/copy-paste-glyph-character-from-one-font-file-to-another#comment105816680_31592033
 
         // Following tables are from the LaTeX Symbol List
         // Table 1: Escapable “Special” Characters
@@ -906,8 +913,8 @@ namespace CSharpMath.Atom {
         // [See BoundaryDelimiters dictionary above]
 
         // Table 20: AMS Arrows
-        //{ @"\dashrightarrow", "⇢", new Relation("⇢") }, // Glyph not in Latin Modern Math
-        //{ @"\dashleftarrow", "⇠", new Relation("⇠") }, // Glyph not in Latin Modern Math
+        //{ @"\dashrightarrow", "⇢", new Relation("⇢") }, // Glyph not in Latin Modern Math - it's constructed from 3 AMS glyphs (arrow head + 2 dashes)
+        //{ @"\dashleftarrow", "⇠", new Relation("⇠") }, // Glyph not in Latin Modern Math - it's constructed from 3 AMS glyphs (arrow head + 2 dashes)
         { @"\leftleftarrows", "⇇", new Relation("⇇") },
         { @"\leftrightarrows", "⇆", new Relation("⇆") },
         { @"\Lleftarrow", "⇚", new Relation("⇚") },
@@ -948,7 +955,7 @@ namespace CSharpMath.Atom {
         { @"\nLeftrightarrow", "⇎", new Relation("⇎") },
 
         // Table 22: AMS Greek 
-        // { @"\digamma", "ϝ", new Variable("ϝ") }, // Glyph not in Latin Modern Math
+        { @"\digamma", "ϝ", new Variable("ϝ") }, // Glyph from AMS Supplements
         { @"\varkappa", "ϰ", new Variable("ϰ") },
 
         // Table 23: AMS Hebrew
@@ -959,17 +966,17 @@ namespace CSharpMath.Atom {
         // Table 24: AMS Miscellaneous
         // \hbar defined in Table 11
         { @"\hslash", new Ordinary("ℏ") }, // Same as \hbar
-        { @"\vartriangle", "▵", new Ordinary("△") }, // ▵ not in Latin Modern Math
-        { @"\triangledown", "▿", new Ordinary("▽") }, // ▿ not in Latin Modern Math
+        { @"\vartriangle", "▵", new Ordinary("▵") }, // Glyph from AMS Supplements
+        { @"\triangledown", "▿", new Ordinary("▿") }, // Glyph from AMS Supplements
         { @"\square", Placeholder },
         { @"\lozenge", "◊", new Ordinary("◊") },
-        // { @"\circledS", "Ⓢ", new Ordinary("Ⓢ") }, // Glyph not in Latin Modern Math
+        { @"\circledS", "Ⓢ", new Ordinary("Ⓢ") }, // Glyph from AMS Supplements
         // \angle defined in Table 11
         { @"\measuredangle", "∡", new Ordinary("∡") },
         { @"\nexists", "∄", new Ordinary("∄") },
         // \mho defined in Table 11
-        // { @"\Finv", "Ⅎ", new Ordinary("Ⅎ") }, // Glyph not in Latin Modern Math
-        // { @"\Game", "⅁", new Ordinary("⅁") }, // Glyph not in Latin Modern Math
+        { @"\Finv", "Ⅎ", new Ordinary("Ⅎ") }, // Glyph from AMS Supplements
+        { @"\Game", "⅁", new Ordinary("⅁") }, // Glyph from AMS Supplements
         { @"\Bbbk", new Ordinary("𝐤") }, // "𝐤" should make make a Variable so it's not a key here
         { @"\backprime", "‵", new Ordinary("‵") },
         { @"\varnothing", new Ordinary("∅") }, // Same as \emptyset
@@ -977,12 +984,12 @@ namespace CSharpMath.Atom {
         { @"\blacktriangledown", "▾", "▼", new Ordinary("▼") }, // ▾ not in Latin Modern Math
         { @"\blacksquare", "▪", new Ordinary("▪") },
         { @"\blacklozenge", "⧫", "♦", new Ordinary("♦") }, // ⧫ not in Latin Modern Math
-        { @"\bigstar", "★", new Ordinary("⋆") }, // ★ not in Latin Modern Math
+        { @"\bigstar", "★", new Ordinary("★") }, // Glyph from AMS Supplements
         { @"\sphericalangle", "∢", new Ordinary("∢") },
         { @"\complement", "∁", new Ordinary("∁") },
         { @"\eth", new Ordinary("ð") }, // Same as \dh
-        { @"\diagup", "╱", new Ordinary("/") }, // ╱ not in Latin Modern Math
-        { @"\diagdown", "╲", new Ordinary("\\") }, // ╲ not in Latin Modern Math
+        { @"\diagup", "╱", new Ordinary("╱") }, // Glyph from AMS Supplements
+        { @"\diagdown", "╲", new Ordinary("╲") }, // Glyph from AMS Supplements
 
         // Table 25: AMS Commands Deﬁned to Work in Both Math and Text Mode
         { @"\checkmark", "✓", new Ordinary("✓") },
@@ -996,7 +1003,7 @@ namespace CSharpMath.Atom {
         { @"\Cup", "⋓", new BinaryOperator("⋓") },
         { @"\barwedge", "⌅", new BinaryOperator("⌅") },
         { @"\veebar", "⊻", new BinaryOperator("⊻") },
-        // { @"\doublebarwedge", "⩞", new BinaryOperator("⩞") }, //Glyph not in Latin Modern Math
+        { @"\doublebarwedge", "⩞", new BinaryOperator("⩞") }, // Glyph from AMS Supplements
         { @"\boxminus", "⊟", new BinaryOperator("⊟") },
         { @"\boxtimes", "⊠", new BinaryOperator("⊠") },
         { @"\boxdot", "⊡", new BinaryOperator("⊡") },
@@ -1031,13 +1038,13 @@ namespace CSharpMath.Atom {
         { @"\fallingdotseq", "≒", new Relation("≒") },
         { @"\backsim", "∽", new Relation("∽") },
         { @"\backsimeq", "⋍", new Relation("⋍") },
-        // { @"\subseteqq", "⫅", new Relation("⫅") }, // Glyph not in Latin Modern Math
+        { @"\subseteqq", "⫅", new Relation("⫅") }, // Glyph from AMS Supplements
         { @"\Subset", "⋐", new Relation("⋐") },
         // \sqsubset is defined in Table 8
         { @"\preccurlyeq", "≼", new Relation("≼") },
         { @"\curlyeqprec", "⋞", new Relation("⋞") },
         { @"\precsim", "≾", new Relation("≾") },
-        // { @"\precapprox", "⪷", new Relation("⪷") }, // Glyph not in Latin Modern Math
+        { @"\precapprox", "⪷", new Relation("⪷") }, // Glyph from AMS Supplements
         { @"\vartriangleleft", new Relation("⊲") }, // Same as \lhd
         { @"\trianglelefteq", new Relation("⊴") }, // Same as \unlhd
         { @"\vDash", "⊨", new Relation("⊨") },
@@ -1061,24 +1068,24 @@ namespace CSharpMath.Atom {
         { @"\triangleq", "≜", new Relation("≜") },
         { @"\thicksim", new Relation("∼") }, // Same as \sim
         { @"\thickapprox", new Relation("≈") }, // Same as \approx
-        // { @"\supseteqq", "⫆", new Relation("⫆") }, // Glyph not in Latin Modern Math
+        { @"\supseteqq", "⫆", new Relation("⫆") }, // Glyph from AMS Supplements
         { @"\Supset", "⋑", new Relation("⋑") },
         // \sqsupset is defined in Table 8
         { @"\succcurlyeq", "≽", new Relation("≽") },
         { @"\curlyeqsucc", "⋟", new Relation("⋟") },
         { @"\succsim", "≿", new Relation("≿") },
-        // { @"\succapprox", "⪸", new Relation("⪸") }, // Glyph not in Latin Modern Math
+        { @"\succapprox", "⪸", new Relation("⪸") }, // Glyph from AMS Supplements
         { @"\vartriangleright", new Relation("⊳") }, // Same as \rhd
         { @"\trianglerighteq", new Relation("⊵") }, // Same as \unrhd
         { @"\Vdash", "⊩", new Relation("⊩") },
         { @"\shortmid", new Relation("∣") }, // Same as \mid
         { @"\shortparallel", new Relation("∥") }, // Same as \parallel
         { @"\between", "≬", new Relation("≬") },
-        // { @"\pitchfork", "⋔", new Relation("⋔") }, // Glyph not in Latin Modern Math
+        { @"\pitchfork", "⋔", new Relation("⋔") }, // Glyph from AMS Supplements
         { @"\varpropto", new Relation("∝") }, // Same as \propto
         { @"\blacktriangleleft", "◀", "◂", new Relation("◀") }, // ◂ not in Latin Modern Math
         { @"\therefore", "∴", new Relation("∴") },
-        // { @"\backepsilon", "϶", new Relation("϶") }, // Glyph not in Latin Modern Math
+        { @"\backepsilon", "϶", new Relation("϶") }, // Glyph from AMS Supplements
         { @"\blacktriangleright", "▶", "▸", new Relation("▶") }, // ▸ not in Latin Modern Math
         { @"\because", "∵", new Relation("∵") },
 
@@ -1096,7 +1103,7 @@ namespace CSharpMath.Atom {
         { @"\nprec", "⊀", new Relation("⊀") },
         { @"\npreceq", "⪯\u0338", new Relation("⪯\u0338") },
         { @"\precnsim", "⋨", new Relation("⋨") },
-        // { @"\precnapprox", "⪹", new Relation("⪹") }, // Glyph not in Latin Modern Math
+        { @"\precnapprox", "⪹", new Relation("⪹") }, // Glyph from AMS Supplements
         { @"\nsim", "≁", new Relation("≁") },
         { @"\nshortmid", new Relation("∤") }, // Same as \nmid
         { @"\nmid", "∤", new Relation("∤") },
@@ -1107,7 +1114,7 @@ namespace CSharpMath.Atom {
         { @"\nsubseteq", "⊈", new Relation("⊈") },
         { @"\subsetneq", "⊊", new Relation("⊊") },
         // \varsubsetneq -> ⊊ + U+FE00 (Variation Selector 1) Not dealing with variation selectors, thank you very much
-        // { @"\subsetneqq", "⫋", new Relation("⫋") }, // Glyph not in Latin Modern Math
+        { @"\subsetneqq", "⫋", new Relation("⫋") }, // Glyph from AMS Supplements
         // \varsubsetneqq -> ⫋ + U+FE00 (Variation Selector 1) Not dealing with variation selectors, thank you very much
         { @"\ngtr", "≯", new Relation("≯") },
         { @"\ngeq", "≱", new Relation("≱") },
@@ -1122,7 +1129,7 @@ namespace CSharpMath.Atom {
         { @"\nsucceq", "⪰\u0338", new Relation("⪰\u0338") },
         // Duplicate entry in LaTeX Symbol list: \nsucceq
         { @"\succnsim", "⋩", new Relation("⋩") },
-        // { @"\succnapprox", "⪺", new Relation("⪺") }, // Glyph not in Latin Modern Math
+        { @"\succnapprox", "⪺", new Relation("⪺") }, // Glyph from AMS Supplements
         { @"\ncong", "≇", new Relation("≇") },
         { @"\nshortparallel", new Relation("∦") }, // Same as \nparallel
         { @"\nparallel", "∦", new Relation("∦") },
@@ -1131,11 +1138,13 @@ namespace CSharpMath.Atom {
         { @"\ntriangleright", "⋫", new Relation("⋫") },
         { @"\ntrianglerighteq", "⋭", new Relation("⋭") },
         { @"\nsupseteq", "⊉", new Relation("⊉") },
-        // { @"\nsupseteqq", "⫆\u0338", new Relation("⫆\u0338") }, // Glyph not in Latin Modern Math
+        { @"\nsupseteqq", "⫆\u0338", new Relation("⫆\u0338") }, // Glyph from AMS Supplements
         { @"\supsetneq", "⊋", new Relation("⊋") },
         // \varsupsetneq -> ⊋ + U+FE00 (Variation Selector 1) Not dealing with variation selectors, thank you very much
-        // { @"\supsetneqq", "⫌", new Relation("⫌") }, // Glyph not in Latin Modern Math
+        { @"\supsetneqq", "⫌", new Relation("⫌") }, // Glyph from AMS Supplements
         // \varsupsetneqq -> ⫌ + U+FE00 (Variation Selector 1) Not dealing with variation selectors, thank you very much
+
+        // Tables after 28 to be implemented
       };
   }
 }

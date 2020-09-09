@@ -8,14 +8,6 @@ namespace CSharpMath.Display.FrontEnd {
     public float MuUnit(TFont font) => font.PointSize / 18f;
     public abstract float RadicalDisplayStyleVerticalGap(TFont font);
     public abstract float RadicalVerticalGap(TFont font);
-    public float GetStyleSize(LineStyle style, TFont font) => style switch {
-      LineStyle.Display => font.PointSize,
-      LineStyle.Text => font.PointSize,
-      LineStyle.Script => font.PointSize * ScriptScaleDown(font),
-      LineStyle.ScriptScript => font.PointSize * ScriptScriptScaleDown(font),
-      _ => throw new ArgumentOutOfRangeException(nameof(style), style, "Style is out of range.")
-    };
-
     public float ScriptScaleDown(TFont font) => ScriptPercentScaleDown(font) / 100f;
     public float ScriptScriptScaleDown(TFont font) => ScriptScriptPercentScaleDown(font) / 100f;
     protected abstract short ScriptPercentScaleDown(TFont font);

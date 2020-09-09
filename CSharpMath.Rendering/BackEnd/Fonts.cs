@@ -17,7 +17,7 @@ namespace CSharpMath.Rendering.BackEnd {
         return typeface;
       }
       GlobalTypefaces = new Typefaces(LoadFont("latinmodern-math.otf"));
-      GlobalTypefaces.AddOverride(LoadFont("AMS-Capital-Blackboard-Bold.otf"));
+      GlobalTypefaces.AddOverride(LoadFont("AMS-Supplements.otf"));
       GlobalTypefaces.AddSupplement(LoadFont("cyrillic-modern-nmr10.otf"));
     }
     public Fonts(IEnumerable<Typeface> localTypefaces, float pointSize) {

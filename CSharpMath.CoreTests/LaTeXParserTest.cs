@@ -1271,6 +1271,9 @@ namespace CSharpMath.CoreTests {
     [InlineData(@"\int", @"\int ", false)]
     [InlineData(@"\int\limits", @"\int \limits ", true)]
     [InlineData(@"\int\nolimits", @"\int ", false)]
+    [InlineData(@"∫", @"\int ", false)]
+    [InlineData(@"∫\limits", @"\int \limits ", true)]
+    [InlineData(@"∫\nolimits", @"\int ", false)]
     public void TestLimits(string input, string output, bool? limits) {
       var list = ParseLaTeX(input);
       Assert.Collection(list, CheckAtom<LargeOperator>("∫", op => Assert.Equal(limits, op.Limits)));
@@ -1281,6 +1284,9 @@ namespace CSharpMath.CoreTests {
     [InlineData(@"\sum", @"\sum ", null)]
     [InlineData(@"\sum\limits", @"\sum \limits ", true)]
     [InlineData(@"\sum\nolimits", @"\sum \nolimits ", false)]
+    [InlineData(@"∑", @"\sum ", null)]
+    [InlineData(@"∑\limits", @"\sum \limits ", true)]
+    [InlineData(@"∑\nolimits", @"\sum \nolimits ", false)]
     public void TestUnspecifiedLimits(string input, string output, bool? limits) {
       var list = ParseLaTeX(input);
       Assert.Collection(list, CheckAtom<LargeOperator>("∑", op => Assert.Equal(limits, op.Limits)));

@@ -88,10 +88,10 @@ namespace CSharpMath.Display {
     internal readonly FontMathTable<TFont, TGlyph> _mathTable;
     internal TFont _styleFont;
     internal LineStyle _style;
+    internal float _styleMultiplier = 1;
     internal readonly bool _cramped;
     internal readonly bool _spaced;
-    internal readonly List<IDisplay<TFont, TGlyph>> _displayAtoms =
-      new List<IDisplay<TFont, TGlyph>>();
+    internal readonly List<IDisplay<TFont, TGlyph>> _displayAtoms = new List<IDisplay<TFont, TGlyph>>();
     internal PointF _currentPosition; // the Y axis is NOT inverted in the typesetter.
     internal readonly AttributedString<TFont, TGlyph> _currentLine;
     internal Range _currentLineIndexRange = Range.NotFound;
@@ -114,13 +114,21 @@ namespace CSharpMath.Display {
       _cramped
       ? _mathTable.SuperscriptShiftUpCramped(_styleFont)
       : _mathTable.SuperscriptShiftUp(_styleFont);
+    TFont CreateStyleFont(LineStyle style) =>
+      _context.MathFontCloner.Invoke(_font, style switch
+      {
+        LineStyle.Display => _font.PointSize,
+        LineStyle.Text => _font.PointSize,
+        LineStyle.Script => _font.PointSize * _mathTable.ScriptScaleDown(_font),
+        LineStyle.ScriptScript => _font.PointSize * _mathTable.ScriptScriptScaleDown(_font),
+        _ => throw new System.ComponentModel.InvalidEnumArgumentException(nameof(_style), (int)_style, typeof(LineStyle))
+      } * _styleMultiplier);
     internal Typesetter(TFont font, TypesettingContext<TFont, TGlyph> context,
       LineStyle style, bool cramped, bool spaced) {
       _font = font;
       _context = context;
       _mathTable = context.MathTable;
-      _style = style;
-      _styleFont = _context.MathFontCloner.Invoke(font, context.MathTable.GetStyleSize(style, font));
+      _styleFont = CreateStyleFont(_style = style);
       _cramped = cramped;
       _spaced = spaced;
       _currentLine = new AttributedString<TFont, TGlyph>();
@@ -178,9 +186,15 @@ namespace CSharpMath.Display {
           case Style style:
             // stash the existing layout
             AddDisplayLine(false);
-            _style = style.LineStyle;
-            _styleFont =
-              _context.MathFontCloner.Invoke(_font, _mathTable.GetStyleSize(_style, _font));
+            _styleFont = CreateStyleFont(_style = style.LineStyle);
+            // We need to preserve the prevAtom for any inter-element space changes,
+            // so we skip to the next node.
+            continue;
+          case FontSize size:
+            // stash the existing layout
+            AddDisplayLine(false);
+            _styleMultiplier = (int)size.Size * 0.01f;
+            _styleFont = CreateStyleFont(_style);
             // We need to preserve the prevAtom for any inter-element space changes,
             // so we skip to the next node.
             continue;
@@ -321,8 +335,7 @@ namespace CSharpMath.Display {
           case Open _:
           case Close _:
           case Placeholder _:
-          case Punctuation _:
-          case Prime _: {
+          case Punctuation _: {
               if (prevAtom != null) {
                 float interElementSpace =
                   InterElementSpaces.Get(prevAtom, atom, _style, _styleFont, _mathTable);
@@ -435,8 +448,7 @@ namespace CSharpMath.Display {
       float subscriptShiftDown = 0;
       display.HasScript = true;
       if (!(display is TextLineDisplay<TFont, TGlyph>)) {
-        var scriptFontSize = _mathTable.GetStyleSize(_scriptStyle, _font);
-        var scriptFont = _context.MathFontCloner.Invoke(_font, scriptFontSize);
+        var scriptFont = CreateStyleFont(_scriptStyle);
         superscriptShiftUp = display.Ascent - _context.MathTable.SuperscriptShiftUp(scriptFont);
         subscriptShiftDown = display.Descent + _context.MathTable.SubscriptBaselineDropMin(scriptFont);
       }
