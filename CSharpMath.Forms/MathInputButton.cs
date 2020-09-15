@@ -13,9 +13,9 @@ namespace CSharpMath.Forms {
         case MathKeyboardInput.Right: return "\u25B6";
         case MathKeyboardInput.Up: return "\u25B2";
         case MathKeyboardInput.Down: return "\u25BC";
-        case MathKeyboardInput.Backspace: return "{\\color{red}\u2B05}";
+        case MathKeyboardInput.Backspace: return "\u2B05";
         case MathKeyboardInput.Return: return "\u21B5";
-        case MathKeyboardInput.Clear: return "{\\color{red}\u21BB}";
+        case MathKeyboardInput.Clear: return "\u21BB";
         case MathKeyboardInput.Dismiss: return "\u2A2F";
         case MathKeyboardInput.Space: return @"\ ␣\ ";
         default:
@@ -25,7 +25,7 @@ namespace CSharpMath.Forms {
       }
     }
     public static readonly BindableProperty InputProperty =
-      BindableProperty.Create(nameof(Input), typeof(MathKeyboardInput), typeof(MathInputButton), propertyChanged:(b, o, n) => {
+      BindableProperty.Create(nameof(Input), typeof(MathKeyboardInput), typeof(MathInputButton), propertyChanged: (b, o, n) => {
         var button = (MathInputButton)b;
         button.Content ??= new MathView();
         button.Content.LaTeX = InputToLaTeX((MathKeyboardInput)n);

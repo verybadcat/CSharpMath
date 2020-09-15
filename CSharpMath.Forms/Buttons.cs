@@ -7,27 +7,56 @@ namespace CSharpMath.Forms {
     where TView : BaseView<TPainter, TContent>
     where TPainter : Rendering.FrontEnd.Painter<SKCanvas, TContent, SKColor>, new()
     where TContent : class {
+    private Color _textColor = Color.Black;
+    public Color TextColor {
+      get => _textColor;
+      set {
+        _textColor = value;
+        SetImageSource();
+      }
+    }
     public BaseButton() {
       Aspect = Aspect.AspectFit;
-      // Color.Default will be ugly: https://github.com/verybadcat/CSharpMath/issues/111
       BackgroundColor = Color.Transparent;
-      Source = ImageSource.FromStream(() => {
-        if (Content is { } c) {
-          var latex = c.Painter.LaTeX;
-          if (c.Painter.FontSize is Rendering.FrontEnd.PainterConstants.DefaultFontSize)
-            // Have a clear output by default
-            c.Painter.FontSize = Rendering.FrontEnd.PainterConstants.LargerFontSize;
-          // Appropriate positioning for non-full characters, e.g. prime, degree
-          // Also acts as spacing between MathButtons next to each other
-          // TODO: Implement and use \phantom
-          c.Painter.LaTeX = @"{\color{#00000000}|}" + latex + @"{\color{#00000000}|}";
-          var stream = c.Painter.DrawAsStream();
-          c.Painter.LaTeX = latex;
-          return stream;
-        }
-        return null;
-      });
+      SetImageSource();
     }
+
+    private void SetImageSource() => Source = ImageSource.FromStream(() => {
+      if (Content is { } c) {
+        var painter = c.Painter;
+        var originalLatexString = painter.LaTeX;
+        HaveLargerFontSizeByDefault(painter);
+        SetTextColorIfRequested(painter);
+        FixPositionOfNonFullCharacters(painter);
+        var stream = painter.DrawAsStream();
+        painter.LaTeX = originalLatexString;
+        return stream;
+      }
+      return null;
+    });
+
+    private static void HaveLargerFontSizeByDefault(TPainter painter) {
+      if (painter.FontSize is Rendering.FrontEnd.PainterConstants.DefaultFontSize)
+        painter.FontSize = Rendering.FrontEnd.PainterConstants.LargerFontSize;
+    }
+    private void SetTextColorIfRequested(TPainter painter) {
+      if (TextColor != Color.Black && painter.LaTeX != null)
+        painter.LaTeX = SetColor(painter.LaTeX, TextColor);
+    }
+    private void FixPositionOfNonFullCharacters(TPainter painter) {
+      // Appropriate positioning for non-full characters, e.g. prime, degree
+      // Also acts as spacing between MathButtons next to each other
+      // TODO: Implement and use \phantom
+      string phantom = SetColor("|", Color.Transparent);
+      painter.LaTeX = phantom + painter.LaTeX + phantom;
+    }
+    static string SetColor(string latex, Color color) => @"{\color{" + color.ToHex() + "}{" + latex + "}}";
+
+    public static readonly BindableProperty TextColorProperty =
+      BindableProperty.Create(nameof(TextColor), typeof(Color), typeof(BaseButton<TView, TPainter, TContent>), propertyChanged: (b, o, n) => {
+        var baseButton = (BaseButton<TView, TPainter, TContent>)b;
+        baseButton.TextColor = (Color)n;
+      });
     public TView? Content { get => (TView?)GetValue(ContentProperty); set => SetValue(ContentProperty, value); }
     public static readonly BindableProperty ContentProperty = BindableProperty.Create(nameof(Content), typeof(TView), typeof(BaseButton<TView, TPainter, TContent>));
   }

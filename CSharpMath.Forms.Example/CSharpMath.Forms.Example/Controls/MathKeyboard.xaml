@@ -113,12 +113,14 @@
         <!--Right row of first 3 tabs-->
         <Style TargetType="f:MathInputButton" Class="Back">
             <Setter Property="Input" Value="Backspace"/>
+            <Setter Property="TextColor" Value="Red" />
             <Setter Property="Grid.Column" Value="5"/>
             <Setter Property="Grid.Row" Value="0"/>
             <Setter Property="Keyboard" Value="{StaticResource Keyboard}"/>
         </Style>
         <Style TargetType="f:MathInputButton" Class="Clear">
             <Setter Property="Input" Value="Clear"/>
+            <Setter Property="TextColor" Value="Red" />
             <Setter Property="Grid.Column" Value="5"/>
             <Setter Property="Grid.Row" Value="1"/>
             <Setter Property="Keyboard" Value="{StaticResource Keyboard}"/>
