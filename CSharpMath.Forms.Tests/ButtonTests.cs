@@ -30,7 +30,7 @@ namespace CSharpMath.Forms.Tests {
       }
     }
     [Fact]
-    public void MathInputButtonsHaveBackTextColorByDefault() {
+    public void MathInputButtonsHaveBlackTextColorByDefault() {
       foreach (var mathInputButton in TheMathInputButtons) {
         // At the time of writing this test, vphatom = @"{\color{#00FFFFFF}{|}}" (Xamarin.Forms.Color.Transparent = "#00FFFFFF") is used as there is no \vphantom command yet.
         // As soon as \vphantom has been implemented, the call .Replace(LatexHelper.vphantom, "") can be removed.
