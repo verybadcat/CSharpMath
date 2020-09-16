@@ -1,0 +1,6 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <EmbeddedResource Include="..\CSharpMath.Rendering.Tests\ComicNeue_Bold.otf" Link="ComicNeue_Bold.otf" />
+    <ProjectReference Include="..\CSharpMath.Forms\CSharpMath.Forms.csproj" />
+  </ItemGroup>
+</Project>
