@@ -1,8 +1,8 @@
-namespace CSharpMath.Forms.Tests {
-  public static class Extensions {
+namespace Xunit {
+  public static partial class Extensions {
     public static T NotNull<T>(this T? obj) where T : class {
       if (obj == null)
-        throw new Xunit.Sdk.NotNullException();
+        throw new Sdk.NotNullException();
       return obj;
     }
   }

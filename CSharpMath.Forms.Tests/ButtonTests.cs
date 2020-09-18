@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CSharpMath.Editor;
 using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
 using Xunit;
 namespace CSharpMath.Forms.Tests {
   public class ButtonTests {
@@ -43,5 +44,30 @@ namespace CSharpMath.Forms.Tests {
       Assert.Equal(Color.Transparent, mathInputButton.BackgroundColor);
     }
     public static IEnumerable<object[]> TheMathKeyboardInputs => Enum.GetValues(typeof(MathKeyboardInput)).Cast<MathKeyboardInput>().Select(input => new object[] { input });
+  }
+  public class ButtonTestsWithPlatformServices {
+    public ButtonTestsWithPlatformServices() => Xamarin.Forms.Device.PlatformServices = new Xamarin.Forms.Core.UnitTests.MockPlatformServices();
+    const string xmlns = "xmlns=\"clr-namespace:CSharpMath.Forms;assembly=CSharpMath.Forms\"";
+    [Fact]
+    public void TextColorProperty_TextButton() {
+      var xaml = $@"<TextButton {xmlns} TextColor=""Blue""><TextView {xmlns}>Text with inline $\pi$</TextView></TextButton>";
+      var textButton = new TextButton().LoadFromXaml(xaml);
+      Assert.Equal(Color.Blue, textButton.TextColor);
+      Assert.Equal(@"Text\ with\ inline\ \(\pi \)", textButton.Content.NotNull().LaTeX);
+    }
+    [Fact]
+    public void TextColorProperty_MathButton() {
+      var xaml = $@"<MathButton {xmlns} TextColor=""Blue""><MathView {xmlns}>\leq</MathView></MathButton>";
+      var mathButton = new MathButton().LoadFromXaml(xaml);
+      Assert.Equal(Color.Blue, mathButton.TextColor);
+      Assert.Equal(@"\leq ", mathButton.Content.NotNull().LaTeX);
+    }
+    [Fact]
+    public void TextColorProperty_MathInputButton() {
+      var xaml = $@"<MathInputButton {xmlns} Input=""LessOrEquals"" TextColor=""Blue"" />";
+      var mathInputButton = new MathInputButton().LoadFromXaml(xaml);
+      Assert.Equal(Color.Blue, mathInputButton.TextColor);
+      Assert.Equal(@"\leq ", mathInputButton.Content.NotNull().LaTeX);
+    }
   }
 }
