@@ -22,26 +22,26 @@ namespace CSharpMath.Forms.Tests {
       Assert.Equal(latexContent, textButton.Content.LaTeX);
     }
     [Theory]
-    [ClassData(typeof(TheMathInputButtons))]
-    public void AllMathInputButtonsHaveLatexContent(MathInputButton mathInputButton) {
+    [MemberData(nameof(TheMathKeyboardInputs))]
+    public void AllMathInputButtonsHaveLatexContent(MathKeyboardInput mathKeyboardInput) {
+      var mathInputButton = new MathInputButton { Input = mathKeyboardInput };
       Assert.False(string.IsNullOrEmpty(mathInputButton.Content?.LaTeX));
     }
     [Theory]
-    [ClassData(typeof(TheMathInputButtons))]
-    public void MathInputButtonsHaveBlackTextColorByDefault(MathInputButton mathInputButton) {
-      // At the time of writing this test, vphatom = @"{\color{#00FFFFFF}{|}}" (Xamarin.Forms.Color.Transparent = "#00FFFFFF") is used as there is no \vphantom command yet.
-      // As soon as \vphantom has been implemented, the call .Replace(LatexHelper.vphantom, "") can be removed.
-      Assert.DoesNotContain(@"\color", mathInputButton.Content.NotNull().LaTeX.NotNull().Replace(LatexHelper.vphantom, ""));
+    [MemberData(nameof(TheMathKeyboardInputs))]
+    public void MathInputButtonsHaveBlackTextColorByDefault(MathKeyboardInput mathKeyboardInput) {
+      var mathInputButton = new MathInputButton { Input = mathKeyboardInput };
+      // At the time of writing this test, phatom = @"{\color{#00FFFFFF}{|}}" (Xamarin.Forms.Color.Transparent = "#00FFFFFF") is used as there is no \phantom command yet.
+      // As soon as \phantom has been implemented, the call .Replace(LatexHelper.phantom, "") can be removed.
+      Assert.DoesNotContain(@"\color", mathInputButton.Content.NotNull().LaTeX.NotNull().Replace(LatexHelper.phantom, ""));
       Assert.Equal(Color.Black, mathInputButton.TextColor);
     }
     [Theory]
-    [ClassData(typeof(TheMathInputButtons))]
-    public void MathInputButtonsHaveTransparentBackgroundByDefault(MathInputButton mathInputButton) {
+    [MemberData(nameof(TheMathKeyboardInputs))]
+    public void MathInputButtonsHaveTransparentBackgroundByDefault(MathKeyboardInput mathKeyboardInput) {
+      var mathInputButton = new MathInputButton { Input = mathKeyboardInput };
       Assert.Equal(Color.Transparent, mathInputButton.BackgroundColor);
     }
-    public class TheMathInputButtons : TestHelpers.ComplexClassData<MathInputButton> {
-      public override IEnumerable<MathInputButton> theData =>
-        Enum.GetValues(typeof(MathKeyboardInput)).Cast<MathKeyboardInput>().Select(input => new MathInputButton { Input = input });
-    }
+    public static IEnumerable<object[]> TheMathKeyboardInputs => Enum.GetValues(typeof(MathKeyboardInput)).Cast<MathKeyboardInput>().Select(input => new object[] { input });
   }
 }

@@ -28,7 +28,7 @@
       "CSharpMath.SkiaSharp/CSharpMath.SkiaSharp.csproj",
       "CSharpMath.Forms/CSharpMath.Forms.csproj",
       "CSharpMath.Forms.Example/CSharpMath.Forms.Example/CSharpMath.Forms.Example.csproj",
-	"CSharpMath.Forms.Tests/CSharpMath.Forms.Tests.csproj"
+      "CSharpMath.Forms.Tests/CSharpMath.Forms.Tests.csproj"
     ]
   }
 }

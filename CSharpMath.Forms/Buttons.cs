@@ -26,7 +26,7 @@ namespace CSharpMath.Forms {
             // Appropriate positioning for non-full characters, e.g. prime, degree
             // Also acts as spacing between MathButtons next to each other
             // TODO: Implement and use \phantom
-            painter.LaTeX = LatexHelper.vphantom + painter.LaTeX + LatexHelper.vphantom;
+            painter.LaTeX = LatexHelper.phantom + painter.LaTeX + LatexHelper.phantom;
 
             var stream = painter.DrawAsStream();
             painter.LaTeX = originalLatexString;
