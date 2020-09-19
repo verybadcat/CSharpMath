@@ -6,4 +6,9 @@
   <ItemGroup>
     <ProjectReference Include="..\CSharpMath.Forms\CSharpMath.Forms.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="files\**\*.*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

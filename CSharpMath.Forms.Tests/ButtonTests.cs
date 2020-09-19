@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using CSharpMath.Editor;
 using CSharpMath.Rendering.FrontEnd;
@@ -22,6 +23,31 @@ namespace CSharpMath.Forms.Tests {
       textButton.TextColor = newColor;
       Assert.Equal(mathButton.TextColor, newColor);
       Assert.Equal(latexContent, textButton.Content.LaTeX);
+    }
+    [Fact]
+    public void DefaultButtonImageTextColorIsBlack() {
+      var mathButton = new MathButton { Content = new MathView { LaTeX = "1" } };
+      Assert.True(ImagesAreEqual(
+        new FileInfo("files/buttons/BtnBlackText.png"),
+        ((StreamImageSource)mathButton.Source).Stream(System.Threading.CancellationToken.None).Result));
+    }
+    [Fact]
+    public void ButtonTextColorPropertyChangesImageColor() {
+      var mathButton = new MathButton { TextColor = Color.Blue, Content = new MathView { LaTeX = "1" } };
+      Assert.True(ImagesAreEqual(
+        new FileInfo("files/buttons/BtnBlueText.png"),
+        ((StreamImageSource)mathButton.Source).Stream(System.Threading.CancellationToken.None).Result));
+    }
+    static bool ImagesAreEqual(FileInfo f, Stream s) {
+      using (FileStream fs = f.OpenRead()) {
+        int b;
+        while ((b = fs.ReadByte()) != -1) {
+          if (s.ReadByte() != b) {
+            return false;
+          }
+        }
+        return fs.ReadByte() == -1;
+      }
     }
     [Theory]
     [MemberData(nameof(TheMathKeyboardInputs))]
