@@ -50,7 +50,7 @@ namespace CSharpMath.Forms.Tests {
       var mathKeyboardClassThatProcessesKeyPresses = new MathKeyboard();
       var mathInputButton = new MathInputButton { Input = mathKeyboardInput, Keyboard = mathKeyboardClassThatProcessesKeyPresses };
       mathInputButton.Command.Execute(null); // Simulate a MathInputButton key press
-      Assert.Equal(expectedResult(), mathKeyboardClassThatProcessesKeyPresses.LaTeX);
+      Assert.Equal(expectedResult(), mathInputButton.Keyboard.LaTeX);
       string expectedResult() {
         var kb = new MathKeyboard();
         kb.KeyPress(mathKeyboardInput);
