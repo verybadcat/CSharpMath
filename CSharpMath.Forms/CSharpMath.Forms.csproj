@@ -8,7 +8,6 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="SkiaSharp" Version="2.80.1" />
     <PackageReference Include="SkiaSharp.Views.Forms" Version="1.68.0" />
     <PackageReference Include="Xamarin.Forms" Version="4.3.0.908675" />
     <ProjectReference Include="..\CSharpMath.SkiaSharp\CSharpMath.SkiaSharp.csproj" />
