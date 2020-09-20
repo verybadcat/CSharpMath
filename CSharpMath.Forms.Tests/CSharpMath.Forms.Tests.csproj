@@ -11,7 +11,4 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="SkiaSharp.Views.Forms" Version="1.68.0" />
-  </ItemGroup>
 </Project>
