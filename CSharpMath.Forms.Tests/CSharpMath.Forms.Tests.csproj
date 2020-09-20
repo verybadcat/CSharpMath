@@ -10,5 +10,9 @@
     <Content Include="files\**\*.*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="SkiaSharp.Views.Forms.2.80.2.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>SkiaSharp.Views.Forms.dll</TargetPath>
+    </Content>
   </ItemGroup>
 </Project>
