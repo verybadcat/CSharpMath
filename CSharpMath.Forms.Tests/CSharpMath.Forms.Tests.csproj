@@ -14,5 +14,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>SkiaSharp.Views.Forms.dll</TargetPath>
     </Content>
+    <Content Include="libSkiaSharp.netcoreapp3.x64.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TargetPath>libSkiaSharp.dll</TargetPath>
+    </Content>
   </ItemGroup>
 </Project>
