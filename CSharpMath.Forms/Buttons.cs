@@ -37,8 +37,8 @@ namespace CSharpMath.Forms {
       }
     }
     public BaseButton() {
-      Aspect = Aspect.AspectFit;
-      BackgroundColor = Color.Transparent;
+      Aspect = DefaultButtonStyle.AspectFit;
+      BackgroundColor = DefaultButtonStyle.TransparentBackground;
       TextColor = Color.Black;
     }
     public static readonly BindableProperty TextColorProperty = BindableProperty.Create(nameof(TextColor), typeof(Color), typeof(BaseButton<TView, TPainter, TContent>),
@@ -48,4 +48,8 @@ namespace CSharpMath.Forms {
   }
   public class MathButton : BaseButton<MathView, MathPainter, Atom.MathList> { }
   public class TextButton : BaseButton<TextView, TextPainter, Rendering.Text.TextAtom> { }
+}
+internal class DefaultButtonStyle {
+  internal const Aspect AspectFit = Aspect.AspectFit;
+  internal static readonly Color TransparentBackground = Color.Transparent;
 }

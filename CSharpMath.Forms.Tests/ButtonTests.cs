@@ -84,6 +84,14 @@ namespace CSharpMath.Forms.Tests {
       }
     }
     public static IEnumerable<object[]> TheMathKeyboardInputs => Enum.GetValues(typeof(MathKeyboardInput)).Cast<MathKeyboardInput>().Select(input => new object[] { input });
+
+    [Fact]
+    public void MathInputButton_KeyboardProperty() {
+      var mathKeyboardClassThatProcessesKeyPresses = new MathKeyboard();
+      var mathInputButton = new MathInputButton();
+      mathInputButton.SetValue(MathInputButton.KeyboardProperty, mathKeyboardClassThatProcessesKeyPresses);
+      Assert.Equal(mathKeyboardClassThatProcessesKeyPresses, mathInputButton.Keyboard);
+    }
   }
   public class ButtonTestsWithPlatformServices {
     public ButtonTestsWithPlatformServices() => Xamarin.Forms.Device.PlatformServices = new Xamarin.Forms.Core.UnitTests.MockPlatformServices();
@@ -107,7 +115,26 @@ namespace CSharpMath.Forms.Tests {
       var xaml = $@"<MathInputButton {xmlns} Input=""LessOrEquals"" TextColor=""Blue"" />";
       var mathInputButton = new MathInputButton().LoadFromXaml(xaml);
       Assert.Equal(Color.Blue, mathInputButton.TextColor);
-      Assert.Equal(@"\leq ", mathInputButton.Content.NotNull().LaTeX);
+      Assert.Equal(@"\(\leq \)", mathInputButton.Content.NotNull().LaTeX);
+    }
+    [Fact]
+    public void ImageSourceMathInputButton_InputProperty_KeyboardProperty_and_Command() {
+      var mathKeyboardClassThatProcessesKeyPresses = new MathKeyboard();
+      var clearXaml = $@"<ImageSourceMathInputButton {xmlns} Input=""Clear"" Source=""yourflameimage.png"" />";
+      var clearButton = new ImageSourceMathInputButton().LoadFromXaml(clearXaml);
+      BindKeyboardAsIfItWereViaXaml(clearButton, mathKeyboardClassThatProcessesKeyPresses);
+      var aXaml = $@"<ImageSourceMathInputButton {xmlns} Input=""SmallA"" Source=""unrealisticexample.png"" />";
+      var aButton = new ImageSourceMathInputButton().LoadFromXaml(aXaml);
+      BindKeyboardAsIfItWereViaXaml(aButton, mathKeyboardClassThatProcessesKeyPresses);
+
+      aButton.Command.Execute(null); // Simulate key press
+      Assert.Equal("a", mathKeyboardClassThatProcessesKeyPresses.LaTeX);
+
+      clearButton.Command.Execute(null); // Simulate key press
+      Assert.Equal("", mathKeyboardClassThatProcessesKeyPresses.LaTeX);
+
+      void BindKeyboardAsIfItWereViaXaml(ImageSourceMathInputButton imgButton, MathKeyboard mathKeyboard) =>
+        imgButton.SetValue(ImageSourceMathInputButton.KeyboardProperty, mathKeyboard); // I don't know how to pass the MathKeyboard via XAML in unit tests.
     }
   }
   public static class NotNullExtension {

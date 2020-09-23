@@ -2,12 +2,12 @@ using Xamarin.Forms;
 namespace CSharpMath.Forms {
   using Editor;
   using Rendering.FrontEnd;
-  public class MathInputButton : MathButton {
+  public class MathInputButton : TextButton {
     public MathInputButton() => Command = new Command(() => Keyboard?.KeyPress(Input));
     public static readonly BindableProperty KeyboardProperty =
       BindableProperty.Create(nameof(Keyboard), typeof(MathKeyboard), typeof(MathInputButton));
     public MathKeyboard? Keyboard { get => (MathKeyboard?)GetValue(KeyboardProperty); set => SetValue(KeyboardProperty, value); }
-    static string InputToLaTeX(MathKeyboardInput input) {
+    protected virtual string GetButtonDisplayLaTeX(MathKeyboardInput input) {
       switch (input) {
         case MathKeyboardInput.Left: return "\u25C0";
         case MathKeyboardInput.Right: return "\u25B6";
@@ -21,15 +21,26 @@ namespace CSharpMath.Forms {
         default:
           var keyboard = new MathKeyboard();
           keyboard.KeyPress(input);
-          return keyboard.LaTeX;
+          return @$"\({keyboard.LaTeX}\)";
       }
     }
     public static readonly BindableProperty InputProperty =
       BindableProperty.Create(nameof(Input), typeof(MathKeyboardInput), typeof(MathInputButton), propertyChanged: (b, o, n) => {
         var button = (MathInputButton)b;
-        button.Content ??= new MathView();
-        button.Content.LaTeX = InputToLaTeX((MathKeyboardInput)n);
+        button.Content ??= new TextView();
+        button.Content.LaTeX = button.GetButtonDisplayLaTeX((MathKeyboardInput)n);
       });
     public MathKeyboardInput Input { get => (MathKeyboardInput)GetValue(InputProperty); set => SetValue(InputProperty, value); }
+  }
+  public class ImageSourceMathInputButton : ImageButton {
+    public ImageSourceMathInputButton() {
+      Aspect = DefaultButtonStyle.AspectFit;
+      BackgroundColor = DefaultButtonStyle.TransparentBackground;
+      Command = new Command(() => Keyboard?.KeyPress(Input));
+    }
+    public MathKeyboard? Keyboard { get => (MathKeyboard?)GetValue(KeyboardProperty); set => SetValue(KeyboardProperty, value); }
+    public static readonly BindableProperty KeyboardProperty = BindableProperty.Create(nameof(Keyboard), typeof(MathKeyboard), typeof(ImageSourceMathInputButton));
+    public MathKeyboardInput Input { get => (MathKeyboardInput)GetValue(InputProperty); set => SetValue(InputProperty, value); }
+    public static readonly BindableProperty InputProperty = BindableProperty.Create(nameof(Input), typeof(MathKeyboardInput), typeof(ImageSourceMathInputButton));
   }
 }
