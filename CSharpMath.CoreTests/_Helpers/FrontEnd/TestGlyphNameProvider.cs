@@ -1,6 +1,7 @@
 namespace CSharpMath.CoreTests.FrontEnd {
   using System.Linq;
   using TGlyph = System.Text.Rune;
+  /// <summary> Looks up a name in latinmodern-math.json </summary>
   class TestGlyphNameProvider : Display.FrontEnd.IGlyphNameProvider<TGlyph> {
     TestGlyphNameProvider() { }
     public static TestGlyphNameProvider Instance { get; } = new TestGlyphNameProvider();
