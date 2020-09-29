@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CSharpMath.Atom;
 using CSharpMath.CoreTests.FrontEnd;
 using Xunit;
 
@@ -174,6 +175,66 @@ namespace CSharpMath.Editor.Tests {
       keyboard.StartBlinking();
       await Task.Delay((int)MathKeyboard<TestFont, char>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
       Assert.Equal(MathKeyboardCaretState.Shown, keyboard.CaretState);
+    }
+  }
+  public class CustomizablePlaceholder {
+    [Fact]
+    public async void Test() {
+      LaTeXSettings.PlaceholderActiveNucleus = "😀";
+      LaTeXSettings.PlaceholderRestingNucleus = "😐";
+      LaTeXSettings.PlaceholderActiveColor = System.Drawing.Color.Green;
+      LaTeXSettings.PlaceholderRestingColor = System.Drawing.Color.Blue;
+
+      var keyboard = new MathKeyboard<TestFont, char>(TestTypesettingContexts.Instance, new TestFont()) {
+        CaretState = MathKeyboardCaretState.Shown
+      };
+      Assert.Equal(MathKeyboardCaretState.Shown, keyboard.CaretState);
+
+      keyboard.KeyPress(MathKeyboardInput.Subscript);
+      var outer = Assert.IsType<Atom.Atoms.Placeholder>(Assert.Single(keyboard.MathList));
+      var inner = Assert.IsType<Atom.Atoms.Placeholder>(Assert.Single(outer.Subscript));
+      Assert.Equal(MathKeyboardCaretState.ShownThroughPlaceholder, keyboard.CaretState);
+      Assert.Equal("😐", outer.Nucleus);
+      Assert.Equal(System.Drawing.Color.Blue, outer.Color);
+      Assert.Equal("😀", inner.Nucleus);
+      Assert.Equal(System.Drawing.Color.Green, inner.Color);
+
+      await Task.Delay((int)MathKeyboard<TestFont, char>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      Assert.Equal(MathKeyboardCaretState.TemporarilyHidden, keyboard.CaretState);
+      Assert.Equal("😐", outer.Nucleus);
+      Assert.Equal(System.Drawing.Color.Blue, outer.Color);
+      Assert.Equal("😐", inner.Nucleus);
+      Assert.Equal(System.Drawing.Color.Blue, inner.Color);
+      RestorePlaceholderDefaultSettings();
+    }
+    [Fact]
+    public void LaTeXSettings_Placeholder_IsNewInstance() {
+      Assert.False(LaTeXSettings.Placeholder == LaTeXSettings.Placeholder);
+    }
+    [Fact]
+    public void DefaultPlaceholderAppearance() {
+      Assert.Null(LaTeXSettings.PlaceholderActiveColor);
+      Assert.Null(LaTeXSettings.PlaceholderRestingColor);
+      Assert.Equal("\u25A0", LaTeXSettings.PlaceholderActiveNucleus);
+      Assert.Equal("\u25A1", LaTeXSettings.PlaceholderRestingNucleus);
+      Assert.Equal(LaTeXSettings.PlaceholderRestingNucleus, LaTeXSettings.Placeholder.Nucleus);
+      Assert.Equal(LaTeXSettings.PlaceholderRestingColor, LaTeXSettings.Placeholder.Color);
+    }
+    [Fact]
+    public void CustomizedPlaceholderGetter() {
+      LaTeXSettings.PlaceholderActiveNucleus = "😀";
+      LaTeXSettings.PlaceholderRestingNucleus = "😐";
+      LaTeXSettings.PlaceholderActiveColor = System.Drawing.Color.Green;
+      LaTeXSettings.PlaceholderRestingColor = System.Drawing.Color.Blue;
+      Assert.Equal("😐", LaTeXSettings.Placeholder.Nucleus);
+      Assert.Equal(System.Drawing.Color.Blue, LaTeXSettings.Placeholder.Color);
+      RestorePlaceholderDefaultSettings();
+    }
+    private void RestorePlaceholderDefaultSettings() {
+      LaTeXSettings.PlaceholderActiveNucleus = "\u25A0";
+      LaTeXSettings.PlaceholderRestingNucleus = "\u25A1";
+      LaTeXSettings.PlaceholderActiveColor = null;
+      LaTeXSettings.PlaceholderRestingColor = null;
     }
   }
 }
