@@ -177,6 +177,7 @@ namespace CSharpMath.Editor.Tests {
       Assert.Equal(MathKeyboardCaretState.Shown, keyboard.CaretState);
     }
   }
+  [Collection(nameof(NonParallelPlaceholderTests))]
   public class CustomizablePlaceholder {
     [Fact]
     public async void Test() {
@@ -210,6 +211,11 @@ namespace CSharpMath.Editor.Tests {
     [Fact]
     public void LaTeXSettings_Placeholder_IsNewInstance() {
       Assert.False(LaTeXSettings.Placeholder == LaTeXSettings.Placeholder);
+      // Double check, also verify that its contents are 'fresh':
+      LaTeXSettings.Placeholder.Nucleus = "x";
+      Assert.NotEqual("x", LaTeXSettings.Placeholder.Nucleus);
+      LaTeXSettings.Placeholder.Color = System.Drawing.Color.Green;
+      Assert.NotEqual(System.Drawing.Color.Green, LaTeXSettings.Placeholder.Color);
     }
     [Fact]
     public void DefaultPlaceholderAppearance() {
@@ -237,4 +243,6 @@ namespace CSharpMath.Editor.Tests {
       LaTeXSettings.PlaceholderRestingColor = null;
     }
   }
+  [CollectionDefinition(nameof(NonParallelPlaceholderTests), DisableParallelization = true)]
+  public class NonParallelPlaceholderTests { }
 }
