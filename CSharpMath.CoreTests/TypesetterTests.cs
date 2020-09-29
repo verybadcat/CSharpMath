@@ -35,6 +35,10 @@ namespace CSharpMath.CoreTests {
       TestList(rangeMax, ascent, descent, width, 0, 0, LinePosition.Regular, Range.UndefinedInt, inspectors)
       (ParseLaTeXToDisplay(latex));
 
+    /// <summary>
+    /// Makes sure that a single character of type Variable/Number/Punctuation/Ordinary(surrogates)
+    /// measures as the same one-character size.
+    /// </summary>
     [Theory, InlineData("x", "𝑥"), InlineData("2", "2"), InlineData(".", "."), InlineData("𝑥", "𝑥")]
     public void TestSingleCharacter(string latex, string text) =>
       TestOuter(latex, 1, 14, 4, 10,
