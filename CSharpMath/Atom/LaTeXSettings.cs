@@ -77,7 +77,7 @@ namespace CSharpMath.Atom {
         { @"\lrcorner", new Boundary("⌟") },
       };
 
-    static MathAtom? Dummy => Placeholder;
+    static readonly MathAtom? Dummy = Placeholder;
     public static Result<(MathAtom? Atom, MathList? Return)> Ok(MathAtom? atom) => Result.Ok((atom, (MathList?)null));
     public static Result<(MathAtom? Atom, MathList? Return)> OkStyled(MathList styled) => Result.Ok((Dummy, (MathList?)styled));
     public static Result<(MathAtom? Atom, MathList? Return)> OkStop(MathList @return) => Result.Ok(((MathAtom?)null, (MathList?)@return));
@@ -320,11 +320,11 @@ namespace CSharpMath.Atom {
       };
     public static MathAtom Times => new BinaryOperator("×");
     public static MathAtom Divide => new BinaryOperator("÷");
-    public static Color? PlaceholderHidingColor { get; set; }
-    public static Color? PlaceholderFullShowColor { get; set; }
-    public static string PlaceholderFullShowNucleus { get; set; } = "\u25A0";
-    public static string PlaceholderHidingNucleus { get; set; } = "\u25A1";
-    public static MathAtom Placeholder => new Placeholder(PlaceholderHidingNucleus, PlaceholderHidingColor);
+    public static Color? PlaceholderRestingColor { get; set; }
+    public static Color? PlaceholderActiveColor { get; set; }
+    public static string PlaceholderActiveNucleus { get; set; } = "\u25A0";
+    public static string PlaceholderRestingNucleus { get; set; } = "\u25A1";
+    public static MathAtom Placeholder => new Placeholder(PlaceholderRestingNucleus, PlaceholderRestingColor);
     public static MathList PlaceholderList => new MathList { Placeholder };
 
     public static AliasBiDictionary<string, FontStyle> FontStyles { get; } =
