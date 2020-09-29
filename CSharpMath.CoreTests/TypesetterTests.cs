@@ -40,7 +40,7 @@ namespace CSharpMath.CoreTests {
       TestOuter(latex, 1, 14, 4, 10,
         d => {
           var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
-          Assert.Single(line.Atoms); // have to think about these; doesn't really work atm
+          Assert.Single(line.Atoms);
           Assert.Equal(text, string.Concat(line.Text));
           Assert.Equal(new PointF(), line.Position);
           Assert.Equal(new Range(0, 1), line.Range);
