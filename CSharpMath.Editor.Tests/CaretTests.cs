@@ -206,6 +206,14 @@ namespace CSharpMath.Editor.Tests {
       Assert.Equal(System.Drawing.Color.Blue, outer.Color);
       Assert.Equal("😐", inner.Nucleus);
       Assert.Equal(System.Drawing.Color.Blue, inner.Color);
+
+      await Task.Delay((int)MathKeyboard<TestFont, char>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      Assert.Equal(MathKeyboardCaretState.ShownThroughPlaceholder, keyboard.CaretState);
+      Assert.Equal("😐", outer.Nucleus);
+      Assert.Equal(System.Drawing.Color.Blue, outer.Color);
+      Assert.Equal("😀", inner.Nucleus);
+      Assert.Equal(System.Drawing.Color.Green, inner.Color);
+
       RestorePlaceholderDefaultSettings();
     }
     [Fact]
