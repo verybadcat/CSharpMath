@@ -13,7 +13,7 @@ namespace CSharpMath.CoreTests {
       var font = new TestFont(10);
       var provider = TestGlyphBoundsProvider.Instance;
       var glyphRun = new AttributedGlyphRun<TestFont, TGlyph>(hello, hello, font);
-      Assert.True(glyphRun.GlyphInfos.All(GlyphInfo => GlyphInfo.Foreground == null));
+      Assert.All(glyphRun.GlyphInfos, glyphInfo => Assert.Null(glyphInfo.Foreground));
       var width = provider.GetTypographicWidth(font, glyphRun);
       Approximately.Equal(width, 25,  0.01);
     }
@@ -24,7 +24,7 @@ namespace CSharpMath.CoreTests {
       var font = new TestFont(10);
       var provider = TestGlyphBoundsProvider.Instance;
       var glyphRun = new AttributedGlyphRun<TestFont, TGlyph>(america, america, font);
-      Assert.True(glyphRun.GlyphInfos.All(GlyphInfo => GlyphInfo.Foreground == null));
+      Assert.All(glyphRun.GlyphInfos, glyphInfo => Assert.Null(glyphInfo.Foreground));
       var width = provider.GetTypographicWidth(font, glyphRun);
       Approximately.Equal(width, 40, 0.01);
     }
