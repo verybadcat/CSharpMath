@@ -33,18 +33,18 @@ namespace CSharpMath.Editor.Tests {
       var outer = Assert.IsType<Atom.Atoms.Placeholder>(Assert.Single(keyboard.MathList));
       var inner = Assert.IsType<Atom.Atoms.Placeholder>(Assert.Single(outer.Superscript));
       Assert.Equal(MathKeyboardCaretState.ShownThroughPlaceholder, keyboard.CaretState);
-      Assert.Equal("\u25A1", outer.Nucleus);
-      Assert.Equal("\u25A0", inner.Nucleus);
+      Assert.Equal(CustomizablePlaceholder.RestingNucleusDefault, outer.Nucleus);
+      Assert.Equal(CustomizablePlaceholder.ActiveNucleusDefault, inner.Nucleus);
 
       await Task.Delay((int)MathKeyboard<TestFont, char>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
       Assert.Equal(MathKeyboardCaretState.TemporarilyHidden, keyboard.CaretState);
-      Assert.Equal("\u25A1", outer.Nucleus);
-      Assert.Equal("\u25A1", inner.Nucleus);
+      Assert.Equal(CustomizablePlaceholder.RestingNucleusDefault, outer.Nucleus);
+      Assert.Equal(CustomizablePlaceholder.RestingNucleusDefault, inner.Nucleus);
 
       await Task.Delay((int)MathKeyboard<TestFont, char>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
       Assert.Equal(MathKeyboardCaretState.ShownThroughPlaceholder, keyboard.CaretState);
-      Assert.Equal("\u25A1", outer.Nucleus);
-      Assert.Equal("\u25A0", inner.Nucleus);
+      Assert.Equal(CustomizablePlaceholder.RestingNucleusDefault, outer.Nucleus);
+      Assert.Equal(CustomizablePlaceholder.ActiveNucleusDefault, inner.Nucleus);
     }
   }
   public class CaretMovesWithPlaceholder {
@@ -59,20 +59,20 @@ namespace CSharpMath.Editor.Tests {
       var outer = Assert.IsType<Atom.Atoms.Placeholder>(Assert.Single(keyboard.MathList));
       var inner = Assert.IsType<Atom.Atoms.Placeholder>(Assert.Single(outer.Subscript));
       Assert.Equal(MathKeyboardCaretState.ShownThroughPlaceholder, keyboard.CaretState);
-      Assert.Equal("\u25A1", outer.Nucleus);
-      Assert.Equal("\u25A0", inner.Nucleus);
+      Assert.Equal(CustomizablePlaceholder.RestingNucleusDefault, outer.Nucleus);
+      Assert.Equal(CustomizablePlaceholder.ActiveNucleusDefault, inner.Nucleus);
 
       await Task.Delay((int)MathKeyboard<TestFont, char>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
       Assert.Equal(MathKeyboardCaretState.TemporarilyHidden, keyboard.CaretState);
       keyboard.KeyPress(MathKeyboardInput.Left);
       Assert.Equal(MathKeyboardCaretState.ShownThroughPlaceholder, keyboard.CaretState);
-      Assert.Equal("\u25A0", outer.Nucleus);
-      Assert.Equal("\u25A1", inner.Nucleus);
+      Assert.Equal(CustomizablePlaceholder.ActiveNucleusDefault, outer.Nucleus);
+      Assert.Equal(CustomizablePlaceholder.RestingNucleusDefault, inner.Nucleus);
 
       Assert.Equal(MathKeyboardCaretState.ShownThroughPlaceholder, keyboard.CaretState);
       keyboard.KeyPress(MathKeyboardInput.Right);
-      Assert.Equal("\u25A1", outer.Nucleus);
-      Assert.Equal("\u25A0", inner.Nucleus);
+      Assert.Equal(CustomizablePlaceholder.RestingNucleusDefault, outer.Nucleus);
+      Assert.Equal(CustomizablePlaceholder.ActiveNucleusDefault, inner.Nucleus);
     }
   }
   public class CaretStaysHidden {
@@ -179,6 +179,10 @@ namespace CSharpMath.Editor.Tests {
   }
   [Collection(nameof(NonParallelPlaceholderTests))]
   public class CustomizablePlaceholder {
+    public const string ActiveNucleusDefault = "\u25A0";
+    public const string RestingNucleusDefault = "\u25A1";
+    public static readonly System.Drawing.Color? RestingColorDefault = null;
+    public static readonly System.Drawing.Color? ActiveColorDefault = null;
     [Fact]
     public async void CustomizedPlaceholderBlinks() {
       LaTeXSettings.PlaceholderActiveNucleus = "😀";
@@ -244,16 +248,16 @@ namespace CSharpMath.Editor.Tests {
       Assert.False(LaTeXSettings.Placeholder == LaTeXSettings.Placeholder);
       // Double check, also verify that its contents are 'fresh':
       LaTeXSettings.Placeholder.Nucleus = "x";
-      Assert.NotEqual("x", LaTeXSettings.Placeholder.Nucleus);
+      Assert.Equal(RestingNucleusDefault, LaTeXSettings.Placeholder.Nucleus);
       LaTeXSettings.Placeholder.Color = System.Drawing.Color.Green;
-      Assert.NotEqual(System.Drawing.Color.Green, LaTeXSettings.Placeholder.Color);
+      Assert.Equal(RestingColorDefault, LaTeXSettings.Placeholder.Color);
     }
     [Fact]
     public void DefaultPlaceholderAppearance() {
       Assert.Null(LaTeXSettings.PlaceholderActiveColor);
       Assert.Null(LaTeXSettings.PlaceholderRestingColor);
-      Assert.Equal("\u25A0", LaTeXSettings.PlaceholderActiveNucleus);
-      Assert.Equal("\u25A1", LaTeXSettings.PlaceholderRestingNucleus);
+      Assert.Equal(ActiveNucleusDefault, LaTeXSettings.PlaceholderActiveNucleus);
+      Assert.Equal(RestingNucleusDefault, LaTeXSettings.PlaceholderRestingNucleus);
       Assert.Equal(LaTeXSettings.PlaceholderRestingNucleus, LaTeXSettings.Placeholder.Nucleus);
       Assert.Equal(LaTeXSettings.PlaceholderRestingColor, LaTeXSettings.Placeholder.Color);
     }
@@ -268,10 +272,10 @@ namespace CSharpMath.Editor.Tests {
       RestorePlaceholderDefaultSettings();
     }
     private void RestorePlaceholderDefaultSettings() {
-      LaTeXSettings.PlaceholderActiveNucleus = "\u25A0";
-      LaTeXSettings.PlaceholderRestingNucleus = "\u25A1";
-      LaTeXSettings.PlaceholderActiveColor = null;
-      LaTeXSettings.PlaceholderRestingColor = null;
+      LaTeXSettings.PlaceholderActiveNucleus = ActiveNucleusDefault;
+      LaTeXSettings.PlaceholderRestingNucleus = RestingNucleusDefault;
+      LaTeXSettings.PlaceholderActiveColor = ActiveColorDefault;
+      LaTeXSettings.PlaceholderRestingColor = RestingColorDefault;
     }
   }
   [CollectionDefinition(nameof(NonParallelPlaceholderTests), DisableParallelization = true)]
