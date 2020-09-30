@@ -37,7 +37,7 @@ namespace CSharpMath.CoreTests {
 
     /// <summary>Makes sure that a single codepoint of various atom types have the same measured size.</summary>
     [Theory, InlineData("x"), InlineData("2"), InlineData(","), InlineData("+"), InlineData("Σ"), InlineData("𝑥")]
-    public void TestSingleCharacter(string latex, string text) =>
+    public void TestSingleCharacter(string latex) =>
       TestOuter(latex, 1, 14, 4, 10,
         d => {
           var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
