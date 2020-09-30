@@ -138,16 +138,14 @@ namespace CSharpMath.Editor.Tests {
       Assert.Equal(MathKeyboardCaretState.Shown, keyboard.CaretState);
       await Task.Delay((int)MathKeyboard<TestFont, char>.DefaultBlinkMilliseconds - CaretBlinks.MillisecondBuffer);
 
-      Assert.Equal(MathKeyboardCaretState.Shown, keyboard.CaretState);
       keyboard.KeyPress(MathKeyboardInput.A);
+      Assert.Equal(MathKeyboardCaretState.Shown, keyboard.CaretState);
       await Task.Delay((int)MathKeyboard<TestFont, char>.DefaultBlinkMilliseconds - CaretBlinks.MillisecondBuffer);
 
-      Assert.Equal(MathKeyboardCaretState.Shown, keyboard.CaretState);
       keyboard.KeyPress(MathKeyboardInput.Left);
-      await Task.Delay((int)MathKeyboard<TestFont, char>.DefaultBlinkMilliseconds - CaretBlinks.MillisecondBuffer);
-
       Assert.Equal(MathKeyboardCaretState.Shown, keyboard.CaretState);
-      await Task.Delay(4 * CaretBlinks.MillisecondBuffer);
+
+      await Task.Delay((int)MathKeyboard<TestFont, char>.DefaultBlinkMilliseconds + 4 * CaretBlinks.MillisecondBuffer);
       Assert.Equal(MathKeyboardCaretState.TemporarilyHidden, keyboard.CaretState);
     }
   }
