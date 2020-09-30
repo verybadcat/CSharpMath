@@ -180,7 +180,7 @@ namespace CSharpMath.Editor.Tests {
   [Collection(nameof(NonParallelPlaceholderTests))]
   public class CustomizablePlaceholder {
     [Fact]
-    public async void Test() {
+    public async void CustomizedPlaceholderBlinks() {
       LaTeXSettings.PlaceholderActiveNucleus = "😀";
       LaTeXSettings.PlaceholderRestingNucleus = "😐";
       LaTeXSettings.PlaceholderActiveColor = System.Drawing.Color.Green;
@@ -206,6 +206,29 @@ namespace CSharpMath.Editor.Tests {
       Assert.Equal(System.Drawing.Color.Blue, outer.Color);
       Assert.Equal("😐", inner.Nucleus);
       Assert.Equal(System.Drawing.Color.Blue, inner.Color);
+      RestorePlaceholderDefaultSettings();
+    }
+    [Fact]
+    public void AllCustomizablePlaceholderPropertiesAreResetOnCaretVisible() {
+      LaTeXSettings.PlaceholderActiveNucleus = "😀";
+      LaTeXSettings.PlaceholderRestingNucleus = "😐";
+      LaTeXSettings.PlaceholderActiveColor = System.Drawing.Color.Green;
+      LaTeXSettings.PlaceholderRestingColor = System.Drawing.Color.Blue;
+      var keyboard = new MathKeyboard<TestFont, char>(TestTypesettingContexts.Instance, new TestFont()) {
+        CaretState = MathKeyboardCaretState.Shown
+      };
+      Assert.Equal(MathKeyboardCaretState.Shown, keyboard.CaretState);
+      keyboard.KeyPress(MathKeyboardInput.Subscript);
+      var outer = Assert.IsType<Atom.Atoms.Placeholder>(Assert.Single(keyboard.MathList));
+      var inner = Assert.IsType<Atom.Atoms.Placeholder>(Assert.Single(outer.Subscript));
+      Assert.Equal(MathKeyboardCaretState.ShownThroughPlaceholder, keyboard.CaretState);
+
+      keyboard.InsertionIndex = MathListIndex.Level0Index(keyboard.MathList.Count);
+      Assert.Equal(MathKeyboardCaretState.Shown, keyboard.CaretState);
+      Assert.Equal(LaTeXSettings.PlaceholderRestingNucleus, outer.Nucleus);
+      Assert.Equal(LaTeXSettings.PlaceholderRestingColor, outer.Color);
+      Assert.Equal(LaTeXSettings.PlaceholderRestingNucleus, inner.Nucleus);
+      Assert.Equal(LaTeXSettings.PlaceholderRestingColor, inner.Color);
       RestorePlaceholderDefaultSettings();
     }
     [Fact]
