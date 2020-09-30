@@ -10,7 +10,7 @@ namespace CSharpMath.Display {
   public class AttributedGlyphRun<TFont, TGlyph> where TFont : FrontEnd.IFont<TGlyph> {
     public AttributedGlyphRun(string text, IEnumerable<TGlyph> glyphs, TFont font, bool isPlaceHolder = false, Color? color = null) {
       Text = new StringBuilder(text);
-      GlyphInfos = glyphs.Select(g => new GlyphInfo<TGlyph>(g) { Foreground = color}).ToList();
+      GlyphInfos = glyphs.Select(g => new GlyphInfo<TGlyph>(g) { Foreground = color }).ToList();
       Font = font;
       Placeholder = isPlaceHolder;
     }

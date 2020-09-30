@@ -2,7 +2,6 @@ using CSharpMath.CoreTests.FrontEnd;
 using Xunit;
 using TGlyph = System.Char;
 using CSharpMath.Display;
-using System.Linq;
 
 namespace CSharpMath.CoreTests {
   // purpose of this class is to make sure our mocks behave as expected.
@@ -17,7 +16,6 @@ namespace CSharpMath.CoreTests {
       var width = provider.GetTypographicWidth(font, glyphRun);
       Approximately.Equal(width, 25,  0.01);
     }
-
     [Fact]
     public void TestGlyphBoundsWithM() {
       string america = "America";
