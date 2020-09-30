@@ -35,17 +35,14 @@ namespace CSharpMath.CoreTests {
       TestList(rangeMax, ascent, descent, width, 0, 0, LinePosition.Regular, Range.UndefinedInt, inspectors)
       (ParseLaTeXToDisplay(latex));
 
-    /// <summary>
-    /// Makes sure that a single character of type Variable/Number/Punctuation/Ordinary(surrogates)
-    /// measures as the same one-character size.
-    /// </summary>
-    [Theory, InlineData("x", "𝑥"), InlineData("2", "2"), InlineData(".", "."), InlineData("𝑥", "𝑥")]
+    /// <summary>Makes sure that a single codepoint of various atom types have the same measured size.</summary>
+    [Theory, InlineData("x"), InlineData("2"), InlineData(","), InlineData("+"), InlineData("Σ"), InlineData("𝑥")]
     public void TestSingleCharacter(string latex, string text) =>
       TestOuter(latex, 1, 14, 4, 10,
         d => {
           var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
-          Assert.Single(line.Atoms);
-          Assert.Equal(text, string.Concat(line.Text));
+          var atom = Assert.Single(line.Atoms);
+          Assert.Equal(latex is "x" ? "𝑥" : text, string.Concat(line.Text));
           Assert.Equal(new PointF(), line.Position);
           Assert.Equal(new Range(0, 1), line.Range);
 
