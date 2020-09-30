@@ -42,7 +42,7 @@ namespace CSharpMath.CoreTests {
         d => {
           var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
           var atom = Assert.Single(line.Atoms);
-          Assert.Equal(latex is "x" ? "𝑥" : text, string.Concat(line.Text));
+          Assert.Equal(latex is "x" ? "𝑥" : latex, string.Concat(line.Text));
           Assert.Equal(new PointF(), line.Position);
           Assert.Equal(new Range(0, 1), line.Range);
 
