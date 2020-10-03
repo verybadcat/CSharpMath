@@ -188,7 +188,7 @@ namespace CSharpMath.Editor.Tests {
   public class DefaultPlaceholder {
     [Fact]
     public void LaTeXSettingsPlaceholderIsNewInstance() {
-      Assert.False(LaTeXSettings.Placeholder == LaTeXSettings.Placeholder);
+      Assert.NotSame(LaTeXSettings.Placeholder, LaTeXSettings.Placeholder);
       // Double check, also verify that its contents are 'fresh':
       LaTeXSettings.Placeholder.Nucleus = "x";
       Assert.Equal(DefaultPlaceholderSettings.RestingNucleus, LaTeXSettings.Placeholder.Nucleus);
@@ -220,7 +220,7 @@ namespace CSharpMath.Editor.Tests {
       LaTeXSettings.PlaceholderRestingColor = DefaultPlaceholderSettings.RestingColor;
     }
     [Fact]
-    public async void CustomizedPlaceholderBlinks() {
+    public async Task CustomizedPlaceholderBlinks() {
       var keyboard = new MathKeyboard<TestFont, char>(TestTypesettingContexts.Instance, new TestFont()) {
         CaretState = MathKeyboardCaretState.Shown
       };
