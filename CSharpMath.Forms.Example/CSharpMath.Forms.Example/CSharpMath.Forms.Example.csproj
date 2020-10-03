@@ -14,6 +14,12 @@
     <Content Include="Controls\ImageSourceMathInputButtons\flame.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Controls\ImageSourceMathInputButtons\metaltrashcan.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Controls\ImageSourceMathInputButtons\recyclebin.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
