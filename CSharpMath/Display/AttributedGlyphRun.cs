@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 
@@ -7,9 +8,9 @@ namespace CSharpMath.Display {
   /// over the whole string. We use KernedGlyph objects instead of Glyphs to
   /// allow us to set kern on a per-glyph basis.</summary>
   public class AttributedGlyphRun<TFont, TGlyph> where TFont : FrontEnd.IFont<TGlyph> {
-    public AttributedGlyphRun(string text, IEnumerable<TGlyph> glyphs, TFont font, bool isPlaceHolder = false) {
+    public AttributedGlyphRun(string text, IEnumerable<TGlyph> glyphs, TFont font, bool isPlaceHolder = false, Color? color = null) {
       Text = new StringBuilder(text);
-      GlyphInfos = glyphs.Select(g => new GlyphInfo<TGlyph>(g)).ToList();
+      GlyphInfos = glyphs.Select(g => new GlyphInfo<TGlyph>(g) { Foreground = color }).ToList();
       Font = font;
       Placeholder = isPlaceHolder;
     }

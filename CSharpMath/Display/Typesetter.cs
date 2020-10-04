@@ -337,7 +337,7 @@ namespace CSharpMath.Display {
               var nucleusText = atom.Nucleus;
               var glyphs = _context.GlyphFinder.FindGlyphs(_font, nucleusText);
               var current = new AttributedGlyphRun<TFont, TGlyph>(
-                nucleusText, glyphs, _font, atom is Placeholder);
+                nucleusText, glyphs, _font, atom is Placeholder, (atom as Placeholder)?.Color);
               _currentLine.AppendGlyphRun(current);
               if (_currentLineIndexRange.Location == Range.UndefinedInt)
                 _currentLineIndexRange = atom.IndexRange;
