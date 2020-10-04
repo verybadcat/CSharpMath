@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1599328920471,
+  "lastUpdate": 1601786797424,
   "repoUrl": "https://github.com/verybadcat/CSharpMath",
   "entries": {
     "CSharpMath.Rendering.Benchmarks": [
@@ -1260,6 +1260,96 @@ window.BENCHMARK_DATA = {
             "value": 5300087.5,
             "unit": "ns",
             "range": "± 96484.35365384379"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "32139898+SymboLinker@users.noreply.github.com",
+            "name": "SymboLinker",
+            "username": "SymboLinker"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "789b8613cc0019691af7cdde451d26652c04aa1f",
+          "message": "Make blinking Placeholder's Nucleus and ForeColor customizable in both CaretStates (#167)\n\n* Make blinking Placeholder's Nucleus and ForeColor customizable in both CaretStates\r\n\r\n* Renaming of Placeholder-related variables + refactor (#167)\r\n\r\n- Rename Placholder's \"ForeColor\" to \"Color\".\r\n- Use property initializer GlyphInfo.Foreground.\r\n- Restore \"readonly field\" instead of property getter for LaTeXSettings.Dummy.\r\n- Use the name parts \"Resting\" and \"Active\" in the placeholder setting names (instead of \"Hiding\" and \"FullShow\" which are related to the caret but do not fit a blinking placeholder).\r\n- Use variable name \"placeholder\" instead of \"ph\".\r\n\r\n* Add unit tests for customizable placeholder (#167)\r\n\r\n* Disable parallelization of customizable placeholder unit tests\r\n\r\nAlso: verify more in LaTeXSettings_Placeholder_IsNewInstance.\r\n\r\n* Add unit test AllCustomizablePlaceholderPropertiesAreResetOnCaretVisible (#167)\r\n\r\nAlso: in the MockTests class, verify that AttributedGlyphRun sets the GlyphInfo.Foreground to null (default color).\r\n\r\n* Unit test CustomizedPlaceholderBlinks: test complete cycle\r\n\r\n* Fix failing unit test CaretTimerResetsOnKeyPress\r\n\r\n* Use Assert.All instead of Assert.True(enumerable.All(pred))\r\n\r\n* Revert \"Fix failing unit test CaretTimerResetsOnKeyPress\"\r\n\r\nThis reverts commit 9925952a078e0bc21cee91d1d372d3b0259d699f.\r\n\r\n* Replace Assert.NotEqual + replace hardcoded strings by constants\r\n\r\n* Refactoring and cleaning (of customizable placeholder tests and more)\r\n\r\n* Placeholder tests: use Assert.NotSame and async Task",
+          "timestamp": "2020-10-04T12:41:10+08:00",
+          "tree_id": "91022bc75b617142d00d199a33676df88be67741",
+          "url": "https://github.com/verybadcat/CSharpMath/commit/789b8613cc0019691af7cdde451d26652c04aa1f"
+        },
+        "date": 1601786795744,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.AllConstantValues",
+            "value": 816789040,
+            "unit": "ns",
+            "range": "± 7051726.458798178"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cases\")",
+            "value": 5005457.142857143,
+            "unit": "ns",
+            "range": "± 80131.72534391985"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Color\")",
+            "value": 2069676.4705882352,
+            "unit": "ns",
+            "range": "± 41890.14695324791"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Commands\")",
+            "value": 798680,
+            "unit": "ns",
+            "range": "± 23741.138455693606"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cyrillic\")",
+            "value": 5192261.538461538,
+            "unit": "ns",
+            "range": "± 56314.82247836027"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"ErrorMissingArgument\")",
+            "value": 2715922.34375,
+            "unit": "ns",
+            "range": "± 21249.82782692281"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Matrix\")",
+            "value": 3100323.076923077,
+            "unit": "ns",
+            "range": "± 34662.25502007801"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuadraticFormula\")",
+            "value": 1333176.923076923,
+            "unit": "ns",
+            "range": "± 7682.789624235224"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuarticSolutions\")",
+            "value": 187728171.42857143,
+            "unit": "ns",
+            "range": "± 2695489.9005071903"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"TangentPeriodShift\")",
+            "value": 1581621.4285714286,
+            "unit": "ns",
+            "range": "± 21227.74594256766"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"VectorProjection\")",
+            "value": 5749085.714285715,
+            "unit": "ns",
+            "range": "± 87173.03620821201"
           }
         ]
       }
