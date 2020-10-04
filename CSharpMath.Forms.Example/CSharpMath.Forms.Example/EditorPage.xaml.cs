@@ -117,8 +117,9 @@ namespace CSharpMath.Forms.Example {
       },
       () => {
         UseMyCustomizedPlaceholderAppearance();
-        // Changing the LaTeXSettings does redraw MathImageButtons, but using an appearance property of a MathInputButton does,
-        // so although the previous theme had black colored buttons as well, set the color:
+        // Changing the LaTeXSettings doesn't redraw MathInputButtons,
+        // but at invoking an appearance property's setter of a MathInputButton, a redraw will be done,
+        // so although the previous theme had black colored buttons as well, we set the color again:
         keyboard.SetButtonsTextColor(Color.Black); // Placeholder appearance on the keys is the same as in the output by default.
         keyboard.SetClearButtonImageSource("Controls/ImageSourceMathInputButtons/metaltrashcan.png");
       },
