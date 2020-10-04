@@ -320,7 +320,11 @@ namespace CSharpMath.Atom {
       };
     public static MathAtom Times => new BinaryOperator("×");
     public static MathAtom Divide => new BinaryOperator("÷");
-    public static MathAtom Placeholder => new Placeholder("\u25A1");
+    public static Color? PlaceholderRestingColor { get; set; }
+    public static Color? PlaceholderActiveColor { get; set; }
+    public static string PlaceholderActiveNucleus { get; set; } = "\u25A0";
+    public static string PlaceholderRestingNucleus { get; set; } = "\u25A1";
+    public static Placeholder Placeholder => new Placeholder(PlaceholderRestingNucleus, PlaceholderRestingColor);
     public static MathList PlaceholderList => new MathList { Placeholder };
 
     public static AliasBiDictionary<string, FontStyle> FontStyles { get; } =
