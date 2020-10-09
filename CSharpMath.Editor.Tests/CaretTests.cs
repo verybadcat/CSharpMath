@@ -222,7 +222,7 @@ namespace CSharpMath.Editor.Tests {
     }
     [Fact]
     public async Task CustomizedPlaceholderBlinks() {
-      var keyboard = new MathKeyboard<TestFont, char>(TestTypesettingContexts.Instance, new TestFont()) {
+      var keyboard = new MathKeyboard<TestFont, TGlyph>(TestTypesettingContexts.Instance, new TestFont()) {
         CaretState = MathKeyboardCaretState.Shown
       };
       Assert.Equal(MathKeyboardCaretState.Shown, keyboard.CaretState);
@@ -236,14 +236,14 @@ namespace CSharpMath.Editor.Tests {
       Assert.Equal("😀", inner.Nucleus);
       Assert.Equal(System.Drawing.Color.Green, inner.Color);
 
-      await Task.Delay((int)MathKeyboard<TestFont, char>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
       Assert.Equal(MathKeyboardCaretState.TemporarilyHidden, keyboard.CaretState);
       Assert.Equal("😐", outer.Nucleus);
       Assert.Equal(System.Drawing.Color.Blue, outer.Color);
       Assert.Equal("😐", inner.Nucleus);
       Assert.Equal(System.Drawing.Color.Blue, inner.Color);
 
-      await Task.Delay((int)MathKeyboard<TestFont, char>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
       Assert.Equal(MathKeyboardCaretState.ShownThroughPlaceholder, keyboard.CaretState);
       Assert.Equal("😐", outer.Nucleus);
       Assert.Equal(System.Drawing.Color.Blue, outer.Color);
@@ -252,7 +252,7 @@ namespace CSharpMath.Editor.Tests {
     }
     [Fact]
     public void AllCustomizablePlaceholderPropertiesAreResetOnCaretVisible() {
-      var keyboard = new MathKeyboard<TestFont, char>(TestTypesettingContexts.Instance, new TestFont()) {
+      var keyboard = new MathKeyboard<TestFont, TGlyph>(TestTypesettingContexts.Instance, new TestFont()) {
         CaretState = MathKeyboardCaretState.Shown
       };
       Assert.Equal(MathKeyboardCaretState.Shown, keyboard.CaretState);
