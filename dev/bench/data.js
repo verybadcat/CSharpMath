@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1601786797424,
+  "lastUpdate": 1603278878762,
   "repoUrl": "https://github.com/verybadcat/CSharpMath",
   "entries": {
     "CSharpMath.Rendering.Benchmarks": [
@@ -1350,6 +1350,96 @@ window.BENCHMARK_DATA = {
             "value": 5749085.714285715,
             "unit": "ns",
             "range": "± 87173.03620821201"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "charles.roddie@cantab.net",
+            "name": "Charles Roddie",
+            "username": "charlesroddie"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "ed72190a76825656e3915972f1652c14c968f51b",
+          "message": "Cleanup in preparation for Font Styles (#156)\n\n* font styles init\r\n\r\n* remove unused deconstruct and commented code\r\n\r\n* Simplify by removing IFontChanger\r\n\r\n* remove unused interface\r\n\r\n* clean Typefaces of unused methods\r\n\r\n* Document Typefaces\r\n\r\n* tidy\r\n\r\n* WIP: Fixing IndexRanges in progress\r\n\r\n* Use Rune as TGlyph\r\n\r\n* Tests show unexpected changes in positioning\r\n\r\n* Include italic m as double in width measurement\r\n\r\n* Fixed tests\r\n\r\n* Don't test UnicodeFontChanger only\r\n\r\n* Fix typo\r\n\r\n* Remove duplicate comment\r\n\r\n* Be even more lenient wrt CI load\r\n\r\n* Wait longer in caret reset test\r\n\r\n* Increase alert threshold again\r\n\r\n* Update ReportGenerator\r\n\r\n* Add the word \"Ignore\"\r\n\r\n* use ToStringInvariant()\r\n\r\n* Remove outdated comment\r\n\r\n* copy in happypig's explanation verbatim\r\n\r\n* copy in happypig's comment\r\n\r\n* Clarify the comment\r\n\r\n* Fix the test\r\n\r\n* .\r\n\r\n* Quick update\r\n\r\n* Update CaretTests.cs\r\n\r\nCo-authored-by: Hadrian Tang <hadrianwttang@outlook.com>\r\nCo-authored-by: FoggyFinder <FoggyFinder@yandex.ua>",
+          "timestamp": "2020-10-21T12:08:46+01:00",
+          "tree_id": "89a99aef312ac2f940d3447431ebd85156a6e35a",
+          "url": "https://github.com/verybadcat/CSharpMath/commit/ed72190a76825656e3915972f1652c14c968f51b"
+        },
+        "date": 1603278877207,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.AllConstantValues",
+            "value": 798122866.6666666,
+            "unit": "ns",
+            "range": "± 12841175.411635064"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cases\")",
+            "value": 4830626.0869565215,
+            "unit": "ns",
+            "range": "± 185759.09899626288"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Color\")",
+            "value": 1963779.365079365,
+            "unit": "ns",
+            "range": "± 90163.31089666371"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Commands\")",
+            "value": 599318.0069633152,
+            "unit": "ns",
+            "range": "± 14617.649607260859"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cyrillic\")",
+            "value": 5216583.870967742,
+            "unit": "ns",
+            "range": "± 158252.28191461507"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"ErrorMissingArgument\")",
+            "value": 2682375.948660714,
+            "unit": "ns",
+            "range": "± 46835.886748724035"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Matrix\")",
+            "value": 3070000,
+            "unit": "ns",
+            "range": "± 113699.05347849103"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuadraticFormula\")",
+            "value": 1283813.4328358208,
+            "unit": "ns",
+            "range": "± 60279.113161124325"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuarticSolutions\")",
+            "value": 182188362.5,
+            "unit": "ns",
+            "range": "± 3412272.500621836"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"TangentPeriodShift\")",
+            "value": 1284295.8203125,
+            "unit": "ns",
+            "range": "± 19629.22653334558"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"VectorProjection\")",
+            "value": 5626737.142857143,
+            "unit": "ns",
+            "range": "± 183524.66909946257"
           }
         ]
       }
