@@ -4,6 +4,7 @@ namespace CSharpMath.Rendering.Tests {
   using BackEnd;
   using Xunit;
   using CSharpMath.Display.FrontEnd;
+  using System.Linq;
 
   public class TestMeasure {
     class D : Display.IDisplay<Fonts, Glyph> {
@@ -20,7 +21,7 @@ namespace CSharpMath.Rendering.Tests {
       public void SetTextColorRecursive(Color? textColor) => throw new NotImplementedException();
     }
     class DEditorKeyboard : Editor.MathKeyboard<Fonts, Glyph> {
-      public DEditorKeyboard() : base(TypesettingContext.Instance, new Fonts()) =>
+      public DEditorKeyboard() : base(TypesettingContext.Instance, new Fonts(Enumerable.Empty<Typography.OpenFont.Typeface>(), 0.0f)) =>
         Display = new Display.Displays.ListDisplay<Fonts, Glyph>(new[] { new D() });
     }
     class DRenderingMath : SkiaSharp.MathPainter {

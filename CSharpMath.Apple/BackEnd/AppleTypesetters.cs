@@ -8,7 +8,6 @@ namespace CSharpMath.Apple {
         (font, size) => new AppleMathFont(font, size),
         AppleGlyphBoundsProvider.Instance,
         CtFontGlyphFinder.Instance,
-        Display.UnicodeFontChanger.Instance,
         new JsonMathTable<AppleMathFont, TGlyph>(
           AppleFontMeasurer.Instance,
           Resources.ManifestResources.LatinMath,

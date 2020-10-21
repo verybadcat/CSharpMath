@@ -4,8 +4,8 @@ using System.Linq;
 using Typography.OpenFont;
 
 namespace CSharpMath.Rendering.BackEnd {
-  public readonly struct Fonts : Display.FrontEnd.IFont<Glyph>, IEnumerable<Typeface> {
-    static Fonts() {
+  public class Fonts : Display.FrontEnd.IFont<Glyph>, IEnumerable<Typeface> {
+    static Typefaces GetGlobalTypefaces() {
       var reader = new OpenFontReader();
       Typeface LoadFont(string fileName) {
         var typeface = reader.Read(
@@ -16,24 +16,22 @@ namespace CSharpMath.Rendering.BackEnd {
         typeface.UpdateAllCffGlyphBounds();
         return typeface;
       }
-      GlobalTypefaces = new Typefaces(LoadFont("latinmodern-math.otf"));
-      GlobalTypefaces.AddOverride(LoadFont("AMS-Capital-Blackboard-Bold.otf"));
-      GlobalTypefaces.AddSupplement(LoadFont("cyrillic-modern-nmr10.otf"));
+      var globalTypefaces = new Typefaces(LoadFont("latinmodern-math.otf"));
+      globalTypefaces.AddOverride(LoadFont("AMS-Capital-Blackboard-Bold.otf"));
+      globalTypefaces.AddSupplement(LoadFont("cyrillic-modern-nmr10.otf"));
+      return globalTypefaces;
     }
     public Fonts(IEnumerable<Typeface> localTypefaces, float pointSize) {
       PointSize = pointSize;
       Typefaces = localTypefaces.Concat(GlobalTypefaces);
+      MathTypeface = Typefaces.First(t => t.HasMathTable());
+      MathConsts = MathTypeface.MathConsts ?? throw new Structures.InvalidCodePathException(nameof(MathTypeface) + " doesn't have " + nameof(MathConsts));
     }
-    public Fonts(Fonts cloneMe, float pointSize) {
-      PointSize = pointSize;
-      Typefaces = cloneMe.Typefaces;
-    }
-    public static Typefaces GlobalTypefaces { get; }
+    public static readonly Typefaces GlobalTypefaces = GetGlobalTypefaces();
     public float PointSize { get; }
     public IEnumerable<Typeface> Typefaces { get; }
-    public Typeface MathTypeface => Typefaces.First(t => t.HasMathTable());
-    public Typography.OpenFont.MathGlyphs.MathConstants MathConsts =>
-      MathTypeface.MathConsts ?? throw new Structures.InvalidCodePathException(nameof(MathTypeface) + " doesn't have " + nameof(MathConsts));
+    public Typeface MathTypeface { get; }
+    public Typography.OpenFont.MathGlyphs.MathConstants MathConsts { get; }
     public IEnumerator<Typeface> GetEnumerator() => Typefaces.GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => Typefaces.GetEnumerator();
   }
