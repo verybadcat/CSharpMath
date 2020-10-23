@@ -61,12 +61,9 @@ namespace CSharpMath.Editor {
       set {
         blinkTimer.Stop();
         blinkTimer.Start();
-        if (value != MathKeyboardCaretState.Hidden &&
-           MathList.AtomAt(_insertionIndex) is Atoms.Placeholder placeholder) 
+        if (value != MathKeyboardCaretState.Hidden && MathList.AtomAt(_insertionIndex) is Atoms.Placeholder placeholder)
           (placeholder.Nucleus, placeholder.Color, _caretState) =
-            value == MathKeyboardCaretState.TemporarilyHidden
-            ? (LaTeXSettings.PlaceholderRestingNucleus, LaTeXSettings.PlaceholderRestingColor, MathKeyboardCaretState.TemporarilyHidden)
-            : (LaTeXSettings.PlaceholderActiveNucleus, LaTeXSettings.PlaceholderActiveColor, MathKeyboardCaretState.ShownThroughPlaceholder);
+            (LaTeXSettings.PlaceholderActiveNucleus, LaTeXSettings.PlaceholderActiveColor, MathKeyboardCaretState.ShownThroughPlaceholder);
         else _caretState = value;
         RecreateDisplayFromMathList();
         RedrawRequested?.Invoke(this, EventArgs.Empty);
