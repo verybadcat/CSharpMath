@@ -324,6 +324,7 @@ namespace CSharpMath.Atom {
     public static Color? PlaceholderActiveColor { get; set; }
     public static string PlaceholderActiveNucleus { get; set; } = "\u25A0";
     public static string PlaceholderRestingNucleus { get; set; } = "\u25A1";
+    public static bool PlaceholderBlinks { get; set; } = false;
     public static Placeholder Placeholder => new Placeholder(PlaceholderRestingNucleus, PlaceholderRestingColor);
     public static MathList PlaceholderList => new MathList { Placeholder };
 
