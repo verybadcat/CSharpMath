@@ -182,6 +182,7 @@ namespace CSharpMath.Editor.Tests {
     public const string RestingNucleus = "□";
     public static readonly System.Drawing.Color? ActiveColor = null;
     public static readonly System.Drawing.Color? RestingColor = null;
+    public const bool Blinks = true;
   }
   [CollectionDefinition(nameof(NonParallelPlaceholderTests), DisableParallelization = true)]
   public class NonParallelPlaceholderTests { }
@@ -204,6 +205,7 @@ namespace CSharpMath.Editor.Tests {
       Assert.Equal(DefaultPlaceholderSettings.RestingNucleus, LaTeXSettings.PlaceholderRestingNucleus);
       Assert.Equal(LaTeXSettings.PlaceholderRestingNucleus, LaTeXSettings.Placeholder.Nucleus);
       Assert.Equal(LaTeXSettings.PlaceholderRestingColor, LaTeXSettings.Placeholder.Color);
+      Assert.Equal(DefaultPlaceholderSettings.Blinks, LaTeXSettings.PlaceholderBlinks);
     }
   }
   [Collection(nameof(NonParallelPlaceholderTests))]
@@ -272,6 +274,34 @@ namespace CSharpMath.Editor.Tests {
     public void CustomizedPlaceholderGetter() {
       Assert.Equal("😐", LaTeXSettings.Placeholder.Nucleus);
       Assert.Equal(System.Drawing.Color.Blue, LaTeXSettings.Placeholder.Color);
+    }
+  }
+  [Collection(nameof(NonParallelPlaceholderTests))]
+  public class NonBlinkingPlaceholderViaSetting : IDisposable {
+    MathKeyboard<TestFont, TGlyph> keyboard { get; set; } = new MathKeyboard<TestFont, TGlyph>(TestTypesettingContexts.Instance, new TestFont());
+    public NonBlinkingPlaceholderViaSetting() => LaTeXSettings.PlaceholderBlinks = false;
+    public void Dispose() => LaTeXSettings.PlaceholderBlinks = DefaultPlaceholderSettings.Blinks;
+    void ExpectedAppearance(string expectedOuterNucleus, string expectedInnerNucleus) {
+      var outer = Assert.IsType<Atom.Atoms.Placeholder>(Assert.Single(keyboard.MathList));
+      var inner = Assert.IsType<Atom.Atoms.Placeholder>(Assert.Single(outer.Subscript));
+      Assert.Equal(MathKeyboardCaretState.ShownThroughPlaceholder, keyboard.CaretState);
+      Assert.Equal(expectedOuterNucleus, outer.Nucleus);
+      Assert.Equal(expectedInnerNucleus, inner.Nucleus);
+    }
+    [Fact]
+    public async Task PlaceholderDoesNotBlink() {
+      keyboard.KeyPress(MathKeyboardInput.Subscript);
+      ExpectedAppearance(DefaultPlaceholderSettings.RestingNucleus, DefaultPlaceholderSettings.ActiveNucleus);
+      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      ExpectedAppearance(DefaultPlaceholderSettings.RestingNucleus, DefaultPlaceholderSettings.ActiveNucleus);
+    }
+    [Fact]
+    public async Task ActivePlaceholderMoves() {
+      keyboard.KeyPress(MathKeyboardInput.Subscript);
+      keyboard.KeyPress(MathKeyboardInput.Left);
+      ExpectedAppearance(DefaultPlaceholderSettings.ActiveNucleus, DefaultPlaceholderSettings.RestingNucleus);
+      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      ExpectedAppearance(DefaultPlaceholderSettings.ActiveNucleus, DefaultPlaceholderSettings.RestingNucleus);
     }
   }
 }
