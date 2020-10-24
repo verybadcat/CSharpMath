@@ -25,8 +25,11 @@ namespace CSharpMath.Editor {
       blinkTimer.Elapsed += (sender, e) => {
         switch (CaretState) {
           case MathKeyboardCaretState.Shown:
-          case MathKeyboardCaretState.ShownThroughPlaceholder:
             CaretState = MathKeyboardCaretState.TemporarilyHidden;
+            break;
+          case MathKeyboardCaretState.ShownThroughPlaceholder:
+            if (LaTeXSettings.PlaceholderBlinks)
+              CaretState = MathKeyboardCaretState.TemporarilyHidden;
             break;
           case MathKeyboardCaretState.TemporarilyHidden:
             CaretState = MathKeyboardCaretState.Shown;
@@ -64,7 +67,7 @@ namespace CSharpMath.Editor {
         if (value != MathKeyboardCaretState.Hidden &&
           MathList.AtomAt(_insertionIndex) is Atoms.Placeholder placeholder)
           (placeholder.Nucleus, placeholder.Color, _caretState) =
-            LaTeXSettings.PlaceholderBlinks && value == MathKeyboardCaretState.TemporarilyHidden
+            value == MathKeyboardCaretState.TemporarilyHidden
             ? (LaTeXSettings.PlaceholderRestingNucleus, LaTeXSettings.PlaceholderRestingColor, MathKeyboardCaretState.TemporarilyHidden)
             : (LaTeXSettings.PlaceholderActiveNucleus, LaTeXSettings.PlaceholderActiveColor, MathKeyboardCaretState.ShownThroughPlaceholder);
         else _caretState = value;
