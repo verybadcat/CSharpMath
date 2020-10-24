@@ -311,8 +311,10 @@ namespace CSharpMath.Editor.Tests {
       keyboard.KeyPress(MathKeyboardInput.Subscript);
       keyboard.KeyPress(MathKeyboardInput.Right);
       Assert.Equal(MathKeyboardCaretState.Shown, keyboard.CaretState);
+      ExpectedAppearance(DefaultPlaceholderSettings.RestingNucleus, DefaultPlaceholderSettings.RestingNucleus);
       await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
       Assert.Equal(MathKeyboardCaretState.TemporarilyHidden, keyboard.CaretState);
+      ExpectedAppearance(DefaultPlaceholderSettings.RestingNucleus, DefaultPlaceholderSettings.RestingNucleus);
     }
   }
 }
