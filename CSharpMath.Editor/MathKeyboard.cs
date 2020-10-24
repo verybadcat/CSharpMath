@@ -59,11 +59,10 @@ namespace CSharpMath.Editor {
     /// <summary>Adjust a placeholder and invoke a display/redraw when CaretState is initalized or changed.</summary>
     private void ProcessCaretState(MathKeyboardCaretState value) {
       if (MathList.AtomAt(_insertionIndex) is Atoms.Placeholder placeholder) {
-        if (value == MathKeyboardCaretState.Shown) {
-          (placeholder.Nucleus, placeholder.Color) = (LaTeXSettings.PlaceholderActiveNucleus, LaTeXSettings.PlaceholderActiveColor);
-        } else {
-          (placeholder.Nucleus, placeholder.Color) = (LaTeXSettings.PlaceholderRestingNucleus, LaTeXSettings.PlaceholderRestingColor);
-        }
+        (placeholder.Nucleus, placeholder.Color) =
+          (value == MathKeyboardCaretState.Shown)
+          ? (LaTeXSettings.PlaceholderActiveNucleus, LaTeXSettings.PlaceholderActiveColor)
+          : (LaTeXSettings.PlaceholderRestingNucleus, LaTeXSettings.PlaceholderRestingColor);
       }
       RecreateDisplayFromMathList();
       RedrawRequested?.Invoke(this, EventArgs.Empty);
