@@ -56,7 +56,7 @@ namespace CSharpMath.Editor {
       }
     }
     MathKeyboardCaretState _caretState;
-
+    /// <summary>Adjust a placeholder and invoke a display/redraw when CaretState is initalized or changed.</summary>
     private void ProcessCaretState(MathKeyboardCaretState value) {
       if (MathList.AtomAt(_insertionIndex) is Atoms.Placeholder placeholder) {
         if (value == MathKeyboardCaretState.Shown) {
