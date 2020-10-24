@@ -284,24 +284,35 @@ namespace CSharpMath.Editor.Tests {
     void ExpectedAppearance(string expectedOuterNucleus, string expectedInnerNucleus) {
       var outer = Assert.IsType<Atom.Atoms.Placeholder>(Assert.Single(keyboard.MathList));
       var inner = Assert.IsType<Atom.Atoms.Placeholder>(Assert.Single(outer.Subscript));
-      Assert.Equal(MathKeyboardCaretState.ShownThroughPlaceholder, keyboard.CaretState);
       Assert.Equal(expectedOuterNucleus, outer.Nucleus);
       Assert.Equal(expectedInnerNucleus, inner.Nucleus);
     }
     [Fact]
     public async Task PlaceholderDoesNotBlink() {
       keyboard.KeyPress(MathKeyboardInput.Subscript);
+      Assert.Equal(MathKeyboardCaretState.ShownThroughPlaceholder, keyboard.CaretState);
       ExpectedAppearance(DefaultPlaceholderSettings.RestingNucleus, DefaultPlaceholderSettings.ActiveNucleus);
       await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      Assert.Equal(MathKeyboardCaretState.ShownThroughPlaceholder, keyboard.CaretState);
       ExpectedAppearance(DefaultPlaceholderSettings.RestingNucleus, DefaultPlaceholderSettings.ActiveNucleus);
     }
     [Fact]
     public async Task ActivePlaceholderMoves() {
       keyboard.KeyPress(MathKeyboardInput.Subscript);
       keyboard.KeyPress(MathKeyboardInput.Left);
+      Assert.Equal(MathKeyboardCaretState.ShownThroughPlaceholder, keyboard.CaretState);
       ExpectedAppearance(DefaultPlaceholderSettings.ActiveNucleus, DefaultPlaceholderSettings.RestingNucleus);
       await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      Assert.Equal(MathKeyboardCaretState.ShownThroughPlaceholder, keyboard.CaretState);
       ExpectedAppearance(DefaultPlaceholderSettings.ActiveNucleus, DefaultPlaceholderSettings.RestingNucleus);
+    }
+    [Fact]
+    public async Task CaretStillBlinks() {
+      keyboard.KeyPress(MathKeyboardInput.Subscript);
+      keyboard.KeyPress(MathKeyboardInput.Right);
+      Assert.Equal(MathKeyboardCaretState.Shown, keyboard.CaretState);
+      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      Assert.Equal(MathKeyboardCaretState.TemporarilyHidden, keyboard.CaretState);
     }
   }
 }
