@@ -44,8 +44,9 @@ namespace CSharpMath.Editor {
         ResetPlaceholders(mathAtom.Superscript);
         ResetPlaceholders(mathAtom.Subscript);
         switch (mathAtom) {
-          case Atoms.Placeholder _:
-            mathAtom.Nucleus = "\u25A1";
+          case Atoms.Placeholder placeholder:
+            placeholder.Color = LaTeXSettings.PlaceholderRestingColor;
+            placeholder.Nucleus = LaTeXSettings.PlaceholderRestingNucleus;
             break;
           case IMathListContainer container:
             foreach (var list in container.InnerLists)
@@ -62,10 +63,10 @@ namespace CSharpMath.Editor {
         blinkTimer.Start();
         if (value != MathKeyboardCaretState.Hidden &&
            MathList.AtomAt(_insertionIndex) is Atoms.Placeholder placeholder) 
-          (placeholder.Nucleus, _caretState) =
+          (placeholder.Nucleus, placeholder.Color, _caretState) =
             value == MathKeyboardCaretState.TemporarilyHidden
-            ? ("\u25A1", MathKeyboardCaretState.TemporarilyHidden)
-            : ("\u25A0", MathKeyboardCaretState.ShownThroughPlaceholder);
+            ? (LaTeXSettings.PlaceholderRestingNucleus, LaTeXSettings.PlaceholderRestingColor, MathKeyboardCaretState.TemporarilyHidden)
+            : (LaTeXSettings.PlaceholderActiveNucleus, LaTeXSettings.PlaceholderActiveColor, MathKeyboardCaretState.ShownThroughPlaceholder);
         else _caretState = value;
         RecreateDisplayFromMathList();
         RedrawRequested?.Invoke(this, EventArgs.Empty);

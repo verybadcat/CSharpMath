@@ -9,9 +9,7 @@ namespace CSharpMath.Display.Displays {
     public TextLineDisplay(
       AttributedString<TFont, TGlyph> text, Range range,
       TypesettingContext<TFont, TGlyph> context, IReadOnlyList<MathAtom> atoms, PointF position) : this(
-        text.Runs.Select(run =>
-          new TextRunDisplay<TFont, TGlyph>(run, new Range(range.Location, run.Length), context)
-        ).ToList(), atoms, position) { }
+        text.Runs.Select(run => new TextRunDisplay<TFont, TGlyph>(run, range, context)).ToList(), atoms, position) { }
     public TextLineDisplay
       (List<TextRunDisplay<TFont, TGlyph>> runs, IReadOnlyList<MathAtom> atoms, PointF position) {
       Runs = runs;
