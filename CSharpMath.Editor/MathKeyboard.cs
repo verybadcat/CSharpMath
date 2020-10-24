@@ -12,7 +12,6 @@ namespace CSharpMath.Editor {
   public enum MathKeyboardCaretState : byte {
     Hidden,
     TemporarilyHidden,
-    ShownThroughPlaceholder,
     Shown
   }
   public class MathKeyboard<TFont, TGlyph> where TFont : IFont<TGlyph> {
@@ -25,11 +24,8 @@ namespace CSharpMath.Editor {
       blinkTimer.Elapsed += (sender, e) => {
         switch (CaretState) {
           case MathKeyboardCaretState.Shown:
+            if (LaTeXSettings.PlaceholderBlinks || !(MathList.AtomAt(_insertionIndex) is Atoms.Placeholder _))
             CaretState = MathKeyboardCaretState.TemporarilyHidden;
-            break;
-          case MathKeyboardCaretState.ShownThroughPlaceholder:
-            if (LaTeXSettings.PlaceholderBlinks)
-              CaretState = MathKeyboardCaretState.TemporarilyHidden;
             break;
           case MathKeyboardCaretState.TemporarilyHidden:
             CaretState = MathKeyboardCaretState.Shown;
@@ -37,6 +33,7 @@ namespace CSharpMath.Editor {
         }
       };
       blinkTimer.Start();
+      ProcessCaretState(_caretState);
     }
     public void StartBlinking() => blinkTimer.Start();
     public void StopBlinking() => blinkTimer.Stop();
@@ -59,20 +56,28 @@ namespace CSharpMath.Editor {
       }
     }
     MathKeyboardCaretState _caretState;
+
+    private void ProcessCaretState(MathKeyboardCaretState value) {
+      if (MathList.AtomAt(_insertionIndex) is Atoms.Placeholder placeholder) {
+        if (value == MathKeyboardCaretState.Shown) {
+          (placeholder.Nucleus, placeholder.Color) = (LaTeXSettings.PlaceholderActiveNucleus, LaTeXSettings.PlaceholderActiveColor);
+        } else {
+          (placeholder.Nucleus, placeholder.Color) = (LaTeXSettings.PlaceholderRestingNucleus, LaTeXSettings.PlaceholderRestingColor);
+        }
+      }
+      RecreateDisplayFromMathList();
+      RedrawRequested?.Invoke(this, EventArgs.Empty);
+    }
+
     public MathKeyboardCaretState CaretState {
       get => _caretState;
       set {
         blinkTimer.Stop();
         blinkTimer.Start();
-        if (value != MathKeyboardCaretState.Hidden &&
-          MathList.AtomAt(_insertionIndex) is Atoms.Placeholder placeholder)
-          (placeholder.Nucleus, placeholder.Color, _caretState) =
-            value == MathKeyboardCaretState.TemporarilyHidden
-            ? (LaTeXSettings.PlaceholderRestingNucleus, LaTeXSettings.PlaceholderRestingColor, MathKeyboardCaretState.TemporarilyHidden)
-            : (LaTeXSettings.PlaceholderActiveNucleus, LaTeXSettings.PlaceholderActiveColor, MathKeyboardCaretState.ShownThroughPlaceholder);
-        else _caretState = value;
-        RecreateDisplayFromMathList();
-        RedrawRequested?.Invoke(this, EventArgs.Empty);
+        if ((value != _caretState) || true) {
+          _caretState = value;
+          ProcessCaretState(_caretState);
+        }
       }
     }
     public Display.Displays.ListDisplay<TFont, TGlyph>? Display { get; protected set; }
