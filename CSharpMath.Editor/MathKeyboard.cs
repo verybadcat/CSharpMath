@@ -33,7 +33,7 @@ namespace CSharpMath.Editor {
         }
       };
       blinkTimer.Start();
-      ProcessCaretState(_caretState);
+      ProcessCaretState();
     }
     public void StartBlinking() => blinkTimer.Start();
     public void StopBlinking() => blinkTimer.Stop();
@@ -56,11 +56,11 @@ namespace CSharpMath.Editor {
       }
     }
     MathKeyboardCaretState _caretState;
-    /// <summary>Adjust a placeholder and invoke a display/redraw when CaretState is initalized or changed.</summary>
-    private void ProcessCaretState(MathKeyboardCaretState value) {
+    /// <summary>Adjust a placeholder and invoke a display/redraw when CaretState or display is initialized or changed.</summary>
+    private void ProcessCaretState() {
       if (MathList.AtomAt(_insertionIndex) is Atoms.Placeholder placeholder) {
         (placeholder.Nucleus, placeholder.Color) =
-          (value == MathKeyboardCaretState.Shown)
+          (_caretState == MathKeyboardCaretState.Shown)
           ? (LaTeXSettings.PlaceholderActiveNucleus, LaTeXSettings.PlaceholderActiveColor)
           : (LaTeXSettings.PlaceholderRestingNucleus, LaTeXSettings.PlaceholderRestingColor);
       }
@@ -73,9 +73,9 @@ namespace CSharpMath.Editor {
       set {
         blinkTimer.Stop();
         blinkTimer.Start();
-        if ((value != _caretState) || true) {
+        if (value != _caretState) {
           _caretState = value;
-          ProcessCaretState(_caretState);
+          ProcessCaretState();
         }
       }
     }
@@ -89,6 +89,7 @@ namespace CSharpMath.Editor {
         _insertionIndex = value;
         ResetPlaceholders(MathList);
         CaretState = MathKeyboardCaretState.Shown;
+        ProcessCaretState();
       }
     }
     public TFont Font { get; set; }
@@ -459,10 +460,12 @@ namespace CSharpMath.Editor {
         case MathKeyboardInput.Return:
           ReturnPressed?.Invoke(this, EventArgs.Empty);
           CaretState = MathKeyboardCaretState.Hidden;
+          ProcessCaretState();
           return;
         case MathKeyboardInput.Dismiss:
           DismissPressed?.Invoke(this, EventArgs.Empty);
           CaretState = MathKeyboardCaretState.Hidden;
+          ProcessCaretState();
           return;
         case MathKeyboardInput.Slash:
           HandleSlashButton();
@@ -845,6 +848,7 @@ namespace CSharpMath.Editor {
       }
       ResetPlaceholders(MathList);
       CaretState = MathKeyboardCaretState.Shown;
+      ProcessCaretState();
     }
 
     public void MoveCaretToPoint(PointF point) {
