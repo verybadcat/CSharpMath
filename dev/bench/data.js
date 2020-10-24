@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1603278878762,
+  "lastUpdate": 1603561661357,
   "repoUrl": "https://github.com/verybadcat/CSharpMath",
   "entries": {
     "CSharpMath.Rendering.Benchmarks": [
@@ -1440,6 +1440,96 @@ window.BENCHMARK_DATA = {
             "value": 5626737.142857143,
             "unit": "ns",
             "range": "± 183524.66909946257"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "charles.roddie@cantab.net",
+            "name": "Charles Roddie",
+            "username": "charlesroddie"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "476beb04e3032cd03a7f60f3a35313ba73aa9eeb",
+          "message": "Make MathKeyboard IDisposable (#179)\n\n* Dispose Timer in MathKeyboard",
+          "timestamp": "2020-10-24T18:42:40+01:00",
+          "tree_id": "d374171aba93343428ce1ee94f753914436a50b1",
+          "url": "https://github.com/verybadcat/CSharpMath/commit/476beb04e3032cd03a7f60f3a35313ba73aa9eeb"
+        },
+        "date": 1603561659630,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.AllConstantValues",
+            "value": 852181126.6666666,
+            "unit": "ns",
+            "range": "± 3674991.4725783803"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cases\")",
+            "value": 5253014.285714285,
+            "unit": "ns",
+            "range": "± 36923.74381265877"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Color\")",
+            "value": 2225961.5384615385,
+            "unit": "ns",
+            "range": "± 14014.31045167394"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Commands\")",
+            "value": 816628.5714285715,
+            "unit": "ns",
+            "range": "± 11848.68889672729"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cyrillic\")",
+            "value": 5667353.846153846,
+            "unit": "ns",
+            "range": "± 12182.337992945317"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"ErrorMissingArgument\")",
+            "value": 3067666.6666666665,
+            "unit": "ns",
+            "range": "± 6163.680100471826"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Matrix\")",
+            "value": 3326300,
+            "unit": "ns",
+            "range": "± 18033.9850112119"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuadraticFormula\")",
+            "value": 1345860,
+            "unit": "ns",
+            "range": "± 11634.726345851765"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuarticSolutions\")",
+            "value": 196042793.33333334,
+            "unit": "ns",
+            "range": "± 2707340.996905231"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"TangentPeriodShift\")",
+            "value": 1600383.3333333333,
+            "unit": "ns",
+            "range": "± 10041.806550012741"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"VectorProjection\")",
+            "value": 6095113.333333333,
+            "unit": "ns",
+            "range": "± 19695.317306647383"
           }
         ]
       }
