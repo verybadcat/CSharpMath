@@ -41,8 +41,9 @@ namespace CSharpMath.Editor.Tests {
   public class CaretShowsAfterAtomKeyPress {
     [Fact]
     public void Test() {
-      var keyboard = new MathKeyboard<TestFont, TGlyph>(TestTypesettingContexts.Instance, new TestFont());
-      keyboard.InsertionPositionHighlighted = false;
+      var keyboard = new MathKeyboard<TestFont, TGlyph>(TestTypesettingContexts.Instance, new TestFont()) {
+        InsertionPositionHighlighted = false
+      };
       keyboard.StopBlinking();
       Assert.False(keyboard.ShouldDrawCaret);
       keyboard.KeyPress(MathKeyboardInput.A);
@@ -52,8 +53,9 @@ namespace CSharpMath.Editor.Tests {
   public class InsertionPositionIsHighLightedAfterPlaceholderKeyPress {
     [Fact]
     public void Test() {
-      var keyboard = new MathKeyboard<TestFont, TGlyph>(TestTypesettingContexts.Instance, new TestFont());
-      keyboard.InsertionPositionHighlighted = false;
+      var keyboard = new MathKeyboard<TestFont, TGlyph>(TestTypesettingContexts.Instance, new TestFont()) {
+        InsertionPositionHighlighted = false
+      };
       keyboard.StopBlinking();
       Assert.False(keyboard.InsertionPositionHighlighted);
       keyboard.KeyPress(MathKeyboardInput.Power);
@@ -82,17 +84,18 @@ namespace CSharpMath.Editor.Tests {
         InsertionPositionHighlighted = true
       };
       Assert.True(keyboard.ShouldDrawCaret);
-      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds - CaretBlinks.MillisecondBuffer);
 
+      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds - CaretBlinks.MillisecondBuffer);
       Assert.True(keyboard.ShouldDrawCaret);
+
       keyboard.KeyPress(MathKeyboardInput.A);
       await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds - CaretBlinks.MillisecondBuffer);
-
       Assert.True(keyboard.ShouldDrawCaret);
+
       keyboard.KeyPress(MathKeyboardInput.Left);
       await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds - CaretBlinks.MillisecondBuffer);
-
       Assert.True(keyboard.ShouldDrawCaret);
+
       await Task.Delay(4 * CaretBlinks.MillisecondBuffer);
       Assert.False(keyboard.ShouldDrawCaret);
     }
@@ -156,13 +159,14 @@ namespace CSharpMath.Editor.Tests {
   }
   [Collection(nameof(NonParallelPlaceholderTests))]
   public class CustomizablePlaceholder : IDisposable {
-    MathKeyboard<TestFont, TGlyph> Keyboard = new MathKeyboard<TestFont, TGlyph>(TestTypesettingContexts.Instance, new TestFont());
+    readonly MathKeyboard<TestFont, TGlyph> keyboard;
     public CustomizablePlaceholder() {
       LaTeXSettings.PlaceholderActiveNucleus = "😀";
       LaTeXSettings.PlaceholderRestingNucleus = "😐";
       LaTeXSettings.PlaceholderActiveColor = System.Drawing.Color.Green;
       LaTeXSettings.PlaceholderRestingColor = System.Drawing.Color.Blue;
       LaTeXSettings.PlaceholderBlinks = true;
+      keyboard = new MathKeyboard<TestFont, TGlyph>(TestTypesettingContexts.Instance, new TestFont());
     }
     public void Dispose() {
       LaTeXSettings.PlaceholderActiveNucleus = DefaultPlaceholderSettings.ActiveNucleus;
@@ -173,27 +177,27 @@ namespace CSharpMath.Editor.Tests {
     }
     [Fact]
     public async Task CustomizedPlaceholderBlinks() {
-      Keyboard.KeyPress(MathKeyboardInput.Subscript);
-      var outer = Assert.IsType<Atom.Atoms.Placeholder>(Assert.Single(Keyboard.MathList));
+      keyboard.KeyPress(MathKeyboardInput.Subscript);
+      var outer = Assert.IsType<Atom.Atoms.Placeholder>(Assert.Single(keyboard.MathList));
       var inner = Assert.IsType<Atom.Atoms.Placeholder>(Assert.Single(outer.Subscript));
-      Assert.True(Keyboard.InsertionPositionHighlighted);
-      Assert.False(Keyboard.ShouldDrawCaret);
+      Assert.True(keyboard.InsertionPositionHighlighted);
+      Assert.False(keyboard.ShouldDrawCaret);
       Assert.Equal("😐", outer.Nucleus);
       Assert.Equal(System.Drawing.Color.Blue, outer.Color);
       Assert.Equal("😀", inner.Nucleus);
       Assert.Equal(System.Drawing.Color.Green, inner.Color);
 
       await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
-      Assert.False(Keyboard.InsertionPositionHighlighted);
-      Assert.False(Keyboard.ShouldDrawCaret);
+      Assert.False(keyboard.InsertionPositionHighlighted);
+      Assert.False(keyboard.ShouldDrawCaret);
       Assert.Equal("😐", outer.Nucleus);
       Assert.Equal(System.Drawing.Color.Blue, outer.Color);
       Assert.Equal("😐", inner.Nucleus);
       Assert.Equal(System.Drawing.Color.Blue, inner.Color);
 
       await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
-      Assert.True(Keyboard.InsertionPositionHighlighted);
-      Assert.False(Keyboard.ShouldDrawCaret);
+      Assert.True(keyboard.InsertionPositionHighlighted);
+      Assert.False(keyboard.ShouldDrawCaret);
       Assert.Equal("😐", outer.Nucleus);
       Assert.Equal(System.Drawing.Color.Blue, outer.Color);
       Assert.Equal("😀", inner.Nucleus);
@@ -201,15 +205,15 @@ namespace CSharpMath.Editor.Tests {
     }
     [Fact]
     public void ShowRestingPlaceholdersOnCaretVisible() {
-      Keyboard.KeyPress(MathKeyboardInput.Subscript);
-      var outer = Assert.IsType<Atom.Atoms.Placeholder>(Assert.Single(Keyboard.MathList));
+      keyboard.KeyPress(MathKeyboardInput.Subscript);
+      var outer = Assert.IsType<Atom.Atoms.Placeholder>(Assert.Single(keyboard.MathList));
       var inner = Assert.IsType<Atom.Atoms.Placeholder>(Assert.Single(outer.Subscript));
-      Assert.True(Keyboard.InsertionPositionHighlighted);
-      Assert.False(Keyboard.ShouldDrawCaret);
+      Assert.True(keyboard.InsertionPositionHighlighted);
+      Assert.False(keyboard.ShouldDrawCaret);
 
-      Keyboard.InsertionIndex = MathListIndex.Level0Index(Keyboard.MathList.Count);
-      Assert.True(Keyboard.InsertionPositionHighlighted);
-      Assert.True(Keyboard.ShouldDrawCaret);
+      keyboard.InsertionIndex = MathListIndex.Level0Index(keyboard.MathList.Count);
+      Assert.True(keyboard.InsertionPositionHighlighted);
+      Assert.True(keyboard.ShouldDrawCaret);
       Assert.Equal(LaTeXSettings.PlaceholderRestingNucleus, outer.Nucleus);
       Assert.Equal(LaTeXSettings.PlaceholderRestingColor, outer.Color);
       Assert.Equal(LaTeXSettings.PlaceholderRestingNucleus, inner.Nucleus);
@@ -223,26 +227,26 @@ namespace CSharpMath.Editor.Tests {
   }
   [Collection(nameof(NonParallelPlaceholderTests))]
   public class NonBlinkingPlaceholder : IDisposable {
-    readonly MathKeyboard<TestFont, TGlyph> Keyboard;
+    readonly MathKeyboard<TestFont, TGlyph> keyboard;
     public NonBlinkingPlaceholder() {
       LaTeXSettings.PlaceholderBlinks = false;
-      Keyboard = new MathKeyboard<TestFont, TGlyph>(TestTypesettingContexts.Instance, new TestFont()) {
+      keyboard = new MathKeyboard<TestFont, TGlyph>(TestTypesettingContexts.Instance, new TestFont()) {
         InsertionPositionHighlighted = true
       };
     }
     public void Dispose() => LaTeXSettings.PlaceholderBlinks = DefaultPlaceholderSettings.Blinks;
     void ExpectedAppearance(string expectedOuterNucleus, string expectedInnerNucleus) {
-      var outer = Assert.IsType<Atom.Atoms.Placeholder>(Assert.Single(Keyboard.MathList));
+      var outer = Assert.IsType<Atom.Atoms.Placeholder>(Assert.Single(keyboard.MathList));
       var inner = Assert.IsType<Atom.Atoms.Placeholder>(Assert.Single(outer.Subscript));
       Assert.Equal(expectedOuterNucleus, outer.Nucleus);
       Assert.Equal(expectedInnerNucleus, inner.Nucleus);
     }
     [Fact]
     public async Task PlaceholderDoesNotBlinkAndNoCaretVisible() {
-      Keyboard.KeyPress(MathKeyboardInput.Subscript);
+      keyboard.KeyPress(MathKeyboardInput.Subscript);
       void Check() {
-        Assert.True(Keyboard.InsertionPositionHighlighted);
-        Assert.False(Keyboard.ShouldDrawCaret);
+        Assert.True(keyboard.InsertionPositionHighlighted);
+        Assert.False(keyboard.ShouldDrawCaret);
         ExpectedAppearance(DefaultPlaceholderSettings.RestingNucleus, DefaultPlaceholderSettings.ActiveNucleus);
       }
       Check();
@@ -253,39 +257,47 @@ namespace CSharpMath.Editor.Tests {
     }
     [Fact]
     public void NonBlinkingActivePlaceholderMoves() {
-      Assert.True(Keyboard.InsertionPositionHighlighted);
-      Assert.True(Keyboard.ShouldDrawCaret);
-      Keyboard.KeyPress(MathKeyboardInput.Subscript);
-      Assert.False(Keyboard.ShouldDrawCaret);
-      Assert.True(Keyboard.InsertionPositionHighlighted);
+      Assert.True(keyboard.InsertionPositionHighlighted);
+      Assert.True(keyboard.ShouldDrawCaret);
+
+      keyboard.KeyPress(MathKeyboardInput.Subscript);
+      Assert.True(keyboard.InsertionPositionHighlighted);
+      Assert.False(keyboard.ShouldDrawCaret);
       ExpectedAppearance(DefaultPlaceholderSettings.RestingNucleus, DefaultPlaceholderSettings.ActiveNucleus);
-      Keyboard.KeyPress(MathKeyboardInput.Left);
-      Assert.False(Keyboard.ShouldDrawCaret);
-      Assert.True(Keyboard.InsertionPositionHighlighted);
+
+      keyboard.KeyPress(MathKeyboardInput.Left);
+      Assert.True(keyboard.InsertionPositionHighlighted);
+      Assert.False(keyboard.ShouldDrawCaret);
       ExpectedAppearance(DefaultPlaceholderSettings.ActiveNucleus, DefaultPlaceholderSettings.RestingNucleus);
-      Keyboard.KeyPress(MathKeyboardInput.Right);
-      Assert.True(Keyboard.InsertionPositionHighlighted);
-      Assert.False(Keyboard.ShouldDrawCaret);
+
+      keyboard.KeyPress(MathKeyboardInput.Right);
+      Assert.True(keyboard.InsertionPositionHighlighted);
+      Assert.False(keyboard.ShouldDrawCaret);
       ExpectedAppearance(DefaultPlaceholderSettings.RestingNucleus, DefaultPlaceholderSettings.ActiveNucleus);
-      Keyboard.KeyPress(MathKeyboardInput.Right);
-      Assert.True(Keyboard.InsertionPositionHighlighted);
-      Assert.True(Keyboard.ShouldDrawCaret);
+
+      keyboard.KeyPress(MathKeyboardInput.Right);
+      Assert.True(keyboard.InsertionPositionHighlighted);
+      Assert.True(keyboard.ShouldDrawCaret);
       ExpectedAppearance(DefaultPlaceholderSettings.RestingNucleus, DefaultPlaceholderSettings.RestingNucleus);
     }
     [Fact]
     public async Task IfNonBlinkingPlaceholderIsNotHighLightedThenCaretBlinks() {
-      Assert.True(Keyboard.ShouldDrawCaret);
+      Assert.True(keyboard.ShouldDrawCaret);
+
       await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
-      Assert.False(Keyboard.ShouldDrawCaret);
-      Keyboard.KeyPress(MathKeyboardInput.Subscript);
-      Keyboard.KeyPress(MathKeyboardInput.Right);
-      Assert.True(Keyboard.ShouldDrawCaret);
+      Assert.False(keyboard.ShouldDrawCaret);
+
+      keyboard.KeyPress(MathKeyboardInput.Subscript);
+      keyboard.KeyPress(MathKeyboardInput.Right);
+      Assert.True(keyboard.ShouldDrawCaret);
       ExpectedAppearance(DefaultPlaceholderSettings.RestingNucleus, DefaultPlaceholderSettings.RestingNucleus);
+
       await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
-      Assert.False(Keyboard.ShouldDrawCaret);
+      Assert.False(keyboard.ShouldDrawCaret);
       ExpectedAppearance(DefaultPlaceholderSettings.RestingNucleus, DefaultPlaceholderSettings.RestingNucleus);
+
       await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
-      Assert.True(Keyboard.ShouldDrawCaret);
+      Assert.True(keyboard.ShouldDrawCaret);
       ExpectedAppearance(DefaultPlaceholderSettings.RestingNucleus, DefaultPlaceholderSettings.RestingNucleus);
     }
   }
