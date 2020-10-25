@@ -9,11 +9,6 @@ namespace CSharpMath.Editor {
   using Structures;
   using Atoms = Atom.Atoms;
 
-  public enum MathKeyboardCaretState : byte {
-    Hidden,
-    TemporarilyHidden,
-    Shown
-  }
   public class MathKeyboard<TFont, TGlyph> where TFont : IFont<TGlyph> {
     protected Timer blinkTimer;
     public const double DefaultBlinkMilliseconds = 800;
@@ -22,18 +17,12 @@ namespace CSharpMath.Editor {
       Font = font;
       blinkTimer = new Timer(blinkMilliseconds);
       blinkTimer.Elapsed += (sender, e) => {
-        switch (CaretState) {
-          case MathKeyboardCaretState.Shown:
-            if (!(MathList.AtomAt(_insertionIndex) is Atoms.Placeholder _) || LaTeXSettings.PlaceholderBlinks)
-              CaretState = MathKeyboardCaretState.TemporarilyHidden;
-            break;
-          case MathKeyboardCaretState.TemporarilyHidden:
-            CaretState = MathKeyboardCaretState.Shown;
-            break;
-        }
+        if (!(MathList.AtomAt(_insertionIndex) is Atoms.Placeholder) || LaTeXSettings.PlaceholderBlinks)
+          InsertionPositionHighlighted = !InsertionPositionHighlighted;
       };
       blinkTimer.Start();
     }
+    public bool ShouldDrawCaret => InsertionPositionHighlighted && !(MathList.AtomAt(_insertionIndex) is Atoms.Placeholder);
     public void StartBlinking() => blinkTimer.Start();
     public void StopBlinking() => blinkTimer.Stop();
     protected TypesettingContext<TFont, TGlyph> Context { get; }
@@ -53,16 +42,16 @@ namespace CSharpMath.Editor {
         }
       }
     }
-    MathKeyboardCaretState _caretState;
-    public MathKeyboardCaretState CaretState {
-      get => _caretState;
+    bool _insertionPositionHighlighted;
+    public bool InsertionPositionHighlighted {
+      get => _insertionPositionHighlighted;
       set {
         blinkTimer.Stop();
         blinkTimer.Start();
-        _caretState = value;
+        _insertionPositionHighlighted = value;
         if (MathList.AtomAt(_insertionIndex) is Atoms.Placeholder placeholder) {
           (placeholder.Nucleus, placeholder.Color) =
-            (_caretState == MathKeyboardCaretState.Shown)
+            _insertionPositionHighlighted
             ? (LaTeXSettings.PlaceholderActiveNucleus, LaTeXSettings.PlaceholderActiveColor)
             : (LaTeXSettings.PlaceholderRestingNucleus, LaTeXSettings.PlaceholderRestingColor);
         }
@@ -79,7 +68,7 @@ namespace CSharpMath.Editor {
       set {
         _insertionIndex = value;
         ResetPlaceholders(MathList);
-        CaretState = MathKeyboardCaretState.Shown;
+        InsertionPositionHighlighted = true;
       }
     }
     public TFont Font { get; set; }
@@ -449,11 +438,13 @@ namespace CSharpMath.Editor {
           break;
         case MathKeyboardInput.Return:
           ReturnPressed?.Invoke(this, EventArgs.Empty);
-          CaretState = MathKeyboardCaretState.Hidden;
+          InsertionPositionHighlighted = false;
+          StopBlinking();
           return;
         case MathKeyboardInput.Dismiss:
           DismissPressed?.Invoke(this, EventArgs.Empty);
-          CaretState = MathKeyboardCaretState.Hidden;
+          InsertionPositionHighlighted = false;
+          StopBlinking();
           return;
         case MathKeyboardInput.Slash:
           HandleSlashButton();
@@ -835,7 +826,7 @@ namespace CSharpMath.Editor {
           break;
       }
       ResetPlaceholders(MathList);
-      CaretState = MathKeyboardCaretState.Shown;
+      InsertionPositionHighlighted = true;
     }
 
     public void MoveCaretToPoint(PointF point) {
