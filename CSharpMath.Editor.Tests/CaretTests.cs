@@ -240,16 +240,16 @@ namespace CSharpMath.Editor.Tests {
     [Fact]
     public async Task PlaceholderDoesNotBlinkAndNoCaretVisible() {
       Keyboard.KeyPress(MathKeyboardInput.Subscript);
-      Check();
-      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
-      Check();
-      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
-      Check();
       void Check() {
         Assert.True(Keyboard.InsertionPositionHighlighted);
         Assert.False(Keyboard.ShouldDrawCaret);
         ExpectedAppearance(DefaultPlaceholderSettings.RestingNucleus, DefaultPlaceholderSettings.ActiveNucleus);
       }
+      Check();
+      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      Check();
+      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      Check();
     }
     [Fact]
     public void NonBlinkingActivePlaceholderMoves() {
