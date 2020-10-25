@@ -289,16 +289,16 @@ namespace CSharpMath.Editor.Tests {
 
       keyboard.KeyPress(MathKeyboardInput.Subscript);
       keyboard.KeyPress(MathKeyboardInput.Right);
-      Assert.True(keyboard.ShouldDrawCaret);
       ExpectedAppearance(DefaultPlaceholderSettings.RestingNucleus, DefaultPlaceholderSettings.RestingNucleus);
+      Assert.True(keyboard.ShouldDrawCaret);
 
       await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      ExpectedAppearance(DefaultPlaceholderSettings.RestingNucleus, DefaultPlaceholderSettings.RestingNucleus);
       Assert.False(keyboard.ShouldDrawCaret);
-      ExpectedAppearance(DefaultPlaceholderSettings.RestingNucleus, DefaultPlaceholderSettings.RestingNucleus);
 
       await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
-      Assert.True(keyboard.ShouldDrawCaret);
       ExpectedAppearance(DefaultPlaceholderSettings.RestingNucleus, DefaultPlaceholderSettings.RestingNucleus);
+      Assert.True(keyboard.ShouldDrawCaret);
     }
   }
 }
