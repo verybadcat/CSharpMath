@@ -4,12 +4,13 @@ using System.Drawing;
 using System.Linq;
 using CSharpMath.Display;
 using CSharpMath.CoreTests.FrontEnd;
+using TGlyph = System.Text.Rune;
 
 namespace CSharpMath.Editor.Tests.Visualizer {
-  public class GraphicsContext : Display.FrontEnd.IGraphicsContext<TestFont, char> {
+  public class GraphicsContext : Display.FrontEnd.IGraphicsContext<TestFont, TGlyph> {
     readonly Stack<PointF> stack = new Stack<PointF>();
     PointF trans = new PointF();
-    public void DrawGlyphRunWithOffset(AttributedGlyphRun<TestFont, char> text,
+    public void DrawGlyphRunWithOffset(AttributedGlyphRun<TestFont, TGlyph> text,
       PointF point, Color? color) {
       var advance = 0.0;
       foreach (var ((glyph, kernAfter, foreground), bounds) in
@@ -24,7 +25,7 @@ namespace CSharpMath.Editor.Tests.Visualizer {
         advance += bounds.Width + kernAfter;
       }
     }
-    public void DrawGlyphsAtPoints(IReadOnlyList<char> glyphs,
+    public void DrawGlyphsAtPoints(IReadOnlyList<TGlyph> glyphs,
       TestFont font, IEnumerable<PointF> points, Color? color) {
       var zipped = glyphs.Zip(points, ValueTuple.Create);
       var bounds = TestTypesettingContexts.Instance.GlyphBoundsProvider

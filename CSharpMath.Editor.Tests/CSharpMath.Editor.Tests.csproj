@@ -7,7 +7,6 @@
     <Compile Include="..\CSharpMath.Apple\Resources\ManifestResources.cs" Link="_Helpers\Resources\ManifestResources.cs" />
     <Compile Include="..\CSharpMath.Apple\Resources\ManifestResourceProvider.cs" Link="_Helpers\Resources\ManifestResourceProvider.cs" />
     <Compile Include="..\CSharpMath.CoreTests\_Helpers\ApproximateAssertions.cs" Link="_Helpers\ApproximateAssertions.cs" />
-    <Compile Include="..\CSharpMath.CoreTests\_Helpers\FrontEnd\DoNothingFontChanger.cs" Link="_Helpers\FrontEnd\DoNothingFontChanger.cs" />
     <Compile Include="..\CSharpMath.CoreTests\_Helpers\FrontEnd\TestFont.cs" Link="_Helpers\FrontEnd\TestFont.cs" />
     <Compile Include="..\CSharpMath.CoreTests\_Helpers\FrontEnd\TestFontMeasurer.cs" Link="_Helpers\FrontEnd\TestFontMeasurer.cs" />
     <Compile Include="..\CSharpMath.CoreTests\_Helpers\FrontEnd\TestGlyphBoundsProvider.cs" Link="_Helpers\FrontEnd\TestGlyphBoundsProvider.cs" />

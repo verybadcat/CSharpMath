@@ -19,7 +19,7 @@ namespace CSharpMath.Rendering.Text {
       public string Content { get; }
       public override int? SingleChar(FontStyle style) =>
         Display.Typesetter.UnicodeLengthIsOne(Content)
-        ? Display.UnicodeFontChanger.Instance.StyleCharacter(Content[0], style)
+        ? Display.UnicodeFontChanger.StyleCharacter(Content[0], style)
         : new int?();
       public override bool Equals(TextAtom atom) => atom is Text t && t.Content == Content;
       public override int GetHashCode() => Content.GetHashCode();

@@ -3,20 +3,21 @@ using System.Linq;
 using CSharpMath.Display.FrontEnd;
 using CSharpMath.CoreTests.FrontEnd;
 using Xunit;
+using TGlyph = System.Text.Rune;
 using T = Xunit.InlineDataAttribute; // 'T'est
 using K = CSharpMath.Editor.MathKeyboardInput; // 'K'ey
 
 namespace CSharpMath.Editor.Tests {
-  using EventInteractor = Action<MathKeyboard<TestFont, char>, EventHandler>;
+  using EventInteractor = Action<MathKeyboard<TestFont, TGlyph>, EventHandler>;
   public class KeyPressTests {
-    private static readonly TypesettingContext<TestFont, char> context = TestTypesettingContexts.Instance;
+    private static readonly TypesettingContext<TestFont, TGlyph> context = TestTypesettingContexts.Instance;
     static void Test(string latex, K[] inputs) {
-      var keyboard = new MathKeyboard<TestFont, char>(context, new TestFont());
+      var keyboard = new MathKeyboard<TestFont, TGlyph>(context, new TestFont());
       keyboard.KeyPress(inputs);
       Assert.Equal(latex, keyboard.LaTeX);
     }
     static void TestEvent(EventInteractor attach, EventInteractor detach, K[] inputs) {
-      var keyboard = new MathKeyboard<TestFont, char>(context, new TestFont());
+      var keyboard = new MathKeyboard<TestFont, TGlyph>(context, new TestFont());
       Assert.Raises<EventArgs>(
         h => attach(keyboard, new EventHandler(h)),
         h => detach(keyboard, new EventHandler(h)),

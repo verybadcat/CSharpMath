@@ -44,7 +44,7 @@ jobs:
         # Coverlet settings come after --: https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/VSTestIntegration.md#advanced-options-supported-via-runsettings
         dotnet test CSharpMath.CrossPlatform.slnf -c Release -l GitHubActions --blame --collect:"XPlat Code Coverage" -r .testcoverage -p:PackageReleaseNotes="$RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }} -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.IncludeTestAssembly=true
     - name: Run ReportGenerator on Test Coverage results
-      uses: danielpalme/ReportGenerator-GitHub-Action@4.6.4
+      uses: danielpalme/ReportGenerator-GitHub-Action@4.6.7
       with:
         reports: '.testcoverage/**/*.*' # REQUIRED # The coverage reports that should be parsed (separated by semicolon). Globbing is supported.
         targetdir: '.testcoverage/report' # REQUIRED # The directory where the generated report should be saved.

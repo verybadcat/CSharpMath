@@ -32,7 +32,7 @@ namespace CSharpMath.Editor.Tests {
         }
       }
     }
-    public static Structures.Result<Display.Displays.ListDisplay<TestFont, char>>
+    public static Structures.Result<Display.Displays.ListDisplay<TestFont, System.Text.Rune>>
       CreateDisplay(string latex) =>
       LaTeXParser.MathListFromLaTeX(latex).Bind(mathList =>
         Display.Typesetter.CreateLine(

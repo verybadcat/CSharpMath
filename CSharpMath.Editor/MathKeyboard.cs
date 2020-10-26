@@ -15,7 +15,7 @@ namespace CSharpMath.Editor {
     ShownThroughPlaceholder,
     Shown
   }
-  public class MathKeyboard<TFont, TGlyph> where TFont : IFont<TGlyph> {
+  public class MathKeyboard<TFont, TGlyph> : IDisposable where TFont : IFont<TGlyph> {
     protected Timer blinkTimer;
     public const double DefaultBlinkMilliseconds = 800;
     public MathKeyboard(TypesettingContext<TFont, TGlyph> context, TFont font, double blinkMilliseconds = DefaultBlinkMilliseconds) {
@@ -870,6 +870,9 @@ namespace CSharpMath.Editor {
     public void ClearHighlights() {
       RecreateDisplayFromMathList();
       RedrawRequested?.Invoke(this, EventArgs.Empty);
+    }
+    public void Dispose() {
+      ((IDisposable)blinkTimer).Dispose();
     }
   }
 }

@@ -1,7 +1,7 @@
 using System;
 using System.Drawing;
 using System.Text;
-using ListDisplay = CSharpMath.Display.Displays.ListDisplay<CSharpMath.CoreTests.FrontEnd.TestFont, char>;
+using ListDisplay = CSharpMath.Display.Displays.ListDisplay<CSharpMath.CoreTests.FrontEnd.TestFont, System.Text.Rune>;
 
 namespace CSharpMath.Editor.Tests.Visualizer {
   using Structures;
@@ -48,7 +48,7 @@ namespace CSharpMath.Editor.Tests.Visualizer {
             Console.Write("Input LaTeX: ");
             if (latex is null) latex = Console.ReadLine();
             else Console.WriteLine(latex); // The P-key case
-            Tests.IndexForPointTests.CreateDisplay(latex)
+            IndexForPointTests.CreateDisplay(latex)
             .Match(listDisplay => display = listDisplay, error => {
               Console.WriteLine(error);
               latex = null;
@@ -111,7 +111,7 @@ moveCursor:var pos = Adjust(new Rectangle(x, y, 0, 0));
         Math.Clamp(Console.BufferHeight / 2 - rect.Bottom, 0, Console.BufferHeight - 1),
         rect.Width,
         rect.Height);
-    public static void ConsoleDrawRectangle(Rectangle rect, char glyph, Color? color) {
+    public static void ConsoleDrawRectangle(Rectangle rect, Rune glyph, Color? color) {
       rect = Adjust(rect);
       var innerRectWidth = rect.Width - 2;
       var innerRectHeight = rect.Height - 2;
@@ -135,9 +135,9 @@ moveCursor:var pos = Adjust(new Rectangle(x, y, 0, 0));
           Console.Write('━');
         Console.Write('┛');
       }
-      if (glyph != '\0') {
+      if (glyph != new Rune()) {
         Console.SetCursorPosition(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
-        Console.Write(glyph);
+        Console.Write(glyph.ToString());
       }
       Console.ResetColor();
     }

@@ -7,6 +7,11 @@ namespace CSharpMath.Atom {
   // 0     1     2     3     4 (End exclusive)
   //       ^----------------^ Length = 3
   //     Start              End
+  /// <summary>
+  /// Corresponds to a range of <see cref="MathAtom"/>s before finalization.
+  /// This value is tracked in finalized <see cref="MathAtom"/>s and <see cref="Display.IDisplay{TFont, TGlyph}"/>s,
+  /// for utilization in CSharpMath.Editor to construct MathListIndexes from <see cref="Display.IDisplay{TFont, TGlyph}"/>s.
+  /// </summary>
   public readonly struct Range : IEquatable<Range> {
     public const int UndefinedInt = int.MinValue;
     /// <summary>Value of IndexRange for unfinalized atoms</summary>
