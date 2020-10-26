@@ -11,20 +11,16 @@ namespace CSharpMath.Forms {
     public static readonly BindableProperty KeyboardProperty = BindableProperty.Create(nameof(Keyboard), typeof(MathKeyboard), typeof(MathInputButton));
     public MathKeyboardInput Input { get => (MathKeyboardInput)GetValue(InputProperty); set => SetValue(InputProperty, value); }
     public static readonly BindableProperty InputProperty = BindablePropertyWithButtonDraw(nameof(Input), typeof(MathKeyboardInput));
-    public Color? PlaceholderActiveColor { get {
-        var v = (Color)GetValue(PlaceholderActiveColorProperty);
-        return v == Color.Transparent ? (Color?)null : v;
-      }
-      set => SetValue(PlaceholderActiveColorProperty, value ?? Color.Transparent);
+    public Color? PlaceholderActiveColor {
+      get => this.GetNullableColor(PlaceholderActiveColorProperty);
+      set => this.SetNullableColor(PlaceholderActiveColorProperty, value);
     }
-    public static readonly BindableProperty PlaceholderActiveColorProperty = BindablePropertyWithButtonDraw(nameof(PlaceholderActiveColor), typeof(Color), defaultValue: Color.Transparent);
+    public static readonly BindableProperty PlaceholderActiveColorProperty = BindablePropertyWithButtonDraw(nameof(PlaceholderActiveColor), typeof(Color), defaultValue: NullableColorBindablePropertyHelper.Null);
     public Color? PlaceholderRestingColor {
-      get {
-        var v = (Color)GetValue(PlaceholderRestingColorProperty);
-        return v == Color.Transparent ? (Color?)null : v;
-      }
-      set => SetValue(PlaceholderRestingColorProperty, value ?? Color.Transparent); }
-    public static readonly BindableProperty PlaceholderRestingColorProperty = BindablePropertyWithButtonDraw(nameof(PlaceholderRestingColor), typeof(Color), defaultValue: Color.Transparent);
+      get => this.GetNullableColor(PlaceholderRestingColorProperty);
+      set => this.SetNullableColor(PlaceholderRestingColorProperty, value);
+    }
+    public static readonly BindableProperty PlaceholderRestingColorProperty = BindablePropertyWithButtonDraw(nameof(PlaceholderRestingColor), typeof(Color), defaultValue: NullableColorBindablePropertyHelper.Null);
     static BindableProperty BindablePropertyWithButtonDraw(string propertyName, Type propertyType, object? defaultValue = null) =>
       BindableProperty.Create(propertyName, propertyType, typeof(MathInputButton), defaultValue: defaultValue, propertyChanged: (b, o, n) => ((MathInputButton)b).ButtonDraw());
     protected override void ButtonDraw() {
@@ -43,18 +39,22 @@ namespace CSharpMath.Forms {
           var keyboard = new MathKeyboard();
           keyboard.KeyPress(Input);
           var latex = keyboard.LaTeX;
-          var restingNucleus = LaTeXSettings.PlaceholderRestingNucleus.Replace("\u25A1", @"\square");
-          var coloredPlaceholderRestingNucleus = LatexHelper.SetColor(restingNucleus, PlaceholderRestingColor ?? LaTeXSettings.PlaceholderRestingColor);
-          var coloredPlaceholderActiveNucleus = LatexHelper.SetColor(LaTeXSettings.PlaceholderActiveNucleus, PlaceholderActiveColor ?? LaTeXSettings.PlaceholderActiveColor);
-          if (Input == MathKeyboardInput.Power || Input == MathKeyboardInput.Subscript) {
-            latex = latex.ReplaceFirstOccurrence(restingNucleus, coloredPlaceholderRestingNucleus);
-            latex = latex.ReplaceLastOccurrence(LaTeXSettings.PlaceholderActiveNucleus, coloredPlaceholderActiveNucleus);
-          } else if (LaTeXSettings.PlaceholderRestingNucleus == LaTeXSettings.PlaceholderActiveNucleus && Regex.Matches(latex, LaTeXSettings.PlaceholderActiveNucleus).Count > 1
-              || restingNucleus != LaTeXSettings.PlaceholderActiveNucleus && latex.Contains(restingNucleus) && latex.Contains(LaTeXSettings.PlaceholderActiveNucleus)) {
-            latex = latex.ReplaceFirstOccurrence(LaTeXSettings.PlaceholderActiveNucleus, coloredPlaceholderActiveNucleus);
-            latex = latex.ReplaceLastOccurrence(restingNucleus, coloredPlaceholderRestingNucleus);
-          } else {
-            latex = latex.Replace(LaTeXSettings.PlaceholderActiveNucleus, coloredPlaceholderActiveNucleus);
+          Color? restingPlaceholderColor = PlaceholderRestingColor ?? LaTeXSettings.PlaceholderRestingColor;
+          Color? activePlaceholderColor = PlaceholderActiveColor ?? LaTeXSettings.PlaceholderActiveColor;
+          if (restingPlaceholderColor != null || activePlaceholderColor != null) {
+            var restingNucleus = LaTeXSettings.PlaceholderRestingNucleus.Replace("\u25A1", @"\square");
+            var coloredPlaceholderRestingNucleus = LatexHelper.SetColor(restingNucleus, restingPlaceholderColor);
+            var coloredPlaceholderActiveNucleus = LatexHelper.SetColor(LaTeXSettings.PlaceholderActiveNucleus, activePlaceholderColor);
+            if (Input == MathKeyboardInput.Power || Input == MathKeyboardInput.Subscript) {
+              latex = latex.ReplaceFirstOccurrence(restingNucleus, coloredPlaceholderRestingNucleus);
+              latex = latex.ReplaceLastOccurrence(LaTeXSettings.PlaceholderActiveNucleus, coloredPlaceholderActiveNucleus);
+            } else if (LaTeXSettings.PlaceholderRestingNucleus == LaTeXSettings.PlaceholderActiveNucleus && Regex.Matches(latex, LaTeXSettings.PlaceholderActiveNucleus).Count > 1
+                || restingNucleus != LaTeXSettings.PlaceholderActiveNucleus && latex.Contains(restingNucleus) && latex.Contains(LaTeXSettings.PlaceholderActiveNucleus)) {
+              latex = latex.ReplaceFirstOccurrence(LaTeXSettings.PlaceholderActiveNucleus, coloredPlaceholderActiveNucleus);
+              latex = latex.ReplaceLastOccurrence(restingNucleus, coloredPlaceholderRestingNucleus);
+            } else {
+              latex = latex.Replace(LaTeXSettings.PlaceholderActiveNucleus, coloredPlaceholderActiveNucleus);
+            }
           }
           Content.LaTeX = @$"\({latex}\)";
           break;
@@ -72,5 +72,13 @@ namespace CSharpMath.Forms {
     public static readonly BindableProperty KeyboardProperty = BindableProperty.Create(nameof(Keyboard), typeof(MathKeyboard), typeof(ImageSourceMathInputButton));
     public MathKeyboardInput Input { get => (MathKeyboardInput)GetValue(InputProperty); set => SetValue(InputProperty, value); }
     public static readonly BindableProperty InputProperty = BindableProperty.Create(nameof(Input), typeof(MathKeyboardInput), typeof(ImageSourceMathInputButton));
+  }
+  public static class NullableColorBindablePropertyHelper {
+    public readonly static Color Null = Color.Transparent;
+    public static Color? GetNullableColor(this BindableObject bindableObject, BindableProperty bindableProperty) {
+      var v = (Color)bindableObject.GetValue(bindableProperty);
+      return v == Null ? (Color?)null : v;
+    }
+    public static void SetNullableColor(this BindableObject bindableObject, BindableProperty bindableProperty, Color? value) => bindableObject.SetValue(bindableProperty, value ?? Null);
   }
 }
