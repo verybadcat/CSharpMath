@@ -14,7 +14,7 @@ namespace CSharpMath.Rendering.FrontEnd {
     public override RectangleF Measure =>
       Display != null ? new RectangleF(0, -Display.Ascent, Display.Width, Display.Ascent + Display.Descent) : RectangleF.Empty;
     public void DrawCaret(ICanvas canvas, Color color, CaretShape shape) {
-      if (CaretState != MathKeyboardCaretState.Shown || Display is null)
+      if (Display == null)
         return;
       var cursorPosition = Display.PointForIndex(TypesettingContext.Instance, InsertionIndex) ?? Display.Position;
       cursorPosition.Y *= -1; //inverted canvas, blah blah
