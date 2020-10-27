@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1603561661357,
+  "lastUpdate": 1603782820828,
   "repoUrl": "https://github.com/verybadcat/CSharpMath",
   "entries": {
     "CSharpMath.Rendering.Benchmarks": [
@@ -1530,6 +1530,96 @@ window.BENCHMARK_DATA = {
             "value": 6095113.333333333,
             "unit": "ns",
             "range": "± 19695.317306647383"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "32139898+SymboLinker@users.noreply.github.com",
+            "name": "SymboLinker",
+            "username": "SymboLinker"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "892eaec3b1cc82e1cbc156b3dc61604ec29822cf",
+          "message": "Add placeholder blinks setting (#177)\n\n* Add setting LaTeXSettings.PlaceholderBlinks + unit tests\r\n\r\n* Fix PlaceholderBlinks setting + add unit test CaretStillBlinks\r\n\r\n* Non-blinking placeholder test \"CaretStillBlinks\" should also verify that the RestingNucleus is shown for all placeholders if the caret blinks\r\n\r\n* Refactor: if PlaceholderBlinks is false and ShownThroughPlaceholder true then don't change the CaretState instead of ignoring the changed state later on\r\n\r\n* Remove MathKeyboardCaretState.ShownThroughPlaceholder\r\nand avoid invoking RedrawRequested when state has not changed\r\n\r\n* Remove nuget.config\r\n\r\n* add xml\r\n\r\n* Set PlaceholderBlinks default to false\r\n\r\n* Don't show cursor if at placeholder\r\n\r\n* ternary conditional operator\r\n\r\n* fix ProcessCaretState\r\n\r\n* Refactor away ProcessCaretState() + fix indentation\r\n\r\nAlso:\r\n- Set PlaceholderBlinks back to true because I don't like to do a commit that has failing unit tests. A commit that changes a default, should also change the tests. I will have a look at the changes needed.\r\n\r\n* change LaTeXSettings.PlaceholderBlinks again and remove tests checking for default blinking behaviour. Remove nuget.Config\r\n\r\n* Restore parts of some tests + mark CaretIsOverriddenByPlaceholder as \"fix or delete\"\r\n\r\n* Replace CaretState enum property by boolean properties \"InsertionPositionHighlighted\" and \"ShouldDrawCaret\"\r\n\r\nGeneral notes:\r\nHaving a CaretState that says \"MathKeyboardCaretState.Shown\" while actually no caret is shown because a placeholder is shown is wrong. Having a CaretState \"MathKeyboardCaretState.Hidden\" and \"MathKeyboardCaretState.TemporarilyHidden\" is not needed: you can use StopBlinking() just after setting the CaretState you want to keep until the next key press. These two observations resulted in the boolean properties \"InsertionPositionHighlighted\" (that makes sense for both the caret AND the placeholder appearance) and \"ShouldDrawCaret\".\r\n\r\nBecause Drawing the caret is done in CSharpMath.Rendering.FrontEnd, the unit tests of CSharpMath.Editor can only test \"ShouldDraw\" and unit tests that do that can cover the same as before (when it was tested via a MathKeyboardCaretState enum).\r\n\r\nNotes about moved unit tests:\r\n- CaretIsOverriddenByPlaceholder has been replaced by PlaceholderDoesNotBlinkAndNoCaretVisible.\r\n- CaretMovesWithPlaceholder has been replaced by NonBlinkingActivePlaceholderMoves.\r\n\r\n* Make mergable without conflict (after #179 for IDisposable MathKeyboard)\r\n\r\n* Move method before first using\r\n\r\n* Fix inconsistent code style\r\n\r\n* Reverse assertion order\r\n\r\n* Reverse assertion order - part 2\r\n\r\nCo-authored-by: Charles Roddie <charles.roddie@mathspire.com>\r\nCo-authored-by: FoggyFinder <FoggyFinder@yandex.ua>",
+          "timestamp": "2020-10-27T07:08:33Z",
+          "tree_id": "fbc7a590ebca1937a9764a9ba44d0b6975367d45",
+          "url": "https://github.com/verybadcat/CSharpMath/commit/892eaec3b1cc82e1cbc156b3dc61604ec29822cf"
+        },
+        "date": 1603782817623,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.AllConstantValues",
+            "value": 824321042.8571428,
+            "unit": "ns",
+            "range": "± 10882210.250942327"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cases\")",
+            "value": 4908619.178082191,
+            "unit": "ns",
+            "range": "± 228443.94258738979"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Color\")",
+            "value": 2158773.6842105263,
+            "unit": "ns",
+            "range": "± 72788.18468201408"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Commands\")",
+            "value": 787506.779661017,
+            "unit": "ns",
+            "range": "± 33474.343569092554"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cyrillic\")",
+            "value": 5636400,
+            "unit": "ns",
+            "range": "± 85274.66851831845"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"ErrorMissingArgument\")",
+            "value": 2822813.2080078125,
+            "unit": "ns",
+            "range": "± 54541.04284424096"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Matrix\")",
+            "value": 3208673.6842105263,
+            "unit": "ns",
+            "range": "± 71123.0767527926"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuadraticFormula\")",
+            "value": 1332235,
+            "unit": "ns",
+            "range": "± 28305.816307644356"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuarticSolutions\")",
+            "value": 190404157.89473686,
+            "unit": "ns",
+            "range": "± 3751674.443101046"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"TangentPeriodShift\")",
+            "value": 1549996.7741935484,
+            "unit": "ns",
+            "range": "± 46109.069851609944"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"VectorProjection\")",
+            "value": 5923373.333333333,
+            "unit": "ns",
+            "range": "± 62961.64894676154"
           }
         ]
       }
