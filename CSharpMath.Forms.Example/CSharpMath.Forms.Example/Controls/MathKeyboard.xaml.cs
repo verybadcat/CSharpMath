@@ -45,20 +45,21 @@ namespace CSharpMath.Forms.Example {
     public void SetButtonsTextColor(Color color, Color? placeholderRestingColor = null, Color? placeholderActiveColor = null) {
       LeftButton.TextColor = color;
       RightButton.TextColor = color;
-      TabButtons.ForEach(button => button.TextColor = color);
-      ButtonGrids.SelectMany(grid => grid.Children)
-        .Where(child => child is MathInputButton button && button.Input != MathKeyboardInput.Backspace).Cast<MathInputButton>()
-        .ForEach(button => {
-          button.TextColor = color;
-          button.PlaceholderRestingColor = placeholderRestingColor;
-          button.PlaceholderActiveColor = placeholderActiveColor;
-        });
+      foreach (var button in TabButtons) button.TextColor = color;
+      foreach (var button in ButtonGrids.SelectMany(grid => grid.Children).Where(child => child is MathInputButton button && button.Input != MathKeyboardInput.Backspace).Cast<MathInputButton>()) {
+        button.TextColor = color;
+        button.PlaceholderRestingColor = placeholderRestingColor;
+        button.PlaceholderActiveColor = placeholderActiveColor;
+      };
     }
-    
-    public void SetClearButtonImageSource(ImageSource imageSource) => ButtonGrids.SelectMany(grid => grid.Children)
-      .Where(button => button is ImageSourceMathInputButton).Cast<ImageSourceMathInputButton>()
-      .Where(button => button.Input == MathKeyboardInput.Clear)
-      .ForEach(button => button.Source = imageSource);
+
+    public void SetClearButtonImageSource(ImageSource imageSource) {
+      foreach(var button in ButtonGrids.SelectMany(grid => grid.Children)
+                            .Where(button => button is ImageSourceMathInputButton)
+                            .Cast<ImageSourceMathInputButton>()
+                            .Where(button => button.Input == MathKeyboardInput.Clear))
+      button.Source = imageSource;
+    }
     MathButton[] TabButtons => new[] { NumbersButton, SymbolsButton, FunctionsButton, OperationsButton, LettersButton };
     Grid[] ButtonGrids => new[] { Numbers, Symbols, Functions, Operations, Letters, LettersCapitals };
   }
