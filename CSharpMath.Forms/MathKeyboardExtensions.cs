@@ -20,8 +20,8 @@ namespace CSharpMath.Forms {
           var c = e.Surface.Canvas;
           c.Clear();
           MathPainter.DrawDisplay(settings, keyboard.Display, c);
-          keyboard.DrawCaret(
-            new SkiaCanvas(c, settings.AntiAlias), caretColor.FromNative(), caretShape);
+          if (keyboard.ShouldDrawCaret)
+            keyboard.DrawCaret(new SkiaCanvas(c, settings.AntiAlias), caretColor.FromNative(), caretShape);
         };
     }
   }
