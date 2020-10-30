@@ -55,8 +55,7 @@ namespace CSharpMath.Forms.Example {
 
     public void SetClearButtonImageSource(ImageSource imageSource) {
       foreach(var button in ButtonGrids.SelectMany(grid => grid.Children)
-                            .Where(button => button is ImageSourceMathInputButton)
-                            .Cast<ImageSourceMathInputButton>()
+                            .OfType<ImageSourceMathInputButton>()
                             .Where(button => button.Input == MathKeyboardInput.Clear))
       button.Source = imageSource;
     }
