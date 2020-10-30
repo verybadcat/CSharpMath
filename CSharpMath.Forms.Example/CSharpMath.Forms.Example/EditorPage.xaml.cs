@@ -112,8 +112,8 @@ namespace CSharpMath.Forms.Example {
         Atom.LaTeXSettings.PlaceholderRestingColor = null;
         Atom.LaTeXSettings.PlaceholderActiveNucleus = "■";
         Atom.LaTeXSettings.PlaceholderRestingNucleus = "□";
-        keyboard.SetClearButtonImageSource("Controls/ImageSourceMathInputButtons/recyclebin.png");
         keyboard.SetButtonsTextColor(Color.Black);
+        keyboard.SetClearButtonImageSource("Controls/ImageSourceMathInputButtons/recyclebin.png");
       },
       () => {
         UseMyCustomizedPlaceholderAppearance();
