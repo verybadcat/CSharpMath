@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using CSharpMath.Atom;
 using CSharpMath.Editor;
 using CSharpMath.Rendering.FrontEnd;
@@ -9,6 +9,11 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Xunit;
 namespace CSharpMath.Forms.Tests {
+  public sealed class FactSkipLinux : FactAttribute {
+    public FactSkipLinux(string reason) {
+      if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) Skip = reason;
+    }
+  }
   public class ButtonTests {
     [Fact]
     public void ChangingButtonTextColorDoesNotChangeLatexPropertyValue() {
@@ -25,30 +30,34 @@ namespace CSharpMath.Forms.Tests {
       Assert.Equal(mathButton.TextColor, newColor);
       Assert.Equal(latexContent, textButton.Content.LaTeX);
     }
-    [Fact(Skip = "Fails on Linux. Solution may be documented here: https://github.com/mono/SkiaSharp/releases/tag/v2.80.0#additional")]
+    const string ButtonImageSourceTestsFailOnLinux = "Fails on Linux. Solution may be documented here: https://github.com/mono/SkiaSharp/releases/tag/v2.80.0#additional";
+    [FactSkipLinux(ButtonImageSourceTestsFailOnLinux)]
     public void DefaultButtonImageTextColorIsBlack() {
       var mathButton = new MathButton { Content = new MathView { LaTeX = "1" } };
-      Assert.True(ImagesAreEqual(
-        new FileInfo("files/buttons/BtnBlackText.png"),
-        ((StreamImageSource)mathButton.Source).Stream(System.Threading.CancellationToken.None).Result));
+      Assert.True(mathButton.ImageSourceEquals("files/buttons/MathButton_1_Black.png"));
     }
-    [Fact(Skip = "Fails on Linux. Solution may be documented here: https://github.com/mono/SkiaSharp/releases/tag/v2.80.0#additional")]
+    [FactSkipLinux(ButtonImageSourceTestsFailOnLinux)]
     public void ButtonTextColorPropertyChangesImageColor() {
       var mathButton = new MathButton { TextColor = Color.Blue, Content = new MathView { LaTeX = "1" } };
-      Assert.True(ImagesAreEqual(
-        new FileInfo("files/buttons/BtnBlueText.png"),
-        ((StreamImageSource)mathButton.Source).Stream(System.Threading.CancellationToken.None).Result));
+      Assert.True(mathButton.ImageSourceEquals("files/buttons/MathButton_1_Blue.png"));
     }
-    static bool ImagesAreEqual(FileInfo f, Stream s) {
-      using (FileStream fs = f.OpenRead()) {
-        int b;
-        while ((b = fs.ReadByte()) != -1) {
-          if (s.ReadByte() != b) {
-            return false;
-          }
-        }
-        return fs.ReadByte() == -1;
-      }
+    [FactSkipLinux(ButtonImageSourceTestsFailOnLinux)]
+    public void MathButtonTextColorCanChangeMultipleTimes() {
+      var mathButton = new MathButton { Content = new MathView { LaTeX = "1" } };
+      Assert.True(mathButton.ImageSourceEquals("files/buttons/MathButton_1_Black.png"));
+      mathButton.TextColor = Color.Blue;
+      Assert.True(mathButton.ImageSourceEquals("files/buttons/MathButton_1_Blue.png"));
+      mathButton.TextColor = Color.Black;
+      Assert.True(mathButton.ImageSourceEquals("files/buttons/MathButton_1_Black.png"));
+    }
+    [FactSkipLinux(ButtonImageSourceTestsFailOnLinux)]
+    public void MathInputButtonTextColorCanChangeMultipleTimes() {
+      var mathInputButton = new MathInputButton { Input = MathKeyboardInput.Fraction };
+      Assert.True(mathInputButton.ImageSourceEquals("files/buttons/MathInputButton_Fraction_Black.png"));
+      mathInputButton.TextColor = Color.Blue;
+      Assert.True(mathInputButton.ImageSourceEquals("files/buttons/MathInputButton_Fraction_Blue.png"));
+      mathInputButton.TextColor = Color.Black;
+      Assert.True(mathInputButton.ImageSourceEquals("files/buttons/MathInputButton_Fraction_Black.png"));
     }
     [Theory]
     [MemberData(nameof(TheMathKeyboardInputs))]
