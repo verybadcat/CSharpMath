@@ -4,7 +4,7 @@ on:
   release:
     types: [published]
 jobs:
-  all_projects:
+  CSharpMath:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
