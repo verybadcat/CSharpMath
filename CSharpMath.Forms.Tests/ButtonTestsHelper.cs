@@ -7,7 +7,7 @@ using Xamarin.Forms;
 namespace CSharpMath.Forms.Tests {
   public static class ButtonTestsHelper {
     public static bool ImageSourceEquals(this ImageButton imageButton, string expectedImageRelativePath) =>
-      ImagesAreEqual(new FileInfo(expectedImageRelativePath), ((StreamImageSource)imageButton.Source).Stream(System.Threading.CancellationToken.None).Result);
+      ImagesAreEqual(new FileInfo(expectedImageRelativePath), imageButton.ImageSourceAsStream());
     static bool ImagesAreEqual(FileInfo f, Stream s) {
       using (FileStream fs = f.OpenRead()) {
         int b;
@@ -24,7 +24,8 @@ namespace CSharpMath.Forms.Tests {
     /// </summary>
     public static void ButtonImageSourceToFile(this ImageButton imageButton, string relativeDestinationFilePath) {
       using (var fs = new FileInfo(@"..\..\..\" + relativeDestinationFilePath).Create())
-        ((StreamImageSource)imageButton.Source).Stream(System.Threading.CancellationToken.None).Result.CopyTo(fs);
+        imageButton.ImageSourceAsStream().CopyTo(fs);
     }
+    static Stream ImageSourceAsStream(this ImageButton imageButton) => ((StreamImageSource)imageButton.Source).Stream(System.Threading.CancellationToken.None).Result;
   }
 }

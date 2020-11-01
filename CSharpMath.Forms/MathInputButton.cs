@@ -1,6 +1,5 @@
 using Xamarin.Forms;
 namespace CSharpMath.Forms {
-  using System;
   using System.Text.RegularExpressions;
   using CSharpMath.Atom;
   using Editor;
@@ -10,20 +9,18 @@ namespace CSharpMath.Forms {
     public MathKeyboard? Keyboard { get => (MathKeyboard?)GetValue(KeyboardProperty); set => SetValue(KeyboardProperty, value); }
     public static readonly BindableProperty KeyboardProperty = BindableProperty.Create(nameof(Keyboard), typeof(MathKeyboard), typeof(MathInputButton));
     public MathKeyboardInput Input { get => (MathKeyboardInput)GetValue(InputProperty); set => SetValue(InputProperty, value); }
-    public static readonly BindableProperty InputProperty = BindablePropertyWithButtonDraw(nameof(Input), typeof(MathKeyboardInput));
+    public static readonly BindableProperty InputProperty = BindablePropertyWithButtonDraw<MathInputButton>(nameof(Input), typeof(MathKeyboardInput));
     public Color? PlaceholderActiveColor {
       get => this.GetNullableColor(PlaceholderActiveColorProperty);
       set => this.SetNullableColor(PlaceholderActiveColorProperty, value);
     }
-    public static readonly BindableProperty PlaceholderActiveColorProperty = BindablePropertyWithButtonDraw(nameof(PlaceholderActiveColor), typeof(Color), defaultValue: NullableColorBindablePropertyHelper.Null);
+    public static readonly BindableProperty PlaceholderActiveColorProperty = BindablePropertyWithButtonDraw<MathInputButton>(nameof(PlaceholderActiveColor), typeof(Color), defaultValue: NullableColorBindablePropertyHelper.Null);
     public Color? PlaceholderRestingColor {
       get => this.GetNullableColor(PlaceholderRestingColorProperty);
       set => this.SetNullableColor(PlaceholderRestingColorProperty, value);
     }
-    public static readonly BindableProperty PlaceholderRestingColorProperty = BindablePropertyWithButtonDraw(nameof(PlaceholderRestingColor), typeof(Color), defaultValue: NullableColorBindablePropertyHelper.Null);
-    static BindableProperty BindablePropertyWithButtonDraw(string propertyName, Type propertyType, object? defaultValue = null) =>
-      BindableProperty.Create(propertyName, propertyType, typeof(MathInputButton), defaultValue: defaultValue, propertyChanged: (b, o, n) => ((MathInputButton)b).ButtonDraw());
-    protected override void ButtonDraw() {
+    public static readonly BindableProperty PlaceholderRestingColorProperty = BindablePropertyWithButtonDraw<MathInputButton>(nameof(PlaceholderRestingColor), typeof(Color), defaultValue: NullableColorBindablePropertyHelper.Null);
+    public override void ButtonDraw() {
       Content ??= new TextView();
       switch (Input) {
         case MathKeyboardInput.Left: Content.LaTeX = "\u25C0"; break;
@@ -72,13 +69,5 @@ namespace CSharpMath.Forms {
     public static readonly BindableProperty KeyboardProperty = BindableProperty.Create(nameof(Keyboard), typeof(MathKeyboard), typeof(ImageSourceMathInputButton));
     public MathKeyboardInput Input { get => (MathKeyboardInput)GetValue(InputProperty); set => SetValue(InputProperty, value); }
     public static readonly BindableProperty InputProperty = BindableProperty.Create(nameof(Input), typeof(MathKeyboardInput), typeof(ImageSourceMathInputButton));
-  }
-  public static class NullableColorBindablePropertyHelper {
-    public readonly static Color Null = Color.Transparent;
-    public static Color? GetNullableColor(this BindableObject bindableObject, BindableProperty bindableProperty) {
-      var v = (Color)bindableObject.GetValue(bindableProperty);
-      return v == Null ? (Color?)null : v;
-    }
-    public static void SetNullableColor(this BindableObject bindableObject, BindableProperty bindableProperty, Color? value) => bindableObject.SetValue(bindableProperty, value ?? Null);
   }
 }

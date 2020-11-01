@@ -108,6 +108,7 @@ namespace CSharpMath.Forms.Example {
     IList<Action> Themes => new Action[] {
       () => { // This theme is the default. For a round-trip through the themes we need to set them again:
         OutputMathPainter.TextColor = SKColors.Black;
+        Atom.LaTeXSettings.PlaceholderBlinks = false;
         Atom.LaTeXSettings.PlaceholderActiveColor = null;
         Atom.LaTeXSettings.PlaceholderRestingColor = null;
         Atom.LaTeXSettings.PlaceholderActiveNucleus = "■";
@@ -117,13 +118,11 @@ namespace CSharpMath.Forms.Example {
       },
       () => {
         UseMyCustomizedPlaceholderAppearance();
-        // Changing the LaTeXSettings doesn't redraw MathInputButtons,
-        // but at invoking an appearance property's setter of a MathInputButton, a redraw will be done,
-        // so although the previous theme had black colored buttons as well, we set the color again:
         keyboard.SetButtonsTextColor(Color.Black); // Placeholder appearance on the keys is the same as in the output by default.
         keyboard.SetClearButtonImageSource("Controls/ImageSourceMathInputButtons/metaltrashcan.png");
       },
       () => {
+        Atom.LaTeXSettings.PlaceholderBlinks = true;
         OutputMathPainter.TextColor = SKColors.DarkGreen;
         UseMyCustomizedPlaceholderAppearance();
         // If you'd like to use different keyboard colors than output colors and you specified a placeholder color,

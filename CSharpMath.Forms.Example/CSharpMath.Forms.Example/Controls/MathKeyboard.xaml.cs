@@ -43,16 +43,18 @@ namespace CSharpMath.Forms.Example {
       }
     }
     public void SetButtonsTextColor(Color color, Color? placeholderRestingColor = null, Color? placeholderActiveColor = null) {
-      LeftButton.TextColor = color;
-      RightButton.TextColor = color;
-      foreach (var button in TabButtons) button.TextColor = color;
-      foreach (var button in ButtonGrids.SelectMany(grid => grid.Children).Where(child => child is MathInputButton button && button.Input != MathKeyboardInput.Backspace).Cast<MathInputButton>()) {
+      foreach (var button in new MathButton[] { ShiftButton, ShiftCapitalsButton }.Concat(TabButtons))
+        button.TextColor = color;
+      foreach (var button in new[] { LeftButton, RightButton}
+                            .Concat(ButtonGrids.SelectMany(grid => grid.Children)
+                            .Where(child => child is MathInputButton button && button.Input != MathKeyboardInput.Backspace)
+                            .Cast<MathInputButton>())) {
         button.TextColor = color;
         button.PlaceholderRestingColor = placeholderRestingColor;
         button.PlaceholderActiveColor = placeholderActiveColor;
+        button.ButtonDraw(/* If the LaTeXSettings change but the button's appearance properties don't, there's no event that causes the execution of this method. */);
       };
     }
-
     public void SetClearButtonImageSource(ImageSource imageSource) {
       foreach(var button in ButtonGrids.SelectMany(grid => grid.Children)
                             .OfType<ImageSourceMathInputButton>()
