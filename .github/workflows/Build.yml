@@ -13,9 +13,9 @@ jobs:
       with:
         dotnet-version: '3.1.401'
     - name: Setup NuGet
-      uses: NuGet/setup-nuget@v1.0.2
+      uses: NuGet/setup-nuget@v1.0.5
     - name: Setup MSBuild Path
-      uses: warrenbuckley/Setup-MSBuild@v1
+      uses: microsoft/setup-msbuild@v1.0.2
     - name: Restore NuGet Packages
       run: nuget restore CSharpMath.sln
     - name: Build Everything
