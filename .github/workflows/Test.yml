@@ -26,6 +26,10 @@ jobs:
         }
         # retry 5 times since dotnet outdated fails often: https://github.com/jerriep/dotnet-outdated/issues/299
         update || update || update || update || update
+    - name: Clean
+      run: |
+        dotnet tool install --global scrub
+        scrub --ask false
     - name: Restore
       run: dotnet restore CSharpMath.CrossPlatform.slnf
     - name: Build
