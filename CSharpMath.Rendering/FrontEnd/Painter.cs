@@ -30,14 +30,14 @@ namespace CSharpMath.Rendering.FrontEnd {
     /// Unit of measure: points;
     /// Defaults to <see cref="FontSize"/>.
     /// </summary>
-    public float? ErrorFontSize { get; set; }
+    public double ErrorFontSize { get; set; }
     public bool DisplayErrorInline { get; set; } = true;
     public TColor ErrorColor { get; set; }
     public TColor TextColor { get; set; }
     public TColor HighlightColor { get; set; }
     public (TColor glyph, TColor textRun)? GlyphBoxColor { get; set; }
     public PaintStyle PaintStyle { get; set; } = PaintStyle.Fill;
-    public float Magnification { get; set; } = 1;
+    public double Magnification { get; set; } = 1;
     public string? ErrorMessage { get; protected set; }
     public abstract IDisplay<Fonts, Glyph>? Display { get; protected set; }
     #endregion Non-redisplaying properties
@@ -47,9 +47,9 @@ namespace CSharpMath.Rendering.FrontEnd {
     protected abstract void SetRedisplay();
     protected Fonts Fonts { get; private set; } = new Fonts(Array.Empty<Typeface>(), DefaultFontSize);
     /// <summary>Unit of measure: points</summary>
-    public float FontSize { get => Fonts.PointSize; set { Fonts = new Fonts(Fonts, value); SetRedisplay(); } }
+    public double FontSize { get => Fonts.PointSize; set { Fonts = new Fonts(Fonts, (float)value); SetRedisplay(); } }
     IEnumerable<Typeface> __localTypefaces = Array.Empty<Typeface>();
-    public IEnumerable<Typeface> LocalTypefaces { get => __localTypefaces; set { Fonts = new Fonts(value, FontSize); __localTypefaces = value; SetRedisplay(); } }
+    public IEnumerable<Typeface> LocalTypefaces { get => __localTypefaces; set { Fonts = new Fonts(value, (float)FontSize); __localTypefaces = value; SetRedisplay(); } }
     Atom.LineStyle __style = Atom.LineStyle.Display;
     public Atom.LineStyle LineStyle { get => __style; set { __style = value; SetRedisplay(); } }
     TContent? __content;
@@ -74,7 +74,7 @@ namespace CSharpMath.Rendering.FrontEnd {
       UpdateDisplayCore(textPainterCanvasWidth);
       if (Display == null && DisplayErrorInline && ErrorMessage != null) {
         var font = Fonts;
-        if (ErrorFontSize is { } errorSize) font = new Fonts(font, errorSize);
+        if (ErrorFontSize > 0) font = new Fonts(font, (float)ErrorFontSize);
         var errorLines = ErrorMessage.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
         var runs = new List<Display.Displays.TextRunDisplay<Fonts, Glyph>>();
         float y = 0;
@@ -116,7 +116,7 @@ namespace CSharpMath.Rendering.FrontEnd {
         canvas.Save();
         //invert the canvas vertically: displays are drawn with mathematical coordinates, not graphical coordinates
         canvas.Scale(1, -1);
-        canvas.Scale(Magnification, Magnification);
+        canvas.Scale((float)Magnification, (float)Magnification);
         if (position is { } p) display.Position = new PointF(p.X, p.Y);
         canvas.DefaultColor = WrapColor(TextColor);
         canvas.CurrentColor = WrapColor(HighlightColor);
