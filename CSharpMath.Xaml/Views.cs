@@ -280,11 +280,11 @@ namespace CSharpMath.UWPUno {
     public static readonly XProperty TextAlignmentProperty = CreateProperty<BaseView<TPainter, TContent>, CSharpMathTextAlignment>(nameof(Rendering.FrontEnd.TextAlignment), false, p => (CSharpMathTextAlignment)drawMethodParams[1].DefaultValue, (p, v) => { });
     public CSharpMathThickness Padding { get => (CSharpMathThickness)GetValue(PaddingProperty); set => SetValue(PaddingProperty, value); }
     public static readonly XProperty PaddingProperty = CreateProperty<BaseView<TPainter, TContent>, CSharpMathThickness>(nameof(Padding), false, p => (CSharpMathThickness)(drawMethodParams[2].DefaultValue ?? new CSharpMathThickness()), (p, v) => { });
-    public double DisplacementX { get => (float)GetValue(DisplacementXProperty); set => SetValue(DisplacementXProperty, value); }
+    public double DisplacementX { get => (double)GetValue(DisplacementXProperty); set => SetValue(DisplacementXProperty, value); }
     public static readonly XProperty DisplacementXProperty = CreateProperty<BaseView<TPainter, TContent>, double>(nameof(DisplacementX), false, p => Convert.ToDouble(drawMethodParams[3].DefaultValue), (p, v) => { });
-    public double DisplacementY { get => (float)GetValue(DisplacementYProperty); set => SetValue(DisplacementYProperty, value); }
+    public double DisplacementY { get => (double)GetValue(DisplacementYProperty); set => SetValue(DisplacementYProperty, value); }
     public static readonly XProperty DisplacementYProperty = CreateProperty<BaseView<TPainter, TContent>, double>(nameof(DisplacementY), false, p => Convert.ToDouble(drawMethodParams[4].DefaultValue), (p, v) => { });
-    public double Magnification { get => (float)GetValue(MagnificationProperty); set => SetValue(MagnificationProperty, value); }
+    public double Magnification { get => (double)GetValue(MagnificationProperty); set => SetValue(MagnificationProperty, value); }
     public static readonly XProperty MagnificationProperty = CreateProperty<BaseView<TPainter, TContent>, double>(nameof(Magnification), false, p => p.Magnification, (p, v) => p.Magnification = (float)v);
     public PaintStyle PaintStyle { get => (PaintStyle)GetValue(PaintStyleProperty); set => SetValue(PaintStyleProperty, value); }
     public static readonly XProperty PaintStyleProperty = CreateProperty<BaseView<TPainter, TContent>, PaintStyle>(nameof(PaintStyle), false, p => p.PaintStyle, (p, v) => p.PaintStyle = v);

@@ -1,0 +1,125 @@
+is_global = true
+build_property.TargetPlatformIdentifier = Windows
+build_property.TargetFramework = 
+build_property.ProjectTypeGuidsProperty = {FEACFBD2-3405-455C-9665-78FE426C6842},{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}
+build_property.MSBuildProjectFullPath = C:\Martin\Dev\CSharpMath\CSharpMath.UWPUno.Example\CSharpMath.UWPUno.Example.iOS\CSharpMath.UWPUno.Example.iOS.csproj
+build_property.RootNamespace = CSharpMath.UWPUno.Example.iOS
+build_property.DefineConstantsProperty = __IOS__,__MOBILE__,__UNIFIED__,DEBUG
+build_property.Configuration = Debug
+build_property.IntermediateOutputPath = obj\iPhoneSimulator\Debug\
+build_property.AndroidApplication = 
+build_property.OutputType = Exe
+build_property.MSBuildProjectName = CSharpMath.UWPUno.Example.iOS
+build_property.BuildingProject = false
+build_property.DesignTimeBuild = true
+build_property.UseWPF = 
+build_property.IsUnoHead = 
+build_property.UnoRemoteControlPort = 
+build_property.UnoRemoteControlHost = 
+build_property.TSBindingsPath = 
+build_property.UseUnoXamlParser = 
+build_property.UnoSkipUserControlsInVisualTree = 
+build_property.ShouldWriteErrorOnInvalidXaml = 
+build_property.IsUiAutomationMappingEnabled = 
+build_property.ShouldAnnotateGeneratedXaml = 
+build_property.DefaultLanguage = 
+build_property.UnoPlatformTelemetryOptOut = 
+build_property.ExcludeXamlNamespacesProperty = win,android,not_ios
+build_property.IncludeXamlNamespacesProperty = xamarin,not_win,legacy,ios,not_android,not_wasm,not_macos,not_skia,not_netstdref
+build_property.XamlGeneratorAnalyzerSuppressionsProperty = nventive.Usage-NV0056,nventive.Usage-NV0058,nventive.Usage-NV1003,nventive.Usage-NV0085,nventive.Usage-NV2001,nventive.Usage-NV2003,nventive.Usage-NV2004,nventive.Usage-NV2005
+build_property.LegacyTypesProperty = 
+
+[C:/Martin/Dev/CSharpMath/CSharpMath.UWPUno.Example/CSharpMath.UWPUno.Example.Shared/MainPage.xaml]
+build_metadata.AdditionalFiles.SourceItemGroup = Page
+build_metadata.AdditionalFiles.Link = MainPage.xaml
+build_metadata.AdditionalFiles.FullPath = C:\Martin\Dev\CSharpMath\CSharpMath.UWPUno.Example\CSharpMath.UWPUno.Example.Shared\MainPage.xaml
+
+[C:/Martin/Dev/CSharpMath/CSharpMath.UWPUno.Example/CSharpMath.UWPUno.Example.Shared/TryPage.xaml]
+build_metadata.AdditionalFiles.SourceItemGroup = Page
+build_metadata.AdditionalFiles.Link = TryPage.xaml
+build_metadata.AdditionalFiles.FullPath = C:\Martin\Dev\CSharpMath\CSharpMath.UWPUno.Example\CSharpMath.UWPUno.Example.Shared\TryPage.xaml
+
+[C:/Martin/Dev/CSharpMath/CSharpMath.UWPUno.Example/CSharpMath.UWPUno.Example.Shared/App.xaml]
+build_metadata.AdditionalFiles.SourceItemGroup = ApplicationDefinition
+build_metadata.AdditionalFiles.Link = App.xaml
+build_metadata.AdditionalFiles.FullPath = C:\Martin\Dev\CSharpMath\CSharpMath.UWPUno.Example\CSharpMath.UWPUno.Example.Shared\App.xaml
+
+[C:/Martin/Dev/CSharpMath/CSharpMath.UWPUno.Example/CSharpMath.UWPUno.Example.Shared/Strings/en/Resources.resw]
+build_metadata.AdditionalFiles.SourceItemGroup = PRIResource
+build_metadata.AdditionalFiles.Link = 
+build_metadata.AdditionalFiles.FullPath = C:\Martin\Dev\CSharpMath\CSharpMath.UWPUno.Example\CSharpMath.UWPUno.Example.Shared\Strings\en\Resources.resw
+
+[C:/Users/Martin/.nuget/packages/uno.ui/3.4.0/analyzers/Uno.Analyzers.dll]
+build_metadata.AdditionalFiles.SourceItemGroup = Analyzer
+build_metadata.AdditionalFiles.Link = 
+build_metadata.AdditionalFiles.FullPath = C:\Users\Martin\.nuget\packages\uno.ui\3.4.0\analyzers\Uno.Analyzers.dll
+
+[C:/Users/Martin/.nuget/packages/uno.ui/3.4.0/analyzers/dotnet/cs/CommonServiceLocator.dll]
+build_metadata.AdditionalFiles.SourceItemGroup = Analyzer
+build_metadata.AdditionalFiles.Link = 
+build_metadata.AdditionalFiles.FullPath = C:\Users\Martin\.nuget\packages\uno.ui\3.4.0\analyzers\dotnet\cs\CommonServiceLocator.dll
+
+[C:/Users/Martin/.nuget/packages/uno.ui/3.4.0/analyzers/dotnet/cs/Microsoft.ApplicationInsights.dll]
+build_metadata.AdditionalFiles.SourceItemGroup = Analyzer
+build_metadata.AdditionalFiles.Link = 
+build_metadata.AdditionalFiles.FullPath = C:\Users\Martin\.nuget\packages\uno.ui\3.4.0\analyzers\dotnet\cs\Microsoft.ApplicationInsights.dll
+
+[C:/Users/Martin/.nuget/packages/uno.ui/3.4.0/analyzers/dotnet/cs/Microsoft.DotNet.PlatformAbstractions.dll]
+build_metadata.AdditionalFiles.SourceItemGroup = Analyzer
+build_metadata.AdditionalFiles.Link = 
+build_metadata.AdditionalFiles.FullPath = C:\Users\Martin\.nuget\packages\uno.ui\3.4.0\analyzers\dotnet\cs\Microsoft.DotNet.PlatformAbstractions.dll
+
+[C:/Users/Martin/.nuget/packages/uno.ui/3.4.0/analyzers/dotnet/cs/Microsoft.Extensions.Logging.Abstractions.dll]
+build_metadata.AdditionalFiles.SourceItemGroup = Analyzer
+build_metadata.AdditionalFiles.Link = 
+build_metadata.AdditionalFiles.FullPath = C:\Users\Martin\.nuget\packages\uno.ui\3.4.0\analyzers\dotnet\cs\Microsoft.Extensions.Logging.Abstractions.dll
+
+[C:/Users/Martin/.nuget/packages/uno.ui/3.4.0/analyzers/dotnet/cs/Microsoft.Extensions.Logging.dll]
+build_metadata.AdditionalFiles.SourceItemGroup = Analyzer
+build_metadata.AdditionalFiles.Link = 
+build_metadata.AdditionalFiles.FullPath = C:\Users\Martin\.nuget\packages\uno.ui\3.4.0\analyzers\dotnet\cs\Microsoft.Extensions.Logging.dll
+
+[C:/Users/Martin/.nuget/packages/uno.ui/3.4.0/analyzers/dotnet/cs/Mono.Cecil.Mdb.dll]
+build_metadata.AdditionalFiles.SourceItemGroup = Analyzer
+build_metadata.AdditionalFiles.Link = 
+build_metadata.AdditionalFiles.FullPath = C:\Users\Martin\.nuget\packages\uno.ui\3.4.0\analyzers\dotnet\cs\Mono.Cecil.Mdb.dll
+
+[C:/Users/Martin/.nuget/packages/uno.ui/3.4.0/analyzers/dotnet/cs/Mono.Cecil.Pdb.dll]
+build_metadata.AdditionalFiles.SourceItemGroup = Analyzer
+build_metadata.AdditionalFiles.Link = 
+build_metadata.AdditionalFiles.FullPath = C:\Users\Martin\.nuget\packages\uno.ui\3.4.0\analyzers\dotnet\cs\Mono.Cecil.Pdb.dll
+
+[C:/Users/Martin/.nuget/packages/uno.ui/3.4.0/analyzers/dotnet/cs/Mono.Cecil.Rocks.dll]
+build_metadata.AdditionalFiles.SourceItemGroup = Analyzer
+build_metadata.AdditionalFiles.Link = 
+build_metadata.AdditionalFiles.FullPath = C:\Users\Martin\.nuget\packages\uno.ui\3.4.0\analyzers\dotnet\cs\Mono.Cecil.Rocks.dll
+
+[C:/Users/Martin/.nuget/packages/uno.ui/3.4.0/analyzers/dotnet/cs/Mono.Cecil.dll]
+build_metadata.AdditionalFiles.SourceItemGroup = Analyzer
+build_metadata.AdditionalFiles.Link = 
+build_metadata.AdditionalFiles.FullPath = C:\Users\Martin\.nuget\packages\uno.ui\3.4.0\analyzers\dotnet\cs\Mono.Cecil.dll
+
+[C:/Users/Martin/.nuget/packages/uno.ui/3.4.0/analyzers/dotnet/cs/System.Diagnostics.DiagnosticSource.dll]
+build_metadata.AdditionalFiles.SourceItemGroup = Analyzer
+build_metadata.AdditionalFiles.Link = 
+build_metadata.AdditionalFiles.FullPath = C:\Users\Martin\.nuget\packages\uno.ui\3.4.0\analyzers\dotnet\cs\System.Diagnostics.DiagnosticSource.dll
+
+[C:/Users/Martin/.nuget/packages/uno.ui/3.4.0/analyzers/dotnet/cs/Uno.Core.dll]
+build_metadata.AdditionalFiles.SourceItemGroup = Analyzer
+build_metadata.AdditionalFiles.Link = 
+build_metadata.AdditionalFiles.FullPath = C:\Users\Martin\.nuget\packages\uno.ui\3.4.0\analyzers\dotnet\cs\Uno.Core.dll
+
+[C:/Users/Martin/.nuget/packages/uno.ui/3.4.0/analyzers/dotnet/cs/Uno.UI.SourceGenerators.dll]
+build_metadata.AdditionalFiles.SourceItemGroup = Analyzer
+build_metadata.AdditionalFiles.Link = 
+build_metadata.AdditionalFiles.FullPath = C:\Users\Martin\.nuget\packages\uno.ui\3.4.0\analyzers\dotnet\cs\Uno.UI.SourceGenerators.dll
+
+[C:/Users/Martin/.nuget/packages/uno.ui/3.4.0/analyzers/dotnet/cs/Uno.Xaml.dll]
+build_metadata.AdditionalFiles.SourceItemGroup = Analyzer
+build_metadata.AdditionalFiles.Link = 
+build_metadata.AdditionalFiles.FullPath = C:\Users\Martin\.nuget\packages\uno.ui\3.4.0\analyzers\dotnet\cs\Uno.Xaml.dll
+
+[C:/Users/Martin/.nuget/packages/xunit.analyzers/0.10.0/analyzers/dotnet/cs/xunit.analyzers.dll]
+build_metadata.AdditionalFiles.SourceItemGroup = Analyzer
+build_metadata.AdditionalFiles.Link = 
+build_metadata.AdditionalFiles.FullPath = C:\Users\Martin\.nuget\packages\xunit.analyzers\0.10.0\analyzers\dotnet\cs\xunit.analyzers.dll
