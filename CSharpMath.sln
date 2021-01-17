@@ -140,6 +140,7 @@ Global
 		CSharpMath.Wiki\CSharpMath.Wiki.projitems*{883bcfb1-3aa8-4ab7-8f82-27b849716373}*SharedItemsImports = 13
 		Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems*{9a99f103-b119-4a4d-8093-6a03baa6d36b}*SharedItemsImports = 13
 		CSharpMath.Xaml\CSharpMath.Xaml.projitems*{9bad6846-0b1d-4446-bf62-fcf85c6e9a9f}*SharedItemsImports = 5
+		CSharpMath.UWPUno.Example\CSharpMath.UWPUno.Example.Shared\CSharpMath.UWPUno.Example.Shared.projitems*{b7759d42-229d-47cb-96a2-e99db18aa316}*SharedItemsImports = 4
 		CSharpMath.Xaml\CSharpMath.Xaml.projitems*{d37416fb-3025-4a64-81ce-89da21062acb}*SharedItemsImports = 13
 		Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems*{d8861cf8-c506-472b-8a57-632bd6ca6496}*SharedItemsImports = 13
 	EndGlobalSection

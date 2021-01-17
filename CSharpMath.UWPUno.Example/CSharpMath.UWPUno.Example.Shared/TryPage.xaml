@@ -32,6 +32,6 @@
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch"
         EnablePanning="True"
-        TextColor="{ThemeResource SystemBaseHighColor}" />
+        TextColor="Black" />
   </Grid>
 </Page>

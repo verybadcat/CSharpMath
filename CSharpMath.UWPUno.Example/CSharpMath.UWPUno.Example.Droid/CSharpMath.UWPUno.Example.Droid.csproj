@@ -17,7 +17,7 @@
     <AndroidUseAapt2>true</AndroidUseAapt2>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <AndroidUseLatestPlatformSdk>False</AndroidUseLatestPlatformSdk>
-    <TargetFrameworkVersion>v10.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v11.0</TargetFrameworkVersion>
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
     <AndroidUseIntermediateDesignerFile>True</AndroidUseIntermediateDesignerFile>
     <ResourcesDirectory>..\CSharpMath.UWPUno.Example.Shared\Strings</ResourcesDirectory>
@@ -65,6 +65,9 @@
     <PackageReference Include="Uno.UniversalImageLoader" Version="1.9.33" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Filter" Version="1.1.1" />
+    <PackageReference Include="Validation">
+      <Version>2.4.22</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />
@@ -89,9 +92,25 @@
     <AndroidResource Include="Resources\values\Styles.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\CSharpMath.Editor\CSharpMath.Editor.csproj">
+      <Project>{38f58489-ede4-4289-8acf-a9756977a7a6}</Project>
+      <Name>CSharpMath.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\CSharpMath.Rendering\CSharpMath.Rendering.csproj">
+      <Project>{65016a61-2125-4e0c-90e8-a915230c7826}</Project>
+      <Name>CSharpMath.Rendering</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\CSharpMath.SkiaSharp\CSharpMath.SkiaSharp.csproj">
+      <Project>{35b4bb5b-2202-436e-9afe-00997ca2cc65}</Project>
+      <Name>CSharpMath.SkiaSharp</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\CSharpMath.UWPUno\CSharpMath.UWPUno.csproj">
       <Project>{5c46ca75-fa31-4281-80eb-a07750e1fecb}</Project>
       <Name>CSharpMath.UWPUno</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\CSharpMath\CSharpMath.csproj">
+      <Project>{5157367b-f03e-4acb-83a1-0de414a3bfca}</Project>
+      <Name>CSharpMath</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="..\CSharpMath.UWPUno.Example.Shared\CSharpMath.UWPUno.Example.Shared.projitems" Label="Shared" Condition="Exists('..\CSharpMath.UWPUno.Example.Shared\CSharpMath.UWPUno.Example.Shared.projitems')" />

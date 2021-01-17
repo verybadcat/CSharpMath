@@ -29,6 +29,11 @@ build_property.IncludeXamlNamespacesProperty = xamarin,not_win,legacy,ios,not_an
 build_property.XamlGeneratorAnalyzerSuppressionsProperty = nventive.Usage-NV0056,nventive.Usage-NV0058,nventive.Usage-NV1003,nventive.Usage-NV0085,nventive.Usage-NV2001,nventive.Usage-NV2003,nventive.Usage-NV2004,nventive.Usage-NV2005
 build_property.LegacyTypesProperty = 
 
+[C:/Martin/Dev/CSharpMath/CSharpMath.UWPUno.Example/CSharpMath.UWPUno.Example.Shared/ClockPage.xaml]
+build_metadata.AdditionalFiles.SourceItemGroup = Page
+build_metadata.AdditionalFiles.Link = ClockPage.xaml
+build_metadata.AdditionalFiles.FullPath = C:\Martin\Dev\CSharpMath\CSharpMath.UWPUno.Example\CSharpMath.UWPUno.Example.Shared\ClockPage.xaml
+
 [C:/Martin/Dev/CSharpMath/CSharpMath.UWPUno.Example/CSharpMath.UWPUno.Example.Shared/MainPage.xaml]
 build_metadata.AdditionalFiles.SourceItemGroup = Page
 build_metadata.AdditionalFiles.Link = MainPage.xaml

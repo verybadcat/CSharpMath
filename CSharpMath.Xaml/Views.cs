@@ -237,7 +237,7 @@ namespace CSharpMath.UWPUno {
       canvas.Clear();
       // SkiaSharp deals with raw pixels as opposed to Xamarin.Forms's device-independent units.
       // We should scale to occupy the full view size.
-      canvas.Scale(e.Info.Width / (float)Width);
+      canvas.Scale(e.Info.Width / (float)ActualWidth);
 #endif
       Painter.Draw(canvas, TextAlignment, Padding, (float)DisplacementX, (float)DisplacementY);
     }
