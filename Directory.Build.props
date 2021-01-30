@@ -15,7 +15,7 @@
   <!--Don't apply to Typography projects-->
   <PropertyGroup Condition="$(MSBuildProjectName.StartsWith('CSharpMath'))">
     <!--CSharpMath-specific properties for centralized control of values-->
-    <AvaloniaVersion>0.10.0-rc1</AvaloniaVersion>
+    <AvaloniaVersion>0.10.0</AvaloniaVersion>
 
     <!--C# code properties-->
     <LangVersion>preview</LangVersion>
