@@ -26,11 +26,7 @@ jobs:
         }
         # retry 5 times since dotnet outdated fails often: https://github.com/jerriep/dotnet-outdated/issues/299
         update || update || update || update || update
-    - name: Restore
-      run: dotnet restore CSharpMath.CrossPlatform.slnf
-    - name: Build
-      run: dotnet build CSharpMath.CrossPlatform.slnf -c Release --no-restore
-    - name: Test
+    - name: Build and Test
       env:
         RELEASE_NOTES: |
           # ${{ steps.release_drafter.outputs.name }}
@@ -45,7 +41,7 @@ jobs:
         
         # --collect:"XPlat Code Coverage" means collect test coverage with https://github.com/coverlet-coverage/coverlet
         # Coverlet settings come after --: https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/VSTestIntegration.md#advanced-options-supported-via-runsettings
-        dotnet test CSharpMath.CrossPlatform.slnf -c Release --no-build -l GitHubActions --blame --collect:"XPlat Code Coverage" -r .testcoverage -p:PackageReleaseNotes="$RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }} -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.IncludeTestAssembly=true
+        dotnet test CSharpMath.CrossPlatform.slnf -c Release -l GitHubActions --blame --collect:"XPlat Code Coverage" -r .testcoverage -p:PackageReleaseNotes="$RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }} -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.IncludeTestAssembly=true
     - name: Run ReportGenerator on Test Coverage results
       uses: danielpalme/ReportGenerator-GitHub-Action@4.6.7
       with:
