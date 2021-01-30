@@ -4,7 +4,7 @@
 
     <Application.Styles>
 
-        <StyleInclude Source="avares://Avalonia.Themes.Fluent/FluentLight.xaml"/>
+        <FluentTheme Mode="Light" />
 
         <StyleInclude Source="/Styles.xaml"/>
 
