@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1604249206467,
+  "lastUpdate": 1612014563158,
   "repoUrl": "https://github.com/verybadcat/CSharpMath",
   "entries": {
     "CSharpMath.Rendering.Benchmarks": [
@@ -1800,6 +1800,96 @@ window.BENCHMARK_DATA = {
             "value": 6011390.625,
             "unit": "ns",
             "range": "± 558970.2372414031"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lorenzo.delana@gmail.com",
+            "name": "Lorenzo Delana",
+            "username": "devel0"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "40b8ddfcbb8b4c31520f0170707105822f9b4684",
+          "message": "upgrade avalonia pkg to 0.10.0 (#186)\n\n* upgrade avalonia pkg to 0.10.0-rc1\r\n\r\n* Revert \"upgrade avalonia pkg to 0.10.0-rc1\" to verify CI build without patch\r\n\r\nThis reverts commit 272d3db84f0c5545130b0b43e58d7c996c247d59.\r\n\r\n* Revert \"Revert \"upgrade avalonia pkg to 0.10.0-rc1\" to verify CI build without patch\"\r\n\r\nThis reverts commit 12797de1df0624734010b90146a6fc10d42ad337.\r\n\r\n* updated uri as of 0.10.0-rc1\r\n\r\n* avalonia 0.10.0\r\n\r\nCo-authored-by: jp2masa <jp2masa@users.noreply.github.com>\r\n\r\n* Update CSharpMath.Avalonia.Example/App.xaml\r\n\r\nuse FluentTheme xaml constructor\r\n\r\nCo-authored-by: jp2masa <jp2masa@users.noreply.github.com>\r\n\r\nCo-authored-by: jp2masa <jp2masa@users.noreply.github.com>",
+          "timestamp": "2021-01-30T15:43:16+02:00",
+          "tree_id": "d0d9d603a6d367ac530bd01c347bd457c0d8f6f5",
+          "url": "https://github.com/verybadcat/CSharpMath/commit/40b8ddfcbb8b4c31520f0170707105822f9b4684"
+        },
+        "date": 1612014557792,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.AllConstantValues",
+            "value": 900770220,
+            "unit": "ns",
+            "range": "± 12806515.893325554"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cases\")",
+            "value": 4987247.76119403,
+            "unit": "ns",
+            "range": "± 235610.82276822065"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Color\")",
+            "value": 1971792.4731182796,
+            "unit": "ns",
+            "range": "± 177387.1822954811"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Commands\")",
+            "value": 688360.9635416666,
+            "unit": "ns",
+            "range": "± 11705.50900280673"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cyrillic\")",
+            "value": 4985475,
+            "unit": "ns",
+            "range": "± 286624.3356864387"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"ErrorMissingArgument\")",
+            "value": 3047286.7924528304,
+            "unit": "ns",
+            "range": "± 124684.83659231482"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Matrix\")",
+            "value": 3035550,
+            "unit": "ns",
+            "range": "± 279275.9026128459"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuadraticFormula\")",
+            "value": 1282837.7777777778,
+            "unit": "ns",
+            "range": "± 92190.76652902119"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuarticSolutions\")",
+            "value": 199335536.84210527,
+            "unit": "ns",
+            "range": "± 4377962.179575045"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"TangentPeriodShift\")",
+            "value": 1543779.347826087,
+            "unit": "ns",
+            "range": "± 126626.42949133423"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"VectorProjection\")",
+            "value": 5436653.260869565,
+            "unit": "ns",
+            "range": "± 329280.68839136563"
           }
         ]
       }
