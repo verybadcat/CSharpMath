@@ -1,4 +1,4 @@
-<!--Directory.Build.props: MSBuild properties that are included in every project-->
+﻿<!--Directory.Build.props: MSBuild properties that are included in every project-->
 <!--Info: https://docs.microsoft.com/en-us/visualstudio/msbuild/customize-your-build?view=vs-2019#directorybuildprops-and-directorybuildtargets-->
 <Project InitialTargets="SetDefaultPackageVersion">
   <PropertyGroup Condition="$(MSBuildProjectName.Contains('Test')) And !$(MSBuildProjectName.Contains('Ios'))">
