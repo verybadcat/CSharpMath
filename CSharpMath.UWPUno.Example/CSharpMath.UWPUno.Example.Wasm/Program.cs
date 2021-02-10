@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using Windows.UI.Xaml;
 
 namespace CSharpMath.UWPUno.Example.Wasm
 {
     public class Program
     {
-        private static App _app;
+        private static App? _app;
 
         static int Main(string[] args)
         {

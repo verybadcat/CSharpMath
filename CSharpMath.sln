@@ -104,7 +104,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Rendering.Benchm
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UWPUno", "UWPUno", "{4FCF3573-9740-4F65-A672-703E9359F4BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.UWPUno", "CSharpMath.UWPUno\CSharpMath.UWPUno.csproj", "{5C46CA75-FA31-4281-80EB-A07750E1FECB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.UWPUno", "CSharpMath.UWPUno\CSharpMath.UWPUno.csproj", "{5C46CA75-FA31-4281-80EB-A07750E1FECB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.UWPUno.Example.Droid", "CSharpMath.UWPUno.Example\CSharpMath.UWPUno.Example.Droid\CSharpMath.UWPUno.Example.Droid.csproj", "{B7759D42-229D-47CB-96A2-E99DB18AA316}"
 EndProject
@@ -112,7 +112,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.UWPUno.Example.i
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.UWPUno.Example.UWP", "CSharpMath.UWPUno.Example\CSharpMath.UWPUno.Example.UWP\CSharpMath.UWPUno.Example.UWP.csproj", "{57CD6652-90CD-4D4B-8734-965E733B6E8D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.UWPUno.Example.Wasm", "CSharpMath.UWPUno.Example\CSharpMath.UWPUno.Example.Wasm\CSharpMath.UWPUno.Example.Wasm.csproj", "{55126386-76BD-4B5B-9119-948A93A1DCDF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.UWPUno.Example.Wasm", "CSharpMath.UWPUno.Example\CSharpMath.UWPUno.Example.Wasm\CSharpMath.UWPUno.Example.Wasm.csproj", "{55126386-76BD-4B5B-9119-948A93A1DCDF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.UWPUno.Example.macOS", "CSharpMath.UWPUno.Example\CSharpMath.UWPUno.Example.macOS\CSharpMath.UWPUno.Example.macOS.csproj", "{F70321E2-42CB-4302-B5ED-61646036ECD0}"
 EndProject
@@ -126,6 +126,7 @@ Global
 		Typography\Typography.OpenFont\Typography.OpenFont.projitems*{20986a1a-bf57-4ea7-92e1-e88d3c70874b}*SharedItemsImports = 5
 		Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems*{20986a1a-bf57-4ea7-92e1-e88d3c70874b}*SharedItemsImports = 5
 		Typography\Typography.OpenFont\Typography.OpenFont.projitems*{235a071b-8d06-40ae-a5c5-b1ce59715ee9}*SharedItemsImports = 13
+		CSharpMath.UWPUno.Example\CSharpMath.UWPUno.Example.Shared\CSharpMath.UWPUno.Example.Shared.projitems*{26af2be4-5bb0-4d60-94d1-30aa033ddc3e}*SharedItemsImports = 4
 		Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems*{2e593fca-b809-4270-9eb2-93f380af2d6c}*SharedItemsImports = 5
 		PixelFarm.Typography (Excerpt)\PixelFarm.Typography (Excerpt).projitems*{3eca00b3-0925-4418-b6f2-ac49aa3520bb}*SharedItemsImports = 13
 		CSharpMath.UWPUno.Example\CSharpMath.UWPUno.Example.Shared\CSharpMath.UWPUno.Example.Shared.projitems*{55126386-76bd-4b5b-9119-948a93a1dcdf}*SharedItemsImports = 5
@@ -143,6 +144,7 @@ Global
 		CSharpMath.UWPUno.Example\CSharpMath.UWPUno.Example.Shared\CSharpMath.UWPUno.Example.Shared.projitems*{b7759d42-229d-47cb-96a2-e99db18aa316}*SharedItemsImports = 4
 		CSharpMath.Xaml\CSharpMath.Xaml.projitems*{d37416fb-3025-4a64-81ce-89da21062acb}*SharedItemsImports = 13
 		Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems*{d8861cf8-c506-472b-8a57-632bd6ca6496}*SharedItemsImports = 13
+		CSharpMath.UWPUno.Example\CSharpMath.UWPUno.Example.Shared\CSharpMath.UWPUno.Example.Shared.projitems*{f70321e2-42cb-4302-b5ed-61646036ecd0}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Ad-Hoc|Any CPU = Ad-Hoc|Any CPU
