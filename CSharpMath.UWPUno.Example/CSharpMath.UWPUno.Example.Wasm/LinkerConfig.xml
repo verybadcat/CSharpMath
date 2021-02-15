@@ -1,5 +1,6 @@
 ﻿<linker>
   <assembly fullname="CSharpMath.UWPUno.Example.Wasm" />
+  <assembly fullname="SkiaSharp.Views.UWP" />
   <assembly fullname="Uno.UI" />
 
   <assembly fullname="System.Core">
