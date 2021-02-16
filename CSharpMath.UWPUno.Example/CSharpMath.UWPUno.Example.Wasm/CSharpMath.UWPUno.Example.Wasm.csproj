@@ -45,11 +45,11 @@
     <!-- Note that for WebAssembly version 1.1.1 of the console logger required -->
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Filter" Version="1.1.1" />
-    <PackageReference Include="SkiaSharp.Views.Uno" Version="2.80.2" />
-    <PackageReference Include="Uno.UI.WebAssembly" Version="3.4.0" />
-    <PackageReference Include="Uno.UI.RemoteControl" Version="3.4.0" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="Uno.Wasm.Bootstrap" Version="2.0.0-dev.163" />
-    <PackageReference Include="Uno.Wasm.Bootstrap.DevServer" Version="2.0.0-dev.163" />
+    <PackageReference Include="SkiaSharp.Views.Uno" Version="2.80.3-preview.40" />
+    <PackageReference Include="Uno.UI.WebAssembly" Version="3.6.0-dev.81" />
+    <PackageReference Include="Uno.UI.RemoteControl" Version="3.6.0-dev.81" Condition="'$(Configuration)'=='Debug'" />
+    <PackageReference Include="Uno.Wasm.Bootstrap" Version="2.0.0-dev.165" />
+    <PackageReference Include="Uno.Wasm.Bootstrap.DevServer" Version="2.0.0-dev.165" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\CSharpMath.UWPUno\CSharpMath.UWPUno.csproj" />

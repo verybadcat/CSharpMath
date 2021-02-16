@@ -19,13 +19,16 @@
   </ItemGroup>
   <Import Project="..\CSharpMath.Xaml\CSharpMath.Xaml.projitems" Label="Shared" />
   <ItemGroup>
+    <PackageReference Include="SkiaSharp.Views" Version="2.80.3-preview.40" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\CSharpMath.SkiaSharp\CSharpMath.SkiaSharp.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='uap10.0.17763'">
-    <PackageReference Include="SkiaSharp.Views" Version="2.80.2" />
+    <PackageReference Include="SkiaSharp.Views" Version="2.80.3-preview.40" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'!='uap10.0.17763'">
-    <PackageReference Include="SkiaSharp.Views.Uno" Version="2.80.2" />
-    <PackageReference Include="Uno.UI" Version="3.4.0" />
+    <PackageReference Include="SkiaSharp.Views.Uno" Version="2.80.3-preview.40" />
+    <PackageReference Include="Uno.UI" Version="3.6.0-dev.81" />
   </ItemGroup>
 </Project>

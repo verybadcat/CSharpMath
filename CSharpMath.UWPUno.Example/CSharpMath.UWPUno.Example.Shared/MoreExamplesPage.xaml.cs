@@ -19,7 +19,7 @@ namespace CSharpMath.UWPUno.Example {
       this.InitializeComponent();
       foreach (var view in MoreExamples.Views) {
         view.ErrorFontSize = view.FontSize * 0.8f;
-        view.TextColor = Windows.UI.Colors.White;
+        view.TextColor = Windows.UI.Colors.Black;
         Stack.Children.Add(view);
       }
     }
