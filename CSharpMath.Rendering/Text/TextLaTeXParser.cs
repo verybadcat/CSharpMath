@@ -38,6 +38,8 @@ string BreakText(string text, string seperator = "|")
 }
 BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
      */
+    /// <summary>Handle additional languages</summary>
+    public static List<BreakingEngine> AdditionalBreakingEngines { get; } = new();
     public static Result<TextAtom> TextAtomFromLaTeX(string latexSource) {
       if (string.IsNullOrEmpty(latexSource))
         return new TextAtom.List(Array.Empty<TextAtom>());
@@ -54,6 +56,8 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
         BreakNumberAfterText = true,
         ThrowIfCharOutOfRange = false
       };
+      foreach (var engine in AdditionalBreakingEngines)
+        breaker.AddBreakingEngine(engine);
       breaker.BreakWords(latexSource);
 
       Result CheckDollarCount(int startAt, ref int endAt, TextAtomListBuilder atoms) {
