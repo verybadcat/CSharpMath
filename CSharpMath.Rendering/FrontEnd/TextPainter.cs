@@ -56,7 +56,7 @@ namespace CSharpMath.Rendering.FrontEnd {
             System.Math.Max(_relativeXCoordDisplay.Width, _absoluteXCoordDisplay.Width),
             System.Math.Max(_relativeXCoordDisplay.Ascent, _absoluteXCoordDisplay.Ascent),
             System.Math.Max(_relativeXCoordDisplay.Descent, _absoluteXCoordDisplay.Descent),
-            FontSize, width ?? c.Width,
+            (float)FontSize, width ?? c.Width,
             c.Height, alignment, padding, offsetX, offsetY
           ));
         var adjustedCanvasWidth =

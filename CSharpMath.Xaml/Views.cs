@@ -4,6 +4,8 @@ using CSharpMath.Atom;
 using CSharpMath.Rendering.FrontEnd;
 using CSharpMath.Structures;
 using Typography.OpenFont;
+using CSharpMathTextAlignment = CSharpMath.Rendering.FrontEnd.TextAlignment;
+using CSharpMathThickness = CSharpMath.Structures.Thickness;
 
 // X stands for Xaml
 #if Avalonia
@@ -25,8 +27,24 @@ using MathPainter = CSharpMath.SkiaSharp.MathPainter;
 using TextPainter = CSharpMath.SkiaSharp.TextPainter;
 namespace CSharpMath.Forms {
   [Xamarin.Forms.ContentProperty(nameof(LaTeX))]
+#elif HAS_UNO || WINDOWS_UWP
+using Windows.UI.Xaml;
+using System.Drawing;
+using Windows.UI.Core;
+using Windows.UI.Xaml.Input;
+using XCanvas = SkiaSharp.SKCanvas;
+using XCanvasColor = SkiaSharp.SKColor;
+using XColor = Windows.UI.Color;
+using XThickness = Windows.UI.Xaml.Thickness;
+using XControl = Windows.UI.Xaml.Controls.Control;
+using XInheritControl = SkiaSharp.Views.UWP.SKXamlCanvas;
+using XProperty = Windows.UI.Xaml.DependencyProperty;
+using MathPainter = CSharpMath.SkiaSharp.MathPainter;
+using TextPainter = CSharpMath.SkiaSharp.TextPainter;
+namespace CSharpMath.UWPUno {
+  [global::Windows.UI.Xaml.Markup.ContentProperty(Name = nameof(LaTeX))]
 #endif
-  public class BaseView<TPainter, TContent> : XInheritControl, ICSharpMathAPI<TContent, XColor>
+ public partial class BaseView<TPainter, TContent> : XInheritControl, ICSharpMathAPI<TContent, XColor>
     where TPainter : Painter<XCanvas, TContent, XCanvasColor>, new() where TContent : class {
     public TPainter Painter { get; } = new TPainter();
 
@@ -164,8 +182,64 @@ namespace CSharpMath.Forms {
       // SkiaSharp deals with raw pixels as opposed to Xamarin.Forms's device-independent units.
       // We should scale to occupy the full view size.
       canvas.Scale(e.Info.Width / (float)Width);
+#elif HAS_UNO || WINDOWS_UWP
+        @this.Invalidate();
+      }
+      return XProperty.Register(propertyName, typeof(TValue), typeof(TThis),
+        new PropertyMetadata(defaultValue, (b, n) => PropertyChanged((TThis)b, n.NewValue)));
+    }
+    public BaseView() {
+      PointerPressed += OnPointerPressed;
+      PointerMoved += OnPointerMoved;
+      PointerReleased += OnPointerReleased;
+    }
+    protected override Windows.Foundation.Size MeasureOverride(Windows.Foundation.Size availableSize) =>
+      Painter.Measure((float)availableSize.Width) is { } rect
+      ? new Windows.Foundation.Size(rect.Width, rect.Height)
+      : base.MeasureOverride(availableSize);
+    struct ReadOnlyProperty<TThis, TValue> where TThis : BaseView<TPainter, TContent> {
+      public ReadOnlyProperty(string propertyName,
+        Func<TPainter, TValue> getter) {
+        Property = XProperty.Register(propertyName, typeof(TValue), typeof(TThis), new Windows.UI.Xaml.PropertyMetadata(getter(staticPainter)));        
+      }
+      public XProperty Property;
+      public void SetValue(TThis @this, TValue value) => @this.SetValue(Property, value);
+    }
+    static XCanvasColor XColorToXCanvasColor(XColor color) => new XCanvasColor(color.R, color.G, color.B, color.A);
+    static XColor XCanvasColorToXColor(XCanvasColor color) => XColor.FromArgb(color.Alpha, color.Red, color.Green, color.Blue);
+    static CSharpMathThickness XThicknessToCSharpMathThickness(XThickness thickness) => new CSharpMathThickness((float)thickness.Left, (float)thickness.Top, (float)thickness.Right, (float)thickness.Bottom);
+    static XThickness CSharpMathThicknessToXThickness(CSharpMathThickness thickness) => new XThickness(thickness.Left, thickness.Top, thickness.Right, thickness.Bottom);
+    global::Windows.Foundation.Point _origin;
+    private void OnPointerPressed(object sender, PointerRoutedEventArgs e) {
+      var point = e.GetCurrentPoint(this);
+      if (point.Properties.IsLeftButtonPressed && EnablePanning) {
+        _origin = point.Position;
+      }
+    }
+    private void OnPointerMoved(object sender, PointerRoutedEventArgs e) {
+      var point = e.GetCurrentPoint(this);
+      if (point.Properties.IsLeftButtonPressed && EnablePanning) {
+        var displacement = new Windows.Foundation.Point(point.Position.X - _origin.X, point.Position.Y - _origin.Y);
+        _origin = point.Position;
+        DisplacementX += (float)displacement.X;
+        DisplacementY += (float)displacement.Y;
+      }
+    }
+    private void OnPointerReleased(object sender, PointerRoutedEventArgs e) {
+      var point = e.GetCurrentPoint(this);
+      if (point.Properties.IsLeftButtonPressed && EnablePanning) {
+        _origin = point.Position;
+      }
+    }
+    protected override void OnPaintSurface(global::SkiaSharp.Views.UWP.SKPaintSurfaceEventArgs e) {
+      base.OnPaintSurface(e);
+      var canvas = e.Surface.Canvas;
+      canvas.Clear();
+      // SkiaSharp deals with raw pixels as opposed to Xamarin.Forms's device-independent units.
+      // We should scale to occupy the full view size.
+      canvas.Scale(e.Info.Width / (float)ActualWidth);
 #endif
-      Painter.Draw(canvas, TextAlignment, Padding, DisplacementX, DisplacementY);
+      Painter.Draw(canvas, TextAlignment, Padding, (float)DisplacementX, (float)DisplacementY);
     }
     /// <summary>Requires touch events to be enabled in SkiaSharp/Xamarin.Forms</summary>
     public bool EnablePanning { get => (bool)GetValue(DisablePanningProperty); set => SetValue(DisablePanningProperty, value); }
@@ -173,7 +247,7 @@ namespace CSharpMath.Forms {
 
     static readonly System.Reflection.ParameterInfo[] drawMethodParams = typeof(TPainter)
       .GetMethod(nameof(Painter<XCanvas, TContent, XColor>.Draw),
-        new[] { typeof(XCanvas), typeof(TextAlignment), typeof(Thickness), typeof(float), typeof(float) }).GetParameters();
+        new[] { typeof(XCanvas), typeof(CSharpMathTextAlignment), typeof(CSharpMathThickness), typeof(float), typeof(float) }).GetParameters();
     static T? Nullable<T>(T value) where T : struct => new T?(value);
     public (XColor glyph, XColor textRun)? GlyphBoxColor { get => ((XColor glyph, XColor textRun)?)GetValue(GlyphBoxColorProperty); set => SetValue(GlyphBoxColorProperty, value); }
     public static readonly XProperty GlyphBoxColorProperty = CreateProperty<BaseView<TPainter, TContent>, (XColor glyph, XColor textRun)?>(nameof(GlyphBoxColor), false,
@@ -189,11 +263,11 @@ namespace CSharpMath.Forms {
     public bool DisplayErrorInline { get => (bool)GetValue(DisplayErrorInlineProperty); set => SetValue(DisplayErrorInlineProperty, value); }
     public static readonly XProperty DisplayErrorInlineProperty = CreateProperty<BaseView<TPainter, TContent>, bool>(nameof(DisplayErrorInline), true, p => p.DisplayErrorInline, (p, v) => p.DisplayErrorInline = v);
     /// <summary>Unit of measure: points</summary>
-    public float FontSize { get => (float)GetValue(FontSizeProperty); set => SetValue(FontSizeProperty, value); }
-    public static readonly XProperty FontSizeProperty = CreateProperty<BaseView<TPainter, TContent>, float>(nameof(FontSize), true, p => p.FontSize, (p, v) => p.FontSize = v);
+    public double FontSize { get => (double)GetValue(FontSizeProperty); set => SetValue(FontSizeProperty, value); }
+    public static readonly XProperty FontSizeProperty = CreateProperty<BaseView<TPainter, TContent>, double>(nameof(FontSize), true, p => p.FontSize, (p, v) => p.FontSize = (float)v);
     /// <summary>Unit of measure: points; Defaults to <see cref="FontSize"/>.</summary>
-    public float? ErrorFontSize { get => (float?)GetValue(ErrorFontSizeProperty); set => SetValue(ErrorFontSizeProperty, value); }
-    public static readonly XProperty ErrorFontSizeProperty = CreateProperty<BaseView<TPainter, TContent>, float?>(nameof(ErrorFontSize), true, p => p.ErrorFontSize, (p, v) => p.ErrorFontSize = v);
+    public double ErrorFontSize { get => (double)GetValue(ErrorFontSizeProperty); set => SetValue(ErrorFontSizeProperty, value); }
+    public static readonly XProperty ErrorFontSizeProperty = CreateProperty<BaseView<TPainter, TContent>, double>(nameof(ErrorFontSize), true, p => p.ErrorFontSize, (p, v) => p.ErrorFontSize = (float)v);
     public IEnumerable<Typeface> LocalTypefaces { get => (IEnumerable<Typeface>)GetValue(LocalTypefacesProperty); set => SetValue(LocalTypefacesProperty, value); }
     public static readonly XProperty LocalTypefacesProperty = CreateProperty<BaseView<TPainter, TContent>, IEnumerable<Typeface>>(nameof(LocalTypefaces), true, p => p.LocalTypefaces, (p, v) => p.LocalTypefaces = v);
     public XColor TextColor { get => (XColor)GetValue(TextColorProperty); set => SetValue(TextColorProperty, value); }
@@ -202,16 +276,16 @@ namespace CSharpMath.Forms {
     public static readonly XProperty HighlightColorProperty = CreateProperty<BaseView<TPainter, TContent>, XColor>(nameof(HighlightColor), false, p => XCanvasColorToXColor(p.HighlightColor), (p, v) => p.HighlightColor = XColorToXCanvasColor(v));
     public XColor ErrorColor { get => (XColor)GetValue(ErrorColorProperty); set => SetValue(ErrorColorProperty, value); }
     public static readonly XProperty ErrorColorProperty = CreateProperty<BaseView<TPainter, TContent>, XColor>(nameof(ErrorColor), false, p => XCanvasColorToXColor(p.ErrorColor), (p, v) => p.ErrorColor = XColorToXCanvasColor(v));
-    public TextAlignment TextAlignment { get => (TextAlignment)GetValue(TextAlignmentProperty); set => SetValue(TextAlignmentProperty, value); }
-    public static readonly XProperty TextAlignmentProperty = CreateProperty<BaseView<TPainter, TContent>, TextAlignment>(nameof(Rendering.FrontEnd.TextAlignment), false, p => (TextAlignment)drawMethodParams[1].DefaultValue, (p, v) => { });
-    public Thickness Padding { get => (Thickness)GetValue(PaddingProperty); set => SetValue(PaddingProperty, value); }
-    public static readonly XProperty PaddingProperty = CreateProperty<BaseView<TPainter, TContent>, Thickness>(nameof(Padding), false, p => (Thickness)(drawMethodParams[2].DefaultValue ?? new Thickness()), (p, v) => { });
-    public float DisplacementX { get => (float)GetValue(DisplacementXProperty); set => SetValue(DisplacementXProperty, value); }
-    public static readonly XProperty DisplacementXProperty = CreateProperty<BaseView<TPainter, TContent>, float>(nameof(DisplacementX), false, p => (float)drawMethodParams[3].DefaultValue, (p, v) => { });
-    public float DisplacementY { get => (float)GetValue(DisplacementYProperty); set => SetValue(DisplacementYProperty, value); }
-    public static readonly XProperty DisplacementYProperty = CreateProperty<BaseView<TPainter, TContent>, float>(nameof(DisplacementY), false, p => (float)drawMethodParams[4].DefaultValue, (p, v) => { });
-    public float Magnification { get => (float)GetValue(MagnificationProperty); set => SetValue(MagnificationProperty, value); }
-    public static readonly XProperty MagnificationProperty = CreateProperty<BaseView<TPainter, TContent>, float>(nameof(Magnification), false, p => p.Magnification, (p, v) => p.Magnification = v);
+    public CSharpMathTextAlignment TextAlignment { get => (CSharpMathTextAlignment)GetValue(TextAlignmentProperty); set => SetValue(TextAlignmentProperty, value); }
+    public static readonly XProperty TextAlignmentProperty = CreateProperty<BaseView<TPainter, TContent>, CSharpMathTextAlignment>(nameof(Rendering.FrontEnd.TextAlignment), false, p => (CSharpMathTextAlignment)drawMethodParams[1].DefaultValue, (p, v) => { });
+    public CSharpMathThickness Padding { get => (CSharpMathThickness)GetValue(PaddingProperty); set => SetValue(PaddingProperty, value); }
+    public static readonly XProperty PaddingProperty = CreateProperty<BaseView<TPainter, TContent>, CSharpMathThickness>(nameof(Padding), false, p => (CSharpMathThickness)(drawMethodParams[2].DefaultValue ?? new CSharpMathThickness()), (p, v) => { });
+    public double DisplacementX { get => (double)GetValue(DisplacementXProperty); set => SetValue(DisplacementXProperty, value); }
+    public static readonly XProperty DisplacementXProperty = CreateProperty<BaseView<TPainter, TContent>, double>(nameof(DisplacementX), false, p => Convert.ToDouble(drawMethodParams[3].DefaultValue), (p, v) => { });
+    public double DisplacementY { get => (double)GetValue(DisplacementYProperty); set => SetValue(DisplacementYProperty, value); }
+    public static readonly XProperty DisplacementYProperty = CreateProperty<BaseView<TPainter, TContent>, double>(nameof(DisplacementY), false, p => Convert.ToDouble(drawMethodParams[4].DefaultValue), (p, v) => { });
+    public double Magnification { get => (double)GetValue(MagnificationProperty); set => SetValue(MagnificationProperty, value); }
+    public static readonly XProperty MagnificationProperty = CreateProperty<BaseView<TPainter, TContent>, double>(nameof(Magnification), false, p => p.Magnification, (p, v) => p.Magnification = (float)v);
     public PaintStyle PaintStyle { get => (PaintStyle)GetValue(PaintStyleProperty); set => SetValue(PaintStyleProperty, value); }
     public static readonly XProperty PaintStyleProperty = CreateProperty<BaseView<TPainter, TContent>, PaintStyle>(nameof(PaintStyle), false, p => p.PaintStyle, (p, v) => p.PaintStyle = v);
     public LineStyle LineStyle { get => (LineStyle)GetValue(LineStyleProperty); set => SetValue(LineStyleProperty, value); }
@@ -220,6 +294,6 @@ namespace CSharpMath.Forms {
     private static readonly ReadOnlyProperty<BaseView<TPainter, TContent>, string?> ErrorMessagePropertyKey = new ReadOnlyProperty<BaseView<TPainter, TContent>, string?>(nameof(ErrorMessage), p => p.ErrorMessage);
     public static readonly XProperty ErrorMessageProperty = ErrorMessagePropertyKey.Property;
   }
-  public class MathView : BaseView<MathPainter, MathList> { }
-  public class TextView : BaseView<TextPainter, Rendering.Text.TextAtom> { }
+  public partial class MathView : BaseView<MathPainter, MathList> { }
+  public partial class TextView : BaseView<TextPainter, Rendering.Text.TextAtom> { }
 }

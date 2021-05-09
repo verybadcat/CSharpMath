@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="MSBuild.Sdk.Extras/2.0.54">
+  <PropertyGroup>
+    <TargetFrameworks>xamarinmac20;MonoAndroid10.0;MonoAndroid11.0;xamarinios10;netstandard2.0;uap10.0.17763</TargetFrameworks>
+    <Description>The UWP and Uno Platform front end for CSharpMath using SkiaSharp rendering.</Description>
+    <PackageTags>$(PackageTags) unoplatform uwp wasm</PackageTags>
+    <!-- Ensures the .xr.xml files are generated in a proper layout folder -->
+    <GenerateLibraryLayout>true</GenerateLibraryLayout>
+    <LangVersion>8.0</LangVersion>    
+  </PropertyGroup>
+  <ItemGroup>
+    <Page Include="**\*.xaml" Exclude="bin\**\*.xaml;obj\**\*.xaml" />
+    <Compile Update="**\*.xaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Include="**\*.xaml" Exclude="bin\**\*.xaml;obj\**\*.xaml" />
+  </ItemGroup>
+  <Import Project="..\CSharpMath.Xaml\CSharpMath.Xaml.projitems" Label="Shared" />
+  <ItemGroup>
+    <PackageReference Include="SkiaSharp.Views" Version="2.80.3-preview.40" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CSharpMath.SkiaSharp\CSharpMath.SkiaSharp.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)'=='uap10.0.17763'">
+    <PackageReference Include="SkiaSharp.Views" Version="2.80.3-preview.40" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)'!='uap10.0.17763'">
+    <PackageReference Include="SkiaSharp.Views.Uno" Version="2.80.3-preview.40" />
+    <PackageReference Include="Uno.UI" Version="3.6.0-dev.81" />
+  </ItemGroup>
+</Project>

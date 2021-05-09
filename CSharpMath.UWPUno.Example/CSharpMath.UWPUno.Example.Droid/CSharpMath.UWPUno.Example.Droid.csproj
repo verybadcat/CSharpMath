@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{B7759D42-229D-47CB-96A2-E99DB18AA316}</ProjectGuid>
+    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CSharpMath.UWPUno.Example.Droid</RootNamespace>
+    <AssemblyName>CSharpMath.UWPUno.Example.Droid</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <AndroidApplication>true</AndroidApplication>
+    <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
+    <AndroidUseAapt2>true</AndroidUseAapt2>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <AndroidUseLatestPlatformSdk>False</AndroidUseLatestPlatformSdk>
+    <TargetFrameworkVersion>v11.0</TargetFrameworkVersion>
+    <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
+    <AndroidUseIntermediateDesignerFile>True</AndroidUseIntermediateDesignerFile>
+    <ResourcesDirectory>..\CSharpMath.UWPUno.Example.Shared\Strings</ResourcesDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>portable</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidUseSharedRuntime>True</AndroidUseSharedRuntime>
+    <AndroidLinkMode>None</AndroidLinkMode>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <AndroidManagedSymbols>true</AndroidManagedSymbols>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
+    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
+    <AndroidCreatePackagePerAbi>true</AndroidCreatePackagePerAbi>
+    <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+    <AotAssemblies>true</AotAssemblies>
+    <EnableLLVM>true</EnableLLVM>
+    <AndroidEnableSGenConcurrent>true</AndroidEnableSGenConcurrent>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Mono.Android" />
+    <Reference Include="Mono.Android.Export" />
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Uno.UI" Version="3.6.0-dev.81" />
+    <PackageReference Include="Uno.UI.RemoteControl" Version="3.6.0-dev.81" Condition="'$(Configuration)'=='Debug'" />
+    <PackageReference Include="Uno.UniversalImageLoader" Version="1.9.33" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Filter" Version="1.1.1" />
+    <PackageReference Include="Validation">
+      <Version>2.4.22</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="MainActivity.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Main.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\Fonts\uno-fluentui-assets.ttf" />
+    <None Include="Resources\AboutResources.txt" />
+    <None Include="Assets\AboutAssets.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\values\Strings.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\Icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\AndroidManifest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\values\Styles.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\CSharpMath.Editor\CSharpMath.Editor.csproj">
+      <Project>{38f58489-ede4-4289-8acf-a9756977a7a6}</Project>
+      <Name>CSharpMath.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\CSharpMath.Rendering\CSharpMath.Rendering.csproj">
+      <Project>{65016a61-2125-4e0c-90e8-a915230c7826}</Project>
+      <Name>CSharpMath.Rendering</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\CSharpMath.SkiaSharp\CSharpMath.SkiaSharp.csproj">
+      <Project>{35b4bb5b-2202-436e-9afe-00997ca2cc65}</Project>
+      <Name>CSharpMath.SkiaSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\CSharpMath.UWPUno\CSharpMath.UWPUno.csproj">
+      <Project>{5c46ca75-fa31-4281-80eb-a07750e1fecb}</Project>
+      <Name>CSharpMath.UWPUno</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\CSharpMath\CSharpMath.csproj">
+      <Project>{5157367b-f03e-4acb-83a1-0de414a3bfca}</Project>
+      <Name>CSharpMath</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="..\CSharpMath.UWPUno.Example.Shared\CSharpMath.UWPUno.Example.Shared.projitems" Label="Shared" Condition="Exists('..\CSharpMath.UWPUno.Example.Shared\CSharpMath.UWPUno.Example.Shared.projitems')" />
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
+  <!-- This will force the generation of the APK when not building inside visual studio -->
+  <Target Name="GenerateBuild" DependsOnTargets="SignAndroidPackage" AfterTargets="Build" Condition="'$(BuildingInsideVisualStudio)'==''" />
+  <Target Name="Issue3897Workaround" Condition=" '$(ManagedDesignTimeBuild)' == 'True' " AfterTargets="_RemoveLegacyDesigner">
+    <!-- See https://github.com/unoplatform/uno/issues/3897 and https://github.com/xamarin/xamarin-android/issues/5069 for more details -->
+    <ItemGroup>
+      <Compile Remove="$(_AndroidResourceDesignerFile)" />
+    </ItemGroup>
+  </Target>
+</Project>

@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <NoWarn>NU1701</NoWarn>
+    <WasmShellILLinkerEnabled>true</WasmShellILLinkerEnabled>
+    <WasmShellForceDisableWSL Condition="'$(OS)' != 'Unix' and ('$(CI)' == 'true' or '$(BUILD_BUILDID)' != '')">true</WasmShellForceDisableWSL>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <MonoRuntimeDebuggerEnabled>true</MonoRuntimeDebuggerEnabled>
+    <DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <WasmShellMonoRuntimeExecutionMode>Interpreter</WasmShellMonoRuntimeExecutionMode>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <WasmShellMonoRuntimeExecutionMode>FullAOT</WasmShellMonoRuntimeExecutionMode>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="Assets\SplashScreen.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Include="..\CSharpMath.UWPUno.Example.Shared\**\*.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="WasmCSS\Fonts.css" />
+    <EmbeddedResource Include="WasmScripts\AppManifest.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <LinkerDescriptor Include="LinkerConfig.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <!--
+    This item group is required by the project template because of the
+    new SDK-Style project, otherwise some files are not added automatically.
+
+    You can safely remove this ItemGroup completely.
+    -->
+    <None Include="Program.cs" />
+    <None Include="LinkerConfig.xml" />
+    <None Include="wwwroot\web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Note that for WebAssembly version 1.1.1 of the console logger required -->
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Filter" Version="1.1.1" />
+    <PackageReference Include="SkiaSharp.Views.Uno" Version="2.80.3-preview.40" />
+    <PackageReference Include="Uno.UI.WebAssembly" Version="3.6.0-dev.81" />
+    <PackageReference Include="Uno.UI.RemoteControl" Version="3.6.0-dev.81" Condition="'$(Configuration)'=='Debug'" />
+    <PackageReference Include="Uno.Wasm.Bootstrap" Version="2.0.0-dev.165" />
+    <PackageReference Include="Uno.Wasm.Bootstrap.DevServer" Version="2.0.0-dev.165" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\CSharpMath.UWPUno\CSharpMath.UWPUno.csproj" />
+  </ItemGroup>
+  <Import Project="..\CSharpMath.UWPUno.Example.Shared\CSharpMath.UWPUno.Example.Shared.projitems" Label="Shared" Condition="Exists('..\CSharpMath.UWPUno.Example.Shared\CSharpMath.UWPUno.Example.Shared.projitems')" />
+</Project>

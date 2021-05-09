@@ -9,15 +9,15 @@ namespace CSharpMath.Rendering.FrontEnd {
     TColor TextColor { get; set; }
     TColor ErrorColor { get; set; }
     ///<summary>Unit of measure: points; Defaults to <see cref="FontSize"/>.</summary>
-    float? ErrorFontSize { get; set; }
+    double ErrorFontSize { get; set; }
     bool DisplayErrorInline { get; set; }
     PaintStyle PaintStyle { get; set; }
-    float Magnification { get; set; }
+    double Magnification { get; set; }
     string? ErrorMessage { get; }
     #endregion Non-display-recreating properties
     #region Display-recreating properties
     /// <summary>Unit of measure: points</summary>
-    float FontSize { get; set; }
+    double FontSize { get; set; }
     System.Collections.Generic.IEnumerable<Typeface> LocalTypefaces { get; set; }
     Atom.LineStyle LineStyle { get; set; }
     TContent? Content { get; set; }
