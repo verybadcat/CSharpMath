@@ -9,6 +9,7 @@ namespace CSharpMath.Forms {
     where TView : BaseView<TPainter, TContent>
     where TPainter : Rendering.FrontEnd.Painter<SKCanvas, TContent, SKColor>, new()
     where TContent : class {
+    private readonly object lockObj = new object();
     public BaseButton() {
       Aspect = DefaultButtonStyle.AspectFit;
       BackgroundColor = DefaultButtonStyle.TransparentBackground;
@@ -16,23 +17,25 @@ namespace CSharpMath.Forms {
     }
     public virtual void ButtonDraw() => Source = ImageSource.FromStream(() => {
       if (Content is { } c) {
-        var painter = c.Painter;
-        var originalLatexString = painter.LaTeX;
+        lock (lockObj) {
+          var painter = c.Painter;
+          var originalLatexString = painter.LaTeX;
 
-        if (painter.FontSize is Rendering.FrontEnd.PainterConstants.DefaultFontSize)
-          painter.FontSize = Rendering.FrontEnd.PainterConstants.LargerFontSize;
+          if (painter.FontSize is Rendering.FrontEnd.PainterConstants.DefaultFontSize)
+            painter.FontSize = Rendering.FrontEnd.PainterConstants.LargerFontSize;
 
-        if (TextColor != Color.Black && painter.LaTeX != null)
-          painter.LaTeX = LatexHelper.SetColor(painter.LaTeX, TextColor);
+          if (TextColor != Color.Black && painter.LaTeX != null)
+            painter.LaTeX = LatexHelper.SetColor(painter.LaTeX, TextColor);
 
-        // Appropriate positioning for non-full characters, e.g. prime, degree
-        // Also acts as spacing between MathButtons next to each other
-        // TODO: Implement and use \phantom
-        painter.LaTeX = LatexHelper.phantom + painter.LaTeX + LatexHelper.phantom;
+          // Appropriate positioning for non-full characters, e.g. prime, degree
+          // Also acts as spacing between MathButtons next to each other
+          // TODO: Implement and use \phantom
+          painter.LaTeX = LatexHelper.phantom + painter.LaTeX + LatexHelper.phantom;
 
-        var stream = painter.DrawAsStream();
-        painter.LaTeX = originalLatexString;
-        return stream;
+          var stream = painter.DrawAsStream();
+          painter.LaTeX = originalLatexString;
+          return stream;
+        }
       }
       return null;
     });
