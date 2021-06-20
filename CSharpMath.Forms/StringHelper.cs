@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CSharpMath.Forms {
   internal static class StringHelper {
@@ -11,6 +9,8 @@ namespace CSharpMath.Forms {
       int index = replacementOption == ReplacementOption.First ? source.IndexOf(subString) : source.LastIndexOf(subString);
       return index == -1 ? source : source.Remove(index, subString.Length).Insert(index, replacement);
     }
+    internal static int SubStringCount(this string text, string substring) =>
+      text.Split(new[] { substring }, StringSplitOptions.None).Length - 1;
   }
 }
 

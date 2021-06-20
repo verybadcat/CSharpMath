@@ -1,6 +1,5 @@
 using Xamarin.Forms;
 namespace CSharpMath.Forms {
-  using System.Text.RegularExpressions;
   using CSharpMath.Atom;
   using Editor;
   using Rendering.FrontEnd;
@@ -45,7 +44,7 @@ namespace CSharpMath.Forms {
             if (Input == MathKeyboardInput.Power || Input == MathKeyboardInput.Subscript) {
               latex = latex.ReplaceFirstOccurrence(restingNucleus, coloredPlaceholderRestingNucleus);
               latex = latex.ReplaceLastOccurrence(LaTeXSettings.PlaceholderActiveNucleus, coloredPlaceholderActiveNucleus);
-            } else if (LaTeXSettings.PlaceholderRestingNucleus == LaTeXSettings.PlaceholderActiveNucleus && Regex.Matches(latex, LaTeXSettings.PlaceholderActiveNucleus).Count > 1
+            } else if (LaTeXSettings.PlaceholderRestingNucleus == LaTeXSettings.PlaceholderActiveNucleus && latex.SubStringCount(LaTeXSettings.PlaceholderActiveNucleus) > 1
                 || restingNucleus != LaTeXSettings.PlaceholderActiveNucleus && latex.Contains(restingNucleus) && latex.Contains(LaTeXSettings.PlaceholderActiveNucleus)) {
               latex = latex.ReplaceFirstOccurrence(LaTeXSettings.PlaceholderActiveNucleus, coloredPlaceholderActiveNucleus);
               latex = latex.ReplaceLastOccurrence(restingNucleus, coloredPlaceholderRestingNucleus);
