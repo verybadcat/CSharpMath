@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1620231091135,
+  "lastUpdate": 1624293079095,
   "repoUrl": "https://github.com/verybadcat/CSharpMath",
   "entries": {
     "CSharpMath.Rendering.Benchmarks": [
@@ -2070,6 +2070,96 @@ window.BENCHMARK_DATA = {
             "value": 6089350,
             "unit": "ns",
             "range": "± 139185.8186212344"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "32139898+SymboLinker@users.noreply.github.com",
+            "name": "SymboLinker",
+            "username": "SymboLinker"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "23e681bef834307937899a5edf8ce7d83f2174a1",
+          "message": "Add TextColor property to BaseButton and make MathInputButton's color customizable (#164)\n\n* Add TextColor property to BaseButton and make MathInputButton's color customizable\r\n\r\nThe main goal of this commit is to make keyboard colors customizable (per keyboard key) to fit an app's color theme(s). For example, a dark keyboard background with light button texts.\r\n\r\nCSharpMath.Forms:\r\n- Refactor BaseButton's constructor.\r\n- Add TextColor property to BaseButton and a bindable TextColorProperty.\r\n- Remove the predefined Red color from MathInputButton.InputToLaTeX(input) for \"Backspace\" and \"Clear\".\r\n\r\nCSharpMath.Forms.Example (MathKeyboard.xaml):\r\n- Use the TextColorProperty in the Style of \"Backspace\" and \"Clear\", setting it to Red.\r\n\r\n* Add a few ButtonTests and refactor out use-once functions from BaseButton\r\n\r\nNotes:\r\n- I guessed that CSharpMath.Forms needs a Test project of its own.\r\n- It seems to deviate from the current coding style to have such a class, but I needed to make sure that the unit test MathInputButtonsHaveBackTextColorByDefault could detect the \"phantom\" and thus I added a static class LatexHelper that contains the temporary implementation of a \"fake\" vphantom. I also added the method SetColor(latex,Xamarin.Forms.Color).\r\n\r\n* Fix typo in unit test name MathInputButtonsHaveBlackTextColorByDefault\r\n\r\n* ButtonTests: use [ClassData] attribute, use NotNull<T>() extension, include in slnf\r\n\r\n- Instead of IEnumerable<MathInputButton> TheMathInputButtons, use the [ClassData] attribute, introducing TestHelper.ComplexClassData<T> that can pass classes instead of ValueType data.\r\n- Instead of using the ! (null-forgiving) operator, introduce and use NotNull<T>() extension that throws a Xunit.Sdk.NotNullException if the object is null and otherwise returns the not-null object. (Note: the namespace deviates from the folder structure, so that it is available everywhere in the test project without the need to add a using statement.)\r\n- Improve logic in Assert of AllMathInputButtonsHaveLatexContent.\r\n- Add CSharpMath.Forms.Tests to CSharpMath.CrossPlatform.slnf.\r\n\r\nMaybe the newly created classes can be used in other parts of the solution as well, but I don't feel comfortable deciding that. Most of the code is very compact and adding classes feels like ignoring that coding style. Also, I am not very confident that those classes I have created meet the expected standards. I therefore put them \"close to where they are used\".\r\n\r\n* Update CSharpMath.CrossPlatform.slnf (suggested commit))\r\n\r\nCo-authored-by: Hadrian Tang <hadrianwttang@outlook.com>\r\n\r\n* ButtonTests: use the [MemberData] attribute and MathKeyboardInput enum for individual testcases + do some cleaning\r\n\r\n- NotNull.cs: remove pragma directives and unused namespace usings.\r\n- Rename LatexHelper's vphantom to phantom, as the intention is to also add a tiny bit of horizontal spacing.\r\n- ButtonTests: use the [MemberData] attribute and remove TestHelpers.ComplexClassData. Use the MathKeyboardInput enum as method parameter type, since only xunit-serializable types will result in individual test cases.\r\n- Remove unused linked file from CSharpMath.Forms.Tests.csproj.\r\n- Restore deleted space from commit 4a56307e6016557490be83ac248e8bef0baed276, and remove another white line. (I committed the suggestion to see its result: I didn't understand why the space character seemed to be removed at the start of the line and I thought it had something to do with my Visual Studio settings. Now I know that the suggested change was removing the white line and that the removed space character was not the intention.)\r\n\r\n* Rename and move file from TestHelpers/NotNull.cs to /Extensions.cs\r\n\r\n* Add ButtonBase.TextColorProperty Xaml Tests to CSharpMath.Forms.Tests\r\n\r\nNotes:\r\n- I changed the namespace of Extensions.NotNull and made the class partial, so that it can be linked from any test project.\r\n- I am still in doubt about what is the right folder/project structure for the tests.\r\n\r\nLong description of this last comment:\r\n-- The name Xaml refers to the markup language and if code behind stuff should be included in that project, then maybe \"UI\" is a better name than \"Xaml\".\r\n-- The class names are very broad: for example, \"Test\" seems to say that that is the main file that should include all tests. But that is set up only for tests that are shared between Avalonia and Xamarin.Froms. When thinking about creating a file that is for testing Xamarin.Forms only, I bump into the fact that one file is called TestXamarinForms.cs but that file has a completely different purpose than being the container for unit tests.\r\n-- Postponing the decision to restructure - or actually awaiting to hear your preferences - I used external links. I wouldn't mind making the change or even thinking up a new the structure, but without that request I won't do that of course (as a newbie/guest to the project).\r\n\r\n* Add MathInputButton_Command unit test and do the suggested cleaning\r\n\r\n- Add MathInputButton_Command unit test.\r\n- The global XML Namespace is only needed for the outermost node.\r\n- Move a refactored NotNullExtension into ButtonTests.cs.\r\n\r\n* MathInputButton_Command test: use the MathInputButton's Keyboard getter\r\n\r\n* MathInputButton_Command test: no variable is needed anymore for the MathKeyboard instance\r\n\r\n* Revert \"MathInputButton_Command test: no variable is needed anymore for the MathKeyboard instance\"\r\n\r\nThis reverts commit 132e19f7373ffaf8dc1d2cb9181a6de80862823e.\r\n\r\n* Revert \"MathInputButton_Command test: use the MathInputButton's Keyboard getter\"\r\n\r\nThis reverts commit fe0f460c35e1dbca1010f926a71851af7cf923a9.\r\n\r\n* Add MathButton unit tests that check that the image color is correctly set in the StreamImageSource\r\n\r\nProbably needless to say: if ever the font changes, new images can created by adding the following method temporarily to the unit test and copying the result into the test project's \"files/buttons\" folder:\r\nstatic void StreamToFile(Stream s, FileInfo f) { using (var fs = f.Create()) { s.CopyTo(fs); }}\r\n\r\n* Attempt/test 1: also reference SkiaSharp from the CSharpMath.Forms.csproj\r\n\r\n* Attempt/test 2: also reference SkiaSharp from CSharpMath.Forms.Test.csproj\r\n\r\n* Attempt/test 3: Reference SkiaSharp & SkiaSharp.Views.Forms from test project (note: my previous commit message stated that I included SkiaSharp, but it was SkiaSharp.Views.Forms)\r\n\r\n* Revert \"Attempt/test 3: Reference SkiaSharp & SkiaSharp.Views.Forms from test project (note: my previous commit message stated that I included SkiaSharp, but it was SkiaSharp.Views.Forms)\"\r\n\r\nThis reverts commit b43a974101bda9dba077f6129ac1270ad77e8491.\r\n\r\n* Revert \"Attempt/test 2: also reference SkiaSharp from CSharpMath.Forms.Test.csproj\"\r\n\r\nThis reverts commit 350fc9b67a6169825d94204d97a98f03576cd62f.\r\n\r\n* Revert \"Attempt/test 1: also reference SkiaSharp from the CSharpMath.Forms.csproj\"\r\n\r\nThis reverts commit 8c486ddd3f207e3a4d26446ebbe9d328cb048d9e.\r\n\r\n* Update SkiaSharp and SkiaSharp.View.Forms to 2.80.2 in all referencing projects\r\n\r\nIntroduces unwanted side effects:\r\n- Warning NU1605 Detected package downgrade: Xamarin.Forms from 4.6.0.772 to 4.3.0.908675.\r\n- A reference to a dll from CSharpMath.Forms.Tests, because somehow referencing the NuGet package wasn't enough. This seems to be a known bug: https://github.com/mono/SkiaSharp/issues/1393.\r\n\r\n* Add libSkiaSharp.dll to test project CSharpMath.Forms.Tests\r\n\r\nTrying out a variation of workaround 3 from:\r\nhttps://github.com/mono/SkiaSharp/issues/1041#issuecomment-576400773\r\n\r\n* Revert \"Add libSkiaSharp.dll to test project CSharpMath.Forms.Tests\"\r\n\r\nThis reverts commit 593d677652a4d3d2bd723f3532fc222faa0bcc9d.\r\n\r\n* Revert \"Update SkiaSharp and SkiaSharp.View.Forms to 2.80.2 in all referencing projects\"\r\n\r\nThis reverts commit 31cc12ac242e79f6663efa5d373f5757747b1586.\r\n\r\n* Customize buttons for MathKeyboardInput even more\r\n\r\n- Make the button display Latex related to the enum values of MathKeyboardInput overridable. (Not the math that may be displayed after pressing the button, but only the appearance of the button itself.)\r\n- Use a TextButton as a base class for MathInputButton. Then you have more options than when using a MathButton. (See the Example project, MyMathInputButton.cs where just the text \"space\" is used.)\r\n- Add another button type related to MathKeyboardInput (but unrelated to LaTeX): ImageSourceMathInputButton. This may help people be creative. (See the Example project, the Clear button now appears as a flame: Controls/ImageSourceMathInputButtons/flame.png.)\r\n- Add a unit tests:\r\n--- ImageSourceMathInputButton_InputProperty_KeyboardProperty_and_Command\r\n--- MathInputButton_KeyboardProperty\r\n\r\n* Make blinking Placeholder's Nucleus and ForeColor customizable in both CaretStates (#167)\r\n\r\n* Make blinking Placeholder's Nucleus and ForeColor customizable in both CaretStates\r\n\r\n* Renaming of Placeholder-related variables + refactor (#167)\r\n\r\n- Rename Placholder's \"ForeColor\" to \"Color\".\r\n- Use property initializer GlyphInfo.Foreground.\r\n- Restore \"readonly field\" instead of property getter for LaTeXSettings.Dummy.\r\n- Use the name parts \"Resting\" and \"Active\" in the placeholder setting names (instead of \"Hiding\" and \"FullShow\" which are related to the caret but do not fit a blinking placeholder).\r\n- Use variable name \"placeholder\" instead of \"ph\".\r\n\r\n* Add unit tests for customizable placeholder (#167)\r\n\r\n* Disable parallelization of customizable placeholder unit tests\r\n\r\nAlso: verify more in LaTeXSettings_Placeholder_IsNewInstance.\r\n\r\n* Add unit test AllCustomizablePlaceholderPropertiesAreResetOnCaretVisible (#167)\r\n\r\nAlso: in the MockTests class, verify that AttributedGlyphRun sets the GlyphInfo.Foreground to null (default color).\r\n\r\n* Unit test CustomizedPlaceholderBlinks: test complete cycle\r\n\r\n* Fix failing unit test CaretTimerResetsOnKeyPress\r\n\r\n* Use Assert.All instead of Assert.True(enumerable.All(pred))\r\n\r\n* Revert \"Fix failing unit test CaretTimerResetsOnKeyPress\"\r\n\r\nThis reverts commit 9925952a078e0bc21cee91d1d372d3b0259d699f.\r\n\r\n* Replace Assert.NotEqual + replace hardcoded strings by constants\r\n\r\n* Refactoring and cleaning (of customizable placeholder tests and more)\r\n\r\n* Placeholder tests: use Assert.NotSame and async Task\r\n\r\n* MathInputButtons with customized placeholders: what you see is what you get in the output\r\n\r\nIn case MathInputButtons have the same TextColor as the output, the placeholders can be customized by only setting one or more of the LaTeXSetting properties PlaceholderActiveNucleus, PlaceholderRestingNucleus, PlaceholderActiveColor, PlaceholderRestingColor.\r\nIn case of different keyboard colors than output colors then the MathInputButton properties PlaceholderActiveColor and/or PlaceholderRestingColor can be used to override the LaTeXSettings. Those two properties use a weird hack: BindableProperties cannot have nullable value types it seems. Nobody will ever use a transparent placeholder, so that is save to use as a replacement for null. The color black should be available, in case the TextColor is not black.\r\n\r\nThis commit reverts the adding of MyMathInputButton of commit 94ebda211b7905c4651d2ede4f0b2b3eab9e61fd.\r\n\r\nThe Example project's Editor tab is updated to have a \"Change appearance\" button on the EditorPage that does a round trip through 3 themes that show different Clear buttons, different colors on the keyboard keys and output, different placeholders on the keyboard and in the output.\r\n\r\nA large number of testcases has been added. It does not cover everything however.\r\nThe PlaceholderColorsProperties_MathInputButton expects a weird LaTeX string (you see \"{}\" at index 24):\r\n@\"\\(\\color{blue}{\\square }{}^{\\color{green}{■}}\\)\"\r\n\r\n* Correct comment\r\n\r\n* MathInputButton: only perform the placeholder color logic if defaults are overridden + refactor\r\n\r\n- At ButtonDraw: only perform the placeholder color logic if the placeholder properties (of LaTeXSettings or of MathInputButton) are not the default values (null).\r\n- Introduce NullableColorBindablePropertyHelper for nullable color workaround.\r\n\r\n* Comment out 2 ButtonTests that have Linux failures\r\n\r\n* Use FactAttribute.Skip\r\n\r\n* Delete NullableColorBindablePropertyHelper (I am afraid I did not try the right things before - it just works)\r\n\r\n* Revert \"Delete NullableColorBindablePropertyHelper (I am afraid I did not try the right things before - it just works)\"\r\n\r\nThis reverts commit da8b2913582546a21ecf8256c928e580095bc963.\r\n\r\n* Use \"foreach\" instead of Xamarin.Forms.Internals.ForEach\r\n\r\n* First call SetButtonsTextColor and then SetClearButtonImageSource\r\n\r\n* Update CSharpMath.Forms.Example/CSharpMath.Forms.Example/Controls/MathKeyboard.xaml.cs\r\n\r\nCo-authored-by: FoggyFinder <FoggyFinder@yandex.ua>\r\n\r\n* Add unit tests MathButtonTextColorCanChangeMultipleTimes and MathInputButtonTextColorCanChangeMultipleTimes\r\n\r\nAlso:\r\n- Skip only on Linux via \"FactSkipLinux(reason)\" instead of a general Fact(Skip = reason).\r\n- Move some helper methods into a separate file ButtonTestsHelper.cs.\r\n- Rename png used in unit tests, using more specific names.\r\n\r\n* Introduce interface IButtonDraw for bindablePropertyChanged\r\n\r\n- Move ButtonDraw from TextColor setter to TextColorProperty's propertyChanged event.\r\n- If calling ButtonDraw after casting to a base class, the subclass' override of ButtonDraw() is not executed, but via the IButtonDraw interface it is.\r\n- Move NullableColorBindablePropertyHelper to its own file.\r\n- ButtonTestsHelper refactor: extract method imageButton.ImageSourceAsStream().\r\n\r\nExample project:\r\n- use PlaceholderBlinks setting in the thrid theme.\r\n- call ButtonDraw during each theme change (this is officially only needed for going from theme 1 to theme 2, but may also fix a not-understood bug).\r\n\r\n* Shut CSharpMath.Ios.Tests\r\n\r\n* add lock for now\r\n\r\n* Create and use method SubStringCount() instead of Regex.Matches().Count\r\n\r\n* Customized placeholder colors: add unit test\r\n\r\nCo-authored-by: Hadrian Tang <hadrianwttang@outlook.com>\r\nCo-authored-by: FoggyFinder <FoggyFinder@yandex.ua>",
+          "timestamp": "2021-06-21T19:25:11+03:00",
+          "tree_id": "9e769026d3e88317805801822dcf9f09820f98ff",
+          "url": "https://github.com/verybadcat/CSharpMath/commit/23e681bef834307937899a5edf8ce7d83f2174a1"
+        },
+        "date": 1624293073841,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.AllConstantValues",
+            "value": 689838773.3333334,
+            "unit": "ns",
+            "range": "± 2075838.3536939158"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cases\")",
+            "value": 4313658.333333333,
+            "unit": "ns",
+            "range": "± 22779.55456238348"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Color\")",
+            "value": 1449068.975360577,
+            "unit": "ns",
+            "range": "± 5742.709279460926"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Commands\")",
+            "value": 515156.50390625,
+            "unit": "ns",
+            "range": "± 1974.3747552024445"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cyrillic\")",
+            "value": 4220132.421875,
+            "unit": "ns",
+            "range": "± 93077.49894094332"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"ErrorMissingArgument\")",
+            "value": 2332399.158653846,
+            "unit": "ns",
+            "range": "± 9792.676711578095"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Matrix\")",
+            "value": 2738984.6153846155,
+            "unit": "ns",
+            "range": "± 21012.5694983521"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuadraticFormula\")",
+            "value": 915472.3271122685,
+            "unit": "ns",
+            "range": "± 25158.804711856992"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuarticSolutions\")",
+            "value": 157822010.25641027,
+            "unit": "ns",
+            "range": "± 5437082.347991375"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"TangentPeriodShift\")",
+            "value": 1111082.9817708333,
+            "unit": "ns",
+            "range": "± 5344.908274247087"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"VectorProjection\")",
+            "value": 4998828.571428572,
+            "unit": "ns",
+            "range": "± 16585.69488219516"
           }
         ]
       }
