@@ -1,4 +1,7 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using CSharpMath.SkiaSharp;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using Xamarin.Forms;
@@ -13,14 +16,13 @@ namespace CSharpMath.Forms.Example {
     }
   }
   public class EditorView : ContentView {
+    public MathPainter OutputMathPainter = new MathPainter { TextColor = SKColors.Black };
+    MathKeyboard keyboard = new MathKeyboard(Rendering.FrontEnd.PainterConstants.LargerFontSize);
     public EditorView() {
       // Basic functionality
       var view = new SKCanvasView { HeightRequest = 225 };
-      var keyboard = new MathKeyboard(Rendering.FrontEnd.PainterConstants.LargerFontSize);
       var viewModel = keyboard.Keyboard;
-      viewModel.BindDisplay(view, new SkiaSharp.MathPainter {
-        TextColor = SKColors.Black
-      }, new SKColor(0, 0, 0, 153));
+      viewModel.BindDisplay(view, OutputMathPainter, new SKColor(0, 0, 0, 153));
 
       // Input from physical keyboard
       var entry = new Entry {
@@ -84,6 +86,7 @@ namespace CSharpMath.Forms.Example {
               new StackLayout {
                 Orientation = StackOrientation.Horizontal,
                 Children = {
+                  new Button { Text = "Change appearance", Command = new Command(ChangeAppearance) },
                   entry,
                   new Button {
                     Text = "Reset answer pan",
@@ -96,5 +99,44 @@ namespace CSharpMath.Forms.Example {
         }
       };
     }
+    int CurrentThemeIndex = 0;
+    public void ChangeAppearance() {
+      CurrentThemeIndex = (CurrentThemeIndex + 1) % Themes.Count;
+      Themes[CurrentThemeIndex].Invoke();
+      keyboard.Keyboard.InsertionIndex = keyboard.Keyboard.InsertionIndex; // Hack to redraw placeholders in the output.
+    }
+    IList<Action> Themes => new Action[] {
+      () => { // This theme is the default. For a round-trip through the themes we need to set them again:
+        OutputMathPainter.TextColor = SKColors.Black;
+        Atom.LaTeXSettings.PlaceholderBlinks = false;
+        Atom.LaTeXSettings.PlaceholderActiveColor = null;
+        Atom.LaTeXSettings.PlaceholderRestingColor = null;
+        Atom.LaTeXSettings.PlaceholderActiveNucleus = "■";
+        Atom.LaTeXSettings.PlaceholderRestingNucleus = "□";
+        keyboard.SetButtonsTextColor(Color.Black);
+        keyboard.SetClearButtonImageSource("Controls/ImageSourceMathInputButtons/recyclebin.png");
+      },
+      () => {
+        UseMyCustomizedPlaceholderAppearance();
+        keyboard.SetButtonsTextColor(Color.Black); // Placeholder appearance on the keys is the same as in the output by default.
+        keyboard.SetClearButtonImageSource("Controls/ImageSourceMathInputButtons/metaltrashcan.png");
+      },
+      () => {
+        Atom.LaTeXSettings.PlaceholderBlinks = true;
+        OutputMathPainter.TextColor = SKColors.DarkGreen;
+        UseMyCustomizedPlaceholderAppearance();
+        // If you'd like to use different keyboard colors than output colors and you specified a placeholder color,
+        // probably you'll not want to use the same placeholder color on the keyboard:
+        keyboard.SetButtonsTextColor(Color.Brown, CalculateMyPlaceholderRestingColorFromSurroundingTextColor(Color.Brown));
+        keyboard.SetClearButtonImageSource("Controls/ImageSourceMathInputButtons/flame.png");
+      }
+    };
+
+    public void UseMyCustomizedPlaceholderAppearance() {
+      // You could also customize the "Active" placeholder nucleus and color, but for this example we don't.
+      Atom.LaTeXSettings.PlaceholderRestingNucleus = "■";
+      Atom.LaTeXSettings.PlaceholderRestingColor = CalculateMyPlaceholderRestingColorFromSurroundingTextColor(OutputMathPainter.TextColor.ToFormsColor());
+    }
+    public static Color CalculateMyPlaceholderRestingColorFromSurroundingTextColor(Color textColor) => textColor.WithLuminosity(textColor.Luminosity > 0.5 ? 0.2 : 0.8);
   }
 }

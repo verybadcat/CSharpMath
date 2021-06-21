@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:r="clr-namespace:CSharpMath.Rendering.FrontEnd;assembly=CSharpMath.Rendering"
              xmlns:e="clr-namespace:CSharpMath.Forms.Example"
              xmlns:f="clr-namespace:CSharpMath.Forms;assembly=CSharpMath.Forms"
              x:Class="CSharpMath.Forms.Example.MathKeyboard"
@@ -113,12 +112,14 @@
         <!--Right row of first 3 tabs-->
         <Style TargetType="f:MathInputButton" Class="Back">
             <Setter Property="Input" Value="Backspace"/>
+            <Setter Property="TextColor" Value="Red" />
             <Setter Property="Grid.Column" Value="5"/>
             <Setter Property="Grid.Row" Value="0"/>
             <Setter Property="Keyboard" Value="{StaticResource Keyboard}"/>
         </Style>
-        <Style TargetType="f:MathInputButton" Class="Clear">
+        <Style TargetType="f:ImageSourceMathInputButton" Class="Clear">
             <Setter Property="Input" Value="Clear"/>
+            <Setter Property="Source" Value="Controls/ImageSourceMathInputButtons/recyclebin.png" />
             <Setter Property="Grid.Column" Value="5"/>
             <Setter Property="Grid.Row" Value="1"/>
             <Setter Property="Keyboard" Value="{StaticResource Keyboard}"/>
@@ -155,7 +156,7 @@
                 <ColumnDefinition Width="*"/>
             </ColumnDefinitionCollection>
         </Grid.ColumnDefinitions>
-        <f:MathInputButton Input="Left" Grid.Column="0" Keyboard="{StaticResource Keyboard}"/>
+        <f:MathInputButton x:Name="LeftButton" Input="Left" Grid.Column="0" Keyboard="{StaticResource Keyboard}"/>
         <f:MathButton x:Name="NumbersButton" Grid.Column="1" Command="{e:SwitchToTab Self={Reference this}, Target=Numbers}">
             <f:MathView LaTeX="123"/>
         </f:MathButton>
@@ -181,7 +182,7 @@
             <f:MathInputButton Input="Equals" Grid.Row="3" Grid.Column="3" Keyboard="{StaticResource Keyboard}"/>
             <f:MathInputButton Input="Plus" Grid.Row="3" Grid.Column="4" Keyboard="{StaticResource Keyboard}"/>
             <f:MathInputButton StyleClass="Back"/>
-            <f:MathInputButton StyleClass="Clear"/>
+            <f:ImageSourceMathInputButton StyleClass="Clear"/>
             <f:MathInputButton StyleClass="Dismiss"/>
             <f:MathInputButton StyleClass="Enter"/>
         </Grid>
@@ -210,7 +211,7 @@
             <f:MathInputButton Input="Ratio" Grid.Row="3" Grid.Column="3" Keyboard="{StaticResource Keyboard}"/>
             <f:MathInputButton Input="Comma" Grid.Row="3" Grid.Column="4" Keyboard="{StaticResource Keyboard}"/>
             <f:MathInputButton StyleClass="Back"/>
-            <f:MathInputButton StyleClass="Clear"/>
+            <f:ImageSourceMathInputButton StyleClass="Clear"/>
             <f:MathInputButton StyleClass="Dismiss"/>
             <f:MathInputButton StyleClass="Enter"/>
         </Grid>
@@ -239,7 +240,7 @@
             <f:MathInputButton Input="NthRoot" Grid.Row="3" Grid.Column="3" Keyboard="{StaticResource Keyboard}"/>
             <f:MathInputButton Input="Degree" Grid.Row="3" Grid.Column="4" Keyboard="{StaticResource Keyboard}"/>
             <f:MathInputButton StyleClass="Back"/>
-            <f:MathInputButton StyleClass="Clear"/>
+            <f:ImageSourceMathInputButton StyleClass="Clear"/>
             <f:MathInputButton StyleClass="Dismiss"/>
             <f:MathInputButton StyleClass="Enter"/>
         </Grid>
@@ -268,7 +269,7 @@
             <f:MathInputButton Input="Up" Grid.Row="3" Grid.Column="3" Keyboard="{StaticResource Keyboard}"/>
             <f:MathInputButton Input="Up" Grid.Row="3" Grid.Column="4" Keyboard="{StaticResource Keyboard}"/>
             <f:MathInputButton StyleClass="Back"/>
-            <f:MathInputButton StyleClass="Clear"/>
+            <f:ImageSourceMathInputButton StyleClass="Clear"/>
             <f:MathInputButton StyleClass="Dismiss"/>
             <f:MathInputButton StyleClass="Enter"/>
         </Grid>
@@ -349,10 +350,10 @@
             <f:MathButton Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Command="{e:SwitchToTab Self={Reference this}, Target=Letters}" x:Name="ShiftCapitalsButton">
                 <f:MathView LaTeX="⇧"/>
             </f:MathButton>
-            <f:MathInputButton StyleClass="Clear" Grid.Row="2" Grid.Column="17" Grid.ColumnSpan="3"/>
+            <f:ImageSourceMathInputButton StyleClass="Clear" Grid.Row="2" Grid.Column="17" Grid.ColumnSpan="3"/>
             <f:MathInputButton StyleClass="Dismiss" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="5"/>
             <f:MathInputButton StyleClass="Enter" Grid.Row="3" Grid.Column="15" Grid.RowSpan="1" Grid.ColumnSpan="5"/>
         </Grid>
-        <f:MathInputButton Input="Right" Grid.Column="6" Keyboard="{StaticResource Keyboard}"/>
+        <f:MathInputButton x:Name="RightButton" Input="Right" Grid.Column="6" Keyboard="{StaticResource Keyboard}"/>
     </Grid>
 </ContentView>

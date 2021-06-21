@@ -1,5 +1,8 @@
 using System;
+using System.Linq;
+using CSharpMath.Editor;
 using Xamarin.Forms;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
 
 namespace CSharpMath.Forms.Example {
@@ -20,12 +23,8 @@ namespace CSharpMath.Forms.Example {
     public Tab CurrentTab {
       get => _tab;
       set {
-        foreach (var grid in new[] {
-          Numbers, Symbols, Functions, Operations, Letters, LettersCapitals
-        }) grid.IsVisible = false;
-        foreach (var gridButton in new[] {
-          NumbersButton, SymbolsButton, FunctionsButton, OperationsButton, LettersButton
-        }) gridButton.BackgroundColor = Color.Transparent;
+        foreach (var buttonGrid in ButtonGrids) buttonGrid.IsVisible = false;
+        foreach (var tabButton in TabButtons) tabButton.BackgroundColor = Color.Transparent;
         var (selectedGrid, selectedGridButton) =
           value switch {
             Tab.Numbers => (Numbers, NumbersButton),
@@ -43,6 +42,27 @@ namespace CSharpMath.Forms.Example {
         _tab = value;
       }
     }
+    public void SetButtonsTextColor(Color color, Color? placeholderRestingColor = null, Color? placeholderActiveColor = null) {
+      foreach (var button in new MathButton[] { ShiftButton, ShiftCapitalsButton }.Concat(TabButtons))
+        button.TextColor = color;
+      foreach (var button in new[] { LeftButton, RightButton}
+                            .Concat(ButtonGrids.SelectMany(grid => grid.Children)
+                            .Where(child => child is MathInputButton button && button.Input != MathKeyboardInput.Backspace)
+                            .Cast<MathInputButton>())) {
+        button.TextColor = color;
+        button.PlaceholderRestingColor = placeholderRestingColor;
+        button.PlaceholderActiveColor = placeholderActiveColor;
+        button.ButtonDraw(/* If the LaTeXSettings change but the button's appearance properties don't, there's no event that causes the execution of this method. */);
+      };
+    }
+    public void SetClearButtonImageSource(ImageSource imageSource) {
+      foreach(var button in ButtonGrids.SelectMany(grid => grid.Children)
+                            .OfType<ImageSourceMathInputButton>()
+                            .Where(button => button.Input == MathKeyboardInput.Clear))
+      button.Source = imageSource;
+    }
+    MathButton[] TabButtons => new[] { NumbersButton, SymbolsButton, FunctionsButton, OperationsButton, LettersButton };
+    Grid[] ButtonGrids => new[] { Numbers, Symbols, Functions, Operations, Letters, LettersCapitals };
   }
   [AcceptEmptyServiceProvider]
   public class SwitchToTabExtension : IMarkupExtension<Command> {
