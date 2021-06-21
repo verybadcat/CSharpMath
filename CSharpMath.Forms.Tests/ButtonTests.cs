@@ -212,13 +212,24 @@ namespace CSharpMath.Forms.Tests {
       TestTwoButtonDisplayPlaceholders(mathInputButton, @"\color{#FF000000}{😀}", @"\color{#FFD3D3D3}{😐}");
     }
     [Theory]
-    [MemberData(nameof(TheMathKeyboardInputsWithTwoPlaceholders))]
-    public void MathInputButtonTwoPlaceholdersWithSameNucleusColorsSameAsEditorOutput(MathKeyboardInput mathKeyboardInput) {
-      LaTeXSettings.PlaceholderActiveNucleus = LaTeXSettings.PlaceholderRestingNucleus = "😀";
+    [MemberData(nameof(TheMathKeyboardInputsWithSinglePlaceholder))]
+    public void SameNucleusPlaceholders_MathInputButtonPlaceholderWithSinglePlaceholderIsActive(MathKeyboardInput mathKeyboardInput) {
+      LaTeXSettings.PlaceholderActiveNucleus = LaTeXSettings.PlaceholderRestingNucleus = "■";
       var mathInputButton = new MathInputButton { Input = mathKeyboardInput };
       Assert.Null(mathInputButton.PlaceholderActiveColor);
       Assert.Null(mathInputButton.PlaceholderRestingColor);
-      TestTwoButtonDisplayPlaceholders(mathInputButton, @"\color{green}{😀}", @"\color{blue}{😀}");
+      var latex = mathInputButton.Content.NotNull().LaTeX.NotNull();
+      Assert.Contains(@"\color{green}{■}", latex);
+      Assert.DoesNotContain(@"\color{blue}", latex);
+    }
+    [Theory]
+    [MemberData(nameof(TheMathKeyboardInputsWithTwoPlaceholders))]
+    public void MathInputButtonTwoPlaceholdersWithSameNucleusColorsSameAsEditorOutput(MathKeyboardInput mathKeyboardInput) {
+      LaTeXSettings.PlaceholderActiveNucleus = LaTeXSettings.PlaceholderRestingNucleus = "■";
+      var mathInputButton = new MathInputButton { Input = mathKeyboardInput };
+      Assert.Null(mathInputButton.PlaceholderActiveColor);
+      Assert.Null(mathInputButton.PlaceholderRestingColor);
+      TestTwoButtonDisplayPlaceholders(mathInputButton, @"\color{green}{■}", @"\color{blue}{■}");
     }
     [Theory]
     [MemberData(nameof(TheMathKeyboardInputsWithTwoPlaceholders))]
