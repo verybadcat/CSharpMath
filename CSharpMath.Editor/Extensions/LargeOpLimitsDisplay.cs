@@ -18,23 +18,23 @@ namespace CSharpMath.Editor {
       // We are after the large operator
       ? MathListIndex.Level0Index(self.Range.End)
       : self.UpperLimit is { } u && point.Y > self.Position.Y + u.Position.Y - PixelDelta
-      ? MathListIndex.IndexAtLocation(self.Range.Location,
-          MathListSubIndexType.Superscript, u.IndexForPoint(context, point))
+      ? new MathListIndex(self.Range.Location,
+          (MathListSubIndexType.Superscript, u.IndexForPoint(context, point)!)) // TODO: verify non-null
       : self.LowerLimit is { } l && point.Y < self.Position.Y + l.Position.Y + l.DisplayBounds().Height + PixelDelta
-      ? MathListIndex.IndexAtLocation(self.Range.Location,
-          MathListSubIndexType.Subscript, l.IndexForPoint(context, point))
+      ? new MathListIndex(self.Range.Location,
+          (MathListSubIndexType.Subscript, l.IndexForPoint(context, point)!)) // TODO: verify non-null
       : point.X > self.Position.X + self.Width * 3 / 4
       ? MathListIndex.Level0Index(self.Range.End)
       : point.X > self.Position.X + self.Width / 2
-      ? MathListIndex.IndexAtLocation(self.Range.Location,
-        MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1))
+      ? new MathListIndex(self.Range.Location,
+        (MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1)))
       : MathListIndex.Level0Index(self.Range.Location);
 
     public static PointF? PointForIndex<TFont, TGlyph>(
       this LargeOpLimitsDisplay<TFont, TGlyph> self,
       TypesettingContext<TFont, TGlyph> _,
       MathListIndex index) where TFont : IFont<TGlyph> =>
-      index.SubIndexType != MathListSubIndexType.None
+      index.SubIndexInfo != null
       ? throw new ArgumentException
         ("The subindex must be none to get the closest point for it.", nameof(index))
       : index.AtomIndex == self.Range.End
@@ -46,7 +46,7 @@ namespace CSharpMath.Editor {
     public static void HighlightCharacterAt<TFont, TGlyph>(
       this LargeOpLimitsDisplay<TFont, TGlyph> self,
       MathListIndex index, Color color) where TFont : IFont<TGlyph> {
-      if (index.SubIndexType != MathListSubIndexType.None)
+      if (index.SubIndexInfo != null)
         throw new ArgumentException
           ("The subindex must be none to get the highlight a character in it.", nameof(index));
       self.Highlight(color);

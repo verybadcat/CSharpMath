@@ -16,9 +16,11 @@ namespace CSharpMath.Editor {
     public MathListIndex Start { get; }
     public int Length { get; }
     public MathListRange? SubIndexRange =>
-      Start.SubIndex != null
-      ? new MathListRange(Start.SubIndex, Length)
-      : new MathListRange?();
+      Start.SubIndexInfo switch
+      {
+        null => new MathListRange?(),
+        (_, MathListIndex subIndex) => new MathListRange(subIndex, Length)
+      };
     public Range FinalRange => new Range(Start.FinalIndex, Length);
     public override string ToString() => $"({Start}, {Length})";
     public static MathListRange operator +(MathListRange left, MathListRange right) {

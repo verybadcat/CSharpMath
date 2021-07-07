@@ -19,12 +19,11 @@ namespace CSharpMath.Editor.Tests {
             mathListIndex = MathListIndex.Level0Index(
               subIndexRecursive[^1].subIndex);
             for (var i = subIndexRecursive.Length - 2; i >= 0; i--)
-              mathListIndex = MathListIndex.IndexAtLocation(
+              mathListIndex = new MathListIndex(
                 subIndexRecursive[i].subIndex,
-                subIndexRecursive[i + 1].subType,
-                mathListIndex);
-            mathListIndex = MathListIndex.IndexAtLocation(index,
-              subIndexRecursive[0].subType, mathListIndex);
+                (subIndexRecursive[i + 1].subType, mathListIndex));
+            mathListIndex = new MathListIndex(index,
+              (subIndexRecursive[0].subType, mathListIndex));
             goto default;
           default:
             AddRow(new PointF((float)point.x, (float)point.y), mathListIndex);

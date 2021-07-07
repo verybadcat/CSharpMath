@@ -17,32 +17,31 @@ namespace CSharpMath.Editor {
       //We are after the fraction
       ? MathListIndex.Level0Index(self.Range.End)
       : point.Y > self.LinePosition + PixelDelta
-      ? MathListIndex.IndexAtLocation(self.Range.Location,
-          MathListSubIndexType.Numerator, self.Numerator.IndexForPoint(context, point))
+      ? new MathListIndex(self.Range.Location,
+          (MathListSubIndexType.Numerator, self.Numerator.IndexForPoint(context, point)!)) // TODO: validate that IndexForPoint is non-null
       : point.Y < self.LinePosition - PixelDelta
-      ? MathListIndex.IndexAtLocation(self.Range.Location,
-          MathListSubIndexType.Denominator, self.Denominator.IndexForPoint(context, point))
+      ? new MathListIndex(self.Range.Location,
+          (MathListSubIndexType.Denominator, self.Denominator.IndexForPoint(context, point)!)) // TODO: validate that IndexForPoint is non-null
       : point.X > self.Position.X + self.Width / 2
       ? MathListIndex.Level0Index(self.Range.End)
       : MathListIndex.Level0Index(self.Range.Location);
 
     public static PointF? PointForIndex<TFont, TGlyph>(
-      this FractionDisplay<TFont, TGlyph> self,
-      TypesettingContext<TFont, TGlyph> _,
-      MathListIndex index) where TFont : IFont<TGlyph> =>
-      index.SubIndexType != MathListSubIndexType.None
-      ? throw new ArgumentException
-        ("The subindex must be none to get the closest point for it.", nameof(index))
-      : index.AtomIndex == self.Range.End
-      // draw a caret after the fraction
-      ? self.Position.Plus(new PointF(self.DisplayBounds().Right, 0))
-      // draw a caret before the fraction
-      : self.Position;
+        this FractionDisplay<TFont, TGlyph> self,
+        TypesettingContext<TFont, TGlyph> _,
+        MathListIndex index) where TFont : IFont<TGlyph> =>
+      index.SubIndexInfo == null ?
+          (index.AtomIndex == self.Range.End
+          // draw a caret after the fraction
+          ? self.Position.Plus(new PointF(self.DisplayBounds().Right, 0))
+          // draw a caret before the fraction
+          : self.Position)
+      : throw new ArgumentException("The subindex must be none to get the closest point for it.", nameof(index));
 
     public static void HighlightCharacterAt<TFont, TGlyph>(
       this FractionDisplay<TFont, TGlyph> self,
       MathListIndex index, Color color) where TFont : IFont<TGlyph> {
-      if (index.SubIndexType != MathListSubIndexType.None)
+      if (index.SubIndexInfo != null)
         throw new ArgumentException
           ("The subindex must be none to get the highlight a character in it.", nameof(index));
       self.Highlight(color);
