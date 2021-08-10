@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1624293079095,
+  "lastUpdate": 1628600685502,
   "repoUrl": "https://github.com/verybadcat/CSharpMath",
   "entries": {
     "CSharpMath.Rendering.Benchmarks": [
@@ -2160,6 +2160,96 @@ window.BENCHMARK_DATA = {
             "value": 4998828.571428572,
             "unit": "ns",
             "range": "± 16585.69488219516"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "sohaibathar@gmail.com",
+            "name": "Sohaib Athar",
+            "username": "ReallyVirtual"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "cf8fe8cc571d5a5e9afea7dfe4e0a21529acfe3b",
+          "message": "Update FractionDisplay.cs (#200)\n\nFix a copy/paste typo",
+          "timestamp": "2021-08-10T20:58:05+08:00",
+          "tree_id": "c6be86285177e413b1f9e64f3fab890a83a5a862",
+          "url": "https://github.com/verybadcat/CSharpMath/commit/cf8fe8cc571d5a5e9afea7dfe4e0a21529acfe3b"
+        },
+        "date": 1628600681533,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.AllConstantValues",
+            "value": 657335233.3333334,
+            "unit": "ns",
+            "range": "± 11697877.638801876"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cases\")",
+            "value": 3646357.3958333335,
+            "unit": "ns",
+            "range": "± 66232.8083403811"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Color\")",
+            "value": 1407145.5338541667,
+            "unit": "ns",
+            "range": "± 18713.074548419634"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Commands\")",
+            "value": 494577.9808407738,
+            "unit": "ns",
+            "range": "± 11754.231113542357"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cyrillic\")",
+            "value": 4063621.09375,
+            "unit": "ns",
+            "range": "± 98331.58778429365"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"ErrorMissingArgument\")",
+            "value": 2245010.0260416665,
+            "unit": "ns",
+            "range": "± 47602.58382383362"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Matrix\")",
+            "value": 2187355.3328804346,
+            "unit": "ns",
+            "range": "± 53439.80087236019"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuadraticFormula\")",
+            "value": 905828.4851074219,
+            "unit": "ns",
+            "range": "± 17686.539169965337"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuarticSolutions\")",
+            "value": 148174365.3846154,
+            "unit": "ns",
+            "range": "± 6110743.485328455"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"TangentPeriodShift\")",
+            "value": 1054723.0933779762,
+            "unit": "ns",
+            "range": "± 24967.50878975344"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"VectorProjection\")",
+            "value": 4083799.826388889,
+            "unit": "ns",
+            "range": "± 76638.48157528609"
           }
         ]
       }
