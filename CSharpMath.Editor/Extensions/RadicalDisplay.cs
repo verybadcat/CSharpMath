@@ -20,15 +20,15 @@ namespace CSharpMath.Editor {
       : DistanceFromPointToRect(point, self.Degree != null ? new RectangleF(self.Degree.Position, self.Degree.DisplayBounds().Size) : default)
       < DistanceFromPointToRect(point, new RectangleF(self.Radicand.Position, self.Radicand.DisplayBounds().Size))
       ? self.Degree != null
-        ? MathListIndex.IndexAtLocation(self.Range.Location, MathListSubIndexType.Degree, self.Degree.IndexForPoint(context, point))
+        ? new MathListIndex(self.Range.Location, (MathListSubIndexType.Degree, self.Degree.IndexForPoint(context, point)!)) // TODO: verify/handle null
         : MathListIndex.Level0Index(self.Range.Location)
-      : MathListIndex.IndexAtLocation(self.Range.Location, MathListSubIndexType.Radicand, self.Radicand.IndexForPoint(context, point));
-    
+      : new MathListIndex(self.Range.Location, (MathListSubIndexType.Radicand, self.Radicand.IndexForPoint(context, point)!)); // TODO: verify/handle null
+
     public static PointF? PointForIndex<TFont, TGlyph>(
       this RadicalDisplay<TFont, TGlyph> self,
       TypesettingContext<TFont, TGlyph> _,
       MathListIndex index) where TFont : IFont<TGlyph> {
-      if (index.SubIndexType != MathListSubIndexType.None)
+      if (index.SubIndexInfo != null)
         throw new ArgumentException("The subindex must be none to get the closest point for it.", nameof(index));
 
       if (index.AtomIndex == self.Range.End)
@@ -42,7 +42,7 @@ namespace CSharpMath.Editor {
       this RadicalDisplay<TFont, TGlyph> self,
       MathListIndex index,
       Color color) where TFont : IFont<TGlyph> {
-      if (index.SubIndexType != MathListSubIndexType.None)
+      if (index.SubIndexInfo != null)
         throw new ArgumentException("The subindex must be none to get the highlight a character in it.", nameof(index));
       self.Highlight(color);
     }
