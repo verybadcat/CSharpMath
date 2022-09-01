@@ -27,6 +27,7 @@
       "CSharpMath.Avalonia/CSharpMath.Avalonia.csproj",
       "CSharpMath.Avalonia.Example/CSharpMath.Avalonia.Example.csproj",
       "CSharpMath.SkiaSharp/CSharpMath.SkiaSharp.csproj",
+	  "CSharpMath.VectSharp/CSharpMath.VectSharp.csproj",
       "CSharpMath.Forms/CSharpMath.Forms.csproj",
       "CSharpMath.Forms.Example/CSharpMath.Forms.Example/CSharpMath.Forms.Example.csproj",
       "CSharpMath.Forms.Tests/CSharpMath.Forms.Tests.csproj"
