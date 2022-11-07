@@ -34,6 +34,18 @@ namespace CSharpMath.Atom {
     /// Whether or not the atom allows superscripts and subscripts.
     /// </summary>
     public abstract bool ScriptsAllowed { get; }
+
+    public virtual int CountObjects{
+      get {
+        int counter = 1;
+        if(Subscript.IsNonEmpty())
+          counter += Subscript.CountObjects;
+        if(Superscript.IsNonEmpty())
+          counter += Superscript.CountObjects;
+        return counter;
+      }
+    }
+
     protected abstract MathAtom CloneInside(bool finalize);
     protected TAtom ApplyCommonPropertiesOn<TAtom>(bool finalize, TAtom newAtom)
       where TAtom : MathAtom {

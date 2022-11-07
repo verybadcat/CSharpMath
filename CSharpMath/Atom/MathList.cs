@@ -107,6 +107,13 @@ namespace CSharpMath.Atom {
     public string DebugString =>
       string.Concat(System.Linq.Enumerable.Select(Atoms, a => a.DebugString));
     public bool IsReadOnly => false;
+    public virtual int CountObjects {
+      get {
+        int counter = 1;
+        Atoms.ForEach(a => counter += a.CountObjects);
+        return counter;
+      }
+    }
     public MathAtom this[int index] { get => Atoms[index]; set => Atoms[index] = value; }
     public virtual void Append(IEnumerable<MathAtom> list) => Atoms.AddRange(list);
     public void RemoveAtoms(int index, int count) => Atoms.RemoveRange(index, count);

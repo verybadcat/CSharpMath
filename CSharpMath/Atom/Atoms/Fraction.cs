@@ -8,6 +8,15 @@ namespace CSharpMath.Atom.Atoms {
       new[] { Numerator, Denominator };
     public Boundary LeftDelimiter { get; set; }
     public Boundary RightDelimiter { get; set; }
+    public override int CountObjects
+    {
+      get {
+        int counter = base.CountObjects;
+          counter += Numerator.CountObjects;
+          counter += Denominator.CountObjects;
+        return counter;
+        }
+    }
     /// <summary>In this context, a "rule" is a fraction line.</summary>
     public bool HasRule { get; }
     public Fraction(MathList numerator, MathList denominator, bool hasRule = true) =>

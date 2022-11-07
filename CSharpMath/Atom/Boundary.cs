@@ -7,6 +7,7 @@ namespace CSharpMath.Atom {
     public static readonly Boundary Empty = default;
     public string? Nucleus { get; }
     public string DebugString => Nucleus ?? "(null)";
+    public int CountObjects{ get;} = 1;
     public Boundary(string nucleus) => Nucleus = nucleus;
     public bool EqualsBoundary(Boundary boundary) => Nucleus == boundary.Nucleus;
     bool System.IEquatable<Boundary>.Equals(Boundary other) => EqualsBoundary(other);
