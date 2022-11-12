@@ -126,7 +126,7 @@ namespace CSharpMath.Atom {
           return false;
         }
       }
-      return true;
+        return true;
     }
     public override bool Equals(object obj) => obj is MathList l && EqualsList(l);
     public override int GetHashCode() =>
@@ -136,8 +136,7 @@ namespace CSharpMath.Atom {
     IEnumerator IEnumerable.GetEnumerator() => Atoms.GetEnumerator();
     public int IndexOf(MathAtom item) => Atoms.IndexOf(item);
     public void Insert(int index, MathAtom item) {
-      if (item != null) Atoms.Insert(index, item);
-      else throw new ArgumentNullException(nameof(item), "MathList cannot contain null.");
+      Atoms.Insert(index, item);
     }
     public void RemoveAt(int index) => Atoms.RemoveAt(index);
     public virtual void Add(MathAtom item) {
