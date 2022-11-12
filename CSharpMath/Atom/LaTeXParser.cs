@@ -488,11 +488,15 @@ namespace CSharpMath.Atom {
         command = null;
         return false;
       }
-
       if (mathList is null) throw new ArgumentNullException(nameof(mathList));
       if (mathList.IsEmpty()) return;
       var currentFontStyle = outerFontStyle;
       foreach (var atom in mathList) {
+        bool hasCover = atom.HasCover;
+        if(hasCover)
+        {
+          atom.Cover?.ForEach(x => builder.Append(x.previousText));
+        }
         if (currentFontStyle != atom.FontStyle) {
           if (currentFontStyle != outerFontStyle) {
             // close the previous font style
@@ -708,6 +712,10 @@ namespace CSharpMath.Atom {
           case { Nucleus: var aNucleus }:
             builder.Append(aNucleus);
             break;
+        }
+        if(hasCover)
+        {
+          atom.Cover?.ForEach(x => builder.Append(x.nextText));
         }
         static void AppendScript
           (StringBuilder builder, MathList script, char scriptChar, FontStyle currentFontStyle) {
