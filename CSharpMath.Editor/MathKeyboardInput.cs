@@ -74,5 +74,6 @@ namespace CSharpMath.Editor {
     DoubleIntegral = '∬', TripleIntegral = '∭', QuadrupleIntegral = '⨌',
     ContourIntegral = '∮', DoubleContourIntegral = '∯', TripleContourIntegral = '∰',
     ClockwiseIntegral = '∱', ClockwiseContourIntegral = '∲', CounterClockwiseContourIntegral = '∳'
+    ,Caret = '⎇'
   }
 }
