@@ -1,30 +1,48 @@
 using System;
 
 namespace CSharpMath.Editor {
+  using System.Collections.Generic;
+  using System.Linq;
   using Atom;
   using Atoms = Atom.Atoms;
+  using CSharpMath.Atom.Atoms;
   using Structures;
   partial class Extensions {
     static void InsertAtAtomIndexAndAdvance(this MathList self, int atomIndex, MathAtom atom, ref MathListIndex advance, MathListSubIndexType advanceType) {
+      static void CheckOutOfBounds(MathList self, int atomIndex) {
       if (atomIndex < 0 || atomIndex > self.Count)
         throw new IndexOutOfRangeException($"Index {atomIndex} is out of bounds for list of size {self.Atoms.Count}");
+      }
+      static bool priviousIsPlaceHolder(MathList self, int atomIndex, out MathAtom placeholder) {
+        placeholder = new Number("0");
+        if (atomIndex < self.Count) {
+          placeholder = self[atomIndex];
+          if (self[atomIndex] is Placeholder) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      CheckOutOfBounds(self, atomIndex);
+
       // Test for placeholder to the right of index, e.g. \sqrt{‸■} -> \sqrt{2‸}
-      if (atomIndex < self.Count && self[atomIndex] is Atoms.Placeholder placeholder) {
-        atom.Superscript.Append(placeholder.Superscript);
-        atom.Subscript.Append(placeholder.Subscript);
+      if (priviousIsPlaceHolder(self, atomIndex, out MathAtom placeholder)) {
+        SetSuperAndSubScript(placeholder, atom);
         self[atomIndex] = atom;
-      } else self.Insert(atomIndex, atom);
-      advance = advanceType switch
-      {
-        MathListSubIndexType.None => advance.Next,
-        _ => advance.LevelUpWithSubIndex(advanceType, MathListIndex.Level0Index(0)),
-      };
+        return;
+      }
+
+      self.Insert(atomIndex, atom);
+      advance = advanceType == MathListSubIndexType.None ?
+        advance.Next :
+        advance.LevelUpWithSubIndex(advanceType, MathListIndex.Level0Index(0));
+
     }
     /// <summary>Inserts <paramref name="atom"/> and modifies <paramref name="index"/> to advance to the next position.</summary>
     public static void InsertAndAdvance(this MathList self, ref MathListIndex index, MathAtom atom, MathListSubIndexType advanceType) {
       index ??= MathListIndex.Level0Index(0);
-      if (index.AtomIndex > self.Atoms.Count)
-        throw new IndexOutOfRangeException($"Index {index.AtomIndex} is out of bounds for list of size {self.Atoms.Count}");
+      checkForOutOfBounds(self, index);
       switch (index.SubIndexType) {
         case MathListSubIndexType.None:
           self.InsertAtAtomIndexAndAdvance(index.AtomIndex, atom, ref index, advanceType);
@@ -33,12 +51,8 @@ namespace CSharpMath.Editor {
           throw new InvalidCodePathException("index.SubIndex is null despite non-None subindex type");
         case MathListSubIndexType.BetweenBaseAndScripts:
           var currentAtom = self.Atoms[index.AtomIndex];
-          if (currentAtom.Subscript.IsEmpty() && currentAtom.Superscript.IsEmpty())
-            throw new SubIndexTypeMismatchException(index);
-          if (atom.Subscript.IsNonEmpty() || atom.Superscript.IsNonEmpty())
-            throw new ArgumentException("Cannot fuse with an atom that already has a subscript or a superscript");
-          atom.Subscript.Append(currentAtom.Subscript);
-          atom.Superscript.Append(currentAtom.Superscript);
+          ensureSubAndScript(index, atom, currentAtom);
+          SetSuperAndSubScript(currentAtom, atom);
           currentAtom.Subscript.Clear();
           currentAtom.Superscript.Clear();
           var atomIndex = index.AtomIndex;
@@ -78,12 +92,23 @@ namespace CSharpMath.Editor {
         default:
           throw new SubIndexTypeMismatchException(index);
       }
+
+      static void checkForOutOfBounds(MathList self, MathListIndex index) {
+        if (index.AtomIndex > self.Atoms.Count)
+          throw new IndexOutOfRangeException($"Index {index.AtomIndex} is out of bounds for list of size {self.Atoms.Count}");
+      }
+
+      static void ensureSubAndScript(MathListIndex index, MathAtom atom, MathAtom currentAtom) {
+        if (currentAtom.Subscript.IsEmpty() && currentAtom.Superscript.IsEmpty())
+          throw new SubIndexTypeMismatchException(index);
+        if (atom.Subscript.IsNonEmpty() || atom.Superscript.IsNonEmpty())
+          throw new ArgumentException("Cannot fuse with an atom that already has a subscript or a superscript");
+      }
     }
 
     public static void RemoveAt(this MathList self, ref MathListIndex index) {
       index ??= MathListIndex.Level0Index(0);
-      if (index.AtomIndex > self.Atoms.Count)
-        throw new IndexOutOfRangeException($"Index {index.AtomIndex} is out of bounds for list of size {self.Atoms.Count}");
+      CheckForOutOfBounds(self, index);
       switch (index.SubIndexType) {
         case MathListSubIndexType.None:
           self.RemoveAt(index.AtomIndex);
@@ -92,25 +117,11 @@ namespace CSharpMath.Editor {
           throw new InvalidCodePathException("index.SubIndex is null despite non-None subindex type");
         case MathListSubIndexType.BetweenBaseAndScripts:
           var currentAtom = self.Atoms[index.AtomIndex];
-          if (currentAtom.Subscript.IsEmpty() && currentAtom.Superscript.IsEmpty())
-            throw new SubIndexTypeMismatchException(index);
+          CheckForSubSuperEmpty(index, currentAtom);
           var downIndex = index.LevelDown();
           if (downIndex is null) throw new InvalidCodePathException("downIndex is null");
-          if (index.AtomIndex > 0 &&
-              self.Atoms[index.AtomIndex - 1] is MathAtom previous &&
-              previous.Subscript.IsEmpty() &&
-              previous.Superscript.IsEmpty() &&
-              previous switch
-              {
-                Atoms.BinaryOperator _ => false,
-                Atoms.UnaryOperator _ => false,
-                Atoms.Relation _ => false,
-                Atoms.Punctuation _ => false,
-                Atoms.Space _ => false,
-                _ => true
-              }) {
-            previous.Superscript.Append(currentAtom.Superscript);
-            previous.Subscript.Append(currentAtom.Subscript);
+          if (AtomCouldGetLeftovers(out MathAtom previous,index)) {
+            SetSuperAndSubScript(currentAtom, previous);
             self.RemoveAt(index.AtomIndex);
             // it was in the nucleus and we removed it, get out of the nucleus and get in the nucleus of the previous one.
             index = downIndex.Previous is MathListIndex downPrev
@@ -120,8 +131,7 @@ namespace CSharpMath.Editor {
           }
           // insert placeholder since we couldn't place the scripts in previous atom
           var insertionAtom = LaTeXSettings.Placeholder;
-          insertionAtom.Subscript.Append(currentAtom.Subscript);
-          insertionAtom.Superscript.Append(currentAtom.Superscript);
+          SetSuperAndSubScript(currentAtom, insertionAtom);
           self.RemoveAt(index.AtomIndex);
           index = downIndex;
           self.InsertAndAdvance(ref index, insertionAtom, MathListSubIndexType.None);
@@ -169,6 +179,35 @@ namespace CSharpMath.Editor {
           self.InsertAndAdvance(ref index, LaTeXSettings.Placeholder, MathListSubIndexType.None);
           index = index.Previous ?? throw new InvalidCodePathException("Cannot go back after insertion?"); ;
         }
+      }
+      bool AtomCouldGetLeftovers(out MathAtom previous, MathListIndex index) {
+        previous = new Number("0");
+        if (index is null) throw new NullReferenceException("index");
+        if (index.AtomIndex > 0) {
+          previous = self.Atoms[index.AtomIndex - 1];
+          if (SubAndSuperAreEmpty(previous) && filterAtoms(previous)) {
+            return true;
+      }
+    }
+        return false;
+        static bool filterAtoms(MathAtom previous) {
+          return previous switch {
+            Atoms.BinaryOperator _ => false,
+            Atoms.UnaryOperator _ => false,
+            Atoms.Relation _ => false,
+            Atoms.Punctuation _ => false,
+            Atoms.Space _ => false,
+            _ => true
+          };
+        }
+      }
+      static void CheckForOutOfBounds(MathList self, MathListIndex index) {
+        if (index.AtomIndex > self.Atoms.Count)
+          throw new IndexOutOfRangeException($"Index {index.AtomIndex} is out of bounds for list of size {self.Atoms.Count}");
+      }
+      static void CheckForSubSuperEmpty(MathListIndex index, MathAtom currentAtom) {
+        if (currentAtom.Subscript.IsEmpty() && currentAtom.Superscript.IsEmpty())
+          throw new SubIndexTypeMismatchException(index);
       }
     }
 
@@ -218,8 +257,8 @@ namespace CSharpMath.Editor {
     }
 
     public static MathAtom? AtomAt(this MathList self, MathListIndex? index) {
-      if (index is null || index.AtomIndex >= self.Atoms.Count) return null;
-      var atom = self.Atoms[index.AtomIndex];
+        if (FaultyParameters(self, index)) return null;
+        var atom = self.Atoms[index!.AtomIndex];
       switch (index.SubIndexType) {
         case MathListSubIndexType.None:
           return atom;
@@ -252,6 +291,20 @@ namespace CSharpMath.Editor {
         default:
           throw new SubIndexTypeMismatchException(index);
       }
+        static bool FaultyParameters(MathList self, MathListIndex? index) {
+          return index is null || index.AtomIndex < 0 || index.AtomIndex >= self.Atoms.Count;
+        }
     }
   }
 }
+
+      private static void SetSuperAndSubScript(MathAtom currentAtom, MathAtom ToAtom) {
+        ToAtom.Superscript.Append(currentAtom.Superscript);
+        ToAtom.Subscript.Append(currentAtom.Subscript);
+      }
+      private static bool SubAndSuperAreEmpty(MathAtom Atom) {
+        return Atom.Subscript.IsEmpty() && Atom.Superscript.IsEmpty();
+      }
+    }
+  }
+
