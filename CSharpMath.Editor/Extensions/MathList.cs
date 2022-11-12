@@ -295,6 +295,66 @@ namespace CSharpMath.Editor {
           return index is null || index.AtomIndex < 0 || index.AtomIndex >= self.Atoms.Count;
         }
     }
+      public static List<MathAtom> Deployment(this MathList self) {
+        var atomlist = new List<MathAtom>();
+        if (self is null) throw new ArgumentNullException(nameof(self));
+        foreach (var atom in self.Atoms.ToList()) {
+          atomlist.Add(atom);
+          switch (atom) {
+            case Comment { Nucleus: var comment }:
+              break;
+            case Fraction fraction: {
+                AddToList(fraction.Numerator);
+                AddToList(fraction.Denominator);
+              }
+              break;
+            case Radical radical:
+              radical.Degree.Deployment();
+              radical.Radicand.Deployment();
+              break;
+            case Inner { LeftBoundary: { Nucleus: null }, InnerList: var list }:
+              AddToList(list);
+              break;
+            case Inner { LeftBoundary: { Nucleus: "〈" }, InnerList: var list }:
+              AddToList(list);
+              break;
+            case Inner { LeftBoundary: { Nucleus: "|" }, InnerList: var list }:
+              AddToList(list);
+              break;
+            case Inner { LeftBoundary: var left, InnerList: var list }:
+              AddToList(list);
+              break;
+            case Atoms.Caret caret:
+              AddToList(caret.CartList.InnerList);
+              break;
+            case Overline over:
+              AddToList(over.InnerList);
+              break;
+            case Underline under:
+              AddToList(under.InnerList);
+              break;
+            case Accent accent:
+              //MathAtomToLaTeX(accent, builder, out _);
+              AddToList(accent.InnerList);
+              break;
+            case Colored colored:
+              AddToList(colored.InnerList);
+              break;
+            case ColorBox colorBox:
+              AddToList(colorBox.InnerList);
+              break;
+            case RaiseBox r:
+              AddToList(r.InnerList);
+              break;
+          }
+          AddToList(atom.Subscript);
+          AddToList(atom.Superscript);
+        }
+        return atomlist;
+        void AddToList(MathList list) {
+          if (list.IsNonEmpty()) {
+            atomlist.AddRange(list.Deployment());
+          }
   }
 }
 
