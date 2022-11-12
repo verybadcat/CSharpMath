@@ -1157,6 +1157,7 @@ namespace CSharpMath.Atom {
         { @"\nsupseteq", new Relation("⊉") },
         // { @"\nsupseteqq", new Relation("⫆\u0338") }, // Glyph not in Latin Modern Math
         { @"\supsetneq", new Relation("⊋") },
+        { @"\Caret", new Caret() },
         // \varsupsetneq -> ⊋ + U+FE00 (Variation Selector 1) Not dealing with variation selectors, thank you very much
         // { @"\supsetneqq", new Relation("⫌") }, // Glyph not in Latin Modern Math
         // \varsupsetneqq -> ⫌ + U+FE00 (Variation Selector 1) Not dealing with variation selectors, thank you very much

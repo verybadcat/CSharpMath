@@ -13,7 +13,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CSharpMath\CSharpMath.csproj" />
-    <PackageReference Include="AngouriMath" Version="1.1.0.3-beta" />
+    <PackageReference Include="AngouriMath" Version="1.4.0-preview.3" />
+    <PackageReference Include="GenericTensor" Version="1.0.5" />
   </ItemGroup>
 
 </Project>

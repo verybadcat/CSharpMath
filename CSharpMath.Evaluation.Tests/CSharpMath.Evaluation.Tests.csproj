@@ -1,5 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
+    <PackageReference Include="GenericTensor" Version="1.0.5" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="../CSharpMath.Evaluation/CSharpMath.Evaluation.csproj" />
   </ItemGroup>
 </Project>
