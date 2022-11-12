@@ -10,8 +10,8 @@ namespace CSharpMath.Editor {
   partial class Extensions {
     static void InsertAtAtomIndexAndAdvance(this MathList self, int atomIndex, MathAtom atom, ref MathListIndex advance, MathListSubIndexType advanceType) {
       static void CheckOutOfBounds(MathList self, int atomIndex) {
-      if (atomIndex < 0 || atomIndex > self.Count)
-        throw new IndexOutOfRangeException($"Index {atomIndex} is out of bounds for list of size {self.Atoms.Count}");
+        if (atomIndex < 0 || atomIndex > self.Count)
+          throw new IndexOutOfRangeException($"Index {atomIndex} is out of bounds for list of size {self.Atoms.Count}");
       }
       static bool priviousIsPlaceHolder(MathList self, int atomIndex, out MathAtom placeholder) {
         placeholder = new Number("0");
@@ -58,7 +58,7 @@ namespace CSharpMath.Editor {
           var atomIndex = index.AtomIndex;
           // Prevent further subindexing inside BetweenBaseAndScripts
           if (advanceType != MathListSubIndexType.None
-              && index.LevelDown() is MathListIndex levelDown) index = levelDown.Next;
+            && index.LevelDown() is MathListIndex levelDown) index = levelDown.Next;
           self.InsertAtAtomIndexAndAdvance(atomIndex + 1, atom, ref index, advanceType);
           break;
         case MathListSubIndexType.Degree:
@@ -187,8 +187,8 @@ namespace CSharpMath.Editor {
           previous = self.Atoms[index.AtomIndex - 1];
           if (SubAndSuperAreEmpty(previous) && filterAtoms(previous)) {
             return true;
-      }
-    }
+          }
+        }
         return false;
         static bool filterAtoms(MathAtom previous) {
           return previous switch {
@@ -211,90 +211,132 @@ namespace CSharpMath.Editor {
       }
     }
 
-    public static void RemoveAtoms(this MathList self, MathListRange? nullableRange) {
-      if (!(nullableRange is MathListRange range)) return;
-      var start = range.Start;
-      switch (start.SubIndexType) {
-        case MathListSubIndexType.None:
-          self.RemoveAtoms(start.AtomIndex, range.Length);
-          break;
-        case var _ when start.SubIndex is null:
-          throw new InvalidCodePathException("start.SubIndex is null despite non-None subindex type");
-        case MathListSubIndexType.BetweenBaseAndScripts:
-          throw new NotSupportedException("Nuclear fission is not supported");
-        case MathListSubIndexType.Radicand:
-        case MathListSubIndexType.Degree:
-          if (!(self.Atoms[start.AtomIndex] is Atoms.Radical radical))
-            throw new SubIndexTypeMismatchException(typeof(Atoms.Radical), start);
-          if (start.SubIndexType == MathListSubIndexType.Degree)
-            radical.Degree.RemoveAtoms(range.SubIndexRange);
-          else radical.Radicand.RemoveAtoms(range.SubIndexRange);
-          break;
-        case MathListSubIndexType.Numerator:
-        case MathListSubIndexType.Denominator:
-          if (!(self.Atoms[start.AtomIndex] is Atoms.Fraction frac))
-            throw new SubIndexTypeMismatchException(typeof(Atoms.Fraction), start);
-          if (start.SubIndexType == MathListSubIndexType.Numerator)
-            frac.Numerator.RemoveAtoms(range.SubIndexRange);
-          else frac.Denominator.RemoveAtoms(range.SubIndexRange);
-          break;
-        case MathListSubIndexType.Subscript:
-          var current = self.Atoms[start.AtomIndex];
-          if (current.Subscript.IsEmpty()) throw new SubIndexTypeMismatchException(start);
-          current.Subscript.RemoveAtoms(range.SubIndexRange);
-          break;
-        case MathListSubIndexType.Superscript:
-          current = self.Atoms[start.AtomIndex];
-          if (current.Superscript.IsEmpty()) throw new SubIndexTypeMismatchException(start);
-          current.Superscript.RemoveAtoms(range.SubIndexRange);
-          break;
-        case MathListSubIndexType.Inner:
-          if (!(self.Atoms[start.AtomIndex] is Atoms.Inner inner))
-            throw new SubIndexTypeMismatchException(typeof(Atoms.Inner), start);
-          inner.InnerList.RemoveAtoms(range.SubIndexRange);
-          break;
+      public static void RemoveAtoms(this MathList self, MathListRange? nullableRange) {
+        if (!(nullableRange is MathListRange range)) return;
+        var start = range.Start;
+        switch (start.SubIndexType) {
+          case MathListSubIndexType.None:
+            self.RemoveAtoms(start.AtomIndex, range.Length);
+            break;
+          case var _ when start.SubIndex is null:
+            throw new InvalidCodePathException("start.SubIndex is null despite non-None subindex type");
+          case MathListSubIndexType.BetweenBaseAndScripts:
+            throw new NotSupportedException("Nuclear fission is not supported");
+          case MathListSubIndexType.Radicand:
+          case MathListSubIndexType.Degree:
+            if (!(self.Atoms[start.AtomIndex] is Atoms.Radical radical))
+              throw new SubIndexTypeMismatchException(typeof(Atoms.Radical), start);
+            if (start.SubIndexType == MathListSubIndexType.Degree)
+              radical.Degree.RemoveAtoms(range.SubIndexRange);
+            else radical.Radicand.RemoveAtoms(range.SubIndexRange);
+            break;
+          case MathListSubIndexType.Numerator:
+          case MathListSubIndexType.Denominator:
+            if (!(self.Atoms[start.AtomIndex] is Atoms.Fraction frac))
+              throw new SubIndexTypeMismatchException(typeof(Atoms.Fraction), start);
+            if (start.SubIndexType == MathListSubIndexType.Numerator)
+              frac.Numerator.RemoveAtoms(range.SubIndexRange);
+            else frac.Denominator.RemoveAtoms(range.SubIndexRange);
+            break;
+          case MathListSubIndexType.Subscript:
+            var current = self.Atoms[start.AtomIndex];
+            if (current.Subscript.IsEmpty()) throw new SubIndexTypeMismatchException(start);
+            current.Subscript.RemoveAtoms(range.SubIndexRange);
+            break;
+          case MathListSubIndexType.Superscript:
+            current = self.Atoms[start.AtomIndex];
+            if (current.Superscript.IsEmpty()) throw new SubIndexTypeMismatchException(start);
+            current.Superscript.RemoveAtoms(range.SubIndexRange);
+            break;
+          case MathListSubIndexType.Inner:
+            if (!(self.Atoms[start.AtomIndex] is Atoms.Inner inner))
+              throw new SubIndexTypeMismatchException(typeof(Atoms.Inner), start);
+            inner.InnerList.RemoveAtoms(range.SubIndexRange);
+            break;
+        }
       }
-    }
 
-    public static MathAtom? AtomAt(this MathList self, MathListIndex? index) {
+      public static MathAtom? AtomAt(this MathList self, MathListIndex? index) {
         if (FaultyParameters(self, index)) return null;
         var atom = self.Atoms[index!.AtomIndex];
-      switch (index.SubIndexType) {
-        case MathListSubIndexType.None:
-          return atom;
-        case var _ when index.SubIndex is null:
-          throw new InvalidCodePathException("index.SubIndex is null despite non-None subindex type");
-        case MathListSubIndexType.BetweenBaseAndScripts:
-          return null;
-        case MathListSubIndexType.Subscript:
-          return atom.Subscript.AtomAt(index.SubIndex);
-        case MathListSubIndexType.Superscript:
-          return atom.Superscript.AtomAt(index.SubIndex);
-        case MathListSubIndexType.Radicand:
-        case MathListSubIndexType.Degree:
-          return
-            atom is Atoms.Radical radical
-            ? index.SubIndexType == MathListSubIndexType.Degree
-              ? radical.Degree.AtomAt(index.SubIndex)
-              : radical.Radicand.AtomAt(index.SubIndex)
-            : null;
-        case MathListSubIndexType.Numerator:
-        case MathListSubIndexType.Denominator:
-          return
-            atom is Atoms.Fraction frac
-            ? index.SubIndexType == MathListSubIndexType.Denominator
-              ? frac.Denominator.AtomAt(index.SubIndex)
-              : frac.Numerator.AtomAt(index.SubIndex)
-            : null;
-        case MathListSubIndexType.Inner:
-          return atom is Atoms.Inner inner ? inner.InnerList.AtomAt(index.SubIndex) : null;
-        default:
-          throw new SubIndexTypeMismatchException(index);
-      }
+        switch (index.SubIndexType) {
+          case MathListSubIndexType.None:
+            return atom;
+          case var _ when index.SubIndex is null:
+            throw new InvalidCodePathException("index.SubIndex is null despite non-None subindex type");
+          case MathListSubIndexType.BetweenBaseAndScripts:
+            return null;
+          case MathListSubIndexType.Subscript:
+            return atom.Subscript.AtomAt(index.SubIndex);
+          case MathListSubIndexType.Superscript:
+            return atom.Superscript.AtomAt(index.SubIndex);
+          case MathListSubIndexType.Radicand:
+          case MathListSubIndexType.Degree:
+            return
+              atom is Atoms.Radical radical
+              ? index.SubIndexType == MathListSubIndexType.Degree
+                ? radical.Degree.AtomAt(index.SubIndex)
+                : radical.Radicand.AtomAt(index.SubIndex)
+              : null;
+          case MathListSubIndexType.Numerator:
+          case MathListSubIndexType.Denominator:
+            return
+              atom is Atoms.Fraction frac
+              ? index.SubIndexType == MathListSubIndexType.Denominator
+                ? frac.Denominator.AtomAt(index.SubIndex)
+                : frac.Numerator.AtomAt(index.SubIndex)
+              : null;
+          case MathListSubIndexType.Inner:
+            return atom is Atoms.Inner inner ? inner.InnerList.AtomAt(index.SubIndex) : null;
+          default:
+            throw new SubIndexTypeMismatchException(index);
+        }
         static bool FaultyParameters(MathList self, MathListIndex? index) {
           return index is null || index.AtomIndex < 0 || index.AtomIndex >= self.Atoms.Count;
         }
-    }
+      }
+      public static MathList? AtomListAt(this MathList self, MathListIndex? index) {
+        if (index is null || index.AtomIndex >= self.Atoms.Count) return self;
+        var atom = self.Atoms[index.AtomIndex];
+        switch (index.SubIndexType) {
+          case MathListSubIndexType.None:
+            return self;
+          case var _ when index.SubIndex is null:
+            throw new InvalidCodePathException("index.SubIndex is null despite non-None subindex type");
+          case MathListSubIndexType.BetweenBaseAndScripts:
+            return null;
+          case MathListSubIndexType.Subscript:
+            return atom.Subscript.AtomListAt(index.SubIndex);
+          case MathListSubIndexType.Superscript:
+            return atom.Superscript.AtomListAt(index.SubIndex);
+          case MathListSubIndexType.Radicand:
+          case MathListSubIndexType.Degree:
+            return
+              atom is Atoms.Radical radical
+              ? index.SubIndexType == MathListSubIndexType.Degree
+                ? radical.Degree.AtomListAt(index.SubIndex)
+                : radical.Radicand.AtomListAt(index.SubIndex)
+              : null;
+          case MathListSubIndexType.Numerator:
+          case MathListSubIndexType.Denominator:
+            return
+              atom is Atoms.Fraction frac
+              ? index.SubIndexType == MathListSubIndexType.Denominator
+                ? frac.Denominator.AtomListAt(index.SubIndex)
+                : frac.Numerator.AtomListAt(index.SubIndex)
+              : null;
+          case MathListSubIndexType.Inner:
+            return atom is Atoms.Inner inner ? inner.InnerList.AtomListAt(index.SubIndex) : null;
+          default:
+            throw new SubIndexTypeMismatchException(index);
+        }
+      }
+      /// <summary>
+      /// Return list of all the objects inside the mathlist
+      /// </summary>
+      /// <param name="self"></param>
+      /// <returns></returns>
+      /// <exception cref="ArgumentNullException"></exception>
       public static List<MathAtom> Deployment(this MathList self) {
         var atomlist = new List<MathAtom>();
         if (self is null) throw new ArgumentNullException(nameof(self));
@@ -355,8 +397,8 @@ namespace CSharpMath.Editor {
           if (list.IsNonEmpty()) {
             atomlist.AddRange(list.Deployment());
           }
-  }
-}
+        }
+      }
 
       private static void SetSuperAndSubScript(MathAtom currentAtom, MathAtom ToAtom) {
         ToAtom.Superscript.Append(currentAtom.Superscript);
