@@ -618,13 +618,6 @@ namespace CSharpMath.Atom {
                 .Append("}");
             }
             break;
-            case Atoms.Caret caret:
-            builder.Append(@"\color{");
-            LaTeXSettings.ColorToString(caret.CartList.Color, builder)
-              .Append("}{");
-            MathListToLaTeX(caret.CartList.InnerList, builder, currentFontStyle);
-            builder.Append("}");
-            break;
           case Overline over:
             builder.Append(@"\overline{");
             MathListToLaTeX(over.InnerList, builder, currentFontStyle);

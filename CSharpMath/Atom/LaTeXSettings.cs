@@ -323,13 +323,8 @@ namespace CSharpMath.Atom {
     public static bool PlaceholderBlinks { get; set; } = false;
     public static Color? PlaceholderRestingColor { get; set; }
     public static Color? PlaceholderActiveColor { get; set; }
-    public static Color CertColor { get; set; } = Color.Black;
-    public static MathAtom CertAtom { get; set; } = new Atoms.Number("|");
     public static string PlaceholderActiveNucleus { get; set; } = "\u25A0";
     public static string PlaceholderRestingNucleus { get; set; } = "\u25A1";
-
-    public static MathList CertList => new MathList { CertAtom };
-
     public static Placeholder Placeholder => new Placeholder(PlaceholderRestingNucleus, PlaceholderRestingColor);
     public static MathList PlaceholderList => new MathList { Placeholder };
 
