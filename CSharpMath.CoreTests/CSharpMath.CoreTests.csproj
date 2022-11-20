@@ -8,6 +8,6 @@
     <Compile Include="..\CSharpMath.Apple\Resources\ManifestResourceProvider.cs" Link="_Helpers\Resources\ManifestResourceProvider.cs" />
     <EmbeddedResource Include="_Helpers\Resources\latinmodern-math.json" />
     <ProjectReference Include="..\CSharpMath\CSharpMath.csproj" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 </Project>
