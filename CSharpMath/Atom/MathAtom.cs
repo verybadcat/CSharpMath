@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using CSharpMath.Structures;
 
 namespace CSharpMath.Atom {
   public abstract class MathAtom : IMathObject, IEquatable<MathAtom> {
@@ -34,6 +35,18 @@ namespace CSharpMath.Atom {
     /// Whether or not the atom allows superscripts and subscripts.
     /// </summary>
     public abstract bool ScriptsAllowed { get; }
+
+    public virtual int CountObjects{
+      get {
+        int counter = 1;
+        if(Subscript.IsNonEmpty())
+          counter += Subscript.CountObjects;
+        if(Superscript.IsNonEmpty())
+          counter += Superscript.CountObjects;
+        return counter;
+      }
+    }
+
     protected abstract MathAtom CloneInside(bool finalize);
     protected TAtom ApplyCommonPropertiesOn<TAtom>(bool finalize, TAtom newAtom)
       where TAtom : MathAtom {
@@ -85,10 +98,15 @@ namespace CSharpMath.Atom {
       GetType() == otherAtom.GetType() &&
       //IndexRange == otherAtom.IndexRange &&
       //FontStyle == otherAtom.FontStyle &&
-      Superscript.NullCheckingStructuralEquality(otherAtom.Superscript) &&
-      Subscript.NullCheckingStructuralEquality(otherAtom.Subscript);
+      Superscript.Equals(otherAtom.Superscript) &&
+      Subscript.Equals(otherAtom.Subscript);
+
     public override bool Equals(object obj) => obj is MathAtom a && EqualsAtom(a);
     bool IEquatable<MathAtom>.Equals(MathAtom otherAtom) => EqualsAtom(otherAtom);
     public override int GetHashCode() => (Superscript, Subscript, Nucleus).GetHashCode();
+
+    public List<AtomCover>? Cover { get; set; }
+    public bool HasCover => AtomCover.IsNonNullOrEmpty(Cover);
+
   }
 }

@@ -1,4 +1,5 @@
 namespace CSharpMath.Editor {
+  using System.Linq;
   ///<summary>The type of the subindex denotes what branch the path to the atom that this index points to takes.</summary>
   public enum MathListSubIndexType : byte {
     ///<summary>The index denotes the whole atom, subIndex is null</summary>
@@ -81,6 +82,14 @@ namespace CSharpMath.Editor {
       _ => SubIndex?.Previous is MathListIndex prevSubIndex ? IndexAtLocation(AtomIndex, SubIndexType, prevSubIndex) : null,
     };
 
+    /// <summary>Should be used inside <see cref="Extensions.RemoveAt(Atom.MathList, ref MathListIndex)"/> only!</summary>
+    internal MathListIndex? PreviousOrBeforeWholeList => SubIndexType switch
+    {
+      MathListSubIndexType.None => AtomIndex > -1 ? Level0Index(AtomIndex - 1) : null,
+      _ => SubIndex?.PreviousOrBeforeWholeList is MathListIndex prevSubIndex ? IndexAtLocation(AtomIndex, SubIndexType, prevSubIndex) : null,
+    };
+
+
     ///<summary>Returns the next index.</summary>
     public MathListIndex Next => SubIndexType switch
     {
@@ -91,18 +100,19 @@ namespace CSharpMath.Editor {
 
     ///<summary>Returns true if any of the subIndexes of this index have the given type.</summary>
     public bool HasSubIndexOfType(MathListSubIndexType subIndexType) =>
-      SubIndexType == subIndexType ? true :
-      SubIndex != null ? SubIndex.HasSubIndexOfType(subIndexType) : false;
+    SubIndexType == subIndexType || (SubIndex != null && SubIndex.HasSubIndexOfType(subIndexType));
+
+        public MathListIndex? GetParentIndexByType(params MathListSubIndexType[] subIndexType) =>
+      subIndexType.Any(x => x == FinalSubIndexType) ?  this.LevelDown() : SubIndex is not null
+      ? this.LevelDown()?.GetParentIndexByType(subIndexType) : null;
 
     public bool AtSameLevel(MathListIndex other) =>
-      SubIndexType != other.SubIndexType ? false :
+     SubIndexType == other.SubIndexType &&
       // No subindexes, they are at the same level.
-      SubIndexType == MathListSubIndexType.None ? true :
+        (SubIndexType == MathListSubIndexType.None ||
       // the subindexes are used in different atoms
-      AtomIndex != other.AtomIndex ? false :
-      SubIndex != null && other.SubIndex != null ? SubIndex.AtSameLevel(other.SubIndex) :
-      // No subindexes, they are at the same level.
-      true;
+          (AtomIndex == other.AtomIndex &&
+            (SubIndex == null || other.SubIndex == null || SubIndex.AtSameLevel(other.SubIndex))));
 
     public int FinalIndex =>
       SubIndexType is MathListSubIndexType.None || SubIndex is null ? AtomIndex : SubIndex.FinalIndex;
@@ -120,9 +130,9 @@ namespace CSharpMath.Editor {
       $@"[{AtomIndex}, {SubIndexType}:{SubIndex.ToString().Trim('[', ']')}]";
 
     public bool EqualsToIndex(MathListIndex index) =>
-      index is null || AtomIndex != index.AtomIndex || SubIndexType != index.SubIndexType ? false :
-      SubIndex != null && index.SubIndex != null ? SubIndex.EqualsToIndex(index.SubIndex) :
-      index.SubIndex == null;
+      !(index is null) && AtomIndex == index.AtomIndex && SubIndexType == index.SubIndexType &&
+        (SubIndex != null && index.SubIndex != null ? SubIndex.EqualsToIndex(index.SubIndex) :
+      index.SubIndex == null);
 
     public override bool Equals(object obj) =>
       obj is MathListIndex index && EqualsToIndex(index);

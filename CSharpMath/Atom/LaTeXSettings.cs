@@ -323,8 +323,13 @@ namespace CSharpMath.Atom {
     public static bool PlaceholderBlinks { get; set; } = false;
     public static Color? PlaceholderRestingColor { get; set; }
     public static Color? PlaceholderActiveColor { get; set; }
+    public static Color CertColor { get; set; } = Color.Black;
+    public static MathAtom CertAtom { get; set; } = new Atoms.Number("|");
     public static string PlaceholderActiveNucleus { get; set; } = "\u25A0";
     public static string PlaceholderRestingNucleus { get; set; } = "\u25A1";
+
+    public static MathList CertList => new MathList { CertAtom };
+
     public static Placeholder Placeholder => new Placeholder(PlaceholderRestingNucleus, PlaceholderRestingColor);
     public static MathList PlaceholderList => new MathList { Placeholder };
 
@@ -1152,6 +1157,7 @@ namespace CSharpMath.Atom {
         { @"\nsupseteq", new Relation("⊉") },
         // { @"\nsupseteqq", new Relation("⫆\u0338") }, // Glyph not in Latin Modern Math
         { @"\supsetneq", new Relation("⊋") },
+        { @"\Caret", new Caret() },
         // \varsupsetneq -> ⊋ + U+FE00 (Variation Selector 1) Not dealing with variation selectors, thank you very much
         // { @"\supsetneqq", new Relation("⫌") }, // Glyph not in Latin Modern Math
         // \varsupsetneqq -> ⫌ + U+FE00 (Variation Selector 1) Not dealing with variation selectors, thank you very much
