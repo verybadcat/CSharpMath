@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29201.188
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath", "CSharpMath\CSharpMath.csproj", "{5157367B-F03E-4ACB-83A1-0DE414A3BFCA}"
 EndProject
@@ -104,27 +104,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Rendering.Benchm
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Forms.Tests", "CSharpMath.Forms.Tests\CSharpMath.Forms.Tests.csproj", "{FBD8667E-9506-4654-9FF1-49A75BE17771}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F068C88D-3CBB-4D1A-A1DF-2F6CCA712EC8}"
+	ProjectSection(SolutionItems) = preProject
+		NuGet.Config = NuGet.Config
+	EndProjectSection
+EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		CSharpMath.Apple\CSharpMath.Apple.projitems*{11d4e6c7-c8e2-449c-a1e7-18bbbce4e6f3}*SharedItemsImports = 5
-		CSharpMath.Apple\CSharpMath.Apple.projitems*{1e62c0f0-b5c9-430e-addc-6f6ec6e0bde1}*SharedItemsImports = 13
-		Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems*{20986a1a-bf57-4ea7-92e1-e88d3c70874b}*SharedItemsImports = 5
-		Typography\Typography.OpenFont\Typography.OpenFont.projitems*{20986a1a-bf57-4ea7-92e1-e88d3c70874b}*SharedItemsImports = 5
-		Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems*{20986a1a-bf57-4ea7-92e1-e88d3c70874b}*SharedItemsImports = 5
-		Typography\Typography.OpenFont\Typography.OpenFont.projitems*{235a071b-8d06-40ae-a5c5-b1ce59715ee9}*SharedItemsImports = 13
-		Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems*{2e593fca-b809-4270-9eb2-93f380af2d6c}*SharedItemsImports = 5
-		PixelFarm.Typography (Excerpt)\PixelFarm.Typography (Excerpt).projitems*{3eca00b3-0925-4418-b6f2-ac49aa3520bb}*SharedItemsImports = 13
-		CSharpMath.Xaml\CSharpMath.Xaml.projitems*{56166c6c-b3b4-4bae-823e-b3d24c080394}*SharedItemsImports = 5
-		PixelFarm.Typography (Excerpt)\PixelFarm.Typography (Excerpt).projitems*{65016a61-2125-4e0c-90e8-a915230c7826}*SharedItemsImports = 5
-		Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems*{65016a61-2125-4e0c-90e8-a915230c7826}*SharedItemsImports = 5
-		Typography\Typography.OpenFont\Typography.OpenFont.projitems*{65016a61-2125-4e0c-90e8-a915230c7826}*SharedItemsImports = 5
-		Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems*{65016a61-2125-4e0c-90e8-a915230c7826}*SharedItemsImports = 5
-		CSharpMath.Wiki\CSharpMath.Wiki.projitems*{883bcfb1-3aa8-4ab7-8f82-27b849716373}*SharedItemsImports = 13
-		Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems*{9a99f103-b119-4a4d-8093-6a03baa6d36b}*SharedItemsImports = 13
-		CSharpMath.Xaml\CSharpMath.Xaml.projitems*{9bad6846-0b1d-4446-bf62-fcf85c6e9a9f}*SharedItemsImports = 5
-		CSharpMath.Xaml\CSharpMath.Xaml.projitems*{d37416fb-3025-4a64-81ce-89da21062acb}*SharedItemsImports = 13
-		Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems*{d8861cf8-c506-472b-8a57-632bd6ca6496}*SharedItemsImports = 13
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Ad-Hoc|Any CPU = Ad-Hoc|Any CPU
 		Ad-Hoc|ARM = Ad-Hoc|ARM
@@ -1608,5 +1593,25 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3C9A56A6-4EA3-4228-B064-E4789B282032}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		CSharpMath.Apple\CSharpMath.Apple.projitems*{11d4e6c7-c8e2-449c-a1e7-18bbbce4e6f3}*SharedItemsImports = 5
+		CSharpMath.Apple\CSharpMath.Apple.projitems*{1e62c0f0-b5c9-430e-addc-6f6ec6e0bde1}*SharedItemsImports = 13
+		Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems*{20986a1a-bf57-4ea7-92e1-e88d3c70874b}*SharedItemsImports = 5
+		Typography\Typography.OpenFont\Typography.OpenFont.projitems*{20986a1a-bf57-4ea7-92e1-e88d3c70874b}*SharedItemsImports = 5
+		Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems*{20986a1a-bf57-4ea7-92e1-e88d3c70874b}*SharedItemsImports = 5
+		Typography\Typography.OpenFont\Typography.OpenFont.projitems*{235a071b-8d06-40ae-a5c5-b1ce59715ee9}*SharedItemsImports = 13
+		Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems*{2e593fca-b809-4270-9eb2-93f380af2d6c}*SharedItemsImports = 5
+		PixelFarm.Typography (Excerpt)\PixelFarm.Typography (Excerpt).projitems*{3eca00b3-0925-4418-b6f2-ac49aa3520bb}*SharedItemsImports = 13
+		CSharpMath.Xaml\CSharpMath.Xaml.projitems*{56166c6c-b3b4-4bae-823e-b3d24c080394}*SharedItemsImports = 5
+		PixelFarm.Typography (Excerpt)\PixelFarm.Typography (Excerpt).projitems*{65016a61-2125-4e0c-90e8-a915230c7826}*SharedItemsImports = 5
+		Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems*{65016a61-2125-4e0c-90e8-a915230c7826}*SharedItemsImports = 5
+		Typography\Typography.OpenFont\Typography.OpenFont.projitems*{65016a61-2125-4e0c-90e8-a915230c7826}*SharedItemsImports = 5
+		Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems*{65016a61-2125-4e0c-90e8-a915230c7826}*SharedItemsImports = 5
+		CSharpMath.Wiki\CSharpMath.Wiki.projitems*{883bcfb1-3aa8-4ab7-8f82-27b849716373}*SharedItemsImports = 13
+		Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems*{9a99f103-b119-4a4d-8093-6a03baa6d36b}*SharedItemsImports = 13
+		CSharpMath.Xaml\CSharpMath.Xaml.projitems*{9bad6846-0b1d-4446-bf62-fcf85c6e9a9f}*SharedItemsImports = 5
+		CSharpMath.Xaml\CSharpMath.Xaml.projitems*{d37416fb-3025-4a64-81ce-89da21062acb}*SharedItemsImports = 13
+		Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems*{d8861cf8-c506-472b-8a57-632bd6ca6496}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal
