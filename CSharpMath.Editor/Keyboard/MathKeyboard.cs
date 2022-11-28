@@ -109,6 +109,7 @@ namespace CSharpMath.Editor {
     public MathListIndex? ClosestIndexToPoint(PointF point) =>
       Display?.IndexForPoint(Context, point);
     public override void KeyPress(MathKeyboardInput input) {
+      base.KeyPress(input);
       ResetPlaceholders(MathList);
       CaretState = MathKeyboardCaretState.Shown;
     }
