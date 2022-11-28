@@ -30,10 +30,10 @@ namespace CSharpMath.Editor {
       if (priviousIsPlaceHolder(self, atomIndex, out MathAtom placeholder)) {
         SetSuperAndSubScript(placeholder, atom);
         self[atomIndex] = atom;
-        return;
       }
-
-      self.Insert(atomIndex, atom);
+      else {
+        self.Insert(atomIndex, atom);
+      }
       advance = advanceType == MathListSubIndexType.None ?
         advance.Next :
         advance.LevelUpWithSubIndex(advanceType, MathListIndex.Level0Index(0));
