@@ -30,6 +30,14 @@ namespace CSharpMath.Editor.Visualizer {
             this.LatexLable = new System.Windows.Forms.Label();
             this.Delete = new System.Windows.Forms.Button();
             this.DebugButton = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.Left = new System.Windows.Forms.Button();
+            this.Right = new System.Windows.Forms.Button();
+            this.Up = new System.Windows.Forms.Button();
+            this.Down = new System.Windows.Forms.Button();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // CommandFire
@@ -100,11 +108,105 @@ namespace CSharpMath.Editor.Visualizer {
             this.DebugButton.UseVisualStyleBackColor = true;
             this.DebugButton.Click += new System.EventHandler(this.DebugButton_Click);
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(219, 22);
+            this.button1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(9, 25);
+            this.button1.TabIndex = 7;
+            this.button1.Text = "Start";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Visible = false;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(561, 8);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(63, 15);
+            this.label1.TabIndex = 8;
+            this.label1.Text = "GrafhTable";
+            // 
+            // Left
+            // 
+            this.Left.Location = new System.Drawing.Point(12, 305);
+            this.Left.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.Left.Name = "Left";
+            this.Left.Size = new System.Drawing.Size(75, 22);
+            this.Left.TabIndex = 9;
+            this.Left.Text = "Left";
+            this.Left.UseVisualStyleBackColor = true;
+            this.Left.Click += new System.EventHandler(this.Left_Click);
+            // 
+            // Right
+            // 
+            this.Right.Location = new System.Drawing.Point(265, 305);
+            this.Right.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.Right.Name = "Right";
+            this.Right.Size = new System.Drawing.Size(66, 22);
+            this.Right.TabIndex = 10;
+            this.Right.Text = "Right";
+            this.Right.UseVisualStyleBackColor = true;
+            this.Right.Click += new System.EventHandler(this.Right_Click);
+            // 
+            // Up
+            // 
+            this.Up.Location = new System.Drawing.Point(93, 305);
+            this.Up.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.Up.Name = "Up";
+            this.Up.Size = new System.Drawing.Size(78, 22);
+            this.Up.TabIndex = 11;
+            this.Up.Text = "Up";
+            this.Up.UseVisualStyleBackColor = true;
+            this.Up.Click += new System.EventHandler(this.Up_Click);
+            // 
+            // Down
+            // 
+            this.Down.Location = new System.Drawing.Point(177, 305);
+            this.Down.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.Down.Name = "Down";
+            this.Down.Size = new System.Drawing.Size(83, 22);
+            this.Down.TabIndex = 12;
+            this.Down.Text = "Down";
+            this.Down.UseVisualStyleBackColor = true;
+            this.Down.Click += new System.EventHandler(this.Down_Click);
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(22, 392);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(93, 19);
+            this.checkBox1.TabIndex = 13;
+            this.checkBox1.Text = "משמאל לימין";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
+            // checkBox2
+            // 
+            this.checkBox2.AutoSize = true;
+            this.checkBox2.Location = new System.Drawing.Point(121, 392);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(56, 19);
+            this.checkBox2.TabIndex = 14;
+            this.checkBox2.Text = "בבניה";
+            this.checkBox2.UseVisualStyleBackColor = true;
+            this.checkBox2.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(344, 450);
+            this.ClientSize = new System.Drawing.Size(1334, 448);
+            this.Controls.Add(this.checkBox2);
+            this.Controls.Add(this.checkBox1);
+            this.Controls.Add(this.Down);
+            this.Controls.Add(this.Up);
+            this.Controls.Add(this.Right);
+            this.Controls.Add(this.Left);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.DebugButton);
             this.Controls.Add(this.Delete);
             this.Controls.Add(this.LatexLable);
@@ -129,5 +231,13 @@ namespace CSharpMath.Editor.Visualizer {
     private Label LatexLable;
     private Button Delete;
     private Button DebugButton;
+    private Button button1;
+    private Label label1;
+    private Button Left;
+    private Button Right;
+    private Button Up;
+    private Button Down;
+    private CheckBox checkBox1;
+    private CheckBox checkBox2;
   }
 }
