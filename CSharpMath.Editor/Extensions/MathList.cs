@@ -109,6 +109,31 @@ namespace CSharpMath.Editor {
     public static void RemoveAt(this MathList self, ref MathListIndex index) {
       index ??= MathListIndex.Level0Index(0);
       CheckForOutOfBounds(self, index);
+      var currectAtom = self.Atoms[index.AtomIndex];
+      if (self.AtomAt(index) is Placeholder) {
+        #region HandlePlaceHolder
+        // remove scripts/superscript/subscript by list
+        if (index.SubIndexType != MathListSubIndexType.None) {
+          var frac = self.AtomAt(index.LevelDown() ?? throw new Exception("no level down"));
+          if (frac is Atoms.Fraction && self.AtomListAt(index)?.CountObjects == 2) {
+            if (index.LevelDown() is MathListIndex leveldown) {
+              RemoveAt(self, ref leveldown);
+            }
+          }
+          self.AtomListAt(index)?.Clear();
+          if (index.SubIndexType == MathListSubIndexType.BetweenBaseAndScripts) {
+            index = index.LevelDown() ?? index.Previous ?? index;
+            return;
+          }
+          index = index.LevelDown()?.Next ?? index.Previous ?? index;
+          return;
+        }
+        if (!SubAndSuperAreEmpty(currectAtom) || self.Count > 1) {
+          self.RemoveAt(index.AtomIndex);
+        }
+        return;
+        #endregion
+      }
       switch (index.SubIndexType) {
         case MathListSubIndexType.None:
           self.RemoveAt(index.AtomIndex);
@@ -120,7 +145,7 @@ namespace CSharpMath.Editor {
           CheckForSubSuperEmpty(index, currentAtom);
           var downIndex = index.LevelDown();
           if (downIndex is null) throw new InvalidCodePathException("downIndex is null");
-          if (AtomCouldGetLeftovers(out MathAtom previous,index)) {
+          if (AtomCouldGetLeftOvers(out MathAtom previous, index)) {
             SetSuperAndSubScript(currentAtom, previous);
             self.RemoveAt(index.AtomIndex);
             // it was in the nucleus and we removed it, get out of the nucleus and get in the nucleus of the previous one.
@@ -133,6 +158,11 @@ namespace CSharpMath.Editor {
           var insertionAtom = LaTeXSettings.Placeholder;
           SetSuperAndSubScript(currentAtom, insertionAtom);
           self.RemoveAt(index.AtomIndex);
+          //self.Insert(index.AtomIndex,insertionAtom);
+          if (currectAtom.Subscript.IsNonEmpty() && currectAtom.Superscript.IsNonEmpty()) {
+          self.Insert(index.AtomIndex,insertionAtom);
+            return;
+          }
           index = downIndex;
           self.InsertAndAdvance(ref index, insertionAtom, MathListSubIndexType.None);
           index = index.Previous ?? throw new InvalidCodePathException("Cannot go back after insertion?");
@@ -175,12 +205,14 @@ namespace CSharpMath.Editor {
       }
       if (index.Previous is null && index.SubIndexType != MathListSubIndexType.None) {
         // We have deleted to the beginning of the line and it is not the outermost line
-        if (self.AtomAt(index) is null) {
+        currectAtom = self.AtomAt(index);
+        if (currectAtom is null) {
           self.InsertAndAdvance(ref index, LaTeXSettings.Placeholder, MathListSubIndexType.None);
-          index = index.Previous ?? throw new InvalidCodePathException("Cannot go back after insertion?"); ;
+          return;
         }
       }
-      bool AtomCouldGetLeftovers(out MathAtom previous, MathListIndex index) {
+
+      bool AtomCouldGetLeftOvers(out MathAtom previous, MathListIndex index) {
         previous = new Number("0");
         if (index is null) throw new NullReferenceException("index");
         if (index.AtomIndex > 0) {
