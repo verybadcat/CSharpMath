@@ -103,6 +103,7 @@ namespace CSharpMath.Editor {
             case (Atoms.BinaryOperator _, 0): goto stop;
             case (Atoms.Relation _, 0): goto stop;
             case (Atoms.Fraction _, 0): goto stop;
+            case (Atoms.Placeholder _, 0): goto stop;
             case (Atoms.Open _, _) when parenDepth < 0: goto stop;
             // We don't put this atom on the fraction
             case (var atom, _): numerator.Push(atom); break;
@@ -210,6 +211,13 @@ namespace CSharpMath.Editor {
               var FinalType = finalSubType();
               MoveByFinalType(levelDown, FinalType);
               break;
+            case Atoms.Placeholder p:
+              _insertionIndex = prev;
+              if ((p.Superscript.IsEmpty() && p.Subscript.IsEmpty()) || _insertionIndex.SubIndexType == MathListSubIndexType.BetweenBaseAndScripts) {
+                MoveCursorLeft();
+                return;
+              }
+              break;
             case { Superscript: var s } when s.IsNonEmpty():
 
               _insertionIndex = prev;
@@ -237,12 +245,10 @@ namespace CSharpMath.Editor {
           }
 #pragma warning restore CS8604 // Possible null reference argument.
           CheckNullIndex();
-          if (finalSubType() is MathListSubIndexType.BetweenBaseAndScripts) {
-            var prevInd = _insertionIndex.LevelDown();
-            if (prevInd != null && getAtom(prevInd) is Atoms.Placeholder) {
-              _insertionIndex = prevInd;
-            }
-            return;
+          var NextIndex = _insertionIndex?.Next;
+          if (NextIndex is not null) {
+            if (getAtom(NextIndex) is Atoms.Placeholder p && p.Superscript.IsEmpty() && p.Subscript.IsEmpty())
+              _insertionIndex = NextIndex; // Skip right side of placeholders when end of line
           }
           var previousIndex = _insertionIndex?.Previous;
           if (getAtom(_insertionIndex) is null && previousIndex is not null) {
@@ -326,9 +332,11 @@ namespace CSharpMath.Editor {
                   throw new InvalidCodePathException
                     ("finalSubType() is BetweenBaseAndScripts but levelDown is null");
                 }
-                var typeOfA = a.Subscript.IsNonEmpty() ? MathListSubIndexType.Subscript : MathListSubIndexType.Superscript;
+
+                var typeOfAtom = a.Subscript.IsNonEmpty() ? MathListSubIndexType.Subscript : MathListSubIndexType.Superscript;
+
                 _insertionIndex = levelDown;
-                IndexLevelUp(typeOfA, MathListIndex.Level0Index(0));
+                IndexLevelUp(typeOfAtom, MathListIndex.Level0Index(0));
                 break;
               case Atoms.Inner _:
                 IndexLevelUp(MathListSubIndexType.Inner, MathListIndex.Level0Index(0));
@@ -344,8 +352,8 @@ namespace CSharpMath.Editor {
                 IndexLevelUp(MathListSubIndexType.BetweenBaseAndScripts, MathListIndex.Level0Index(1));
                 break;
               case Atoms.Placeholder:
-                // Skip right side of placeholders when end of line
-                goto case null;
+              //  // Skip right side of placeholders when end of line
+              //  goto case null;
               default:
                 _insertionIndex = _insertionIndex.Next;
                 break;
@@ -406,8 +414,7 @@ namespace CSharpMath.Editor {
               throw new InvalidOperationException($"{nameof(_insertionIndex)} is null.");
           }
           void MoveRightIfPlaceHolder() {
-            if (finalSubType() is MathListSubIndexType.BetweenBaseAndScripts
-                && getAtom(_insertionIndex.LevelDown()) is Atoms.Placeholder)
+            if (getAtom(_insertionIndex) is Atoms.Placeholder)
               MoveCursorRight();
           }
         }
