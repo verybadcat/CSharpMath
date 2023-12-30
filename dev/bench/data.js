@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1628600685502,
+  "lastUpdate": 1703929343281,
   "repoUrl": "https://github.com/verybadcat/CSharpMath",
   "entries": {
     "CSharpMath.Rendering.Benchmarks": [
@@ -2250,6 +2250,96 @@ window.BENCHMARK_DATA = {
             "value": 4083799.826388889,
             "unit": "ns",
             "range": "± 76638.48157528609"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "charles.roddie@mathspire.com",
+            "name": "Charles Roddie",
+            "username": "charlesroddie"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "2d7dec98695dac6944027d90c73ec50fe45c5964",
+          "message": "Remove EnumGetValues (#230)\n\nCo-authored-by: Charles Roddie <charles.roddie@summatic.co.uk>",
+          "timestamp": "2023-12-30T17:35:11+08:00",
+          "tree_id": "6dd61a7a1f28119dec4f1622c7db77e3703134d5",
+          "url": "https://github.com/verybadcat/CSharpMath/commit/2d7dec98695dac6944027d90c73ec50fe45c5964"
+        },
+        "date": 1703929334338,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.AllConstantValues",
+            "value": 623906780,
+            "unit": "ns",
+            "range": "± 5910817.297754057"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cases\")",
+            "value": 3156643.59375,
+            "unit": "ns",
+            "range": "± 14209.75049695775"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Color\")",
+            "value": 1081983.6388221155,
+            "unit": "ns",
+            "range": "± 5620.572251813654"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Commands\")",
+            "value": 385259.39592633926,
+            "unit": "ns",
+            "range": "± 2723.7192183201155"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cyrillic\")",
+            "value": 3300759.6875,
+            "unit": "ns",
+            "range": "± 14782.48486508431"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"ErrorMissingArgument\")",
+            "value": 1977323.6778846155,
+            "unit": "ns",
+            "range": "± 12245.663712854948"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Matrix\")",
+            "value": 1810697.8365384615,
+            "unit": "ns",
+            "range": "± 6833.91962891657"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuadraticFormula\")",
+            "value": 730922.265625,
+            "unit": "ns",
+            "range": "± 4100.175522326886"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuarticSolutions\")",
+            "value": 134114253.33333333,
+            "unit": "ns",
+            "range": "± 723704.3584095321"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"TangentPeriodShift\")",
+            "value": 856293.3143028846,
+            "unit": "ns",
+            "range": "± 7786.41872763696"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"VectorProjection\")",
+            "value": 3423486.941964286,
+            "unit": "ns",
+            "range": "± 10570.467639230552"
           }
         ]
       }
