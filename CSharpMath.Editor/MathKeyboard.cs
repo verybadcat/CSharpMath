@@ -75,7 +75,7 @@ namespace CSharpMath.Editor {
     public LineStyle LineStyle { get; set; }
     public Color SelectColor { get; set; }
     public virtual RectangleF Measure => Display?.DisplayBounds() ?? RectangleF.Empty;
-    public bool HasText => MathList?.Atoms?.Count > 0;
+    public bool HasText => MathList.Atoms.Count > 0;
     public void RecreateDisplayFromMathList() {
       var position = Display?.Position ?? default;
       Display = Typesetter.CreateLine(MathList, Font, Context, LineStyle);
@@ -377,9 +377,9 @@ namespace CSharpMath.Editor {
 
       void DeleteBackwards() {
         // delete the last atom from the list
-        if (HasText && _insertionIndex.Previous is MathListIndex previous) {
+        if (HasText && (Extensions.PreviousOrBeforeWholeList(_insertionIndex)) is MathListIndex previous) {
           _insertionIndex = previous;
-          MathList.RemoveAt(ref _insertionIndex);
+          MathList.RemoveAt(_insertionIndex);
         }
       }
 

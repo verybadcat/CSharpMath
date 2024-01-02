@@ -29,8 +29,8 @@ namespace CSharpMath.Atom.Atoms {
     public override bool Equals(object obj) => obj is Fraction f && EqualsFraction(f);
     public bool EqualsFraction(Fraction other) =>
       EqualsAtom(other)
-      && Numerator.NullCheckingStructuralEquality(other.Numerator)
-      && Denominator.NullCheckingStructuralEquality(other.Denominator)
+      && Numerator.Equals(other.Numerator)
+      && Denominator.Equals(other.Denominator)
       && LeftDelimiter == other.LeftDelimiter
       && RightDelimiter == other.RightDelimiter;
     public override int GetHashCode() =>

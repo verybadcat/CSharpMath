@@ -5,7 +5,7 @@ using System.Collections;
 namespace CSharpMath.Atom {
   using Atoms;
 #pragma warning disable CA1710 // Identifiers should have correct suffix
-  // WTF CA1710, you want types inheriting IList to have the Collection suffix?
+  // WTF CA1710, you want types implementing IList to have the Collection suffix?
   class DisabledMathList : MathList {
     internal DisabledMathList() { }
     public override void Add(MathAtom item) => throw new InvalidOperationException("Scripts are not allowed!");
@@ -111,14 +111,11 @@ namespace CSharpMath.Atom {
     public virtual void Append(IEnumerable<MathAtom> list) => Atoms.AddRange(list);
     public void RemoveAtoms(int index, int count) => Atoms.RemoveRange(index, count);
     public bool EqualsList(MathList otherList) {
-      if (otherList == null) {
-        return false;
-      }
       if (otherList.Count != Count) {
         return false;
       }
       for (int i = 0; i < Count; i++) {
-        if (!this[i].NullCheckingStructuralEquality(otherList[i])) {
+        if (!this[i].Equals(otherList[i])) {
           return false;
         }
       }
@@ -132,13 +129,11 @@ namespace CSharpMath.Atom {
     IEnumerator IEnumerable.GetEnumerator() => Atoms.GetEnumerator();
     public int IndexOf(MathAtom item) => Atoms.IndexOf(item);
     public void Insert(int index, MathAtom item) {
-      if (item != null) Atoms.Insert(index, item);
-      else throw new ArgumentNullException(nameof(item), "MathList cannot contain null.");
+      Atoms.Insert(index, item);
     }
     public void RemoveAt(int index) => Atoms.RemoveAt(index);
     public virtual void Add(MathAtom item) {
-      if (item != null) Atoms.Add(item);
-      else throw new ArgumentNullException(nameof(item), "MathList cannot contain null.");
+      Atoms.Add(item);
     }
     public void Clear() => Atoms.Clear();
     public bool Contains(MathAtom item) => Atoms.Contains(item);
