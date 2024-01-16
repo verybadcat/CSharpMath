@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
+using SkiaSharp.Views.Maui.Controls.Hosting;
 
 namespace CSharpMath.Maui.Example {
   public static class MauiProgram {
@@ -6,10 +7,7 @@ namespace CSharpMath.Maui.Example {
       var builder = MauiApp.CreateBuilder();
       builder
           .UseMauiApp<App>()
-          .ConfigureFonts(fonts => {
-            fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-            fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-          });
+          .UseSkiaSharp();
 
 #if DEBUG
   		builder.Logging.AddDebug();

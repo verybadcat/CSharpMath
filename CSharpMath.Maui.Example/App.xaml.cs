@@ -1,9 +1,9 @@
-﻿namespace CSharpMath.Maui.Example {
+namespace CSharpMath.Maui.Example {
   public partial class App : Application {
     public App() {
       InitializeComponent();
 
-      MainPage = new AppShell();
+      MainPage = new MainPage();
     }
   }
 }
