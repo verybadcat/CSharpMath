@@ -145,6 +145,8 @@
     <ProjectReference Include="..\CSharpMath.Ios\CSharpMath.Ios.csproj">
       <Project>{11D4E6C7-C8E2-449C-A1E7-18BBBCE4E6F3}</Project>
       <Name>CSharpMath.Ios</Name>
+      <IsAppExtension>false</IsAppExtension>
+      <IsWatchApp>false</IsWatchApp>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
