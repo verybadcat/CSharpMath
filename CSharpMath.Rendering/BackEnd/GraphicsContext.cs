@@ -8,7 +8,7 @@ using Typography.OpenFont;
 
 namespace CSharpMath.Rendering.BackEnd {
   public class GraphicsContext : IGraphicsContext<Fonts, Glyph> {
-    private class GlyphOutlineBuilder : Typography.Contours.GlyphOutlineBuilderBase {
+    private class GlyphOutlineBuilder : Typography.OpenFont.Contours.GlyphOutlineBuilderBase {
       public GlyphOutlineBuilder(Typeface typeface) : base(typeface) { }
     }
     public GraphicsContext(ICanvas canvas, (Color glyph, Color textRun)? glyphBoxColor) {
@@ -72,7 +72,7 @@ namespace CSharpMath.Rendering.BackEnd {
         pathBuilder.BuildFromGlyph(glyph.Info, pointSize);
         Canvas.CurrentColor = foreground ?? color;
         pathBuilder.ReadShapes(Canvas.StartNewPath());
-        Canvas.Translate(typeface.GetHAdvanceWidthFromGlyphIndex(index) * scale + kernAfter, 0);
+        Canvas.Translate(typeface.GetAdvanceWidthFromGlyphIndex(index) * scale + kernAfter, 0);
       }
       Canvas.Restore();
     }
