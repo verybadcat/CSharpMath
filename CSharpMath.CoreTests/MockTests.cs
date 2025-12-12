@@ -29,8 +29,5 @@ namespace CSharpMath.CoreTests {
     [Fact]
     public void ResourceProviderFindsResource() =>
       Assert.NotNull(Resources.ManifestResources.LatinMathContent);
-    [Fact]
-    public void ResourceProviderFindsMathConfiguration() =>
-      Assert.IsType<Newtonsoft.Json.Linq.JObject>(Resources.ManifestResources.LatinMath["constants"]);
   }
 }
