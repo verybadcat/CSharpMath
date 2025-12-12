@@ -12,13 +12,11 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: |
-          3.1.x
           6.0.x
-    - name: Setup NuGet
-      uses: NuGet/setup-nuget@v2
+          10.0.x
     - name: Setup MSBuild Path
       uses: microsoft/setup-msbuild@v2
     - name: Restore NuGet Packages
-      run: nuget restore CSharpMath.sln
+      run: dotnet restore CSharpMath.sln
     - name: Build Everything
       run: msbuild CSharpMath.sln /p:Configuration=Release
