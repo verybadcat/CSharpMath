@@ -22,7 +22,6 @@
       "Typography/Typography.OpenFont/Typography.OpenFont.shproj",
       "Typography/Typography.GlyphLayout/Typography.GlyphLayout.shproj",
       "Typography/Typography.TextBreak/Typography.TextBreak/Typography.TextBreak.shproj",
-      "Typography/Typography.TextBreak/Typography.TextBreak.UnitTests/TextBreakTests.csproj",
       "CSharpMath.Playground/CSharpMath.Playground.csproj",
       "CSharpMath.Avalonia/CSharpMath.Avalonia.csproj",
       "CSharpMath.Avalonia.Example/CSharpMath.Avalonia.Example.csproj",
@@ -32,4 +31,4 @@
       "CSharpMath.Forms.Tests/CSharpMath.Forms.Tests.csproj"
     ]
   }
-}
+}}
