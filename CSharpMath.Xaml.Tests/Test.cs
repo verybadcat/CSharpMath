@@ -45,7 +45,7 @@ namespace CSharpMath.Xaml.Tests {
       SetBinding(view,
         (TProperty)typeof(TView)
         .GetField(propertyName + "Property", BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
-        ?.GetValue(view) ?? throw new NotImplementedException($"Property not found in {typeof(TView)}: {propertyName}"),
+        ?.GetValue(view)! ?? throw new NotImplementedException($"Property not found in {typeof(TView)}: {propertyName}"),
         propertyName,
         bindingMode ?? Default);
     [Fact]
