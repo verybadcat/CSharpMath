@@ -4,6 +4,8 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!-- Suppress nullable reference type warnings from Typography submodule -->
+    <NoWarn>$(NoWarn);CS8618;CS8603;CS8625;CS8600;CS8601;CS8602;CS8604</NoWarn>
   </PropertyGroup>
 
   <Import Project="..\Typography\Typography.OpenFont\Typography.OpenFont.projitems" Label="Shared" />
