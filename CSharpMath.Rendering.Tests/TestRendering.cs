@@ -24,7 +24,7 @@ namespace CSharpMath.Rendering.Tests {
     // https://www.codecogs.com/latex/eqneditor.php
     static string ThisFilePath([CallerFilePath] string? path = null) =>
       path ?? throw new ArgumentNullException(nameof(path));
-    public static DirectoryInfo ThisDirectory = new FileInfo(ThisFilePath()).Directory;
+    public static DirectoryInfo ThisDirectory = new FileInfo(ThisFilePath()).Directory!;
     public static string GetFolder(string folderName) =>
       ThisDirectory.CreateSubdirectory(folderName).FullName;
     public static IEnumerable<string> Folders =>

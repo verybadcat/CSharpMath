@@ -8,7 +8,7 @@ namespace CSharpMath.Rendering.Tests {
     public void DrawsAsUsual() {
       using var surface = SKSurface.Create(new SKImageInfo(258, 258));
       DrawIcon.Draw(surface.Canvas);
-      using var expected = TestRenderingFixture.ThisDirectory.Parent.EnumerateFiles("Icon.png").Single().OpenRead();
+      using var expected = TestRenderingFixture.ThisDirectory.Parent!.EnumerateFiles("Icon.png").Single().OpenRead();
       using var actual = surface.Snapshot().Encode().AsStream();
       Assert.Equal(expected.Length, actual.Length);
       Assert.True(TestRenderingFixture.StreamsContentsAreEqual(expected, actual));
