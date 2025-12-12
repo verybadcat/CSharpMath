@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Typography.OpenFont;
+using Typography.OpenFont.Extensions;
 
 namespace CSharpMath.Rendering.BackEnd {
   public class Fonts : Display.FrontEnd.IFont<Glyph>, IEnumerable<Typeface> {
