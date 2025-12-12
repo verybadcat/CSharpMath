@@ -52,10 +52,11 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
       int dollarCount = 0;
       var globalAtoms = new TextAtomListBuilder();
       List<BreakAtInfo> breakList = new List<BreakAtInfo>(); // Roslyn bug that assumes breakList is nullable resulting in warnings so var is not used
-      var breaker = new CustomBreaker() { // v => breakList.Add(new BreakAtInfo(v.LatestBreakAt, v.LatestWordKind)) // The CustomBreaker constructor no longer takes an argument
+      var breaker = new CustomBreaker() {
         BreakNumberAfterText = true,
         ThrowIfCharOutOfRange = false
       };
+      breaker.SetNewBreakHandler(v => breakList.Add(new BreakAtInfo(v.LatestBreakAt, v.LatestWordKind)));
       foreach (var engine in AdditionalBreakingEngines)
         breaker.AddBreakingEngine(engine);
       breaker.BreakWords(latexSource);
