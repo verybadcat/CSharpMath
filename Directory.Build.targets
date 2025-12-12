@@ -1,9 +1,4 @@
 <Project>
-  <!--Needed as SourceLink + DeterministicBuild don't play well with coverlet: https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/DeterministicBuild.md-->
-  <!--Still needed as of .NET Core CLI 3.1.302: https://github.com/coverlet-coverage/coverlet/issues/882#issuecomment-657183552-->
-  <ItemGroup>
-    <SourceRoot Include="$(NuGetPackageRoot)" />
-  </ItemGroup>
   <Target Name="CoverletGetPathMap"
           DependsOnTargets="InitializeSourceRootMappedPaths"
           Returns="@(_LocalTopLevelSourceRoot)"
