@@ -3,6 +3,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Description>Rendering interface for CSharpMath using the Typography library.</Description>
+      <!-- Suppress nullable reference type warnings from Typography submodule -->
+      <NoWarn>$(NoWarn);CS8618;CS8603;CS8625;CS8600;CS8601;CS8602;CS8604</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="Reference Fonts\*.otf" />
