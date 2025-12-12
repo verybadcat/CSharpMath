@@ -1,9 +1,9 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras/2.1.2">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>xamarin.ios1.0</TargetFramework>
+    <TargetFramework>net10.0-ios</TargetFramework>
     <OutputType>Library</OutputType>
     <Description>The iOS front end for CSharpMath.</Description>
-    <PackageTags>$(PackageTags) ios xamarin</PackageTags>
+    <PackageTags>$(PackageTags) ios</PackageTags>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
