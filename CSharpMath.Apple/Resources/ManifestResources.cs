@@ -14,7 +14,7 @@ namespace CSharpMath.Resources {
           using var textReader = new StreamReader(LatinMathContent);
           using var reader = new Newtonsoft.Json.JsonTextReader(textReader);
           _latinMath =
-            new Newtonsoft.Json.JsonSerializer().Deserialize<JObject>(reader).Root;
+            new Newtonsoft.Json.JsonSerializer().Deserialize<JObject>(reader)!.Root;
         }
         return _latinMath;
       }

@@ -5,6 +5,8 @@ using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
 
+# nullable disable
+
 namespace CSharpMath.Apple {
   /// <summary>Holds lots of constants for spacing between
   /// various visible elements by reading a JSON file.</summary>
@@ -136,7 +138,7 @@ namespace CSharpMath.Apple {
     private const string _startConnectorKey = "startConnector";
     private const string _extenderKey = "extender";
     private const string _glyphKey = "glyph";
-    public override IEnumerable<GlyphPart<TGlyph>>? GetVerticalGlyphAssembly(TGlyph rawGlyph, TFont font) =>
+    public override IEnumerable<GlyphPart<TGlyph>> GetVerticalGlyphAssembly(TGlyph rawGlyph, TFont font) =>
       _assemblyTable[GlyphNameProvider.GetGlyphName(rawGlyph)]?[_assemblyPartsKey] is JArray parts
       ? parts.Select(partInfo =>
         new GlyphPart<TGlyph>(
