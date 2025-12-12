@@ -7,16 +7,18 @@ jobs:
     steps:
     - name: Update draft on GitHub Releases
       id: release_drafter
-      uses: release-drafter/release-drafter@v5
+      uses: release-drafter/release-drafter@v6
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         submodules: 'recursive'
-    - name: Setup .NET Core # Required to execute ReportGenerator
-      uses: actions/setup-dotnet@v1
+    - name: Setup .NET # Required to execute ReportGenerator
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '3.1.401'
+        dotnet-version: |
+          3.1.x
+          6.0.x
     - name: Update dependencies in CSharpMath.Xaml.Tests.NuGet
       run: |
         dotnet tool install -g dotnet-outdated
@@ -35,7 +37,7 @@ jobs:
       run: |
         # .NET Core MSBuild cannot parse , and ; correctly so we replace them with substitutions: https://github.com/dotnet/msbuild/issues/471#issuecomment-366268743
         # https://www.gnu.org/software/bash/manual/bash.html#Shell-Parameter-Expansion
-        # ${parameter/pattern/string} If pattern begins with ‘/’, all matches of pattern are replaced with string. Normally only the first match is replaced.
+        # ${parameter/pattern/string} If pattern begins with '/', all matches of pattern are replaced with string. Normally only the first match is replaced.
         RELEASE_NOTES=${RELEASE_NOTES//,/%2C}
         RELEASE_NOTES=${RELEASE_NOTES//;/%3B}
         
@@ -43,7 +45,7 @@ jobs:
         # Coverlet settings come after --: https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/VSTestIntegration.md#advanced-options-supported-via-runsettings
         dotnet test CSharpMath.CrossPlatform.slnf -c Release -l GitHubActions --blame --collect:"XPlat Code Coverage" -r .testcoverage -p:PackageReleaseNotes="$RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }} -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.IncludeTestAssembly=true
     - name: Run ReportGenerator on Test Coverage results
-      uses: danielpalme/ReportGenerator-GitHub-Action@4.6.7
+      uses: danielpalme/ReportGenerator-GitHub-Action@5
       with:
         reports: '.testcoverage/**/*.*' # REQUIRED # The coverage reports that should be parsed (separated by semicolon). Globbing is supported.
         targetdir: '.testcoverage/report' # REQUIRED # The directory where the generated report should be saved.
@@ -51,30 +53,30 @@ jobs:
         title: 'CSharpMath test coverage results' # Optional title.
         tag: ${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }} # Optional tag or build version.
     - name: Upload CSharpMath test coverage results as CI artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: CSharpMath test coverage results
         path: .testcoverage/
     - name: Upload CSharpMath test coverage results to codecov.io
-      uses: codecov/codecov-action@v1
+      uses: codecov/codecov-action@v4
       with:
         file: .testcoverage/**/*.xml # optional
         name: CSharpMath test coverage # optional
         fail_ci_if_error: true # optional (default = false)
     - name: Upload CSharpMath.Rendering.Tests results as CI artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       if: always() # Run even when a previous step failed: https://stackoverflow.com/a/58859404/5429648
       with:
         name: CSharpMath.Rendering.Tests results
         path: CSharpMath.Rendering.Tests/*/*.png
     - name: Upload CSharpMath.Xaml.Tests.NuGet results as CI artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: CSharpMath.Xaml.Tests.NuGet results
         path: CSharpMath.Xaml.Tests.NuGet/*.png
     - name: Upload NuGet packages as CI artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: NuGet packages
@@ -90,7 +92,7 @@ jobs:
   Ios:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         submodules: 'recursive'
     - run: nuget restore CSharpMath.sln
@@ -171,7 +173,7 @@ jobs:
         if [[ "$TESTS_OUTPUT" == *"[FAIL]"* ]]
         then exit 1
         fi
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       if: always() # Run even when a previous step failed: https://stackoverflow.com/a/58859404/5429648
       with:
         name: CSharpMath.Ios.Tests Results

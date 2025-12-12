@@ -7,13 +7,15 @@ jobs:
   CSharpMath:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         submodules: 'recursive'
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '3.1.401'
+        dotnet-version: |
+          3.1.x
+          6.0.x
     - name: Build GitHub Releases draft artifacts
       env:
         RELEASE_NOTES: |
