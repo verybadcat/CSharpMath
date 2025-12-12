@@ -86,7 +86,7 @@ jobs:
     - uses: actions/checkout@v4
       with:
         submodules: 'recursive'
-    - run: dotnet restore CSharpMath.sln
+    - run: dotnet restore CSharpMath.Ios.slnf
     - run: msbuild CSharpMath.Ios.Tests
     - name: Run tests
       env:
