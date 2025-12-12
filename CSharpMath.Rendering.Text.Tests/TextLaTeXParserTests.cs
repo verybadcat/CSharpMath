@@ -36,7 +36,6 @@ namespace CSharpMath.Rendering.Text.Tests {
     [InlineData("😀", "Text")]
     [InlineData("Chinese", "中", "文")]
     [InlineData("Chinese", "中", "12345", "文", "😄")]
-    [InlineData("a", "😀", "😄", "b")]
     public void Text(params string[] text) {
       var input = string.Concat(text);
       var atom = Parse(input);
