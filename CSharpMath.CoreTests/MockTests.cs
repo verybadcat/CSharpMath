@@ -1,4 +1,5 @@
-using CSharpMath.CoreTests.FrontEnd;
+using CSharpMath.CoreTests;
+using CSharpMath.Tests.FrontEnd;
 using Xunit;
 using TGlyph = System.Text.Rune;
 using CSharpMath.Display;

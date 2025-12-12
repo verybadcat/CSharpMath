@@ -15,6 +15,7 @@
       "CSharpMath.Rendering.Tests.FSharp/CSharpMath.Rendering.Tests.FSharp.fsproj",
       "CSharpMath.Rendering.Text.Tests/CSharpMath.Rendering.Text.Tests.csproj",
       "CSharpMath.Rendering/CSharpMath.Rendering.csproj",
+      "CSharpMath.Tests.FrontEnd/CSharpMath.Tests.FrontEnd.csproj",
       "CSharpMath.Xaml/CSharpMath.Xaml.shproj",
       "CSharpMath.Xaml.Tests/CSharpMath.Xaml.Tests.csproj",
       "CSharpMath.Xaml.Tests.NuGet/CSharpMath.Xaml.Tests.NuGet.csproj",
