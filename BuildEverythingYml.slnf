@@ -23,7 +23,6 @@
       "CSharpMath.SkiaSharp\\CSharpMath.SkiaSharp.csproj",
       "CSharpMath.Forms\\CSharpMath.Forms.csproj",
       "CSharpMath.Forms.Example\\CSharpMath.Forms.Example\\CSharpMath.Forms.Example.csproj",
-      "CSharpMath.Forms.Example\\CSharpMath.Forms.Example.WPF\\CSharpMath.Forms.Example.WPF.csproj",
       "CSharpMath.Forms.Tests\\CSharpMath.Forms.Tests.csproj"
     ]
   }
