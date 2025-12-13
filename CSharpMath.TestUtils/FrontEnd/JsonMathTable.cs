@@ -1,7 +1,7 @@
 using CSharpMath.Display;
 using CSharpMath.Display.FrontEnd;
 using CSharpMath.Structures;
-using CSharpMath.Tests.FrontEnd;
+using CSharpMath.TestUtils;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;

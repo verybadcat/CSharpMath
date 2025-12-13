@@ -1,6 +1,6 @@
 using System.Drawing;
 using CSharpMath.Atom;
-using CSharpMath.Tests.FrontEnd;
+using CSharpMath.TestUtils;
 using Xunit;
 
 namespace CSharpMath.Editor.Tests {

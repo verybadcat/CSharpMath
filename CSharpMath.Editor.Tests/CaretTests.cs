@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using CSharpMath.Atom;
-using CSharpMath.Tests.FrontEnd;
+using CSharpMath.TestUtils;
 using Xunit;
 using TGlyph = System.Text.Rune;
 

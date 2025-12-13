@@ -2,6 +2,6 @@
   <ItemGroup>
     <EmbeddedResource Include="_Helpers\Resources\latinmodern-math.json" />
     <ProjectReference Include="..\CSharpMath\CSharpMath.csproj" />
-    <ProjectReference Include="..\CSharpMath.Tests.FrontEnd\CSharpMath.Tests.FrontEnd.csproj" />
+    <ProjectReference Include="..\CSharpMath.TestUtils\CSharpMath.TestUtils.csproj" />
   </ItemGroup>
 </Project>

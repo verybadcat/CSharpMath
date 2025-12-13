@@ -1,4 +1,4 @@
-namespace CSharpMath.Tests.FrontEnd;
+namespace CSharpMath.TestUtils;
 
 using System;
 using System.Collections.Generic;

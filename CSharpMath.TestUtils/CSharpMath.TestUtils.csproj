@@ -4,6 +4,8 @@
     <LangVersion>14.0</LangVersion>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <AssemblyName>CSharpMath.TestUtils</AssemblyName>
+    <RootNamespace>CSharpMath.TestUtils</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

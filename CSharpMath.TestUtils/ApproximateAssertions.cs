@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Runtime.CompilerServices;
 using Xunit;
 
-namespace CSharpMath.Tests.FrontEnd;
+namespace CSharpMath.TestUtils;
 
 [DebuggerStepThrough] // Debugger should stop at the line that uses these functions
 public static class Approximately {

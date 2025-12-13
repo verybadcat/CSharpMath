@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.0.11222.15
@@ -103,7 +103,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\Test.yml = .github\workflows\Test.yml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.Tests.FrontEnd", "CSharpMath.Tests.FrontEnd\CSharpMath.Tests.FrontEnd.csproj", "{7400B38E-9951-4A2D-8E2E-B71B864E6973}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpMath.TestUtils", "CSharpMath.TestUtils\CSharpMath.TestUtils.csproj", "{7400B38E-9951-4A2D-8E2E-B71B864E6973}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

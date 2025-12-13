@@ -8,7 +8,7 @@ namespace CSharpMath.CoreTests.FrontEnd {
         TestGlyphFinder.Instance,
         new Apple.JsonMathTable<TestFont, TGlyph>(
           TestFontMeasurer.Instance,
-          Resources.ManifestResources.LatinMath,
+          TestUtils.Resources.ManifestResources.LatinMath,
           TestGlyphNameProvider.Instance,
           TestGlyphBoundsProvider.Instance
         )

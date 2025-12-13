@@ -2,7 +2,7 @@ namespace CSharpMath.CoreTests.FrontEnd {
   using System.Linq;
   using TGlyph = System.Text.Rune;
   /// <summary> Looks up a name in latinmodern-math.json </summary>
-  class TestGlyphNameProvider : Editor.Tests.IGlyphNameProvider {
+  class TestGlyphNameProvider : TestUtils.IGlyphNameProvider<TGlyph> {
     TestGlyphNameProvider() { }
     public static TestGlyphNameProvider Instance { get; } = new TestGlyphNameProvider();
     static readonly TGlyph italic_a = "𝑎".EnumerateRunes().Single();

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <ProjectReference Include="..\CSharpMath.Editor\CSharpMath.Editor.csproj" />
-    <ProjectReference Include="..\CSharpMath.Tests.FrontEnd\CSharpMath.Tests.FrontEnd.csproj" />
+    <ProjectReference Include="..\CSharpMath.TestUtils\CSharpMath.TestUtils.csproj" />
   </ItemGroup>
 </Project>

@@ -1,14 +1,14 @@
 using System;
 using System.Linq;
 using CSharpMath.Display.FrontEnd;
-using CSharpMath.Tests.FrontEnd;
+using CSharpMath.TestUtils;
 using Xunit;
 using TGlyph = System.Text.Rune;
-using T = Xunit.InlineDataAttribute; // 'T'est
-using K = CSharpMath.Editor.MathKeyboardInput; // 'K'ey
+using T = Xunit.InlineDataAttribute;
+using K = CSharpMath.Editor.MathKeyboardInput;
+using EventInteractor = System.Action<CSharpMath.Editor.MathKeyboard<CSharpMath.TestUtils.TestFont, System.Text.Rune>, System.EventHandler>;
 
 namespace CSharpMath.Editor.Tests {
-  using EventInteractor = Action<MathKeyboard<TestFont, TGlyph>, EventHandler>;
   public class KeyPressTests {
     private static readonly TypesettingContext<TestFont, TGlyph> context = TestTypesettingContexts.Instance;
     static void Test(string latex, K[] inputs) {
@@ -235,7 +235,7 @@ namespace CSharpMath.Editor.Tests {
       T(@"\frac{■}{\square }", K.Fraction, K.Backspace),
       T(@"", K.VerticalBar, K.VerticalBar, K.Backspace, K.Backspace, K.Backspace)
     ]
-    public void Backspace(string latex, params K[] inputs) => Test(latex, inputs);
+    public void Backspace(string latex, params K[] inputs = null) => Test(latex, inputs);
 
     [
       Theory,

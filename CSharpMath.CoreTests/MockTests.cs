@@ -1,4 +1,4 @@
-using CSharpMath.Tests.FrontEnd;
+using CSharpMath.TestUtils;
 using CSharpMath.CoreTests;
 using Xunit;
 using TGlyph = System.Text.Rune;
@@ -29,6 +29,6 @@ namespace CSharpMath.CoreTests {
     }
     [Fact]
     public void ResourceProviderFindsResource() =>
-      Assert.NotNull(Tests.FrontEnd.Resources.ManifestResources.LatinMath);
+      Assert.NotNull(TestUtils.Resources.ManifestResources.LatinMath);
   }
 }

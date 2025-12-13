@@ -1,4 +1,4 @@
-namespace CSharpMath.Tests.FrontEnd;
+namespace CSharpMath.TestUtils;
 
 using TGlyph = System.Text.Rune;
 
