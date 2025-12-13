@@ -2,7 +2,7 @@ using System.Drawing;
 using CSharpMath.Atom;
 using CSharpMath.Tests.FrontEnd;
 using Xunit;
-using SubIndex = MathListSubIndexType;
+using SubIndex = CSharpMath.Editor.MathListSubIndexType;
 
 namespace CSharpMath.Editor.Tests {
   using static IndexForPointTests;
@@ -11,7 +11,7 @@ namespace CSharpMath.Editor.Tests {
   public class PointForIndexTests {
     void Test(string latex, PointF expected, MathListIndex index) =>
       CreateDisplay(latex).Match(
-        display => CSharpMath.CoreTests.Approximately.Equal
+        display => CSharpMath.Tests.FrontEnd.Approximately.Equal
           (expected, display.PointForIndex(TestTypesettingContexts.Instance, index)),
         s => throw new Xunit.Sdk.XunitException(s)
       );
