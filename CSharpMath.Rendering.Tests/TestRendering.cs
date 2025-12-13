@@ -19,7 +19,7 @@ namespace CSharpMath.Rendering.Tests {
       // Pre-initialize typefaces to speed tests up
       BackEnd.Fonts.GlobalTypefaces.ToString();
       // Needed by Avalonia tests!
-      global::Avalonia.Skia.SkiaPlatform.Initialize();
+      //global::Avalonia.Skia.SkiaPlatform.Initialize();
     }
     // https://www.codecogs.com/latex/eqneditor.php
     static string ThisFilePath([CallerFilePath] string? path = null) =>

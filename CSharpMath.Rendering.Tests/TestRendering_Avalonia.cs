@@ -1,8 +1,8 @@
-using AvaloniaColor = Avalonia.Media.Color;
+//using AvaloniaColor = Avalonia.Media.Color;
 
 namespace CSharpMath.Rendering.Tests {
   using System.IO;
-  using Avalonia;
+  //using Avalonia;
   using FrontEnd;
   
 #if false // Avalonia tests are failing owing to versioning issues. When Avalonia support is updated, this test should be re-enabled.
