@@ -12,19 +12,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="./.git" />
-    <None Include="$(MSBuildThisFileDirectory)%40GettingStarted~Mac.md" />
     <None Include="$(MSBuildThisFileDirectory)%40GettingStarted~Forms.md" />
-    <None Include="$(MSBuildThisFileDirectory)%40GettingStarted~iOS.md" />
-    <None Include="$(MSBuildThisFileDirectory)%40Introduction.md" />
     <None Include="$(MSBuildThisFileDirectory)Documentation-of-public-facing-APIs-of-CSharpMath.Rendering,-CSharpMath.SkiaSharp-and-CSharpMath.Forms-MathViews.md" />
     <None Include="$(MSBuildThisFileDirectory)Easter-egg~Being-a-stargazer-as-usual.....md" />
     <None Include="$(MSBuildThisFileDirectory)FAQ~What-is-the-purpose-of-each-project？.md" />
     <None Include="$(MSBuildThisFileDirectory)Note~Further-reading-materials-on-GitHub-project-management.md" />
-    <None Include="$(MSBuildThisFileDirectory)Note~Gaining-Influence.md" />
     <None Include="$(MSBuildThisFileDirectory)Note~Link-towards-raw-file-of-Documentation-to-be-exported-to-NuGet.md" />
     <None Include="$(MSBuildThisFileDirectory)_Footer.md" />
     <None Include="$(MSBuildThisFileDirectory)_SideBar.md" />
-    <None Include="$(MSBuildThisFileDirectory)%40GettingStarted~tvOS.md" />
-    <None Include="$(MSBuildThisFileDirectory)%40GettingStarted~watchOS.md" />
   </ItemGroup>
 </Project>
