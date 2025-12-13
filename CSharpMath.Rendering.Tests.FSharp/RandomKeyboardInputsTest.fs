@@ -12,7 +12,7 @@ let getRandomMathKeyboardInput =
 
 /// adds 100 random keypresses to a MathKeyboard and gets LaTeX and checks that there is no crash
 let private test100keypresses() =
-    let keyboard = CSharpMath.Rendering.FrontEnd.MathKeyboard()
+    use keyboard = new CSharpMath.Rendering.FrontEnd.MathKeyboard()
     let mutable reverseInputs:MathKeyboardInput list = []
     try
         for _ in 1 .. 100 do
@@ -25,7 +25,7 @@ let private test100keypresses() =
         Error(reverseInputs |> List.rev)
 
 let private tryList(kl:MathKeyboardInput list) =
-    let keyboard = CSharpMath.Rendering.FrontEnd.MathKeyboard()
+    use keyboard = new CSharpMath.Rendering.FrontEnd.MathKeyboard()
     for ki in kl do
         ki |> keyboard.KeyPress
         keyboard.LaTeX |> ignore
@@ -55,4 +55,4 @@ let [<Fact>] ``random inputs don't crash editor``() =
     | kl::_ ->
         let shortestSublist = findShortening kl
         try tryList shortestSublist
-        with ex -> failwithf "Exeption: %s inputs: %A" ex.Message shortestSublist
+        with ex -> failwith $"Exeption: {ex.Message} inputs: {shortestSublist}"  
