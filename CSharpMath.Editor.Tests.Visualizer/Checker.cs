@@ -27,7 +27,7 @@ namespace CSharpMath.Editor.Tests.Visualizer {
         try {
           Console.Title = "CSharpMath.Editor.Tests Visualizer";
           Console.Clear();
-          if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+          if (OperatingSystem.IsWindows())
             Console.SetBufferSize(Console.WindowWidth, Console.BufferHeight); // line wrapping
           Console.ResetColor();
           Console.WriteLine("Welcome to the CSharpMath.Editor.Tests Visualizer!");
@@ -61,7 +61,7 @@ namespace CSharpMath.Editor.Tests.Visualizer {
           var y = ReadInt("Input Touch Y (integer): ");
           Console.Clear();
 
-          if(Environment.OSVersion.Platform == PlatformID.Win32NT)
+          if(OperatingSystem.IsWindows())
             Console.SetBufferSize(10000, Console.BufferHeight); // no line wrapping
           display.Draw(context);
 moveCursor:var pos = Adjust(new Rectangle(x, y, 0, 0));
