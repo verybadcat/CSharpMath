@@ -235,7 +235,7 @@ namespace CSharpMath.Editor.Tests {
       T(@"\frac{■}{\square }", K.Fraction, K.Backspace),
       T(@"", K.VerticalBar, K.VerticalBar, K.Backspace, K.Backspace, K.Backspace)
     ]
-    public void Backspace(string latex, params K[] inputs = null) => Test(latex, inputs);
+    public void Backspace(string latex, params K[] inputs) => Test(latex, inputs);
 
     [
       Theory,
