@@ -477,7 +477,10 @@ namespace CSharpMath.Atom {
     private static void MathListToLaTeX
       (MathList mathList, StringBuilder builder, FontStyle outerFontStyle) {
       static bool MathAtomToLaTeX(MathAtom atom, StringBuilder builder,
-        [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out string? command) {
+#if !NETSTANDARD2_0 && !NET45
+        [System.Diagnostics.CodeAnalysis.NotNullWhen(true)]
+#endif
+        out string? command) {
         if (LaTeXSettings.CommandForAtom(atom) is string name) {
           command = name;
           builder.Append(name);
@@ -632,7 +635,7 @@ namespace CSharpMath.Atom {
             break;
           case LargeOperator op:
             if (MathAtomToLaTeX(op, builder, out var command)) {
-              if (!(LaTeXSettings.AtomForCommand(command) is LargeOperator originalOperator))
+              if (!(LaTeXSettings.AtomForCommand(command!) is LargeOperator originalOperator))
                 throw new InvalidCodePathException("original operator not found!");
               if (originalOperator.Limits == op.Limits)
                 break;

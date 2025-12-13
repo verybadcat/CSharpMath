@@ -10,7 +10,7 @@ public static class TestTypesettingContexts {
       TestGlyphFinder.Instance,
       new JsonMathTable<TestFont, TGlyph>(
         TestFontMeasurer.Instance,
-        Newtonsoft.Json.Linq.JToken.Parse(Resources.ManifestResources.LatinMath),
+        Resources.ManifestResources.LatinMath,
         TestGlyphNameProvider.Instance,
         TestGlyphBoundsProvider.Instance
       )

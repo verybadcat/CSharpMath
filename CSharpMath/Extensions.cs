@@ -101,8 +101,10 @@ namespace CSharpMath {
       width = rect.Width;
       descent = -rect.Y;
     }
+#if !NETSTANDARD2_0 && !NET45
     [return: System.Diagnostics.CodeAnalysis.MaybeNull]
-    public static T PeekOrDefault<T>(this Stack<T> stack) => stack.Count == 0 ? default : stack.Peek();
+#endif
+    public static T PeekOrDefault<T>(this Stack<T> stack) => stack.Count == 0 ? default! : stack.Peek();
     public static StringBuilder Append(this StringBuilder sb, ReadOnlySpan<char> value) {
       sb.EnsureCapacity(sb.Length + value.Length);
       for (int i = 0; i < value.Length; i++) sb.Append(value[i]);

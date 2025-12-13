@@ -20,7 +20,9 @@ namespace CSharpMath.Atom {
 
     /// <returns>The last <see cref="MathAtom"/> that is not a <see cref="Comment"/>,
     /// or <see cref="null"/> when <see cref="Atoms"/> is empty.</returns>
+#if !NETSTANDARD2_0 && !NET45
     [System.Diagnostics.CodeAnalysis.DisallowNull]
+#endif
     public MathAtom? Last {
       get {
         for (int i = Atoms.Count - 1; i >= 0; i--)
@@ -38,10 +40,10 @@ namespace CSharpMath.Atom {
             case Comment _:
               continue;
             default:
-              Atoms[i] = value;
+              Atoms[i] = value!;
               return;
           }
-        Atoms.Add(value);
+        Atoms.Add(value!);
       }
     }
     /// <summary>Just a deep copy if finalize is false; A finalized list if finalize is true</summary>

@@ -1,13 +1,13 @@
 namespace CSharpMath.TestUtils.Resources;
 
 public static class ManifestResources {
-  static readonly System.Lazy<string> _latinMath = new System.Lazy<string>(() => {
+  static readonly System.Lazy<Newtonsoft.Json.Linq.JToken> _latinMath = new System.Lazy<Newtonsoft.Json.Linq.JToken>(() => {
     var assembly = typeof(ManifestResources).Assembly;
     using var stream = assembly.GetManifestResourceStream("CSharpMath.TestUtils.Resources.latinmodern-math.json");
     if (stream == null) throw new System.InvalidOperationException("Could not find embedded resource latinmodern-math.json");
     using var reader = new System.IO.StreamReader(stream);
-    return reader.ReadToEnd();
+    return Newtonsoft.Json.Linq.JToken.Parse(reader.ReadToEnd());
   });
   
-  public static string LatinMath => _latinMath.Value;
+  public static Newtonsoft.Json.Linq.JToken LatinMath => _latinMath.Value;
 }
