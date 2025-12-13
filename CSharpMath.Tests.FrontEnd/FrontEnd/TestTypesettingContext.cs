@@ -8,9 +8,9 @@ public static class TestTypesettingContexts {
       (font, size) => new TestFont(size),
       TestGlyphBoundsProvider.Instance,
       TestGlyphFinder.Instance,
-      new Apple.JsonMathTable<TestFont, TGlyph>(
+      new CSharpMath.Apple.JsonMathTable<TestFont, TGlyph>(
         TestFontMeasurer.Instance,
-        Resources.ManifestResources.LatinMath,
+        Newtonsoft.Json.Linq.JToken.Parse(Resources.ManifestResources.LatinMath),
         TestGlyphNameProvider.Instance,
         TestGlyphBoundsProvider.Instance
       )

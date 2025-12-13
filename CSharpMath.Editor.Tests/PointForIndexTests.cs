@@ -1,6 +1,8 @@
 using System.Drawing;
-using CSharpMath.CoreTests.FrontEnd;
+using CSharpMath.Atom;
+using CSharpMath.Tests.FrontEnd;
 using Xunit;
+using SubIndex = MathListSubIndexType;
 
 namespace CSharpMath.Editor.Tests {
   using static IndexForPointTests;

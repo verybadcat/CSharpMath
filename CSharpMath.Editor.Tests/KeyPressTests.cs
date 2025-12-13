@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using CSharpMath.Display.FrontEnd;
-using CSharpMath.CoreTests.FrontEnd;
+using CSharpMath.Tests.FrontEnd;
 using Xunit;
 using TGlyph = System.Text.Rune;
 using T = Xunit.InlineDataAttribute; // 'T'est

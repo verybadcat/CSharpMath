@@ -2,7 +2,7 @@ namespace CSharpMath.Tests.FrontEnd;
 
 using TGlyph = System.Text.Rune;
 
-class TestGlyphFinder : Display.FrontEnd.IGlyphFinder<TestFont, TGlyph> {
+public class TestGlyphFinder : Display.FrontEnd.IGlyphFinder<TestFont, TGlyph> {
   TestGlyphFinder() { }
   public static TestGlyphFinder Instance { get; } = new TestGlyphFinder();
   public TGlyph FindGlyphForCharacterAtIndex(TestFont font, int index, string str) =>

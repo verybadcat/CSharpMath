@@ -7,7 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources\latinmodern-math.json" />
+    <EmbeddedResource Include="..\CSharpMath.CoreTests\_Helpers\Resources\latinmodern-math.json" Link="Resources\latinmodern-math.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
