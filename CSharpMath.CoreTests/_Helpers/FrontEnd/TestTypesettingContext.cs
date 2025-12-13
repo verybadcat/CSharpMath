@@ -6,7 +6,7 @@ namespace CSharpMath.CoreTests.FrontEnd {
         (font, size) => new TestFont(size),
         TestGlyphBoundsProvider.Instance,
         TestGlyphFinder.Instance,
-        new Apple.JsonMathTable<TestFont, TGlyph>(
+        new TestUtils.JsonMathTable<TestFont, TGlyph>(
           TestFontMeasurer.Instance,
           TestUtils.Resources.ManifestResources.LatinMath,
           TestGlyphNameProvider.Instance,

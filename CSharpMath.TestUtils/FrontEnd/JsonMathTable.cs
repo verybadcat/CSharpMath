@@ -1,12 +1,11 @@
 using CSharpMath.Display;
 using CSharpMath.Display.FrontEnd;
 using CSharpMath.Structures;
-using CSharpMath.TestUtils;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CSharpMath.Apple {
+namespace CSharpMath.TestUtils {
   /// <summary>Holds lots of constants for spacing between
   /// various visible elements by reading a JSON file.</summary>
   public class JsonMathTable<TFont, TGlyph> : FontMathTable<TFont, TGlyph>
