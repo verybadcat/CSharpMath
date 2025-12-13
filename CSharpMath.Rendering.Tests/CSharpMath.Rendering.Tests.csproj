@@ -2,5 +2,6 @@
   <ItemGroup>
     <Compile Include="..\CSharpMath.CoreTests\_Helpers\ApproximateAssertions.cs" Link="ApproximateAssertions.cs" />
     <ProjectReference Include="..\CSharpMath.SkiaSharp\CSharpMath.SkiaSharp.csproj" />
+    <PackageReference Include="SkiaSharp" Version="2.88.9" />
   </ItemGroup>
 </Project>
