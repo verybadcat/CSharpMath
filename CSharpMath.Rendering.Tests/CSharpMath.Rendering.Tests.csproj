@@ -1,10 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <Compile Include="..\CSharpMath.CoreTests\_Helpers\ApproximateAssertions.cs" Link="ApproximateAssertions.cs" />
+    <ProjectReference Include="..\CSharpMath.Avalonia\CSharpMath.Avalonia.csproj" />
     <ProjectReference Include="..\CSharpMath.SkiaSharp\CSharpMath.SkiaSharp.csproj" />
     <PackageReference Include="SkiaSharp" Version="2.88.9" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.9" />
     <PackageReference Include="SkiaSharp.NativeAssets.Win32" Version="2.88.9" />
     <PackageReference Include="SkiaSharp.NativeAssets.macOS" Version="2.88.9" />
+    <PackageReference Include="Avalonia.Skia" Version="$(AvaloniaVersion)" />
   </ItemGroup>
 </Project>
