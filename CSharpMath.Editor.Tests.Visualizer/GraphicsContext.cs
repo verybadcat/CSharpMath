@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using CSharpMath.Display;
-using CSharpMath.CoreTests.FrontEnd;
+using CSharpMath.TestUtils;
 using TGlyph = System.Text.Rune;
 
 namespace CSharpMath.Editor.Tests.Visualizer {

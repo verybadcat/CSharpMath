@@ -1,7 +1,7 @@
 using System;
 using System.Drawing;
 using System.Text;
-using ListDisplay = CSharpMath.Display.Displays.ListDisplay<CSharpMath.CoreTests.FrontEnd.TestFont, System.Text.Rune>;
+using ListDisplay = CSharpMath.Display.Displays.ListDisplay<CSharpMath.TestUtils.TestFont, System.Text.Rune>;
 
 namespace CSharpMath.Editor.Tests.Visualizer {
   using Structures;
@@ -11,7 +11,7 @@ namespace CSharpMath.Editor.Tests.Visualizer {
     public static readonly bool OutputLines = true;
     public static void Main() {
       static int ReadInt(string message) {
-        string input;
+        string? input;
         int value;
         do {
           Console.Write(message);
@@ -46,7 +46,7 @@ namespace CSharpMath.Editor.Tests.Visualizer {
           ListDisplay? display = null;
           void AssignDisplay() {
             Console.Write("Input LaTeX: ");
-            if (latex is null) latex = Console.ReadLine();
+            if (latex is null) latex = Console.ReadLine()!;
             else Console.WriteLine(latex); // The P-key case
             IndexForPointTests.CreateDisplay(latex)
             .Match(listDisplay => display = listDisplay, error => {
@@ -91,7 +91,7 @@ moveCursor:var pos = Adjust(new Rectangle(x, y, 0, 0));
         ConsoleColor ret = 0;
         double rr = color.R, gg = color.G, bb = color.B, delta = double.MaxValue;
         foreach (var cc in System.Linq.Enumerable.Cast<ConsoleColor>(Enum.GetValues(typeof(ConsoleColor)))) {
-          var n = Enum.GetName(typeof(ConsoleColor), cc);
+          var n = Enum.GetName(typeof(ConsoleColor), cc)!;
           // There's no "DarkYellow" in System.Drawing.Color
           var c = cc is ConsoleColor.DarkYellow ? System.Drawing.Color.Orange : System.Drawing.Color.FromName(n);
           var t = Math.Pow(c.R - rr, 2.0) + Math.Pow(c.G - gg, 2.0) + Math.Pow(c.B - bb, 2.0);
