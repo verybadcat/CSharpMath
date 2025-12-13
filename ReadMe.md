@@ -26,27 +26,27 @@ Really, any one you like!
 
 [//]: # (Primary platforms)
 
-[SkiaSharp](wiki/@GettingStarted~SkiaSharp.md)
-[Xamarin.Forms](wiki/@GettingStarted~Forms.md)
-[Xamarin.iOS](wiki/@GettingStarted~iOS.md)
+[SkiaSharp](CSharpMath.Wiki/@GettingStarted~SkiaSharp.md)
+[Xamarin.Forms](CSharpMath.Wiki/@GettingStarted~Forms.md)
+[Xamarin.iOS](CSharpMath.Wiki/@GettingStarted~iOS.md)
 
 [//]: # (Through SkiaSharp)
 
-[tvOS](wiki/@GettingStarted~tvOS.md)
-[watchOS](wiki/@GettingStarted~watchOS.md)
-[Xamarin.Android](wiki/@GettingStarted~Android.md)
-[Xamarin.Mac](wiki/@GettingStarted~Mac.md)
-[.NET Core](wiki/@GettingStarted~NetCore.md)
-[Windows Forms](wiki/@GettingStarted~WinForms.md)
-[Windows Presentation Framework](wiki/@GettingStarted~WPF.md)
-[Universal Windows Platform](wiki/@GettingStarted~UWP.md)
-[Gtk#](wiki/@GettingStarted~Gtk.md)
-[Tizen](wiki/@GettingStarted~Tizen.md)
+[tvOS](CSharpMath.Wiki/@GettingStarted~tvOS.md)
+[watchOS](CSharpMath.Wiki/@GettingStarted~watchOS.md)
+[Xamarin.Android](CSharpMath.Wiki/@GettingStarted~Android.md)
+[Xamarin.Mac](CSharpMath.Wiki/@GettingStarted~Mac.md)
+[.NET Core](CSharpMath.Wiki/@GettingStarted~NetCore.md)
+[Windows Forms](CSharpMath.Wiki/@GettingStarted~WinForms.md)
+[Windows Presentation Framework](CSharpMath.Wiki/@GettingStarted~WPF.md)
+[Universal Windows Platform](CSharpMath.Wiki/@GettingStarted~UWP.md)
+[Gtk#](CSharpMath.Wiki/@GettingStarted~Gtk.md)
+[Tizen](CSharpMath.Wiki/@GettingStarted~Tizen.md)
 
 [//]: # (Future)
 
-[Unity](wiki/@GettingStarted~Unity.md)
-[ASP.NET](wiki/@GettingStarted~ASP.md)
+[Unity](CSharpMath.Wiki/@GettingStarted~Unity.md)
+[ASP.NET](CSharpMath.Wiki/@GettingStarted~ASP.md)
 -->
 
 # Platform support

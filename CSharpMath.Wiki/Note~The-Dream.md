@@ -1,0 +1,5 @@
+https://katex.org/docs/supported.html
+
+[A repo gaining massive attention](https://star-history.t9t.io/#verybadcat/CSharpMath&ForNeVeR/wpf-math&LayoutFarm/Typography&nxrighthere/UnrealCLR) just from [social networks](https://www.reddit.com/r/dotnet/comments/he4waw/unreal_engine_4_net_core_integration/)
+
+[Ads that bring emotion effectively -> a lot of upvotes -> free advertising](https://www.reddit.com/r/funny/comments/hebr9x/this_milk_ad/) ([another one](https://www.youtube.com/watch?v=x4-T_AULO0w&feature=youtu.be)) ([another one](https://www.youtube.com/watch?v=o2hQGOOR5g0)) ([another one](https://www.youtube.com/watch?v=NpROnHsWohs&feature=youtu.be)) ([another one](https://www.youtube.com/watch?v=LQsMp4Oo6xM)) ([another one](https://www.youtube.com/watch?v=DPI-YNpAh28&feature=youtu.be)) ([another one](https://www.youtube.com/watch?v=U88TkYKFJCo))
