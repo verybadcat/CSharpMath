@@ -485,7 +485,7 @@ namespace CSharpMath.Atom {
           command = name;
           builder.Append(name);
           if (name.AsSpan().StartsWithInvariant(@"\"))
-            builder.Append(" ");
+            builder.Append(' ');
           return true;
         }
         command = null;
@@ -604,7 +604,7 @@ namespace CSharpMath.Atom {
                 }
                 MathListToLaTeX(cell, builder, currentFontStyle);
                 if (j < row.Count - 1) {
-                  builder.Append("&");
+                  builder.Append('&');
                 }
               }
               if (i < table.NRows - 1) {
@@ -614,7 +614,7 @@ namespace CSharpMath.Atom {
             if (table.Environment != null) {
               builder.Append(@"\end{")
                 .Append(table.Environment)
-                .Append("}");
+                .Append('}');
             }
             break;
           case Overline over:
