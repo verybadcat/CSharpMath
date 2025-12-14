@@ -22,11 +22,7 @@ namespace CSharpMath.CoreTests {
         Equal(x, actual.X, tolerance);
         Equal(y, actual.Y, tolerance);
       } catch (Xunit.Sdk.InRangeException) {
-        throw Xunit.Sdk.InRangeException.ForValueNotInRange(
-          actual,
-          new PointF((float)(x - tolerance), (float)(y - tolerance)),
-          new PointF((float)(x + tolerance), (float)(y + tolerance))
-        );
+        Assert.Fail($"Expected point at ({x}, {y}) ± {tolerance}, but was ({actual.X}, {actual.Y})");
       }
     }
     public static void Equal
@@ -44,13 +40,7 @@ namespace CSharpMath.CoreTests {
         Equal(width, actual.Width, tolerance);
         Equal(height, actual.Height, tolerance);
       } catch (Xunit.Sdk.InRangeException) {
-        throw Xunit.Sdk.InRangeException.ForValueNotInRange(
-          actual,
-          new RectangleF((float)(x - tolerance), (float)(y - tolerance),
-                         (float)(width - tolerance), (float)(height - tolerance)),
-          new RectangleF((float)(x + tolerance), (float)(y + tolerance),
-                         (float)(width + tolerance), (float)(height + tolerance))
-        );
+        Assert.Fail($"Expected rectangle at ({x}, {y}) with size ({width}, {height}) ± {tolerance}, but was at ({actual.X}, {actual.Y}) with size ({actual.Width}, {actual.Height})");
       }
     }
 

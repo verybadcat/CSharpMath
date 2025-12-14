@@ -277,6 +277,9 @@ namespace CSharpMath.Forms.Tests {
     }.Select(input => new object[] { input });
   }
   public static class NotNullExtension {
-    public static T NotNull<T>(this T? obj) where T : class => obj ?? throw new Xunit.Sdk.NotNullException();
+    public static T NotNull<T>(this T? obj) where T : class {
+      Assert.NotNull(obj);
+      return obj;
+    }
   }
 }
