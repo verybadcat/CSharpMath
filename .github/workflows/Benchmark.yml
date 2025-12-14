@@ -9,11 +9,9 @@ jobs:
       with:
         submodules: 'recursive'
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: |
-          3.1.x
-          6.0.x
+        dotnet-version: '10.0.x'
     - run: dotnet run -p CSharpMath.Rendering.Benchmarks
     - name: Store benchmark result
       uses: Happypig375/github-action-benchmark@v1
