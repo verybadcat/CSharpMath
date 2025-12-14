@@ -122,6 +122,7 @@ Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6. \[\f
     protected void Run<TContent>(
       string inFile, string latex, Painter<TCanvas, TContent, TColor> painter, TextAlignment alignment = TextAlignment.TopLeft,
       float textPainterCanvasWidth = TextPainter<TCanvas, TColor>.DefaultCanvasWidth, [CallerMemberName] string folder = "") where TContent : class {
+      bool updateBaselines = false;
       folder = TestRenderingFixture.GetFolder(folder);
       var frontEnd = FrontEnd.ToLowerInvariant();
 
@@ -150,9 +151,20 @@ Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6. \[\f
       Assert.True(expectedFile.Exists, "The expected image was not copied successfully.");
       using var actualStream = actualFile.OpenRead();
       using var expectedStream = expectedFile.OpenRead();
+      
+      bool sizesMatch = Math.Abs(expectedStream.Length - actualStream.Length) <= expectedStream.Length * FileSizeTolerance;
+      bool contentsMatch = FileSizeTolerance == 0 ? TestRenderingFixture.StreamsContentsAreEqual(expectedStream, actualStream) : sizesMatch;
+      
+      if (!contentsMatch && updateBaselines) {
+        expectedStream.Close();
+        actualStream.Close();
+        actualFile.CopyTo(expectedFile.FullName, overwrite: true);
+        return;
+      }
+      
       CoreTests.Approximately.Equal(expectedStream.Length, actualStream.Length, expectedStream.Length * FileSizeTolerance);
       if (FileSizeTolerance == 0)
-        Assert.True(TestRenderingFixture.StreamsContentsAreEqual(expectedStream, actualStream), "The images differ.");
+        Assert.True(contentsMatch, "The images differ.");
     }
     public static TheoryData<string, TPainter> PainterSettingsData<TPainter, TContent>() where TPainter : Painter<TCanvas, TContent, TColor>, new() where TContent : class =>
       new TheoryData<string, TPainter> {
