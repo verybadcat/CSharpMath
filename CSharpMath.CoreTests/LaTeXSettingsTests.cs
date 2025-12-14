@@ -30,10 +30,10 @@ namespace CSharpMath.CoreTests {
     [Fact]
     public void AtomForCommandGeneratesACopy() {
       var atom = LaTeXSettings.AtomForCommand(@"\int");
-      if (atom == null) throw new Xunit.Sdk.NotNullException();
+      Assert.NotNull(atom);
       atom.IndexRange = Range.NotFound;
       var atom2 = LaTeXSettings.AtomForCommand(@"\int");
-      if (atom2 == null) throw new Xunit.Sdk.NotNullException();
+      Assert.NotNull(atom2);
       Assert.Equal(Range.Zero, atom2.IndexRange);
     }
   }

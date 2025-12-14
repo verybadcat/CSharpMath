@@ -23,9 +23,11 @@ public static class Approximately {
       Equal(x, actual.X, tolerance);
       Equal(y, actual.Y, tolerance);
     } catch (Xunit.Sdk.InRangeException) {
-      throw new Xunit.Sdk.InRangeException(actual,
+      throw Xunit.Sdk.InRangeException.ForValueNotInRange(
+        actual,
         new PointF((float)(x - tolerance), (float)(y - tolerance)),
-        new PointF((float)(x + tolerance), (float)(y + tolerance)));
+        new PointF((float)(x + tolerance), (float)(y + tolerance))
+      );
     }
   }
   public static void Equal
@@ -43,11 +45,13 @@ public static class Approximately {
       Equal(width, actual.Width, tolerance);
       Equal(height, actual.Height, tolerance);
     } catch (Xunit.Sdk.InRangeException) {
-      throw new Xunit.Sdk.InRangeException(actual,
+      throw Xunit.Sdk.InRangeException.ForValueNotInRange(
+        actual,
         new RectangleF((float)(x - tolerance), (float)(y - tolerance),
                        (float)(width - tolerance), (float)(height - tolerance)),
         new RectangleF((float)(x + tolerance), (float)(y + tolerance),
-                       (float)(width + tolerance), (float)(height + tolerance)));
+                       (float)(width + tolerance), (float)(height + tolerance))
+      );
     }
   }
 

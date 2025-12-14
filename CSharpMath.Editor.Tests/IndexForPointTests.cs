@@ -7,7 +7,7 @@ namespace CSharpMath.Editor.Tests {
   // Use the "CSharpMath.Editor Test Checker" project in the _Utils folder to visualize the test cases
   using SubIndex = MathListSubIndexType;
   public class IndexForPointTests {
-    public class TestData : TheoryData {
+    public class TestData : TheoryData<PointF, MathListIndex> {
       // Format of test data
       public void Add((double x, double y) point,
         int index, params (SubIndex subType, int subIndex)[] subIndexRecursive) {

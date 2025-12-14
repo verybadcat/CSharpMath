@@ -159,7 +159,7 @@ namespace CSharpMath.CoreTests {
           Assert.Equal(new Range(rangeIndex, rangeLength), a.IndexRange);
         };
       static void CheckListContents(MathList? list) {
-        if (list == null) throw new Xunit.Sdk.NotNullException();
+        Assert.NotNull(list);
         Assert.Collection(list.Atoms,
           CheckAtomNucleusAndRange<UnaryOperator>("\u2212", 0, 1),
           CheckAtomNucleusAndRange<Number>("52", 1, 2),
