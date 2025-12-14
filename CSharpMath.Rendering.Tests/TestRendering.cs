@@ -122,6 +122,7 @@ Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6. \[\f
     protected void Run<TContent>(
       string inFile, string latex, Painter<TCanvas, TContent, TColor> painter, TextAlignment alignment = TextAlignment.TopLeft,
       float textPainterCanvasWidth = TextPainter<TCanvas, TColor>.DefaultCanvasWidth, [CallerMemberName] string folder = "") where TContent : class {
+      // Set to true to update baseline pngs
       bool updateBaselines = false;
       folder = TestRenderingFixture.GetFolder(folder);
       var frontEnd = FrontEnd.ToLowerInvariant();
