@@ -8,7 +8,7 @@
     <Compile Include="..\CSharpMath.Rendering.Tests\TestRenderingSharedData.cs" Link="TestRenderingSharedData.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.12.1" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.15.8" />
     <ProjectReference Include="../CSharpMath.SkiaSharp/CSharpMath.SkiaSharp.csproj" />
   </ItemGroup>
 </Project>
