@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="CSharpMath.Maui.Example.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:CSharpMath.Maui.Example"
+    Title="CSharpMath.Maui.Example">
+
+    <ShellContent
+        Title="Try"
+        ContentTemplate="{DataTemplate local:TryPage}"
+        Route="TryPage" />
+    <ShellContent
+        Title="Clock"
+        ContentTemplate="{DataTemplate local:ClockPage}"
+        Route="ClockPage" />
+
+
+</Shell>

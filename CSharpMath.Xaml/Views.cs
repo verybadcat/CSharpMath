@@ -4,6 +4,8 @@ using CSharpMath.Atom;
 using CSharpMath.Rendering.FrontEnd;
 using CSharpMath.Structures;
 using Typography.OpenFont;
+using System.Drawing;
+
 
 // X stands for Xaml
 #if Avalonia
@@ -25,13 +27,24 @@ using MathPainter = CSharpMath.SkiaSharp.MathPainter;
 using TextPainter = CSharpMath.SkiaSharp.TextPainter;
 namespace CSharpMath.Forms {
   [Xamarin.Forms.ContentProperty(nameof(LaTeX))]
+#elif Maui
+using XCanvas_Canvas = Microsoft.Maui.Graphics.ICanvas;
+using XCanvas_Size = Microsoft.Maui.Graphics.SizeF;
+using XCanvas = (Microsoft.Maui.Graphics.ICanvas, Microsoft.Maui.Graphics.SizeF);
+using XCanvasColor = Microsoft.Maui.Graphics.Color;
+using XColor = Microsoft.Maui.Graphics.Color;
+using XControl = Microsoft.Maui.Controls.GraphicsView;
+using XInheritControl = Microsoft.Maui.Controls.GraphicsView;
+using XProperty = Microsoft.Maui.Controls.BindableProperty;
+namespace CSharpMath.Maui {
+  [Microsoft.Maui.Controls.ContentProperty(nameof(LaTeX))]
 #endif
   public class BaseView<TPainter, TContent> : XInheritControl, ICSharpMathAPI<TContent, XColor>
     where TPainter : Painter<XCanvas, TContent, XCanvasColor>, new() where TContent : class {
     public TPainter Painter { get; } = new TPainter();
 
     protected static readonly TPainter staticPainter = new TPainter();
-    
+
     static BaseView() {
       // Initialize static property fields
       DisablePanningProperty = CreateProperty<BaseView<TPainter, TContent>, bool>(nameof(EnablePanning), false, _ => false, (_, __) => { });
@@ -57,7 +70,7 @@ namespace CSharpMath.Forms {
       ErrorMessagePropertyKey = new ReadOnlyProperty<BaseView<TPainter, TContent>, string?>(nameof(ErrorMessage), p => p.ErrorMessage);
       ErrorMessageProperty = ErrorMessagePropertyKey.Property;
     }
-    
+
     public static XProperty CreateProperty<TThis, TValue>(
       string propertyName,
       bool affectsMeasure,
@@ -191,6 +204,50 @@ namespace CSharpMath.Forms {
       // SkiaSharp deals with raw pixels as opposed to Xamarin.Forms's device-independent units.
       // We should scale to occupy the full view size.
       canvas.Scale(e.Info.Width / (float)Width);
+#elif Maui
+        @this.Invalidate();
+      }
+      return XProperty.Create(propertyName, typeof(TValue), typeof(TThis), defaultValue,
+        propertyChanged: (b, o, n) => PropertyChanged((TThis)b, n));
+    }
+    protected override Microsoft.Maui.Graphics.Size MeasureOverride(double widthConstraint, double heightConstraint) =>
+      Painter.Measure((float)widthConstraint) is { } rect
+      ? new(rect.Width, rect.Height)
+      : base.MeasureOverride(widthConstraint, heightConstraint);
+    struct ReadOnlyProperty<TThis, TValue> where TThis : BaseView<TPainter, TContent> {
+      public ReadOnlyProperty(string propertyName,
+        Func<TPainter, TValue> getter) {
+        _key = XProperty.CreateReadOnly(propertyName, typeof(TValue), typeof(TThis), getter(staticPainter));
+      }
+      readonly Microsoft.Maui.Controls.BindablePropertyKey _key;
+      public XProperty Property => _key.BindableProperty;
+      public void SetValue(TThis @this, TValue value) => @this.SetValue(_key, value);
+    }
+    private protected static XCanvasColor XColorToXCanvasColor(XColor color) => color;
+    private protected static XColor XCanvasColorToXColor(XCanvasColor color) => color;
+    Microsoft.Maui.Graphics.PointF _origin;
+    public BaseView() {
+      StartInteraction += (sender, e) => {
+        if (EnablePanning)
+          _origin = e.Touches[0];
+      };
+      DragInteraction += (sender, e) => {
+        if (EnablePanning) {
+          var point = e.Touches[0];
+          var displacement = point - _origin;
+          _origin = point;
+          DisplacementX += displacement.Width;
+          DisplacementY += displacement.Height;
+        }
+      };
+      EndInteraction += (sender, e) => { _origin = e.Touches[0]; };
+      Drawable = new DrawableRedirector(this);
+    }
+    class DrawableRedirector(BaseView<TPainter, TContent> parent) : Microsoft.Maui.Graphics.IDrawable {
+
+      public void Draw(XCanvas_Canvas canvas, Microsoft.Maui.Graphics.RectF dirtyRect) => parent.Draw((canvas, dirtyRect.Size));
+    }
+    void Draw(XCanvas canvas) {
 #endif
       Painter.Draw(canvas, TextAlignment, Padding, DisplacementX, DisplacementY);
     }
