@@ -4,7 +4,7 @@
 
     <Application.Styles>
 
-        <FluentTheme Mode="Light" />
+        <FluentTheme />
 
         <StyleInclude Source="/Styles.xaml"/>
 
