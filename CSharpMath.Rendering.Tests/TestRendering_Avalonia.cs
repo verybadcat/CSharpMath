@@ -1,4 +1,4 @@
-//using AvaloniaColor = Avalonia.Media.Color;
+using AvaloniaColor = Avalonia.Media.Color;
 
 namespace CSharpMath.Rendering.Tests {
   using System.IO;

@@ -7,8 +7,7 @@
     <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.1" />
     <PackageReference Include="SkiaSharp.NativeAssets.Win32" Version="3.119.1" />
     <PackageReference Include="SkiaSharp.NativeAssets.macOS" Version="3.119.1" />
-    <!-- Avalonia needs updating. Avalonia-specific tests commented out for now. -->
-    <!-- <PackageReference Include="Avalonia.Skia" Version="$(AvaloniaVersion)" /> -->
+    <PackageReference Include="Avalonia.Skia" Version="$(AvaloniaVersion)" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="coverlet.collector" Version="6.0.4">
