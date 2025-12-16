@@ -19,7 +19,7 @@ namespace CSharpMath.Forms {
         (sender, e) => {
           var c = e.Surface.Canvas;
           c.Clear();
-          MathPainter.DrawDisplay(settings, keyboard.Display, c);
+          settings.DrawDisplay(keyboard.Display, c);
           if (keyboard.ShouldDrawCaret)
             keyboard.DrawCaret(new SkiaCanvas(c, settings.AntiAlias), caretColor.FromNative(), caretShape);
         };

@@ -11,6 +11,10 @@
         ContentTemplate="{DataTemplate local:TryPage}"
         Route="TryPage" />
     <ShellContent
+        Title="Editor"
+        ContentTemplate="{DataTemplate local:EditorPage}"
+        Route="EditorPage" />
+    <ShellContent
         Title="Clock"
         ContentTemplate="{DataTemplate local:ClockPage}"
         Route="ClockPage" />
