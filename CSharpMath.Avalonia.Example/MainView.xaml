@@ -18,9 +18,9 @@
                 Margin="2,8"
                 Padding="8,0"
                 VerticalContentAlignment="Center"
-                Content="Light"
-                IsChecked="true" />
-            <RadioButton
+                Content="Light" />
+			<RadioButton
+                x:Name="darkThemeRbn"
                 Margin="2,8"
                 Padding="8,0"
                 VerticalContentAlignment="Center"
