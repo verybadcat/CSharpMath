@@ -42,7 +42,7 @@ namespace CSharpMath.Maui.Example {
     public void SetButtonsTextColor(Color color, Color? placeholderRestingColor = null, Color? placeholderActiveColor = null) {
       foreach (var button in new MathButton[] { ShiftButton, ShiftCapitalsButton }.Concat(TabButtons))
         button.TextColor = color;
-      foreach (var button in new[] { LeftButton, RightButton}
+      foreach (var button in new[] { LeftButton, RightButton }
                             .Concat(ButtonGrids.SelectMany(grid => grid.Children)
                             .Where(child => child is MathInputButton button && button.Input != MathKeyboardInput.Backspace)
                             .Cast<MathInputButton>())) {

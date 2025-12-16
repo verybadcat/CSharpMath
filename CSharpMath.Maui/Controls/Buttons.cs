@@ -35,6 +35,7 @@ namespace CSharpMath.Maui {
           var stream = new System.IO.MemoryStream();
           painter.DrawToStream(stream);
           painter.LaTeX = originalLatexString;
+          stream.Position = 0;
           return stream;
         }
       }
