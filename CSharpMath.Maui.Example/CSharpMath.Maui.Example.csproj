@@ -67,19 +67,4 @@
 		<ProjectReference Include="..\CSharpMath.Maui\CSharpMath.Maui.csproj" />
 		<ProjectReference Include="..\CSharpMath.Evaluation\CSharpMath.Evaluation.csproj" />
 	</ItemGroup>
-	
-	<ItemGroup>
-	  <Compile Update="EditorPage.xaml.cs">
-	    <DependentUpon>EditorPage.xaml</DependentUpon>
-	  </Compile>
-	  <Compile Update="TryPage.xaml.cs">
-	    <DependentUpon>TryPage.xaml</DependentUpon>
-	  </Compile>
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <MauiXaml Update="EditorPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	</ItemGroup>
 </Project>

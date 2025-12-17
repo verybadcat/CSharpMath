@@ -132,6 +132,7 @@ namespace CSharpMath.Rendering.FrontEnd {
         canvas.Restore();
       }
     }
+    public Painter<TCanvas, TContent, TColor> ShallowClone() => (Painter<TCanvas, TContent, TColor>)MemberwiseClone();
     #endregion Methods
   }
 }

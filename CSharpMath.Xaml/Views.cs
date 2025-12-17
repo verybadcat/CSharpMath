@@ -47,7 +47,7 @@ namespace CSharpMath.Maui {
 
     static BaseView() {
       // Initialize static property fields
-      DisablePanningProperty = CreateProperty<BaseView<TPainter, TContent>, bool>(nameof(EnablePanning), false, _ => false, (_, __) => { });
+      EnablePanningProperty = CreateProperty<BaseView<TPainter, TContent>, bool>(nameof(EnablePanning), false, _ => false, (_, __) => { });
       GlyphBoxColorProperty = CreateProperty<BaseView<TPainter, TContent>, (XColor glyph, XColor textRun)?>(nameof(GlyphBoxColor), false,
         p => p.GlyphBoxColor is var (glyph, textRun) ? Nullable((XCanvasColorToXColor(glyph), XCanvasColorToXColor(textRun))) : null,
         (p, v) => p.GlyphBoxColor = v is var (glyph, textRun) ? Nullable((XColorToXCanvasColor(glyph), XColorToXCanvasColor(textRun))) : null);
@@ -252,8 +252,8 @@ namespace CSharpMath.Maui {
       Painter.Draw(canvas, TextAlignment, Padding, DisplacementX, DisplacementY);
     }
     /// <summary>Requires touch events to be enabled in SkiaSharp/Xamarin.Forms</summary>
-    public bool EnablePanning { get => (bool)GetValue(DisablePanningProperty)!; set => SetValue(DisablePanningProperty, value); }
-    public static readonly XProperty DisablePanningProperty;
+    public bool EnablePanning { get => (bool)GetValue(EnablePanningProperty)!; set => SetValue(EnablePanningProperty, value); }
+    public static readonly XProperty EnablePanningProperty;
 
     static readonly System.Reflection.ParameterInfo[] drawMethodParams = typeof(TPainter)
       .GetMethod(nameof(Painter<XCanvas, TContent, XColor>.Draw),

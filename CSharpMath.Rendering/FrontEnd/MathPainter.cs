@@ -56,5 +56,6 @@ namespace CSharpMath.Rendering.FrontEnd {
       Draw(canvas, textAlignment, padding, offsetX, offsetY);
       (Display, _displayChanged) = original;
     }
+    public new MathPainter<TCanvas, TColor> ShallowClone() => (MathPainter<TCanvas, TColor>)MemberwiseClone();
   }
 }

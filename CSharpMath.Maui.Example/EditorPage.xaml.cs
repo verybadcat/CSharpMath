@@ -14,7 +14,7 @@ namespace CSharpMath.Maui.Example {
     MathKeyboard keyboard = new MathKeyboard(Rendering.FrontEnd.PainterConstants.LargerFontSize);
     public EditorView() {
       // Basic functionality
-      var view = new GraphicsView { HeightRequest = 225 };
+      var view = new GraphicsView();
       var viewModel = keyboard.Keyboard;
       viewModel.BindDisplay(view, OutputMathPainter, new Color(0, 0, 0, 153));
 
@@ -26,7 +26,8 @@ namespace CSharpMath.Maui.Example {
       entry.TextChanged += (sender, e) => {
         entry.Text = "";
         foreach (var c in e.NewTextValue)
-          // The (int) extra conversion seems to be required by Android or a crash occurs
+          // The (int) extra conversion used to be required by Xamarin.Forms on Android or a crash occurs
+          // Maybe this isn't required anymore in .NET MAUI
           viewModel.KeyPress((Editor.MathKeyboardInput)(int)c);
       };
 
@@ -59,11 +60,12 @@ namespace CSharpMath.Maui.Example {
       // Assemble
       Content = new Grid {
         RowDefinitions = {
+          new RowDefinition { Height = new GridLength(1, GridUnitType.Auto) },
           new RowDefinition { Height = new GridLength(1, GridUnitType.Star) },
-          new RowDefinition { Height = new GridLength(1.5, GridUnitType.Star) },
-          new RowDefinition { Height = 1 },
-          new RowDefinition { Height = new GridLength(1.5, GridUnitType.Star) },
-          new RowDefinition { Height = new GridLength(2, GridUnitType.Star) },
+          new RowDefinition { Height = new GridLength(1, GridUnitType.Auto) },
+          new RowDefinition { Height = new GridLength(1, GridUnitType.Star) },
+          new RowDefinition { Height = new GridLength(1, GridUnitType.Star) },
+          new RowDefinition { Height = new GridLength(1, GridUnitType.Auto) },
         },
         Children = {
           GridItem(0, 0, new ScrollView {
@@ -74,19 +76,15 @@ namespace CSharpMath.Maui.Example {
           GridItem(1, 0, view),
           GridItem(2, 0, new BoxView { Color = Colors.Gray }),
           GridItem(3, 0, output),
-          GridItem(4, 0, new StackLayout {
+          GridItem(4, 0, keyboard),
+          GridItem(5, 0, new StackLayout {
+            Orientation = StackOrientation.Horizontal,
             Children = {
-              keyboard,
-              new StackLayout {
-                Orientation = StackOrientation.Horizontal,
-                Children = {
-                  new Button { Text = "Change appearance", Command = new Command(ChangeAppearance) },
-                  entry,
-                  new Button {
-                    Text = "Reset answer pan",
-                    Command = new Command(() => output.DisplacementX = output.DisplacementY = 0)
-                  }
-                }
+              new Button { Text = "Change appearance", Command = new Command(ChangeAppearance) },
+              entry,
+              new Button {
+                Text = "Reset answer pan",
+                Command = new Command(() => output.DisplacementX = output.DisplacementY = 0)
               }
             }
           })

@@ -119,5 +119,6 @@ namespace CSharpMath.Rendering.FrontEnd {
         );
       DrawCore(c, new ListDisplay<Fonts, Glyph>(array.Result));
     }
+    public new TextPainter<TCanvas, TColor> ShallowClone() => (TextPainter<TCanvas, TColor>)MemberwiseClone();
   }
 }
