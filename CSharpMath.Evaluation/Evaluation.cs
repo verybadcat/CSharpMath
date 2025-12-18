@@ -26,14 +26,12 @@ namespace CSharpMath {
       PercentDegree
       // Highest
     }
-    public abstract class MathItem : AngouriMath.Core.Sys.Interfaces.ILatexiseable {
+    public abstract class MathItem : AngouriMath.Core.ILatexiseable {
       private protected MathItem() { }
       public abstract string Latexise();
       public static implicit operator MathItem(AngouriMath.Entity content) => new Entity(content);
       public static explicit operator AngouriMath.Entity(MathItem item) => ((Entity)item).Content;
-      public static implicit operator MathItem(SetNode content) => new Set(content);
-      public static explicit operator SetNode(MathItem item) => ((Set)item).Content;
-      /// <summary>A real number, complex number, variable, function call, vector, matrix or higher-dimensional tensor</summary>
+      /// <summary>A real number, complex number, variable, function call, vector, matrix, higher-dimensional tensor, or set</summary>
       public sealed class Entity : MathItem {
         public Entity(AngouriMath.Entity content) => Content = content;
         public AngouriMath.Entity Content { get; }
@@ -56,12 +54,6 @@ namespace CSharpMath {
             current = current.Next;
           }
         }
-      }
-      /// <summary>A set or a combination of set operations</summary>
-      public sealed class Set : MathItem {
-        public Set(SetNode content) => Content = content;
-        public SetNode Content { get; }
-        public override string Latexise() => Content.Latexise();
       }
     }
     public static MathList Visualize(MathItem entity) =>
@@ -105,19 +97,6 @@ namespace CSharpMath {
       });
     static Result<Entity> AsEntity(this MathItem? item, string itemName) =>
       Result.Ok(item).ExpectEntity(itemName);
-    static Result<SetNode?> ExpectSetOrNull(this Result<MathItem?> result, string itemName) =>
-      result.Bind(item => item switch {
-        null => Result.Ok((SetNode?)null),
-        MathItem.Set entity => Result.Ok((SetNode?)entity.Content),
-        var notEntity => Result.Err(item.GetType().Name + " cannot be " + itemName)
-      });
-    static Result<SetNode> ExpectSet(this Result<MathItem?> result, string itemName) =>
-      result.ExpectSetOrNull(itemName).Bind(item => item switch {
-        null => Result.Err("Missing " + itemName),
-        { } entity => Result.Ok(entity)
-      });
-    static Result<SetNode> AsSet(this MathItem? item, string itemName) =>
-      Result.Ok(item).ExpectSet(itemName);
     static Result<MathItem> ExpectNotNull(this Result<MathItem?> result, string itemName) =>
       result.Bind(item => item switch {
         null => Result.Err("Missing " + itemName),
@@ -132,11 +111,11 @@ namespace CSharpMath {
             (MathItem)(
               left == right // MathS.Sets.Interval throws when both edges are equal
               ? leftClosed && rightClosed
-                ? new Set(MathS.Sets.Element(left))
-                : MathS.Sets.Empty()
-              : new Set(MathS.Sets.Interval(left, right).SetLeftClosed(leftClosed).SetRightClosed(rightClosed))
+                ? MathS.Sets.Finite(left)
+                : MathS.Sets.Empty
+              : MathS.Sets.Interval(left, leftClosed, right, rightClosed))
             )
-          )),
+          ),
         _ => "Unrecognized comma-delimited collection of " + c.Count() + " items"
       };
     static readonly Dictionary<Precedence, (string KnownOpening, string InferredClosing)> ContextInfo =
@@ -179,10 +158,7 @@ namespace CSharpMath {
       string? error;
       Precedence handlePrecendence;
       Func<Entity, Entity> handlePrefix, handlePostfix, handleFunction, handleFunctionInverse;
-      Func<Entity[], Entity> handleFunctionN, handleFunctionInverseN;
       Func<Entity, Entity, Entity> handleBinary;
-      Func<SetNode, SetNode> handlePrefixSet, handlePostfixSet, handleFunctionSet, handleFunctionInverseSet;
-      Func<SetNode, SetNode, SetNode> handleBinarySet;
       Func<string, MathItem?, Result<MathItem>> handlePrefixInner, handlePostfixInner, handleFunctionInner, handleFunctionInverseInner;
       Func<string, MathItem?, string, MathItem?, Result<MathItem>> handleBinaryInner;
       for (; i < mathList.Count; i++) {
@@ -192,7 +168,7 @@ namespace CSharpMath {
           switch(superscript) {
             case { Count: 1 } when superscript[0] is Atoms.Ordinary { Nucleus: "∁" }:
               (@this, error) =
-                @this.AsSet("target of set inversion").Bind(target => (MathItem?)!target);
+                @this.AsEntity("target of set inversion").Bind(target => (MathItem?)!target);
               if (error != null) return error;
               break;
             default:
@@ -212,12 +188,12 @@ namespace CSharpMath {
           case Atoms.Placeholder _:
             return "Placeholders should be filled";
           case Atoms.Number n:
-            if (AngouriMath.Core.Numerix.ComplexNumber.TryParse(n.Nucleus, out var number)) {
-              @this = new NumberEntity(number);
+            if (Entity.Number.Complex.TryParse(n.Nucleus, out var number)) {
+              @this = number;
               goto handleThis;
             } else return "Invalid number: " + n.Nucleus;
           case Atoms.Variable v:
-            var subscript = new System.Text.StringBuilder("_");
+            var subscript = new System.Text.StringBuilder();
             foreach (var subAtom in v.Subscript)
               switch (subAtom) {
                 case Atoms.Placeholder _:
@@ -235,24 +211,27 @@ namespace CSharpMath {
                 default:
                   return $"Unsupported {subAtom.TypeName} {subAtom.Nucleus} in subscript";
               }
+            var underscore = subscript.Length > 0 ? "_" : "";
             @this = (v.Nucleus, v.Subscript.Count) switch
             {
-              ("R", 0) when v.FontStyle == FontStyle.Blackboard => MathS.Sets.R(),
-              ("C", 0) when v.FontStyle == FontStyle.Blackboard => MathS.Sets.C(),
+              ("C", 0) when v.FontStyle == FontStyle.Blackboard => MathS.Sets.C,
+              ("R", 0) when v.FontStyle == FontStyle.Blackboard => MathS.Sets.R,
+              ("Q", 0) when v.FontStyle == FontStyle.Blackboard => MathS.Sets.Q,
+              ("Z", 0) when v.FontStyle == FontStyle.Blackboard => MathS.Sets.Z,
               ("e", 0) => MathS.e,
               ("π", 0) => MathS.pi,
-              ("i", 0) => new NumberEntity(MathS.i),
+              ("i", 0) => MathS.i,
               // Convert θ to theta
-              _ when LaTeXSettings.CommandForAtom(atom) is string s => MathS.Var(s + subscript.ToString()),
-              (var name, _) => MathS.Var(name + subscript.ToString())
+              _ when LaTeXSettings.CommandForAtom(atom) is string s => MathS.Var(s + underscore + subscript.ToString()),
+              (var name, _) => MathS.Var(name + underscore + subscript.ToString())
             };
             v.Subscript.Clear();
             goto handleThis;
           case Atoms.Ordinary { Nucleus: "∞" }:
-            @this = new NumberEntity(AngouriMath.Core.Numerix.RealNumber.PositiveInfinity);
+            @this = Entity.Number.Real.PositiveInfinity;
             goto handleThis;
           case Atoms.Ordinary { Nucleus: "∅" }:
-            @this = MathS.Sets.Empty();
+            @this = MathS.Sets.Empty;
             goto handleThis;
           case Atoms.Fraction f:
             Entity numerator, denominator;
@@ -332,7 +311,7 @@ namespace CSharpMath {
             (logBase, error) = Transform(@base).ExpectEntityOrNull(nameof(logBase));
             if (error != null) return error;
             @base.Clear();
-            logBase ??= new NumberEntity(10);
+            logBase ??= 10;
             handleFunction = arg => MathS.Log(logBase, arg);
             handleFunctionInverse = arg => MathS.Pow(logBase, arg);
             goto handleFunction;
@@ -383,16 +362,16 @@ namespace CSharpMath {
             }
           case Atoms.BinaryOperator { Nucleus: "∩" }:
             handlePrecendence = Precedence.SetOperation;
-            handleBinarySet = (l, r) => l & r;
-            goto handleBinarySet;
+            handleBinary = MathS.Intersection;
+            goto handleBinary;
           case Atoms.BinaryOperator { Nucleus: "∪" }:
             handlePrecendence = Precedence.SetOperation;
-            handleBinarySet = (l, r) => l | r;
-            goto handleBinarySet;
+            handleBinary = MathS.Union;
+            goto handleBinary;
           case Atoms.BinaryOperator { Nucleus: "∖" }:
             handlePrecendence = Precedence.SetOperation;
-            handleBinarySet = (l, r) => l - r;
-            goto handleBinarySet;
+            handleBinary = MathS.SetSubtraction;
+            goto handleBinary;
           case Atoms.Table { Environment: "matrix" } matrix:
             var (rows, cols, cells) = (matrix.NRows, matrix.NColumns, matrix.Cells);
             var matrixElements = new Entity[rows * cols];
@@ -468,25 +447,11 @@ namespace CSharpMath {
             return $"Unsupported table environment {table.Environment}";
           default:
             return $"Unsupported {atom.TypeName} {atom.Nucleus}";
-#pragma warning disable CS0162 // Unreachable code detected
-#pragma warning disable CS0164 // This label has not been referenced
             handleFunction:
             handleFunctionInner = (itemName, item) =>
               item.AsEntity(itemName).Bind(e => (MathItem)handleFunction(e));
             handleFunctionInverseInner = (itemName, item) =>
               item.AsEntity(itemName).Bind(e => (MathItem)handleFunctionInverse(e));
-            goto handleFunctionInner;
-            handleFunctionN:
-            handleFunctionInner = (itemName, item) =>
-              item.AsEntities(itemName).Bind(e => (MathItem)handleFunctionN(e));
-            handleFunctionInverseInner = (itemName, item) =>
-              item.AsEntities(itemName).Bind(e => (MathItem)handleFunctionInverseN(e));
-            goto handleFunctionInner;
-            handleFunctionSet:
-            handleFunctionInner = (itemName, item) =>
-              item.AsSet(itemName).Bind(set => (MathItem)handleFunctionSet(set));
-            handleFunctionInverseInner = (itemName, item) =>
-              item.AsSet(itemName).Bind(set => (MathItem)handleFunctionInverseSet(set));
             goto handleFunctionInner;
             handleFunctionInner:
             if (atom.Superscript.EqualsList(new MathList(new Atoms.UnaryOperator("\u2212"), new Atoms.Number("1")))) {
@@ -559,9 +524,6 @@ namespace CSharpMath {
             handlePrefix:
             handlePrefixInner = (itemName, item) => item.AsEntity(itemName).Bind(e => (MathItem)handlePrefix(e));
             goto handlePrefixInner;
-            handlePrefixSet:
-            handlePrefixInner = (itemName, item) => item.AsSet(itemName).Bind(set => (MathItem)handlePrefixSet(set));
-            goto handlePrefixInner;
             handlePrefixInner:
             i++;
             (next, error) = Transform(mathList, ref i, handlePrecendence);
@@ -578,16 +540,6 @@ namespace CSharpMath {
               (r, error) = right.AsEntity(rightName);
               if (error != null) return error;
               return (MathItem)handleBinary(l, r);
-            };
-            goto handleBinaryInner;
-            handleBinarySet:
-            handleBinaryInner = (leftName, left, rightName, right) => {
-              SetNode l, r;
-              (l, error) = left.AsSet(leftName);
-              if (error != null) return error;
-              (r, error) = right.AsSet(rightName);
-              if (error != null) return error;
-              return (MathItem)handleBinarySet(l, r);
             };
             goto handleBinaryInner;
             handleBinaryInner:
@@ -621,9 +573,6 @@ namespace CSharpMath {
             handlePostfix:
             handlePostfixInner = (itemName, item) => item.AsEntity(itemName).Bind(e => (MathItem)handlePostfix(e));
             goto handlePostfixInner;
-            handlePostfixSet:
-            handlePostfixInner = (itemName, item) => item.AsSet(itemName).Bind(set => (MathItem)handlePostfixSet(set));
-            goto handlePostfixInner;
             handlePostfixInner:
             if (prev == null) return "Missing left operand for " + atom.Nucleus;
             if (prec < handlePrecendence) {
@@ -636,8 +585,6 @@ namespace CSharpMath {
               i--;
               return prev;
             }
-#pragma warning restore CS0162 // Unreachable code detected
-#pragma warning restore CS0164 // This label has not been referenced
 
             handleThis:
             if (atom.Subscript.Count > 0)
