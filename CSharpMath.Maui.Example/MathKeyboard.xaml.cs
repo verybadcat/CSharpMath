@@ -44,12 +44,11 @@ namespace CSharpMath.Maui.Example {
         button.TextColor = color;
       foreach (var button in new[] { LeftButton, RightButton }
                             .Concat(ButtonGrids.SelectMany(grid => grid.Children)
-                            .Where(child => child is MathInputButton button && button.Input != MathKeyboardInput.Backspace)
-                            .Cast<MathInputButton>())) {
+                            .OfType<MathInputButton>()
+                            .Where(button => button.Input != MathKeyboardInput.Backspace))) {
         button.TextColor = color;
         button.PlaceholderRestingColor = placeholderRestingColor;
         button.PlaceholderActiveColor = placeholderActiveColor;
-        button.ButtonDraw(/* If the LaTeXSettings change but the button's appearance properties don't, there's no event that causes the execution of this method. */);
       };
     }
     public void SetClearButtonImageSource(ImageSource imageSource) {

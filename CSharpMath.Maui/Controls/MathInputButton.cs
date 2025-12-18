@@ -7,35 +7,28 @@ namespace CSharpMath.Maui {
   using Rendering.FrontEnd;
 
   public class MathInputButton : TextButton {
-    readonly static Color Null = Colors.Transparent;
-    Color? GetNullableColor(BindableProperty bindableProperty) {
-      var v = (Color)GetValue(bindableProperty);
-      return v == Null ? (Color?)null : v;
-    }
-    void SetNullableColor(BindableProperty bindableProperty, Color? value) => SetValue(bindableProperty, value ?? Null);
-
     static string ReplaceFirstOccurrence(string source, string subString, string replacement) => ReplaceOccurrence(source, subString, replacement, source.IndexOf(subString));
     static string ReplaceLastOccurrence(string source, string subString, string replacement) => ReplaceOccurrence(source, subString, replacement, source.LastIndexOf(subString));
     static string ReplaceOccurrence(string source, string subString, string replacement, int index) => index == -1 ? source : source.Remove(index, subString.Length).Insert(index, replacement);
     static int SubStringCount(string text, string substring) =>
-      text.Split(new[] { substring }, StringSplitOptions.None).Length - 1;
+      text.Split(substring, StringSplitOptions.None).Length - 1;
 
     public MathInputButton() => Command = new Command(() => Keyboard?.KeyPress(Input));
     public MathKeyboard? Keyboard { get => (MathKeyboard?)GetValue(KeyboardProperty); set => SetValue(KeyboardProperty, value); }
     public static readonly BindableProperty KeyboardProperty = BindableProperty.Create(nameof(Keyboard), typeof(MathKeyboard), typeof(MathInputButton));
     public MathKeyboardInput Input { get => (MathKeyboardInput)GetValue(InputProperty); set => SetValue(InputProperty, value); }
-    public static readonly BindableProperty InputProperty = BindablePropertyWithButtonDraw<MathInputButton>(nameof(Input), typeof(MathKeyboardInput));
+    public static readonly BindableProperty InputProperty = BindablePropertyWithUpdateImageSource<MathInputButton>(nameof(Input), typeof(MathKeyboardInput));
     public Color? PlaceholderActiveColor {
-      get => GetNullableColor(PlaceholderActiveColorProperty);
-      set => SetNullableColor(PlaceholderActiveColorProperty, value);
+      get => (Color?)GetValue(PlaceholderActiveColorProperty);
+      set => SetValue(PlaceholderActiveColorProperty, value);
     }
-    public static readonly BindableProperty PlaceholderActiveColorProperty = BindablePropertyWithButtonDraw<MathInputButton>(nameof(PlaceholderActiveColor), typeof(Color), defaultValue: Null);
+    public static readonly BindableProperty PlaceholderActiveColorProperty = BindablePropertyWithUpdateImageSource<MathInputButton>(nameof(PlaceholderActiveColor), typeof(Color), defaultValue: null);
     public Color? PlaceholderRestingColor {
-      get => GetNullableColor(PlaceholderRestingColorProperty);
-      set => SetNullableColor(PlaceholderRestingColorProperty, value);
+      get => (Color?)GetValue(PlaceholderRestingColorProperty);
+      set => SetValue(PlaceholderRestingColorProperty, value);
     }
-    public static readonly BindableProperty PlaceholderRestingColorProperty = BindablePropertyWithButtonDraw<MathInputButton>(nameof(PlaceholderRestingColor), typeof(Color), defaultValue: Null);
-    public override void ButtonDraw() {
+    public static readonly BindableProperty PlaceholderRestingColorProperty = BindablePropertyWithUpdateImageSource<MathInputButton>(nameof(PlaceholderRestingColor), typeof(Color), defaultValue: null);
+    public override void UpdateImageSource() {
       Content ??= new TextView();
       switch (Input) {
         case MathKeyboardInput.Left: Content.LaTeX = "\u25C0"; break;
@@ -54,9 +47,10 @@ namespace CSharpMath.Maui {
           Color? restingPlaceholderColor = PlaceholderRestingColor ?? LaTeXSettings.PlaceholderRestingColor?.ToMauiColor();
           Color? activePlaceholderColor = PlaceholderActiveColor ?? LaTeXSettings.PlaceholderActiveColor?.ToMauiColor();
           if (restingPlaceholderColor != null || activePlaceholderColor != null) {
+            static string LaTeXSetColor(string nucleus, Color? color) => color is null ? nucleus : $@"\color{{{color.ToArgbHex()}}}{{{nucleus}}}";
             var restingNucleus = LaTeXSettings.PlaceholderRestingNucleus.Replace("\u25A1", @"\square");
-            var coloredPlaceholderRestingNucleus = LatexHelper.SetColor(restingNucleus, restingPlaceholderColor);
-            var coloredPlaceholderActiveNucleus = LatexHelper.SetColor(LaTeXSettings.PlaceholderActiveNucleus, activePlaceholderColor);
+            var coloredPlaceholderRestingNucleus = LaTeXSetColor(restingNucleus, restingPlaceholderColor);
+            var coloredPlaceholderActiveNucleus = LaTeXSetColor(LaTeXSettings.PlaceholderActiveNucleus, activePlaceholderColor);
             if (Input == MathKeyboardInput.Power || Input == MathKeyboardInput.Subscript) {
               latex = ReplaceFirstOccurrence(latex, restingNucleus, coloredPlaceholderRestingNucleus);
               latex = ReplaceLastOccurrence(latex, LaTeXSettings.PlaceholderActiveNucleus, coloredPlaceholderActiveNucleus);
@@ -71,7 +65,7 @@ namespace CSharpMath.Maui {
           Content.LaTeX = @$"\({latex}\)";
           break;
       }
-      base.ButtonDraw();
+      base.UpdateImageSource();
     }
   }
   public class ImageSourceMathInputButton : ImageButton {

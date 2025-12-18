@@ -11,17 +11,18 @@ namespace CSharpMath.Maui.Example {
   }
   public class EditorView : ContentView {
     public MathPainter OutputMathPainter = new MathPainter { TextColor = Colors.Black };
+    public GraphicsView OutputGraphicsView;
     MathKeyboard keyboard = new MathKeyboard(Rendering.FrontEnd.PainterConstants.LargerFontSize);
     public EditorView() {
       // Basic functionality
-      var view = new GraphicsView();
+      OutputGraphicsView = new GraphicsView();
       var viewModel = keyboard.Keyboard;
-      viewModel.BindDisplay(view, OutputMathPainter, new Color(0, 0, 0, 153));
+      viewModel.BindDisplay(OutputGraphicsView, OutputMathPainter, new Color(0, 0, 0, 153));
 
       // Input from physical keyboard
       var entry = new Entry {
         Placeholder = "Enter keystrokes...",
-        HorizontalOptions = LayoutOptions.FillAndExpand
+        HorizontalOptions = LayoutOptions.Fill
       };
       entry.TextChanged += (sender, e) => {
         entry.Text = "";
@@ -73,23 +74,28 @@ namespace CSharpMath.Maui.Example {
               Children = { latex, atomTypes, ranges, index }
             }
           }),
-          GridItem(1, 0, view),
+          GridItem(1, 0, OutputGraphicsView),
           GridItem(2, 0, new BoxView { Color = Colors.Gray }),
           GridItem(3, 0, output),
           GridItem(4, 0, keyboard),
-          GridItem(5, 0, new StackLayout {
-            Orientation = StackOrientation.Horizontal,
+          GridItem(5, 0, new Grid {
+            ColumnDefinitions = {
+              new ColumnDefinition { Width = new GridLength(1, GridUnitType.Auto) },
+              new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+              new ColumnDefinition { Width = new GridLength(1, GridUnitType.Auto) },
+            },
             Children = {
-              new Button { Text = "Change appearance", Command = new Command(ChangeAppearance) },
-              entry,
-              new Button {
+              GridItem(0, 0, new Button { Text = "Change appearance", Command = new Command(ChangeAppearance) }),
+              GridItem(0, 1, entry),
+              GridItem(0, 2, new Button {
                 Text = "Reset answer pan",
                 Command = new Command(() => output.DisplacementX = output.DisplacementY = 0)
-              }
+              }),
             }
           })
         }
       };
+      Themes[0].Invoke();
     }
     int CurrentThemeIndex = 0;
     public void ChangeAppearance() {
@@ -97,32 +103,38 @@ namespace CSharpMath.Maui.Example {
       Themes[CurrentThemeIndex].Invoke();
       keyboard.Keyboard.InsertionIndex = keyboard.Keyboard.InsertionIndex; // Hack to redraw placeholders in the output.
     }
-    IList<Action> Themes => new Action[] {
-      () => { // This theme is the default. For a round-trip through the themes we need to set them again:
-        OutputMathPainter.TextColor = Colors.Black;
+    IList<Action> Themes => [
+      () => { // This theme is the default.
+        var color = (Color)Application.Current!.Resources[Application.Current!.RequestedTheme == AppTheme.Dark ? "PrimaryDark" : "Primary"];
+        OutputMathPainter.TextColor = color;
+        keyboard.Keyboard.UpdateDisplayCaret(OutputGraphicsView, OutputMathPainter, color);
         Atom.LaTeXSettings.PlaceholderBlinks = false;
         Atom.LaTeXSettings.PlaceholderActiveColor = null;
         Atom.LaTeXSettings.PlaceholderRestingColor = null;
         Atom.LaTeXSettings.PlaceholderActiveNucleus = "■";
         Atom.LaTeXSettings.PlaceholderRestingNucleus = "□";
-        keyboard.SetButtonsTextColor(Colors.Black);
-        keyboard.SetClearButtonImageSource("Controls/ImageSourceMathInputButtons/recyclebin.png");
+        keyboard.SetButtonsTextColor(color);
+        keyboard.SetButtonsTextColor(color);
+        keyboard.SetClearButtonImageSource("recyclebin.png");
       },
       () => {
+        var color = (Color)Application.Current!.Resources[Application.Current!.RequestedTheme == AppTheme.Dark ? "PrimaryDark" : "Primary"];
         UseMyCustomizedPlaceholderAppearance();
-        keyboard.SetButtonsTextColor(Colors.Black); // Placeholder appearance on the keys is the same as in the output by default.
-        keyboard.SetClearButtonImageSource("Controls/ImageSourceMathInputButtons/metaltrashcan.png");
+        keyboard.Keyboard.UpdateDisplayCaret(OutputGraphicsView, OutputMathPainter, color);
+        keyboard.SetButtonsTextColor(color); // Placeholder appearance on the keys is the same as in the output by default.
+        keyboard.SetClearButtonImageSource("metaltrashcan.png");
       },
       () => {
         Atom.LaTeXSettings.PlaceholderBlinks = true;
-        OutputMathPainter.TextColor = Colors.DarkGreen;
+        OutputMathPainter.TextColor = Application.Current!.RequestedTheme == AppTheme.Dark ? Colors.LightGreen : Colors.DarkGreen;
         UseMyCustomizedPlaceholderAppearance();
+        keyboard.Keyboard.UpdateDisplayCaret(OutputGraphicsView, OutputMathPainter, Colors.Orange);
         // If you'd like to use different keyboard colors than output colors and you specified a placeholder color,
         // probably you'll not want to use the same placeholder color on the keyboard:
         keyboard.SetButtonsTextColor(Colors.Brown, CalculateMyPlaceholderRestingColorFromSurroundingTextColor(Colors.Brown));
-        keyboard.SetClearButtonImageSource("Controls/ImageSourceMathInputButtons/flame.png");
+        keyboard.SetClearButtonImageSource("flame.png");
       }
-    };
+    ];
 
     public void UseMyCustomizedPlaceholderAppearance() {
       // You could also customize the "Active" placeholder nucleus and color, but for this example we don't.

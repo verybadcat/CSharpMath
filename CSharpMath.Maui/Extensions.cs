@@ -70,6 +70,11 @@ namespace CSharpMath.Maui {
           keyboard.DrawCaret(new MauiCanvas((canvas, dirtyRect.Size)), caretColor.ToCSharpMathColor(), caretShape);
       }
     }
+    /// <summary>
+    /// Registers event handling for a <see cref="GraphicsView"/> to render a <see cref="MathKeyboard"/> and move its caret on touch.
+    /// Do not call this method more than once for the same <see cref="MathKeyboard"/> and <see cref="GraphicsView"/> or
+    /// the same event handlers will be registered multiple times.
+    /// </summary>
     public static void BindDisplay(this MathKeyboard keyboard,
       GraphicsView view, MathPainter settings, Color caretColor,
       CaretShape caretShape = CaretShape.IBeam) {
@@ -78,6 +83,14 @@ namespace CSharpMath.Maui {
           keyboard.MoveCaretToPoint(new System.Drawing.PointF(e.Touches[0].X, e.Touches[0].Y));
         };
       keyboard.RedrawRequested += (_, _) => view.Invalidate();
+      view.Drawable = new KeyboardDrawable(keyboard, settings, caretColor, caretShape);
+    }
+    /// <summary>
+    /// Updates caret color and shape for a bound keyboard view.
+    /// Only call this after calling <see cref="BindDisplay(MathKeyboard, GraphicsView, MathPainter, Color, CaretShape)"/>.
+    /// </summary>
+    public static void UpdateDisplayCaret(this MathKeyboard keyboard, GraphicsView view, MathPainter settings, Color caretColor,
+      CaretShape caretShape = CaretShape.IBeam) {
       view.Drawable = new KeyboardDrawable(keyboard, settings, caretColor, caretShape);
     }
   }

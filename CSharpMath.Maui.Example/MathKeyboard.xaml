@@ -119,7 +119,7 @@
         </Style>
         <Style TargetType="f:ImageSourceMathInputButton" Class="Clear">
             <Setter Property="Input" Value="Clear"/>
-            <Setter Property="Source" Value="Controls/ImageSourceMathInputButtons/recyclebin.png" />
+            <Setter Property="Source" Value="recyclebin.png" />
             <Setter Property="Grid.Column" Value="5"/>
             <Setter Property="Grid.Row" Value="1"/>
             <Setter Property="Keyboard" Value="{StaticResource Keyboard}"/>

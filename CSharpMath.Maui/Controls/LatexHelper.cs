@@ -5,7 +5,6 @@ using Microsoft.Maui.Graphics;
 
 namespace CSharpMath.Maui {
   public static class LatexHelper {
-    public static readonly string phantom = SetColor("|", Colors.Transparent);
-    public static string SetColor(string latex, Color? color) => color != null ? $@"\color{{{color.ToArgbHex(true)}}}{{{latex}}}" : latex;
+    public const string phantom = @"\color{#00000000}|";
   }
 }
