@@ -23,7 +23,7 @@ namespace CSharpMath {
       MultiplyDivide,
       FunctionApplication,
       UnaryPlusMinus,
-      PercentDegree
+      Postfix
       // Highest
     }
     public abstract class MathItem : AngouriMath.Core.ILatexiseable {
@@ -61,7 +61,6 @@ namespace CSharpMath {
       // CSharpMath must handle all LaTeX coming from AngouriMath or a bug is present!
       .Match(list => list, e => throw new InvalidCodePathException(e));
     public static Result<MathItem> Evaluate(MathList mathList) {
-      MathS.pi.ToString(); // Call into MathS's static initializer to ensure Entity methods work
       return Transform(mathList.Clone(true))
       .Bind(result =>
         result is { } r
@@ -159,8 +158,6 @@ namespace CSharpMath {
       Precedence handlePrecendence;
       Func<Entity, Entity> handlePrefix, handlePostfix, handleFunction, handleFunctionInverse;
       Func<Entity, Entity, Entity> handleBinary;
-      Func<string, MathItem?, Result<MathItem>> handlePrefixInner, handlePostfixInner, handleFunctionInner, handleFunctionInverseInner;
-      Func<string, MathItem?, string, MathItem?, Result<MathItem>> handleBinaryInner;
       for (; i < mathList.Count; i++) {
         var atom = mathList[i];
         MathItem? @this;
@@ -168,7 +165,7 @@ namespace CSharpMath {
           switch(superscript) {
             case { Count: 1 } when superscript[0] is Atoms.Ordinary { Nucleus: "∁" }:
               (@this, error) =
-                @this.AsEntity("target of set inversion").Bind(target => (MathItem?)!target);
+                @this.AsEntity("target of set inversion").Bind(target => (MathItem?)MathS.SetSubtraction(MathS.Sets.C, target)); // we don't support domains yet
               if (error != null) return error;
               break;
             default:
@@ -222,7 +219,7 @@ namespace CSharpMath {
               ("π", 0) => MathS.pi,
               ("i", 0) => MathS.i,
               // Convert θ to theta
-              _ when LaTeXSettings.CommandForAtom(atom) is string s => MathS.Var(s + underscore + subscript.ToString()),
+              _ when LaTeXSettings.CommandForAtom(atom) is string s => MathS.Var(string.Concat(s.TrimStart('\\'), underscore, subscript)),
               (var name, _) => MathS.Var(name + underscore + subscript.ToString())
             };
             v.Subscript.Clear();
@@ -339,14 +336,23 @@ namespace CSharpMath {
             handleBinary = (a, b) => a / b;
             goto handleBinary;
           case Atoms.Ordinary { Nucleus: "%" }:
-            handlePrecendence = Precedence.PercentDegree;
             handlePostfix = x => x / 100;
             goto handlePostfix;
           case Atoms.Ordinary { Nucleus: "°" }:
-            handlePrecendence = Precedence.PercentDegree;
             handlePostfix = x => x * MathS.pi / 180;
             goto handlePostfix;
+          case Atoms.Punctuation { Nucleus: "!" }:
+            if (i + 1 < mathList.Count && mathList[i + 1] is Atoms.Punctuation { Nucleus: "!" }) {
+              i++;
+              // z!! = 2^(z/2) (2/π)^((1-cos(πz))/4) Γ(z/2+1)
+              handlePostfix = z => MathS.Pow(2, z / 2) *
+                MathS.Pow(2 / MathS.pi, (1 - MathS.Cos(MathS.pi * z)) / 4) *
+                MathS.Factorial(z / 2);
+            } else
+              handlePostfix = MathS.Factorial;
+            goto handlePostfix;
           case Atoms.Punctuation { Nucleus: "," }:
+          case Atoms.Punctuation { Nucleus: ";" }: // ; is interpreted as an alias of ,
             if (prec <= Precedence.Comma) {
               if (prev is null) return "Missing left operand for comma";
               i++;
@@ -448,15 +454,9 @@ namespace CSharpMath {
           default:
             return $"Unsupported {atom.TypeName} {atom.Nucleus}";
             handleFunction:
-            handleFunctionInner = (itemName, item) =>
-              item.AsEntity(itemName).Bind(e => (MathItem)handleFunction(e));
-            handleFunctionInverseInner = (itemName, item) =>
-              item.AsEntity(itemName).Bind(e => (MathItem)handleFunctionInverse(e));
-            goto handleFunctionInner;
-            handleFunctionInner:
             if (atom.Superscript.EqualsList(new MathList(new Atoms.UnaryOperator("\u2212"), new Atoms.Number("1")))) {
               atom.Superscript.Clear();
-              handleFunctionInner = handleFunctionInverseInner;
+              handleFunction = handleFunctionInverse;
             }
             i++;
             MathList? bracketArgument = null;
@@ -517,32 +517,19 @@ namespace CSharpMath {
               ? Transform(mathList, ref i, Precedence.FunctionApplication)
               : Transform(bracketArgument);
             if (error != null) return error;
-            (@this, error) = handleFunctionInner("argument for " + atom.Nucleus, next);
+            (@this, error) = next.AsEntity("argument for " + atom.Nucleus).Bind(e => (MathItem)handleFunction(e));
             if (error != null) return error;
             goto handleThis;
 
             handlePrefix:
-            handlePrefixInner = (itemName, item) => item.AsEntity(itemName).Bind(e => (MathItem)handlePrefix(e));
-            goto handlePrefixInner;
-            handlePrefixInner:
             i++;
             (next, error) = Transform(mathList, ref i, handlePrecendence);
             if (error != null) return error;
-            (@this, error) = handlePrefixInner("right operand for " + atom.Nucleus, next);
+            (@this, error) = next.AsEntity("right operand for " + atom.Nucleus).Bind(e => (MathItem)handlePrefix(e));
             if (error != null) return error;
             goto handleThis;
 
             handleBinary:
-            handleBinaryInner = (leftName, left, rightName, right) => {
-              Entity l, r;
-              (l, error) = left.AsEntity(leftName);
-              if (error != null) return error;
-              (r, error) = right.AsEntity(rightName);
-              if (error != null) return error;
-              return (MathItem)handleBinary(l, r);
-            };
-            goto handleBinaryInner;
-            handleBinaryInner:
             if (prev is null) {
               // No previous entity, treat as unary operator (happens for 1---2)
               if (atom is Atoms.BinaryOperator b) {
@@ -559,9 +546,11 @@ namespace CSharpMath {
               i++;
               (next, error) = Transform(mathList, ref i, handlePrecendence);
               if (error != null) return error;
-              (@this, error) =
-                handleBinaryInner("left operand for " + atom.Nucleus, prev,
-                  "right operand for " + atom.Nucleus, next);
+              (var l, error) = prev.AsEntity("left operand for " + atom.Nucleus);
+              if (error != null) return error;
+              (var r, error) = next.AsEntity("right operand for " + atom.Nucleus);
+              if (error != null) return error;
+              @this = (MathItem)handleBinary(l, r);
               if (error != null) return error;
               prev = null; // We used up prev, don't keep it
               goto handleThis;
@@ -571,20 +560,11 @@ namespace CSharpMath {
             }
 
             handlePostfix:
-            handlePostfixInner = (itemName, item) => item.AsEntity(itemName).Bind(e => (MathItem)handlePostfix(e));
-            goto handlePostfixInner;
-            handlePostfixInner:
-            if (prev == null) return "Missing left operand for " + atom.Nucleus;
-            if (prec < handlePrecendence) {
-              (@this, error) =
-                handlePostfixInner("left operand for " + atom.Nucleus, prev);
-              if (error != null) return error;
-              prev = null; // We used up prev, don't keep it
-              goto handleThis;
-            } else {
-              i--;
-              return prev;
-            }
+            (@this, error) =
+              prev.AsEntity("left operand for " + atom.Nucleus).Bind(e => (MathItem)handlePostfix(e));
+            if (error != null) return error;
+            prev = null; // We used up prev, don't keep it
+            goto handleThis;
 
             handleThis:
             if (atom.Subscript.Count > 0)
