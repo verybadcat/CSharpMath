@@ -769,7 +769,7 @@ namespace CSharpMath.Atom {
         { @"\longrightarrow", new Relation("⟶") },
         { @"\downarrow", new Relation("↓") },
         { @"\Rightarrow", new Relation("⇒") },
-        { @"\Longrightarrow", new Relation("⟹") },
+        { @"\implies", @"\Longrightarrow", new Relation("⟹") },
         { @"\Downarrow", new Relation("⇓") },
         { @"\leftrightarrow", new Relation("↔") },
         { @"\Leftrightarrow", new Relation("⇔") },

@@ -18,6 +18,11 @@ namespace CSharpMath {
       ParenthesisContext,
       // Lowest
       Comma,
+      Implication,
+      Disjunction,
+      Conjunction,
+      Negation,
+      Relation,
       SetOperation,
       AddSubtract,
       MultiplyDivide,
@@ -161,6 +166,7 @@ namespace CSharpMath {
       for (; i < mathList.Count; i++) {
         var atom = mathList[i];
         MathItem? @this;
+        bool subscriptAllowed = false;
         Result HandleSuperscript(ref MathItem? @this, MathList superscript) {
           switch(superscript) {
             case { Count: 1 } when superscript[0] is Atoms.Ordinary { Nucleus: "∁" }:
@@ -184,6 +190,12 @@ namespace CSharpMath {
         switch (atom) {
           case Atoms.Placeholder _:
             return "Placeholders should be filled";
+          case Atoms.Number { Subscript: [Atoms.Number numericBase] } n:
+            if (int.TryParse(numericBase.Nucleus, out var @base)) {
+              try { @this = MathS.FromBaseN(atom.Nucleus, @base); } catch (Exception e) { return e.Message; }
+              subscriptAllowed = true;
+              goto handleThis;
+            } else return "Invalid numeric base: " + numericBase.Nucleus;
           case Atoms.Number n:
             if (Entity.Number.Complex.TryParse(n.Nucleus, out var number)) {
               @this = number;
@@ -222,7 +234,7 @@ namespace CSharpMath {
               _ when LaTeXSettings.CommandForAtom(atom) is string s => MathS.Var(string.Concat(s.TrimStart('\\'), underscore, subscript)),
               (var name, _) => MathS.Var(name + underscore + subscript.ToString())
             };
-            v.Subscript.Clear();
+            subscriptAllowed = true;
             goto handleThis;
           case Atoms.Ordinary { Nucleus: "∞" }:
             @this = Entity.Number.Real.PositiveInfinity;
@@ -303,18 +315,22 @@ namespace CSharpMath {
             handleFunction = MathS.Arccosec;
             handleFunctionInverse = MathS.Cosec;
             goto handleFunction;
-          case Atoms.LargeOperator { Nucleus: "log", Subscript: var @base }:
+          case Atoms.LargeOperator { Nucleus: "log", Subscript: var logBaseList }:
             Entity? logBase;
-            (logBase, error) = Transform(@base).ExpectEntityOrNull(nameof(logBase));
+            (logBase, error) = Transform(logBaseList).ExpectEntityOrNull(nameof(logBase));
             if (error != null) return error;
-            @base.Clear();
             logBase ??= 10;
             handleFunction = arg => MathS.Log(logBase, arg);
             handleFunctionInverse = arg => MathS.Pow(logBase, arg);
+            subscriptAllowed = true;
             goto handleFunction;
           case Atoms.LargeOperator { Nucleus: "ln" }:
             handleFunction = MathS.Ln;
             handleFunctionInverse = arg => MathS.Pow(MathS.e, arg);
+            goto handleFunction;
+          case Atoms.LargeOperator { Nucleus: "sgn" }:
+            handleFunction = MathS.Signum;
+            handleFunctionInverse = arg => MathS.NaN;
             goto handleFunction;
           case Atoms.BinaryOperator { Nucleus: "+" }:
             handlePrecendence = Precedence.AddSubtract;
@@ -377,6 +393,72 @@ namespace CSharpMath {
           case Atoms.BinaryOperator { Nucleus: "∖" }:
             handlePrecendence = Precedence.SetOperation;
             handleBinary = MathS.SetSubtraction;
+            goto handleBinary;
+          case Atoms.LargeOperator { Nucleus: "true" or "True" }:
+            @this = MathS.Boolean.Create(true);
+            goto handleThis;
+          case Atoms.LargeOperator { Nucleus: "false" or "False" }:
+            @this = MathS.Boolean.Create(false);
+            goto handleThis;
+          case Atoms.Ordinary { Nucleus: "¬" }:
+            handlePrecendence = Precedence.Negation;
+            handlePrefix = MathS.Negation;
+            goto handlePrefix;
+          case Atoms.BinaryOperator { Nucleus: "∧" }:
+            handlePrecendence = Precedence.Conjunction;
+            handleBinary = MathS.Conjunction;
+            goto handleBinary;
+          case Atoms.BinaryOperator { Nucleus: "∨" }:
+            handlePrecendence = Precedence.Disjunction;
+            handleBinary = MathS.Disjunction;
+            goto handleBinary;
+          case Atoms.BinaryOperator { Nucleus: "⊕" }:
+            handlePrecendence = Precedence.Disjunction;
+            handleBinary = MathS.ExclusiveDisjunction;
+            goto handleBinary;
+          case Atoms.Relation { Nucleus: "→" }:
+            handlePrecendence = Precedence.Implication;
+            handleBinary = MathS.Implication;
+            goto handleBinary;
+          case Atoms.Relation { Nucleus: "↛" }:
+            handlePrecendence = Precedence.Implication;
+            handleBinary = (x, y) => MathS.Negation(MathS.Implication(x, y));
+            goto handleBinary;
+          case Atoms.Relation { Nucleus: "∈" }:
+            handlePrecendence = Precedence.Relation;
+            handleBinary = MathS.Sets.ElementInSet;
+            goto handleBinary;
+          case Atoms.Relation { Nucleus: "∉" }:
+            handlePrecendence = Precedence.Relation;
+            handleBinary = (element, set) => MathS.Negation(MathS.Sets.ElementInSet(element, set));
+            goto handleBinary;
+          case Atoms.Relation { Nucleus: "∋" }:
+            handlePrecendence = Precedence.Relation;
+            handleBinary = (set, element) => MathS.Sets.ElementInSet(element, set);
+            goto handleBinary;
+          case Atoms.Relation { Nucleus: "=" }:
+            handlePrecendence = Precedence.Relation;
+            handleBinary = MathS.Equality;
+            goto handleBinary;
+          case Atoms.Relation { Nucleus: "≠" }:
+            handlePrecendence = Precedence.Relation;
+            handleBinary = (element, set) => MathS.Negation(MathS.Equality(element, set));
+            goto handleBinary;
+          case Atoms.Relation { Nucleus: "<" }:
+            handlePrecendence = Precedence.Relation;
+            handleBinary = MathS.LessThan;
+            goto handleBinary;
+          case Atoms.Relation { Nucleus: "≤" }:
+            handlePrecendence = Precedence.Relation;
+            handleBinary = MathS.LessOrEqualThan;
+            goto handleBinary;
+          case Atoms.Relation { Nucleus: ">" }:
+            handlePrecendence = Precedence.Relation;
+            handleBinary = MathS.GreaterThan;
+            goto handleBinary;
+          case Atoms.Relation { Nucleus: "≥" }:
+            handlePrecendence = Precedence.Relation;
+            handleBinary = MathS.GreaterOrEqualThan;
             goto handleBinary;
           case Atoms.Table { Environment: "matrix" } matrix:
             var (rows, cols, cells) = (matrix.NRows, matrix.NColumns, matrix.Cells);
@@ -567,7 +649,7 @@ namespace CSharpMath {
             goto handleThis;
 
             handleThis:
-            if (atom.Subscript.Count > 0)
+            if (!subscriptAllowed && atom.Subscript.Count > 0)
               return $"Subscripts are unsupported for {atom.TypeName} {atom.Nucleus}";
             error = HandleSuperscript(ref @this, atom.Superscript).Error;
             if (error != null) return error;
