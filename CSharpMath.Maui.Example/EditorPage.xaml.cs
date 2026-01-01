@@ -1,6 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using CommunityToolkit.Maui.Extensions;
+using CommunityToolkit.Maui.Views;
+using Microsoft.Maui.Controls;
+using SharpHook;
+using SharpHook.Data;
+
 namespace CSharpMath.Maui.Example {
   [XamlCompilation(XamlCompilationOptions.Compile)]
   public partial class EditorPage : ContentPage {
@@ -12,7 +17,7 @@ namespace CSharpMath.Maui.Example {
   public class EditorView : ContentView {
     public MathPainter OutputMathPainter = new MathPainter { TextColor = Colors.Black };
     public GraphicsView OutputGraphicsView;
-    MathKeyboard keyboard = new MathKeyboard(Rendering.FrontEnd.PainterConstants.LargerFontSize);
+    readonly MathKeyboard keyboard = new(Rendering.FrontEnd.PainterConstants.LargerFontSize);
     public EditorView() {
       // Basic functionality
       OutputGraphicsView = new GraphicsView();
@@ -20,22 +25,56 @@ namespace CSharpMath.Maui.Example {
       viewModel.BindDisplay(OutputGraphicsView, OutputMathPainter, new Color(0, 0, 0, 153));
 
       // Input from physical keyboard
-      var entry = new Entry {
-        Placeholder = "Enter keystrokes...",
-        HorizontalOptions = LayoutOptions.Fill
+      var hook = new SimpleGlobalHook(GlobalHookType.Keyboard);
+      var popupShown = false;
+      void activatedListener(object? sender, EventArgs e) { if (!hook.IsRunning && IsLoaded && !popupShown) hook.RunAsync(); }
+      void deactivatedListener(object? sender, EventArgs e) { if (hook.IsRunning) hook.Stop(); }
+      Window? owningWindow = null;
+      void unloadedListener(object? sender, EventArgs e) {
+        if (hook.IsRunning) hook.Stop();
+        owningWindow?.Activated -= activatedListener;
+        owningWindow?.Deactivated -= deactivatedListener;
+        Unloaded -= unloadedListener;
+      }
+      Loaded += (sender, e) => {
+        owningWindow = Window;
+        if (!hook.IsRunning && owningWindow.IsActivated && !popupShown) hook.RunAsync();
+        owningWindow.Activated += activatedListener;
+        owningWindow.Deactivated += deactivatedListener;
+        Unloaded += unloadedListener;
       };
-      entry.TextChanged += (sender, e) => {
-        entry.Text = "";
-        foreach (var c in e.NewTextValue)
-          // The (int) extra conversion used to be required by Xamarin.Forms on Android or a crash occurs
-          // Maybe this isn't required anymore in .NET MAUI
-          viewModel.KeyPress((Editor.MathKeyboardInput)(int)c);
+      hook.KeyTyped += (sender, e) => viewModel.KeyPress((Editor.MathKeyboardInput)e.Data.KeyChar);
+      hook.KeyPressed += (sender, e) => {
+        switch (e.Data.KeyCode) {
+          case KeyCode.VcBackspace: viewModel.KeyPress(Editor.MathKeyboardInput.Backspace); break;
+          case KeyCode.VcNumPadEnter or KeyCode.VcEnter: viewModel.KeyPress(Editor.MathKeyboardInput.Return); break;
+          case KeyCode.VcLeft: viewModel.KeyPress(Editor.MathKeyboardInput.Left); break;
+          case KeyCode.VcRight: viewModel.KeyPress(Editor.MathKeyboardInput.Right); break;
+          case KeyCode.VcUp: viewModel.KeyPress(Editor.MathKeyboardInput.Up); break;
+          case KeyCode.VcDown: viewModel.KeyPress(Editor.MathKeyboardInput.Down); break;
+        }
       };
 
       // Evaluation
-      var output = new MathView { FontSize = 32, EnablePanning = true };
       keyboard.Keyboard.ReturnPressed += delegate {
-        output.LaTeX = Evaluation.Interpret(keyboard.Keyboard.MathList);
+        Dispatcher.Dispatch(async () => { // We may not be on the main thread since SharpHook event handlers are called from its own threads.
+          if (Parent is Page p) {
+            popupShown = true;
+            if (hook.IsRunning) hook.Stop();
+            var view = new MathView { FontSize = 32, EnablePanning = true, TextAlignment = Rendering.FrontEnd.TextAlignment.TopLeft,
+              LaTeX = Evaluation.Interpret(keyboard.Keyboard.MathList)
+            };
+            await p.ShowPopupAsync(new VerticalStackLayout {
+              new Grid {
+                ColumnDefinitions = { new() { Width = new GridLength(1, GridUnitType.Star) }, new() { Width = new GridLength(1, GridUnitType.Star) } },
+                Children = {
+                  GridItem(0, 0, new Button { Text = "Reset pan", Command = new Command(() => view.DisplacementX = view.DisplacementY = 0) }),
+                  GridItem(0, 1, new Button { Text = "Close", Command = new Command(() => p.ClosePopupAsync()) }) }
+              }, view });
+            popupShown = false;
+            if (IsLoaded && owningWindow is { IsActivated: true } && !hook.IsRunning) await hook.RunAsync();
+          }
+        });
       };
 
       // Debug labels
@@ -62,37 +101,19 @@ namespace CSharpMath.Maui.Example {
       Content = new Grid {
         RowDefinitions = {
           new RowDefinition { Height = new GridLength(1, GridUnitType.Auto) },
-          new RowDefinition { Height = new GridLength(1, GridUnitType.Star) },
+          new RowDefinition { Height = new GridLength(2, GridUnitType.Star) },
           new RowDefinition { Height = new GridLength(1, GridUnitType.Auto) },
-          new RowDefinition { Height = new GridLength(1, GridUnitType.Star) },
           new RowDefinition { Height = new GridLength(1, GridUnitType.Star) },
           new RowDefinition { Height = new GridLength(1, GridUnitType.Auto) },
         },
         Children = {
           GridItem(0, 0, new ScrollView {
-            Content = new StackLayout {
-              Children = { latex, atomTypes, ranges, index }
-            }
+            Content = new StackLayout { latex, atomTypes, ranges, index }
           }),
           GridItem(1, 0, OutputGraphicsView),
           GridItem(2, 0, new BoxView { Color = Colors.Gray }),
-          GridItem(3, 0, output),
-          GridItem(4, 0, keyboard),
-          GridItem(5, 0, new Grid {
-            ColumnDefinitions = {
-              new ColumnDefinition { Width = new GridLength(1, GridUnitType.Auto) },
-              new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
-              new ColumnDefinition { Width = new GridLength(1, GridUnitType.Auto) },
-            },
-            Children = {
-              GridItem(0, 0, new Button { Text = "Change appearance", Command = new Command(ChangeAppearance) }),
-              GridItem(0, 1, entry),
-              GridItem(0, 2, new Button {
-                Text = "Reset answer pan",
-                Command = new Command(() => output.DisplacementX = output.DisplacementY = 0)
-              }),
-            }
-          })
+          GridItem(3, 0, keyboard),
+          GridItem(4, 0, new StackLayout { new Button { Text = "Change appearance", Command = new Command(ChangeAppearance), HorizontalOptions = LayoutOptions.Start } }),
         }
       };
       Themes[0].Invoke();

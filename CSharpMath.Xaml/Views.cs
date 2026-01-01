@@ -223,7 +223,7 @@ namespace CSharpMath.Maui {
     static string GetPropertyName(XProperty prop) => prop.PropertyName;
     protected override Microsoft.Maui.Graphics.Size MeasureOverride(double widthConstraint, double heightConstraint) =>
       Painter.Measure((float)widthConstraint) is { } rect
-      ? new(rect.Width, rect.Height)
+      ? new(Math.Min(rect.Width, widthConstraint), Math.Min(rect.Height, heightConstraint)) // We can't allocate too big of a GraphicsView on MAUI Windows.
       : base.MeasureOverride(widthConstraint, heightConstraint);
     struct ReadOnlyProperty<TThis, TValue> where TThis : BaseView<TPainter, TContent> {
       public ReadOnlyProperty(string propertyName,
