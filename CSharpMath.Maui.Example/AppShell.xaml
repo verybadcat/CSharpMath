@@ -7,6 +7,10 @@
     Title="CSharpMath.Maui.Example">
 
     <ShellContent
+        Title="Examples"
+        ContentTemplate="{DataTemplate local:ExamplesPage}"
+        Route="ExamplesPage" />
+    <ShellContent
         Title="Try"
         ContentTemplate="{DataTemplate local:TryPage}"
         Route="TryPage" />
@@ -18,6 +22,6 @@
         Title="Clock"
         ContentTemplate="{DataTemplate local:ClockPage}"
         Route="ClockPage" />
-
+    <MenuItem Text="{AppThemeBinding Light='Light Theme', Dark='Dark Theme'}" Clicked="ThemeChange" />
 
 </Shell>

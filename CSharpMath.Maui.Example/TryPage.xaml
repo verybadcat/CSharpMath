@@ -9,11 +9,10 @@
         <Entry x:Name="Entry" Grid.Row="0"/>
         <Label x:Name="Exit" Grid.Row="1"/>
         <HorizontalStackLayout Grid.Row="2">
-            <Picker x:Name="Size"
-                    ItemsSource="{x:Static local:TryPage.FontSizes}"/>
+            <Picker x:Name="Size" ItemsSource="{x:Static local:TryPage.FontSizes}"/>
             <Button Text="Reset pan" Clicked="Button_Clicked" HorizontalOptions="End"/>
         </HorizontalStackLayout>
-        <math:MathView x:Name="View" EnablePanning="True" TextColor="{x:StaticResource Primary}" Grid.Row="3" />
+        <math:MathView x:Name="View" EnablePanning="True" Grid.Row="3" FontSize="36" />
     </Grid>
 
 </ContentPage>
