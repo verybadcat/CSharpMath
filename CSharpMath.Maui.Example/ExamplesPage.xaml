@@ -5,8 +5,20 @@
              xmlns:local="clr-namespace:CSharpMath.Maui.Example"
              x:Class="CSharpMath.Maui.Example.ExamplesPage"
              Title="Examples">
-    <ScrollView>
-        <StackLayout x:Name="Stack"/>
-    </ScrollView>
-
+    <Grid RowDefinitions="Auto,*">
+        <ScrollView>
+            <HorizontalStackLayout>
+                <Picker x:Name="alignment" Title="Alignment" />
+                <Picker x:Name="paintStyle" Title="Paint Style" />
+                <Picker x:Name="lineStyle" Title="Line Style" />
+                <Label Text="Draw glyph boxes"/>
+                <Switch x:Name="drawGlyphBoxes"/>
+                <Label Text="Highlight color"/>
+                <Switch x:Name="highlight"/>
+            </HorizontalStackLayout>
+        </ScrollView>
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout x:Name="Stack"/>
+        </ScrollView>
+    </Grid>
 </ContentPage>

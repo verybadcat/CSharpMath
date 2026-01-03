@@ -1,4 +1,5 @@
 using CSharpMath.Atom;
+using CSharpMath.Rendering.FrontEnd;
 using TextAlignment = CSharpMath.Rendering.FrontEnd.TextAlignment;
 
 namespace CSharpMath.Maui.Example {
@@ -7,11 +8,40 @@ namespace CSharpMath.Maui.Example {
     static Dictionary<byte, MathView> labels { get; } = new();
     public ExamplesPage() {
       InitializeComponent();
-      foreach (var view in demoLabels.Concat(labels).Select(p => p.Value)) {
+      var mathViews = demoLabels.Concat(labels).Select(p => p.Value);
+      foreach (var view in mathViews) {
         view.ErrorFontSize = view.FontSize * 0.8f;
-        view.TextAlignment = TextAlignment.Top; // TODO: There is some bug with Center / Bottom...
         Stack.Children.Add(view);
       }
+
+      var values = typeof(TextAlignment).GetEnumValues();
+      Array.Reverse(values);
+      alignment.ItemsSource = values;
+      alignment.SelectedIndexChanged += (sender, e) => {
+        foreach (var view in mathViews) view.TextAlignment = (TextAlignment)alignment.SelectedItem;
+      };
+      alignment.SelectedItem = TextAlignment.Top;
+
+      paintStyle.ItemsSource = typeof(PaintStyle).GetEnumValues();
+      paintStyle.SelectedIndexChanged += (sender, e) => {
+        foreach (var view in mathViews) view.PaintStyle = (PaintStyle)paintStyle.SelectedItem;
+      };
+      paintStyle.SelectedItem = PaintStyle.Fill;
+
+      lineStyle.ItemsSource = typeof(LineStyle).GetEnumValues();
+      lineStyle.SelectedIndexChanged += (sender, e) => {
+        foreach (var view in mathViews) view.LineStyle = (LineStyle)lineStyle.SelectedItem;
+      };
+      lineStyle.SelectedItem = LineStyle.Display;
+
+      drawGlyphBoxes.Toggled += (sender, e) => {
+        foreach (var view in mathViews)
+          view.GlyphBoxColor = e.Value ? (Colors.Red, Colors.Blue) : null;
+      };
+      highlight.Toggled += (sender, e) => {
+        foreach (var view in mathViews)
+          view.HighlightColor = e.Value ? Colors.Yellow : Colors.Transparent;
+      };
     }
     static ExamplesPage() {
       //  Demo formulae
