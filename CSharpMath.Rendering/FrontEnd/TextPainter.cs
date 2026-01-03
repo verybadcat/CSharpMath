@@ -96,8 +96,9 @@ namespace CSharpMath.Rendering.FrontEnd {
       DrawCore(c, Display);
     }
     /// <summary>
-    /// Draws with respect to the only baseline which coordinates are given.
-    /// The measure of the result drawn by this method is NOT Measure(float.PositiveInfinity).
+    /// Draws with respect to the only baseline which coordinates are given - center display maths with respect to text instead of canvas width.
+    /// The measure of the result drawn by this method is NOT Measure(float.PositiveInfinity)
+    /// as display maths, which is supposed to be centered, would be positioned at infinity for that call.
     /// </summary>
     public void DrawOneLine(TCanvas canvas, float x, float y) {
       var c = WrapCanvas(canvas);

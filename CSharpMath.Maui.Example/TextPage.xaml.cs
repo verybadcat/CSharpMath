@@ -22,9 +22,5 @@ namespace CSharpMath.Maui.Example {
         Scroll.InvalidateMeasure(); // Seems to be required on Windows to update the scroll size
       }
     }
-
-    private void Button_Clicked(object sender, EventArgs e) {
-      View.DisplacementX = View.DisplacementY = 0;
-    }
   }
 }

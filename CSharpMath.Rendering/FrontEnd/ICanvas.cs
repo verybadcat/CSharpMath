@@ -9,12 +9,15 @@ namespace CSharpMath.Rendering.FrontEnd {
     Color? CurrentColor { get; set; }
     PaintStyle CurrentStyle { get; set; }
     Path StartNewPath();
+    /// <summary>Implementations can choose whether to respect <see cref="CurrentStyle"/> or not by calling <see cref="CanvasExtensions.StrokeLineOutline(ICanvas, float, float, float, float, float)"/> for stroking.</summary>
     void DrawLine(float x1, float y1, float x2, float y2, float lineThickness);
     void StrokeRect(float left, float top, float width, float height);
     void FillRect(float left, float top, float width, float height);
+    /// <summary>Implementations are only required to save Translate and Scale transforms. Saving color and style properties is optional.</summary>
     void Save();
     void Translate(float dx, float dy);
     void Scale(float sx, float sy);
+    /// <summary>Implementations are only required to restore Translate and Scale transforms. Restoring color and style properties is optional.</summary>
     void Restore();
   }
   public static class CanvasExtensions {

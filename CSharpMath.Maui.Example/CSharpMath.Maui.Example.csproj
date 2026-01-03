@@ -69,22 +69,4 @@
 		<ProjectReference Include="..\CSharpMath.Maui\CSharpMath.Maui.csproj" />
 		<ProjectReference Include="..\CSharpMath.Evaluation\CSharpMath.Evaluation.csproj" />
 	</ItemGroup>
-	
-	<ItemGroup>
-	  <Compile Update="TextPage.xaml.cs">
-	    <DependentUpon>TextPage.xaml</DependentUpon>
-	  </Compile>
-	  <Compile Update="ExamplesPage.xaml.cs">
-	    <DependentUpon>ExamplesPage.xaml</DependentUpon>
-	  </Compile>
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <MauiXaml Update="TextPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="ExamplesPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	</ItemGroup>
 </Project>

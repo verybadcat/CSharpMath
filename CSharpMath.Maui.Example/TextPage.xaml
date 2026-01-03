@@ -5,12 +5,7 @@
              xmlns:local="clr-namespace:CSharpMath.Maui.Example"
              x:Class="CSharpMath.Maui.Example.TextPage"
              Title="Text">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="5*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="5*"/>
-        </Grid.RowDefinitions>
+    <Grid RowDefinitions="5*,*,5*">
         <Editor x:Name="Text"
                 TextChanged="Text_TextChanged"
                 Grid.Row="0" 
@@ -28,16 +23,14 @@ where \textit{color} stands for one of the LaTeX standard colors.
 \red{Colored text in text mode are able to automatically break up when spaces are inside the colored text, which the equivalent in math mode cannot do.}
 \textbf{Styled} \texttt{text} can be achieved via the LaTeX styling commands.
 The SkiaSharp version of this is located at CSharpMath.SkiaSharp.TextPainter;
-and the Xamarin.Forms version of this is located at CSharpMath.Forms.TextView.
+and the MAUI version of this is located at CSharpMath.Maui.TextView.
 Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6. \[\frac{Display}{maths} \sqrt\text\mathtt{\ at\ the\ end}^\mathbf{are\ now\ incuded\ in\ Measure!} \]"/>
-        <StackLayout Orientation="Horizontal"
-                     Grid.Row="1" >
-            <Picker x:Name="Size"
-                    Title="Font Size"
-                    ItemsSource="{x:Static local:TryPage.FontSizes}"
-                    SelectedIndexChanged="Size_SelectedIndexChanged"/>
-            <Button Text="Reset pan" Clicked="Button_Clicked"/>
-        </StackLayout>
+        
+        <Picker Grid.Row="1"
+                x:Name="Size"
+                Title="Font Size"
+                ItemsSource="{x:Static local:TryPage.FontSizes}"
+                SelectedIndexChanged="Size_SelectedIndexChanged"/>
         <ScrollView Grid.Row="2" x:Name="Scroll">
             <text:TextView x:Name="View"/>
         </ScrollView>
