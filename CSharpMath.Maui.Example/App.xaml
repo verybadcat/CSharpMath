@@ -11,9 +11,11 @@
             </ResourceDictionary.MergedDictionaries>
             <Style TargetType="math:MathView">
                 <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource Primary}}" />
+                <Setter Property="FontSize" Value="36" />
             </Style>
             <Style TargetType="math:TextView">
                 <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource Primary}}" />
+                <Setter Property="FontSize" Value="36" />
             </Style>
         </ResourceDictionary>
     </Application.Resources>

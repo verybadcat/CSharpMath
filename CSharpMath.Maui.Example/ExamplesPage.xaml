@@ -5,19 +5,8 @@
              xmlns:local="clr-namespace:CSharpMath.Maui.Example"
              x:Class="CSharpMath.Maui.Example.ExamplesPage"
              Title="Examples">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <HorizontalStackLayout>
-            <Picker x:Name="Picker" HorizontalOptions="Start"/>
-            <Picker x:Name="Size" HorizontalOptions="Start"/>
-            <Button Text="Reset pan" Clicked="Button_Clicked" HorizontalOptions="End"/>
-        </HorizontalStackLayout>
-        <Label x:Name="Label" Grid.Row="1"/>
-        <math:MathView x:Name="View" Grid.Row="2" FontSize="36" EnablePanning="True"/>
-    </Grid>
+    <ScrollView>
+        <StackLayout x:Name="Stack"/>
+    </ScrollView>
 
 </ContentPage>

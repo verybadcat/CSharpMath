@@ -10,7 +10,13 @@ namespace CSharpMath.Maui.Example {
       Size.SelectedIndexChanged += (sender, e) => View.FontSize = (float)Size.SelectedItem;
       Entry.TextChanged += (sender, e) => {
         View.LaTeX = Entry.Text;
-        Exit.Text = View.ErrorMessage is { } ? View.LaTeX : "";
+        if (View.ErrorMessage is { })
+          Exit.FormattedText = new() { Spans = { new() { Text = View.LaTeX, TextColor = Colors.Red, FontSize = Exit.FontSize } } };
+        else Exit.Text = View.LaTeX;
+      };
+      Picker.ItemsSource = Rendering.Tests.TestRenderingMathData.AllConstants.Keys.ToList();
+      Picker.SelectedIndexChanged += (sender, e) => {
+        if (Picker.SelectedItem is string s) View.LaTeX = Entry.Text = Rendering.Tests.TestRenderingMathData.AllConstants[s];
       };
     }
     private void Button_Clicked(object sender, System.EventArgs e) {

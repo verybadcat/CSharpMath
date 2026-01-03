@@ -7,12 +7,13 @@
              Title="Try">
     <Grid RowDefinitions="Auto,Auto,Auto,*" ColumnDefinitions="*">
         <Entry x:Name="Entry" Grid.Row="0"/>
-        <Label x:Name="Exit" Grid.Row="1"/>
-        <HorizontalStackLayout Grid.Row="2">
-            <Picker x:Name="Size" ItemsSource="{x:Static local:TryPage.FontSizes}"/>
-            <Button Text="Reset pan" Clicked="Button_Clicked" HorizontalOptions="End"/>
+        <HorizontalStackLayout Grid.Row="1">
+            <Button Text="Reset pan" Clicked="Button_Clicked"/>
+            <Picker x:Name="Size" Title="Font Size" ItemsSource="{x:Static local:TryPage.FontSizes}"/>
+            <Picker x:Name="Picker" Title="Select an example"/>
         </HorizontalStackLayout>
-        <math:MathView x:Name="View" EnablePanning="True" Grid.Row="3" FontSize="36" />
+        <Label x:Name="Exit" Grid.Row="2"/>
+        <math:MathView x:Name="View" EnablePanning="True" Grid.Row="3" />
     </Grid>
 
 </ContentPage>
