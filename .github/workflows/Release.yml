@@ -5,7 +5,7 @@ on:
     types: [published]
 jobs:
   CSharpMath:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v6
       with:
@@ -13,7 +13,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: '10.0.x'
+        dotnet-version: '10.x'
     - name: Build GitHub Releases draft artifacts
       env:
         RELEASE_NOTES: |

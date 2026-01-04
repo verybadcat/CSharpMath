@@ -2,8 +2,22 @@
 
 on: [push, pull_request]
 jobs:
-  Core:
-    runs-on: ubuntu-latest # release-drafter/release-drafter@v5 only works on Linux: https://github.com/release-drafter/release-drafter/issues/558
+  Projects:
+    runs-on: [ubuntu-latest, macos-latest]
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        submodules: 'recursive'
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: '10.x'
+    - name: Build and Test
+      run: |
+        dotnet workload restore
+        dotnet test CSharpMath.sln -c Release -l GitHubActions --blame
+  Everything:
+    runs-on: windows-latest
     steps:
     - name: Update draft on GitHub Releases
       id: release_drafter
