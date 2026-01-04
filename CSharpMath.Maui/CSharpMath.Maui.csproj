@@ -20,9 +20,9 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<Compile Include="..\CSharpMath.Xaml\**\*.cs" Link="%(RecursiveDir)%(Filename)%(Extension)" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<ProjectReference Include="..\CSharpMath.Rendering\CSharpMath.Rendering.csproj" />
 	</ItemGroup>
-	<Import Project="..\CSharpMath.Xaml\CSharpMath.Xaml.projitems" Label="Shared" />
 
 </Project>
