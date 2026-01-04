@@ -15,6 +15,6 @@ jobs:
     - name: Setup MSBuild Path
       uses: microsoft/setup-msbuild@v2
     - name: Restore NuGet Packages
-      run: dotnet restore BuildEverythingYml.slnf
+      run: dotnet restore CSharpMath.sln
     - name: Build Everything
-      run: msbuild BuildEverythingYml.slnf /p:Configuration=Release
+      run: dotnet build CSharpMath.sln /p:Configuration=Release
