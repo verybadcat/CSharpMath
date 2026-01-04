@@ -1,5 +1,4 @@
 namespace CSharpMath.Rendering.Tests {
-  [Android.Runtime.Preserve(AllMembers = true), Foundation.Preserve(AllMembers = true)]
   public sealed class TestRenderingMathData : TestRenderingSharedData<TestRenderingMathData> {
     
     public const string Abs = @"|x|=\begin{cases} -x, & \text{ if } x < 0 \\ x, & \text{ if } x \geq 0 \end{cases}";

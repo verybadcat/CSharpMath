@@ -18,17 +18,6 @@ using XControl = Avalonia.Controls.Control;
 using XInheritControl = Avalonia.Controls.Control;
 using XProperty = Avalonia.AvaloniaProperty;
 namespace CSharpMath.Avalonia {
-#elif Forms
-using XCanvas = SkiaSharp.SKCanvas;
-using XCanvasColor = SkiaSharp.SKColor;
-using XColor = Xamarin.Forms.Color;
-using XControl = Xamarin.Forms.View;
-using XInheritControl = SkiaSharp.Views.Forms.SKCanvasView;
-using XProperty = Xamarin.Forms.BindableProperty;
-using MathPainter = CSharpMath.SkiaSharp.MathPainter;
-using TextPainter = CSharpMath.SkiaSharp.TextPainter;
-namespace CSharpMath.Forms {
-  [Xamarin.Forms.ContentProperty(nameof(LaTeX))]
 #elif Maui
 using XCanvas_Canvas = Microsoft.Maui.Graphics.ICanvas;
 using XCanvas_Size = Microsoft.Maui.Graphics.SizeF;
@@ -156,64 +145,6 @@ namespace CSharpMath.Maui {
     public override void Render(global::Avalonia.Media.DrawingContext context) {
       base.Render(context);
       var canvas = new XCanvas(context, Bounds.Size);
-#elif Forms
-        @this.InvalidateSurface();
-      }
-      return XProperty.Create(propertyName, typeof(TValue), typeof(TThis), defaultValue,
-        propertyChanged: (b, o, n) => PropertyChanged((TThis)b, n));
-    }
-    static string GetPropertyName(XProperty prop) => prop.PropertyName;
-    protected override Xamarin.Forms.SizeRequest OnMeasure(double widthConstraint, double heightConstraint) =>
-      Painter.Measure((float)widthConstraint) is { } rect
-      ? new Xamarin.Forms.SizeRequest(new Xamarin.Forms.Size(rect.Width, rect.Height))
-      : base.OnMeasure(widthConstraint, heightConstraint);
-    struct ReadOnlyProperty<TThis, TValue> where TThis : BaseView<TPainter, TContent> {
-      public ReadOnlyProperty(string propertyName,
-        Func<TPainter, TValue> getter) {
-        _key = XProperty.CreateReadOnly(propertyName, typeof(TValue), typeof(TThis), getter(staticPainter));
-      }
-      readonly Xamarin.Forms.BindablePropertyKey _key;
-      public XProperty Property => _key.BindableProperty;
-      public void SetValue(TThis @this, TValue value) => @this.SetValue(_key, value);
-    }
-    private protected static XCanvasColor XColorToXCanvasColor(XColor color) => global::SkiaSharp.Views.Forms.Extensions.ToSKColor(color);
-    private protected static XColor XCanvasColorToXColor(XCanvasColor color) => global::SkiaSharp.Views.Forms.Extensions.ToFormsColor(color);
-    global::SkiaSharp.SKPoint _origin;
-    protected override void OnTouch(global::SkiaSharp.Views.Forms.SKTouchEventArgs e) {
-      if (e.InContact && EnablePanning) {
-        switch (e.ActionType) {
-          case global::SkiaSharp.Views.Forms.SKTouchAction.Pressed:
-            _origin = e.Location;
-            e.Handled = true;
-            break;
-          case global::SkiaSharp.Views.Forms.SKTouchAction.Moved:
-            var displacement = e.Location - _origin;
-            _origin = e.Location;
-            DisplacementX += displacement.X;
-            DisplacementY += displacement.Y;
-            e.Handled = true;
-            break;
-          case global::SkiaSharp.Views.Forms.SKTouchAction.Released:
-            _origin = e.Location;
-            e.Handled = true;
-            break;
-          case global::SkiaSharp.Views.Forms.SKTouchAction.Entered:
-          case global::SkiaSharp.Views.Forms.SKTouchAction.Cancelled:
-          case global::SkiaSharp.Views.Forms.SKTouchAction.Exited:
-          default:
-            break;
-        }
-      }
-      base.OnTouch(e);
-    }
-    protected sealed override void OnPaintSurface(global::SkiaSharp.Views.Forms.SKPaintSurfaceEventArgs e) {
-      base.OnPaintSurface(e);
-      var canvas = e.Surface.Canvas;
-      canvas.Clear();
-      // https://github.com/verybadcat/CSharpMath/issues/136 and https://github.com/verybadcat/CSharpMath/issues/137
-      // SkiaSharp deals with raw pixels as opposed to Xamarin.Forms's device-independent units.
-      // We should scale to occupy the full view size.
-      canvas.Scale(e.Info.Width / (float)Width);
 #elif Maui
         @this.Invalidate();
       }

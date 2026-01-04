@@ -3,22 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-//For the Android linker
-namespace Android.Runtime {
-  public sealed class PreserveAttribute : System.Attribute {
-    public bool AllMembers; public bool Conditional;
-  }
-}
-#if !__IOS__
-//For the iOS linker
-namespace Foundation {
-  public sealed class PreserveAttribute : System.Attribute {
-    public bool AllMembers; public bool Conditional;
-  }
-}
-#endif
 namespace CSharpMath.Rendering.Tests {
-  [Android.Runtime.Preserve(AllMembers = true), Foundation.Preserve(AllMembers = true)]
   public abstract class TestRenderingSharedData<TThis> : IEnumerable<object[]> where TThis : TestRenderingSharedData<TThis> {
     public static IReadOnlyDictionary<string, string> AllConstants { get; } =
       typeof(TThis)

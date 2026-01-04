@@ -3,7 +3,6 @@
     <EmbeddedResource Include="..\CSharpMath.Rendering.Tests\ComicNeue_Bold.otf" Link="ComicNeue_Bold.otf" />
     <PackageReference Include="Avalonia.Markup.Xaml.Loader" Version="$(AvaloniaVersion)" />
     <ProjectReference Include="..\CSharpMath.Avalonia\CSharpMath.Avalonia.csproj" />
-    <ProjectReference Include="..\CSharpMath.Forms\CSharpMath.Forms.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="coverlet.collector" Version="6.0.4">
