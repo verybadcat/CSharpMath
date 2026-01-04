@@ -32,14 +32,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Playground", "_Playground"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SkiaSharp", "SkiaSharp", "{F3C6FCAE-FB37-4FBA-8ABD-7295868F15EC}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Typography.OpenFont", "Typography\Typography.OpenFont\Typography.OpenFont.shproj", "{235A071B-8D06-40AE-A5C5-B1CE59715EE9}"
-EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Typography.GlyphLayout", "Typography\Typography.GlyphLayout\Typography.GlyphLayout.shproj", "{D8861CF8-C506-472B-8A57-632BD6CA6496}"
-EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Typography.TextBreak", "Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.shproj", "{9A99F103-B119-4A4D-8093-6A03BAA6D36B}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Dependencies", "_Dependencies", "{74FBDC58-E93A-4DCE-B83F-AA936EE57B31}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Editor", "CSharpMath.Editor\CSharpMath.Editor.csproj", "{38F58489-EDE4-4289-8ACF-A9756977A7A6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Editor.Tests", "CSharpMath.Editor.Tests\CSharpMath.Editor.Tests.csproj", "{BA1ECF0E-134A-49C2-BA4D-1D28C6A8494A}"
@@ -55,8 +47,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Avalonia.Example", "CSharpMath.Avalonia.Example\CSharpMath.Avalonia.Example.csproj", "{4E728BD1-65C2-4D1C-8147-1C7457565B6E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Rendering.Tests", "CSharpMath.Rendering.Tests\CSharpMath.Rendering.Tests.csproj", "{14E42639-10E7-44C1-9571-65F0A48A3696}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Run 'git submodule update --init' if below unloaded", "Run 'git submodule update --init' if below unloaded", "{15784E9C-7D6D-47C0-B993-A45A964C82F5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Evaluation", "CSharpMath.Evaluation\CSharpMath.Evaluation.csproj", "{039990A9-FBF8-421E-A40A-CAE2A34B7240}"
 EndProject
@@ -1187,9 +1177,6 @@ Global
 		{35B4BB5B-2202-436E-9AFE-00997CA2CC65} = {F3C6FCAE-FB37-4FBA-8ABD-7295868F15EC}
 		{20986A1A-BF57-4EA7-92E1-E88D3C70874B} = {E7CDDECF-B87B-4114-932B-D3FB5E8302F8}
 		{65016A61-2125-4E0C-90E8-A915230C7826} = {125C1FE9-F684-4E87-A9EF-969FD1E2D726}
-		{235A071B-8D06-40AE-A5C5-B1CE59715EE9} = {74FBDC58-E93A-4DCE-B83F-AA936EE57B31}
-		{D8861CF8-C506-472B-8A57-632BD6CA6496} = {74FBDC58-E93A-4DCE-B83F-AA936EE57B31}
-		{9A99F103-B119-4A4D-8093-6A03BAA6D36B} = {74FBDC58-E93A-4DCE-B83F-AA936EE57B31}
 		{38F58489-EDE4-4289-8ACF-A9756977A7A6} = {125C1FE9-F684-4E87-A9EF-969FD1E2D726}
 		{BA1ECF0E-134A-49C2-BA4D-1D28C6A8494A} = {125C1FE9-F684-4E87-A9EF-969FD1E2D726}
 		{C60126CE-A71D-4D11-A4A8-A45B67312E98} = {125C1FE9-F684-4E87-A9EF-969FD1E2D726}
@@ -1197,7 +1184,6 @@ Global
 		{56166C6C-B3B4-4BAE-823E-B3D24C080394} = {FCA00A99-04A2-467D-9557-C8BA3F8D50D4}
 		{4E728BD1-65C2-4D1C-8147-1C7457565B6E} = {FCA00A99-04A2-467D-9557-C8BA3F8D50D4}
 		{14E42639-10E7-44C1-9571-65F0A48A3696} = {125C1FE9-F684-4E87-A9EF-969FD1E2D726}
-		{15784E9C-7D6D-47C0-B993-A45A964C82F5} = {74FBDC58-E93A-4DCE-B83F-AA936EE57B31}
 		{039990A9-FBF8-421E-A40A-CAE2A34B7240} = {125C1FE9-F684-4E87-A9EF-969FD1E2D726}
 		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E} = {125C1FE9-F684-4E87-A9EF-969FD1E2D726}
 		{D37416FB-3025-4A64-81CE-89DA21062ACB} = {125C1FE9-F684-4E87-A9EF-969FD1E2D726}
@@ -1219,16 +1205,9 @@ Global
 		Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems*{20986a1a-bf57-4ea7-92e1-e88d3c70874b}*SharedItemsImports = 5
 		Typography\Typography.OpenFont\Typography.OpenFont.projitems*{20986a1a-bf57-4ea7-92e1-e88d3c70874b}*SharedItemsImports = 5
 		Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems*{20986a1a-bf57-4ea7-92e1-e88d3c70874b}*SharedItemsImports = 5
-		Typography\Typography.OpenFont\Typography.OpenFont.projitems*{235a071b-8d06-40ae-a5c5-b1ce59715ee9}*SharedItemsImports = 13
 		CSharpMath.Xaml\CSharpMath.Xaml.projitems*{56166c6c-b3b4-4bae-823e-b3d24c080394}*SharedItemsImports = 5
-		PixelFarm.Typography (Excerpt)\PixelFarm.Typography (Excerpt).projitems*{65016a61-2125-4e0c-90e8-a915230c7826}*SharedItemsImports = 5
-		Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems*{65016a61-2125-4e0c-90e8-a915230c7826}*SharedItemsImports = 5
-		Typography\Typography.OpenFont\Typography.OpenFont.projitems*{65016a61-2125-4e0c-90e8-a915230c7826}*SharedItemsImports = 5
-		Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems*{65016a61-2125-4e0c-90e8-a915230c7826}*SharedItemsImports = 5
 		CSharpMath.Wiki\CSharpMath.Wiki.projitems*{883bcfb1-3aa8-4ab7-8f82-27b849716373}*SharedItemsImports = 13
 		CSharpMath.Xaml\CSharpMath.Xaml.projitems*{96356788-e2a3-46e7-a9cf-d8fa8674f385}*SharedItemsImports = 5
-		Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems*{9a99f103-b119-4a4d-8093-6a03baa6d36b}*SharedItemsImports = 13
 		CSharpMath.Xaml\CSharpMath.Xaml.projitems*{d37416fb-3025-4a64-81ce-89da21062acb}*SharedItemsImports = 13
-		Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems*{d8861cf8-c506-472b-8a57-632bd6ca6496}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal

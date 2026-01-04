@@ -12,8 +12,14 @@
     <PackageReference Include="Nullable" Version="1.3.1" PrivateAssets="all" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.6.1" />
   </ItemGroup>
-  <Import Project="..\PixelFarm.Typography %28Excerpt%29\PixelFarm.Typography %28Excerpt%29.projitems" Label="Shared" Condition="Exists('..\PixelFarm.Typography %28Excerpt%29\PixelFarm.Typography %28Excerpt%29.projitems')" />
-  <Import Project="..\Typography\Typography.OpenFont\Typography.OpenFont.projitems" Label="Shared" />
-  <Import Project="..\Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems" Label="Shared" />
-  <Import Project="..\Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems" Label="Shared" Condition="Exists('..\Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems')" />
+  <ItemGroup Label="Typography">
+    <Compile Include="..\Typography\Typography.OpenFont\**\*.cs" Link="Typography\OpenFont\%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="..\Typography\Typography.GlyphLayout\**\*.cs" Exclude="..\Typography\Typography.GlyphLayout\**\\AssemblyInfo.cs" Link="Typography\GlyphLayout\%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="..\Typography\Typography.TextBreak\Typography.TextBreak\**\*.cs" Link="Typography\TextBreak\%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="..\Typography\PixelFarm.Typography\3_Typography_Contours\GlyphOutlineBuilderBase.cs" Link="Typography\%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+  <Target Name="CheckTypographySubmodule" BeforeTargets="BeforeBuild">
+    <Error Condition="!Exists('..\Typography\Typography.OpenFont')" 
+           Text="Typography submodule not initialized. Please run 'git submodule update --init' in the repository root." />
+  </Target>
 </Project>
