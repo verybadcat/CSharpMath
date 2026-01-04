@@ -9,6 +9,7 @@ namespace CSharpMath {
   using Atom;
   using Atoms = Atom.Atoms;
   using Structures;
+  using System.Numerics;
 
   public static partial class Evaluation {
     enum Precedence {
@@ -18,6 +19,7 @@ namespace CSharpMath {
       ParenthesisContext,
       // Lowest
       Comma,
+      Equivalence,
       Implication,
       Disjunction,
       Conjunction,
@@ -202,6 +204,16 @@ namespace CSharpMath {
               goto handleThis;
             } else return "Invalid number: " + n.Nucleus;
           case Atoms.Variable v:
+            var name = new System.Text.StringBuilder(v.Nucleus);
+            if (v.FontStyle is FontStyle.Roman) // handle multi-character roman variables
+              while (i + 1 < mathList.Count) {
+                if (mathList[i + 1] is Atoms.Variable { FontStyle: FontStyle.Roman } v2) {
+                  name.Append(v2.Nucleus);
+                  v = v2;
+                  i++;
+                  if (v2.Superscript.Count > 0 || v2.Subscript.Count > 0) break;
+                } else break;
+              }
             var subscript = new System.Text.StringBuilder();
             foreach (var subAtom in v.Subscript)
               switch (subAtom) {
@@ -221,18 +233,18 @@ namespace CSharpMath {
                   return $"Unsupported {subAtom.TypeName} {subAtom.Nucleus} in subscript";
               }
             var underscore = subscript.Length > 0 ? "_" : "";
-            @this = (v.Nucleus, v.Subscript.Count) switch
+            @this = (name.ToString(), v.Subscript.Count, v.FontStyle) switch
             {
-              ("C", 0) when v.FontStyle == FontStyle.Blackboard => MathS.Sets.C,
-              ("R", 0) when v.FontStyle == FontStyle.Blackboard => MathS.Sets.R,
-              ("Q", 0) when v.FontStyle == FontStyle.Blackboard => MathS.Sets.Q,
-              ("Z", 0) when v.FontStyle == FontStyle.Blackboard => MathS.Sets.Z,
-              ("e", 0) => MathS.e,
-              ("π", 0) => MathS.pi,
-              ("i", 0) => MathS.i,
+              ("C", 0, FontStyle.Blackboard) => MathS.Sets.C,
+              ("R", 0, FontStyle.Blackboard) => MathS.Sets.R,
+              ("Q", 0, FontStyle.Blackboard) => MathS.Sets.Q,
+              ("Z", 0, FontStyle.Blackboard) => MathS.Sets.Z,
+              ("e", 0, FontStyle.Roman or FontStyle.Default or FontStyle.Italic) => MathS.e,
+              ("π", 0, FontStyle.Roman or FontStyle.Default or FontStyle.Italic) => MathS.pi,
+              ("i", 0, FontStyle.Roman or FontStyle.Default or FontStyle.Italic) => MathS.i,
               // Convert θ to theta
-              _ when LaTeXSettings.CommandForAtom(atom) is string s => MathS.Var(string.Concat(s.TrimStart('\\'), underscore, subscript)),
-              (var name, _) => MathS.Var(name + underscore + subscript.ToString())
+              (_, _, FontStyle.Default or FontStyle.Italic) when LaTeXSettings.CommandForAtom(atom) is string s => MathS.Var(string.Concat(s.TrimStart('\\'), underscore, subscript)),
+              _ => MathS.Var(name + underscore + subscript.ToString())
             };
             subscriptAllowed = true;
             goto handleThis;
@@ -340,7 +352,6 @@ namespace CSharpMath {
             handlePrecendence = Precedence.AddSubtract;
             handleBinary = (a, b) => a - b;
             goto handleBinary;
-          case Atoms.BinaryOperator { Nucleus: "*" }:
           case Atoms.BinaryOperator { Nucleus: "×" }:
           case Atoms.BinaryOperator { Nucleus: "·" }:
             handlePrecendence = Precedence.MultiplyDivide;
@@ -394,10 +405,10 @@ namespace CSharpMath {
             handlePrecendence = Precedence.SetOperation;
             handleBinary = MathS.SetSubtraction;
             goto handleBinary;
-          case Atoms.LargeOperator { Nucleus: "true" or "True" }:
+          case Atoms.Ordinary { Nucleus: "⊤" }:
             @this = MathS.Boolean.Create(true);
             goto handleThis;
-          case Atoms.LargeOperator { Nucleus: "false" or "False" }:
+          case Atoms.Ordinary { Nucleus: "⊥" }:
             @this = MathS.Boolean.Create(false);
             goto handleThis;
           case Atoms.Ordinary { Nucleus: "¬" }:
@@ -408,13 +419,22 @@ namespace CSharpMath {
             handlePrecendence = Precedence.Conjunction;
             handleBinary = MathS.Conjunction;
             goto handleBinary;
+          case Atoms.BinaryOperator { Nucleus: "⌅" }:
+            handlePrecendence = Precedence.Conjunction;
+            handleBinary = (x, y) => MathS.Negation(MathS.Conjunction(x, y));
+            goto handleBinary;
           case Atoms.BinaryOperator { Nucleus: "∨" }:
             handlePrecendence = Precedence.Disjunction;
             handleBinary = MathS.Disjunction;
             goto handleBinary;
-          case Atoms.BinaryOperator { Nucleus: "⊕" }:
-            handlePrecendence = Precedence.Disjunction;
+          case Atoms.BinaryOperator { Nucleus: "⊻" }:
+          case Atoms.Relation { Nucleus: "↮" }:
+            handlePrecendence = Precedence.Disjunction; // XOR has same precedence as OR
             handleBinary = MathS.ExclusiveDisjunction;
+            goto handleBinary;
+          case Atoms.Relation { Nucleus: "↔" }:
+            handlePrecendence = Precedence.Equivalence;
+            handleBinary = (x, y) => MathS.Negation(MathS.ExclusiveDisjunction(x, y)); // XNOR = equivalence
             goto handleBinary;
           case Atoms.Relation { Nucleus: "→" }:
             handlePrecendence = Precedence.Implication;
@@ -423,6 +443,14 @@ namespace CSharpMath {
           case Atoms.Relation { Nucleus: "↛" }:
             handlePrecendence = Precedence.Implication;
             handleBinary = (x, y) => MathS.Negation(MathS.Implication(x, y));
+            goto handleBinary;
+          case Atoms.Relation { Nucleus: "←" }:
+            handlePrecendence = Precedence.Implication;
+            handleBinary = (x, y) => MathS.Implication(y, x);
+            goto handleBinary;
+          case Atoms.Relation { Nucleus: "↚" }:
+            handlePrecendence = Precedence.Implication;
+            handleBinary = (x, y) => MathS.Negation(MathS.Implication(y, x));
             goto handleBinary;
           case Atoms.Relation { Nucleus: "∈" }:
             handlePrecendence = Precedence.Relation;
@@ -448,7 +476,7 @@ namespace CSharpMath {
             handlePrecendence = Precedence.Relation;
             handleBinary = MathS.LessThan;
             goto handleBinary;
-          case Atoms.Relation { Nucleus: "≤" }:
+          case Atoms.Relation { Nucleus: "≤" or "⩽" }:
             handlePrecendence = Precedence.Relation;
             handleBinary = MathS.LessOrEqualThan;
             goto handleBinary;
@@ -456,7 +484,7 @@ namespace CSharpMath {
             handlePrecendence = Precedence.Relation;
             handleBinary = MathS.GreaterThan;
             goto handleBinary;
-          case Atoms.Relation { Nucleus: "≥" }:
+          case Atoms.Relation { Nucleus: "≥" or "⩾" }:
             handlePrecendence = Precedence.Relation;
             handleBinary = MathS.GreaterOrEqualThan;
             goto handleBinary;
