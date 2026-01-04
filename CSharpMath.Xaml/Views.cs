@@ -7,24 +7,19 @@ using Typography.OpenFont;
 using System.Drawing;
 using System.Linq;
 
-
-
 // X stands for Xaml
 #if Avalonia
 using XCanvas = CSharpMath.Avalonia.AvaloniaCanvas;
 using XCanvasColor = Avalonia.Media.Color;
 using XColor = Avalonia.Media.Color;
-using XControl = Avalonia.Controls.Control;
 using XInheritControl = Avalonia.Controls.Control;
 using XProperty = Avalonia.AvaloniaProperty;
 namespace CSharpMath.Avalonia {
 #elif Maui
 using XCanvas_Canvas = Microsoft.Maui.Graphics.ICanvas;
-using XCanvas_Size = Microsoft.Maui.Graphics.SizeF;
 using XCanvas = (Microsoft.Maui.Graphics.ICanvas, Microsoft.Maui.Graphics.SizeF);
 using XCanvasColor = Microsoft.Maui.Graphics.Color;
 using XColor = Microsoft.Maui.Graphics.Color;
-using XControl = Microsoft.Maui.Controls.GraphicsView;
 using XInheritControl = Microsoft.Maui.Controls.GraphicsView;
 using XProperty = Microsoft.Maui.Controls.BindableProperty;
 namespace CSharpMath.Maui {

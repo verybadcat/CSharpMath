@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <ProjectReference Include="..\CSharpMath.Editor\CSharpMath.Editor.csproj" />
-    <ProjectReference Include="..\CSharpMath.TestUtils\CSharpMath.TestUtils.csproj" />
+    <ProjectReference Include="..\CSharpMath.TestUtils\CSharpMath.CoreTestUtils.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="coverlet.collector" Version="6.0.4">

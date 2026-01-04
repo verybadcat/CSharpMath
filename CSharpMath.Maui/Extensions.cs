@@ -27,13 +27,14 @@ namespace CSharpMath.Maui {
         MauiTextAlignment.End => CSharpMathTextAlignment.TopRight,
         _ => CSharpMathTextAlignment.Left
       };
-
+#if ANDROID || IOS || MACCATALYST || WINDOWS
     public static System.Threading.Tasks.Task DrawToStreamAsync<TContent>
       (this Rendering.FrontEnd.Painter<(MauiICanvas, SizeF), TContent, MauiColor> painter,
        System.IO.Stream target,
        float textPainterCanvasWidth = TextPainter.DefaultCanvasWidth,
        ImageFormat format = ImageFormat.Png,
-       float quality = 1) where TContent : class {
+       float quality = 1,
+       CSharpMathTextAlignment alignmentForTests = CSharpMathTextAlignment.TopLeft) where TContent : class {
       if (!(painter.Measure(textPainterCanvasWidth) is { } size)) return System.Threading.Tasks.Task.CompletedTask;
       // In case there is no support for zero width/height - other frontends have this check
       // and I won't waste time checking each Maui platform to validate this.
@@ -45,7 +46,7 @@ namespace CSharpMath.Maui {
       using var renderTarget = new Microsoft.Graphics.Canvas.CanvasRenderTarget(device, size.Width, size.Height, 96);
       canvas.CanvasSize = renderTarget.Size;
       using (canvas.Session = renderTarget.CreateDrawingSession()) {
-        painter.Draw((canvas, new SizeF(size.Width, size.Height)), CSharpMathTextAlignment.TopLeft);
+        painter.Draw((canvas, new SizeF(size.Width, size.Height)), alignmentForTests);
       }
       var bs = renderTarget.GetPixelBytes();
       var nativeFormat = format switch {
@@ -59,10 +60,11 @@ namespace CSharpMath.Maui {
       return renderTarget.SaveAsync(target.AsRandomAccessStream(), nativeFormat, quality).AsTask();
 #else
       using var context = new Microsoft.Maui.Graphics.Platform.PlatformBitmapExportService().CreateContext((int)size.Width, (int)size.Height);
-      painter.Draw((context.Canvas, new SizeF(size.Width, size.Height)), CSharpMathTextAlignment.TopLeft);
+      painter.Draw((context.Canvas, new SizeF(size.Width, size.Height)), alignmentForTests);
       return context.Image.SaveAsync(target, format, quality);
 #endif
     }
+#endif
     class KeyboardDrawable(MathKeyboard keyboard, MathPainter settings, Color caretColor, CaretShape caretShape) : IDrawable {
       public void Draw(MauiICanvas canvas, RectF dirtyRect) {
         settings.DrawDisplay(keyboard.Display, (canvas, dirtyRect.Size));

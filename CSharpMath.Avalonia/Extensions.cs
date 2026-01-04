@@ -47,14 +47,15 @@ namespace CSharpMath.Avalonia {
       (this Painter<AvaloniaCanvas, TContent, AvaloniaColor> painter,
        System.IO.Stream target,
        float textPainterCanvasWidth = TextPainter.DefaultCanvasWidth,
-       int? quality = null) where TContent : class {
+       int? quality = null,
+       CSharpMathTextAlignment alignmentForTests = CSharpMathTextAlignment.TopLeft) where TContent : class {
       if (!(painter.Measure(textPainterCanvasWidth) is { } size)) return;
       // RenderTargetBitmap does not support zero width/height. ArgumentException will be thrown.
       if (size.Width is 0) size.Width = 1;
       if (size.Height is 0) size.Height = 1;
       using var bitmap =
         new RenderTargetBitmap(new PixelSize((int)size.Width, (int)size.Height));
-      bitmap.Render(new DrawVisual<TContent>(painter, size, CSharpMathTextAlignment.TopLeft));
+      bitmap.Render(new DrawVisual<TContent>(painter, size, alignmentForTests));
       bitmap.Save(target, quality);
     }
   }

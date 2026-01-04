@@ -10,6 +10,6 @@ namespace CSharpMath.Rendering.Tests {
     protected override double FileSizeTolerance => 0.0472;
     protected override void DrawToStream<TContent>(Painter<AvaloniaCanvas, TContent, AvaloniaColor> painter,
       Stream stream, float textPainterCanvasWidth, TextAlignment alignment) =>
-      painter.DrawAsPng(stream, textPainterCanvasWidth, alignment);
+      painter.DrawAsPng(stream, textPainterCanvasWidth, null, alignment);
   }
 }

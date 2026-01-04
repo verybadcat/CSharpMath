@@ -26,7 +26,9 @@ namespace CSharpMath.Maui {
           BaseView<TPainter, TContent>.WritablePainterPropertyNames.Contains(e.PropertyName))
         UpdateImageSource();
     }
-    public virtual void UpdateImageSource() => Source = ImageSource.FromStream(async _ => {
+    public virtual void UpdateImageSource()
+#if IOS || ANDROID || MACCATALYST || WINDOWS
+      => Source = ImageSource.FromStream(async _ => {
       if (Content is { } c) {
         var painter = c.Painter.ShallowClone();
 
@@ -46,6 +48,9 @@ namespace CSharpMath.Maui {
       }
       return null;
     });
+#else
+      { }
+#endif
     public Color? TextColor { get => (Color?)GetValue(TextColorProperty); set => SetValue(TextColorProperty, value); }
     public static readonly BindableProperty TextColorProperty = BindablePropertyWithUpdateImageSource<BaseButton<TView, TPainter, TContent>>(nameof(TextColor), typeof(Color), null);
     public TView? Content { get => (TView?)GetValue(ContentProperty); set => SetValue(ContentProperty, value); }

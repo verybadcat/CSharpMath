@@ -11,13 +11,6 @@ namespace CSharpMath.Xaml.Tests {
   using Rendering.BackEnd;
   using Rendering.FrontEnd;
   using Rendering.Text;
-  [CollectionDefinition(nameof(TestFixture))]
-  public class TestFixture : ICollectionFixture<TestFixture> {
-    public TestFixture() {
-      Xamarin.Forms.Device.PlatformServices = new Xamarin.Forms.Core.UnitTests.MockPlatformServices();
-    }
-  }
-  [Collection(nameof(TestFixture))]
   public abstract class Test<TColor, TBindingMode, TProperty, TBaseView, TMathView, TTextView>
     where TBindingMode : struct, Enum
     where TMathView : TBaseView, ICSharpMathAPI<MathList, TColor>, new()
@@ -162,19 +155,10 @@ namespace CSharpMath.Xaml.Tests {
 
           using var innerBinding = SetBinding(view, nameof(viewModel.LaTeX));
           viewModel.LaTeX = @"\\\";
-          if (typeof(TBindingMode) == typeof(global::Avalonia.Data.BindingMode)) {
-            // Avalonia processes bindings from newest to oldest
-            Assert.Equal(@"123", view.LaTeX);
-            Assert.Equal(@"123", viewModel.LaTeX);
-            Assert.Equal(oneTwoThree, view.Content);
-            Assert.Null(view.ErrorMessage);
-          } else if (typeof(TBindingMode) == typeof(Xamarin.Forms.BindingMode)) {
-            // Xamarin Forms processes bindings from oldest to newest
-            Assert.Equal(@"\\\", view.LaTeX);
-            Assert.Equal(@"\\\", viewModel.LaTeX);
-            Assert.Null(view.Content);
-            Assert.Equal("Error: Invalid command \\\n\\\\\\\n  ↑ (pos 3)", view.ErrorMessage);
-          } else throw new NotImplementedException();
+          Assert.Equal(@"\\\", view.LaTeX);
+          Assert.Equal(@"\\\", viewModel.LaTeX);
+          Assert.Null(view.Content);
+          Assert.Equal("Error: Invalid command \\\n\\\\\\\n  ↑ (pos 3)", view.ErrorMessage);
         }
         using (var binding = SetBinding(view, nameof(viewModel.LaTeX))) {
           viewModel.LaTeX = @"}";
