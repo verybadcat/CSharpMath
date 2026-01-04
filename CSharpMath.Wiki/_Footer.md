@@ -1,1 +1,0 @@
-[How to search for CSharpMath](http://lmgtfy.com/?q=CSharpMath)

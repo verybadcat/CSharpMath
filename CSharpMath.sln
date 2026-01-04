@@ -54,8 +54,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Xaml.Tests", "CS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Rendering.Text.Tests", "CSharpMath.Rendering.Text.Tests\CSharpMath.Rendering.Text.Tests.csproj", "{B4187488-F6DF-45AC-96D3-EEE58B65C53E}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "CSharpMath.Wiki", "CSharpMath.Wiki\CSharpMath.Wiki.shproj", "{883BCFB1-3AA8-4AB7-8F82-27B849716373}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Xaml.Tests.NuGet", "CSharpMath.Xaml.Tests.NuGet\CSharpMath.Xaml.Tests.NuGet.csproj", "{2FD3FBBD-FD06-4E49-BA91-4FC5ADC33BA7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpMath.Evaluation.Tests", "CSharpMath.Evaluation.Tests\CSharpMath.Evaluation.Tests.csproj", "{06241755-626A-4992-9CAE-C5A5745CB83C}"
@@ -1190,7 +1188,6 @@ Global
 		{039990A9-FBF8-421E-A40A-CAE2A34B7240} = {125C1FE9-F684-4E87-A9EF-969FD1E2D726}
 		{87C65DBF-14E4-4BFD-B8E3-BC7F8D2A857E} = {125C1FE9-F684-4E87-A9EF-969FD1E2D726}
 		{B4187488-F6DF-45AC-96D3-EEE58B65C53E} = {125C1FE9-F684-4E87-A9EF-969FD1E2D726}
-		{883BCFB1-3AA8-4AB7-8F82-27B849716373} = {4095C402-9D46-4F54-9A19-4FA063852135}
 		{2FD3FBBD-FD06-4E49-BA91-4FC5ADC33BA7} = {125C1FE9-F684-4E87-A9EF-969FD1E2D726}
 		{06241755-626A-4992-9CAE-C5A5745CB83C} = {125C1FE9-F684-4E87-A9EF-969FD1E2D726}
 		{3D54C678-A873-4831-9894-9E92E6F8EEBF} = {125C1FE9-F684-4E87-A9EF-969FD1E2D726}
@@ -1208,6 +1205,5 @@ Global
 		Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems*{20986a1a-bf57-4ea7-92e1-e88d3c70874b}*SharedItemsImports = 5
 		Typography\Typography.OpenFont\Typography.OpenFont.projitems*{20986a1a-bf57-4ea7-92e1-e88d3c70874b}*SharedItemsImports = 5
 		Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems*{20986a1a-bf57-4ea7-92e1-e88d3c70874b}*SharedItemsImports = 5
-		CSharpMath.Wiki\CSharpMath.Wiki.projitems*{883bcfb1-3aa8-4ab7-8f82-27b849716373}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal
