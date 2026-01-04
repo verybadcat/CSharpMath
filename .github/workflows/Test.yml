@@ -10,13 +10,13 @@ jobs:
       uses: release-drafter/release-drafter@v6
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         submodules: 'recursive'
     - name: Setup .NET
       uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: '10.0.x'
+        dotnet-version: '10.x'
     - name: Build and Test
       env:
         RELEASE_NOTES: |
@@ -30,6 +30,7 @@ jobs:
         RELEASE_NOTES=${RELEASE_NOTES//,/%2C}
         RELEASE_NOTES=${RELEASE_NOTES//;/%3B}
         
+        dotnet workload restore
         # --collect:"XPlat Code Coverage" means collect test coverage with https://github.com/coverlet-coverage/coverlet
         # Coverlet settings come after --: https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/VSTestIntegration.md#advanced-options-supported-via-runsettings
         dotnet test CSharpMath.sln -c Release -l GitHubActions --blame --collect:"XPlat Code Coverage" --results-directory .testcoverage -p:PackageReleaseNotes="$RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }} -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.IncludeTestAssembly=true

@@ -5,15 +5,15 @@ jobs:
   Everything:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         submodules: 'recursive'
     - name: Setup .NET
       uses: actions/setup-dotnet@v5
       with:
         dotnet-version: '10.0.x'
-    - name: Setup MSBuild Path
-      uses: microsoft/setup-msbuild@v2
+    - name: .NET Workload restore
+      run: dotnet workload restore
     - name: Restore NuGet Packages
       run: dotnet restore CSharpMath.sln
     - name: Build Everything

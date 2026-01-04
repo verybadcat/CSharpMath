@@ -7,7 +7,7 @@ jobs:
   CSharpMath:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         submodules: 'recursive'
     - name: Setup .NET
@@ -27,8 +27,9 @@ jobs:
         RELEASE_NOTES=${RELEASE_NOTES//,/%2C}
         RELEASE_NOTES=${RELEASE_NOTES//;/%3B}
         
+        dotnet workload restore
         # -r for restore
-        dotnet msbuild -r -p:Configuration=Release -p:PackageVersion="${{ github.event.release.tag_name }}" -p:PackageReleaseNotes="$RELEASE_NOTES" CSharpMath.CrossPlatform.slnf
+        dotnet msbuild -r -p:Configuration=Release -p:PackageVersion="${{ github.event.release.tag_name }}" -p:PackageReleaseNotes="$RELEASE_NOTES" CSharpMath.sln
     - name: Upload to GitHub Releases
       uses: svenstaro/upload-release-action@v2
       with:
