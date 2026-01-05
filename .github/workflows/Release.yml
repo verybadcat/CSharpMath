@@ -14,10 +14,6 @@ jobs:
       uses: actions/setup-dotnet@v5
       with:
         dotnet-version: '10.x'
-    - if: matrix.os == 'macos-latest'
-      uses: maxim-lobanov/setup-xcode@v1
-      with:
-        xcode-version: latest-stable
     - name: Build GitHub Releases draft artifacts
       env:
         RELEASE_NOTES: |

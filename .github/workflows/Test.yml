@@ -15,10 +15,28 @@ jobs:
       uses: actions/setup-dotnet@v5
       with:
         dotnet-version: '10.x'
-    - if: matrix.os == 'macos-latest'
+    - name: Query required Xcode version
+      if: matrix.os == 'macos-latest'
+      id: xcode-version
+      run: |
+        # Get the MacCatalyst SDK version from dotnet workload
+        MACCATALYST_VERSION=$(dotnet workload list --verbosity detailed 2>&1 | grep -A 5 "maui-maccatalyst" | grep "Microsoft.MacCatalyst.Sdk" | sed -n 's/.*Microsoft.MacCatalyst.Sdk.net[0-9.]*_\([0-9.]*\).*/\1/p' | head -1)
+        
+        if [ -z "$MACCATALYST_VERSION" ]; then
+          echo "Could not determine MacCatalyst SDK version, using latest-stable Xcode"
+          echo "xcode-version=latest-stable" >> $GITHUB_OUTPUT
+        else
+          # Extract major.minor version (e.g., 26.2 from 26.2.10191)
+          XCODE_VERSION=$(echo $MACCATALYST_VERSION | cut -d. -f1-2)
+          echo "Required Xcode version: $XCODE_VERSION"
+          echo "xcode-version=$XCODE_VERSION" >> $GITHUB_OUTPUT
+        fi
+      shell: bash
+    - name: Setup Xcode
+      if: matrix.os == 'macos-latest'
       uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: latest-stable
+        xcode-version: ${{ steps.xcode-version.outputs.xcode-version }}
     - name: Build and Test
       run: |
         dotnet workload restore
