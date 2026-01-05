@@ -5,7 +5,7 @@
     <TargetFramework>net10.0</TargetFramework>
 	<OutputType>Exe</OutputType> <!--Required by xunit.v3-->
   </PropertyGroup>
-  <ItemGroup Condition="$(MSBuildProjectName.Contains('Test')) And !$(MSBuildProjectName.Contains('Visualizer'))">
+  <ItemGroup Condition="$(MSBuildProjectName.Contains('Test'))">
     <PackageReference Include="xunit.v3.mtp-v2" Version="3.2.1" />
     <PackageReference Include="coverlet.collector" Version="6.0.4" />
     <PackageReference Include="GitHubActionsTestLogger" Version="3.0.1" />

@@ -8,6 +8,7 @@
     <NoWarn>$(NoWarn);CS8618;CS8603;CS8625;CS8600;CS8601;CS8602;CS8604;CS0162;CS0168;CS0219;CS0649</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+	<ProjectReference Include="..\CSharpMath\CSharpMath.csproj" />
     <EmbeddedResource Include="Reference Fonts\*.otf" />
     <PackageReference Include="Nullable" Version="1.3.1" PrivateAssets="all" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.6.1" />
