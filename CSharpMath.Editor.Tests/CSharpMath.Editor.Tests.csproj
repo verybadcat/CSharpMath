@@ -1,6 +1,1 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-  <ItemGroup>
-    <ProjectReference Include="..\CSharpMath.Editor\CSharpMath.Editor.csproj" />
-    <ProjectReference Include="..\CSharpMath.TestUtils\CSharpMath.CoreTestUtils.csproj" />
-  </ItemGroup>
-</Project>
+﻿<Project Sdk="Microsoft.NET.Sdk" />

@@ -9,7 +9,6 @@
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="Reference Fonts\*.otf" />
-    <ProjectReference Include="..\CSharpMath.Editor\CSharpMath.Editor.csproj" />
     <PackageReference Include="Nullable" Version="1.3.1" PrivateAssets="all" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.6.1" />
   </ItemGroup>
@@ -20,7 +19,6 @@
     <Compile Include="..\Typography\PixelFarm.Typography\3_Typography_Contours\GlyphOutlineBuilderBase.cs" Link="Typography\%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
   <Target Name="CheckTypographySubmodule" BeforeTargets="BeforeBuild">
-    <Error Condition="!Exists('..\Typography\Typography.OpenFont')" 
-           Text="Typography submodule not initialized. Please run 'git submodule update --init' in the repository root." />
+    <Error Condition="!Exists('..\Typography\Typography.OpenFont')" Text="Typography submodule not initialized. Please run 'git submodule update --init' in the repository root." />
   </Target>
 </Project>
