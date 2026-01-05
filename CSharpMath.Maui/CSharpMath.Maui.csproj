@@ -2,8 +2,8 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>net10.0;net10.0-android</TargetFrameworks>
-		<TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('linux'))">$(TargetFrameworks);net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
-		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
+		<TargetFrameworks Condition="!$([System.OperatingSystem]::IsLinux())">$(TargetFrameworks);net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
+		<TargetFrameworks Condition="$([System.OperatingSystem]::IsWindows())">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
 
 		<UseMaui>true</UseMaui>
 		<Nullable>enable</Nullable>
