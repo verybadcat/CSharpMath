@@ -4,9 +4,9 @@
     <ProjectReference Include="..\CSharpMath.Avalonia\CSharpMath.Avalonia.csproj" />
     <ProjectReference Include="..\CSharpMath.SkiaSharp\CSharpMath.SkiaSharp.csproj" />
     <PackageReference Include="SkiaSharp" Version="3.119.1" />
-    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.1" />
-    <PackageReference Include="SkiaSharp.NativeAssets.Win32" Version="3.119.1" />
-    <PackageReference Include="SkiaSharp.NativeAssets.macOS" Version="3.119.1" />
+	<PackageReference Condition="$([MSBuild]::IsOSPlatform('linux'))" Include="SkiaSharp.NativeAssets.Linux" Version="3.119.1" />
+	<PackageReference Condition="$([MSBuild]::IsOSPlatform('windows'))" Include="SkiaSharp.NativeAssets.Win32" Version="3.119.1" />
+	<PackageReference Condition="$([MSBuild]::IsOSPlatform('macos'))" Include="SkiaSharp.NativeAssets.macOS" Version="3.119.1" />
     <PackageReference Include="Avalonia.Skia" Version="$(AvaloniaVersion)" />
   </ItemGroup>
 </Project>
