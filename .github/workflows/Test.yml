@@ -26,4 +26,4 @@ jobs:
     - name: Build Everything
       run: dotnet build CSharpMath.sln -c Release # Newer macOS workloads may require newer Xcode versions. Update above.
     - name: Run Tests
-      run: dotnet test CSharpMath.sln -c Release
+      run: dotnet test --solution CSharpMath.sln -c Release
