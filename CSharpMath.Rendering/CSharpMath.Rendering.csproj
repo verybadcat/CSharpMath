@@ -3,8 +3,9 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Description>Rendering interface for CSharpMath using the Typography library.</Description>
-      <!-- Suppress nullable reference type warnings from Typography submodule -->
-      <NoWarn>$(NoWarn);CS8618;CS8603;CS8625;CS8600;CS8601;CS8602;CS8604</NoWarn>
+    <!-- Suppress compiler and analyzer warnings from Typography submodule since its code is not clean -->
+    <!-- Applied globally to the project since item-level NoWarn doesn't reliably work for linked files -->
+    <NoWarn>$(NoWarn);CS8618;CS8603;CS8625;CS8600;CS8601;CS8602;CS8604;CS0162;CS0168;CS0219;CS0649</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="Reference Fonts\*.otf" />
@@ -13,9 +14,9 @@
     <PackageReference Include="System.Numerics.Vectors" Version="4.6.1" />
   </ItemGroup>
   <ItemGroup Label="Typography">
-    <Compile Include="..\Typography\Typography.OpenFont\**\*.cs" Link="Typography\OpenFont\%(RecursiveDir)%(Filename)%(Extension)" />
-    <Compile Include="..\Typography\Typography.GlyphLayout\**\*.cs" Exclude="..\Typography\Typography.GlyphLayout\**\\AssemblyInfo.cs" Link="Typography\GlyphLayout\%(RecursiveDir)%(Filename)%(Extension)" />
-    <Compile Include="..\Typography\Typography.TextBreak\Typography.TextBreak\**\*.cs" Link="Typography\TextBreak\%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="..\Typography\Typography.OpenFont\**\*.cs" Exclude="..\Typography\Typography.OpenFont\**\AssemblyInfo.cs" Link="Typography\OpenFont\%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="..\Typography\Typography.GlyphLayout\**\*.cs" Exclude="..\Typography\Typography.GlyphLayout\**\AssemblyInfo.cs" Link="Typography\TextLayout\%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="..\Typography\Typography.TextBreak\Typography.TextBreak\**\*.cs" Exclude="..\Typography\Typography.TextBreak\Typography.TextBreak\**\AssemblyInfo.cs" Link="Typography\TextBreak\%(RecursiveDir)%(Filename)%(Extension)" />
     <Compile Include="..\Typography\PixelFarm.Typography\3_Typography_Contours\GlyphOutlineBuilderBase.cs" Link="Typography\%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
   <Target Name="CheckTypographySubmodule" BeforeTargets="BeforeBuild">
