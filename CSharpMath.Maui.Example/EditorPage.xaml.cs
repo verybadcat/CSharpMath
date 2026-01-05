@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Maui.Views;
 using Microsoft.Maui.Controls;
+#if !IOS && !ANDROID
 using SharpHook;
 using SharpHook.Data;
+#endif
 
 namespace CSharpMath.Maui.Example {
   [XamlCompilation(XamlCompilationOptions.Compile)]
