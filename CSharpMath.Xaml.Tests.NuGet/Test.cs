@@ -5,7 +5,8 @@ namespace CSharpMath.Xaml.Tests.NuGet {
       System.IO.Path.Combine(thisDir, "..", $"Test.{platform}.png");
     [Xunit.Fact]
     public void TestImage() {
-      global::Avalonia.Skia.SkiaPlatform.Initialize();
+      // TODO: old versions of SkiaSharp fail to initialize on arm64 macOS since they only have x64 native libraries
+      //global::Avalonia.Skia.SkiaPlatform.Initialize();
 
       // TODO: Update to use MAUI package
       //using (var forms = System.IO.File.OpenWrite(File(nameof(Forms))))

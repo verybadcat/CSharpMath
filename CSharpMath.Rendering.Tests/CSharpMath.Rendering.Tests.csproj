@@ -5,8 +5,6 @@
     <ProjectReference Include="..\CSharpMath.SkiaSharp\CSharpMath.SkiaSharp.csproj" />
     <PackageReference Include="SkiaSharp" Version="3.119.1" />
 	<PackageReference Condition="$([System.OperatingSystem]::IsLinux())" Include="SkiaSharp.NativeAssets.Linux" Version="3.119.1" />
-	<PackageReference Condition="$([System.OperatingSystem]::IsWindows())" Include="SkiaSharp.NativeAssets.Win32" Version="3.119.1" />
-	<PackageReference Condition="$([System.OperatingSystem]::IsMacOS())" Include="SkiaSharp.NativeAssets.macOS" Version="3.119.1" />
     <PackageReference Include="Avalonia.Skia" Version="$(AvaloniaVersion)" />
   </ItemGroup>
 </Project>
