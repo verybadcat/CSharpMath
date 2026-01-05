@@ -3,7 +3,7 @@ name: Build
 on: [push, pull_request]
 jobs:
   Everything:
-    runs-on: windows-latest
+    runs-on: [windows-latest, ubuntu-latest, macos-latest]
     steps:
     - uses: actions/checkout@v6
       with:
@@ -11,7 +11,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: '10.0.x'
+        dotnet-version: '10.x'
     - name: .NET Workload restore
       run: dotnet workload restore
     - name: Restore NuGet Packages

@@ -7,11 +7,7 @@
     <!-- Suppress nullable reference type warnings from Typography submodule -->
     <NoWarn>$(NoWarn);CS8618;CS8603;CS8625;CS8600;CS8601;CS8602;CS8604</NoWarn>
   </PropertyGroup>
-
-  <Import Project="..\Typography\Typography.OpenFont\Typography.OpenFont.projitems" Label="Shared" />
-  <Import Project="..\Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems" Label="Shared" />
-  <Import Project="..\Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems" Label="Shared" />
   <ItemGroup>
-    <Compile Include="..\CSharpMath.Rendering\_IgnoreTypographyWarnings.cs" Link="_IgnoreTypographyWarnings.cs" />
+	<ProjectReference Include="..\CSharpMath.SkiaSharp\CSharpMath.SkiaSharp.csproj" />
   </ItemGroup>
 </Project>

@@ -24,9 +24,10 @@ namespace CSharpMath.Maui.Example {
       var viewModel = keyboard.Keyboard;
       viewModel.BindDisplay(OutputGraphicsView, OutputMathPainter, new Color(0, 0, 0, 153));
 
-      // Input from physical keyboard
-      var hook = new SimpleGlobalHook(GlobalHookType.Keyboard);
+      // Input from physical keyboard (doesn't work on mobile because SharpHook depends on libuiohook which only works on desktop)
+#if !IOS && !ANDROID
       var popupShown = false;
+      var hook = new SimpleGlobalHook(GlobalHookType.Keyboard);
       void activatedListener(object? sender, EventArgs e) { if (!hook.IsRunning && IsLoaded && !popupShown) hook.RunAsync(); }
       void deactivatedListener(object? sender, EventArgs e) { if (hook.IsRunning) hook.Stop(); }
       Window? owningWindow = null;
@@ -54,13 +55,16 @@ namespace CSharpMath.Maui.Example {
           case KeyCode.VcDown: viewModel.KeyPress(Editor.MathKeyboardInput.Down); break;
         }
       };
+#endif
 
       // Evaluation
       keyboard.Keyboard.ReturnPressed += delegate {
         Dispatcher.Dispatch(async () => { // We may not be on the main thread since SharpHook event handlers are called from its own threads.
           if (Parent is Page p) {
+#if !IOS && !ANDROID
             popupShown = true;
             if (hook.IsRunning) hook.Stop();
+#endif
             var view = new MathView { FontSize = 32, EnablePanning = true, TextAlignment = Rendering.FrontEnd.TextAlignment.TopLeft,
               LaTeX = Evaluation.Interpret(keyboard.Keyboard.MathList)
             };
@@ -71,8 +75,10 @@ namespace CSharpMath.Maui.Example {
                   GridItem(0, 0, new Button { Text = "Reset pan", Command = new Command(() => view.DisplacementX = view.DisplacementY = 0) }),
                   GridItem(0, 1, new Button { Text = "Close", Command = new Command(() => p.ClosePopupAsync()) }) }
               }, view });
+#if !IOS && !ANDROID
             popupShown = false;
             if (IsLoaded && owningWindow is { IsActivated: true } && !hook.IsRunning) await hook.RunAsync();
+#endif
           }
         });
       };
