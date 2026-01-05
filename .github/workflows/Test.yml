@@ -6,21 +6,24 @@ jobs:
     strategy:
       fail-fast: false # Don't cancel other os builds if one fails
       matrix:
-        # Check required Xcode version for latest "dotnet workload restore": https://github.com/dotnet/macios/releases
         # Check included Xcode versions for GitHub Actions: https://github.com/actions/runner-images?tab=readme-ov-file#available-images
-        os: [windows-latest, ubuntu-latest, macos-26] 
+        os: [windows-latest, ubuntu-latest, macos-26]
     runs-on: ${{ matrix.os }}
     steps:
+    - uses: maxim-lobanov/setup-xcode@v1
+      if: startsWith(matrix.os, 'macos')
+      with:
+        # Check required Xcode version for latest "dotnet workload restore": https://github.com/dotnet/macios/releases
+        xcode-version: '26.2' # If this is to be changed, also check macos-version in matrix.os above
+    - uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: '10.x'
     - uses: actions/checkout@v6
       with:
         submodules: 'recursive'
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v5
-      with:
-        dotnet-version: '10.x'
     - name: Install MAUI workloads
       run: dotnet workload restore
     - name: Build Everything
-      run: dotnet build CSharpMath.sln -c Release
+      run: dotnet build CSharpMath.sln -c Release # Newer macOS workloads may require newer Xcode versions. Update above.
     - name: Run Tests
       run: dotnet test CSharpMath.sln -c Release
