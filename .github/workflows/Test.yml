@@ -1,11 +1,13 @@
-﻿name: Test
+name: Build and Test
 
 on: [push, pull_request]
 jobs:
-  Projects:
+  Everything:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        # Check required Xcode version for latest "dotnet workload restore": https://github.com/dotnet/macios/releases
+        # Check included Xcode versions for GitHub Actions: https://github.com/actions/runner-images?tab=readme-ov-file#available-images
+        os: [windows-latest, ubuntu-latest, macos-26] 
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v6
@@ -15,106 +17,9 @@ jobs:
       uses: actions/setup-dotnet@v5
       with:
         dotnet-version: '10.x'
-    - name: Query required Xcode version
-      if: matrix.os == 'macos-latest'
-      id: xcode-version
-      run: |
-        dotnet workload restore # restore workloads to find installed SDKs
-
-        # Find the installed MacCatalyst SDK pack after workload restore
-        SDK_PATH=$(find ~/.dotnet/packs -name "Microsoft.MacCatalyst.Sdk.net*" -type d 2>/dev/null | head -1)
-        
-        if [ -n "$SDK_PATH" ]; then
-          # Extract version from path (e.g., Microsoft.MacCatalyst.Sdk.net10.0_26.2)
-          XCODE_VERSION=$(basename "$SDK_PATH" | sed -n 's/.*_\([0-9]*\.[0-9]*\).*/\1/p')
-          echo "Required Xcode version from SDK: $XCODE_VERSION"
-          echo "xcode-version=$XCODE_VERSION" >> $GITHUB_OUTPUT
-        else
-          echo "Could not determine required Xcode version, using latest-stable"
-          echo "xcode-version=latest-stable" >> $GITHUB_OUTPUT
-        fi
-      shell: bash
-    - name: Setup Xcode
-      if: matrix.os == 'macos-latest'
-      uses: maxim-lobanov/setup-xcode@v1
-      with:
-        xcode-version: ${{ steps.xcode-version.outputs.xcode-version }}
-    - name: Build and Test
-      run: dotnet test CSharpMath.sln -c Release -l GitHubActions --blame
-  Everything:
-    runs-on: windows-latest
-    steps:
-    - name: Update draft on GitHub Releases
-      id: release_drafter
-      uses: release-drafter/release-drafter@v6
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - uses: actions/checkout@v6
-      with:
-        submodules: 'recursive'
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v5
-      with:
-        dotnet-version: '10.x'
-    - name: Build and Test
-      env:
-        RELEASE_NOTES: |
-          # ${{ steps.release_drafter.outputs.name }}
-          
-          ${{ steps.release_drafter.outputs.body }}
-      run: |
-        # .NET Core MSBuild cannot parse , and ; correctly so we replace them with substitutions: https://github.com/dotnet/msbuild/issues/471#issuecomment-366268743
-        # PowerShell string replacement
-        $env:RELEASE_NOTES = $env:RELEASE_NOTES -replace ',','%2C' -replace ';','%3B'
-        
-        dotnet workload restore
-        # --collect:"XPlat Code Coverage" means collect test coverage with https://github.com/coverlet-coverage/coverlet
-        # Coverlet settings come after --: https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/VSTestIntegration.md#advanced-options-supported-via-runsettings
-        dotnet test CSharpMath.sln -c Release -l GitHubActions --blame --collect:"XPlat Code Coverage" --results-directory .testcoverage -p:PackageReleaseNotes="$env:RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }} -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.IncludeTestAssembly=true
-      shell: pwsh
-    - name: Run ReportGenerator on Test Coverage results
-      uses: danielpalme/ReportGenerator-GitHub-Action@5
-      with:
-        reports: '.testcoverage/**/*.*' # REQUIRED # The coverage reports that should be parsed (separated by semicolon). Globbing is supported.
-        targetdir: '.testcoverage/report' # REQUIRED # The directory where the generated report should be saved.
-        reporttypes: 'Html' # The output formats and scope (separated by semicolon) Values: Badges, Clover, Cobertura, CsvSummary, Html, HtmlChart, HtmlInline, HtmlInline_AzurePipelines, HtmlInline_AzurePipelines_Dark, HtmlSummary, JsonSummary, Latex, LatexSummary, lcov, MHtml, PngChart, SonarQube, TeamCitySummary, TextSummary, Xml, XmlSummary
-        title: 'CSharpMath test coverage results' # Optional title.
-        tag: ${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }} # Optional tag or build version.
-    - name: Upload CSharpMath test coverage results as CI artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: CSharpMath test coverage results
-        path: .testcoverage/
-    - name: Upload CSharpMath test coverage results to codecov.io
-      uses: codecov/codecov-action@v4
-      with:
-        file: .testcoverage/**/*.xml # optional
-        name: CSharpMath test coverage # optional
-        fail_ci_if_error: false # optional (default = false)
-    - name: Upload CSharpMath.Rendering.Tests results as CI artifacts
-      uses: actions/upload-artifact@v4
-      if: always() # Run even when a previous step failed: https://stackoverflow.com/a/58859404/5429648
-      with:
-        name: CSharpMath.Rendering.Tests results
-        path: CSharpMath.Rendering.Tests/*/*.png
-    - name: Upload CSharpMath.Xaml.Tests.NuGet results as CI artifacts
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: CSharpMath.Xaml.Tests.NuGet results
-        path: CSharpMath.Xaml.Tests.NuGet/*.png
-    - name: Upload NuGet packages as CI artifacts
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: NuGet packages
-        path: .nupkgs/
-    - name: Push CI artifacts to GitHub Packages registry
-      if: github.ref == 'refs/heads/master'
-      run: |
-        # "dotnet nuget push" with "dotnet nuget add source" to GitHub Packages is unstable for project names with a dot: https://github.com/NuGet/Home/issues/9775#issuecomment-714509211
-        # So we must specify api-key directly in "dotnet nuget push" instead of following the GitHub Packages documentation
-        # We use quotes to avoid shell globbing: https://github.com/NuGet/Home/issues/4393#issuecomment-667618120
-        # --no-symbols true to not let GitHub Releases interpret .snupkg as .nupkg
-        dotnet nuget push '.nupkgs/*.nupkg' --source 'https://nuget.pkg.github.com/verybadcat/index.json' --api-key ${{ github.token }} --skip-duplicate --no-symbols true
-      shell: pwsh
+    - name: Install MAUI workloads
+      run: dotnet workload restore
+    - name: Build Everything
+      run: dotnet build CSharpMath.sln -c Release
+    - name: Run Tests
+      run: dotnet test CSharpMath.sln -c Release -l GitHubActions
