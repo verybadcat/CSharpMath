@@ -7,7 +7,7 @@ jobs:
     steps:
     - name: Update draft on GitHub Releases
       id: release_drafter
-      uses: release-drafter/release-drafter@v6
+      uses: release-drafter/release-drafter@v6.0.0 # Pinned to v6.0.0 to avoid v6.1.0 bug: https://github.com/release-drafter/release-drafter/issues/1425
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - uses: actions/checkout@v6
