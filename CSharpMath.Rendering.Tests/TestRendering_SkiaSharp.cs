@@ -15,7 +15,7 @@ namespace CSharpMath.Rendering.Tests {
       new TheoryData<string, MathPainter> {
         { "NoAntiAlias", new MathPainter { AntiAlias = false } }
       };
-    [SkippableTheory]
+    [Theory]
     [MemberData(nameof(MathPainterSettingsDataExtra))]
     public override void MathPainterSettings(string file, MathPainter painter) =>
       base.MathPainterSettings(file, painter);

@@ -4,7 +4,7 @@ using CSharpMath.TestUtils;
 using Xunit;
 
 namespace CSharpMath.Editor.Tests {
-  // Use the "CSharpMath.Editor Test Checker" project in the _Utils folder to visualize the test cases
+  // Use CSharpMath.Editor.Tests.Visualizer to visualize the test cases
   using SubIndex = MathListSubIndexType;
   public class IndexForPointTests {
     public class TestData : TheoryData<PointF, MathListIndex> {
@@ -27,7 +27,7 @@ namespace CSharpMath.Editor.Tests {
               subIndexRecursive[0].subType, mathListIndex);
             goto default;
           default:
-            AddRow(new PointF((float)point.x, (float)point.y), mathListIndex);
+            Add(new PointF((float)point.x, (float)point.y), mathListIndex);
             break;
         }
       }

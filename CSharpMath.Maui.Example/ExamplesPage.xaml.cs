@@ -44,6 +44,7 @@ namespace CSharpMath.Maui.Example {
       };
     }
     static ExamplesPage() {
+      // From https://github.com/kostub/iosMath/blob/master/iosMathExample/example/ViewController.m
       //  Demo formulae
 
       //  Quadratic formula

@@ -38,8 +38,8 @@ namespace CSharpMath.Rendering.Tests {
         return false;
       })
       .SelectMany(t => t.GetMethods())
-      .Where(method => method.IsDefined(typeof(SkippableFactAttribute), false)
-                    || method.IsDefined(typeof(SkippableTheoryAttribute), false))
+      .Where(method => method.IsDefined(typeof(FactAttribute), false)
+                    || method.IsDefined(typeof(TheoryAttribute), false))
       .Select(method => GetFolder(method.Name))
       .Distinct();
     // https://stackoverflow.com/a/2637303/5429648
@@ -68,28 +68,28 @@ namespace CSharpMath.Rendering.Tests {
     protected abstract double FileSizeTolerance { get; }
     protected abstract void DrawToStream<TContent>(Painter<TCanvas, TContent, TColor> painter,
       Stream stream, float textPainterCanvasWidth, TextAlignment alignment) where TContent : class;
-    [SkippableTheory, ClassData(typeof(TestRenderingMathData))]
+    [Theory, ClassData(typeof(TestRenderingMathData))]
     public void MathDisplay(string file, string latex) =>
       Run(file, latex, new TMathPainter { LineStyle = Atom.LineStyle.Display });
-    [SkippableTheory, ClassData(typeof(TestRenderingMathData))]
+    [Theory, ClassData(typeof(TestRenderingMathData))]
     public void MathInline(string file, string latex) =>
       Run(file, latex, new TMathPainter { LineStyle = Atom.LineStyle.Text });
-    [SkippableTheory, ClassData(typeof(TestRenderingTextData))]
+    [Theory, ClassData(typeof(TestRenderingTextData))]
     public void TextLeft(string file, string latex) =>
       Run(file, latex, new TTextPainter());
-    [SkippableTheory, ClassData(typeof(TestRenderingTextData))]
+    [Theory, ClassData(typeof(TestRenderingTextData))]
     public void TextCenter(string file, string latex) =>
       Run(file, latex, new TTextPainter(), TextAlignment.Top);
-    [SkippableTheory, ClassData(typeof(TestRenderingTextData))]
+    [Theory, ClassData(typeof(TestRenderingTextData))]
     public void TextRight(string file, string latex) =>
       Run(file, latex, new TTextPainter(), TextAlignment.TopRight);
-    [SkippableTheory, ClassData(typeof(TestRenderingTextData))]
+    [Theory, ClassData(typeof(TestRenderingTextData))]
     public void TextLeftInfiniteWidth(string file, string latex) =>
       Run(file, latex, new TTextPainter(), textPainterCanvasWidth: float.PositiveInfinity);
-    [SkippableTheory, ClassData(typeof(TestRenderingTextData))]
+    [Theory, ClassData(typeof(TestRenderingTextData))]
     public void TextCenterInfiniteWidth(string file, string latex) =>
       Run(file, latex, new TTextPainter(), TextAlignment.Top, textPainterCanvasWidth: float.PositiveInfinity);
-    [SkippableTheory, ClassData(typeof(TestRenderingTextData))]
+    [Theory, ClassData(typeof(TestRenderingTextData))]
     public void TextRightInfiniteWidth(string file, string latex) =>
       Run(file, latex, new TTextPainter(), TextAlignment.TopRight, textPainterCanvasWidth: float.PositiveInfinity);
     public static TheoryData<float, TextAlignment> TextFontSizesData() {
@@ -100,7 +100,7 @@ namespace CSharpMath.Rendering.Tests {
           data.Add(fontSize, alignment); 
       return data;
     }
-    [SkippableTheory, MemberData(nameof(TextFontSizesData))]
+    [Theory, MemberData(nameof(TextFontSizesData))]
     public void TextFontSizes(float fontSize, TextAlignment alignment) =>
       Run((fontSize, alignment).ToString(), @"Here are some text.
 This text is made to be long enough to have the TextPainter of CSharpMath add a line break to this text automatically.
@@ -145,7 +145,7 @@ Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6. \[\f
 
       var expectedFile = new FileInfo(System.IO.Path.Combine(folder, inFile + ".png"));
       if (!expectedFile.Exists) {
-        Skip.IfNot(FileSizeTolerance is 0, "Baseline images may only be created by SkiaSharp.");
+        Assert.SkipWhen(FileSizeTolerance is 0, "Baseline images may only be created by SkiaSharp.");
         actualFile.CopyTo(expectedFile.FullName);
         expectedFile.Refresh();
       }
@@ -193,11 +193,11 @@ Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6. \[\f
     };
     public static TheoryData<string, TMathPainter> MathPainterSettingsData => PainterSettingsData<TMathPainter, Atom.MathList>();
     public static TheoryData<string, TTextPainter> TextPainterSettingsData => PainterSettingsData<TTextPainter, Text.TextAtom>();
-    [SkippableTheory]
+    [Theory]
     [MemberData(nameof(MathPainterSettingsData))]
     public virtual void MathPainterSettings(string file, TMathPainter painter) =>
       Run(file, @"\sqrt[3]\frac\color{#FF0000}a\mathbb C", painter);
-    [SkippableTheory]
+    [Theory]
     [MemberData(nameof(TextPainterSettingsData))]
     public void TextPainterSettings(string file, TTextPainter painter) =>
       Run(file, @"Inline \color{red}{Maths}: $\int_{a_1^2}^{a_2^2}\color{green}\sqrt\frac x2dx$Display \color{red}{Maths}: $$\int_{a_1^2}^{a_2^2}\color{green}\sqrt\frac x2dx$$", painter);

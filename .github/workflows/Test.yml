@@ -1,9 +1,10 @@
 name: Build and Test
 
-on: [push, pull_request]
+on: push
 jobs:
   Everything:
     strategy:
+      fail-fast: false # Don't cancel other os builds if one fails
       matrix:
         # Check required Xcode version for latest "dotnet workload restore": https://github.com/dotnet/macios/releases
         # Check included Xcode versions for GitHub Actions: https://github.com/actions/runner-images?tab=readme-ov-file#available-images
@@ -22,4 +23,4 @@ jobs:
     - name: Build Everything
       run: dotnet build CSharpMath.sln -c Release
     - name: Run Tests
-      run: dotnet test CSharpMath.sln -c Release -l GitHubActions
+      run: dotnet test CSharpMath.sln -c Release

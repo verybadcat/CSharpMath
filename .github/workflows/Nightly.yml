@@ -1,6 +1,6 @@
 ﻿name: Upload test results and nightly builds
 
-on: [push, pull_request]
+on: push
 jobs:
   Everything:
     runs-on: windows-latest
@@ -31,7 +31,7 @@ jobs:
         dotnet workload restore
         # --collect:"XPlat Code Coverage" means collect test coverage with https://github.com/coverlet-coverage/coverlet
         # Coverlet settings come after --: https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/VSTestIntegration.md#advanced-options-supported-via-runsettings
-        dotnet test CSharpMath.sln -c Release -l GitHubActions --blame --collect:"XPlat Code Coverage" --results-directory .testcoverage -p:PackageReleaseNotes="$env:RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }} -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.IncludeTestAssembly=true
+        dotnet test CSharpMath.sln -c Release --blame --collect:"XPlat Code Coverage" --results-directory .testcoverage -p:PackageReleaseNotes="$env:RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }} -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.IncludeTestAssembly=true
       shell: pwsh
     - name: Run ReportGenerator on Test Coverage results
       uses: danielpalme/ReportGenerator-GitHub-Action@5
