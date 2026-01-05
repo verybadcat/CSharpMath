@@ -14,7 +14,7 @@ jobs:
         dotnet-version: '10.x'
     - run: dotnet run -p CSharpMath.Rendering.Benchmarks
     - name: Store benchmark result
-      uses: Happypig375/github-action-benchmark@v1
+      uses: benchmark-action/github-action-benchmark@v1
       with:
         name: CSharpMath.Rendering.Benchmarks
         tool: 'benchmarkdotnet'
