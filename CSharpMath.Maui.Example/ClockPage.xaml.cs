@@ -52,7 +52,7 @@ namespace CSharpMath.Maui.Example {
         if (i % 5 == 0) {
           painter.LaTeX = labels[i / 5];
           if (!(painter.Measure(dirtyRect.Width) is { } measure))
-            throw new Structures.InvalidCodePathException("Invalid LaTeX");
+            throw new Atom.InvalidCodePathException("Invalid LaTeX");
           var θ = (90 - 6 * i) / 180f * MathF.PI;
           var (sinθ, cosθ) = MathF.SinCos(θ);
           painter.Draw((canvas, dirtyRect.Size),

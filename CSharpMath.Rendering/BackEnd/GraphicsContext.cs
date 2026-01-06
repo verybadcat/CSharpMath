@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Linq;
 using CSharpMath.Display.FrontEnd;
 using CSharpMath.Rendering.FrontEnd;
-using CSharpMath.Structures;
 using Typography.OpenFont;
 
 namespace CSharpMath.Rendering.BackEnd {
@@ -23,7 +22,7 @@ namespace CSharpMath.Rendering.BackEnd {
       (IReadOnlyList<Glyph> glyphs, Fonts font, IEnumerable<PointF> points, Color? color) {
       foreach (var (glyph, point) in glyphs.Zip(points, System.ValueTuple.Create)) {
         if (GlyphBoxColor != null) {
-          using var rentedArray = new RentedArray<Glyph>(glyph);
+          using var rentedArray = new Atom.RentedArray<Glyph>(glyph);
           var rect =
             GlyphBoundsProvider.Instance.GetBoundingRectsForGlyphs(font, rentedArray.Result, 1).Single();
           Canvas.CurrentColor = GlyphBoxColor?.glyph;

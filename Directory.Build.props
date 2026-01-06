@@ -30,7 +30,7 @@
     <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie, FoggyFinder)</Authors>
     <Title>$(PackageId)</Title>
     <!--Description property is defined in individual projects-->
-    <Copyright>© CSharpMath Contributors 2020</Copyright>
+    <Copyright>© CSharpMath Contributors 2026</Copyright>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/verybadcat/CSharpMath</PackageProjectUrl>

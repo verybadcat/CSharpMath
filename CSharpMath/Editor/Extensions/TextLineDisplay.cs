@@ -5,7 +5,6 @@ namespace CSharpMath.Editor {
   using Display;
   using Display.Displays;
   using Display.FrontEnd;
-  using Structures;
 
   partial class Extensions {
     public static int? GlyphIndexForXOffset<TFont, TGlyph>
@@ -59,7 +58,7 @@ namespace CSharpMath.Editor {
         strLenCovered += self.Atoms[mlIndex].Nucleus.Length;
       }
       if (strLenCovered < strIndex)
-        throw new InvalidCodePathException("StrIndex should not be more than the len covered");
+        throw new Atom.InvalidCodePathException("StrIndex should not be more than the len covered");
       return self.Atoms.Count;
     }
 
@@ -91,7 +90,7 @@ namespace CSharpMath.Editor {
       var index = nindex.GetValueOrDefault();
       var diffLng = r.Run.Length != r.Range.Length;
       if (index < 0 || (!diffLng && index > self.Range.Length) || (diffLng && index > r.Run.Length))
-        throw new InvalidCodePathException
+        throw new Atom.InvalidCodePathException
           ($"Returned index out of range: {index}, range ({self.Range.Location}, {self.Range.Length})");
       return diffLng
         ? index > r.Run.Length / 2

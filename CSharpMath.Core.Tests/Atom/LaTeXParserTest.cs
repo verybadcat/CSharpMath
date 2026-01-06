@@ -1279,20 +1279,20 @@ namespace CSharpMath.Core.Tests {
               CheckAtom<Variable>("T", t => Assert.Equal(FontStyle.Roman, t.FontStyle)),
               CheckAtom<Space>("", space => {
                 Assert.Equal(FontStyle.Roman, space.FontStyle);
-                var expected = -1 / 6f * Structures.Space.EmWidth;
-                Assert.Equal(expected.Length, space.Length);
+                var expected = -1 / 6f * Length.EmWidth;
+                Assert.Equal(expected.Amount, space.Length);
                 Assert.Equal(expected.IsMu, space.IsMu);
               }),
               CheckAtom<RaiseBox>("", raise => {
                 Assert.Equal(FontStyle.Roman, raise.FontStyle);
-                Assert.Equal(-1 / 2f * Structures.Space.ExHeight, raise.Raise);
+                Assert.Equal(-1 / 2f * Length.ExHeight, raise.Raise);
                 Assert.Collection(raise.InnerList,
                   CheckAtom<Variable>("E", e => Assert.Equal(FontStyle.Roman, e.FontStyle)));
               }),
               CheckAtom<Space>("", space => {
                 Assert.Equal(FontStyle.Roman, space.FontStyle);
-                var expected = -1 / 8f * Structures.Space.EmWidth;
-                Assert.Equal(expected.Length, space.Length);
+                var expected = -1 / 8f * Length.EmWidth;
+                Assert.Equal(expected.Amount, space.Length);
                 Assert.Equal(expected.IsMu, space.IsMu);
               }),
               CheckAtom<Variable>("X", x => Assert.Equal(FontStyle.Roman, x.FontStyle))

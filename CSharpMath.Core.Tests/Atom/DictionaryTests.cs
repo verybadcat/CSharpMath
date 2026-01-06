@@ -1,5 +1,5 @@
 using Xunit;
-using CSharpMath.Structures;
+using CSharpMath.Atom;
 
 namespace CSharpMath.Core.Tests {
   public class DictionaryTests {

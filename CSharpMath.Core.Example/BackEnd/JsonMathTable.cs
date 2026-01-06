@@ -1,6 +1,5 @@
 using CSharpMath.Display;
 using CSharpMath.Display.FrontEnd;
-using CSharpMath.Structures;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
@@ -162,7 +161,7 @@ namespace CSharpMath.Core.BackEnd {
       if (variantGlyphs is not JArray variantGlyphsArray) {
         var outputGlyph = GlyphNameProvider.GetGlyph(glyphName);
         if (!outputGlyph.Equals(rawGlyph))
-          throw new InvalidCodePathException
+          throw new Atom.InvalidCodePathException
             ("GlyphNameProvider.GetGlyph(GlyphNameProvider.GetGlyphName(rawGlyph)) != rawGlyph");
         return (new TGlyph[] { outputGlyph }, 1);
       } else
@@ -214,7 +213,7 @@ namespace CSharpMath.Core.BackEnd {
         return FontUnitsToPt(font, nameValue.Value<int>());
       } else {
         // If no top accent is defined then it is the center of the advance width.
-        using var glyphs = new Structures.RentedArray<TGlyph>(glyph);
+        using var glyphs = new Atom.RentedArray<TGlyph>(glyph);
         var (_, Total) = GlyphBoundsProvider.GetAdvancesForGlyphs(font, glyphs.Result, 1);
         return Total / 2;
       }

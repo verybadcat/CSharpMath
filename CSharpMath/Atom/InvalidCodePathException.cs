@@ -1,4 +1,4 @@
-namespace CSharpMath.Structures {
+namespace CSharpMath.Atom {
   /// <summary>
   /// The exception that is thrown when an invalid code path was encountered.
   /// If an instance of this type is thrown, you must have encountered a bug.

@@ -10,7 +10,7 @@ namespace CSharpMath.Rendering.Tests {
       .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
       .Where(fi => fi.IsLiteral && !fi.IsInitOnly)
       .ToDictionary(fi => fi.Name, fi => fi.GetRawConstantValue() as string
-        ?? throw new Structures.InvalidCodePathException("All constants must be strings!"));
+        ?? throw new Atom.InvalidCodePathException("All constants must be strings!"));
     public static string AllConstantValues { get; } =
       string.Join(@"\\", AllConstants.Where(info => !info.Key.StartsWith("Error")).Select(info => $@"{info.Key}: {info.Value}"));
     public IEnumerator<object[]> GetEnumerator() =>

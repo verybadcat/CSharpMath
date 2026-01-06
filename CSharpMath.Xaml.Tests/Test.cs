@@ -190,8 +190,8 @@ namespace CSharpMath.Xaml.Tests {
     public void TypefacesAreBindable() {
       var typeface = new Typography.OpenFont.OpenFontReader().Read(
         Assembly.GetExecutingAssembly().GetManifestResourceStream("CSharpMath.Xaml.Tests.ComicNeue_Bold.otf")
-        ?? throw new Structures.InvalidCodePathException("Font not found"))
-        ?? throw new Structures.InvalidCodePathException("Font is invalid");
+        ?? throw new InvalidCodePathException("Font not found"))
+        ?? throw new InvalidCodePathException("Font is invalid");
       void Test<TView, TContent>()
         where TView : TBaseView, ICSharpMathAPI<TContent, TColor>, new() where TContent : class {
         var view = new TView();
@@ -213,8 +213,8 @@ namespace CSharpMath.Xaml.Tests {
     public void TypefaceAdditionSeenInDisplay() {
       var typeface = new Typography.OpenFont.OpenFontReader().Read(
         Assembly.GetExecutingAssembly().GetManifestResourceStream("CSharpMath.Xaml.Tests.ComicNeue_Bold.otf")
-        ?? throw new Structures.InvalidCodePathException("Font not found"))
-        ?? throw new Structures.InvalidCodePathException("Font is invalid");
+        ?? throw new InvalidCodePathException("Font not found"))
+        ?? throw new InvalidCodePathException("Font is invalid");
       void Test<TView, TContent>(Action<IDisplay<Fonts, Glyph>> check)
         where TView : TBaseView, ICSharpMathAPI<TContent, TColor>, new() where TContent : class {
         var view = new TView();

@@ -154,7 +154,7 @@ namespace CSharpMath.Core.Tests {
     }
     [Fact]
     public void TestCopySpace() {
-      var space = new Space(3 * CSharpMath.Structures.Space.Point);
+      var space = new Space(3 * Length.Point);
       Assert.IsType<Space>(space);
 
       var copy = space.Clone(false);

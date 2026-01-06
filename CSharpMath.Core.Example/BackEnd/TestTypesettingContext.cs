@@ -2,7 +2,7 @@ namespace CSharpMath.Core.BackEnd {
   using CSharpMath.Atom;
   using TGlyph = System.Text.Rune;
   public static class TestTypesettingContext {
-    public static Structures.Result<Display.Displays.ListDisplay<TestFont, System.Text.Rune>>
+    public static Result<Display.Displays.ListDisplay<TestFont, System.Text.Rune>>
       CreateDisplay(string latex) =>
       LaTeXParser.MathListFromLaTeX(latex).Bind(mathList =>
         Display.Typesetter.CreateLine(

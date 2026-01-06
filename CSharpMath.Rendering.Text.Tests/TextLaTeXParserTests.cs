@@ -146,7 +146,7 @@ namespace CSharpMath.Rendering.Text.Tests {
       var atom = Parse(input);
       Assert.Equal(new TextAtom.List(new TextAtom[] {
         new TextAtom.Text("a"),
-        new TextAtom.Space((isMu ? Structures.Space.MathUnit : Structures.Space.Point) * length),
+        new TextAtom.Space((isMu ? Atom.Length.MathUnit : Atom.Length.Point) * length),
         new TextAtom.Text("b"),
       }), atom);
       Assert.Equal(@$"a{outCommand}b", TextLaTeXParser.TextAtomToLaTeX(atom).ToString());

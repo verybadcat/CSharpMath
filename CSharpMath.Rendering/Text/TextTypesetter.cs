@@ -8,7 +8,6 @@ namespace CSharpMath.Rendering.Text {
   using BackEnd;
   using FrontEnd;
   using Display = Display.Displays.ListDisplay<BackEnd.Fonts, BackEnd.Glyph>;
-  using CSharpMath.Structures;
   using System.Drawing;
   public static class TextTypesetter {
     public static (Display relative, Display absolute) Layout(TextAtom input, Fonts inputFont, float canvasWidth) {

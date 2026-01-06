@@ -4,7 +4,6 @@ using System.Text;
 using ListDisplay = CSharpMath.Display.Displays.ListDisplay<CSharpMath.Core.BackEnd.TestFont, System.Text.Rune>;
 
 namespace CSharpMath.Core {
-  using Structures;
   public class Checker {
     /// <summary>Whether you want to view e.g. fraction lines and radical lines
     /// despite viewing character positions with less clarity.</summary>
@@ -56,7 +55,7 @@ namespace CSharpMath.Core {
             });
           }
           AssignDisplay();
-          if (display == null) throw new InvalidCodePathException("display is still not assigned");
+          if (display == null) throw new Atom.InvalidCodePathException("display is still not assigned");
           var x = ReadInt("Input Touch X (integer): ");
           var y = ReadInt("Input Touch Y (integer): ");
           Console.Clear();

@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
-namespace CSharpMath.Structures {
+namespace CSharpMath.Atom {
   /// <summary>
   /// Funnels collection initializers to <see cref="Added"/>.
   /// Implements <see cref="IEnumerable"/> but throws upon enumeration because it is there only to enable collection initializers.

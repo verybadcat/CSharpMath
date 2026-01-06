@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using CSharpMath.Atom;
 using CSharpMath.Rendering.FrontEnd;
-using CSharpMath.Structures;
 using Typography.OpenFont;
 using System.Drawing;
 using System.Linq;

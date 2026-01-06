@@ -4,12 +4,11 @@ namespace CSharpMath.Rendering.FrontEnd {
   using System.Runtime;
   using BackEnd;
   using Display;
-  using Structures;
 
   public abstract class MathPainter<TCanvas, TColor> : Painter<TCanvas, Atom.MathList, TColor> {
     protected bool _displayChanged = true;
     public override IDisplay<Fonts, Glyph>? Display { get; protected set; }
-    protected override Result<Atom.MathList> LaTeXToContent(string latex) =>
+    protected override Atom.Result<Atom.MathList> LaTeXToContent(string latex) =>
       Atom.LaTeXParser.MathListFromLaTeX(latex);
     protected override string ContentToLaTeX(Atom.MathList mathList) =>
       Atom.LaTeXParser.MathListToLaTeX(mathList).ToString();

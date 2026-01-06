@@ -8,7 +8,6 @@ namespace CSharpMath {
   using System.Collections;
   using Atom;
   using Atoms = Atom.Atoms;
-  using Structures;
   using System.Numerics;
 
   public static partial class Evaluation {

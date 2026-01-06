@@ -3,7 +3,6 @@ using System;
 namespace CSharpMath.Editor {
   using Atom;
   using Atoms = Atom.Atoms;
-  using Structures;
   partial class Extensions {
     static void InsertAtAtomIndexAndAdvance(this MathList self, int atomIndex, MathAtom atom, ref MathListIndex advance, MathListSubIndexType advanceType) {
       if (atomIndex < 0 || atomIndex > self.Count)

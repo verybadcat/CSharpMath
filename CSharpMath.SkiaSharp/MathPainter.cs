@@ -1,6 +1,4 @@
 using System.Drawing;
-using CSharpMath.Structures;
-using CSharpMath.Rendering.BackEnd;
 using CSharpMath.Rendering.FrontEnd;
 using SkiaSharp;
 

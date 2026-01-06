@@ -6,7 +6,6 @@ namespace CSharpMath.Editor {
   using Atom;
   using Display;
   using Display.FrontEnd;
-  using Structures;
   using Atoms = Atom.Atoms;
 
   public class MathKeyboard<TFont, TGlyph> : IDisposable where TFont : IFont<TGlyph> {

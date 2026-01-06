@@ -67,33 +67,11 @@ namespace CSharpMath.Atom {
               prevNode?.IndexRange.Location + prevNode?.IndexRange.Length ?? 0;
             newNode.IndexRange = new Range(prevIndex, 1);
           }
-          //TODO: One day when C# receives "or patterns", simplify this abomination
           switch (prevNode, newNode) {
-            case (null, BinaryOperator b):
+            case (null or BinaryOperator or Relation or Open or Punctuation or LargeOperator, BinaryOperator b):
               newNode = b.ToUnaryOperator();
               break;
-            case (BinaryOperator _, BinaryOperator b):
-              newNode = b.ToUnaryOperator();
-              break;
-            case (Relation _, BinaryOperator b):
-              newNode = b.ToUnaryOperator();
-              break;
-            case (Open _, BinaryOperator b):
-              newNode = b.ToUnaryOperator();
-              break;
-            case (Punctuation _, BinaryOperator b):
-              newNode = b.ToUnaryOperator();
-              break;
-            case (LargeOperator _, BinaryOperator b):
-              newNode = b.ToUnaryOperator();
-              break;
-            case (BinaryOperator b, Relation _):
-              newList.Last = b.ToUnaryOperator();
-              break;
-            case (BinaryOperator b, Punctuation _):
-              newList.Last = b.ToUnaryOperator();
-              break;
-            case (BinaryOperator b, Close _):
+            case (BinaryOperator b, Relation or Punctuation or Close):
               newList.Last = b.ToUnaryOperator();
               break;
             case (Number n, Number _) when n.Superscript.IsEmpty() && n.Subscript.IsEmpty():

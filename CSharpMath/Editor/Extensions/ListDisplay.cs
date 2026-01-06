@@ -6,7 +6,6 @@ namespace CSharpMath.Editor {
   using Display;
   using Display.Displays;
   using Display.FrontEnd;
-  using Structures;
 
   partial class Extensions {
     public static MathListIndex? IndexForPoint<TFont, TGlyph>
@@ -196,7 +195,7 @@ namespace CSharpMath.Editor {
                 return inner.Inner;
               case MathListSubIndexType.Superscript:
               case MathListSubIndexType.Subscript:
-                throw new InvalidCodePathException
+                throw new Atom.InvalidCodePathException
                   ("Superscripts and subscripts should have been handled in a separate case above.");
               default:
                 throw new SubIndexTypeMismatchException(index);

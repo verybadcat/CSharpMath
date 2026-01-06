@@ -5,7 +5,6 @@ namespace CSharpMath.Rendering.FrontEnd {
   using Display;
   using Display.Displays;
   using BackEnd;
-  using Structures;
   using Text;
   using CSharpMath.Atom.Atoms;
 
@@ -22,7 +21,7 @@ namespace CSharpMath.Rendering.FrontEnd {
     public ListDisplay<Fonts, Glyph> _absoluteXCoordDisplay = new ListDisplay<Fonts, Glyph>(System.Array.Empty<IDisplay<Fonts, Glyph>>());
     public ListDisplay<Fonts, Glyph> _relativeXCoordDisplay = new ListDisplay<Fonts, Glyph>(System.Array.Empty<IDisplay<Fonts, Glyph>>());
 
-    protected override Result<TextAtom> LaTeXToContent(string latex) =>
+    protected override Atom.Result<TextAtom> LaTeXToContent(string latex) =>
       TextLaTeXParser.TextAtomFromLaTeX(latex);
     protected override string ContentToLaTeX(TextAtom mathList) =>
       TextLaTeXParser.TextAtomToLaTeX(mathList).ToString();
@@ -79,7 +78,7 @@ namespace CSharpMath.Rendering.FrontEnd {
               {
                 TextAlignment.Center => rightSpace / 2,
                 TextAlignment.Right => rightSpace,
-                _ => throw new InvalidCodePathException("The left flag has been set. This foreach loop should have been skipped.")
+                _ => throw new Atom.InvalidCodePathException("The left flag has been set. This foreach loop should have been skipped.")
               };
             }
             relDisplay.Position = new PointF(relDisplay.Position.X + Δx, y);
@@ -115,7 +114,7 @@ namespace CSharpMath.Rendering.FrontEnd {
         new PointF(_absoluteXCoordDisplay.Position.X + x,
                     _relativeXCoordDisplay.Position.Y);
       using var array =
-        new RentedArray<IDisplay<Fonts, Glyph>>(
+        new Atom.RentedArray<IDisplay<Fonts, Glyph>>(
           _relativeXCoordDisplay, _absoluteXCoordDisplay
         );
       DrawCore(c, new ListDisplay<Fonts, Glyph>(array.Result));

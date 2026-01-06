@@ -2,7 +2,6 @@ using System.Drawing;
 using Typography.OpenFont;
 
 namespace CSharpMath.Rendering.FrontEnd {
-  using Structures;
   public interface ICSharpMathAPI<TContent, TColor> where TContent : class {
     #region Non-display-recreating properties
     TColor HighlightColor { get; set; }

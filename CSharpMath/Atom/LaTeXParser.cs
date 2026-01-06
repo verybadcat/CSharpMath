@@ -7,9 +7,7 @@ using System.Text;
 namespace CSharpMath.Atom {
   using Atoms;
   using Space = Atoms.Space;
-  using Structures;
-  using static Structures.Result;
-  using InvalidCodePathException = Structures.InvalidCodePathException;
+  using static Result;
   public class LaTeXParser {
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1040:Avoid empty interfaces",
@@ -199,7 +197,7 @@ namespace CSharpMath.Atom {
       }
       return Ok(env);
     }
-    public Result<Structures.Space> ReadSpace() {
+    public Result<Atom.Length> ReadSpace() {
       SkipSpaces();
       var sb = new StringBuilder();
       while (HasCharacters) {
@@ -220,7 +218,7 @@ namespace CSharpMath.Atom {
       for (int i = 0; i < 2 && HasCharacters; i++) {
         unit[i] = ReadChar();
       }
-      return Structures.Space.Create(length, new string(unit), TextMode);
+      return Atom.Length.Create(length, new string(unit), TextMode);
     }
     public Result<Boundary> ReadDelimiter(string commandName) {
       if (!HasCharacters) {
@@ -412,7 +410,7 @@ namespace CSharpMath.Atom {
             // add delimiters
             return new Inner(
               new Boundary("{"),
-              new MathList(new Space(Structures.Space.ShortSpace), table),
+              new MathList(new Atoms.Space(Atom.Length.ShortSpace), table),
               Boundary.Empty
             );
           }
@@ -672,7 +670,7 @@ namespace CSharpMath.Atom {
             break;
           case RaiseBox r:
             builder.Append(@"\raisebox{")
-              .Append(r.Raise.Length.ToStringInvariant("0.0####"))
+              .Append(r.Raise.Amount.ToStringInvariant("0.0####"))
               .Append(r.Raise.IsMu ? "mu" : "pt")
               .Append("}{");
             MathListToLaTeX(r.InnerList, builder, currentFontStyle);

@@ -95,7 +95,7 @@ namespace CSharpMath.Maui.Example {
         atomTypes.Text = "Atom Types = " + string.Join
           (", ", viewModel.MathList.Select(x => x.GetType().Name));
         ranges.Text = "Ranges = " + string.Join
-          (", ", (viewModel.Display ?? throw new Structures.InvalidCodePathException("Invalid LaTeX"))
+          (", ", (viewModel.Display ?? throw new Atom.InvalidCodePathException("Invalid LaTeX"))
                  .Displays.Select(x => x.Range));
         index.Text = "Index = " + viewModel.InsertionIndex;
       });

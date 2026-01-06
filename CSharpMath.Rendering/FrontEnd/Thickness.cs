@@ -1,4 +1,4 @@
-namespace CSharpMath.Structures {
+namespace CSharpMath.Rendering.FrontEnd {
   public readonly struct Thickness : System.IEquatable<Thickness> {
     public Thickness(float uniformSize) { Left = Right = Top = Bottom = uniformSize; }
     public Thickness(float horizontalSize, float verticalSize)

@@ -53,7 +53,7 @@ namespace CSharpMath.Display {
       var multiplier =
         Spaces[leftIndex, rightIndex] switch
         {
-          Invalid => throw new Structures.InvalidCodePathException
+          Invalid => throw new InvalidCodePathException
                        ($"Invalid space between {left.TypeName} and {right.TypeName}"),
           None => 0,
           Thin => 3,

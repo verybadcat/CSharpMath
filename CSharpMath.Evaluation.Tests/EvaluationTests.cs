@@ -5,7 +5,6 @@ using Xunit;
 
 namespace CSharpMath.EvaluationTests {
   using Atom;
-  using CSharpMath.Structures;
 
   public class EvaluationTests {
     internal static MathList ParseLaTeX(string latex) =>
