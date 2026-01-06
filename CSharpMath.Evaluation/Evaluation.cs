@@ -32,7 +32,7 @@ namespace CSharpMath {
       Postfix
       // Highest
     }
-    public abstract class MathItem : AngouriMath.Core.ILatexiseable {
+    public abstract class MathItem : ILatexiseable {
       private protected MathItem() { }
       public abstract string Latexise();
       public static implicit operator MathItem(AngouriMath.Entity content) => new Entity(content);
@@ -161,15 +161,16 @@ namespace CSharpMath {
       MathItem? prev = null;
       MathItem? next;
       string? error;
-      Precedence handlePrecendence;
+      Precedence handlePrecedence;
       Func<Entity, Entity> handlePrefix, handlePostfix, handleFunction, handleFunctionInverse;
       Func<Entity, Entity, Entity> handleBinary;
+      Entity? chainedComparisonTarget = null;
       for (; i < mathList.Count; i++) {
         var atom = mathList[i];
         MathItem? @this;
-        bool subscriptAllowed = false;
+        bool subscriptAllowed = false, binaryIsComparison = false, binaryIsRightAssociative = false;
         Result HandleSuperscript(ref MathItem? @this, MathList superscript) {
-          switch(superscript) {
+          switch (superscript) {
             case { Count: 1 } when superscript[0] is Atoms.Ordinary { Nucleus: "∁" }:
               (@this, error) =
                 @this.AsEntity("target of set inversion").Bind(target => (MathItem?)MathS.SetSubtraction(MathS.Sets.C, target)); // we don't support domains yet
@@ -232,8 +233,7 @@ namespace CSharpMath {
                   return $"Unsupported {subAtom.TypeName} {subAtom.Nucleus} in subscript";
               }
             var underscore = subscript.Length > 0 ? "_" : "";
-            @this = (name.ToString(), v.Subscript.Count, v.FontStyle) switch
-            {
+            @this = (name.ToString(), v.Subscript.Count, v.FontStyle) switch {
               ("C", 0, FontStyle.Blackboard) => MathS.Sets.C,
               ("R", 0, FontStyle.Blackboard) => MathS.Sets.R,
               ("Q", 0, FontStyle.Blackboard) => MathS.Sets.Q,
@@ -271,11 +271,11 @@ namespace CSharpMath {
             @this = MathS.Pow(radicand, degree);
             goto handleThis;
           case Atoms.UnaryOperator { Nucleus: "+" }:
-            handlePrecendence = Precedence.UnaryPlusMinus;
+            handlePrecedence = Precedence.UnaryPlusMinus;
             handlePrefix = e => +e;
             goto handlePrefix;
           case Atoms.UnaryOperator { Nucleus: "\u2212" }:
-            handlePrecendence = Precedence.UnaryPlusMinus;
+            handlePrecedence = Precedence.UnaryPlusMinus;
             handlePrefix = e => -e;
             goto handlePrefix;
           case Atoms.LargeOperator { Nucleus: "sin" }:
@@ -344,21 +344,21 @@ namespace CSharpMath {
             handleFunctionInverse = arg => MathS.NaN;
             goto handleFunction;
           case Atoms.BinaryOperator { Nucleus: "+" }:
-            handlePrecendence = Precedence.AddSubtract;
+            handlePrecedence = Precedence.AddSubtract;
             handleBinary = (a, b) => a + b;
             goto handleBinary;
           case Atoms.BinaryOperator { Nucleus: "\u2212" }:
-            handlePrecendence = Precedence.AddSubtract;
+            handlePrecedence = Precedence.AddSubtract;
             handleBinary = (a, b) => a - b;
             goto handleBinary;
           case Atoms.BinaryOperator { Nucleus: "×" }:
           case Atoms.BinaryOperator { Nucleus: "·" }:
-            handlePrecendence = Precedence.MultiplyDivide;
+            handlePrecedence = Precedence.MultiplyDivide;
             handleBinary = (a, b) => a * b;
             goto handleBinary;
           case Atoms.BinaryOperator { Nucleus: "÷" }:
           case Atoms.Ordinary { Nucleus: "/" }:
-            handlePrecendence = Precedence.MultiplyDivide;
+            handlePrecedence = Precedence.MultiplyDivide;
             handleBinary = (a, b) => a / b;
             goto handleBinary;
           case Atoms.Ordinary { Nucleus: "%" }:
@@ -393,15 +393,15 @@ namespace CSharpMath {
               return prev;
             }
           case Atoms.BinaryOperator { Nucleus: "∩" }:
-            handlePrecendence = Precedence.SetOperation;
+            handlePrecedence = Precedence.SetOperation;
             handleBinary = MathS.Intersection;
             goto handleBinary;
           case Atoms.BinaryOperator { Nucleus: "∪" }:
-            handlePrecendence = Precedence.SetOperation;
+            handlePrecedence = Precedence.SetOperation;
             handleBinary = MathS.Union;
             goto handleBinary;
           case Atoms.BinaryOperator { Nucleus: "∖" }:
-            handlePrecendence = Precedence.SetOperation;
+            handlePrecedence = Precedence.SetOperation;
             handleBinary = MathS.SetSubtraction;
             goto handleBinary;
           case Atoms.Ordinary { Nucleus: "⊤" }:
@@ -411,81 +411,92 @@ namespace CSharpMath {
             @this = MathS.Boolean.Create(false);
             goto handleThis;
           case Atoms.Ordinary { Nucleus: "¬" }:
-            handlePrecendence = Precedence.Negation;
+            handlePrecedence = Precedence.Negation;
             handlePrefix = MathS.Negation;
             goto handlePrefix;
           case Atoms.BinaryOperator { Nucleus: "∧" }:
-            handlePrecendence = Precedence.Conjunction;
+            handlePrecedence = Precedence.Conjunction;
             handleBinary = MathS.Conjunction;
             goto handleBinary;
           case Atoms.BinaryOperator { Nucleus: "⌅" }:
-            handlePrecendence = Precedence.Conjunction;
+            handlePrecedence = Precedence.Conjunction;
             handleBinary = (x, y) => MathS.Negation(MathS.Conjunction(x, y));
             goto handleBinary;
           case Atoms.BinaryOperator { Nucleus: "∨" }:
-            handlePrecendence = Precedence.Disjunction;
+            handlePrecedence = Precedence.Disjunction;
             handleBinary = MathS.Disjunction;
             goto handleBinary;
           case Atoms.BinaryOperator { Nucleus: "⊻" }:
           case Atoms.Relation { Nucleus: "↮" }:
-            handlePrecendence = Precedence.Disjunction; // XOR has same precedence as OR
+            handlePrecedence = Precedence.Disjunction; // XOR has same precedence as OR
             handleBinary = MathS.ExclusiveDisjunction;
             goto handleBinary;
           case Atoms.Relation { Nucleus: "↔" }:
-            handlePrecendence = Precedence.Equivalence;
+            handlePrecedence = Precedence.Equivalence;
             handleBinary = (x, y) => MathS.Negation(MathS.ExclusiveDisjunction(x, y)); // XNOR = equivalence
             goto handleBinary;
           case Atoms.Relation { Nucleus: "→" }:
-            handlePrecendence = Precedence.Implication;
+            handlePrecedence = Precedence.Implication;
             handleBinary = MathS.Implication;
+            binaryIsRightAssociative = true;
             goto handleBinary;
           case Atoms.Relation { Nucleus: "↛" }:
-            handlePrecendence = Precedence.Implication;
+            handlePrecedence = Precedence.Implication;
             handleBinary = (x, y) => MathS.Negation(MathS.Implication(x, y));
+            binaryIsRightAssociative = true;
             goto handleBinary;
           case Atoms.Relation { Nucleus: "←" }:
-            handlePrecendence = Precedence.Implication;
+            handlePrecedence = Precedence.Implication;
             handleBinary = (x, y) => MathS.Implication(y, x);
             goto handleBinary;
           case Atoms.Relation { Nucleus: "↚" }:
-            handlePrecendence = Precedence.Implication;
+            handlePrecedence = Precedence.Implication;
             handleBinary = (x, y) => MathS.Negation(MathS.Implication(y, x));
             goto handleBinary;
           case Atoms.Relation { Nucleus: "∈" }:
-            handlePrecendence = Precedence.Relation;
+            handlePrecedence = Precedence.Relation;
             handleBinary = MathS.Sets.ElementInSet;
             goto handleBinary;
           case Atoms.Relation { Nucleus: "∉" }:
-            handlePrecendence = Precedence.Relation;
+            handlePrecedence = Precedence.Relation;
             handleBinary = (element, set) => MathS.Negation(MathS.Sets.ElementInSet(element, set));
             goto handleBinary;
           case Atoms.Relation { Nucleus: "∋" }:
-            handlePrecendence = Precedence.Relation;
+            handlePrecedence = Precedence.Relation;
             handleBinary = (set, element) => MathS.Sets.ElementInSet(element, set);
             goto handleBinary;
+          // For comparison operators, we directly construct the node to explicitly not use
+          // chained comparisons handling in Entity.Equalizes / MathS.Equality from AngouriMath
+          // as that would interpret (x=y)=z as x=y=z. Instead, for (x=y)=z, we don't apply the expansion of x=y=z to x=y∧y=z.
           case Atoms.Relation { Nucleus: "=" }:
-            handlePrecendence = Precedence.Relation;
-            handleBinary = MathS.Equality;
+            handlePrecedence = Precedence.Relation;
+            handleBinary = (x, y) => new Entity.Equalsf(x, y);
+            binaryIsComparison = true;
             goto handleBinary;
           case Atoms.Relation { Nucleus: "≠" }:
-            handlePrecendence = Precedence.Relation;
-            handleBinary = (element, set) => MathS.Negation(MathS.Equality(element, set));
+            handlePrecedence = Precedence.Relation;
+            handleBinary = (x, y) => MathS.Negation(new Entity.Equalsf(x, y));
+            binaryIsComparison = true;
             goto handleBinary;
           case Atoms.Relation { Nucleus: "<" }:
-            handlePrecendence = Precedence.Relation;
-            handleBinary = MathS.LessThan;
+            handlePrecedence = Precedence.Relation;
+            handleBinary = (x, y) => new Entity.Lessf(x, y);
+            binaryIsComparison = true;
             goto handleBinary;
           case Atoms.Relation { Nucleus: "≤" or "⩽" }:
-            handlePrecendence = Precedence.Relation;
-            handleBinary = MathS.LessOrEqualThan;
+            handlePrecedence = Precedence.Relation;
+            handleBinary = (x, y) => new Entity.LessOrEqualf(x, y);
+            binaryIsComparison = true;
             goto handleBinary;
           case Atoms.Relation { Nucleus: ">" }:
-            handlePrecendence = Precedence.Relation;
-            handleBinary = MathS.GreaterThan;
+            handlePrecedence = Precedence.Relation;
+            handleBinary = (x, y) => new Entity.Greaterf(x, y);
+            binaryIsComparison = true;
             goto handleBinary;
           case Atoms.Relation { Nucleus: "≥" or "⩾" }:
-            handlePrecendence = Precedence.Relation;
-            handleBinary = MathS.GreaterOrEqualThan;
+            handlePrecedence = Precedence.Relation;
+            handleBinary = (x, y) => new Entity.GreaterOrEqualf(x, y);
+            binaryIsComparison = true;
             goto handleBinary;
           case Atoms.Table { Environment: "matrix" } matrix:
             var (rows, cols, cells) = (matrix.NRows, matrix.NColumns, matrix.Cells);
@@ -562,7 +573,7 @@ namespace CSharpMath {
             return $"Unsupported table environment {table.Environment}";
           default:
             return $"Unsupported {atom.TypeName} {atom.Nucleus}";
-            handleFunction:
+          handleFunction:
             if (atom.Superscript.EqualsList(new MathList(new Atoms.UnaryOperator("\u2212"), new Atoms.Number("1")))) {
               atom.Superscript.Clear();
               handleFunction = handleFunctionInverse;
@@ -599,7 +610,7 @@ namespace CSharpMath {
                   if (levelsDeep == 0)
                     goto exitFor;
                   break;
-                  stealExponent:
+                stealExponent:
                   _ = bracketArgument; // Ensure assignment
                   if (levelsDeep > 0)
                     break;
@@ -630,15 +641,15 @@ namespace CSharpMath {
             if (error != null) return error;
             goto handleThis;
 
-            handlePrefix:
+          handlePrefix:
             i++;
-            (next, error) = Transform(mathList, ref i, handlePrecendence);
+            (next, error) = Transform(mathList, ref i, handlePrecedence);
             if (error != null) return error;
             (@this, error) = next.AsEntity("right operand for " + atom.Nucleus).Bind(e => (MathItem)handlePrefix(e));
             if (error != null) return error;
             goto handleThis;
 
-            handleBinary:
+          handleBinary:
             if (prev is null) {
               // No previous entity, treat as unary operator (happens for 1---2)
               if (atom is Atoms.BinaryOperator b) {
@@ -651,16 +662,22 @@ namespace CSharpMath {
               i--;
               continue;
             }
-            if (prec < handlePrecendence) {
+            if (prec < handlePrecedence) {
               i++;
-              (next, error) = Transform(mathList, ref i, handlePrecendence);
+              if (binaryIsRightAssociative) handlePrecedence--;
+              (next, error) = Transform(mathList, ref i, handlePrecedence);
               if (error != null) return error;
               (var l, error) = prev.AsEntity("left operand for " + atom.Nucleus);
               if (error != null) return error;
               (var r, error) = next.AsEntity("right operand for " + atom.Nucleus);
               if (error != null) return error;
-              @this = (MathItem)handleBinary(l, r);
-              if (error != null) return error;
+              if (binaryIsComparison) {
+                @this =
+                  chainedComparisonTarget is { } target
+                  ? MathS.Conjunction(l, handleBinary(target, r)) // Chained comparison: a < b < c becomes (a < b) ∧ (b < c)
+                  : handleBinary(l, r);
+                chainedComparisonTarget = r;
+              } else @this = handleBinary(l, r);
               prev = null; // We used up prev, don't keep it
               goto handleThis;
             } else {

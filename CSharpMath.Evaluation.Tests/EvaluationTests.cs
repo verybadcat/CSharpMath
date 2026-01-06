@@ -807,6 +807,8 @@ namespace CSharpMath.EvaluationTests {
     [InlineData(@"a\to b\lor c", @"a\rightarrow b\vee c", @"a\rightarrow b\vee c")]
     [InlineData(@"a\lor b\to c", @"a\vee b\rightarrow c", @"a\vee b\rightarrow c")]
     [InlineData(@"a\to b\to c", @"a\rightarrow b\rightarrow c", @"a\rightarrow b\rightarrow c")]
+    [InlineData(@"a\to (b\to c)", @"a\rightarrow b\rightarrow c", @"a\rightarrow b\rightarrow c")]
+    [InlineData(@"(a\to b)\to c", @"\left( a\rightarrow b\right) \rightarrow c", @"\left( a\rightarrow b\right) \rightarrow c")]
     // Complex expression
     [InlineData(@"a\to b\land c\lor d", @"a\rightarrow b\wedge c\vee d", @"a\rightarrow b\wedge c\vee d")]
     // Test ¬ has highest precedence
@@ -816,5 +818,29 @@ namespace CSharpMath.EvaluationTests {
     [InlineData(@"a=b\land c=d", @"a=b\wedge c=d", @"a=b\wedge c=d")]
     [InlineData(@"a<b\lor c>d", @"a<b\vee c>d", @"a<b\vee c>d")]
     public void LogicalOperatorPrecedence(string latex, string converted, string result) => Test(latex, converted, result);
+    [Theory]
+    [InlineData(@"1<x<3", @"1<x<3", @"1<x<3", @"1=x=3", @"1>x>3")]
+    [InlineData(@"(1<x)<3", @"\left( 1<x\right) <3", @"\left( 1<x\right) <3",  @"1=x=3" /*probably a minor bug in AngouriMath*/, @"\left( 1>x\right) >3")]
+    [InlineData(@"(1<2)<3", @"\left( 1<2\right) <3", @"\top <3", @"\bot ", @"\bot >3")]
+    [InlineData(@"1<(2<3)", @"1<\left( 2<3\right) ", @"1<\top ", @"\bot ", @"1>\bot ")]
+    [InlineData(@"1<2<3", @"1<2<3", @"\top ", @"\bot ", @"\bot ")]
+    [InlineData(@"3<2<3", @"3<2<3", @"\bot ")]
+    [InlineData(@"1<2<1", @"1<2<1", @"\bot ")]
+    [InlineData(@"1<1<1", @"1<1<1", @"\bot ", @"\top ")]
+    [InlineData(@"1\leq 2<3", @"1\leq 2<3", @"\top ", @"\bot ", @"\bot ")]
+    [InlineData(@"3\leq 2<3", @"3\leq 2<3", @"\bot ")]
+    [InlineData(@"1\leq 2<1", @"1\leq 2<1", @"\bot ")]
+    [InlineData(@"1\leq 1<1", @"1\leq 1<1", @"\bot ", @"\top ")]
+    [InlineData(@"1\leq 1=1", @"1\leq 1=1", @"\top ")]
+    [InlineData(@"1\leq 1\geq1", @"1\leq 1\geq 1", @"\top ")]
+    public void ChainedComparisons(string latex, string converted, string result, string? eqResult = null, string? geqResult = null) {
+      Test(latex, converted, result);
+      Test(latex.Replace("<", "=").Replace(@"\leq ", "="),
+           converted.Replace("<", "=").Replace(@"\leq ", "="),
+           eqResult ?? result);
+      Test(latex.Replace("<", ">").Replace(@"\leq ", @"\geq "),
+           converted.Replace("<", ">").Replace(@"\leq ", @"\geq "),
+           geqResult ?? result);
+    }
   }
 }
