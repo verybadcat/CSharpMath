@@ -6,13 +6,15 @@ using AngouriMath.Core;
 
 namespace CSharpMath {
   using System.Collections;
+  using System.Data.SqlTypes;
+  using System.Numerics;
   using Atom;
   using Atoms = Atom.Atoms;
-  using System.Numerics;
 
   public static partial class Evaluation {
     enum Precedence {
       DefaultContext,
+      LimitSubscriptContext,
       BraceContext,
       BracketContext,
       ParenthesisContext,
@@ -135,7 +137,7 @@ namespace CSharpMath {
         { "[", ("]", Precedence.BracketContext) },
         { "{", ("}", Precedence.BraceContext) },
       };
-    static readonly Dictionary<(string? left, string? right), Func<MathItem?, Result<MathItem>>> BracketHandlers =
+    static readonly Dictionary<(string? left, string? right), Func<MathItem?, Result<MathItem>>> InnerHandlers =
       new Dictionary<(string? left, string? right), Func<MathItem?, Result<MathItem>>> {
         { ("(", ")"), item => item switch {
           null => "Missing math inside ( )",
@@ -155,7 +157,8 @@ namespace CSharpMath {
           MathItem.Comma c => TryMakeSet(c, true, true),
           _ => item
         } },
-        { ("{", "}"), item => item.AsEntities("set element").Bind(entities => (MathItem)MathS.Sets.Finite(entities)) }
+        { ("{", "}"), item => item.AsEntities("set element").Bind(entities => (MathItem)MathS.Sets.Finite(entities)) },
+        { ("|", "|"), item => item.AsEntity("abs argument").Bind(x => (MathItem)MathS.Abs(x)) }
       };
     static Result<MathItem?> Transform(MathList mathList, ref int i, Precedence prec) {
       MathItem? prev = null;
@@ -169,12 +172,18 @@ namespace CSharpMath {
         var atom = mathList[i];
         MathItem? @this;
         bool subscriptAllowed = false, binaryIsComparison = false, binaryIsRightAssociative = false;
-        Result HandleSuperscript(ref MathItem? @this, MathList superscript) {
+        Result HandleSuperscript(ref MathItem? @this, ref int i, MathList superscript) {
           switch (superscript) {
-            case { Count: 1 } when superscript[0] is Atoms.Ordinary { Nucleus: "∁" }:
+            case [Atoms.Ordinary { Nucleus: "∁" }]:
               (@this, error) =
                 @this.AsEntity("target of set inversion").Bind(target => (MathItem?)MathS.SetSubtraction(MathS.Sets.C, target)); // we don't support domains yet
               if (error != null) return error;
+              break;
+            case [Atoms.UnaryOperator { Nucleus: ("+" or "\u2212") and var direction }]:
+              if (prec != Precedence.LimitSubscriptContext) return $"{direction} alone in superscript but not in limit subscript context";
+              if (i != mathList.Count - 1) return $"Limit direction indicator {direction} not placed at the end";
+              if (direction == "+") i = mathList.Count + 1; // signal approach from right
+              else i = mathList.Count; // signal approach from left
               break;
             default:
               Entity? exponent;
@@ -241,6 +250,7 @@ namespace CSharpMath {
               ("e", 0, FontStyle.Roman or FontStyle.Default or FontStyle.Italic) => MathS.e,
               ("π", 0, FontStyle.Roman or FontStyle.Default or FontStyle.Italic) => MathS.pi,
               ("i", 0, FontStyle.Roman or FontStyle.Default or FontStyle.Italic) => MathS.i,
+              ("undefined", 0, FontStyle.Roman) => MathS.NaN,
               // Convert θ to theta
               (_, _, FontStyle.Default or FontStyle.Italic) when LaTeXSettings.CommandForAtom(atom) is string s => MathS.Var(string.Concat(s.TrimStart('\\'), underscore, subscript)),
               _ => MathS.Var(name + underscore + subscript.ToString())
@@ -326,6 +336,54 @@ namespace CSharpMath {
             handleFunction = MathS.Arccosec;
             handleFunctionInverse = MathS.Cosec;
             goto handleFunction;
+          case Atoms.LargeOperator { Nucleus: "sinh" }:
+            handleFunction = MathS.Hyperbolic.Sinh;
+            handleFunctionInverse = MathS.Hyperbolic.Arsinh;
+            goto handleFunction;
+          case Atoms.LargeOperator { Nucleus: "cosh" }:
+            handleFunction = MathS.Hyperbolic.Cosh;
+            handleFunctionInverse = MathS.Hyperbolic.Arcosh;
+            goto handleFunction;
+          case Atoms.LargeOperator { Nucleus: "tanh" }:
+            handleFunction = MathS.Hyperbolic.Tanh;
+            handleFunctionInverse = MathS.Hyperbolic.Artanh;
+            goto handleFunction;
+          case Atoms.LargeOperator { Nucleus: "coth" }:
+            handleFunction = MathS.Hyperbolic.Cotanh;
+            handleFunctionInverse = MathS.Hyperbolic.Arcotanh;
+            goto handleFunction;
+          case Atoms.LargeOperator { Nucleus: "sech" }:
+            handleFunction = MathS.Hyperbolic.Sech;
+            handleFunctionInverse = MathS.Hyperbolic.Arsech;
+            goto handleFunction;
+          case Atoms.LargeOperator { Nucleus: "csch" }:
+            handleFunction = MathS.Hyperbolic.Cosech;
+            handleFunctionInverse = MathS.Hyperbolic.Arcosech;
+            goto handleFunction;
+          case Atoms.LargeOperator { Nucleus: "arsinh" }:
+            handleFunction = MathS.Hyperbolic.Arsinh;
+            handleFunctionInverse = MathS.Hyperbolic.Sinh;
+            goto handleFunction;
+          case Atoms.LargeOperator { Nucleus: "arcosh" }:
+            handleFunction = MathS.Hyperbolic.Arcosh;
+            handleFunctionInverse = MathS.Hyperbolic.Cosh;
+            goto handleFunction;
+          case Atoms.LargeOperator { Nucleus: "artanh" }:
+            handleFunction = MathS.Hyperbolic.Artanh;
+            handleFunctionInverse = MathS.Hyperbolic.Tanh;
+            goto handleFunction;
+          case Atoms.LargeOperator { Nucleus: "arcoth" }:
+            handleFunction = MathS.Hyperbolic.Arcotanh;
+            handleFunctionInverse = MathS.Hyperbolic.Cotanh;
+            goto handleFunction;
+          case Atoms.LargeOperator { Nucleus: "arsech" }:
+            handleFunction = MathS.Hyperbolic.Arsech;
+            handleFunctionInverse = MathS.Hyperbolic.Sech;
+            goto handleFunction;
+          case Atoms.LargeOperator { Nucleus: "arcsch" }:
+            handleFunction = MathS.Hyperbolic.Arcosech;
+            handleFunctionInverse = MathS.Hyperbolic.Cosech;
+            goto handleFunction;
           case Atoms.LargeOperator { Nucleus: "log", Subscript: var logBaseList }:
             Entity? logBase;
             (logBase, error) = Transform(logBaseList).ExpectEntityOrNull(nameof(logBase));
@@ -339,9 +397,32 @@ namespace CSharpMath {
             handleFunction = MathS.Ln;
             handleFunctionInverse = arg => MathS.Pow(MathS.e, arg);
             goto handleFunction;
+          case Atoms.LargeOperator { Nucleus: "abs" }:
+            handleFunction = MathS.Abs;
+            handleFunctionInverse = arg => MathS.NaN;
+            goto handleFunction;
           case Atoms.LargeOperator { Nucleus: "sgn" }:
             handleFunction = MathS.Signum;
             handleFunctionInverse = arg => MathS.NaN;
+            goto handleFunction;
+          case Atoms.LargeOperator { Nucleus: "lim", Subscript: var limitSubscript }:
+            Entity limitVariable, limitTarget;
+            int limitSubscriptIndex = 0;
+            (limitVariable, error) = Transform(limitSubscript, ref limitSubscriptIndex, Precedence.LimitSubscriptContext).ExpectEntity("limit variable in subscript");
+            if (error != null) return error;
+            if (limitSubscriptIndex == limitSubscript.Count) return "Missing → in limit subscript";
+            limitSubscriptIndex++;
+            (limitTarget, error) = Transform(limitSubscript, ref limitSubscriptIndex, Precedence.LimitSubscriptContext).ExpectEntity("limit target in subscript");
+            if (error != null) return error;
+            var limitDirection =
+              limitSubscriptIndex == limitSubscript.Count + 1
+              ? ApproachFrom.Left
+              : limitSubscriptIndex == limitSubscript.Count + 2
+              ? ApproachFrom.Right
+              : ApproachFrom.BothSides;
+            handleFunction = limitBody => MathS.Limit(limitBody, limitVariable, limitTarget, limitDirection);
+            handleFunctionInverse = arg => MathS.NaN;
+            subscriptAllowed = true;
             goto handleFunction;
           case Atoms.BinaryOperator { Nucleus: "+" }:
             handlePrecedence = Precedence.AddSubtract;
@@ -436,10 +517,12 @@ namespace CSharpMath {
             handleBinary = (x, y) => MathS.Negation(MathS.ExclusiveDisjunction(x, y)); // XNOR = equivalence
             goto handleBinary;
           case Atoms.Relation { Nucleus: "→" }:
-            handlePrecedence = Precedence.Implication;
-            handleBinary = MathS.Implication;
-            binaryIsRightAssociative = true;
-            goto handleBinary;
+            if (prec != Precedence.LimitSubscriptContext) {
+              handlePrecedence = Precedence.Implication;
+              handleBinary = MathS.Implication;
+              binaryIsRightAssociative = true;
+              goto handleBinary;
+            } else return prev;
           case Atoms.Relation { Nucleus: "↛" }:
             handlePrecedence = Precedence.Implication;
             handleBinary = (x, y) => MathS.Negation(MathS.Implication(x, y));
@@ -542,20 +625,18 @@ namespace CSharpMath {
                   i--;
                   return prev;
               }
-            return
-              BracketHandlers.TryGetValue((contextInfo.KnownOpening, rightBracket), out var handler)
-              ? handler(prev).Bind(handled => {
-                MathItem? nullable = handled;
-                if (HandleSuperscript(ref nullable, super).Error is { } error)
-                  return Result.Err(error);
-                return Result.Ok(nullable);
-              })
-              : $"Unrecognized bracket pair {contextInfo.KnownOpening} {rightBracket}";
-          case Atoms.Inner { LeftBoundary: { Nucleus: var left }, InnerList: var inner, RightBoundary: { Nucleus: var right } }:
+            if (InnerHandlers.TryGetValue((contextInfo.KnownOpening, rightBracket), out var handler)) {
+              (MathItem? handled, error) = handler(prev);
+              if (error != null) return error;
+              else if (HandleSuperscript(ref handled, ref i, super).Error is { } superscriptError)
+                return Result.Err(superscriptError);
+              return Result.Ok(handled);
+            } else return $"Unrecognized bracket pair {contextInfo.KnownOpening} {rightBracket}";
+          case Atoms.Inner { LeftBoundary.Nucleus: var left, InnerList: var inner, RightBoundary.Nucleus: var right }:
             (@this, error) = Transform(inner);
             if (error != null) return error;
             (@this, error) =
-              BracketHandlers.TryGetValue((left, right), out handler)
+              InnerHandlers.TryGetValue((left, right), out handler)
               ? handler(@this)
               : $"Unrecognized bracket pair {left ?? "(empty)"} {right ?? "(empty)"}";
             if (error != null) return error;
@@ -589,7 +670,7 @@ namespace CSharpMath {
                 case Atoms.Space _:
                 case Atoms.Ordinary { Nucleus: var nucleus } when string.IsNullOrWhiteSpace(nucleus):
                   break;
-                case Atoms.Inner inner:
+                case Atoms.Inner { LeftBoundary.Nucleus: "(" or "[", RightBoundary.Nucleus: ")" or "]" } inner:
                   var superscript = inner.Superscript;
                   bracketArgument = inner.InnerList;
                   goto stealExponent;
@@ -685,17 +766,17 @@ namespace CSharpMath {
               return prev;
             }
 
-            handlePostfix:
+          handlePostfix:
             (@this, error) =
               prev.AsEntity("left operand for " + atom.Nucleus).Bind(e => (MathItem)handlePostfix(e));
             if (error != null) return error;
             prev = null; // We used up prev, don't keep it
             goto handleThis;
 
-            handleThis:
+          handleThis:
             if (!subscriptAllowed && atom.Subscript.Count > 0)
               return $"Subscripts are unsupported for {atom.TypeName} {atom.Nucleus}";
-            error = HandleSuperscript(ref @this, atom.Superscript).Error;
+            error = HandleSuperscript(ref @this, ref i, atom.Superscript).Error;
             if (error != null) return error;
             Entity? prevEntity, thisEntity;
             (prevEntity, error) =
@@ -707,7 +788,7 @@ namespace CSharpMath {
             if (error != null) return error;
             prev = prevEntity * thisEntity;
             break;
-        }
+          }
       }
       if (ContextInfo.TryGetValue(prec, out var info))
         return "Missing " + info.InferredClosing;

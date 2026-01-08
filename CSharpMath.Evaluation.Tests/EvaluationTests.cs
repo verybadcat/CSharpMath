@@ -714,6 +714,26 @@ namespace CSharpMath.EvaluationTests {
     [InlineData(@"1;\cap", "Unsupported Unary Operator ∩")]
     [InlineData(@"\cap,", "Unsupported Unary Operator ∩")]
     [InlineData(@"\cap;", "Unsupported Unary Operator ∩")]
+    [InlineData(@"1^+", "+ alone in superscript but not in limit subscript context")]
+    [InlineData(@"1^-", "\u2212 alone in superscript but not in limit subscript context")]
+    [InlineData(@"\lim", "Missing limit variable in subscript")]
+    [InlineData(@"\lim_x", "Missing → in limit subscript")]
+    [InlineData(@"\lim_{xy}", "Missing → in limit subscript")]
+    [InlineData(@"\lim_{xy^+}", "Missing limit target in subscript")]
+    [InlineData(@"\lim_{xy^-}", "Missing limit target in subscript")]
+    [InlineData(@"\lim_{\to}", "Missing limit variable in subscript")]
+    [InlineData(@"\lim_{\to2}", "Missing limit variable in subscript")]
+    [InlineData(@"\lim_{x\to}", "Missing limit target in subscript")]
+    [InlineData(@"\lim_{xy\to}", "Missing limit target in subscript")]
+    [InlineData(@"\lim_{xy\to^+}", "Missing limit target in subscript")]
+    [InlineData(@"\lim_{xy\to^-}", "Missing limit target in subscript")]
+    [InlineData(@"\lim_{x\to2^+2}", "Limit direction indicator + not placed at the end")]
+    [InlineData(@"\lim_{xy\to2^+2}", "Limit direction indicator + not placed at the end")]
+    [InlineData(@"\lim_{xy\to2^-2}", "Limit direction indicator \u2212 not placed at the end")]
+    [InlineData(@"\lim_{xy\to(2^+)}", "+ alone in superscript but not in limit subscript context")]
+    [InlineData(@"\lim_{xy\to(2^-)}", "\u2212 alone in superscript but not in limit subscript context")]
+    [InlineData(@"\lim_{xy\to\left(2^+\right)}", "+ alone in superscript but not in limit subscript context")]
+    [InlineData(@"\lim_{xy\to\left(2^-\right)}", "\u2212 alone in superscript but not in limit subscript context")]
     public void Error(string badLaTeX, string error) =>
       Evaluation.Evaluate(ParseLaTeX(badLaTeX))
       .Match(entity => throw new Xunit.Sdk.XunitException(entity.Latexise()), e => Assert.Equal(error, e));
@@ -792,7 +812,7 @@ namespace CSharpMath.EvaluationTests {
     [InlineData(@"1\geq1", @"1\geq 1", @"\top ")]
     [InlineData(@"1\geqslant1", @"1\geq 1", @"\top ")]
     [InlineData(@"x\in\{x,y\}", @"x\in \left\{ x,y\right\} ", @"\top ")]
-    [InlineData(@"z\notin\{x,y\}", @"\neg z\in \left\{ x,y\right\} ", @"\top ")] // BUG: This should simplify to \top since z is not in {x,y}, but AngouriMath cannot determine this without \mathrm{e}xplicit variable declarations
+    [InlineData(@"z\notin\{x,y\}", @"\neg z\in \left\{ x,y\right\} ", @"\top ")] // BUG: This simplified to \top since z is not in {x,y}, but AngouriMath cannot determine this without explicit variable declarations
     [InlineData(@"\{x,y\}\ni x", @"x\in \left\{ x,y\right\} ", @"\top ")]
     public void LogicalAndRelationalOperators(string latex, string converted, string result) => Test(latex, converted, result);
 
@@ -842,5 +862,27 @@ namespace CSharpMath.EvaluationTests {
            converted.Replace("<", ">").Replace(@"\leq ", @"\geq "),
            geqResult ?? result);
     }
+    [Theory]
+    [InlineData(@"\mathrm{undefined}", @"\mathrm{undefined}", @"\mathrm{undefined}")]
+    [InlineData(@"0\times\infty", @"0\cdot \infty ", @"\mathrm{undefined}")]
+    [InlineData(@"\mathrm{undefined}+1", @"\mathrm{undefined}+1", @"\mathrm{undefined}")]
+    [InlineData(@"\sin\mathrm{undefined}", @"\sin \left( \mathrm{undefined}\right) ", @"\mathrm{undefined}")]
+    public void Undefined(string latex, string converted, string result) => Test(latex, converted, result);
+    [Theory]
+    [InlineData(@"\left|1\right|", @"\left| 1\right| ", @"1")]
+    [InlineData(@"-\left|-1\right|", @"-\left| -1\right| ", @"-1")]
+    [InlineData(@"-\operatorname{abs}(-1)", @"-\left| -1\right| ", @"-1")]
+    [InlineData(@"-\operatorname{abs}\left|-1\right|", @"-\left| \left| -1\right| \right| ", @"-1")]
+    [InlineData(@"-\left|1\right|^2", @"-\left| 1\right| ^2", @"-1")]
+    [InlineData(@"\operatorname{sgn}\operatorname{abs} x", @"\operatorname{sgn} \left( \left| x\right| \right) ", @"1")]
+    public void Abs(string latex, string converted, string result) => Test(latex, converted, result);
+    [Theory]
+    [InlineData(@"\lim_{x\to2}x", @"\lim _{x\rightarrow 2}x", @"2")]
+    [InlineData(@"\lim_{x\to2^-}x", @"\lim _{x\rightarrow 2^-}x", @"2")]
+    [InlineData(@"\lim_{x\to2^+}x", @"\lim _{x\rightarrow 2^+}x", @"2")]
+    [InlineData(@"\lim_{x\to\infty}x", @"\lim _{x\rightarrow \infty }x", @"\infty ")]
+    //[InlineData(@"\lim_{x\to\left(1+x\right)^+}x", @"\lim _{x\rightarrow \left( 1+x\right) ^+}\left( x\right) ", @"1+x")]
+    //[InlineData(@"\lim_{x\to(1+x)^+}x", @"\lim _{x\rightarrow \left( 1+x\right) ^+}\left( x\right) ", @"1+x")] // WIP
+    public void Limit(string latex, string converted, string result) => Test(latex, converted, result);
   }
 }
