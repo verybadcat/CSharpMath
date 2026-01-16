@@ -28,25 +28,26 @@ namespace CSharpMath {
       Relation,
       SetOperation,
       AddSubtract,
+      CalculusOperation,
       MultiplyDivide,
       FunctionApplication,
       UnaryPlusMinus,
       Postfix
       // Highest
     }
-    public abstract class MathItem : ILatexiseable {
+    public abstract record MathItem : ILatexiseable {
       private protected MathItem() { }
       public abstract string Latexise();
       public static implicit operator MathItem(AngouriMath.Entity content) => new Entity(content);
       public static explicit operator AngouriMath.Entity(MathItem item) => ((Entity)item).Content;
       /// <summary>A real number, complex number, variable, function call, vector, matrix, higher-dimensional tensor, or set</summary>
-      public sealed class Entity : MathItem {
+      public sealed record Entity : MathItem {
         public Entity(AngouriMath.Entity content) => Content = content;
         public AngouriMath.Entity Content { get; }
         public override string Latexise() => Content.Latexise();
       }
       /// <summary>A linked list of comma-delimited items</summary>
-      public sealed class Comma : MathItem, IEnumerable<MathItem> {
+      public sealed record Comma : MathItem, IEnumerable<MathItem> {
         public Comma(MathItem prev, MathItem? next) {
           Content = prev;
           Next = next switch { null => null, Comma c => c, _ => new Comma(next, null) };
@@ -68,13 +69,8 @@ namespace CSharpMath {
       LaTeXParser.MathListFromLaTeX(entity.Latexise())
       // CSharpMath must handle all LaTeX coming from AngouriMath or a bug is present!
       .Match(list => list, e => throw new InvalidCodePathException(e));
-    public static Result<MathItem> Evaluate(MathList mathList) {
-      return Transform(mathList.Clone(true))
-      .Bind(result =>
-        result is { } r
-        ? Result.Ok(r)
-        : Result.Err("There is nothing to evaluate"));
-    }
+    public static Result<MathItem> Evaluate(MathList mathList) =>
+      Transform(mathList.Clone(true)).Bind(result => result is { } r ? Result.Ok(r) : Result.Err("There is nothing to evaluate"));
     static Result<MathItem?> Transform(MathList mathList) {
       int i = 0;
       return Transform(mathList, ref i, Precedence.DefaultContext);
@@ -182,8 +178,8 @@ namespace CSharpMath {
             case [Atoms.UnaryOperator { Nucleus: ("+" or "\u2212") and var direction }]:
               if (prec != Precedence.LimitSubscriptContext) return $"{direction} alone in superscript but not in limit subscript context";
               if (i != mathList.Count - 1) return $"Limit direction indicator {direction} not placed at the end";
-              if (direction == "+") i = mathList.Count + 1; // signal approach from right
-              else i = mathList.Count; // signal approach from left
+              if (direction == "+") i = mathList.Count + 2; // signal approach from right
+              else i = mathList.Count + 1; // signal approach from left
               break;
             default:
               Entity? exponent;
@@ -212,25 +208,25 @@ namespace CSharpMath {
               @this = number;
               goto handleThis;
             } else return "Invalid number: " + n.Nucleus;
-          case Atoms.Variable v:
-            var name = new System.Text.StringBuilder(v.Nucleus);
-            if (v.FontStyle is FontStyle.Roman) // handle multi-character roman variables
+          case Atoms.Variable:
+            var name = new System.Text.StringBuilder(atom.Nucleus);
+            if (atom is { FontStyle: FontStyle.Roman, Superscript: [], Subscript: [] }) // handle multi-character roman variables
               while (i + 1 < mathList.Count) {
-                if (mathList[i + 1] is Atoms.Variable { FontStyle: FontStyle.Roman } v2) {
-                  name.Append(v2.Nucleus);
-                  v = v2;
+                if (mathList[i + 1] is Atoms.Variable { FontStyle: FontStyle.Roman } v) {
+                  name.Append(v.Nucleus);
+                  atom = v;
                   i++;
-                  if (v2.Superscript.Count > 0 || v2.Subscript.Count > 0) break;
+                  if (v.Superscript.Count > 0 || v.Subscript.Count > 0) break;
                 } else break;
               }
             var subscript = new System.Text.StringBuilder();
-            foreach (var subAtom in v.Subscript)
+            foreach (var subAtom in atom.Subscript)
               switch (subAtom) {
                 case Atoms.Placeholder _:
                   return "Placeholders should be filled";
-                case { Superscript: { Count: var count } } when count > 0:
+                case { Superscript.Count: > 0 }:
                   return "Unsupported exponentiation in subscript";
-                case { Subscript: { Count: var count } } when count > 0:
+                case { Subscript.Count: > 0 }:
                   return "Unsupported subscript in subscript";
                 case Atoms.Number { Nucleus: var nucleus }:
                   subscript.Append(nucleus);
@@ -242,7 +238,7 @@ namespace CSharpMath {
                   return $"Unsupported {subAtom.TypeName} {subAtom.Nucleus} in subscript";
               }
             var underscore = subscript.Length > 0 ? "_" : "";
-            @this = (name.ToString(), v.Subscript.Count, v.FontStyle) switch {
+            @this = (name.ToString(), atom.Subscript.Count, atom.FontStyle) switch {
               ("C", 0, FontStyle.Blackboard) => MathS.Sets.C,
               ("R", 0, FontStyle.Blackboard) => MathS.Sets.R,
               ("Q", 0, FontStyle.Blackboard) => MathS.Sets.Q,
@@ -264,7 +260,65 @@ namespace CSharpMath {
             @this = MathS.Sets.Empty;
             goto handleThis;
           case Atoms.Fraction f:
-            Entity numerator, denominator;
+            Entity? numerator, denominator;
+            // Check for derivative notation: (d^n y)/(d x^n) or (d y)/(d x) where the d is not part of a longer variable name
+            if (f.Numerator is ([Atoms.Variable { FontStyle: FontStyle.Roman, Nucleus: "d", Superscript: var numSuper }, ..] and not [_, Atoms.Variable { FontStyle: FontStyle.Roman }, ..]) &&
+                f.Denominator is [Atoms.Variable { FontStyle: FontStyle.Roman, Nucleus: "d", Superscript: var denomSuper }, ..] and not [_, Atoms.Variable { FontStyle: FontStyle.Roman }, ..]) {
+              
+              // Parse derivative order from numerator's d exponent
+              int order;
+              switch (numSuper) {
+                case []:
+                  order = 1;
+                  break;
+                case [Atoms.Number { Nucleus: var n }]:
+                  if (int.TryParse(n, out order)) break;
+                  else return $"Derivative order must be an integer, got {n}";
+                default:
+                  return "Derivative order must be an integer";
+              }
+              if (denomSuper.Count > 0)
+                return "The d in derivative denominator cannot have an exponent. Did you mean to write it at the end of the denominator?";
+
+              // For higher-order derivatives, check that the variable has the matching exponent
+              if (order > 1 && f.Denominator.Count > 1) {
+                switch (f.Denominator.Last?.Superscript) {
+                  case []:
+                    // No exponent on denominator but order > 1, e.g. d²y/dx
+                    if (order != 1) return $"Derivative order mismatch: {order} in numerator requires {order} in denominator";
+                    break;
+                  case [Atoms.Number { Nucleus: var n }]:
+                    if (int.TryParse(n, out var denomOrder))
+                      if (order == denomOrder)
+                        break;
+                      // Require both numerator and denominator in d²y/dx² to have exponent 2
+                      else return $"Derivative order mismatch: {order} in numerator but {denomOrder} is in denominator";
+                    else return $"Derivative order must be an integer, got {n}";
+                  default:
+                    return "Derivative order must be an integer";
+                }
+                f.Denominator.Last?.Superscript.Clear();
+              }
+              
+              var numeratorIndex = 1;
+              (numerator, error) = Transform(f.Numerator, ref numeratorIndex, Precedence.DefaultContext).ExpectEntityOrNull("derivative body");
+              if (error != null) return error;
+              
+              var denominatorIndex = 1;
+              (denominator, error) = Transform(f.Denominator, ref denominatorIndex, Precedence.DefaultContext).ExpectEntity("derivative variable");
+              if (error != null) return error;
+              
+              if (numerator is null) {
+                // Derivative operator (no body yet)
+                handlePrecedence = Precedence.CalculusOperation;
+                handlePrefix = derivativeBody => MathS.Derivative(derivativeBody, denominator, order);
+                atom.Nucleus = "derivative operator"; // for the error message
+                goto handlePrefix;
+              }
+              
+              @this = MathS.Derivative(numerator, denominator, order);
+              goto handleThis;
+            }
             (numerator, error) = Transform(f.Numerator).ExpectEntity(nameof(numerator));
             if (error != null) return error;
             (denominator, error) = Transform(f.Denominator).ExpectEntity(nameof(denominator));
@@ -415,15 +469,15 @@ namespace CSharpMath {
             (limitTarget, error) = Transform(limitSubscript, ref limitSubscriptIndex, Precedence.LimitSubscriptContext).ExpectEntity("limit target in subscript");
             if (error != null) return error;
             var limitDirection =
-              limitSubscriptIndex == limitSubscript.Count + 1
+              limitSubscriptIndex == limitSubscript.Count + 2
               ? ApproachFrom.Left
-              : limitSubscriptIndex == limitSubscript.Count + 2
+              : limitSubscriptIndex == limitSubscript.Count + 3
               ? ApproachFrom.Right
               : ApproachFrom.BothSides;
-            handleFunction = limitBody => MathS.Limit(limitBody, limitVariable, limitTarget, limitDirection);
-            handleFunctionInverse = arg => MathS.NaN;
             subscriptAllowed = true;
-            goto handleFunction;
+            handlePrecedence = Precedence.CalculusOperation;
+            handlePrefix = limitBody => MathS.Limit(limitBody, limitVariable, limitTarget, limitDirection);
+            goto handlePrefix;
           case Atoms.BinaryOperator { Nucleus: "+" }:
             handlePrecedence = Precedence.AddSubtract;
             handleBinary = (a, b) => a + b;
@@ -594,12 +648,16 @@ namespace CSharpMath {
             @this = MathS.Matrices.Matrix(rows, cols, matrixElements);
             goto handleThis;
           case Atoms.Open { Nucleus: var opening }:
+            if (atom.Superscript.Count > 0)
+              return "Exponentiation is unsupported for Open Bracket " + opening;
             if (!OpenBracketInfo.TryGetValue(opening, out var bracketInfo))
               return "Unsupported opening bracket " + opening;
             i++;
             (@this, error) = Transform(mathList, ref i, bracketInfo.KnownPrecedence);
             if (error != null) return error;
             if (@this == null) return "Missing " + bracketInfo.InferredClosing;
+            if (HandleSuperscript(ref @this, ref i, mathList[i].Superscript).Error is { } superscriptError)
+              return superscriptError;
             goto handleThis;
           case Atoms.Close { Nucleus: var rightBracket, Superscript: var super, Subscript: var sub }:
             if (sub.Count > 0) return "Subscripts are unsupported for Close " + rightBracket;
@@ -625,13 +683,9 @@ namespace CSharpMath {
                   i--;
                   return prev;
               }
-            if (InnerHandlers.TryGetValue((contextInfo.KnownOpening, rightBracket), out var handler)) {
-              (MathItem? handled, error) = handler(prev);
-              if (error != null) return error;
-              else if (HandleSuperscript(ref handled, ref i, super).Error is { } superscriptError)
-                return Result.Err(superscriptError);
-              return Result.Ok(handled);
-            } else return $"Unrecognized bracket pair {contextInfo.KnownOpening} {rightBracket}";
+            if (InnerHandlers.TryGetValue((contextInfo.KnownOpening, rightBracket), out var handler))
+              return handler(prev).Bind(x => (MathItem?)x);
+            else return $"Unrecognized bracket pair {contextInfo.KnownOpening} {rightBracket}";
           case Atoms.Inner { LeftBoundary.Nucleus: var left, InnerList: var inner, RightBoundary.Nucleus: var right }:
             (@this, error) = Transform(inner);
             if (error != null) return error;

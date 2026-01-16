@@ -16,6 +16,8 @@ namespace CSharpMath.EvaluationTests {
         var math = ParseMath(input);
         Assert.NotNull(math);
         Assert.Equal(converted, LaTeXParser.MathListToLaTeX(Evaluation.Visualize(math)).ToString());
+        // TODO: Apparently adding this line causes a stack overflow when all tests are run, investigate later
+        // Assert.Equal(converted, LaTeXParser.MathListToLaTeX(Evaluation.Visualize(ParseMath(converted))).ToString()); // Double checking conversion
         // Ensure that the converted entity is valid by simplifying it
         if (result != null)
           Assert.Equal(result,
@@ -75,7 +77,7 @@ namespace CSharpMath.EvaluationTests {
     [InlineData(@"3\mathrm{a}a", @"3aa", @"3a^2")]
     [InlineData(@"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
       @"abcd\mathrm{e}fgh\cdot \mathrm{i}jklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
-      // i is considered as a number instead of a variable like other alphabets, so it is sorted to the front
+      // i is considered as a number instead of a variable, unlike other alphabets, so it is sorted to the front
       @"\mathrm{i}aAbBcCdD\mathrm{e}EfFgGhHIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ")]
     [InlineData(@"\alpha\beta\gamma\delta\epsilon\varepsilon\zeta\eta\theta\iota\kappa\varkappa" +
       @"\lambda\mu\nu\xi\omicron\pi\varpi\rho\varrho\sigma\varsigma\tau\upsilon\phi\varphi\chi" +
@@ -159,7 +161,9 @@ namespace CSharpMath.EvaluationTests {
     [InlineData(@"\mathrm{i}\cdot \infty", @"\mathrm{i}\cdot \infty ", @"\infty \mathrm{i}")]
     [InlineData(@"\infty\times \mathrm{i}", @"\infty \cdot \mathrm{i}", @"\infty \mathrm{i}")]
     [InlineData(@"\mathrm{i}\times \mathrm{i}", @"\mathrm{i}\cdot \mathrm{i}", @"-1")]
-    [InlineData(@"\frac00", @"\frac{0}{0}", @"0")] // BUG?
+    [InlineData(@"\frac00", @"\frac{0}{0}", @"\mathrm{undefined}")]
+    [InlineData(@"\frac xx", @"\frac{x}{x}", @"1\quad \mathrm{for}\quad x\neq 0")]
+    [InlineData(@"\frac xx+1", @"\frac{x}{x}+1", @"2\quad \mathrm{for}\quad x\neq 0")]
     [InlineData(@"\frac0\infty", @"\frac{0}{\infty }", @"0")]
     [InlineData(@"\frac2\infty", @"\frac{2}{\infty }", @"0")]
     [InlineData(@"\frac{-2}\infty", @"\frac{-2}{\infty }", @"0")]
@@ -169,6 +173,9 @@ namespace CSharpMath.EvaluationTests {
     [InlineData(@"\frac{-\infty}0", @"\frac{-\infty }{0}", @"\mathrm{undefined}")]
     [InlineData(@"\frac\infty\infty", @"\frac{\infty }{\infty }", @"\mathrm{undefined}")]
     [InlineData(@"\frac{-\infty}{\infty}", @"\frac{-\infty }{\infty }", @"\mathrm{undefined}")]
+    [InlineData(@"a / bc", @"\frac{a}{bc}", @"\frac{a}{bc}")]
+    [InlineData(@"a / bc / d", @"\frac{\frac{a}{bc}}{d}", @"\frac{a}{bcd}")]
+    [InlineData(@"-2/\sin x/y", @"\frac{\frac{-2}{\sin \left( x\right) }}{y}", @"\frac{-2}{\sin \left( x\right) \cdot y}")]
     public void BinaryOperators(string latex, string converted, string result) => Test(latex, converted, result);
     [Theory]
     [InlineData(@"+i", @"\mathrm{i}", @"\mathrm{i}")]
@@ -191,10 +198,10 @@ namespace CSharpMath.EvaluationTests {
     [InlineData(@"a\times-a", @"a\left( -1\right) \cdot a", "-a^2")]
     [InlineData(@"+a\times+a", @"aa", "a^2")]
     [InlineData(@"-a\times-a", @"-a\left( -1\right) \cdot a", "a^2")]
-    [InlineData("a/+a", @"\frac{a}{a}", "1")]
-    [InlineData("a/-a", @"\frac{a}{-a}", "-1")]
-    [InlineData("+a/+a", @"\frac{a}{a}", "1")]
-    [InlineData("-a/-a", @"\frac{-a}{-a}", "1")]
+    [InlineData("a/+a", @"\frac{a}{a}", @"1\quad \mathrm{for}\quad a\neq 0")]
+    [InlineData("a/-a", @"\frac{a}{-a}", @"-1\quad \mathrm{for}\quad a\neq 0")]
+    [InlineData("+a/+a", @"\frac{a}{a}", @"1\quad \mathrm{for}\quad a\neq 0")]
+    [InlineData("-a/-a", @"\frac{-a}{-a}", @"1\quad \mathrm{for}\quad a\neq 0")]
     [InlineData(@"-2+-2+-2", @"-2-2-2", "-6")]
     [InlineData(@"-2--2--2", @"-2--2--2", "2")]
     [InlineData(@"-2\times -2\times -2", @"-2\left( -1\right) \cdot 2\left( -1\right) \cdot 2", "-8")]
@@ -254,9 +261,9 @@ namespace CSharpMath.EvaluationTests {
     [InlineData(@"2\times3^4", @"2\cdot 3^4", "162")]
     [InlineData(@"1/x", @"\frac{1}{x}", @"\frac{1}{x}")]
     [InlineData(@"2/x", @"\frac{2}{x}", @"\frac{2}{x}")]
-    [InlineData(@"0^x", @"0^x", @"0")]
+    [InlineData(@"0^x", @"0^x", @"0\quad \mathrm{for}\quad \left( 1+\frac{1}{\operatorname{sgn} \left( x\right) ^2}\right) \cdot x>0")]
     [InlineData(@"1^x", @"1^x", @"1")]
-    [InlineData(@"x^0", @"x^0", @"1")]
+    [InlineData(@"x^0", @"x^0", @"1\quad \mathrm{for}\quad x\neq 0")]
     [InlineData(@"x^{-1}", @"x^{-1}", @"\frac{1}{x}")]
     [InlineData(@"-i^{-1}", @"-\mathrm{i^{\mathnormal{-1}}}", @"\mathrm{i}")]
     [InlineData(@"i^{-2}", @"\mathrm{i^{\mathnormal{-2}}}", @"-1")]
@@ -276,6 +283,14 @@ namespace CSharpMath.EvaluationTests {
     [InlineData(@"\mathrm{i^3}", @"\mathrm{i^{\mathnormal{3}}}", @"-\mathrm{i}")]
     [InlineData(@"\mathrm{i^{\mathnormal{4}}}", @"\mathrm{i^{\mathnormal{4}}}", @"1")]
     [InlineData(@"\mathrm{i^5}", @"\mathrm{i^{\mathnormal{5}}}", @"\mathrm{i}")]
+    [InlineData(@"\mathrm{zz^2}", @"\mathrm{zz^{\mathnormal{2}}}", @"\mathrm{zz^{\mathnormal{2}}}")]
+    [InlineData(@"\mathrm{zz^{aa}}", @"\mathrm{zz^{aa}}", @"\mathrm{zz^{aa}}")]
+    [InlineData(@"\mathrm{zz^{aa\mathnormal{a}}}", @"\mathrm{zz^{aa\mathnormal{a}}}", @"\mathrm{zz^{\mathnormal{a}aa}}")]
+    [InlineData(@"\mathrm{zz^{aa\cdot aa}}", @"\mathrm{zz^{aa\mathnormal{\cdot }aa}}", @"\mathrm{zz^{aa^{\mathnormal{2}}}}")]
+    [InlineData(@"\mathrm{a^2a^2ab}", @"a^2a^2\cdot \mathrm{ab}", @"a^4\cdot \mathrm{ab}")]
+    [InlineData(@"\mathrm{a_2a_2ab}", @"a_2a_2\mathrm{ab}", @"a_2^2\cdot \mathrm{ab}")]
+    [InlineData(@"\mathrm{a^2_2a_2^2ab}", @"a_2^2a_2^2\cdot \mathrm{ab}", @"a_2^4\cdot \mathrm{ab}")]
+    [InlineData(@"\mathrm{ab^2ab_2ab}", @"\mathrm{ab^{\mathnormal{2}}}\cdot \mathrm{ab_{\mathnormal{2}}}\cdot \mathrm{ab}", @"\mathrm{ab^{\mathnormal{3}}}\cdot \mathrm{ab_{\mathnormal{2}}}")]
     [InlineData(@"10^2", @"10^2", @"100")]
     [InlineData(@".1^2", @"\left( \frac{1}{10}\right) ^2", @"\frac{1}{100}")]
     [InlineData(@"10^x", @"10^x", @"10^x")]
@@ -661,6 +676,9 @@ namespace CSharpMath.EvaluationTests {
     [InlineData(@"\left\{1+\right\}", "Missing right operand for +")]
     [InlineData(@"\left\{\{\right\}\}", @"Missing }")]
     [InlineData(@"\{2,3\}^\square", "Placeholders should be filled")]
+    [InlineData(@"(^2)", "Exponentiation is unsupported for Open Bracket (")]
+    [InlineData(@"[^2]", "Exponentiation is unsupported for Open Bracket [")]
+    [InlineData(@"\{^2\}", "Exponentiation is unsupported for Open Bracket {")]
     [InlineData(@"\left\{2,3\right\}^\square", "Placeholders should be filled")]
     [InlineData(@"\frac{}{x}", "Missing numerator")]
     [InlineData(@"\frac{x}{}", "Missing denominator")]
@@ -714,6 +732,7 @@ namespace CSharpMath.EvaluationTests {
     [InlineData(@"1;\cap", "Unsupported Unary Operator ∩")]
     [InlineData(@"\cap,", "Unsupported Unary Operator ∩")]
     [InlineData(@"\cap;", "Unsupported Unary Operator ∩")]
+    [InlineData(@"\left|1,2\right|", "Comma cannot be abs argument")]
     [InlineData(@"1^+", "+ alone in superscript but not in limit subscript context")]
     [InlineData(@"1^-", "\u2212 alone in superscript but not in limit subscript context")]
     [InlineData(@"\lim", "Missing limit variable in subscript")]
@@ -734,6 +753,21 @@ namespace CSharpMath.EvaluationTests {
     [InlineData(@"\lim_{xy\to(2^-)}", "\u2212 alone in superscript but not in limit subscript context")]
     [InlineData(@"\lim_{xy\to\left(2^+\right)}", "+ alone in superscript but not in limit subscript context")]
     [InlineData(@"\lim_{xy\to\left(2^-\right)}", "\u2212 alone in superscript but not in limit subscript context")]
+    [InlineData(@"\lim_{x,y}", "Comma cannot be limit variable in subscript")]
+    [InlineData(@"\lim_{x\to2}", "Missing right operand for lim")]
+    [InlineData(@"(\lim_{x\to2})x", "Missing right operand for lim")]
+    [InlineData(@"\lim_{x\to2}\cdot 1", "Unsupported Unary Operator ·")]
+    [InlineData(@"\frac{\mathrm{d}}{\mathrm{d}}", "Missing derivative variable")]
+    [InlineData(@"\frac{\mathrm{d}}{\mathrm{d}x}", "Missing right operand for derivative operator")]
+    [InlineData(@"\frac{\mathrm{d}^{1.5}}{\mathrm{d}x^{1.5}}", "Derivative order must be an integer, got 1.5")]
+    [InlineData(@"\frac{\mathrm{d}^a}{\mathrm{d}x^a}", "Derivative order must be an integer")]
+    [InlineData(@"\frac{\mathrm{d}^2}{\mathrm{d}}", "Missing derivative variable")]
+    [InlineData(@"\frac{\mathrm{d}^2}{\mathrm{d}^2}", "The d in derivative denominator cannot have an exponent. Did you mean to write it at the end of the denominator?")]
+    [InlineData(@"\frac{\mathrm{d}^2x}{\mathrm{d}^2}", "The d in derivative denominator cannot have an exponent. Did you mean to write it at the end of the denominator?")]
+    [InlineData(@"\frac{\mathrm{d}^3}{\mathrm{d}x^2}", "Derivative order mismatch: 3 in numerator but 2 is in denominator")]
+    [InlineData(@"\frac{\mathrm{d}^2}{\mathrm{d}(x^2)}", "Derivative order mismatch: 2 in numerator requires 2 in denominator")]
+    [InlineData(@"\frac{\mathrm{d}^2\cdot 1}{\mathrm{d}x^2}", "Unsupported Unary Operator ·")]
+    [InlineData(@"\left(\frac{\mathrm{d}^2}{\mathrm{d}x^2}\right)x", "Missing right operand for derivative operator")]
     public void Error(string badLaTeX, string error) =>
       Evaluation.Evaluate(ParseLaTeX(badLaTeX))
       .Match(entity => throw new Xunit.Sdk.XunitException(entity.Latexise()), e => Assert.Equal(error, e));
@@ -802,7 +836,7 @@ namespace CSharpMath.EvaluationTests {
     [InlineData(@"x\le x", @"x\leq x", @"\top ")]
     [InlineData(@"x\leq x", @"x\leq x", @"\top ")]
     [InlineData(@"x\leqslant x", @"x\leq x", @"\top ")]
-    [InlineData(@"x\neq y", @"\neg x=y", @"\neg x=y")] // Cannot simplify without knowing x and y
+    [InlineData(@"x\neq y", @"x\neq y", @"x\neq y")] // Cannot simplify without knowing x and y
     [InlineData(@"1<2", @"1<2", @"\top ")]
     [InlineData(@"2<1", @"2<1", @"\bot ")]
     [InlineData(@"1\le1", @"1\leq 1", @"\top ")]
@@ -812,7 +846,7 @@ namespace CSharpMath.EvaluationTests {
     [InlineData(@"1\geq1", @"1\geq 1", @"\top ")]
     [InlineData(@"1\geqslant1", @"1\geq 1", @"\top ")]
     [InlineData(@"x\in\{x,y\}", @"x\in \left\{ x,y\right\} ", @"\top ")]
-    [InlineData(@"z\notin\{x,y\}", @"\neg z\in \left\{ x,y\right\} ", @"\top ")] // BUG: This simplified to \top since z is not in {x,y}, but AngouriMath cannot determine this without explicit variable declarations
+    [InlineData(@"z\notin\{x,y\}", @"\neg z\in \left\{ x,y\right\} ", @"\neg z\in \left\{ x,y\right\} ")] // Cannot determine this without knowing x, y, and z
     [InlineData(@"\{x,y\}\ni x", @"x\in \left\{ x,y\right\} ", @"\top ")]
     public void LogicalAndRelationalOperators(string latex, string converted, string result) => Test(latex, converted, result);
 
@@ -839,8 +873,8 @@ namespace CSharpMath.EvaluationTests {
     [InlineData(@"a<b\lor c>d", @"a<b\vee c>d", @"a<b\vee c>d")]
     public void LogicalOperatorPrecedence(string latex, string converted, string result) => Test(latex, converted, result);
     [Theory]
-    [InlineData(@"1<x<3", @"1<x<3", @"1<x<3", @"1=x=3", @"1>x>3")]
-    [InlineData(@"(1<x)<3", @"\left( 1<x\right) <3", @"\left( 1<x\right) <3",  @"1=x=3" /*probably a minor bug in AngouriMath*/, @"\left( 1>x\right) >3")]
+    [InlineData(@"1<x<3", @"1<x<3", @"1<x<3")]
+    [InlineData(@"(1<x)<3", @"\left( 1<x\right) <3", @"\left( 1<x\right) <3")]
     [InlineData(@"(1<2)<3", @"\left( 1<2\right) <3", @"\top <3", @"\bot ", @"\bot >3")]
     [InlineData(@"1<(2<3)", @"1<\left( 2<3\right) ", @"1<\top ", @"\bot ", @"1>\bot ")]
     [InlineData(@"1<2<3", @"1<2<3", @"\top ", @"\bot ", @"\bot ")]
@@ -850,17 +884,21 @@ namespace CSharpMath.EvaluationTests {
     [InlineData(@"1\leq 2<3", @"1\leq 2<3", @"\top ", @"\bot ", @"\bot ")]
     [InlineData(@"3\leq 2<3", @"3\leq 2<3", @"\bot ")]
     [InlineData(@"1\leq 2<1", @"1\leq 2<1", @"\bot ")]
-    [InlineData(@"1\leq 1<1", @"1\leq 1<1", @"\bot ", @"\top ")]
+    [InlineData(@"1\leq 1<1", @"1\leq 1<1", @"\bot ", @"\top ", @"\bot ")]
     [InlineData(@"1\leq 1=1", @"1\leq 1=1", @"\top ")]
     [InlineData(@"1\leq 1\geq1", @"1\leq 1\geq 1", @"\top ")]
     public void ChainedComparisons(string latex, string converted, string result, string? eqResult = null, string? geqResult = null) {
       Test(latex, converted, result);
+      eqResult ??= result.Replace("<", "=").Replace(@"\leq ", "=");
       Test(latex.Replace("<", "=").Replace(@"\leq ", "="),
            converted.Replace("<", "=").Replace(@"\leq ", "="),
-           eqResult ?? result);
+           eqResult);
       Test(latex.Replace("<", ">").Replace(@"\leq ", @"\geq "),
            converted.Replace("<", ">").Replace(@"\leq ", @"\geq "),
-           geqResult ?? result);
+           geqResult ?? result.Replace("<", ">").Replace(@"\leq ", @"\geq "));
+      Test(latex.Replace("<", @"\neq ").Replace(@"\leq ", @"\neq "),
+           converted.Replace("<", @"\neq ").Replace(@"\leq ", @"\neq "),
+           eqResult.Replace("=", @"\neq ").Replace(@"\top ", @"|||").Replace(@"\bot ", @"\top ").Replace(@"|||", @"\bot "));
     }
     [Theory]
     [InlineData(@"\mathrm{undefined}", @"\mathrm{undefined}", @"\mathrm{undefined}")]
@@ -877,12 +915,49 @@ namespace CSharpMath.EvaluationTests {
     [InlineData(@"\operatorname{sgn}\operatorname{abs} x", @"\operatorname{sgn} \left( \left| x\right| \right) ", @"1")]
     public void Abs(string latex, string converted, string result) => Test(latex, converted, result);
     [Theory]
-    [InlineData(@"\lim_{x\to2}x", @"\lim _{x\rightarrow 2}x", @"2")]
-    [InlineData(@"\lim_{x\to2^-}x", @"\lim _{x\rightarrow 2^-}x", @"2")]
-    [InlineData(@"\lim_{x\to2^+}x", @"\lim _{x\rightarrow 2^+}x", @"2")]
+    [InlineData(@"\lim_{x\to2}x+1", @"\lim _{x\rightarrow 2}x+1", @"3")]
+    [InlineData(@"\lim_{x\to2^-}x+1", @"\lim _{x\rightarrow 2^-}x+1", @"3")]
+    [InlineData(@"\lim_{x\to2^+}x+1", @"\lim _{x\rightarrow 2^+}x+1", @"3")]
     [InlineData(@"\lim_{x\to\infty}x", @"\lim _{x\rightarrow \infty }x", @"\infty ")]
-    //[InlineData(@"\lim_{x\to\left(1+x\right)^+}x", @"\lim _{x\rightarrow \left( 1+x\right) ^+}\left( x\right) ", @"1+x")]
-    //[InlineData(@"\lim_{x\to(1+x)^+}x", @"\lim _{x\rightarrow \left( 1+x\right) ^+}\left( x\right) ", @"1+x")] // WIP
+    [InlineData(@"\lim_{x\to0}\frac1x+1", @"\lim _{x\rightarrow 0}\frac{1}{x}+1", @"\mathrm{undefined}")]
+    [InlineData(@"\lim_{x\to0^-}\frac1x+1", @"\lim _{x\rightarrow 0^-}\frac{1}{x}+1", @"-\infty ")]
+    [InlineData(@"\lim_{x\to0^+}\frac1x+1", @"\lim _{x\rightarrow 0^+}\frac{1}{x}+1", @"\infty ")]
+    [InlineData(@"\lim_{x\to\infty}\frac1x^2x^2+1", @"\lim _{x\rightarrow \infty }\left( \frac{1}{x}\right) ^2x^2+1", @"2")]
+    [InlineData(@"\lim_{x\to\infty^-}\frac1x^2x^2+1", @"\lim _{x\rightarrow \infty ^-}\left( \frac{1}{x}\right) ^2x^2+1", @"2")]
+    [InlineData(@"\lim_{x\to\infty^+}\frac1x^2x^2+1", @"\lim _{x\rightarrow \infty ^+}\left( \frac{1}{x}\right) ^2x^2+1", @"2")]
+    [InlineData(@"\lim_{x\to1+x}x", @"\lim _{x\rightarrow 1+x}x", @"\infty ")]
+    [InlineData(@"\lim_{x\to(1+x)}x", @"\lim _{x\rightarrow 1+x}x", @"\infty ")]
+    [InlineData(@"\lim_{x\to(1+x)^+}x", @"\lim _{x\rightarrow \left( 1+x\right) ^+}x", @"\infty ")]
+    [InlineData(@"\lim_{x\to(1+x)^-}x", @"\lim _{x\rightarrow \left( 1+x\right) ^-}x", @"\infty ")]
+    [InlineData(@"\lim_{x\to(y)}(x)y+y", @"\lim _{x\rightarrow y}xy+y", @"y^2+y")]
+    [InlineData(@"\lim_{x\to(y)^+}(x)y+y", @"\lim _{x\rightarrow y^+}xy+y", @"y^2+y")]
+    [InlineData(@"\lim_{x\to(y)^-}(x)y+y", @"\lim _{x\rightarrow y^-}xy+y", @"y^2+y")]
+    [InlineData(@"\lim_{y\to zzz_2}x", @"\lim _{y\rightarrow zzz_2}x", @"x")]
+    [InlineData(@"\lim_{y\to zzz_2^-}x", @"\lim _{y\rightarrow \left( zzz_2\right) ^-}x", @"x")]
+    [InlineData(@"\lim_{y\to zzz_2^+}x", @"\lim _{y\rightarrow \left( zzz_2\right) ^+}x", @"x")]
+    [InlineData(@"\lim_{xyy\to zzz_2}x", @"\lim _{xyy\rightarrow zzz_2}x", @"\lim _{xy^2\rightarrow z^2\cdot z_2}x")]
+    [InlineData(@"\lim_{xyy\to zzz_2^-}x", @"\lim _{xyy\rightarrow \left( zzz_2\right) ^-}x", @"\lim _{xy^2\rightarrow \left( z^2\cdot z_2\right) ^-}x")]
+    [InlineData(@"\lim_{xyy\to zzz_2^+}x", @"\lim _{xyy\rightarrow \left( zzz_2\right) ^+}x", @"\lim _{xy^2\rightarrow \left( z^2\cdot z_2\right) ^+}x")]
+    [InlineData(@"\lim_{\mathrm{xy}\to\mathrm{zz}}x", @"\lim _{\mathrm{xy}\rightarrow \mathrm{zz}}x", @"x")]
+    [InlineData(@"\lim_{\mathrm{xy}\to\mathrm{zz}^-}x", @"\lim _{\mathrm{xy}\rightarrow \mathrm{zz^{\mathnormal{-}}}}x", @"x")]
+    [InlineData(@"\lim_{\mathrm{xy}\to\mathrm{zz^+}}x", @"\lim _{\mathrm{xy}\rightarrow \mathrm{zz^{\mathnormal{+}}}}x", @"x")]
+    [InlineData(@"(\lim_{x\to y}(z)^2)^3", @"\left( \lim _{x\rightarrow y}z^2\right) ^3", @"z^6")]
     public void Limit(string latex, string converted, string result) => Test(latex, converted, result);
+    [Theory]
+    [InlineData(@"\frac{\mathrm{d}}{\mathrm{d}x}x", @"\frac{\mathrm{d}}{\mathrm{d}x}x", @"1")]
+    [InlineData(@"\frac{\mathrm{d}x}{\mathrm{d}x}", @"\frac{\mathrm{d}}{\mathrm{d}x}x", @"1")]
+    [InlineData(@"\frac{\mathrm{d}x}{\mathrm{d}x}x", @"\left( \frac{\mathrm{d}}{\mathrm{d}x}x\right) \cdot x", @"x")]
+    [InlineData(@"\frac{\mathrm{d}}{\mathrm{d}x}xy+1", @"\frac{\mathrm{d}}{\mathrm{d}x}xy+1", @"1+y")]
+    [InlineData(@"\frac{\mathrm{d}}{\mathrm{d}(x)}(x)y+1", @"\frac{\mathrm{d}}{\mathrm{d}x}xy+1", @"1+y")]
+    [InlineData(@"\frac{\mathrm{d}}{\mathrm{d}x^2}x^2y+1", @"\frac{\mathrm{d}}{\mathrm{d}\left( x^2\right) }x^2\cdot y+1", @"1+y")]
+    [InlineData(@"\frac{\mathrm{d}x^2}{\mathrm{d}x^2}y+1", @"\left( \frac{\mathrm{d}}{\mathrm{d}\left( x^2\right) }x^2\right) \cdot y+1", @"1+y")]
+    [InlineData(@"\frac{\mathrm{d}x}{\mathrm{d}x^2}xy+1", @"\left( \frac{\mathrm{d}}{\mathrm{d}\left( x^2\right) }x\right) \cdot xy+1", @"1")]
+    [InlineData(@"\frac{\mathrm{d}x}{\mathrm{d}(x^2)}(x)y+1", @"\left( \frac{\mathrm{d}}{\mathrm{d}\left( x^2\right) }x\right) \cdot xy+1", @"1")]
+    [InlineData(@"\frac{\mathrm{d}^2}{\mathrm{d}x^2}x^2y+1", @"\frac{\mathrm{d^{\mathnormal{2}}}}{\mathrm{d}x^2}x^2\cdot y+1", @"1+2y")]
+    [InlineData(@"\frac{\mathrm{d}^2}{\mathrm{d}(x^2)^2}x^2y+1", @"\frac{\mathrm{d^{\mathnormal{2}}}}{\mathrm{d}\left( x^2\right) ^2}x^2\cdot y+1", @"1+y")]
+    [InlineData(@"\frac{\mathrm{d}^2x}{\mathrm{d}x^2}x^2y+1", @"\left( \frac{\mathrm{d^{\mathnormal{2}}}}{\mathrm{d}x^2}x\right) \cdot x^2\cdot y+1", @"1")]
+    [InlineData(@"\frac{\mathrm{d}^2x}{\mathrm{d}(x^2)^2}x^2y+1", @"\left( \frac{\mathrm{d^{\mathnormal{2}}}}{\mathrm{d}\left( x^2\right) ^2}x\right) \cdot x^2\cdot y+1", @"1")]
+    [InlineData(@"\frac{\mathrm{d}}{\mathrm{d}x}\lim_{y\to z}xy+x", @"\frac{\mathrm{d}}{\mathrm{d}x}\lim _{y\rightarrow z}xy+x", @"x+z")]
+    public void Derivative(string latex, string converted, string result) => Test(latex, converted, result);
   }
 }
