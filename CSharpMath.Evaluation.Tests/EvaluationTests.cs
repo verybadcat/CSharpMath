@@ -803,6 +803,7 @@ namespace CSharpMath.EvaluationTests {
     [InlineData(@"\begin{cases}1&\end{cases}", "Missing case predicate")]
     [InlineData(@"\begin{cases}1&\mathrm{for}^23\end{cases}", "for operator cannot have a superscript")]
     [InlineData(@"\begin{cases}1&\mathrm{for}_23\end{cases}", "for operator cannot have a subscript")]
+    [InlineData(@"\left\{ \, \begin{array}{ll}\textstyle x+1&\textstyle \mathrm{otherwise}&ERROR\\ \textstyle x-1&\textstyle \mathrm{otherwise}\end{array}\right. ", "The cases environment must have 1 to 2 columns per row")]
     public void Error(string badLaTeX, string error) =>
       Evaluation.Evaluate(ParseLaTeX(badLaTeX))
       .Match(entity => throw new Xunit.Sdk.XunitException(entity.Latexise()), e => Assert.Equal(error, e));

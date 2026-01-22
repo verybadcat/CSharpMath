@@ -745,7 +745,7 @@ namespace CSharpMath {
                   }
                   caseElements[row] = new Entity.Providedf(expression, predicate);
                   break;
-                case []: return $"The cases environment must have 1 to 2 columns per row";
+                default: return $"The cases environment must have 1 to 2 columns per row";
             }
             @this = MathS.Piecewise(caseElements);
             goto handleThis;
