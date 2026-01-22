@@ -794,7 +794,15 @@ namespace CSharpMath.EvaluationTests {
     [InlineData(@"\mathrm{for}2", "Unsupported Unary Operator for")]
     [InlineData(@"\mathrm{for},", "Unsupported Unary Operator for")]
     [InlineData(@"1\mathrm{for},", "Missing right operand for for")]
-    [InlineData(@"1\mathrm{for}_23,", "Subscripts are unsupported for Variable for")]
+    [InlineData(@"1\mathrm{for}^23,", "for operator cannot have a superscript")]
+    [InlineData(@"1\mathrm{for}_23,", "for operator cannot have a subscript")]
+    [InlineData(@"\begin{cases}1,2\end{cases}", "Comma cannot be case expression")]
+    [InlineData(@"\begin{cases}1&3,4\end{cases}", "Comma cannot be case predicate")]
+    [InlineData(@"\begin{cases}1,2&3,4\end{cases}", "Comma cannot be case expression")]
+    [InlineData(@"\begin{cases}&3,4\end{cases}", "Missing case expression")]
+    [InlineData(@"\begin{cases}1&\end{cases}", "Missing case predicate")]
+    [InlineData(@"\begin{cases}1&\mathrm{for}^23\end{cases}", "for operator cannot have a superscript")]
+    [InlineData(@"\begin{cases}1&\mathrm{for}_23\end{cases}", "for operator cannot have a subscript")]
     public void Error(string badLaTeX, string error) =>
       Evaluation.Evaluate(ParseLaTeX(badLaTeX))
       .Match(entity => throw new Xunit.Sdk.XunitException(entity.Latexise()), e => Assert.Equal(error, e));
@@ -1019,5 +1027,31 @@ namespace CSharpMath.EvaluationTests {
     [InlineData(@"x\mathrm{for}y,y\mathrm{for}z,z\mathrm{for}a\mathrm{for}b", @"x\quad \mathrm{for}\quad y,y\quad \mathrm{for}\quad z,z\quad \mathrm{for}\quad a\quad \mathrm{for}\quad b", null)]
     [InlineData(@"x=2=y\mathrm{for}x\leftrightarrow y", @"x=2=y\quad \mathrm{for}\quad \neg \left( x\veebar y\right) ", @"x=2=y\quad \mathrm{for}\quad \neg \left( x\veebar y\right) ")]
     public void Provided(string latex, string converted, string? result) => Test(latex, converted, result);
+    [Theory]
+    [InlineData(@"\begin{cases}x+1\end{cases}",
+                @"\left\{ \, \begin{array}{ll}\textstyle x+1&\textstyle \mathrm{otherwise}\end{array}\right. ",
+                @"1+x")]
+    [InlineData(@"\begin{cases}x+1\\x-1\end{cases}",
+                @"\left\{ \, \begin{array}{ll}\textstyle x+1&\textstyle \mathrm{otherwise}\\ \textstyle x-1&\textstyle \mathrm{otherwise}\end{array}\right. ",
+                @"1+x")]
+    [InlineData(@"\begin{cases}x+1&\mathrm{otherwise}\\x-1\end{cases}",
+                @"\left\{ \, \begin{array}{ll}\textstyle x+1&\textstyle \mathrm{otherwise}\\ \textstyle x-1&\textstyle \mathrm{otherwise}\end{array}\right. ",
+                @"1+x")]
+    [InlineData(@"\begin{cases}x+1&\top\\x-1&\mathrm{otherwise}\end{cases}",
+                @"\left\{ \, \begin{array}{ll}\textstyle x+1&\textstyle \mathrm{otherwise}\\ \textstyle x-1&\textstyle \mathrm{otherwise}\end{array}\right. ",
+                @"1+x")]
+    [InlineData(@"\begin{cases}x+1&\mathrm{otherwise}\\x-1&\mathrm{for}\top\end{cases}",
+                @"\left\{ \, \begin{array}{ll}\textstyle x+1&\textstyle \mathrm{otherwise}\\ \textstyle x-1&\textstyle \mathrm{otherwise}\end{array}\right. ",
+                @"1+x")]
+    [InlineData(@"\begin{cases}x+1 & x<0\\x-1 & x\geq0\end{cases}",
+                @"\left\{ \, \begin{array}{ll}\textstyle x+1&\textstyle \mathrm{for\  }x<0\\ \textstyle x-1&\textstyle \mathrm{for\  }x\geq 0\end{array}\right. ",
+                @"\left\{ \, \begin{array}{ll}\textstyle x+1&\textstyle \mathrm{for\  }x<0\\ \textstyle x-1&\textstyle \mathrm{for\  }x\geq 0\end{array}\right. ")]
+    [InlineData(@"\begin{cases}x+1 & \mathrm{for}\ x<0\\x-1 & \mathrm{for}\ x\geq0\end{cases}",
+                @"\left\{ \, \begin{array}{ll}\textstyle x+1&\textstyle \mathrm{for\  }x<0\\ \textstyle x-1&\textstyle \mathrm{for\  }x\geq 0\end{array}\right. ",
+                @"\left\{ \, \begin{array}{ll}\textstyle x+1&\textstyle \mathrm{for\  }x<0\\ \textstyle x-1&\textstyle \mathrm{for\  }x\geq 0\end{array}\right. ")]
+    [InlineData(@"\begin{cases}x+1 & \mathrm{for} x<0\mathrm{for} y\\x-1 & \mathrm{for}\ x\geq0\mathrm{for} y\end{cases}",
+                @"\left\{ \, \begin{array}{ll}\textstyle x+1&\textstyle \mathrm{for\  }\left( x<0\quad \mathrm{for}\quad y\right) \\ \textstyle x-1&\textstyle \mathrm{for\  }\left( x\geq 0\quad \mathrm{for}\quad y\right) \end{array}\right. ",
+                @"\left\{ \, \begin{array}{ll}\textstyle x+1&\textstyle \mathrm{for\  }\left( x<0\quad \mathrm{for}\quad y\right) \\ \textstyle x-1&\textstyle \mathrm{for\  }\left( x\geq 0\quad \mathrm{for}\quad y\right) \end{array}\right. ")]
+    public void Piecewise(string latex, string converted, string result) => Test(latex, converted, result);
   }
 }

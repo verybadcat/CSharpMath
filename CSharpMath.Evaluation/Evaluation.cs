@@ -14,6 +14,7 @@ namespace CSharpMath {
   public static partial class Evaluation {
     enum Precedence {
       DefaultContext,
+      CasePredicateContext,
       LimitSubscriptContext,
       IntegralBodyContext,
       BraceContext,
@@ -262,6 +263,11 @@ namespace CSharpMath {
                 if (prec != Precedence.IntegralBodyContext) return "d alone but not in integral body context";
                 return prev;
               case ("for", _, FontStyle.Roman):
+                if (atom.Superscript is not [])
+                  return "for operator cannot have a superscript";
+                else if (atom.Subscript is not [])
+                  return "for operator cannot have a subscript";
+                if (prec == Precedence.CasePredicateContext && prev is null) continue;
                 atom.Nucleus = "for"; // for the error message
                 handlePrecedence = Precedence.Provided;
                 handleBinary = MathS.Provided;
@@ -354,7 +360,7 @@ namespace CSharpMath {
           case Atoms.Radical r:
             Entity degree, radicand;
             (degree, error) = Transform(r.Degree).ExpectEntityOrNull(nameof(degree))
-              .Bind(degree => degree is null ? 0.5 : 1 / degree);
+              .Bind(degree => degree is null ? Entity.Number.Rational.Create(1, 2) : 1 / degree);
             if (error != null) return error;
             (radicand, error) = Transform(r.Radicand).ExpectEntity(nameof(radicand));
             if (error != null) return error;
@@ -706,6 +712,43 @@ namespace CSharpMath {
               }
             @this = MathS.Matrices.Matrix(rows, cols, matrixElements);
             goto handleThis;
+          // cases environment
+          case Atoms.Inner { LeftBoundary.Nucleus: "{", InnerList: [Atoms.Space, Atoms.Table { Environment: "array" } cases], RightBoundary.Nucleus: null }:
+            var caseRows = cases.Cells.Count;
+            var caseElements = new Entity.Providedf[caseRows];
+            for (var row = 0; row < caseRows; row++)
+              switch (cases.Cells[row]) {
+                case [var col1]:
+                  (var expression, error) = Transform(col1).ExpectEntity("case expression");
+                  if (error != null) return error;
+                  caseElements[row] = new Entity.Providedf(expression, Entity.Boolean.True);
+                  break;
+                case [var col1, var col2]:
+                  (expression, error) = Transform(cases.Cells[row][0]).ExpectEntity("case expression");
+                  if (error != null) return error;
+                  Entity predicate;
+                  if (col2 is [Atoms.Style,
+                               Atoms.Variable { Nucleus: "o", FontStyle: FontStyle.Roman, Superscript: [], Subscript: [] },
+                               Atoms.Variable { Nucleus: "t", FontStyle: FontStyle.Roman, Superscript: [], Subscript: [] },
+                               Atoms.Variable { Nucleus: "h", FontStyle: FontStyle.Roman, Superscript: [], Subscript: [] },
+                               Atoms.Variable { Nucleus: "e", FontStyle: FontStyle.Roman, Superscript: [], Subscript: [] },
+                               Atoms.Variable { Nucleus: "r", FontStyle: FontStyle.Roman, Superscript: [], Subscript: [] },
+                               Atoms.Variable { Nucleus: "w", FontStyle: FontStyle.Roman, Superscript: [], Subscript: [] },
+                               Atoms.Variable { Nucleus: "i", FontStyle: FontStyle.Roman, Superscript: [], Subscript: [] },
+                               Atoms.Variable { Nucleus: "s", FontStyle: FontStyle.Roman, Superscript: [], Subscript: [] },
+                               Atoms.Variable { Nucleus: "e", FontStyle: FontStyle.Roman, Superscript: [], Subscript: [] }])
+                    predicate = MathS.Boolean.True;
+                  else {
+                    var casePredicateIndex = 0;
+                    (predicate, error) = Transform(cases.Cells[row][1], ref casePredicateIndex, Precedence.CasePredicateContext).ExpectEntity("case predicate");
+                    if (error != null) return error;
+                  }
+                  caseElements[row] = new Entity.Providedf(expression, predicate);
+                  break;
+                case []: return $"The cases environment must have 1 to 2 columns per row";
+            }
+            @this = MathS.Piecewise(caseElements);
+            goto handleThis;
           case Atoms.Open { Nucleus: var opening }:
             if (atom.Superscript.Count > 0)
               return "Superscripts are unsupported for Open Bracket " + opening;
@@ -714,7 +757,7 @@ namespace CSharpMath {
             i++;
             (@this, error) = Transform(mathList, ref i, bracketInfo.KnownPrecedence);
             if (error != null) return error;
-            if (@this == null) return "Missing " + bracketInfo.InferredClosing;
+            if (i >= mathList.Count) return "Missing " + bracketInfo.InferredClosing;
             if (HandleSuperscript(ref @this, ref i, mathList[i].Superscript).Error is { } superscriptError)
               return superscriptError;
             goto handleThis;
@@ -906,8 +949,6 @@ namespace CSharpMath {
             break;
           }
       }
-      if (ContextInfo.TryGetValue(prec, out var info))
-        return "Missing " + info.InferredClosing;
       return prev;
     }
   }
