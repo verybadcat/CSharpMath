@@ -15,21 +15,27 @@ namespace CSharpMath {
     enum Precedence {
       DefaultContext,
       LimitSubscriptContext,
+      IntegralBodyContext,
       BraceContext,
       BracketContext,
       ParenthesisContext,
+      _, // used during recursive right associative processing of comma
       // Lowest
-      Comma,
+      Comma, // right associative
+      Provided, // right associative
       Equivalence,
-      Implication,
+      Implication, // right associative
       Disjunction,
+      ExclusiveDisjunction,
       Conjunction,
       Negation,
-      Relation,
-      SetOperation,
-      AddSubtract,
+      Comparison,
+      SetMembership,
+      SetUnionSubtraction,
+      SetIntersection,
+      AdditionSubtraction,
       CalculusOperation,
-      MultiplyDivide,
+      MultiplicationDivision,
       FunctionApplication,
       UnaryPlusMinus,
       Postfix
@@ -122,19 +128,19 @@ namespace CSharpMath {
         _ => "Unrecognized comma-delimited collection of " + c.Count() + " items"
       };
     static readonly Dictionary<Precedence, (string KnownOpening, string InferredClosing)> ContextInfo =
-      new Dictionary<Precedence, (string, string)> {
+      new() {
         { Precedence.ParenthesisContext, ("(", ")") },
         { Precedence.BracketContext, ("[", "]") },
         { Precedence.BraceContext, ("{", "}") },
       };
     static readonly Dictionary<string, (string InferredClosing, Precedence KnownPrecedence)> OpenBracketInfo =
-      new Dictionary<string, (string, Precedence)> {
+      new() {
         { "(", (")", Precedence.ParenthesisContext) },
         { "[", ("]", Precedence.BracketContext) },
         { "{", ("}", Precedence.BraceContext) },
       };
     static readonly Dictionary<(string? left, string? right), Func<MathItem?, Result<MathItem>>> InnerHandlers =
-      new Dictionary<(string? left, string? right), Func<MathItem?, Result<MathItem>>> {
+      new() {
         { ("(", ")"), item => item switch {
           null => "Missing math inside ( )",
           MathItem.Comma c => TryMakeSet(c, false, false),
@@ -167,7 +173,7 @@ namespace CSharpMath {
       for (; i < mathList.Count; i++) {
         var atom = mathList[i];
         MathItem? @this;
-        bool subscriptAllowed = false, binaryIsComparison = false, binaryIsRightAssociative = false;
+        bool subscriptAllowed = false, binaryIsRightAssociative = false;
         Result HandleSuperscript(ref MathItem? @this, ref int i, MathList superscript) {
           switch (superscript) {
             case [Atoms.Ordinary { Nucleus: "∁" }]:
@@ -209,11 +215,11 @@ namespace CSharpMath {
               goto handleThis;
             } else return "Invalid number: " + n.Nucleus;
           case Atoms.Variable:
-            var name = new System.Text.StringBuilder(atom.Nucleus);
+            var nameBuilder = new System.Text.StringBuilder(atom.Nucleus);
             if (atom is { FontStyle: FontStyle.Roman, Superscript: [], Subscript: [] }) // handle multi-character roman variables
               while (i + 1 < mathList.Count) {
                 if (mathList[i + 1] is Atoms.Variable { FontStyle: FontStyle.Roman } v) {
-                  name.Append(v.Nucleus);
+                  nameBuilder.Append(v.Nucleus);
                   atom = v;
                   i++;
                   if (v.Superscript.Count > 0 || v.Subscript.Count > 0) break;
@@ -238,19 +244,31 @@ namespace CSharpMath {
                   return $"Unsupported {subAtom.TypeName} {subAtom.Nucleus} in subscript";
               }
             var underscore = subscript.Length > 0 ? "_" : "";
-            @this = (name.ToString(), atom.Subscript.Count, atom.FontStyle) switch {
-              ("C", 0, FontStyle.Blackboard) => MathS.Sets.C,
-              ("R", 0, FontStyle.Blackboard) => MathS.Sets.R,
-              ("Q", 0, FontStyle.Blackboard) => MathS.Sets.Q,
-              ("Z", 0, FontStyle.Blackboard) => MathS.Sets.Z,
-              ("e", 0, FontStyle.Roman or FontStyle.Default or FontStyle.Italic) => MathS.e,
-              ("π", 0, FontStyle.Roman or FontStyle.Default or FontStyle.Italic) => MathS.pi,
-              ("i", 0, FontStyle.Roman or FontStyle.Default or FontStyle.Italic) => MathS.i,
-              ("undefined", 0, FontStyle.Roman) => MathS.NaN,
-              // Convert θ to theta
-              (_, _, FontStyle.Default or FontStyle.Italic) when LaTeXSettings.CommandForAtom(atom) is string s => MathS.Var(string.Concat(s.TrimStart('\\'), underscore, subscript)),
-              _ => MathS.Var(name + underscore + subscript.ToString())
-            };
+            // Convert θ to theta
+            string GreekToLaTeXCommandName(string n) =>
+              // Only latin and greek letters have the Variable atom
+              LaTeXSettings.CommandForAtom(new Atoms.Variable(n))?.TrimStart('\\') ?? n;
+            switch (GreekToLaTeXCommandName(nameBuilder.ToString()), atom.Subscript.Count, atom.FontStyle) {
+              case ("C", 0, FontStyle.Blackboard): @this = MathS.Sets.C; break;
+              case ("R", 0, FontStyle.Blackboard): @this = MathS.Sets.R; break;
+              case ("Q", 0, FontStyle.Blackboard): @this = MathS.Sets.Q; break;
+              case ("Z", 0, FontStyle.Blackboard): @this = MathS.Sets.Z; break;
+              case ("e", 0, FontStyle.Roman or FontStyle.Default or FontStyle.Italic): @this = MathS.e; break;
+              case ("pi", 0, FontStyle.Roman or FontStyle.Default or FontStyle.Italic): @this = MathS.pi; break;
+              case ("i", 0, FontStyle.Roman or FontStyle.Default or FontStyle.Italic): @this = MathS.i; break;
+              case ("undefined", 0, FontStyle.Roman): @this = MathS.NaN; break;
+              case ("d", 0, FontStyle.Roman):
+                if (prec >= Precedence.AdditionSubtraction) { i--; return prev; } // re-parse outside as this may be closing a nested integral
+                if (prec != Precedence.IntegralBodyContext) return "d alone but not in integral body context";
+                return prev;
+              case ("for", _, FontStyle.Roman):
+                atom.Nucleus = "for"; // for the error message
+                handlePrecedence = Precedence.Provided;
+                handleBinary = MathS.Provided;
+                binaryIsRightAssociative = true;
+                goto handleBinary;
+              case (var name, _, _): @this = MathS.Var(name + underscore + GreekToLaTeXCommandName(subscript.ToString())); break;
+            }
             subscriptAllowed = true;
             goto handleThis;
           case Atoms.Ordinary { Nucleus: "∞" }:
@@ -274,6 +292,9 @@ namespace CSharpMath {
                 case [Atoms.Number { Nucleus: var n }]:
                   if (int.TryParse(n, out order)) break;
                   else return $"Derivative order must be an integer, got {n}";
+                case [Atoms.UnaryOperator { Nucleus: "\u2212" }, Atoms.Number { Nucleus: var n }]:
+                  if (int.TryParse(n, out order)) { order = -order; break; }
+                  else return $"Derivative order must be an integer, got {n}";
                 default:
                   return "Derivative order must be an integer";
               }
@@ -281,7 +302,7 @@ namespace CSharpMath {
                 return "The d in derivative denominator cannot have an exponent. Did you mean to write it at the end of the denominator?";
 
               // For higher-order derivatives, check that the variable has the matching exponent
-              if (order > 1 && f.Denominator.Count > 1) {
+              if (order != 1 && f.Denominator.Count > 1) {
                 switch (f.Denominator.Last?.Superscript) {
                   case []:
                     // No exponent on denominator but order > 1, e.g. d²y/dx
@@ -289,11 +310,16 @@ namespace CSharpMath {
                     break;
                   case [Atoms.Number { Nucleus: var n }]:
                     if (int.TryParse(n, out var denomOrder))
-                      if (order == denomOrder)
-                        break;
+                      if (order == denomOrder) break;
                       // Require both numerator and denominator in d²y/dx² to have exponent 2
                       else return $"Derivative order mismatch: {order} in numerator but {denomOrder} is in denominator";
                     else return $"Derivative order must be an integer, got {n}";
+                  case [Atoms.UnaryOperator { Nucleus: "\u2212" }, Atoms.Number { Nucleus: var n }]:
+                    if (int.TryParse(n, out denomOrder))
+                      if (order == -denomOrder) break;
+                      // Require both numerator and denominator in d²y/dx² to have exponent 2
+                      else return $"Derivative order mismatch: {order} in numerator but -{denomOrder} is in denominator";
+                    else return $"Derivative order must be an integer, got -{n}";
                   default:
                     return "Derivative order must be an integer";
                 }
@@ -451,6 +477,10 @@ namespace CSharpMath {
             handleFunction = MathS.Ln;
             handleFunctionInverse = arg => MathS.Pow(MathS.e, arg);
             goto handleFunction;
+          case Atoms.LargeOperator { Nucleus: "lb" }:
+            handleFunction = arg => MathS.Log(2, arg);
+            handleFunctionInverse = arg => MathS.Pow(2, arg);
+            goto handleFunction;
           case Atoms.LargeOperator { Nucleus: "abs" }:
             handleFunction = MathS.Abs;
             handleFunctionInverse = arg => MathS.NaN;
@@ -464,7 +494,7 @@ namespace CSharpMath {
             int limitSubscriptIndex = 0;
             (limitVariable, error) = Transform(limitSubscript, ref limitSubscriptIndex, Precedence.LimitSubscriptContext).ExpectEntity("limit variable in subscript");
             if (error != null) return error;
-            if (limitSubscriptIndex == limitSubscript.Count) return "Missing → in limit subscript";
+            if (limitSubscriptIndex >= limitSubscript.Count) return "Missing → in limit subscript";
             limitSubscriptIndex++;
             (limitTarget, error) = Transform(limitSubscript, ref limitSubscriptIndex, Precedence.LimitSubscriptContext).ExpectEntity("limit target in subscript");
             if (error != null) return error;
@@ -478,22 +508,54 @@ namespace CSharpMath {
             handlePrecedence = Precedence.CalculusOperation;
             handlePrefix = limitBody => MathS.Limit(limitBody, limitVariable, limitTarget, limitDirection);
             goto handlePrefix;
+          case Atoms.LargeOperator { Nucleus: "∫" }:
+            (var integralFrom, error) = Transform(atom.Subscript);
+            if (error != null) return error;
+            (var integralTo, error) = Transform(atom.Superscript);
+            if (error != null) return error;
+            (Entity from, Entity to)? integralFromTo;
+            switch (integralFrom, integralTo) {
+              case (null, null): integralFromTo = null; break;
+              case ({ }, { }):
+                (var fromEntity, error) = integralFrom.AsEntity("integral lower limit");
+                if (error != null) return error;
+                (var toEntity, error) = integralTo.AsEntity("integral upper limit");
+                if (error != null) return error;
+                integralFromTo = (fromEntity, toEntity);
+                break;
+              case (null, { }): return "Integrals with only the upper limit are not supported";
+              case ({ }, null): return "Integrals with only the lower limit are not supported";
+            }
+            i++;
+            (var integralBody, error) = Transform(mathList, ref i, Precedence.IntegralBodyContext).ExpectEntityOrNull("integral body");
+            integralBody ??= 1;
+            if (error != null) return error;
+            if (i >= mathList.Count) return "Missing integral variable. Did you forget to prepend it with upright d?";
+            if (mathList[i] is not Atoms.Variable { FontStyle: FontStyle.Roman, Nucleus: "d" } integralD)
+              return "Expected integral variable with upright d, got " + mathList[i].TypeName + " " + mathList[i].Nucleus;
+            i++;
+            (var integralVariable, error) = Transform(mathList, ref i, Precedence.FunctionApplication).ExpectEntity("integral variable");
+            if (error != null) return error;
+            atom.Superscript.Clear();
+            @this = new Entity.Integralf(integralBody, integralVariable, integralFromTo);
+            subscriptAllowed = true;
+            goto handleThis;
           case Atoms.BinaryOperator { Nucleus: "+" }:
-            handlePrecedence = Precedence.AddSubtract;
+            handlePrecedence = Precedence.AdditionSubtraction;
             handleBinary = (a, b) => a + b;
             goto handleBinary;
           case Atoms.BinaryOperator { Nucleus: "\u2212" }:
-            handlePrecedence = Precedence.AddSubtract;
+            handlePrecedence = Precedence.AdditionSubtraction;
             handleBinary = (a, b) => a - b;
             goto handleBinary;
           case Atoms.BinaryOperator { Nucleus: "×" }:
           case Atoms.BinaryOperator { Nucleus: "·" }:
-            handlePrecedence = Precedence.MultiplyDivide;
+            handlePrecedence = Precedence.MultiplicationDivision;
             handleBinary = (a, b) => a * b;
             goto handleBinary;
           case Atoms.BinaryOperator { Nucleus: "÷" }:
           case Atoms.Ordinary { Nucleus: "/" }:
-            handlePrecedence = Precedence.MultiplyDivide;
+            handlePrecedence = Precedence.MultiplicationDivision;
             handleBinary = (a, b) => a / b;
             goto handleBinary;
           case Atoms.Ordinary { Nucleus: "%" }:
@@ -514,10 +576,10 @@ namespace CSharpMath {
             goto handlePostfix;
           case Atoms.Punctuation { Nucleus: "," }:
           case Atoms.Punctuation { Nucleus: ";" }: // ; is interpreted as an alias of ,
-            if (prec <= Precedence.Comma) {
+            if (prec < Precedence.Comma) {
               if (prev is null) return "Missing left operand for comma";
               i++;
-              (next, error) = Transform(mathList, ref i, Precedence.Comma);
+              (next, error) = Transform(mathList, ref i, Precedence.Comma - 1);
               if (error != null) return error;
               if (next is null) return "Missing right operand for comma";
               @this = new MathItem.Comma(prev, next);
@@ -528,22 +590,22 @@ namespace CSharpMath {
               return prev;
             }
           case Atoms.BinaryOperator { Nucleus: "∩" }:
-            handlePrecedence = Precedence.SetOperation;
+            handlePrecedence = Precedence.SetIntersection;
             handleBinary = MathS.Intersection;
             goto handleBinary;
           case Atoms.BinaryOperator { Nucleus: "∪" }:
-            handlePrecedence = Precedence.SetOperation;
+            handlePrecedence = Precedence.SetUnionSubtraction;
             handleBinary = MathS.Union;
             goto handleBinary;
           case Atoms.BinaryOperator { Nucleus: "∖" }:
-            handlePrecedence = Precedence.SetOperation;
+            handlePrecedence = Precedence.SetUnionSubtraction;
             handleBinary = MathS.SetSubtraction;
             goto handleBinary;
           case Atoms.Ordinary { Nucleus: "⊤" }:
-            @this = MathS.Boolean.Create(true);
+            @this = Entity.Boolean.True;
             goto handleThis;
           case Atoms.Ordinary { Nucleus: "⊥" }:
-            @this = MathS.Boolean.Create(false);
+            @this = Entity.Boolean.False;
             goto handleThis;
           case Atoms.Ordinary { Nucleus: "¬" }:
             handlePrecedence = Precedence.Negation;
@@ -562,8 +624,11 @@ namespace CSharpMath {
             handleBinary = MathS.Disjunction;
             goto handleBinary;
           case Atoms.BinaryOperator { Nucleus: "⊻" }:
+            handlePrecedence = Precedence.ExclusiveDisjunction;
+            handleBinary = MathS.ExclusiveDisjunction;
+            goto handleBinary;
           case Atoms.Relation { Nucleus: "↮" }:
-            handlePrecedence = Precedence.Disjunction; // XOR has same precedence as OR
+            handlePrecedence = Precedence.Equivalence; // Same as ↔ (analogous to ≠ and =)
             handleBinary = MathS.ExclusiveDisjunction;
             goto handleBinary;
           case Atoms.Relation { Nucleus: "↔" }:
@@ -591,49 +656,43 @@ namespace CSharpMath {
             handleBinary = (x, y) => MathS.Negation(MathS.Implication(y, x));
             goto handleBinary;
           case Atoms.Relation { Nucleus: "∈" }:
-            handlePrecedence = Precedence.Relation;
+            handlePrecedence = Precedence.SetMembership;
             handleBinary = MathS.Sets.ElementInSet;
             goto handleBinary;
           case Atoms.Relation { Nucleus: "∉" }:
-            handlePrecedence = Precedence.Relation;
+            handlePrecedence = Precedence.SetMembership;
             handleBinary = (element, set) => MathS.Negation(MathS.Sets.ElementInSet(element, set));
             goto handleBinary;
           case Atoms.Relation { Nucleus: "∋" }:
-            handlePrecedence = Precedence.Relation;
+            handlePrecedence = Precedence.SetMembership;
             handleBinary = (set, element) => MathS.Sets.ElementInSet(element, set);
             goto handleBinary;
           // For comparison operators, we directly construct the node to explicitly not use
           // chained comparisons handling in Entity.Equalizes / MathS.Equality from AngouriMath
           // as that would interpret (x=y)=z as x=y=z. Instead, for (x=y)=z, we don't apply the expansion of x=y=z to x=y∧y=z.
           case Atoms.Relation { Nucleus: "=" }:
-            handlePrecedence = Precedence.Relation;
+            handlePrecedence = Precedence.Comparison;
             handleBinary = (x, y) => new Entity.Equalsf(x, y);
-            binaryIsComparison = true;
             goto handleBinary;
           case Atoms.Relation { Nucleus: "≠" }:
-            handlePrecedence = Precedence.Relation;
+            handlePrecedence = Precedence.Comparison;
             handleBinary = (x, y) => MathS.Negation(new Entity.Equalsf(x, y));
-            binaryIsComparison = true;
             goto handleBinary;
           case Atoms.Relation { Nucleus: "<" }:
-            handlePrecedence = Precedence.Relation;
+            handlePrecedence = Precedence.Comparison;
             handleBinary = (x, y) => new Entity.Lessf(x, y);
-            binaryIsComparison = true;
             goto handleBinary;
           case Atoms.Relation { Nucleus: "≤" or "⩽" }:
-            handlePrecedence = Precedence.Relation;
+            handlePrecedence = Precedence.Comparison;
             handleBinary = (x, y) => new Entity.LessOrEqualf(x, y);
-            binaryIsComparison = true;
             goto handleBinary;
           case Atoms.Relation { Nucleus: ">" }:
-            handlePrecedence = Precedence.Relation;
+            handlePrecedence = Precedence.Comparison;
             handleBinary = (x, y) => new Entity.Greaterf(x, y);
-            binaryIsComparison = true;
             goto handleBinary;
           case Atoms.Relation { Nucleus: "≥" or "⩾" }:
-            handlePrecedence = Precedence.Relation;
+            handlePrecedence = Precedence.Comparison;
             handleBinary = (x, y) => new Entity.GreaterOrEqualf(x, y);
-            binaryIsComparison = true;
             goto handleBinary;
           case Atoms.Table { Environment: "matrix" } matrix:
             var (rows, cols, cells) = (matrix.NRows, matrix.NColumns, matrix.Cells);
@@ -649,7 +708,7 @@ namespace CSharpMath {
             goto handleThis;
           case Atoms.Open { Nucleus: var opening }:
             if (atom.Superscript.Count > 0)
-              return "Exponentiation is unsupported for Open Bracket " + opening;
+              return "Superscripts are unsupported for Open Bracket " + opening;
             if (!OpenBracketInfo.TryGetValue(opening, out var bracketInfo))
               return "Unsupported opening bracket " + opening;
             i++;
@@ -700,7 +759,7 @@ namespace CSharpMath {
           case Atoms.Comment _:
           case Atoms.Ordinary { Nucleus: var nucleus } when string.IsNullOrWhiteSpace(nucleus):
             if (atom.Superscript.Count > 0)
-              return $"Exponentiation is unsupported for {atom.TypeName}";
+              return $"Superscripts are unsupported for {atom.TypeName}";
             if (atom.Subscript.Count > 0)
               return $"Subscripts are unsupported for {atom.TypeName}";
             continue;
@@ -777,6 +836,8 @@ namespace CSharpMath {
             goto handleThis;
 
           handlePrefix:
+            if (atom.Superscript is not [])
+              return $"Superscripts are unsupported for {atom.TypeName} {atom.Nucleus}";
             i++;
             (next, error) = Transform(mathList, ref i, handlePrecedence);
             if (error != null) return error;
@@ -785,6 +846,8 @@ namespace CSharpMath {
             goto handleThis;
 
           handleBinary:
+            if (atom.Superscript is not [])
+              return $"Superscripts are unsupported for {atom.TypeName} {atom.Nucleus}";
             if (prev is null) {
               // No previous entity, treat as unary operator (happens for 1---2)
               if (atom is Atoms.BinaryOperator b) {
@@ -799,14 +862,13 @@ namespace CSharpMath {
             }
             if (prec < handlePrecedence) {
               i++;
-              if (binaryIsRightAssociative) handlePrecedence--;
-              (next, error) = Transform(mathList, ref i, handlePrecedence);
+              (next, error) = Transform(mathList, ref i, binaryIsRightAssociative ? handlePrecedence - 1 : handlePrecedence);
               if (error != null) return error;
               (var l, error) = prev.AsEntity("left operand for " + atom.Nucleus);
               if (error != null) return error;
               (var r, error) = next.AsEntity("right operand for " + atom.Nucleus);
               if (error != null) return error;
-              if (binaryIsComparison) {
+              if (handlePrecedence == Precedence.Comparison) {
                 @this =
                   chainedComparisonTarget is { } target
                   ? MathS.Conjunction(l, handleBinary(target, r)) // Chained comparison: a < b < c becomes (a < b) ∧ (b < c)
