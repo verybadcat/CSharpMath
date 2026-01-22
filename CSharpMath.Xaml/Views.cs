@@ -181,9 +181,11 @@ namespace CSharpMath.Maui {
     }
     class DrawableRedirector(BaseView<TPainter, TContent> parent) : Microsoft.Maui.Graphics.IDrawable {
 
-      public void Draw(XCanvas_Canvas canvas, Microsoft.Maui.Graphics.RectF dirtyRect) => parent.Draw((canvas, dirtyRect.Size));
+      public void Draw(XCanvas_Canvas canvas, Microsoft.Maui.Graphics.RectF dirtyRect) => parent.Draw(canvas);
     }
-    void Draw(XCanvas canvas) {
+    void Draw(XCanvas_Canvas rawCanvas) {
+      // dirtyRect may be larger than Width and Height on Windows which leads to incorrect alignments
+      var canvas = (rawCanvas, new Microsoft.Maui.Graphics.SizeF((float)Width, (float)Height));
 #endif
       Painter.Draw(canvas, TextAlignment, Padding, DisplacementX, DisplacementY);
     }

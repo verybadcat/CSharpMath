@@ -11,6 +11,7 @@
             <Button Text="Reset pan" Clicked="Button_Clicked"/>
             <Picker x:Name="Size" Title="Font Size" ItemsSource="{x:Static local:TryPage.FontSizes}"/>
             <Picker x:Name="Picker" Title="Select an example"/>
+            <Picker x:Name="Alignment" Title="Alignment" />
         </HorizontalStackLayout>
         <Label x:Name="Exit" Grid.Row="2"/>
         <math:MathView x:Name="View" EnablePanning="True" Grid.Row="3" />

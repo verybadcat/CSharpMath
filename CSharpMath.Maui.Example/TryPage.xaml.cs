@@ -18,6 +18,11 @@ namespace CSharpMath.Maui.Example {
       Picker.SelectedIndexChanged += (sender, e) => {
         if (Picker.SelectedItem is string s) View.LaTeX = Entry.Text = Rendering.Tests.TestRenderingMathData.AllConstants[s];
       };
+      var values = typeof(Rendering.FrontEnd.TextAlignment).GetEnumValues();
+      Array.Reverse(values);
+      Alignment.ItemsSource = values;
+      Alignment.SelectedIndexChanged += (sender, e) => View.TextAlignment = (Rendering.FrontEnd.TextAlignment)Alignment.SelectedItem;
+      Alignment.SelectedItem = View.TextAlignment;
     }
     private void Button_Clicked(object sender, System.EventArgs e) {
       View.DisplacementX = View.DisplacementY = 0;
