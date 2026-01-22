@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1769109077578,
+  "lastUpdate": 1769114422088,
   "repoUrl": "https://github.com/verybadcat/CSharpMath",
   "entries": {
     "CSharpMath.Rendering.Benchmarks": [
@@ -2430,6 +2430,96 @@ window.BENCHMARK_DATA = {
             "value": 3603506.2349759615,
             "unit": "ns",
             "range": "± 96627.89346869399"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "charles.roddie@mathspire.com",
+            "name": "Charles Roddie",
+            "username": "charlesroddie"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "a3df60c021bb86e2ef89b4dac31e16a2a5442616",
+          "message": "Workflows, projects, and packages updates (#240)\n\nUpdate versions in workflows\nRemove a workaround which breaks the build\nRemove IOS projects as per\n\n    Errors on build - remove Avalonia from CSharpMath.Xaml.Tests and delete CSharpMath.Apple? #231\n    Remove WPF Forms example which doesn't build any more\n\nFixes #231\n\n---------\n\nCo-authored-by: Charles Roddie <charles.roddie@summatic.co.uk>\nCo-authored-by: Copilot <198982749+Copilot@users.noreply.github.com>\nCo-authored-by: charlesroddie <19760720+charlesroddie@users.noreply.github.com>\nCo-authored-by: Hadrian Tang <hadrianwttang@outlook.com>",
+          "timestamp": "2026-01-22T20:34:11Z",
+          "tree_id": "4f7bd308a156d423076c7933d77a1c4adf6ad410",
+          "url": "https://github.com/verybadcat/CSharpMath/commit/a3df60c021bb86e2ef89b4dac31e16a2a5442616"
+        },
+        "date": 1769114412335,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.AllConstantValues",
+            "value": 597828120.4545455,
+            "unit": "ns",
+            "range": "± 21865111.340338193"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cases\")",
+            "value": 2569781.3585069445,
+            "unit": "ns",
+            "range": "± 53718.20776410246"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Color\")",
+            "value": 824981.2434895834,
+            "unit": "ns",
+            "range": "± 3498.0958245834418"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Commands\")",
+            "value": 297758.486328125,
+            "unit": "ns",
+            "range": "± 1228.7540319970062"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cyrillic\")",
+            "value": 2700159.598214286,
+            "unit": "ns",
+            "range": "± 11988.533207393835"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"ErrorMissingArgument\")",
+            "value": 1568261.997767857,
+            "unit": "ns",
+            "range": "± 10006.193700962553"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Matrix\")",
+            "value": 1397221.2890625,
+            "unit": "ns",
+            "range": "± 26962.666682525585"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuadraticFormula\")",
+            "value": 615235.0130208334,
+            "unit": "ns",
+            "range": "± 7095.963883042892"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuarticSolutions\")",
+            "value": 120993016.92307693,
+            "unit": "ns",
+            "range": "± 620361.1347081717"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"TangentPeriodShift\")",
+            "value": 739565.87890625,
+            "unit": "ns",
+            "range": "± 6185.725662645118"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"VectorProjection\")",
+            "value": 2887224.3229166665,
+            "unit": "ns",
+            "range": "± 26770.826713452905"
           }
         ]
       }
