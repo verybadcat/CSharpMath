@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1703929343281,
+  "lastUpdate": 1769109077578,
   "repoUrl": "https://github.com/verybadcat/CSharpMath",
   "entries": {
     "CSharpMath.Rendering.Benchmarks": [
@@ -2340,6 +2340,96 @@ window.BENCHMARK_DATA = {
             "value": 3423486.941964286,
             "unit": "ns",
             "range": "± 10570.467639230552"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "hadrianwttang@outlook.com",
+            "name": "Hadrian Tang",
+            "username": "Happypig375"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "f3ed4a62e89fc97e6c1043b00baef50f488700c8",
+          "message": "Update badge (#222)",
+          "timestamp": "2026-01-23T03:04:14+08:00",
+          "tree_id": "73c92b5d356186f0e7ba80a640c40b60ca4ba4b7",
+          "url": "https://github.com/verybadcat/CSharpMath/commit/f3ed4a62e89fc97e6c1043b00baef50f488700c8"
+        },
+        "date": 1769109072795,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.AllConstantValues",
+            "value": 645000785.7142857,
+            "unit": "ns",
+            "range": "± 2315739.1834863583"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cases\")",
+            "value": 3219536.6145833335,
+            "unit": "ns",
+            "range": "± 57858.63571370436"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Color\")",
+            "value": 1149178.9177389706,
+            "unit": "ns",
+            "range": "± 22984.659251274752"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Commands\")",
+            "value": 403349.462890625,
+            "unit": "ns",
+            "range": "± 3271.640062434882"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cyrillic\")",
+            "value": 3393992.3502604165,
+            "unit": "ns",
+            "range": "± 16968.41707643968"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"ErrorMissingArgument\")",
+            "value": 2007378.6157852565,
+            "unit": "ns",
+            "range": "± 69701.94848710076"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Matrix\")",
+            "value": 1873570.786830357,
+            "unit": "ns",
+            "range": "± 12680.85308980913"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuadraticFormula\")",
+            "value": 770275.5208333334,
+            "unit": "ns",
+            "range": "± 9889.68833609467"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuarticSolutions\")",
+            "value": 137256507.14285713,
+            "unit": "ns",
+            "range": "± 521843.376833562"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"TangentPeriodShift\")",
+            "value": 889808.3723958334,
+            "unit": "ns",
+            "range": "± 9773.97687638989"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"VectorProjection\")",
+            "value": 3603506.2349759615,
+            "unit": "ns",
+            "range": "± 96627.89346869399"
           }
         ]
       }
