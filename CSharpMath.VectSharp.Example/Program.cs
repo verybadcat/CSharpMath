@@ -5,7 +5,7 @@ using VectSharp.SVG;
 using CSharpMath.VectSharp;
 
 var painter = new TextPainter {
-  LaTeX = @"Let's render some math to a PDF and an SVG file!$$x = -b \pm \sqrt{b^2-4ac} \over 2a$$"
+  LaTeX = @"Let's render some math to a PDF and an SVG file!$$x = {-b \pm \color{red}\sqrt{b^2-4ac} \over 2a}$$"
 };
 var page = painter.DrawToPage(400f); // adjust width here
 var doc = new Document { Pages = { page } };

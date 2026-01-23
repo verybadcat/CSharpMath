@@ -77,7 +77,6 @@ jobs:
       run: |
         # "dotnet nuget push" with "dotnet nuget add source" to GitHub Packages is unstable for project names with a dot: https://github.com/NuGet/Home/issues/9775#issuecomment-714509211
         # So we must specify api-key directly in "dotnet nuget push" instead of following the GitHub Packages documentation
-        # We use quotes to avoid shell globbing: https://github.com/NuGet/Home/issues/4393#issuecomment-667618120
         # --no-symbols true to not let GitHub Releases interpret .snupkg as .nupkg
-        dotnet nuget push '.nupkgs/*.nupkg' --source 'https://nuget.pkg.github.com/verybadcat/index.json' --api-key ${{ github.token }} --skip-duplicate --no-symbols true
+        dotnet nuget push .nupkgs\*.nupkg --source 'https://nuget.pkg.github.com/verybadcat/index.json' --api-key ${{ github.token }} --skip-duplicate --no-symbols true
       shell: pwsh

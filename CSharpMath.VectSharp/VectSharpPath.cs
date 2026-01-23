@@ -1,5 +1,3 @@
-// Adapted after https://github.com/verybadcat/CSharpMath/blob/master/CSharpMath.SkiaSharp/SkiaPath.cs
-
 using System.Drawing;
 using VectSharp;
 

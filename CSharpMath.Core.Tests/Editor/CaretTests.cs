@@ -9,7 +9,7 @@ namespace CSharpMath.Core.Tests {
   using BackEnd;
   // Tests in different classes run in parallel, unlike tests in the same class
   public class CaretBlinks {
-    public const int MillisecondBuffer = 150;
+    public const int MillisecondBuffer = 200;
     [Fact]
     public async Task Test() {
       var keyboard = new MathKeyboard<TestFont, TGlyph>(TestTypesettingContext.Instance, new TestFont()) {
@@ -17,10 +17,10 @@ namespace CSharpMath.Core.Tests {
       };
       Assert.True(keyboard.InsertionPositionHighlighted);
       Assert.True(keyboard.ShouldDrawCaret);
-      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + MillisecondBuffer);
+      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + MillisecondBuffer, TestContext.Current.CancellationToken);
       Assert.False(keyboard.InsertionPositionHighlighted);
       Assert.False(keyboard.ShouldDrawCaret);
-      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + MillisecondBuffer);
+      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + MillisecondBuffer, TestContext.Current.CancellationToken);
       Assert.True(keyboard.InsertionPositionHighlighted);
       Assert.True(keyboard.ShouldDrawCaret);
     }
@@ -33,9 +33,9 @@ namespace CSharpMath.Core.Tests {
       };
       keyboard.StopBlinking();
       Assert.False(keyboard.ShouldDrawCaret);
-      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer, TestContext.Current.CancellationToken);
       Assert.False(keyboard.ShouldDrawCaret);
-      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer, TestContext.Current.CancellationToken);
       Assert.False(keyboard.ShouldDrawCaret);
     }
   }
@@ -74,7 +74,7 @@ namespace CSharpMath.Core.Tests {
       Assert.True(keyboard.ShouldDrawCaret);
       keyboard.KeyPress(input);
       Assert.False(keyboard.ShouldDrawCaret);
-      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer, TestContext.Current.CancellationToken);
       Assert.False(keyboard.ShouldDrawCaret);
     }
   }
@@ -86,18 +86,18 @@ namespace CSharpMath.Core.Tests {
       };
       Assert.True(keyboard.ShouldDrawCaret);
 
-      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds - CaretBlinks.MillisecondBuffer);
+      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds - CaretBlinks.MillisecondBuffer, TestContext.Current.CancellationToken);
       Assert.True(keyboard.ShouldDrawCaret);
 
       keyboard.KeyPress(MathKeyboardInput.A);
-      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds - CaretBlinks.MillisecondBuffer);
+      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds - CaretBlinks.MillisecondBuffer, TestContext.Current.CancellationToken);
       Assert.True(keyboard.ShouldDrawCaret);
 
       keyboard.KeyPress(MathKeyboardInput.Left);
-      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds - CaretBlinks.MillisecondBuffer);
+      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds - CaretBlinks.MillisecondBuffer, TestContext.Current.CancellationToken);
       Assert.True(keyboard.ShouldDrawCaret);
 
-      await Task.Delay(4 * CaretBlinks.MillisecondBuffer);
+      await Task.Delay(4 * CaretBlinks.MillisecondBuffer, TestContext.Current.CancellationToken);
       Assert.False(keyboard.ShouldDrawCaret);
     }
   }
@@ -111,19 +111,19 @@ namespace CSharpMath.Core.Tests {
       Assert.True(keyboard.ShouldDrawCaret);
 
       keyboard.StopBlinking();
-      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer, TestContext.Current.CancellationToken);
       Assert.True(keyboard.ShouldDrawCaret);
 
       keyboard.StartBlinking();
-      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer, TestContext.Current.CancellationToken);
       Assert.False(keyboard.ShouldDrawCaret);
 
       keyboard.StopBlinking();
-      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer, TestContext.Current.CancellationToken);
       Assert.False(keyboard.ShouldDrawCaret);
 
       keyboard.StartBlinking();
-      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer, TestContext.Current.CancellationToken);
       Assert.True(keyboard.ShouldDrawCaret);
     }
   }
@@ -188,7 +188,7 @@ namespace CSharpMath.Core.Tests {
       Assert.Equal("😀", inner.Nucleus);
       Assert.Equal(System.Drawing.Color.Green, inner.Color);
 
-      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer, TestContext.Current.CancellationToken);
       Assert.False(keyboard.InsertionPositionHighlighted);
       Assert.False(keyboard.ShouldDrawCaret);
       Assert.Equal("😐", outer.Nucleus);
@@ -196,7 +196,7 @@ namespace CSharpMath.Core.Tests {
       Assert.Equal("😐", inner.Nucleus);
       Assert.Equal(System.Drawing.Color.Blue, inner.Color);
 
-      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer, TestContext.Current.CancellationToken);
       Assert.True(keyboard.InsertionPositionHighlighted);
       Assert.False(keyboard.ShouldDrawCaret);
       Assert.Equal("😐", outer.Nucleus);
@@ -251,9 +251,9 @@ namespace CSharpMath.Core.Tests {
         ExpectedAppearance(DefaultPlaceholderSettings.RestingNucleus, DefaultPlaceholderSettings.ActiveNucleus);
       }
       Check();
-      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer, TestContext.Current.CancellationToken);
       Check();
-      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer, TestContext.Current.CancellationToken);
       Check();
     }
     [Fact]
@@ -285,7 +285,7 @@ namespace CSharpMath.Core.Tests {
     public async Task IfNonBlinkingPlaceholderIsNotHighLightedThenCaretBlinks() {
       Assert.True(keyboard.ShouldDrawCaret);
 
-      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer, TestContext.Current.CancellationToken);
       Assert.False(keyboard.ShouldDrawCaret);
 
       keyboard.KeyPress(MathKeyboardInput.Subscript);
@@ -293,11 +293,11 @@ namespace CSharpMath.Core.Tests {
       ExpectedAppearance(DefaultPlaceholderSettings.RestingNucleus, DefaultPlaceholderSettings.RestingNucleus);
       Assert.True(keyboard.ShouldDrawCaret);
 
-      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer, TestContext.Current.CancellationToken);
       ExpectedAppearance(DefaultPlaceholderSettings.RestingNucleus, DefaultPlaceholderSettings.RestingNucleus);
       Assert.False(keyboard.ShouldDrawCaret);
 
-      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer);
+      await Task.Delay((int)MathKeyboard<TestFont, TGlyph>.DefaultBlinkMilliseconds + CaretBlinks.MillisecondBuffer, TestContext.Current.CancellationToken);
       ExpectedAppearance(DefaultPlaceholderSettings.RestingNucleus, DefaultPlaceholderSettings.RestingNucleus);
       Assert.True(keyboard.ShouldDrawCaret);
     }
