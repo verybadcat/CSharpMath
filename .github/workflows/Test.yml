@@ -1,178 +1,29 @@
-﻿name: Test
+name: Build and Test
 
-on: [push, pull_request]
+on: push
 jobs:
-  Core:
-    runs-on: ubuntu-latest # release-drafter/release-drafter@v5 only works on Linux: https://github.com/release-drafter/release-drafter/issues/558
+  Everything:
+    strategy:
+      fail-fast: false # Don't cancel other os builds if one fails
+      matrix:
+        # Check included Xcode versions for GitHub Actions: https://github.com/actions/runner-images?tab=readme-ov-file#available-images
+        os: [windows-latest, ubuntu-latest, macos-26]
+    runs-on: ${{ matrix.os }}
     steps:
-    - name: Update draft on GitHub Releases
-      id: release_drafter
-      uses: release-drafter/release-drafter@v5
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - uses: actions/checkout@v2
+    - uses: maxim-lobanov/setup-xcode@v1
+      if: startsWith(matrix.os, 'macos')
+      with:
+        # Check required Xcode version for latest "dotnet workload restore": https://github.com/dotnet/macios/releases
+        xcode-version: '26.2' # If this is to be changed, also check macos-version in matrix.os above
+    - uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: '10.x'
+    - uses: actions/checkout@v6
       with:
         submodules: 'recursive'
-    - name: Setup .NET Core # Required to execute ReportGenerator
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '3.1.401'
-    - name: Update dependencies in CSharpMath.Xaml.Tests.NuGet
-      run: |
-        dotnet tool install -g dotnet-outdated
-        update() {
-          dotnet outdated -u CSharpMath.Xaml.Tests.NuGet
-          dotnet outdated -pre Always -inc CSharpMath -u CSharpMath.Xaml.Tests.NuGet
-        }
-        # retry 5 times since dotnet outdated fails often: https://github.com/jerriep/dotnet-outdated/issues/299
-        update || update || update || update || update
-    - name: Build and Test
-      env:
-        RELEASE_NOTES: |
-          # ${{ steps.release_drafter.outputs.name }}
-          
-          ${{ steps.release_drafter.outputs.body }}
-      run: |
-        # .NET Core MSBuild cannot parse , and ; correctly so we replace them with substitutions: https://github.com/dotnet/msbuild/issues/471#issuecomment-366268743
-        # https://www.gnu.org/software/bash/manual/bash.html#Shell-Parameter-Expansion
-        # ${parameter/pattern/string} If pattern begins with ‘/’, all matches of pattern are replaced with string. Normally only the first match is replaced.
-        RELEASE_NOTES=${RELEASE_NOTES//,/%2C}
-        RELEASE_NOTES=${RELEASE_NOTES//;/%3B}
-        
-        # --collect:"XPlat Code Coverage" means collect test coverage with https://github.com/coverlet-coverage/coverlet
-        # Coverlet settings come after --: https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/VSTestIntegration.md#advanced-options-supported-via-runsettings
-        dotnet test CSharpMath.CrossPlatform.slnf -c Release -l GitHubActions --blame --collect:"XPlat Code Coverage" -r .testcoverage -p:PackageReleaseNotes="$RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }} -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.IncludeTestAssembly=true
-    - name: Run ReportGenerator on Test Coverage results
-      uses: danielpalme/ReportGenerator-GitHub-Action@4.6.7
-      with:
-        reports: '.testcoverage/**/*.*' # REQUIRED # The coverage reports that should be parsed (separated by semicolon). Globbing is supported.
-        targetdir: '.testcoverage/report' # REQUIRED # The directory where the generated report should be saved.
-        reporttypes: 'Html' # The output formats and scope (separated by semicolon) Values: Badges, Clover, Cobertura, CsvSummary, Html, HtmlChart, HtmlInline, HtmlInline_AzurePipelines, HtmlInline_AzurePipelines_Dark, HtmlSummary, JsonSummary, Latex, LatexSummary, lcov, MHtml, PngChart, SonarQube, TeamCitySummary, TextSummary, Xml, XmlSummary
-        title: 'CSharpMath test coverage results' # Optional title.
-        tag: ${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }} # Optional tag or build version.
-    - name: Upload CSharpMath test coverage results as CI artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: CSharpMath test coverage results
-        path: .testcoverage/
-    - name: Upload CSharpMath test coverage results to codecov.io
-      uses: codecov/codecov-action@v1
-      with:
-        file: .testcoverage/**/*.xml # optional
-        name: CSharpMath test coverage # optional
-        fail_ci_if_error: true # optional (default = false)
-    - name: Upload CSharpMath.Rendering.Tests results as CI artifacts
-      uses: actions/upload-artifact@v2
-      if: always() # Run even when a previous step failed: https://stackoverflow.com/a/58859404/5429648
-      with:
-        name: CSharpMath.Rendering.Tests results
-        path: CSharpMath.Rendering.Tests/*/*.png
-    - name: Upload CSharpMath.Xaml.Tests.NuGet results as CI artifacts
-      uses: actions/upload-artifact@v2
-      if: always()
-      with:
-        name: CSharpMath.Xaml.Tests.NuGet results
-        path: CSharpMath.Xaml.Tests.NuGet/*.png
-    - name: Upload NuGet packages as CI artifacts
-      uses: actions/upload-artifact@v2
-      if: always()
-      with:
-        name: NuGet packages
-        path: .nupkgs/
-    - name: Push CI artifacts to GitHub Packages registry
-      if: github.ref == 'refs/heads/master'
-      run: |
-        # "dotnet nuget push" with "dotnet nuget add source" to GitHub Packages is unstable for project names with a dot: https://github.com/NuGet/Home/issues/9775#issuecomment-714509211
-        # So we must specify api-key directly in "dotnet nuget push" instead of following the GitHub Packages documentation
-        # We use quotes to avoid shell globbing: https://github.com/NuGet/Home/issues/4393#issuecomment-667618120
-        # --no-symbols true to not let GitHub Releases interpret .snupkg as .nupkg
-        dotnet nuget push '.nupkgs/*.nupkg' --source 'https://nuget.pkg.github.com/verybadcat/index.json' --api-key ${{ github.token }} --skip-duplicate --no-symbols true
-  Ios:
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: 'recursive'
-    - run: nuget restore CSharpMath.sln
-    - run: msbuild CSharpMath.Ios.Tests
-    - name: Run tests
-      env:
-        IOS_SIM_NAME: iPhone 11 # https://github.com/actions/virtual-environments/blob/master/images/macos/macos-10.15-Readme.md#installed-simulators
-        BUNDLE_IDENTIFIER: CSharpMath.Ios.Unit-Tests # Located inside CSharpMath.Ios.Tests Info.plist file
-        APP_PATH: CSharpMath.Ios.Tests/bin/iPhoneSimulator/Debug/CSharpMath.Ios.Tests.app
-      run: |
-        # This script is a heavily modified version of https://gist.github.com/jerrymarino/1f9eb6a06c423f9744ea297d80193a9b
-        
-        IOS_SIM_UDID=`xcrun simctl list | grep -w "$IOS_SIM_NAME" | awk 'match($0, /\(([-0-9A-F]+)\)/) { print substr( $0, RSTART + 1, RLENGTH - 2 )}' | head -1`
-        SIMULATOR_PATH='/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/Contents/MacOS/Simulator'
-        
-        # run_ios_sim builds and runs an iOS app on the simulator
-        #
-        # It is designed to replicate the behavior of "Run" in Xcode and assumes basic
-        # xcodebuild usage.
-        # 
-        # USAGE:
-        # export IOS_SIM_UDID=342F9A20-DF48-41A9-BE60-C6B35F47E97F; \
-        # export BUNDLE_IDENTIFIER=a.Some; \
-        # export APP_PATH=$PWD/Build/Debug-iphonesimulator/$APP_NAME.app \
-        # /path/to/run_ios_sim.sh 
-        #
-        # Note that the UDID must match a device where runtime is installed See
-        # available devices with "simctl list"
-        #
-        # Tested on Xcode 8.3.1 a few times
-        # Author: Jerry Marino - @jerrymarino
-
-        APP_NAME=`echo ""${APP_PATH##*/}"" | cut -d'.' -f1`
-
-        echo "Running sim for $APP_NAME - $BUNDLE_IDENTIFIER"
-        
-        # If the booted simulator does not match, then we need to restart it. Expect an
-        # output list of the form
-        # "Phone: iPhone 7 Plus (342F9A20-DF48-41A9-BE60-C6B35F47E97F) (Booted)"
-        BOOTED_UDID=`xcrun simctl list | grep Booted | perl -pe 's/(.*\()(.*)\)+ (.*)/\2/' | sed -n 1p`
-        if [[ $BOOTED_UDID != $IOS_SIM_UDID ]]; then
-          killall Simulator || true # Ignore error code 1: No matching process has been found
-        else
-          # FIXME: We don't need to do this for all cases and
-          # it is slow
-          killall Simulator || true # Ignore error code 1: No matching process has been found
-        fi
-
-        # Open the simulator
-        open -a "$SIMULATOR_PATH" --args -CurrentDeviceUDID $IOS_SIM_UDID
-
-        # Wait until there is a device booted
-
-        function booted_sim_ct() {
-          echo `xcrun simctl list | grep Booted | wc -l | sed -e 's/ //g'`
-        }
-
-        while [ `booted_sim_ct` -lt 1 ]
-        do
-          sleep 1
-        done
-
-        echo "Installing app at path $APP_PATH"
-        xcrun simctl install booted $APP_PATH
-
-        # Launch the app program into the booted sim
-        TESTS_OUTPUT=`xcrun simctl launch --console booted "$BUNDLE_IDENTIFIER" 2>&1`
-        # 2>&1 means "redirect stderr to stdout": https://stackoverflow.com/a/818284/5429648
-
-        echo "$TESTS_OUTPUT"
-        
-        # Move artifacts (generated pictures) to a known path for uploading
-        TESTS_ARTIFACTS="`xcrun simctl get_app_container booted $BUNDLE_IDENTIFIER data`/Documents/*"
-        mkdir -p /tmp/tests_artifacts
-        mv $TESTS_ARTIFACTS /tmp/tests_artifacts # We don't put $TESTS_ARTIFACTS in double quotes because we need path expansion
-
-        # We fail this workflow if the debug output contains [FAIL] (i.e. a test has failed).
-        if [[ "$TESTS_OUTPUT" == *"[FAIL]"* ]]
-        then exit 1
-        fi
-    - uses: actions/upload-artifact@v2
-      if: always() # Run even when a previous step failed: https://stackoverflow.com/a/58859404/5429648
-      with:
-        name: CSharpMath.Ios.Tests Results
-        path: /tmp/tests_artifacts
+    - name: Install MAUI workloads
+      run: dotnet workload restore
+    - name: Build Everything
+      run: dotnet build CSharpMath.sln # Newer macOS workloads may require newer Xcode versions. Update above.
+    - name: Run Tests
+      run: dotnet test --solution CSharpMath.sln

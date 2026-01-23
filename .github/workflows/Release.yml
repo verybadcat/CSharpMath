@@ -5,15 +5,15 @@ on:
     types: [published]
 jobs:
   CSharpMath:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v6
       with:
         submodules: 'recursive'
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: '3.1.401'
+        dotnet-version: '10.x'
     - name: Build GitHub Releases draft artifacts
       env:
         RELEASE_NOTES: |
@@ -22,13 +22,13 @@ jobs:
           ${{ github.event.release.body }}
       run: |
         # .NET Core MSBuild cannot parse , and ; correctly so we replace them with substitutions: https://github.com/dotnet/msbuild/issues/471#issuecomment-366268743
-        # https://www.gnu.org/software/bash/manual/bash.html#Shell-Parameter-Expansion
-        # ${parameter/pattern/string} If pattern begins with ‘/’, all matches of pattern are replaced with string. Normally only the first match is replaced.
-        RELEASE_NOTES=${RELEASE_NOTES//,/%2C}
-        RELEASE_NOTES=${RELEASE_NOTES//;/%3B}
+        # PowerShell string replacement
+        $env:RELEASE_NOTES = $env:RELEASE_NOTES -replace ',','%2C' -replace ';','%3B'
         
+        dotnet workload restore
         # -r for restore
-        dotnet msbuild -r -p:Configuration=Release -p:PackageVersion="${{ github.event.release.tag_name }}" -p:PackageReleaseNotes="$RELEASE_NOTES" CSharpMath.CrossPlatform.slnf
+        dotnet msbuild -r -p:Configuration=Release -p:PackageVersion="${{ github.event.release.tag_name }}" -p:PackageReleaseNotes="$env:RELEASE_NOTES" CSharpMath.sln
+      shell: pwsh
     - name: Upload to GitHub Releases
       uses: svenstaro/upload-release-action@v2
       with:
@@ -41,3 +41,4 @@ jobs:
       run: | # We use double quotes to avoid shell globbing: https://github.com/NuGet/Home/issues/4393#issuecomment-667618120
         # Use --skip-duplicate since we want re-runs of this workflow to succeed in case of network issues
         dotnet nuget push ".nupkgs/*.nupkg" -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json  --skip-duplicate
+      shell: pwsh

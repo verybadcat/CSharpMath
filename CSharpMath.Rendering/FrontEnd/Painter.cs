@@ -2,7 +2,6 @@ using System;
 using System.Drawing;
 
 using CSharpMath.Display;
-using CSharpMath.Structures;
 
 using Typography.OpenFont;
 using System.Collections.Specialized;
@@ -58,7 +57,7 @@ namespace CSharpMath.Rendering.FrontEnd {
     #endregion Redisplaying properties
 
     #region Methods
-    protected abstract Result<TContent> LaTeXToContent(string latex);
+    protected abstract Atom.Result<TContent> LaTeXToContent(string latex);
     protected abstract string ContentToLaTeX(TContent content);
     public abstract Color WrapColor(TColor color);
     public abstract TColor UnwrapColor(Color color);
@@ -132,6 +131,7 @@ namespace CSharpMath.Rendering.FrontEnd {
         canvas.Restore();
       }
     }
+    public Painter<TCanvas, TContent, TColor> ShallowClone() => (Painter<TCanvas, TContent, TColor>)MemberwiseClone();
     #endregion Methods
   }
 }

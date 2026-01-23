@@ -7,8 +7,6 @@ using System.Text;
 
 namespace CSharpMath.Atom {
   using Atoms;
-  using Structures;
-  using Space = Atoms.Space;
   //https://mirror.hmc.edu/ctan/macros/latex/contrib/unicode-math/unimath-symbols.pdf
   public static class LaTeXSettings {
     static readonly Dictionary<Boundary, string> boundaryDelimitersReverse = new Dictionary<Boundary, string>();
@@ -320,7 +318,7 @@ namespace CSharpMath.Atom {
       };
     public static MathAtom Times => new BinaryOperator("×");
     public static MathAtom Divide => new BinaryOperator("÷");
-    public static bool PlaceholderBlinks { get; set; } = false;
+    public static bool PlaceholderBlinks { get; set; }
     public static Color? PlaceholderRestingColor { get; set; }
     public static Color? PlaceholderActiveColor { get; set; }
     public static string PlaceholderActiveNucleus { get; set; } = "\u25A0";
@@ -477,11 +475,11 @@ namespace CSharpMath.Atom {
         { @"\threeunderdot", new Accent("\u20E8") },
         { @"\TeX", new Inner(Boundary.Empty, new MathList(
             new Variable("T") { FontStyle = FontStyle.Roman },
-            new Space(-1/6f * Structures.Space.EmWidth) { FontStyle = FontStyle.Roman },
-            new RaiseBox(-1/2f * Structures.Space.ExHeight,
+            new Space(-1/6f * Length.EmWidth) { FontStyle = FontStyle.Roman },
+            new RaiseBox(-1/2f * Length.ExHeight,
               new MathList(new Variable("E") { FontStyle = FontStyle.Roman })
             ) { FontStyle = FontStyle.Roman },
-            new Space(-1/8f * Structures.Space.EmWidth) { FontStyle = FontStyle.Roman },
+            new Space(-1/8f * Length.EmWidth) { FontStyle = FontStyle.Roman },
             new Variable("X") { FontStyle = FontStyle.Roman }
           ), Boundary.Empty) },
 
@@ -509,13 +507,13 @@ namespace CSharpMath.Atom {
         { Enumerable.Range('A', 26).Concat(Enumerable.Range('a', 26)).Select(c => ((char)c).ToStringInvariant()),
           v => new Variable(v) },
         { @"\ ", new Ordinary(" ") },
-        { @"\,", new Space(Structures.Space.ShortSpace) },
-        { @"\:", @"\>", new Space(Structures.Space.MediumSpace) },
-        { @"\;", new Space(Structures.Space.LongSpace) },
-        { @"\!", new Space(-Structures.Space.ShortSpace) },
-        { @"\enspace", new Space(Structures.Space.EmWidth / 2) },
-        { @"\quad", new Space(Structures.Space.EmWidth) },
-        { @"\qquad", new Space(Structures.Space.EmWidth * 2) },
+        { @"\,", new Space(Length.ShortSpace) },
+        { @"\:", @"\>", new Space(Length.MediumSpace) },
+        { @"\;", new Space(Length.LongSpace) },
+        { @"\!", new Space(-Length.ShortSpace) },
+        { @"\enspace", new Space(Length.EmWidth / 2) },
+        { @"\quad", new Space(Length.EmWidth) },
+        { @"\qquad", new Space(Length.EmWidth * 2) },
         { @"\displaystyle", new Style(LineStyle.Display) },
         { @"\textstyle", new Style(LineStyle.Text) },
         { @"\scriptstyle", new Style(LineStyle.Script) },
@@ -769,7 +767,7 @@ namespace CSharpMath.Atom {
         { @"\longrightarrow", new Relation("⟶") },
         { @"\downarrow", new Relation("↓") },
         { @"\Rightarrow", new Relation("⇒") },
-        { @"\Longrightarrow", new Relation("⟹") },
+        { @"\implies", @"\Longrightarrow", new Relation("⟹") },
         { @"\Downarrow", new Relation("⇓") },
         { @"\leftrightarrow", new Relation("↔") },
         { @"\Leftrightarrow", new Relation("⇔") },

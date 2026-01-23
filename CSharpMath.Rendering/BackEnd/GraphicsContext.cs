@@ -3,12 +3,11 @@ using System.Drawing;
 using System.Linq;
 using CSharpMath.Display.FrontEnd;
 using CSharpMath.Rendering.FrontEnd;
-using CSharpMath.Structures;
 using Typography.OpenFont;
 
 namespace CSharpMath.Rendering.BackEnd {
   public class GraphicsContext : IGraphicsContext<Fonts, Glyph> {
-    private class GlyphOutlineBuilder : Typography.Contours.GlyphOutlineBuilderBase {
+    private class GlyphOutlineBuilder : Typography.OpenFont.Contours.GlyphOutlineBuilderBase {
       public GlyphOutlineBuilder(Typeface typeface) : base(typeface) { }
     }
     public GraphicsContext(ICanvas canvas, (Color glyph, Color textRun)? glyphBoxColor) {
@@ -23,7 +22,7 @@ namespace CSharpMath.Rendering.BackEnd {
       (IReadOnlyList<Glyph> glyphs, Fonts font, IEnumerable<PointF> points, Color? color) {
       foreach (var (glyph, point) in glyphs.Zip(points, System.ValueTuple.Create)) {
         if (GlyphBoxColor != null) {
-          using var rentedArray = new RentedArray<Glyph>(glyph);
+          using var rentedArray = new Atom.RentedArray<Glyph>(glyph);
           var rect =
             GlyphBoundsProvider.Instance.GetBoundingRectsForGlyphs(font, rentedArray.Result, 1).Single();
           Canvas.CurrentColor = GlyphBoxColor?.glyph;
@@ -72,7 +71,7 @@ namespace CSharpMath.Rendering.BackEnd {
         pathBuilder.BuildFromGlyph(glyph.Info, pointSize);
         Canvas.CurrentColor = foreground ?? color;
         pathBuilder.ReadShapes(Canvas.StartNewPath());
-        Canvas.Translate(typeface.GetHAdvanceWidthFromGlyphIndex(index) * scale + kernAfter, 0);
+        Canvas.Translate(typeface.GetAdvanceWidthFromGlyphIndex(index) * scale + kernAfter, 0);
       }
       Canvas.Restore();
     }

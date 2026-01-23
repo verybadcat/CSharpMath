@@ -30,8 +30,8 @@ namespace CSharpMath.Rendering.Text {
       public override int GetHashCode() => "\r\n".GetHashCode();
     }
     public sealed class Space : TextAtom {
-      public Space(Structures.Space space) => Content = space;
-      public Structures.Space Content { get; }
+      public Space(Length space) => Content = space;
+      public Length Content { get; }
       public override int? SingleChar(FontStyle style) => ' ';
       public override bool Equals(TextAtom atom) => atom is Space s && s.Content == Content;
       public override int GetHashCode() => Content.GetHashCode();

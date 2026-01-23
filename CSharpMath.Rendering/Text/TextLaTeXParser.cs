@@ -5,9 +5,8 @@ using Typography.TextBreak;
 
 namespace CSharpMath.Rendering.Text {
   using Atom;
-  using CSharpMath.Structures;
   using System.Drawing;
-  using static CSharpMath.Structures.Result;
+  using static CSharpMath.Atom.Result;
   public static class TextLaTeXParser {
     /* //Paste this into the C# Interactive, fill <username> yourself
 #r "C:/Users/<username>/source/repos/CSharpMath/Typography/Build/NetStandard/Typography.TextBreak/bin/Debug/netstandard1.3/Typography.TextBreak.dll"
@@ -52,10 +51,11 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
       int dollarCount = 0;
       var globalAtoms = new TextAtomListBuilder();
       List<BreakAtInfo> breakList = new List<BreakAtInfo>(); // Roslyn bug that assumes breakList is nullable resulting in warnings so var is not used
-      var breaker = new CustomBreaker(v => breakList.Add(new BreakAtInfo(v.LatestBreakAt, v.LatestWordKind))) {
+      var breaker = new CustomBreaker() {
         BreakNumberAfterText = true,
         ThrowIfCharOutOfRange = false
       };
+      breaker.SetNewBreakHandler(v => breakList.Add(new BreakAtInfo(v.LatestBreakAt, v.LatestWordKind)));
       foreach (var engine in AdditionalBreakingEngines)
         breaker.AddBreakingEngine(engine);
       breaker.BreakWords(latexSource);
@@ -105,7 +105,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
           int i, bool oneCharOnly, char stopChar) {
         void ParagraphBreak() {
           atoms.Break();
-          atoms.Space(Space.ParagraphIndent);
+          atoms.Space(Length.ParagraphIndent);
         }
         for (; i < breakList.Count; i++) {
           void ObtainSection(ReadOnlySpan<char> latexInput, int index,
@@ -319,26 +319,26 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     atoms.Break();
                     break;
                   case ",":
-                    atoms.Space(Space.ShortSpace);
+                    atoms.Space(Length.ShortSpace);
                     break;
                   case ":":
                   case ">":
-                    atoms.Space(Space.MediumSpace);
+                    atoms.Space(Length.MediumSpace);
                     break;
                   case ";":
-                    atoms.Space(Space.LongSpace);
+                    atoms.Space(Length.LongSpace);
                     break;
                   case "!":
-                    atoms.Space(-Space.ShortSpace);
+                    atoms.Space(-Length.ShortSpace);
                     break;
                   case "enspace":
-                    atoms.Space(Space.EmWidth / 2);
+                    atoms.Space(Length.EmWidth / 2);
                     break;
                   case "quad":
-                    atoms.Space(Space.EmWidth);
+                    atoms.Space(Length.EmWidth);
                     break;
                   case "qquad":
-                    atoms.Space(Space.EmWidth * 2);
+                    atoms.Space(Length.EmWidth * 2);
                     break;
                   case "hspace": {
                       if (ReadArgumentString(latex, ref textSection).Bind(space => {
@@ -347,7 +347,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                           if ('0' <= space[j] && space[j] <= '9' || space[j] == '.') lastNum = j;
                         }
                         if (lastNum == -1) return Err("Space cannot be empty");
-                        return Space.Create(space.Slice(0, lastNum + 1).ToString(), space.Slice(lastNum + 1).ToString(), true);
+                        return Length.Create(space.Slice(0, lastNum + 1).ToString(), space.Slice(lastNum + 1).ToString(), true);
                       }).Bind(space => atoms.Space(space)).Error is string error)
                         return Err(error);
                       break;
@@ -463,7 +463,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
             .Append(m.DisplayStyle ? ']' : ')');
         case TextAtom.Space s:
           return s.Content.IsMu
-          ? s.Content.Length switch
+          ? s.Content.Amount switch
           {
             -3 => b.Append(@"\! "),
             3 => b.Append(@"\, "),
@@ -474,7 +474,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
             36 => b.Append(@"\qquad "),
             var l => b.Append(@"\hspace{").Append((l / 18).ToStringInvariant("0.0####")).Append("em").Append('}')
           }
-          : b.Append(@"\hspace{").Append(s.Content.Length.ToStringInvariant("0.0####")).Append("pt").Append('}');
+          : b.Append(@"\hspace{").Append(s.Content.Amount.ToStringInvariant("0.0####")).Append("pt").Append('}');
         case TextAtom.ControlSpace _:
           return b.Append(@"\ ");
         case TextAtom.Accent a:

@@ -1,5 +1,4 @@
 namespace CSharpMath.Rendering.Tests {
-  [Android.Runtime.Preserve(AllMembers = true), Foundation.Preserve(AllMembers = true)]
   public sealed class TestRenderingTextData : TestRenderingSharedData<TestRenderingTextData> {
     public const string Accent = @"\'a";
     public const string DisplayMath = @"$$\int_{a_1^2}^{a_2^2}\sqrt\frac x2dx$$";

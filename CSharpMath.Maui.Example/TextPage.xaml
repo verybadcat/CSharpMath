@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:text="clr-namespace:CSharpMath.Maui;assembly=CSharpMath.Maui"
+             xmlns:local="clr-namespace:CSharpMath.Maui.Example"
+             x:Class="CSharpMath.Maui.Example.TextPage"
+             Title="Text">
+    <Grid RowDefinitions="5*,*,5*">
+        <Editor x:Name="Text"
+                TextChanged="Text_TextChanged"
+                Grid.Row="0" 
+                Text="Here are some text.
+This text is made to be long enough to have the TextPainter of CSharpMath add a line break to this text automatically.
+To demonstrate the capabilities of the TextPainter,
+here are some math content:
+First, a fraction in inline mode: $\frac34$
+Next, a summation in inline mode: $\sum_{i=0}^3i^i$
+Then, a summation in display mode: $$\sum_{i=0}^3i^i$$
+After that, an integral in display mode: $$\int^6_{-56}x\ dx$$
+Finally, an escaped dollar sign \$ that represents the start/end of math mode when it is unescaped.
+Colors can be achieved via \backslash color\textit{\{color\}\{content\}}, or \backslash \textit{color\{content\}},
+where \textit{color} stands for one of the LaTeX standard colors.
+\red{Colored text in text mode are able to automatically break up when spaces are inside the colored text, which the equivalent in math mode cannot do.}
+\textbf{Styled} \texttt{text} can be achieved via the LaTeX styling commands.
+The SkiaSharp version of this is located at CSharpMath.SkiaSharp.TextPainter;
+and the MAUI version of this is located at CSharpMath.Maui.TextView.
+Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6. \[\frac{Display}{maths} \sqrt\text\mathtt{\ at\ the\ end}^\mathbf{are\ now\ incuded\ in\ Measure!} \]"/>
+        
+        <Picker Grid.Row="1"
+                x:Name="Size"
+                Title="Font Size"
+                ItemsSource="{x:Static local:TryPage.FontSizes}"
+                SelectedIndexChanged="Size_SelectedIndexChanged"/>
+        <ScrollView Grid.Row="2" x:Name="Scroll">
+            <text:TextView x:Name="View"/>
+        </ScrollView>
+    </Grid>
+</ContentPage>

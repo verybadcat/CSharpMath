@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:math="clr-namespace:CSharpMath.Maui;assembly=CSharpMath.Maui"
+             xmlns:local="clr-namespace:CSharpMath.Maui.Example"
+             x:Class="CSharpMath.Maui.Example.TryPage"
+             Title="Try">
+    <Grid RowDefinitions="Auto,Auto,Auto,*" ColumnDefinitions="*">
+        <Entry x:Name="Entry" Grid.Row="0"/>
+        <HorizontalStackLayout Grid.Row="1">
+            <Button Text="Reset pan" Clicked="Button_Clicked"/>
+            <Picker x:Name="Size" Title="Font Size" ItemsSource="{x:Static local:TryPage.FontSizes}"/>
+            <Picker x:Name="Picker" Title="Select an example"/>
+            <Picker x:Name="Alignment" Title="Alignment" />
+        </HorizontalStackLayout>
+        <Label x:Name="Exit" Grid.Row="2"/>
+        <math:MathView x:Name="View" EnablePanning="True" Grid.Row="3" />
+    </Grid>
+
+</ContentPage>

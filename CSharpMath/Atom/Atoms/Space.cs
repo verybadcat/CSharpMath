@@ -1,9 +1,9 @@
 namespace CSharpMath.Atom.Atoms {
   public sealed class Space : MathAtom {
-    private readonly Structures.Space _space;
-    public float Length => _space.Length;
+    private readonly Length _space;
+    public float Length => _space.Amount;
     public bool IsMu => _space.IsMu;
-    public Space(Structures.Space space) : base() =>
+    public Space(Length space) : base() =>
       _space = space;
     public override bool ScriptsAllowed => false;
     public new Space Clone(bool finalize) => (Space)base.Clone(finalize);

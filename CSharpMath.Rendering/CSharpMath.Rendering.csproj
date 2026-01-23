@@ -3,15 +3,23 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Description>Rendering interface for CSharpMath using the Typography library.</Description>
+    <!-- Suppress compiler and analyzer warnings from Typography submodule since its code is not clean -->
+    <!-- Applied globally to the project since item-level NoWarn doesn't reliably work for linked files -->
+    <NoWarn>$(NoWarn);CS8618;CS8603;CS8625;CS8600;CS8601;CS8602;CS8604;CS0162;CS0168;CS0219;CS0649</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+	<ProjectReference Include="..\CSharpMath\CSharpMath.csproj" />
     <EmbeddedResource Include="Reference Fonts\*.otf" />
-    <ProjectReference Include="..\CSharpMath.Editor\CSharpMath.Editor.csproj" />
-    <PackageReference Include="Nullable" Version="1.2.1" PrivateAssets="all" />
-    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
+    <PackageReference Include="Nullable" Version="1.3.1" PrivateAssets="all" />
+    <PackageReference Include="System.Numerics.Vectors" Version="4.6.1" />
   </ItemGroup>
-  <Import Project="..\PixelFarm.Typography %28Excerpt%29\PixelFarm.Typography %28Excerpt%29.projitems" Label="Shared" Condition="Exists('..\PixelFarm.Typography %28Excerpt%29\PixelFarm.Typography %28Excerpt%29.projitems')" />
-  <Import Project="..\Typography\Typography.OpenFont\Typography.OpenFont.projitems" Label="Shared" />
-  <Import Project="..\Typography\Typography.GlyphLayout\Typography.GlyphLayout.projitems" Label="Shared" />
-  <Import Project="..\Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems" Label="Shared" Condition="Exists('..\Typography\Typography.TextBreak\Typography.TextBreak\Typography.TextBreak.projitems')" />
+  <ItemGroup Label="Typography">
+    <Compile Include="..\Typography\Typography.OpenFont\**\*.cs" Exclude="..\Typography\Typography.OpenFont\**\AssemblyInfo.cs" Link="Typography\OpenFont\%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="..\Typography\Typography.GlyphLayout\**\*.cs" Exclude="..\Typography\Typography.GlyphLayout\**\AssemblyInfo.cs" Link="Typography\TextLayout\%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="..\Typography\Typography.TextBreak\Typography.TextBreak\**\*.cs" Exclude="..\Typography\Typography.TextBreak\Typography.TextBreak\**\AssemblyInfo.cs" Link="Typography\TextBreak\%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="..\Typography\PixelFarm.Typography\3_Typography_Contours\GlyphOutlineBuilderBase.cs" Link="Typography\%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+  <Target Name="CheckTypographySubmodule" BeforeTargets="BeforeBuild">
+    <Error Condition="!Exists('..\Typography\Typography.OpenFont')" Text="Typography submodule not initialized. Please run 'git submodule update --init' in the repository root." />
+  </Target>
 </Project>

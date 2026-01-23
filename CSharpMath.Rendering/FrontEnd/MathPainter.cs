@@ -1,13 +1,14 @@
 using System.Drawing;
 
 namespace CSharpMath.Rendering.FrontEnd {
-  using Display;
+  using System.Runtime;
   using BackEnd;
-  using Structures;
+  using Display;
+
   public abstract class MathPainter<TCanvas, TColor> : Painter<TCanvas, Atom.MathList, TColor> {
     protected bool _displayChanged = true;
     public override IDisplay<Fonts, Glyph>? Display { get; protected set; }
-    protected override Result<Atom.MathList> LaTeXToContent(string latex) =>
+    protected override Atom.Result<Atom.MathList> LaTeXToContent(string latex) =>
       Atom.LaTeXParser.MathListFromLaTeX(latex);
     protected override string ContentToLaTeX(Atom.MathList mathList) =>
       Atom.LaTeXParser.MathListToLaTeX(mathList).ToString();
@@ -30,14 +31,30 @@ namespace CSharpMath.Rendering.FrontEnd {
     public void Draw(TCanvas canvas, float x, float y) {
       var c = WrapCanvas(canvas);
       UpdateDisplay(float.NaN);
-      DrawCore(c, Display, new PointF(x, -y));
+      DrawCore(c, Display, new PointF(x, -y)); // Invert the canvas
     }
-    public void Draw(TCanvas canvas, PointF position) {
-      var c = WrapCanvas(canvas);
-      // Invert the canvas
-      position.Y *= -1;
-      UpdateDisplay(float.NaN);
-      DrawCore(c, Display, position);
+    /// <summary>
+    /// Directly draw the given <paramref name="display"/>. Repositions the <paramref name="display"/>.
+    /// </summary>
+    public void DrawDisplay(IDisplay<Fonts, Glyph>? display, TCanvas canvas, float x, float y) {
+      if (display is null) return;
+      var original = (Display, _displayChanged);
+      (Display, _displayChanged) = (display, false);
+      Draw(canvas, x, y);
+      (Display, _displayChanged) = original;
     }
+    /// <summary>
+    /// Directly draw the given <paramref name="display"/>. Repositions the <paramref name="display"/>.
+    /// </summary>
+    public void DrawDisplay(IDisplay<Fonts, Glyph>? display, TCanvas canvas,
+      TextAlignment textAlignment = TextAlignment.Center,
+      Thickness padding = default, float offsetX = 0, float offsetY = 0) {
+      if (display is null) return;
+      var original = (Display, _displayChanged);
+      (Display, _displayChanged) = (display, false);
+      Draw(canvas, textAlignment, padding, offsetX, offsetY);
+      (Display, _displayChanged) = original;
+    }
+    public new MathPainter<TCanvas, TColor> ShallowClone() => (MathPainter<TCanvas, TColor>)MemberwiseClone();
   }
 }

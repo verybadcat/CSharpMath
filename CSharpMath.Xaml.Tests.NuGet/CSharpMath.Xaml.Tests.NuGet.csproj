@@ -1,9 +1,6 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <PackageReference Include="CSharpMath.Avalonia" Version="0.5.0-alpha4" />
-    <PackageReference Include="CSharpMath.Forms" Version="0.5.0-alpha4" />
-    <PackageReference Include="Avalonia.Skia" Version="0.10.0-preview5" />
-    <Compile Include="../CSharpMath.Xaml.Tests/XamarinFormsCrc64.cs" Link="XamarinFormsCrc64.cs" />
-    <Compile Include="../CSharpMath.Xaml.Tests/XamarinFormsMockPlatformServices.cs" Link="XamarinFormsMockPlatformServices.cs" />
+	<PackageReference Include="Avalonia.Skia" Version="0.10.0" />
   </ItemGroup>
 </Project>

@@ -24,7 +24,7 @@ namespace CSharpMath.Rendering.BackEnd {
     public override float FractionNumeratorShiftUp(Fonts fonts) => ReadRecord(fonts.MathConsts.FractionNumeratorShiftUp, fonts);
     public override float FractionRuleThickness(Fonts fonts) => ReadRecord(fonts.MathConsts.FractionRuleThickness, fonts);
     (IEnumerable<Glyph> variants, int count)? GetVariants(Typeface typeface, MathGlyphConstruction? glyphs) {
-      var records = glyphs?.GlyphVariantRecords;
+      var records = glyphs?.glyphVariantRecords;
       if (records == null) return null;
       return (records.Select(record => new Glyph(typeface, typeface.GetGlyph(record.VariantGlyph))), records.Length);
     }
@@ -35,7 +35,7 @@ namespace CSharpMath.Rendering.BackEnd {
     public override float GetItalicCorrection(Fonts fonts, Glyph glyph) =>
       glyph.Info.MathGlyphInfo?.ItalicCorrection?.Value * glyph.Typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize) ?? 0;
     public override Glyph GetLargerGlyph(Fonts fonts, Glyph glyph) {
-      var variants = glyph.Info.MathGlyphInfo?.VertGlyphConstruction?.GlyphVariantRecords;
+      var variants = glyph.Info.MathGlyphInfo?.VertGlyphConstruction?.glyphVariantRecords;
       var glyphIndex = glyph.Info.GlyphIndex;
       foreach (var variant in variants ?? System.Array.Empty<MathGlyphVariantRecord>()) {
         var variantIndex = variant.VariantGlyph;
@@ -50,7 +50,7 @@ namespace CSharpMath.Rendering.BackEnd {
     public override IEnumerable<GlyphPart<Glyph>>? GetVerticalGlyphAssembly(Glyph rawGlyph, Fonts fonts) {
       var scale = rawGlyph.Typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);
       return
-        rawGlyph.Info.MathGlyphInfo?.VertGlyphConstruction?.GlyphAsm?.GlyphPartRecords.Select(record =>
+        rawGlyph.Info.MathGlyphInfo?.VertGlyphConstruction?.GlyphAsm_GlyphPartRecords.Select(record =>
         new GlyphPart<Glyph>(
           new Glyph(rawGlyph.Typeface, rawGlyph.Typeface.GetGlyph(record.GlyphId)),
           record.FullAdvance * scale,
@@ -92,7 +92,7 @@ namespace CSharpMath.Rendering.BackEnd {
     public override float GetTopAccentAdjustment(Fonts fonts, Glyph glyph) =>
       (glyph.Info.MathGlyphInfo?.TopAccentAttachment?.Value
       // If no top accent is defined then it is the center of the advance width.
-      ?? glyph.Typeface.GetHAdvanceWidthFromGlyphIndex(glyph.Info.GlyphIndex) / 2)
+      ?? glyph.Typeface.GetAdvanceWidthFromGlyphIndex(glyph.Info.GlyphIndex) / 2)
       //remember to scale the unit
       * glyph.Typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);
     public override float UnderbarRuleThickness(Fonts fonts) => ReadRecord(fonts.MathConsts.UnderbarRuleThickness, fonts);

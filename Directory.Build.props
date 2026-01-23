@@ -1,21 +1,19 @@
 ﻿<!--Directory.Build.props: MSBuild properties that are included in every project-->
 <!--Info: https://docs.microsoft.com/en-us/visualstudio/msbuild/customize-your-build?view=vs-2019#directorybuildprops-and-directorybuildtargets-->
 <Project InitialTargets="SetDefaultPackageVersion">
-  <PropertyGroup Condition="$(MSBuildProjectName.Contains('Test')) And !$(MSBuildProjectName.Contains('Ios'))">
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+  <PropertyGroup Condition="$(MSBuildProjectName.Contains('Test'))">
+    <TargetFramework>net10.0</TargetFramework>
+	<OutputType>Exe</OutputType> <!--Required by xunit.v3-->
   </PropertyGroup>
-  <ItemGroup Condition="$(MSBuildProjectName.Contains('Test')) And !$(MSBuildProjectName.Contains('Visualizer'))">
-    <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
-    <PackageReference Include="Xunit.SkippableFact" Version="1.4.13" />
-    <PackageReference Include="coverlet.collector" Version="1.3.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="*" />
-    <PackageReference Include="GitHubActionsTestLogger" Version="1.1.0" />
+  <ItemGroup Condition="$(MSBuildProjectName.Contains('Test'))">
+    <PackageReference Include="xunit.v3.mtp-v2" Version="3.2.1" />
+    <PackageReference Include="coverlet.collector" Version="6.0.4" />
+    <PackageReference Include="GitHubActionsTestLogger" Version="3.0.1" />
   </ItemGroup>
   <!--Don't apply to Typography projects-->
   <PropertyGroup Condition="$(MSBuildProjectName.StartsWith('CSharpMath'))">
     <!--CSharpMath-specific properties for centralized control of values-->
-    <AvaloniaVersion>0.10.0</AvaloniaVersion>
+    <AvaloniaVersion>11.3.9</AvaloniaVersion>
 
     <!--C# code properties-->
     <LangVersion>preview</LangVersion>
@@ -32,7 +30,7 @@
     <Authors>CSharpMath Contributors (verybadcat, Happypig375, charlesroddie, FoggyFinder)</Authors>
     <Title>$(PackageId)</Title>
     <!--Description property is defined in individual projects-->
-    <Copyright>© CSharpMath Contributors 2020</Copyright>
+    <Copyright>© CSharpMath Contributors 2026</Copyright>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/verybadcat/CSharpMath</PackageProjectUrl>

@@ -11,15 +11,15 @@ namespace CSharpMath.SkiaSharp {
     public static System.IO.Stream? DrawAsStream<TContent>
       (this Painter<SKCanvas, TContent, SKColor> painter,
        float textPainterCanvasWidth = TextPainter.DefaultCanvasWidth,
-       TextAlignment alignment = TextAlignment.TopLeft,
        SKEncodedImageFormat format = SKEncodedImageFormat.Png,
-       int quality = 100) where TContent : class {
+       int quality = 100,
+       TextAlignment alignmentForTests = TextAlignment.TopLeft) where TContent : class {
       var size = painter.Measure(textPainterCanvasWidth).Size;
       // SKSurface does not support zero width/height. Null will be returned from SKSurface.Create.
       if (size.Width is 0) size.Width = 1;
       if (size.Height is 0) size.Height = 1;
       using var surface = SKSurface.Create(new SKImageInfo((int)size.Width, (int)size.Height));
-      painter.Draw(surface.Canvas, alignment);
+      painter.Draw(surface.Canvas, alignmentForTests);
       using var snapshot = surface.Snapshot();
       return snapshot.Encode(format, quality).AsStream();
     }
