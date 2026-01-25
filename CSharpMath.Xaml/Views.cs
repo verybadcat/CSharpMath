@@ -25,8 +25,6 @@ using XInheritControl = Microsoft.Maui.Controls.GraphicsView;
 using XProperty = Microsoft.Maui.Controls.BindableProperty;
 namespace CSharpMath.Maui {
   [Microsoft.Maui.Controls.ContentProperty(nameof(LaTeX))]
-<<<<<<< Updated upstream
-=======
 #elif Uno
 using XCanvas = SkiaSharp.SKCanvas;
 using XCanvasColor = SkiaSharp.SKColor;
@@ -38,7 +36,6 @@ using MathPainter = CSharpMath.SkiaSharp.MathPainter;
 using TextPainter = CSharpMath.SkiaSharp.TextPainter;
 namespace CSharpMath.Uno {
   [Microsoft.UI.Xaml.Markup.ContentProperty(Name = nameof(LaTeX))]
->>>>>>> Stashed changes
 #endif
   public class BaseView<TPainter, TContent> : XInheritControl, ICSharpMathAPI<TContent, XColor>
     where TPainter : Painter<XCanvas, TContent, XCanvasColor>, new() where TContent : class {
@@ -49,16 +46,12 @@ namespace CSharpMath.Uno {
     /// <summary>Contains all the properties to listen to for painter property changes. Do not mutate.</summary>
     public static readonly XProperty[] WritablePainterProperties;
     /// <summary>Contains all the property names to listen to for painter property changes. Do not mutate.</summary>
-<<<<<<< Updated upstream
-    public static readonly HashSet<string> WritablePainterPropertyNames;
-=======
 #if Uno
     private
 #else
     public
 #endif
       static readonly HashSet<string> WritablePainterPropertyNames;
->>>>>>> Stashed changes
     static BaseView() {
       WritablePainterProperties = [
         EnablePanningProperty = CreateProperty<BaseView<TPainter, TContent>, bool>(nameof(EnablePanning), false, _ => false, (_, __) => { }),
@@ -178,32 +171,6 @@ namespace CSharpMath.Uno {
     private protected static XCanvasColor XColorToXCanvasColor(XColor color) => color;
     private protected static XColor XCanvasColorToXColor(XCanvasColor color) => color;
     Microsoft.Maui.Graphics.PointF _origin;
-<<<<<<< Updated upstream
-    public BaseView() {
-      StartInteraction += (sender, e) => {
-        if (EnablePanning)
-          _origin = e.Touches[0];
-      };
-      DragInteraction += (sender, e) => {
-        if (EnablePanning) {
-          var point = e.Touches[0];
-          var displacement = point - _origin;
-          _origin = point;
-          DisplacementX += displacement.Width;
-          DisplacementY += displacement.Height;
-        }
-      };
-      EndInteraction += (sender, e) => { _origin = e.Touches[0]; };
-      Drawable = new DrawableRedirector(this);
-    }
-    class DrawableRedirector(BaseView<TPainter, TContent> parent) : Microsoft.Maui.Graphics.IDrawable {
-  
-      public void Draw(XCanvas_Canvas canvas, Microsoft.Maui.Graphics.RectF dirtyRect) => parent.Draw(canvas);
-    }
-    void Draw(XCanvas_Canvas rawCanvas) {
-      // dirtyRect may be larger than Width and Height on Windows which leads to incorrect alignments
-      var canvas = (rawCanvas, new Microsoft.Maui.Graphics.SizeF((float)Width, (float)Height));
-=======
     public BaseView() {
       StartInteraction += (sender, e) => {
         if (EnablePanning)
@@ -273,7 +240,6 @@ namespace CSharpMath.Uno {
       // SkiaSharp deals with raw pixels as opposed to Uno's device-independent units.
       // We should scale to occupy the full view size.
       canvas.Scale(e.Info.Width / (float)ActualWidth);
->>>>>>> Stashed changes
 #endif
       var padding = Padding;
       Painter.Draw(canvas, TextAlignment, new(left: (float)padding.Left, top: (float)padding.Top, right: (float)padding.Right, bottom: (float)padding.Bottom), DisplacementX, DisplacementY);
