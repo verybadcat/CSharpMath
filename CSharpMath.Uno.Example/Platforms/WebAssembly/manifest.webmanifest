@@ -1,0 +1,10 @@
+{
+  "background_color": "#ffffff",
+  "description": "CSharpMath.Uno.Example",
+  "display": "standalone",
+  "name": "CSharpMath.Uno.Example",
+  "short_name": "CSharpMath.Uno.Example",
+  "start_url": "/index.html",
+  "theme_color": "#ffffff",
+  "scope": "/"
+}

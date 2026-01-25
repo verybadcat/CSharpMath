@@ -1,0 +1,31 @@
+﻿<Page
+    x:Class="CSharpMath.Uno.Example.TryPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CSharpMath.Uno.Example"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:math="using:CSharpMath.Uno"
+    xmlns:mathrender="using:CSharpMath.Rendering.FrontEnd"
+    xmlns:sys="using:System"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid RowDefinitions="Auto,Auto,Auto,*">
+        <TextBox x:Name="Entry" />
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <Button Content="Reset pan" Click="ResetPan_Clicked"/>
+            <ComboBox x:Name="FontSizer" Header="Font Size" ItemsSource="{Binding FontSizes}" SelectedItem="30" />
+            <ComboBox x:Name="Alignment" Header="Alignment" ItemsSource="{Binding AlignmentValues}" />
+            <Button Content="Calculate" Click="Calculate_Clicked" />
+        </StackPanel>
+        <TextBlock x:Name="Exit" Grid.Row="2" Text="{Binding LaTeX, ElementName=View, Mode=OneWay}" />
+        <math:MathView
+            x:Name="View"
+            Grid.Row="3"
+            EnablePanning="True"
+            LaTeX="{Binding Text, ElementName=Entry, Mode=OneWay}"
+            FontSize="{Binding SelectedItem, ElementName=FontSizer, Mode=OneWay}"
+            TextAlignment="{Binding SelectedItem, ElementName=Alignment, Mode=OneWay}"
+            TextColor="{StaticResource TextFillColorPrimary}" />
+    </Grid>
+</Page>

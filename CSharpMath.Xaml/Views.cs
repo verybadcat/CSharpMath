@@ -25,6 +25,20 @@ using XInheritControl = Microsoft.Maui.Controls.GraphicsView;
 using XProperty = Microsoft.Maui.Controls.BindableProperty;
 namespace CSharpMath.Maui {
   [Microsoft.Maui.Controls.ContentProperty(nameof(LaTeX))]
+<<<<<<< Updated upstream
+=======
+#elif Uno
+using XCanvas = SkiaSharp.SKCanvas;
+using XCanvasColor = SkiaSharp.SKColor;
+using XColor = Windows.UI.Color;
+using XThickness = Microsoft.UI.Xaml.Thickness;
+using XInheritControl = SkiaSharp.Views.Windows.SKXamlCanvas;
+using XProperty = Microsoft.UI.Xaml.DependencyProperty;
+using MathPainter = CSharpMath.SkiaSharp.MathPainter;
+using TextPainter = CSharpMath.SkiaSharp.TextPainter;
+namespace CSharpMath.Uno {
+  [Microsoft.UI.Xaml.Markup.ContentProperty(Name = nameof(LaTeX))]
+>>>>>>> Stashed changes
 #endif
   public class BaseView<TPainter, TContent> : XInheritControl, ICSharpMathAPI<TContent, XColor>
     where TPainter : Painter<XCanvas, TContent, XCanvasColor>, new() where TContent : class {
@@ -35,7 +49,16 @@ namespace CSharpMath.Maui {
     /// <summary>Contains all the properties to listen to for painter property changes. Do not mutate.</summary>
     public static readonly XProperty[] WritablePainterProperties;
     /// <summary>Contains all the property names to listen to for painter property changes. Do not mutate.</summary>
+<<<<<<< Updated upstream
     public static readonly HashSet<string> WritablePainterPropertyNames;
+=======
+#if Uno
+    private
+#else
+    public
+#endif
+      static readonly HashSet<string> WritablePainterPropertyNames;
+>>>>>>> Stashed changes
     static BaseView() {
       WritablePainterProperties = [
         EnablePanningProperty = CreateProperty<BaseView<TPainter, TContent>, bool>(nameof(EnablePanning), false, _ => false, (_, __) => { }),
@@ -155,6 +178,7 @@ namespace CSharpMath.Maui {
     private protected static XCanvasColor XColorToXCanvasColor(XColor color) => color;
     private protected static XColor XCanvasColorToXColor(XCanvasColor color) => color;
     Microsoft.Maui.Graphics.PointF _origin;
+<<<<<<< Updated upstream
     public BaseView() {
       StartInteraction += (sender, e) => {
         if (EnablePanning)
@@ -179,6 +203,77 @@ namespace CSharpMath.Maui {
     void Draw(XCanvas_Canvas rawCanvas) {
       // dirtyRect may be larger than Width and Height on Windows which leads to incorrect alignments
       var canvas = (rawCanvas, new Microsoft.Maui.Graphics.SizeF((float)Width, (float)Height));
+=======
+    public BaseView() {
+      StartInteraction += (sender, e) => {
+        if (EnablePanning)
+          _origin = e.Touches[0];
+      };
+      DragInteraction += (sender, e) => {
+        if (EnablePanning) {
+          var point = e.Touches[0];
+          var displacement = point - _origin;
+          _origin = point;
+          DisplacementX += displacement.Width;
+          DisplacementY += displacement.Height;
+        }
+      };
+      EndInteraction += (sender, e) => { _origin = e.Touches[0]; };
+      Drawable = new DrawableRedirector(this);
+    }
+    class DrawableRedirector(BaseView<TPainter, TContent> parent) : Microsoft.Maui.Graphics.IDrawable {
+  
+      public void Draw(XCanvas_Canvas canvas, Microsoft.Maui.Graphics.RectF dirtyRect) => parent.Draw(canvas);
+    }
+    void Draw(XCanvas_Canvas rawCanvas) {
+      // dirtyRect may be larger than Width and Height on Windows which leads to incorrect alignments
+      var canvas = (rawCanvas, new Microsoft.Maui.Graphics.SizeF((float)Width, (float)Height));
+#elif Uno
+          @this.Invalidate();
+        }
+        return XProperty.Register(propertyName, typeof(TValue), typeof(TThis),
+          new Microsoft.UI.Xaml.PropertyMetadata(defaultValue, (b, n) => PropertyChanged((TThis)b, n.NewValue)));
+      }
+      static string GetPropertyName(XProperty prop) => ""; // unsupported :(
+    }
+    public BaseView() {
+      PointerPressed += (sender, e) => {
+        if (e.GetCurrentPoint(this) is { Properties.IsLeftButtonPressed: true } point && EnablePanning)
+          _origin = point.Position;
+      };
+      PointerMoved += (sender, e) => {
+        if (e.GetCurrentPoint(this) is { Properties.IsLeftButtonPressed: true } point && EnablePanning) {
+          var displacement = new Windows.Foundation.Point(point.Position.X - _origin.X, point.Position.Y - _origin.Y);
+          _origin = point.Position;
+          DisplacementX += (float)displacement.X;
+          DisplacementY += (float)displacement.Y;
+        }
+      };
+      PointerReleased += (sender, e) => {
+        if (e.GetCurrentPoint(this) is { Properties.IsLeftButtonPressed: true } point && EnablePanning)
+          _origin = point.Position;
+      };
+    }
+    protected override Windows.Foundation.Size MeasureOverride(Windows.Foundation.Size availableSize) =>
+      Painter.Measure((float)availableSize.Width) is { } rect
+      ? new Windows.Foundation.Size(rect.Width, rect.Height)
+      : base.MeasureOverride(availableSize);
+    [System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.AllConstructors)]
+    readonly struct ReadOnlyProperty<TThis, TValue>(string propertyName, Func<TPainter, TValue> getter) where TThis : BaseView<TPainter, TContent> {
+      public readonly XProperty Property = XProperty.Register(propertyName, typeof(TValue), typeof(TThis), new Microsoft.UI.Xaml.PropertyMetadata(getter(staticPainter)));
+      public void SetValue(TThis @this, TValue value) => @this.SetValue(Property, value);
+    }
+    static XCanvasColor XColorToXCanvasColor(XColor color) => new(color.R, color.G, color.B, color.A);
+    static XColor XCanvasColorToXColor(XCanvasColor color) => XColor.FromArgb(color.Alpha, color.Red, color.Green, color.Blue);
+    Windows.Foundation.Point _origin;
+    protected override void OnPaintSurface(global::SkiaSharp.Views.Windows.SKPaintSurfaceEventArgs e) {
+      base.OnPaintSurface(e);
+      var canvas = e.Surface.Canvas;
+      canvas.Clear();
+      // SkiaSharp deals with raw pixels as opposed to Uno's device-independent units.
+      // We should scale to occupy the full view size.
+      canvas.Scale(e.Info.Width / (float)ActualWidth);
+>>>>>>> Stashed changes
 #endif
       var padding = Padding;
       Painter.Draw(canvas, TextAlignment, new(left: (float)padding.Left, top: (float)padding.Top, right: (float)padding.Right, bottom: (float)padding.Bottom), DisplacementX, DisplacementY);
