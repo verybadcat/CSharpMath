@@ -4,7 +4,6 @@ using CSharpMath.Atom;
 using CSharpMath.Atom.Atoms;
 using CSharpMath.Display.Displays;
 using CSharpMath.Display.FrontEnd;
-using InvalidCodePathException = CSharpMath.Structures.InvalidCodePathException;
 using System.Drawing;
 using System.Linq;
 
@@ -738,7 +737,7 @@ namespace CSharpMath.Display {
       var glyphs = new List<TGlyph>();
       var offsets = new List<float>();
       float height = ConstructGlyphWithParts(parts, glyphHeight, glyphs, offsets);
-      using var singleGlyph = new Structures.RentedArray<TGlyph>(glyphs[0]);
+      using var singleGlyph = new RentedArray<TGlyph>(glyphs[0]);
       // descent:0 because it's up to the rendering to adjust the display glyph up or down by setting ShiftDown
       return new GlyphConstructionDisplay<TFont, TGlyph>
         (glyphs, offsets, _styleFont, height, 0, _context.GlyphBoundsProvider
@@ -925,7 +924,7 @@ namespace CSharpMath.Display {
             // Enlarge the character in display style.
             glyph = _mathTable.GetLargerGlyph(_styleFont, glyph);
           var delta = _mathTable.GetItalicCorrection(_styleFont, glyph);
-          using (var glyphsArray = new Structures.RentedArray<TGlyph>(glyph)) {
+          using (var glyphsArray = new RentedArray<TGlyph>(glyph)) {
             var boundingBox = _context.GlyphBoundsProvider.GetBoundingRectsForGlyphs
               (_styleFont, glyphsArray.Result, 1).Single();
             var width = _context.GlyphBoundsProvider.GetAdvancesForGlyphs

@@ -15,14 +15,10 @@ using Suppress = System.Diagnostics.CodeAnalysis.SuppressMessageAttribute;
 [assembly:Suppress("", "IDE0063:'using' statement can be simplified", Target = _Typography, Justification = Justification, Scope = Scope)]
 [assembly:Suppress("", "IDE0066:Use 'switch' expression", Target = _Typography, Justification = Justification, Scope = Scope)]
 [assembly:Suppress("", "IDE1006:Naming rule violation: Prefix '_' is not expected", Target = _Typography, Justification = Justification, Scope = Scope)]
-[assembly:Suppress("", "CS0162:Unreachable code detected", Target = _Typography, Justification = Justification, Scope = Scope)]
-[assembly:Suppress("", "CS0168:Variable is declared but never used", Target = _Typography, Justification = Justification, Scope = Scope)]
-[assembly:Suppress("", "CS0219:Variable is assigned but never used", Target = _Typography, Justification = Justification, Scope = Scope)]
-[assembly:Suppress("", "CS0649:Field is never assigned to and will always have its default value", Target = _Typography, Justification = Justification, Scope = Scope)]
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 static class IgnoreTypographyWarnings {
   public const string Justification = "These messages are from the Typography library. Its code is not very clean.";
   public const string Scope = "namespaceanddescendants";
-  public const string _Typography = nameof(Typography);
+  public const string _Typography = "~N:Typography";
 }

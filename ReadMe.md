@@ -11,7 +11,7 @@ CSharpMath is a C# port of the wonderful <a href="https://github.com/kostub/iosM
 [Current prerelease][NuGet-pre]|[![NuGet pre-release shield](https://img.shields.io/nuget/vpre/CSharpMath.svg)][NuGet-pre] [![GitHub pre-release shield](https://img.shields.io/github/release-pre/verybadcat/CSharpMath.svg)][GitHub-pre] [![GitHub pre-release date shield](https://img.shields.io/github/release-date-pre/verybadcat/CSharpMath.svg)][GitHub-pre] [![GitHub commits since last prerelease shield](https://img.shields.io/github/commits-since/verybadcat/CSharpMath/latest.svg?include_prereleases)][GitHub-pre]
 <!-- The "Current nightly" badge is blocked on https://github.com/badges/shields/pull/4184 -->
 
-[![NuGet downloads shield](https://img.shields.io/nuget/dt/CSharpMath.svg)][NuGet] [![GitHub contributors shield](https://img.shields.io/github/contributors/verybadcat/CSharpMath.svg)](https://github.com/verybadcat/CSharpMath/graphs/contributors) [![GitHub license shield](https://img.shields.io/github/license/verybadcat/CSharpMath.svg)](https://github.com/verybadcat/CSharpMath/blob/master/License) [![GitHub last commit shield](https://img.shields.io/github/last-commit/verybadcat/CSharpMath.svg)](https://github.com/verybadcat/CSharpMath/commits/master) [![GitHub Build workflow shield](https://img.shields.io/github/workflow/status/verybadcat/CSharpMath/Build.svg)](https://github.com/verybadcat/CSharpMath/actions?query=workflow%3ABuild+branch%3Amaster) [![GitHub Test workflow shield](https://img.shields.io/github/workflow/status/verybadcat/CSharpMath/Test.svg?label=tests)](https://github.com/verybadcat/CSharpMath/actions?query=workflow%3ATest+branch%3Amaster) [![codecov.io badge](https://codecov.io/github/verybadcat/CSharpMath/coverage.svg?branch=master)](https://codecov.io/github/verybadcat/CSharpMath?branch=master)
+[![NuGet downloads shield](https://img.shields.io/nuget/dt/CSharpMath.svg)][NuGet] [![GitHub contributors shield](https://img.shields.io/github/contributors/verybadcat/CSharpMath.svg)](https://github.com/verybadcat/CSharpMath/graphs/contributors) [![GitHub license shield](https://img.shields.io/github/license/verybadcat/CSharpMath.svg)](https://github.com/verybadcat/CSharpMath/blob/master/License) [![GitHub last commit shield](https://img.shields.io/github/last-commit/verybadcat/CSharpMath.svg)](https://github.com/verybadcat/CSharpMath/commits/master) [![GitHub Build workflow shield](https://img.shields.io/github/actions/workflow/status/verybadcat/CSharpMath/Build.yml?branch=main) [![GitHub Test workflow shield](https://img.shields.io/github/actions/workflow/status/verybadcat/CSharpMath/Test.yml?branch=main) [![codecov.io badge](https://codecov.io/github/verybadcat/CSharpMath/coverage.svg?branch=master)](https://codecov.io/github/verybadcat/CSharpMath?branch=master)
 
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/verybadcat/CSharpMath.svg)](http://isitmaintained.com/project/verybadcat/CSharpMath "Average time to resolve an issue") [![Percentage of issues still open](http://isitmaintained.com/badge/open/verybadcat/CSharpMath.svg)](http://isitmaintained.com/project/verybadcat/CSharpMath "Percentage of issues still open") [![Issues welcome](https://img.shields.io/badge/issues-welcome-success)](https://github.com/verybadcat/CSharpMath/issues) [![Pull Requests welcome](https://img.shields.io/badge/pull_requests-welcome-success)](https://github.com/verybadcat/CSharpMath/issues) [![❤](https://img.shields.io/badge/made%20with-%e2%9d%a4-ff69b4.svg)](https://www.youtube.com/watch?v=dQw4w9WgXcQ "")
 
@@ -26,34 +26,32 @@ Really, any one you like!
 
 [//]: # (Primary platforms)
 
-[SkiaSharp](wiki/@GettingStarted~SkiaSharp.md)
-[Xamarin.Forms](wiki/@GettingStarted~Forms.md)
-[Xamarin.iOS](wiki/@GettingStarted~iOS.md)
+[SkiaSharp](CSharpMath.Wiki/@GettingStarted~SkiaSharp.md)
+[Xamarin.Forms](CSharpMath.Wiki/@GettingStarted~Forms.md)
 
 [//]: # (Through SkiaSharp)
 
-[tvOS](wiki/@GettingStarted~tvOS.md)
-[watchOS](wiki/@GettingStarted~watchOS.md)
-[Xamarin.Android](wiki/@GettingStarted~Android.md)
-[Xamarin.Mac](wiki/@GettingStarted~Mac.md)
-[.NET Core](wiki/@GettingStarted~NetCore.md)
-[Windows Forms](wiki/@GettingStarted~WinForms.md)
-[Windows Presentation Framework](wiki/@GettingStarted~WPF.md)
-[Universal Windows Platform](wiki/@GettingStarted~UWP.md)
-[Gtk#](wiki/@GettingStarted~Gtk.md)
-[Tizen](wiki/@GettingStarted~Tizen.md)
+iOS
+tvOS
+watchOS
+[Xamarin.Android](CSharpMath.Wiki/@GettingStarted~Android.md)
+Mac
+[.NET Core](CSharpMath.Wiki/@GettingStarted~NetCore.md)
+[Windows Forms](CSharpMath.Wiki/@GettingStarted~WinForms.md)
+[Windows Presentation Framework](CSharpMath.Wiki/@GettingStarted~WPF.md)
+[Universal Windows Platform](CSharpMath.Wiki/@GettingStarted~UWP.md)
+[Gtk#](CSharpMath.Wiki/@GettingStarted~Gtk.md)
+[Tizen](CSharpMath.Wiki/@GettingStarted~Tizen.md)
 
 [//]: # (Future)
 
-[Unity](wiki/@GettingStarted~Unity.md)
-[ASP.NET](wiki/@GettingStarted~ASP.md)
+[Unity](CSharpMath.Wiki/@GettingStarted~Unity.md)
+[ASP.NET](CSharpMath.Wiki/@GettingStarted~ASP.md)
 -->
 
 # Platform support
 
-iOS (CSharpMath.Ios) was ironically the first front end, which was added in v0.0.
-
-Xamarin.Forms (CSharpMath.Forms) support via SkiaSharp (CSharpMath.SkiaSharp) was added in v0.1 as development continued.
+Xamarin.Forms (CSharpMath.Forms) support via SkiaSharp (CSharpMath.SkiaSharp) was added in v0.1.
 
 Avalonia (CSharpMath.Avalonia) support was also added in v0.4.
 
@@ -67,23 +65,7 @@ _The above projects are independent of CSharpMath._
 
 To get started, do something like this:
 
-### 1. CSharpMath.Ios
-
-```cs
-var latexView = IosMathLabels.MathView(@"x = -b \pm \frac{\sqrt{b^2-4ac}}{2a}", 15);
-latexView.ContentInsets = new UIEdgeInsets(10, 10, 10, 10);
-var size = latexView.SizeThatFits(new CoreGraphics.CGSize(370, 180));
-latexView.Frame = new CoreGraphics.CGRect(0, 20, size.Width, size.Height);
-someSuperview.Add(latexView);
-```
-
-[See an example project](CSharpMath.Ios.Example)
-      
-![Quadratic Formula](CSharpMath/RenderedSamples/Quadratic%20Formula.png)|![Power Series](CSharpMath/RenderedSamples/PowerSeries.png)
-------------------------------------------------------------------------|-----------------------------------------------------------
-![Matrix Product](CSharpMath/RenderedSamples/MatrixProduct.png)         |![Continued Fraction](CSharpMath/RenderedSamples/ContinuedFraction.png)
-    
-### 2. CSharpMath.SkiaSharp
+### 1. CSharpMath.SkiaSharp
 ```cs
 var painter = CSharpMath.SkiaSharp.MathPainter();
 painter.LaTeX = @"\frac\sqrt23";
@@ -91,7 +73,7 @@ paiinter.Draw(someCanvas);
 ```
 This is used by CSharpMath.Forms below.
     
-### 3. CSharpMath.Forms
+### 2. CSharpMath.Forms
 
 ```xaml
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
@@ -112,11 +94,11 @@ someLayout.Children.Add(view);
 
 [See an example project](CSharpMath.Forms.Example)
     
-iOS | Android | Windows UWP
-----|---------|------------
-![1/2](https://user-images.githubusercontent.com/19922066/40612166-fd6c5b38-62ab-11e8-9cb1-b2b7eb6883be.png) | ![1+1](https://user-images.githubusercontent.com/19922066/40575043-183a6970-6110-11e8-887f-820e14efc588.jpeg) | ![Panning a view](https://user-images.githubusercontent.com/19922066/40731183-18a09b68-6463-11e8-8095-1a4cc9df9eae.gif) ![Colors!](https://user-images.githubusercontent.com/19922066/40972206-8abc247c-68f2-11e8-8684-561b5e833c21.png)
+Android | Windows UWP
+--------|------------
+![1+1](https://user-images.githubusercontent.com/19922066/40575043-183a6970-6110-11e8-887f-820e14efc588.jpeg) | ![Panning a view](https://user-images.githubusercontent.com/19922066/40731183-18a09b68-6463-11e8-8095-1a4cc9df9eae.gif) ![Colors!](https://user-images.githubusercontent.com/19922066/40972206-8abc247c-68f2-11e8-8684-561b5e833c21.png)
 
-### 4. CSharpMath.Avalonia
+### 3. CSharpMath.Avalonia
 
 ```xaml
 <UserControl xmlns="https://github.com/avaloniaui"
@@ -314,7 +296,7 @@ chl: chart labels, here a graph written in https://en.wikipedia.org/wiki/DOT_lan
 
 For all uses and possible values of the API parameters, see https://developers.google.com/chart/image/docs/chart_params
 -->
-![Project structure](https://quickchart.io/chart?cht=gv&chl=graph{node[shape=box];{rank=same;"Typography.OpenFont";"Typography.TextBreak";CSharpMath};"Typography.OpenFont"[shape=record,label="{_Dependencies|Typography.OpenFont}"];"Typography.TextBreak"[shape=record,label="{_Dependencies|Typography.TextBreak}"];CSharpMath[shape=record,label="{_Core|CSharpMath}"];"CSharpMath.Apple"[shape=record,label="{iOS|CSharpMath.Apple}"];"CSharpMath.Avalonia"[shape=record,label="{Avalonia|CSharpMath.Avalonia}"];"CSharpMath.SkiaSharp"[shape=record,label="{SkiaSharp|CSharpMath.SkiaSharp}"];"CSharpMath.Forms"[shape=record,label="{Xamarin.Forms|CSharpMath.Forms}"];"Typography.OpenFont"--"Typography.GlyphLayout";"Typography.TextBreak"--"TextBreakTests";CSharpMath--"CSharpMath.CoreTests";CSharpMath--"CSharpMath.Apple"--"CSharpMath.Ios"--{"CSharpMath.Ios.Example";"CSharpMath.Ios.Tests"};CSharpMath--"CSharpMath.Editor"--"CSharpMath.Editor.Tests"--"CSharpMath.Editor.Tests.Visualizer";"CSharpMath.Editor"--"CSharpMath.Editor.Tests.FSharp";CSharpMath--"CSharpMath.Evaluation"--{"CSharpMath.Evaluation.Tests";"CSharpMath.Forms.Example"};{"CSharpMath.Editor";"Typography.GlyphLayout";"Typography.TextBreak"}--"CSharpMath.Rendering"--"CSharpMath.Rendering.Text.Tests";"CSharpMath.Rendering"--"CSharpMath.Avalonia"--"CSharpMath.Avalonia.Example";"CSharpMath.Rendering"--"CSharpMath.SkiaSharp"--"CSharpMath.Forms"--"CSharpMath.Forms.Example";"CSharpMath.Forms.Example"--{"CSharpMath.Forms.Example.Android";"CSharpMath.Forms.Example.iOS";"CSharpMath.Forms.Example.UWP";"CSharpMath.Forms.Example.WPF"};{"CSharpMath.Avalonia";"CSharpMath.SkiaSharp"}--"CSharpMath.Rendering.Tests";"CSharpMath.Xaml"--{"CSharpMath.Avalonia";"CSharpMath.Forms"}--"CSharpMath.Xaml.Tests"})
+![Project structure](https://quickchart.io/chart?cht=gv&chl=graph{node[shape=box];{rank=same;"Typography.OpenFont";"Typography.TextBreak";CSharpMath};"Typography.OpenFont"[shape=record,label="{_Dependencies|Typography.OpenFont}"];"Typography.TextBreak"[shape=record,label="{_Dependencies|Typography.TextBreak}"];CSharpMath[shape=record,label="{_Core|CSharpMath}"];"CSharpMath.Avalonia"[shape=record,label="{Avalonia|CSharpMath.Avalonia}"];"CSharpMath.SkiaSharp"[shape=record,label="{SkiaSharp|CSharpMath.SkiaSharp}"];"CSharpMath.Forms"[shape=record,label="{Xamarin.Forms|CSharpMath.Forms}"];"Typography.OpenFont"--"Typography.GlyphLayout";"Typography.TextBreak"--"TextBreakTests";CSharpMath--"CSharpMath.CoreTests";CSharpMath--"CSharpMath.Editor"--"CSharpMath.Editor.Tests"--"CSharpMath.Editor.Tests.Visualizer";"CSharpMath.Editor"--"CSharpMath.Editor.Tests.FSharp";CSharpMath--"CSharpMath.Evaluation"--{"CSharpMath.Evaluation.Tests";"CSharpMath.Forms.Example"};{"CSharpMath.Editor";"Typography.GlyphLayout";"Typography.TextBreak"}--"CSharpMath.Rendering"--"CSharpMath.Rendering.Text.Tests";"CSharpMath.Rendering"--"CSharpMath.Avalonia"--"CSharpMath.Avalonia.Example";"CSharpMath.Rendering"--"CSharpMath.SkiaSharp"--"CSharpMath.Forms"--"CSharpMath.Forms.Example";"CSharpMath.Forms.Example"--{"CSharpMath.Forms.Example.Android";"CSharpMath.Forms.Example.UWP"};{"CSharpMath.Avalonia";"CSharpMath.SkiaSharp"}--"CSharpMath.Rendering.Tests";"CSharpMath.Xaml"--{"CSharpMath.Avalonia";"CSharpMath.Forms"}--"CSharpMath.Xaml.Tests"})
 
 ## Major processes of drawing LaTeX
 <!--For some reason taillabel is the only way to position a label to the left-->
@@ -361,7 +343,7 @@ Dependency|Used by|License
 -|-|-
 [Typography project](https://github.com/LayoutFarm/Typography)|CSharpMath.Rendering|[MIT](https://github.com/LayoutFarm/Typography/blob/master/LICENSE.md)
 [AngouriMath project](https://github.com/asc-community/AngouriMath)|CSharpMath.Evaluation|[MIT](https://github.com/asc-community/AngouriMath/blob/master/LICENSE.md)
-[Latin Modern Math font](http://www.gust.org.pl/projects/e-foundry/lm-math)|CSharpMath.Ios, CSharpMath.Rendering|[GUST Font License](http://www.gust.org.pl/projects/e-foundry/licenses/GUST-FONT-LICENSE.txt/view)
+[Latin Modern Math font](http://www.gust.org.pl/projects/e-foundry/lm-math)|CSharpMath.Rendering|[GUST Font License](http://www.gust.org.pl/projects/e-foundry/licenses/GUST-FONT-LICENSE.txt/view)
 [Cyrillic Modern font](https://sourceforge.net/projects/cyrillic-modern/)|CSharpMath.Rendering|[SIL Open Font License](https://ctan.org/license/ofl)
 [AMS Capital Blackboard Bold font](https://github.com/Happypig375/AMSFonts-Ttf-Otf) (extracted by @Happypig375 from [the amsfonts package](https://ctan.org/pkg/amsfonts))|CSharpMath.Rendering|[SIL Open Font License](https://ctan.org/license/ofl)
 [ComicNeue font](http://comicneue.com)|CSharpMath.Rendering.Tests, CSharpMath.Xaml.Tests|[SIL Open Font License](http://scripts.sil.org/OFL)

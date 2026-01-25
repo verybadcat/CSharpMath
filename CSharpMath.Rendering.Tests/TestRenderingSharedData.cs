@@ -3,29 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-//For the Android linker
-namespace Android.Runtime {
-  public sealed class PreserveAttribute : System.Attribute {
-    public bool AllMembers; public bool Conditional;
-  }
-}
-#if !__IOS__
-//For the iOS linker
-namespace Foundation {
-  public sealed class PreserveAttribute : System.Attribute {
-    public bool AllMembers; public bool Conditional;
-  }
-}
-#endif
 namespace CSharpMath.Rendering.Tests {
-  [Android.Runtime.Preserve(AllMembers = true), Foundation.Preserve(AllMembers = true)]
   public abstract class TestRenderingSharedData<TThis> : IEnumerable<object[]> where TThis : TestRenderingSharedData<TThis> {
     public static IReadOnlyDictionary<string, string> AllConstants { get; } =
       typeof(TThis)
       .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
       .Where(fi => fi.IsLiteral && !fi.IsInitOnly)
       .ToDictionary(fi => fi.Name, fi => fi.GetRawConstantValue() as string
-        ?? throw new Structures.InvalidCodePathException("All constants must be strings!"));
+        ?? throw new Atom.InvalidCodePathException("All constants must be strings!"));
     public static string AllConstantValues { get; } =
       string.Join(@"\\", AllConstants.Where(info => !info.Key.StartsWith("Error")).Select(info => $@"{info.Key}: {info.Value}"));
     public IEnumerator<object[]> GetEnumerator() =>

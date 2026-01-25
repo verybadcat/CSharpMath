@@ -2,22 +2,21 @@ using System.Drawing;
 using Typography.OpenFont;
 
 namespace CSharpMath.Rendering.FrontEnd {
-  using Structures;
   public interface ICSharpMathAPI<TContent, TColor> where TContent : class {
     #region Non-display-recreating properties
     TColor HighlightColor { get; set; }
     TColor TextColor { get; set; }
     TColor ErrorColor { get; set; }
     ///<summary>Unit of measure: points; Defaults to <see cref="FontSize"/>.</summary>
-    double ErrorFontSize { get; set; }
+    float? ErrorFontSize { get; set; }
     bool DisplayErrorInline { get; set; }
     PaintStyle PaintStyle { get; set; }
-    double Magnification { get; set; }
+    float Magnification { get; set; }
     string? ErrorMessage { get; }
     #endregion Non-display-recreating properties
     #region Display-recreating properties
     /// <summary>Unit of measure: points</summary>
-    double FontSize { get; set; }
+    float FontSize { get; set; }
     System.Collections.Generic.IEnumerable<Typeface> LocalTypefaces { get; set; }
     Atom.LineStyle LineStyle { get; set; }
     TContent? Content { get; set; }

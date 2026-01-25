@@ -1,0 +1,50 @@
+﻿<?xml version = "1.0" encoding = "UTF-8" ?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:math="clr-namespace:CSharpMath.Maui;assembly=CSharpMath.Maui"
+             xmlns:sys="clr-namespace:System;assembly=netstandard"
+             x:Class="CSharpMath.Maui.Example.App">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="math:MathView">
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource Primary}}" />
+                <Setter Property="FontSize" Value="36" />
+            </Style>
+            <Style TargetType="math:TextView">
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource Primary}}" />
+                <Setter Property="FontSize" Value="36" />
+            </Style>
+            <x:Array x:Key="FontSizesArray" Type="{x:Type sys:Single}">
+                <sys:Single>1</sys:Single>
+                <sys:Single>2</sys:Single>
+                <sys:Single>4</sys:Single>
+                <sys:Single>8</sys:Single>
+                <sys:Single>12</sys:Single>
+                <sys:Single>16</sys:Single>
+                <sys:Single>20</sys:Single>
+                <sys:Single>24</sys:Single>
+                <sys:Single>30</sys:Single>
+                <sys:Single>36</sys:Single>
+                <sys:Single>48</sys:Single>
+                <sys:Single>60</sys:Single>
+                <sys:Single>72</sys:Single>
+                <sys:Single>96</sys:Single>
+                <sys:Single>108</sys:Single>
+                <sys:Single>144</sys:Single>
+                <sys:Single>192</sys:Single>
+                <sys:Single>288</sys:Single>
+                <sys:Single>384</sys:Single>
+                <sys:Single>480</sys:Single>
+                <sys:Single>576</sys:Single>
+                <sys:Single>666</sys:Single>
+                <sys:Single>768</sys:Single>
+                <sys:Single>864</sys:Single>
+                <sys:Single>960</sys:Single>
+            </x:Array>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

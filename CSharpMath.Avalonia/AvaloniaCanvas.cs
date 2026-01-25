@@ -54,11 +54,11 @@ namespace CSharpMath.Avalonia {
     }
     public void Save() => _states.Push(new Stack<DrawingContext.PushedState>());
     public void Scale(float sx, float sy) =>
-        PushState(DrawingContext.PushPreTransform(new Matrix(sx, 0, 0, sy, 0, 0)));
+        PushState(DrawingContext.PushTransform(Matrix.CreateScale(sx, sy)));
     public void StrokeRect(float left, float top, float width, float height) =>
         DrawingContext.DrawRectangle(new Pen(CurrentBrush), new Rect(left, top, width, height));
     public void Translate(float dx, float dy) =>
-        PushState(DrawingContext.PushPreTransform(new Matrix(1, 0, 0, 1, dx, dy)));
+        PushState(DrawingContext.PushTransform(Matrix.CreateTranslation(dx, dy)));
     private void PushState(DrawingContext.PushedState state) => _states.Peek().Push(state);
   }
 }

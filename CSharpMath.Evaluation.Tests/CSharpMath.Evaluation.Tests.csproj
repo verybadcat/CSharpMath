@@ -1,4 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+	<!--The Xunit auto-generated namespace should not overwrite CSharpMath.Evaluation-->
+	<RootNamespace>CSharpMath.EvaluationTests</RootNamespace>	
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../CSharpMath.Evaluation/CSharpMath.Evaluation.csproj" />
   </ItemGroup>

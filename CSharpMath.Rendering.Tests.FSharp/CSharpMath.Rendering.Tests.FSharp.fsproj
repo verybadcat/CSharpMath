@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <Compile Include="RandomKeyboardInputsTest.fs"/>
-    <ProjectReference Include="..\CSharpMath.Rendering\CSharpMath.Rendering.csproj"/>
+    <Compile Include="RandomKeyboardInputsTest.fs" />
+    <ProjectReference Include="..\CSharpMath.Rendering\CSharpMath.Rendering.csproj" />
   </ItemGroup>
 </Project>

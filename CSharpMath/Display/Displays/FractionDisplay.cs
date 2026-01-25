@@ -10,7 +10,7 @@ namespace CSharpMath.Display.Displays {
     ///<summary>A display representing the numerator of the fraction.
     ///Its position is relative to the parent and it is not treated as a sub-display.</summary>
     public ListDisplay<TFont, TGlyph> Numerator { get; }
-    ///<summary>A display representing the numerator of the fraction.
+    ///<summary>A display representing the denominator of the fraction.
     ///Its position is relative to the parent and it is not treated as a sub-display.</summary>
     public ListDisplay<TFont, TGlyph> Denominator { get; }
 

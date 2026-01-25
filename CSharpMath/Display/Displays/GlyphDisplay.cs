@@ -29,8 +29,8 @@ namespace CSharpMath.Display.Displays {
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
       this.DrawBackground(context);
       context.SaveState();
-      using var glyphs = new Structures.RentedArray<TGlyph>(Glyph);
-      using var positions = new Structures.RentedArray<PointF>(new PointF());
+      using var glyphs = new RentedArray<TGlyph>(Glyph);
+      using var positions = new RentedArray<PointF>(new PointF());
       context.Translate(new PointF(Position.X, Position.Y - ShiftDown));
       context.SetTextPosition(new PointF());
       context.DrawGlyphsAtPoints(glyphs.Result, Font, positions.Result, TextColor);

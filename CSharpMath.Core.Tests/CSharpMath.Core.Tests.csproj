@@ -1,0 +1,5 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\CSharpMath.Core.Example\CSharpMath.Core.Example.csproj" />
+  </ItemGroup>
+</Project>

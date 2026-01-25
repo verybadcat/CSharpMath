@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Typography.OpenFont;
+using Typography.OpenFont.Extensions;
 
 namespace CSharpMath.Rendering.BackEnd {
   public class Fonts : Display.FrontEnd.IFont<Glyph>, IEnumerable<Typeface> {
@@ -12,7 +13,7 @@ namespace CSharpMath.Rendering.BackEnd {
           System.Reflection.Assembly.GetExecutingAssembly()
           .GetManifestResourceStream($"CSharpMath.Rendering.Reference_Fonts.{fileName}")
         );
-        if (typeface == null) throw new Structures.InvalidCodePathException("Invalid predefined font!");
+        if (typeface == null) throw new Atom.InvalidCodePathException("Invalid predefined font!");
         typeface.UpdateAllCffGlyphBounds();
         return typeface;
       }
@@ -25,7 +26,7 @@ namespace CSharpMath.Rendering.BackEnd {
       PointSize = pointSize;
       Typefaces = localTypefaces.Concat(GlobalTypefaces);
       MathTypeface = Typefaces.First(t => t.HasMathTable());
-      MathConsts = MathTypeface.MathConsts ?? throw new Structures.InvalidCodePathException(nameof(MathTypeface) + " doesn't have " + nameof(MathConsts));
+      MathConsts = MathTypeface.MathConsts ?? throw new Atom.InvalidCodePathException(nameof(MathTypeface) + " doesn't have " + nameof(MathConsts));
     }
     public static readonly Typefaces GlobalTypefaces = GetGlobalTypefaces();
     public float PointSize { get; }

@@ -3,7 +3,7 @@ using System.Text;
 
 namespace CSharpMath {
   static partial class Evaluation {
-    static StringBuilder AppendLaTeX(this StringBuilder sb, AngouriMath.Core.Sys.Interfaces.ILatexiseable latex) =>
+    static StringBuilder AppendLaTeX(this StringBuilder sb, AngouriMath.Core.ILatexiseable latex) =>
       sb.Append(latex.Latexise());
     static StringBuilder AppendLaTeXHeader(this StringBuilder sb, string header, bool includeNewlineBefore = true) {
       if (includeNewlineBefore) sb.Append(@"\\\\");
@@ -30,12 +30,12 @@ namespace CSharpMath {
           Evaluate(right).Bind(x => (MathItem?)x).ExpectEntity("right side of equation").Bind(right => {
             latex.AppendLaTeXHeader("Input", false).AppendLaTeX(left).Append("=").AppendLaTeX(right);
             var entity = left - right;
-            var variables = AngouriMath.MathS.Utils.GetUniqueVariables(entity).FiniteSet();
-            if (variables.Count == 0)
-              latex.AppendLaTeXHeader("Result").Append($@"\text{{{entity.Eval() == 0}}}");
+            var variables = entity.Vars;
+            if (variables.IsEmpty())
+              latex.AppendLaTeXHeader("Result").Append($@"\text{{{entity.Evaled == 0}}}");
             else {
               latex.AppendLaTeXHeader("Solutions");
-              foreach (AngouriMath.VariableEntity variable in variables)
+              foreach (AngouriMath.Entity.Variable variable in variables)
                 latex.AppendLaTeX(variable).Append(@"\in ").AppendLaTeX(entity.SolveEquation(variable)).Append(@"\\");
             }
             return latex.ToString();
@@ -47,14 +47,13 @@ namespace CSharpMath {
           switch (item) {
             case MathItem.Entity { Content: var entity }:
               latex.AppendLaTeXHeader("Simplified").AppendLaTeX(entity.Simplify());
-              if (AngouriMath.MathS.CanBeEvaluated(entity))
-                latex.AppendLaTeXHeader($@"Value\ ({AngouriMath.MathS.Settings.DecimalPrecisionContext.Value.Precision}\ digits)").AppendLaTeX(entity.Eval());
+              if (entity.Evaled is AngouriMath.Entity.Number c)
+                latex.AppendLaTeXHeader($@"Value\ ({AngouriMath.MathS.Settings.DecimalPrecisionContext.Value.Precision}\ digits)").AppendLaTeX(c);
               else {
                 latex.AppendLaTeXHeader("Expanded").AppendLaTeX(entity.Expand());
-                latex.AppendLaTeXHeader("Factorized").AppendLaTeX(entity.Collapse());
+                latex.AppendLaTeXHeader("Factorized").AppendLaTeX(entity.Factorize());
               }
               break;
-            case MathItem.Set _:
             case MathItem.Comma _:
               break;
             default:

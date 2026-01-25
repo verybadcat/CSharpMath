@@ -9,13 +9,13 @@ namespace CSharpMath.Avalonia.Example.Pages {
     public CalculatorPage() => AvaloniaXamlLoader.Load(this);
   }
   class CalculatorPageConverter : IValueConverter {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture) =>
       value is string latex
       ? Atom.LaTeXParser.MathListFromLaTeX(latex)
         .Bind(list => Evaluation.Interpret(list))
         .Match(success => success, error => latex)
       : value;
-    object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
+    object? IValueConverter.ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
       throw new NotImplementedException();
     public static CalculatorPageConverter Singleton { get; } = new CalculatorPageConverter();
   }

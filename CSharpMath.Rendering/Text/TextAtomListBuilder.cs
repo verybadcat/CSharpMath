@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace CSharpMath.Rendering.Text {
-  using CSharpMath.Structures;
   public class TextAtomListBuilder : IReadOnlyList<TextAtom> {
     readonly List<TextAtom> _list = new List<TextAtom>();
     private void Add(TextAtom atom) => _list.Add(atom);
@@ -21,19 +20,19 @@ namespace CSharpMath.Rendering.Text {
         }
       Add(new TextAtom.Text(text));
     }
-    public void Space(Space space) => Add(new TextAtom.Space(space));
+    public void Space(Atom.Length space) => Add(new TextAtom.Space(space));
     public void Style(TextAtom atom, Atom.FontStyle style) => Add(new TextAtom.Style(atom, style));
     public void Size(TextAtom atom, float fontSize) => Add(new TextAtom.Size(atom, fontSize));
     public void Color(TextAtom atom, Color color) => Add(new TextAtom.Colored(atom, color));
-    public Result Math(string mathLaTeX, bool displayStyle, int startAt, ref int endAt) {
+    public Atom.Result Math(string mathLaTeX, bool displayStyle, int startAt, ref int endAt) {
       var builder = new Atom.LaTeXParser(mathLaTeX);
       var (mathList, error) = builder.Build();
       if (error != null) {
         endAt = startAt - mathLaTeX.Length + builder.NextChar - 1;
-        return Result.Err("[Math] " + error);
+        return Atom.Result.Err("[Math] " + error);
       } else {
         Add(new TextAtom.Math(mathList, displayStyle));
-        return Result.Ok();
+        return Atom.Result.Ok();
       }
     }
     public void List(IReadOnlyList<TextAtom> textAtoms) => Add(new TextAtom.List(textAtoms));

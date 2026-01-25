@@ -20,7 +20,9 @@ namespace CSharpMath.Atom {
 
     /// <returns>The last <see cref="MathAtom"/> that is not a <see cref="Comment"/>,
     /// or <see cref="null"/> when <see cref="Atoms"/> is empty.</returns>
+#if !NETSTANDARD2_0 && !NET45
     [System.Diagnostics.CodeAnalysis.DisallowNull]
+#endif
     public MathAtom? Last {
       get {
         for (int i = Atoms.Count - 1; i >= 0; i--)
@@ -38,10 +40,10 @@ namespace CSharpMath.Atom {
             case Comment _:
               continue;
             default:
-              Atoms[i] = value;
+              Atoms[i] = value!;
               return;
           }
-        Atoms.Add(value);
+        Atoms.Add(value!);
       }
     }
     /// <summary>Just a deep copy if finalize is false; A finalized list if finalize is true</summary>
@@ -65,33 +67,11 @@ namespace CSharpMath.Atom {
               prevNode?.IndexRange.Location + prevNode?.IndexRange.Length ?? 0;
             newNode.IndexRange = new Range(prevIndex, 1);
           }
-          //TODO: One day when C# receives "or patterns", simplify this abomination
           switch (prevNode, newNode) {
-            case (null, BinaryOperator b):
+            case (null or BinaryOperator or Relation or Open or Punctuation or LargeOperator, BinaryOperator b):
               newNode = b.ToUnaryOperator();
               break;
-            case (BinaryOperator _, BinaryOperator b):
-              newNode = b.ToUnaryOperator();
-              break;
-            case (Relation _, BinaryOperator b):
-              newNode = b.ToUnaryOperator();
-              break;
-            case (Open _, BinaryOperator b):
-              newNode = b.ToUnaryOperator();
-              break;
-            case (Punctuation _, BinaryOperator b):
-              newNode = b.ToUnaryOperator();
-              break;
-            case (LargeOperator _, BinaryOperator b):
-              newNode = b.ToUnaryOperator();
-              break;
-            case (BinaryOperator b, Relation _):
-              newList.Last = b.ToUnaryOperator();
-              break;
-            case (BinaryOperator b, Punctuation _):
-              newList.Last = b.ToUnaryOperator();
-              break;
-            case (BinaryOperator b, Close _):
+            case (BinaryOperator b, Relation or Punctuation or Close):
               newList.Last = b.ToUnaryOperator();
               break;
             case (Number n, Number _) when n.Superscript.IsEmpty() && n.Subscript.IsEmpty():

@@ -12,7 +12,7 @@ namespace CSharpMath.Rendering.BackEnd {
       (Fonts font, IEnumerable<Glyph> glyphs, int nGlyphs) {
       var advances = new List<float>(nGlyphs);
       foreach (var glyph in glyphs)
-        advances.Add(glyph.Typeface.GetHAdvanceWidthFromGlyphIndex(glyph.Info.GlyphIndex) *
+        advances.Add(glyph.Typeface.GetAdvanceWidthFromGlyphIndex(glyph.Info.GlyphIndex) *
           glyph.Typeface.CalculateScaleToPixelFromPointSize(font.PointSize));
       return (advances, advances.Sum());
     }

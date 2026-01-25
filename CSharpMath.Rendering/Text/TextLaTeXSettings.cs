@@ -1,5 +1,5 @@
 namespace CSharpMath.Rendering.Text {
-  using CSharpMath.Structures;
+  using CSharpMath.Atom;
   public static class TextLaTeXSettings {
     public static AliasBiDictionary<string, string> PredefinedTextSymbols { get; } =
       new AliasBiDictionary<string, string> {

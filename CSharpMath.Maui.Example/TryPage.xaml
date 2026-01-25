@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:math="clr-namespace:CSharpMath.Maui;assembly=CSharpMath.Maui"
+             xmlns:local="clr-namespace:CSharpMath.Maui.Example"
+             x:Class="CSharpMath.Maui.Example.TryPage"
+             Title="Try">
+    <ContentPage.Resources>
+        <local:IsNotNullConverter x:Key="IsNotNullConverter" />
+    </ContentPage.Resources>
+    <Grid RowDefinitions="Auto,Auto,Auto,*" ColumnDefinitions="*">
+        <Entry x:Name="Entry" Grid.Row="0" Text="{Binding LaTeX, Source={x:Reference View}}"/>
+        <HorizontalStackLayout Grid.Row="1">
+            <Button Text="Reset pan" Clicked="Button_Clicked"/>
+            <Picker x:Name="Size" Title="Font Size" ItemsSource="{StaticResource FontSizesArray}"/>
+            <Picker x:Name="Picker" Title="Select an example"/>
+            <Picker x:Name="Alignment" Title="Alignment" />
+        </HorizontalStackLayout>
+        <Label x:Name="Exit" Grid.Row="2"
+               Text="{Binding LaTeX, Source={x:Reference View}}">
+            <Label.Triggers>
+                <DataTrigger TargetType="Label"
+                             Binding="{Binding ErrorMessage, Source={x:Reference View}, Converter={StaticResource IsNotNullConverter}}"
+                             Value="True">
+                    <Setter Property="TextColor" Value="Red" />
+                </DataTrigger>
+            </Label.Triggers>
+        </Label>
+        <math:MathView x:Name="View" EnablePanning="True" Grid.Row="3" 
+                       FontSize="{Binding SelectedItem, Source={x:Reference Size}}"
+                       TextAlignment="{Binding SelectedItem, Source={x:Reference Alignment}}" />
+    </Grid>
+</ContentPage>

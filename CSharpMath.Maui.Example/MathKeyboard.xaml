@@ -1,0 +1,359 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:e="clr-namespace:CSharpMath.Maui.Example"
+             xmlns:f="clr-namespace:CSharpMath.Maui;assembly=CSharpMath.Maui"
+             x:Class="CSharpMath.Maui.Example.MathKeyboard"
+             x:Name="this"
+             WidthRequest="320"
+             HeightRequest="225">
+    <!-- double R(double value, double factor) => Math.Round(value / factor, MidpointRounding.AwayFromZero) * factor;
+         void F(float a, float b, float c, float d) =>
+           WriteLine((R(a, R(c, 2)) / 320f, R(b, R(d, 3)) / 180f, R(c, 2) / 320f, R(d, 3) / 180f).ToString().Trim('(', ')')); -->
+    <ContentView.Resources>
+        <Style TargetType="Grid">
+            <Setter Property="RowSpacing" Value="0"/>
+            <Setter Property="ColumnSpacing" Value="0"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+        <Style TargetType="Grid" x:Key="Tab">
+            <Setter Property="Grid.Row" Value="1"/>
+            <Setter Property="Grid.Column" Value="0"/>
+            <Setter Property="Grid.ColumnSpan" Value="7"/>
+            <Setter Property="IsVisible" Value="False"/>
+            <Setter Property="RowDefinitions">
+                <Setter.Value>
+                    <RowDefinitionCollection>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </RowDefinitionCollection>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ColumnDefinitions">
+                <Setter.Value>
+                    <ColumnDefinitionCollection>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="1.4*"/>
+                    </ColumnDefinitionCollection>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="Grid" x:Key="Tab_Letters" BaseResourceKey="Tab">
+            <Setter Property="RowDefinitions">
+                <Setter.Value>
+                    <RowDefinitionCollection>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </RowDefinitionCollection>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ColumnDefinitions">
+                <Setter.Value>
+                    <ColumnDefinitionCollection>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </ColumnDefinitionCollection>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!--Left row of first 3 tabs-->
+        <Style TargetType="f:MathInputButton" Class="x">
+            <Setter Property="Input" Value="SmallX"/>
+            <Setter Property="Grid.Row" Value="0"/>
+            <Setter Property="Grid.Column" Value="0"/>
+            <Setter Property="Keyboard" Value="{StaticResource Keyboard}"/>
+        </Style>
+        <Style TargetType="f:MathInputButton" Class="y">
+            <Setter Property="Input" Value="SmallY"/>
+            <Setter Property="Grid.Column" Value="0"/>
+            <Setter Property="Grid.Row" Value="1"/>
+            <Setter Property="Keyboard" Value="{StaticResource Keyboard}"/>
+        </Style>
+        <Style TargetType="f:MathInputButton" Class="Fraction">
+            <Setter Property="Input" Value="Fraction"/>
+            <Setter Property="Grid.Column" Value="0"/>
+            <Setter Property="Grid.Row" Value="2"/>
+            <Setter Property="Keyboard" Value="{StaticResource Keyboard}"/>
+        </Style>
+        <Style TargetType="f:MathInputButton" Class="Power">
+            <Setter Property="Input" Value="Power"/>
+            <Setter Property="Grid.Column" Value="0"/>
+            <Setter Property="Grid.Row" Value="3"/>
+            <Setter Property="Keyboard" Value="{StaticResource Keyboard}"/>
+        </Style>
+        <!--/Left row of first 3 tabs-->
+        <!--Right row of first 3 tabs-->
+        <Style TargetType="f:MathInputButton" Class="Back">
+            <Setter Property="Input" Value="Backspace"/>
+            <Setter Property="TextColor" Value="Red" />
+            <Setter Property="Grid.Column" Value="5"/>
+            <Setter Property="Grid.Row" Value="0"/>
+            <Setter Property="Keyboard" Value="{StaticResource Keyboard}"/>
+        </Style>
+        <Style TargetType="f:ImageSourceMathInputButton" Class="Clear">
+            <Setter Property="Input" Value="Clear"/>
+            <Setter Property="Source" Value="recyclebin.png" />
+            <Setter Property="Grid.Column" Value="5"/>
+            <Setter Property="Grid.Row" Value="1"/>
+            <Setter Property="Keyboard" Value="{StaticResource Keyboard}"/>
+        </Style>
+        <Style TargetType="f:MathInputButton" Class="Enter">
+            <Setter Property="Input" Value="Return"/>
+            <Setter Property="Grid.Column" Value="5"/>
+            <Setter Property="Grid.Row" Value="2"/>
+            <Setter Property="Keyboard" Value="{StaticResource Keyboard}"/>
+        </Style>
+        <Style TargetType="f:MathInputButton" Class="Dismiss">
+            <Setter Property="Input" Value="Dismiss"/>
+            <Setter Property="Grid.Column" Value="5"/>
+            <Setter Property="Grid.Row" Value="3"/>
+            <Setter Property="Keyboard" Value="{StaticResource Keyboard}"/>
+        </Style>
+        <!--/Right row of first 3 tabs-->
+    </ContentView.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinitionCollection>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="4*"/>
+            </RowDefinitionCollection>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinitionCollection>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="1.2*"/>
+                <ColumnDefinition Width="1.2*"/>
+                <ColumnDefinition Width="1.2*"/>
+                <ColumnDefinition Width="1.2*"/>
+                <ColumnDefinition Width="1.2*"/>
+                <ColumnDefinition Width="*"/>
+            </ColumnDefinitionCollection>
+        </Grid.ColumnDefinitions>
+        <f:MathInputButton x:Name="LeftButton" Input="Left" Grid.Column="0" Keyboard="{StaticResource Keyboard}"/>
+        <f:MathButton x:Name="NumbersButton" Grid.Column="1" Command="{e:SwitchToTab Self={Reference this}, Target=Numbers}">
+            <f:MathView LaTeX="123"/>
+        </f:MathButton>
+        <Grid x:Name="Numbers" Style="{StaticResource Tab}" IsVisible="True">
+            <f:MathInputButton StyleClass="x"/>
+            <f:MathInputButton StyleClass="y"/>
+            <f:MathInputButton StyleClass="Fraction"/>
+            <f:MathInputButton StyleClass="Power"/>
+            <f:MathInputButton Input="D7" Grid.Row="0" Grid.Column="1" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="D8" Grid.Row="0" Grid.Column="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="D9" Grid.Row="0" Grid.Column="3" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="BothRoundBrackets" Grid.Row="0" Grid.Column="4" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="D4" Grid.Row="1" Grid.Column="1" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="D5" Grid.Row="1" Grid.Column="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="D6" Grid.Row="1" Grid.Column="3" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Multiply" Grid.Row="1" Grid.Column="4" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="D1" Grid.Row="2" Grid.Column="1" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="D2" Grid.Row="2" Grid.Column="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="D3" Grid.Row="2" Grid.Column="3" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Minus" Grid.Row="2" Grid.Column="4" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="D0" Grid.Row="3" Grid.Column="1" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Decimal" Grid.Row="3" Grid.Column="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Equals" Grid.Row="3" Grid.Column="3" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Plus" Grid.Row="3" Grid.Column="4" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton StyleClass="Back"/>
+            <f:ImageSourceMathInputButton StyleClass="Clear"/>
+            <f:MathInputButton StyleClass="Dismiss"/>
+            <f:MathInputButton StyleClass="Enter"/>
+        </Grid>
+        <f:MathButton x:Name="SymbolsButton" Grid.Column="2" Command="{e:SwitchToTab Self={Reference this}, Target=Symbols}">
+            <f:MathView LaTeX="()&lt;&gt;"/>
+        </f:MathButton>
+        <Grid x:Name="Symbols" Style="{StaticResource Tab}">
+            <f:MathInputButton StyleClass="x"/>
+            <f:MathInputButton StyleClass="y"/>
+            <f:MathInputButton StyleClass="Fraction"/>
+            <f:MathInputButton StyleClass="Power"/>
+            <f:MathInputButton Input="LeftRoundBracket" Grid.Row="0" Grid.Column="1" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="RightRoundBracket" Grid.Row="0" Grid.Column="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="LessThan" Grid.Row="0" Grid.Column="3" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="GreaterThan" Grid.Row="0" Grid.Column="4" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="LeftSquareBracket" Grid.Row="1" Grid.Column="1" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="RightSquareBracket" Grid.Row="1" Grid.Column="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="LessOrEquals" Grid.Row="1" Grid.Column="3" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="GreaterOrEquals" Grid.Row="1" Grid.Column="4" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="LeftCurlyBracket" Grid.Row="2" Grid.Column="1" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="RightCurlyBracket" Grid.Row="2" Grid.Column="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Absolute" Grid.Row="2" Grid.Column="3" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Percentage" Grid.Row="2" Grid.Column="4" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Factorial" Grid.Row="3" Grid.Column="1" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Infinity" Grid.Row="3" Grid.Column="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Ratio" Grid.Row="3" Grid.Column="3" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Comma" Grid.Row="3" Grid.Column="4" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton StyleClass="Back"/>
+            <f:ImageSourceMathInputButton StyleClass="Clear"/>
+            <f:MathInputButton StyleClass="Dismiss"/>
+            <f:MathInputButton StyleClass="Enter"/>
+        </Grid>
+        <f:MathButton x:Name="FunctionsButton" Grid.Column="3" Command="{e:SwitchToTab Self={Reference this}, Target=Functions}">
+            <f:MathView LaTeX="f(x)"/>
+        </f:MathButton>
+        <Grid x:Name="Functions" Style="{StaticResource Tab}">
+            <f:MathInputButton StyleClass="x"/>
+            <f:MathInputButton StyleClass="y"/>
+            <f:MathInputButton StyleClass="Fraction"/>
+            <f:MathInputButton StyleClass="Power"/>
+            <f:MathInputButton Input="Sine" Grid.Row="0" Grid.Column="1" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Cosine" Grid.Row="0" Grid.Column="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Tangent" Grid.Row="0" Grid.Column="3" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallTheta" Grid.Row="0" Grid.Column="4" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Cosecant" Grid.Row="1" Grid.Column="1" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Secant" Grid.Row="1" Grid.Column="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Cotangent" Grid.Row="1" Grid.Column="3" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallPi" Grid.Row="1" Grid.Column="4" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Logarithm" Grid.Row="2" Grid.Column="1" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="NaturalLogarithm" Grid.Row="2" Grid.Column="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="LogarithmWithBase" Grid.Row="2" Grid.Column="3" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Angle" Grid.Row="2" Grid.Column="4" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Subscript" Grid.Row="3" Grid.Column="1" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SquareRoot" Grid.Row="3" Grid.Column="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="NthRoot" Grid.Row="3" Grid.Column="3" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Degree" Grid.Row="3" Grid.Column="4" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton StyleClass="Back"/>
+            <f:ImageSourceMathInputButton StyleClass="Clear"/>
+            <f:MathInputButton StyleClass="Dismiss"/>
+            <f:MathInputButton StyleClass="Enter"/>
+        </Grid>
+        <f:MathButton x:Name="OperationsButton" Grid.Column="4" Command="{e:SwitchToTab Self={Reference this}, Target=Operations}">
+            <f:MathView LaTeX="\int\sum"/>
+        </f:MathButton>
+        <Grid x:Name="Operations" Style="{StaticResource Tab}">
+            <f:MathInputButton StyleClass="x"/>
+            <f:MathInputButton StyleClass="y"/>
+            <f:MathInputButton StyleClass="Fraction"/>
+            <f:MathInputButton StyleClass="Power"/>
+            <f:MathInputButton Input="Integral" Grid.Row="0" Grid.Column="1" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="IntegralLowerLimit" Grid.Row="0" Grid.Column="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="IntegralUpperLimit" Grid.Row="0" Grid.Column="3" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="IntegralBothLimits" Grid.Row="0" Grid.Column="4" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="LimitWithBase" Grid.Row="1" Grid.Column="1" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="RightArrow" Grid.Row="1" Grid.Column="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Prime" Grid.Row="1" Grid.Column="3" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="PartialDifferential" Grid.Row="1" Grid.Column="4" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Summation" Grid.Row="2" Grid.Column="1" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SummationBothLimits" Grid.Row="2" Grid.Column="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Product" Grid.Row="2" Grid.Column="3" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="ProductBothLimits" Grid.Row="2" Grid.Column="4" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Space" Grid.Row="3" Grid.Column="1" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Up" Grid.Row="3" Grid.Column="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Up" Grid.Row="3" Grid.Column="3" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Up" Grid.Row="3" Grid.Column="4" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton StyleClass="Back"/>
+            <f:ImageSourceMathInputButton StyleClass="Clear"/>
+            <f:MathInputButton StyleClass="Dismiss"/>
+            <f:MathInputButton StyleClass="Enter"/>
+        </Grid>
+        <f:MathButton x:Name="LettersButton" Grid.Column="5" Command="{e:SwitchToTab Self={Reference this}, Target=Letters}">
+            <f:MathView LaTeX="abc"/>
+        </f:MathButton>
+        <Grid x:Name="Letters" Style="{StaticResource Tab_Letters}">
+            <f:MathInputButton Input="SmallQ" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallW" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallE" Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallR" Grid.Row="0" Grid.Column="6" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallT" Grid.Row="0" Grid.Column="8" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallY" Grid.Row="0" Grid.Column="10" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallU" Grid.Row="0" Grid.Column="12" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallI" Grid.Row="0" Grid.Column="14" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallO" Grid.Row="0" Grid.Column="16" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallP" Grid.Row="0" Grid.Column="18" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallA" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallS" Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallD" Grid.Row="1" Grid.Column="5" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallF" Grid.Row="1" Grid.Column="7" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallG" Grid.Row="1" Grid.Column="9" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallH" Grid.Row="1" Grid.Column="11" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallJ" Grid.Row="1" Grid.Column="13" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallK" Grid.Row="1" Grid.Column="15" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallL" Grid.Row="1" Grid.Column="17" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallZ" Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallX" Grid.Row="2" Grid.Column="5" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallC" Grid.Row="2" Grid.Column="7" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallV" Grid.Row="2" Grid.Column="9" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallB" Grid.Row="2" Grid.Column="11" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallN" Grid.Row="2" Grid.Column="13" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallM" Grid.Row="2" Grid.Column="15" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallAlpha" Grid.Row="3" Grid.Column="5" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Delta" Grid.Row="3" Grid.Column="7" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallSigma" Grid.Row="3" Grid.Column="9" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallMu" Grid.Row="3" Grid.Column="11" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallLambda" Grid.Row="3" Grid.Column="13" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathButton Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Command="{e:SwitchToTab Self={Reference this}, Target=LettersCapitals}" x:Name="ShiftButton">
+                <f:MathView LaTeX="⇧"/>
+            </f:MathButton>
+            <f:MathInputButton StyleClass="Back" Grid.Row="2" Grid.Column="17" Grid.ColumnSpan="3"/>
+            <f:MathInputButton StyleClass="Dismiss" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="5"/>
+            <f:MathInputButton StyleClass="Enter" Grid.Row="3" Grid.Column="15" Grid.RowSpan="1" Grid.ColumnSpan="5"/>
+        </Grid>
+        <Grid x:Name="LettersCapitals" Style="{StaticResource Tab_Letters}">
+            <f:MathInputButton Input="Q" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="W" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="E" Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="R" Grid.Row="0" Grid.Column="6" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="T" Grid.Row="0" Grid.Column="8" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Y" Grid.Row="0" Grid.Column="10" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="U" Grid.Row="0" Grid.Column="12" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="I" Grid.Row="0" Grid.Column="14" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="O" Grid.Row="0" Grid.Column="16" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="P" Grid.Row="0" Grid.Column="18" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="A" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="S" Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="D" Grid.Row="1" Grid.Column="5" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="F" Grid.Row="1" Grid.Column="7" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="G" Grid.Row="1" Grid.Column="9" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="H" Grid.Row="1" Grid.Column="11" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="J" Grid.Row="1" Grid.Column="13" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="K" Grid.Row="1" Grid.Column="15" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="L" Grid.Row="1" Grid.Column="17" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Z" Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="X" Grid.Row="2" Grid.Column="5" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="C" Grid.Row="2" Grid.Column="7" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="V" Grid.Row="2" Grid.Column="9" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="B" Grid.Row="2" Grid.Column="11" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="N" Grid.Row="2" Grid.Column="13" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="M" Grid.Row="2" Grid.Column="15" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallRho" Grid.Row="3" Grid.Column="5" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallOmega" Grid.Row="3" Grid.Column="7" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallPhi" Grid.Row="3" Grid.Column="9" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallNu" Grid.Row="3" Grid.Column="11" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="SmallBeta" Grid.Row="3" Grid.Column="13" Grid.ColumnSpan="2" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathButton Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Command="{e:SwitchToTab Self={Reference this}, Target=Letters}" x:Name="ShiftCapitalsButton">
+                <f:MathView LaTeX="⇧"/>
+            </f:MathButton>
+            <f:ImageSourceMathInputButton StyleClass="Clear" Grid.Row="2" Grid.Column="17" Grid.ColumnSpan="3"/>
+            <f:MathInputButton StyleClass="Dismiss" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="5"/>
+            <f:MathInputButton StyleClass="Enter" Grid.Row="3" Grid.Column="15" Grid.RowSpan="1" Grid.ColumnSpan="5"/>
+        </Grid>
+        <f:MathInputButton x:Name="RightButton" Input="Right" Grid.Column="6" Keyboard="{StaticResource Keyboard}"/>
+    </Grid>
+</ContentView>

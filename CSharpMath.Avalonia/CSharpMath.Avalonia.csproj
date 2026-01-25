@@ -8,12 +8,11 @@
   </PropertyGroup>
   
   <ItemGroup>
+	<Compile Include="..\CSharpMath.Xaml\**\*.cs" Link="%(RecursiveDir)%(Filename)%(Extension)" />
     <Compile Update="**\*.xaml.cs" DependentUpon="%(Filename)" />
     <AvaloniaResource Include="**\*.xaml" />
     <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
     <ProjectReference Include="..\CSharpMath.Rendering\CSharpMath.Rendering.csproj" />
   </ItemGroup>
-  
-  <Import Project="..\CSharpMath.Xaml\CSharpMath.Xaml.projitems" Label="Shared" />
 
 </Project>

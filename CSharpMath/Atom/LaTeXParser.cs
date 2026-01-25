@@ -7,9 +7,7 @@ using System.Text;
 namespace CSharpMath.Atom {
   using Atoms;
   using Space = Atoms.Space;
-  using Structures;
-  using static Structures.Result;
-  using InvalidCodePathException = Structures.InvalidCodePathException;
+  using static Result;
   public class LaTeXParser {
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1040:Avoid empty interfaces",
@@ -199,7 +197,7 @@ namespace CSharpMath.Atom {
       }
       return Ok(env);
     }
-    public Result<Structures.Space> ReadSpace() {
+    public Result<Atom.Length> ReadSpace() {
       SkipSpaces();
       var sb = new StringBuilder();
       while (HasCharacters) {
@@ -220,7 +218,7 @@ namespace CSharpMath.Atom {
       for (int i = 0; i < 2 && HasCharacters; i++) {
         unit[i] = ReadChar();
       }
-      return Structures.Space.Create(length, new string(unit), TextMode);
+      return Atom.Length.Create(length, new string(unit), TextMode);
     }
     public Result<Boundary> ReadDelimiter(string commandName) {
       if (!HasCharacters) {
@@ -412,7 +410,7 @@ namespace CSharpMath.Atom {
             // add delimiters
             return new Inner(
               new Boundary("{"),
-              new MathList(new Space(Structures.Space.ShortSpace), table),
+              new MathList(new Atoms.Space(Atom.Length.ShortSpace), table),
               Boundary.Empty
             );
           }
@@ -477,12 +475,15 @@ namespace CSharpMath.Atom {
     private static void MathListToLaTeX
       (MathList mathList, StringBuilder builder, FontStyle outerFontStyle) {
       static bool MathAtomToLaTeX(MathAtom atom, StringBuilder builder,
-        [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out string? command) {
+#if !NETSTANDARD2_0 && !NET45
+        [System.Diagnostics.CodeAnalysis.NotNullWhen(true)]
+#endif
+        out string? command) {
         if (LaTeXSettings.CommandForAtom(atom) is string name) {
           command = name;
           builder.Append(name);
           if (name.AsSpan().StartsWithInvariant(@"\"))
-            builder.Append(" ");
+            builder.Append(' ');
           return true;
         }
         command = null;
@@ -496,11 +497,11 @@ namespace CSharpMath.Atom {
         if (currentFontStyle != atom.FontStyle) {
           if (currentFontStyle != outerFontStyle) {
             // close the previous font style
-            builder.Append("}");
+            builder.Append('}');
           }
           if (atom.FontStyle != outerFontStyle) {
             // open a new font style
-            builder.Append(@"\").Append(LaTeXSettings.FontStyles.SecondToFirst[atom.FontStyle]).Append("{");
+            builder.Append('\\').Append(LaTeXSettings.FontStyles.SecondToFirst[atom.FontStyle]).Append('{');
           }
         }
         currentFontStyle = atom.FontStyle;
@@ -514,9 +515,9 @@ namespace CSharpMath.Atom {
               MathListToLaTeX(fraction.Numerator, builder, currentFontStyle);
               builder.Append("}{");
               MathListToLaTeX(fraction.Denominator, builder, currentFontStyle);
-              builder.Append("}");
+              builder.Append('}');
             } else {
-              builder.Append("{");
+              builder.Append('{');
               MathListToLaTeX(fraction.Numerator, builder, currentFontStyle);
               builder.Append(@" \").Append(
                 (fraction.LeftDelimiter, fraction.RightDelimiter) switch
@@ -526,9 +527,9 @@ namespace CSharpMath.Atom {
                   ({ Nucleus: "{" }, { Nucleus: "}" }) => "brace",
                   ({ Nucleus: "[" }, { Nucleus: "]" }) => "brack",
                   (var left, var right) => $"atopwithdelims{BoundaryToLaTeX(left)}{BoundaryToLaTeX(right)}",
-                }).Append(" ");
+                }).Append(' ');
               MathListToLaTeX(fraction.Denominator, builder, currentFontStyle);
-              builder.Append("}");
+              builder.Append('}');
             }
             break;
           case Radical radical:
@@ -548,12 +549,12 @@ namespace CSharpMath.Atom {
           case Inner { LeftBoundary: { Nucleus: "〈" }, InnerList: var list, RightBoundary: { Nucleus: "|" } }:
             builder.Append(@"\Bra{");
             MathListToLaTeX(list, builder, currentFontStyle);
-            builder.Append("}");
+            builder.Append('}');
             break;
           case Inner { LeftBoundary: { Nucleus: "|" }, InnerList: var list, RightBoundary: { Nucleus: "〉" } }:
             builder.Append(@"\Ket{");
             MathListToLaTeX(list, builder, currentFontStyle);
-            builder.Append("}");
+            builder.Append('}');
             break;
           case Inner { LeftBoundary: var left, InnerList: var list, RightBoundary: var right }:
             builder.Append(@"\left").Append(BoundaryToLaTeX(left)).Append(' ');
@@ -601,7 +602,7 @@ namespace CSharpMath.Atom {
                 }
                 MathListToLaTeX(cell, builder, currentFontStyle);
                 if (j < row.Count - 1) {
-                  builder.Append("&");
+                  builder.Append('&');
                 }
               }
               if (i < table.NRows - 1) {
@@ -611,28 +612,28 @@ namespace CSharpMath.Atom {
             if (table.Environment != null) {
               builder.Append(@"\end{")
                 .Append(table.Environment)
-                .Append("}");
+                .Append('}');
             }
             break;
           case Overline over:
             builder.Append(@"\overline{");
             MathListToLaTeX(over.InnerList, builder, currentFontStyle);
-            builder.Append("}");
+            builder.Append('}');
             break;
           case Underline under:
             builder.Append(@"\underline{");
             MathListToLaTeX(under.InnerList, builder, currentFontStyle);
-            builder.Append("}");
+            builder.Append('}');
             break;
           case Accent accent:
             MathAtomToLaTeX(accent, builder, out _);
-            builder.Append("{");
+            builder.Append('{');
             MathListToLaTeX(accent.InnerList, builder, currentFontStyle);
-            builder.Append("}");
+            builder.Append('}');
             break;
           case LargeOperator op:
             if (MathAtomToLaTeX(op, builder, out var command)) {
-              if (!(LaTeXSettings.AtomForCommand(command) is LargeOperator originalOperator))
+              if (!(LaTeXSettings.AtomForCommand(command!) is LargeOperator originalOperator))
                 throw new InvalidCodePathException("original operator not found!");
               if (originalOperator.Limits == op.Limits)
                 break;
@@ -655,25 +656,25 @@ namespace CSharpMath.Atom {
             LaTeXSettings.ColorToString(colored.Color, builder)
               .Append("}{");
             MathListToLaTeX(colored.InnerList, builder, currentFontStyle);
-            builder.Append("}");
+            builder.Append('}');
             break;
           case ColorBox colorBox:
             builder.Append(@"\colorbox{");
             LaTeXSettings.ColorToString(colorBox.Color, builder)
               .Append("}{");
             MathListToLaTeX(colorBox.InnerList, builder, currentFontStyle);
-            builder.Append("}");
+            builder.Append('}');
             break;
           case Prime prime:
             builder.Append('\'', prime.Length);
             break;
           case RaiseBox r:
             builder.Append(@"\raisebox{")
-              .Append(r.Raise.Length.ToStringInvariant("0.0####"))
+              .Append(r.Raise.Amount.ToStringInvariant("0.0####"))
               .Append(r.Raise.IsMu ? "mu" : "pt")
               .Append("}{");
             MathListToLaTeX(r.InnerList, builder, currentFontStyle);
-            builder.Append("}");
+            builder.Append('}');
             break;
           case var _ when MathAtomToLaTeX(atom, builder, out _):
             break;
@@ -693,10 +694,10 @@ namespace CSharpMath.Atom {
             builder.Append("{}");
             break;
           case { Nucleus: "\u2236" }:
-            builder.Append(":");
+            builder.Append(':');
             break;
           case { Nucleus: "\u2212" }:
-            builder.Append("-");
+            builder.Append('-');
             break;
           case { Nucleus: var aNucleus }:
             builder.Append(aNucleus);
@@ -718,7 +719,7 @@ namespace CSharpMath.Atom {
         AppendScript(builder, atom.Superscript, '^', currentFontStyle);
       }
       if (currentFontStyle != outerFontStyle) {
-        builder.Append("}");
+        builder.Append('}');
       }
     }
     public static StringBuilder MathListToLaTeX(MathList mathList, StringBuilder? sb = null) {

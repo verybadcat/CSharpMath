@@ -1,20 +1,20 @@
 name: Benchmark
 
-on: [push, pull_request]
+on: push
 jobs:
   Rendering:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v6
       with:
         submodules: 'recursive'
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: 3.1.401
+        dotnet-version: '10.x'
     - run: dotnet run -p CSharpMath.Rendering.Benchmarks
     - name: Store benchmark result
-      uses: Happypig375/github-action-benchmark@v1
+      uses: benchmark-action/github-action-benchmark@v1
       with:
         name: CSharpMath.Rendering.Benchmarks
         tool: 'benchmarkdotnet'

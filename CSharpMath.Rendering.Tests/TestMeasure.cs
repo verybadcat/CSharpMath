@@ -20,8 +20,8 @@ namespace CSharpMath.Rendering.Tests {
       public void Draw(IGraphicsContext<Fonts, Glyph> context) => throw new NotImplementedException();
       public void SetTextColorRecursive(Color? textColor) => throw new NotImplementedException();
     }
-    class DEditorKeyboard : Editor.MathKeyboard<Fonts, Glyph> {
-      public DEditorKeyboard() : base(TypesettingContext.Instance, new Fonts(Enumerable.Empty<Typography.OpenFont.Typeface>(), 0.0f)) =>
+    class DKeyboard : Editor.MathKeyboard<Fonts, Glyph> {
+      public DKeyboard() : base(TypesettingContext.Instance, new Fonts(Enumerable.Empty<Typography.OpenFont.Typeface>(), 0.0f)) =>
         Display = new Display.Displays.ListDisplay<Fonts, Glyph>(new[] { new D() });
     }
     class DRenderingMath : SkiaSharp.MathPainter {
@@ -39,13 +39,13 @@ namespace CSharpMath.Rendering.Tests {
         Display = new Display.Displays.ListDisplay<Fonts, Glyph>(new[] { new D() });
     }
     /// <summary>
-    /// CSharpMath and CSharpMath.Editor use the mathematical coordinate system,
+    /// CSharpMath uses the mathematical coordinate system,
     /// i.e. the rectangle position is at the bottom-left.
     /// </summary>
     [Fact]
     public void CoreMeasure_YIsNegDescent() {
       Assert.Equal(new RectangleF(0, -3, 10, 15), new D().DisplayBounds());
-      Assert.Equal(new RectangleF(0, -3, 10, 15), new DEditorKeyboard().Measure);
+      Assert.Equal(new RectangleF(0, -3, 10, 15), new DKeyboard().Measure);
     }
     /// <summary>
     /// CSharpMath.Rendering and descendants use the graphical coordinate system,
