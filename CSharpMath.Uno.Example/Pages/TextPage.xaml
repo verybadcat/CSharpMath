@@ -10,11 +10,13 @@
     xmlns:sys="using:System"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <!--
     <Grid RowDefinitions="*,Auto,*">
         <TextBox x:Name="Text"
                  Grid.Row="0"
                  TextWrapping="Wrap"
                  AcceptsReturn="true"
+                 HorizontalAlignment="Stretch"
                  Text="Here are some text.
 This text is made to be long enough to have the TextPainter of CSharpMath add a line break to this text automatically.
 To demonstrate the capabilities of the TextPainter,
@@ -42,5 +44,14 @@ Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6. \[\f
                                TextColor="{StaticResource TextFillColorPrimary}"
                                FontSize="{x:Bind (sys:Single)FontSizer.SelectedItem,Mode=OneWay}" />
         </ScrollViewer>
+    </Grid>-->
+    <Grid>
+        <ScrollViewer HorizontalScrollMode="Disabled">
+            <TextBox
+            TextWrapping="Wrap"
+            AcceptsReturn="True"
+            HorizontalAlignment="Stretch" />
+        </ScrollViewer>
+       
     </Grid>
 </Page>
