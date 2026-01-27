@@ -72,13 +72,12 @@ jobs:
       if: always()
       with:
         name: NuGet packages
-        path: .nupkgs\*
-        glob: true
+        path: .nupkgs/*.*
     - name: Push CI artifacts to GitHub Packages registry
       #if: github.ref == 'refs/heads/master'
       run: |
         # "dotnet nuget push" with "dotnet nuget add source" to GitHub Packages is unstable for project names with a dot: https://github.com/NuGet/Home/issues/9775#issuecomment-714509211
         # So we must specify api-key directly in "dotnet nuget push" instead of following the GitHub Packages documentation
         # --no-symbols true to not let GitHub Releases interpret .snupkg as .nupkg
-        dotnet nuget push '.nupkgs\*.*' --source 'https://nuget.pkg.github.com/verybadcat/index.json' --api-key ${{ github.token }} --skip-duplicate --no-symbols
+        dotnet nuget push '.nupkgs/*.*' --source 'https://nuget.pkg.github.com/verybadcat/index.json' --api-key ${{ github.token }} --skip-duplicate --no-symbols
       shell: pwsh
