@@ -77,9 +77,9 @@ jobs:
       run: |
         # On Windows, / will not be interpreted as the folder separator in this command and \ must be used here, unlike in Unix environments.
         # "dotnet nuget push" with "dotnet nuget add source" to GitHub Packages is unstable for project names with a dot: https://github.com/NuGet/Home/issues/9775#issuecomment-714509211
-        #   so we must specify --api-key directly in "dotnet nuget push" instead of following the GitHub Packages documentation.
+        #   so we must specify -k (key) directly in "dotnet nuget push" instead of following the GitHub Packages documentation.
         # By using *.* as the file path, this command will fail when .nupkgs folder contains any file that isn't a .nupkg or .snupkg file.
         # --skip-duplicate enables re-running this workflow even if some packages from the same commit are already uploaded.
         # --no-symbols omits uploading .snupkg files which is not supported by GitHub Packages: https://github.com/orgs/community/discussions/38678
-        dotnet nuget push '.nupkgs\*.*' --source 'https://nuget.pkg.github.com/verybadcat/index.json' --api-key ${{ github.token }} --skip-duplicate --no-symbols
+        dotnet nuget push '.nupkgs\*.*' -s 'https://nuget.pkg.github.com/verybadcat/index.json' -k ${{ github.token }} --skip-duplicate --no-symbols
       shell: pwsh
