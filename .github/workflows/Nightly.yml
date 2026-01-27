@@ -72,7 +72,8 @@ jobs:
       if: always()
       with:
         name: NuGet packages
-        path: .nupkgs/*.*
+        path: .nupkgs/
+        include-hidden-files: true
     - name: Push CI artifacts to GitHub Packages registry
       #if: github.ref == 'refs/heads/master'
       run: |
