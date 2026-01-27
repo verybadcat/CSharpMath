@@ -41,5 +41,5 @@ jobs:
         # "dotnet nuget push" with "dotnet nuget add source" to GitHub Packages is unstable for project names with a dot: https://github.com/NuGet/Home/issues/9775#issuecomment-714509211
         #   so we must specify -k (key) directly in "dotnet nuget push" instead of following the GitHub Packages documentation.
         # --skip-duplicate enables re-running this workflow even if some packages from the same commit are already uploaded.
-        dotnet nuget push '.nupkgs\*.nupkg' -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json  --skip-duplicate
+        dotnet nuget push '.nupkgs\*.nupkg' -s 'https://api.nuget.org/v3/index.json' -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate
       shell: pwsh
