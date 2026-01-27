@@ -4,6 +4,7 @@ using SkiaSharp;
 
 namespace CSharpMath.SkiaSharp {
   public class MathPainter : MathPainter<SKCanvas, SKColor> {
+    ///<summary>Set this to false for not rendering partially blended pixels that make edges look smooth.</summary>
     public bool AntiAlias { get; set; } = true;
     public void Draw(SKCanvas canvas, SKPoint point) => Draw(canvas, point.X, point.Y);
     public override SKColor UnwrapColor(Color color) => color.ToNative();
