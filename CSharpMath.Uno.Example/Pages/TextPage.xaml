@@ -31,19 +31,16 @@ where \textit{color} stands for one of the LaTeX standard colors.
 The SkiaSharp version of this is located at CSharpMath.SkiaSharp.TextPainter;
 and the MAUI version of this is located at CSharpMath.Maui.TextView.
 Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6. \[\frac{Display}{maths} \sqrt\text\mathtt{\ at\ the\ end}^\mathbf{are\ now\ incuded\ in\ Measure!} \]"
-                 Foreground="{StaticResource TextFillColorPrimaryBrush}"/>
-
+                 Foreground="{StaticResource TextFillColorPrimaryBrush}"
+                 />
         <ComboBox Grid.Row="1"
                   x:Name="FontSizer"
                   Header="Font Size"
-                  ItemsSource="{Binding FontSizes}" SelectedItem="30"/>
-        <Border Grid.Row="2" BorderBrush="Red">
-            <ScrollViewer HorizontalScrollMode="Disabled">
-                <text:TextView x:Name="View" 
+                  ItemsSource="{x:Bind local:TryPage.FontSizes}" SelectedItem="{Binding FontSize,ElementName=View,Mode=OneTime}"/>
+        <ScrollViewer Grid.Row="2" HorizontalScrollMode="Disabled">
+            <text:TextView x:Name="View" 
                                TextColor="{StaticResource TextFillColorPrimary}"
-                               LaTeX="{Binding Text, ElementName=Text, Mode=OneWay}"
-                               FontSize="{Binding SelectedItem, ElementName=FontSizer, Mode=OneWay}" />
-            </ScrollViewer>
-        </Border>
+                               FontSize="{x:Bind (sys:Single)FontSizer.SelectedItem,Mode=OneWay}" />
+        </ScrollViewer>
     </Grid>
 </Page>

@@ -220,10 +220,11 @@ namespace CSharpMath.Uno {
         if (e.GetCurrentPoint(this) is { Properties.IsLeftButtonPressed: true } point && EnablePanning)
           _origin = point.Position;
       };
+      Loaded += delegate { InvalidateMeasure(); };
     }
     protected override Windows.Foundation.Size MeasureOverride(Windows.Foundation.Size availableSize) =>
-      Painter.Measure((float)availableSize.Width) is { } rect
-      ? new Windows.Foundation.Size(rect.Width, rect.Height)
+      Parent is Microsoft.UI.Xaml.FrameworkElement { ActualWidth: > 0 and var width } && Painter.Measure((float)width) is { } rect
+      ? new Windows.Foundation.Size(Math.Min(width, rect.Width), rect.Height)
       : base.MeasureOverride(availableSize);
     [System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.AllConstructors)]
     readonly struct ReadOnlyProperty<TThis, TValue>(string propertyName, Func<TPainter, TValue> getter) where TThis : BaseView<TPainter, TContent> {

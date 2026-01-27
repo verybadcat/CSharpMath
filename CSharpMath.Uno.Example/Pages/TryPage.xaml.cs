@@ -8,20 +8,24 @@ public sealed partial class TryPage : Page {
     1, 2, 4, 8, 12, 16, 20, 24, 30, 36, 48, 60, 72, 96, 108, 144, 192,
     288, 384, 480, 576, 666, 768, 864, 960
   ];
-
-  public Rendering.FrontEnd.TextAlignment[] AlignmentValues { get; }
-
-  public TryPage() {
+  public static Rendering.FrontEnd.TextAlignment[] AlignmentValues { get; }
+  static TryPage() {
     var values = (Rendering.FrontEnd.TextAlignment[])typeof(Rendering.FrontEnd.TextAlignment).GetEnumValues();
     System.Array.Reverse(values);
     AlignmentValues = values;
+  }
+  public TryPage() {
     InitializeComponent();
+    FontSizer.SelectedItem = 30f;
     Alignment.SelectedItem = View.TextAlignment;
-    View.RegisterPropertyChangedCallback(MathView.ErrorMessageProperty, (sender, dp) => {
+    // Unlike MAUI and Avalonia, {Binding}s and {x:Bind}s are cleared when a value is assigned.
+    // Since LaTeX property automatically re-formats assigned input, we need to bind in the code behind.
+    Entry.RegisterPropertyChangedCallback(TextBox.TextProperty, (sender, dp) => View.LaTeX = Entry.Text);
+    View.RegisterPropertyChangedCallback(MathView.ErrorMessageProperty, (sender, dp) =>
       Exit.Foreground = View.ErrorMessage is not null
         ? new SolidColorBrush(Colors.Red)
-        : (Brush)Application.Current.Resources["TextFillColorPrimaryBrush"];
-    });
+        : (Brush)Application.Current.Resources["TextFillColorPrimaryBrush"]
+    );
   }
 
   private void ResetPan_Clicked(object sender, RoutedEventArgs e) {

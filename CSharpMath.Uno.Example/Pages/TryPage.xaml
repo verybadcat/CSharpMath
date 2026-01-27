@@ -11,21 +11,24 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Grid RowDefinitions="Auto,Auto,Auto,*">
-        <TextBox x:Name="Entry" />
+        <TextBox x:Name="Entry"/>
         <StackPanel Grid.Row="1" Orientation="Horizontal">
             <Button Content="Reset pan" Click="ResetPan_Clicked"/>
-            <ComboBox x:Name="FontSizer" Header="Font Size" ItemsSource="{Binding FontSizes}" SelectedItem="30" />
-            <ComboBox x:Name="Alignment" Header="Alignment" ItemsSource="{Binding AlignmentValues}" />
+            <!--Note: Static binding {x:Bind} can only refer to earlier elements for valid value assignment for the first time.
+                      Dynamic binding {Binding} must be used for refering to later elements.-->
+            <ComboBox x:Name="FontSizer" Header="Font Size" ItemsSource="{x:Bind local:TryPage.FontSizes}" SelectedItem="{Binding FontSize,ElementName=View,Mode=OneTime}" />
+            <ComboBox x:Name="Alignment" Header="Alignment" ItemsSource="{x:Bind local:TryPage.AlignmentValues}" SelectedItem="{Binding TextAlignment,ElementName=View,Mode=OneTime}" />
             <Button Content="Calculate" Click="Calculate_Clicked" />
         </StackPanel>
-        <TextBlock x:Name="Exit" Grid.Row="2" Text="{Binding LaTeX, ElementName=View, Mode=OneWay}" />
+        <TextBlock x:Name="Exit" Grid.Row="2" Text="{Binding LaTeX, ElementName=View}" />
+        <!--Note: {x:Bind} seems to default to Mode=OneWay for bindings with no casting (see ItemsSource above)
+                  but Mode=OneTime for bindings with casting (see FontSize and TextAlignment below).-->
         <math:MathView
             x:Name="View"
             Grid.Row="3"
             EnablePanning="True"
-            LaTeX="{Binding Text, ElementName=Entry, Mode=OneWay}"
-            FontSize="{Binding SelectedItem, ElementName=FontSizer, Mode=OneWay}"
-            TextAlignment="{Binding SelectedItem, ElementName=Alignment, Mode=OneWay}"
+            FontSize="{x:Bind (sys:Single)FontSizer.SelectedItem,Mode=OneWay}"
+            TextAlignment="{x:Bind (mathrender:TextAlignment)Alignment.SelectedItem,Mode=OneWay}"
             TextColor="{StaticResource TextFillColorPrimary}" />
     </Grid>
 </Page>
