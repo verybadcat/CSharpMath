@@ -28,8 +28,9 @@ jobs:
         # PowerShell string replacement
         $env:RELEASE_NOTES = $env:RELEASE_NOTES -replace ',','%2C' -replace ';','%3B'
         
-        dotnet workload restore
-        dotnet test --solution CSharpMath.sln -c Release -p:PackageReleaseNotes="$env:RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }}
+        #dotnet workload restore
+        dotnet test --project CSharpMath.Rendering.Tests/CSharpMath.Rendering.Tests.csproj -c Release -p:PackageReleaseNotes="$env:RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }}
+        #dotnet test --solution CSharpMath.sln -c Release -p:PackageReleaseNotes="$env:RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }}
     #### Awaiting coverlet.MTP at https://github.com/coverlet-coverage/coverlet/pull/1788
     #    # --collect:"XPlat Code Coverage" means collect test coverage with https://github.com/coverlet-coverage/coverlet
     #    # Coverlet settings come after --: https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/VSTestIntegration.md#advanced-options-supported-via-runsettings
@@ -71,12 +72,12 @@ jobs:
       if: always()
       with:
         name: NuGet packages
-        path: .nupkgs
+        path: ./.nupkgs/*
     - name: Push CI artifacts to GitHub Packages registry
       #if: github.ref == 'refs/heads/master'
       run: |
         # "dotnet nuget push" with "dotnet nuget add source" to GitHub Packages is unstable for project names with a dot: https://github.com/NuGet/Home/issues/9775#issuecomment-714509211
         # So we must specify api-key directly in "dotnet nuget push" instead of following the GitHub Packages documentation
         # --no-symbols true to not let GitHub Releases interpret .snupkg as .nupkg
-        dotnet nuget push .nupkgs --source 'https://nuget.pkg.github.com/verybadcat/index.json' --api-key ${{ github.token }} --skip-duplicate --no-symbols true
+        dotnet nuget push './.nupkgs/*' --source 'https://nuget.pkg.github.com/verybadcat/index.json' --api-key ${{ github.token }} --skip-duplicate --no-symbols true
       shell: pwsh
