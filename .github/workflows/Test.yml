@@ -1,8 +1,9 @@
 name: Build and Test
 
-on: push
+on: [push, pull_request]
 jobs:
   Everything:
+    if: (github.event_name == 'pull_request') == github.event.pull_request.head.repo.fork
     strategy:
       fail-fast: false # Don't cancel other os builds if one fails
       matrix:

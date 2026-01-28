@@ -41,7 +41,7 @@ namespace CSharpMath.Core {
           Console.WriteLine("P: Re-inputs the cursor position.");
           Console.WriteLine("Enter: Moves on to another test case.");
           Console.WriteLine("");
-          
+
           ListDisplay? display = null;
           void AssignDisplay() {
             Console.Write("Input LaTeX: ");
@@ -60,10 +60,10 @@ namespace CSharpMath.Core {
           var y = ReadInt("Input Touch Y (integer): ");
           Console.Clear();
 
-          if(OperatingSystem.IsWindows())
+          if (OperatingSystem.IsWindows())
             Console.SetBufferSize(10000, Console.BufferHeight); // no line wrapping
           display.Draw(context);
-moveCursor:var pos = Adjust(new Rectangle(x, y, 0, 0));
+        moveCursor: var pos = Adjust(new Rectangle(x, y, 0, 0));
           Console.Title = $"CSharpMath.Editor.Tests Visualizer - ({x}, {y}) in {latex}";
           Console.SetCursorPosition(pos.X, pos.Y);
           switch (Console.ReadKey(true).Key) {
@@ -100,8 +100,7 @@ moveCursor:var pos = Adjust(new Rectangle(x, y, 0, 0));
           }
         }
         Console.ForegroundColor = ret;
-      }
-      else Console.ResetColor();
+      } else Console.ResetColor();
     }
     static Rectangle Adjust(Rectangle rect) =>
       new Rectangle(

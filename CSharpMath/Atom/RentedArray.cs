@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 
 namespace CSharpMath.Atom {
-// RentedArray not supposed to be equatable
+  // RentedArray not supposed to be equatable
 #pragma warning disable CA1815 // Override equals and operator equals on value types
   public ref struct RentedArray<T> {
 #pragma warning restore CA1815 // Override equals and operator equals on value types

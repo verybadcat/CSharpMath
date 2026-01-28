@@ -32,4 +32,3 @@ namespace CSharpMath.Rendering.BackEnd {
       + run.GlyphInfos.Sum(g => g.KernAfterGlyph);
   }
 }
-

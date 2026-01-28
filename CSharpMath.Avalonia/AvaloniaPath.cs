@@ -1,8 +1,7 @@
-using CSharpMath.Rendering.FrontEnd;
-using CSharpMathColor = System.Drawing.Color;
-
 using Avalonia;
 using Avalonia.Media;
+using CSharpMath.Rendering.FrontEnd;
+using CSharpMathColor = System.Drawing.Color;
 
 namespace CSharpMath.Avalonia {
   public sealed class AvaloniaPath : Path {

@@ -1,5 +1,5 @@
-using SkiaSharp;
 using CSharpMath.SkiaSharp;
+using SkiaSharp;
 
 // set up canvas
 using var surface = SKSurface.Create(new SKImageInfo(258, 258));

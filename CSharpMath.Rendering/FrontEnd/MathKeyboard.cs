@@ -1,9 +1,8 @@
 namespace CSharpMath.Rendering.FrontEnd {
   using System;
   using System.Drawing;
-
-  using Editor;
   using BackEnd;
+  using Editor;
 
   public enum CaretShape { IBeam, UpArrow }
   public class MathKeyboard : MathKeyboard<Fonts, Glyph> {

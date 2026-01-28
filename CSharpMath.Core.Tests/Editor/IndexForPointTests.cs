@@ -3,8 +3,8 @@ using Xunit;
 
 namespace CSharpMath.Core.Tests {
   using Atom;
-  using Editor;
   using BackEnd;
+  using Editor;
   // Use CSharpMath.Core.Example to visualize the test cases
   using SubIndex = Editor.MathListSubIndexType;
   public class IndexForPointTests {
@@ -466,7 +466,7 @@ namespace CSharpMath.Core.Tests {
         { (150, 40), 5 },
       };
     [Theory, MemberData(nameof(ComplexData))]
-    public void Complex(PointF point, MathListIndex expected) => 
+    public void Complex(PointF point, MathListIndex expected) =>
       Test(@"\frac a\frac bc\frac\frac123\sqrt d^e\sqrt[5]6\sqrt[f]g^{7_8}_{9^0}", point, expected);
     public static TestData SineData =>
       new TestData {

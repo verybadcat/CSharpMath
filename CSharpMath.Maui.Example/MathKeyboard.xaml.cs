@@ -49,13 +49,14 @@ namespace CSharpMath.Maui.Example {
         button.TextColor = color;
         button.PlaceholderRestingColor = placeholderRestingColor;
         button.PlaceholderActiveColor = placeholderActiveColor;
-      };
+      }
+      ;
     }
     public void SetClearButtonImageSource(ImageSource imageSource) {
-      foreach(var button in ButtonGrids.SelectMany(grid => grid.Children)
+      foreach (var button in ButtonGrids.SelectMany(grid => grid.Children)
                             .OfType<ImageSourceMathInputButton>()
                             .Where(button => button.Input == MathKeyboardInput.Clear))
-      button.Source = imageSource;
+        button.Source = imageSource;
     }
     MathButton[] TabButtons => new[] { NumbersButton, SymbolsButton, FunctionsButton, OperationsButton, LettersButton };
     Grid[] ButtonGrids => new[] { Numbers, Symbols, Functions, Operations, Letters, LettersCapitals };

@@ -1,7 +1,7 @@
 namespace CSharpMath.Display {
   using Atom;
-  using Atoms = Atom.Atoms;
   using static InterElementSpaces.InterElementSpaceType;
+  using Atoms = Atom.Atoms;
   internal static class InterElementSpaces {
     internal enum InterElementSpaceType {
       Invalid = -1,
@@ -32,8 +32,7 @@ namespace CSharpMath.Display {
       LineStyle style, TFont styleFont, FrontEnd.FontMathTable<TFont, TGlyph> mathTable)
       where TFont : FrontEnd.IFont<TGlyph> {
       static int GetInterElementSpaceArrayIndexForType(MathAtom atomType, bool row) =>
-        atomType switch
-        {
+        atomType switch {
           Atoms.LargeOperator _ => 1,
           Atoms.BinaryOperator _ => 2,
           Atoms.Relation _ => 3,
@@ -51,8 +50,7 @@ namespace CSharpMath.Display {
       var leftIndex = GetInterElementSpaceArrayIndexForType(left, true);
       var rightIndex = GetInterElementSpaceArrayIndexForType(right, false);
       var multiplier =
-        Spaces[leftIndex, rightIndex] switch
-        {
+        Spaces[leftIndex, rightIndex] switch {
           Invalid => throw new InvalidCodePathException
                        ($"Invalid space between {left.TypeName} and {right.TypeName}"),
           None => 0,

@@ -1,6 +1,6 @@
-using System.Drawing;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace CSharpMath.Rendering.Text {
   public class TextAtomListBuilder : IReadOnlyList<TextAtom> {

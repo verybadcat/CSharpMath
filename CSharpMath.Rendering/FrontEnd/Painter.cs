@@ -1,10 +1,8 @@
 using System;
-using System.Drawing;
-
-using CSharpMath.Display;
-
-using Typography.OpenFont;
 using System.Collections.Specialized;
+using System.Drawing;
+using CSharpMath.Display;
+using Typography.OpenFont;
 
 namespace CSharpMath.Rendering.FrontEnd {
   using System.Collections.Generic;

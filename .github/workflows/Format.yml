@@ -1,0 +1,17 @@
+name: Check format
+
+on: [push, pull_request]
+jobs:
+  Excluding_Typography:
+    if: (github.event_name == 'pull_request') == github.event.pull_request.head.repo.fork
+    runs-on: windows-latest
+    steps:
+    - uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: '10.x'
+    - uses: actions/checkout@v6
+      with:
+        submodules: 'recursive'
+    - run: dotnet workload restore
+    - name: Check formatting (Fix with "dotnet format --exclude Typography" at repository root)
+      run: dotnet format --exclude Typography --verify-no-changes --severity error --verbosity diagnostic

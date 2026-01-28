@@ -16,7 +16,7 @@ namespace CSharpMath.Editor {
     LeftArrow = '←', UpArrow = '↑', RightArrow = '→', DownArrow = '↓', Space = ' ',
 
     // More complicated operators
-    Slash = '/', Fraction = '⁄', Power = '^', Subscript = '_', SquareRoot = '√', 
+    Slash = '/', Fraction = '⁄', Power = '^', Subscript = '_', SquareRoot = '√',
     CubeRoot = '∛', NthRoot = '∜', BaseEPower = 'ℯ', LogarithmWithBase = '㏐',
 
     // Basic Brackets
@@ -59,7 +59,7 @@ namespace CSharpMath.Editor {
     // Trigonometric functions
     Sine = '␖', Cosine = '℅', Tangent = '␘', Cotangent = '␄', Secant = '␎', Cosecant = '␛',
     ArcSine = '◜', ArcCosine = '◝', ArcTangent = '◟', ArcCotangent = '◞', ArcSecant = '◠', ArcCosecant = '◡',
-    
+
     // Hyperbolic functions
     HyperbolicSine = '◐', HyperbolicCosine = '◑', HyperbolicTangent = '◓',
     HyperbolicCotangent = '◒', HyperbolicSecant = '◔', HyperbolicCosecant = '◕',
@@ -67,8 +67,8 @@ namespace CSharpMath.Editor {
     AreaHyperbolicCotangent = '◶', AreaHyperbolicSecant = '⚆', AreaHyperbolicCosecant = '⚇',
 
     // Calculus operators
-    LimitWithBase = '㋏', 
-    Integral = '∫', IntegralLowerLimit= 'ʆ', IntegralUpperLimit = 'ƒ', IntegralBothLimits = 'ʄ',
+    LimitWithBase = '㋏',
+    Integral = '∫', IntegralLowerLimit = 'ʆ', IntegralUpperLimit = 'ƒ', IntegralBothLimits = 'ʄ',
     Summation = '∑', SummationLowerLimit = 'Ƹ', SummationUpperLimit = 'ⵉ', SummationBothLimits = '⅀',
     Product = '∏', ProductLowerLimit = 'ᚂ', ProductUpperLimit = '⥣', ProductBothLimits = '⍡',
     DoubleIntegral = '∬', TripleIntegral = '∭', QuadrupleIntegral = '⨌',

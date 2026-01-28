@@ -6,7 +6,7 @@ using CSharpMath.Atom;
 namespace CSharpMath.Display.Displays {
   using FrontEnd;
   /// <summary>Corresponds to MTMathListDisplay in iosMath.</summary>
-  public class ListDisplay<TFont, TGlyph>: IDisplay<TFont, TGlyph>
+  public class ListDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph>
     where TFont : IFont<TGlyph> {
     public IReadOnlyList<IDisplay<TFont, TGlyph>> Displays { get; }
     public LinePosition LinePosition { get; set; }
@@ -29,7 +29,7 @@ namespace CSharpMath.Display.Displays {
     public float Ascent => Displays.CollectionAscent();
     public float Descent => Displays.CollectionDescent();
     public PointF Position { get; set; }
-    
+
     public Range Range =>
       Range.Combine(
         Displays

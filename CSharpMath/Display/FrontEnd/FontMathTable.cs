@@ -1,6 +1,6 @@
-using CSharpMath.Atom;
 using System;
 using System.Collections.Generic;
+using CSharpMath.Atom;
 
 namespace CSharpMath.Display.FrontEnd {
   /// <summary>Holds lots of constants for spacing between various visible elements.</summary>

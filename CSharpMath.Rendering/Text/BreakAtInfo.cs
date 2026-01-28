@@ -6,7 +6,7 @@ namespace CSharpMath.Rendering.Text {
   internal struct BreakAtInfo {
     public readonly int breakAt;
     public readonly WordKind wordKind;
-    
+
     public BreakAtInfo(int breakAt, WordKind wordKind) {
       this.breakAt = breakAt;
       this.wordKind = wordKind;

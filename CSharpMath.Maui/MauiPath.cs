@@ -16,9 +16,7 @@ namespace CSharpMath.Maui {
     public override void Dispose() {
       owner.Canvas.SaveState();
       var c = (Foreground ?? owner.CurrentColor ?? owner.DefaultColor).ToMauiColor();
-      if (owner.CurrentStyle == Rendering.FrontEnd.PaintStyle.Fill)
-        { owner.Canvas.FillColor = c; owner.Canvas.StrokeSize = 0; owner.Canvas.FillPath(_path); }
-      else { owner.Canvas.StrokeColor = c; owner.Canvas.StrokeSize = 2; owner.Canvas.DrawPath(_path); }
+      if (owner.CurrentStyle == Rendering.FrontEnd.PaintStyle.Fill) { owner.Canvas.FillColor = c; owner.Canvas.StrokeSize = 0; owner.Canvas.FillPath(_path); } else { owner.Canvas.StrokeColor = c; owner.Canvas.StrokeSize = 2; owner.Canvas.DrawPath(_path); }
       owner.Canvas.RestoreState();
       _path.Dispose();
     }

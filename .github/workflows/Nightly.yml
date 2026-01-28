@@ -1,8 +1,9 @@
 ﻿name: Upload test results and nightly builds
 
-on: push
+on: [push, pull_request]
 jobs:
   Everything:
+    if: (github.event_name == 'pull_request') == github.event.pull_request.head.repo.fork
     runs-on: windows-latest
     steps:
     - name: Update draft on GitHub Releases

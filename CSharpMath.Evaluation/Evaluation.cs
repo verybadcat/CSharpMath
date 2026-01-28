@@ -288,7 +288,7 @@ namespace CSharpMath {
             // Check for derivative notation: (d^n y)/(d x^n) or (d y)/(d x) where the d is not part of a longer variable name
             if (f.Numerator is ([Atoms.Variable { FontStyle: FontStyle.Roman, Nucleus: "d", Superscript: var numSuper }, ..] and not [_, Atoms.Variable { FontStyle: FontStyle.Roman }, ..]) &&
                 f.Denominator is [Atoms.Variable { FontStyle: FontStyle.Roman, Nucleus: "d", Superscript: var denomSuper }, ..] and not [_, Atoms.Variable { FontStyle: FontStyle.Roman }, ..]) {
-              
+
               // Parse derivative order from numerator's d exponent
               int order;
               switch (numSuper) {
@@ -299,8 +299,7 @@ namespace CSharpMath {
                   if (int.TryParse(n, out order)) break;
                   else return $"Derivative order must be an integer, got {n}";
                 case [Atoms.UnaryOperator { Nucleus: "\u2212" }, Atoms.Number { Nucleus: var n }]:
-                  if (int.TryParse(n, out order)) { order = -order; break; }
-                  else return $"Derivative order must be an integer, got {n}";
+                  if (int.TryParse(n, out order)) { order = -order; break; } else return $"Derivative order must be an integer, got {n}";
                 default:
                   return "Derivative order must be an integer";
               }
@@ -331,15 +330,15 @@ namespace CSharpMath {
                 }
                 f.Denominator.Last?.Superscript.Clear();
               }
-              
+
               var numeratorIndex = 1;
               (numerator, error) = Transform(f.Numerator, ref numeratorIndex, Precedence.DefaultContext).ExpectEntityOrNull("derivative body");
               if (error != null) return error;
-              
+
               var denominatorIndex = 1;
               (denominator, error) = Transform(f.Denominator, ref denominatorIndex, Precedence.DefaultContext).ExpectEntity("derivative variable");
               if (error != null) return error;
-              
+
               if (numerator is null) {
                 // Derivative operator (no body yet)
                 handlePrecedence = Precedence.CalculusOperation;
@@ -347,7 +346,7 @@ namespace CSharpMath {
                 atom.Nucleus = "derivative operator"; // for the error message
                 goto handlePrefix;
               }
-              
+
               @this = MathS.Derivative(numerator, denominator, order);
               goto handleThis;
             }
@@ -522,7 +521,7 @@ namespace CSharpMath {
             (Entity from, Entity to)? integralFromTo;
             switch (integralFrom, integralTo) {
               case (null, null): integralFromTo = null; break;
-              case ({ }, { }):
+              case ( { }, { }):
                 (var fromEntity, error) = integralFrom.AsEntity("integral lower limit");
                 if (error != null) return error;
                 (var toEntity, error) = integralTo.AsEntity("integral upper limit");
@@ -530,7 +529,7 @@ namespace CSharpMath {
                 integralFromTo = (fromEntity, toEntity);
                 break;
               case (null, { }): return "Integrals with only the upper limit are not supported";
-              case ({ }, null): return "Integrals with only the lower limit are not supported";
+              case ( { }, null): return "Integrals with only the lower limit are not supported";
             }
             i++;
             (var integralBody, error) = Transform(mathList, ref i, Precedence.IntegralBodyContext).ExpectEntityOrNull("integral body");
@@ -746,7 +745,7 @@ namespace CSharpMath {
                   caseElements[row] = new Entity.Providedf(expression, predicate);
                   break;
                 default: return $"The cases environment must have 1 to 2 columns per row";
-            }
+              }
             @this = MathS.Piecewise(caseElements);
             goto handleThis;
           case Atoms.Open { Nucleus: var opening }:
@@ -947,7 +946,7 @@ namespace CSharpMath {
             if (error != null) return error;
             prev = prevEntity * thisEntity;
             break;
-          }
+        }
       }
       return prev;
     }

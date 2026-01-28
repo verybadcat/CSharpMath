@@ -1,6 +1,6 @@
 namespace CSharpMath.Rendering.Tests {
   public sealed class TestRenderingMathData : TestRenderingSharedData<TestRenderingMathData> {
-    
+
     public const string Abs = @"|x|=\begin{cases} -x, & \text{ if } x < 0 \\ x, & \text{ if } x \geq 0 \end{cases}";
     public const string AccentOver = @"\acute{x}";
     //TODO: Fix following line's output

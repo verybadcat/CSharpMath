@@ -9,6 +9,7 @@ CSharpMath.Xaml.Tests.NuGet/Test.*.png
 /.benchmarkresults
 /.nupkgs
 /.testcoverage
+/.vscode
 ## END Specifically added for CSharpMath
 
 ## Ignore Visual Studio temporary files, build results, and

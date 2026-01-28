@@ -1,5 +1,4 @@
-namespace CSharpMath.Atom
- {
+namespace CSharpMath.Atom {
   public enum FontStyle {
     ///<summary>\mathnormal</summary>
     Default,

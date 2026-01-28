@@ -5,8 +5,8 @@ using TGlyph = System.Text.Rune;
 
 namespace CSharpMath.Core.Tests {
   using Atom;
-  using Editor;
   using BackEnd;
+  using Editor;
   // Tests in different classes run in parallel, unlike tests in the same class
   public class CaretBlinks {
     public const int MillisecondBuffer = 200;
@@ -63,7 +63,7 @@ namespace CSharpMath.Core.Tests {
       Assert.True(keyboard.InsertionPositionHighlighted);
     }
   }
-  public class CaretHidesAfterReturnAndDismiss { 
+  public class CaretHidesAfterReturnAndDismiss {
     [Theory]
     [InlineData(MathKeyboardInput.Return)]
     [InlineData(MathKeyboardInput.Dismiss)]
@@ -78,7 +78,7 @@ namespace CSharpMath.Core.Tests {
       Assert.False(keyboard.ShouldDrawCaret);
     }
   }
-  public class CaretTimerResetsOnKeyPress { 
+  public class CaretTimerResetsOnKeyPress {
     [Fact]
     public async Task Test() {
       var keyboard = new MathKeyboard<TestFont, TGlyph>(TestTypesettingContext.Instance, new TestFont()) {

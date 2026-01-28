@@ -1,5 +1,5 @@
-using Microsoft.Extensions.Logging;
 using CommunityToolkit.Maui;
+using Microsoft.Extensions.Logging;
 
 namespace CSharpMath.Maui.Example {
   public static class MauiProgram {
@@ -16,7 +16,7 @@ namespace CSharpMath.Maui.Example {
           });
 
 #if DEBUG
-  		builder.Logging.AddDebug();
+      builder.Logging.AddDebug();
 #endif
 
       return builder.Build();

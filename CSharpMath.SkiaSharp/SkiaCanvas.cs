@@ -1,5 +1,5 @@
-using CSharpMath.Rendering.FrontEnd;
 using System.Drawing;
+using CSharpMath.Rendering.FrontEnd;
 using SkiaSharp;
 
 namespace CSharpMath.SkiaSharp {

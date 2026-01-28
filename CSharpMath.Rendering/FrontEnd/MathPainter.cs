@@ -15,8 +15,7 @@ namespace CSharpMath.Rendering.FrontEnd {
     public override RectangleF Measure(float unused = float.NaN) => base.Measure(unused);
     protected override void SetRedisplay() => _displayChanged = true;
     protected override void UpdateDisplayCore(float unused) {
-      if (_displayChanged)
-      {
+      if (_displayChanged) {
         Display = Content == null
           ? null
           : Typesetter.CreateLine(Content, Fonts, TypesettingContext.Instance, LineStyle);

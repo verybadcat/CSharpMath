@@ -220,7 +220,7 @@ namespace CSharpMath.Xaml.Tests {
         var view = new TView();
         Assert.Empty(view.LocalTypefaces);
         var list = new List<Typography.OpenFont.Typeface>();
-        view.LocalTypefaces = list; 
+        view.LocalTypefaces = list;
         view.LaTeX = "123";
         Assert.Throws<Xunit.Sdk.AllException>(() => check(GetDisplay(view)));
 

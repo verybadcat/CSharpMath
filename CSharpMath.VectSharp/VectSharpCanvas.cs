@@ -3,6 +3,7 @@ using CSharpMath.Rendering.FrontEnd;
 using VectSharp;
 
 namespace CSharpMath.VectSharp;
+
 public sealed class VectSharpCanvas(Page canvas) : ICanvas {
   public Page Canvas { get; } = canvas;
   public float Width => (float)Canvas.Width;

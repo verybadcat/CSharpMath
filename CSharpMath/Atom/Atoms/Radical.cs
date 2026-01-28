@@ -1,7 +1,7 @@
 using System.Text;
 
 namespace CSharpMath.Atom.Atoms {
-  public sealed class Radical: MathAtom, IMathListContainer {
+  public sealed class Radical : MathAtom, IMathListContainer {
     public Radical(MathList degree, MathList radicand) =>
       (Degree, Radicand) = (degree, radicand);
     public MathList Degree { get; }

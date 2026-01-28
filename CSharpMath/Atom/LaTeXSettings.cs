@@ -362,8 +362,7 @@ namespace CSharpMath.Atom {
       if (hexOrName.StartsWith("#", StringComparison.Ordinal)) {
         var hex = hexOrName.Substring(1);
         return
-          (hex.Length, int.TryParse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var i)) switch
-          {
+          (hex.Length, int.TryParse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var i)) switch {
             (8, true) => Color.FromArgb(i),
             (6, true) => Color.FromArgb(unchecked((int)0xff000000) + i),
             _ => null

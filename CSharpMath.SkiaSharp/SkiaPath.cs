@@ -1,5 +1,5 @@
-using SKPath = SkiaSharp.SKPath;
 using System.Drawing;
+using SKPath = SkiaSharp.SKPath;
 
 namespace CSharpMath.SkiaSharp {
   public sealed class SkiaPath : Rendering.FrontEnd.Path {

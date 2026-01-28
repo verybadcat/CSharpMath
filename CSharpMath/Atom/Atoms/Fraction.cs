@@ -16,9 +16,9 @@ namespace CSharpMath.Atom.Atoms {
     public new Fraction Clone(bool finalize) => (Fraction)base.Clone(finalize);
     protected override MathAtom CloneInside(bool finalize) =>
       new Fraction(Numerator.Clone(finalize), Denominator.Clone(finalize), HasRule) {
-      LeftDelimiter = LeftDelimiter,
-      RightDelimiter = RightDelimiter
-    };
+        LeftDelimiter = LeftDelimiter,
+        RightDelimiter = RightDelimiter
+      };
     public override string DebugString =>
       new StringBuilder(HasRule ? @"\frac" : @"\atop")
         .AppendInBracketsOrNothing(LeftDelimiter.Nucleus)

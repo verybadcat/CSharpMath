@@ -1,14 +1,14 @@
 namespace CSharpMath.Rendering.Text {
   using System;
   using System.Collections.Generic;
+  using System.Drawing;
   using System.Linq;
   using Atom;
+  using BackEnd;
   using Display;
   using Display.Displays;
-  using BackEnd;
   using FrontEnd;
   using Display = Display.Displays.ListDisplay<BackEnd.Fonts, BackEnd.Glyph>;
-  using System.Drawing;
   public static class TextTypesetter {
     public static (Display relative, Display absolute) Layout(TextAtom input, Fonts inputFont, float canvasWidth) {
       // TODO: Multiply these constants by resolution

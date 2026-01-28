@@ -1,11 +1,11 @@
-using CSharpMath.Atom;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using CSharpMath.Atom;
 
 namespace CSharpMath.Display.Displays {
   using FrontEnd;
-  public class TextLineDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph> where TFont: IFont<TGlyph> {
+  public class TextLineDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph> where TFont : IFont<TGlyph> {
     public TextLineDisplay(
       AttributedString<TFont, TGlyph> text, Range range,
       TypesettingContext<TFont, TGlyph> context, IReadOnlyList<MathAtom> atoms, PointF position) : this(
@@ -20,7 +20,7 @@ namespace CSharpMath.Display.Displays {
     public List<TextRunDisplay<TFont, TGlyph>> Runs { get; }
     public IReadOnlyList<MathAtom> Atoms { get; }
     public IEnumerable<TGlyph> Text => Runs.SelectMany(run => run.Run.Glyphs);
-    
+
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
       this.DrawBackground(context);
       context.SaveState();

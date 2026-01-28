@@ -13,8 +13,7 @@ namespace CSharpMath.Editor {
         atom.Subscript.Append(placeholder.Subscript);
         self[atomIndex] = atom;
       } else self.Insert(atomIndex, atom);
-      advance = advanceType switch
-      {
+      advance = advanceType switch {
         MathListSubIndexType.None => advance.Next,
         _ => advance.LevelUpWithSubIndex(advanceType, MathListIndex.Level0Index(0)),
       };
@@ -99,8 +98,7 @@ namespace CSharpMath.Editor {
               self.Atoms[index.AtomIndex - 1] is MathAtom previous &&
               previous.Subscript.IsEmpty() &&
               previous.Superscript.IsEmpty() &&
-              previous switch
-              {
+              previous switch {
                 Atoms.BinaryOperator _ => false,
                 Atoms.UnaryOperator _ => false,
                 Atoms.Relation _ => false,

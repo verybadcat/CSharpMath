@@ -67,7 +67,8 @@ namespace CSharpMath.Maui.Example {
             popupShown = true;
             if (hook.IsRunning) hook.Stop();
 #endif
-            var view = new MathView { FontSize = 32, EnablePanning = true, TextAlignment = Rendering.FrontEnd.TextAlignment.TopLeft,
+            var view = new MathView {
+              FontSize = 32, EnablePanning = true, TextAlignment = Rendering.FrontEnd.TextAlignment.TopLeft,
               LaTeX = Evaluation.Interpret(keyboard.Keyboard.MathList)
             };
             await p.ShowPopupAsync(new VerticalStackLayout {

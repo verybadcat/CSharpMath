@@ -24,7 +24,7 @@ namespace CSharpMath.Display.Displays {
     public Range Range => Accentee.Range;
 
     public PointF Position { get => Accentee.Position; set => Accentee.Position = value; }
-    
+
     public bool HasScript { get; set; }
 
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
