@@ -28,7 +28,7 @@ namespace CSharpMath.Display.Displays {
       Range = range;
       UpdateNumeratorAndDenominatorPositions();
     }
-    
+
     public float Ascent => Numerator.Ascent + NumeratorUp;
 
     public float Descent => Denominator.Descent + DenominatorDown;

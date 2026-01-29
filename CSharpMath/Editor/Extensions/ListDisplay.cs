@@ -52,7 +52,7 @@ namespace CSharpMath.Editor {
               self.Range.End < 0
               ? null
               : self.Displays.Count == 1
-                && self.Displays[0] is TextLineDisplay<TFont, TGlyph> { Atoms:var atoms }
+                && self.Displays[0] is TextLineDisplay<TFont, TGlyph> { Atoms: var atoms }
                 && atoms.Count == 1
                 && atoms[0] is Atom.Atoms.Placeholder
               ? MathListIndex.Level0Index(self.Range.Location)
@@ -136,7 +136,7 @@ namespace CSharpMath.Editor {
         // We didn't find the position
         return null;
     }
-    
+
     public static void HighlightCharacterAt<TFont, TGlyph>(this ListDisplay<TFont, TGlyph> self,
       MathListIndex index, Color color) where TFont : IFont<TGlyph> {
       if (self.Range.Contains(index.AtomIndex)
@@ -184,7 +184,7 @@ namespace CSharpMath.Editor {
               case MathListSubIndexType.BetweenBaseAndScripts:
                 return display;
               case MathListSubIndexType.Degree when display is RadicalDisplay<TFont, TGlyph> radical:
-                  return radical.Degree;
+                return radical.Degree;
               case MathListSubIndexType.Radicand when display is RadicalDisplay<TFont, TGlyph> radical:
                 return radical.Radicand;
               case MathListSubIndexType.Numerator when display is FractionDisplay<TFont, TGlyph> fraction:

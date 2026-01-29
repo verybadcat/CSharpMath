@@ -60,8 +60,7 @@ namespace CSharpMath.Editor {
 
     public static IDisplay<TFont, TGlyph>? SubListForIndexType<TFont, TGlyph>(
       this LargeOpLimitsDisplay<TFont, TGlyph> self, MathListSubIndexType type) where TFont : IFont<TGlyph> =>
-      type switch
-      {
+      type switch {
         MathListSubIndexType.Superscript => self.UpperLimit,
         MathListSubIndexType.Subscript => self.LowerLimit,
         _ => throw new ArgumentOutOfRangeException

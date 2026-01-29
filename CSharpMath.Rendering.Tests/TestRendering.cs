@@ -97,7 +97,7 @@ namespace CSharpMath.Rendering.Tests {
       // TODO: Fix font sizes at 100 and 300
       foreach (var fontSize in stackalloc[] { 20, 40, 60 })
         foreach (var alignment in typeof(TextAlignment).GetEnumValues().Cast<TextAlignment>())
-          data.Add(fontSize, alignment); 
+          data.Add(fontSize, alignment);
       return data;
     }
     [Theory, MemberData(nameof(TextFontSizesData))]
@@ -152,17 +152,17 @@ Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6. \[\f
       Assert.True(expectedFile.Exists, "The expected image was not copied successfully.");
       using var actualStream = actualFile.OpenRead();
       using var expectedStream = expectedFile.OpenRead();
-      
+
       bool sizesMatch = Math.Abs(expectedStream.Length - actualStream.Length) <= expectedStream.Length * FileSizeTolerance;
       bool contentsMatch = FileSizeTolerance == 0 ? TestRenderingFixture.StreamsContentsAreEqual(expectedStream, actualStream) : sizesMatch;
-      
+
       if (!contentsMatch && updateBaselines) {
         expectedStream.Close();
         actualStream.Close();
         actualFile.CopyTo(expectedFile.FullName, overwrite: true);
         return;
       }
-      
+
       Core.Tests.Approximately.Equal(expectedStream.Length, actualStream.Length, expectedStream.Length * FileSizeTolerance);
       if (FileSizeTolerance == 0)
         Assert.True(contentsMatch, "The images differ.");

@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using TGlyph = System.Text.Rune;
 using CSharpMath.Display;
+using TGlyph = System.Text.Rune;
 
 namespace CSharpMath.Core.BackEnd {
   public class TestGlyphBoundsProvider : Display.FrontEnd.IGlyphBoundsProvider<TestFont, TGlyph> {
@@ -27,7 +27,7 @@ namespace CSharpMath.Core.BackEnd {
 
     private int GetEffectiveLength(ReadOnlySpan<TGlyph> span) {
       int length = 0;
-      for(int i = 0; i < span.Length; i++)
+      for (int i = 0; i < span.Length; i++)
         if (M.Contains(span[i])) length += 2;
         else length++;
       return length;
@@ -54,7 +54,7 @@ namespace CSharpMath.Core.BackEnd {
       var r = new float[nGlyphs];
       var total = 0f;
       int i = 0;
-      foreach(var glyph in glyphs) {
+      foreach (var glyph in glyphs) {
         ReadOnlySpan<TGlyph> span = stackalloc[] { glyph };
         total += r[i] = GetEffectiveLength(span) * font.PointSize * WidthPerCharacterPerFontSize;
         i++;

@@ -29,7 +29,7 @@ namespace CSharpMath {
               goto notRepeatingUnit;
           }
           return sub;
-          notRepeatingUnit:;
+        notRepeatingUnit:;
         }
         return ReadOnlySpan<double>.Empty;
       }
@@ -53,8 +53,7 @@ namespace CSharpMath {
         if (type == ContinuationType.Geometric && list.IndexOf(0) >= 0)
           return false; // Do not try to divide by zero
         foreach (var elem in list) System.Diagnostics.Debug.WriteLine("1/" + new string(' ', depth) + type + elem);
-        AntiRunningSums(list, type switch
-        {
+        AntiRunningSums(list, type switch {
           ContinuationType.Arithmetic => (a, b) => a - b,
           ContinuationType.Geometric => (a, b) => a / b,
           _ => throw new NotImplementedException()
@@ -66,8 +65,7 @@ namespace CSharpMath {
         })
           if (depth < 2 && TryInterpretSequence(list, newList, depth + 1, t)) {
             foreach (var elem in newList) System.Diagnostics.Debug.WriteLine("3/" + new string(' ', depth) + type + elem);
-            RunningSums(newList, type switch
-            {
+            RunningSums(newList, type switch {
               ContinuationType.Arithmetic => (a, b) => a + b,
               ContinuationType.Geometric => (a, b) => a * b,
               _ => throw new NotImplementedException()
@@ -75,8 +73,7 @@ namespace CSharpMath {
             foreach (var elem in newList) System.Diagnostics.Debug.WriteLine("4/" + new string(' ', depth) + type + elem);
             return true;
           }
-        RunningSums(list, type switch
-        {
+        RunningSums(list, type switch {
           ContinuationType.Arithmetic => (a, b) => a + b,
           ContinuationType.Geometric => (a, b) => a * b,
           _ => throw new NotImplementedException()

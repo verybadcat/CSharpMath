@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace CSharpMath.Display {
-  public class AttributedString<TFont, TGlyph> where TFont: FrontEnd.IFont<TGlyph> {
+  public class AttributedString<TFont, TGlyph> where TFont : FrontEnd.IFont<TGlyph> {
     private readonly List<AttributedGlyphRun<TFont, TGlyph>> _runs;
     public AttributedString(IEnumerable<AttributedGlyphRun<TFont, TGlyph>>? runs = null) {
       _runs = runs?.ToList() ?? new List<AttributedGlyphRun<TFont, TGlyph>>();

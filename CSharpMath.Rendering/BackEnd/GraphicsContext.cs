@@ -63,7 +63,7 @@ namespace CSharpMath.Rendering.BackEnd {
       Canvas.Save();
       Canvas.Translate(textPosition.X, textPosition.Y);
       Canvas.CurrentColor = color;
-      foreach(var (glyph, kernAfter, foreground) in run.GlyphInfos) {
+      foreach (var (glyph, kernAfter, foreground) in run.GlyphInfos) {
         var typeface = glyph.Typeface;
         var pathBuilder = new GlyphOutlineBuilder(typeface);
         var scale = typeface.CalculateScaleToPixelFromPointSize(pointSize);

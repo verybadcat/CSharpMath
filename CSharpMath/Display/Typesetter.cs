@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 using CSharpMath.Atom;
 using CSharpMath.Atom.Atoms;
 using CSharpMath.Display.Displays;
 using CSharpMath.Display.FrontEnd;
-using System.Drawing;
-using System.Linq;
 
 namespace CSharpMath.Display {
   public static class Typesetter {
@@ -14,8 +14,7 @@ namespace CSharpMath.Display {
       where TFont : IFont<TGlyph> =>
       list is null ? throw new ArgumentNullException(nameof(list))
       : Typesetter<TFont, TGlyph>.CreateLine(list.Clone(true), font, context, style, false);
-    public static bool UnicodeLengthIsOne(string? str) => str?.Length switch
-    {
+    public static bool UnicodeLengthIsOne(string? str) => str?.Length switch {
       1 => true,
       2 when char.IsHighSurrogate(str[0]) && char.IsLowSurrogate(str[1]) => true,
       _ => false
@@ -97,8 +96,7 @@ namespace CSharpMath.Display {
     internal readonly List<MathAtom> _currentAtoms = new List<MathAtom>();
     internal const int _delimiterFactor = 901;
     internal const int _delimiterShortfallPoints = 5;
-    private LineStyle _scriptStyle => _style switch
-    {
+    private LineStyle _scriptStyle => _style switch {
       LineStyle.Display => LineStyle.Script,
       LineStyle.Text => LineStyle.Script,
       LineStyle.Script => LineStyle.ScriptScript,
@@ -135,8 +133,7 @@ namespace CSharpMath.Display {
           if (atom is Comment) continue;
           // These are not a TeX type nodes. TeX does this during parsing the input.
           // switch to using the font specified in the atom and convert it to ordinary
-          var newAtom = atom switch
-          {
+          var newAtom = atom switch {
             Variable v => v.ToOrdinary(UnicodeFontChanger.ChangeFont),
             Number n => n.ToOrdinary(UnicodeFontChanger.ChangeFont),
             // TeX treats unary operators as Ordinary. So will we.
@@ -579,8 +576,7 @@ namespace CSharpMath.Display {
 
     private IDisplay<TFont, TGlyph> MakeFraction(Fraction fraction) {
       float _NumeratorShiftUp(bool hasRule) =>
-        (hasRule, _style) switch
-        {
+        (hasRule, _style) switch {
           (true, LineStyle.Display) => _mathTable.FractionNumeratorDisplayStyleShiftUp(_styleFont),
           (true, _) => _mathTable.FractionNumeratorShiftUp(_styleFont),
           (false, LineStyle.Display) => _mathTable.StackTopDisplayStyleShiftUp(_styleFont),
@@ -592,8 +588,7 @@ namespace CSharpMath.Display {
         : _mathTable.FractionNumeratorGapMin(_styleFont);
 
       float _DenominatorShiftDown(bool hasRule) =>
-        (hasRule, _style) switch
-        {
+        (hasRule, _style) switch {
           (true, LineStyle.Display) => _mathTable.FractionDenominatorDisplayStyleShiftDown(_styleFont),
           (true, _) => _mathTable.FractionDenominatorShiftDown(_styleFont),
           (false, LineStyle.Display) => _mathTable.StackBottomDisplayStyleShiftDown(_styleFont),

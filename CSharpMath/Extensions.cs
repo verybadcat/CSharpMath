@@ -119,8 +119,7 @@ namespace CSharpMath {
       EmptyString,
     }
     private static StringBuilder AppendIn(this StringBuilder b, char l, string? s, char r, NullHandling h) =>
-      h switch
-      {
+      h switch {
         NullHandling.EmptyContent => b.Append(l).Append(s).Append(r),
         NullHandling.EmptyString => s != null ? b.Append(l).Append(s).Append(r) : b,
         NullHandling.LiteralNull => b.Append(l).Append(s ?? "null").Append(r),

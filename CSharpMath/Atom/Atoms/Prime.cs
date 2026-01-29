@@ -11,7 +11,7 @@ namespace CSharpMath.Atom.Atoms {
         throw new System.ArgumentOutOfRangeException(
           nameof(length), length, "Only positive length is allowed.");
       var sb = new System.Text.StringBuilder();
-      Append: switch (length) {
+    Append: switch (length) {
         //glyphs are already superscripted
         //pick appropriate codepoint depending on number of primes
         case 1: sb.Append('\u2032'); break;
@@ -24,6 +24,6 @@ namespace CSharpMath.Atom.Atoms {
     }
     public override int GetHashCode() => unchecked(base.GetHashCode() + 401 * Length);
     public bool EqualsPrime(Prime other) => EqualsAtom(other) && Length == other.Length;
-    public override bool Equals(object obj) => obj is Prime p ? EqualsPrime(p) : false; 
+    public override bool Equals(object obj) => obj is Prime p ? EqualsPrime(p) : false;
   }
 }

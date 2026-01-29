@@ -4,8 +4,8 @@ using System.Text;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
-using Avalonia.Media;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 
 namespace CSharpMath.Xaml.Tests {
   using Avalonia;
@@ -20,7 +20,8 @@ namespace CSharpMath.Xaml.Tests {
           p.Measure(float.PositiveInfinity);
           return p.Display ?? throw new InvalidOperationException("Invalid content");
         default: throw new NotImplementedException();
-      };
+      }
+      ;
     }
     protected override string FrontEndNamespace => nameof(Avalonia);
     protected override BindingMode Default => BindingMode.Default;

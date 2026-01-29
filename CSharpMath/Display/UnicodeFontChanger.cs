@@ -93,8 +93,7 @@ namespace CSharpMath.Display {
       : IsNumber(c) ? GetBold(c) : c;
 
     private static int GetCaligraphic(char c) =>
-      c switch
-      {
+      c switch {
         // Caligraphic has lots of exceptions:
         'B' => 0x212C, // Script B (bernoulli)
         'E' => 0x2130, // Script E (emf)
@@ -126,8 +125,7 @@ namespace CSharpMath.Display {
     // mathfrak
     private static int GetFraktur(char c) =>
       // Fraktur has exceptions:
-      c switch
-      {
+      c switch {
         'C' => 0x212D, // C Fraktur
         'H' => 0x210C, // Hilbert space
         'I' => 0x2111, // Imaginary
@@ -148,8 +146,7 @@ namespace CSharpMath.Display {
 
     private static int GetBlackboard(char c) =>
       // Blackboard has lots of exceptions:
-      c switch
-      {
+      c switch {
         'C' => 0x2102, // Complex numbers
         'H' => 0x210D, // Quarternions
         'N' => 0x2115, // Natural numbers
@@ -163,8 +160,7 @@ namespace CSharpMath.Display {
         _ => GetDefaultStyle(c),
       };
     public static int StyleCharacter(char c, FontStyle fontStyle) =>
-      fontStyle switch
-      {
+      fontStyle switch {
         FontStyle.Default => GetDefaultStyle(c),
         FontStyle.Roman => c,
         FontStyle.Bold => GetBold(c),

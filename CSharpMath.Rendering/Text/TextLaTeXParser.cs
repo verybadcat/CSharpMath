@@ -4,8 +4,8 @@ using System.Text;
 using Typography.TextBreak;
 
 namespace CSharpMath.Rendering.Text {
-  using Atom;
   using System.Drawing;
+  using Atom;
   using static CSharpMath.Atom.Result;
   public static class TextLaTeXParser {
     /* //Paste this into the C# Interactive, fill <username> yourself
@@ -147,7 +147,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
               _ = NextSection(latexInput, ref section); //this never fails because the above check
             return Ok(resultText);
           }
-          Result<Color> ReadColor(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section)  =>
+          Result<Color> ReadColor(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section) =>
             ReadArgumentString(latexInput, ref section).Bind(color =>
               LaTeXSettings.ParseColor(color.ToString()) is Color value ?
                 Ok(value) :
@@ -251,8 +251,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                   case var _ when textSection.Is('$'):
                     throw new InvalidCodePathException("The $ case should have been accounted for.");
                   case var _ when textSection.Is('('):
-                    return displayMath switch
-                    {
+                    return displayMath switch {
                       true => "Cannot open inline math mode in display math mode",
                       false => "Cannot open inline math mode in inline math mode",
                       null => throw new InvalidCodePathException("displayMath is null. This switch should not be hit."),
@@ -272,8 +271,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     }
                     break;
                   case var _ when textSection.Is('['):
-                    return displayMath switch
-                    {
+                    return displayMath switch {
                       true => "Cannot open display math mode in display math mode",
                       false => "Cannot open display math mode in inline math mode",
                       null => throw new InvalidCodePathException("displayMath is null. This switch should not be hit."),
@@ -463,8 +461,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
             .Append(m.DisplayStyle ? ']' : ')');
         case TextAtom.Space s:
           return s.Content.IsMu
-          ? s.Content.Amount switch
-          {
+          ? s.Content.Amount switch {
             -3 => b.Append(@"\! "),
             3 => b.Append(@"\, "),
             4 => b.Append(@"\: "),

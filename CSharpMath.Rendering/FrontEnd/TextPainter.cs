@@ -2,11 +2,11 @@ using System.Drawing;
 using System.Linq;
 
 namespace CSharpMath.Rendering.FrontEnd {
+  using BackEnd;
+  using CSharpMath.Atom.Atoms;
   using Display;
   using Display.Displays;
-  using BackEnd;
   using Text;
-  using CSharpMath.Atom.Atoms;
 
   /// <summary>
   /// Unlike <see cref="Typesetter{TFont, TGlyph}"/>,
@@ -74,8 +74,7 @@ namespace CSharpMath.Rendering.FrontEnd {
             if (relDisplay.Position.Y > y) {
               y = relDisplay.Position.Y;
               var rightSpace = adjustedCanvasWidth - (relDisplay.Position.X + relDisplay.Width);
-              Δx = leftRightFlags switch
-              {
+              Δx = leftRightFlags switch {
                 TextAlignment.Center => rightSpace / 2,
                 TextAlignment.Right => rightSpace,
                 _ => throw new Atom.InvalidCodePathException("The left flag has been set. This foreach loop should have been skipped.")

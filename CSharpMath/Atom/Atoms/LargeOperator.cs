@@ -10,7 +10,7 @@ namespace CSharpMath.Atom.Atoms {
     public bool? Limits { get => ForceNoLimits ? false : _limits; set => _limits = value; }
     ///<summary>If true, overrides Limits and makes it treated as false</summary>
     public bool ForceNoLimits { get; }
-    public LargeOperator(string value, bool? limits, bool forceNoLimits = false): base(value) {
+    public LargeOperator(string value, bool? limits, bool forceNoLimits = false) : base(value) {
       Limits = limits;
       ForceNoLimits = forceNoLimits;
     }

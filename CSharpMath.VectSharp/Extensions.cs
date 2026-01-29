@@ -2,6 +2,7 @@ using System;
 using CSharpMath.Rendering.FrontEnd;
 
 namespace CSharpMath.VectSharp;
+
 public static class Extensions {
   internal static global::VectSharp.Colour ToNative(this System.Drawing.Color color) =>
     global::VectSharp.Colour.FromRgba(color.R, color.G, color.B, color.A);

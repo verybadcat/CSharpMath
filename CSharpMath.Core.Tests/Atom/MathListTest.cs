@@ -1,7 +1,7 @@
-using CSharpMath.Atom;
-using CSharpMath.Atom.Atoms;
 using System;
 using System.Linq;
+using CSharpMath.Atom;
+using CSharpMath.Atom.Atoms;
 using Xunit;
 
 namespace CSharpMath.Core.Tests {

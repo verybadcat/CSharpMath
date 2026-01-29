@@ -1,6 +1,6 @@
+using System.Drawing;
 using CSharpMath.Rendering.FrontEnd;
 using SkiaSharp;
-using System.Drawing;
 
 namespace CSharpMath.SkiaSharp {
   public static class Extensions {

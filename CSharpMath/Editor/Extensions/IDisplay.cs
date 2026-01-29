@@ -39,31 +39,29 @@ namespace CSharpMath.Editor {
     public static MathListIndex? IndexForPoint<TFont, TGlyph>(
       this IDisplay<TFont, TGlyph> display,
       TypesettingContext<TFont, TGlyph> context, PointF point)
-      where TFont : IFont<TGlyph> => display switch
-    {
-      TextLineDisplay<TFont, TGlyph> text => text.IndexForPoint(context, point),
-      FractionDisplay<TFont, TGlyph> frac => frac.IndexForPoint(context, point),
-      RadicalDisplay<TFont, TGlyph> radical => radical.IndexForPoint(context, point),
-      ListDisplay<TFont, TGlyph> list => list.IndexForPoint(context, point),
-      LargeOpLimitsDisplay<TFont, TGlyph> largeOp => largeOp.IndexForPoint(context, point),
-      IGlyphDisplay<TFont, TGlyph> glyph => glyph.IndexForPoint(context, point),
-      InnerDisplay<TFont, TGlyph> inner => inner.IndexForPoint(context, point),
-      _ => null,
-    };
+      where TFont : IFont<TGlyph> => display switch {
+        TextLineDisplay<TFont, TGlyph> text => text.IndexForPoint(context, point),
+        FractionDisplay<TFont, TGlyph> frac => frac.IndexForPoint(context, point),
+        RadicalDisplay<TFont, TGlyph> radical => radical.IndexForPoint(context, point),
+        ListDisplay<TFont, TGlyph> list => list.IndexForPoint(context, point),
+        LargeOpLimitsDisplay<TFont, TGlyph> largeOp => largeOp.IndexForPoint(context, point),
+        IGlyphDisplay<TFont, TGlyph> glyph => glyph.IndexForPoint(context, point),
+        InnerDisplay<TFont, TGlyph> inner => inner.IndexForPoint(context, point),
+        _ => null,
+      };
     ///<summary>The bounds of the display indicated by the given index</summary>
     public static PointF? PointForIndex<TFont, TGlyph>(this IDisplay<TFont, TGlyph> display,
       TypesettingContext<TFont, TGlyph> context,
-      MathListIndex index) where TFont : IFont<TGlyph> => display switch
-    {
-      TextLineDisplay<TFont, TGlyph> text => text.PointForIndex(context, index),
-      FractionDisplay<TFont, TGlyph> frac => frac.PointForIndex(context, index),
-      RadicalDisplay<TFont, TGlyph> radical => radical.PointForIndex(context, index),
-      ListDisplay<TFont, TGlyph> list => list.PointForIndex(context, index),
-      LargeOpLimitsDisplay<TFont, TGlyph> largeOp => largeOp.PointForIndex(context, index),
-      IGlyphDisplay<TFont, TGlyph> glyph => glyph.PointForIndex(context, index),
-      InnerDisplay<TFont, TGlyph> inner => inner.PointForIndex(context, index),
-      _ => null,
-    };
+      MathListIndex index) where TFont : IFont<TGlyph> => display switch {
+        TextLineDisplay<TFont, TGlyph> text => text.PointForIndex(context, index),
+        FractionDisplay<TFont, TGlyph> frac => frac.PointForIndex(context, index),
+        RadicalDisplay<TFont, TGlyph> radical => radical.PointForIndex(context, index),
+        ListDisplay<TFont, TGlyph> list => list.PointForIndex(context, index),
+        LargeOpLimitsDisplay<TFont, TGlyph> largeOp => largeOp.PointForIndex(context, index),
+        IGlyphDisplay<TFont, TGlyph> glyph => glyph.PointForIndex(context, index),
+        InnerDisplay<TFont, TGlyph> inner => inner.PointForIndex(context, index),
+        _ => null,
+      };
     public static void HighlightCharacterAt<TFont, TGlyph>
       (this IDisplay<TFont, TGlyph> display, MathListIndex index, Color color)
       where TFont : IFont<TGlyph> {

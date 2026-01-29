@@ -105,8 +105,7 @@ namespace CSharpMath.Editor {
           MathList.InsertAndAdvance(ref _insertionIndex, emptyAtom, subIndexType);
         }
         static bool IsFullPlaceholderRequired(MathAtom mathAtom) =>
-          mathAtom switch
-          {
+          mathAtom switch {
             Atoms.BinaryOperator _ => true,
             Atoms.UnaryOperator _ => true,
             Atoms.Relation _ => true,
@@ -162,7 +161,7 @@ namespace CSharpMath.Editor {
             case (var a, _): numerator.Push(a); break;
           }
         }
-        stop: MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count));
+      stop: MathList.RemoveAtoms(new MathListRange(_insertionIndex, numerator.Count));
         if (numerator.Count == 0)
           // so we didn't really find any numbers before this, so make the numerator 1
           numerator.Push(new Atoms.Number("1"));
@@ -385,8 +384,7 @@ namespace CSharpMath.Editor {
       static bool IsPlaceholderList(MathList ml) => ml.Count == 1 && ml[0] is Atoms.Placeholder;
       void InsertAtom(MathAtom a) =>
         MathList.InsertAndAdvance(ref _insertionIndex, a,
-          a switch
-          {
+          a switch {
             Atoms.Fraction _ => MathListSubIndexType.Numerator,
             Atoms.Radical { Degree: { } d } when IsPlaceholderList(d) => MathListSubIndexType.Degree,
             Atoms.Radical _ => MathListSubIndexType.Radicand,
@@ -417,7 +415,7 @@ namespace CSharpMath.Editor {
       }
 
       switch (input) {
-      // TODO: Implement up/down buttons
+        // TODO: Implement up/down buttons
         case MathKeyboardInput.Up:
           break;
         case MathKeyboardInput.Down:

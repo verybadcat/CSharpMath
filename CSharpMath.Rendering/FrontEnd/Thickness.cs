@@ -1,10 +1,8 @@
 namespace CSharpMath.Rendering.FrontEnd {
   public readonly struct Thickness : System.IEquatable<Thickness> {
     public Thickness(float uniformSize) { Left = Right = Top = Bottom = uniformSize; }
-    public Thickness(float horizontalSize, float verticalSize)
-      { Left = Right = horizontalSize; Top = Bottom = verticalSize; }
-    public Thickness(float left, float top, float right, float bottom)
-      { Left = left; Top = top; Right = right; Bottom = bottom; }
+    public Thickness(float horizontalSize, float verticalSize) { Left = Right = horizontalSize; Top = Bottom = verticalSize; }
+    public Thickness(float left, float top, float right, float bottom) { Left = left; Top = top; Right = right; Bottom = bottom; }
     public float Top { get; }
     public float Bottom { get; }
     public float Left { get; }

@@ -21,8 +21,7 @@ namespace CSharpMath.Core.BackEnd {
     public TGlyph GetGlyph(string glyphName) {
       // Variant glyphs have a dot in their name
       var actualName = glyphName.IndexOf('.') switch { -1 => glyphName, var dotIndex => glyphName.Substring(0, dotIndex) };
-      return actualName.Length switch
-      {
+      return actualName.Length switch {
         1 when actualName[0] >= 'a' && actualName[0] <= 'z' => new TGlyph(actualName[0] - 'a' + italic_a.Value),
         1 when actualName[0] >= 'A' && actualName[0] <= 'Z' => new TGlyph(actualName[0] - 'A' + italic_A.Value),
         5 => new TGlyph(int.Parse(actualName.Substring(1), System.Globalization.NumberStyles.AllowHexSpecifier)),

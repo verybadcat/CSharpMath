@@ -1,6 +1,6 @@
+using System.Linq;
 using CSharpMath.Atom;
 using CSharpMath.Atom.Atoms;
-using System.Linq;
 using Xunit;
 
 namespace CSharpMath.Core.Tests {

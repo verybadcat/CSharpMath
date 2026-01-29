@@ -1,10 +1,9 @@
 using Avalonia;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using CSharpMath.Rendering.FrontEnd;
 using AvaloniaColor = Avalonia.Media.Color;
 using AvaloniaTextAlignment = Avalonia.Media.TextAlignment;
-
-using CSharpMath.Rendering.FrontEnd;
 using CSharpMathTextAlignment = CSharpMath.Rendering.FrontEnd.TextAlignment;
 
 namespace CSharpMath.Avalonia {
@@ -16,8 +15,7 @@ namespace CSharpMath.Avalonia {
         System.Drawing.Color.FromArgb(color.A, color.R, color.G, color.B);
 
     internal static CSharpMathTextAlignment ToCSharpMathTextAlignment(this AvaloniaTextAlignment alignment) =>
-      alignment switch
-      {
+      alignment switch {
         AvaloniaTextAlignment.Left => CSharpMathTextAlignment.TopLeft,
         AvaloniaTextAlignment.Center => CSharpMathTextAlignment.Top,
         AvaloniaTextAlignment.Right => CSharpMathTextAlignment.TopRight,

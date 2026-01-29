@@ -2,6 +2,7 @@ using System.Drawing;
 using VectSharp;
 
 namespace CSharpMath.VectSharp;
+
 public sealed class VectSharpPath(VectSharpCanvas owner) : Rendering.FrontEnd.Path {
   public override Color? Foreground { get; set; }
   private readonly GraphicsPath _path = new();

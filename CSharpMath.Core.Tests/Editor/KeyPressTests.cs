@@ -2,14 +2,14 @@ using System;
 using System.Linq;
 using CSharpMath.Display.FrontEnd;
 using Xunit;
-using TGlyph = System.Text.Rune;
-using T = Xunit.InlineDataAttribute;
-using K = CSharpMath.Editor.MathKeyboardInput;
 using EventInteractor = System.Action<CSharpMath.Editor.MathKeyboard<CSharpMath.Core.BackEnd.TestFont, System.Text.Rune>, System.EventHandler>;
+using K = CSharpMath.Editor.MathKeyboardInput;
+using T = Xunit.InlineDataAttribute;
+using TGlyph = System.Text.Rune;
 
 namespace CSharpMath.Core.Tests {
-  using Editor;
   using BackEnd;
+  using Editor;
   public class KeyPressTests {
     private static readonly TypesettingContext<TestFont, TGlyph> context = TestTypesettingContext.Instance;
     static void Test(string latex, K[] inputs) {
@@ -57,7 +57,7 @@ namespace CSharpMath.Core.Tests {
       T(@"0123456789.", K.D0, K.D1, K.D2, K.D3, K.D4, K.D5, K.D6, K.D7, K.D8, K.D9, K.Decimal),
       //Basic operators
       T(@"+-\times \div :\% ,!\infty \angle \degree |\log \ln ",
-        K.Plus, K.Minus, K.Multiply, K.Divide, K.Ratio, K.Percentage, 
+        K.Plus, K.Minus, K.Multiply, K.Divide, K.Ratio, K.Percentage,
         K.Comma, K.Factorial, K.Infinity, K.Angle, K.Degree, K.VerticalBar, K.Logarithm, K.NaturalLogarithm),
       T(@"''\partial \leftarrow \uparrow \rightarrow \downarrow \  ",
         K.Prime, K.Prime, K.PartialDifferential, K.LeftArrow, K.UpArrow, K.RightArrow, K.DownArrow, K.Space),
@@ -67,13 +67,13 @@ namespace CSharpMath.Core.Tests {
       T(@"ABCDEFGHIJKLMNOPQRSTUVWXYZ", K.A, K.B, K.C, K.D, K.E, K.F, K.G, K.H, K.I, K.J,
         K.K, K.L, K.M, K.N, K.O, K.P, K.Q, K.R, K.S, K.T, K.U, K.V, K.W, K.X, K.Y, K.Z),
       //Small English alphabets
-      T(@"abcdefghijklmnopqrstuvwxyz", K.SmallA, K.SmallB, K.SmallC, K.SmallD, K.SmallE, K.SmallF, K.SmallG, 
-        K.SmallH, K.SmallI, K.SmallJ, K.SmallK, K.SmallL, K.SmallM, K.SmallN, K.SmallO, K.SmallP, K.SmallQ, 
+      T(@"abcdefghijklmnopqrstuvwxyz", K.SmallA, K.SmallB, K.SmallC, K.SmallD, K.SmallE, K.SmallF, K.SmallG,
+        K.SmallH, K.SmallI, K.SmallJ, K.SmallK, K.SmallL, K.SmallM, K.SmallN, K.SmallO, K.SmallP, K.SmallQ,
         K.SmallR, K.SmallS, K.SmallT, K.SmallU, K.SmallV, K.SmallW, K.SmallX, K.SmallY, K.SmallZ),
       //Capital Greek alphabets
       T(@"ΑΒ\Gamma \Delta ΕΖΗ\Theta ΙΚ\Lambda ΜΝ\Xi Ο\Pi Ρ\Sigma Τ\Upsilon \Phi Χ\Psi \Omega ",
-        K.Alpha, K.Beta, K.Gamma, K.Delta, K.Epsilon, K.Zeta, K.Eta, K.Theta, 
-        K.Iota, K.Kappa, K.Lambda, K.Mu, K.Nu, K.Xi, K.Omicron, 
+        K.Alpha, K.Beta, K.Gamma, K.Delta, K.Epsilon, K.Zeta, K.Eta, K.Theta,
+        K.Iota, K.Kappa, K.Lambda, K.Mu, K.Nu, K.Xi, K.Omicron,
         K.Pi, K.Rho, K.Sigma, K.Tau, K.Upsilon, K.Phi, K.Chi, K.Psi, K.Omega),
       //Small Greek alphabets
       T(@"\alpha \beta \gamma \delta \epsilon \varepsilon \zeta \eta \theta \iota \kappa \varkappa \lambda \mu " +
@@ -173,7 +173,7 @@ namespace CSharpMath.Core.Tests {
       T(@"\sin \Pi ^2", K.Sine, K.Power, K.D2, K.Left, K.Left, K.Pi),
       T(@"17_{26}^{35}4", K.D1, K.Subscript, K.D2, K.Right, K.Power, K.D3, K.Right, K.D4,
          K.Left, K.Left, K.D5, K.Left, K.Left, K.Left, K.D6, K.Left, K.Left, K.Left, K.D7),
-      T(@"\frac{23}{4}_6^578", K.Fraction, K.D3, K.Right, K.D4, K.Right, K.Power, K.D5, K.Right, K.Subscript, 
+      T(@"\frac{23}{4}_6^578", K.Fraction, K.D3, K.Right, K.D4, K.Right, K.Power, K.D5, K.Right, K.Subscript,
         K.D6, K.Right, K.Right, K.Right, K.D7, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left, K.Left,
         K.D2, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.Right, K.D8),
       T(@"\sqrt[23]{4}_6^578", K.NthRoot, K.D3, K.Right, K.D4, K.Right, K.Power, K.D5, K.Right, K.Subscript,
@@ -332,26 +332,26 @@ namespace CSharpMath.Core.Tests {
       T(@"\frac{\infty }{■}", K.Infinity, K.Slash),
       T(@"\frac{\sin ^2\theta }{■}", K.Sine, K.Power, K.D2, K.Right, K.SmallTheta, K.Slash),
       T(@"\frac{\log _3\pi }{■}", K.LogarithmWithBase, K.D3, K.Right, K.SmallPi, K.Slash),
-      
+
       T(@"\frac{1}{\frac{1}{■}}", K.Slash, K.Slash),
       T(@"\frac{1}{\frac{2}{■}}", K.Slash, K.D2, K.Slash),
       T(@"\frac{1}{\square }\times \frac{1}{■}", K.Slash, K.Right, K.Slash),
       T(@"\frac{1}{2}\times \frac{1}{■}", K.Slash, K.D2, K.Right, K.Slash),
       T(@"\frac{1}{2}\times \frac{1}{■}", K.Slash, K.D2, K.Right, K.D1, K.Slash),
       T(@"\frac{1}{2}\times \frac{2}{■}", K.Slash, K.D2, K.Right, K.D2, K.Slash),
-      
+
       T(@"\sqrt{\frac{2}{■}}", K.SquareRoot, K.D2, K.Slash),
       T(@"\frac{\sqrt{2}}{■}", K.SquareRoot, K.D2, K.Right, K.Slash),
       T(@"\sqrt[\frac{1}{■}]{\square }", K.NthRoot, K.Slash),
       T(@"\log _{\frac{1}{■}}", K.LogarithmWithBase, K.Slash),
-      
+
       T(@"\frac{1^{\square }}{■}", K.D1, K.Power, K.Left, K.Slash),
       T(@"\frac{123^{\square }}{■}", K.D1, K.D2, K.D3, K.Power, K.Left, K.Slash),
       T(@"\frac{x\infty 1^{\square }}{■}", K.SmallX, K.Infinity, K.D1, K.Power, K.Left, K.Slash),
       T(@"\frac{1_{\square }}{■}", K.D1, K.Subscript, K.Left, K.Slash),
       T(@"\frac{123_{\square }}{■}", K.D1, K.D2, K.D3, K.Subscript, K.Left, K.Slash),
       T(@"\frac{x\infty 1_{\square }}{■}", K.SmallX, K.Infinity, K.D1, K.Subscript, K.Left, K.Slash),
-      
+
       T(@"\frac{\left( \square \right) }{■}", K.BothRoundBrackets, K.Right, K.Slash),
       T(@"\frac{\left[ \square \right] }{■}", K.BothSquareBrackets, K.Right, K.Slash),
       T(@"\frac{\left\{ \square \right\} }{■}", K.BothCurlyBrackets, K.Right, K.Slash),
@@ -372,7 +372,7 @@ namespace CSharpMath.Core.Tests {
       T(@"(\frac{(\{ \} )([])}{■}", K.LeftRoundBracket,
         K.LeftRoundBracket, K.LeftCurlyBracket, K.RightCurlyBracket, K.RightRoundBracket,
         K.LeftRoundBracket, K.LeftSquareBracket, K.RightSquareBracket, K.RightRoundBracket, K.Slash),
-      
+
       T(@"\frac{(1+2)}{■}", K.LeftRoundBracket, K.D1, K.Plus, K.D2, K.RightRoundBracket, K.Slash),
       T(@"\frac{\left( 1+2\right) }{■}", K.BothRoundBrackets, K.D1, K.Plus, K.D2, K.Right, K.Slash),
       T(@"|1+\frac{2|}{■}", K.VerticalBar, K.D1, K.Plus, K.D2, K.VerticalBar, K.Slash),

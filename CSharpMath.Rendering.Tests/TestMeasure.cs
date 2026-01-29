@@ -1,10 +1,10 @@
 namespace CSharpMath.Rendering.Tests {
   using System;
   using System.Drawing;
-  using BackEnd;
-  using Xunit;
-  using CSharpMath.Display.FrontEnd;
   using System.Linq;
+  using BackEnd;
+  using CSharpMath.Display.FrontEnd;
+  using Xunit;
 
   public class TestMeasure {
     class D : Display.IDisplay<Fonts, Glyph> {

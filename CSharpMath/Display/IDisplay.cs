@@ -1,5 +1,5 @@
-using CSharpMath.Atom;
 using System.Drawing;
+using CSharpMath.Atom;
 
 namespace CSharpMath.Display {
   using FrontEnd;

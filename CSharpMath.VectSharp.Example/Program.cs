@@ -1,8 +1,8 @@
 using System.IO;
+using CSharpMath.VectSharp;
 using VectSharp;
 using VectSharp.PDF;
 using VectSharp.SVG;
-using CSharpMath.VectSharp;
 
 var painter = new TextPainter {
   LaTeX = @"Let's render some math to a PDF and an SVG file!$$x = {-b \pm \color{red}\sqrt{b^2-4ac} \over 2a}$$"

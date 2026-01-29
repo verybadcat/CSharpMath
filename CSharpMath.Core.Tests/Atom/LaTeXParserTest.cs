@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Xunit;
+using System.Text;
 using CSharpMath.Atom;
 using CSharpMath.Atom.Atoms;
-using System.Text;
+using Xunit;
 
 namespace CSharpMath.Core.Tests {
   public class LaTeXParserTest {
@@ -580,7 +580,8 @@ namespace CSharpMath.Core.Tests {
                   yield return CheckAtom<Open>("(");
                   yield return CheckAtom<Variable>("x");
                   yield return CheckAtom<Close>(")");
-                };
+                }
+                ;
                 Assert.Collection(table.Cells[i / 2][i % 2], Checkers().ToArray());
               }
             })

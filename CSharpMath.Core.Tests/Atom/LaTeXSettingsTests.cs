@@ -3,8 +3,8 @@ using Xunit;
 namespace CSharpMath.Core.Tests {
   using CSharpMath.Atom;
   using CSharpMath.Atom.Atoms;
-  using Atoms = CSharpMath.Atom.Atoms;
   using static LaTeXParserTest;
+  using Atoms = CSharpMath.Atom.Atoms;
   [CollectionDefinition("No parallelization because of LaTeXSettings mutation", DisableParallelization = true)]
   [Collection("No parallelization because of LaTeXSettings mutation")]
   public class LaTeXSettingsTests {

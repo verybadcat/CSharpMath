@@ -1,14 +1,14 @@
-using CSharpMath.Atom;
 using System.Drawing;
 using System.Linq;
+using CSharpMath.Atom;
 
 namespace CSharpMath.Display.Displays {
   using FrontEnd;
   /// <summary>Corresponds to MTCTLineDisplay in iOSMath.</summary> 
   public class TextRunDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph> where TFont : IFont<TGlyph> {
     public TextRunDisplay(
-      AttributedGlyphRun<TFont, TGlyph> run, 
-      Range range, 
+      AttributedGlyphRun<TFont, TGlyph> run,
+      Range range,
       TypesettingContext<TFont, TGlyph> context) {
       var font = run.Font;
       Run = run;
@@ -21,7 +21,7 @@ namespace CSharpMath.Display.Displays {
       Descent = rects.IsEmpty() ? 0 : rects.Max(rect => -rect.Y);
     }
     public AttributedGlyphRun<TFont, TGlyph> Run { get; }
-    
+
     public Range Range { get; }
     public float Width { get; }
     public float Ascent { get; }

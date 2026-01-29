@@ -170,7 +170,7 @@ namespace CSharpMath.Atom {
         if (secondToFirst[svalue].Equals(first)) {
           TFirst[] otherFirsts =
             firstToSecond
-            .Where(kvp => EqualityComparer<TSecond>.Default.Equals(kvp.Value,svalue))
+            .Where(kvp => EqualityComparer<TSecond>.Default.Equals(kvp.Value, svalue))
             .Select(kvp => kvp.Key).ToArray();
           if (otherFirsts.IsEmpty())
             secondToFirst.Remove(svalue);
@@ -186,7 +186,7 @@ namespace CSharpMath.Atom {
         // Remove all TFirsts pointing to second
         var firsts =
           firstToSecond
-          .Where(kvp => EqualityComparer<TSecond>.Default.Equals(kvp.Value,second))
+          .Where(kvp => EqualityComparer<TSecond>.Default.Equals(kvp.Value, second))
           .Select(kvp => kvp.Key).ToArray();
         foreach (var first in firsts)
           firstToSecond.Remove(first);

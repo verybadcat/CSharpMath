@@ -20,8 +20,7 @@ namespace CSharpMath.Maui {
     }
 
     internal static CSharpMathTextAlignment ToCSharpMathTextAlignment(this MauiTextAlignment alignment) =>
-      alignment switch
-      {
+      alignment switch {
         MauiTextAlignment.Start => CSharpMathTextAlignment.TopLeft,
         MauiTextAlignment.Center => CSharpMathTextAlignment.Top,
         MauiTextAlignment.End => CSharpMathTextAlignment.TopRight,

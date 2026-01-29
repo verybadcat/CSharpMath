@@ -23,7 +23,7 @@ namespace CSharpMath.Editor {
         ? MathListIndex.IndexAtLocation(self.Range.Location, MathListSubIndexType.Degree, self.Degree.IndexForPoint(context, point))
         : MathListIndex.Level0Index(self.Range.Location)
       : MathListIndex.IndexAtLocation(self.Range.Location, MathListSubIndexType.Radicand, self.Radicand.IndexForPoint(context, point));
-    
+
     public static PointF? PointForIndex<TFont, TGlyph>(
       this RadicalDisplay<TFont, TGlyph> self,
       TypesettingContext<TFont, TGlyph> _,

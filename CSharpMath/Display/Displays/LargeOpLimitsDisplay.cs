@@ -37,7 +37,7 @@ namespace CSharpMath.Display.Displays {
     ///<summary>A display representing the lower limit of the large operator.
     ///Its position is relative to the parent and it is not treated as a sub-display.</summary>
     public ListDisplay<TFont, TGlyph>? LowerLimit { get; }
-    
+
     public float Ascent =>
       NucleusDisplay.Ascent +
       (_extraPadding + UpperLimit?.Ascent + _upperLimitGap + UpperLimit?.Descent ?? 0);
@@ -57,12 +57,12 @@ namespace CSharpMath.Display.Displays {
 
     private void UpdateComponentPositions() {
       NucleusDisplay.Position = new PointF(Position.X + (Width - NucleusDisplay.Width) / 2, Position.Y);
-      if (UpperLimit!=null) {
+      if (UpperLimit != null) {
         UpperLimit.Position = new PointF(
           Position.X + _limitShift + (Width - UpperLimit.Width) / 2,
           Position.Y + NucleusDisplay.Ascent + _upperLimitGap + UpperLimit.Descent);
       }
-      if (LowerLimit!=null) {
+      if (LowerLimit != null) {
         LowerLimit.Position = new PointF(
           Position.X - _limitShift + (Width - LowerLimit.Width) / 2,
           Position.Y - NucleusDisplay.Descent - _lowerLimitGap - LowerLimit.Ascent);

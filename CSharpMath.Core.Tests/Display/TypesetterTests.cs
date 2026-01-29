@@ -1,12 +1,12 @@
+using System.Drawing;
+using System.Linq;
 using CSharpMath.Atom;
 using CSharpMath.Display;
 using CSharpMath.Display.Displays;
 using CSharpMath.Display.FrontEnd;
-using System.Drawing;
 using Xunit;
-using TGlyph = System.Text.Rune;
 using TFont = CSharpMath.Core.BackEnd.TestFont;
-using System.Linq;
+using TGlyph = System.Text.Rune;
 
 namespace CSharpMath.Core.Tests {
   public class TypesetterTests {
@@ -281,7 +281,7 @@ namespace CSharpMath.Core.Tests {
           Assert.Equal(14, inner.Ascent);
           Assert.Equal(4, inner.Descent);
           Assert.Equal(30, inner.Width);
-          
+
           var glyph = Assert.IsType<GlyphDisplay<TFont, TGlyph>>(inner.Left);
           Approximately.At(13.333, 0, glyph.Position);
           Assert.Equal(Range.NotFound, glyph.Range);
@@ -303,7 +303,7 @@ namespace CSharpMath.Core.Tests {
           Assert.Equal(Range.NotFound, glyph2.Range);
           Assert.False(glyph2.HasScript);
           Assert.Equal(right.EnumerateRunes().Last(), glyph2.Glyph);
-      });
+        });
     [Theory, InlineData("\\sqrt2", "", "2"), InlineData("\\sqrt[3]2", "3", "2")]
     public void TestRadical(string latex, string degree, string radicand) =>
       TestOuter(latex, 1, 18.56, 4, degree.IsEmpty() ? 20 : 21.44, d => {

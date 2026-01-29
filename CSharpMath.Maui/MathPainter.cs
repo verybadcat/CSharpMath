@@ -1,7 +1,7 @@
 using Microsoft.Maui.Graphics;
+using CSharpMathColor = System.Drawing.Color;
 using CSharpMathICanvas = CSharpMath.Rendering.FrontEnd.ICanvas;
 using MauiColor = Microsoft.Maui.Graphics.Color;
-using CSharpMathColor = System.Drawing.Color;
 
 namespace CSharpMath.Maui {
   public sealed class MathPainter : CSharpMath.Rendering.FrontEnd.MathPainter<(ICanvas, SizeF), MauiColor> {

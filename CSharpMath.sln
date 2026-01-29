@@ -57,6 +57,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{86C13BAB-EE19-4E82-B36F-2FEE92754B30}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\Benchmark.yml = .github\workflows\Benchmark.yml
+		.github\workflows\Format.yml = .github\workflows\Format.yml
 		.github\workflows\Nightly.yml = .github\workflows\Nightly.yml
 		.github\workflows\Release.yml = .github\workflows\Release.yml
 		.github\workflows\Test.yml = .github\workflows\Test.yml

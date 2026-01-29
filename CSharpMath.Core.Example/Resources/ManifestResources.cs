@@ -8,6 +8,6 @@ public static class ManifestResources {
     using var reader = new System.IO.StreamReader(stream);
     return Newtonsoft.Json.Linq.JToken.Parse(reader.ReadToEnd());
   });
-  
+
   public static Newtonsoft.Json.Linq.JToken LatinMath => _latinMath.Value;
 }

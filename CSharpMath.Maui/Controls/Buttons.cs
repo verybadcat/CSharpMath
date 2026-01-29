@@ -2,8 +2,8 @@ using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
 namespace CSharpMath.Maui {
-  using System.ComponentModel;
   using System.Collections.Generic;
+  using System.ComponentModel;
 
   [ContentProperty(nameof(Content))]
   public abstract class BaseButton<TView, TPainter, TContent> : ImageButton

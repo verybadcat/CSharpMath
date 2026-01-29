@@ -2,19 +2,19 @@
 using static IgnoreTypographyWarnings;
 using Suppress = System.Diagnostics.CodeAnalysis.SuppressMessageAttribute;
 
-[assembly:Suppress("", "IDE0017:Object initialization can be simplified", Target = _Typography, Justification = Justification, Scope = Scope)]
-[assembly:Suppress("", "IDE0018:Variable declaration can be inlined", Target = _Typography, Justification = Justification, Scope = Scope)]
-[assembly:Suppress("", "IDE0019:Use pattern matching", Target = _Typography, Justification = Justification, Scope = Scope)]
-[assembly:Suppress("", "IDE0031:Null check can be simplified", Target = _Typography, Justification = Justification, Scope = Scope)]
-[assembly:Suppress("", "IDE0044:Make field readonly", Target = _Typography, Justification = Justification, Scope = Scope)]
-[assembly:Suppress("", "IDE0051:Private member is unused", Target = _Typography, Justification = Justification, Scope = Scope)]
-[assembly:Suppress("", "IDE0052:Private member can be removed as the value assigned to it is never read", Target = _Typography, Justification = Justification, Scope = Scope)]
-[assembly:Suppress("", "IDE0056:Indexing can be simplified", Target = _Typography, Justification = Justification, Scope = Scope)]
-[assembly:Suppress("", "IDE0059:Unnecessary assignment of a value to a variable", Target = _Typography, Justification = Justification, Scope = Scope)]
-[assembly:Suppress("", "IDE0060:Remove unused parameter", Target = _Typography, Justification = Justification, Scope = Scope)]
-[assembly:Suppress("", "IDE0063:'using' statement can be simplified", Target = _Typography, Justification = Justification, Scope = Scope)]
-[assembly:Suppress("", "IDE0066:Use 'switch' expression", Target = _Typography, Justification = Justification, Scope = Scope)]
-[assembly:Suppress("", "IDE1006:Naming rule violation: Prefix '_' is not expected", Target = _Typography, Justification = Justification, Scope = Scope)]
+[assembly: Suppress("", "IDE0017:Object initialization can be simplified", Target = _Typography, Justification = Justification, Scope = Scope)]
+[assembly: Suppress("", "IDE0018:Variable declaration can be inlined", Target = _Typography, Justification = Justification, Scope = Scope)]
+[assembly: Suppress("", "IDE0019:Use pattern matching", Target = _Typography, Justification = Justification, Scope = Scope)]
+[assembly: Suppress("", "IDE0031:Null check can be simplified", Target = _Typography, Justification = Justification, Scope = Scope)]
+[assembly: Suppress("", "IDE0044:Make field readonly", Target = _Typography, Justification = Justification, Scope = Scope)]
+[assembly: Suppress("", "IDE0051:Private member is unused", Target = _Typography, Justification = Justification, Scope = Scope)]
+[assembly: Suppress("", "IDE0052:Private member can be removed as the value assigned to it is never read", Target = _Typography, Justification = Justification, Scope = Scope)]
+[assembly: Suppress("", "IDE0056:Indexing can be simplified", Target = _Typography, Justification = Justification, Scope = Scope)]
+[assembly: Suppress("", "IDE0059:Unnecessary assignment of a value to a variable", Target = _Typography, Justification = Justification, Scope = Scope)]
+[assembly: Suppress("", "IDE0060:Remove unused parameter", Target = _Typography, Justification = Justification, Scope = Scope)]
+[assembly: Suppress("", "IDE0063:'using' statement can be simplified", Target = _Typography, Justification = Justification, Scope = Scope)]
+[assembly: Suppress("", "IDE0066:Use 'switch' expression", Target = _Typography, Justification = Justification, Scope = Scope)]
+[assembly: Suppress("", "IDE1006:Naming rule violation: Prefix '_' is not expected", Target = _Typography, Justification = Justification, Scope = Scope)]
 
 [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 static class IgnoreTypographyWarnings {

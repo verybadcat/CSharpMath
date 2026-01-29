@@ -1,6 +1,6 @@
 namespace CSharpMath.Core.Tests {
-  using Xunit;
   using Atom;
+  using Xunit;
   public class FontChangingTests {
     // Tests are ordered by numeric value of the Atom.FontStyle enumeration
     void Test(string input, string output, string command) {
