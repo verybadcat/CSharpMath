@@ -16,11 +16,11 @@ namespace CSharpMath.Core.Tests {
     private static readonly TFont _font = new TFont(20);
     private static readonly TypesettingContext<TFont, TGlyph> _context = BackEnd.TestTypesettingContext.Instance;
 
-    System.Action<IDisplay<TFont, TGlyph>?> TestList(int rangeMax, double ascent, double descent, double width, double x, double y,
+    static System.Action<IDisplay<TFont, TGlyph>?> TestList((int, int) range, double ascent, double descent, double width, double x, double y,
       LinePosition linePos, int indexInParent, params System.Action<IDisplay<TFont, TGlyph>>[] inspectors) => d => {
         var list = Assert.IsType<ListDisplay<TFont, TGlyph>>(d);
         Assert.False(list.HasScript);
-        Assert.Equal(new Range(0, rangeMax), list.Range);
+        Assert.Equal(new Range(range.Item1, range.Item2), list.Range);
         Approximately.Equal(ascent, list.Ascent);
         Approximately.Equal(descent, list.Descent);
         Approximately.Equal(width, list.Width);
@@ -29,9 +29,16 @@ namespace CSharpMath.Core.Tests {
         Assert.Equal(indexInParent, list.IndexInParent);
         Assert.Collection(list.Displays, inspectors);
       };
-    void TestOuter(string latex, int rangeMax, double ascent, double descent, double width,
+    static System.Action<IDisplay<TFont, TGlyph>?> TestList(int rangeMax, double ascent, double descent, double width, double x, double y,
+      LinePosition linePos, int indexInParent, params System.Action<IDisplay<TFont, TGlyph>>[] inspectors) =>
+      TestList((0, rangeMax), ascent, descent, width, x, y, linePos, indexInParent, inspectors);
+    static void TestOuter(string latex, int rangeMax, double ascent, double descent, double width,
         params System.Action<IDisplay<TFont, TGlyph>>[] inspectors) =>
       TestList(rangeMax, ascent, descent, width, 0, 0, LinePosition.Regular, Range.UndefinedInt, inspectors)
+      (ParseLaTeXToDisplay(latex));
+    static void TestOuter(string latex, (int, int) range, double ascent, double descent, double width,
+        params System.Action<IDisplay<TFont, TGlyph>>[] inspectors) =>
+      TestList(range, ascent, descent, width, 0, 0, LinePosition.Regular, Range.UndefinedInt, inspectors)
       (ParseLaTeXToDisplay(latex));
 
     /// <summary>Makes sure that a single codepoint of various atom types have the same measured size.</summary>
@@ -67,18 +74,18 @@ namespace CSharpMath.Core.Tests {
           Assert.Equal(40, line.Width);
         });
     [Theory]
-    [InlineData("%\n1234", "1234")]
-    [InlineData("12.b% comment ", "12.𝑏")]
-    [InlineData("|`% \\notacommand \u2028@/", "|`@/")]
-    public void TestIgnoreComments(string latex, string text) =>
-      TestOuter(latex, 4, 14, 4, 40,
+    [InlineData("%\n1234", "1234", 1, 4)]
+    [InlineData("12.b% comment ", "12.𝑏", 0, 4)]
+    [InlineData("|`% \\notacommand \u2028@/", "|`@/", 0, 5)]
+    public void TestIgnoreComments(string latex, string text, int rangeStart, int rangeEnd) =>
+      TestOuter(latex, (rangeStart, rangeEnd), 14, 4, 40,
         d => {
           var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
           Assert.Equal(4, line.Atoms.Count);
           Assert.All(line.Atoms, Assert.IsNotType<Atom.Atoms.Comment>);
           Assert.Equal(text, string.Concat(line.Text));
           Assert.Equal(new PointF(), line.Position);
-          Assert.Equal(new Range(0, 4), line.Range);
+          Assert.Equal(new Range(rangeStart, rangeEnd), line.Range);
           Assert.False(line.HasScript);
 
           Assert.Equal(14, line.Ascent);
@@ -533,5 +540,81 @@ namespace CSharpMath.Core.Tests {
           Assert.Null(line.TextColor);
         }
       );
+    [Fact]
+    public void Issue213() {
+      float charWidth = 10;
+      float mathUnit = 20f / 18f;
+      foreach (var space in new[] { "", "\\," })
+        // 5 mu spacing between = (Relation) and - (Unary Operator, aka Ordinary)
+        TestOuter($"{space}=-1", (space.Length / 2, 3), 14, 4, 3 * charWidth + 5 * mathUnit, // expected: - becomes UnaryOperator then typesetted as Ordinary
+          d => {
+            var textBefore = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
+            Assert.Equal(3 * charWidth + 5 * mathUnit, textBefore.Width);
+            Assert.Equal("=\u22121", string.Concat(textBefore.Text));
+            Assert.Equal(new Range(space.Length / 2, 3), textBefore.Range);
+            Assert.Collection(textBefore.Atoms,
+              a => Assert.Equal("=", Assert.IsType<Atom.Atoms.Relation>(a).Nucleus),
+              a => Assert.Equal("\u2212", Assert.IsType<Atom.Atoms.Ordinary>(a).Nucleus),
+              a => Assert.Equal("1", Assert.IsType<Atom.Atoms.Ordinary>(a).Nucleus));
+          });
+      foreach (var (nonDisplayedAtomThatCreatesNewDisplayLine, additionalWidth) in new[] { (@"\, ", 3 * mathUnit), (@"\displaystyle ", 0) })
+        TestOuter($@"={nonDisplayedAtomThatCreatesNewDisplayLine}-1", 4, 14, 4, 3 * charWidth + 5 * mathUnit + additionalWidth, // issue 213: inserting a space between them should still work
+        eq => {
+          var textBefore = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(eq);
+          Assert.Equal(new PointF(), textBefore.Position);
+          Assert.Equal(charWidth, textBefore.Width);
+          Assert.Equal("=", string.Concat(textBefore.Text));
+          Assert.Equal(new Range(0, 1), textBefore.Range);
+          Assert.Equal("=", Assert.IsType<Atom.Atoms.Relation>(Assert.Single(textBefore.Atoms)).Nucleus);
+        }, m1 => {
+          var textAfter = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(m1);
+          Assert.Equal(new PointF(10 + 5 * mathUnit + additionalWidth, 0), textAfter.Position);
+          Assert.Equal(2 * charWidth, textAfter.Width);
+          Assert.Equal("\u22121", string.Concat(textAfter.Text));
+          Assert.Equal(new Range(2, 2), textAfter.Range);
+          Assert.Collection(textAfter.Atoms,
+            a => Assert.Equal("\u2212", Assert.IsType<Atom.Atoms.Ordinary>(a).Nucleus),
+            a => Assert.Equal("1", Assert.IsType<Atom.Atoms.Ordinary>(a).Nucleus));
+        });
+      TestOuter("=%comment\n-1", 4, 14, 4, 3 * charWidth + 5 * mathUnit, // same should apply to Comment atoms
+        d => {
+          var textBefore = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
+          Assert.Equal(3 * charWidth + 5 * mathUnit, textBefore.Width);
+          Assert.Equal("=\u22121", string.Concat(textBefore.Text));
+          Assert.Equal(new Range(0, 4), textBefore.Range);
+          Assert.Collection(textBefore.Atoms,
+            a => Assert.Equal("=", Assert.IsType<Atom.Atoms.Relation>(a).Nucleus),
+            a => Assert.Equal("\u2212", Assert.IsType<Atom.Atoms.Ordinary>(a).Nucleus),
+            a => Assert.Equal("1", Assert.IsType<Atom.Atoms.Ordinary>(a).Nucleus));
+        });
+    }
+    [Fact]
+    public void SpacingBetweenNumbers() {
+      // Numbers that have non-display atoms between them should not be fused together.
+      foreach (var (nonDisplayedAtomThatCreatesNewDisplayLine, additionalWidth) in new[] { (@"\quad ", 20), (@"\displaystyle ", 0) })
+        TestOuter($"2{nonDisplayedAtomThatCreatesNewDisplayLine}3", 3, 14, 4, 10 + additionalWidth + 10,
+        d => {
+          var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
+          Assert.Equal(new PointF(), line.Position);
+          Assert.Equal("2", Assert.IsType<Atom.Atoms.Ordinary>(Assert.Single(line.Atoms)).Nucleus);
+          Assert.Equal("2", string.Concat(line.Text));
+          Assert.Equal(new Range(0, 1), line.Range);
+          Assert.False(line.HasScript);
+          Assert.Equal(14, line.Ascent);
+          Assert.Equal(4, line.Descent);
+          Assert.Equal(10, line.Width);
+        },
+        d => {
+          var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
+          Assert.Equal(new PointF(10 + additionalWidth, 0), line.Position);
+          Assert.Equal("3", Assert.IsType<Atom.Atoms.Ordinary>(Assert.Single(line.Atoms)).Nucleus);
+          Assert.Equal("3", string.Concat(line.Text));
+          Assert.Equal(new Range(2, 1), line.Range);
+          Assert.False(line.HasScript);
+          Assert.Equal(14, line.Ascent);
+          Assert.Equal(4, line.Descent);
+          Assert.Equal(10, line.Width);
+        });
+    }
   }
 }

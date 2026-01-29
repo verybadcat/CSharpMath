@@ -125,6 +125,9 @@ namespace CSharpMath.Display {
     internal static ListDisplay<TFont, TGlyph> CreateLine(
       MathList list, TFont font, TypesettingContext<TFont, TGlyph> context,
       LineStyle style, bool cramped, bool spaced = false) {
+      // NOTE: The 3 atom types that use continue; below, aka [Comment, Space, Style], correspond to non-displayed atom types
+      // in MathList.Clone(true). Update that if-condition and add a test in Issue213() if more such atom types are added.
+      // Otherwise, using these atoms between = (Relation) and - (BinaryOperator) will cause an exception from invalid spacing.
 
       List<MathAtom> _PreprocessMathList() {
         MathAtom? prevAtom = null;
@@ -338,8 +341,7 @@ namespace CSharpMath.Display {
               if (_currentLineIndexRange.Location == Range.UndefinedInt)
                 _currentLineIndexRange = atom.IndexRange;
               else
-                _currentLineIndexRange = new Range(_currentLineIndexRange.Location,
-                  _currentLineIndexRange.Length + atom.IndexRange.Length);
+                _currentLineIndexRange += atom.IndexRange;
               // add the fused atoms
               if (atom.FusedAtoms != null)
                 _currentAtoms.AddRange(atom.FusedAtoms);

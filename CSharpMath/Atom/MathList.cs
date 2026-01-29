@@ -53,32 +53,28 @@ namespace CSharpMath.Atom {
         foreach (var atom in Atoms)
           newList.Add(atom.Clone(finalize));
       } else {
+        MathAtom? prevNode = null;
+        int prevDisplayedIndex = -1;
         foreach (var atom in Atoms) {
-          if (atom is Comment) {
-            var newComment = atom.Clone(finalize);
-            newComment.IndexRange = Range.NotFound;
-            newList.Add(newComment);
-            continue;
-          }
-          var prevNode = newList.Last;
           var newNode = atom.Clone(finalize);
-          if (atom.IndexRange == Range.Zero) {
-            int prevIndex =
-              prevNode?.IndexRange.Location + prevNode?.IndexRange.Length ?? 0;
-            newNode.IndexRange = new Range(prevIndex, 1);
-          }
-          switch (prevNode, newNode) {
+          if (newNode.IndexRange == Range.Zero)
+            newNode.IndexRange = new Range(prevNode is { } prev ? prev.IndexRange.Location + prev.IndexRange.Length : 0, 1);
+          switch (prevDisplayedIndex == -1 ? null : newList[prevDisplayedIndex], newNode) {
+            // NOTE: The left pattern does not include UnaryOperator. Just try "1+++2" and "1++++2" in any LaTeX rendering engine.
             case (null or BinaryOperator or Relation or Open or Punctuation or LargeOperator, BinaryOperator b):
               newNode = b.ToUnaryOperator();
               break;
             case (BinaryOperator b, Relation or Punctuation or Close):
-              newList.Last = b.ToUnaryOperator();
+              newList[prevDisplayedIndex] = b.ToUnaryOperator();
               break;
-            case (Number n, Number _) when n.Superscript.IsEmpty() && n.Subscript.IsEmpty():
-              n.Fuse(newNode);
-              continue; // do not add the new node; we fused it instead.
           }
+          if ((prevNode, newNode) is (Number { Superscript.Count: 0, Subscript.Count: 0 } n, Number)) {
+            n.Fuse(newNode);
+            continue; // do not add the new node; we fused it instead.
+          }
+          if (newNode is not (Comment or Space or Style)) prevDisplayedIndex = newList.Count; // Corresponds to atom types that use continue; in Typesetter.CreateLine
           newList.Add(newNode);
+          prevNode = newNode;
         }
       }
       return newList;

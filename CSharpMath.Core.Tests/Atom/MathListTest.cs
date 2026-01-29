@@ -173,9 +173,8 @@ namespace CSharpMath.Core.Tests {
           CheckAtomNucleusAndRange<Fraction>("", 13, 1),
           CheckAtomNucleusAndRange<LargeOperator>("∫", 14, 1),
           CheckAtomNucleusAndRange<Variable>("θ", 15, 1),
-          // Comments are not given ranges as they won't affect typesetting
-          CheckAtomNucleusAndRange<Comment>(":)", Range.UndefinedInt, Range.UndefinedInt),
-          CheckAtomNucleusAndRange<Punctuation>(",", 16, 1)
+          CheckAtomNucleusAndRange<Comment>(":)", 16, 1),
+          CheckAtomNucleusAndRange<Punctuation>(",", 17, 1)
         );
         Assert.Collection(list.Atoms[2].Superscript,
           CheckAtomNucleusAndRange<Number>("13", 0, 2),

@@ -52,7 +52,7 @@ namespace CSharpMath.Display {
       var multiplier =
         Spaces[leftIndex, rightIndex] switch {
           Invalid => throw new InvalidCodePathException
-                       ($"Invalid space between {left.TypeName} and {right.TypeName}"),
+            ($"Invalid space between {left.TypeName} and {right.TypeName}. The {nameof(Atoms.BinaryOperator)} should have been converted to a {nameof(Atoms.UnaryOperator)} during {nameof(MathList)} {nameof(MathList.Clone)}, then converted to an {nameof(Atoms.Ordinary)} during {nameof(Typesetter)} preparation."),
           None => 0,
           Thin => 3,
           NsThin => style < LineStyle.Script ? 3 : 0,

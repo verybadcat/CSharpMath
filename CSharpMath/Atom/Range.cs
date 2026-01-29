@@ -10,7 +10,7 @@ namespace CSharpMath.Atom {
   /// <summary>
   /// Corresponds to a range of <see cref="MathAtom"/>s before finalization.
   /// This value is tracked in finalized <see cref="MathAtom"/>s and <see cref="Display.IDisplay{TFont, TGlyph}"/>s,
-  /// for utilization in CSharpMath.Editor to construct MathListIndexes from <see cref="Display.IDisplay{TFont, TGlyph}"/>s.
+  /// for use in <see cref="Editor.Extensions.IndexForPoint{TFont, TGlyph}(Display.IDisplay{TFont, TGlyph}, Display.FrontEnd.TypesettingContext{TFont, TGlyph}, System.Drawing.PointF)"/>.
   /// </summary>
   public readonly struct Range : IEquatable<Range> {
     public const int UndefinedInt = int.MinValue;
