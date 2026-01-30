@@ -91,12 +91,9 @@ namespace CSharpMath.Uno {
           // So this use of the null-forgiving operator should be blamed on non-generic PropertyChanged handlers
           var @new = (TValue)newValue!;
           propertySet(@this.Painter, @new);
-#if !Uno // Uno/WinUI bindings are gone when a property is assigned unlike Avalonia and MAUI, so we omit automatic property updates.
-          updateOtherProperty?.Invoke(@this, @new);
-#endif
           if (affectsMeasure) @this.InvalidateMeasure();
-          // Redraw immediately! No deferred drawing
 #if Avalonia
+          updateOtherProperty?.Invoke(@this, @new); // Re-assign LaTeX from Content or vice versa
           @this.InvalidateVisual();
         }
         var prop = XProperty.Register<TThis, TValue>(propertyName, defaultValue);
@@ -154,6 +151,7 @@ namespace CSharpMath.Uno {
       base.Render(context);
       var canvas = new XCanvas(context, Bounds.Size);
 #elif Maui
+          updateOtherProperty?.Invoke(@this, @new); // Re-assign LaTeX from Content or vice versa
           @this.Invalidate();
         }
         return XProperty.Create(propertyName, typeof(TValue), typeof(TThis), defaultValue,
@@ -198,6 +196,7 @@ namespace CSharpMath.Uno {
       // dirtyRect may be larger than Width and Height on Windows which leads to incorrect alignments
       var canvas = (rawCanvas, new Microsoft.Maui.Graphics.SizeF((float)Width, (float)Height));
 #elif Uno
+          // Uno/WinUI bindings are gone when a property is assigned unlike Avalonia and MAUI, so we omit updateOtherProperty.
           @this.Invalidate();
         }
         return XProperty.Register(propertyName, typeof(TValue), typeof(TThis),
@@ -225,7 +224,7 @@ namespace CSharpMath.Uno {
     }
     protected override Windows.Foundation.Size MeasureOverride(Windows.Foundation.Size availableSize) =>
       (double.IsFinite(availableSize.Width) ? availableSize.Width
-      : Parent is Microsoft.UI.Xaml.FrameworkElement { ActualWidth: > 0 and var parentWidth } // availableSize may be 
+      : Parent is Microsoft.UI.Xaml.FrameworkElement { ActualWidth: > 0 and var parentWidth } // availableSize may be ∞x∞ in a ScrollView without MaxWidth so use parent width as fallback
       ? parentWidth : new double?()) is { } width && Painter.Measure((float)width) is { } rect
       ? new Windows.Foundation.Size(Math.Min(width, rect.Width), rect.Height)
       : base.MeasureOverride(availableSize);
