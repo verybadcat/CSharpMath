@@ -1,3 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly"> <!--Makes "dotnet workload restore" install wasm-tools for CSharpMath.Uno.Example-->
-  <TargetFramework>net10.0</TargetFramework>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
 </Project>
