@@ -10,7 +10,6 @@
     xmlns:sys="using:System"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-    <!--
     <Grid RowDefinitions="*,Auto,*">
         <TextBox x:Name="Text"
                  Grid.Row="0"
@@ -38,20 +37,12 @@ Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6. \[\f
         <ComboBox Grid.Row="1"
                   x:Name="FontSizer"
                   Header="Font Size"
-                  ItemsSource="{x:Bind local:TryPage.FontSizes}" SelectedItem="{Binding FontSize,ElementName=View,Mode=OneTime}"/>
+                  ItemsSource="{x:Bind local:TryPage.FontSizes}"/>
         <ScrollViewer Grid.Row="2" HorizontalScrollMode="Disabled">
-            <text:TextView x:Name="View" 
-                               TextColor="{StaticResource TextFillColorPrimary}"
-                               FontSize="{x:Bind (sys:Single)FontSizer.SelectedItem,Mode=OneWay}" />
+            <text:TextView x:Name="View"
+                           TextColor="{StaticResource TextFillColorPrimary}"
+                           LaTeX="{x:Bind Text.Text,Mode=OneWay}"
+                           FontSize="{x:Bind (sys:Single)FontSizer.SelectedItem,Mode=OneWay}" />
         </ScrollViewer>
-    </Grid>-->
-    <Grid>
-        <ScrollViewer HorizontalScrollMode="Disabled">
-            <TextBox
-            TextWrapping="Wrap"
-            AcceptsReturn="True"
-            HorizontalAlignment="Stretch" />
-        </ScrollViewer>
-       
     </Grid>
 </Page>

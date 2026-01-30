@@ -12,8 +12,8 @@
         <Entry x:Name="Entry" Grid.Row="0" Text="{Binding LaTeX, Source={x:Reference View}}"/>
         <HorizontalStackLayout Grid.Row="1">
             <Button Text="Reset pan" Clicked="Button_Clicked"/>
-            <Picker x:Name="Size" Title="Font Size" ItemsSource="{StaticResource FontSizesArray}"/>
             <Picker x:Name="Picker" Title="Select an example"/>
+            <Picker x:Name="Size" Title="Font Size" ItemsSource="{StaticResource FontSizesArray}"/>
             <Picker x:Name="Alignment" Title="Alignment" />
         </HorizontalStackLayout>
         <Label x:Name="Exit" Grid.Row="2"

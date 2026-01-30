@@ -18,14 +18,10 @@ public sealed partial class TryPage : Page {
     InitializeComponent();
     FontSizer.SelectedItem = 30f;
     Alignment.SelectedItem = View.TextAlignment;
-    // Unlike MAUI and Avalonia, {Binding}s and {x:Bind}s are cleared when a value is assigned.
-    // Since LaTeX property automatically re-formats assigned input, we need to bind in the code behind.
-    Entry.RegisterPropertyChangedCallback(TextBox.TextProperty, (sender, dp) => View.LaTeX = Entry.Text);
-    View.RegisterPropertyChangedCallback(MathView.ErrorMessageProperty, (sender, dp) =>
-      Exit.Foreground = View.ErrorMessage is not null
-        ? new SolidColorBrush(Colors.Red)
-        : (Brush)Application.Current.Resources["TextFillColorPrimaryBrush"]
-    );
+    Picker.ItemsSource = Rendering.Tests.TestRenderingMathData.AllConstants.Keys.ToList();
+    Picker.SelectionChanged += (sender, e) => {
+      if (Picker.SelectedItem is string s) View.LaTeX = Entry.Text = Rendering.Tests.TestRenderingMathData.AllConstants[s];
+    };
   }
 
   private void ResetPan_Clicked(object sender, RoutedEventArgs e) {
@@ -69,13 +65,6 @@ public sealed partial class TryPage : Page {
       CloseButtonText = "Close",
       XamlRoot = this.XamlRoot
     };
-
-    popupView.Loaded += (s, e) => {
-      // Force the MathView to render after the dialog is loaded by forcing a measure and invalidate to ensure rendering
-      popupView.InvalidateMeasure();
-      popupView.Invalidate();
-    };
-
     await dialog.ShowAsync();
   }
 }

@@ -73,7 +73,7 @@ namespace CSharpMath.Uno {
         DisplacementYProperty = CreateProperty<BaseView<TPainter, TContent>, float>(nameof(DisplacementY), false, p => (float)drawMethodParams[4].DefaultValue!, (p, v) => { }),
         MagnificationProperty = CreateProperty<BaseView<TPainter, TContent>, float>(nameof(Magnification), false, p => p.Magnification, (p, v) => p.Magnification = v),
         PaintStyleProperty = CreateProperty<BaseView<TPainter, TContent>, PaintStyle>(nameof(PaintStyle), false, p => p.PaintStyle, (p, v) => p.PaintStyle = v),
-        LineStyleProperty = CreateProperty<BaseView<TPainter, TContent>, LineStyle>(nameof(LineStyle), false, p => p.LineStyle, (p, v) => p.LineStyle = v),
+        LineStyleProperty = CreateProperty<BaseView<TPainter, TContent>, LineStyle>(nameof(LineStyle), true, p => p.LineStyle, (p, v) => p.LineStyle = v),
       ];
       WritablePainterPropertyNames = [.. WritablePainterProperties.Select(GetPropertyName)];
       ErrorMessagePropertyKey = new ReadOnlyProperty<BaseView<TPainter, TContent>, string?>(nameof(ErrorMessage), p => p.ErrorMessage);
@@ -91,7 +91,9 @@ namespace CSharpMath.Uno {
           // So this use of the null-forgiving operator should be blamed on non-generic PropertyChanged handlers
           var @new = (TValue)newValue!;
           propertySet(@this.Painter, @new);
+#if !Uno // Uno/WinUI bindings are gone when a property is assigned unlike Avalonia and MAUI, so we omit automatic property updates.
           updateOtherProperty?.Invoke(@this, @new);
+#endif
           if (affectsMeasure) @this.InvalidateMeasure();
           // Redraw immediately! No deferred drawing
 #if Avalonia
@@ -220,10 +222,11 @@ namespace CSharpMath.Uno {
         if (e.GetCurrentPoint(this) is { Properties.IsLeftButtonPressed: true } point && EnablePanning)
           _origin = point.Position;
       };
-      Loaded += delegate { InvalidateMeasure(); };
     }
     protected override Windows.Foundation.Size MeasureOverride(Windows.Foundation.Size availableSize) =>
-      Parent is Microsoft.UI.Xaml.FrameworkElement { ActualWidth: > 0 and var width } && Painter.Measure((float)width) is { } rect
+      (double.IsFinite(availableSize.Width) ? availableSize.Width
+      : Parent is Microsoft.UI.Xaml.FrameworkElement { ActualWidth: > 0 and var parentWidth } // availableSize may be 
+      ? parentWidth : new double?()) is { } width && Painter.Measure((float)width) is { } rect
       ? new Windows.Foundation.Size(Math.Min(width, rect.Width), rect.Height)
       : base.MeasureOverride(availableSize);
     [System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.AllConstructors)]

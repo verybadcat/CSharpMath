@@ -5,7 +5,10 @@
       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <Pivot>
+        <Pivot x:Name="Pivot">
+            <PivotItem Header="Examples">
+                <local:ExamplesPage />
+            </PivotItem>
             <PivotItem Header="Try">
                 <local:TryPage />
             </PivotItem>
