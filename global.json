@@ -1,5 +1,10 @@
 {
-    "test": {
-        "runner": "Microsoft.Testing.Platform"
-    }
+  "sdk": {
+    "workloads": [
+      "wasm-tools" // needed for CSharpMath.Uno.Example
+    ]
+  },
+  "test": {
+    "runner": "Microsoft.Testing.Platform"
+  }
 }
