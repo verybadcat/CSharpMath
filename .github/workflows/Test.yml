@@ -20,12 +20,12 @@ jobs:
       if: matrix.os != 'ubuntu-latest'
       with:
         dotnet-version: '10.x'
-        workloads: maui-ios, maui-maccatalyst, maui-android, maui-tizen, wasm-tools
+        workloads: maui-ios, maui-maccatalyst, maui-android, wasm-tools
     - uses: actions/setup-dotnet@main
       if: matrix.os == 'ubuntu-latest'
       with:
         dotnet-version: '10.x'
-        workloads: maui-android, maui-tizen, wasm-tools
+        workloads: maui-android, wasm-tools
     - uses: actions/checkout@v6
       with:
         submodules: 'recursive'

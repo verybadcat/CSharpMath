@@ -16,6 +16,7 @@
       https://aka.platform.uno/singleproject-features
     -->
     <UnoFeatures>SkiaRenderer</UnoFeatures>
+	<SkiaSharpVersion>3.119.1</SkiaSharpVersion>
   </PropertyGroup>
 
   <ItemGroup>

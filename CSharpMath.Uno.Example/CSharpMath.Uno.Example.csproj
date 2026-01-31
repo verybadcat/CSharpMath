@@ -29,18 +29,7 @@
 	<ItemGroup>
 		<Compile Include="..\CSharpMath.Rendering.Tests\TestRenderingMathData.cs" Link="Examples\TestRenderingMathData.cs" />
 		<Compile Include="..\CSharpMath.Rendering.Tests\TestRenderingSharedData.cs" Link="Examples\TestRenderingSharedData.cs" />
-    <Compile Remove="DotnetWorkloadRestoreWasmTools.cs" />
 		<ProjectReference Include="..\CSharpMath.Uno\CSharpMath.Uno.csproj" />
 		<ProjectReference Include="..\CSharpMath.Evaluation\CSharpMath.Evaluation.csproj" />
-	</ItemGroup>
-	<ItemGroup>
-	  <Compile Update="Pages\ExamplesPage.xaml.cs">
-	    <SubType>Code</SubType>
-	  </Compile>
-	</ItemGroup>
-	<ItemGroup>
-	  <Page Update="Pages\ExamplesPage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </Page>
 	</ItemGroup>
 </Project>

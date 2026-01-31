@@ -17,7 +17,7 @@ jobs:
     - uses: actions/setup-dotnet@main
       with:
         dotnet-version: '10.x'
-        workloads: maui-ios, maui-maccatalyst, maui-android, maui-tizen, wasm-tools
+        workloads: maui-ios, maui-maccatalyst, maui-android, wasm-tools
       env:
         RELEASE_NOTES: |
           # ${{ steps.release_drafter.outputs.name }}
