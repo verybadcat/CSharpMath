@@ -19,7 +19,7 @@ jobs:
     - uses: actions/setup-dotnet@main
       with:
         dotnet-version: '10.x'
-        workloads: maui-tizen maui-android maui-ios maui-maccatalyst wasm-tools
+        workloads: maui-tizen, maui-android, maui-ios, maui-maccatalyst, wasm-tools
     - uses: actions/checkout@v6
       with:
         submodules: 'recursive'
