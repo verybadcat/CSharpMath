@@ -11,7 +11,6 @@ namespace CSharpMath.Uno.Example {
       var mathViews = demoLabels.Concat(labels).Select(p => p.Value);
       foreach (var view in mathViews) {
         view.ErrorFontSize = view.FontSize * 0.8f;
-        view.TextColor = Microsoft.UI.Colors.White;
         Stack.Children.Add(view);
       }
 

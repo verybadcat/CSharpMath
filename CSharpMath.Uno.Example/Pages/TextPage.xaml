@@ -32,8 +32,7 @@ where \textit{color} stands for one of the LaTeX standard colors.
 The SkiaSharp version of this is located at CSharpMath.SkiaSharp.TextPainter;
 and the MAUI version of this is located at CSharpMath.Maui.TextView.
 Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6. \[\frac{Display}{maths} \sqrt\text\mathtt{\ at\ the\ end}^\mathbf{are\ now\ incuded\ in\ Measure!} \]"
-                 Foreground="{StaticResource TextFillColorPrimaryBrush}"
-                 />
+                />
         <ComboBox Grid.Row="1"
                   x:Name="FontSizer"
                   Header="Font Size"

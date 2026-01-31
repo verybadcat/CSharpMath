@@ -29,7 +29,6 @@
             EnablePanning="True"
             LaTeX="{x:Bind Entry.Text,Mode=TwoWay}"
             FontSize="{x:Bind (sys:Single)FontSizer.SelectedItem,Mode=OneWay}"
-            TextAlignment="{x:Bind (mathrender:TextAlignment)Alignment.SelectedItem,Mode=OneWay}"
-            TextColor="{StaticResource TextFillColorPrimary}" />
+            TextAlignment="{x:Bind (mathrender:TextAlignment)Alignment.SelectedItem,Mode=OneWay}" />
     </Grid>
 </Page>
