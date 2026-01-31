@@ -14,10 +14,10 @@ jobs:
     - uses: actions/checkout@v6
       with:
         submodules: 'recursive'
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v5
+    - uses: actions/setup-dotnet@main
       with:
         dotnet-version: '10.x'
+        workloads: maui, wasm-tools
     - name: Build and Test
       env:
         RELEASE_NOTES: |
@@ -29,7 +29,6 @@ jobs:
         # PowerShell string replacement
         $env:RELEASE_NOTES = $env:RELEASE_NOTES -replace ',','%2C' -replace ';','%3B'
         
-        dotnet workload restore
         dotnet test --solution CSharpMath.sln -c Release -p:PackageReleaseNotes="$env:RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }}
     #### Awaiting coverlet.MTP at https://github.com/coverlet-coverage/coverlet/pull/1788
     #    # --collect:"XPlat Code Coverage" means collect test coverage with https://github.com/coverlet-coverage/coverlet

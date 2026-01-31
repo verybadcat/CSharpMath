@@ -10,10 +10,10 @@ jobs:
     - uses: actions/checkout@v6
       with:
         submodules: 'recursive'
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v5
+    - uses: actions/setup-dotnet@main
       with:
         dotnet-version: '10.x'
+        workloads: maui, wasm-tools
     - name: Build GitHub Releases draft artifacts
       env:
         RELEASE_NOTES: |
@@ -25,7 +25,6 @@ jobs:
         # PowerShell string replacement
         $env:RELEASE_NOTES = $env:RELEASE_NOTES -replace ',','%2C' -replace ';','%3B'
         
-        dotnet workload restore
         # -r for restore
         dotnet msbuild -r -p:Configuration=Release -p:PackageVersion="${{ github.event.release.tag_name }}" -p:PackageReleaseNotes="$env:RELEASE_NOTES" CSharpMath.sln
       shell: pwsh

@@ -16,14 +16,13 @@ jobs:
       with:
         # Check required Xcode version for latest "dotnet workload restore": https://github.com/dotnet/macios/releases
         xcode-version: '26.2' # If this is to be changed, also check macos-version in matrix.os above
-    - uses: actions/setup-dotnet@v5
+    - uses: actions/setup-dotnet@main
       with:
         dotnet-version: '10.x'
+        workloads: maui, wasm-tools
     - uses: actions/checkout@v6
       with:
         submodules: 'recursive'
-    - name: Install MAUI workloads
-      run: dotnet workload restore
     - name: Build Everything
       run: dotnet build CSharpMath.sln # Newer macOS workloads may require newer Xcode versions. Update above.
     - name: Run Tests
