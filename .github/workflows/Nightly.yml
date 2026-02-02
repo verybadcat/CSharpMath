@@ -90,7 +90,10 @@ jobs:
         git fetch origin gh-pages
         git worktree add website/wwwroot gh-pages
         Get-ChildItem -Path website/wwwroot/* -Exclude dev | Remove-Item -Recurse -Force # dev is the output folder of Benchmark.yml, keep it
-        dotnet publish CSharpMath.Uno.Example -f net10.0-browserwasm --no-build -o website # the files we want are in website/wwwroot after this
+        # TODO: why can't this publish use --no-build? For example, see https://github.com/verybadcat/CSharpMath/actions/runs/21600019106/job/62243168945
+        # Error: C:\Program Files\dotnet\sdk\10.0.102\Sdks\Microsoft.NET.Sdk\targets\Microsoft.NET.Sdk.targets(262,5): error NETSDK1085:
+        # The 'NoBuild' property was set to true but the 'Build' target was invoked. [D:\a\CSharpMath\CSharpMath\CSharpMath.Uno\CSharpMath.Uno.csproj::TargetFramework=net10.0-browserwasm]
+        dotnet publish CSharpMath.Uno.Example -f net10.0-browserwasm -o website # the files we want are in website/wwwroot after this
         cd website/wwwroot
         git config user.name ${{ github.actor }}
         git config user.email "${{ github.actor }}@users.noreply.github.com"
