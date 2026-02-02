@@ -3,8 +3,6 @@
     <BuildType Name="Debug"/>
     <BuildType Name="Release"/>
     <Platform Name="Any CPU"/>
-    <Platform Name="x64"/>
-    <Platform Name="ARM"/>
   </Configurations>
   <Folder Name="/_GlobalFiles/">
     <File Path=".editorconfig"/>
@@ -48,13 +46,7 @@
   <Project Path="CSharpMath.Maui/CSharpMath.Maui.csproj"/>
   <Project Path="CSharpMath.Maui.Example/CSharpMath.Maui.Example.csproj">
     <Deploy Solution="Debug|Any CPU"/>
-  </Project>
-  <Project Path="CSharpMath.SkiaSharp/CSharpMath.SkiaSharp.csproj"/>
-  <Project Path="CSharpMath.SkiaSharp.Example/CSharpMath.SkiaSharp.Example.csproj"/>
-  <Project Path="CSharpMath.Uno/CSharpMath.Uno.csproj"/>
-  <Project Path="CSharpMath.Uno.Example/CSharpMath.Uno.Example.csproj">
-    <Deploy Solution="Debug|Any CPU"/>
-		<!-- We include a build dependency on CSharpMath.Maui.Example. It is because Microsoft.Maui.Resizetizer and Uno.Resizetizer
+		<!-- We include a build dependency on CSharpMath.Uno.Example. It is because Microsoft.Maui.Resizetizer and Uno.Resizetizer
 		use different native SkiaSharp DLL versions on build time, causing a conflict if both build in parallel for a solution-wide build. 
 		An instance of an exception caused by this can be seen at: https://github.com/verybadcat/CSharpMath/actions/runs/21598419979/job/62237307140
 		
@@ -63,7 +55,13 @@
         -> System.InvalidOperationException: The version of the native libSkiaSharp library (116.0) is incompatible with this version of SkiaSharp. Supported versions of the native libSkiaSharp library are in the range [88.1, 89.0).
 		
 		This has been reported before: https://github.com/unoplatform/uno/issues/21344 and the resolution was also to build MAUI and Uno apps separately.-->
-    <BuildDependency Project="CSharpMath.Maui.Example/CSharpMath.Maui.Example.csproj"/>
+    <BuildDependency Project="CSharpMath.Uno.Example/CSharpMath.Uno.Example.csproj"/>
+  </Project>
+  <Project Path="CSharpMath.SkiaSharp/CSharpMath.SkiaSharp.csproj"/>
+  <Project Path="CSharpMath.SkiaSharp.Example/CSharpMath.SkiaSharp.Example.csproj"/>
+  <Project Path="CSharpMath.Uno/CSharpMath.Uno.csproj"/>
+  <Project Path="CSharpMath.Uno.Example/CSharpMath.Uno.Example.csproj">
+    <Deploy Solution="Debug|Any CPU"/>
   </Project>
   <Project Path="CSharpMath.VectSharp/CSharpMath.VectSharp.csproj"/>
   <Project Path="CSharpMath.VectSharp.Example/CSharpMath.VectSharp.Example.csproj"/>
