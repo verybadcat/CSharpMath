@@ -87,6 +87,7 @@ jobs:
     - name: Push Uno.Example as website
       run: |
         git worktree add website gh-pages
+        Get-ChildItem -Path website\* -Exclude dev | Remove-Item -Recurse -Force
         dotnet publish CSharpMath.Uno.Example --no-build -o website
         cd website
         git commit --all -m "Update website to commit ${{ github.sha }}"
