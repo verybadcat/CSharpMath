@@ -18,6 +18,7 @@ jobs:
       with:
         dotnet-version: '10.x'
         workloads: maui-ios, maui-maccatalyst, maui-android, wasm-tools
+    - name: Build and Test
       env:
         RELEASE_NOTES: |
           # ${{ steps.release_drafter.outputs.name }}
