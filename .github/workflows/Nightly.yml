@@ -90,10 +90,10 @@ jobs:
         git fetch origin gh-pages
         git worktree add website/wwwroot gh-pages
         Get-ChildItem -Path website/wwwroot/* -Exclude dev | Remove-Item -Recurse -Force # dev is the output folder of Benchmark.yml, keep it
-        dotnet publish CSharpMath.Uno.Example --no-build -o website # the files we want are in website/wwwroot after this
+        dotnet publish CSharpMath.Uno.Example -f net10.0-browserwasm --no-build -o website # the files we want are in website/wwwroot after this
         cd website/wwwroot
-        git config user.name ${{ secrets.GITHUB_ACTOR }}
-        git config user.email "${{ secrets.GITHUB_ACTOR }}@users.noreply.github.com"
+        git config user.name ${{ github.actor }}
+        git config user.email "${{ github.actor }}@users.noreply.github.com"
         git commit --all -m "Update website to commit ${{ github.sha }}"
       shell: pwsh
     - uses: ad-m/github-push-action@v1

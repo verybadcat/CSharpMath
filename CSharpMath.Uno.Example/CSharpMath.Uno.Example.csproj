@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Uno.Sdk/6.4.58"> <!--https://aka.platform.uno/using-uno-sdk-->
   <PropertyGroup>
+	<!-- If net10.0-browserwasm gets updated, be sure to update this TargetFramework in Nightly.yml workflow too -->
     <TargetFrameworks>net10.0-android;net10.0-browserwasm;net10.0-desktop</TargetFrameworks>
 	<TargetFrameworks Condition="!$([System.OperatingSystem]::IsLinux())">$(TargetFrameworks);net10.0-ios</TargetFrameworks>
 	<TargetFrameworks Condition="$([System.OperatingSystem]::IsWindows())">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>

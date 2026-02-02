@@ -29,7 +29,7 @@ jobs:
     - name: Upload to GitHub Releases
       uses: svenstaro/upload-release-action@v2
       with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        repo_token: ${{ github.token }}
         tag: ${{ github.ref }}
         file: .nupkgs/*
         file_glob: true

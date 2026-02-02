@@ -6,10 +6,10 @@ namespace CSharpMath.Uno.Example {
   public partial class ExamplesPage : Page {
     public ExamplesPage() {
       InitializeComponent();
-      
+
       // Collect all MathView controls from the StackPanel (defined in XAML)
       var mathViews = Stack.Children.OfType<MathView>().ToList();
-      
+
       // Set ErrorFontSize for all views
       foreach (var view in mathViews) {
         view.ErrorFontSize = view.FontSize * 0.8f;

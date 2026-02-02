@@ -6,7 +6,7 @@ namespace CSharpMath.Uno.Example;
 public sealed partial class MainPage : Page {
   public MainPage() {
     this.InitializeComponent();
-    
+
     // Handle theme switching
     ThemeSelector.SelectionChanged += (sender, e) => {
       if (ThemeSelector.SelectedItem is ComboBoxItem { Tag: string tag }) {
@@ -19,7 +19,7 @@ public sealed partial class MainPage : Page {
           };
       }
     };
-    
+
     this.Pivot.SizeChanged += (sender, e) => { // required since WinUI/Uno won't auto constrain PivotItem content width!
       foreach (var pivotItem in Pivot.Items.OfType<PivotItem>())
         pivotItem.MaxWidth = Pivot.ActualWidth - pivotItem.Margin.Left - pivotItem.Margin.Right;
