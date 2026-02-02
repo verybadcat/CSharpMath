@@ -1,41 +1,13 @@
-<Project Sdk="Uno.Sdk/6.4.58"> <!--https://aka.platform.uno/using-uno-sdk-->
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net10.0;net10.0-android;net10.0-browserwasm;net10.0-desktop</TargetFrameworks>
-	<TargetFrameworks Condition="!$([System.OperatingSystem]::IsLinux())">$(TargetFrameworks);net10.0-ios</TargetFrameworks>
-	<TargetFrameworks Condition="$([System.OperatingSystem]::IsWindows())">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
+    <TargetFramework>net10.0</TargetFramework>
     <Description>The Uno/WinUI front end for CSharpMath.</Description>
     <PackageTags>$(PackageTags) uno</PackageTags>
 	<DefineConstants>$(DefineConstants) Uno</DefineConstants>
-	  
-	<OutputType>Library</OutputType>
-	<UnoSingleProject>true</UnoSingleProject>
-    <!-- Ensures the .xr.xml files are generated in a proper layout folder -->
-    <GenerateLibraryLayout>true</GenerateLibraryLayout>
-    <!--
-      UnoFeatures let's you quickly add and manage implicit package references based on the features you want to use.
-      https://aka.platform.uno/singleproject-features
-    -->
-    <UnoFeatures></UnoFeatures>
   </PropertyGroup>
-
   <ItemGroup>
 	<Compile Include="..\CSharpMath.Xaml\**\*.cs" Link="%(RecursiveDir)%(Filename)%(Extension)" />
 	<ProjectReference Include="..\CSharpMath.SkiaSharp\CSharpMath.SkiaSharp.csproj" />
 	<PackageReference Include="SkiaSharp.Views.Uno.WinUI" Version="3.119.1" />
-  </ItemGroup>
-
-  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
-    <!--
-    If you encounter this error message:
-
-      error NETSDK1148: A referenced assembly was compiled using a newer version of Microsoft.Windows.SDK.NET.dll.
-      Please update to a newer .NET SDK in order to reference this assembly.
-
-    This means that the two packages below must be aligned with the "build" version number of
-    the "Microsoft.Windows.SDK.BuildTools" package above, and the "revision" version number
-    must be the highest found in https://www.nuget.org/packages/Microsoft.Windows.SDK.NET.Ref.
-    -->
-    <!-- <FrameworkReference Update="Microsoft.Windows.SDK.NET.Ref" RuntimeFrameworkVersion="10.0.22621.28" />
-    <FrameworkReference Update="Microsoft.Windows.SDK.NET.Ref" TargetingPackVersion="10.0.22621.28" /> -->
   </ItemGroup>
 </Project>
