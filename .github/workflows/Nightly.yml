@@ -92,6 +92,8 @@ jobs:
         Get-ChildItem -Path website/wwwroot/* -Exclude dev | Remove-Item -Recurse -Force # dev is the output folder of Benchmark.yml, keep it
         dotnet publish CSharpMath.Uno.Example --no-build -o website # the files we want are in website\wwwroot after this
         cd website/wwwroot
+        git config user.name ${{ secrets.GITHUB_ACTOR }}
+        git config user.email "${{ secrets.GITHUB_ACTOR }}@users.noreply.github.com"
         git commit --all -m "Update website to commit ${{ github.sha }}"
-        git push
+        git push https://${{ github.token }}@github.com/verybadcat/CSharpMath.git gh-pages
       shell: pwsh
