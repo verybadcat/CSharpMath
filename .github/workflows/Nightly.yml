@@ -87,7 +87,8 @@ jobs:
       shell: pwsh
     - name: Push CSharpMath.Uno.Example as website
       run: |
-        git worktree add --track -b gh-pages website/wwwroot origin/gh-pages
+        git fetch origin gh-pages
+        git worktree add website/wwwroot gh-pages
         Get-ChildItem -Path website/wwwroot/* -Exclude dev | Remove-Item -Recurse -Force # dev is the output folder of Benchmark.yml, keep it
         dotnet publish CSharpMath.Uno.Example --no-build -o website # the files we want are in website\wwwroot after this
         cd website/wwwroot
