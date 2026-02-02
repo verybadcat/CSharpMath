@@ -96,7 +96,7 @@ jobs:
         dotnet publish CSharpMath.Uno.Example -f net10.0-browserwasm -o website # the files we want are in website/wwwroot after this
         cd website/wwwroot
         # By default, Uno outputs absolute paths for e.g. href and src attributes in HTML starting with / which breaks GitHub Pages hosting. We replace them with ./
-        Get-ChildItem -Path . -Include *.html,*.js -Recurse | ForEach-Object { [System.IO.File]::WriteAllText($_.FullName, [System.IO.File]::ReadAllText($_.FullName).Replace('="/','="./').Replace(' "/',' "./').Replace('["/',' '["./')) }
+        Get-ChildItem -Path . -Include *.html,*.js -Recurse | ForEach-Object { [System.IO.File]::WriteAllText($_.FullName, [System.IO.File]::ReadAllText($_.FullName).Replace('="/','="./').Replace(' "/',' "./').Replace('["/','["./')) }
         git config user.name ${{ github.actor }}
         git config user.email "${{ github.actor }}@users.noreply.github.com"
         git commit --all -m "Update website to commit ${{ github.sha }}"

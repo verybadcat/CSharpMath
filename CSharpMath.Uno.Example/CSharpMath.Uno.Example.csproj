@@ -26,6 +26,7 @@
       https://aka.platform.uno/singleproject-features
     -->
     <UnoFeatures>SkiaRenderer</UnoFeatures>
+    <Configurations>Debug;Release;NoUnoExample</Configurations>
   </PropertyGroup>
 	<ItemGroup>
 		<Compile Include="..\CSharpMath.Rendering.Tests\TestRenderingMathData.cs" Link="Examples\TestRenderingMathData.cs" />
@@ -33,21 +34,4 @@
 		<ProjectReference Include="..\CSharpMath.Uno\CSharpMath.Uno.csproj" />
 		<ProjectReference Include="..\CSharpMath.Evaluation\CSharpMath.Evaluation.csproj" />
 	</ItemGroup>
-
-	<!-- We disable Uno Resizetizer. It is because Microsoft.Maui.Resizetizer and Uno.Resizetizer
-		use different native SkiaSharp DLL versions on build time, causing a conflict if both build in parallel for a solution-wide build. 
-		An instance of an exception caused by this can be seen at: https://github.com/verybadcat/CSharpMath/actions/runs/21598419979/job/62237307140
-		
-		C:\Users\runneradmin\.nuget\packages\uno.resizetizer\1.12.1\build\Uno.Resizetizer.android.targets(11,3): error MSB4018:
-		System.TypeInitializationException: The type initializer for 'SkiaSharp.SKObject' threw an exception.
-        -> System.InvalidOperationException: The version of the native libSkiaSharp library (116.0) is incompatible with this version of SkiaSharp. Supported versions of the native libSkiaSharp library are in the range [88.1, 89.0).
-		
-		This has been reported before: https://github.com/unoplatform/uno/issues/21344 and the resolution was also to build MAUI and Uno apps separately.
-		But that would complicate CI scripts and local CLI usage.-->
-	<Target Name="DisableResizetizer" BeforeTargets="UnoImplicitPackages">
-		<!-- https://github.com/unoplatform/uno.resizetizer/issues/356#issuecomment-3248574062 -->
-		<ItemGroup>
-			<_UnoProjectSystemPackageReference Remove="Uno.Resizetizer"/>
-		</ItemGroup>
-	</Target>
 </Project>
