@@ -4,20 +4,29 @@
       xmlns:local="using:CSharpMath.Uno.Example"
       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
-        <Pivot x:Name="Pivot">
-            <PivotItem Header="Examples">
-                <local:ExamplesPage />
-            </PivotItem>
-            <PivotItem Header="Try">
-                <local:TryPage />
-            </PivotItem>
-            <PivotItem Header="Text">
-                <local:TextPage />
-            </PivotItem>
-            <PivotItem Header="Clock">
-                <local:ClockPage />
-            </PivotItem>
-        </Pivot>
-    </Grid>
+    <Pivot x:Name="Pivot">
+        <Pivot.RightHeader>
+            <StackPanel Orientation="Horizontal" Spacing="10" Padding="10,0">
+                <TextBlock Text="Theme:" VerticalAlignment="Center"/>
+                <ComboBox x:Name="ThemeSelector" SelectedIndex="0" MinWidth="120" VerticalAlignment="Center">
+                    <ComboBoxItem Content="System Default" Tag="Default"/>
+                    <ComboBoxItem Content="Light" Tag="Light"/>
+                    <ComboBoxItem Content="Dark" Tag="Dark"/>
+                </ComboBox>
+            </StackPanel>
+        </Pivot.RightHeader>
+
+        <PivotItem Header="Examples">
+            <local:ExamplesPage />
+        </PivotItem>
+        <PivotItem Header="Try">
+            <local:TryPage />
+        </PivotItem>
+        <PivotItem Header="Text">
+            <local:TextPage />
+        </PivotItem>
+        <PivotItem Header="Clock">
+            <local:ClockPage />
+        </PivotItem>
+    </Pivot>
 </Page>

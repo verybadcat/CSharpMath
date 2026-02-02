@@ -226,7 +226,7 @@ namespace CSharpMath.Uno {
       (double.IsFinite(availableSize.Width) ? availableSize.Width
       : Parent is Microsoft.UI.Xaml.FrameworkElement { ActualWidth: > 0 and var parentWidth } // availableSize may be ∞x∞ in a ScrollView without MaxWidth so use parent width as fallback
       ? parentWidth : new double?()) is { } width && Painter.Measure((float)width) is { } rect
-      ? new Windows.Foundation.Size(Math.Min(width, rect.Width), rect.Height)
+      ? new Windows.Foundation.Size(Math.Min(width, rect.Width), rect.Height) // Without Math.Min here, a horizontally overflowing line for TextView would affect line breaking for later lines! Avalonia and MAUI don't exhibit this behavior.
       : base.MeasureOverride(availableSize);
     [System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.AllConstructors)]
     readonly struct ReadOnlyProperty<TThis, TValue>(string propertyName, Func<TPainter, TValue> getter) where TThis : BaseView<TPainter, TContent> {

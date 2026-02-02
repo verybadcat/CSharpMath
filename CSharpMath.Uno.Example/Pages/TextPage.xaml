@@ -39,7 +39,6 @@ Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6. \[\f
                   ItemsSource="{x:Bind local:TryPage.FontSizes}"/>
         <ScrollViewer Grid.Row="2" HorizontalScrollMode="Disabled">
             <text:TextView x:Name="View"
-                           TextColor="{StaticResource TextFillColorPrimary}"
                            LaTeX="{x:Bind Text.Text,Mode=OneWay}"
                            FontSize="{x:Bind (sys:Single)FontSizer.SelectedItem,Mode=OneWay}" />
         </ScrollViewer>
