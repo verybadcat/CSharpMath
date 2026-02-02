@@ -3,7 +3,6 @@
     <BuildType Name="Debug"/>
     <BuildType Name="Release"/>
     <Platform Name="Any CPU"/>
-    <Platform Name="Any CPU"/>
   </Configurations>
   <Folder Name="/_GlobalFiles/">
     <File Path=".editorconfig"/>
