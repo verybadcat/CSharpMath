@@ -25,4 +25,6 @@ public sealed partial class MainPage : Page {
         pivotItem.MaxWidth = Pivot.ActualWidth - pivotItem.Margin.Left - pivotItem.Margin.Right;
     };
   }
+  private async void Benchmark_Open(object sender, RoutedEventArgs e) =>
+    await Windows.System.Launcher.LaunchUriAsync(new Uri("https://verybadcat.github.io/CSharpMath/dev/bench"));
 }

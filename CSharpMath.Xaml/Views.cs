@@ -222,11 +222,11 @@ namespace CSharpMath.Uno {
           _origin = point.Position;
       };
     }
+    // TODO: How to stop a horizontally overflowing line for TextView from affecting line breaking for later lines, without breaking horizontal scrolling for MathView?
+    // Avalonia and MAUI don't exhibit this behavior.
     protected override Windows.Foundation.Size MeasureOverride(Windows.Foundation.Size availableSize) =>
-      (double.IsFinite(availableSize.Width) ? availableSize.Width
-      : Parent is Microsoft.UI.Xaml.FrameworkElement { ActualWidth: > 0 and var parentWidth } // availableSize may be ∞x∞ in a ScrollView without MaxWidth so use parent width as fallback
-      ? parentWidth : new double?()) is { } width && Painter.Measure((float)width) is { } rect
-      ? new Windows.Foundation.Size(Math.Min(width, rect.Width), rect.Height) // Without Math.Min here, a horizontally overflowing line for TextView would affect line breaking for later lines! Avalonia and MAUI don't exhibit this behavior.
+      Painter.Measure((float)availableSize.Width) is { } rect
+      ? new Windows.Foundation.Size(rect.Width, rect.Height)
       : base.MeasureOverride(availableSize);
     [System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembers(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.AllConstructors)]
     readonly struct ReadOnlyProperty<TThis, TValue>(string propertyName, Func<TPainter, TValue> getter) where TThis : BaseView<TPainter, TContent> {

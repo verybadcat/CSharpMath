@@ -13,6 +13,7 @@
                     <ComboBoxItem Content="Light" Tag="Light"/>
                     <ComboBoxItem Content="Dark" Tag="Dark"/>
                 </ComboBox>
+                <Button Content="Open Benchmark results" Click="Benchmark_Open"/>
             </StackPanel>
         </Pivot.RightHeader>
 

@@ -30,41 +30,19 @@ public sealed partial class TryPage : Page {
 
   private async void Calculate_Clicked(object sender, RoutedEventArgs e) {
     if (View.Painter.Content is not { } content) return;
-    var popupView = new MathView {
-      FontSize = 32,
-      EnablePanning = true,
-      TextAlignment = Rendering.FrontEnd.TextAlignment.TopLeft,
-      LaTeX = CSharpMath.Evaluation.Interpret(content),
-      HorizontalAlignment = HorizontalAlignment.Stretch,
-      VerticalAlignment = VerticalAlignment.Stretch,
-      TextColor = View.TextColor,
-      Width = 400,
-      Height = 300
-    };
-    static Button Tap(Button button, Action<object, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs> handler) {
-      button.Tapped += (s, e) => handler(s, e);
-      return button;
-    }
-    var dialog = new ContentDialog {
+    await new ContentDialog {
+      XamlRoot = XamlRoot,
       Title = "Calculation Result",
-      Content = new StackPanel {
-        Spacing = 10,
-        Children = {
-          new StackPanel {
-            Orientation = Orientation.Horizontal,
-            Spacing = 10,
-            Children = {
-              Tap(new Button {
-                Content = "Reset pan"
-              }, (s, _) => popupView.DisplacementX = popupView.DisplacementY = 0)
-            }
-          },
-          popupView
-        }
-      },
       CloseButtonText = "Close",
-      XamlRoot = this.XamlRoot
-    };
-    await dialog.ShowAsync();
+      Content = new ScrollViewer {
+        HorizontalScrollBarVisibility = ScrollBarVisibility.Auto, // Not visible by default for some reason
+        Content = new MathView {
+          FontSize = 32,
+          TextAlignment = Rendering.FrontEnd.TextAlignment.TopLeft,
+          LaTeX = Evaluation.Interpret(content),
+          TextColor = View.TextColor
+        }
+      }
+    }.ShowAsync();
   }
 }

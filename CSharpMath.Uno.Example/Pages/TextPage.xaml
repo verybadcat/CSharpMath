@@ -30,17 +30,17 @@ where \textit{color} stands for one of the LaTeX standard colors.
 \red{Colored text in text mode are able to automatically break up when spaces are inside the colored text, which the equivalent in math mode cannot do.}
 \textbf{Styled} \texttt{text} can be achieved via the LaTeX styling commands.
 The SkiaSharp version of this is located at CSharpMath.SkiaSharp.TextPainter;
-and the MAUI version of this is located at CSharpMath.Maui.TextView.
+and the Uno/WinUI version of this is located at CSharpMath.Uno.TextView.
 Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6. \[\frac{Display}{maths} \sqrt\text\mathtt{\ at\ the\ end}^\mathbf{are\ now\ incuded\ in\ Measure!} \]"
                 />
         <ComboBox Grid.Row="1"
                   x:Name="FontSizer"
                   Header="Font Size"
                   ItemsSource="{x:Bind local:TryPage.FontSizes}"/>
-        <ScrollViewer Grid.Row="2" HorizontalScrollMode="Disabled">
+        <ScrollViewer Grid.Row="2" HorizontalContentAlignment="Stretch">
             <text:TextView x:Name="View"
                            LaTeX="{x:Bind Text.Text,Mode=OneWay}"
-                           FontSize="{x:Bind (sys:Single)FontSizer.SelectedItem,Mode=OneWay}" />
+                           FontSize="{x:Bind (sys:Single)FontSizer.SelectedItem,Mode=OneWay}"/>
         </ScrollViewer>
     </Grid>
 </Page>
