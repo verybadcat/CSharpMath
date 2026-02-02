@@ -1,0 +1,66 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Debug"/>
+    <BuildType Name="Release"/>
+    <Platform Name="Any CPU"/>
+  </Configurations>
+  <Folder Name="/_GlobalFiles/">
+    <File Path=".editorconfig"/>
+    <File Path=".gitignore"/>
+    <File Path="CONTRIBUTING.md"/>
+    <File Path="Directory.Build.props"/>
+    <File Path="Directory.Build.targets"/>
+    <File Path="global.json"/>
+    <File Path="Icon.png"/>
+    <File Path="Idea bucket.txt"/>
+    <File Path="LICENSE"/>
+    <File Path="README.md"/>
+    <File Path="ReleaseProcedure.txt"/>
+  </Folder>
+  <Folder Name="/_GlobalFiles/workflows/">
+    <File Path=".github/workflows/Benchmark.yml"/>
+    <File Path=".github/workflows/Format.yml"/>
+    <File Path=".github/workflows/Nightly.yml"/>
+    <File Path=".github/workflows/Release.yml"/>
+    <File Path=".github/workflows/Test.yml"/>
+  </Folder>
+  <Folder Name="/Core/">
+    <Project Path="CSharpMath/CSharpMath.csproj"/>
+    <Project Path="CSharpMath.Core.Example/CSharpMath.Core.Example.csproj"/>
+    <Project Path="CSharpMath.Core.Tests/CSharpMath.Core.Tests.csproj"/>
+    <Project Path="CSharpMath.Evaluation/CSharpMath.Evaluation.csproj"/>
+    <Project Path="CSharpMath.Evaluation.Tests/CSharpMath.Evaluation.Tests.csproj"/>
+    <Project Path="CSharpMath.Rendering/CSharpMath.Rendering.csproj"/>
+    <Project Path="CSharpMath.Rendering.Benchmarks/CSharpMath.Rendering.Benchmarks.csproj"/>
+    <Project Path="CSharpMath.Rendering.Tests/CSharpMath.Rendering.Tests.csproj"/>
+    <Project Path="CSharpMath.Rendering.Tests.FSharp/CSharpMath.Rendering.Tests.FSharp.fsproj"/>
+    <Project Path="CSharpMath.Rendering.Text.Tests/CSharpMath.Rendering.Text.Tests.csproj"/>
+    <Project Path="CSharpMath.Xaml.Tests/CSharpMath.Xaml.Tests.csproj"/>
+    <Project Path="CSharpMath.Xaml.Tests.NuGet/CSharpMath.Xaml.Tests.NuGet.csproj"/>
+  </Folder>
+  <Folder Name="/Core/CSharpMath.Xaml/">
+    <File Path="CSharpMath.Xaml/Views.cs"/>
+  </Folder>
+  <Project Path="CSharpMath.Avalonia/CSharpMath.Avalonia.csproj"/>
+  <Project Path="CSharpMath.Avalonia.Example/CSharpMath.Avalonia.Example.csproj"/>
+  <Project Path="CSharpMath.Maui/CSharpMath.Maui.csproj"/>
+  <Project Path="CSharpMath.Maui.Example/CSharpMath.Maui.Example.csproj"/>
+  <Project Path="CSharpMath.SkiaSharp/CSharpMath.SkiaSharp.csproj"/>
+  <Project Path="CSharpMath.SkiaSharp.Example/CSharpMath.SkiaSharp.Example.csproj"/>
+  <Project Path="CSharpMath.Uno/CSharpMath.Uno.csproj"/>
+  <Project Path="CSharpMath.Uno.Example/CSharpMath.Uno.Example.csproj">
+    <Deploy Solution="Debug|Any CPU"/>
+		<!-- We include a build dependency on CSharpMath.Maui.Example. It is because Microsoft.Maui.Resizetizer and Uno.Resizetizer
+		use different native SkiaSharp DLL versions on build time, causing a conflict if both build in parallel for a solution-wide build. 
+		An instance of an exception caused by this can be seen at: https://github.com/verybadcat/CSharpMath/actions/runs/21598419979/job/62237307140
+		
+		C:\Users\runneradmin\.nuget\packages\uno.resizetizer\1.12.1\build\Uno.Resizetizer.android.targets(11,3): error MSB4018:
+		System.TypeInitializationException: The type initializer for 'SkiaSharp.SKObject' threw an exception.
+        -> System.InvalidOperationException: The version of the native libSkiaSharp library (116.0) is incompatible with this version of SkiaSharp. Supported versions of the native libSkiaSharp library are in the range [88.1, 89.0).
+		
+		This has been reported before: https://github.com/unoplatform/uno/issues/21344 and the resolution was also to build MAUI and Uno apps separately.-->
+    <BuildDependency Project="CSharpMath.Maui.Example/CSharpMath.Maui.Example.csproj"/>
+  </Project>
+  <Project Path="CSharpMath.VectSharp/CSharpMath.VectSharp.csproj"/>
+  <Project Path="CSharpMath.VectSharp.Example/CSharpMath.VectSharp.Example.csproj"/>
+</Solution>

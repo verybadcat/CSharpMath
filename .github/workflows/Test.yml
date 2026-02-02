@@ -30,6 +30,6 @@ jobs:
       with:
         submodules: 'recursive'
     - name: Build Everything
-      run: dotnet build CSharpMath.sln # Newer macOS workloads may require newer Xcode versions. Update above.
+      run: dotnet build CSharpMath.slnx # Newer macOS workloads may require newer Xcode versions. Update above.
     - name: Run Tests
-      run: dotnet test --solution CSharpMath.sln
+      run: dotnet test --solution CSharpMath.slnx

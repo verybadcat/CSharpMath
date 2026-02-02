@@ -30,11 +30,11 @@ jobs:
         
         # Untested projects like CSharpMath.VectSharp won't be built with dotnet test, so we need to build everything here for all NuGet packages
         dotnet build -c Release -p:PackageReleaseNotes="$env:RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }}
-        dotnet test --solution CSharpMath.sln -c Release --no-build
+        dotnet test --solution CSharpMath.slnx -c Release --no-build
     #### Awaiting coverlet.MTP at https://github.com/coverlet-coverage/coverlet/pull/1788
     #    # --collect:"XPlat Code Coverage" means collect test coverage with https://github.com/coverlet-coverage/coverlet
     #    # Coverlet settings come after --: https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/VSTestIntegration.md#advanced-options-supported-via-runsettings
-    #    dotnet test --solution CSharpMath.sln -c Release --collect:"XPlat Code Coverage" --results-directory .testcoverage -p:PackageReleaseNotes="$env:RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }} -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.IncludeTestAssembly=true
+    #    dotnet test --solution CSharpMath.slnx -c Release --collect:"XPlat Code Coverage" --results-directory .testcoverage -p:PackageReleaseNotes="$env:RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }} -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.IncludeTestAssembly=true
     #  shell: pwsh
     #- name: Run ReportGenerator on Test Coverage results
     #  uses: danielpalme/ReportGenerator-GitHub-Action@5
@@ -95,6 +95,8 @@ jobs:
         # The 'NoBuild' property was set to true but the 'Build' target was invoked. [D:\a\CSharpMath\CSharpMath\CSharpMath.Uno\CSharpMath.Uno.csproj::TargetFramework=net10.0-browserwasm]
         dotnet publish CSharpMath.Uno.Example -f net10.0-browserwasm -o website # the files we want are in website/wwwroot after this
         cd website/wwwroot
+        # By default, Uno outputs absolute paths for e.g. href and src attributes in HTML starting with / which breaks GitHub Pages hosting. We replace them with ./
+        Get-ChildItem -Path . -Include *.html,*.js -Recurse | ForEach-Object { [System.IO.File]::WriteAllText($_.FullName, [System.IO.File]::ReadAllText($_.FullName).Replace('="/','="./').Replace(' "/',' "./').Replace('["/',' '["./')) }
         git config user.name ${{ github.actor }}
         git config user.email "${{ github.actor }}@users.noreply.github.com"
         git commit --all -m "Update website to commit ${{ github.sha }}"
