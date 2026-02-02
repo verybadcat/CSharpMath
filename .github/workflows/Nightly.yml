@@ -29,8 +29,9 @@ jobs:
         $env:RELEASE_NOTES = $env:RELEASE_NOTES -replace ',','%2C' -replace ';','%3B'
         
         # Untested projects like CSharpMath.VectSharp won't be built with dotnet test, so we need to build everything here for all NuGet packages
-        dotnet build -c Release -p:PackageReleaseNotes="$env:RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }}
-        dotnet test --solution CSharpMath.slnx -c Release --no-build
+        dotnet restore
+        dotnet build --no-restore -c Release -p:PackageReleaseNotes="$env:RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }}
+        dotnet test --no-build --solution CSharpMath.slnx -c Release
     #### Awaiting coverlet.MTP at https://github.com/coverlet-coverage/coverlet/pull/1788
     #    # --collect:"XPlat Code Coverage" means collect test coverage with https://github.com/coverlet-coverage/coverlet
     #    # Coverlet settings come after --: https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/VSTestIntegration.md#advanced-options-supported-via-runsettings
@@ -93,7 +94,7 @@ jobs:
         # TODO: why can't this publish use --no-build? For example, see https://github.com/verybadcat/CSharpMath/actions/runs/21600019106/job/62243168945
         # Error: C:\Program Files\dotnet\sdk\10.0.102\Sdks\Microsoft.NET.Sdk\targets\Microsoft.NET.Sdk.targets(262,5): error NETSDK1085:
         # The 'NoBuild' property was set to true but the 'Build' target was invoked. [D:\a\CSharpMath\CSharpMath\CSharpMath.Uno\CSharpMath.Uno.csproj::TargetFramework=net10.0-browserwasm]
-        dotnet publish CSharpMath.Uno.Example -f net10.0-browserwasm -o website # the files we want are in website/wwwroot after this
+        dotnet publish --no-restore CSharpMath.Uno.Example -f net10.0-browserwasm -o website # the files we want are in website/wwwroot after this
         cd website/wwwroot
         # By default, Uno outputs absolute paths for e.g. href and src attributes in HTML starting with / which breaks GitHub Pages hosting. We replace them with ./
         Get-ChildItem -Path . -Include *.html,*.js -Recurse | ForEach-Object { [System.IO.File]::WriteAllText($_.FullName, [System.IO.File]::ReadAllText($_.FullName).Replace('="/','="./').Replace(' "/',' "./').Replace('["/',' '["./')) }
