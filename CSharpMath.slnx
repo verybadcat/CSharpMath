@@ -3,6 +3,7 @@
     <BuildType Name="Debug"/>
     <BuildType Name="Release"/>
     <Platform Name="Any CPU"/>
+    <Platform Name="Any CPU"/>
   </Configurations>
   <Folder Name="/_GlobalFiles/">
     <File Path=".editorconfig"/>
@@ -44,7 +45,9 @@
   <Project Path="CSharpMath.Avalonia/CSharpMath.Avalonia.csproj"/>
   <Project Path="CSharpMath.Avalonia.Example/CSharpMath.Avalonia.Example.csproj"/>
   <Project Path="CSharpMath.Maui/CSharpMath.Maui.csproj"/>
-  <Project Path="CSharpMath.Maui.Example/CSharpMath.Maui.Example.csproj"/>
+  <Project Path="CSharpMath.Maui.Example/CSharpMath.Maui.Example.csproj">
+    <Deploy Solution="Debug|Any CPU"/>
+  </Project>
   <Project Path="CSharpMath.SkiaSharp/CSharpMath.SkiaSharp.csproj"/>
   <Project Path="CSharpMath.SkiaSharp.Example/CSharpMath.SkiaSharp.Example.csproj"/>
   <Project Path="CSharpMath.Uno/CSharpMath.Uno.csproj"/>
