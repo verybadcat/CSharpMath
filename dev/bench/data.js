@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1769999315517,
+  "lastUpdate": 1770095376050,
   "repoUrl": "https://github.com/verybadcat/CSharpMath",
   "entries": {
     "CSharpMath.Rendering.Benchmarks": [
@@ -2880,6 +2880,96 @@ window.BENCHMARK_DATA = {
             "value": 2939334.9051339286,
             "unit": "ns",
             "range": "± 84246.46928775258"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "martin@zikmund.dev",
+            "name": "Martin Zikmund",
+            "username": "MartinZikmund"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "0c7e2aad4ac710713a5a06183f0c1c948a459be2",
+          "message": "Uno Platform Support (#121)\n\n* Initial UWP/Uno support library, replacing float-based DP\n\n* Fix issues in Uno specific code\n\n* Add base UWPUno example\n\n* First working Android, UWP samples\n\n* Trying to get WASM up and running\n\n* Update versions, linker config\n\n* Fixing WASM build\n\n* Repo cleaning that happened with Uno support\n\n* Uno redone\n\n* Update gitignore and clean\n\n* Revert gitignore deleting repo-specific config\n\n* Revert revert solution change\n\n* Fix merge markers\n\n* Another try at getting TextView to work\n\n* TextBlock experiment\n\n* Finalize Uno example\n\n* Clean up\n\n* Specify wasm-tools\n\n* Make dotnet workload restore install wasm-tools\n\n* Add TargetFramework\n\n* Fix project again\n\n* Fix project again\n\n* Fix project again\n\n* Fix project again\n\n* Update workflows to use workload lists\n\n* Update workloads\n\n* Update workloads again\n\n* OS-dependent setup-dotnet\n\n* Update workload list again\n\n* Fix SkiaSharp version\n\n* Move TextColor Style to binding\n\n* Add theme switch, put ExamplePage MathViews into XAML\n\n* Commit\n\n* Clean old\n\n* Explain\n\n* Fix nightly\n\n* Try to be explicit\n\n* Use fetch\n\n* Update nightly for username and email\n\n* Fix nightly\n\n* Fix nightly and format\n\n* Fix CI\n\n* Fix build by using build dependency\n\n* Simplify CSharpMath.Uno\n\n* Try to fix no deploy?\n\n* Try to fix no deploy?\n\n* x64 and ARM are needed?\n\n* Dependency inversion?\n\n* How about restore separation?\n\n* Try disabling Resizetizer\n\n* Fix build error\n\n* Try using a configuration\n\n* Fix typo\n\n* Separate\n\n* git add -A\n\n* Fix workflows again\n\n* Fix build\n\n* Separate CSharpMath.Uno.Example into its own step\n\n* Use Uno.Sdk for Uno again\n\n* I need permissions?\n\n* Move permissions to jobs\n\n* Final\n\n---------\n\nCo-authored-by: Hadrian Tang <hadrianwttang@outlook.com>",
+          "timestamp": "2026-02-03T13:04:01+08:00",
+          "tree_id": "6b2b6a2b016231d57f599c336293e824c7407f1d",
+          "url": "https://github.com/verybadcat/CSharpMath/commit/0c7e2aad4ac710713a5a06183f0c1c948a459be2"
+        },
+        "date": 1770095370245,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.AllConstantValues",
+            "value": 580822526.6666666,
+            "unit": "ns",
+            "range": "± 2519877.013287601"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cases\")",
+            "value": 2541899.3489583335,
+            "unit": "ns",
+            "range": "± 24365.278622234135"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Color\")",
+            "value": 816796.2262834822,
+            "unit": "ns",
+            "range": "± 2388.009008135977"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Commands\")",
+            "value": 297423.76883370534,
+            "unit": "ns",
+            "range": "± 5188.082268845283"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cyrillic\")",
+            "value": 2708540.715144231,
+            "unit": "ns",
+            "range": "± 13627.024349494293"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"ErrorMissingArgument\")",
+            "value": 1558487.1744791667,
+            "unit": "ns",
+            "range": "± 8113.9327650171745"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Matrix\")",
+            "value": 1380974.70703125,
+            "unit": "ns",
+            "range": "± 11349.653679861845"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuadraticFormula\")",
+            "value": 605217.041015625,
+            "unit": "ns",
+            "range": "± 2605.734533744312"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuarticSolutions\")",
+            "value": 120538052.85714285,
+            "unit": "ns",
+            "range": "± 396010.16821499716"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"TangentPeriodShift\")",
+            "value": 731893.9583333334,
+            "unit": "ns",
+            "range": "± 8291.200643231505"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"VectorProjection\")",
+            "value": 2839005.4036458335,
+            "unit": "ns",
+            "range": "± 8859.979788662373"
           }
         ]
       }
