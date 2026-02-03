@@ -1,5 +1,7 @@
 ﻿name: Build and Test (upload results and nightly builds)
 
+permissions:
+  contents: write
 on: [push, pull_request]
 jobs:
   Windows:
