@@ -2,7 +2,7 @@ name: Build and Test
 
 on: [push, pull_request]
 jobs:
-  Everything:
+  Unix:
     if: (github.event_name == 'pull_request') == github.event.pull_request.head.repo.fork
     strategy:
       fail-fast: false # Don't cancel other os builds if one fails
@@ -30,6 +30,6 @@ jobs:
       with:
         submodules: 'recursive'
     - name: Build Everything
-      run: dotnet build CSharpMath.Uno.Example
+      run: dotnet build
     - name: Run Tests
       run: dotnet test --no-build --solution CSharpMath.slnx

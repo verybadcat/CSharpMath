@@ -1,8 +1,8 @@
-﻿name: Upload test results and nightly builds
+﻿name: Build and Test (upload results and nightly builds)
 
 on: [push, pull_request]
 jobs:
-  Everything:
+  Windows:
     if: (github.event_name == 'pull_request') == github.event.pull_request.head.repo.fork
     runs-on: windows-latest
     steps:
@@ -36,8 +36,8 @@ jobs:
         ### System.TypeInitializationException: The type initializer for 'SkiaSharp.SKObject' threw an exception.
         ### ---> System.InvalidOperationException: The version of the native libSkiaSharp library (116.0) is incompatible with this version of SkiaSharp. Supported versions of the native libSkiaSharp library are in the range [88.1, 89.0).
         # This has been reported before: https://github.com/unoplatform/uno/issues/21344 and the resolution was to build MAUI and Uno apps separately.
-        dotnet build -c Not.Uno.Example
-        dotnet build CSharpMath.Uno.Example -c Release
+        dotnet build -c Not.Uno.Example -p:PackageReleaseNotes="$env:RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }}
+        dotnet build CSharpMath.Uno.Example # Note: Built in Debug, which won't produce NuGet packages.
         dotnet test --no-build --solution CSharpMath.slnx -c Release
     #### Awaiting coverlet.MTP at https://github.com/coverlet-coverage/coverlet/pull/1788
     #    # --collect:"XPlat Code Coverage" means collect test coverage with https://github.com/coverlet-coverage/coverlet
