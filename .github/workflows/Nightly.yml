@@ -99,7 +99,8 @@ jobs:
         Get-ChildItem -Path . -Include *.html,*.js -Recurse | ForEach-Object { [System.IO.File]::WriteAllText($_.FullName, [System.IO.File]::ReadAllText($_.FullName).Replace('="/','="./').Replace(' "/',' "./').Replace('["/','["./')) }
         git config user.name ${{ github.actor }}
         git config user.email "${{ github.actor }}@users.noreply.github.com"
-        git commit --all -m "Update website to commit ${{ github.sha }}"
+        git add -A # We need to include untracked files too, unlike git commit -a
+        git commit -m "Update website to commit ${{ github.sha }}"
       shell: pwsh
     - uses: ad-m/github-push-action@v1
       with:
