@@ -8,6 +8,7 @@
     <OutputType>Exe</OutputType>
     <UnoSingleProject>true</UnoSingleProject>
 	<ImplicitUsings>enable</ImplicitUsings>
+    <Configurations>Debug;Release;Not.Uno.Example</Configurations>
 
     <!-- Display name -->
     <ApplicationTitle>CSharpMath.Uno.Example</ApplicationTitle>
@@ -26,7 +27,6 @@
       https://aka.platform.uno/singleproject-features
     -->
     <UnoFeatures>SkiaRenderer</UnoFeatures>
-    <Configurations>Debug;Release;NoUnoExample</Configurations>
   </PropertyGroup>
 	<ItemGroup>
 		<Compile Include="..\CSharpMath.Rendering.Tests\TestRenderingMathData.cs" Link="Examples\TestRenderingMathData.cs" />

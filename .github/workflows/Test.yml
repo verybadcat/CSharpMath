@@ -29,18 +29,18 @@ jobs:
     - uses: actions/checkout@v6
       with:
         submodules: 'recursive'
-    - name: Build Everything
-      run: |
-        # We need to have this configuration because Microsoft.Maui.Resizetizer and Uno.Resizetizer
-        # use different native SkiaSharp DLL versions on build time, causing a conflict if both build in parallel for a solution-wide build. 
-        # An instance of an exception caused by this can be seen at: https://github.com/verybadcat/CSharpMath/actions/runs/21598419979/job/62237307140
+      # We need to have this configuration because Microsoft.Maui.Resizetizer and Uno.Resizetizer
+      # use different native SkiaSharp DLL versions on build time, causing a conflict if both build in parallel for a solution-wide build. 
+      # An instance of an exception caused by this can be seen at: https://github.com/verybadcat/CSharpMath/actions/runs/21598419979/job/62237307140
 
-        # C:\Users\runneradmin\.nuget\packages\uno.resizetizer\1.12.1\build\Uno.Resizetizer.android.targets(11,3): error MSB4018:
-        # System.TypeInitializationException: The type initializer for 'SkiaSharp.SKObject' threw an exception.
-        # ---> System.InvalidOperationException: The version of the native libSkiaSharp library (116.0) is incompatible with this version of SkiaSharp. Supported versions of the native libSkiaSharp library are in the range [88.1, 89.0).
+      # C:\Users\runneradmin\.nuget\packages\uno.resizetizer\1.12.1\build\Uno.Resizetizer.android.targets(11,3): error MSB4018:
+      # System.TypeInitializationException: The type initializer for 'SkiaSharp.SKObject' threw an exception.
+      # ---> System.InvalidOperationException: The version of the native libSkiaSharp library (116.0) is incompatible with this version of SkiaSharp. Supported versions of the native libSkiaSharp library are in the range [88.1, 89.0).
 
-        # This has been reported before: https://github.com/unoplatform/uno/issues/21344 and the resolution was to build MAUI and Uno apps separately.
-        dotnet build CSharpMath.slnx -c Not.Uno.Example # Newer macOS workloads may require newer Xcode versions. Update above.
-        dotnet build CSharpMath.Uno.Example
+      # This has been reported before: https://github.com/unoplatform/uno/issues/21344 and the resolution was to build MAUI and Uno apps separately.
+    - name: Build non-CSharpMath.Uno.Example
+      run: dotnet build CSharpMath.slnx -c Not.Uno.Example # Newer macOS workloads may require newer Xcode versions. Update above.
+    - name: Build CSharpMath.Uno.Example
+      run: dotnet build CSharpMath.Uno.Example
     - name: Run Tests
       run: dotnet test --no-build --solution CSharpMath.slnx
