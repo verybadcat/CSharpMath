@@ -1,6 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Uno.Sdk/6.4.58">
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFrameworks>net10.0</TargetFrameworks>
+	<!--A Windows TargetFramework is required for this package to be usable on native WinUI without assembly reference errors. This also necessitates using Uno.Sdk.-->
+	<TargetFrameworks Condition="$([System.OperatingSystem]::IsWindows())">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
     <Description>The Uno/WinUI front end for CSharpMath.</Description>
     <PackageTags>$(PackageTags) uno</PackageTags>
 	<DefineConstants>$(DefineConstants) Uno</DefineConstants>
