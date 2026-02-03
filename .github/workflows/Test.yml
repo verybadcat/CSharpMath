@@ -40,7 +40,7 @@ jobs:
         # ---> System.InvalidOperationException: The version of the native libSkiaSharp library (116.0) is incompatible with this version of SkiaSharp. Supported versions of the native libSkiaSharp library are in the range [88.1, 89.0).
 
         # This has been reported before: https://github.com/unoplatform/uno/issues/21344 and the resolution was to build MAUI and Uno apps separately.
-        dotnet build CSharpMath.slnx -c No.Uno.Example # Newer macOS workloads may require newer Xcode versions. Update above.
+        dotnet build CSharpMath.slnx -c Not.Uno.Example # Newer macOS workloads may require newer Xcode versions. Update above.
         dotnet build CSharpMath.Uno.Example
     - name: Run Tests
       run: dotnet test --no-build --solution CSharpMath.slnx
