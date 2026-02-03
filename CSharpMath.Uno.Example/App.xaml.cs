@@ -41,7 +41,7 @@ public partial class App : Application {
       rootFrame.Navigate(typeof(MainPage), args.Arguments);
     }
 
-    //MainWindow.SetWindowIcon(); // We disabled Resizetizer for this project, so no icon
+    MainWindow.SetWindowIcon();
     // Ensure the current window is active
     MainWindow.Activate();
   }

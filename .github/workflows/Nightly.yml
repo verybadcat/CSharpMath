@@ -88,7 +88,7 @@ jobs:
         path: .nupkgs/*
         include-hidden-files: true # This GitHub Action interprets any file or folder starting with . as hidden and omitted by default.
     - name: Push NuGet packages to GitHub Packages registry
-      if: github.ref == 'refs/heads/master'
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       run: |
         # On Windows, / will not be interpreted as the folder separator in this command and \ must be used here, unlike in Unix environments.
         # "dotnet nuget push" with "dotnet nuget add source" to GitHub Packages is unstable for project names with a dot: https://github.com/NuGet/Home/issues/9775#issuecomment-714509211
@@ -98,7 +98,7 @@ jobs:
         # --no-symbols omits uploading .snupkg files which is not supported by GitHub Packages: https://github.com/orgs/community/discussions/38678
         dotnet nuget push '.nupkgs\*.*' -s 'https://nuget.pkg.github.com/verybadcat/index.json' -k ${{ github.token }} --skip-duplicate --no-symbols
       shell: pwsh
-    - name: Push CSharpMath.Uno.Example as website
+    - name: Publish CSharpMath.Uno.Example
       run: |
         git fetch origin gh-pages
         git worktree add website/wwwroot gh-pages
@@ -115,7 +115,9 @@ jobs:
         git add -A # We need to include untracked files too, unlike git commit -a
         git commit -m "Update website to commit ${{ github.sha }}"
       shell: pwsh
-    - uses: ad-m/github-push-action@v1
+    - name: Push CSharpMath.Uno.Example to GitHub Pages
+      uses: ad-m/github-push-action@v1
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       with:
         branch: gh-pages
         directory: website/wwwroot

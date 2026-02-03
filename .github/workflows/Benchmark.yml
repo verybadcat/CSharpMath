@@ -21,7 +21,7 @@ jobs:
         tool: 'benchmarkdotnet'
         output-file-path: .benchmarkresults/results/CSharpMath.Rendering.Benchmarks.Program-report-full-compressed.json
         github-token: ${{ github.token }}
-        auto-push: ${{ github.ref == 'refs/heads/master' }} # Push and deploy GitHub pages branch automatically
+        auto-push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }} # Push and deploy GitHub pages branch automatically
         alert-threshold: 155% # Should not be lower than 155% to take account of fluctuations of CI load, see https://github.com/verybadcat/CSharpMath/pull/156#commitcomment-42067078
         comment-on-alert: true # Show alert with commit comment on detecting possible performance regression
         fail-on-alert: true
