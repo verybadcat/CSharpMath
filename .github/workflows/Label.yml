@@ -5,6 +5,9 @@ jobs:
   Label:
     runs-on: windows-latest
     steps:
+    - uses: actions/checkout@v6
+      with:
+        submodules: recursive
     - name: If there are changes in PublicApi.Shipped.txt, fail the workflow
       if: github.head_ref != 'action/ship-publicapi' # Same branch name specified in Release.yml
       run: |
