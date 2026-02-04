@@ -1,0 +1,47 @@
+﻿#nullable enable
+abstract CSharpMath.Evaluation.MathItem.<Clone>$() -> CSharpMath.Evaluation.MathItem!
+abstract CSharpMath.Evaluation.MathItem.Latexise() -> string!
+CSharpMath.Evaluation
+CSharpMath.Evaluation.MathItem
+CSharpMath.Evaluation.MathItem.Comma
+CSharpMath.Evaluation.MathItem.Comma.Comma(CSharpMath.Evaluation.MathItem! prev, CSharpMath.Evaluation.MathItem? next) -> void
+CSharpMath.Evaluation.MathItem.Comma.Content.get -> CSharpMath.Evaluation.MathItem!
+CSharpMath.Evaluation.MathItem.Comma.Equals(CSharpMath.Evaluation.MathItem.Comma? other) -> bool
+CSharpMath.Evaluation.MathItem.Comma.GetEnumerator() -> System.Collections.Generic.IEnumerator<CSharpMath.Evaluation.MathItem!>!
+CSharpMath.Evaluation.MathItem.Comma.Next.get -> CSharpMath.Evaluation.MathItem.Comma?
+CSharpMath.Evaluation.MathItem.Comma.Next.set -> void
+CSharpMath.Evaluation.MathItem.Entity
+CSharpMath.Evaluation.MathItem.Entity.Content.get -> AngouriMath.Entity!
+CSharpMath.Evaluation.MathItem.Entity.Entity(AngouriMath.Entity! content) -> void
+CSharpMath.Evaluation.MathItem.Entity.Equals(CSharpMath.Evaluation.MathItem.Entity? other) -> bool
+CSharpMath.Evaluation.MathItem.MathItem(CSharpMath.Evaluation.MathItem! original) -> void
+override CSharpMath.Evaluation.MathItem.Comma.<Clone>$() -> CSharpMath.Evaluation.MathItem!
+override CSharpMath.Evaluation.MathItem.Comma.Equals(object? obj) -> bool
+override CSharpMath.Evaluation.MathItem.Comma.GetHashCode() -> int
+override CSharpMath.Evaluation.MathItem.Comma.Latexise() -> string!
+override CSharpMath.Evaluation.MathItem.Comma.ToString() -> string!
+override CSharpMath.Evaluation.MathItem.Entity.<Clone>$() -> CSharpMath.Evaluation.MathItem!
+override CSharpMath.Evaluation.MathItem.Entity.Equals(object? obj) -> bool
+override CSharpMath.Evaluation.MathItem.Entity.GetHashCode() -> int
+override CSharpMath.Evaluation.MathItem.Entity.Latexise() -> string!
+override CSharpMath.Evaluation.MathItem.Entity.ToString() -> string!
+override CSharpMath.Evaluation.MathItem.Equals(object? obj) -> bool
+override CSharpMath.Evaluation.MathItem.GetHashCode() -> int
+override CSharpMath.Evaluation.MathItem.ToString() -> string!
+override sealed CSharpMath.Evaluation.MathItem.Comma.Equals(CSharpMath.Evaluation.MathItem? other) -> bool
+override sealed CSharpMath.Evaluation.MathItem.Entity.Equals(CSharpMath.Evaluation.MathItem? other) -> bool
+static CSharpMath.Evaluation.Evaluate(CSharpMath.Atom.MathList! mathList) -> CSharpMath.Atom.Result<CSharpMath.Evaluation.MathItem!>
+static CSharpMath.Evaluation.Interpret(CSharpMath.Atom.MathList! mathList, System.Func<string!, string!>? errorLaTeX = null) -> string!
+static CSharpMath.Evaluation.MathItem.Comma.operator !=(CSharpMath.Evaluation.MathItem.Comma? left, CSharpMath.Evaluation.MathItem.Comma? right) -> bool
+static CSharpMath.Evaluation.MathItem.Comma.operator ==(CSharpMath.Evaluation.MathItem.Comma? left, CSharpMath.Evaluation.MathItem.Comma? right) -> bool
+static CSharpMath.Evaluation.MathItem.Entity.operator !=(CSharpMath.Evaluation.MathItem.Entity? left, CSharpMath.Evaluation.MathItem.Entity? right) -> bool
+static CSharpMath.Evaluation.MathItem.Entity.operator ==(CSharpMath.Evaluation.MathItem.Entity? left, CSharpMath.Evaluation.MathItem.Entity? right) -> bool
+static CSharpMath.Evaluation.MathItem.explicit operator AngouriMath.Entity!(CSharpMath.Evaluation.MathItem! item) -> AngouriMath.Entity!
+static CSharpMath.Evaluation.MathItem.implicit operator CSharpMath.Evaluation.MathItem!(AngouriMath.Entity! content) -> CSharpMath.Evaluation.MathItem!
+static CSharpMath.Evaluation.MathItem.operator !=(CSharpMath.Evaluation.MathItem? left, CSharpMath.Evaluation.MathItem? right) -> bool
+static CSharpMath.Evaluation.MathItem.operator ==(CSharpMath.Evaluation.MathItem? left, CSharpMath.Evaluation.MathItem? right) -> bool
+static CSharpMath.Evaluation.Predict(System.Span<double> originalList) -> double?
+static CSharpMath.Evaluation.Visualize(CSharpMath.Evaluation.MathItem! entity) -> CSharpMath.Atom.MathList!
+virtual CSharpMath.Evaluation.MathItem.EqualityContract.get -> System.Type!
+virtual CSharpMath.Evaluation.MathItem.Equals(CSharpMath.Evaluation.MathItem? other) -> bool
+virtual CSharpMath.Evaluation.MathItem.PrintMembers(System.Text.StringBuilder! builder) -> bool

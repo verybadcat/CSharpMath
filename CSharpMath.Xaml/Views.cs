@@ -117,7 +117,9 @@ namespace CSharpMath.Uno {
       : base.MeasureOverride(availableSize);
     struct ReadOnlyProperty<TThis, TValue>(string propertyName, Func<TPainter, TValue> getter) where TThis : BaseView<TPainter, TContent> {
       TValue _value = getter(staticPainter);
+#pragma warning disable AVP1001 // Safe: ReadOnlyProperty is only instantiated in static constructor
       public global::Avalonia.DirectProperty<TThis, TValue> Property = XProperty.RegisterDirect<TThis, TValue>(propertyName, b => getter(b.Painter), null, getter(staticPainter));
+#pragma warning restore AVP1001
       public void SetValue(TThis @this, TValue value) => @this.SetAndRaise(Property, ref _value, value);
     }
     static XCanvasColor XColorToXCanvasColor(XColor color) => color;

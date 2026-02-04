@@ -14,4 +14,4 @@ jobs:
       with:
         submodules: 'recursive'
     - name: Check formatting (Fix with "dotnet format --exclude Typography" at repository root)
-      run: dotnet format --exclude Typography --verify-no-changes --severity error --verbosity diagnostic
+      run: dotnet format --exclude Typography --verify-no-changes --verbosity diagnostic

@@ -6,6 +6,10 @@ on:
 jobs:
   CSharpMath:
     runs-on: windows-latest
+    permissions:
+      # permissions requested by https://github.com/marketplace/actions/create-pull-request#token
+      contents: write
+      pull-requests: write
     steps:
     - uses: actions/checkout@v6
       with:
@@ -13,7 +17,7 @@ jobs:
     - uses: actions/setup-dotnet@main
       with:
         dotnet-version: '10.x'
-        workloads: maui-ios, maui-maccatalyst, maui-android, wasm-tools
+        workloads: maui, wasm-tools
     - name: Build GitHub Releases draft artifacts
       env:
         RELEASE_NOTES: |
@@ -42,3 +46,13 @@ jobs:
         # --skip-duplicate enables re-running this workflow even if some packages from the same commit are already uploaded.
         dotnet nuget push '.nupkgs\*.nupkg' -s 'https://api.nuget.org/v3/index.json' -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate
       shell: pwsh
+    - name: Move PublicApi.Unshipped.txt to PublicApi.Shipped.txt
+      run: .github/workflows/Release-mark-shipped.ps1
+      shell: pwsh
+    - name: Create PR for shipping PublicApi
+      uses: peter-evans/create-pull-request@v8
+      with:
+        commit-message: 'Move PublicApi.Unshipped.txt to PublicApi.Shipped.txt for ${{ github.event.release.tag_name }}'
+        title: 'Ship PublicApi for ${{ github.event.release.tag_name }}'
+        body: 'This PR moves the contents of PublicApi.Unshipped.txt to PublicApi.Shipped.txt to mark the API as shipped for version ${{ github.event.release.tag_name }}.'
+        branch: action/ship-publicapi # Same branch name specified in Label.yml

@@ -1,16 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 
 namespace CSharpMath.Rendering.Tests {
-  public abstract class TestRenderingSharedData<TThis> : IEnumerable<object[]> where TThis : TestRenderingSharedData<TThis> {
+  public abstract class TestRenderingSharedData<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields)] TThis> : IEnumerable<object[]> where TThis : TestRenderingSharedData<TThis> {
     public static IReadOnlyDictionary<string, string> AllConstants { get; } =
-      typeof(TThis)
-      .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
-      .Where(fi => fi.IsLiteral && !fi.IsInitOnly)
-      .ToDictionary(fi => fi.Name, fi => fi.GetRawConstantValue() as string
-        ?? throw new Atom.InvalidCodePathException("All constants must be strings!"));
+     typeof(TThis)
+     .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+     .Where(fi => fi.IsLiteral && !fi.IsInitOnly)
+     .ToDictionary(fi => fi.Name, fi => fi.GetRawConstantValue() as string
+       ?? throw new Atom.InvalidCodePathException("All constants must be strings!"));
     public static string AllConstantValues { get; } =
       string.Join(@"\\", AllConstants.Where(info => !info.Key.StartsWith("Error")).Select(info => $@"{info.Key}: {info.Value}"));
     public IEnumerator<object[]> GetEnumerator() =>

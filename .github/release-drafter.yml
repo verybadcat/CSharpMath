@@ -1,24 +1,23 @@
 # https://github.com/marketplace/actions/release-drafter#configuration
-name-template: '$RESOLVED_VERSION CI'
+name-template: '$RESOLVED_VERSION xxx Update [Alpha|Beta]'
 tag-template: 'v$RESOLVED_VERSION'
-version-resolver:
+version-resolver: # Sync these labels with Label.yml
   major:
     labels:
-      - 'Version/Major'
+      - 'Impact/Breaking change'
   minor:
     labels:
-      - 'Version/Minor'
+      - 'Type/Platform'
+      - 'Type/Enhancement'
   patch:
     labels:
-      - 'Version/Patch'
+      - 'Type/Bug'
   default: patch
 exclude-labels:
-  - 'Version/None'
+  - 'Type/Housekeeping'
 prerelease: true
 template: |
-  <!--Example release name: $RESOLVED_VERSION xxx Update [Alpha|Beta]-->
-  <!--Please release immediately after modifying as any changes will be overwritten on next run of the Test workflow-->
-  <!--Remove these comments, they will be visible in the released NuGet packages!-->
+  <!--Auto-generated. Any changes will be overwritten on next run of the Nightly workflow.-->
 
   ## Changes from $PREVIOUS_TAG (Recently merged first)
   $CHANGES
@@ -35,8 +34,6 @@ categories:
   - title: '🐛 Bug Fixes'
     labels:
       - 'Type/Bug'
-  - title: '🧰 Maintenance'
-    label: 'Type/Housekeeping'
 # Extra line before $BODY or markdown on the first line of $BODY will be interpreted as plain text
 change-template: |
   <details><summary>$TITLE (#$NUMBER) @$AUTHOR</summary><table><td>

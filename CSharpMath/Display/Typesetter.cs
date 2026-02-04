@@ -317,8 +317,7 @@ namespace CSharpMath.Display {
           case Open _:
           case Close _:
           case Placeholder _:
-          case Punctuation _:
-          case Prime _: {
+          case Punctuation _: {
               if (prevAtom != null) {
                 float interElementSpace =
                   InterElementSpaces.Get(prevAtom, atom, _style, _styleFont, _mathTable);
