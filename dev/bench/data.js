@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1770095376050,
+  "lastUpdate": 1770826315350,
   "repoUrl": "https://github.com/verybadcat/CSharpMath",
   "entries": {
     "CSharpMath.Rendering.Benchmarks": [
@@ -2970,6 +2970,96 @@ window.BENCHMARK_DATA = {
             "value": 2839005.4036458335,
             "unit": "ns",
             "range": "± 8859.979788662373"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "198982749+Copilot@users.noreply.github.com",
+            "name": "Copilot",
+            "username": "Copilot"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "c1fbbf020371b092d448f3ebd5952d0f775befb4",
+          "message": "Enforce that line endings are always stored as LF in git tree (#250)\n\n* Initial plan\n\n* Add .gitattributes to fix cross-platform formatting\n\nNormalizes line endings to LF in repository while allowing platform-native\ncheckouts (CRLF on Windows, LF on Linux). Verified that dotnet format passes\non both platforms without requiring end_of_line in .editorconfig.\n\nCo-authored-by: Happypig375 <19922066+Happypig375@users.noreply.github.com>\n\n* Enforce automatic CRLF to LF conversion\n\n* Update workflows while we're at it\n\n* Fix Release workflow\n\n---------\n\nCo-authored-by: copilot-swe-agent[bot] <198982749+Copilot@users.noreply.github.com>\nCo-authored-by: Happypig375 <19922066+Happypig375@users.noreply.github.com>\nCo-authored-by: Hadrian Tang <hadrianwttang@outlook.com>",
+          "timestamp": "2026-02-12T00:04:56+08:00",
+          "tree_id": "b92c5da42740b202f6dbbf2c7e81c36df9a37d8a",
+          "url": "https://github.com/verybadcat/CSharpMath/commit/c1fbbf020371b092d448f3ebd5952d0f775befb4"
+        },
+        "date": 1770826312805,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.AllConstantValues",
+            "value": 597527784.6153846,
+            "unit": "ns",
+            "range": "± 3601180.982410759"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cases\")",
+            "value": 2586515.792410714,
+            "unit": "ns",
+            "range": "± 35530.82039338544"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Color\")",
+            "value": 838899.2903645834,
+            "unit": "ns",
+            "range": "± 4670.49539075542"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Commands\")",
+            "value": 300660.7389322917,
+            "unit": "ns",
+            "range": "± 1888.8007148795373"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cyrillic\")",
+            "value": 2733679.19921875,
+            "unit": "ns",
+            "range": "± 18239.88371041217"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"ErrorMissingArgument\")",
+            "value": 1588959.9088541667,
+            "unit": "ns",
+            "range": "± 14016.88544468804"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Matrix\")",
+            "value": 1396829.701450893,
+            "unit": "ns",
+            "range": "± 14350.547598181007"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuadraticFormula\")",
+            "value": 627476.4047475961,
+            "unit": "ns",
+            "range": "± 6530.238241108647"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuarticSolutions\")",
+            "value": 123711293.33333333,
+            "unit": "ns",
+            "range": "± 1176596.7112543378"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"TangentPeriodShift\")",
+            "value": 790452.0846354166,
+            "unit": "ns",
+            "range": "± 39643.86712721562"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"VectorProjection\")",
+            "value": 2999824.699519231,
+            "unit": "ns",
+            "range": "± 20643.50690886075"
           }
         ]
       }
