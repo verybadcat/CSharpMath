@@ -31,7 +31,7 @@ using XCanvas = SkiaSharp.SKCanvas;
 using XCanvasColor = SkiaSharp.SKColor;
 using XColor = Windows.UI.Color;
 using XThickness = Microsoft.UI.Xaml.Thickness;
-#if IOS || ANDROID || WINDOWS || BROWSERWASM // native renderer
+#if IOS || ANDROID || WINDOWS // native renderer
 using XInheritControl = SkiaSharp.Views.Windows.SKXamlCanvas;
 #else // Skia renderer
 using XInheritControl = Uno.WinUI.Graphics2DSK.SKCanvasElement;
@@ -250,7 +250,7 @@ namespace CSharpMath.Uno {
     static XCanvasColor XColorToXCanvasColor(XColor color) => new(color.R, color.G, color.B, color.A);
     static XColor XCanvasColorToXColor(XCanvasColor color) => XColor.FromArgb(color.Alpha, color.Red, color.Green, color.Blue);
     Windows.Foundation.Point _origin;
-#if IOS || ANDROID || WINDOWS || BROWSERWASM
+#if IOS || ANDROID || WINDOWS
     protected override void OnPaintSurface(global::SkiaSharp.Views.Windows.SKPaintSurfaceEventArgs e) {
       base.OnPaintSurface(e);
       var canvas = e.Surface.Canvas;

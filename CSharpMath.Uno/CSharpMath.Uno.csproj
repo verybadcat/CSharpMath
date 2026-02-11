@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Uno.Sdk/6.4.58"> <!--https://aka.platform.uno/using-uno-sdk-->
   <PropertyGroup>
-    <TargetFrameworks>net10.0;net10.0-android;net10.0-browserwasm</TargetFrameworks>
+    <TargetFrameworks>net10.0;net10.0-android</TargetFrameworks>
     <TargetFrameworks Condition="!$([System.OperatingSystem]::IsLinux())">$(TargetFrameworks);net10.0-ios</TargetFrameworks>
     <!--A Windows TargetFramework is required for this package to be usable on native WinUI without assembly reference errors. This also necessitates using Uno.Sdk.-->
     <TargetFrameworks Condition="$([System.OperatingSystem]::IsWindows())">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
