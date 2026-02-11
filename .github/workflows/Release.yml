@@ -21,14 +21,15 @@ jobs:
     - name: Build GitHub Releases draft artifacts
       env:
         RELEASE_NOTES: |
-          # ${{ github.event.release.name }}
+          ${{ format('# {0}', github.event.release.name) }}
           
           ${{ github.event.release.body }}
       run: |
         # .NET Core MSBuild cannot parse , and ; correctly so we replace them with MSBuild XML escapes: https://github.com/dotnet/msbuild/issues/471#issuecomment-366268743
         $env:RELEASE_NOTES = $env:RELEASE_NOTES -replace ',','%2C' -replace ';','%3B'
         
-        dotnet build -c Release -p:PackageReleaseNotes="$env:RELEASE_NOTES" -p:PackageVersion="${{ github.event.release.tag_name }}"
+        # For why Not.Uno.Example is used, see Nightly.yml
+        dotnet build -c Not.Uno.Example -p:PackageReleaseNotes="$env:RELEASE_NOTES" -p:PackageVersion="${{ github.event.release.tag_name }}"
       shell: pwsh
     - name: Upload to GitHub Releases
       uses: svenstaro/upload-release-action@v2

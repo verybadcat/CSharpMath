@@ -17,15 +17,9 @@ jobs:
         # Check required Xcode version for latest "dotnet workload restore": https://github.com/dotnet/macios/releases
         xcode-version: '26.2' # If this is to be changed, also check macos-version in matrix.os above
     - uses: actions/setup-dotnet@main
-      if: matrix.os != 'ubuntu-latest'
       with:
         dotnet-version: '10.x'
-        workloads: maui, wasm-tools
-    - uses: actions/setup-dotnet@main
-      if: matrix.os == 'ubuntu-latest'
-      with:
-        dotnet-version: '10.x'
-        workloads: maui-android, wasm-tools
+        workloads: ${{ case(startsWith(matrix.os, 'ubuntu'), 'maui-android, wasm-tools', 'maui, wasm-tools') }}
     - uses: actions/checkout@v6
       with:
         submodules: 'recursive'
