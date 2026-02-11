@@ -44,7 +44,7 @@ namespace CSharpMath.Uno {
 #endif
   public partial class BaseView<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] TPainter,
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)]
-    TContent> : XInheritControl, ICSharpMathAPI<TContent, XColor>
+  TContent> : XInheritControl, ICSharpMathAPI<TContent, XColor>
     where TPainter : Painter<XCanvas, TContent, XCanvasColor>, new() where TContent : class {
     public TPainter Painter { get; } = new TPainter();
 

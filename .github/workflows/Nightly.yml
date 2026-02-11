@@ -103,7 +103,7 @@ jobs:
       run: |
         git fetch origin gh-pages
         git worktree add website/wwwroot gh-pages
-        Get-ChildItem -Path website/wwwroot/* -Exclude dev | Remove-Item -Recurse -Force # dev is the output folder of Benchmark.yml, keep it
+        Get-ChildItem -Path website/wwwroot/* -Exclude dev,.nojekyll | Remove-Item -Recurse -Force # dev is the output folder of Benchmark.yml and .nojekyll ensures _framework folder is served, keep them
         # TODO: why can't this publish use --no-build? For example, see https://github.com/verybadcat/CSharpMath/actions/runs/21600019106/job/62243168945
         # Error: C:\Program Files\dotnet\sdk\10.0.102\Sdks\Microsoft.NET.Sdk\targets\Microsoft.NET.Sdk.targets(262,5): error NETSDK1085:
         # The 'NoBuild' property was set to true but the 'Build' target was invoked. [D:\a\CSharpMath\CSharpMath\CSharpMath.Uno\CSharpMath.Uno.csproj::TargetFramework=net10.0-browserwasm]
