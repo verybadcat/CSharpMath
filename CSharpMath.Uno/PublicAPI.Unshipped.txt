@@ -47,7 +47,7 @@ override CSharpMath.Uno.BaseView<TPainter, TContent>.MeasureOverride(Windows.Fou
 #if IOS || ANDROID || WINDOWS || BROWSERWASM
 override CSharpMath.Uno.BaseView<TPainter, TContent>.OnPaintSurface(SkiaSharp.Views.Windows.SKPaintSurfaceEventArgs! e) -> void
 #else
-override CSharpMath.Uno.BaseView<TPainter, TContent>.RenderOverride(SkiaSharp.Canvas! canvas, Windows.Foundation.Size area) -> void
+override CSharpMath.Uno.BaseView<TPainter, TContent>.RenderOverride(SkiaSharp.SKCanvas! canvas, Windows.Foundation.Size area) -> void
 #endif
 static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.ContentProperty -> Microsoft.UI.Xaml.DependencyProperty!
 static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.DisplacementXProperty -> Microsoft.UI.Xaml.DependencyProperty!
