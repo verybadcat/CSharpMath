@@ -1,6 +1,5 @@
 using CSharpMath.Atom;
 using CSharpMath.Rendering.FrontEnd;
-using TextAlignment = CSharpMath.Rendering.FrontEnd.TextAlignment;
 
 namespace CSharpMath.Uno.Example {
   public partial class ExamplesPage : Page {
@@ -15,13 +14,13 @@ namespace CSharpMath.Uno.Example {
         view.ErrorFontSize = view.FontSize * 0.8f;
       }
 
-      var values = typeof(TextAlignment).GetEnumValues();
+      var values = typeof(Rendering.FrontEnd.TextAlignment).GetEnumValues();
       Array.Reverse(values);
       alignment.ItemsSource = values;
       alignment.SelectionChanged += (sender, e) => {
-        foreach (var view in mathViews) view.TextAlignment = (TextAlignment)alignment.SelectedItem;
+        foreach (var view in mathViews) view.TextAlignment = (Rendering.FrontEnd.TextAlignment)alignment.SelectedItem;
       };
-      alignment.SelectedItem = TextAlignment.Top;
+      alignment.SelectedItem = Rendering.FrontEnd.TextAlignment.Top;
 
       paintStyle.ItemsSource = typeof(PaintStyle).GetEnumValues();
       paintStyle.SelectionChanged += (sender, e) => {

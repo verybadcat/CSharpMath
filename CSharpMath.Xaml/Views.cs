@@ -30,14 +30,18 @@ using XCanvas = SkiaSharp.SKCanvas;
 using XCanvasColor = SkiaSharp.SKColor;
 using XColor = Windows.UI.Color;
 using XThickness = Microsoft.UI.Xaml.Thickness;
+#if IOS || ANDROID || WINDOWS || BROWSERWASM // native renderer
 using XInheritControl = SkiaSharp.Views.Windows.SKXamlCanvas;
+#else // Skia renderer
+using XInheritControl = Uno.WinUI.Graphics2DSK.SKCanvasElement;
+#endif
 using XProperty = Microsoft.UI.Xaml.DependencyProperty;
 using MathPainter = CSharpMath.SkiaSharp.MathPainter;
 using TextPainter = CSharpMath.SkiaSharp.TextPainter;
 namespace CSharpMath.Uno {
   [Microsoft.UI.Xaml.Markup.ContentProperty(Name = nameof(LaTeX))]
 #endif
-  public class BaseView<TPainter, TContent> : XInheritControl, ICSharpMathAPI<TContent, XColor>
+  public partial class BaseView<TPainter, TContent> : XInheritControl, ICSharpMathAPI<TContent, XColor>
     where TPainter : Painter<XCanvas, TContent, XCanvasColor>, new() where TContent : class {
     public TPainter Painter { get; } = new TPainter();
 
@@ -238,13 +242,16 @@ namespace CSharpMath.Uno {
     static XCanvasColor XColorToXCanvasColor(XColor color) => new(color.R, color.G, color.B, color.A);
     static XColor XCanvasColorToXColor(XCanvasColor color) => XColor.FromArgb(color.Alpha, color.Red, color.Green, color.Blue);
     Windows.Foundation.Point _origin;
+#if IOS || ANDROID || WINDOWS || BROWSERWASM
     protected override void OnPaintSurface(global::SkiaSharp.Views.Windows.SKPaintSurfaceEventArgs e) {
       base.OnPaintSurface(e);
       var canvas = e.Surface.Canvas;
       canvas.Clear();
-      // SkiaSharp deals with raw pixels as opposed to Uno's device-independent units.
-      // We should scale to occupy the full view size.
+      // SkiaSharp.Views' surface is on a different dimension compared to the layout system so we should scale to occupy the full view size.
       canvas.Scale(e.Info.Width / (float)ActualWidth);
+#else
+    protected override void RenderOverride(XCanvas canvas, Windows.Foundation.Size area) {
+#endif
 #endif
       var padding = Padding;
       Painter.Draw(canvas, TextAlignment, new(left: (float)padding.Left, top: (float)padding.Top, right: (float)padding.Right, bottom: (float)padding.Bottom), DisplacementX, DisplacementY);
@@ -300,6 +307,6 @@ namespace CSharpMath.Uno {
     private static readonly ReadOnlyProperty<BaseView<TPainter, TContent>, string?> ErrorMessagePropertyKey;
     public static readonly XProperty ErrorMessageProperty;
   }
-  public class MathView : BaseView<MathPainter, MathList> { }
-  public class TextView : BaseView<TextPainter, Rendering.Text.TextAtom> { }
+  public partial class MathView : BaseView<MathPainter, MathList> { }
+  public partial class TextView : BaseView<TextPainter, Rendering.Text.TextAtom> { }
 }
