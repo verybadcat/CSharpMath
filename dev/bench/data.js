@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1770826315350,
+  "lastUpdate": 1770857817982,
   "repoUrl": "https://github.com/verybadcat/CSharpMath",
   "entries": {
     "CSharpMath.Rendering.Benchmarks": [
@@ -3060,6 +3060,96 @@ window.BENCHMARK_DATA = {
             "value": 2999824.699519231,
             "unit": "ns",
             "range": "± 20643.50690886075"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "hadrianwttang@outlook.com",
+            "name": "Hadrian Tang",
+            "username": "Happypig375"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "d6feac52d2cf4b186f1f275ca4c84fd7564cc470",
+          "message": "Track publicly exposed APIs for semantic versioning (#252)\n\n* Track publicly exposed API for semantic versioning\n\n* Checkout in Labeller\n\n* Make Uno use performant Skia renderer when possible\n\n* Fix warnings\n\n* Format\n\n* Undo native browser renderer?",
+          "timestamp": "2026-02-12T08:51:08+08:00",
+          "tree_id": "1de867f0ec58e60c9e079cc282526cbfd19dfbaf",
+          "url": "https://github.com/verybadcat/CSharpMath/commit/d6feac52d2cf4b186f1f275ca4c84fd7564cc470"
+        },
+        "date": 1770857814430,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.AllConstantValues",
+            "value": 588403814.2857143,
+            "unit": "ns",
+            "range": "± 7812448.418818732"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cases\")",
+            "value": 2607259.765625,
+            "unit": "ns",
+            "range": "± 45617.551273725425"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Color\")",
+            "value": 826431.5708705357,
+            "unit": "ns",
+            "range": "± 1910.6426690548763"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Commands\")",
+            "value": 297979.6875,
+            "unit": "ns",
+            "range": "± 949.8074390774981"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cyrillic\")",
+            "value": 2706588.2254464286,
+            "unit": "ns",
+            "range": "± 12737.231847815632"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"ErrorMissingArgument\")",
+            "value": 1574509.1145833333,
+            "unit": "ns",
+            "range": "± 12831.97015570253"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Matrix\")",
+            "value": 1391796.6536458333,
+            "unit": "ns",
+            "range": "± 8914.830455277819"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuadraticFormula\")",
+            "value": 617583.7123325893,
+            "unit": "ns",
+            "range": "± 4262.474395099974"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuarticSolutions\")",
+            "value": 122724783.33333333,
+            "unit": "ns",
+            "range": "± 1012317.1585202554"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"TangentPeriodShift\")",
+            "value": 748375.2669270834,
+            "unit": "ns",
+            "range": "± 8487.306793333855"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"VectorProjection\")",
+            "value": 2900278.097098214,
+            "unit": "ns",
+            "range": "± 29092.32429010882"
           }
         ]
       }
