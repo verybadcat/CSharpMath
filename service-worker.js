@@ -1,4 +1,4 @@
-import { config as unoConfig } from "./package_560691698027bd4a91317cb25d6344f8c39c2aec/uno-config.js";
+import { config as unoConfig } from "./package_f6a20f3e3443d832c0be28e47eb8351854961a0b/uno-config.js";
 
 if (unoConfig.environmentVariables["UNO_BOOTSTRAP_DEBUGGER_ENABLED"] !== "True") {
     console.debug("[ServiceWorker] Initializing");
@@ -10,7 +10,7 @@ if (unoConfig.environmentVariables["UNO_BOOTSTRAP_DEBUGGER_ENABLED"] !== "True")
     self.addEventListener('install', function (e) {
         console.debug('[ServiceWorker] Installing offline worker');
         e.waitUntil(
-            caches.open('73484abb-85c5-454b-8a06-3c350b816246').then(async function (cache) {
+            caches.open('274cb8b5-dec5-4ad7-a7ce-9712ad00d9c6').then(async function (cache) {
                 console.debug('[ServiceWorker] Caching app binaries and content');
 
                 // Add files one by one to avoid failed downloads to prevent the
@@ -97,7 +97,7 @@ if (unoConfig.environmentVariables["UNO_BOOTSTRAP_DEBUGGER_ENABLED"] !== "True")
             caches.keys().then(function (cacheNames) {
                 return Promise.all(
                     cacheNames.filter(function (cacheName) {
-                        return cacheName !== '73484abb-85c5-454b-8a06-3c350b816246';
+                        return cacheName !== '274cb8b5-dec5-4ad7-a7ce-9712ad00d9c6';
                     }).map(function (cacheName) {
                         console.debug('[ServiceWorker] Deleting old cache:', cacheName);
                         return caches.delete(cacheName);
