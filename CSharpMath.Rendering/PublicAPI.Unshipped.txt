@@ -1,4 +1,5 @@
 ﻿#nullable enable
+TEST
 abstract CSharpMath.Rendering.FrontEnd.Painter<TCanvas, TContent, TColor>.ContentToLaTeX(TContent! content) -> string!
 abstract CSharpMath.Rendering.FrontEnd.Painter<TCanvas, TContent, TColor>.Display.get -> CSharpMath.Display.IDisplay<CSharpMath.Rendering.BackEnd.Fonts!, CSharpMath.Rendering.BackEnd.Glyph>?
 abstract CSharpMath.Rendering.FrontEnd.Painter<TCanvas, TContent, TColor>.Display.set -> void
