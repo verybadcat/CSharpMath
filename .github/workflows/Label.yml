@@ -1,6 +1,7 @@
 name: Label breaking changes for semantic versioning
 
-on: [pull_request_target] # run on the merge target branch instead of the merge commit to grant pull-requests:write permission
+on:
+  pull_request_target: # run on the merge target branch instead of the merge commit to grant pull-requests:write permission
 jobs:
   Label:
     runs-on: windows-latest
