@@ -1,20 +1,20 @@
 name: Label breaking changes for semantic versioning
 
-on: pull_request_target # run on the merge target branch instead of the merge commit to grant pull-requests:write permission
+on: pull_request_target # Run on the merge target branch instead of the merge commit to grant pull-requests:write permission
 jobs:
   Label:
     runs-on: windows-latest
     permissions:
-      pull-requests: write # allow adding a label to this pull request
+      pull-requests: write # Allow adding a label to this pull request
     steps:
     - uses: actions/checkout@v6
       with:
-        fetch-depth: 0 # fetch all commit history and tags, instead of the default fetch of only one commit
-        ref: ${{ github.event.pull_request.head.sha }}  # checkout the PR branch
+        fetch-depth: 0 # Fetch all commit history and tags, instead of the default fetch of only one commit
+        ref: ${{ github.event.pull_request.head.sha }}  # Checkout the PR branch
     - name: If there are changes in PublicApi.Shipped.txt, fail the workflow
       if: github.head_ref != 'action/ship-publicapi' # Same branch name specified in Release.yml
       run: |
-        $changes = git diff --numstat --shortstat origin/${{ github.base_ref }}...HEAD -- '**/PublicApi.Shipped.txt'
+        $changes = git diff --numstat --shortstat origin/${{ github.base_ref }}...HEAD -- '**/PublicApi.Shipped.txt' # Note that ** must expand to at least one folder here, this doesn't check root
         Write-Output "$changes"
         if ($changes) {
           Write-Error "Changes detected in PublicApi.Shipped.txt files. Public API changes must be shipped through the release process, not in regular pull requests."
