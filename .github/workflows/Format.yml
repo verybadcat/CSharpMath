@@ -12,6 +12,6 @@ jobs:
         workloads: maui-ios, maui-maccatalyst, maui-android, wasm-tools
     - uses: actions/checkout@v6
       with:
-        submodules: 'recursive'
+        submodules: recursive
     - name: Check formatting (Fix with "dotnet format --exclude Typography" at repository root)
       run: dotnet format --exclude Typography --verify-no-changes --verbosity diagnostic
