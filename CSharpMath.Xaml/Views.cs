@@ -5,6 +5,7 @@ using CSharpMath.Rendering.FrontEnd;
 using Typography.OpenFont;
 using System.Drawing;
 using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 
 // X stands for Xaml
 #if Avalonia
@@ -25,8 +26,25 @@ using XInheritControl = Microsoft.Maui.Controls.GraphicsView;
 using XProperty = Microsoft.Maui.Controls.BindableProperty;
 namespace CSharpMath.Maui {
   [Microsoft.Maui.Controls.ContentProperty(nameof(LaTeX))]
+#elif Uno
+using XCanvas = SkiaSharp.SKCanvas;
+using XCanvasColor = SkiaSharp.SKColor;
+using XColor = Windows.UI.Color;
+using XThickness = Microsoft.UI.Xaml.Thickness;
+#if IOS || ANDROID || WINDOWS // native renderer
+using XInheritControl = SkiaSharp.Views.Windows.SKXamlCanvas;
+#else // Skia renderer
+using XInheritControl = Uno.WinUI.Graphics2DSK.SKCanvasElement;
 #endif
-  public class BaseView<TPainter, TContent> : XInheritControl, ICSharpMathAPI<TContent, XColor>
+using XProperty = Microsoft.UI.Xaml.DependencyProperty;
+using MathPainter = CSharpMath.SkiaSharp.MathPainter;
+using TextPainter = CSharpMath.SkiaSharp.TextPainter;
+namespace CSharpMath.Uno {
+  [Microsoft.UI.Xaml.Markup.ContentProperty(Name = nameof(LaTeX))]
+#endif
+  public partial class BaseView<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] TPainter,
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)]
+  TContent> : XInheritControl, ICSharpMathAPI<TContent, XColor>
     where TPainter : Painter<XCanvas, TContent, XCanvasColor>, new() where TContent : class {
     public TPainter Painter { get; } = new TPainter();
 
@@ -35,7 +53,12 @@ namespace CSharpMath.Maui {
     /// <summary>Contains all the properties to listen to for painter property changes. Do not mutate.</summary>
     public static readonly XProperty[] WritablePainterProperties;
     /// <summary>Contains all the property names to listen to for painter property changes. Do not mutate.</summary>
-    public static readonly HashSet<string> WritablePainterPropertyNames;
+#if Uno
+    private
+#else
+    public
+#endif
+      static readonly HashSet<string> WritablePainterPropertyNames;
     static BaseView() {
       WritablePainterProperties = [
         EnablePanningProperty = CreateProperty<BaseView<TPainter, TContent>, bool>(nameof(EnablePanning), false, _ => false, (_, __) => { }),
@@ -57,12 +80,15 @@ namespace CSharpMath.Maui {
         DisplacementYProperty = CreateProperty<BaseView<TPainter, TContent>, float>(nameof(DisplacementY), false, p => (float)drawMethodParams[4].DefaultValue!, (p, v) => { }),
         MagnificationProperty = CreateProperty<BaseView<TPainter, TContent>, float>(nameof(Magnification), false, p => p.Magnification, (p, v) => p.Magnification = v),
         PaintStyleProperty = CreateProperty<BaseView<TPainter, TContent>, PaintStyle>(nameof(PaintStyle), false, p => p.PaintStyle, (p, v) => p.PaintStyle = v),
-        LineStyleProperty = CreateProperty<BaseView<TPainter, TContent>, LineStyle>(nameof(LineStyle), false, p => p.LineStyle, (p, v) => p.LineStyle = v),
+        LineStyleProperty = CreateProperty<BaseView<TPainter, TContent>, LineStyle>(nameof(LineStyle), true, p => p.LineStyle, (p, v) => p.LineStyle = v),
       ];
       WritablePainterPropertyNames = [.. WritablePainterProperties.Select(GetPropertyName)];
       ErrorMessagePropertyKey = new ReadOnlyProperty<BaseView<TPainter, TContent>, string?>(nameof(ErrorMessage), p => p.ErrorMessage);
       ErrorMessageProperty = ErrorMessagePropertyKey.Property;
-      static XProperty CreateProperty<TThis, TValue>(
+      static XProperty CreateProperty<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] TThis,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] TValue
+      >(
         string propertyName,
         bool affectsMeasure,
         Func<TPainter, TValue> defaultValueGet,
@@ -75,10 +101,9 @@ namespace CSharpMath.Maui {
           // So this use of the null-forgiving operator should be blamed on non-generic PropertyChanged handlers
           var @new = (TValue)newValue!;
           propertySet(@this.Painter, @new);
-          updateOtherProperty?.Invoke(@this, @new);
           if (affectsMeasure) @this.InvalidateMeasure();
-          // Redraw immediately! No deferred drawing
 #if Avalonia
+          updateOtherProperty?.Invoke(@this, @new); // Re-assign LaTeX from Content or vice versa
           @this.InvalidateVisual();
         }
         var prop = XProperty.Register<TThis, TValue>(propertyName, defaultValue);
@@ -102,7 +127,9 @@ namespace CSharpMath.Maui {
       : base.MeasureOverride(availableSize);
     struct ReadOnlyProperty<TThis, TValue>(string propertyName, Func<TPainter, TValue> getter) where TThis : BaseView<TPainter, TContent> {
       TValue _value = getter(staticPainter);
+#pragma warning disable AVP1001 // Safe: ReadOnlyProperty is only instantiated in static constructor
       public global::Avalonia.DirectProperty<TThis, TValue> Property = XProperty.RegisterDirect<TThis, TValue>(propertyName, b => getter(b.Painter), null, getter(staticPainter));
+#pragma warning restore AVP1001
       public void SetValue(TThis @this, TValue value) => @this.SetAndRaise(Property, ref _value, value);
     }
     static XCanvasColor XColorToXCanvasColor(XColor color) => color;
@@ -136,6 +163,7 @@ namespace CSharpMath.Maui {
       base.Render(context);
       var canvas = new XCanvas(context, Bounds.Size);
 #elif Maui
+          updateOtherProperty?.Invoke(@this, @new); // Re-assign LaTeX from Content or vice versa
           @this.Invalidate();
         }
         return XProperty.Create(propertyName, typeof(TValue), typeof(TThis), defaultValue,
@@ -179,6 +207,59 @@ namespace CSharpMath.Maui {
     void Draw(XCanvas_Canvas rawCanvas) {
       // dirtyRect may be larger than Width and Height on Windows which leads to incorrect alignments
       var canvas = (rawCanvas, new Microsoft.Maui.Graphics.SizeF((float)Width, (float)Height));
+#elif Uno
+          // Uno/WinUI bindings are gone when a property is assigned unlike Avalonia and MAUI, so we omit updateOtherProperty.
+          @this.Invalidate();
+        }
+        return XProperty.Register(propertyName, typeof(TValue), typeof(TThis),
+          new Microsoft.UI.Xaml.PropertyMetadata(defaultValue, (b, n) => PropertyChanged((TThis)b, n.NewValue)));
+      }
+      static string GetPropertyName(XProperty prop) => ""; // unsupported :(
+    }
+    public BaseView() {
+      PointerPressed += (sender, e) => {
+        if (e.GetCurrentPoint(this) is { Properties.IsLeftButtonPressed: true } point && EnablePanning)
+          _origin = point.Position;
+      };
+      PointerMoved += (sender, e) => {
+        if (e.GetCurrentPoint(this) is { Properties.IsLeftButtonPressed: true } point && EnablePanning) {
+          var displacement = new Windows.Foundation.Point(point.Position.X - _origin.X, point.Position.Y - _origin.Y);
+          _origin = point.Position;
+          DisplacementX += (float)displacement.X;
+          DisplacementY += (float)displacement.Y;
+        }
+      };
+      PointerReleased += (sender, e) => {
+        if (e.GetCurrentPoint(this) is { Properties.IsLeftButtonPressed: true } point && EnablePanning)
+          _origin = point.Position;
+      };
+    }
+    // TODO: How to stop a horizontally overflowing line for TextView from affecting line breaking for later lines, without breaking horizontal scrolling for MathView?
+    // Avalonia and MAUI don't exhibit this behavior.
+    protected override Windows.Foundation.Size MeasureOverride(Windows.Foundation.Size availableSize) =>
+      Painter.Measure((float)availableSize.Width) is { } rect
+      ? new Windows.Foundation.Size(rect.Width, rect.Height)
+      : base.MeasureOverride(availableSize);
+    readonly struct ReadOnlyProperty<
+      [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] TThis,
+      [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] TValue
+    >(string propertyName, Func<TPainter, TValue> getter) where TThis : BaseView<TPainter, TContent> {
+      public readonly XProperty Property = XProperty.Register(propertyName, typeof(TValue), typeof(TThis), new Microsoft.UI.Xaml.PropertyMetadata(getter(staticPainter)));
+      public void SetValue(TThis @this, TValue value) => @this.SetValue(Property, value);
+    }
+    static XCanvasColor XColorToXCanvasColor(XColor color) => new(color.R, color.G, color.B, color.A);
+    static XColor XCanvasColorToXColor(XCanvasColor color) => XColor.FromArgb(color.Alpha, color.Red, color.Green, color.Blue);
+    Windows.Foundation.Point _origin;
+#if IOS || ANDROID || WINDOWS
+    protected override void OnPaintSurface(global::SkiaSharp.Views.Windows.SKPaintSurfaceEventArgs e) {
+      base.OnPaintSurface(e);
+      var canvas = e.Surface.Canvas;
+      canvas.Clear();
+      // SkiaSharp.Views' surface is on a different dimension compared to the layout system so we should scale to occupy the full view size.
+      canvas.Scale(e.Info.Width / (float)ActualWidth);
+#else
+    protected override void RenderOverride(XCanvas canvas, Windows.Foundation.Size area) {
+#endif
 #endif
       var padding = Padding;
       Painter.Draw(canvas, TextAlignment, new(left: (float)padding.Left, top: (float)padding.Top, right: (float)padding.Right, bottom: (float)padding.Bottom), DisplacementX, DisplacementY);
@@ -216,7 +297,11 @@ namespace CSharpMath.Maui {
     public static readonly XProperty HighlightColorProperty;
     public XColor ErrorColor { get => (XColor)GetValue(ErrorColorProperty)!; set => SetValue(ErrorColorProperty, value); }
     public static readonly XProperty ErrorColorProperty;
-    public TextAlignment TextAlignment { get => (TextAlignment)GetValue(TextAlignmentProperty)!; set => SetValue(TextAlignmentProperty, value); }
+    public
+#if Uno && ANDROID
+      new
+#endif
+      TextAlignment TextAlignment { get => (TextAlignment)GetValue(TextAlignmentProperty)!; set => SetValue(TextAlignmentProperty, value); }
     public static readonly XProperty TextAlignmentProperty;
     public XThickness Padding { get => (XThickness)GetValue(PaddingProperty)!; set => SetValue(PaddingProperty, value); }
     public static readonly XProperty PaddingProperty;
@@ -234,6 +319,6 @@ namespace CSharpMath.Maui {
     private static readonly ReadOnlyProperty<BaseView<TPainter, TContent>, string?> ErrorMessagePropertyKey;
     public static readonly XProperty ErrorMessageProperty;
   }
-  public class MathView : BaseView<MathPainter, MathList> { }
-  public class TextView : BaseView<TextPainter, Rendering.Text.TextAtom> { }
+  public partial class MathView : BaseView<MathPainter, MathList> { }
+  public partial class TextView : BaseView<TextPainter, Rendering.Text.TextAtom> { }
 }

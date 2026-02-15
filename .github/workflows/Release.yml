@@ -6,39 +6,55 @@ on:
 jobs:
   CSharpMath:
     runs-on: windows-latest
+    permissions:
+      # Permissions requested by https://github.com/marketplace/actions/create-pull-request#token
+      contents: write
+      pull-requests: write
     steps:
     - uses: actions/checkout@v6
       with:
-        submodules: 'recursive'
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v5
+        submodules: recursive
+    - uses: actions/setup-dotnet@main
       with:
         dotnet-version: '10.x'
+        workloads: maui, wasm-tools
     - name: Build GitHub Releases draft artifacts
       env:
         RELEASE_NOTES: |
-          # ${{ github.event.release.name }}
+          ${{ format('# {0}', github.event.release.name) }}
           
           ${{ github.event.release.body }}
       run: |
-        # .NET Core MSBuild cannot parse , and ; correctly so we replace them with substitutions: https://github.com/dotnet/msbuild/issues/471#issuecomment-366268743
-        # PowerShell string replacement
+        # .NET Core MSBuild cannot parse , and ; correctly so we replace them with MSBuild XML escapes: https://github.com/dotnet/msbuild/issues/471#issuecomment-366268743
         $env:RELEASE_NOTES = $env:RELEASE_NOTES -replace ',','%2C' -replace ';','%3B'
         
-        dotnet workload restore
-        # -r for restore
-        dotnet msbuild -r -p:Configuration=Release -p:PackageVersion="${{ github.event.release.tag_name }}" -p:PackageReleaseNotes="$env:RELEASE_NOTES" CSharpMath.sln
+        # For why Not.Uno.Example is used, see Nightly.yml
+        dotnet build -c Not.Uno.Example -p:PackageReleaseNotes="$env:RELEASE_NOTES" -p:PackageVersion="${{ github.event.release.tag_name }}"
       shell: pwsh
     - name: Upload to GitHub Releases
       uses: svenstaro/upload-release-action@v2
       with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        repo_token: ${{ github.token }}
         tag: ${{ github.ref }}
         file: .nupkgs/*
         file_glob: true
         overwrite: true
     - name: Upload to NuGet
       run: |
-        # Use --skip-duplicate since we want re-runs of this workflow to succeed in case of network issues
-        dotnet nuget push '.nupkgs\*.nupkg' -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json  --skip-duplicate
+        # On Windows, / will not be interpreted as the folder separator in this command and \ must be used here, unlike in Unix environments.
+        # "dotnet nuget push" with "dotnet nuget add source" to GitHub Packages is unstable for project names with a dot: https://github.com/NuGet/Home/issues/9775#issuecomment-714509211
+        #   so we must specify -k (key) directly in "dotnet nuget push" instead of following the GitHub Packages documentation.
+        # --skip-duplicate enables re-running this workflow even if some packages from the same commit are already uploaded.
+        dotnet nuget push '.nupkgs\*.nupkg' -s 'https://api.nuget.org/v3/index.json' -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate
       shell: pwsh
+    - name: Move PublicApi.Unshipped.txt to PublicApi.Shipped.txt
+      run: .github/workflows/Release-mark-shipped.ps1
+      shell: pwsh
+    - name: Create PR for shipping PublicApi
+      uses: peter-evans/create-pull-request@v8
+      with:
+        commit-message: 'Move PublicApi.Unshipped.txt to PublicApi.Shipped.txt for ${{ github.event.release.tag_name }}'
+        title: 'Ship PublicApi for ${{ github.event.release.tag_name }}'
+        body: 'This PR moves the contents of PublicApi.Unshipped.txt to PublicApi.Shipped.txt to mark the API as shipped for version ${{ github.event.release.tag_name }}.'
+        branch: action/ship-publicapi # Same branch name specified in Label.yml
+        base: '${{ github.event.repository.default_branch }}' # Releases are checked out on the tag commit but we need a target branch for the pull request. Let's just always submit it against the default branch

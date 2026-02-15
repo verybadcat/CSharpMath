@@ -1,0 +1,23 @@
+<Application x:Class="CSharpMath.Uno.Example.App"
+       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+       xmlns:math="using:CSharpMath.Uno">
+
+  <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- Load WinUI resources -->
+                <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+            </ResourceDictionary.MergedDictionaries>
+            <Style x:Key="AppMathViewStyle" TargetType="math:MathView">
+                <Setter Property="TextColor" Value="{ThemeResource TextFillColorPrimary}" />
+            </Style>
+            <Style BasedOn="{StaticResource AppMathViewStyle}" TargetType="math:MathView" />
+            <Style x:Key="AppTextViewStyle" TargetType="math:TextView">
+                <Setter Property="TextColor" Value="{ThemeResource TextFillColorPrimary}" />
+            </Style>
+            <Style BasedOn="{StaticResource AppTextViewStyle}" TargetType="math:TextView" />
+        </ResourceDictionary>
+    </Application.Resources>
+
+</Application>

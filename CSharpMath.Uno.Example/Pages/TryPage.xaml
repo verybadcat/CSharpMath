@@ -1,0 +1,34 @@
+﻿<Page
+    x:Class="CSharpMath.Uno.Example.TryPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CSharpMath.Uno.Example"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:math="using:CSharpMath.Uno"
+    xmlns:mathrender="using:CSharpMath.Rendering.FrontEnd"
+    xmlns:sys="using:System"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid RowDefinitions="Auto,Auto,*">
+        <TextBox x:Name="Entry"/>
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <Button Content="Reset pan" Click="ResetPan_Clicked"/>
+            <ComboBox x:Name="Picker" Header="Select an example"/>
+            <!--Note: Static binding {x:Bind} can only refer to earlier elements for valid value assignment for the first time.
+                      Dynamic binding {Binding} must be used for refering to later elements.-->
+            <ComboBox x:Name="FontSizer" Header="Font Size" ItemsSource="{x:Bind local:TryPage.FontSizes}" SelectedItem="{Binding FontSize,ElementName=View,Mode=OneTime}" />
+            <ComboBox x:Name="Alignment" Header="Alignment" ItemsSource="{x:Bind local:TryPage.AlignmentValues}" SelectedItem="{Binding TextAlignment,ElementName=View,Mode=OneTime}" />
+            <Button Content="Calculate" Click="Calculate_Clicked" />
+        </StackPanel>
+        <!--Note: {x:Bind} seems to default to Mode=OneWay for bindings with no casting (see ItemsSource above)
+                  but Mode=OneTime for bindings with casting (see FontSize and TextAlignment below).-->
+        <math:MathView
+            x:Name="View"
+            Grid.Row="3"
+            EnablePanning="True"
+            LaTeX="{x:Bind Entry.Text,Mode=TwoWay}"
+            FontSize="{x:Bind (sys:Single)FontSizer.SelectedItem,Mode=OneWay}"
+            TextAlignment="{x:Bind (mathrender:TextAlignment)Alignment.SelectedItem,Mode=OneWay}" />
+    </Grid>
+</Page>

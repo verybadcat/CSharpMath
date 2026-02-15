@@ -16,6 +16,7 @@ namespace CSharpMath.Atom {
     public const int UndefinedInt = int.MinValue;
     /// <summary>Value of IndexRange for unfinalized atoms</summary>
     public static readonly Range Zero = new Range(0, 0);
+    /// <summary>Value of IndexRange for finalized atoms and displays without an original unfinalized equivalent</summary>
     public static readonly Range NotFound = new Range(UndefinedInt, UndefinedInt);
     public int Location { get; }
     /// <summary>The number of integers in the range. So End-Start=Length-1.</summary>

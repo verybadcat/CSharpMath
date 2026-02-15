@@ -659,9 +659,6 @@ namespace CSharpMath.Atom {
             MathListToLaTeX(colorBox.InnerList, builder, currentFontStyle);
             builder.Append('}');
             break;
-          case Prime prime:
-            builder.Append('\'', prime.Length);
-            break;
           case RaiseBox r:
             builder.Append(@"\raisebox{")
               .Append(r.Raise.Amount.ToStringInvariant("0.0####"))

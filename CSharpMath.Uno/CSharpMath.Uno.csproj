@@ -1,0 +1,21 @@
+﻿<Project Sdk="Uno.Sdk/6.4.58"> <!--https://aka.platform.uno/using-uno-sdk-->
+  <PropertyGroup>
+    <TargetFrameworks>net10.0;net10.0-android</TargetFrameworks>
+    <TargetFrameworks Condition="!$([System.OperatingSystem]::IsLinux())">$(TargetFrameworks);net10.0-ios</TargetFrameworks>
+    <!--A Windows TargetFramework is required for this package to be usable on native WinUI without assembly reference errors. This also necessitates using Uno.Sdk.-->
+    <TargetFrameworks Condition="$([System.OperatingSystem]::IsWindows())">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
+	<OutputType>Library</OutputType> <!--browserwasm has a different OutputType default here-->
+    <Description>The Uno/WinUI front end for CSharpMath.</Description>
+    <PackageTags>$(PackageTags) uno</PackageTags>
+    <DefineConstants>$(DefineConstants) Uno</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\CSharpMath.Xaml\**\*.cs" Link="%(RecursiveDir)%(Filename)%(Extension)" />
+    <ProjectReference Include="..\CSharpMath.SkiaSharp\CSharpMath.SkiaSharp.csproj" />
+    <!--Working with both the native renderer and Skia renderer: https://platform.uno/docs/articles/features/using-skia-rendering.html#implications-for-iosandroid-class-libraries-->
+    <!--For native renderer, i.e. for explicit iOS, Android and Windows, pull in SkiaSharp.Views.-->
+    <PackageReference Include="SkiaSharp.Views.Uno.WinUI" Version="3.119.1" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != ''" />
+    <!--For Skia renderer, i.e. the cross-platform target framework, use SKCanvasElement for performance.-->
+    <PackageReference Include="Uno.WinUI.Graphics2DSK" Version="$(UnoVersion)" Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == ''" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Page xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:math="using:CSharpMath.Uno"
+             xmlns:local="using:CSharpMath.Uno.Example"
+             x:Class="CSharpMath.Uno.Example.ExamplesPage">
+    <Page.Resources>
+        <!-- Extend the app-level style instead of replacing it -->
+        <Style TargetType="math:MathView" BasedOn="{StaticResource AppMathViewStyle}">
+            <Setter Property="FontSize" Value="22.5"/>
+        </Style>
+    </Page.Resources>
+    <Grid RowDefinitions="Auto,*">
+        <ScrollView>
+            <StackPanel Orientation="Horizontal">
+                <ComboBox x:Name="alignment" Header="Alignment" />
+                <ComboBox x:Name="paintStyle" Header="Paint Style" />
+                <ComboBox x:Name="lineStyle" Header="Line Style" />
+                <TextBlock Text="Draw glyph boxes"/>
+                <ToggleSwitch x:Name="drawGlyphBoxes"/>
+                <TextBlock Text="Highlight color"/>
+                <ToggleSwitch x:Name="highlight"/>
+            </StackPanel>
+        </ScrollView>
+        <ScrollView Grid.Row="1">
+            <StackPanel x:Name="Stack">
+                <!-- From https://github.com/kostub/iosMath/blob/master/iosMathExample/example/ViewController.m -->
+                <!-- Demo Formulae -->
+                <!-- Quadratic formula -->
+                <math:MathView LaTeX="\text{ваш вопрос: }x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}" FontSize="15"/>
+                <math:MathView LaTeX="\color{#ff3399}{(a_1+a_2)^2}=a_1^2+2a_1a_2+a_2^2"/>
+                <math:MathView LaTeX="\cos(\theta + \varphi) = \cos(\theta)\cos(\varphi) - \sin(\theta)\sin(\varphi)"/>
+                <math:MathView LaTeX="\frac{1}{\left(\sqrt{\phi \sqrt{5}}-\phi\right) e^{\frac25 \pi}} = 1+\frac{e^{-2\pi}} {1 +\frac{e^{-4\pi}} {1+\frac{e^{-6\pi}} {1+\frac{e^{-8\pi}} {1+\cdots} } } }"/>
+                <math:MathView LaTeX="\sigma = \sqrt{\frac{1}{N}\sum_{i=1}^N (x_i - \mu)^2}"/>
+                <math:MathView LaTeX="\neg(P\land Q) \iff (\neg P)\lor(\neg Q)"/>
+                <math:MathView LaTeX="\log_b(x) = \frac{\log_a(x)}{\log_a(b)}"/>
+                <math:MathView LaTeX="\lim_{x\to\infty}\left(1 + \frac{k}{x}\right)^x = e^k"/>
+                <math:MathView LaTeX="\int_{-\infty}^\infty \! e^{-x^2} dx = \sqrt{\pi}"/>
+                <math:MathView LaTeX="\frac 1 n \sum_{i=1}^{n}x_i \geq \sqrt[n]{\prod_{i=1}^{n}x_i}"/>
+                <math:MathView LaTeX="f^{(n)}(z_0) = \frac{n!}{2\pi i}\oint_\gamma\frac{f(z)}{(z-z_0)^{n+1}}\,dz"/>
+                <math:MathView LaTeX="i\hbar\frac{\partial}{\partial t}\mathbf\Psi(\mathbf{x},t) = -\frac{\hbar}{2m}\nabla^2\mathbf\Psi(\mathbf{x},t) + V(\mathbf{x})\mathbf\Psi(\mathbf{x},t)"/>
+                <math:MathView LaTeX="\left(\sum_{k=1}^n a_k b_k \right)^2 \le \left(\sum_{k=1}^n a_k^2\right)\left(\sum_{k=1}^n b_k^2\right)"/>
+                <math:MathView LaTeX=" {n \brace k} = \frac{1}{k!}\sum_{j=0}^k (-1)^{k-j}\binom{k}{j}(k-j)^n"/>
+                <math:MathView LaTeX="f(x) = \int\limits_{-\infty}^\infty\!\hat f(\xi)\,e^{2 \pi i \xi x}\,\mathrm{d}\xi"/>
+                <math:MathView LaTeX="\begin{gather}\dot{x} = \sigma(y-x) \\\dot{y} = \rho x - y - xz \\\dot{z} = -\beta z + xy\end{gather}"/>
+                <math:MathView LaTeX="\vec \bf V_1 \times \vec \bf V_2 =  \begin{vmatrix}\hat \imath &amp;\hat \jmath &amp;\hat k \\\frac{\partial X}{\partial u} &amp;  \frac{\partial Y}{\partial u} &amp; 0 \\\frac{\partial X}{\partial v} &amp;  \frac{\partial Y}{\partial v} &amp; 0\end{vmatrix}"/>
+                <math:MathView LaTeX="\begin{eqalign}\nabla \cdot \vec{\bf{E}} &amp; = \frac {\rho} {\varepsilon_0} \\\nabla \cdot \vec{\bf{B}} &amp; = 0 \\\nabla \times \vec{\bf{E}} &amp;= - \frac{\partial\vec{\bf{B}}}{\partial t} \\\nabla \times \vec{\bf{B}} &amp; = \mu_0\vec{\bf{J}} + \mu_0\varepsilon_0 \frac{\partial\vec{\bf{E}}}{\partial t}\end{eqalign}"/>
+                <math:MathView LaTeX="\begin{pmatrix}a &amp; b\\ c &amp; d\end{pmatrix}\begin{pmatrix}\alpha &amp; \beta \\ \gamma &amp; \delta\end{pmatrix} = \begin{pmatrix}a\alpha + b\gamma &amp; a\beta + b \delta \\c\alpha + d\gamma &amp; c\beta + d \delta \end{pmatrix}"/>
+                <math:MathView LaTeX="\frak Q(\lambda,\hat{\lambda}) = -\frac{1}{2} \mathbb P(O \mid \lambda ) \sum_s \sum_m \sum_t \gamma_m^{(s)} (t) +\\ \quad \left( \log(2 \pi ) + \log \left| \cal C_m^{(s)} \right| + \left( o_t - \hat{\mu}_m^{(s)} \right) ^T \cal C_m^{(s)-1} \right)"/>
+                <math:MathView LaTeX="f(x) = \begin{cases}\frac{e^x}{2} &amp; x \geq 0 \\1 &amp; x &lt; 0\end{cases}"/>
+                <math:MathView LaTeX="\color{#ff3333}{c}\color{#9933ff}{o}\color{#ff0080}{l}+\color{#99ff33}{\frac{\color{#ff99ff}{o}}{\color{#990099}{r}}}-\color{#33ffff}{\sqrt[\color{#3399ff}{e}]{\color{#3333ff}{d}}}"/>
+
+                <!-- Test Formulae -->
+                <math:MathView LaTeX="3+2-5 = 0" Background="Gray"/>
+                <!-- Infix and prefix Operators -->
+                <math:MathView LaTeX="12+-3 > +14" Background="Gray" TextAlignment="Center"/>
+                <!-- Punct, parens -->
+                <math:MathView LaTeX="(-3-5=-8, -6-7=-13)"/>
+                <!-- Latex commands -->
+                <math:MathView LaTeX="5\times(-2 \div 1) = -10" Background="Gray" TextAlignment="Right"/>
+                <math:MathView LaTeX="-h - (5xy+2) = z"/>
+                <!-- Text mode fraction -->
+                <math:MathView LaTeX="\frac12x + \frac{3\div4}2y = 25" LineStyle="Text"/>
+                <!-- Display mode fraction -->
+                <math:MathView LaTeX="\frac{x+\frac{12}{5}}{y}+\frac1z = \frac{xz+y+\frac{12}{5}z}{yz}" Background="Gray"/>
+                <!-- fraction in fraction in text mode -->
+                <math:MathView LaTeX="\frac{x+\frac{12}{5}}{y}+\frac1z = \frac{xz+y+\frac{12}{5}z}{yz}" Background="Gray" LineStyle="Text"/>
+                <!-- Exponents and subscripts: Large font -->
+                <math:MathView LaTeX="\frac{x^{2+3y}}{x^{2+4y}} = x^y \times \frac{z_1^{y+1}}{z_1^{y+1}}" FontSize="30" TextAlignment="Center"/>
+                <!-- Exponents and subscripts: Small font -->
+                <math:MathView LaTeX="\frac{x^{2+3y}}{x^{2+4y}} = x^y \times \frac{z_1^{y+1}}{z_1^{y+1}}" FontSize="10" TextAlignment="Center"/>
+                <!-- Square root -->
+                <math:MathView LaTeX="5+\sqrt{2}+3"/>
+                <!-- Square root inside square roots and with fractions -->
+                <math:MathView LaTeX="\sqrt{\frac{\sqrt{\frac{1}{2}} + 3}{\sqrt5^x}}+\sqrt{3x}+x^{\sqrt2}"/>
+                <!-- General root -->
+                <math:MathView LaTeX="\sqrt[3]{24} + 3\sqrt{2}24"/>
+                <!-- Fractions and formulae in root -->
+                <math:MathView LaTeX="\sqrt[x+\frac{3}{4}]{\frac{2}{4}+1}"/>
+                <!-- Non-symbol operators with no limits -->
+                <math:MathView LaTeX="\sin^2(\theta)=\log_3^2(\pi)"/>
+                <!-- Non-symbol operators with limits -->
+                <math:MathView LaTeX="\lim_{x\to\infty}\frac{e^2}{1-x}=\limsup_{\sigma}5"/>
+                <!-- Symbol operators with limits -->
+                <math:MathView LaTeX="\sum_{n=1}^{\infty}\frac{1+n}{1-n}=\bigcup_{A\in\Im}C\cup B"/>
+                <!-- Symbol operators with limits: text style -->
+                <math:MathView LaTeX="\sum_{n=1}^{\infty}\frac{1+n}{1-n}=\bigcup_{A\in\Im}C\cup B" LineStyle="Text"/>
+                <!-- Non-symbol operators with limits: text style -->
+                <math:MathView LaTeX="\lim_{x\to\infty}\frac{e^2}{1-x}=\limsup_{\sigma}5" LineStyle="Text"/>
+                <!-- Symbol operators with no limits -->
+                <math:MathView LaTeX="\int_{0}^{\infty}e^x \,dx=\oint_0^{\Delta}5\Gamma"/>
+                <!-- Test italic correction for large ops -->
+                <math:MathView LaTeX="\int\int\int^{\infty}\int_0\int^{\infty}_0\int"/>
+                <!-- Test italic correction for superscript/subscript -->
+                <math:MathView LaTeX="U_3^2UY_3^2U_3Y^2f_1f^2ff"/>
+                <!-- Error -->
+                <math:MathView LaTeX="\notacommand"/>
+                <math:MathView LaTeX="\sqrt{1}"/>
+                <math:MathView LaTeX="\sqrt[|]{1}"/>
+                <math:MathView LaTeX=" {n \choose k}"/>
+                <math:MathView LaTeX=" {n \choose k}" LineStyle="Text"/>
+                <math:MathView LaTeX="\left({n \atop k}\right)"/>
+                <math:MathView LaTeX="\left({n \atop k}\right)" LineStyle="Text"/>
+                <math:MathView LaTeX="\underline{xyz}+\overline{abc}"/>
+                <math:MathView LaTeX="\underline{\frac12}+\overline{\frac34}"/>
+                <math:MathView LaTeX="\underline{x^\overline{y}_\overline{z}+5}"/>
+                <!-- Spacing examples from the TeX book -->
+                <math:MathView LaTeX="\int\!\!\!\int_D dx\,dy"/>
+                <!-- No spacing -->
+                <math:MathView LaTeX="\int\int_D dxdy"/>
+                <math:MathView LaTeX="y\,dx-x\,dy"/>
+                <math:MathView LaTeX="y dx - x dy"/>
+                <!-- Large spaces -->
+                <math:MathView LaTeX="hello\ from \quad the \qquad other\ side"/>
+                <!-- Accents -->
+                <math:MathView LaTeX="\vec x \; \hat y \; \breve {x^2} \; \tilde x \tilde x^2 x^2"/>
+                <math:MathView LaTeX="\hat{xyz} \; \widehat{xyz}\; \vec{2ab}"/>
+                <math:MathView LaTeX="\hat{\frac12} \; \hat{\sqrt 3}"/>
+                <!-- Large roots -->
+                <math:MathView LaTeX="\colorbox{#f0f0e0}{\sqrt{1+\colorbox{#d0c0d0}{\sqrt{1+\colorbox{#a080c0}{\sqrt{1+\colorbox{#7050a0}{\sqrt{1+\colorbox{403060}{\colorbox{#102000}{\sqrt{1+\cdots}}}}}}}}}}}"/>
+                <math:MathView LaTeX="\begin{bmatrix}a &amp; b\\ c &amp; d \\ e &amp; f \\ g &amp; h \\ i &amp; j\end{bmatrix}"/>
+                <math:MathView LaTeX="x{\scriptstyle y}z"/>
+                <math:MathView LaTeX="x \mathrm x \mathbf x \mathcal X \mathfrak x \mathsf x \bm x \mathtt x \mathit \Lambda \cal g"/>
+                <math:MathView LaTeX="\mathrm{using\ mathrm}"/>
+                <math:MathView LaTeX="\text{using text}"/>
+                <math:MathView LaTeX="\text{Mary has }\$500 + \$200."/>
+                <math:MathView LaTeX="\colorbox{#888888}{\begin{pmatrix}\colorbox{#ff0000}{a} &amp; \colorbox{#00ff00}{b} \\\colorbox{#00aaff}{c} &amp; \colorbox{#f0f0f0}{d}\end{pmatrix}}"/>
+            </StackPanel>
+        </ScrollView>
+    </Grid>
+</Page>

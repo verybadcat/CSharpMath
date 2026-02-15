@@ -1,0 +1,62 @@
+name: Label breaking changes for semantic versioning
+
+on: pull_request_target # Run on the merge target branch instead of the merge commit to grant pull-requests:write permission
+jobs:
+  Label:
+    runs-on: windows-latest
+    permissions:
+      pull-requests: write # Allow adding a label to this pull request
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        fetch-depth: 0 # Fetch all commit history and tags, instead of the default fetch of only one commit
+        ref: ${{ github.event.pull_request.head.sha }}  # Checkout the PR branch
+    - name: If there are changes in PublicAPI.Shipped.txt, fail the workflow
+      if: github.head_ref != 'action/ship-publicapi' # Same branch name specified in Release.yml
+      run: |
+        $changes = git diff --numstat --shortstat origin/${{ github.base_ref }}...HEAD -- '**/PublicAPI.Shipped.txt' # Note that ** must expand to at least one folder here, this doesn't check root
+        Write-Output "$changes"
+        if ($changes) {
+          Write-Error "Changes detected in PublicAPI.Shipped.txt files. Public API changes must be shipped through the release process, not in regular pull requests."
+          exit 1
+        }
+      shell: pwsh
+    - name: Label based on PublicAPI.Unshipped.txt
+      run: |
+        if ("${{ github.head_ref }}" -eq "action/ship-publicapi") {
+          $labels = @('Type/Housekeeping')
+          Write-Output "This is a ship-publicapi PR, labeling as Type/Housekeeping"
+        } else {
+          # For regular PRs, check for API changes
+          $changes = git diff origin/${{ github.base_ref }}...HEAD -- '**/PublicAPI.Unshipped.txt'
+          Write-Output "$changes"
+          
+          if ($changes) {
+            # Check if any of the changes include *REMOVED* entries (breaking changes)
+            $addedLines = $changes | Select-String '^\+.*\*REMOVED\*'
+            if ($addedLines) {
+              $labels = @('Impact/Breaking change')
+              Write-Output "Breaking changes detected:"
+              Write-Output "$addedLines"
+            } else {
+              $labels = @('Type/Enhancement')
+              Write-Output "Publicly facing API changes include only additions. Labelling as enhancement."
+            }
+          } else {
+            Write-Output "No publicly facing API changes. Exiting the workflow."
+            Exit
+          }
+        }
+        
+        # Add label to PR using GitHub API
+        $headers = @{
+          "Authorization" = "Bearer ${{ github.token }}"
+          "Accept" = "application/vnd.github+json"
+        }
+        $body = @{
+          labels = $labels
+        } | ConvertTo-Json
+        
+        Invoke-RestMethod -Method Post -Uri "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels" -Headers $headers -Body $body -ContentType "application/json"
+        Write-Output "Added '$($labels -join ', ')' label(s) to PR #${{ github.event.pull_request.number }}"
+      shell: pwsh

@@ -1,0 +1,72 @@
+﻿#nullable enable
+CSharpMath.Uno.BaseView<TPainter, TContent>
+CSharpMath.Uno.BaseView<TPainter, TContent>.BaseView() -> void
+CSharpMath.Uno.BaseView<TPainter, TContent>.Content.get -> TContent?
+CSharpMath.Uno.BaseView<TPainter, TContent>.Content.set -> void
+CSharpMath.Uno.BaseView<TPainter, TContent>.DisplacementX.get -> float
+CSharpMath.Uno.BaseView<TPainter, TContent>.DisplacementX.set -> void
+CSharpMath.Uno.BaseView<TPainter, TContent>.DisplacementY.get -> float
+CSharpMath.Uno.BaseView<TPainter, TContent>.DisplacementY.set -> void
+CSharpMath.Uno.BaseView<TPainter, TContent>.DisplayErrorInline.get -> bool
+CSharpMath.Uno.BaseView<TPainter, TContent>.DisplayErrorInline.set -> void
+CSharpMath.Uno.BaseView<TPainter, TContent>.EnablePanning.get -> bool
+CSharpMath.Uno.BaseView<TPainter, TContent>.EnablePanning.set -> void
+CSharpMath.Uno.BaseView<TPainter, TContent>.ErrorColor.get -> Windows.UI.Color
+CSharpMath.Uno.BaseView<TPainter, TContent>.ErrorColor.set -> void
+CSharpMath.Uno.BaseView<TPainter, TContent>.ErrorFontSize.get -> float?
+CSharpMath.Uno.BaseView<TPainter, TContent>.ErrorFontSize.set -> void
+CSharpMath.Uno.BaseView<TPainter, TContent>.ErrorMessage.get -> string?
+CSharpMath.Uno.BaseView<TPainter, TContent>.FontSize.get -> float
+CSharpMath.Uno.BaseView<TPainter, TContent>.FontSize.set -> void
+CSharpMath.Uno.BaseView<TPainter, TContent>.GlyphBoxColor.get -> (Windows.UI.Color glyph, Windows.UI.Color textRun)?
+CSharpMath.Uno.BaseView<TPainter, TContent>.GlyphBoxColor.set -> void
+CSharpMath.Uno.BaseView<TPainter, TContent>.HighlightColor.get -> Windows.UI.Color
+CSharpMath.Uno.BaseView<TPainter, TContent>.HighlightColor.set -> void
+CSharpMath.Uno.BaseView<TPainter, TContent>.LaTeX.get -> string?
+CSharpMath.Uno.BaseView<TPainter, TContent>.LaTeX.set -> void
+CSharpMath.Uno.BaseView<TPainter, TContent>.LineStyle.get -> CSharpMath.Atom.LineStyle
+CSharpMath.Uno.BaseView<TPainter, TContent>.LineStyle.set -> void
+CSharpMath.Uno.BaseView<TPainter, TContent>.LocalTypefaces.get -> System.Collections.Generic.IEnumerable<Typography.OpenFont.Typeface!>!
+CSharpMath.Uno.BaseView<TPainter, TContent>.LocalTypefaces.set -> void
+CSharpMath.Uno.BaseView<TPainter, TContent>.Magnification.get -> float
+CSharpMath.Uno.BaseView<TPainter, TContent>.Magnification.set -> void
+CSharpMath.Uno.BaseView<TPainter, TContent>.Padding.get -> Microsoft.UI.Xaml.Thickness
+CSharpMath.Uno.BaseView<TPainter, TContent>.Padding.set -> void
+CSharpMath.Uno.BaseView<TPainter, TContent>.Painter.get -> TPainter!
+CSharpMath.Uno.BaseView<TPainter, TContent>.PaintStyle.get -> CSharpMath.Rendering.FrontEnd.PaintStyle
+CSharpMath.Uno.BaseView<TPainter, TContent>.PaintStyle.set -> void
+CSharpMath.Uno.BaseView<TPainter, TContent>.TextAlignment.get -> CSharpMath.Rendering.FrontEnd.TextAlignment
+CSharpMath.Uno.BaseView<TPainter, TContent>.TextAlignment.set -> void
+CSharpMath.Uno.BaseView<TPainter, TContent>.TextColor.get -> Windows.UI.Color
+CSharpMath.Uno.BaseView<TPainter, TContent>.TextColor.set -> void
+CSharpMath.Uno.MathView
+CSharpMath.Uno.MathView.MathView() -> void
+CSharpMath.Uno.TextView
+CSharpMath.Uno.TextView.TextView() -> void
+override CSharpMath.Uno.BaseView<TPainter, TContent>.MeasureOverride(Windows.Foundation.Size availableSize) -> Windows.Foundation.Size
+#if IOS || ANDROID || WINDOWS || BROWSERWASM
+override CSharpMath.Uno.BaseView<TPainter, TContent>.OnPaintSurface(SkiaSharp.Views.Windows.SKPaintSurfaceEventArgs! e) -> void
+#else
+override CSharpMath.Uno.BaseView<TPainter, TContent>.RenderOverride(SkiaSharp.SKCanvas! canvas, Windows.Foundation.Size area) -> void
+#endif
+static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.ContentProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.DisplacementXProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.DisplacementYProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.DisplayErrorInlineProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.EnablePanningProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.ErrorColorProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.ErrorFontSizeProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.ErrorMessageProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.FontSizeProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.GlyphBoxColorProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.HighlightColorProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.LaTeXProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.LineStyleProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.LocalTypefacesProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.MagnificationProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.PaddingProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.PaintStyleProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.staticPainter -> TPainter!
+static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.TextAlignmentProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.TextColorProperty -> Microsoft.UI.Xaml.DependencyProperty!
+static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.WritablePainterProperties -> Microsoft.UI.Xaml.DependencyProperty![]!

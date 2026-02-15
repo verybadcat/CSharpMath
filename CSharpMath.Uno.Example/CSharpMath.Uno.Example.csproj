@@ -1,0 +1,37 @@
+﻿<Project Sdk="Uno.Sdk/6.4.58"> <!--https://aka.platform.uno/using-uno-sdk-->
+  <PropertyGroup>
+	<!-- If net10.0-browserwasm gets updated, be sure to update this TargetFramework in Nightly.yml workflow too -->
+    <TargetFrameworks>net10.0-android;net10.0-browserwasm;net10.0-desktop</TargetFrameworks>
+	<TargetFrameworks Condition="!$([System.OperatingSystem]::IsLinux())">$(TargetFrameworks);net10.0-ios</TargetFrameworks>
+	<TargetFrameworks Condition="$([System.OperatingSystem]::IsWindows())">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
+
+    <OutputType>Exe</OutputType>
+    <UnoSingleProject>true</UnoSingleProject>
+	<ImplicitUsings>enable</ImplicitUsings>
+    <Configurations>Debug;Release;Not.Uno.Example</Configurations>
+
+    <!-- Display name -->
+    <ApplicationTitle>CSharpMath.Uno.Example</ApplicationTitle>
+    <!-- App Identifier -->
+    <ApplicationId>com.companyname.csharpmath-uno-example</ApplicationId>
+    <!-- Versions -->
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <ApplicationVersion>1</ApplicationVersion>
+    <!-- Package Publisher -->
+    <ApplicationPublisher>CSharpMath.Uno.Example</ApplicationPublisher>
+    <!-- Package Description -->
+    <Description>CSharpMath.Uno.Example powered by Uno Platform.</Description>
+
+    <!--
+      UnoFeatures are used to quickly add and manage features enabled for your app.
+      https://aka.platform.uno/singleproject-features
+    -->
+    <UnoFeatures>SkiaRenderer</UnoFeatures>
+  </PropertyGroup>
+	<ItemGroup>
+		<Compile Include="..\CSharpMath.Rendering.Tests\TestRenderingMathData.cs" Link="Examples\TestRenderingMathData.cs" />
+		<Compile Include="..\CSharpMath.Rendering.Tests\TestRenderingSharedData.cs" Link="Examples\TestRenderingSharedData.cs" />
+		<ProjectReference Include="..\CSharpMath.Uno\CSharpMath.Uno.csproj" />
+		<ProjectReference Include="..\CSharpMath.Evaluation\CSharpMath.Evaluation.csproj" />
+	</ItemGroup>
+</Project>

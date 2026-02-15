@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Page
+    x:Class="CSharpMath.Uno.Example.TextPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CSharpMath.Uno.Example"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:text="using:CSharpMath.Uno"
+    xmlns:sys="using:System"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid RowDefinitions="*,Auto,*">
+        <TextBox x:Name="Text"
+                 Grid.Row="0"
+                 TextWrapping="Wrap"
+                 AcceptsReturn="true"
+                 HorizontalAlignment="Stretch"
+                 Text="Here are some text.
+This text is made to be long enough to have the TextPainter of CSharpMath add a line break to this text automatically.
+To demonstrate the capabilities of the TextPainter,
+here are some math content:
+First, a fraction in inline mode: $\frac34$
+Next, a summation in inline mode: $\sum_{i=0}^3i^i$
+Then, a summation in display mode: $$\sum_{i=0}^3i^i$$
+After that, an integral in display mode: $$\int^6_{-56}x\ dx$$
+Finally, an escaped dollar sign \$ that represents the start/end of math mode when it is unescaped.
+Colors can be achieved via \backslash color\textit{\{color\}\{content\}}, or \backslash \textit{color\{content\}},
+where \textit{color} stands for one of the LaTeX standard colors.
+\red{Colored text in text mode are able to automatically break up when spaces are inside the colored text, which the equivalent in math mode cannot do.}
+\textbf{Styled} \texttt{text} can be achieved via the LaTeX styling commands.
+The SkiaSharp version of this is located at CSharpMath.SkiaSharp.TextPainter;
+and the Uno/WinUI version of this is located at CSharpMath.Uno.TextView.
+Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6. \[\frac{Display}{maths} \sqrt\text\mathtt{\ at\ the\ end}^\mathbf{are\ now\ incuded\ in\ Measure!} \]"
+                />
+        <ComboBox Grid.Row="1"
+                  x:Name="FontSizer"
+                  Header="Font Size"
+                  ItemsSource="{x:Bind local:TryPage.FontSizes}"/>
+        <ScrollViewer Grid.Row="2" HorizontalContentAlignment="Stretch">
+            <text:TextView x:Name="View"
+                           LaTeX="{x:Bind Text.Text,Mode=OneWay}"
+                           FontSize="{x:Bind (sys:Single)FontSizer.SelectedItem,Mode=OneWay}"/>
+        </ScrollViewer>
+    </Grid>
+</Page>

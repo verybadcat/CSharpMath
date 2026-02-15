@@ -1,0 +1,114 @@
+﻿#nullable enable
+CSharpMath.Avalonia.AvaloniaCanvas
+CSharpMath.Avalonia.AvaloniaCanvas.AvaloniaCanvas(Avalonia.Media.DrawingContext! drawingContext, Avalonia.Size size) -> void
+CSharpMath.Avalonia.AvaloniaCanvas.CurrentColor.get -> System.Drawing.Color?
+CSharpMath.Avalonia.AvaloniaCanvas.CurrentColor.set -> void
+CSharpMath.Avalonia.AvaloniaCanvas.CurrentStyle.get -> CSharpMath.Rendering.FrontEnd.PaintStyle
+CSharpMath.Avalonia.AvaloniaCanvas.CurrentStyle.set -> void
+CSharpMath.Avalonia.AvaloniaCanvas.DefaultColor.get -> System.Drawing.Color
+CSharpMath.Avalonia.AvaloniaCanvas.DefaultColor.set -> void
+CSharpMath.Avalonia.AvaloniaCanvas.DrawLine(float x1, float y1, float x2, float y2, float lineThickness) -> void
+CSharpMath.Avalonia.AvaloniaCanvas.FillRect(float left, float top, float width, float height) -> void
+CSharpMath.Avalonia.AvaloniaCanvas.Height.get -> float
+CSharpMath.Avalonia.AvaloniaCanvas.Restore() -> void
+CSharpMath.Avalonia.AvaloniaCanvas.Save() -> void
+CSharpMath.Avalonia.AvaloniaCanvas.Scale(float sx, float sy) -> void
+CSharpMath.Avalonia.AvaloniaCanvas.StartNewPath() -> CSharpMath.Rendering.FrontEnd.Path!
+CSharpMath.Avalonia.AvaloniaCanvas.StrokeRect(float left, float top, float width, float height) -> void
+CSharpMath.Avalonia.AvaloniaCanvas.Translate(float dx, float dy) -> void
+CSharpMath.Avalonia.AvaloniaCanvas.Width.get -> float
+CSharpMath.Avalonia.AvaloniaPath
+CSharpMath.Avalonia.AvaloniaPath.AvaloniaPath(CSharpMath.Avalonia.AvaloniaCanvas! canvas) -> void
+CSharpMath.Avalonia.BaseView<TPainter, TContent>
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.BaseView() -> void
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.Content.get -> TContent?
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.Content.set -> void
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.DisplacementX.get -> float
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.DisplacementX.set -> void
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.DisplacementY.get -> float
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.DisplacementY.set -> void
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.DisplayErrorInline.get -> bool
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.DisplayErrorInline.set -> void
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.EnablePanning.get -> bool
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.EnablePanning.set -> void
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.ErrorColor.get -> Avalonia.Media.Color
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.ErrorColor.set -> void
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.ErrorFontSize.get -> float?
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.ErrorFontSize.set -> void
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.ErrorMessage.get -> string?
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.FontSize.get -> float
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.FontSize.set -> void
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.GlyphBoxColor.get -> (Avalonia.Media.Color glyph, Avalonia.Media.Color textRun)?
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.GlyphBoxColor.set -> void
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.HighlightColor.get -> Avalonia.Media.Color
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.HighlightColor.set -> void
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.LaTeX.get -> string?
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.LaTeX.set -> void
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.LineStyle.get -> CSharpMath.Atom.LineStyle
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.LineStyle.set -> void
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.LocalTypefaces.get -> System.Collections.Generic.IEnumerable<Typography.OpenFont.Typeface!>!
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.LocalTypefaces.set -> void
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.Magnification.get -> float
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.Magnification.set -> void
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.Padding.get -> Avalonia.Thickness
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.Padding.set -> void
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.Painter.get -> TPainter!
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.PaintStyle.get -> CSharpMath.Rendering.FrontEnd.PaintStyle
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.PaintStyle.set -> void
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.TextAlignment.get -> CSharpMath.Rendering.FrontEnd.TextAlignment
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.TextAlignment.set -> void
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.TextColor.get -> Avalonia.Media.Color
+CSharpMath.Avalonia.BaseView<TPainter, TContent>.TextColor.set -> void
+CSharpMath.Avalonia.Extensions
+CSharpMath.Avalonia.MathPainter
+CSharpMath.Avalonia.MathPainter.MathPainter() -> void
+CSharpMath.Avalonia.MathView
+CSharpMath.Avalonia.MathView.MathView() -> void
+CSharpMath.Avalonia.TextPainter
+CSharpMath.Avalonia.TextPainter.TextPainter() -> void
+CSharpMath.Avalonia.TextView
+CSharpMath.Avalonia.TextView.TextView() -> void
+override CSharpMath.Avalonia.AvaloniaPath.CloseContour() -> void
+override CSharpMath.Avalonia.AvaloniaPath.Curve3(float x1, float y1, float x2, float y2) -> void
+override CSharpMath.Avalonia.AvaloniaPath.Curve4(float x1, float y1, float x2, float y2, float x3, float y3) -> void
+override CSharpMath.Avalonia.AvaloniaPath.Dispose() -> void
+override CSharpMath.Avalonia.AvaloniaPath.Foreground.get -> System.Drawing.Color?
+override CSharpMath.Avalonia.AvaloniaPath.Foreground.set -> void
+override CSharpMath.Avalonia.AvaloniaPath.LineTo(float x1, float y1) -> void
+override CSharpMath.Avalonia.AvaloniaPath.MoveTo(float x0, float y0) -> void
+override CSharpMath.Avalonia.BaseView<TPainter, TContent>.MeasureOverride(Avalonia.Size availableSize) -> Avalonia.Size
+override CSharpMath.Avalonia.BaseView<TPainter, TContent>.OnPointerMoved(Avalonia.Input.PointerEventArgs! e) -> void
+override CSharpMath.Avalonia.BaseView<TPainter, TContent>.OnPointerPressed(Avalonia.Input.PointerPressedEventArgs! e) -> void
+override CSharpMath.Avalonia.BaseView<TPainter, TContent>.OnPointerReleased(Avalonia.Input.PointerReleasedEventArgs! e) -> void
+override CSharpMath.Avalonia.BaseView<TPainter, TContent>.Render(Avalonia.Media.DrawingContext! context) -> void
+override CSharpMath.Avalonia.MathPainter.UnwrapColor(System.Drawing.Color color) -> Avalonia.Media.Color
+override CSharpMath.Avalonia.MathPainter.WrapCanvas(CSharpMath.Avalonia.AvaloniaCanvas! canvas) -> CSharpMath.Rendering.FrontEnd.ICanvas!
+override CSharpMath.Avalonia.MathPainter.WrapColor(Avalonia.Media.Color color) -> System.Drawing.Color
+override CSharpMath.Avalonia.TextPainter.UnwrapColor(System.Drawing.Color color) -> Avalonia.Media.Color
+override CSharpMath.Avalonia.TextPainter.WrapCanvas(CSharpMath.Avalonia.AvaloniaCanvas! canvas) -> CSharpMath.Rendering.FrontEnd.ICanvas!
+override CSharpMath.Avalonia.TextPainter.WrapColor(Avalonia.Media.Color color) -> System.Drawing.Color
+static CSharpMath.Avalonia.Extensions.DrawAsPng<TContent>(this CSharpMath.Rendering.FrontEnd.Painter<CSharpMath.Avalonia.AvaloniaCanvas!, TContent!, Avalonia.Media.Color>! painter, System.IO.Stream! target, float textPainterCanvasWidth = 2000, int? quality = null, CSharpMath.Rendering.FrontEnd.TextAlignment alignmentForTests = CSharpMath.Rendering.FrontEnd.TextAlignment.TopLeft) -> void
+static CSharpMath.Avalonia.Extensions.ToAvaloniaColor(this System.Drawing.Color color) -> Avalonia.Media.Color
+static CSharpMath.Avalonia.Extensions.ToSolidColorBrush(this System.Drawing.Color color) -> Avalonia.Media.SolidColorBrush!
+static readonly CSharpMath.Avalonia.BaseView<TPainter, TContent>.ContentProperty -> Avalonia.AvaloniaProperty!
+static readonly CSharpMath.Avalonia.BaseView<TPainter, TContent>.DisplacementXProperty -> Avalonia.AvaloniaProperty!
+static readonly CSharpMath.Avalonia.BaseView<TPainter, TContent>.DisplacementYProperty -> Avalonia.AvaloniaProperty!
+static readonly CSharpMath.Avalonia.BaseView<TPainter, TContent>.DisplayErrorInlineProperty -> Avalonia.AvaloniaProperty!
+static readonly CSharpMath.Avalonia.BaseView<TPainter, TContent>.EnablePanningProperty -> Avalonia.AvaloniaProperty!
+static readonly CSharpMath.Avalonia.BaseView<TPainter, TContent>.ErrorColorProperty -> Avalonia.AvaloniaProperty!
+static readonly CSharpMath.Avalonia.BaseView<TPainter, TContent>.ErrorFontSizeProperty -> Avalonia.AvaloniaProperty!
+static readonly CSharpMath.Avalonia.BaseView<TPainter, TContent>.ErrorMessageProperty -> Avalonia.AvaloniaProperty!
+static readonly CSharpMath.Avalonia.BaseView<TPainter, TContent>.FontSizeProperty -> Avalonia.AvaloniaProperty!
+static readonly CSharpMath.Avalonia.BaseView<TPainter, TContent>.GlyphBoxColorProperty -> Avalonia.AvaloniaProperty!
+static readonly CSharpMath.Avalonia.BaseView<TPainter, TContent>.HighlightColorProperty -> Avalonia.AvaloniaProperty!
+static readonly CSharpMath.Avalonia.BaseView<TPainter, TContent>.LaTeXProperty -> Avalonia.AvaloniaProperty!
+static readonly CSharpMath.Avalonia.BaseView<TPainter, TContent>.LineStyleProperty -> Avalonia.AvaloniaProperty!
+static readonly CSharpMath.Avalonia.BaseView<TPainter, TContent>.LocalTypefacesProperty -> Avalonia.AvaloniaProperty!
+static readonly CSharpMath.Avalonia.BaseView<TPainter, TContent>.MagnificationProperty -> Avalonia.AvaloniaProperty!
+static readonly CSharpMath.Avalonia.BaseView<TPainter, TContent>.PaddingProperty -> Avalonia.AvaloniaProperty!
+static readonly CSharpMath.Avalonia.BaseView<TPainter, TContent>.PaintStyleProperty -> Avalonia.AvaloniaProperty!
+static readonly CSharpMath.Avalonia.BaseView<TPainter, TContent>.staticPainter -> TPainter!
+static readonly CSharpMath.Avalonia.BaseView<TPainter, TContent>.TextAlignmentProperty -> Avalonia.AvaloniaProperty!
+static readonly CSharpMath.Avalonia.BaseView<TPainter, TContent>.TextColorProperty -> Avalonia.AvaloniaProperty!
+static readonly CSharpMath.Avalonia.BaseView<TPainter, TContent>.WritablePainterProperties -> Avalonia.AvaloniaProperty![]!
+static readonly CSharpMath.Avalonia.BaseView<TPainter, TContent>.WritablePainterPropertyNames -> System.Collections.Generic.HashSet<string!>!

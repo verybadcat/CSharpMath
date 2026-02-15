@@ -1,0 +1,154 @@
+﻿#nullable enable
+const CSharpMath.Maui.LatexHelper.phantom = "\\color{#00000000}|" -> string!
+CSharpMath.Maui.BaseButton<TView, TPainter, TContent>
+CSharpMath.Maui.BaseButton<TView, TPainter, TContent>.BaseButton() -> void
+CSharpMath.Maui.BaseButton<TView, TPainter, TContent>.Content.get -> TView?
+CSharpMath.Maui.BaseButton<TView, TPainter, TContent>.Content.set -> void
+CSharpMath.Maui.BaseButton<TView, TPainter, TContent>.TextColor.get -> Microsoft.Maui.Graphics.Color?
+CSharpMath.Maui.BaseButton<TView, TPainter, TContent>.TextColor.set -> void
+CSharpMath.Maui.BaseView<TPainter, TContent>
+CSharpMath.Maui.BaseView<TPainter, TContent>.BaseView() -> void
+CSharpMath.Maui.BaseView<TPainter, TContent>.Content.get -> TContent?
+CSharpMath.Maui.BaseView<TPainter, TContent>.Content.set -> void
+CSharpMath.Maui.BaseView<TPainter, TContent>.DisplacementX.get -> float
+CSharpMath.Maui.BaseView<TPainter, TContent>.DisplacementX.set -> void
+CSharpMath.Maui.BaseView<TPainter, TContent>.DisplacementY.get -> float
+CSharpMath.Maui.BaseView<TPainter, TContent>.DisplacementY.set -> void
+CSharpMath.Maui.BaseView<TPainter, TContent>.DisplayErrorInline.get -> bool
+CSharpMath.Maui.BaseView<TPainter, TContent>.DisplayErrorInline.set -> void
+CSharpMath.Maui.BaseView<TPainter, TContent>.EnablePanning.get -> bool
+CSharpMath.Maui.BaseView<TPainter, TContent>.EnablePanning.set -> void
+CSharpMath.Maui.BaseView<TPainter, TContent>.ErrorColor.get -> Microsoft.Maui.Graphics.Color!
+CSharpMath.Maui.BaseView<TPainter, TContent>.ErrorColor.set -> void
+CSharpMath.Maui.BaseView<TPainter, TContent>.ErrorFontSize.get -> float?
+CSharpMath.Maui.BaseView<TPainter, TContent>.ErrorFontSize.set -> void
+CSharpMath.Maui.BaseView<TPainter, TContent>.ErrorMessage.get -> string?
+CSharpMath.Maui.BaseView<TPainter, TContent>.FontSize.get -> float
+CSharpMath.Maui.BaseView<TPainter, TContent>.FontSize.set -> void
+CSharpMath.Maui.BaseView<TPainter, TContent>.GlyphBoxColor.get -> (Microsoft.Maui.Graphics.Color! glyph, Microsoft.Maui.Graphics.Color! textRun)?
+CSharpMath.Maui.BaseView<TPainter, TContent>.GlyphBoxColor.set -> void
+CSharpMath.Maui.BaseView<TPainter, TContent>.HighlightColor.get -> Microsoft.Maui.Graphics.Color!
+CSharpMath.Maui.BaseView<TPainter, TContent>.HighlightColor.set -> void
+CSharpMath.Maui.BaseView<TPainter, TContent>.LaTeX.get -> string?
+CSharpMath.Maui.BaseView<TPainter, TContent>.LaTeX.set -> void
+CSharpMath.Maui.BaseView<TPainter, TContent>.LineStyle.get -> CSharpMath.Atom.LineStyle
+CSharpMath.Maui.BaseView<TPainter, TContent>.LineStyle.set -> void
+CSharpMath.Maui.BaseView<TPainter, TContent>.LocalTypefaces.get -> System.Collections.Generic.IEnumerable<Typography.OpenFont.Typeface!>!
+CSharpMath.Maui.BaseView<TPainter, TContent>.LocalTypefaces.set -> void
+CSharpMath.Maui.BaseView<TPainter, TContent>.Magnification.get -> float
+CSharpMath.Maui.BaseView<TPainter, TContent>.Magnification.set -> void
+CSharpMath.Maui.BaseView<TPainter, TContent>.Padding.get -> Microsoft.Maui.Thickness
+CSharpMath.Maui.BaseView<TPainter, TContent>.Padding.set -> void
+CSharpMath.Maui.BaseView<TPainter, TContent>.Painter.get -> TPainter!
+CSharpMath.Maui.BaseView<TPainter, TContent>.PaintStyle.get -> CSharpMath.Rendering.FrontEnd.PaintStyle
+CSharpMath.Maui.BaseView<TPainter, TContent>.PaintStyle.set -> void
+CSharpMath.Maui.BaseView<TPainter, TContent>.TextAlignment.get -> CSharpMath.Rendering.FrontEnd.TextAlignment
+CSharpMath.Maui.BaseView<TPainter, TContent>.TextAlignment.set -> void
+CSharpMath.Maui.BaseView<TPainter, TContent>.TextColor.get -> Microsoft.Maui.Graphics.Color!
+CSharpMath.Maui.BaseView<TPainter, TContent>.TextColor.set -> void
+CSharpMath.Maui.Extensions
+CSharpMath.Maui.ImageSourceMathInputButton
+CSharpMath.Maui.ImageSourceMathInputButton.ImageSourceMathInputButton() -> void
+CSharpMath.Maui.ImageSourceMathInputButton.Input.get -> CSharpMath.Editor.MathKeyboardInput
+CSharpMath.Maui.ImageSourceMathInputButton.Input.set -> void
+CSharpMath.Maui.ImageSourceMathInputButton.Keyboard.get -> CSharpMath.Rendering.FrontEnd.MathKeyboard?
+CSharpMath.Maui.ImageSourceMathInputButton.Keyboard.set -> void
+CSharpMath.Maui.LatexHelper
+CSharpMath.Maui.MathButton
+CSharpMath.Maui.MathButton.MathButton() -> void
+CSharpMath.Maui.MathInputButton
+CSharpMath.Maui.MathInputButton.Input.get -> CSharpMath.Editor.MathKeyboardInput
+CSharpMath.Maui.MathInputButton.Input.set -> void
+CSharpMath.Maui.MathInputButton.Keyboard.get -> CSharpMath.Rendering.FrontEnd.MathKeyboard?
+CSharpMath.Maui.MathInputButton.Keyboard.set -> void
+CSharpMath.Maui.MathInputButton.MathInputButton() -> void
+CSharpMath.Maui.MathInputButton.PlaceholderActiveColor.get -> Microsoft.Maui.Graphics.Color?
+CSharpMath.Maui.MathInputButton.PlaceholderActiveColor.set -> void
+CSharpMath.Maui.MathInputButton.PlaceholderRestingColor.get -> Microsoft.Maui.Graphics.Color?
+CSharpMath.Maui.MathInputButton.PlaceholderRestingColor.set -> void
+CSharpMath.Maui.MathPainter
+CSharpMath.Maui.MathPainter.MathPainter() -> void
+CSharpMath.Maui.MathView
+CSharpMath.Maui.MathView.MathView() -> void
+CSharpMath.Maui.MauiCanvas
+CSharpMath.Maui.MauiCanvas.Canvas.get -> Microsoft.Maui.Graphics.ICanvas!
+CSharpMath.Maui.MauiCanvas.CurrentColor.get -> System.Drawing.Color?
+CSharpMath.Maui.MauiCanvas.CurrentColor.set -> void
+CSharpMath.Maui.MauiCanvas.CurrentStyle.get -> CSharpMath.Rendering.FrontEnd.PaintStyle
+CSharpMath.Maui.MauiCanvas.CurrentStyle.set -> void
+CSharpMath.Maui.MauiCanvas.DefaultColor.get -> System.Drawing.Color
+CSharpMath.Maui.MauiCanvas.DefaultColor.set -> void
+CSharpMath.Maui.MauiCanvas.DrawLine(float x1, float y1, float x2, float y2, float lineThickness) -> void
+CSharpMath.Maui.MauiCanvas.FillRect(float left, float top, float width, float height) -> void
+CSharpMath.Maui.MauiCanvas.Height.get -> float
+CSharpMath.Maui.MauiCanvas.MauiCanvas((Microsoft.Maui.Graphics.ICanvas!, Microsoft.Maui.Graphics.SizeF) canvas) -> void
+CSharpMath.Maui.MauiCanvas.Restore() -> void
+CSharpMath.Maui.MauiCanvas.Save() -> void
+CSharpMath.Maui.MauiCanvas.Scale(float sx, float sy) -> void
+CSharpMath.Maui.MauiCanvas.StartNewPath() -> CSharpMath.Rendering.FrontEnd.Path!
+CSharpMath.Maui.MauiCanvas.StrokeRect(float left, float top, float width, float height) -> void
+CSharpMath.Maui.MauiCanvas.Translate(float dx, float dy) -> void
+CSharpMath.Maui.MauiCanvas.Width.get -> float
+CSharpMath.Maui.MauiPath
+CSharpMath.Maui.MauiPath.MauiPath(CSharpMath.Maui.MauiCanvas! owner) -> void
+CSharpMath.Maui.TextButton
+CSharpMath.Maui.TextButton.TextButton() -> void
+CSharpMath.Maui.TextPainter
+CSharpMath.Maui.TextPainter.TextPainter() -> void
+CSharpMath.Maui.TextView
+CSharpMath.Maui.TextView.TextView() -> void
+override CSharpMath.Maui.BaseView<TPainter, TContent>.MeasureOverride(double widthConstraint, double heightConstraint) -> Microsoft.Maui.Graphics.Size
+override CSharpMath.Maui.MathInputButton.UpdateImageSource() -> void
+override CSharpMath.Maui.MathPainter.UnwrapColor(System.Drawing.Color color) -> Microsoft.Maui.Graphics.Color!
+override CSharpMath.Maui.MathPainter.WrapCanvas((Microsoft.Maui.Graphics.ICanvas!, Microsoft.Maui.Graphics.SizeF) canvas) -> CSharpMath.Rendering.FrontEnd.ICanvas!
+override CSharpMath.Maui.MathPainter.WrapColor(Microsoft.Maui.Graphics.Color! color) -> System.Drawing.Color
+override CSharpMath.Maui.MauiPath.CloseContour() -> void
+override CSharpMath.Maui.MauiPath.Curve3(float x1, float y1, float x2, float y2) -> void
+override CSharpMath.Maui.MauiPath.Curve4(float x1, float y1, float x2, float y2, float x3, float y3) -> void
+override CSharpMath.Maui.MauiPath.Dispose() -> void
+override CSharpMath.Maui.MauiPath.Foreground.get -> System.Drawing.Color?
+override CSharpMath.Maui.MauiPath.Foreground.set -> void
+override CSharpMath.Maui.MauiPath.LineTo(float x1, float y1) -> void
+override CSharpMath.Maui.MauiPath.MoveTo(float x0, float y0) -> void
+override CSharpMath.Maui.TextPainter.UnwrapColor(System.Drawing.Color color) -> Microsoft.Maui.Graphics.Color!
+override CSharpMath.Maui.TextPainter.WrapCanvas((Microsoft.Maui.Graphics.ICanvas!, Microsoft.Maui.Graphics.SizeF) canvas) -> CSharpMath.Rendering.FrontEnd.ICanvas!
+override CSharpMath.Maui.TextPainter.WrapColor(Microsoft.Maui.Graphics.Color! color) -> System.Drawing.Color
+static CSharpMath.Maui.BaseButton<TView, TPainter, TContent>.BindablePropertyWithUpdateImageSource<TButton>(string! propertyName, System.Type! propertyType, object? defaultValue = null) -> Microsoft.Maui.Controls.BindableProperty!
+static CSharpMath.Maui.Extensions.BindDisplay(this CSharpMath.Rendering.FrontEnd.MathKeyboard! keyboard, Microsoft.Maui.Controls.GraphicsView! view, CSharpMath.Maui.MathPainter! settings, Microsoft.Maui.Graphics.Color! caretColor, CSharpMath.Rendering.FrontEnd.CaretShape caretShape = CSharpMath.Rendering.FrontEnd.CaretShape.IBeam) -> void
+static CSharpMath.Maui.Extensions.ToCSharpMathColor(this Microsoft.Maui.Graphics.Color! color) -> System.Drawing.Color
+static CSharpMath.Maui.Extensions.ToMauiColor(this System.Drawing.Color color) -> Microsoft.Maui.Graphics.Color!
+static CSharpMath.Maui.Extensions.UpdateDisplayCaret(this CSharpMath.Rendering.FrontEnd.MathKeyboard! keyboard, Microsoft.Maui.Controls.GraphicsView! view, CSharpMath.Maui.MathPainter! settings, Microsoft.Maui.Graphics.Color! caretColor, CSharpMath.Rendering.FrontEnd.CaretShape caretShape = CSharpMath.Rendering.FrontEnd.CaretShape.IBeam) -> void
+static readonly CSharpMath.Maui.BaseButton<TView, TPainter, TContent>.ContentProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly CSharpMath.Maui.BaseButton<TView, TPainter, TContent>.TextColorProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly CSharpMath.Maui.BaseView<TPainter, TContent>.ContentProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly CSharpMath.Maui.BaseView<TPainter, TContent>.DisplacementXProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly CSharpMath.Maui.BaseView<TPainter, TContent>.DisplacementYProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly CSharpMath.Maui.BaseView<TPainter, TContent>.DisplayErrorInlineProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly CSharpMath.Maui.BaseView<TPainter, TContent>.EnablePanningProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly CSharpMath.Maui.BaseView<TPainter, TContent>.ErrorColorProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly CSharpMath.Maui.BaseView<TPainter, TContent>.ErrorFontSizeProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly CSharpMath.Maui.BaseView<TPainter, TContent>.ErrorMessageProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly CSharpMath.Maui.BaseView<TPainter, TContent>.FontSizeProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly CSharpMath.Maui.BaseView<TPainter, TContent>.GlyphBoxColorProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly CSharpMath.Maui.BaseView<TPainter, TContent>.HighlightColorProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly CSharpMath.Maui.BaseView<TPainter, TContent>.LaTeXProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly CSharpMath.Maui.BaseView<TPainter, TContent>.LineStyleProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly CSharpMath.Maui.BaseView<TPainter, TContent>.LocalTypefacesProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly CSharpMath.Maui.BaseView<TPainter, TContent>.MagnificationProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly CSharpMath.Maui.BaseView<TPainter, TContent>.PaddingProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly CSharpMath.Maui.BaseView<TPainter, TContent>.PaintStyleProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly CSharpMath.Maui.BaseView<TPainter, TContent>.staticPainter -> TPainter!
+static readonly CSharpMath.Maui.BaseView<TPainter, TContent>.TextAlignmentProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly CSharpMath.Maui.BaseView<TPainter, TContent>.TextColorProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly CSharpMath.Maui.BaseView<TPainter, TContent>.WritablePainterProperties -> Microsoft.Maui.Controls.BindableProperty![]!
+static readonly CSharpMath.Maui.BaseView<TPainter, TContent>.WritablePainterPropertyNames -> System.Collections.Generic.HashSet<string!>!
+static readonly CSharpMath.Maui.ImageSourceMathInputButton.InputProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly CSharpMath.Maui.ImageSourceMathInputButton.KeyboardProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly CSharpMath.Maui.MathInputButton.InputProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly CSharpMath.Maui.MathInputButton.KeyboardProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly CSharpMath.Maui.MathInputButton.PlaceholderActiveColorProperty -> Microsoft.Maui.Controls.BindableProperty!
+static readonly CSharpMath.Maui.MathInputButton.PlaceholderRestingColorProperty -> Microsoft.Maui.Controls.BindableProperty!
+virtual CSharpMath.Maui.BaseButton<TView, TPainter, TContent>.UpdateImageSource() -> void
+#if ANDROID || IOS || MACCATALYST || WINDOWS
+static CSharpMath.Maui.Extensions.DrawToStreamAsync<TContent>(this CSharpMath.Rendering.FrontEnd.Painter<(Microsoft.Maui.Graphics.ICanvas!, Microsoft.Maui.Graphics.SizeF), TContent!, Microsoft.Maui.Graphics.Color!>! painter, System.IO.Stream! target, float textPainterCanvasWidth = 2000, Microsoft.Maui.Graphics.ImageFormat format = Microsoft.Maui.Graphics.ImageFormat.Png, float quality = 1, CSharpMath.Rendering.FrontEnd.TextAlignment alignmentForTests = CSharpMath.Rendering.FrontEnd.TextAlignment.TopLeft) -> System.Threading.Tasks.Task!
+#endif

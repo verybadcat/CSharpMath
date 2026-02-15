@@ -1,11 +1,11 @@
 ﻿<!--Directory.Build.props: MSBuild properties that are included in every project-->
 <!--Info: https://docs.microsoft.com/en-us/visualstudio/msbuild/customize-your-build?view=vs-2019#directorybuildprops-and-directorybuildtargets-->
 <Project InitialTargets="SetDefaultPackageVersion">
-  <PropertyGroup Condition="$(MSBuildProjectName.Contains('Test'))">
+  <PropertyGroup Condition="$([System.Text.RegularExpressions.Regex]::IsMatch($(MSBuildProjectName), `Tests(.FSharp)?$`))">
     <TargetFramework>net10.0</TargetFramework>
 	<OutputType>Exe</OutputType> <!--Required by xunit.v3-->
   </PropertyGroup>
-  <ItemGroup Condition="$(MSBuildProjectName.Contains('Test'))">
+  <ItemGroup Condition="$([System.Text.RegularExpressions.Regex]::IsMatch($(MSBuildProjectName), `Tests(.FSharp)?$`))">
     <PackageReference Include="xunit.v3.mtp-v2" Version="3.2.1" />
     <PackageReference Include="coverlet.collector" Version="6.0.4" />
     <PackageReference Include="GitHubActionsTestLogger" Version="3.0.1" />
@@ -13,6 +13,8 @@
   <PropertyGroup>
     <!--CSharpMath-specific properties for centralized control of values-->
     <AvaloniaVersion>11.3.9</AvaloniaVersion>
+	<IsPublishedPackage>true</IsPublishedPackage>
+	<IsPublishedPackage Condition="$([System.Text.RegularExpressions.Regex]::IsMatch($(MSBuildProjectName), `(Tests(.FSharp)?|Benchmarks|Example)$`))">false</IsPublishedPackage>
 
     <!--C# code properties-->
     <LangVersion>preview</LangVersion>
@@ -21,7 +23,7 @@
       CA1062,<!--Obsolete with C# 8 nullability annotations-->
       CA1303,<!--Who localizes exception messages, anyway?-->
     </NoWarn>
-    <WarningsAsErrors Condition="$(MSBuildProjectExtension) == '.csproj'">nullable</WarningsAsErrors>
+    <WarningsAsErrors>nullable</WarningsAsErrors>
 
     <!--NuGet properties: Ordered according to https://docs.microsoft.com/en-us/nuget/reference/msbuild-targets#pack-target-->
     <PackageId>$(MSBuildProjectName)</PackageId>
@@ -52,12 +54,7 @@
 
     <!--Info on NuGet packaging properties: https://github.com/NuGet/Home/wiki/Adding-nuget-pack-as-a-msbuild-target-->
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <GeneratePackageOnBuild Condition="
-      !$(MSBuildProjectName.Contains('Test'))
-      And !$(MSBuildProjectName.Contains('Benchmark'))
-      And !$(MSBuildProjectName.Contains('Example'))
-      And !$(MSBuildProjectName.Contains('Playground'))
-      And $(Configuration.Equals('Release'))">true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild Condition="$(IsPublishedPackage) And $(Configuration.Equals('Release'))">true</GeneratePackageOnBuild>
     <PackageOutputPath>$(MSBuildThisFileDirectory).nupkgs</PackageOutputPath>
 
     <!--https://github.com/clairernovotny/DeterministicBuilds
@@ -73,10 +70,10 @@
     <RootNamespace>$(MSBuildProjectName)</RootNamespace>
     <AssemblyName>$(MSBuildProjectName)</AssemblyName>
   </PropertyGroup>
-  <!--SourceLink does not work well with WPF projects so we don't add it unconditionally-->
-  <ItemGroup Condition="$(MSBuildProjectName.StartsWith('CSharpMath')) And $(GeneratePackageOnBuild)">
-    <None Include="$(MSBuildThisFileDirectory)Icon.png" Pack="true" PackagePath="" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+  <ItemGroup>
+    <None Condition="$(GeneratePackageOnBuild)" Include="$(MSBuildThisFileDirectory)Icon.png" Pack="true" PackagePath="" />
+	<PackageReference Condition="$(GeneratePackageOnBuild)" Include="Microsoft.SourceLink.GitHub" Version="10.0.102" PrivateAssets="All" />
+	<PackageReference Condition="$(IsPublishedPackage)" Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="5.0.0-1.25277.114" PrivateAssets="All" />
   </ItemGroup>
   <!--Also run for non-CSharpMath projects: Normalize PackageVersion or else error-->
   <Target Name="SetDefaultPackageVersion">
@@ -85,7 +82,7 @@
       <Output TaskParameter="ConsoleOutput" PropertyName="RepositoryCommit" />
     </Exec>
     <!--For local builds-->
-    <CreateProperty Condition="$(PackageVersion) == '1.0.0'" Value="2147483647.2147483647.2147483647-localbuild-$(RepositoryCommit)">
+    <CreateProperty Condition="$(PackageVersion) == '1.0.0'" Value="2147483647.2147483647.2147483647-localbuild+$(RepositoryCommit)">
       <Output TaskParameter="Value" PropertyName="PackageVersion" />
     </CreateProperty>
     <!--For CI builds that supply -p:PackageVersion-->
