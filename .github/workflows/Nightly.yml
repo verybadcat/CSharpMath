@@ -16,7 +16,7 @@ jobs:
         GITHUB_TOKEN: ${{ github.token }}
     - uses: actions/checkout@v6
       with:
-        submodules: 'recursive'
+        submodules: recursive
     - uses: actions/setup-dotnet@main
       with:
         dotnet-version: '10.x'
@@ -75,12 +75,6 @@ jobs:
       with:
         name: CSharpMath.Rendering.Tests results
         path: CSharpMath.Rendering.Tests/*/*.png
-    - name: Upload CSharpMath.Xaml.Tests.NuGet results as CI artifacts
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: CSharpMath.Xaml.Tests.NuGet results
-        path: CSharpMath.Xaml.Tests.NuGet/*.png
     - name: Upload NuGet packages as CI artifacts
       uses: actions/upload-artifact@v4
       if: always()
@@ -97,11 +91,12 @@ jobs:
         # By using *.* as the file path, this command will fail when .nupkgs folder contains any file that isn't a .nupkg or .snupkg file.
         # --skip-duplicate enables re-running this workflow even if some packages from the same commit are already uploaded.
         # --no-symbols omits uploading .snupkg files which is not supported by GitHub Packages: https://github.com/orgs/community/discussions/38678
-        dotnet nuget push '.nupkgs\*.*' -s 'https://nuget.pkg.github.com/verybadcat/index.json' -k ${{ github.token }} --skip-duplicate --no-symbols
+        dotnet nuget push '.nupkgs\*.*' -s 'https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json' -k ${{ github.token }} --skip-duplicate --no-symbols
       shell: pwsh
     - name: Publish CSharpMath.Uno.Example
       run: |
         git fetch origin gh-pages
+        if (-not $?) { Exit } # For forks that didn't include the gh-pages branch, don't fail the workflow
         git worktree add website/wwwroot gh-pages
         Get-ChildItem -Path website/wwwroot/* -Exclude dev,.nojekyll | Remove-Item -Recurse -Force # dev is the output folder of Benchmark.yml and .nojekyll ensures _framework folder is served, keep them
         # TODO: why can't this publish use --no-build? For example, see https://github.com/verybadcat/CSharpMath/actions/runs/21600019106/job/62243168945

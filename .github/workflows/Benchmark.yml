@@ -8,7 +8,7 @@ jobs:
     steps:
     - uses: actions/checkout@v6
       with:
-        submodules: 'recursive'
+        submodules: recursive
     - name: Setup .NET
       uses: actions/setup-dotnet@v5
       with:
@@ -18,7 +18,7 @@ jobs:
       uses: benchmark-action/github-action-benchmark@v1
       with:
         name: CSharpMath.Rendering.Benchmarks
-        tool: 'benchmarkdotnet'
+        tool: benchmarkdotnet
         output-file-path: .benchmarkresults/results/CSharpMath.Rendering.Benchmarks.Program-report-full-compressed.json
         github-token: ${{ github.token }}
         auto-push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }} # Push and deploy GitHub pages branch automatically

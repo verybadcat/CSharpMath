@@ -7,13 +7,13 @@ jobs:
   CSharpMath:
     runs-on: windows-latest
     permissions:
-      # permissions requested by https://github.com/marketplace/actions/create-pull-request#token
+      # Permissions requested by https://github.com/marketplace/actions/create-pull-request#token
       contents: write
       pull-requests: write
     steps:
     - uses: actions/checkout@v6
       with:
-        submodules: 'recursive'
+        submodules: recursive
     - uses: actions/setup-dotnet@main
       with:
         dotnet-version: '10.x'
@@ -57,3 +57,4 @@ jobs:
         title: 'Ship PublicApi for ${{ github.event.release.tag_name }}'
         body: 'This PR moves the contents of PublicApi.Unshipped.txt to PublicApi.Shipped.txt to mark the API as shipped for version ${{ github.event.release.tag_name }}.'
         branch: action/ship-publicapi # Same branch name specified in Label.yml
+        base: '${{ github.event.repository.default_branch }}' # Releases are checked out on the tag commit but we need a target branch for the pull request. Let's just always submit it against the default branch

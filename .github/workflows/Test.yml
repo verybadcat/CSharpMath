@@ -22,7 +22,7 @@ jobs:
         workloads: ${{ case(startsWith(matrix.os, 'ubuntu'), 'maui-android, wasm-tools', 'maui, wasm-tools') }}
     - uses: actions/checkout@v6
       with:
-        submodules: 'recursive'
+        submodules: recursive
     - name: Build Everything
       run: dotnet build
     - name: Run Tests
