@@ -1,7 +1,7 @@
 using System.Drawing;
 using Xunit;
 
-namespace CSharpMath.Core.Tests {
+namespace CSharpMath.Core.EditorTests {
   using Atom;
   using BackEnd;
   using Editor;
@@ -14,18 +14,13 @@ namespace CSharpMath.Core.Tests {
         int index, params (SubIndex subType, int subIndex)[] subIndexRecursive) {
         switch (subIndexRecursive.Length) {
           case 0:
-            var mathListIndex = MathListIndex.Level0Index(index);
+            var mathListIndex = new MathListIndex(index);
             goto default;
           case var _:
-            mathListIndex = MathListIndex.Level0Index(
-              subIndexRecursive[^1].subIndex);
+            mathListIndex = new(subIndexRecursive[^1].subIndex);
             for (var i = subIndexRecursive.Length - 2; i >= 0; i--)
-              mathListIndex = MathListIndex.IndexAtLocation(
-                subIndexRecursive[i].subIndex,
-                subIndexRecursive[i + 1].subType,
-                mathListIndex);
-            mathListIndex = MathListIndex.IndexAtLocation(index,
-              subIndexRecursive[0].subType, mathListIndex);
+              mathListIndex = mathListIndex.WrapInIndex(subIndexRecursive[i].subIndex, subIndexRecursive[i + 1].subType);
+            mathListIndex = mathListIndex.WrapInIndex(index, subIndexRecursive[0].subType);
             goto default;
           default:
             Add(new PointF((float)point.x, (float)point.y), mathListIndex);

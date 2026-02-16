@@ -1,8 +1,8 @@
 using System.Drawing;
 using Xunit;
 
-namespace CSharpMath.Core.Tests {
-  using Atom;
+namespace CSharpMath.Core.EditorTests {
+  using DisplayTests;
   using BackEnd;
   using Editor;
   using static IndexForPointTests;

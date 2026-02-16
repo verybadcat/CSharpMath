@@ -5,21 +5,14 @@ using System.Linq;
 namespace CSharpMath.Editor {
   using Atom;
   public readonly struct MathListRange {
-    public MathListRange(int start) =>
-      (Start, Length) = (MathListIndex.Level0Index(start), 1);
-    public MathListRange(MathListIndex start) =>
-      (Start, Length) = (start, 1);
-    public MathListRange(MathListIndex start, int length) =>
-      (Start, Length) = (start, length);
-    public MathListRange(Range range) =>
-      (Start, Length) = (MathListIndex.Level0Index(range.Location), range.Length);
+    public MathListRange(int start) => (Start, Length) = (new(start), 1);
+    public MathListRange(MathListIndex start) => (Start, Length) = (start, 1);
+    public MathListRange(MathListIndex start, int length) => (Start, Length) = (start, length);
+    public MathListRange(Range range) => (Start, Length) = (new(range.Location), range.Length);
     public MathListIndex Start { get; }
     public int Length { get; }
-    public MathListRange? SubIndexRange =>
-      Start.SubIndex != null
-      ? new MathListRange(Start.SubIndex, Length)
-      : new MathListRange?();
-    public Range FinalRange => new Range(Start.FinalIndex, Length);
+    public MathListRange? SubIndexRange => Start.SubIndexInfo is var (_, subIndex) ? new(subIndex, Length) : null;
+    public Range FinalRange => new(Start.FinalIndex, Length);
     public override string ToString() => $"({Start}, {Length})";
     public static MathListRange operator +(MathListRange left, MathListRange right) {
       if (!left.Start.AtSameLevel(right.Start))

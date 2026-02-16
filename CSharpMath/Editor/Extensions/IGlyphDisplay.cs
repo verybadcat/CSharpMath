@@ -10,14 +10,14 @@ namespace CSharpMath.Editor {
       TypesettingContext<TFont, TGlyph> _,
       PointF point) where TFont : IFont<TGlyph> =>
       point.X > self.Position.X + self.Width / 2
-      ? MathListIndex.Level0Index(self.Range.End)
-      : MathListIndex.Level0Index(self.Range.Location);
+      ? new(self.Range.End)
+      : new(self.Range.Location);
 
     public static PointF? PointForIndex<TFont, TGlyph>(
       this IGlyphDisplay<TFont, TGlyph> self,
       TypesettingContext<TFont, TGlyph> _,
       MathListIndex index) where TFont : IFont<TGlyph> =>
-      index.SubIndexType != MathListSubIndexType.None
+      index.SubIndexInfo is { }
       ? throw new ArgumentException
         ("The subindex must be none to get the closest point for it.", nameof(index))
       : index.AtomIndex == self.Range.End
@@ -29,7 +29,7 @@ namespace CSharpMath.Editor {
     public static void HighlightCharacterAt<TFont, TGlyph>(
       this IGlyphDisplay<TFont, TGlyph> self,
       MathListIndex index, Color color) where TFont : IFont<TGlyph> {
-      if (index.SubIndexType != MathListSubIndexType.None)
+      if (index.SubIndexInfo is { })
         throw new ArgumentException
           ("The subindex must be none to get the highlight a character in it.", nameof(index));
       self.Highlight(color);

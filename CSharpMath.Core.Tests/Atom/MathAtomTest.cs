@@ -3,7 +3,7 @@ using CSharpMath.Atom;
 using CSharpMath.Atom.Atoms;
 using Xunit;
 
-namespace CSharpMath.Core.Tests {
+namespace CSharpMath.Core.AtomTests {
   public class MathAtomTest {
     internal static void CheckClone(MathAtom? original, MathAtom? clone) =>
       MathListTest.CheckClone(original, clone);

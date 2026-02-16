@@ -79,33 +79,26 @@ namespace CSharpMath.Editor {
       where TFont : IFont<TGlyph> {
       // Convert the point to the reference of the CTLine
       var relativePoint = new PointF(point.X - self.Position.X, point.Y - self.Position.Y);
-      var runsAndIndicies =
-        self.Runs
-        .Select(run => (run, run.Run.GlyphIndexForXOffset(context, relativePoint.Plus(run.Position).X)))
-        .Where(x => x.Item2.HasValue)
-        .ToArray();
-      if (runsAndIndicies.Length == 0)
-        return null;
-      var (r, nindex) = runsAndIndicies.Single();
-      var index = nindex.GetValueOrDefault();
-      var diffLng = r.Run.Length != r.Range.Length;
-      if (index < 0 || (!diffLng && index > self.Range.Length) || (diffLng && index > r.Run.Length))
-        throw new Atom.InvalidCodePathException
-          ($"Returned index out of range: {index}, range ({self.Range.Location}, {self.Range.Length})");
-      return diffLng
-        ? index > r.Run.Length / 2
-          ? MathListIndex.Level0Index(self.Range.End)
-          : MathListIndex.Level0Index(self.Range.Location)
-        : MathListIndex.Level0Index(self.Range.Location + index);
+      foreach (var r in self.Runs)
+        if (r.Run.GlyphIndexForXOffset(context, relativePoint.Plus(r.Position).X) is { } index) {
+          var diffLng = r.Run.Length != r.Range.Length;
+          if (index < 0 || !diffLng && index > self.Range.Length || diffLng && index > r.Run.Length)
+            throw new Atom.InvalidCodePathException
+              ($"Returned index out of range: {index}, range ({self.Range.Location}, {self.Range.Length})");
+          return diffLng
+            ? index > r.Run.Length / 2 ? new(self.Range.End) : new(self.Range.Location)
+            : new(self.Range.Location + index);
+        }
+      return null;
     }
 
     public static (TextRunDisplay<TFont, TGlyph> run, int charIndex)
       GetRunAndCharIndexFromStringIndex<TFont, TGlyph>(
       this TextLineDisplay<TFont, TGlyph> self, int lineCharIndex) where TFont : IFont<TGlyph> {
       var currentRun = self.Runs.First(s => (lineCharIndex -= s.Run.Text.Length) < 0);
-      //return offset for target char in its containing string
+      // Return offset for target char in its containing string
       return (currentRun, currentRun.Run.Text.Length + lineCharIndex);
-      /* //Quick test in C# Interactive
+      /* // Quick test in C# Interactive
 int strIndex = 6; //offset for target char if all strings in array are fused together
 var ss = new[] { "abcde", "fgh", "i", "f", "g" };
 var c = ss.First(s => (strIndex -= s.Length) < 0);
@@ -141,7 +134,7 @@ return c.Length + strIndex; //offset for target char in its containing string
       (this TextLineDisplay<TFont, TGlyph> self, TypesettingContext<TFont, TGlyph> context, MathListIndex index)
       where TFont : IFont<TGlyph> {
       float offset;
-      if (!(index.SubIndexType is MathListSubIndexType.None))
+      if (index.SubIndexInfo is { })
         throw new ArgumentException
           ($"An index in a {nameof(TextLineDisplay<TFont, TGlyph>)} cannot have sub-indexes.", nameof(index));
       if (index.AtomIndex == self.Range.End)
@@ -164,10 +157,10 @@ return c.Length + strIndex; //offset for target char in its containing string
       if (!self.Range.Contains(index.AtomIndex))
         throw new ArgumentOutOfRangeException
           (nameof(index), index, $"The index is not in the range {self.Range}.");
-      if (index.SubIndexType is MathListSubIndexType.None)
+      if (index.SubIndexInfo is { })
         throw new ArgumentException
           ("The subindex type must not be none to be able to highlight it.", nameof(index));
-      if (index.SubIndexType is MathListSubIndexType.BetweenBaseAndScripts)
+      if (index.SubIndexInfo is (MathListSubIndexType.BetweenBaseAndScripts, _))
         throw new ArgumentException("Nucleus highlighting is not supported.", nameof(index));
       // index is in unicode code points, while attrString is not
       var (run, charIndex) = self.GetRunAndCharIndexFromCodepointIndex(index.AtomIndex - self.Range.Location);

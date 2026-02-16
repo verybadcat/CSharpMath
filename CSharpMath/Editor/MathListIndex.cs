@@ -1,8 +1,6 @@
 namespace CSharpMath.Editor {
   ///<summary>The type of the subindex denotes what branch the path to the atom that this index points to takes.</summary>
   public enum MathListSubIndexType : byte {
-    ///<summary>The index denotes the whole atom, subIndex is null</summary>
-    None = 0,
     ///<summary>The position in the subindex is an index into the nucleus, must be 1</summary>
     BetweenBaseAndScripts,
     ///<summary>The subindex indexes into the superscript</summary>
@@ -36,95 +34,105 @@ namespace CSharpMath.Editor {
 * 
 * The level of an index is the number of nodes in the LinkedList to get to the final path.
 * </summary>*/
-  public class MathListIndex {
-    private MathListIndex() { }
+  public class MathListIndex(int atomIndex, (MathListSubIndexType SubIndexType, MathListIndex SubIndex)? subIndexInfo = null) {
 
     ///<summary>The index of the associated atom.</summary>
-    public int AtomIndex { get; set; }
-    ///<summary>The type of subindex, e.g. superscript, numerator etc.</summary>
-    public MathListSubIndexType SubIndexType { get; set; }
-    ///<summary>The index into the sublist.</summary>
-    public MathListIndex? SubIndex;
+    public int AtomIndex { get; } = atomIndex;
 
-    /** <summary>Factory function to create a `MathListIndex` with no subindexes.</summary>
-        <param name="index">The index of the atom that the `MathListIndex` points at.</param>
-     */
-    public static MathListIndex Level0Index(int index) => new MathListIndex { AtomIndex = index };
-    /** <summary>Factory function to create at `MathListIndex` with a given subIndex.</summary>
-        <param name="location">The location at which the subIndex should is present.</param>
-        <param name="subIndex">The subIndex to be added. Can be nil.</param> 
-        <param name="type">The type of the subIndex.</param> 
-     */
-    public static MathListIndex IndexAtLocation(int location, MathListSubIndexType type, MathListIndex? subIndex) =>
-      new MathListIndex { AtomIndex = location, SubIndexType = type, SubIndex = subIndex };
+    public (MathListSubIndexType SubIndexType, MathListIndex SubIndex)? SubIndexInfo { get; } = subIndexInfo;
 
-    ///<summary>Creates a new index by attaching this index at the end of the current one.</summary>
-    public MathListIndex LevelUpWithSubIndex(MathListSubIndexType type, MathListIndex? subIndex) =>
-      SubIndexType is MathListSubIndexType.None ? IndexAtLocation(AtomIndex, type, subIndex) :
-      IndexAtLocation(AtomIndex, SubIndexType, SubIndex?.LevelUpWithSubIndex(type, subIndex));
-    ///<summary>Creates a new index by removing the last index item. If this is the last one, then returns nil.</summary>
+    /// <summary>
+    /// Creates a new MathListIndex that represents a subindex within this list, wrapped at the specified outer atom
+    /// index and subindex type.
+    /// </summary>
+    /// <param name="outerAtomIndex">The zero-based index of the outer atom in the list at which to wrap the subindex.</param>
+    /// <param name="type">The type of subindex to create, specifying the relationship to the outer atom.</param>
+    /// <returns>A MathListIndex representing the specified subindex within this list.</returns>
+    public MathListIndex WrapInIndex(int outerAtomIndex, MathListSubIndexType type) => new(outerAtomIndex, (type, this));
+
+    ///<summary>Creates a new index by replacing the leaf with IndexInfo (type, new(innerAtomIndex)).</summary>
+    public MathListIndex LevelUpWithSubIndex(MathListSubIndexType type, int innerAtomIndex) =>
+      SubIndexInfo switch {
+        null => new MathListIndex(AtomIndex, (type, new(innerAtomIndex))),
+        (MathListSubIndexType thisType, MathListIndex thisSubIndex) =>
+          new MathListIndex(AtomIndex,
+            (thisType, thisSubIndex.LevelUpWithSubIndex(type, innerAtomIndex)))
+      };
+    ///<summary>Creates a new index by removing the last index item. If this is the last one, then returns <see langword="null"/>.</summary>
     public MathListIndex? LevelDown() =>
-      SubIndexType is MathListSubIndexType.None ? null :
-      SubIndex?.LevelDown() is MathListIndex subIndex ? IndexAtLocation(AtomIndex, SubIndexType, subIndex) :
-      Level0Index(AtomIndex);
+      SubIndexInfo switch {
+        null => null,
+        var (type, subIndex) => subIndex.LevelDown() is { } levelledDownSubIndex ? new(AtomIndex, (type, levelledDownSubIndex)) : new(AtomIndex)
+      };
 
     /** <summary>
      * Returns the previous index if this index is not at the beginning of a line.
      * Note there may be multiple lines in a MathList,
      * e.g. a superscript or a fraction numerator.
-     * This returns <see cref="null"/> if there is no previous index, i.e.
+     * This returns <see langword="null"/> if there is no previous index, i.e.
      * the innermost subindex points to the beginning of a line.</summary>
      */
-    public MathListIndex? Previous => SubIndexType switch {
-      MathListSubIndexType.None => AtomIndex > 0 ? Level0Index(AtomIndex - 1) : null,
-      _ => SubIndex?.Previous is MathListIndex prevSubIndex ? IndexAtLocation(AtomIndex, SubIndexType, prevSubIndex) : null,
+    public MathListIndex? Previous => SubIndexInfo switch {
+      null => AtomIndex > 0 ? new(AtomIndex - 1) : null,
+      var (type, subIndex) => subIndex.Previous is { } prevSubIndex ? new(AtomIndex, (type, prevSubIndex)) : null,
     };
 
-    ///<summary>Returns the next index.</summary>
-    public MathListIndex Next => SubIndexType switch {
-      MathListSubIndexType.None => Level0Index(AtomIndex + 1),
-      MathListSubIndexType.BetweenBaseAndScripts => IndexAtLocation(AtomIndex + 1, SubIndexType, SubIndex),
-      _ => IndexAtLocation(AtomIndex, SubIndexType, SubIndex?.Next),
+    /// <summary>Returns the next index. With the exception of BetweenBaseAndScripts, this adds 1 to the AtomIndex of the leaf.</summary>
+    public MathListIndex Next => SubIndexInfo switch {
+      null => new(AtomIndex + 1),
+      (MathListSubIndexType.BetweenBaseAndScripts, _) => new(AtomIndex + 1, SubIndexInfo),
+      var (type, subIndex) => new(AtomIndex, (type, subIndex.Next))
     };
 
-    ///<summary>Returns true if any of the subIndexes of this index have the given type.</summary>
+    /// <summary>Returns true if any of the subIndexes of this index have the given type.</summary>
     public bool HasSubIndexOfType(MathListSubIndexType subIndexType) =>
-      SubIndexType == subIndexType ? true :
-      SubIndex != null ? SubIndex.HasSubIndexOfType(subIndexType) : false;
-
+      SubIndexInfo switch {
+        null => false,
+        var (type, subIndex) => subIndexType == type || subIndex.HasSubIndexOfType(subIndexType)
+      };
+    /// <summary>Same, or differing only with respect to the final AtomIdex.</summary>
     public bool AtSameLevel(MathListIndex other) =>
-      SubIndexType != other.SubIndexType ? false :
-      // No subindexes, they are at the same level.
-      SubIndexType == MathListSubIndexType.None ? true :
-      // the subindexes are used in different atoms
-      AtomIndex != other.AtomIndex ? false :
-      SubIndex != null && other.SubIndex != null ? SubIndex.AtSameLevel(other.SubIndex) :
-      // No subindexes, they are at the same level.
-      true;
+      (SubIndexInfo, other.SubIndexInfo) switch {
+        (null, null) => true,
+        ((_, _), null) => false,
+        (null, (_, _)) => false,
+        (var (aType, aIndex), var (bType, bIndex)) =>
+          aType == bType && AtomIndex == other.AtomIndex && aIndex.AtSameLevel(bIndex)
+      };
 
     public int FinalIndex =>
-      SubIndexType is MathListSubIndexType.None || SubIndex is null ? AtomIndex : SubIndex.FinalIndex;
+      SubIndexInfo switch {
+        null => AtomIndex,
+        var (_, subIndex) => subIndex.FinalIndex
+      };
 
     ///<summary>Returns the type of the innermost sub index.</summary>
-    public MathListSubIndexType FinalSubIndexType =>
-      SubIndex?.SubIndex is null ? SubIndexType : SubIndex.FinalSubIndexType;
-
-    public MathListIndex FinalSubIndexParent =>
-      SubIndex?.SubIndex is null ? this : SubIndex.FinalSubIndexParent;
+    public MathListSubIndexType? FinalSubIndexType =>
+      SubIndexInfo switch {
+        null => null,
+        var (type, subIndex) => subIndex.SubIndexInfo is null ? type : subIndex.FinalSubIndexType
+      };
 
     public override string ToString() =>
-      SubIndex is null ?
-      $@"[{AtomIndex}]" :
-      $@"[{AtomIndex}, {SubIndexType}:{SubIndex.ToString().Trim('[', ']')}]";
+      SubIndexInfo switch {
+        null => $@"[{AtomIndex}]",
+        var (type, subIndex) => $@"[{AtomIndex}, {type}:{subIndex.ToString().Trim('[', ']')}]"
+      };
 
-    public bool EqualsToIndex(MathListIndex index) =>
-      index is null || AtomIndex != index.AtomIndex || SubIndexType != index.SubIndexType ? false :
-      SubIndex != null && index.SubIndex != null ? SubIndex.EqualsToIndex(index.SubIndex) :
-      index.SubIndex == null;
+    public bool EqualsToIndex(MathListIndex other) =>
+      (SubIndexInfo, other.SubIndexInfo) switch {
+        (null, null) => true,
+        ((_, _), null) => false,
+        (null, (_, _)) => false,
+        ((MathListSubIndexType aType, MathListIndex aIndex), (MathListSubIndexType bType, MathListIndex bIndex)) =>
+          aType == bType && aIndex.EqualsToIndex(bIndex)
+      };
 
-    public override bool Equals(object obj) =>
-      obj is MathListIndex index && EqualsToIndex(index);
-    public override int GetHashCode() =>
-      unchecked((AtomIndex * 31 + (int)SubIndexType) * 31 + (SubIndex?.GetHashCode() ?? -1));
+    public override bool Equals(object obj) => obj is MathListIndex index && EqualsToIndex(index);
+    public override int GetHashCode() => unchecked(
+      SubIndexInfo switch {
+        null => AtomIndex * 31 - 1,
+        var (type, subIndex) => AtomIndex * 31 + (int)type * 31 + subIndex.GetHashCode()
+      });
   }
 }

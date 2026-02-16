@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Xunit;
 using TGlyph = System.Text.Rune;
 
-namespace CSharpMath.Core.Tests {
+namespace CSharpMath.Core.EditorTests {
   using Atom;
   using BackEnd;
   using Editor;
@@ -212,7 +212,7 @@ namespace CSharpMath.Core.Tests {
       Assert.True(keyboard.InsertionPositionHighlighted);
       Assert.False(keyboard.ShouldDrawCaret);
 
-      keyboard.InsertionIndex = MathListIndex.Level0Index(keyboard.MathList.Count);
+      keyboard.InsertionIndex = new MathListIndex(keyboard.MathList.Count);
       Assert.True(keyboard.InsertionPositionHighlighted);
       Assert.True(keyboard.ShouldDrawCaret);
       Assert.Equal(LaTeXSettings.PlaceholderRestingNucleus, outer.Nucleus);

@@ -5,25 +5,24 @@ namespace CSharpMath.Editor {
   using Display.FrontEnd;
 
   partial class Extensions {
-    public static MathListIndex IndexForPoint<TFont, TGlyph>(
+    public static MathListIndex? IndexForPoint<TFont, TGlyph>(
       this InnerDisplay<TFont, TGlyph> self,
       TypesettingContext<TFont, TGlyph> context,
       PointF point) where TFont : IFont<TGlyph> =>
       // We can be before or after the inner
       point.X < self.Position.X + (self.Left?.Width / 2 ?? 0)
       //We are before the inner, so
-      ? MathListIndex.Level0Index(self.Range.Location)
+      ? new(self.Range.Location)
       : point.X > self.Position.X + self.Width - (self.Right?.Width / 2 ?? 0)
       //We are after the inner
-      ? MathListIndex.Level0Index(self.Range.End)
-      : MathListIndex.IndexAtLocation(self.Range.Location,
-          MathListSubIndexType.Inner, self.Inner.IndexForPoint(context, point));
+      ? new(self.Range.End)
+      : self.Inner.IndexForPoint(context, point)?.WrapInIndex(self.Range.Location, MathListSubIndexType.Inner);
 
     public static PointF? PointForIndex<TFont, TGlyph>(
       this InnerDisplay<TFont, TGlyph> self,
       TypesettingContext<TFont, TGlyph> _,
       MathListIndex index) where TFont : IFont<TGlyph> =>
-      index.SubIndexType != MathListSubIndexType.None
+      index.SubIndexInfo is { }
       ? throw new ArgumentException
         ("The subindex must be none to get the closest point for it.", nameof(index))
       : index.AtomIndex == self.Range.End
@@ -35,7 +34,7 @@ namespace CSharpMath.Editor {
     public static void HighlightCharacterAt<TFont, TGlyph>(
       this InnerDisplay<TFont, TGlyph> self,
       MathListIndex index, Color color) where TFont : IFont<TGlyph> {
-      if (index.SubIndexType != MathListSubIndexType.None)
+      if (index.SubIndexInfo is { })
         throw new ArgumentException
           ("The subindex must be none to get the highlight a character in it.", nameof(index));
       self.Highlight(color);
