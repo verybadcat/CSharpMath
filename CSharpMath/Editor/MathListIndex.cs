@@ -41,7 +41,7 @@ namespace CSharpMath.Editor {
     /// </summary>
     /// <param name="outerAtomIndex">The zero-based index of the outer atom in the list at which to wrap the subindex.</param>
     /// <param name="type">The type of subindex to create, specifying the relationship to the outer atom.</param>
-    /// <returns>A <see cref="MathListIndex"> representing the specified subindex within this list.</returns>
+    /// <returns>A <see cref="MathListIndex"/> representing the specified subindex within this list.</returns>
     public MathListIndex Wrap(int outerAtomIndex, MathListSubIndexType type) => new(outerAtomIndex, (type, this));
 
     ///<summary>Creates a new index by replacing the leaf with IndexInfo (type, new(innerAtomIndex)).</summary>
