@@ -157,7 +157,7 @@ return c.Length + strIndex; //offset for target char in its containing string
       if (!self.Range.Contains(index.AtomIndex))
         throw new ArgumentOutOfRangeException
           (nameof(index), index, $"The index is not in the range {self.Range}.");
-      if (index.SubIndexInfo is { })
+      if (index.SubIndexInfo is null)
         throw new ArgumentException
           ("The subindex type must not be none to be able to highlight it.", nameof(index));
       if (index.SubIndexInfo is (MathListSubIndexType.BetweenBaseAndScripts, _))
