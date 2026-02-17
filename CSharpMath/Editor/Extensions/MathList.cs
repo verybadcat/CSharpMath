@@ -1,5 +1,5 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
+
 
 namespace CSharpMath.Editor {
   using Atom;
@@ -68,7 +68,7 @@ namespace CSharpMath.Editor {
           throw new ArgumentOutOfRangeException(nameof(index), type, "Index type out of valid range.");
       }
     }
-    /// <summary>Removes the atom at <paramref name="index"/>, placing a new placeholder if all atoms removed, and returns a new <see cref="MathListIndex"/> with <paramref name="index"/> advanced to the next position indicated by <paramref name="advanceType"/>.</summary>
+    /// <summary>Removes the atom at <paramref name="index"/>, placing a new placeholder if all atoms are removed, and returns a new <see cref="MathListIndex"/> with <paramref name="index"/> advanced to the next appropriate position.</summary>
     public static MathListIndex RemoveAt(this MathList self, MathListIndex index) {
       if (index.AtomIndex > self.Atoms.Count)
         throw new IndexOutOfRangeException($"Index {index.AtomIndex} is out of bounds for list of size {self.Atoms.Count}");

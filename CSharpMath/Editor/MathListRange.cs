@@ -5,7 +5,7 @@ using System.Linq;
 namespace CSharpMath.Editor {
   using Atom;
   public readonly record struct MathListRange(MathListIndex Start, int Length) {
-    public MathListRange? SubIndexRange => Start.SubIndexInfo is var (_, subIndex) ? new(subIndex, Length) : null;
+    public MathListRange? SubIndexRange => Start.SubIndexInfo is (_, var subIndex) ? new(subIndex, Length) : null;
     public Range FinalRange => new(Start.FinalIndex, Length);
     public override string ToString() => $"({Start}, {Length})";
     public static MathListRange operator +(MathListRange left, MathListRange right) {

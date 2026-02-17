@@ -82,7 +82,7 @@ namespace CSharpMath.Editor {
         null => false,
         var (type, subIndex) => subIndexType == type || subIndex.HasSubIndexOfType(subIndexType)
       };
-    /// <summary>Same, or differing only with respect to the final AtomIdex.</summary>
+    /// <summary>Same, or differing only with respect to the final AtomIndex.</summary>
     public bool AtSameLevel(MathListIndex other) =>
       (SubIndexInfo, other.SubIndexInfo) switch {
         (null, null) => true,
