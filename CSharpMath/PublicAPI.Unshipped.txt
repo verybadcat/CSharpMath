@@ -985,6 +985,7 @@ CSharpMath.Editor.MathListIndex.SubIndexInfo.init -> void
 CSharpMath.Editor.MathListIndex.Wrap(int outerAtomIndex, CSharpMath.Editor.MathListSubIndexType type) -> CSharpMath.Editor.MathListIndex!
 CSharpMath.Editor.MathListRange
 CSharpMath.Editor.MathListRange.Deconstruct(out CSharpMath.Editor.MathListIndex! Start, out int Length) -> void
+CSharpMath.Editor.MathListRange.Equals(CSharpMath.Editor.MathListRange other) -> bool
 CSharpMath.Editor.MathListRange.FinalRange.get -> CSharpMath.Atom.Range
 CSharpMath.Editor.MathListRange.Length.get -> int
 CSharpMath.Editor.MathListRange.Length.init -> void
@@ -1091,7 +1092,9 @@ override CSharpMath.Display.Displays.TextLineDisplay<TFont, TGlyph>.ToString() -
 override CSharpMath.Display.Displays.TextRunDisplay<TFont, TGlyph>.ToString() -> string!
 override CSharpMath.Display.GlyphPart<TGlyph>.ToString() -> string!
 override CSharpMath.Editor.MathListIndex.Equals(object? obj) -> bool
+override CSharpMath.Editor.MathListIndex.GetHashCode() -> int
 override CSharpMath.Editor.MathListIndex.ToString() -> string!
+override CSharpMath.Editor.MathListRange.GetHashCode() -> int
 override CSharpMath.Editor.MathListRange.ToString() -> string!
 static CSharpMath.Atom.Boundary.operator !=(CSharpMath.Atom.Boundary left, CSharpMath.Atom.Boundary right) -> bool
 static CSharpMath.Atom.Boundary.operator ==(CSharpMath.Atom.Boundary left, CSharpMath.Atom.Boundary right) -> bool
@@ -1218,7 +1221,9 @@ static CSharpMath.Editor.Extensions.XOffsetForGlyphIndex<TFont, TGlyph>(this CSh
 static CSharpMath.Editor.MathListIndex.operator !=(CSharpMath.Editor.MathListIndex? left, CSharpMath.Editor.MathListIndex? right) -> bool
 static CSharpMath.Editor.MathListIndex.operator ==(CSharpMath.Editor.MathListIndex? left, CSharpMath.Editor.MathListIndex? right) -> bool
 static CSharpMath.Editor.MathListRange.Combine(System.Collections.Generic.IEnumerable<CSharpMath.Editor.MathListRange>! ranges) -> CSharpMath.Editor.MathListRange
+static CSharpMath.Editor.MathListRange.operator !=(CSharpMath.Editor.MathListRange left, CSharpMath.Editor.MathListRange right) -> bool
 static CSharpMath.Editor.MathListRange.operator +(CSharpMath.Editor.MathListRange left, CSharpMath.Editor.MathListRange right) -> CSharpMath.Editor.MathListRange
+static CSharpMath.Editor.MathListRange.operator ==(CSharpMath.Editor.MathListRange left, CSharpMath.Editor.MathListRange right) -> bool
 static CSharpMath.Extensions.Append(this System.Text.StringBuilder! sb, System.ReadOnlySpan<char> value) -> System.Text.StringBuilder!
 static CSharpMath.Extensions.CollectionAscent<TFont, TGlyph>(this System.Collections.Generic.IEnumerable<CSharpMath.Display.IDisplay<TFont, TGlyph>!>! displays) -> float
 static CSharpMath.Extensions.CollectionDescent<TFont, TGlyph>(this System.Collections.Generic.IEnumerable<CSharpMath.Display.IDisplay<TFont, TGlyph>!>! displays) -> float
@@ -1275,3 +1280,4 @@ virtual CSharpMath.Editor.MathListIndex.<Clone>$() -> CSharpMath.Editor.MathList
 virtual CSharpMath.Editor.MathListIndex.EqualityContract.get -> System.Type!
 virtual CSharpMath.Editor.MathListIndex.Equals(CSharpMath.Editor.MathListIndex? other) -> bool
 virtual CSharpMath.Editor.MathListIndex.PrintMembers(System.Text.StringBuilder! builder) -> bool
+~override CSharpMath.Editor.MathListRange.Equals(object obj) -> bool
