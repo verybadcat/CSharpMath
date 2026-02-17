@@ -17,9 +17,9 @@ namespace CSharpMath.Editor {
       // We are after the fraction
       ? new(self.Range.End)
       : point.Y > self.LinePosition + PixelDelta
-      ? self.Numerator.IndexForPoint(context, point)?.WrapInIndex(self.Range.Location, MathListSubIndexType.Numerator)
+      ? self.Numerator.IndexForPoint(context, point)?.Wrap(self.Range.Location, MathListSubIndexType.Numerator)
       : point.Y < self.LinePosition - PixelDelta
-      ? self.Denominator.IndexForPoint(context, point)?.WrapInIndex(self.Range.Location, MathListSubIndexType.Denominator)
+      ? self.Denominator.IndexForPoint(context, point)?.Wrap(self.Range.Location, MathListSubIndexType.Denominator)
       : point.X > self.Position.X + self.Width / 2
       ? new(self.Range.End)
       : new(self.Range.Location);

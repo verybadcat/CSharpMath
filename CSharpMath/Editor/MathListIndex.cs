@@ -34,29 +34,21 @@ namespace CSharpMath.Editor {
 * 
 * The level of an index is the number of nodes in the LinkedList to get to the final path.
 * </summary>*/
-  public class MathListIndex(int atomIndex, (MathListSubIndexType SubIndexType, MathListIndex SubIndex)? subIndexInfo = null) {
-
-    ///<summary>The index of the associated atom.</summary>
-    public int AtomIndex { get; } = atomIndex;
-
-    public (MathListSubIndexType SubIndexType, MathListIndex SubIndex)? SubIndexInfo { get; } = subIndexInfo;
-
+  public record class MathListIndex(int AtomIndex, (MathListSubIndexType SubIndexType, MathListIndex SubIndex)? SubIndexInfo = null) {
     /// <summary>
     /// Creates a new MathListIndex that represents a subindex within this list, wrapped at the specified outer atom
     /// index and subindex type.
     /// </summary>
     /// <param name="outerAtomIndex">The zero-based index of the outer atom in the list at which to wrap the subindex.</param>
     /// <param name="type">The type of subindex to create, specifying the relationship to the outer atom.</param>
-    /// <returns>A MathListIndex representing the specified subindex within this list.</returns>
-    public MathListIndex WrapInIndex(int outerAtomIndex, MathListSubIndexType type) => new(outerAtomIndex, (type, this));
+    /// <returns>A <see cref="MathListIndex"> representing the specified subindex within this list.</returns>
+    public MathListIndex Wrap(int outerAtomIndex, MathListSubIndexType type) => new(outerAtomIndex, (type, this));
 
     ///<summary>Creates a new index by replacing the leaf with IndexInfo (type, new(innerAtomIndex)).</summary>
     public MathListIndex LevelUpWithSubIndex(MathListSubIndexType type, int innerAtomIndex) =>
       SubIndexInfo switch {
-        null => new MathListIndex(AtomIndex, (type, new(innerAtomIndex))),
-        (MathListSubIndexType thisType, MathListIndex thisSubIndex) =>
-          new MathListIndex(AtomIndex,
-            (thisType, thisSubIndex.LevelUpWithSubIndex(type, innerAtomIndex)))
+        null => new(AtomIndex, (type, new(innerAtomIndex))),
+        var (thisType, thisSubIndex) => new(AtomIndex, (thisType, thisSubIndex.LevelUpWithSubIndex(type, innerAtomIndex)))
       };
     ///<summary>Creates a new index by removing the last index item. If this is the last one, then returns <see langword="null"/>.</summary>
     public MathListIndex? LevelDown() =>
@@ -118,21 +110,5 @@ namespace CSharpMath.Editor {
         null => $@"[{AtomIndex}]",
         var (type, subIndex) => $@"[{AtomIndex}, {type}:{subIndex.ToString().Trim('[', ']')}]"
       };
-
-    public bool EqualsToIndex(MathListIndex other) =>
-      (SubIndexInfo, other.SubIndexInfo) switch {
-        (null, null) => true,
-        ((_, _), null) => false,
-        (null, (_, _)) => false,
-        ((MathListSubIndexType aType, MathListIndex aIndex), (MathListSubIndexType bType, MathListIndex bIndex)) =>
-          aType == bType && aIndex.EqualsToIndex(bIndex)
-      };
-
-    public override bool Equals(object obj) => obj is MathListIndex index && EqualsToIndex(index);
-    public override int GetHashCode() => unchecked(
-      SubIndexInfo switch {
-        null => AtomIndex * 31 - 1,
-        var (type, subIndex) => AtomIndex * 31 + (int)type * 31 + subIndex.GetHashCode()
-      });
   }
 }

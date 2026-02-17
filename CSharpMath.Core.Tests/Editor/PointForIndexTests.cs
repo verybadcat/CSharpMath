@@ -2,8 +2,8 @@ using System.Drawing;
 using Xunit;
 
 namespace CSharpMath.Core.EditorTests {
-  using DisplayTests;
   using BackEnd;
+  using DisplayTests;
   using Editor;
   using static IndexForPointTests;
   // Use CSharpMath.Core.Example to visualize the test cases

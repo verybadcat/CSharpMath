@@ -16,7 +16,7 @@ namespace CSharpMath.Editor {
       : point.X > self.Position.X + self.Width - (self.Right?.Width / 2 ?? 0)
       //We are after the inner
       ? new(self.Range.End)
-      : self.Inner.IndexForPoint(context, point)?.WrapInIndex(self.Range.Location, MathListSubIndexType.Inner);
+      : self.Inner.IndexForPoint(context, point)?.Wrap(self.Range.Location, MathListSubIndexType.Inner);
 
     public static PointF? PointForIndex<TFont, TGlyph>(
       this InnerDisplay<TFont, TGlyph> self,

@@ -262,7 +262,7 @@ namespace CSharpMath.Editor {
         if (_insertionIndex is null)
           throw new InvalidOperationException($"{nameof(_insertionIndex)} is null.");
         switch (MathList.AtomAt(_insertionIndex)) {
-          case null: //After Count
+          case null: // After Count
             var levelDown = _insertionIndex.LevelDown();
             var levelDownAtom = MathList.AtomAt(levelDown);
             switch (_insertionIndex.FinalSubIndexType) {
@@ -276,13 +276,13 @@ namespace CSharpMath.Editor {
                 if (levelDownAtom is Atoms.Radical)
                   _insertionIndex = levelDown.LevelUpWithSubIndex(MathListSubIndexType.Radicand, 0);
                 else
-                  throw new SubIndexTypeMismatchException(typeof(Atoms.Radical), levelDown);
+                  throw new SubIndexTypeMismatchException(nameof(Atoms.Radical), levelDown.AtomIndex);
                 break;
               case MathListSubIndexType.Numerator:
                 if (levelDownAtom is Atoms.Fraction)
                   _insertionIndex = levelDown.LevelUpWithSubIndex(MathListSubIndexType.Denominator, 0);
                 else
-                  throw new SubIndexTypeMismatchException(typeof(Atoms.Fraction), levelDown);
+                  throw new SubIndexTypeMismatchException(nameof(Atoms.Fraction), levelDown.AtomIndex);
                 break;
               case MathListSubIndexType.Radicand:
               case MathListSubIndexType.Denominator:

@@ -20,9 +20,9 @@ namespace CSharpMath.Editor {
       : DistanceFromPointToRect(point, self.Degree != null ? new RectangleF(self.Degree.Position, self.Degree.DisplayBounds().Size) : default)
       < DistanceFromPointToRect(point, new RectangleF(self.Radicand.Position, self.Radicand.DisplayBounds().Size))
       ? self.Degree is { }
-        ? self.Degree.IndexForPoint(context, point)?.WrapInIndex(self.Range.Location, MathListSubIndexType.Degree)
+        ? self.Degree.IndexForPoint(context, point)?.Wrap(self.Range.Location, MathListSubIndexType.Degree)
         : new(self.Range.Location)
-      : self.Radicand.IndexForPoint(context, point)?.WrapInIndex(self.Range.Location, MathListSubIndexType.Radicand);
+      : self.Radicand.IndexForPoint(context, point)?.Wrap(self.Range.Location, MathListSubIndexType.Radicand);
 
     public static PointF? PointForIndex<TFont, TGlyph>(
       this RadicalDisplay<TFont, TGlyph> self,

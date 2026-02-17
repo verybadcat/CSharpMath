@@ -18,9 +18,9 @@ namespace CSharpMath.Editor {
       // We are after the large operator
       ? new(self.Range.End)
       : self.UpperLimit is { } u && point.Y > self.Position.Y + u.Position.Y - PixelDelta
-      ? u.IndexForPoint(context, point)?.WrapInIndex(self.Range.Location, MathListSubIndexType.Superscript)
+      ? u.IndexForPoint(context, point)?.Wrap(self.Range.Location, MathListSubIndexType.Superscript)
       : self.LowerLimit is { } l && point.Y < self.Position.Y + l.Position.Y + l.DisplayBounds().Height + PixelDelta
-      ? l.IndexForPoint(context, point)?.WrapInIndex(self.Range.Location, MathListSubIndexType.Subscript)
+      ? l.IndexForPoint(context, point)?.Wrap(self.Range.Location, MathListSubIndexType.Subscript)
       : point.X > self.Position.X + self.Width * 3 / 4
       ? new(self.Range.End)
       : point.X > self.Position.X + self.Width / 2

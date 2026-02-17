@@ -84,7 +84,7 @@ namespace CSharpMath.Editor {
         if (closestLine.IndexInParent is int.MinValue)
           throw new ArgumentException
             ($"Index was not set for a {indexType} in the {nameof(ListDisplay<TFont, TGlyph>)}.", nameof(self));
-        return index?.WrapInIndex(closestLine.IndexInParent, indexType);
+        return index?.Wrap(closestLine.IndexInParent, indexType);
       } else if (displayWithPoint.HasScript)
         // The display list has a subscript or a superscript.
         // If the index is at the end of the atom,
@@ -108,7 +108,8 @@ namespace CSharpMath.Editor {
           (MathListSubIndexType.BetweenBaseAndScripts, var subIndex) => display.PointForIndex(context, new(index.AtomIndex + subIndex.AtomIndex)),
           null => display.PointForIndex(context, index),
           (_, var subIndex) => display.PointForIndex(context, subIndex) // Recurse
-        }; else
+        };
+      else
         // Outside the range
         return null;
       if (position is PointF found) {
@@ -166,7 +167,7 @@ namespace CSharpMath.Editor {
               ((MathListSubIndexType.Inner, _), InnerDisplay<TFont, TGlyph> inner) => inner.Inner,
               ((MathListSubIndexType.Superscript or MathListSubIndexType.Subscript, _), _) =>
                 throw new Atom.InvalidCodePathException("Superscripts and subscripts should have been handled in a separate case above."),
-              _ => throw new SubIndexTypeMismatchException(index),
+              ((var type, _), _) => throw new ArgumentOutOfRangeException(nameof(index), type, "Index type out of valid range."),
             };
       return null;
     }

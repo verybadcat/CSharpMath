@@ -4,9 +4,6 @@ using System.Text;
 
 namespace CSharpMath.Editor {
   public class SubIndexTypeMismatchException : InvalidOperationException {
-    public SubIndexTypeMismatchException(Type atomType, MathListIndex index) : base(
-      $"{atomType} not found at index {index.AtomIndex}.") { }
-    public SubIndexTypeMismatchException(MathListIndex index) : base(
-      $"{index.SubIndexType} not found at index {index.AtomIndex}.") { }
+    public SubIndexTypeMismatchException(string target, int atomIndex) : base($"{target} not found at index {atomIndex}.") { }
   }
 }
