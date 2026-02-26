@@ -18,8 +18,8 @@ CSharpMath is a C# port of the wonderful <a href="https://github.com/kostub/iosM
 [NuGet]: https://www.nuget.org/packages/CSharpMath/
 [NuGet-pre]: https://www.nuget.org/packages/CSharpMath/absoluteLatest
 [GitHub]: https://github.com/verybadcat/CSharpMath/releases/latest
-[GitHub-pre]: https://github.com/verybadcat/CSharpMath/releases
-[WASM example]: https://verybadcat.github.io/CSharpMath
+[GitHub-pre]: https://github.com/verybadcat/CSharpMath/releas/latest
+[the WebAssembly version of CSharpMath.Uno.Example]: https://verybadcat.github.io/CSharpMath
 
 # Usage
 
@@ -36,7 +36,7 @@ Other independent projects:
 
 ## Math
 
-Check out the "Example" and "Try" pages of our [WASM example]!
+Check out the "Example" and "Try" pages of [the WebAssembly version of CSharpMath.Uno.Example]!
 
 Example code:
 - [Avalonia Example](CSharpMath.Avalonia.Example/Pages/MathViewPage.xaml)
@@ -50,7 +50,7 @@ For MAUI, you can make use of `CSharpMath.Maui.MathButton` to make a clickable m
 
 ## Text
 
-Check out the "Text" page of our [WASM example]!
+Check out the "Text" page of [the WebAssembly version of CSharpMath.Uno.Example]!
 
 Example code:
 - [Avalonia Example](CSharpMath.Avalonia.Example/Pages/TextViewPage.xaml)
@@ -96,7 +96,7 @@ painter.DrawAsPng(someStream);
 ![Cell 7](CSharpMath.Rendering.Tests/MathDisplay/Matrix3.png)|![Cell 8](CSharpMath.Rendering.Tests/MathDisplay/IntegralColorBoxCorrect.png)|![Cell 9](CSharpMath.Rendering.Tests/MathDisplay/Taylor.png)
 
 ## Math editing and evaluation
-Check out the "Calculate" button on the "Try" page of our [WASM example]! Supported evaluation operations can be found [here](CSharpMath.Evaluation/Evaluation.cs).
+Check out the "Calculate" button on the "Try" page of [the WebAssembly version of CSharpMath.Uno.Example]! Supported evaluation operations can be found [here](CSharpMath.Evaluation/Evaluation.cs).
 
 You can use a `CSharpMath.Rendering.FrontEnd.MathKeyboard` to process key presses and generate a `CSharpMath.Atom.MathList` or a LaTeX string. You can then call `CSharpMath.Evaluation.Evaluate` to get a `CSharpMath.Evaluation.MathItem`, which can be a `CSharpMath.Evaluation.MathItem.Entity` containing an `AngouriMath.Entity` that you can simplify, a `CSharpMath.Evaluation.Comma` containing a comma-delimited collection of `CSharpMath.Evaluation.MathItem`. For all uses of an `AngouriMath.Entity`, check out https://github.com/asc-community/AngouriMath.
 
