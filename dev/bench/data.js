@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1771213602405,
+  "lastUpdate": 1772515753524,
   "repoUrl": "https://github.com/verybadcat/CSharpMath",
   "entries": {
     "CSharpMath.Rendering.Benchmarks": [
@@ -3330,6 +3330,96 @@ window.BENCHMARK_DATA = {
             "value": 2902231.2760416665,
             "unit": "ns",
             "range": "± 47813.39384095767"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "charles.roddie@cantab.net",
+            "name": "Charles Roddie",
+            "username": "charlesroddie"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "9efcb3eef1a895cd1b1f865b9bf268365a360c31",
+          "message": "Tidy MathListIndex (#159)\n\n* WIP rebased onto latest master\n\n* Finalize\n\n* Format again\n\n* Update CSharpMath/Editor/MathListIndex.cs\n\nCo-authored-by: Copilot <175728472+Copilot@users.noreply.github.com>\n\n* Apply suggestions from code review\n\nCo-authored-by: Copilot <175728472+Copilot@users.noreply.github.com>\n\n* Fix wrong condition\n\n---------\n\nCo-authored-by: Hadrian Tang <hadrianwttang@outlook.com>\nCo-authored-by: Copilot <175728472+Copilot@users.noreply.github.com>",
+          "timestamp": "2026-03-03T13:22:23+08:00",
+          "tree_id": "44affa2fec62f4ae78b85d5eafd75282574504ba",
+          "url": "https://github.com/verybadcat/CSharpMath/commit/9efcb3eef1a895cd1b1f865b9bf268365a360c31"
+        },
+        "date": 1772515749171,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.AllConstantValues",
+            "value": 582016538.4615384,
+            "unit": "ns",
+            "range": "± 3921665.8081607916"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cases\")",
+            "value": 2769674.2052801726,
+            "unit": "ns",
+            "range": "± 79385.9249185685"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Color\")",
+            "value": 849040.949358259,
+            "unit": "ns",
+            "range": "± 21723.868601307237"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Commands\")",
+            "value": 299717.22130408656,
+            "unit": "ns",
+            "range": "± 2586.742427159137"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cyrillic\")",
+            "value": 2738824.5833333335,
+            "unit": "ns",
+            "range": "± 27938.257584252053"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"ErrorMissingArgument\")",
+            "value": 1592616.5364583333,
+            "unit": "ns",
+            "range": "± 25720.318051908398"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Matrix\")",
+            "value": 1391973.8882211538,
+            "unit": "ns",
+            "range": "± 6321.042749309843"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuadraticFormula\")",
+            "value": 617242.1526227678,
+            "unit": "ns",
+            "range": "± 3585.251504299235"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuarticSolutions\")",
+            "value": 121887591.22807018,
+            "unit": "ns",
+            "range": "± 599824.7866434543"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"TangentPeriodShift\")",
+            "value": 736029.3229166666,
+            "unit": "ns",
+            "range": "± 8154.2297819953765"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"VectorProjection\")",
+            "value": 2897274.1861979165,
+            "unit": "ns",
+            "range": "± 21514.63534584735"
           }
         ]
       }
