@@ -8,10 +8,10 @@ using Xunit;
 using TFont = CSharpMath.Core.BackEnd.TestFont;
 using TGlyph = System.Text.Rune;
 
-namespace CSharpMath.Core.Tests {
+namespace CSharpMath.Core.DisplayTests {
   public class TypesetterTests {
     internal static ListDisplay<TFont, TGlyph> ParseLaTeXToDisplay(string latex) =>
-      Typesetter.CreateLine(LaTeXParserTest.ParseLaTeX(latex), _font, _context, LineStyle.Display);
+      Typesetter.CreateLine(AtomTests.LaTeXParserTest.ParseLaTeX(latex), _font, _context, LineStyle.Display);
 
     private static readonly TFont _font = new TFont(20);
     private static readonly TypesettingContext<TFont, TGlyph> _context = BackEnd.TestTypesettingContext.Instance;

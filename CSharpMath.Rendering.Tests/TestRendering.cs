@@ -163,7 +163,7 @@ Was added in 0.1.0-pre4; working in 0.1.0-pre5; fully tested in 0.1.0-pre6. \[\f
         return;
       }
 
-      Core.Tests.Approximately.Equal(expectedStream.Length, actualStream.Length, expectedStream.Length * FileSizeTolerance);
+      Core.DisplayTests.Approximately.Equal(expectedStream.Length, actualStream.Length, expectedStream.Length * FileSizeTolerance);
       if (FileSizeTolerance == 0)
         Assert.True(contentsMatch, "The images differ.");
     }

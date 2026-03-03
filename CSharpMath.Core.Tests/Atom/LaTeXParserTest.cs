@@ -6,7 +6,7 @@ using CSharpMath.Atom;
 using CSharpMath.Atom.Atoms;
 using Xunit;
 
-namespace CSharpMath.Core.Tests {
+namespace CSharpMath.Core.AtomTests {
   public class LaTeXParserTest {
     public static MathList ParseLaTeX(string latex) {
       var builder = new LaTeXParser(latex);

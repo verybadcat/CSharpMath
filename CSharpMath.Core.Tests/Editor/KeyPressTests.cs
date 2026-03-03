@@ -7,7 +7,7 @@ using K = CSharpMath.Editor.MathKeyboardInput;
 using T = Xunit.InlineDataAttribute;
 using TGlyph = System.Text.Rune;
 
-namespace CSharpMath.Core.Tests {
+namespace CSharpMath.Core.EditorTests {
   using BackEnd;
   using Editor;
   public class KeyPressTests {

@@ -19,7 +19,7 @@ namespace CSharpMath.Atom {
     public MathList(params MathAtom[] atoms) => Atoms = new List<MathAtom>(atoms);
 
     /// <returns>The last <see cref="MathAtom"/> that is not a <see cref="Comment"/>,
-    /// or <see cref="null"/> when <see cref="Atoms"/> is empty.</returns>
+    /// or <see langword="null"/> when <see cref="Atoms"/> is empty.</returns>
 #if !NETSTANDARD2_0 && !NET45
     [System.Diagnostics.CodeAnalysis.DisallowNull]
 #endif

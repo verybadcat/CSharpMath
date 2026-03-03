@@ -2,7 +2,7 @@ using CSharpMath.Display;
 using Xunit;
 using TGlyph = System.Text.Rune;
 
-namespace CSharpMath.Core.Tests {
+namespace CSharpMath.Core.DisplayTests {
   using BackEnd;
   // purpose of this class is to make sure our mocks behave as expected.
   public class MockTests {

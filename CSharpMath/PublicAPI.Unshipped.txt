@@ -968,43 +968,43 @@ CSharpMath.Editor.MathKeyboardInput.Z = 90 -> CSharpMath.Editor.MathKeyboardInpu
 CSharpMath.Editor.MathKeyboardInput.Zeta = 918 -> CSharpMath.Editor.MathKeyboardInput
 CSharpMath.Editor.MathListIndex
 CSharpMath.Editor.MathListIndex.AtomIndex.get -> int
-CSharpMath.Editor.MathListIndex.AtomIndex.set -> void
+CSharpMath.Editor.MathListIndex.AtomIndex.init -> void
 CSharpMath.Editor.MathListIndex.AtSameLevel(CSharpMath.Editor.MathListIndex! other) -> bool
-CSharpMath.Editor.MathListIndex.EqualsToIndex(CSharpMath.Editor.MathListIndex! index) -> bool
+CSharpMath.Editor.MathListIndex.Deconstruct(out int AtomIndex, out (CSharpMath.Editor.MathListSubIndexType SubIndexType, CSharpMath.Editor.MathListIndex! SubIndex)? SubIndexInfo) -> void
 CSharpMath.Editor.MathListIndex.FinalIndex.get -> int
-CSharpMath.Editor.MathListIndex.FinalSubIndexParent.get -> CSharpMath.Editor.MathListIndex!
-CSharpMath.Editor.MathListIndex.FinalSubIndexType.get -> CSharpMath.Editor.MathListSubIndexType
+CSharpMath.Editor.MathListIndex.FinalSubIndexType.get -> CSharpMath.Editor.MathListSubIndexType?
 CSharpMath.Editor.MathListIndex.HasSubIndexOfType(CSharpMath.Editor.MathListSubIndexType subIndexType) -> bool
 CSharpMath.Editor.MathListIndex.LevelDown() -> CSharpMath.Editor.MathListIndex?
-CSharpMath.Editor.MathListIndex.LevelUpWithSubIndex(CSharpMath.Editor.MathListSubIndexType type, CSharpMath.Editor.MathListIndex? subIndex) -> CSharpMath.Editor.MathListIndex!
+CSharpMath.Editor.MathListIndex.LevelUpWithSubIndex(CSharpMath.Editor.MathListSubIndexType type, int innerAtomIndex) -> CSharpMath.Editor.MathListIndex!
+CSharpMath.Editor.MathListIndex.MathListIndex(CSharpMath.Editor.MathListIndex! original) -> void
+CSharpMath.Editor.MathListIndex.MathListIndex(int AtomIndex, (CSharpMath.Editor.MathListSubIndexType SubIndexType, CSharpMath.Editor.MathListIndex! SubIndex)? SubIndexInfo = null) -> void
 CSharpMath.Editor.MathListIndex.Next.get -> CSharpMath.Editor.MathListIndex!
 CSharpMath.Editor.MathListIndex.Previous.get -> CSharpMath.Editor.MathListIndex?
-CSharpMath.Editor.MathListIndex.SubIndex -> CSharpMath.Editor.MathListIndex?
-CSharpMath.Editor.MathListIndex.SubIndexType.get -> CSharpMath.Editor.MathListSubIndexType
-CSharpMath.Editor.MathListIndex.SubIndexType.set -> void
+CSharpMath.Editor.MathListIndex.SubIndexInfo.get -> (CSharpMath.Editor.MathListSubIndexType SubIndexType, CSharpMath.Editor.MathListIndex! SubIndex)?
+CSharpMath.Editor.MathListIndex.SubIndexInfo.init -> void
+CSharpMath.Editor.MathListIndex.Wrap(int outerAtomIndex, CSharpMath.Editor.MathListSubIndexType type) -> CSharpMath.Editor.MathListIndex!
 CSharpMath.Editor.MathListRange
+CSharpMath.Editor.MathListRange.Deconstruct(out CSharpMath.Editor.MathListIndex! Start, out int Length) -> void
+CSharpMath.Editor.MathListRange.Equals(CSharpMath.Editor.MathListRange other) -> bool
 CSharpMath.Editor.MathListRange.FinalRange.get -> CSharpMath.Atom.Range
 CSharpMath.Editor.MathListRange.Length.get -> int
+CSharpMath.Editor.MathListRange.Length.init -> void
 CSharpMath.Editor.MathListRange.MathListRange() -> void
-CSharpMath.Editor.MathListRange.MathListRange(CSharpMath.Atom.Range range) -> void
-CSharpMath.Editor.MathListRange.MathListRange(CSharpMath.Editor.MathListIndex! start) -> void
-CSharpMath.Editor.MathListRange.MathListRange(CSharpMath.Editor.MathListIndex! start, int length) -> void
-CSharpMath.Editor.MathListRange.MathListRange(int start) -> void
+CSharpMath.Editor.MathListRange.MathListRange(CSharpMath.Editor.MathListIndex! Start, int Length) -> void
 CSharpMath.Editor.MathListRange.Start.get -> CSharpMath.Editor.MathListIndex!
+CSharpMath.Editor.MathListRange.Start.init -> void
 CSharpMath.Editor.MathListRange.SubIndexRange.get -> CSharpMath.Editor.MathListRange?
 CSharpMath.Editor.MathListSubIndexType
-CSharpMath.Editor.MathListSubIndexType.BetweenBaseAndScripts = 1 -> CSharpMath.Editor.MathListSubIndexType
-CSharpMath.Editor.MathListSubIndexType.Degree = 7 -> CSharpMath.Editor.MathListSubIndexType
-CSharpMath.Editor.MathListSubIndexType.Denominator = 5 -> CSharpMath.Editor.MathListSubIndexType
-CSharpMath.Editor.MathListSubIndexType.Inner = 8 -> CSharpMath.Editor.MathListSubIndexType
-CSharpMath.Editor.MathListSubIndexType.None = 0 -> CSharpMath.Editor.MathListSubIndexType
-CSharpMath.Editor.MathListSubIndexType.Numerator = 4 -> CSharpMath.Editor.MathListSubIndexType
-CSharpMath.Editor.MathListSubIndexType.Radicand = 6 -> CSharpMath.Editor.MathListSubIndexType
-CSharpMath.Editor.MathListSubIndexType.Subscript = 3 -> CSharpMath.Editor.MathListSubIndexType
-CSharpMath.Editor.MathListSubIndexType.Superscript = 2 -> CSharpMath.Editor.MathListSubIndexType
+CSharpMath.Editor.MathListSubIndexType.BetweenBaseAndScripts = 0 -> CSharpMath.Editor.MathListSubIndexType
+CSharpMath.Editor.MathListSubIndexType.Degree = 6 -> CSharpMath.Editor.MathListSubIndexType
+CSharpMath.Editor.MathListSubIndexType.Denominator = 4 -> CSharpMath.Editor.MathListSubIndexType
+CSharpMath.Editor.MathListSubIndexType.Inner = 7 -> CSharpMath.Editor.MathListSubIndexType
+CSharpMath.Editor.MathListSubIndexType.Numerator = 3 -> CSharpMath.Editor.MathListSubIndexType
+CSharpMath.Editor.MathListSubIndexType.Radicand = 5 -> CSharpMath.Editor.MathListSubIndexType
+CSharpMath.Editor.MathListSubIndexType.Subscript = 2 -> CSharpMath.Editor.MathListSubIndexType
+CSharpMath.Editor.MathListSubIndexType.Superscript = 1 -> CSharpMath.Editor.MathListSubIndexType
 CSharpMath.Editor.SubIndexTypeMismatchException
-CSharpMath.Editor.SubIndexTypeMismatchException.SubIndexTypeMismatchException(CSharpMath.Editor.MathListIndex! index) -> void
-CSharpMath.Editor.SubIndexTypeMismatchException.SubIndexTypeMismatchException(System.Type! atomType, CSharpMath.Editor.MathListIndex! index) -> void
+CSharpMath.Editor.SubIndexTypeMismatchException.SubIndexTypeMismatchException(string! target, int atomIndex) -> void
 CSharpMath.Extensions
 override CSharpMath.Atom.Atoms.Accent.DebugString.get -> string!
 override CSharpMath.Atom.Atoms.Accent.Equals(object! obj) -> bool
@@ -1091,9 +1091,10 @@ override CSharpMath.Display.Displays.RadicalDisplay<TFont, TGlyph>.ToString() ->
 override CSharpMath.Display.Displays.TextLineDisplay<TFont, TGlyph>.ToString() -> string!
 override CSharpMath.Display.Displays.TextRunDisplay<TFont, TGlyph>.ToString() -> string!
 override CSharpMath.Display.GlyphPart<TGlyph>.ToString() -> string!
-override CSharpMath.Editor.MathListIndex.Equals(object! obj) -> bool
+override CSharpMath.Editor.MathListIndex.Equals(object? obj) -> bool
 override CSharpMath.Editor.MathListIndex.GetHashCode() -> int
 override CSharpMath.Editor.MathListIndex.ToString() -> string!
+override CSharpMath.Editor.MathListRange.GetHashCode() -> int
 override CSharpMath.Editor.MathListRange.ToString() -> string!
 static CSharpMath.Atom.Boundary.operator !=(CSharpMath.Atom.Boundary left, CSharpMath.Atom.Boundary right) -> bool
 static CSharpMath.Atom.Boundary.operator ==(CSharpMath.Atom.Boundary left, CSharpMath.Atom.Boundary right) -> bool
@@ -1192,15 +1193,15 @@ static CSharpMath.Editor.Extensions.HighlightCharacterAt<TFont, TGlyph>(this CSh
 static CSharpMath.Editor.Extensions.HighlightCharacterAt<TFont, TGlyph>(this CSharpMath.Display.Displays.TextLineDisplay<TFont, TGlyph>! self, CSharpMath.Editor.MathListIndex! index, System.Drawing.Color color) -> void
 static CSharpMath.Editor.Extensions.HighlightCharacterAt<TFont, TGlyph>(this CSharpMath.Display.IDisplay<TFont, TGlyph>! display, CSharpMath.Editor.MathListIndex! index, System.Drawing.Color color) -> void
 static CSharpMath.Editor.Extensions.HighlightCharacterAt<TFont, TGlyph>(this CSharpMath.Display.IGlyphDisplay<TFont, TGlyph>! self, CSharpMath.Editor.MathListIndex! index, System.Drawing.Color color) -> void
-static CSharpMath.Editor.Extensions.IndexForPoint<TFont, TGlyph>(this CSharpMath.Display.Displays.FractionDisplay<TFont, TGlyph>! self, CSharpMath.Display.FrontEnd.TypesettingContext<TFont, TGlyph>! context, System.Drawing.PointF point) -> CSharpMath.Editor.MathListIndex!
-static CSharpMath.Editor.Extensions.IndexForPoint<TFont, TGlyph>(this CSharpMath.Display.Displays.InnerDisplay<TFont, TGlyph>! self, CSharpMath.Display.FrontEnd.TypesettingContext<TFont, TGlyph>! context, System.Drawing.PointF point) -> CSharpMath.Editor.MathListIndex!
-static CSharpMath.Editor.Extensions.IndexForPoint<TFont, TGlyph>(this CSharpMath.Display.Displays.LargeOpLimitsDisplay<TFont, TGlyph>! self, CSharpMath.Display.FrontEnd.TypesettingContext<TFont, TGlyph>! context, System.Drawing.PointF point) -> CSharpMath.Editor.MathListIndex!
+static CSharpMath.Editor.Extensions.IndexForPoint<TFont, TGlyph>(this CSharpMath.Display.Displays.FractionDisplay<TFont, TGlyph>! self, CSharpMath.Display.FrontEnd.TypesettingContext<TFont, TGlyph>! context, System.Drawing.PointF point) -> CSharpMath.Editor.MathListIndex?
+static CSharpMath.Editor.Extensions.IndexForPoint<TFont, TGlyph>(this CSharpMath.Display.Displays.InnerDisplay<TFont, TGlyph>! self, CSharpMath.Display.FrontEnd.TypesettingContext<TFont, TGlyph>! context, System.Drawing.PointF point) -> CSharpMath.Editor.MathListIndex?
+static CSharpMath.Editor.Extensions.IndexForPoint<TFont, TGlyph>(this CSharpMath.Display.Displays.LargeOpLimitsDisplay<TFont, TGlyph>! self, CSharpMath.Display.FrontEnd.TypesettingContext<TFont, TGlyph>! context, System.Drawing.PointF point) -> CSharpMath.Editor.MathListIndex?
 static CSharpMath.Editor.Extensions.IndexForPoint<TFont, TGlyph>(this CSharpMath.Display.Displays.ListDisplay<TFont, TGlyph>! self, CSharpMath.Display.FrontEnd.TypesettingContext<TFont, TGlyph>! context, System.Drawing.PointF point) -> CSharpMath.Editor.MathListIndex?
-static CSharpMath.Editor.Extensions.IndexForPoint<TFont, TGlyph>(this CSharpMath.Display.Displays.RadicalDisplay<TFont, TGlyph>! self, CSharpMath.Display.FrontEnd.TypesettingContext<TFont, TGlyph>! context, System.Drawing.PointF point) -> CSharpMath.Editor.MathListIndex!
+static CSharpMath.Editor.Extensions.IndexForPoint<TFont, TGlyph>(this CSharpMath.Display.Displays.RadicalDisplay<TFont, TGlyph>! self, CSharpMath.Display.FrontEnd.TypesettingContext<TFont, TGlyph>! context, System.Drawing.PointF point) -> CSharpMath.Editor.MathListIndex?
 static CSharpMath.Editor.Extensions.IndexForPoint<TFont, TGlyph>(this CSharpMath.Display.Displays.TextLineDisplay<TFont, TGlyph>! self, CSharpMath.Display.FrontEnd.TypesettingContext<TFont, TGlyph>! context, System.Drawing.PointF point) -> CSharpMath.Editor.MathListIndex?
 static CSharpMath.Editor.Extensions.IndexForPoint<TFont, TGlyph>(this CSharpMath.Display.IDisplay<TFont, TGlyph>! display, CSharpMath.Display.FrontEnd.TypesettingContext<TFont, TGlyph>! context, System.Drawing.PointF point) -> CSharpMath.Editor.MathListIndex?
 static CSharpMath.Editor.Extensions.IndexForPoint<TFont, TGlyph>(this CSharpMath.Display.IGlyphDisplay<TFont, TGlyph>! self, CSharpMath.Display.FrontEnd.TypesettingContext<TFont, TGlyph>! _, System.Drawing.PointF point) -> CSharpMath.Editor.MathListIndex!
-static CSharpMath.Editor.Extensions.InsertAndAdvance(this CSharpMath.Atom.MathList! self, ref CSharpMath.Editor.MathListIndex! index, CSharpMath.Atom.MathAtom! atom, CSharpMath.Editor.MathListSubIndexType advanceType) -> void
+static CSharpMath.Editor.Extensions.InsertAndAdvance(this CSharpMath.Atom.MathList! self, CSharpMath.Editor.MathListIndex! index, CSharpMath.Atom.MathAtom! atom, CSharpMath.Editor.MathListSubIndexType? advanceType) -> CSharpMath.Editor.MathListIndex!
 static CSharpMath.Editor.Extensions.MathListIndexToStringIndex<TFont, TGlyph>(this CSharpMath.Display.Displays.TextLineDisplay<TFont, TGlyph>! self, int mlIndex) -> int
 static CSharpMath.Editor.Extensions.PointForIndex<TFont, TGlyph>(this CSharpMath.Display.Displays.FractionDisplay<TFont, TGlyph>! self, CSharpMath.Display.FrontEnd.TypesettingContext<TFont, TGlyph>! _, CSharpMath.Editor.MathListIndex! index) -> System.Drawing.PointF?
 static CSharpMath.Editor.Extensions.PointForIndex<TFont, TGlyph>(this CSharpMath.Display.Displays.InnerDisplay<TFont, TGlyph>! self, CSharpMath.Display.FrontEnd.TypesettingContext<TFont, TGlyph>! _, CSharpMath.Editor.MathListIndex! index) -> System.Drawing.PointF?
@@ -1210,17 +1211,19 @@ static CSharpMath.Editor.Extensions.PointForIndex<TFont, TGlyph>(this CSharpMath
 static CSharpMath.Editor.Extensions.PointForIndex<TFont, TGlyph>(this CSharpMath.Display.Displays.TextLineDisplay<TFont, TGlyph>! self, CSharpMath.Display.FrontEnd.TypesettingContext<TFont, TGlyph>! context, CSharpMath.Editor.MathListIndex! index) -> System.Drawing.PointF?
 static CSharpMath.Editor.Extensions.PointForIndex<TFont, TGlyph>(this CSharpMath.Display.IDisplay<TFont, TGlyph>! display, CSharpMath.Display.FrontEnd.TypesettingContext<TFont, TGlyph>! context, CSharpMath.Editor.MathListIndex! index) -> System.Drawing.PointF?
 static CSharpMath.Editor.Extensions.PointForIndex<TFont, TGlyph>(this CSharpMath.Display.IGlyphDisplay<TFont, TGlyph>! self, CSharpMath.Display.FrontEnd.TypesettingContext<TFont, TGlyph>! _, CSharpMath.Editor.MathListIndex! index) -> System.Drawing.PointF?
-static CSharpMath.Editor.Extensions.RemoveAt(this CSharpMath.Atom.MathList! self, ref CSharpMath.Editor.MathListIndex! index) -> void
+static CSharpMath.Editor.Extensions.RemoveAt(this CSharpMath.Atom.MathList! self, CSharpMath.Editor.MathListIndex! index) -> CSharpMath.Editor.MathListIndex!
 static CSharpMath.Editor.Extensions.RemoveAtoms(this CSharpMath.Atom.MathList! self, CSharpMath.Editor.MathListRange? nullableRange) -> void
 static CSharpMath.Editor.Extensions.StringIndexToCodepointIndex(System.Text.StringBuilder! str, int stringIndex) -> int
 static CSharpMath.Editor.Extensions.StringIndexToMathListIndex<TFont, TGlyph>(this CSharpMath.Display.Displays.TextLineDisplay<TFont, TGlyph>! self, int strIndex) -> int
 static CSharpMath.Editor.Extensions.SubDisplayForIndex<TFont, TGlyph>(this CSharpMath.Display.Displays.ListDisplay<TFont, TGlyph>! self, CSharpMath.Editor.MathListIndex! index) -> CSharpMath.Display.IDisplay<TFont, TGlyph>?
 static CSharpMath.Editor.Extensions.SubListForIndexType<TFont, TGlyph>(this CSharpMath.Display.Displays.LargeOpLimitsDisplay<TFont, TGlyph>! self, CSharpMath.Editor.MathListSubIndexType type) -> CSharpMath.Display.IDisplay<TFont, TGlyph>?
 static CSharpMath.Editor.Extensions.XOffsetForGlyphIndex<TFont, TGlyph>(this CSharpMath.Display.AttributedGlyphRun<TFont, TGlyph>! line, CSharpMath.Display.FrontEnd.TypesettingContext<TFont, TGlyph>! context, int index) -> float
-static CSharpMath.Editor.MathListIndex.IndexAtLocation(int location, CSharpMath.Editor.MathListSubIndexType type, CSharpMath.Editor.MathListIndex? subIndex) -> CSharpMath.Editor.MathListIndex!
-static CSharpMath.Editor.MathListIndex.Level0Index(int index) -> CSharpMath.Editor.MathListIndex!
+static CSharpMath.Editor.MathListIndex.operator !=(CSharpMath.Editor.MathListIndex? left, CSharpMath.Editor.MathListIndex? right) -> bool
+static CSharpMath.Editor.MathListIndex.operator ==(CSharpMath.Editor.MathListIndex? left, CSharpMath.Editor.MathListIndex? right) -> bool
 static CSharpMath.Editor.MathListRange.Combine(System.Collections.Generic.IEnumerable<CSharpMath.Editor.MathListRange>! ranges) -> CSharpMath.Editor.MathListRange
+static CSharpMath.Editor.MathListRange.operator !=(CSharpMath.Editor.MathListRange left, CSharpMath.Editor.MathListRange right) -> bool
 static CSharpMath.Editor.MathListRange.operator +(CSharpMath.Editor.MathListRange left, CSharpMath.Editor.MathListRange right) -> CSharpMath.Editor.MathListRange
+static CSharpMath.Editor.MathListRange.operator ==(CSharpMath.Editor.MathListRange left, CSharpMath.Editor.MathListRange right) -> bool
 static CSharpMath.Extensions.Append(this System.Text.StringBuilder! sb, System.ReadOnlySpan<char> value) -> System.Text.StringBuilder!
 static CSharpMath.Extensions.CollectionAscent<TFont, TGlyph>(this System.Collections.Generic.IEnumerable<CSharpMath.Display.IDisplay<TFont, TGlyph>!>! displays) -> float
 static CSharpMath.Extensions.CollectionDescent<TFont, TGlyph>(this System.Collections.Generic.IEnumerable<CSharpMath.Display.IDisplay<TFont, TGlyph>!>! displays) -> float
@@ -1273,3 +1276,8 @@ virtual CSharpMath.Atom.SpanResult<T>.Func<TResult>.Invoke(System.ReadOnlySpan<T
 virtual CSharpMath.Display.FrontEnd.FontMathTable<TFont, TGlyph>.FractionDelimiterDisplayStyleSize(TFont font) -> float
 virtual CSharpMath.Display.FrontEnd.FontMathTable<TFont, TGlyph>.FractionDelimiterSize(TFont font) -> float
 virtual CSharpMath.Editor.MathKeyboard<TFont, TGlyph>.Measure.get -> System.Drawing.RectangleF
+virtual CSharpMath.Editor.MathListIndex.<Clone>$() -> CSharpMath.Editor.MathListIndex!
+virtual CSharpMath.Editor.MathListIndex.EqualityContract.get -> System.Type!
+virtual CSharpMath.Editor.MathListIndex.Equals(CSharpMath.Editor.MathListIndex? other) -> bool
+virtual CSharpMath.Editor.MathListIndex.PrintMembers(System.Text.StringBuilder! builder) -> bool
+~override CSharpMath.Editor.MathListRange.Equals(object obj) -> bool

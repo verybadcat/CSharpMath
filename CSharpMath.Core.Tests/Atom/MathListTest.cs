@@ -4,7 +4,7 @@ using CSharpMath.Atom;
 using CSharpMath.Atom.Atoms;
 using Xunit;
 
-namespace CSharpMath.Core.Tests {
+namespace CSharpMath.Core.AtomTests {
   using Range = Atom.Range;
   public class MathListTest {
     internal static void CheckClone(MathAtom? original, MathAtom? clone) {
