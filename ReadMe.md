@@ -18,7 +18,7 @@ CSharpMath is a C# port of the wonderful <a href="https://github.com/kostub/iosM
 [NuGet]: https://www.nuget.org/packages/CSharpMath/
 [NuGet-pre]: https://www.nuget.org/packages/CSharpMath/absoluteLatest
 [GitHub]: https://github.com/verybadcat/CSharpMath/releases/latest
-[GitHub-pre]: https://github.com/verybadcat/CSharpMath/releas/latest
+[GitHub-pre]: https://github.com/verybadcat/CSharpMath/releases
 [the WebAssembly version of CSharpMath.Uno.Example]: https://verybadcat.github.io/CSharpMath
 
 # Usage
