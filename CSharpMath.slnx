@@ -46,55 +46,57 @@
     <Project Path="CSharpMath.Rendering/CSharpMath.Rendering.csproj">
       <BuildType Solution="Not.Uno.Example|*" Project="Release" />
     </Project>
-    <Project Path="CSharpMath.Rendering.Benchmarks/CSharpMath.Rendering.Benchmarks.csproj">
-      <BuildType Solution="Not.Uno.Example|*" Project="Release" />
-    </Project>
     <Project Path="CSharpMath.Rendering.Tests.FSharp/CSharpMath.Rendering.Tests.FSharp.fsproj">
-      <BuildType Solution="Not.Uno.Example|*" Project="Release" />
-    </Project>
-    <Project Path="CSharpMath.Rendering.Tests/CSharpMath.Rendering.Tests.csproj">
       <BuildType Solution="Not.Uno.Example|*" Project="Release" />
     </Project>
     <Project Path="CSharpMath.Rendering.Text.Tests/CSharpMath.Rendering.Text.Tests.csproj">
       <BuildType Solution="Not.Uno.Example|*" Project="Release" />
     </Project>
+  </Folder>
+  <Folder Name="/Platforms/CSharpMath.Xaml/">
+    <File Path="CSharpMath.Xaml/Views.cs" />
     <Project Path="CSharpMath.Xaml.Tests/CSharpMath.Xaml.Tests.csproj">
       <BuildType Solution="Not.Uno.Example|*" Project="Release" />
     </Project>
   </Folder>
-  <Folder Name="/CSharpMath.Xaml/">
-    <File Path="CSharpMath.Xaml/Views.cs" />
+  <Folder Name="/Platforms/">
+    <Project Path="CSharpMath.Avalonia/CSharpMath.Avalonia.csproj">
+      <BuildType Solution="Not.Uno.Example|*" Project="Release" />
+    </Project>
+    <Project Path="CSharpMath.Avalonia.Example/CSharpMath.Avalonia.Example.csproj">
+      <BuildType Solution="Not.Uno.Example|*" Project="Release" />
+    </Project>
+    <Project Path="CSharpMath.Maui/CSharpMath.Maui.csproj">
+      <BuildType Solution="Not.Uno.Example|*" Project="Release" />
+    </Project>
+    <Project Path="CSharpMath.Maui.Example/CSharpMath.Maui.Example.csproj">
+      <BuildType Solution="Not.Uno.Example|*" Project="Release" />
+      <Deploy Solution="Debug|*" />
+    </Project>
+    <Project Path="CSharpMath.SkiaSharp/CSharpMath.SkiaSharp.csproj">
+      <BuildType Solution="Not.Uno.Example|*" Project="Release" />
+    </Project>
+    <Project Path="CSharpMath.SkiaSharp.Example/CSharpMath.SkiaSharp.Example.csproj">
+      <BuildType Solution="Not.Uno.Example|*" Project="Release" />
+    </Project>
+    <Project Path="CSharpMath.Uno/CSharpMath.Uno.csproj">
+      <BuildType Solution="Not.Uno.Example|*" Project="Release" />
+    </Project>
+    <Project Path="CSharpMath.Uno.Example/CSharpMath.Uno.Example.csproj">
+      <Build Solution="Not.Uno.Example|*" Project="false" />
+      <Deploy Solution="Debug|*" />
+    </Project>
+    <Project Path="CSharpMath.VectSharp/CSharpMath.VectSharp.csproj">
+      <BuildType Solution="Not.Uno.Example|*" Project="Release" />
+    </Project>
+    <Project Path="CSharpMath.VectSharp.Example/CSharpMath.VectSharp.Example.csproj">
+      <BuildType Solution="Not.Uno.Example|*" Project="Release" />
+    </Project>
   </Folder>
-  <Project Path="CSharpMath.Avalonia/CSharpMath.Avalonia.csproj">
+  <Project Path="CSharpMath.Rendering.Benchmarks/CSharpMath.Rendering.Benchmarks.csproj">
     <BuildType Solution="Not.Uno.Example|*" Project="Release" />
   </Project>
-  <Project Path="CSharpMath.Avalonia.Example/CSharpMath.Avalonia.Example.csproj">
-    <BuildType Solution="Not.Uno.Example|*" Project="Release" />
-  </Project>
-  <Project Path="CSharpMath.Maui/CSharpMath.Maui.csproj">
-    <BuildType Solution="Not.Uno.Example|*" Project="Release" />
-  </Project>
-  <Project Path="CSharpMath.Maui.Example/CSharpMath.Maui.Example.csproj">
-    <BuildType Solution="Not.Uno.Example|*" Project="Release" />
-    <Deploy Solution="Debug|*" />
-  </Project>
-  <Project Path="CSharpMath.SkiaSharp/CSharpMath.SkiaSharp.csproj">
-    <BuildType Solution="Not.Uno.Example|*" Project="Release" />
-  </Project>
-  <Project Path="CSharpMath.SkiaSharp.Example/CSharpMath.SkiaSharp.Example.csproj">
-    <BuildType Solution="Not.Uno.Example|*" Project="Release" />
-  </Project>
-  <Project Path="CSharpMath.Uno/CSharpMath.Uno.csproj">
-    <BuildType Solution="Not.Uno.Example|*" Project="Release" />
-  </Project>
-  <Project Path="CSharpMath.Uno.Example/CSharpMath.Uno.Example.csproj">
-    <Build Solution="Not.Uno.Example|*" Project="false" />
-    <Deploy Solution="Debug|*" />
-  </Project>
-  <Project Path="CSharpMath.VectSharp/CSharpMath.VectSharp.csproj">
-    <BuildType Solution="Not.Uno.Example|*" Project="Release" />
-  </Project>
-  <Project Path="CSharpMath.VectSharp.Example/CSharpMath.VectSharp.Example.csproj">
+  <Project Path="CSharpMath.Rendering.Tests/CSharpMath.Rendering.Tests.csproj">
     <BuildType Solution="Not.Uno.Example|*" Project="Release" />
   </Project>
 </Solution>
