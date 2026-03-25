@@ -10,7 +10,6 @@
     <AvaloniaResource Include="**\*.xaml" />
     <EmbeddedResource Include="..\Icon.png" Link="Icon.png" />
     <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
     <ProjectReference Include="..\CSharpMath.Avalonia\CSharpMath.Avalonia.csproj" />
     <ProjectReference Include="..\CSharpMath.Evaluation\CSharpMath.Evaluation.csproj" />

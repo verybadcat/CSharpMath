@@ -12,7 +12,7 @@
   </ItemGroup>
   <PropertyGroup>
     <!--CSharpMath-specific properties for centralized control of values-->
-    <AvaloniaVersion>11.3.9</AvaloniaVersion>
+    <AvaloniaVersion>12.0.0-rc1</AvaloniaVersion>
 	<IsPublishedPackage>true</IsPublishedPackage>
 	<IsPublishedPackage Condition="$([System.Text.RegularExpressions.Regex]::IsMatch($(MSBuildProjectName), `(Tests(.FSharp)?|Benchmarks|Example)$`))">false</IsPublishedPackage>
 
