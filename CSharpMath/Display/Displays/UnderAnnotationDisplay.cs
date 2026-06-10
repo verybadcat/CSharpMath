@@ -14,8 +14,6 @@ public class UnderAnnotationDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph>
     Inner = inner;
     UnderList = underList;
     AnnotationGlyph = annotationGlyph;
-    _annotationGlyphHeight = AnnotationGlyph.Ascent + AnnotationGlyph.Descent;
-    _underListBasedDescent = underListBasedDescent + (UnderList?.Descent ?? 0);
     Position = position;
   }
 
@@ -25,11 +23,24 @@ public class UnderAnnotationDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph>
   public IDisplay<TFont, TGlyph>? UnderList { get; }
   public IGlyphDisplay<TFont, TGlyph> AnnotationGlyph { get; }
 
-  private readonly float _annotationGlyphHeight;
-  private readonly float _underListBasedDescent;
-
-  public float Ascent => System.Math.Max(AnnotationGlyph.Ascent, Inner.Ascent);
-  public float Descent => System.Math.Max(AnnotationGlyph.Descent, Inner.Descent) + _underListBasedDescent;
+  public float Ascent {
+    get {
+      float max = AnnotationGlyph.Ascent + AnnotationGlyph.Position.Y;
+      max = System.Math.Max(max, Inner.Ascent + Inner.Position.Y);
+      if (UnderList is not null)
+        max = System.Math.Max(max, UnderList.Ascent + UnderList.Position.Y);
+      return max;
+    }
+  }
+  public float Descent {
+    get {
+      float max = AnnotationGlyph.Descent - AnnotationGlyph.Position.Y;
+      max = System.Math.Max(max, Inner.Descent - Inner.Position.Y);
+      if (UnderList is not null)
+        max = System.Math.Max(max, UnderList.Descent - UnderList.Position.Y);
+      return max;
+    }
+  }
   public float Width => Inner.Width;
   public Range Range => Inner.Range;
   public PointF Position {

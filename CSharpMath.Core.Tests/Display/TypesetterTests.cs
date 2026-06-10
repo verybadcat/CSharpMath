@@ -487,7 +487,7 @@ namespace CSharpMath.Core.Tests {
       });
     [Fact]
     public void TestUnderAnnotation() =>
-      TestOuter(@"\underbrace {x}_{y}", 1, 14, 43.6, 10, d => {
+      TestOuter(@"\underbrace {x}_{y}", 1, 14, 39.6, 10, d => {
         var under = Assert.IsType<UnderAnnotationDisplay<TFont, TGlyph>>(d);
         Assert.Equal(new PointF(), under.Position);
         var annotation = Assert.IsType<GlyphDisplay<TFont, TGlyph>>(under.AnnotationGlyph);
@@ -515,7 +515,7 @@ namespace CSharpMath.Core.Tests {
       });
     [Fact]
     public void TestUnderAnnotation2() =>
-      TestOuter(@"\underbrace {xxxxx}_{y}", 5, 14, 43.6, 50, d => {
+      TestOuter(@"\underbrace {xxxxx}_{y}", 5, 14, 39.6, 50, d => {
         var under = Assert.IsType<UnderAnnotationDisplay<TFont, TGlyph>>(d);
         Assert.Equal(new PointF(), under.Position);
         var annotation = Assert.IsType<HorizontalGlyphConstructionDisplay<TFont, TGlyph>>(under.AnnotationGlyph);
