@@ -8,9 +8,11 @@ jobs:
     permissions:
       contents: write
       packages: write
+      pull-requests: read
     steps:
     - name: Update draft on GitHub Releases
       id: release_drafter
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       uses: release-drafter/release-drafter@v7
       env:
         GITHUB_TOKEN: ${{ github.token }}
