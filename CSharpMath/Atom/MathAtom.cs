@@ -72,8 +72,7 @@ namespace CSharpMath.Atom {
         FusedAtoms.Add(otherAtom);
       }
       Nucleus += otherAtom.Nucleus;
-      IndexRange = new Range(IndexRange.Location,
-        IndexRange.Length + otherAtom.IndexRange.Length);
+      IndexRange += otherAtom.IndexRange;
       Subscript = otherAtom.Subscript;
       Superscript = otherAtom.Superscript;
     }

@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Runtime.CompilerServices;
 using Xunit;
 
-namespace CSharpMath.Core.Tests {
+namespace CSharpMath.Core.DisplayTests {
   [DebuggerStepThrough] // Debugger should stop at the line that uses these functions
   public static class Approximately {
     const double DefaultTolerance = 0.001;

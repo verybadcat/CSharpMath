@@ -1,4 +1,4 @@
-namespace CSharpMath.Core.Tests {
+namespace CSharpMath.Core.DisplayTests {
   using Atom;
   using Xunit;
   public class FontChangingTests {

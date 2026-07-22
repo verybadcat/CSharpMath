@@ -38,7 +38,7 @@ function MarkShipped([string]$dir) {
 try {
     Push-Location $PSScriptRoot\..\..
 
-    foreach ($file in Get-ChildItem -re -in "PublicApi.Shipped.txt") {
+    foreach ($file in Get-ChildItem -re -in "PublicAPI.Shipped.txt") {
         $dir = Split-Path -parent $file
         MarkShipped $dir
     }

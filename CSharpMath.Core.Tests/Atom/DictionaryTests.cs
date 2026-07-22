@@ -1,7 +1,7 @@
 using CSharpMath.Atom;
 using Xunit;
 
-namespace CSharpMath.Core.Tests {
+namespace CSharpMath.Core.AtomTests {
   public class DictionaryTests {
     private AliasBiDictionary<string, int> InitTestDict() =>
       new AliasBiDictionary<string, int> {
