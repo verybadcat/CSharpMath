@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1772515753524,
+  "lastUpdate": 1784750976152,
   "repoUrl": "https://github.com/verybadcat/CSharpMath",
   "entries": {
     "CSharpMath.Rendering.Benchmarks": [
@@ -3420,6 +3420,96 @@ window.BENCHMARK_DATA = {
             "value": 2897274.1861979165,
             "unit": "ns",
             "range": "± 21514.63534584735"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "haykflexgrigoryan@gmail.com",
+            "name": "Hakob Grigoryan",
+            "username": "hflexgrig"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "e3204b3d6f3cc392d3c6fd33def7c524725732a4",
+          "message": "Under annotations (#245)\n\n* updated gitignore to ignore .vscode folder\n\n* Created abstraction atom called UnderAnnotation for under annotations like underbrace\n\n* Added basic latex parser for under annotation\n\n* Created abstraction atom called UnderAnnotation for under annotations like underbrace\n\n* Added basic latex parser for under annotation\n\n* commented failing test\n\n* basic display of underbrace\n\n* add underbrace underlist to a latex parser\n\n* Finished implementation\n\n* Implemented GetHorizontalGlyphAssembly\n\n* ran dotnet format with fixups\n\n* fixed unittests\n\n* Add Typesetter tests for UnderAnnotation\n\n* Format\n\n* Fix head\n\n* Use ref?\n\n* sha?\n\n* Check out pull request HEAD commit?\n\n* fetch?\n\n* Need origin?\n\n* Fetch all?\n\n* Use base_ref and head_ref given commit history\n\n* Still need origin huh\n\n* sha?\n\n* pull_request_target?\n\n* Fix Labeller?\n\n* Fix warnings?\n\n* Underbrace rendering tests\n\n* Fix image baselines\n\n* Separate workflow change to #256\n\n* Fix under annotation measure\n\n* ci: enable MTP coverage and dynamic Xcode setup\n\n* Update all CI versions\n\n* ci: skip release drafter on pull requests\n\n* ci: match timestamped Coverlet reports\n\n* Fix coverlet\n\n---------\n\nCo-authored-by: Happypig375 <hadrianwttang@outlook.com>",
+          "timestamp": "2026-07-23T04:03:08+08:00",
+          "tree_id": "c61d70a41589be36ef483c7a2e988276b8d8cac6",
+          "url": "https://github.com/verybadcat/CSharpMath/commit/e3204b3d6f3cc392d3c6fd33def7c524725732a4"
+        },
+        "date": 1784750969315,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.AllConstantValues",
+            "value": 608818446.1538461,
+            "unit": "ns",
+            "range": "± 2607536.6464715907"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cases\")",
+            "value": 2511860.9375,
+            "unit": "ns",
+            "range": "± 6269.653425600847"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Color\")",
+            "value": 839402.75390625,
+            "unit": "ns",
+            "range": "± 15500.977458642472"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Commands\")",
+            "value": 303542.73507254466,
+            "unit": "ns",
+            "range": "± 5041.54051890497"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cyrillic\")",
+            "value": 2735614.8958333335,
+            "unit": "ns",
+            "range": "± 23419.942276670103"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"ErrorMissingArgument\")",
+            "value": 1576873.2142857143,
+            "unit": "ns",
+            "range": "± 24661.196094165836"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Matrix\")",
+            "value": 1423515.4854910714,
+            "unit": "ns",
+            "range": "± 12114.11861363356"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuadraticFormula\")",
+            "value": 628374.9145507812,
+            "unit": "ns",
+            "range": "± 9925.475878825479"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuarticSolutions\")",
+            "value": 121910599.99999999,
+            "unit": "ns",
+            "range": "± 2317385.951902287"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"TangentPeriodShift\")",
+            "value": 734566.3606770834,
+            "unit": "ns",
+            "range": "± 9084.591484376684"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"VectorProjection\")",
+            "value": 2921239.676339286,
+            "unit": "ns",
+            "range": "± 35691.50084153463"
           }
         ]
       }
