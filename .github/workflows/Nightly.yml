@@ -45,30 +45,29 @@ jobs:
         dotnet build -c Not.Uno.Example -p:PackageReleaseNotes="$env:RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }}
     - name: Test
       run: dotnet test --no-build -c Release --solution CSharpMath.slnx
-    #### Awaiting coverlet.MTP at https://github.com/coverlet-coverage/coverlet/pull/1788
-    #    # --collect:"XPlat Code Coverage" means collect test coverage with https://github.com/coverlet-coverage/coverlet
-    #    # Coverlet settings come after --: https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/VSTestIntegration.md#advanced-options-supported-via-runsettings
-    #    dotnet test --solution CSharpMath.slnx -c Release --collect:"XPlat Code Coverage" --results-directory .testcoverage -p:PackageReleaseNotes="$env:RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }} -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.IncludeTestAssembly=true
-    #  shell: pwsh
-    #- name: Run ReportGenerator on Test Coverage results
-    #  uses: danielpalme/ReportGenerator-GitHub-Action@5
-    #  with:
-    #    reports: '.testcoverage/**/*.*' # REQUIRED # The coverage reports that should be parsed (separated by semicolon). Globbing is supported.
-    #    targetdir: '.testcoverage/report' # REQUIRED # The directory where the generated report should be saved.
-    #    reporttypes: 'Html' # The output formats and scope (separated by semicolon) Values: Badges, Clover, Cobertura, CsvSummary, Html, HtmlChart, HtmlInline, HtmlInline_AzurePipelines, HtmlInline_AzurePipelines_Dark, HtmlSummary, JsonSummary, Latex, LatexSummary, lcov, MHtml, PngChart, SonarQube, TeamCitySummary, TextSummary, Xml, XmlSummary
-    #    title: 'CSharpMath test coverage results' # Optional title.
-    #    tag: ${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }} # Optional tag or build version.
-    #- name: Upload CSharpMath test coverage results as CI artifacts
-    #  uses: actions/upload-artifact@v4
-    #  with:
-    #    name: CSharpMath test coverage results
-    #    path: .testcoverage/
-    #- name: Upload CSharpMath test coverage results to codecov.io
-    #  uses: codecov/codecov-action@v4
-    #  with:
-    #    file: .testcoverage/**/*.xml # optional
-    #    name: CSharpMath test coverage # optional
-    #    fail_ci_if_error: false # optional (default = false)
+    # Coverlet.MTP emits one Cobertura report per test project below the results directory.
+    - name: Collect test coverage
+      run: dotnet test --solution CSharpMath.slnx -c Release --results-directory .testcoverage --coverlet --coverlet-output-format cobertura --coverlet-include-test-assembly
+      shell: pwsh
+    - name: Run ReportGenerator on Test Coverage results
+      uses: danielpalme/ReportGenerator-GitHub-Action@5
+      with:
+        reports: '.testcoverage/**/*.xml'
+        targetdir: '.testcoverage/report'
+        reporttypes: 'Html'
+        title: 'CSharpMath test coverage results'
+        tag: ${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }}
+    - name: Upload CSharpMath test coverage results as CI artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: CSharpMath test coverage results
+        path: .testcoverage/
+    - name: Upload CSharpMath test coverage results to codecov.io
+      uses: codecov/codecov-action@v5
+      with:
+        files: .testcoverage/**/*.xml
+        name: CSharpMath test coverage
+        fail_ci_if_error: false
     - name: Upload CSharpMath.Rendering.Tests results as CI artifacts
       uses: actions/upload-artifact@v4
       if: always() # Run even when a previous step failed: https://stackoverflow.com/a/58859404/5429648

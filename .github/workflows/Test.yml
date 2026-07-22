@@ -11,18 +11,27 @@ jobs:
         os: [ubuntu-latest, macos-26] # windows-latest is tested in Nightly.yml. It also needs special handling with regards to CSharpMath.Uno.Example so it's omitted here.
     runs-on: ${{ matrix.os }}
     steps:
+    - uses: actions/checkout@v6
+      with:
+        submodules: recursive
+    - uses: actions/setup-dotnet@main
+      with:
+        dotnet-version: '10.x'
+    - name: Select recommended Xcode version
+      id: ios-version
+      if: startsWith(matrix.os, 'macos')
+      shell: bash
+      run: |
+        _RecommendedXcodeVersion=$(dotnet build CSharpMath.Maui.Example/CSharpMath.Maui.Example.csproj --no-restore -getProperty:_RecommendedXcodeVersion -f net10.0-ios -p:OutputType=Exe | tail -n 1 | tr -d '\r' | sed 's/\.[0-9]*$//')
+        echo "xcode-version=${_RecommendedXcodeVersion:-latest-stable}" >> "$GITHUB_OUTPUT"
     - uses: maxim-lobanov/setup-xcode@v1
       if: startsWith(matrix.os, 'macos')
       with:
-        # Check required Xcode version for latest "dotnet workload restore": https://github.com/dotnet/macios/releases
-        xcode-version: '26.2' # If this is to be changed, also check macos-version in matrix.os above
+        xcode-version: ${{ steps.ios-version.outputs.xcode-version }}
     - uses: actions/setup-dotnet@main
       with:
         dotnet-version: '10.x'
         workloads: ${{ case(startsWith(matrix.os, 'ubuntu'), 'maui-android, wasm-tools', 'maui, wasm-tools') }}
-    - uses: actions/checkout@v6
-      with:
-        submodules: recursive
     - name: Build Everything
       run: dotnet build
     - name: Run Tests
