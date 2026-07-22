@@ -46,8 +46,12 @@ jobs:
         
         dotnet build -c Not.Uno.Example -p:PackageReleaseNotes="$env:RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }}
     # Coverlet.MTP emits one timestamped OpenCover report per test project below the results directory.
+    # Note: --coverlet-include-test-assembly is intentionally omitted because it cannot work in MTP mode
+    # (the test assembly DLL is the controller process and is locked). GitHubActionsTestLogger.dll will
+    # also be locked. When coverlet hits a locked file, it throws an AggregateException and the entire
+    # coverage collection is aborted — producing no coverage files at all.
     - name: Test and collect coverage
-      run: dotnet test --no-build -c Release --solution CSharpMath.slnx --results-directory .testcoverage --coverlet --coverlet-output-format opencover --coverlet-file-prefix '$(AssemblyName)' --coverlet-include-test-assembly
+      run: dotnet test --no-build -c Release --solution CSharpMath.slnx --results-directory .testcoverage --coverlet --coverlet-output-format opencover --coverlet-exclude '[GitHubActionsTestLogger*]*'
       shell: pwsh
     - name: Run ReportGenerator on Test Coverage results
       uses: danielpalme/ReportGenerator-GitHub-Action@5
