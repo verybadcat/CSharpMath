@@ -45,14 +45,14 @@ jobs:
         $env:RELEASE_NOTES = $env:RELEASE_NOTES -replace ',','%2C' -replace ';','%3B'
         
         dotnet build -c Not.Uno.Example -p:PackageReleaseNotes="$env:RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }}
-    # Coverlet.MTP emits one Cobertura report per test project below the results directory.
+    # Coverlet.MTP emits one timestamped OpenCover report per test project below the results directory.
     - name: Test and collect coverage
-      run: dotnet test --no-build -c Release --solution CSharpMath.slnx --results-directory .testcoverage --coverlet --coverlet-output-format cobertura --coverlet-include-test-assembly
+      run: dotnet test --no-build -c Release --solution CSharpMath.slnx --results-directory .testcoverage --coverlet --coverlet-output-format opencover --coverlet-file-prefix '$(AssemblyName)' --coverlet-include-test-assembly
       shell: pwsh
     - name: Run ReportGenerator on Test Coverage results
       uses: danielpalme/ReportGenerator-GitHub-Action@5
       with:
-        reports: '.testcoverage/**/*.xml'
+        reports: '.testcoverage/**/*coverage.opencover.*.xml'
         targetdir: '.testcoverage/report'
         reporttypes: 'Html'
         title: 'CSharpMath test coverage results'
@@ -65,7 +65,7 @@ jobs:
     - name: Upload CSharpMath test coverage results to codecov.io
       uses: codecov/codecov-action@v7
       with:
-        files: .testcoverage/**/*.xml
+        files: .testcoverage/**/*coverage.opencover.*.xml
         name: CSharpMath test coverage
         fail_ci_if_error: false
     - name: Upload CSharpMath.Rendering.Tests results as CI artifacts
