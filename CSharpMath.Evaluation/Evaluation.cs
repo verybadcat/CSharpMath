@@ -867,7 +867,7 @@ namespace CSharpMath {
                   }
                   goto exitFor;
               }
-            exitFor:
+          exitFor:
             (next, error) =
               bracketArgument == null
               ? Transform(mathList, ref i, Precedence.FunctionApplication)

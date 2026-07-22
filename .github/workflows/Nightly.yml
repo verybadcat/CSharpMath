@@ -11,13 +11,13 @@ jobs:
     steps:
     - name: Update draft on GitHub Releases
       id: release_drafter
-      uses: release-drafter/release-drafter@v6.0.0 # Pinned to v6.0.0 to avoid v6.1.0 bug: https://github.com/release-drafter/release-drafter/issues/1425
+      uses: release-drafter/release-drafter@v7
       env:
         GITHUB_TOKEN: ${{ github.token }}
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         submodules: recursive
-    - uses: actions/setup-dotnet@main
+    - uses: actions/setup-dotnet@v6
       with:
         dotnet-version: '10.x'
         workloads: maui, wasm-tools
@@ -43,11 +43,9 @@ jobs:
         $env:RELEASE_NOTES = $env:RELEASE_NOTES -replace ',','%2C' -replace ';','%3B'
         
         dotnet build -c Not.Uno.Example -p:PackageReleaseNotes="$env:RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }}
-    - name: Test
-      run: dotnet test --no-build -c Release --solution CSharpMath.slnx
     # Coverlet.MTP emits one Cobertura report per test project below the results directory.
-    - name: Collect test coverage
-      run: dotnet test --solution CSharpMath.slnx -c Release --results-directory .testcoverage --coverlet --coverlet-output-format cobertura --coverlet-include-test-assembly
+    - name: Test and collect coverage
+      run: dotnet test --no-build -c Release --solution CSharpMath.slnx --results-directory .testcoverage --coverlet --coverlet-output-format cobertura --coverlet-include-test-assembly
       shell: pwsh
     - name: Run ReportGenerator on Test Coverage results
       uses: danielpalme/ReportGenerator-GitHub-Action@5
@@ -58,24 +56,24 @@ jobs:
         title: 'CSharpMath test coverage results'
         tag: ${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }}
     - name: Upload CSharpMath test coverage results as CI artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: CSharpMath test coverage results
         path: .testcoverage/
     - name: Upload CSharpMath test coverage results to codecov.io
-      uses: codecov/codecov-action@v5
+      uses: codecov/codecov-action@v7
       with:
         files: .testcoverage/**/*.xml
         name: CSharpMath test coverage
         fail_ci_if_error: false
     - name: Upload CSharpMath.Rendering.Tests results as CI artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       if: always() # Run even when a previous step failed: https://stackoverflow.com/a/58859404/5429648
       with:
         name: CSharpMath.Rendering.Tests results
         path: CSharpMath.Rendering.Tests/*/*.png
     - name: Upload NuGet packages as CI artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       if: always()
       with:
         name: NuGet packages

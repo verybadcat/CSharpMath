@@ -11,27 +11,29 @@ jobs:
         os: [ubuntu-latest, macos-26] # windows-latest is tested in Nightly.yml. It also needs special handling with regards to CSharpMath.Uno.Example so it's omitted here.
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         submodules: recursive
-    - uses: actions/setup-dotnet@main
+    - uses: actions/setup-dotnet@v6
       with:
         dotnet-version: '10.x'
+        workloads: ${{ case(startsWith(matrix.os, 'ubuntu'), 'maui-android, wasm-tools', 'maui, wasm-tools') }}
     - name: Select recommended Xcode version
       id: ios-version
       if: startsWith(matrix.os, 'macos')
       shell: bash
-      run: |
-        _RecommendedXcodeVersion=$(dotnet build CSharpMath.Maui.Example/CSharpMath.Maui.Example.csproj --no-restore -getProperty:_RecommendedXcodeVersion -f net10.0-ios -p:OutputType=Exe | tail -n 1 | tr -d '\r' | sed 's/\.[0-9]*$//')
-        echo "xcode-version=${_RecommendedXcodeVersion:-latest-stable}" >> "$GITHUB_OUTPUT"
+      # NOTE: .NET for iOS/tvOS/MacCatalyst checks the major.minor version of Xcode for version validation.
+      # Meanwhile, the available property for us (_RecommendedXcodeVersion) may include a build number like 26.6.1.
+      # We strip any patch component so setup-xcode uses semver range matching (bare "26.6" matches any 26.6.x).
+      # If we passed the full 3-component version like "26.6.1", Node.js's semver.satisfies would require
+      # an exact patch match, which could fail if the runner only has "26.6.0" (or vice versa).
+      # This property is more reliable than trying to derive the Xcode version from the workload version number, since the mapping is
+      # not always 1:1 (e.g. iOS 26.5 → Xcode 26.6), see https://github.com/dotnet/macios/issues/25818
+      run: echo "xcode-version=$(dotnet build CSharpMath.Maui.Example/CSharpMath.Maui.Example.csproj -getProperty:_RecommendedXcodeVersion -f net10.0-ios | cut -d. -f1-2)" >> "$GITHUB_OUTPUT"
     - uses: maxim-lobanov/setup-xcode@v1
       if: startsWith(matrix.os, 'macos')
       with:
         xcode-version: ${{ steps.ios-version.outputs.xcode-version }}
-    - uses: actions/setup-dotnet@main
-      with:
-        dotnet-version: '10.x'
-        workloads: ${{ case(startsWith(matrix.os, 'ubuntu'), 'maui-android, wasm-tools', 'maui, wasm-tools') }}
     - name: Build Everything
       run: dotnet build
     - name: Run Tests
