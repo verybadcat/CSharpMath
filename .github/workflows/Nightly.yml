@@ -8,16 +8,18 @@ jobs:
     permissions:
       contents: write
       packages: write
+      pull-requests: read
     steps:
     - name: Update draft on GitHub Releases
       id: release_drafter
-      uses: release-drafter/release-drafter@v6.0.0 # Pinned to v6.0.0 to avoid v6.1.0 bug: https://github.com/release-drafter/release-drafter/issues/1425
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      uses: release-drafter/release-drafter@v7
       env:
         GITHUB_TOKEN: ${{ github.token }}
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         submodules: recursive
-    - uses: actions/setup-dotnet@main
+    - uses: actions/setup-dotnet@v6
       with:
         dotnet-version: '10.x'
         workloads: maui, wasm-tools
@@ -43,40 +45,41 @@ jobs:
         $env:RELEASE_NOTES = $env:RELEASE_NOTES -replace ',','%2C' -replace ';','%3B'
         
         dotnet build -c Not.Uno.Example -p:PackageReleaseNotes="$env:RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }}
-    - name: Test
-      run: dotnet test --no-build -c Release --solution CSharpMath.slnx
-    #### Awaiting coverlet.MTP at https://github.com/coverlet-coverage/coverlet/pull/1788
-    #    # --collect:"XPlat Code Coverage" means collect test coverage with https://github.com/coverlet-coverage/coverlet
-    #    # Coverlet settings come after --: https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/VSTestIntegration.md#advanced-options-supported-via-runsettings
-    #    dotnet test --solution CSharpMath.slnx -c Release --collect:"XPlat Code Coverage" --results-directory .testcoverage -p:PackageReleaseNotes="$env:RELEASE_NOTES" -p:PackageVersion=${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }} -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.IncludeTestAssembly=true
-    #  shell: pwsh
-    #- name: Run ReportGenerator on Test Coverage results
-    #  uses: danielpalme/ReportGenerator-GitHub-Action@5
-    #  with:
-    #    reports: '.testcoverage/**/*.*' # REQUIRED # The coverage reports that should be parsed (separated by semicolon). Globbing is supported.
-    #    targetdir: '.testcoverage/report' # REQUIRED # The directory where the generated report should be saved.
-    #    reporttypes: 'Html' # The output formats and scope (separated by semicolon) Values: Badges, Clover, Cobertura, CsvSummary, Html, HtmlChart, HtmlInline, HtmlInline_AzurePipelines, HtmlInline_AzurePipelines_Dark, HtmlSummary, JsonSummary, Latex, LatexSummary, lcov, MHtml, PngChart, SonarQube, TeamCitySummary, TextSummary, Xml, XmlSummary
-    #    title: 'CSharpMath test coverage results' # Optional title.
-    #    tag: ${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }} # Optional tag or build version.
-    #- name: Upload CSharpMath test coverage results as CI artifacts
-    #  uses: actions/upload-artifact@v4
-    #  with:
-    #    name: CSharpMath test coverage results
-    #    path: .testcoverage/
-    #- name: Upload CSharpMath test coverage results to codecov.io
-    #  uses: codecov/codecov-action@v4
-    #  with:
-    #    file: .testcoverage/**/*.xml # optional
-    #    name: CSharpMath test coverage # optional
-    #    fail_ci_if_error: false # optional (default = false)
+    # Coverlet.MTP emits one timestamped OpenCover report per test project below the results directory.
+    # Note: --coverlet-include-test-assembly is intentionally omitted because it cannot work in MTP mode
+    # (the test assembly DLL is the controller process and is locked). GitHubActionsTestLogger.dll will
+    # also be locked. When coverlet hits a locked file, it throws an AggregateException and the entire
+    # coverage collection is aborted — producing no coverage files at all.
+    - name: Test and collect coverage
+      run: dotnet test --no-build -c Release --solution CSharpMath.slnx --results-directory .testcoverage --coverlet --coverlet-output-format opencover --coverlet-exclude '[GitHubActionsTestLogger*]*'
+      shell: pwsh
+    - name: Run ReportGenerator on Test Coverage results
+      uses: danielpalme/ReportGenerator-GitHub-Action@5
+      with:
+        reports: '.testcoverage/**/*coverage.opencover.*.xml'
+        targetdir: '.testcoverage/report'
+        reporttypes: 'Html'
+        title: 'CSharpMath test coverage results'
+        tag: ${{ steps.release_drafter.outputs.tag_name || format('{0}-pr', github.event.number) }}-ci-${{ github.sha }}
+    - name: Upload CSharpMath test coverage results as CI artifacts
+      uses: actions/upload-artifact@v7
+      with:
+        name: CSharpMath test coverage results
+        path: .testcoverage/
+    - name: Upload CSharpMath test coverage results to codecov.io
+      uses: codecov/codecov-action@v7
+      with:
+        files: .testcoverage/**/*coverage.opencover.*.xml
+        name: CSharpMath test coverage
+        fail_ci_if_error: false
     - name: Upload CSharpMath.Rendering.Tests results as CI artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       if: always() # Run even when a previous step failed: https://stackoverflow.com/a/58859404/5429648
       with:
         name: CSharpMath.Rendering.Tests results
         path: CSharpMath.Rendering.Tests/*/*.png
     - name: Upload NuGet packages as CI artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       if: always()
       with:
         name: NuGet packages

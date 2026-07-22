@@ -12,6 +12,7 @@ abstract CSharpMath.Display.FrontEnd.FontMathTable<TFont, TGlyph>.FractionNumera
 abstract CSharpMath.Display.FrontEnd.FontMathTable<TFont, TGlyph>.FractionNumeratorGapMin(TFont font) -> float
 abstract CSharpMath.Display.FrontEnd.FontMathTable<TFont, TGlyph>.FractionNumeratorShiftUp(TFont font) -> float
 abstract CSharpMath.Display.FrontEnd.FontMathTable<TFont, TGlyph>.FractionRuleThickness(TFont font) -> float
+abstract CSharpMath.Display.FrontEnd.FontMathTable<TFont, TGlyph>.GetHorizontalGlyphAssembly(TGlyph rawGlyph, TFont font) -> System.Collections.Generic.IEnumerable<CSharpMath.Display.GlyphPart<TGlyph>!>?
 abstract CSharpMath.Display.FrontEnd.FontMathTable<TFont, TGlyph>.GetHorizontalVariantsForGlyph(TGlyph rawGlyph) -> (System.Collections.Generic.IEnumerable<TGlyph>! variants, int count)
 abstract CSharpMath.Display.FrontEnd.FontMathTable<TFont, TGlyph>.GetItalicCorrection(TFont font, TGlyph glyph) -> float
 abstract CSharpMath.Display.FrontEnd.FontMathTable<TFont, TGlyph>.GetLargerGlyph(TFont font, TGlyph glyph) -> TGlyph
@@ -185,6 +186,13 @@ CSharpMath.Atom.Atoms.UnaryOperator
 CSharpMath.Atom.Atoms.UnaryOperator.Clone(bool finalize) -> CSharpMath.Atom.Atoms.UnaryOperator!
 CSharpMath.Atom.Atoms.UnaryOperator.ToOrdinary() -> CSharpMath.Atom.Atoms.Ordinary!
 CSharpMath.Atom.Atoms.UnaryOperator.UnaryOperator(string! nucleus) -> void
+CSharpMath.Atom.Atoms.UnderAnnotation
+CSharpMath.Atom.Atoms.UnderAnnotation.Clone(bool finalize) -> CSharpMath.Atom.Atoms.UnderAnnotation!
+CSharpMath.Atom.Atoms.UnderAnnotation.EqualsUnderAnnotation(CSharpMath.Atom.Atoms.UnderAnnotation! other) -> bool
+CSharpMath.Atom.Atoms.UnderAnnotation.InnerList.get -> CSharpMath.Atom.MathList!
+CSharpMath.Atom.Atoms.UnderAnnotation.UnderAnnotation(string! value, CSharpMath.Atom.MathList? innerList = null, CSharpMath.Atom.MathList? underList = null) -> void
+CSharpMath.Atom.Atoms.UnderAnnotation.UnderList.get -> CSharpMath.Atom.MathList?
+CSharpMath.Atom.Atoms.UnderAnnotation.UnderList.set -> void
 CSharpMath.Atom.Atoms.Underline
 CSharpMath.Atom.Atoms.Underline.Clone(bool finalize) -> CSharpMath.Atom.Atoms.Underline!
 CSharpMath.Atom.Atoms.Underline.EqualsUnderline(CSharpMath.Atom.Atoms.Underline! other) -> bool
@@ -493,6 +501,27 @@ CSharpMath.Display.Displays.GlyphDisplay<TFont, TGlyph>.ShiftDown.set -> void
 CSharpMath.Display.Displays.GlyphDisplay<TFont, TGlyph>.TextColor.get -> System.Drawing.Color?
 CSharpMath.Display.Displays.GlyphDisplay<TFont, TGlyph>.TextColor.set -> void
 CSharpMath.Display.Displays.GlyphDisplay<TFont, TGlyph>.Width.get -> float
+CSharpMath.Display.Displays.HorizontalGlyphConstructionDisplay<TFont, TGlyph>
+CSharpMath.Display.Displays.HorizontalGlyphConstructionDisplay<TFont, TGlyph>.Ascent.get -> float
+CSharpMath.Display.Displays.HorizontalGlyphConstructionDisplay<TFont, TGlyph>.BackColor.get -> System.Drawing.Color?
+CSharpMath.Display.Displays.HorizontalGlyphConstructionDisplay<TFont, TGlyph>.BackColor.set -> void
+CSharpMath.Display.Displays.HorizontalGlyphConstructionDisplay<TFont, TGlyph>.Descent.get -> float
+CSharpMath.Display.Displays.HorizontalGlyphConstructionDisplay<TFont, TGlyph>.Draw(CSharpMath.Display.FrontEnd.IGraphicsContext<TFont, TGlyph>! context) -> void
+CSharpMath.Display.Displays.HorizontalGlyphConstructionDisplay<TFont, TGlyph>.Font.get -> TFont
+CSharpMath.Display.Displays.HorizontalGlyphConstructionDisplay<TFont, TGlyph>.HasScript.get -> bool
+CSharpMath.Display.Displays.HorizontalGlyphConstructionDisplay<TFont, TGlyph>.HasScript.set -> void
+CSharpMath.Display.Displays.HorizontalGlyphConstructionDisplay<TFont, TGlyph>.HorizontalGlyphConstructionDisplay(System.Collections.Generic.IReadOnlyList<TGlyph>! glyphs, System.Collections.Generic.IEnumerable<float>! offsets, TFont font, float ascent, float descent, float width) -> void
+CSharpMath.Display.Displays.HorizontalGlyphConstructionDisplay<TFont, TGlyph>.Position.get -> System.Drawing.PointF
+CSharpMath.Display.Displays.HorizontalGlyphConstructionDisplay<TFont, TGlyph>.Position.set -> void
+CSharpMath.Display.Displays.HorizontalGlyphConstructionDisplay<TFont, TGlyph>.Range.get -> CSharpMath.Atom.Range
+CSharpMath.Display.Displays.HorizontalGlyphConstructionDisplay<TFont, TGlyph>.Range.set -> void
+CSharpMath.Display.Displays.HorizontalGlyphConstructionDisplay<TFont, TGlyph>.SetPosition(System.Drawing.PointF position) -> void
+CSharpMath.Display.Displays.HorizontalGlyphConstructionDisplay<TFont, TGlyph>.SetTextColorRecursive(System.Drawing.Color? textColor) -> void
+CSharpMath.Display.Displays.HorizontalGlyphConstructionDisplay<TFont, TGlyph>.ShiftDown.get -> float
+CSharpMath.Display.Displays.HorizontalGlyphConstructionDisplay<TFont, TGlyph>.ShiftDown.set -> void
+CSharpMath.Display.Displays.HorizontalGlyphConstructionDisplay<TFont, TGlyph>.TextColor.get -> System.Drawing.Color?
+CSharpMath.Display.Displays.HorizontalGlyphConstructionDisplay<TFont, TGlyph>.TextColor.set -> void
+CSharpMath.Display.Displays.HorizontalGlyphConstructionDisplay<TFont, TGlyph>.Width.get -> float
 CSharpMath.Display.Displays.InnerDisplay<TFont, TGlyph>
 CSharpMath.Display.Displays.InnerDisplay<TFont, TGlyph>.Ascent.get -> float
 CSharpMath.Display.Displays.InnerDisplay<TFont, TGlyph>.BackColor.get -> System.Drawing.Color?
@@ -636,6 +665,25 @@ CSharpMath.Display.Displays.TextRunDisplay<TFont, TGlyph>.TextColor.get -> Syste
 CSharpMath.Display.Displays.TextRunDisplay<TFont, TGlyph>.TextColor.set -> void
 CSharpMath.Display.Displays.TextRunDisplay<TFont, TGlyph>.TextRunDisplay(CSharpMath.Display.AttributedGlyphRun<TFont, TGlyph>! run, CSharpMath.Atom.Range range, CSharpMath.Display.FrontEnd.TypesettingContext<TFont, TGlyph>! context) -> void
 CSharpMath.Display.Displays.TextRunDisplay<TFont, TGlyph>.Width.get -> float
+CSharpMath.Display.Displays.UnderAnnotationDisplay<TFont, TGlyph>
+CSharpMath.Display.Displays.UnderAnnotationDisplay<TFont, TGlyph>.AnnotationGlyph.get -> CSharpMath.Display.IGlyphDisplay<TFont, TGlyph>!
+CSharpMath.Display.Displays.UnderAnnotationDisplay<TFont, TGlyph>.Ascent.get -> float
+CSharpMath.Display.Displays.UnderAnnotationDisplay<TFont, TGlyph>.BackColor.get -> System.Drawing.Color?
+CSharpMath.Display.Displays.UnderAnnotationDisplay<TFont, TGlyph>.BackColor.set -> void
+CSharpMath.Display.Displays.UnderAnnotationDisplay<TFont, TGlyph>.Descent.get -> float
+CSharpMath.Display.Displays.UnderAnnotationDisplay<TFont, TGlyph>.Draw(CSharpMath.Display.FrontEnd.IGraphicsContext<TFont, TGlyph>! context) -> void
+CSharpMath.Display.Displays.UnderAnnotationDisplay<TFont, TGlyph>.HasScript.get -> bool
+CSharpMath.Display.Displays.UnderAnnotationDisplay<TFont, TGlyph>.HasScript.set -> void
+CSharpMath.Display.Displays.UnderAnnotationDisplay<TFont, TGlyph>.Inner.get -> CSharpMath.Display.IDisplay<TFont, TGlyph>!
+CSharpMath.Display.Displays.UnderAnnotationDisplay<TFont, TGlyph>.Position.get -> System.Drawing.PointF
+CSharpMath.Display.Displays.UnderAnnotationDisplay<TFont, TGlyph>.Position.set -> void
+CSharpMath.Display.Displays.UnderAnnotationDisplay<TFont, TGlyph>.Range.get -> CSharpMath.Atom.Range
+CSharpMath.Display.Displays.UnderAnnotationDisplay<TFont, TGlyph>.SetTextColorRecursive(System.Drawing.Color? textColor) -> void
+CSharpMath.Display.Displays.UnderAnnotationDisplay<TFont, TGlyph>.TextColor.get -> System.Drawing.Color?
+CSharpMath.Display.Displays.UnderAnnotationDisplay<TFont, TGlyph>.TextColor.set -> void
+CSharpMath.Display.Displays.UnderAnnotationDisplay<TFont, TGlyph>.UnderAnnotationDisplay(CSharpMath.Display.IDisplay<TFont, TGlyph>! inner, CSharpMath.Display.IDisplay<TFont, TGlyph>? underList, CSharpMath.Display.IGlyphDisplay<TFont, TGlyph>! annotationGlyph, float underListBasedDescent, System.Drawing.PointF position) -> void
+CSharpMath.Display.Displays.UnderAnnotationDisplay<TFont, TGlyph>.UnderList.get -> CSharpMath.Display.IDisplay<TFont, TGlyph>?
+CSharpMath.Display.Displays.UnderAnnotationDisplay<TFont, TGlyph>.Width.get -> float
 CSharpMath.Display.FrontEnd.FontMathTable<TFont, TGlyph>
 CSharpMath.Display.FrontEnd.FontMathTable<TFont, TGlyph>.FontMathTable() -> void
 CSharpMath.Display.FrontEnd.FontMathTable<TFont, TGlyph>.GetStyleSize(CSharpMath.Atom.LineStyle style, TFont font) -> float
@@ -1037,9 +1085,6 @@ override CSharpMath.Atom.Atoms.Overline.Equals(object! obj) -> bool
 override CSharpMath.Atom.Atoms.Overline.GetHashCode() -> int
 override CSharpMath.Atom.Atoms.Overline.ScriptsAllowed.get -> bool
 override CSharpMath.Atom.Atoms.Placeholder.ScriptsAllowed.get -> bool
-override CSharpMath.Atom.Atoms.Prime.Equals(object! obj) -> bool
-override CSharpMath.Atom.Atoms.Prime.GetHashCode() -> int
-override CSharpMath.Atom.Atoms.Prime.ScriptsAllowed.get -> bool
 override CSharpMath.Atom.Atoms.Punctuation.ScriptsAllowed.get -> bool
 override CSharpMath.Atom.Atoms.Radical.DebugString.get -> string!
 override CSharpMath.Atom.Atoms.Radical.GetHashCode() -> int
@@ -1060,6 +1105,8 @@ override CSharpMath.Atom.Atoms.Table.Equals(object! obj) -> bool
 override CSharpMath.Atom.Atoms.Table.GetHashCode() -> int
 override CSharpMath.Atom.Atoms.Table.ScriptsAllowed.get -> bool
 override CSharpMath.Atom.Atoms.UnaryOperator.ScriptsAllowed.get -> bool
+override CSharpMath.Atom.Atoms.UnderAnnotation.DebugString.get -> string!
+override CSharpMath.Atom.Atoms.UnderAnnotation.ScriptsAllowed.get -> bool
 override CSharpMath.Atom.Atoms.Underline.DebugString.get -> string!
 override CSharpMath.Atom.Atoms.Underline.Equals(object! obj) -> bool
 override CSharpMath.Atom.Atoms.Underline.GetHashCode() -> int
@@ -1090,6 +1137,7 @@ override CSharpMath.Display.Displays.OverOrUnderlineDisplay<TFont, TGlyph>.ToStr
 override CSharpMath.Display.Displays.RadicalDisplay<TFont, TGlyph>.ToString() -> string!
 override CSharpMath.Display.Displays.TextLineDisplay<TFont, TGlyph>.ToString() -> string!
 override CSharpMath.Display.Displays.TextRunDisplay<TFont, TGlyph>.ToString() -> string!
+override CSharpMath.Display.Displays.UnderAnnotationDisplay<TFont, TGlyph>.ToString() -> string!
 override CSharpMath.Display.GlyphPart<TGlyph>.ToString() -> string!
 override CSharpMath.Editor.MathListIndex.Equals(object? obj) -> bool
 override CSharpMath.Editor.MathListIndex.GetHashCode() -> int

@@ -304,6 +304,7 @@ override CSharpMath.Rendering.BackEnd.MathTable.FractionNumeratorDisplayStyleShi
 override CSharpMath.Rendering.BackEnd.MathTable.FractionNumeratorGapMin(CSharpMath.Rendering.BackEnd.Fonts! fonts) -> float
 override CSharpMath.Rendering.BackEnd.MathTable.FractionNumeratorShiftUp(CSharpMath.Rendering.BackEnd.Fonts! fonts) -> float
 override CSharpMath.Rendering.BackEnd.MathTable.FractionRuleThickness(CSharpMath.Rendering.BackEnd.Fonts! fonts) -> float
+override CSharpMath.Rendering.BackEnd.MathTable.GetHorizontalGlyphAssembly(CSharpMath.Rendering.BackEnd.Glyph rawGlyph, CSharpMath.Rendering.BackEnd.Fonts! fonts) -> System.Collections.Generic.IEnumerable<CSharpMath.Display.GlyphPart<CSharpMath.Rendering.BackEnd.Glyph>!>?
 override CSharpMath.Rendering.BackEnd.MathTable.GetHorizontalVariantsForGlyph(CSharpMath.Rendering.BackEnd.Glyph rawGlyph) -> (System.Collections.Generic.IEnumerable<CSharpMath.Rendering.BackEnd.Glyph>! variants, int count)
 override CSharpMath.Rendering.BackEnd.MathTable.GetItalicCorrection(CSharpMath.Rendering.BackEnd.Fonts! fonts, CSharpMath.Rendering.BackEnd.Glyph glyph) -> float
 override CSharpMath.Rendering.BackEnd.MathTable.GetLargerGlyph(CSharpMath.Rendering.BackEnd.Fonts! fonts, CSharpMath.Rendering.BackEnd.Glyph glyph) -> CSharpMath.Rendering.BackEnd.Glyph
@@ -394,11 +395,6 @@ override CSharpMath.Rendering.Text.TextAtom.Style.SingleChar(CSharpMath.Atom.Fon
 override CSharpMath.Rendering.Text.TextAtom.Text.Equals(CSharpMath.Rendering.Text.TextAtom! atom) -> bool
 override CSharpMath.Rendering.Text.TextAtom.Text.GetHashCode() -> int
 override CSharpMath.Rendering.Text.TextAtom.Text.SingleChar(CSharpMath.Atom.FontStyle style) -> int?
-override Typography.OpenFont.Bounds.ToString() -> string!
-override Typography.OpenFont.CFF.Cff1GlyphData.ToString() -> string!
-override Typography.OpenFont.Glyph.ToString() -> string!
-override Typography.OpenFont.GlyphPointF.ToString() -> string!
-override Typography.OpenFont.MathGlyphs.GlyphPartRecord.ToString() -> string!
 override Typography.OpenFont.MathGlyphs.MathGlyphVariantRecord.ToString() -> string!
 override Typography.OpenFont.MathGlyphs.MathKern.ToString() -> string!
 override Typography.OpenFont.MathGlyphs.MathValueRecord.ToString() -> string!

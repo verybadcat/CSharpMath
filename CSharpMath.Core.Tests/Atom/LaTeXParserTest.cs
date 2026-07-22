@@ -408,6 +408,40 @@ namespace CSharpMath.Core.AtomTests {
       Assert.Equal(@"\underline{2}", LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
+    /// <summary>
+    /// Test underbrace without under
+    /// </summary>
+    [Fact]
+    public void TestUnderbrace() {
+      var latexString = @"\underbrace {x}";
+      var list = ParseLaTeX(latexString);
+
+      Assert.Collection(list,
+        CheckAtom<UnderAnnotation>("\u23df", underBrace =>
+          Assert.Collection(underBrace.InnerList, CheckAtom<Variable>("x"))
+        )
+      );
+
+      Assert.Equal(latexString, LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+
+    /// <summary>
+    /// Test underbrace with under
+    /// </summary>
+    [Fact]
+    public void TestUnderbraceWithUnder() {
+      var latexString = @"\underbrace {x}_{y}";
+      var list = ParseLaTeX(latexString);
+
+      Assert.Collection(list,
+        CheckAtom<UnderAnnotation>("\u23df", underBrace =>
+          Assert.Collection(underBrace.InnerList, CheckAtom<Variable>("x"))
+        )
+      );
+
+      Assert.Equal(latexString, LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+
     [Fact]
     public void TestAccent() {
       var list = ParseLaTeX(@"\bar x");

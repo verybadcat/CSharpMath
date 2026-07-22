@@ -128,7 +128,9 @@ c\alpha + d\gamma & c\beta + d \delta
     public const string TangentPeriodShift = @"\tan(\theta\pm\frac\pi4)=\frac{\tan\theta\pm1}{1\mp\tan\theta}";
     public const string Taylor = @"\begin{eqnarray} e^x  &=&  \sum_{n=0}^{\infty}\frac{x^n}{n!} \\ \\ \sin(x) &=& \sum_{n=0}^{\infty}(-1)^n\frac{x^{2n+1}}{(2n+1)!}  \\ \\ -\ln(1-x)   &=& \sum_{n=1}^{\infty}\frac{x^n}{n}  \ \ \ \ \ (-1 \leq x < 1) \end{eqnarray}";
     public const string TwoSin = @"2 \sin";
-
+    public const string Underbrace = @"\underbrace{abcd}";
+    public const string UnderbraceSubscript = @"\underbrace{abcdefghklmnopqrst} _{eee}";
+    public const string UnderbraceSubscriptIntegral = @"\underbrace{\frac{abcd}{efgh} \int \limits _a^b f(x)dx} _{\frac{abcd}{efgh} \int \limits _a^b f(x)dx}";
     public const string Underline = @"\underline{Underline}";
 
     public const string VectorProjection = @"Proj_\vec{v}\vec{u}=|\vec u|\cos\theta\times\frac\vec v{|\vec v|}=|\vec u|\frac{\vec u \cdot \vec v}{|\vec u||\vec v|}\times\frac\vec v{|\vec v|}\\\text{Suppose \mathit{u} and \mathit v are unit vectors, }Proj_\vec v\vec u = (\vec u\cdot\vec v)\vec v";

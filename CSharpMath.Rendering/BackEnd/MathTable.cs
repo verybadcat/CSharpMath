@@ -58,6 +58,18 @@ namespace CSharpMath.Rendering.BackEnd {
           record.EndConnectorLength * scale,
           record.IsExtender));
     }
+
+    public override IEnumerable<GlyphPart<Glyph>>? GetHorizontalGlyphAssembly(Glyph rawGlyph, Fonts fonts) {
+      var scale = rawGlyph.Typeface.CalculateScaleToPixelFromPointSize(fonts.PointSize);
+      return
+        rawGlyph.Info.MathGlyphInfo?.HoriGlyphConstruction?.GlyphAsm_GlyphPartRecords.Select(record =>
+        new GlyphPart<Glyph>(
+          new Glyph(rawGlyph.Typeface, rawGlyph.Typeface.GetGlyph(record.GlyphId)),
+          record.FullAdvance * scale,
+          record.StartConnectorLength * scale,
+          record.EndConnectorLength * scale,
+          record.IsExtender));
+    }
     public override float LowerLimitBaselineDropMin(Fonts fonts) => ReadRecord(fonts.MathConsts.LowerLimitBaselineDropMin, fonts);
     public override float LowerLimitGapMin(Fonts fonts) => ReadRecord(fonts.MathConsts.LowerLimitGapMin, fonts);
     public override float MinConnectorOverlap(Fonts fonts) =>

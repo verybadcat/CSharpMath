@@ -5,8 +5,9 @@
     <StartupObject>CSharpMath.Core.Checker</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-	<ProjectReference Include="..\CSharpMath\CSharpMath.csproj" />
-	<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-	<EmbeddedResource Include="Resources\latinmodern-math.json" />
+    <ProjectReference Include="..\CSharpMath\CSharpMath.csproj" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <EmbeddedResource Include="Resources\latinmodern-math.json" />
+    <None Include="Resources\MathTableExport.py" />
   </ItemGroup>
 </Project>

@@ -493,6 +493,62 @@ namespace CSharpMath.Core.DisplayTests {
           })(accent.Accentee);
       });
     [Fact]
+    public void TestUnderAnnotation() =>
+      TestOuter(@"\underbrace {x}_{y}", 1, 14, 39.6, 10, d => {
+        var under = Assert.IsType<UnderAnnotationDisplay<TFont, TGlyph>>(d);
+        Assert.Equal(new PointF(), under.Position);
+        var annotation = Assert.IsType<GlyphDisplay<TFont, TGlyph>>(under.AnnotationGlyph);
+        Assert.Equal(0, annotation.ShiftDown);
+        Assert.Equal((TGlyph)'\u23df', annotation.Glyph);
+        Approximately.Equal(new PointF(0, -4), annotation.Position);
+        Assert.False(annotation.HasScript);
+        Assert.Equal(Range.NotFound, annotation.Range);
+        TestList(1, 14, 4, 10, 0, 0, LinePosition.Regular, Range.UndefinedInt,
+          d => {
+            var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
+            Assert.Single(line.Atoms);
+            Assert.Equal("𝑥", string.Concat(line.Text));
+            Assert.Equal(new PointF(), line.Position);
+            Assert.False(line.HasScript);
+          })(under.Inner);
+        TestList(1, 9.8, 2.8, 7, 1.5, -36.8, LinePosition.Regular, Range.UndefinedInt,
+          d => {
+            var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
+            Assert.Single(line.Atoms);
+            Assert.Equal("𝑦", string.Concat(line.Text));
+            Assert.Equal(new PointF(), line.Position);
+            Assert.False(line.HasScript);
+          })(under.UnderList);
+      });
+    [Fact]
+    public void TestUnderAnnotation2() =>
+      TestOuter(@"\underbrace {xxxxx}_{y}", 5, 14, 39.6, 50, d => {
+        var under = Assert.IsType<UnderAnnotationDisplay<TFont, TGlyph>>(d);
+        Assert.Equal(new PointF(), under.Position);
+        var annotation = Assert.IsType<HorizontalGlyphConstructionDisplay<TFont, TGlyph>>(under.AnnotationGlyph);
+        Assert.Equal(0, annotation.ShiftDown);
+        Approximately.Equal(new PointF(0, -4), annotation.Position);
+        Assert.False(annotation.HasScript);
+        Assert.Equal(Range.NotFound, annotation.Range);
+        TestList(5, 14, 4, 50, 0, 0, LinePosition.Regular, Range.UndefinedInt,
+          d => {
+            var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
+            Assert.Equal(5, line.Atoms.Count);
+            Assert.All(line.Atoms, a => Assert.IsType<Atom.Atoms.Ordinary>(a));
+            Assert.Equal("𝑥𝑥𝑥𝑥𝑥", string.Concat(line.Text));
+            Assert.Equal(new PointF(), line.Position);
+            Assert.False(line.HasScript);
+          })(under.Inner);
+        TestList(1, 9.8, 2.8, 7, 21.5, -36.8, LinePosition.Regular, Range.UndefinedInt,
+          d => {
+            var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
+            Assert.Single(line.Atoms);
+            Assert.Equal("𝑦", string.Concat(line.Text));
+            Assert.Equal(new PointF(), line.Position);
+            Assert.False(line.HasScript);
+          })(under.UnderList);
+      });
+    [Fact]
     public void TestColor() =>
       TestOuter(@"\color{red}\color{blue}x\colorbox{yellow}\colorbox{green}yz", 3, 14, 4, 30,
         l1 => {

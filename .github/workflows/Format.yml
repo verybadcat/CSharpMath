@@ -6,11 +6,11 @@ jobs:
     if: (github.event_name == 'pull_request') == github.event.pull_request.head.repo.fork
     runs-on: windows-latest
     steps:
-    - uses: actions/setup-dotnet@main
+    - uses: actions/setup-dotnet@v6
       with:
         dotnet-version: '10.x'
         workloads: maui-ios, maui-maccatalyst, maui-android, wasm-tools
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         submodules: recursive
     - name: Check formatting (Fix with "dotnet format --exclude Typography" at repository root)

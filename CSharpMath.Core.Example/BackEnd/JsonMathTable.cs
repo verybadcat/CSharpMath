@@ -14,7 +14,7 @@ namespace CSharpMath.Core.BackEnd {
     /// typically loaded from a .json file.</summary>
     private readonly JToken _mathTable;
     private readonly JObject _constantsDictionary;
-    private readonly JObject _assemblyTable;
+    private readonly JObject _vAssemblyTable, _hAssemblyTable;
     private readonly JObject _italicTable;
     public TestFontMeasurer FontMeasurer { get; }
     public TestGlyphNameProvider GlyphNameProvider { get; }
@@ -41,7 +41,8 @@ namespace CSharpMath.Core.BackEnd {
       GlyphBoundsProvider = glyphBoundsProvider;
       _mathTable = mathTable;
       _constantsDictionary = GetTable("constants");
-      _assemblyTable = GetTable("v_assembly");
+      _vAssemblyTable = GetTable("v_assembly");
+      _hAssemblyTable = GetTable("h_assembly");
       _italicTable = GetTable("italic");
     }
     // different from _ConstantFromTable in that the _ConstantFromTable requires
@@ -137,7 +138,18 @@ namespace CSharpMath.Core.BackEnd {
     private const string _extenderKey = "extender";
     private const string _glyphKey = "glyph";
     public override IEnumerable<GlyphPart<TGlyph>>? GetVerticalGlyphAssembly(TGlyph rawGlyph, TFont font) =>
-      _assemblyTable[GlyphNameProvider.GetGlyphName(rawGlyph)]?[_assemblyPartsKey] is JArray parts
+      _vAssemblyTable[GlyphNameProvider.GetGlyphName(rawGlyph)]?[_assemblyPartsKey] is JArray parts
+      ? parts.Select(partInfo =>
+        new GlyphPart<TGlyph>(
+          GlyphNameProvider.GetGlyph(partInfo[_glyphKey]!.Value<string>()!),
+          FontUnitsToPt(font, partInfo[_advanceKey]!.Value<int>()),
+          FontUnitsToPt(font, partInfo[_startConnectorKey]!.Value<int>()),
+          FontUnitsToPt(font, partInfo[_endConnectorKey]!.Value<int>()),
+          partInfo[_extenderKey]!.Value<bool>()))
+      // Should have been defined, but let's return null
+      : null;
+    public override IEnumerable<GlyphPart<TGlyph>>? GetHorizontalGlyphAssembly(TGlyph rawGlyph, TFont font) =>
+      _hAssemblyTable[GlyphNameProvider.GetGlyphName(rawGlyph)]?[_assemblyPartsKey] is JArray parts
       ? parts.Select(partInfo =>
         new GlyphPart<TGlyph>(
           GlyphNameProvider.GetGlyph(partInfo[_glyphKey]!.Value<string>()!),

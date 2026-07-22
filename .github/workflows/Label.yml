@@ -7,11 +7,12 @@ jobs:
     permissions:
       pull-requests: write # Allow adding a label to this pull request
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         fetch-depth: 0 # Fetch all commit history and tags, instead of the default fetch of only one commit
         ref: ${{ github.event.pull_request.head.sha }}  # Checkout the PR branch
-    - name: If there are changes in PublicAPI.Shipped.txt, fail the workflow
+        allow-unsafe-pr-checkout: true # We confirm that we want to checkout the PR branch even if it is from a forked repository, which is normally unsafe.
+    - name: If there are changes in PublicApi.Shipped.txt, fail the workflow
       if: github.head_ref != 'action/ship-publicapi' # Same branch name specified in Release.yml
       run: |
         $changes = git diff --numstat --shortstat origin/${{ github.base_ref }}...HEAD -- '**/PublicAPI.Shipped.txt' # Note that ** must expand to at least one folder here, this doesn't check root

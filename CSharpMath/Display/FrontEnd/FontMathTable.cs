@@ -68,6 +68,7 @@ namespace CSharpMath.Display.FrontEnd {
     #endregion
     #region glyph assembly
     public abstract IEnumerable<GlyphPart<TGlyph>>? GetVerticalGlyphAssembly(TGlyph rawGlyph, TFont font);
+    public abstract IEnumerable<GlyphPart<TGlyph>>? GetHorizontalGlyphAssembly(TGlyph rawGlyph, TFont font);
     public abstract float MinConnectorOverlap(TFont font);
     public abstract (IEnumerable<TGlyph> variants, int count) GetVerticalVariantsForGlyph(TGlyph rawGlyph);
     public abstract (IEnumerable<TGlyph> variants, int count) GetHorizontalVariantsForGlyph(TGlyph rawGlyph);
