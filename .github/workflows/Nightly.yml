@@ -16,6 +16,8 @@ jobs:
     - name: Update draft on GitHub Releases
       id: release_drafter
       uses: release-drafter/release-drafter@v7
+      with:
+        config-name: file:release-drafter.yml
     - uses: actions/setup-dotnet@v6
       with:
         dotnet-version: '10.x'
