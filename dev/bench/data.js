@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1784750976152,
+  "lastUpdate": 1784874347067,
   "repoUrl": "https://github.com/verybadcat/CSharpMath",
   "entries": {
     "CSharpMath.Rendering.Benchmarks": [
@@ -3510,6 +3510,96 @@ window.BENCHMARK_DATA = {
             "value": 2921239.676339286,
             "unit": "ns",
             "range": "± 35691.50084153463"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "198982749+Copilot@users.noreply.github.com",
+            "name": "Copilot",
+            "username": "Copilot"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "c52b0ad54cd0d389645adfa06ea287a10f6963bf",
+          "message": "Fix Windows Nightly CI failure in release-drafter config loading (#261)\n\n* Initial plan\n\n* Fix Windows release-drafter config loading\n\n* ci: preserve release drafter outputs on pull requests\n\n* Real fix?\n\n* See if we can omit things\n\n* Confirm the actual fix\n\n---------\n\nCo-authored-by: copilot-swe-agent[bot] <198982749+Copilot@users.noreply.github.com>\nCo-authored-by: Hadrian Tang <hadrianwttang@outlook.com>",
+          "timestamp": "2026-07-24T06:19:48Z",
+          "tree_id": "925b0621be8938b01c2ee57543e6446c9f5fd793",
+          "url": "https://github.com/verybadcat/CSharpMath/commit/c52b0ad54cd0d389645adfa06ea287a10f6963bf"
+        },
+        "date": 1784874342651,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.AllConstantValues",
+            "value": 644044284.7826087,
+            "unit": "ns",
+            "range": "± 24666958.49791302"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cases\")",
+            "value": 2600706.2040441176,
+            "unit": "ns",
+            "range": "± 82114.58845092652"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Color\")",
+            "value": 831974.0755208334,
+            "unit": "ns",
+            "range": "± 5088.332703680065"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Commands\")",
+            "value": 300763.7032645089,
+            "unit": "ns",
+            "range": "± 2229.8680729516195"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cyrillic\")",
+            "value": 2699577.8971354165,
+            "unit": "ns",
+            "range": "± 7944.526850728435"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"ErrorMissingArgument\")",
+            "value": 1587516.2369791667,
+            "unit": "ns",
+            "range": "± 10311.765394556973"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Matrix\")",
+            "value": 1391269.0987723214,
+            "unit": "ns",
+            "range": "± 4188.955562462518"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuadraticFormula\")",
+            "value": 614201.8489583334,
+            "unit": "ns",
+            "range": "± 2089.921162157632"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuarticSolutions\")",
+            "value": 121712316.66666667,
+            "unit": "ns",
+            "range": "± 630390.4082750927"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"TangentPeriodShift\")",
+            "value": 745048.1820913461,
+            "unit": "ns",
+            "range": "± 11393.308912681649"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"VectorProjection\")",
+            "value": 2926398.1770833335,
+            "unit": "ns",
+            "range": "± 28416.441495459723"
           }
         ]
       }
