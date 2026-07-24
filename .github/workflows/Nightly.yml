@@ -10,15 +10,14 @@ jobs:
       packages: write
       pull-requests: read
     steps:
-    - name: Update draft on GitHub Releases
-      id: release_drafter
-      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-      uses: release-drafter/release-drafter@v7
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
     - uses: actions/checkout@v7
       with:
         submodules: recursive
+    - name: Update draft on GitHub Releases
+      id: release_drafter
+      uses: release-drafter/release-drafter@v7
+      with:
+        config-name: file:release-drafter.yml
     - uses: actions/setup-dotnet@v6
       with:
         dotnet-version: '10.x'
