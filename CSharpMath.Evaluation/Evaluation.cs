@@ -42,16 +42,20 @@ namespace CSharpMath {
       Postfix
       // Highest
     }
-    public abstract record MathItem : ILatexiseable {
+    public abstract record MathItem : ILatexizeable {
       private protected MathItem() { }
       public abstract string Latexise();
+      // AngouriMath 2.0 renamed ILatexiseable.Latexise to ILatexizeable.Latexize. Implementing
+      // it explicitly keeps MathItem.Latexise as the public name here, so this package's own
+      // surface is unchanged by their rename.
+      string ILatexizeable.Latexize() => Latexise();
       public static implicit operator MathItem(AngouriMath.Entity content) => new Entity(content);
       public static explicit operator AngouriMath.Entity(MathItem item) => ((Entity)item).Content;
       /// <summary>A real number, complex number, variable, function call, vector, matrix, higher-dimensional tensor, or set</summary>
       public sealed record Entity : MathItem {
         public Entity(AngouriMath.Entity content) => Content = content;
         public AngouriMath.Entity Content { get; }
-        public override string Latexise() => Content.Latexise();
+        public override string Latexise() => Content.Latexize();
       }
       /// <summary>A linked list of comma-delimited items</summary>
       public sealed record Comma : MathItem, IEnumerable<MathItem> {
