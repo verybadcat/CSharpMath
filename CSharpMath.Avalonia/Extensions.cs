@@ -1,3 +1,4 @@
+using System;
 using Avalonia;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
@@ -25,22 +26,6 @@ namespace CSharpMath.Avalonia {
     public static SolidColorBrush ToSolidColorBrush(this System.Drawing.Color color) =>
         new SolidColorBrush(color.ToAvaloniaColor());
 
-    class DrawVisual<TContent> : Visual where TContent : class {
-      readonly Painter<AvaloniaCanvas, TContent, AvaloniaColor> painter;
-      readonly System.Drawing.RectangleF measure;
-      readonly CSharpMathTextAlignment alignment;
-      public DrawVisual(Painter<AvaloniaCanvas, TContent, AvaloniaColor> painter,
-        System.Drawing.RectangleF measure, CSharpMathTextAlignment alignment) {
-        this.painter = painter;
-        this.measure = measure;
-        this.alignment = alignment;
-      }
-      public override void Render(DrawingContext context) {
-        base.Render(context);
-        var canvas = new AvaloniaCanvas(context, new Size(measure.Width, measure.Height));
-        painter.Draw(canvas, alignment);
-      }
-    }
     public static void DrawAsPng<TContent>
       (this Painter<AvaloniaCanvas, TContent, AvaloniaColor> painter,
        System.IO.Stream target,
@@ -53,7 +38,9 @@ namespace CSharpMath.Avalonia {
       if (size.Height is 0) size.Height = 1;
       using var bitmap =
         new RenderTargetBitmap(new PixelSize((int)size.Width, (int)size.Height));
-      bitmap.Render(new DrawVisual<TContent>(painter, size, alignmentForTests));
+      using var context = bitmap.CreateDrawingContext();
+      var canvas = new AvaloniaCanvas(context, new Size(size.Width, size.Height));
+      painter.Draw(canvas, alignmentForTests);
       bitmap.Save(target, quality);
     }
   }

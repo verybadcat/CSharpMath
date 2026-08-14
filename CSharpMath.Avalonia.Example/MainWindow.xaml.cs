@@ -10,9 +10,6 @@ namespace CSharpMath.Avalonia.Example {
         .GetManifestResourceStream("CSharpMath.Avalonia.Example.Icon.png");
       if (stream != null)
         Icon = new WindowIcon(stream);
-#if DEBUG
-      this.AttachDevTools();
-#endif
     }
 
     private void InitializeComponent() {
