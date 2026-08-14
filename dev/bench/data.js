@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1784874347067,
+  "lastUpdate": 1786738570934,
   "repoUrl": "https://github.com/verybadcat/CSharpMath",
   "entries": {
     "CSharpMath.Rendering.Benchmarks": [
@@ -3600,6 +3600,96 @@ window.BENCHMARK_DATA = {
             "value": 2926398.1770833335,
             "unit": "ns",
             "range": "± 28416.441495459723"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "hadrianwttang@outlook.com",
+            "name": "Hadrian Tang",
+            "username": "Happypig375"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "ddd8b984952196024ef85ce54651973e4564bca4",
+          "message": "Update to Avalonia 12 (#259)\n\n* Update to Avalonia 12\n\n* Format\n\n* Fix Binding constructor\n\n* Fix Avalonia DrawAsPng\n\n* Update to non-prerelease",
+          "timestamp": "2026-08-14T20:09:37Z",
+          "tree_id": "04d68480567007a18ff3b9ef4488d43112df303f",
+          "url": "https://github.com/verybadcat/CSharpMath/commit/ddd8b984952196024ef85ce54651973e4564bca4"
+        },
+        "date": 1786738565795,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.AllConstantValues",
+            "value": 612866393.3333334,
+            "unit": "ns",
+            "range": "± 11360134.573678924"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cases\")",
+            "value": 2580188.0338541665,
+            "unit": "ns",
+            "range": "± 40864.366329096236"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Color\")",
+            "value": 918995.2725497159,
+            "unit": "ns",
+            "range": "± 34499.20832048869"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Commands\")",
+            "value": 307400.00915527344,
+            "unit": "ns",
+            "range": "± 2095.4237503620843"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cyrillic\")",
+            "value": 2754689.7395833335,
+            "unit": "ns",
+            "range": "± 31280.514544974085"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"ErrorMissingArgument\")",
+            "value": 1582319.4498697917,
+            "unit": "ns",
+            "range": "± 14119.593853415146"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Matrix\")",
+            "value": 1478257.1223958333,
+            "unit": "ns",
+            "range": "± 16870.376860737088"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuadraticFormula\")",
+            "value": 633736.5755208334,
+            "unit": "ns",
+            "range": "± 8151.382365401009"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuarticSolutions\")",
+            "value": 124789997.77777778,
+            "unit": "ns",
+            "range": "± 1601717.3673887372"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"TangentPeriodShift\")",
+            "value": 751173.1119791666,
+            "unit": "ns",
+            "range": "± 6736.86809601239"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"VectorProjection\")",
+            "value": 2911431.310096154,
+            "unit": "ns",
+            "range": "± 23960.685966622976"
           }
         ]
       }
