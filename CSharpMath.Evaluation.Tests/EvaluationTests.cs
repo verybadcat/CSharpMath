@@ -179,6 +179,20 @@ namespace CSharpMath.EvaluationTests {
     [InlineData(@"a / bc / d", @"\frac{\frac{a}{bc}}{d}", @"\frac{a}{bcd}")]
     [InlineData(@"-2/\sin x/y", @"\frac{\frac{-2}{\sin \left( x\right) }}{y}", @"\frac{-2}{\sin \left( x\right) \cdot y}")]
     public void BinaryOperators(string latex, string converted, string result) => Test(latex, converted, result);
+    /// <summary>
+    /// The two forms AngouriMath emits that had no reading here: <c>\bmod</c> for its modulo node
+    /// and <c>\operatorname{\varphi}</c> for Euler's totient. <c>\bmod</c> binds like multiplication
+    /// and division, which is AngouriMath's <c>Priority.Mul</c>, so the grouping cases below are
+    /// the point rather than decoration.
+    /// </summary>
+    [Theory]
+    [InlineData(@"x\bmod y", @"x\bmod y", @"x\bmod y")]
+    [InlineData(@"7\bmod 3", @"7\bmod 3", @"1")]
+    [InlineData(@"x+y\bmod z", @"x+y\bmod z", @"x+y\bmod z")]
+    [InlineData(@"x\bmod y+z", @"x\bmod y+z", @"x\bmod y+z")]
+    [InlineData(@"\operatorname{\varphi}(10)", @"\operatorname{φ} \left( 10\right) ", @"4")]
+    [InlineData(@"\operatorname{\varphi}(x)", @"\operatorname{φ} \left( x\right) ", @"\operatorname{φ} \left( x\right) ")]
+    public void AngouriMathOnlyForms(string latex, string converted, string result) => Test(latex, converted, result);
     [Theory]
     [InlineData(@"+i", @"\mathrm{i}", @"\mathrm{i}")]
     [InlineData(@"-i", @"-\mathrm{i}", @"-\mathrm{i}")]
@@ -341,7 +355,7 @@ namespace CSharpMath.EvaluationTests {
     [InlineData(@"\sin \frac\pi2", @"\sin \left( \frac{\mathrm{\pi }}{2}\right) ", @"1")]
     [InlineData(@"\sin \frac\pi2+1", @"\sin \left( \frac{\mathrm{\pi }}{2}\right) +1", @"2")]
     [InlineData(@"\cos +x", @"\cos \left( x\right) ", @"\cos \left( x\right) ")]
-    [InlineData(@"\cos -x", @"\cos \left( -x\right) ", @"\cos \left( -x\right) ")]
+    [InlineData(@"\cos -x", @"\cos \left( -x\right) ", @"\cos \left( x\right) ")] // 2.2.0 uses evenness
     [InlineData(@"\tan x\%", @"\tan \left( \frac{x}{100}\right) ", @"\tan \left( \frac{x}{100}\right) ")]
     [InlineData(@"\tan x\%^2", @"\tan \left( \left( \frac{x}{100}\right) ^2\right) ", @"\tan \left( \left( \frac{x}{100}\right) ^2\right) ")]
     [InlineData(@"\cot x\times y", @"\cot \left( x\right) \cdot y", @"\cot \left( x\right) \cdot y")]
@@ -391,7 +405,8 @@ namespace CSharpMath.EvaluationTests {
     [InlineData(@"\tan^{-1} x\%^2", @"\arctan \left( \left( \frac{x}{100}\right) ^2\right) ", @"\arctan \left( \left( \frac{x}{100}\right) ^2\right) ")]
     [InlineData(@"\cot^{-1} x\times y", @"\arccot \left( x\right) \cdot y", @"\arccot \left( x\right) \cdot y")]
     [InlineData(@"\cot^{-1} x/y", @"\frac{\arccot \left( x\right) }{y}", @"\frac{\arccot \left( x\right) }{y}")]
-    [InlineData(@"\cos^{-1} \arccos^{-1} x", @"\arccos \left( \cos \left( x\right) \right) ", @"x")]
+    // arccos(cos x) is x only on [0, pi]; AngouriMath 2.2.0 no longer claims it in general.
+    [InlineData(@"\cos^{-1} \arccos^{-1} x", @"\arccos \left( \cos \left( x\right) \right) ", @"\arccos \left( \cos \left( x\right) \right) ")]
     [InlineData(@"\sin^1 x", @"\sin \left( x\right) ^1", @"\sin \left( x\right) ")]
     [InlineData(@"\sin^{+1} x", @"\sin \left( x\right) ^1", @"\sin \left( x\right) ")]
     [InlineData(@"\sin^{+-1} x", @"\sin \left( x\right) ^{-1}", @"\csc \left( x\right) ")]
@@ -869,9 +884,10 @@ namespace CSharpMath.EvaluationTests {
     [InlineData(@"\top\nleftrightarrow\bot", @"\top \veebar \bot ", @"\top ")]
     [InlineData(@"\bot\nleftrightarrow\bot", @"\bot \veebar \bot ", @"\bot ")]
     [InlineData(@"x=x", @"x=x", @"\top ")]
-    [InlineData(@"x\le x", @"x\leq x", @"\top ")]
-    [InlineData(@"x\leq x", @"x\leq x", @"\top ")]
-    [InlineData(@"x\leqslant x", @"x\leq x", @"\top ")]
+    // AngouriMath 2.2.0 carries the domain <= needs rather than asserting the tautology outright.
+    [InlineData(@"x\le x", @"x\leq x", @"\top \quad \mathrm{for}\quad x\in \mathbb{R}")]
+    [InlineData(@"x\leq x", @"x\leq x", @"\top \quad \mathrm{for}\quad x\in \mathbb{R}")]
+    [InlineData(@"x\leqslant x", @"x\leq x", @"\top \quad \mathrm{for}\quad x\in \mathbb{R}")]
     [InlineData(@"x\neq y", @"x\neq y", @"x\neq y")] // Cannot simplify without knowing x and y
     [InlineData(@"1<2", @"1<2", @"\top ")]
     [InlineData(@"2<1", @"2<1", @"\bot ")]
@@ -951,7 +967,8 @@ namespace CSharpMath.EvaluationTests {
     [InlineData(@"-\operatorname{abs}(-1)", @"-\left| -1\right| ", @"-1")]
     [InlineData(@"-\operatorname{abs}\left|-1\right|", @"-\left| \left| -1\right| \right| ", @"-1")]
     [InlineData(@"-\left|1\right|^2", @"-\left| 1\right| ^2", @"-1")]
-    [InlineData(@"\operatorname{sgn}\operatorname{abs} x", @"\operatorname{sgn} \left( \left| x\right| \right) ", @"1")]
+    // AngouriMath 2.2.0 no longer answers 1 here: sgn(|x|) is 1 away from zero but 0 at zero.
+    [InlineData(@"\operatorname{sgn}\operatorname{abs} x", @"\operatorname{sgn} \left( \left| x\right| \right) ", @"\operatorname{sgn} \left( \left| x\right| \right) ")]
     public void Abs(string latex, string converted, string result) => Test(latex, converted, result);
     [Theory]
     [InlineData(@"\lim_{x\to2}x+1", @"\lim _{x\rightarrow 2}x+1", @"3")]

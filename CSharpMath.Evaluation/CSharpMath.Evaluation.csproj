@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CSharpMath\CSharpMath.csproj" />
-    <PackageReference Include="AngouriMath" Version="2.0.0-preview.2" />
+    <PackageReference Include="AngouriMath" Version="2.2.0" />
   </ItemGroup>
 
 </Project>

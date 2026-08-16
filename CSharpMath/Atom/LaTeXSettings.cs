@@ -195,9 +195,30 @@ namespace CSharpMath.Atom {
         } },
         { @"\operatorname", (parser, accumulate, stopChar) => {
           if (!parser.ReadCharIfAvailable('{')) return "Expected {";
-          var operatorname = parser.ReadString();
+          // An operator name is a word, so letters -- but a letter may be written as a command:
+          // AngouriMath emits \operatorname{\varphi} for Euler's totient, and φ is a letter like
+          // any other. Commands standing for anything else are refused rather than spliced in,
+          // which keeps \operatorname{a|} the error it has always been.
+          //
+          // Letters are taken as char.IsLetter and not as parser.ReadString(), which is ASCII-only:
+          // this method writes the name back out as \operatorname{φ}, so refusing to read φ would
+          // mean refusing to read its own output.
+          var operatorname = new StringBuilder();
+          while (true) {
+            while (parser.HasCharacters) {
+              var ch = parser.ReadChar();
+              if (char.IsLetter(ch)) operatorname.Append(ch);
+              else { parser.UndoReadChar(); break; }
+            }
+            if (!parser.ReadCharIfAvailable('\\')) break;
+            var command = parser.ReadString();
+            if (!(AtomForCommand(@"\" + command) is { } letter)
+                || letter.Nucleus.Length == 0 || !letter.Nucleus.All(char.IsLetter))
+              return $@"Invalid command \{command} in an operator name";
+            operatorname.Append(letter.Nucleus);
+          }
           if (!parser.ReadCharIfAvailable('}')) return "Expected }";
-          return Ok(new LargeOperator(operatorname, null));
+          return Ok(new LargeOperator(operatorname.ToString(), null));
         } },
         // Bra and Ket implementations are derived from Donald Arseneau's braket LaTeX package.
         // See: https://www.ctan.org/pkg/braket
@@ -689,6 +710,11 @@ namespace CSharpMath.Atom {
         { @"\wedge", @"\land", new BinaryOperator("∧") },
         { @"\setminus", new BinaryOperator("∖") },
         { @"\wr", new BinaryOperator("≀") },
+        // Not a symbol but a word: \bmod is \mathbin{\operatorname{mod}}, so binary spacing with an
+        // upright nucleus. A BinaryOperator gives both -- only Variable and Number are put through
+        // the italicising font changer, so "mod" stays upright. AngouriMath emits this for its
+        // modulo node, e.g. `x \bmod y`.
+        { @"\bmod", new BinaryOperator("mod") },
         { @"-", new BinaryOperator("−") }, // Use the math minus sign, not hyphen
         { @"\diamond", new BinaryOperator("⋄") },
         { @"\bigtriangleup", new BinaryOperator("△") },

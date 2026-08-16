@@ -498,6 +498,12 @@ namespace CSharpMath {
             handleFunction = MathS.Signum;
             handleFunctionInverse = arg => MathS.NaN;
             goto handleFunction;
+          // Euler's totient, which AngouriMath writes \operatorname{\varphi}. It is not injective
+          // (φ(1) = φ(2) = 1), so there is no inverse to offer -- as for abs and sgn above.
+          case Atoms.LargeOperator { Nucleus: "φ" }:
+            handleFunction = MathS.NumberTheory.Phi;
+            handleFunctionInverse = arg => MathS.NaN;
+            goto handleFunction;
           case Atoms.LargeOperator { Nucleus: "lim", Subscript: var limitSubscript }:
             Entity limitVariable, limitTarget;
             int limitSubscriptIndex = 0;
@@ -566,6 +572,12 @@ namespace CSharpMath {
           case Atoms.Ordinary { Nucleus: "/" }:
             handlePrecedence = Precedence.MultiplicationDivision;
             handleBinary = (a, b) => a / b;
+            goto handleBinary;
+          // \bmod, which AngouriMath emits for its modulo node. It binds like multiplication and
+          // division there too (Priority.Mul), so a+b \bmod c is a+(b mod c) on both sides.
+          case Atoms.BinaryOperator { Nucleus: "mod" }:
+            handlePrecedence = Precedence.MultiplicationDivision;
+            handleBinary = MathS.Mod;
             goto handleBinary;
           case Atoms.Ordinary { Nucleus: "%" }:
             handlePostfix = x => x / 100;
