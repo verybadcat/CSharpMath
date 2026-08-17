@@ -3,8 +3,8 @@ using System.Text;
 
 namespace CSharpMath {
   static partial class Evaluation {
-    static StringBuilder AppendLaTeX(this StringBuilder sb, AngouriMath.Core.ILatexiseable latex) =>
-      sb.Append(latex.Latexise());
+    static StringBuilder AppendLaTeX(this StringBuilder sb, AngouriMath.Core.ILatexizeable latex) =>
+      sb.Append(latex.Latexize());
     static StringBuilder AppendLaTeXHeader(this StringBuilder sb, string header, bool includeNewlineBefore = true) {
       if (includeNewlineBefore) sb.Append(@"\\\\");
       return sb.Append(@"\underline\mathrm{").Append(header).Append(@"}\\");

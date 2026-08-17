@@ -1300,6 +1300,35 @@ namespace CSharpMath.Core.AtomTests {
       Assert.Equal(output, LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
+    /// <summary>
+    /// A letter in an operator name may be written as a command. AngouriMath emits
+    /// <c>\operatorname{\varphi}</c> for Euler's totient, which is the reason this exists.
+    /// </summary>
+    [Theory]
+    [InlineData(@"\varphi", "φ")]
+    [InlineData(@"\Gamma", "Γ")]
+    [InlineData(@"ma\chi ", "maχ")]
+    public void TestOperatorNameWithCommands(string operatorname, string name) {
+      var list = ParseLaTeX(@$"\operatorname{{{operatorname}}}");
+      Assert.Collection(list, CheckAtom<LargeOperator>(name));
+      var output = LaTeXParser.MathListToLaTeX(list).ToString();
+      Assert.Equal(@$"\operatorname{{{name}}} ", output);
+      // The name comes back out as the letter rather than as the command, so reading that is the
+      // round trip that matters -- and it is why the name is read with char.IsLetter.
+      Assert.Collection(ParseLaTeX(output), CheckAtom<LargeOperator>(name));
+    }
+
+    /// <summary><c>\bmod</c> is a binary operator whose nucleus is the word "mod".</summary>
+    [Fact]
+    public void TestModulo() {
+      var list = ParseLaTeX(@"x\bmod y");
+      Assert.Collection(list,
+        CheckAtom<Variable>("x"),
+        CheckAtom<BinaryOperator>("mod"),
+        CheckAtom<Variable>("y"));
+      Assert.Equal(@"x\bmod y", LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+
     [Theory]
     [InlineData(@"\TeX")]
     [InlineData(@"\left.\mathrm{T\! \raisebox{-4.5mu}{E}\mkern-2.25muX}\right.")]
@@ -1561,6 +1590,9 @@ x \end{matrix}
       InlineData(@"\operatorname {a|}", @"Error: Expected }
 \operatorname {a|}
                ↑ (pos 16)"),
+      InlineData(@"\operatorname{\pm}", @"Error: Invalid command \pm in an operator name
+\operatorname{\pm}
+                ↑ (pos 17)"),
     ]
     public void TestErrors(string badInput, string expected) {
       var (list, actual) = LaTeXParser.MathListFromLaTeX(badInput);

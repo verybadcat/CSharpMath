@@ -10,7 +10,7 @@ namespace CSharpMath.EvaluationTests {
     [InlineData(@"1+2", @"\underline\mathrm{Input}\\1+2\\\\\underline\mathrm{Simplified}\\3\\\\\underline\mathrm{Value\ (100\ digits)}\\3")]
     [InlineData(@"1+\sqrt", @"\color{red}\text{Missing radicand}")]
     [InlineData(@"1+\sqrt2", @"\underline\mathrm{Input}\\1+\sqrt{2}\\\\\underline\mathrm{Simplified}\\1+\sqrt{2}\\\\\underline\mathrm{Value\ (100\ digits)}\\2.414213562373095048801688724209698078569671875376948073176679737990732478462107038850387534327641573")]
-    [InlineData(@"1+\sqrt{2x}", @"\underline\mathrm{Input}\\1+\sqrt{2 x}\\\\\underline\mathrm{Simplified}\\1+\sqrt{2 x}\\\\\underline\mathrm{Expanded}\\1+\sqrt{2 x}\\\\\underline\mathrm{Factorized}\\1+\sqrt{2 x}")]
+    [InlineData(@"1+\sqrt{2x}", @"\underline\mathrm{Input}\\1+\sqrt{2 x}\\\\\underline\mathrm{Simplified}\\1+\sqrt{2 x}\\\\\underline\mathrm{Expanded}\\1+\sqrt{2} \sqrt{x}\\\\\underline\mathrm{Factorized}\\1+\sqrt{2 x}")]
     [InlineData(@"1+\sqrt{2xy}", @"\underline\mathrm{Input}\\1+\sqrt{2 x y}\\\\\underline\mathrm{Simplified}\\1+\sqrt{2 x y}\\\\\underline\mathrm{Expanded}\\1+\sqrt{2 x y}\\\\\underline\mathrm{Factorized}\\1+\sqrt{2 x y}")]
     [InlineData(@"=1+\sqrt{2xy}", @"\color{red}\text{Missing left side of equation}")]
     [InlineData(@"1+\sqrt{2xy}=", @"\color{red}\text{Missing right side of equation}")]
