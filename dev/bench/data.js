@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1786738570934,
+  "lastUpdate": 1786955619821,
   "repoUrl": "https://github.com/verybadcat/CSharpMath",
   "entries": {
     "CSharpMath.Rendering.Benchmarks": [
@@ -3690,6 +3690,96 @@ window.BENCHMARK_DATA = {
             "value": 2911431.310096154,
             "unit": "ns",
             "range": "± 23960.685966622976"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "133344302+Rafael-SOWNet@users.noreply.github.com",
+            "name": "Rafael-SOWNet",
+            "username": "Rafael-SOWNet"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "ae6d1b5e51db4f2c45680607d29ab8d75241d148",
+          "message": "Move to AngouriMath 2.0, which renamed Latexise to Latexize (#262)\n\n* Move to AngouriMath 2.0, which renamed Latexise to Latexize\n\nAngouriMath 2.0 renames ILatexiseable.Latexise to ILatexizeable.Latexize.\n\nMathItem implements the new interface explicitly, so CSharpMath's own public\nsurface does not change: MathItem.Latexise stays the name callers know, and\nPublicAPI.Unshipped.txt is untouched. The public-API analyzer confirms it --\nno RS warnings.\n\nOnly two call sites are on AngouriMath's side of the boundary and move:\nContent.Latexize() on an AngouriMath.Entity, and the ILatexizeable parameter\nin Interpret.\n\nOne test expectation changes. 2.0 splits a radical over a positive factor, so\n1+\\sqrt{2x} expands to 1+\\sqrt{2}\\sqrt{x}. sqrt(2x) = sqrt(2)sqrt(x) holds for\nall complex x when the factored constant is positive, so the new output is\nsound; it is a rendering change rather than a correctness one.\n\n955 of 955 tests pass.\n\n* Read the LaTeX AngouriMath 2.2.0 emits, and pin it with a sweep\n\nEvaluation.Visualize throws InvalidCodePathException on any LaTeX it cannot\nread, and says why in its own source -- \"CSharpMath must handle all LaTeX\ncoming from AngouriMath or a bug is present!\" -- but nothing checked it.\nAngouriMathLatexSweepTests now does: every concrete Entity type AngouriMath\ncan print, Latexized and fed back through LaTeXParser. On 2.2.0 that is 76\nnodes, of which two forms had no reading here.\n\n\\bmod, AngouriMath's modulo node. Added as a BinaryOperator whose nucleus is\nthe word \"mod\": binary spacing, and upright because only Variable and Number\ngo through the italicising font changer. It binds like multiplication and\ndivision, matching AngouriMath's Priority.Mul, so x+y \\bmod z is x+(y mod z)\non both sides.\n\n\\operatorname{\\varphi}, Euler's totient. The name was read with ReadString,\nwhich takes ASCII letters only, so both the command and -- since the name is\nwritten back out as the letter -- this method's own output \\operatorname{φ}\nwere rejected. It now reads char.IsLetter and resolves commands that stand\nfor a letter, refusing the rest; \\operatorname{a|} stays the error it was.\n\nBoth directions are covered: parsing, serialising back, evaluating to an\nEntity, and laying out. Layout is measured rather than compared against a\nbaseline image, since the new shapes there are a word-length BinaryOperator\nand a non-ASCII operator name, and glyph coverage is already asserted by\nTestCommandDisplay.\n\nFour recorded answers changed with the version and are updated, each because\nAngouriMath became more careful rather than less:\n\n  sgn(|x|)         was 1; it is 1 away from zero but 0 at zero\n  arccos(cos x)    was x; that holds only on [0, pi]\n  x <= x           was T; now T for x in RR, the domain <= needs\n  cos(-x)          now folds to cos(x), by evenness\n\nCore 1515, Evaluation 962, Rendering 1226, Rendering.Text 237 all pass.",
+          "timestamp": "2026-08-17T08:27:37Z",
+          "tree_id": "c51a26717cc1d55721d05d2b0e4e991acae67021",
+          "url": "https://github.com/verybadcat/CSharpMath/commit/ae6d1b5e51db4f2c45680607d29ab8d75241d148"
+        },
+        "date": 1786955613330,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.AllConstantValues",
+            "value": 600973750,
+            "unit": "ns",
+            "range": "± 3633419.944339365"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cases\")",
+            "value": 2557186.1478365385,
+            "unit": "ns",
+            "range": "± 18190.309968498772"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Color\")",
+            "value": 865606.8974247685,
+            "unit": "ns",
+            "range": "± 23944.5626804592"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Commands\")",
+            "value": 304276.0514322917,
+            "unit": "ns",
+            "range": "± 3336.205939279117"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cyrillic\")",
+            "value": 2761398.8020833335,
+            "unit": "ns",
+            "range": "± 27453.126033202418"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"ErrorMissingArgument\")",
+            "value": 1597024.3055555555,
+            "unit": "ns",
+            "range": "± 33821.68279221771"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Matrix\")",
+            "value": 1403354.6316964286,
+            "unit": "ns",
+            "range": "± 20356.253420882997"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuadraticFormula\")",
+            "value": 625757.3763020834,
+            "unit": "ns",
+            "range": "± 8934.364701730863"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuarticSolutions\")",
+            "value": 123729804.44444443,
+            "unit": "ns",
+            "range": "± 1254173.259268652"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"TangentPeriodShift\")",
+            "value": 744355.3841145834,
+            "unit": "ns",
+            "range": "± 11879.734798904508"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"VectorProjection\")",
+            "value": 2980802.03125,
+            "unit": "ns",
+            "range": "± 51883.554002239674"
           }
         ]
       }
