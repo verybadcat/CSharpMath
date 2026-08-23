@@ -493,7 +493,7 @@ namespace CSharpMath.Atom {
       switch (parser.PeekChar()) {
         case '}' or '^' or '_' or '&':
           return $@"Missing required argument before '{parser.PeekChar()}'";
-        case '\\': {
+        case '\\':
           var saveChar = parser.NextChar;
           var command = parser.ReadCommandName();
           parser.UndoTo(saveChar);
@@ -501,7 +501,6 @@ namespace CSharpMath.Atom {
             return $@"Missing required argument before \{command}";
           }
           break;
-        }
       }
       return parser.ReadArgument();
     }
