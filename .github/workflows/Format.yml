@@ -13,8 +13,14 @@ jobs:
     - uses: actions/checkout@v7
       with:
         submodules: recursive
+    - name: Remove Uno.Example from solution
+      # CSharpMath.Uno.Example must be removed rather than excluded: dotnet format's
+      # --exclude only skips formatting analysis, but the project is still restored
+      # and its Uno.Resizetizer splash-screen task crashes inside dotnet format due
+      # to a SkiaSharp assembly-version conflict (the tool hosts SkiaSharp 2.88
+      # while Uno.Resizetizer requires 3.x / native libSkiaSharp 116.0).
+      shell: bash
+      run:
+        dotnet sln CSharpMath.slnx remove CSharpMath.Uno.Example/CSharpMath.Uno.Example.csproj
     - name: Check formatting (Fix with "dotnet format --exclude Typography" at repository root)
-      # CSharpMath.Uno.Example is excluded: its Uno.Resizetizer splash task crashes
-      # under dotnet format due to a SkiaSharp assembly-version conflict (the tool
-      # loads SkiaSharp 2.88 while the resizetizer needs 3.x / native lib 116).
-      run: dotnet format --exclude Typography --exclude CSharpMath.Uno.Example --verify-no-changes --verbosity diagnostic
+      run: dotnet format --exclude Typography --verify-no-changes --verbosity diagnostic
