@@ -27,7 +27,19 @@
       https://aka.platform.uno/singleproject-features
     -->
     <UnoFeatures>SkiaRenderer</UnoFeatures>
+
+    <!--
+      Override vulnerable transitive dependencies pulled in by the Uno.Sdk
+      (NU1903 high-severity audit findings fail `dotnet format`'s msbuild restore).
+      System.Security.Cryptography.Xml 10.0.10 is the patched version Uno itself
+      bumped to (unoplatform/uno#23830).
+    -->
+    <NuGetAuditLevel>high</NuGetAuditLevel>
   </PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.10" />
+		<PackageReference Include="Tmds.DBus.Protocol" Version="0.21.3" />
+	</ItemGroup>
 	<ItemGroup>
 		<Compile Include="..\CSharpMath.Rendering.Tests\TestRenderingMathData.cs" Link="Examples\TestRenderingMathData.cs" />
 		<Compile Include="..\CSharpMath.Rendering.Tests\TestRenderingSharedData.cs" Link="Examples\TestRenderingSharedData.cs" />
