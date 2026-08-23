@@ -48,7 +48,7 @@ namespace CSharpMath.Core.AtomTests {
     [InlineData("x+2", new[] { typeof(Variable), typeof(BinaryOperator), typeof(Number) }, "x+2")]
     [InlineData("(2.3 * 8)", new[] { typeof(Open), typeof(Number), typeof(Number), typeof(Number), typeof(BinaryOperator), typeof(Number), typeof(Close) }, "(2.3*8)")]
     [InlineData("5{3+4}", new[] { typeof(Number), typeof(Group) }, "5{3+4}")] // braces create an Ord group
-                                                                                                                     // commands
+    // commands
     [InlineData(@"\pi+\theta\geq 3", new[] { typeof(Variable), typeof(BinaryOperator), typeof(Variable), typeof(Relation), typeof(Number) }, @"\pi +\theta \geq 3")]
     // aliases
     [InlineData(@"\pi\ne 5 \land 3", new[] { typeof(Variable), typeof(Relation), typeof(Number), typeof(BinaryOperator), typeof(Number) }, @"\pi \neq 5\wedge 3")]
