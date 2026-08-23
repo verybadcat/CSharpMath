@@ -104,7 +104,7 @@ namespace CSharpMath.Core.AtomTests {
       var stack = Assert.IsType<Stack>(Assert.Single(ParseLaTeX(@"\stackrel{?}{=}")));
       Assert.Equal(typeof(Relation), stack.DisplayClassType);
       var overRow = Assert.IsType<StackConstruction.MathListRow>(stack.Over);
-      Assert.Equal(1, overRow.List.Count);
+      Assert.Single(overRow.List);
       Assert.Equal(@"\stackrel{?}{=}", RoundTrip(@"\stackrel{?}{=}"));
     }
     [Fact]
@@ -378,7 +378,7 @@ namespace CSharpMath.Core.AtomTests {
     [Fact]
     public void ScriptsAttachToWholeGroup() {
       var group = Assert.IsType<Group>(Assert.Single(ParseLaTeX(@"{x}^2")));
-      Assert.Equal(1, group.Superscript.Count);
+      Assert.Single(group.Superscript);
     }
     [Fact]
     public void ScriptStyleDoesNotLeakPastGroup() {
