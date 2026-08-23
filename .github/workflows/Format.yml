@@ -14,4 +14,7 @@ jobs:
       with:
         submodules: recursive
     - name: Check formatting (Fix with "dotnet format --exclude Typography" at repository root)
-      run: dotnet format --exclude Typography --verify-no-changes --verbosity diagnostic
+      # CSharpMath.Uno.Example is excluded: its Uno.Resizetizer splash task crashes
+      # under dotnet format due to a SkiaSharp assembly-version conflict (the tool
+      # loads SkiaSharp 2.88 while the resizetizer needs 3.x / native lib 116).
+      run: dotnet format --exclude Typography --exclude CSharpMath.Uno.Example --verify-no-changes --verbosity diagnostic
