@@ -20,6 +20,8 @@ namespace CSharpMath.Core.AtomTests {
         .DefinedTypes
         .Where(t => t.Namespace == typeof(Accent).Namespace && t.GetCustomAttributes(
           typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), false).Length == 0)
+        // Only atoms themselves; helper value types (e.g. StackConstruction rows) are not MathAtoms.
+        .Where(t => typeof(MathAtom).IsAssignableFrom(t.AsType()))
         .SelectMany(t =>
           new[] { t.GetConstructor(new System.Type[0]), t.GetConstructor(new[] { typeof(string) }) })
         .Where(c => c != null)

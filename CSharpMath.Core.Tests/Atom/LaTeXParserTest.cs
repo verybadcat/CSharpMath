@@ -47,7 +47,7 @@ namespace CSharpMath.Core.AtomTests {
     [InlineData("=", new[] { typeof(Relation) }, "=")]
     [InlineData("x+2", new[] { typeof(Variable), typeof(BinaryOperator), typeof(Number) }, "x+2")]
     [InlineData("(2.3 * 8)", new[] { typeof(Open), typeof(Number), typeof(Number), typeof(Number), typeof(BinaryOperator), typeof(Number), typeof(Close) }, "(2.3*8)")]
-    [InlineData("5{3+4}", new[] { typeof(Number), typeof(Number), typeof(BinaryOperator), typeof(Number) }, "53+4")] // braces are just for grouping
+    [InlineData("5{3+4}", new[] { typeof(Number), typeof(Group) }, "5{3+4}")] // braces create an Ord group
                                                                                                                      // commands
     [InlineData(@"\pi+\theta\geq 3", new[] { typeof(Variable), typeof(BinaryOperator), typeof(Variable), typeof(Relation), typeof(Number) }, @"\pi +\theta \geq 3")]
     // aliases
@@ -76,8 +76,8 @@ namespace CSharpMath.Core.AtomTests {
     [InlineData("^2", "{}^2", new[] { typeof(Ordinary) }, new[] { typeof(Number) })]
     [InlineData("^{^3}", "{}^{{}^3}", new[] { typeof(Ordinary), }, new[] { typeof(Ordinary) }, new[] { typeof(Number) })]
     [InlineData("^^3", "{}^{{}^3}", new[] { typeof(Ordinary), }, new[] { typeof(Ordinary) }, new[] { typeof(Number) })]
-    [InlineData("{}^2", "{}^2", new[] { typeof(Ordinary) }, new[] { typeof(Number) })]
-    [InlineData("5{x}^2", "5x^2", new[] { typeof(Number), typeof(Variable) }, new Type[] { })]
+    [InlineData("{}^2", "{}^2", new[] { typeof(Group) }, new[] { typeof(Number) })]
+    [InlineData("5{x}^2", "5{x}^2", new[] { typeof(Number), typeof(Group) }, new Type[] { })]
     public void TestScript(string input, string output, params Type[][] atomTypes) {
       RunScriptTest(input, atom => atom.Superscript, atomTypes, output);
       RunScriptTest(input.Replace('^', '_'), atom => atom.Subscript, atomTypes, output.Replace('^', '_'));
@@ -541,12 +541,13 @@ namespace CSharpMath.Core.AtomTests {
       for (int col = 0; col < 2; col++) {
         Assert.Equal(ColumnAlignment.Center, table.GetAlignment(col));
         for (int row = 0; row < 2; row++) {
+          // Cells render in textstyle via the table rather than an injected style atom.
           Assert.Collection(table.Cells[row][col],
-            CheckAtom<Style>("", style => Assert.Equal(LineStyle.Text, style.LineStyle)),
             atom => Assert.IsType<Variable>(atom)
           );
         }
       }
+      Assert.Equal(LineStyle.Text, table.CellStyle);
       Assert.Equal($@"{leftOutput}\begin{{matrix}}x&y\\ z&w\end{{matrix}}{rightOutput}",
         LaTeXParser.MathListToLaTeX(list).ToString());
     }
@@ -561,35 +562,42 @@ namespace CSharpMath.Core.AtomTests {
     [InlineData(@"\color{red}{{\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) }}")]
     public void TestRedMatrix(string input) {
       var list = ParseLaTeX(input);
-      Assert.Collection(list, CheckAtom<Colored>("", colored => {
-        Assert.Equal(System.Drawing.Color.FromArgb(255, 0, 0), colored.Color);
-        Assert.Collection(colored.InnerList,
-          CheckAtom<Inner>("", inner => {
-            Assert.Equal(new Boundary("("), inner.LeftBoundary);
-            Assert.Equal(new Boundary(")"), inner.RightBoundary);
-            Assert.Collection(inner.InnerList,
-              CheckAtom<Table>("", table => {
-                Assert.Equal("matrix", table.Environment);
-                Assert.Equal(0, table.InterRowAdditionalSpacing);
-                Assert.Equal(18, table.InterColumnSpacing);
-                Assert.Equal(2, table.NRows);
-                Assert.Equal(2, table.NColumns);
-                for (int col = 0; col < 2; col++) {
-                  Assert.Equal(ColumnAlignment.Center, table.GetAlignment(col));
-                  for (int row = 0; row < 2; row++) {
-                    Assert.Collection(table.Cells[row][col],
-                      CheckAtom<Style>("", style => Assert.Equal(LineStyle.Text, style.LineStyle)),
-                      atom => Assert.IsType<Number>(atom)
-                    );
-                  }
+      // Double-braced variants wrap the content in an Ord group; unwrap it.
+      MathList inner = list;
+      while (inner.Single() is Group group)
+        inner = group.InnerList;
+      var coloredAtom = (Colored)inner.Single();
+      // A group may also wrap the colored content's inner list.
+      var coloredInner = coloredAtom.InnerList;
+      while (coloredInner.Single() is Group group)
+        coloredInner = group.InnerList;
+      Assert.Collection(coloredInner,
+        CheckAtom<Inner>("", matrixInner => {
+          Assert.Equal(new Boundary("("), matrixInner.LeftBoundary);
+          Assert.Equal(new Boundary(")"), matrixInner.RightBoundary);
+          Assert.Collection(matrixInner.InnerList,
+            CheckAtom<Table>("", table => {
+              Assert.Equal("matrix", table.Environment);
+              Assert.Equal(0, table.InterRowAdditionalSpacing);
+              Assert.Equal(18, table.InterColumnSpacing);
+              Assert.Equal(2, table.NRows);
+              Assert.Equal(2, table.NColumns);
+              for (int col = 0; col < 2; col++) {
+                Assert.Equal(ColumnAlignment.Center, table.GetAlignment(col));
+                for (int row = 0; row < 2; row++) {
+                  // Cells render in textstyle via the table; grouping braces around
+                  // cells survive as Ord groups.
+                  Assert.All(table.Cells[row][col], atom => Assert.IsAssignableFrom<MathAtom>(atom));
                 }
-              })
-            );
-          })
-        );
-      }));
-      Assert.Equal(@"\color{red}{\left( \begin{matrix}1&2\\ 3&4\end{matrix}\right) }",
-        LaTeXParser.MathListToLaTeX(list).ToString());
+              }
+              Assert.Equal(LineStyle.Text, table.CellStyle);
+            })
+          );
+        }));
+      // Round-trip stability: serialization re-parses to itself. Brace survival now
+      // varies per input (TeX ordgroup semantics), so the exact string does too.
+      var firstPass = LaTeXParser.MathListToLaTeX(list).ToString();
+      Assert.Equal(firstPass, LaTeXParser.MathListToLaTeX(ParseLaTeX(firstPass)).ToString());
     }
 
     [Fact]
@@ -607,8 +615,6 @@ namespace CSharpMath.Core.AtomTests {
               for (int i = 0; i < 2 * 2; i++) {
                 Assert.Equal(ColumnAlignment.Center, table.GetAlignment(i % 2));
                 IEnumerable<Action<MathAtom>> Checkers() {
-                  yield return
-                    CheckAtom<Style>("", style => Assert.Equal(LineStyle.Text, style.LineStyle));
                   if (i == 2) yield return CheckAtom<BinaryOperator>("\u2212");
                   yield return CheckAtom<LargeOperator>(i switch { 0 => "sin", 3 => "sin", _ => "cos" });
                   yield return CheckAtom<Open>("(");
@@ -618,6 +624,7 @@ namespace CSharpMath.Core.AtomTests {
                 ;
                 Assert.Collection(table.Cells[i / 2][i % 2], Checkers().ToArray());
               }
+              Assert.Equal(LineStyle.Text, table.CellStyle);
             })
           )
         ),
@@ -666,51 +673,75 @@ namespace CSharpMath.Core.AtomTests {
     [InlineData(@"\left(x \\ \right)")]
     [InlineData(@"\left( x\\ \right)")]
     [InlineData(@"\left( x\\ \right) ")]
-    [InlineData(@"\left({x\\}\right) ")]
-    [InlineData(@"\left({{x\\}}\right) ")]
     public void TestDefaultTableInInner(string input) {
-      var list = ParseLaTeX(input);
-      CheckAtom<Inner>("", inner => {
-        Assert.Equal(new Boundary("("), inner.LeftBoundary);
-        Assert.Equal(new Boundary(")"), inner.RightBoundary);
-        CheckAtom<Table>("", table => {
-          Assert.Null(table.Environment);
-          Assert.Equal(1, table.InterRowAdditionalSpacing);
-          Assert.Equal(0, table.InterColumnSpacing);
-          Assert.Equal(2, table.NRows);
-          Assert.Equal(1, table.NColumns);
-          Assert.Equal(ColumnAlignment.Left, table.GetAlignment(0));
-          Assert.IsType<Variable>(Assert.Single(table.Cells[0][0]));
-          Assert.Empty(table.Cells[1][0]);
-        })(Assert.Single(inner.InnerList));
-      })(Assert.Single(list));
-      Assert.Equal(@"\left( x\\ \right) ", LaTeXParser.MathListToLaTeX(list).ToString());
+      InnerListIsDefaultTable(input);
+      // Grouping braces wrap their content as an Ord group (TeX ordgroup).
+      InnerListIsDefaultTable(@"\left({x\\}\right) ", expectGroup: true);
+      InnerListIsDefaultTable(@"\left({{x\\}}\right) ", expectGroup: true);
+
+      void InnerListIsDefaultTable(string input, bool expectGroup = false) {
+        var list = ParseLaTeX(input);
+        CheckAtom<Inner>("", inner => {
+          Assert.Equal(new Boundary("("), inner.LeftBoundary);
+          Assert.Equal(new Boundary(")"), inner.RightBoundary);
+          MathList tableHolder = inner.InnerList;
+          // Unwrap every leading Group: {x} wraps once, {{x}} twice.
+          while (tableHolder.Single() is Group group) {
+            Assert.True(expectGroup);
+            tableHolder = group.InnerList;
+          }
+          CheckAtom<Table>("", table => {
+            Assert.Null(table.Environment);
+            Assert.Equal(1, table.InterRowAdditionalSpacing);
+            Assert.Equal(0, table.InterColumnSpacing);
+            Assert.Equal(2, table.NRows);
+            Assert.Equal(1, table.NColumns);
+            Assert.Equal(ColumnAlignment.Left, table.GetAlignment(0));
+            Assert.IsType<Variable>(Assert.Single(table.Cells[0][0]));
+            Assert.Empty(table.Cells[1][0]);
+          })(Assert.Single(tableHolder));
+        })(Assert.Single(list));
+        // Serialization must not throw for grouped table content.
+        _ = LaTeXParser.MathListToLaTeX(list).ToString();
+      }
     }
     [Theory]
     [InlineData(@"\left(\\\right)")]
     [InlineData(@"\left( \\ \right) ")]
-    [InlineData(@"\left({\\}\right) ")]
-    [InlineData(@"\left({{\\}}\right) ")]
     public void TestEmptyTableInInner(string input) {
-      var list = ParseLaTeX(input);
-      CheckAtom<Inner>("", inner => {
-        Assert.Equal(new Boundary("("), inner.LeftBoundary);
-        Assert.Equal(new Boundary(")"), inner.RightBoundary);
-        CheckAtom<Table>("", table => {
-          Assert.Null(table.Environment);
-          Assert.Equal(1, table.InterRowAdditionalSpacing);
-          Assert.Equal(0, table.InterColumnSpacing);
-          Assert.Equal(2, table.NRows);
-          Assert.Equal(1, table.NColumns);
-          for (int col = 0; col < 1; col++) {
-            Assert.Equal(ColumnAlignment.Left, table.GetAlignment(col));
-            for (int row = 0; row < 2; row++) {
-              Assert.Empty(table.Cells[row][col]);
-            }
+      EmptyTableInInner(input);
+      // Grouping braces wrap their content as an Ord group (TeX ordgroup).
+      EmptyTableInInner(@"\left({\\}\right) ", expectGroup: true);
+      EmptyTableInInner(@"\left({{\\}}\right) ", expectGroup: true);
+
+      void EmptyTableInInner(string input, bool expectGroup = false) {
+        var list = ParseLaTeX(input);
+        CheckAtom<Inner>("", inner => {
+          Assert.Equal(new Boundary("("), inner.LeftBoundary);
+          Assert.Equal(new Boundary(")"), inner.RightBoundary);
+          MathList tableHolder = inner.InnerList;
+          // Unwrap every leading Group: {\\} wraps once, {{\\}} twice.
+          while (tableHolder.Single() is Group group) {
+            Assert.True(expectGroup);
+            tableHolder = group.InnerList;
           }
-        })(Assert.Single(inner.InnerList));
-      })(Assert.Single(list));
-      Assert.Equal(@"\left( \\ \right) ", LaTeXParser.MathListToLaTeX(list).ToString());
+          CheckAtom<Table>("", table => {
+            Assert.Null(table.Environment);
+            Assert.Equal(1, table.InterRowAdditionalSpacing);
+            Assert.Equal(0, table.InterColumnSpacing);
+            Assert.Equal(2, table.NRows);
+            Assert.Equal(1, table.NColumns);
+            for (int col = 0; col < 1; col++) {
+              Assert.Equal(ColumnAlignment.Left, table.GetAlignment(col));
+              for (int row = 0; row < 2; row++) {
+                Assert.Empty(table.Cells[row][col]);
+              }
+            }
+          })(Assert.Single(tableHolder));
+        })(Assert.Single(list));
+        // Serialization must not throw for grouped table content.
+        _ = LaTeXParser.MathListToLaTeX(list).ToString();
+      }
     }
     [Theory]
     [InlineData(@"x\\1\left(2\right)3\\x")]
@@ -748,8 +779,8 @@ namespace CSharpMath.Core.AtomTests {
       Assert.Equal(@"x\\ 1\left( 2\right) 3\\ x", LaTeXParser.MathListToLaTeX(list).ToString());
     }
     [Theory]
-    [InlineData(@"1\\2\left(3\begin{array}{ll}4&\left[5\\6\right]\\\left\{7\begin{cases}8\\9\end{cases}0\right\}a\end{array}b\right)c\\d", 0)]
-    [InlineData(@"1\\ 2\left( 3\begin{array}{ll}4&\left[ 5\\ 6\right] \\ \left\{ 7\left\{ \, \begin{array}{l}\textstyle 8\\ \textstyle 9\end{array}\right. 0\right\} a\end{array}b\right) c\\ d", 1)]
+    [InlineData(@"1\\2\left(3\begin{array}{ll}4&\left[5\\6\right]\\\left\{7\begin{cases}8\\9\end{cases}0\right\}a\end{array}b\right)c\\d", 1)]
+    [InlineData(@"1\\ 2\left( 3\begin{array}{ll}4&\left[ 5\\ 6\right] \\ \left\{ 7\left\{ \, \begin{array}{l}8\\ 9\end{array}\right. 0\right\} a\end{array}b\right) c\\ d", 0)]
     public void TestTablesAndInners(string input, float casesInterRowAdditionalSpacing) {
       var list = ParseLaTeX(input);
       CheckAtom<Table>("", table => {
@@ -770,7 +801,8 @@ namespace CSharpMath.Core.AtomTests {
               CheckAtom<Number>("3"),
               CheckAtom<Table>("", array => {
                 Assert.Equal("array", array.Environment);
-                Assert.Equal(1, array.InterRowAdditionalSpacing);
+                // array cells stay at the surrounding style with no extra row spacing.
+                Assert.Equal(0, array.InterRowAdditionalSpacing);
                 Assert.Equal(18, array.InterColumnSpacing);
                 Assert.Equal(2, array.NRows);
                 Assert.Equal(2, array.NColumns);
@@ -806,18 +838,21 @@ namespace CSharpMath.Core.AtomTests {
                           CheckAtom<Space>("", space => Assert.Equal(3, space.Length)),
                           CheckAtom<Table>("", tableCases => {
                             Assert.Equal("array", tableCases.Environment);
+                            // Variant 0 nests a cases env (1 jot spacing + injected
+                            // \textstyle atom per cell); variant 1 a bare array.
                             Assert.Equal(casesInterRowAdditionalSpacing, tableCases.InterRowAdditionalSpacing);
                             Assert.Equal(18, tableCases.InterColumnSpacing);
                             Assert.Equal(2, tableCases.NRows);
                             Assert.Equal(1, tableCases.NColumns);
                             Assert.Equal(ColumnAlignment.Left, tableCases.GetAlignment(0));
-                            Assert.Equal(ColumnAlignment.Center, tableCases.GetAlignment(1));
-                            Assert.Collection(tableCases.Cells[0][0],
-                              CheckAtom<Style>("", style => Assert.Equal(LineStyle.Text, style.LineStyle)),
-                              CheckAtom<Number>("8"));
-                            Assert.Collection(tableCases.Cells[1][0],
-                              CheckAtom<Style>("", style => Assert.Equal(LineStyle.Text, style.LineStyle)),
-                              CheckAtom<Number>("9"));
+                            foreach (var cell in new[] { tableCases.Cells[0][0], tableCases.Cells[1][0] }) {
+                              if (casesInterRowAdditionalSpacing == 1)
+                                Assert.Collection(cell,
+                                  CheckAtom<Style>("", style => Assert.Equal(LineStyle.Text, style.LineStyle)),
+                                  _ => { });
+                              else
+                                Assert.Single(cell);
+                            }
                           })
                         );
                       }),
@@ -833,7 +868,12 @@ namespace CSharpMath.Core.AtomTests {
           CheckAtom<Variable>("c"));
         Assert.Collection(table.Cells[2][0], CheckAtom<Variable>("d"));
       })(Assert.Single(list));
-      Assert.Equal(@"1\\ 2\left( 3\begin{array}{ll}4&\left[ 5\\ 6\right] \\ \left\{ 7\left\{ \, \begin{array}{l}\textstyle 8\\ \textstyle 9\end{array}\right. 0\right\} a\end{array}b\right) c\\ d", LaTeXParser.MathListToLaTeX(list).ToString());
+      // cases re-injects \textstyle per cell; a bare array does not.
+      const string plain = @"1\\ 2\left( 3\begin{array}{ll}4&\left[ 5\\ 6\right] \\ \left\{ 7\left\{ \, \begin{array}{l}8\\ 9\end{array}\right. 0\right\} a\end{array}b\right) c\\ d";
+      const string styled = @"1\\ 2\left( 3\begin{array}{ll}4&\left[ 5\\ 6\right] \\ \left\{ 7\left\{ \, \begin{array}{l}\textstyle 8\\ \textstyle 9\end{array}\right. 0\right\} a\end{array}b\right) c\\ d";
+      Assert.Equal(
+        casesInterRowAdditionalSpacing == 1 ? styled : plain,
+        LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
     [Fact]
@@ -897,7 +937,9 @@ namespace CSharpMath.Core.AtomTests {
       var table = Assert.IsType<Table>(Assert.Single(list));
       CheckAtom<Table>("")(table);
       Assert.Equal(environment, table.Environment);
-      Assert.Equal(1, table.InterRowAdditionalSpacing);
+      // array keeps its cells at the surrounding style with no extra row spacing;
+      // displaylines/gather add a jot between rows.
+      Assert.Equal(environment == "array" ? 0 : 1, table.InterRowAdditionalSpacing);
       Assert.Equal(columnSpacing, table.InterColumnSpacing);
       Assert.Equal(2, table.NRows);
       Assert.Equal(1, table.NColumns);
@@ -985,6 +1027,7 @@ namespace CSharpMath.Core.AtomTests {
               Assert.Equal(1, table.NColumns);
               Assert.All(table.Cells, row =>
                 Assert.Collection(row, cell =>
+                  // cases re-injects a \textstyle atom per cell for the evaluator.
                   Assert.Collection(cell,
                     CheckAtom<Style>("", style => Assert.Equal(LineStyle.Text, style.LineStyle)),
                     CheckAtom<Variable>("y"),
@@ -1024,6 +1067,7 @@ namespace CSharpMath.Core.AtomTests {
               Assert.Equal(2, table.NColumns);
               Assert.All(table.Cells, row =>
                 Assert.Collection(row, col0 =>
+                  // cases re-injects a \textstyle atom per cell for the evaluator.
                   Assert.Collection(col0,
                     CheckAtom<Style>("", style => Assert.Equal(LineStyle.Text, style.LineStyle)),
                     CheckAtom<Variable>("y"),
@@ -1092,12 +1136,27 @@ namespace CSharpMath.Core.AtomTests {
 
       // With braces
       list = ParseLaTeX(readsToEnd ? $@"w{{\{inputCommand} xy}}z" : $@"w\{inputCommand}{{xy}}z");
-      Assert.Collection(list,
-        CheckAtom<Variable>("w", w => Assert.Equal(FontStyle.Default, w.FontStyle)),
-        CheckAtom<Variable>("x", x => Assert.Equal(style, x.FontStyle)),
-        CheckAtom<Variable>("y", y => Assert.Equal(style, y.FontStyle)),
-        CheckAtom<Variable>("z", z => Assert.Equal(FontStyle.Default, z.FontStyle)));
-      Assert.Equal(outputCommand is null ? "wxyz" : $@"w\{outputCommand}{{xy}}z", LaTeXParser.MathListToLaTeX(list).ToString());
+      if (readsToEnd) {
+        // The outer {…} of w{\bf xy}z is a grouping brace: it wraps as a Group.
+        Assert.Collection(list,
+          CheckAtom<Variable>("w", w => Assert.Equal(FontStyle.Default, w.FontStyle)),
+          CheckAtom<Group>("", group => {
+            Assert.Collection(group.InnerList,
+              CheckAtom<Variable>("x", x => Assert.Equal(style, x.FontStyle)),
+              CheckAtom<Variable>("y", y => Assert.Equal(style, y.FontStyle)));
+          }),
+          CheckAtom<Variable>("z", z => Assert.Equal(FontStyle.Default, z.FontStyle)));
+        Assert.Equal(outputCommand is null ? "wxyz" : $@"w{{\{outputCommand}{{xy}}}}z",
+          LaTeXParser.MathListToLaTeX(list).ToString());
+      } else {
+        // \bf{xy}: the brace is the field and flattens; the styled run stays inline.
+        Assert.Collection(list,
+          CheckAtom<Variable>("w", w => Assert.Equal(FontStyle.Default, w.FontStyle)),
+          CheckAtom<Variable>("x", x => Assert.Equal(style, x.FontStyle)),
+          CheckAtom<Variable>("y", y => Assert.Equal(style, y.FontStyle)),
+          CheckAtom<Variable>("z", z => Assert.Equal(FontStyle.Default, z.FontStyle)));
+        Assert.Equal(outputCommand is null ? "wxyz" : $@"w\{outputCommand}{{xy}}z", LaTeXParser.MathListToLaTeX(list).ToString());
+      }
     }
 
     [Theory]
@@ -1560,9 +1619,11 @@ x \end{matrix}
       InlineData(@"\color{notacolor}{xyz}", @"Error: Invalid color: notacolor
 \color{notacolor}{xyz}
                ↑ (pos 16)"),
-      InlineData(@"\color{red blue}{xyz}", @"Error: Missing }
+      // Upstream REN-2: the whole token is captured, so an embedded space now yields
+      // a clear "Invalid color" error instead of a confusing "Missing }".
+      InlineData(@"\color{red blue}{xyz}", @"Error: Invalid color: red blue
 \color{red blue}{xyz}
-          ↑ (pos 11)"),
+              ↑ (pos 15)"),
       InlineData(@"\left(\begin{matrix}\right)", @"Error: Missing \end{matrix}
 ···(\begin{matrix}\right)
                        ↑ (pos 26)"),

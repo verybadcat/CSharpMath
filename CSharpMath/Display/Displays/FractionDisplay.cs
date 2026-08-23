@@ -18,6 +18,9 @@ namespace CSharpMath.Display.Displays {
     public float DenominatorDown { get; set; }
     public float LineThickness { get; set; }
     public float LinePosition { get; set; }
+    /// <summary>Horizontal alignment of the numerator within the fraction column.
+    /// Only \cfrac[l]/[r] sets a non-center value.</summary>
+    public Atom.Atoms.FractionAlignment NumeratorAlignment { get; set; }
 
     public Range Range { get; }
 
@@ -36,8 +39,13 @@ namespace CSharpMath.Display.Displays {
     public float Width => Math.Max(Numerator.Width, Denominator.Width);
 
     public void UpdateNumeratorAndDenominatorPositions() {
+      float offset = NumeratorAlignment switch {
+        Atom.Atoms.FractionAlignment.Left => 0,
+        Atom.Atoms.FractionAlignment.Right => Width - Numerator.Width,
+        _ => (Width - Numerator.Width) / 2
+      };
       Numerator.Position =
-        new PointF(Position.X + (Width - Numerator.Width) / 2, Position.Y + NumeratorUp);
+        new PointF(Position.X + offset, Position.Y + NumeratorUp);
       Denominator.Position =
         new PointF(Position.X + (Width - Denominator.Width) / 2, Position.Y - DenominatorDown);
     }

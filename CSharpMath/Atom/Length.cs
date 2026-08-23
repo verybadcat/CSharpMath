@@ -24,14 +24,15 @@ namespace CSharpMath.Atom {
         System.Globalization.CultureInfo.InvariantCulture.NumberFormat,
         out var value)
       ? "Invalid length value"
-      : useTextUnits
-      ? unit switch {
-        "mu" => "The length unit mu is not allowed in text mode",
+      // em is allowed in both modes (iosMath f644371: \kern1em == 18mu in math mode);
+      // mu stays text-mode-only because a math unit has no meaning in text.
+      : useTextUnits && unit == "mu"
+      ? "The length unit mu is not allowed in text mode"
+      : unit switch {
+        "mu" => MathUnit * value,
         var _ when PredefinedLengthUnits.TryGetValue(unit, out var space) => space * value,
         _ => $"Unsupported length unit {unit}",
-      } : unit != "mu"
-      ? "Only the length unit mu is allowed in math mode"
-      : (Result<Length>)(MathUnit * value);
+      };
     private static bool UnifyIsMu(Length left, Length right) =>
       left.IsMu && right.IsMu
       || (left.IsMu || right.IsMu

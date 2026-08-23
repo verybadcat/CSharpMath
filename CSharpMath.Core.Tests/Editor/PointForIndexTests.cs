@@ -93,18 +93,26 @@ namespace CSharpMath.Core.EditorTests {
       };
     [Theory, MemberData(nameof(ExponentData))]
     public void Exponent(PointF point, MathListIndex expected) => Test("2^3", point, expected);
-    public static TestData ExponentsData =>
-      new TestData {
-        { (0, 0), 0 },
-        { (10, 0), 0, (SubIndex.BetweenBaseAndScripts, 1) },
-        { (10, -4.94), 0, (SubIndex.Subscript, 0) },
-        { (17, -4.94), 0, (SubIndex.Subscript, 1) },
-        { (18.12, 0), 1 },
-        { (28.12, 0), 1, (SubIndex.BetweenBaseAndScripts, 1) },
-        { (28.12, -4.94), 1, (SubIndex.Subscript, 0) },
-        { (35.12, -4.94), 1, (SubIndex.Subscript, 1) },
-        { (35.12, 0), 2 },
-      };
+    public static TestData ExponentsData {
+      get {
+        // {2_3}{3_2}: braces are Ord groups now — the groups render transparently
+        // (their displays are spliced into the parent), but atoms inside a group do
+        // not fuse across the brace boundary, so each glyph carries its own italic
+        // correction and the pen advances by 1.12pt per boundary.
+        var data = new TestData {
+          { (0, 0), 0 },
+          { (10, 0), 0, (SubIndex.BetweenBaseAndScripts, 1) },
+          { (10, -4.94), 0, (SubIndex.Subscript, 0) },
+          { (17, -4.94), 0, (SubIndex.Subscript, 1) },
+          { (17, 0), 1 },
+          { (27, 0), 1, (SubIndex.BetweenBaseAndScripts, 1) },
+          { (27, -4.94), 1, (SubIndex.Subscript, 0) },
+          { (34, -4.94), 1, (SubIndex.Subscript, 1) },
+          { (34, 0), 2 },
+        };
+        return data;
+      }
+    }
     [Theory, MemberData(nameof(ExponentsData))]
     public void Subscripts(PointF point, MathListIndex expected) => Test("{2_3}{3_2}", point, expected);
 

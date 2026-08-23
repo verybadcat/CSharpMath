@@ -13,6 +13,9 @@ namespace CSharpMath.Atom.Atoms {
       InterColumnSpacing = InterColumnSpacing,
       InterRowAdditionalSpacing = InterRowAdditionalSpacing,
       Environment = Environment,
+      CellStyle = CellStyle,
+      VerticalLines = VerticalLines.ToList(),
+      HorizontalLines = HorizontalLines.ToList(),
       Alignments = Alignments.ToList(),
       Cells = new List<List<MathList>>(Cells.Select(list =>
         new List<MathList>(list.Select(sublist => sublist.Clone(finalize)))))
@@ -29,6 +32,17 @@ namespace CSharpMath.Atom.Atoms {
     /// Additional spacing between rows in jots (one jot is 0.3 times font size).
     /// </summary>
     public float InterRowAdditionalSpacing { get; set; }
+    /// <summary>The line style every cell of this table renders in, or null to
+    /// inherit the surrounding style (aligned/gather/eqnarray/alignedat).</summary>
+    public LineStyle? CellStyle { get; set; }
+    /// <summary>The number of `|` vertical rules at each column boundary (array
+    /// environment). Length NColumns+1: index 0 = before column 0 … NColumns = after the
+    /// last column. Empty for every non-array environment.</summary>
+    public List<int> VerticalLines { get; set; } = new List<int>();
+    /// <summary>The number of `\hline` horizontal rules at each row boundary (array
+    /// environment). Length NRows+1: index 0 = above row 0 … NRows = below the last
+    /// row. Empty for every non-array environment.</summary>
+    public List<int> HorizontalLines { get; set; } = new List<int>();
     /// <summary>The name of the environment that this table denotes</summary>
     public string? Environment { get; set; }
     /// <summary>Number of rows</summary>

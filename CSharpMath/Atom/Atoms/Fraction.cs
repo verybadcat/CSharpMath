@@ -1,6 +1,9 @@
 using System.Text;
 
 namespace CSharpMath.Atom.Atoms {
+  public enum FractionStyle { Auto, Display, Text }
+  public enum FractionAlignment { Center, Left, Right }
+
   public sealed class Fraction : MathAtom, IMathListContainer {
     public MathList Numerator { get; }
     public MathList Denominator { get; }
@@ -10,6 +13,14 @@ namespace CSharpMath.Atom.Atoms {
     public Boundary RightDelimiter { get; set; }
     /// <summary>In this context, a "rule" is a fraction line.</summary>
     public bool HasRule { get; }
+    /// <summary>Explicit style override: \dfrac/\dbinom/\cfrac force display,
+    /// \tfrac/\tbinom force text. Auto honors the surrounding style (Rule 15a).</summary>
+    public FractionStyle StyleOverride { get; set; } = FractionStyle.Auto;
+    /// <summary>True for \cfrac: operands are typeset in display style with struts
+    /// and the whole fraction is wrapped in surrounding 3mu thin space.</summary>
+    public bool IsContinuedFraction { get; set; }
+    /// <summary>Numerator alignment within max(numWidth, denWidth). Only \cfrac[l]/[r] sets a non-default value.</summary>
+    public FractionAlignment NumeratorAlignment { get; set; } = FractionAlignment.Center;
     public Fraction(MathList numerator, MathList denominator, bool hasRule = true) =>
       (Numerator, Denominator, HasRule) = (numerator, denominator, hasRule);
     public override bool ScriptsAllowed => true;
@@ -17,7 +28,10 @@ namespace CSharpMath.Atom.Atoms {
     protected override MathAtom CloneInside(bool finalize) =>
       new Fraction(Numerator.Clone(finalize), Denominator.Clone(finalize), HasRule) {
         LeftDelimiter = LeftDelimiter,
-        RightDelimiter = RightDelimiter
+        RightDelimiter = RightDelimiter,
+        StyleOverride = StyleOverride,
+        IsContinuedFraction = IsContinuedFraction,
+        NumeratorAlignment = NumeratorAlignment
       };
     public override string DebugString =>
       new StringBuilder(HasRule ? @"\frac" : @"\atop")

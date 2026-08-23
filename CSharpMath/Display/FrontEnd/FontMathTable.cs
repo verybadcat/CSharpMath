@@ -78,6 +78,12 @@ namespace CSharpMath.Display.FrontEnd {
     public abstract float UpperLimitBaselineRiseMin(TFont font);
     public abstract float LowerLimitGapMin(TFont font);
     public abstract float LowerLimitBaselineDropMin(TFont font);
+    #region stretch stack (\overbrace / \underbrace and relatives)
+    public abstract float StretchStackTopShiftUp(TFont font);
+    public abstract float StretchStackBottomShiftDown(TFont font);
+    public abstract float StretchStackGapAboveMin(TFont font);
+    public abstract float StretchStackGapBelowMin(TFont font);
+    #endregion
     public abstract float UnderbarVerticalGap(TFont font);
     public abstract float UnderbarRuleThickness(TFont font);
     public abstract float OverbarVerticalGap(TFont font);

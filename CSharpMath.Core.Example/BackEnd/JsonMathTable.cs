@@ -205,6 +205,14 @@ namespace CSharpMath.Core.BackEnd {
 
     public override float LowerLimitBaselineDropMin(TFont font) =>
       ConstantFromTable(font, nameof(LowerLimitBaselineDropMin));
+    public override float StretchStackTopShiftUp(TFont font) =>
+      ConstantFromTable(font, nameof(StretchStackTopShiftUp));
+    public override float StretchStackBottomShiftDown(TFont font) =>
+      ConstantFromTable(font, nameof(StretchStackBottomShiftDown));
+    public override float StretchStackGapAboveMin(TFont font) =>
+      ConstantFromTable(font, nameof(StretchStackGapAboveMin));
+    public override float StretchStackGapBelowMin(TFont font) =>
+      ConstantFromTable(font, nameof(StretchStackGapBelowMin));
     #region overline/underline
     public override float UnderbarVerticalGap(TFont font) =>
       ConstantFromTable(font, nameof(UnderbarVerticalGap));
