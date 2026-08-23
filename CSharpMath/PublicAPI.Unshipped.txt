@@ -1,4 +1,14 @@
 #nullable enable
+CSharpMath.Atom.LaTeXParser.IsReadingOneCharField.get -> bool
+CSharpMath.Atom.LaTeXParser.IsReadingStopCharField.get -> bool
+CSharpMath.Atom.LaTeXParser.IsTemplateMode.get -> bool
+CSharpMath.Atom.LaTeXParser.IsTemplateMode.set -> void
+CSharpMath.Atom.LaTeXParser.PeekChar() -> char
+CSharpMath.Atom.LaTeXParser.ReadCommandName() -> string!
+CSharpMath.Atom.LaTeXParser.TableEnvironment.Argument.get -> string?
+CSharpMath.Atom.LaTeXParser.TableEnvironment.Argument.set -> void
+CSharpMath.Atom.LaTeXParser.TableEnvironment.HorizontalLines.get -> System.Collections.Generic.List<int>!
+CSharpMath.Atom.LaTeXParser.UndoTo(int position) -> void
 ~override CSharpMath.Editor.MathListRange.Equals(object obj) -> bool
 abstract CSharpMath.Atom.MathAtom.CloneInside(bool finalize) -> CSharpMath.Atom.MathAtom!
 abstract CSharpMath.Atom.MathAtom.ScriptsAllowed.get -> bool

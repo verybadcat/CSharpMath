@@ -431,33 +431,44 @@ namespace CSharpMath.Atom {
         BuildStackCommands() {
       var specs = new System.Collections.Generic.Dictionary<string, StackCommandSpec> {
         ["overrightarrow"] = new StackCommandSpec {
-          OverConstruction = new StackConstruction.Extensible("→") },
+          OverConstruction = new StackConstruction.Extensible("→")
+        },
         ["overleftarrow"] = new StackCommandSpec {
-          OverConstruction = new StackConstruction.Extensible("←") },
+          OverConstruction = new StackConstruction.Extensible("←")
+        },
         ["overleftrightarrow"] = new StackCommandSpec {
-          OverConstruction = new StackConstruction.Extensible("↔") },
+          OverConstruction = new StackConstruction.Extensible("↔")
+        },
         ["underrightarrow"] = new StackCommandSpec {
-          UnderConstruction = new StackConstruction.Extensible("→") },
+          UnderConstruction = new StackConstruction.Extensible("→")
+        },
         ["underleftarrow"] = new StackCommandSpec {
-          UnderConstruction = new StackConstruction.Extensible("←") },
+          UnderConstruction = new StackConstruction.Extensible("←")
+        },
         ["underleftrightarrow"] = new StackCommandSpec {
-          UnderConstruction = new StackConstruction.Extensible("↔") },
+          UnderConstruction = new StackConstruction.Extensible("↔")
+        },
         ["overbrace"] = new StackCommandSpec {
-          OverConstruction = new StackConstruction.Extensible("⏞") },
+          OverConstruction = new StackConstruction.Extensible("⏞")
+        },
         // \underbrace keeps its pre-port UnderAnnotation registration (its _
         // attaches an under-list), so it is deliberately absent here.
         ["overset"] = new StackCommandSpec {
           InheritsClass = true,
-          ArgRoles = new[] { StackArgRole.Over, StackArgRole.Base } },
+          ArgRoles = new[] { StackArgRole.Over, StackArgRole.Base }
+        },
         ["underset"] = new StackCommandSpec {
           InheritsClass = true,
-          ArgRoles = new[] { StackArgRole.Under, StackArgRole.Base } },
+          ArgRoles = new[] { StackArgRole.Under, StackArgRole.Base }
+        },
         ["stackrel"] = new StackCommandSpec {
           DisplayClassType = typeof(Relation),
-          ArgRoles = new[] { StackArgRole.Over, StackArgRole.Base } },
+          ArgRoles = new[] { StackArgRole.Over, StackArgRole.Base }
+        },
         ["stackbin"] = new StackCommandSpec {
           DisplayClassType = typeof(BinaryOperator),
-          ArgRoles = new[] { StackArgRole.Over, StackArgRole.Base } },
+          ArgRoles = new[] { StackArgRole.Over, StackArgRole.Base }
+        },
       };
       return specs;
     }
@@ -570,7 +581,7 @@ namespace CSharpMath.Atom {
               box.KeepHeight = true;
               box.KeepDepth = false;
               break;
-            // any other value: ignore bracket, smash both, no crash
+              // any other value: ignore bracket, smash both, no crash
           }
         } else {
           parser.UndoTo(saveChar);
