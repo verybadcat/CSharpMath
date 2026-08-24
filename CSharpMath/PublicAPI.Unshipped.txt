@@ -1340,9 +1340,11 @@ static CSharpMath.Atom.LaTeXSettings.ColorToString(System.Drawing.Color color, S
 static CSharpMath.Atom.LaTeXSettings.CommandForAtom(CSharpMath.Atom.MathAtom! atom) -> string?
 static CSharpMath.Atom.LaTeXSettings.Commands.get -> CSharpMath.Atom.LaTeXCommandDictionary<System.Func<CSharpMath.Atom.LaTeXParser!, CSharpMath.Atom.MathList!, char, CSharpMath.Atom.Result<(CSharpMath.Atom.MathAtom? Atom, CSharpMath.Atom.MathList? Return)>>!>!
 static CSharpMath.Atom.LaTeXSettings.CommandSymbols.get -> CSharpMath.Atom.AliasBiDictionary<string!, CSharpMath.Atom.MathAtom!>!
+static CSharpMath.Atom.LaTeXSettings.AddMacro(string! name, int argumentCount, string! template) -> void
 static CSharpMath.Atom.LaTeXSettings.Divide.get -> CSharpMath.Atom.MathAtom!
 static CSharpMath.Atom.LaTeXSettings.Err(string! error) -> CSharpMath.Atom.ResultImplicitError
 static CSharpMath.Atom.LaTeXSettings.FontStyles.get -> CSharpMath.Atom.AliasBiDictionary<string!, CSharpMath.Atom.FontStyle>!
+static CSharpMath.Atom.LaTeXSettings.MacroDefinitionForCommand(string! command) -> (int argc, string! template)?
 static CSharpMath.Atom.LaTeXSettings.Ok(CSharpMath.Atom.MathAtom? atom) -> CSharpMath.Atom.Result<(CSharpMath.Atom.MathAtom? Atom, CSharpMath.Atom.MathList? Return)>
 static CSharpMath.Atom.LaTeXSettings.OkStop(CSharpMath.Atom.MathList! return) -> CSharpMath.Atom.Result<(CSharpMath.Atom.MathAtom? Atom, CSharpMath.Atom.MathList? Return)>
 static CSharpMath.Atom.LaTeXSettings.OkStyled(CSharpMath.Atom.MathList! styled) -> CSharpMath.Atom.Result<(CSharpMath.Atom.MathAtom? Atom, CSharpMath.Atom.MathList? Return)>
