@@ -187,9 +187,13 @@ namespace CSharpMath.Core.AtomTests {
       Assert.False(box.KeepWidth);
       Assert.True(box.DrawChild);
       Assert.Equal(align, box.HAlign);
-      // Single-atom groups serialize bare; laps keep their command since the inner
-      // atom is wrapped by the box itself.
-      Assert.Contains(RoundTrip(latex), new[] { @"x", @"\llap{x}", @"\rlap{x}", @"\clap{x}" });
+    }
+    [Theory]
+    [InlineData(@"\llap{x}", @"\llap{x}")]
+    [InlineData(@"\rlap{x}", @"\rlap{x}")]
+    [InlineData(@"\clap{x}", @"\clap{x}")]
+    public void LapsRoundTrip(string latex, string expected) {
+      Assert.Equal(expected, RoundTrip(latex));
     }
     [Theory]
     [InlineData(@"\cancel{x}", StrikeStyle.Forward)]

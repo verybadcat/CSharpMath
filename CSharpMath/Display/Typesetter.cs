@@ -1273,7 +1273,7 @@ namespace CSharpMath.Display {
 
       var ruledRowDisplays = new List<IDisplay<TFont, TGlyph>>();
       foreach (var row in displays) {
-        ruledRowDisplays.Add(MakeRuledRowWithColumns(row, table, columnOffsets));
+        ruledRowDisplays.Add(MakeRuledRowWithColumns(row, table, columnWidths, columnOffsets));
       }
 
       // position all the rows
@@ -1331,19 +1331,18 @@ namespace CSharpMath.Display {
 
     /// <summary>Like MakeRowWithColumns but using precomputed shared column offsets.</summary>
     private ListDisplay<TFont, TGlyph> MakeRuledRowWithColumns(
-      List<ListDisplay<TFont, TGlyph>> row, Table table, float[] columnOffsets) {
+      List<ListDisplay<TFont, TGlyph>> row, Table table, float[] columnWidths, float[] columnOffsets) {
       Range rowRange = Range.NotFound;
       for (int i = 0; i < row.Count; i++) {
         var entry = row[i];
-        float columnWidth = entry.Width;
         var alignment = table.GetAlignment(i);
         var cellPosition = columnOffsets[i];
         switch (alignment) {
           case ColumnAlignment.Right:
-            cellPosition += (columnWidth - entry.Width);
+            cellPosition += (columnWidths[i] - entry.Width);
             break;
           case ColumnAlignment.Center:
-            cellPosition += (columnWidth - entry.Width) / 2;
+            cellPosition += (columnWidths[i] - entry.Width) / 2;
             break;
         }
         entry.Position = new PointF(cellPosition, 0);

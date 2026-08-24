@@ -41,6 +41,9 @@ namespace CSharpMath.Rendering.Tests {
     // iosMath c9afaad: the correction of a script base must come from the face that
     // drew its nucleus; \mathit digits keep their upright face, so 1^2 must not shift.
     public const string ItalicCorrectionStyles = @"1\mathit{2}^3 x_\ell \mathrm{P}^2 \mathbf{f}_1";
+    // Ruled arrays must honour the column alignment spec: cells sit at shared
+    // offsets, then r/c/l shifts are applied within the full column width.
+    public const string RuledArrayAlignment = @"\begin{array}{|r|c|} 1 & 2 \\ 1000 & x \end{array}";
 
     public const string KetSum = @"\frac{1}{\sqrt{2^n}} \sum_{i=0}^{2^n-1} \Ket{i}";
 
