@@ -143,9 +143,10 @@ namespace CSharpMath.Display {
             UnaryOperator u => u.ToOrdinary(),
             _ => atom
           };
-          // This is Rule 14 to merge ordinary characters.
-          // combine ordinary atoms together
-          if (newAtom is Ordinary && prevAtom is Ordinary o && o.Superscript.IsEmpty() && o.Subscript.IsEmpty()) {
+          // This is Rule 14 to merge ordinary characters, but only within one font
+          // style: the fused run is stamped with a single face (iosMath 76fd773).
+          if (newAtom is Ordinary && prevAtom is Ordinary o && o.Superscript.IsEmpty() && o.Subscript.IsEmpty()
+            && o.FontStyle == newAtom.FontStyle) {
             prevAtom.Fuse(newAtom);
             // skip the current node as we fused it
             continue;

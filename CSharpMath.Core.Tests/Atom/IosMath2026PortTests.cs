@@ -252,6 +252,47 @@ namespace CSharpMath.Core.AtomTests {
       Assert.NotNull(new LaTeXParser(@"\pod").Build().Error);
     }
     [Fact]
+    public void AddMacroRegistersAndReplaces() {
+      // iosMath b2b19a8: runtime macro registration, with replacement on re-register.
+      // Compare finalized expansions, as the invocation itself serializes back as \half.
+      LaTeXSettings.AddMacro("half", 0, @"\frac{1}{2}");
+      Assert.Equal(FinalizedDebugString(@"\frac{1}{2}"), FinalizedDebugString(@"\half"));
+      LaTeXSettings.AddMacro("half", 0, @"\frac{1}{3}");
+      Assert.Equal(FinalizedDebugString(@"\frac{1}{3}"), FinalizedDebugString(@"\half"));
+    }
+    static string FinalizedDebugString(string latex) => ParseLaTeX(latex).Clone(true).DebugString;
+    // iosMath 76fd773: fusing across a font-style change corrupts the style — Fuse
+    // keeps the first atom's FontStyle, so 1\mathit{2} would drop the italic and
+    // \mathit{1}2 would spread it onto a plain digit.
+    [Theory]
+    [InlineData(@"1\mathit{2}", FontStyle.Default, FontStyle.Italic)]
+    [InlineData(@"\mathit{1}2", FontStyle.Italic, FontStyle.Default)]
+    public void FinalizedDoesNotFuseDigitsAcrossFontStyles(string latex, FontStyle firstStyle, FontStyle secondStyle) {
+      var finalized = ParseLaTeX(latex).Clone(true);
+      Assert.Equal(2, finalized.Count);
+      var first = Assert.IsType<Number>(finalized[0]);
+      var second = Assert.IsType<Number>(finalized[1]);
+      Assert.Equal("1", first.Nucleus);
+      Assert.Equal("2", second.Nucleus);
+      Assert.Equal(firstStyle, first.FontStyle);
+      Assert.Equal(secondStyle, second.FontStyle);
+    }
+    [Fact]
+    public void AddMacroValidatesArityAndTemplate() {
+      Assert.Throws<ArgumentException>(() => LaTeXSettings.AddMacro("ten", 10, @"x"));
+      // #2 referenced but only one argument declared.
+      Assert.Throws<ArgumentException>(() => LaTeXSettings.AddMacro("badref", 1, @"#2"));
+    }
+    [Fact]
+    public void MacroDefinitionForCommandReturnsRegisteredDefinition() {
+      Assert.True(LaTeXSettings.MacroDefinitionForCommand("pmod").HasValue);
+      Assert.False(LaTeXSettings.MacroDefinitionForCommand("nosuchmacro").HasValue);
+      LaTeXSettings.AddMacro("probe", 2, @"[#1|#2]");
+      var def = LaTeXSettings.MacroDefinitionForCommand("probe")!.GetValueOrDefault();
+      Assert.Equal(2, def.argc);
+      Assert.Equal(@"[#1|#2]", def.template);
+    }
+    [Fact]
     public void BmodStaysABinaryOperator() {
       // \bmod is a plain symbol table entry, not a macro. After finalize the leading
       // number fuses and the trailing number follows the binary op.

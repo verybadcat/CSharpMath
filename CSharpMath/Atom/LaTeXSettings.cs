@@ -436,7 +436,8 @@ namespace CSharpMath.Atom {
     public static MathAtom Divide => new BinaryOperator("÷");
 
     /// <summary>Built-in macros: command name → (argument count, LaTeX template with
-    /// #N placeholders). Each entry is amsmath's inline expansion.</summary>
+    /// #N placeholders). Each entry is amsmath's inline expansion. Populated once at
+    /// startup; <see cref="AddMacro"/> mutates it and must not race a live parse.</summary>
     public static readonly Dictionary<string, (int argc, string template)>
       BuiltinMacros = new Dictionary<string, (int, string)> {
         // amsmath's exact inline expansion. Not reproduced is the \if@display switch
@@ -458,6 +459,39 @@ namespace CSharpMath.Atom {
         ["varprojlim"] = (0, @"\underleftarrow{\lim}"),
       };
 
+    /// <summary>Defines a macro: a command that expands to <paramref name="template"/>
+    /// with <c>#1</c>…<c>#9</c> replaced by the arguments it is invoked with. Macros are
+    /// looked up before every other command table, so registering a name that already
+    /// exists — a macro or a built-in command — shadows it. Re-registering the same
+    /// name replaces the definition. Carries the same setup-time contract as the
+    /// symbol tables: do not call this while parsing on another thread.</summary>
+    public static void AddMacro(string name, int argumentCount, string template) {
+      if (name == null) throw new ArgumentNullException(nameof(name));
+      if (template == null) throw new ArgumentNullException(nameof(template));
+      if (argumentCount > 9)
+        throw new ArgumentException($@"\{name} declares {argumentCount} arguments; a macro can take at most 9", nameof(argumentCount));
+      if (!TemplateReferencesOnlyArgumentsUpTo(template, argumentCount))
+        throw new ArgumentException(
+          $@"Template for \{name} references an argument beyond its {argumentCount} declared argument(s): {template}",
+          nameof(template));
+      BuiltinMacros[name] = (argumentCount, template);
+    }
+
+    /// <summary>The macro registered under <paramref name="command"/>, or null if it is not a macro.</summary>
+    public static (int argc, string template)? MacroDefinitionForCommand(string command) =>
+      BuiltinMacros.TryGetValue(command, out var def) ? def : ((int, string)?)null;
+
+    /// <summary>Whether every #N reference in the template names an argument within the declared arity.</summary>
+    static bool TemplateReferencesOnlyArgumentsUpTo(string templateString, int argumentCount) {
+      for (int i = 0; i + 1 < templateString.Length; i++) {
+        if (templateString[i] != '#') continue;
+        char digit = templateString[i + 1];
+        if (digit < '1' || digit > '9' || digit - '0' > argumentCount) return false;
+        i++;
+      }
+      return true;
+    }
+
     /// <summary>Parses a built-in macro template: ordinary LaTeX plus #N references.</summary>
     internal static Result<MathList> BuildTemplate(string template) {
       var builder = new LaTeXParser(template) { IsTemplateMode = true };
@@ -478,7 +512,9 @@ namespace CSharpMath.Atom {
       // A fresh parser so the in-flight parse's state is never disturbed.
       var (templateExpression, templateError) = BuildTemplate(def.template);
       if (templateError != null || templateExpression == null) {
-        return Err($@"Built-in template for \{command} failed to parse");
+        // Reachable from a template registered through AddMacro, so this is the
+        // caller's error, not the library's.
+        return Err($@"Template for \{command} failed to parse");
       }
       return Ok(new Atoms.Macro(command, arguments, templateExpression));
     }

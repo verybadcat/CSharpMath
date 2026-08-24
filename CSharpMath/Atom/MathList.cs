@@ -104,7 +104,10 @@ namespace CSharpMath.Atom {
               newList[prevDisplayedIndex] = b.ToUnaryOperator();
               break;
           }
-          if ((prevNode, newNode) is (Number { Superscript.Count: 0, Subscript.Count: 0 } n, Number)) {
+          // Combine numbers together, but never across a font-style change: Fuse
+          // keeps the first atom's FontStyle and would corrupt the other's.
+          if ((prevNode, newNode) is (Number { Superscript.Count: 0, Subscript.Count: 0 } n, Number)
+            && n.FontStyle == newNode.FontStyle) {
             n.Fuse(newNode);
             continue; // do not add the new node; we fused it instead.
           }

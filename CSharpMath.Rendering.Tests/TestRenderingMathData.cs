@@ -38,6 +38,9 @@ namespace CSharpMath.Rendering.Tests {
     public const string IntegralScripts = @"\int\int\int^{\infty}\int_0\int^{\infty}_0\int";
     public const string ItalicAlignment = @"\colorbox{yellow}P\\\begin{array}{r}\colorbox{yellow}{PF}\\\colorbox{yellow}F\end{array}";
     public const string ItalicScripts = @"U_3^2UY_3^2U_3Y^2f_1f^2ff";
+    // iosMath c9afaad: the correction of a script base must come from the face that
+    // drew its nucleus; \mathit digits keep their upright face, so 1^2 must not shift.
+    public const string ItalicCorrectionStyles = @"1\mathit{2}^3 x_\ell \mathrm{P}^2 \mathbf{f}_1";
 
     public const string KetSum = @"\frac{1}{\sqrt{2^n}} \sum_{i=0}^{2^n-1} \Ket{i}";
 
