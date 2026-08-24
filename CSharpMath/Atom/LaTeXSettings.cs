@@ -358,28 +358,40 @@ namespace CSharpMath.Atom {
           ? OkStop(accumulate)
           : parser.ReadTable(null, accumulate, false, stopChar).Bind(table => OkStop(new MathList(table))) },
         { @"\over", (parser, accumulate, stopChar) => {
+            // iosMath 801af6f: \over/\atop/\choose/\brack/\brace are illegal in a
+            // one-character argument slot (e.g. x^\over y); TeX rejects it too.
+            if (parser.IsReadingOneCharField)
+              return $@"\over cannot be used in a one-character argument; wrap it in braces, e.g. x^{{a \over b}}";
             parser.GroupWasTransformedByStopCommand = true;
             return parser.ReadUntil(stopChar).Bind(denominator =>
               OkStop(new MathList(new Fraction(accumulate, denominator))));
           } },
         { @"\atop", (parser, accumulate, stopChar) => {
+            if (parser.IsReadingOneCharField)
+              return $@"\atop cannot be used in a one-character argument; wrap it in braces, e.g. x^{{a \atop b}}";
             parser.GroupWasTransformedByStopCommand = true;
             return parser.ReadUntil(stopChar).Bind(denominator =>
               OkStop(new MathList(new Fraction(accumulate, denominator, false))));
           } },
         { @"\choose", (parser, accumulate, stopChar) => {
+            if (parser.IsReadingOneCharField)
+              return $@"\choose cannot be used in a one-character argument; wrap it in braces, e.g. x^{{a \choose b}}";
             parser.GroupWasTransformedByStopCommand = true;
             return parser.ReadUntil(stopChar).Bind(denominator =>
               OkStop(new MathList(new Fraction(accumulate, denominator, false)
                 { LeftDelimiter = new Boundary("("), RightDelimiter = new Boundary(")") })));
           } },
         { @"\brack", (parser, accumulate, stopChar) => {
+            if (parser.IsReadingOneCharField)
+              return $@"\brack cannot be used in a one-character argument; wrap it in braces, e.g. x^{{a \brack b}}";
             parser.GroupWasTransformedByStopCommand = true;
             return parser.ReadUntil(stopChar).Bind(denominator =>
               OkStop(new MathList(new Fraction(accumulate, denominator, false)
                 { LeftDelimiter = new Boundary("["), RightDelimiter = new Boundary("]") })));
           } },
         { @"\brace", (parser, accumulate, stopChar) => {
+            if (parser.IsReadingOneCharField)
+              return $@"\brace cannot be used in a one-character argument; wrap it in braces, e.g. x^{{a \brace b}}";
             parser.GroupWasTransformedByStopCommand = true;
             return parser.ReadUntil(stopChar).Bind(denominator =>
               OkStop(new MathList(new Fraction(accumulate, denominator, false)

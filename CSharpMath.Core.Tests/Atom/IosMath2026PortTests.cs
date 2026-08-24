@@ -442,6 +442,25 @@ namespace CSharpMath.Core.AtomTests {
       Assert.True(frac.HasRule);
       Assert.Equal(@"\frac{a}{b}", RoundTrip(@"{a \over b}"));
     }
+    [Theory]
+    [InlineData(@"x^\over y")]
+    [InlineData(@"x_\over y")]
+    [InlineData(@"x^\atop y")]
+    [InlineData(@"x^\choose y")]
+    public void GeneralizedFractionInOneCharSlotIsError(string latex) {
+      // iosMath 801af6f: \over/\atop/\choose/\brack/\brace in a one-character
+      // argument slot must error, not silently swallow the rest of the input.
+      Assert.NotNull(new LaTeXParser(latex).Build().Error);
+    }
+    [Fact]
+    public void BracedGeneralizedFractionStillParses() {
+      // The explicitly-braced form is unaffected (iosMath 801af6f regression guard).
+      var list = ParseLaTeX(@"x^{1 \over y}");
+      var x = Assert.IsType<Variable>(Assert.Single(list));
+      var sup = Assert.Single(x.Superscript);
+      Assert.IsType<Fraction>(sup);
+      Assert.Equal(@"x^{\frac{1}{y}}", RoundTrip(@"x^{1 \over y}"));
+    }
     [Fact]
     public void NestedGroupsSurvive() {
       // The outer braces wrap a single Group atom, which serializes bare, so the
