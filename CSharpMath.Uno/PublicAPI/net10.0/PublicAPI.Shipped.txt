@@ -1,5 +1,9 @@
 #nullable enable
+Uno.Resizetizer.__LegacyResizetizerSupport__
 CSharpMath.Uno.BaseView<TPainter, TContent>
+CSharpMath.Uno.GlobalStaticResources
+CSharpMath.Uno.GlobalStaticResources.GlobalStaticResources() -> void
+CSharpMath.Uno.WindowExtensions
 CSharpMath.Uno.BaseView<TPainter, TContent>.BaseView() -> void
 CSharpMath.Uno.BaseView<TPainter, TContent>.Content.get -> TContent?
 CSharpMath.Uno.BaseView<TPainter, TContent>.Content.set -> void
@@ -44,11 +48,8 @@ CSharpMath.Uno.MathView.MathView() -> void
 CSharpMath.Uno.TextView
 CSharpMath.Uno.TextView.TextView() -> void
 override CSharpMath.Uno.BaseView<TPainter, TContent>.MeasureOverride(Windows.Foundation.Size availableSize) -> Windows.Foundation.Size
-#if IOS || ANDROID || WINDOWS || BROWSERWASM
-override CSharpMath.Uno.BaseView<TPainter, TContent>.OnPaintSurface(SkiaSharp.Views.Windows.SKPaintSurfaceEventArgs! e) -> void
-#else
 override CSharpMath.Uno.BaseView<TPainter, TContent>.RenderOverride(SkiaSharp.SKCanvas! canvas, Windows.Foundation.Size area) -> void
-#endif
+static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.staticPainter -> TPainter!
 static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.ContentProperty -> Microsoft.UI.Xaml.DependencyProperty!
 static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.DisplacementXProperty -> Microsoft.UI.Xaml.DependencyProperty!
 static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.DisplacementYProperty -> Microsoft.UI.Xaml.DependencyProperty!
@@ -64,9 +65,12 @@ static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.LaTeXProperty -> Mic
 static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.LineStyleProperty -> Microsoft.UI.Xaml.DependencyProperty!
 static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.LocalTypefacesProperty -> Microsoft.UI.Xaml.DependencyProperty!
 static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.MagnificationProperty -> Microsoft.UI.Xaml.DependencyProperty!
-static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.PaddingProperty -> Microsoft.UI.Xaml.DependencyProperty!
 static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.PaintStyleProperty -> Microsoft.UI.Xaml.DependencyProperty!
-static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.staticPainter -> TPainter!
+static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.PaddingProperty -> Microsoft.UI.Xaml.DependencyProperty!
 static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.TextAlignmentProperty -> Microsoft.UI.Xaml.DependencyProperty!
 static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.TextColorProperty -> Microsoft.UI.Xaml.DependencyProperty!
 static readonly CSharpMath.Uno.BaseView<TPainter, TContent>.WritablePainterProperties -> Microsoft.UI.Xaml.DependencyProperty![]!
+static CSharpMath.Uno.GlobalStaticResources.Initialize() -> void
+static CSharpMath.Uno.GlobalStaticResources.RegisterDefaultStyles() -> void
+static CSharpMath.Uno.GlobalStaticResources.RegisterResourceDictionariesBySource() -> void
+~static CSharpMath.Uno.WindowExtensions.SetWindowIcon(this Microsoft.UI.Xaml.Window window) -> void

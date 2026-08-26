@@ -6,7 +6,21 @@
     <!-- Suppress compiler and analyzer warnings from Typography submodule since its code is not clean -->
     <!-- Applied globally to the project since item-level NoWarn doesn't reliably work for linked files -->
     <NoWarn>$(NoWarn);CS8618;CS8603;CS8625;CS8600;CS8601;CS8602;CS8604;CS0162;CS0168;CS0219;CS0649</NoWarn>
+    <PublicApiVariant Condition="'$(PublicApiVariant)' == '' and '$(Configuration)' == 'Debug'">DebugApi</PublicApiVariant>
+    <PublicApiVariant Condition="'$(PublicApiVariant)' == '' and '$(Configuration)' == 'Release'">ReleaseApi</PublicApiVariant>
   </PropertyGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="PublicAPI\$(PublicApiVariant)\PublicAPI.Shipped.txt" />
+    <AdditionalFiles Include="PublicAPI\$(PublicApiVariant)\PublicAPI.Unshipped.txt" />
+  </ItemGroup>
+  <Target Name="ValidatePublicApiVariant" BeforeTargets="CoreCompile">
+    <Error Condition="'$(PublicApiVariant)' != 'DebugApi' and '$(PublicApiVariant)' != 'ReleaseApi'"
+           Text="PublicApiVariant must be DebugApi or ReleaseApi; configuration '$(Configuration)' has no default variant." />
+    <Error Condition="!Exists('$(MSBuildProjectDirectory)\PublicAPI\$(PublicApiVariant)\PublicAPI.Shipped.txt')"
+           Text="Missing Public API shipped baseline for variant '$(PublicApiVariant)'." />
+    <Error Condition="!Exists('$(MSBuildProjectDirectory)\PublicAPI\$(PublicApiVariant)\PublicAPI.Unshipped.txt')"
+           Text="Missing Public API unshipped baseline for variant '$(PublicApiVariant)'." />
+  </Target>
   <ItemGroup>
 	<ProjectReference Include="..\CSharpMath\CSharpMath.csproj" />
     <EmbeddedResource Include="Reference Fonts\*.otf" />
