@@ -8,13 +8,10 @@ $ErrorActionPreference = "Stop"
 
 function MarkShipped([string]$dir) {
     $shippedFilePath = Join-Path $dir "PublicAPI.Shipped.txt"
-    $shipped = Get-Content $shippedFilePath
-    if ($null -eq $shipped) {
-        $shipped = @()
-    }
+    $shipped = @(Get-Content $shippedFilePath)
 
     $unshippedFilePath = Join-Path $dir "PublicAPI.Unshipped.txt"
-    $unshipped = Get-Content $unshippedFilePath
+    $unshipped = @(Get-Content $unshippedFilePath)
     $removed = @()
     $removedPrefix = "*REMOVED*";
     Write-Host "Processing $dir"
