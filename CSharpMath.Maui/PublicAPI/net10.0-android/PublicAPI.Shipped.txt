@@ -1,4 +1,6 @@
-﻿#nullable enable
+#nullable enable
+CSharpMath.Maui.Resource
+CSharpMath.Maui.Resource.Resource() -> void
 const CSharpMath.Maui.LatexHelper.phantom = "\\color{#00000000}|" -> string!
 CSharpMath.Maui.BaseButton<TView, TPainter, TContent>
 CSharpMath.Maui.BaseButton<TView, TPainter, TContent>.BaseButton() -> void
@@ -149,6 +151,4 @@ static readonly CSharpMath.Maui.MathInputButton.KeyboardProperty -> Microsoft.Ma
 static readonly CSharpMath.Maui.MathInputButton.PlaceholderActiveColorProperty -> Microsoft.Maui.Controls.BindableProperty!
 static readonly CSharpMath.Maui.MathInputButton.PlaceholderRestingColorProperty -> Microsoft.Maui.Controls.BindableProperty!
 virtual CSharpMath.Maui.BaseButton<TView, TPainter, TContent>.UpdateImageSource() -> void
-#if ANDROID || IOS || MACCATALYST || WINDOWS
 static CSharpMath.Maui.Extensions.DrawToStreamAsync<TContent>(this CSharpMath.Rendering.FrontEnd.Painter<(Microsoft.Maui.Graphics.ICanvas!, Microsoft.Maui.Graphics.SizeF), TContent!, Microsoft.Maui.Graphics.Color!>! painter, System.IO.Stream! target, float textPainterCanvasWidth = 2000, Microsoft.Maui.Graphics.ImageFormat format = Microsoft.Maui.Graphics.ImageFormat.Png, float quality = 1, CSharpMath.Rendering.FrontEnd.TextAlignment alignmentForTests = CSharpMath.Rendering.FrontEnd.TextAlignment.TopLeft) -> System.Threading.Tasks.Task!
-#endif

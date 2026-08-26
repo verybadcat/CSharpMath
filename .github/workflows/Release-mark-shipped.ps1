@@ -8,19 +8,19 @@ $ErrorActionPreference = "Stop"
 
 function MarkShipped([string]$dir) {
     $shippedFilePath = Join-Path $dir "PublicAPI.Shipped.txt"
-    $shipped = Get-Content $shippedFilePath
-    if ($null -eq $shipped) {
-        $shipped = @()
-    }
+    $shipped = @(Get-Content $shippedFilePath -Encoding UTF8)
 
     $unshippedFilePath = Join-Path $dir "PublicAPI.Unshipped.txt"
-    $unshipped = Get-Content $unshippedFilePath
+    $unshipped = @(Get-Content $unshippedFilePath -Encoding UTF8)
     $removed = @()
     $removedPrefix = "*REMOVED*";
     Write-Host "Processing $dir"
 
     foreach ($item in $unshipped) {
         if ($item.Length -gt 0) {
+            if (($item -match '^#nullable\s') -and $shipped.Contains($item)) {
+                continue
+            }
             if ($item.StartsWith($removedPrefix)) {
                 $item = $item.Substring($removedPrefix.Length)
                 $removed += $item
@@ -31,8 +31,10 @@ function MarkShipped([string]$dir) {
         }
     }
 
-    $shipped | Sort-Object | ?{ -not $removed.Contains($_) } | Out-File $shippedFilePath -Encoding Ascii
-    $null | Out-File $unshippedFilePath -Encoding Ascii
+    $encoding = New-Object System.Text.UTF8Encoding($false)
+    [string[]]$filteredShipped = @($shipped | ?{ -not $removed.Contains($_) })
+    [System.IO.File]::WriteAllLines($shippedFilePath, $filteredShipped, $encoding)
+    [System.IO.File]::WriteAllLines($unshippedFilePath, [string[]]@(), $encoding)
 }
 
 try {

@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 abstract CSharpMath.Rendering.FrontEnd.Painter<TCanvas, TContent, TColor>.ContentToLaTeX(TContent! content) -> string!
 abstract CSharpMath.Rendering.FrontEnd.Painter<TCanvas, TContent, TColor>.Display.get -> CSharpMath.Display.IDisplay<CSharpMath.Rendering.BackEnd.Fonts!, CSharpMath.Rendering.BackEnd.Glyph>?
 abstract CSharpMath.Rendering.FrontEnd.Painter<TCanvas, TContent, TColor>.Display.set -> void
@@ -395,6 +395,11 @@ override CSharpMath.Rendering.Text.TextAtom.Style.SingleChar(CSharpMath.Atom.Fon
 override CSharpMath.Rendering.Text.TextAtom.Text.Equals(CSharpMath.Rendering.Text.TextAtom! atom) -> bool
 override CSharpMath.Rendering.Text.TextAtom.Text.GetHashCode() -> int
 override CSharpMath.Rendering.Text.TextAtom.Text.SingleChar(CSharpMath.Atom.FontStyle style) -> int?
+override Typography.OpenFont.Bounds.ToString() -> string!
+override Typography.OpenFont.CFF.Cff1GlyphData.ToString() -> string!
+override Typography.OpenFont.Glyph.ToString() -> string!
+override Typography.OpenFont.GlyphPointF.ToString() -> string!
+override Typography.OpenFont.MathGlyphs.GlyphPartRecord.ToString() -> string!
 override Typography.OpenFont.MathGlyphs.MathGlyphVariantRecord.ToString() -> string!
 override Typography.OpenFont.MathGlyphs.MathKern.ToString() -> string!
 override Typography.OpenFont.MathGlyphs.MathValueRecord.ToString() -> string!
