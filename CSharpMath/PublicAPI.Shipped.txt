@@ -1,5 +1,4 @@
 #nullable enable
-~override CSharpMath.Editor.MathListRange.Equals(object obj) -> bool
 abstract CSharpMath.Atom.MathAtom.CloneInside(bool finalize) -> CSharpMath.Atom.MathAtom!
 abstract CSharpMath.Atom.MathAtom.ScriptsAllowed.get -> bool
 abstract CSharpMath.Display.FrontEnd.FontMathTable<TFont, TGlyph>.AccentBaseHeight(TFont font) -> float
@@ -1186,13 +1185,13 @@ static CSharpMath.Atom.Length.Multiply(CSharpMath.Atom.Length length, float magn
 static CSharpMath.Atom.Length.Multiply(float magnitude, CSharpMath.Atom.Length length) -> CSharpMath.Atom.Length
 static CSharpMath.Atom.Length.Negate(CSharpMath.Atom.Length space) -> CSharpMath.Atom.Length
 static CSharpMath.Atom.Length.operator !=(CSharpMath.Atom.Length left, CSharpMath.Atom.Length right) -> bool
-static CSharpMath.Atom.Length.operator -(CSharpMath.Atom.Length left, CSharpMath.Atom.Length right) -> CSharpMath.Atom.Length
-static CSharpMath.Atom.Length.operator -(CSharpMath.Atom.Length space) -> CSharpMath.Atom.Length
 static CSharpMath.Atom.Length.operator *(CSharpMath.Atom.Length length, float magnitude) -> CSharpMath.Atom.Length
 static CSharpMath.Atom.Length.operator *(float magnitude, CSharpMath.Atom.Length length) -> CSharpMath.Atom.Length
-static CSharpMath.Atom.Length.operator /(CSharpMath.Atom.Length length, float magnitude) -> CSharpMath.Atom.Length
 static CSharpMath.Atom.Length.operator +(CSharpMath.Atom.Length left, CSharpMath.Atom.Length right) -> CSharpMath.Atom.Length
 static CSharpMath.Atom.Length.operator +(CSharpMath.Atom.Length space) -> CSharpMath.Atom.Length
+static CSharpMath.Atom.Length.operator -(CSharpMath.Atom.Length left, CSharpMath.Atom.Length right) -> CSharpMath.Atom.Length
+static CSharpMath.Atom.Length.operator -(CSharpMath.Atom.Length space) -> CSharpMath.Atom.Length
+static CSharpMath.Atom.Length.operator /(CSharpMath.Atom.Length length, float magnitude) -> CSharpMath.Atom.Length
 static CSharpMath.Atom.Length.operator ==(CSharpMath.Atom.Length left, CSharpMath.Atom.Length right) -> bool
 static CSharpMath.Atom.Length.Plus(CSharpMath.Atom.Length space) -> CSharpMath.Atom.Length
 static CSharpMath.Atom.Length.PredefinedLengthUnits.get -> System.Collections.Generic.Dictionary<string!, CSharpMath.Atom.Length>!
@@ -1329,3 +1328,4 @@ virtual CSharpMath.Editor.MathListIndex.<Clone>$() -> CSharpMath.Editor.MathList
 virtual CSharpMath.Editor.MathListIndex.EqualityContract.get -> System.Type!
 virtual CSharpMath.Editor.MathListIndex.Equals(CSharpMath.Editor.MathListIndex? other) -> bool
 virtual CSharpMath.Editor.MathListIndex.PrintMembers(System.Text.StringBuilder! builder) -> bool
+~override CSharpMath.Editor.MathListRange.Equals(object obj) -> bool
