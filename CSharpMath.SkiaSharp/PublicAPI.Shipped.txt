@@ -1,5 +1,4 @@
 #nullable enable
-#nullable enable
 CSharpMath.SkiaSharp.Extensions
 CSharpMath.SkiaSharp.MathPainter
 CSharpMath.SkiaSharp.MathPainter.AntiAlias.get -> bool

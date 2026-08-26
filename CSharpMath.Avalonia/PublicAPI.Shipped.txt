@@ -1,5 +1,4 @@
 #nullable enable
-#nullable enable
 CSharpMath.Avalonia.AvaloniaCanvas
 CSharpMath.Avalonia.AvaloniaCanvas.AvaloniaCanvas(Avalonia.Media.DrawingContext! drawingContext, Avalonia.Size size) -> void
 CSharpMath.Avalonia.AvaloniaCanvas.CurrentColor.get -> System.Drawing.Color?

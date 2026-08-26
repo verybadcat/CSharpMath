@@ -1,5 +1,4 @@
 #nullable enable
-#nullable enable
 ~override CSharpMath.Editor.MathListRange.Equals(object obj) -> bool
 abstract CSharpMath.Atom.MathAtom.CloneInside(bool finalize) -> CSharpMath.Atom.MathAtom!
 abstract CSharpMath.Atom.MathAtom.ScriptsAllowed.get -> bool

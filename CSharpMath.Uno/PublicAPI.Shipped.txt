@@ -2,7 +2,6 @@
 #endif
 #if IOS || ANDROID || WINDOWS || BROWSERWASM
 #nullable enable
-#nullable enable
 CSharpMath.Uno.BaseView<TPainter, TContent>
 CSharpMath.Uno.BaseView<TPainter, TContent>.BaseView() -> void
 CSharpMath.Uno.BaseView<TPainter, TContent>.Content.get -> TContent?

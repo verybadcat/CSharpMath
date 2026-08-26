@@ -1,5 +1,4 @@
 #nullable enable
-#nullable enable
 CSharpMath.VectSharp.Extensions
 CSharpMath.VectSharp.MathPainter
 CSharpMath.VectSharp.MathPainter.Draw(VectSharp.Page! canvas, VectSharp.Point point) -> void

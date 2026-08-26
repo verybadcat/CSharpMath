@@ -1,7 +1,6 @@
 #endif
 #if ANDROID || IOS || MACCATALYST || WINDOWS
 #nullable enable
-#nullable enable
 const CSharpMath.Maui.LatexHelper.phantom = "\\color{#00000000}|" -> string!
 CSharpMath.Maui.BaseButton<TView, TPainter, TContent>
 CSharpMath.Maui.BaseButton<TView, TPainter, TContent>.BaseButton() -> void

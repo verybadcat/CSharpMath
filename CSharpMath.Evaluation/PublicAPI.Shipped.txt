@@ -1,5 +1,4 @@
 #nullable enable
-#nullable enable
 abstract CSharpMath.Evaluation.MathItem.<Clone>$() -> CSharpMath.Evaluation.MathItem!
 abstract CSharpMath.Evaluation.MathItem.Latexise() -> string!
 CSharpMath.Evaluation

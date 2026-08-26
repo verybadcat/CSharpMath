@@ -18,6 +18,9 @@ function MarkShipped([string]$dir) {
 
     foreach ($item in $unshipped) {
         if ($item.Length -gt 0) {
+            if (($item -match '^#nullable\s') -and $shipped.Contains($item)) {
+                continue
+            }
             if ($item.StartsWith($removedPrefix)) {
                 $item = $item.Substring($removedPrefix.Length)
                 $removed += $item
