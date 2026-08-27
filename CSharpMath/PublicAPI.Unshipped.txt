@@ -81,7 +81,6 @@ CSharpMath.Atom.Atoms.Table.HorizontalLines.set -> void
 CSharpMath.Atom.Atoms.Table.VerticalLines.get -> System.Collections.Generic.List<int>!
 CSharpMath.Atom.Atoms.Table.VerticalLines.set -> void
 CSharpMath.Atom.LaTeXParser.IsReadingOneCharField.get -> bool
-CSharpMath.Atom.LaTeXParser.IsReadingStopCharField.get -> bool
 CSharpMath.Atom.LaTeXParser.PeekChar() -> char
 CSharpMath.Atom.LaTeXParser.ReadCommandName() -> string!
 CSharpMath.Atom.LaTeXParser.TableEnvironment.Argument.get -> string?

@@ -100,6 +100,47 @@ namespace CSharpMath.Rendering.Tests {
       Assert.Equal(advance, display.Width);
     }
 
+    [Fact]
+    public void StackDisplayClassControlsInterElementSpacing() {
+      static (float Left, float Right) Gaps(string latex) {
+        var painter = new SkiaSharp.MathPainter { LaTeX = latex };
+        painter.Measure();
+        var root = Assert.IsType<Display.Displays.ListDisplay<Fonts, Glyph>>(painter.Display);
+        var stackIndex = root.Displays
+          .Select((display, index) => (display, index))
+          .Single(item => item.display is Display.Displays.StackDisplay<Fonts, Glyph>).index;
+        var stack = root.Displays[stackIndex];
+        var left = root.Displays[stackIndex - 1];
+        var right = root.Displays[stackIndex + 1];
+        return (
+          stack.Position.X - (left.Position.X + left.Width),
+          right.Position.X - (stack.Position.X + stack.Width));
+      }
+
+      var ordinary = Gaps(@"a\overset{x}{c}b");
+      var binary = Gaps(@"a\stackbin{x}{+}b");
+      var relation = Gaps(@"a\stackrel{x}{=}b");
+      Assert.True(ordinary.Left < binary.Left);
+      Assert.True(binary.Left < relation.Left);
+      Assert.True(ordinary.Right < binary.Right);
+      Assert.True(binary.Right < relation.Right);
+    }
+
+    [Fact]
+    public void ContinuedFractionAppliesStrutFloorsToBothOperands() {
+      var painter = new SkiaSharp.MathPainter { LaTeX = @"\cfrac{a}{b}" };
+      painter.Measure();
+      var root = Assert.IsType<Display.Displays.ListDisplay<Fonts, Glyph>>(painter.Display);
+      var wrapper = Assert.IsType<Display.Displays.ListDisplay<Fonts, Glyph>>(Assert.Single(root.Displays));
+      var fraction = Assert.IsType<Display.Displays.FractionDisplay<Fonts, Glyph>>(
+        Assert.Single(wrapper.Displays));
+
+      Assert.True(fraction.Numerator.Ascent >= 0.85f * painter.FontSize - 0.001f);
+      Assert.True(fraction.Numerator.Descent >= 0.35f * painter.FontSize - 0.001f);
+      Assert.True(fraction.Denominator.Ascent >= 0.85f * painter.FontSize - 0.001f);
+      Assert.True(fraction.Denominator.Descent >= 0.35f * painter.FontSize - 0.001f);
+    }
+
     [Theory]
     [InlineData(@"\llap{P}")]
     [InlineData(@"\clap{P}")]

@@ -317,7 +317,7 @@ namespace CSharpMath.Atom {
                 // into an enclosing group's decision.)
                 return LaTeXSettings.OkStyled(sublist);
               }
-              if (parser.IsReadingOneCharField || parser.IsReadingStopCharField) {
+              if (parser.IsReadingOneCharField) {
                 // Field brace (^{…}, _{…}, \frac{…}, command argument): the {…} *is*
                 // the field. Flatten and return it as the field.
                 return LaTeXSettings.OkStyled(sublist);

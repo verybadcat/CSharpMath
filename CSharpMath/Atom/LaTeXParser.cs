@@ -144,10 +144,6 @@ namespace CSharpMath.Atom {
     /// / single-field slot (^{…}, _{…}, \frac{…}, command arguments): a brace there *is*
     /// the field, so it must be flattened rather than wrapped as a Group.</summary>
     public bool IsReadingOneCharField { get; private set; }
-    /// <summary>True while the innermost BuildInternal call is reading up to a stop char
-    /// (a `}` field or an environment ender): braces there are fields too.</summary>
-    public bool IsReadingStopCharField { get; private set; }
-
     private Result<MathList> BuildInternal(bool oneCharOnly, char stopChar = '\0', MathList? r = null) {
       if (oneCharOnly && stopChar > '\0') {
         throw new InvalidCodePathException("Cannot set both oneCharOnly and stopChar");
@@ -157,17 +153,14 @@ namespace CSharpMath.Atom {
       }
       _recursionDepth++;
       var outerOneChar = IsReadingOneCharField;
-      var outerStopChar = IsReadingStopCharField;
       // Only a one-char field (^{…}, _{…}, \frac{…}, command arguments) makes braces
       // inside it fields. A stopChar read (a `{…}` group body, an environment body)
       // is NOT a field: nested braces there are genuine groups (iosMath 086d345).
       IsReadingOneCharField = oneCharOnly;
-      IsReadingStopCharField = false;
       try {
         return BuildInternalInner(oneCharOnly, stopChar, r);
       } finally {
         IsReadingOneCharField = outerOneChar;
-        IsReadingStopCharField = outerStopChar;
         _recursionDepth--;
       }
     }

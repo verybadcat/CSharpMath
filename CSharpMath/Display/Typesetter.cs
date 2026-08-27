@@ -19,12 +19,17 @@ namespace CSharpMath.Display {
       2 when char.IsHighSurrogate(str[0]) && char.IsLowSurrogate(str[1]) => true,
       _ => false
     };
-    internal static MathAtom SpacingAtom(MathAtom atom) => atom is LargeDelimiter large
-      ? large.MathClass == typeof(Open) ? new Open(large.Nucleus) :
-        large.MathClass == typeof(Close) ? new Close(large.Nucleus) :
-        large.MathClass == typeof(Relation) ? new Relation(large.Nucleus) :
-        new Ordinary(large.Nucleus)
-      : atom;
+    internal static MathAtom SpacingAtom(MathAtom atom) => atom switch {
+      LargeDelimiter large => SpacingAtom(large.Nucleus, large.MathClass),
+      Stack stack => SpacingAtom(stack.Nucleus, stack.DisplayClassType),
+      _ => atom
+    };
+    private static MathAtom SpacingAtom(string nucleus, Type mathClass) =>
+      mathClass == typeof(Open) ? new Open(nucleus) :
+      mathClass == typeof(Close) ? new Close(nucleus) :
+      mathClass == typeof(Relation) ? new Relation(nucleus) :
+      mathClass == typeof(BinaryOperator) ? new BinaryOperator(nucleus) :
+      new Ordinary(nucleus);
     private static TGlyph FindVariantGlyph<TFont, TGlyph>(FontMathTable<TFont, TGlyph> mathTable,
       IGlyphBoundsProvider<TFont, TGlyph> boundsProvider, TFont styleFont, TGlyph rawGlyph,
       float targetWidth, out float glyphAscent, out float glyphDescent, out float glyphWidth)
@@ -727,20 +732,20 @@ namespace CSharpMath.Display {
         CreateLine(fraction.Denominator, _font, _context, fractionStyle,
           !fraction.IsContinuedFraction);
 
-      float numeratorStrutAscent = 0, numeratorStrutDescent = 0;
-      float denominatorStrutAscent = 0, denominatorStrutDescent = 0;
       if (fraction.IsContinuedFraction) {
         // Apply cfrac strut floors to the operand boxes *before* numeratorShiftUp
         // and denominatorShiftDown are computed. AMSMath's strut is a floor on
-        // the operand box, not on the shift. ListDisplay metrics are computed from
-        // the children, so the floors are folded into NumeratorUp/DenominatorDown
-        // instead of mutating the read-only display properties.
+        // the operand box, not on the shift.
         float strutHeight = 0.85f * _styleFont.PointSize;
         float strutDepth = 0.35f * _styleFont.PointSize;
-        numeratorStrutAscent = Math.Max(0, strutHeight - numeratorDisplay.Ascent);
-        numeratorStrutDescent = Math.Max(0, strutDepth - numeratorDisplay.Descent);
-        denominatorStrutAscent = Math.Max(0, strutHeight - denominatorDisplay.Ascent);
-        denominatorStrutDescent = Math.Max(0, strutDepth - denominatorDisplay.Descent);
+        numeratorDisplay.SetOverrideMetrics(
+          Math.Max(strutHeight, numeratorDisplay.Ascent),
+          Math.Max(strutDepth, numeratorDisplay.Descent),
+          numeratorDisplay.Width);
+        denominatorDisplay.SetOverrideMetrics(
+          Math.Max(strutHeight, denominatorDisplay.Ascent),
+          Math.Max(strutDepth, denominatorDisplay.Descent),
+          denominatorDisplay.Width);
       }
 
       var numeratorShiftUp = _NumeratorShiftUp(fraction.HasRule);
@@ -752,31 +757,27 @@ namespace CSharpMath.Display {
         // this is the difference between the lowest portion of
         // the numerator and the top edge of the fraction bar.
         var distanceFromNumeratorToBar =
-          numeratorShiftUp - numeratorDisplay.Descent - numeratorStrutDescent - (barLocation + barThickness / 2);
+          numeratorShiftUp - numeratorDisplay.Descent - (barLocation + barThickness / 2);
         // The distance should be at least displayGap
         if (distanceFromNumeratorToBar < _NumeratorGapMin()) {
           numeratorShiftUp += (_NumeratorGapMin() - distanceFromNumeratorToBar);
         }
         // now, do the same for the denominator
         var distanceFromDenominatorToBar =
-          barLocation - barThickness / 2 - (denominatorDisplay.Ascent + denominatorStrutAscent - denominatorShiftDown);
+          barLocation - barThickness / 2 - (denominatorDisplay.Ascent - denominatorShiftDown);
         if (distanceFromDenominatorToBar < _DenominatorGapMin()) {
           denominatorShiftDown += _DenominatorGapMin() - distanceFromDenominatorToBar;
         }
       } else {
         float clearance =
-          numeratorShiftUp - numeratorDisplay.Descent - numeratorStrutDescent
-          - (denominatorDisplay.Ascent + denominatorStrutAscent - denominatorShiftDown);
+          numeratorShiftUp - numeratorDisplay.Descent
+          - (denominatorDisplay.Ascent - denominatorShiftDown);
         float minClearance = _StackGapMin();
         if (clearance < minClearance) {
           numeratorShiftUp += (minClearance - clearance / 2);
           denominatorShiftDown += (minClearance - clearance) / 2;
         }
       }
-
-      // The strut floors widen the operand extents: fold them into the shifts.
-      numeratorShiftUp += numeratorStrutAscent;
-      denominatorShiftDown += denominatorStrutAscent;
 
       var display = new FractionDisplay<TFont, TGlyph>
         (numeratorDisplay, denominatorDisplay, _currentPosition, fraction.IndexRange) {
