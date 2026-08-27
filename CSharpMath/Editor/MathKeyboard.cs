@@ -62,9 +62,11 @@ namespace CSharpMath.Editor {
     public MathList MathList { get; } = [];
     public string LaTeX => LaTeXParser.MathListToLaTeX(MathList).ToString();
     private MathListIndex _insertionIndex = new(0);
+    private bool _insertionIndexCameFromVerticalNavigation;
     public MathListIndex InsertionIndex {
       get => _insertionIndex;
       set {
+        _insertionIndexCameFromVerticalNavigation = false;
         _insertionIndex = value;
         ResetPlaceholders(MathList);
         InsertionPositionHighlighted = true;
@@ -90,6 +92,84 @@ namespace CSharpMath.Editor {
       Display?.PointForIndex(Context, index);
     public MathListIndex? ClosestIndexToPoint(PointF point) =>
       Display?.IndexForPoint(Context, point);
+
+    // Hit-test in the list selected by the destination index. A root-level
+    // hit-test can select a sibling branch when the destination is nested,
+    // losing part of the index path.
+    MathListIndex? IndexForVerticalPoint(
+      Display.Displays.ListDisplay<TFont, TGlyph> display,
+      MathListIndex target,
+      PointF point) {
+      if (target.SubIndexInfo is not { } subIndexInfo
+        || subIndexInfo.SubIndexType is MathListSubIndexType.BetweenBaseAndScripts)
+        return display.IndexForPoint(Context, point);
+
+      var (type, subIndex) = subIndexInfo;
+      var child = display.SubDisplayForIndex(target);
+      if (child is null)
+        return null;
+      var translatedPoint = new PointF(point.X - display.Position.X, point.Y - display.Position.Y);
+      var childIndex = child is Display.Displays.ListDisplay<TFont, TGlyph> childList
+        ? IndexForVerticalPoint(childList, subIndex, translatedPoint)
+        : child.IndexForPoint(Context, translatedPoint);
+      return childIndex?.Wrap(target.AtomIndex, type);
+    }
+
+    MathListIndex? VerticalIndexAtPoint(MathListIndex target, PointF sourcePoint, bool constrainToTargetList = true) {
+      if (Display is null)
+        return null;
+      if (Display.Width == 0)
+        return CenteredVerticalIndex(_insertionIndex, target);
+      var targetPoint = ClosestPointToIndex(target);
+      return targetPoint is PointF point
+        ? constrainToTargetList
+          ? IndexForVerticalPoint(Display, target, new(sourcePoint.X, point.Y))
+          : ClosestIndexToPoint(new(sourcePoint.X, point.Y))
+        : null;
+    }
+
+    MathListIndex CenteredVerticalIndex(MathListIndex source, MathListIndex target) {
+      MathList? ListAtIndex(MathListIndex index) {
+        var list = MathList;
+        for (var path = index; path.SubIndexInfo is { } info; path = info.SubIndex) {
+          if (path.AtomIndex < 0 || path.AtomIndex >= list.Count)
+            return null;
+          var atom = list[path.AtomIndex];
+          list = info.SubIndexType switch {
+            MathListSubIndexType.Superscript => atom.Superscript,
+            MathListSubIndexType.Subscript => atom.Subscript,
+            MathListSubIndexType.Numerator when atom is Atoms.Fraction fraction => fraction.Numerator,
+            MathListSubIndexType.Denominator when atom is Atoms.Fraction fraction => fraction.Denominator,
+            MathListSubIndexType.Radicand when atom is Atoms.Radical radical => radical.Radicand,
+            MathListSubIndexType.Degree when atom is Atoms.Radical radical => radical.Degree,
+            MathListSubIndexType.Inner when atom is Atoms.Inner inner => inner.InnerList,
+            _ => null!,
+          };
+          if (list is null)
+            return null;
+        }
+        return list;
+      }
+      static MathListIndex WithFinalIndex(MathListIndex index, int finalIndex) =>
+        index.SubIndexInfo is not { } info
+        ? new(finalIndex)
+        : new(index.AtomIndex, (info.SubIndexType, WithFinalIndex(info.SubIndex, finalIndex)));
+
+      var sourceList = ListAtIndex(source);
+      var targetList = ListAtIndex(target);
+      if (sourceList is null || targetList is null)
+        return target;
+      if (targetList.Count == 1 && targetList[0] is Atoms.Placeholder)
+        return WithFinalIndex(target, 0);
+      var sourcePosition =
+        sourceList.Count == 1 && sourceList[0] is Atoms.Placeholder && source.FinalIndex == 0
+        ? 0.5f
+        : source.FinalIndex;
+      var targetPosition = (int)Math.Round(
+        sourcePosition + (targetList.Count - sourceList.Count) / 2f,
+        MidpointRounding.AwayFromZero);
+      return WithFinalIndex(target, Math.Max(0, Math.Min(targetPosition, targetList.Count)));
+    }
     public void KeyPress(params MathKeyboardInput[] inputs) {
       foreach (var input in inputs) KeyPress(input);
     }
@@ -345,6 +425,144 @@ namespace CSharpMath.Editor {
           MoveCursorRight();
       }
 
+      void MoveCursorUp() {
+        if (Display is null) RecreateDisplayFromMathList();
+        if (MathList.AtomAt(_insertionIndex) is Atoms.Placeholder { Superscript: { Count: var superCount } } && superCount > 0) {
+          _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListSubIndexType.Superscript, 0);
+          return;
+        }
+        if (_insertionIndex.Previous is { } prev && MathList.AtomAt(prev) is { Superscript: var super } && super.Count > 0) {
+          _insertionIndex = prev.LevelUpWithSubIndex(MathListSubIndexType.Superscript, super.Count);
+          if (_insertionIndex.Previous is { } prev2 && MathList.AtomAt(prev2) is Atoms.Placeholder p && p.Superscript.IsEmpty() && p.Subscript.IsEmpty())
+            _insertionIndex = prev2;
+          return;
+        }
+        for (MathListIndex? verticalIndex = _insertionIndex; verticalIndex != null; verticalIndex = verticalIndex.LevelDown()) {
+          switch (verticalIndex.FinalSubIndexType) {
+            case MathListSubIndexType.Denominator:
+              var numerator =
+                verticalIndex.LevelDown()?.LevelUpWithSubIndex(MathListSubIndexType.Numerator, 0)
+                ?? throw new InvalidCodePathException("Null levelDown despite non-None " + nameof(verticalIndex.FinalSubIndexType));
+              var sourcePoint =
+                ClosestPointToIndex(_insertionIndex)
+                ?? throw new InvalidCodePathException("Null closest point despite valid " + nameof(MathListIndex));
+              _insertionIndex = VerticalIndexAtPoint(numerator, sourcePoint) ?? numerator;
+              return;
+            case MathListSubIndexType.Subscript:
+              var levelDown =
+                verticalIndex.LevelDown()
+                ?? throw new InvalidCodePathException("Null levelDown despite non-None " + nameof(verticalIndex.FinalSubIndexType));
+              sourcePoint =
+                ClosestPointToIndex(_insertionIndex)
+                ?? throw new InvalidCodePathException("Null closest point despite valid " + nameof(MathListIndex));
+              if (MathList.AtomAt(levelDown) is { Superscript: { Count: 0 } } atom) {
+                var left =
+                  atom is Atoms.Placeholder
+                  ? levelDown
+                  : levelDown.LevelUpWithSubIndex(MathListSubIndexType.BetweenBaseAndScripts, 1);
+                var leftX =
+                  ClosestPointToIndex(left)?.X
+                  ?? throw new InvalidCodePathException("Null closest point despite valid " + nameof(MathListIndex));
+                var right = levelDown.Next;
+                var rightX =
+                  ClosestPointToIndex(right)?.X
+                  ?? throw new InvalidCodePathException("Null closest point despite valid " + nameof(MathListIndex));
+                _insertionIndex = Display?.Width == 0
+                  ? verticalIndex.FinalIndex switch {
+                    0 => left,
+                    var index when index >= atom.Subscript.Count => right,
+                    _ => sourcePoint.X - leftX <= rightX - sourcePoint.X ? left : right,
+                  }
+                  : sourcePoint.X - leftX <= rightX - sourcePoint.X ? left : right;
+              } else {
+                var superscript =
+                  levelDown?.LevelUpWithSubIndex(MathListSubIndexType.Superscript, 0)
+                  ?? throw new InvalidCodePathException("Null levelDown despite non-None " + nameof(verticalIndex.FinalSubIndexType));
+                _insertionIndex = VerticalIndexAtPoint(superscript, sourcePoint, false) ?? superscript;
+              }
+              return;
+            case MathListSubIndexType.BetweenBaseAndScripts:
+              levelDown =
+                verticalIndex.LevelDown()
+                ?? throw new InvalidCodePathException("Null levelDown despite non-None " + nameof(verticalIndex.FinalSubIndexType));
+              if (MathList.AtomAt(levelDown)?.Superscript.IsNonEmpty()
+                ?? throw new InvalidCodePathException(nameof(levelDown) + " is invalid for " + nameof(MathList))) {
+                _insertionIndex = levelDown.LevelUpWithSubIndex(MathListSubIndexType.Superscript, 0);
+                return;
+              }
+              break;
+          }
+        }
+      }
+      void MoveCursorDown() {
+        if (Display is null) RecreateDisplayFromMathList();
+        if (MathList.AtomAt(_insertionIndex) is Atoms.Placeholder { Subscript: { Count: var subCount } } && subCount > 0) {
+          _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListSubIndexType.Subscript, 0);
+          return;
+        }
+        if (_insertionIndex.Previous is { } prev && MathList.AtomAt(prev) is { Subscript: var sub } && sub.Count > 0) {
+          _insertionIndex = prev.LevelUpWithSubIndex(MathListSubIndexType.Subscript, sub.Count);
+          if (_insertionIndex.Previous is { } prev2 && MathList.AtomAt(prev2) is Atoms.Placeholder p && p.Superscript.IsEmpty() && p.Subscript.IsEmpty())
+            _insertionIndex = prev2;
+          return;
+        }
+        for (MathListIndex? verticalIndex = _insertionIndex; verticalIndex != null; verticalIndex = verticalIndex.LevelDown()) {
+          switch (verticalIndex.FinalSubIndexType) {
+            case MathListSubIndexType.Numerator:
+              var denominator =
+                verticalIndex.LevelDown()?.LevelUpWithSubIndex(MathListSubIndexType.Denominator, 0)
+                ?? throw new InvalidCodePathException("Null levelDown despite non-None " + nameof(verticalIndex.FinalSubIndexType));
+              var sourcePoint =
+                ClosestPointToIndex(_insertionIndex)
+                ?? throw new InvalidCodePathException("Null closest point despite valid " + nameof(MathListIndex));
+              _insertionIndex = VerticalIndexAtPoint(denominator, sourcePoint) ?? denominator;
+              return;
+            case MathListSubIndexType.Superscript:
+              var levelDown =
+                verticalIndex.LevelDown()
+                ?? throw new InvalidCodePathException("Null levelDown despite non-None " + nameof(verticalIndex.FinalSubIndexType));
+              sourcePoint =
+                ClosestPointToIndex(_insertionIndex)
+                ?? throw new InvalidCodePathException("Null closest point despite valid " + nameof(MathListIndex));
+              if (MathList.AtomAt(levelDown) is { Subscript: { Count: 0 } } atom) {
+                var left =
+                  atom is Atoms.Placeholder
+                  ? levelDown
+                  : levelDown.LevelUpWithSubIndex(MathListSubIndexType.BetweenBaseAndScripts, 1);
+                var leftX =
+                  ClosestPointToIndex(left)?.X
+                  ?? throw new InvalidCodePathException("Null closest point despite valid " + nameof(MathListIndex));
+                var right = levelDown.Next;
+                var rightX =
+                  ClosestPointToIndex(right)?.X
+                  ?? throw new InvalidCodePathException("Null closest point despite valid " + nameof(MathListIndex));
+                _insertionIndex = Display?.Width == 0
+                  ? verticalIndex.FinalIndex switch {
+                    0 => left,
+                    var index when index >= atom.Superscript.Count => right,
+                    _ => sourcePoint.X - leftX <= rightX - sourcePoint.X ? left : right,
+                  }
+                  : sourcePoint.X - leftX <= rightX - sourcePoint.X ? left : right;
+              } else {
+                var subscript =
+                  levelDown?.LevelUpWithSubIndex(MathListSubIndexType.Subscript, 0)
+                  ?? throw new InvalidCodePathException("Null levelDown despite non-None " + nameof(verticalIndex.FinalSubIndexType));
+                _insertionIndex = VerticalIndexAtPoint(subscript, sourcePoint, false) ?? subscript;
+              }
+              return;
+            case MathListSubIndexType.BetweenBaseAndScripts:
+              levelDown =
+                verticalIndex.LevelDown()
+                ?? throw new InvalidCodePathException("Null levelDown despite non-None " + nameof(verticalIndex.FinalSubIndexType));
+              if (MathList.AtomAt(levelDown)?.Subscript.IsNonEmpty()
+                ?? throw new InvalidCodePathException(nameof(levelDown) + " is invalid for " + nameof(MathList))) {
+                _insertionIndex = levelDown.LevelUpWithSubIndex(MathListSubIndexType.Subscript, 0);
+                return;
+              }
+              break;
+          }
+        }
+      }
       void DeleteBackwards() {
         // delete the last atom from the list
         if (HasText && _insertionIndex.Previous is MathListIndex previous)
@@ -352,14 +570,31 @@ namespace CSharpMath.Editor {
       }
 
       static bool IsPlaceholderList(MathList ml) => ml.Count == 1 && ml[0] is Atoms.Placeholder;
-      void InsertAtom(MathAtom a) =>
-        _insertionIndex = MathList.InsertAndAdvance(_insertionIndex, a,
-          a switch {
-            Atoms.Fraction _ => MathListSubIndexType.Numerator,
-            Atoms.Radical { Degree: { } d } when IsPlaceholderList(d) => MathListSubIndexType.Degree,
-            Atoms.Radical _ => MathListSubIndexType.Radicand,
-            _ => null
-          });
+      void InsertAtom(MathAtom a) {
+        static bool ContainsNestedScript(MathList list) {
+          foreach (var atom in list.Atoms)
+            if (atom.Superscript.IsNonEmpty() || atom.Subscript.IsNonEmpty())
+              return true;
+          return false;
+        }
+        var advanceType = a switch {
+          Atoms.Fraction _ => MathListSubIndexType.Numerator,
+          Atoms.Radical { Degree: { } d } when IsPlaceholderList(d) => MathListSubIndexType.Degree,
+          Atoms.Radical _ => MathListSubIndexType.Radicand,
+          _ => (MathListSubIndexType?)null
+        };
+        var insertionIndexBefore = _insertionIndex;
+        var preserveVerticalScriptPosition =
+          advanceType is null
+          && MathList.AtomAt(insertionIndexBefore) is Atoms.Placeholder placeholder
+          && (placeholder.Superscript.IsNonEmpty() || placeholder.Subscript.IsNonEmpty())
+          && (_insertionIndexCameFromVerticalNavigation
+            || ContainsNestedScript(placeholder.Superscript)
+            || ContainsNestedScript(placeholder.Subscript));
+        _insertionIndex = MathList.InsertAndAdvance(_insertionIndex, a, advanceType);
+        if (preserveVerticalScriptPosition)
+          _insertionIndex = insertionIndexBefore.LevelUpWithSubIndex(MathListSubIndexType.BetweenBaseAndScripts, 1);
+      }
       void InsertSymbolName(string name, bool subscript = false, bool superscript = false) {
         var atom =
           LaTeXSettings.AtomForCommand(name) ??
@@ -385,10 +620,15 @@ namespace CSharpMath.Editor {
       }
 
       switch (input) {
-        // TODO: Implement up/down buttons
         case MathKeyboardInput.Up:
+          var previousIndex = _insertionIndex;
+          MoveCursorUp();
+          _insertionIndexCameFromVerticalNavigation = previousIndex != _insertionIndex;
           break;
         case MathKeyboardInput.Down:
+          previousIndex = _insertionIndex;
+          MoveCursorDown();
+          _insertionIndexCameFromVerticalNavigation = previousIndex != _insertionIndex;
           break;
         case MathKeyboardInput.Left:
           MoveCursorLeft();
@@ -790,6 +1030,8 @@ namespace CSharpMath.Editor {
         default:
           break;
       }
+      if (input is not MathKeyboardInput.Up and not MathKeyboardInput.Down)
+        _insertionIndexCameFromVerticalNavigation = false;
       ResetPlaceholders(MathList);
       InsertionPositionHighlighted = true;
     }
