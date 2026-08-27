@@ -1,3 +1,7 @@
 #nullable enable
 CSharpMath.Rendering.BackEnd.Fonts.GetAdvances(System.Collections.Generic.IEnumerable<CSharpMath.Rendering.BackEnd.Glyph>! glyphs) -> System.Collections.Generic.IEnumerable<float>!
 CSharpMath.Rendering.BackEnd.Fonts.GetBoundingRects(System.Collections.Generic.IEnumerable<CSharpMath.Rendering.BackEnd.Glyph>! glyphs) -> System.Collections.Generic.IEnumerable<System.Drawing.RectangleF>!
+override CSharpMath.Rendering.BackEnd.MathTable.StretchStackBottomShiftDown(CSharpMath.Rendering.BackEnd.Fonts! fonts) -> float
+override CSharpMath.Rendering.BackEnd.MathTable.StretchStackGapAboveMin(CSharpMath.Rendering.BackEnd.Fonts! fonts) -> float
+override CSharpMath.Rendering.BackEnd.MathTable.StretchStackGapBelowMin(CSharpMath.Rendering.BackEnd.Fonts! fonts) -> float
+override CSharpMath.Rendering.BackEnd.MathTable.StretchStackTopShiftUp(CSharpMath.Rendering.BackEnd.Fonts! fonts) -> float

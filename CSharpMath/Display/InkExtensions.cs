@@ -1,8 +1,8 @@
 using System;
 using System.Drawing;
+using CSharpMath.Atom.Atoms;
 using CSharpMath.Display.Displays;
 using CSharpMath.Display.FrontEnd;
-using CSharpMath.Atom.Atoms;
 
 namespace CSharpMath {
   using Display;

@@ -330,10 +330,6 @@ override CSharpMath.Rendering.BackEnd.MathTable.StackDisplayStyleGapMin(CSharpMa
 override CSharpMath.Rendering.BackEnd.MathTable.StackGapMin(CSharpMath.Rendering.BackEnd.Fonts! fonts) -> float
 override CSharpMath.Rendering.BackEnd.MathTable.StackTopDisplayStyleShiftUp(CSharpMath.Rendering.BackEnd.Fonts! fonts) -> float
 override CSharpMath.Rendering.BackEnd.MathTable.StackTopShiftUp(CSharpMath.Rendering.BackEnd.Fonts! fonts) -> float
-override CSharpMath.Rendering.BackEnd.MathTable.StretchStackBottomShiftDown(CSharpMath.Rendering.BackEnd.Fonts! fonts) -> float
-override CSharpMath.Rendering.BackEnd.MathTable.StretchStackGapAboveMin(CSharpMath.Rendering.BackEnd.Fonts! fonts) -> float
-override CSharpMath.Rendering.BackEnd.MathTable.StretchStackGapBelowMin(CSharpMath.Rendering.BackEnd.Fonts! fonts) -> float
-override CSharpMath.Rendering.BackEnd.MathTable.StretchStackTopShiftUp(CSharpMath.Rendering.BackEnd.Fonts! fonts) -> float
 override CSharpMath.Rendering.BackEnd.MathTable.SubscriptBaselineDropMin(CSharpMath.Rendering.BackEnd.Fonts! fonts) -> float
 override CSharpMath.Rendering.BackEnd.MathTable.SubscriptShiftDown(CSharpMath.Rendering.BackEnd.Fonts! fonts) -> float
 override CSharpMath.Rendering.BackEnd.MathTable.SubscriptTopMax(CSharpMath.Rendering.BackEnd.Fonts! fonts) -> float
