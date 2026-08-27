@@ -226,7 +226,7 @@ namespace CSharpMath.Core.AtomTests {
       var macro = Assert.Single(ParseLaTeX(latex), a => a is Macro) as Macro;
       Assert.NotNull(macro);
       Assert.Equal(argc, macro.Arguments.Count);
-      Assert.NotEmpty(LaTeXSettings.BuiltinMacros[macro.Command].template);
+      Assert.NotEmpty(macro.Expansion());
       // Zero-arg macros keep a trailing space so the name terminates; the others
       // round-trip byte-identically.
       Assert.Equal(latex, RoundTrip(latex).TrimEnd());
@@ -286,15 +286,116 @@ namespace CSharpMath.Core.AtomTests {
       Assert.Throws<ArgumentException>(() => LaTeXSettings.AddMacro("ten", 10, @"x"));
       // #2 referenced but only one argument declared.
       Assert.Throws<ArgumentException>(() => LaTeXSettings.AddMacro("badref", 1, @"#2"));
+      Assert.Throws<ArgumentException>(() => LaTeXSettings.AddMacro("trailing", 0, @"x#"));
     }
     [Fact]
-    public void MacroDefinitionForCommandReturnsRegisteredDefinition() {
-      Assert.True(LaTeXSettings.MacroDefinitionForCommand("pmod").HasValue);
-      Assert.False(LaTeXSettings.MacroDefinitionForCommand("nosuchmacro").HasValue);
+    public void RawMacroArgumentsPreserveNestedBracesAndHashes() {
+      LaTeXSettings.AddMacro("rawprobe", 1, @"#1");
+      var source = @"\rawprobe{{a}{b}}";
+      Assert.Equal(source, RoundTrip(source));
+      Assert.Equal("{a}{b}", Assert.IsType<Macro>(Assert.Single(ParseLaTeX(source))).Arguments[0]);
+    }
+    [Fact]
+    public void MacroSupportsLiteralHashEscape() {
+      LaTeXSettings.AddMacro("hashprobe", 0, @"\textcolor{##f00}{x}");
+      Assert.NotNull(ParseLaTeX(@"\hashprobe").Clone(true));
+    }
+    [Fact]
+    public void MacroExpansionErrorsCarryCommandContext() {
+      LaTeXSettings.AddMacro("badexpansion", 0, @"{");
+      var error = new LaTeXParser(@"\badexpansion").Build().Error;
+      Assert.Contains(@"\badexpansion", error);
+    }
+    [Fact]
+    public void MacroExpansionHonorsRecursionCap() {
+      LaTeXSettings.AddMacro("recursiveProbe", 0, @"\recursiveProbe");
+      var error = new LaTeXParser(@"\recursiveProbe").Build().Error;
+      Assert.Contains("depth", error, System.StringComparison.OrdinalIgnoreCase);
+    }
+    [Fact]
+    public void MacroNestedPlaceholdersAndScriptsRemainAttached() {
+      LaTeXSettings.AddMacro("joinProbe", 2, @"[#2|#1]");
+      var list = ParseLaTeX(@"\joinProbe{{a_b}}{c}^2");
+      var macro = Assert.IsType<Macro>(Assert.Single(list));
+      Assert.Equal(new[] { "{a_b}", "c" }, macro.Arguments);
+      var final = list.Clone(true);
+      Assert.Contains(final, atom => atom.Superscript.Count == 1);
+    }
+
+    [Theory]
+    [InlineData(@"\big(", 1, "Ordinary", "(")]
+    [InlineData(@"\Big[", 2, "Ordinary", "[")]
+    [InlineData(@"\bigg\{", 3, "Ordinary", "{")]
+    [InlineData(@"\Bigg\langle", 4, "Ordinary", "⟨")]
+    [InlineData(@"\bigl(", 1, "Open", "(")]
+    [InlineData(@"\Bigl[", 2, "Open", "[")]
+    [InlineData(@"\biggl\{", 3, "Open", "{")]
+    [InlineData(@"\Biggl\lceil", 4, "Open", "⌈")]
+    [InlineData(@"\bigr)", 1, "Close", ")")]
+    [InlineData(@"\Bigr]", 2, "Close", "]")]
+    [InlineData(@"\biggr\}", 3, "Close", "}")]
+    [InlineData(@"\Biggr\rfloor", 4, "Close", "⌋")]
+    [InlineData(@"\bigm|", 1, "Relation", "|")]
+    [InlineData(@"\Bigm\|", 2, "Relation", "‖")]
+    [InlineData(@"\biggm\Vert", 3, "Relation", "‖")]
+    [InlineData(@"\Biggm\langle", 4, "Relation", "⟨")]
+    public void ExplicitLargeDelimitersParseAndRoundTrip(string latex, int size, string mathClass, string nucleus) {
+      var delimiter = Assert.IsType<LargeDelimiter>(Assert.Single(ParseLaTeX(latex)));
+      Assert.Equal(size, (int)delimiter.Size);
+      Assert.Equal(mathClass, delimiter.MathClass.Name);
+      Assert.Equal(nucleus, delimiter.Nucleus);
+      var expected = latex.EndsWith(@"\Vert") ? latex.Replace(@"\Vert", @"\|") :
+        latex.EndsWith(@"\langle") ? latex.Replace(@"\langle", "<") : latex;
+      Assert.Equal(expected, RoundTrip(latex));
+    }
+    [Fact]
+    public void ExplicitLargeDelimiterSupportsNullAndScripts() {
+      var list = ParseLaTeX(@"\bigl.^2\bigr.");
+      Assert.Collection(list,
+        left => { var d = Assert.IsType<LargeDelimiter>(left); Assert.Equal("", d.Nucleus); Assert.Single(d.Superscript); },
+        right => { var d = Assert.IsType<LargeDelimiter>(right); Assert.Equal("", d.Nucleus); });
+      Assert.Equal(@"\bigl.^2\bigr.", RoundTrip(@"\bigl.^2\bigr."));
+    }
+    [Theory]
+    [InlineData(@"\big")]
+    [InlineData(@"\Bigl")]
+    [InlineData(@"\bigm?")]
+    public void ExplicitLargeDelimiterRejectsMissingOrInvalidDelimiter(string latex) {
+      Assert.NotNull(new LaTeXParser(latex).Build().Error);
+    }
+    [Fact]
+    public void ExplicitLargeDelimiterRemainsIndependentFromAdjacentOrdinaryAtoms() {
+      var list = ParseLaTeX(@"a\bigl(b");
+      Assert.Equal(3, list.Count);
+      Assert.IsType<Variable>(list[0]);
+      Assert.IsType<LargeDelimiter>(list[1]);
+      Assert.IsType<Variable>(list[2]);
+    }
+
+    [Fact]
+    public void TableSpacersAreIndependentAndStylesCanBeSharedSafely() {
+      var table = Assert.IsType<Table>(Assert.Single(ParseLaTeX(@"\begin{aligned}a&b\\c&d\end{aligned}")));
+      var spacer0 = table.Cells[0][1][0];
+      var spacer1 = table.Cells[1][1][0];
+      Assert.NotSame(spacer0, spacer1);
+      spacer0.Nucleus = "changed";
+      Assert.NotEqual("changed", spacer1.Nucleus);
+      var casesInner = Assert.IsType<Inner>(Assert.Single(ParseLaTeX(@"\begin{cases}a&b\\c&d\end{cases}")));
+      var matrix = Assert.IsType<Table>(casesInner.InnerList[1]);
+      var style0 = matrix.Cells[0][0].First();
+      var style1 = matrix.Cells[1][1].First();
+      Assert.Same(style0, style1);
+      var style = Assert.IsType<Style>(style0);
+      Assert.Throws<System.InvalidOperationException>(() => style.Nucleus = "x");
+      Assert.Throws<System.InvalidOperationException>(() => style.FontStyle = FontStyle.Italic);
+      Assert.NotNull(style.Clone(false));
+    }
+    [Fact]
+    public void MacroStoresRawArgumentsAndExpansion() {
       LaTeXSettings.AddMacro("probe", 2, @"[#1|#2]");
-      var def = LaTeXSettings.MacroDefinitionForCommand("probe")!.GetValueOrDefault();
-      Assert.Equal(2, def.argc);
-      Assert.Equal(@"[#1|#2]", def.template);
+      var macro = Assert.IsType<Macro>(Assert.Single(ParseLaTeX(@"\probe{{a}{b}}{c}")));
+      Assert.Equal(new[] { "{a}{b}", "c" }, macro.Arguments);
+      Assert.NotEmpty(macro.Expansion());
     }
     [Fact]
     public void BmodStaysABinaryOperator() {

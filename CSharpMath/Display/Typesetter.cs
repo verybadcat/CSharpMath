@@ -19,6 +19,12 @@ namespace CSharpMath.Display {
       2 when char.IsHighSurrogate(str[0]) && char.IsLowSurrogate(str[1]) => true,
       _ => false
     };
+    internal static MathAtom SpacingAtom(MathAtom atom) => atom is LargeDelimiter large
+      ? large.MathClass == typeof(Open) ? new Open(large.Nucleus) :
+        large.MathClass == typeof(Close) ? new Close(large.Nucleus) :
+        large.MathClass == typeof(Relation) ? new Relation(large.Nucleus) :
+        new Ordinary(large.Nucleus)
+      : atom;
     private static TGlyph FindVariantGlyph<TFont, TGlyph>(FontMathTable<TFont, TGlyph> mathTable,
       IGlyphBoundsProvider<TFont, TGlyph> boundsProvider, TFont styleFont, TGlyph rawGlyph,
       float targetWidth, out float glyphAscent, out float glyphDescent, out float glyphWidth)
@@ -377,6 +383,30 @@ namespace CSharpMath.Display {
             _currentPosition.X += raisedDisplay.Width;
             _displayAtoms.Add(raisedDisplay);
             break;
+          case LargeDelimiter large:
+            AddDisplayLine(false);
+            AddInterElementSpace(prevAtom, Typesetter.SpacingAtom(large));
+            if (large.Nucleus.Length == 0) {
+              var emptyDisplay = new GlyphDisplay<TFont, TGlyph>(default!, large.IndexRange,
+                _styleFont, 0, 0, 0) { Position = _currentPosition };
+              _displayAtoms.Add(emptyDisplay);
+              if (large.Subscript.IsNonEmpty() || large.Superscript.IsNonEmpty())
+                MakeScripts(large, emptyDisplay, large.IndexRange.Location, 0);
+            } else {
+              var height = (large.Size switch {
+                LargeDelimiter.DelimiterSize.Size1 => 1.2f,
+                LargeDelimiter.DelimiterSize.Size2 => 1.623f,
+                LargeDelimiter.DelimiterSize.Size3 => 2.047f,
+                _ => 2.470f
+              }) * _styleFont.PointSize;
+              var display = FindGlyphForBoundary(large.Nucleus, height);
+              display.Position = _currentPosition;
+              _currentPosition.X += display.Width;
+              _displayAtoms.Add(display);
+              if (large.Subscript.IsNonEmpty() || large.Superscript.IsNonEmpty())
+                MakeScripts(large, display, large.IndexRange.Location, 0);
+            }
+            break;
           case Ordinary _:
           case BinaryOperator _:
           case Relation _:
@@ -386,7 +416,7 @@ namespace CSharpMath.Display {
           case Punctuation _: {
               if (prevAtom != null) {
                 float interElementSpace =
-                  InterElementSpaces.Get(prevAtom, atom, _style, _styleFont, _mathTable);
+                  InterElementSpaces.Get(Typesetter.SpacingAtom(prevAtom), Typesetter.SpacingAtom(atom), _style, _styleFont, _mathTable);
                 if (_currentLine.Length > 0) {
                   if (interElementSpace > 0) {
                     _currentLine.Runs.Last().GlyphInfos.Last().KernAfterGlyph = interElementSpace;
@@ -566,8 +596,8 @@ namespace CSharpMath.Display {
 
     private void AddInterElementSpace(MathAtom? prev, MathAtom current) =>
       _currentPosition.X +=
-        prev != null ? InterElementSpaces.Get(prev, current, _style, _styleFont, _mathTable)
-        : _spaced ? InterElementSpaces.Get(new Open(""), current, _style, _styleFont, _mathTable)
+        prev != null ? InterElementSpaces.Get(Typesetter.SpacingAtom(prev), Typesetter.SpacingAtom(current), _style, _styleFont, _mathTable)
+        : _spaced ? InterElementSpaces.Get(new Open(""), Typesetter.SpacingAtom(current), _style, _styleFont, _mathTable)
         : 0;
     internal TextLineDisplay<TFont, TGlyph>? AddDisplayLine(bool evenIfLengthIsZero) {
       if (evenIfLengthIsZero || (_currentLine != null && _currentLine.Length > 0)) {

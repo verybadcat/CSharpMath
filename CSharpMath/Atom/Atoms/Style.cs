@@ -2,6 +2,20 @@ namespace CSharpMath.Atom.Atoms {
   ///<summary>Style changes during rendering</summary>
   public sealed class Style : MathAtom {
     public Style(LineStyle style) : base(string.Empty) => LineStyle = style;
+    public override string Nucleus {
+      get => base.Nucleus;
+      set {
+        if (!string.IsNullOrEmpty(value)) throw new System.InvalidOperationException("Style atoms cannot have a nucleus.");
+        base.Nucleus = value;
+      }
+    }
+    public override FontStyle FontStyle {
+      get => base.FontStyle;
+      set {
+        if (value != FontStyle.Default) throw new System.InvalidOperationException("Style atoms cannot have a font style.");
+        base.FontStyle = value;
+      }
+    }
     public LineStyle LineStyle { get; }
     public override bool ScriptsAllowed => false;
     public new Style Clone(bool finalize) => (Style)base.Clone(finalize);

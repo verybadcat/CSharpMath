@@ -20,6 +20,10 @@ namespace CSharpMath.Display {
     Color? BackColor { get; set; }
     bool HasScript { get; set; }
   }
+
+  /// <summary>Optional painted-ink capability. It is deliberately separate from
+  /// IDisplay so existing display implementations remain source and binary compatible.</summary>
+  public interface IInkDisplay { float InkWidth { get; } }
 }
 namespace CSharpMath {
   using Display;

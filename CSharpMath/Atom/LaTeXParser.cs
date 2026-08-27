@@ -40,6 +40,7 @@ namespace CSharpMath.Atom {
     /// realistic human-authored expression yet far below the frames needed to overflow the stack.</summary>
     internal const int MaxRecursionDepth = 150;
     private int _recursionDepth;
+    internal int MacroExpansionDepth { get; set; }
     /// <summary>Set by a TeX group-transformation command (\over, \atop, …) that fired
     /// inside a `{…}` group; the group must then NOT be wrapped as a Group atom because
     /// the resulting fraction replaces it. Read-and-clear: the `{` handler consumes it,
@@ -47,9 +48,6 @@ namespace CSharpMath.Atom {
     private bool _groupWasTransformedByStopCommand;
     /// <summary>When true (built-in macro templates only), `#N` reads a macro parameter
     /// instead of being an invalid character.</summary>
-    private bool _templateMode;
-    /// <summary>Template mode: `#N` is a macro argument reference, not an invalid char.</summary>
-    public bool IsTemplateMode { get => _templateMode; set => _templateMode = value; }
 
     /// <summary>Whether a group-transformation command (\over/\atop/…) fired inside the
     /// group currently being read. Read-and-clear.</summary>
@@ -98,6 +96,40 @@ namespace CSharpMath.Atom {
       : NextChar--;
     public bool HasCharacters => NextChar < Chars.Length;
     public Result<MathList> ReadArgument(MathList? appendTo = null) => BuildInternal(true, r: appendTo);
+    /// <summary>Reads one macro argument as source text. Braces are retained and
+    /// escaped braces do not affect nesting; this is intentionally not a parsed AST.</summary>
+    internal Result<string> ReadRawArgument() {
+      SkipSpaces();
+      if (!HasCharacters) return Result.Err("Missing required argument at end of input");
+      if (Chars[NextChar] is '}' or '^' or '_' or '&')
+        return Result.Err($"Missing required argument before '{Chars[NextChar]}'");
+      var first = ReadChar();
+      if (first == '\\') {
+        if (!HasCharacters) return Result.Err("Trailing \\ in a macro argument");
+        return Result.Ok("\\" + ReadCommandName());
+      }
+      if (first != '{') {
+        if (char.IsHighSurrogate(first) && HasCharacters && char.IsLowSurrogate(Chars[NextChar]))
+          return Result.Ok(new string(new[] { first, ReadChar() }));
+        return Result.Ok(first.ToString());
+      }
+      var body = new System.Text.StringBuilder();
+      var depth = 0;
+      while (HasCharacters) {
+        var c = ReadChar();
+        if (c == '\\') {
+          if (!HasCharacters) return Result.Err("Trailing \\ in a macro argument");
+          body.Append(c).Append(ReadChar());
+          continue;
+        }
+        if (c == '}') {
+          if (depth == 0) return Result.Ok(body.ToString());
+          depth--;
+        } else if (c == '{') depth++;
+        body.Append(c);
+      }
+      return Result.Err("Unmatched { in a macro argument");
+    }
     public Result<MathList?> ReadArgumentOptional(MathList? appendTo = null) =>
       ReadCharIfAvailable('[')
       ? BuildInternal(false, ']', r: appendTo).Bind(mathList => (MathList?)mathList)
@@ -149,22 +181,12 @@ namespace CSharpMath.Atom {
           NextChar++;
           return r;
         }
-        // #N macro parameter reference (template mode only)
-        if (_templateMode && Chars[NextChar] == '#') {
-          NextChar++;
-          if (!HasCharacters || Chars[NextChar] < '1' || Chars[NextChar] > '9') {
-            return @"Malformed #N in a built-in macro template";
-          }
-          r.Add(new MacroParameter(ReadChar() - '0'));
-          if (oneCharOnly) return r;
-          continue;
-        }
         if (Chars[NextChar] == '\\') {
           // Macros first: one Macro atom then flows through the shared tail below.
           var saveChar = NextChar;
           NextChar++; // consume the backslash
           var commandName = ReadCommandName();
-          if (LaTeXSettings.BuiltinMacros.ContainsKey(commandName)) {
+          if (LaTeXSettings.IsBuiltinMacro(commandName)) {
             var macroResult = LaTeXSettings.MacroAtomForCommand(this, commandName);
             if (macroResult.Error is string macroError) return macroError;
             if (macroResult._value.Atom is { } theMacro) {
@@ -175,6 +197,24 @@ namespace CSharpMath.Atom {
             }
           }
           // Not a macro: rewind and continue with normal command dispatch.
+          UndoTo(saveChar);
+          // Explicit fixed-size delimiters are single atoms; unlike \left/\right,
+          // they never pair and retain their TeX math class for spacing.
+          NextChar++;
+          var largeName = ReadCommandName();
+          if (TryLargeDelimiter(largeName, out var largeSize, out var largeClass)) {
+            var (boundary, boundaryError) = ReadDelimiter(largeName);
+            if (boundaryError != null) return boundaryError;
+            var largeNucleus = boundary.Nucleus switch {
+              "\u2329" => "\u27E8",
+              "\u232A" => "\u27E9",
+              _ => boundary.Nucleus ?? string.Empty
+            };
+            var large = new Atoms.LargeDelimiter(largeNucleus, largeSize, largeClass);
+            r.Add(large);
+            if (oneCharOnly) return r;
+            continue;
+          }
           UndoTo(saveChar);
         }
         var ((handler, splitIndex), error) = LaTeXSettings.Commands.TryLookup(Chars.AsSpan(NextChar));
@@ -215,6 +255,27 @@ namespace CSharpMath.Atom {
         '}' => "Missing closing brace",
         _ => "Expected character not found: " + stopChar.ToStringInvariant(),
       };
+    }
+
+    private static bool TryLargeDelimiter(string name, out Atoms.LargeDelimiter.DelimiterSize size,
+      out System.Type mathClass) {
+      var suffix = name.Length > 0 && name[name.Length - 1] is 'l' or 'r' or 'm'
+        ? name[name.Length - 1] : '\0';
+      var prefix = suffix == '\0' ? name : name.Substring(0, name.Length - 1);
+      size = prefix switch {
+        "big" => Atoms.LargeDelimiter.DelimiterSize.Size1,
+        "Big" => Atoms.LargeDelimiter.DelimiterSize.Size2,
+        "bigg" => Atoms.LargeDelimiter.DelimiterSize.Size3,
+        "Bigg" => Atoms.LargeDelimiter.DelimiterSize.Size4,
+        _ => default
+      };
+      mathClass = suffix switch {
+        'l' => typeof(Atoms.Open),
+        'r' => typeof(Atoms.Close),
+        'm' => typeof(Atoms.Relation),
+        _ => typeof(Atoms.Ordinary)
+      };
+      return prefix is "big" or "Big" or "bigg" or "Bigg";
     }
 
     public string ReadString() {
@@ -784,7 +845,7 @@ namespace CSharpMath.Atom {
             var spacer = new Ordinary(string.Empty);
             foreach (var row in table.Cells) {
               if (row.Count > 1) {
-                row[1].Insert(0, spacer);
+                row[1].Insert(0, spacer.Clone(false));
               }
             }
             table.InterRowAdditionalSpacing = 1;
@@ -809,7 +870,7 @@ namespace CSharpMath.Atom {
             var spacer = new Ordinary(string.Empty);
             foreach (var row in table.Cells) {
               for (int j = 1; j < row.Count; j += 2) {
-                row[j].Insert(0, spacer);
+                row[j].Insert(0, spacer.Clone(false));
               }
             }
             table.InterRowAdditionalSpacing = 1;
@@ -856,7 +917,7 @@ namespace CSharpMath.Atom {
             var textStyle = new Style(LineStyle.Text);
             foreach (var row in table.Cells) {
               foreach (var cell in row) {
-                cell.Insert(0, textStyle.Clone(false));
+                cell.Insert(0, textStyle);
               }
             }
             // add delimiters
@@ -920,9 +981,12 @@ namespace CSharpMath.Atom {
       .ToString();
 
     static string BoundaryToLaTeX(Boundary delimiter) =>
-      LaTeXSettings.BoundaryDelimitersReverse.TryGetValue(delimiter, out var command)
-      ? command
-      : delimiter.Nucleus ?? "";
+      delimiter.Nucleus switch {
+        "\u27E8" => "<",
+        "\u27E9" => ">",
+        _ => LaTeXSettings.BoundaryDelimitersReverse.TryGetValue(delimiter, out var command)
+          ? command : delimiter.Nucleus ?? ""
+      };
 
     /// <summary>Closest LaTeX command for a box variant (cancel / phantom / lap / smash),
     /// picked from the flag matrix.</summary>
@@ -1125,10 +1189,21 @@ namespace CSharpMath.Atom {
               builder.Append(' ');
             }
             foreach (var argument in macro.Arguments) {
-              builder.Append('{');
-              MathListToLaTeX(argument, builder, currentFontStyle);
-              builder.Append('}');
+              builder.Append('{').Append(argument).Append('}');
             }
+            break;
+          case Atoms.LargeDelimiter large:
+            var prefix = large.Size switch {
+              Atoms.LargeDelimiter.DelimiterSize.Size1 => "big",
+              Atoms.LargeDelimiter.DelimiterSize.Size2 => "Big",
+              Atoms.LargeDelimiter.DelimiterSize.Size3 => "bigg",
+              _ => "Bigg"
+            };
+            var suffix = large.MathClass == typeof(Atoms.Open) ? "l" :
+              large.MathClass == typeof(Atoms.Close) ? "r" :
+              large.MathClass == typeof(Atoms.Relation) ? "m" : "";
+            builder.Append('\\').Append(prefix).Append(suffix)
+              .Append(large.Nucleus.Length == 0 ? "." : BoundaryToLaTeX(new Boundary(large.Nucleus)));
             break;
           case Table table:
             if (table.Environment != null) {

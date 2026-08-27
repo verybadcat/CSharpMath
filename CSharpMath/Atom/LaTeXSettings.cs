@@ -52,8 +52,8 @@ namespace CSharpMath.Atom {
         { @"\rfloor", new Boundary("⌋") },
         { @"\lceil", new Boundary("⌈") },
         { @"\rceil", new Boundary("⌉") },
-        { @"<", @"\langle", new Boundary("〈") },
-        { @">", @"\rangle", new Boundary("〉") },
+        { @"<", @"\langle", new Boundary("\u2329") },
+        { @">", @"\rangle", new Boundary("\u232A") },
         { @"/", new Boundary("/") },
         { @"\\", @"backslash", new Boundary("\\") },
         { @"|", @"\vert", new Boundary("|") },
@@ -450,8 +450,8 @@ namespace CSharpMath.Atom {
     /// <summary>Built-in macros: command name → (argument count, LaTeX template with
     /// #N placeholders). Each entry is amsmath's inline expansion. Populated once at
     /// startup; <see cref="AddMacro"/> mutates it and must not race a live parse.</summary>
-    public static readonly Dictionary<string, (int argc, string template)>
-      BuiltinMacros = new Dictionary<string, (int, string)> {
+    private static readonly Dictionary<string, (int argc, string template)>
+      MacroDefinitions = new Dictionary<string, (int, string)> {
         // amsmath's exact inline expansion. Not reproduced is the \if@display switch
         // to an 18mu leading gap, because a macro expands at parse time before the
         // render style is known.
@@ -470,6 +470,7 @@ namespace CSharpMath.Atom {
         ["varinjlim"] = (0, @"\underrightarrow{\lim}"),
         ["varprojlim"] = (0, @"\underleftarrow{\lim}"),
       };
+    private static readonly object MacroRegistryLock = new object();
 
     /// <summary>Defines a macro: a command that expands to <paramref name="template"/>
     /// with <c>#1</c>…<c>#9</c> replaced by the arguments it is invoked with. Macros are
@@ -480,55 +481,64 @@ namespace CSharpMath.Atom {
     public static void AddMacro(string name, int argumentCount, string template) {
       if (name == null) throw new ArgumentNullException(nameof(name));
       if (template == null) throw new ArgumentNullException(nameof(template));
-      if (argumentCount > 9)
+      if (argumentCount < 0 || argumentCount > 9)
         throw new ArgumentException($@"\{name} declares {argumentCount} arguments; a macro can take at most 9", nameof(argumentCount));
       if (!TemplateReferencesOnlyArgumentsUpTo(template, argumentCount))
         throw new ArgumentException(
           $@"Template for \{name} references an argument beyond its {argumentCount} declared argument(s): {template}",
           nameof(template));
-      BuiltinMacros[name] = (argumentCount, template);
+      lock (MacroRegistryLock) MacroDefinitions[name] = (argumentCount, template);
     }
-
-    /// <summary>The macro registered under <paramref name="command"/>, or null if it is not a macro.</summary>
-    public static (int argc, string template)? MacroDefinitionForCommand(string command) =>
-      BuiltinMacros.TryGetValue(command, out var def) ? def : ((int, string)?)null;
 
     /// <summary>Whether every #N reference in the template names an argument within the declared arity.</summary>
     static bool TemplateReferencesOnlyArgumentsUpTo(string templateString, int argumentCount) {
-      for (int i = 0; i + 1 < templateString.Length; i++) {
+      for (int i = 0; i < templateString.Length; i++) {
         if (templateString[i] != '#') continue;
+        if (i + 1 >= templateString.Length) return false;
         char digit = templateString[i + 1];
+        if (digit == '#') { i++; continue; }
         if (digit < '1' || digit > '9' || digit - '0' > argumentCount) return false;
         i++;
       }
       return true;
     }
-
-    /// <summary>Parses a built-in macro template: ordinary LaTeX plus #N references.</summary>
-    internal static Result<MathList> BuildTemplate(string template) {
-      var builder = new LaTeXParser(template) { IsTemplateMode = true };
-      return builder.Build();
+    private static string SpliceTemplate(string template, IReadOnlyList<string> arguments) {
+      var output = new StringBuilder();
+      for (var i = 0; i < template.Length; i++) {
+        if (template[i] != '#') { output.Append(template[i]); continue; }
+        var next = template[++i];
+        if (next == '#') output.Append('#');
+        else output.Append(arguments[next - '1']);
+      }
+      return output.ToString();
     }
 
     internal static Result<(MathAtom? Atom, MathList? Return)> MacroAtomForCommand(
       LaTeXParser parser, string command) {
-      if (!BuiltinMacros.TryGetValue(command, out var def)) {
+      (int argc, string template) def;
+      lock (MacroRegistryLock) {
+        if (!MacroDefinitions.TryGetValue(command, out def)) return Ok(null);
+      }
+      if (def.template == null) {
         return Ok(null);
       }
-      var arguments = new List<MathList>();
+      var rawArguments = new List<string>();
       for (int i = 0; i < def.argc; i++) {
-        var (argument, error) = RequiredArgument(parser);
-        if (error != null) return error;
-        arguments.Add(argument);
+        var (raw, rawError) = parser.ReadRawArgument();
+        if (rawError != null) return rawError;
+        rawArguments.Add(raw);
       }
-      // A fresh parser so the in-flight parse's state is never disturbed.
-      var (templateExpression, templateError) = BuildTemplate(def.template);
-      if (templateError != null || templateExpression == null) {
-        // Reachable from a template registered through AddMacro, so this is the
-        // caller's error, not the library's.
-        return Err($@"Template for \{command} failed to parse");
-      }
-      return Ok(new Atoms.Macro(command, arguments, templateExpression));
+      var expansionParser = new LaTeXParser(SpliceTemplate(def.template, rawArguments));
+      expansionParser.CurrentFontStyle = parser.CurrentFontStyle;
+      expansionParser.MacroExpansionDepth = parser.MacroExpansionDepth + 1;
+      if (expansionParser.MacroExpansionDepth > 32) return Err($@"Macro expansion depth exceeded while expanding \{command}");
+      var (rawExpansion, expansionError) = expansionParser.Build();
+      if (expansionError != null || rawExpansion == null)
+        return Err($@"Expansion of \{command} failed to parse: {expansionError}");
+      return Ok(new Atoms.Macro(command, rawArguments, rawExpansion));
+    }
+    internal static bool IsBuiltinMacro(string command) {
+      lock (MacroRegistryLock) return MacroDefinitions.ContainsKey(command);
     }
 
     /// <summary>Reads a macro argument, erroring on EOF or a `}`/`^`/`_`/`&`/stop-command
@@ -753,8 +763,8 @@ namespace CSharpMath.Atom {
         { @"\rceil", new Close("⌉") },
         { @"\lfloor", new Open("⌊") },
         { @"\rfloor", new Close("⌋") },
-        { @"\langle", new Open("〈") },
-        { @"\rangle", new Close("〉") },
+        { @"\langle", new Open("\u2329") },
+        { @"\rangle", new Close("\u232A") },
         { @"\lgroup", new Open("⟮") },
         { @"\rgroup", new Close("⟯") },
         { @"\ulcorner", new Open("⌜") },

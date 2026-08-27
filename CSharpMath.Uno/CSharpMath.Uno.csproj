@@ -10,6 +10,8 @@
     <DefineConstants>$(DefineConstants) Uno</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <AdditionalFiles Include="PublicAPI\$(TargetFramework)\PublicAPI.Shipped.txt" />
+    <AdditionalFiles Include="PublicAPI\$(TargetFramework)\PublicAPI.Unshipped.txt" />
     <Compile Include="..\CSharpMath.Xaml\**\*.cs" Link="%(RecursiveDir)%(Filename)%(Extension)" />
     <ProjectReference Include="..\CSharpMath.SkiaSharp\CSharpMath.SkiaSharp.csproj" />
     <!--Working with both the native renderer and Skia renderer: https://platform.uno/docs/articles/features/using-skia-rendering.html#implications-for-iosandroid-class-libraries-->

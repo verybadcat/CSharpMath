@@ -1,0 +1,3 @@
+#nullable enable
+CSharpMath.Rendering.BackEnd.Fonts.GetAdvances(System.Collections.Generic.IEnumerable<CSharpMath.Rendering.BackEnd.Glyph>! glyphs) -> System.Collections.Generic.IEnumerable<float>!
+CSharpMath.Rendering.BackEnd.Fonts.GetBoundingRects(System.Collections.Generic.IEnumerable<CSharpMath.Rendering.BackEnd.Glyph>! glyphs) -> System.Collections.Generic.IEnumerable<System.Drawing.RectangleF>!

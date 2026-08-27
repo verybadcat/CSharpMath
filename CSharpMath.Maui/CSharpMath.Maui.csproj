@@ -21,6 +21,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<AdditionalFiles Include="PublicAPI\$(TargetFramework)\PublicAPI.Shipped.txt" />
+		<AdditionalFiles Include="PublicAPI\$(TargetFramework)\PublicAPI.Unshipped.txt" />
 		<Compile Include="..\CSharpMath.Xaml\**\*.cs" Link="%(RecursiveDir)%(Filename)%(Extension)" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<ProjectReference Include="..\CSharpMath.Rendering\CSharpMath.Rendering.csproj" />

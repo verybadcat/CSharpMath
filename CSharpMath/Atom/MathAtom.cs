@@ -16,10 +16,10 @@ namespace CSharpMath.Atom {
     }
     public virtual string DebugString =>
       new StringBuilder(Nucleus).AppendDebugStringOfScripts(this).ToString();
-    public string Nucleus { get; set; }
+    public virtual string Nucleus { get; set; }
     public MathList Superscript { get; private set; }
     public MathList Subscript { get; private set; }
-    public FontStyle FontStyle { get; set; }
+    public virtual FontStyle FontStyle { get; set; }
     /// <summary>Defaults to zero, only has a value after finalization</summary>
     public Range IndexRange { get; set; }
 

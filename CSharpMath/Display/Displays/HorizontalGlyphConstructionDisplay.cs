@@ -5,7 +5,7 @@ using CSharpMath.Atom;
 
 namespace CSharpMath.Display.Displays {
   using FrontEnd;
-  public class HorizontalGlyphConstructionDisplay<TFont, TGlyph> : IGlyphDisplay<TFont, TGlyph> where TFont : IFont<TGlyph> {
+  public class HorizontalGlyphConstructionDisplay<TFont, TGlyph> : IGlyphDisplay<TFont, TGlyph>, IInkDisplay where TFont : IFont<TGlyph> {
     private readonly IReadOnlyList<TGlyph> _glyphs;
     private readonly IEnumerable<PointF> _glyphPositions;
 
@@ -17,6 +17,7 @@ namespace CSharpMath.Display.Displays {
     public float Descent => _descent + ShiftDown;
 
     public float Width { get; }
+    public float InkWidth { get; }
 
     public Range Range { get; set; }
 
@@ -30,11 +31,18 @@ namespace CSharpMath.Display.Displays {
       IReadOnlyList<TGlyph> glyphs, IEnumerable<float> offsets, TFont font,
       float ascent, float descent, float width) {
       _glyphs = glyphs;
-      _glyphPositions = offsets.Select(x => new PointF(x, 0));
+      var offsetList = offsets.ToList();
+      _glyphPositions = offsetList.Select(x => new PointF(x, 0));
       Font = font;
       _ascent = ascent;
       _descent = descent;
       Width = width;
+      InkWidth = width;
+      if (font is IFontGlyphBounds<TGlyph> bounds) {
+        var rects = bounds.GetBoundingRects(glyphs).ToList();
+        for (var i = 0; i < rects.Count && i < offsetList.Count; i++)
+          InkWidth = System.Math.Max(InkWidth, offsetList[i] + rects[i].Right);
+      }
     }
 
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
