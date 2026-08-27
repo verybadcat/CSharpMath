@@ -64,10 +64,8 @@ CSharpMath.Atom.Atoms.StackConstruction.Extensible
 CSharpMath.Atom.Atoms.StackConstruction.Extensible.Extensible(string! glyph) -> void
 CSharpMath.Atom.Atoms.StackConstruction.Extensible.Glyph.get -> string!
 CSharpMath.Atom.Atoms.StackConstruction.MathListRow
-CSharpMath.Atom.Atoms.StackConstruction.MathListRow.Cramped.get -> bool
 CSharpMath.Atom.Atoms.StackConstruction.MathListRow.List.get -> CSharpMath.Atom.MathList!
-CSharpMath.Atom.Atoms.StackConstruction.MathListRow.MathListRow(CSharpMath.Atom.MathList! list, CSharpMath.Atom.LineStyle style, bool cramped) -> void
-CSharpMath.Atom.Atoms.StackConstruction.MathListRow.Style.get -> CSharpMath.Atom.LineStyle
+CSharpMath.Atom.Atoms.StackConstruction.MathListRow.MathListRow(CSharpMath.Atom.MathList! list) -> void
 CSharpMath.Atom.Atoms.StrikeStyle
 CSharpMath.Atom.Atoms.StrikeStyle.Backward = 2 -> CSharpMath.Atom.Atoms.StrikeStyle
 CSharpMath.Atom.Atoms.StrikeStyle.Cross = 3 -> CSharpMath.Atom.Atoms.StrikeStyle
@@ -159,12 +157,20 @@ CSharpMath.Display.Displays.StackDisplay<TFont, TGlyph>.Under.get -> CSharpMath.
 CSharpMath.Display.Displays.StackDisplay<TFont, TGlyph>.Width.get -> float
 CSharpMath.Display.Displays.StackDisplay<TFont, TGlyph>.Width.set -> void
 override CSharpMath.Atom.Atoms.Box.DebugString.get -> string!
+override CSharpMath.Atom.Atoms.Box.Equals(object! obj) -> bool
+override CSharpMath.Atom.Atoms.Box.GetHashCode() -> int
 override CSharpMath.Atom.Atoms.Box.ScriptsAllowed.get -> bool
 override CSharpMath.Atom.Atoms.Group.DebugString.get -> string!
+override CSharpMath.Atom.Atoms.Group.Equals(object! obj) -> bool
+override CSharpMath.Atom.Atoms.Group.GetHashCode() -> int
 override CSharpMath.Atom.Atoms.Group.ScriptsAllowed.get -> bool
 override CSharpMath.Atom.Atoms.Macro.DebugString.get -> string!
+override CSharpMath.Atom.Atoms.Macro.Equals(object! obj) -> bool
+override CSharpMath.Atom.Atoms.Macro.GetHashCode() -> int
 override CSharpMath.Atom.Atoms.Macro.ScriptsAllowed.get -> bool
 override CSharpMath.Atom.Atoms.Stack.DebugString.get -> string!
+override CSharpMath.Atom.Atoms.Stack.Equals(object! obj) -> bool
+override CSharpMath.Atom.Atoms.Stack.GetHashCode() -> int
 override CSharpMath.Atom.Atoms.Stack.ScriptsAllowed.get -> bool
 override CSharpMath.Display.Displays.BoxDisplay<TFont, TGlyph>.ToString() -> string!
 override CSharpMath.Display.Displays.RuleDisplay<TFont, TGlyph>.ToString() -> string!
@@ -191,6 +197,8 @@ CSharpMath.Display.FrontEnd.IFontGlyphBounds<TGlyph>.GetBoundingRects(System.Col
 CSharpMath.Display.IInkDisplay
 CSharpMath.Display.IInkDisplay.InkWidth.get -> float
 override CSharpMath.Atom.Atoms.LargeDelimiter.ScriptsAllowed.get -> bool
+override CSharpMath.Atom.Atoms.LargeDelimiter.Equals(object! obj) -> bool
+override CSharpMath.Atom.Atoms.LargeDelimiter.GetHashCode() -> int
 override CSharpMath.Atom.Atoms.Style.FontStyle.get -> CSharpMath.Atom.FontStyle
 override CSharpMath.Atom.Atoms.Style.FontStyle.set -> void
 override CSharpMath.Atom.Atoms.Style.Nucleus.get -> string!

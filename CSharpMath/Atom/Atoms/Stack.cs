@@ -9,16 +9,13 @@ namespace CSharpMath.Atom.Atoms {
     /// <summary>A math list typeset at a specified style (for \overset / \underset / …).</summary>
     public sealed class MathListRow : StackConstruction {
       public Atom.MathList List { get; }
-      public LineStyle Style { get; }
-      public bool Cramped { get; }
-      public MathListRow(Atom.MathList list, LineStyle style, bool cramped) =>
-        (List, Style, Cramped) = (list, style, cramped);
+      public MathListRow(Atom.MathList list) => List = list;
     }
     internal StackConstruction() { }
 
     public StackConstruction Clone(bool finalize) {
       if (this is Extensible e) return new Extensible(e.Glyph);
-      if (this is MathListRow m) return new MathListRow(m.List.Clone(finalize), m.Style, m.Cramped);
+      if (this is MathListRow m) return new MathListRow(m.List.Clone(finalize));
       throw new InvalidCodePathException("Unknown stack construction kind");
     }
   }
@@ -40,6 +37,29 @@ namespace CSharpMath.Atom.Atoms {
       Over = Over?.Clone(finalize),
       Under = Under?.Clone(finalize),
       DisplayClassType = DisplayClassType
+    };
+    public override bool Equals(object obj) => obj is Stack other
+      && EqualsAtom(other)
+      && InnerList.EqualsList(other.InnerList)
+      && ConstructionsEqual(Over, other.Over)
+      && ConstructionsEqual(Under, other.Under)
+      && DisplayClassType == other.DisplayClassType;
+    public override int GetHashCode() =>
+      (base.GetHashCode(), InnerList, ConstructionHash(Over), ConstructionHash(Under),
+        DisplayClassType).GetHashCode();
+    private static bool ConstructionsEqual(StackConstruction? left, StackConstruction? right) =>
+      (left, right) switch {
+        (null, null) => true,
+        (StackConstruction.Extensible l, StackConstruction.Extensible r) => l.Glyph == r.Glyph,
+        (StackConstruction.MathListRow l, StackConstruction.MathListRow r) =>
+          l.List.EqualsList(r.List),
+        _ => false
+      };
+    private static int ConstructionHash(StackConstruction? construction) => construction switch {
+      null => 0,
+      StackConstruction.Extensible extensible => (1, extensible.Glyph).GetHashCode(),
+      StackConstruction.MathListRow row => (2, row.List).GetHashCode(),
+      _ => throw new InvalidCodePathException("Unknown stack construction kind")
     };
     public override string DebugString =>
       new System.Text.StringBuilder(@"\stack")

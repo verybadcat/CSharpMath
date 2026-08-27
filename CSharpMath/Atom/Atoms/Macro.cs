@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 namespace CSharpMath.Atom.Atoms {
   public sealed class Macro : MathAtom {
     public string Command { get; }
@@ -10,6 +11,19 @@ namespace CSharpMath.Atom.Atoms {
     }
     public new Macro Clone(bool finalize) => (Macro)base.Clone(finalize);
     protected override MathAtom CloneInside(bool finalize) => new Macro(Command, Arguments, RawExpansion);
+    public override bool Equals(object obj) => obj is Macro other
+      && EqualsAtom(other)
+      && Command == other.Command
+      && Arguments.SequenceEqual(other.Arguments)
+      && RawExpansion.EqualsList(other.RawExpansion);
+    public override int GetHashCode() {
+      unchecked {
+        var argumentsHash = 17;
+        foreach (var argument in Arguments)
+          argumentsHash = argumentsHash * 31 + argument.GetHashCode();
+        return (base.GetHashCode(), Command, argumentsHash, RawExpansion).GetHashCode();
+      }
+    }
     public override string DebugString => new System.Text.StringBuilder(@"\").Append(Command).AppendDebugStringOfScripts(this).ToString();
     public MathList Expansion() {
       var output = new MathList();

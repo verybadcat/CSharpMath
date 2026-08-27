@@ -45,7 +45,11 @@ namespace CSharpMath.Atom {
     /// inside a `{…}` group; the group must then NOT be wrapped as a Group atom because
     /// the resulting fraction replaces it. Read-and-clear: the `{` handler consumes it,
     /// so an inner transform never leaks into an enclosing group's decision.</summary>
-    private bool _groupWasTransformedByStopCommand;
+    private sealed class BuildFrame {
+      public bool GroupWasTransformedByStopCommand { get; set; }
+    }
+    private readonly Stack<BuildFrame> _buildFrames = new Stack<BuildFrame>();
+    private bool _lastCompletedBuildWasTransformed;
     /// <summary>When true (built-in macro templates only), `#N` reads a macro parameter
     /// instead of being an invalid character.</summary>
 
@@ -53,11 +57,15 @@ namespace CSharpMath.Atom {
     /// group currently being read. Read-and-clear.</summary>
     internal bool GroupWasTransformedByStopCommand {
       get {
-        var value = _groupWasTransformedByStopCommand;
-        _groupWasTransformedByStopCommand = false;
+        var value = _lastCompletedBuildWasTransformed;
+        _lastCompletedBuildWasTransformed = false;
         return value;
       }
-      set => _groupWasTransformedByStopCommand = value;
+      set {
+        if (_buildFrames.Count == 0)
+          throw new InvalidCodePathException("No active parser frame for group transformation");
+        _buildFrames.Peek().GroupWasTransformedByStopCommand = value;
+      }
     }
 
     /// <summary>Returns the character at the read position without consuming it.</summary>
@@ -87,6 +95,8 @@ namespace CSharpMath.Atom {
     }
     public Result<MathList> Build() {
       _recursionDepth = 0;
+      _buildFrames.Clear();
+      _lastCompletedBuildWasTransformed = false;
       return BuildInternal(false);
     }
     public char ReadChar() => Chars[NextChar++];
@@ -103,6 +113,14 @@ namespace CSharpMath.Atom {
       if (!HasCharacters) return Result.Err("Missing required argument at end of input");
       if (Chars[NextChar] is '}' or '^' or '_' or '&')
         return Result.Err($"Missing required argument before '{Chars[NextChar]}'");
+      if (Chars[NextChar] == '\\') {
+        var commandStart = NextChar;
+        NextChar++;
+        var command = ReadCommandName();
+        UndoTo(commandStart);
+        if (LaTeXSettings.IsStopCommand(command) && !LaTeXSettings.IsBuiltinMacro(command))
+          return Result.Err($@"Missing required argument before \{command}");
+      }
       var first = ReadChar();
       if (first == '\\') {
         if (!HasCharacters) return Result.Err("Trailing \\ in a macro argument");
@@ -152,6 +170,8 @@ namespace CSharpMath.Atom {
         return "LaTeX nesting too deep";
       }
       _recursionDepth++;
+      var frame = new BuildFrame();
+      _buildFrames.Push(frame);
       var outerOneChar = IsReadingOneCharField;
       // Only a one-char field (^{…}, _{…}, \frac{…}, command arguments) makes braces
       // inside it fields. A stopChar read (a `{…}` group body, an environment body)
@@ -160,6 +180,8 @@ namespace CSharpMath.Atom {
       try {
         return BuildInternalInner(oneCharOnly, stopChar, r);
       } finally {
+        _buildFrames.Pop();
+        _lastCompletedBuildWasTransformed = frame.GroupWasTransformedByStopCommand;
         IsReadingOneCharField = outerOneChar;
         _recursionDepth--;
       }
@@ -551,10 +573,10 @@ namespace CSharpMath.Atom {
             stack.InnerList = arg;
             break;
           case StackArgRole.Over:
-            stack.Over = new StackConstruction.MathListRow(arg, LineStyle.Script, true);
+            stack.Over = new StackConstruction.MathListRow(arg);
             break;
           case StackArgRole.Under:
-            stack.Under = new StackConstruction.MathListRow(arg, LineStyle.Script, true);
+            stack.Under = new StackConstruction.MathListRow(arg);
             break;
         }
       }
@@ -712,6 +734,15 @@ namespace CSharpMath.Atom {
           return "Missing }";
         }
         environment.ArrayAlignments = builder.ToString();
+        if (environment.Name == "array") {
+          var alignmentCount = 0;
+          foreach (var specChar in environment.ArrayAlignments) {
+            if (specChar is 'l' or 'c' or 'r') alignmentCount++;
+            else if (specChar != '|' && !char.IsWhiteSpace(specChar))
+              return $"Invalid array alignment character '{specChar}'";
+          }
+          if (alignmentCount == 0) return "Array alignment must contain at least one column";
+        }
       }
       // Record \hline at the current row boundary. Emits no atom; only valid in array.
       void RecordHorizontalLine() {
@@ -753,6 +784,13 @@ namespace CSharpMath.Atom {
       }
       if (environment.Name != null && !environment.Ended) {
         return $@"Missing \end for \begin{{{environment.Name}}}";
+      }
+
+      if (environment.Name == "array" && rows.Count > 0
+        && rows[rows.Count - 1].All(cell => cell.Count == 0)) {
+        // A trailing \\ opens the boundary needed for a bottom \hline. If no
+        // content follows it, discard that synthetic row while retaining the rule.
+        rows.RemoveAt(rows.Count - 1);
       }
 
       // We have finished parsing the table, now interpret the environment
@@ -850,7 +888,7 @@ namespace CSharpMath.Atom {
             // Generalization of aligned to n alignment pairs (2n columns). The raw
             // argument is the declared pair count; require a positive integer and a
             // column count that matches it.
-            var argument = arrayAlignments ?? "";
+            var argument = (arrayAlignments ?? "").Trim();
             bool numeric = argument.Length > 0;
             foreach (var c in argument) numeric &= c >= '0' && c <= '9';
             if (!numeric || !int.TryParse(argument, out var pairs) || pairs < 1) {
@@ -1140,7 +1178,16 @@ namespace CSharpMath.Atom {
                 _ => null
               };
               var name = StackCommandName(stack);
-              if (name == null) {
+              if (stack.Over is StackConstruction.MathListRow bothOver
+                && stack.Under is StackConstruction.MathListRow bothUnder) {
+                builder.Append(@"\underset{");
+                MathListToLaTeX(bothUnder.List, builder, currentFontStyle);
+                builder.Append(@"}{\overset{");
+                MathListToLaTeX(bothOver.List, builder, currentFontStyle);
+                builder.Append("}{");
+                MathListToLaTeX(stack.InnerList, builder, currentFontStyle);
+                builder.Append("}}");
+              } else if (name == null) {
                 // Programmatically-built stack with non-canonical rows: emit only the inner list.
                 MathListToLaTeX(stack.InnerList, builder, currentFontStyle);
               } else if (stack.Over is StackConstruction.MathListRow overRow) {
@@ -1262,7 +1309,8 @@ namespace CSharpMath.Atom {
               }
               bool lastRow = i == table.NRows - 1;
               int bottomHLines = table.Environment == "array"
-                && lastRow && i < table.HorizontalLines.Count ? table.HorizontalLines[i] : 0;
+                && lastRow && table.NRows < table.HorizontalLines.Count
+                ? table.HorizontalLines[table.NRows] : 0;
               if (!lastRow) {
                 builder.Append(@"\\ ");
               } else if (bottomHLines > 0) {

@@ -47,6 +47,8 @@ namespace CSharpMath.Editor {
         LargeOpLimitsDisplay<TFont, TGlyph> largeOp => largeOp.IndexForPoint(context, point),
         IGlyphDisplay<TFont, TGlyph> glyph => glyph.IndexForPoint(context, point),
         InnerDisplay<TFont, TGlyph> inner => inner.IndexForPoint(context, point),
+        BoxDisplay<TFont, TGlyph> box => box.IndexForCompositePoint(point),
+        StackDisplay<TFont, TGlyph> stack => stack.IndexForCompositePoint(point),
         _ => null,
       };
     ///<summary>The bounds of the display indicated by the given index</summary>
@@ -60,6 +62,8 @@ namespace CSharpMath.Editor {
         LargeOpLimitsDisplay<TFont, TGlyph> largeOp => largeOp.PointForIndex(context, index),
         IGlyphDisplay<TFont, TGlyph> glyph => glyph.PointForIndex(context, index),
         InnerDisplay<TFont, TGlyph> inner => inner.PointForIndex(context, index),
+        BoxDisplay<TFont, TGlyph> box => box.PointForCompositeIndex(index),
+        StackDisplay<TFont, TGlyph> stack => stack.PointForCompositeIndex(index),
         _ => null,
       };
     public static void HighlightCharacterAt<TFont, TGlyph>
@@ -86,6 +90,12 @@ namespace CSharpMath.Editor {
           break;
         case InnerDisplay<TFont, TGlyph> inner:
           inner.HighlightCharacterAt(index, color);
+          break;
+        case BoxDisplay<TFont, TGlyph> box:
+          box.Child.Highlight(color);
+          break;
+        case StackDisplay<TFont, TGlyph> stack:
+          stack.HighlightComposite(color);
           break;
         default:
           break;
@@ -115,9 +125,34 @@ namespace CSharpMath.Editor {
         case InnerDisplay<TFont, TGlyph> inner:
           inner.Highlight(color);
           break;
+        case BoxDisplay<TFont, TGlyph> box:
+          box.Child.Highlight(color);
+          break;
+        case StackDisplay<TFont, TGlyph> stack:
+          stack.HighlightComposite(color);
+          break;
         default:
           break;
       }
+    }
+
+    private static MathListIndex? IndexForCompositePoint<TFont, TGlyph>(
+      this IDisplay<TFont, TGlyph> self, PointF point) where TFont : IFont<TGlyph> =>
+      self.Range.IsNotFound ? null : point.X < self.Position.X + self.Width / 2
+      ? new(self.Range.Location) : new(self.Range.End);
+
+    private static PointF? PointForCompositeIndex<TFont, TGlyph>(
+      this IDisplay<TFont, TGlyph> self, MathListIndex index) where TFont : IFont<TGlyph> =>
+      index.SubIndexInfo is { } || self.Range.IsNotFound ? null
+      : index.AtomIndex == self.Range.Location ? self.Position
+      : index.AtomIndex == self.Range.End
+      ? self.Position.Plus(new PointF(self.Width, 0)) : null;
+
+    private static void HighlightComposite<TFont, TGlyph>(
+      this StackDisplay<TFont, TGlyph> self, Color color) where TFont : IFont<TGlyph> {
+      self.Base.Highlight(color);
+      self.Over?.Highlight(color);
+      self.Under?.Highlight(color);
     }
   }
 }

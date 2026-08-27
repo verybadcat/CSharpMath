@@ -249,10 +249,17 @@ namespace CSharpMath {
           // A brace group is an Ord subformula: evaluate its content in place and
           // splice the result so grouping stays transparent (iosMath 086d345).
           case Atoms.Group group: {
+              if (group.InnerList.Count == 0) {
+                if (group.Superscript.Count > 0 || group.Subscript.Count > 0)
+                  return "Empty group cannot carry scripts";
+                continue;
+              }
               var innerList = new MathList(group.InnerList.Select(a => a.Clone(true)));
               int j = 0;
-              var (groupResult, groupError) = Transform(innerList, ref j, prec).Bind(r => r is { } item ? Result.Ok(item) : Result.Err("Empty group"));
+              var (groupResult, groupError) = Transform(innerList, ref j, Precedence.DefaultContext)
+                .Bind(r => r is { } item ? Result.Ok(item) : Result.Err("Empty group"));
               if (groupError != null) return groupError;
+              if (j < innerList.Count - 1) return "Unable to evaluate entire group";
               @this = groupResult;
               subscriptAllowed = true;
               goto handleThis;
@@ -813,7 +820,9 @@ namespace CSharpMath {
               }
             @this = MathS.Piecewise(caseElements);
             goto handleThis;
-          case Atoms.Open { Nucleus: var opening }:
+          case { Nucleus: var opening } when atom is Atoms.Open
+            || atom is Atoms.LargeDelimiter { MathClass: var openingClass }
+              && openingClass == typeof(Atoms.Open):
             if (atom.Superscript.Count > 0)
               return "Superscripts are unsupported for Open Bracket " + opening;
             if (!OpenBracketInfo.TryGetValue(opening, out var bracketInfo))
@@ -825,7 +834,10 @@ namespace CSharpMath {
             if (HandleSuperscript(ref @this, ref i, mathList[i].Superscript).Error is { } superscriptError)
               return superscriptError;
             goto handleThis;
-          case Atoms.Close { Nucleus: var rightBracket, Superscript: var super, Subscript: var sub }:
+          case { Nucleus: var rightBracket, Superscript: var super, Subscript: var sub }
+            when atom is Atoms.Close
+              || atom is Atoms.LargeDelimiter { MathClass: var closingClass }
+                && closingClass == typeof(Atoms.Close):
             if (sub.Count > 0) return "Subscripts are unsupported for Close " + rightBracket;
             if (!ContextInfo.TryGetValue(prec, out var contextInfo))
               switch (prec) {

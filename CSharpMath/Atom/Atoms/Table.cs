@@ -62,11 +62,27 @@ namespace CSharpMath.Atom.Atoms {
       Alignments.Count <= columnIndex ? ColumnAlignment.Center : Alignments[columnIndex];
     public bool EqualsTable(Table otherTable) =>
         EqualsAtom(otherTable) &&
-        NRows == otherTable.NRows &&
         Cells.SequenceEqual(otherTable.Cells, (c1, c2) => c1.SequenceEqual(c2)) &&
-        Alignments.SequenceEqual(otherTable.Alignments);
+        Alignments.SequenceEqual(otherTable.Alignments) &&
+        InterColumnSpacing == otherTable.InterColumnSpacing &&
+        InterRowAdditionalSpacing == otherTable.InterRowAdditionalSpacing &&
+        CellStyle == otherTable.CellStyle &&
+        VerticalLines.SequenceEqual(otherTable.VerticalLines) &&
+        HorizontalLines.SequenceEqual(otherTable.HorizontalLines) &&
+        Environment == otherTable.Environment;
     public override bool Equals(object obj) => obj is Table t ? EqualsTable(t) : false;
     public override int GetHashCode() =>
-      (base.GetHashCode(), Cells, Alignments).GetHashCode();
+      (base.GetHashCode(), NestedSequenceHash(Cells), SequenceHash(Alignments),
+        InterColumnSpacing, InterRowAdditionalSpacing, CellStyle,
+        (SequenceHash(VerticalLines), SequenceHash(HorizontalLines), Environment)).GetHashCode();
+    private static int NestedSequenceHash(IEnumerable<IEnumerable<MathList>> rows) =>
+      SequenceHash(rows.Select(SequenceHash));
+    private static int SequenceHash<T>(IEnumerable<T> items) {
+      unchecked {
+        var hash = 17;
+        foreach (var item in items) hash = hash * 31 + (item?.GetHashCode() ?? 0);
+        return hash;
+      }
+    }
   }
 }

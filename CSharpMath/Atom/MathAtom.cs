@@ -87,7 +87,9 @@ namespace CSharpMath.Atom {
       Superscript.NullCheckingStructuralEquality(otherAtom.Superscript) &&
       Subscript.NullCheckingStructuralEquality(otherAtom.Subscript);
     public override bool Equals(object obj) => obj is MathAtom a && EqualsAtom(a);
-    bool IEquatable<MathAtom>.Equals(MathAtom otherAtom) => EqualsAtom(otherAtom);
+    // Dispatch through the virtual object overload so callers holding atoms through
+    // IEquatable<MathAtom> still observe each subtype's structural state.
+    bool IEquatable<MathAtom>.Equals(MathAtom otherAtom) => Equals(otherAtom);
     public override int GetHashCode() => (Superscript, Subscript, Nucleus).GetHashCode();
   }
 }

@@ -16,6 +16,30 @@ namespace CSharpMath.Core.EditorTests {
         s => throw new Xunit.Sdk.XunitException(s)
       );
 
+    [Theory]
+    [InlineData(@"a\phantom{x}b")]
+    [InlineData(@"a\overset{x}{c}b")]
+    [InlineData(@"a\bigl(b")]
+    public void CompositeAtomsExposeCaretAndHitTestBoundaries(string latex) {
+      var display = TestTypesettingContext.CreateDisplay(latex).Match(
+        value => value, error => throw new Xunit.Sdk.XunitException(error));
+      var before = display.PointForIndex(TestTypesettingContext.Instance, new MathListIndex(1));
+      var after = display.PointForIndex(TestTypesettingContext.Instance, new MathListIndex(2));
+      Assert.NotNull(before);
+      Assert.NotNull(after);
+      var midpoint = new PointF((before.Value.X + after.Value.X) / 2,
+        (before.Value.Y + after.Value.Y) / 2);
+      Assert.NotNull(display.IndexForPoint(TestTypesettingContext.Instance, midpoint));
+    }
+
+    [Fact]
+    public void DecorativeArrayRulesDoNotInterceptCaretRouting() {
+      var display = TestTypesettingContext.CreateDisplay(
+        @"\begin{array}{|c|}\hline a\\\hline\end{array}").Match(
+          value => value, error => throw new Xunit.Sdk.XunitException(error));
+      Assert.NotNull(display.PointForIndex(TestTypesettingContext.Instance, new MathListIndex(0)));
+    }
+
     public static TestData FractionData =>
       new TestData {
         { (0,0), 0 },

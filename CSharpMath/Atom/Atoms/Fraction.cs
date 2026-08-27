@@ -46,8 +46,13 @@ namespace CSharpMath.Atom.Atoms {
       && Numerator.NullCheckingStructuralEquality(other.Numerator)
       && Denominator.NullCheckingStructuralEquality(other.Denominator)
       && LeftDelimiter == other.LeftDelimiter
-      && RightDelimiter == other.RightDelimiter;
+      && RightDelimiter == other.RightDelimiter
+      && HasRule == other.HasRule
+      && StyleOverride == other.StyleOverride
+      && IsContinuedFraction == other.IsContinuedFraction
+      && NumeratorAlignment == other.NumeratorAlignment;
     public override int GetHashCode() =>
-      (base.GetHashCode(), Numerator, Denominator, LeftDelimiter, RightDelimiter).GetHashCode();
+      (base.GetHashCode(), Numerator, Denominator, LeftDelimiter, RightDelimiter,
+        HasRule, (StyleOverride, IsContinuedFraction, NumeratorAlignment)).GetHashCode();
   }
 }

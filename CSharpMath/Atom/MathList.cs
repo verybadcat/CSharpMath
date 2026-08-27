@@ -23,6 +23,36 @@ namespace CSharpMath.Atom {
     public MathList(IEnumerable<MathAtom> atoms) => Atoms = new List<MathAtom>(atoms);
     public MathList(params MathAtom[] atoms) => Atoms = new List<MathAtom>(atoms);
 
+    private static Type EffectiveClass(MathAtom atom) => atom switch {
+      Stack stack => stack.DisplayClassType,
+      LargeDelimiter large => large.MathClass,
+      BinaryOperator _ => typeof(BinaryOperator),
+      Relation _ => typeof(Relation),
+      Open _ => typeof(Open),
+      Close _ => typeof(Close),
+      Punctuation _ => typeof(Punctuation),
+      LargeOperator _ => typeof(LargeOperator),
+      _ => typeof(Ordinary)
+    };
+    private static bool BinaryCannotFollow(MathAtom? atom) {
+      if (atom is null) return true;
+      var mathClass = EffectiveClass(atom);
+      return mathClass == typeof(BinaryOperator) || mathClass == typeof(Relation) ||
+        mathClass == typeof(Open) || mathClass == typeof(Punctuation) ||
+        mathClass == typeof(LargeOperator);
+    }
+    private static MathAtom DemoteBinary(MathAtom atom) => atom switch {
+      BinaryOperator binary => binary.ToUnaryOperator(),
+      Stack stack when stack.DisplayClassType == typeof(BinaryOperator) =>
+        DemoteBinaryStack(stack),
+      _ => throw new InvalidCodePathException("Only binary-class atoms can be demoted")
+    };
+
+    private static Stack DemoteBinaryStack(Stack stack) {
+      stack.DisplayClassType = typeof(Ordinary);
+      return stack;
+    }
+
     /// <returns>The last <see cref="MathAtom"/> that is not a <see cref="Comment"/>,
     /// or <see langword="null"/> when <see cref="Atoms"/> is empty.</returns>
 #if !NETSTANDARD2_0 && !NET45
@@ -66,19 +96,6 @@ namespace CSharpMath.Atom {
         int prevDisplayedIndex = -1;
         foreach (var atom in Atoms) {
           var newNode = atom.Clone(finalize);
-          // A Group wrapping a single atom — or a single parenthesized Inner — is
-          // pure grouping: dissolve it and hoist the group's scripts onto the atom.
-          // This keeps AngouriMath's braced output ({\sin x}^{1}) rendering and
-          // serializing identically to the pre-grouping parser. Multi-atom groups
-          // stay, preserving TeX ordgroup semantics (iosMath 086d345).
-          if (newNode is Group wrapper
-            && wrapper.InnerList.Count == 1
-            && wrapper.InnerList[0] is { } only
-            && only.Superscript.IsEmpty() && only.Subscript.IsEmpty()) {
-            only.Superscript.Append(wrapper.Superscript.Clone(false));
-            only.Subscript.Append(wrapper.Subscript.Clone(false));
-            newNode = only.Clone(true);
-          }
           var location = newNode.IndexRange == Range.Zero
             ? (prevNode is { } prev ? prev.IndexRange.Location + prev.IndexRange.Length : 0)
             : newNode.IndexRange.Location;
@@ -95,14 +112,17 @@ namespace CSharpMath.Atom {
             }
             newNode.IndexRange = new Range(location, length);
           }
-          switch (prevDisplayedIndex == -1 ? null : newList[prevDisplayedIndex], newNode) {
-            // NOTE: The left pattern does not include UnaryOperator. Just try "1+++2" and "1++++2" in any LaTeX rendering engine.
-            case (null or BinaryOperator or Relation or Open or Punctuation or LargeOperator, BinaryOperator b):
-              newNode = b.ToUnaryOperator();
-              break;
-            case (BinaryOperator b, Relation or Punctuation or Close):
-              newList[prevDisplayedIndex] = b.ToUnaryOperator();
-              break;
+          var previousDisplayed = prevDisplayedIndex == -1 ? null : newList[prevDisplayedIndex];
+          var newClass = EffectiveClass(newNode);
+          // Stack atoms participate through DisplayClassType in the same TeX Bin-to-Ord
+          // normalization as native BinaryOperator/Relation atoms.
+          if (newClass == typeof(BinaryOperator) && BinaryCannotFollow(previousDisplayed)) {
+            newNode = DemoteBinary(newNode);
+          } else if (previousDisplayed is { } previous
+            && EffectiveClass(previous) == typeof(BinaryOperator)
+            && (newClass == typeof(Relation) || newClass == typeof(Punctuation) ||
+                newClass == typeof(Close))) {
+            newList[prevDisplayedIndex] = DemoteBinary(previous);
           }
           // Combine numbers together, but never across a font-style change: Fuse
           // keeps the first atom's FontStyle and would corrupt the other's.
@@ -115,6 +135,9 @@ namespace CSharpMath.Atom {
           newList.Add(newNode);
           prevNode = newNode;
         }
+        if (prevDisplayedIndex >= 0
+          && EffectiveClass(newList[prevDisplayedIndex]) == typeof(BinaryOperator))
+          newList[prevDisplayedIndex] = DemoteBinary(newList[prevDisplayedIndex]);
       }
       return newList;
     }
@@ -140,8 +163,15 @@ namespace CSharpMath.Atom {
       return true;
     }
     public override bool Equals(object obj) => obj is MathList l && EqualsList(l);
-    public override int GetHashCode() =>
-      Atoms.Count == 0 ? 0 : Atoms.GetHashCode(); // Special case empty list for LaTeXDefaults
+    public override int GetHashCode() {
+      // Keep hashing structural just like EqualsList. In particular, a cloned list
+      // must remain hash-equal even though it has a different List<MathAtom> instance.
+      unchecked {
+        var hash = 17;
+        foreach (var atom in Atoms) hash = hash * 31 + atom.GetHashCode();
+        return Atoms.Count == 0 ? 0 : hash; // Preserve the LaTeXDefaults empty-list special case.
+      }
+    }
     bool IEquatable<MathList>.Equals(MathList otherList) => EqualsList(otherList);
     public IEnumerator<MathAtom> GetEnumerator() => Atoms.GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => Atoms.GetEnumerator();

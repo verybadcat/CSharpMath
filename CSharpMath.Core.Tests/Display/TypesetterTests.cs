@@ -1,6 +1,7 @@
 using System.Drawing;
 using System.Linq;
 using CSharpMath.Atom;
+using CSharpMath.Core.BackEnd;
 using CSharpMath.Display;
 using CSharpMath.Display.Displays;
 using CSharpMath.Display.FrontEnd;
@@ -10,11 +11,56 @@ using TGlyph = System.Text.Rune;
 
 namespace CSharpMath.Core.DisplayTests {
   public class TypesetterTests {
+    private sealed class MalformedAssemblyTable : JsonMathTable {
+      private readonly float _advance, _connector;
+      public MalformedAssemblyTable(float advance, float connector = 0) : base(
+        TestFontMeasurer.Instance, ManifestResources.LatinMath,
+        TestGlyphNameProvider.Instance, TestGlyphBoundsProvider.Instance) {
+        _advance = advance;
+        _connector = connector;
+      }
+      public override System.Collections.Generic.IEnumerable<GlyphPart<TGlyph>> GetVerticalGlyphAssembly(
+        TGlyph rawGlyph, TFont font) => new[] { new GlyphPart<TGlyph>(rawGlyph, _advance, _connector, _connector, true) };
+      public override System.Collections.Generic.IEnumerable<GlyphPart<TGlyph>> GetHorizontalGlyphAssembly(
+        TGlyph rawGlyph, TFont font) => new[] { new GlyphPart<TGlyph>(rawGlyph, _advance, _connector, _connector, true) };
+      public override (System.Collections.Generic.IEnumerable<TGlyph> variants, int count)
+        GetVerticalVariantsForGlyph(TGlyph rawGlyph) => (System.Array.Empty<TGlyph>(), 0);
+      public override (System.Collections.Generic.IEnumerable<TGlyph> variants, int count)
+        GetHorizontalVariantsForGlyph(TGlyph rawGlyph) => (System.Array.Empty<TGlyph>(), 0);
+    }
     internal static ListDisplay<TFont, TGlyph> ParseLaTeXToDisplay(string latex) =>
       Typesetter.CreateLine(AtomTests.LaTeXParserTest.ParseLaTeX(latex), _font, _context, LineStyle.Display);
 
     private static readonly TFont _font = new TFont(20);
     private static readonly TypesettingContext<TFont, TGlyph> _context = BackEnd.TestTypesettingContext.Instance;
+
+    [Theory]
+    [InlineData(false, 0)]
+    [InlineData(false, -1)]
+    [InlineData(true, 0)]
+    [InlineData(true, -1)]
+    public void MalformedExtenderAssemblyFailsDeterministically(bool horizontal, float advance) {
+      var table = new MalformedAssemblyTable(advance);
+      var context = new TypesettingContext<TFont, TGlyph>(
+        (font, size) => new TFont(size), TestGlyphBoundsProvider.Instance,
+        TestGlyphFinder.Instance, table);
+      var latex = horizontal ? @"\overrightarrow{ABCDEFGHIJKLMNOPQRSTUVWXYZ}" : @"\left( \frac{1}{2} \right)";
+      Assert.Throws<InvalidCodePathException>(() => Typesetter.CreateLine(
+        AtomTests.LaTeXParserTest.ParseLaTeX(latex), _font, context, LineStyle.Display));
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void NonFiniteAssemblyMetricsFailDeterministically(bool horizontal) {
+      var table = new MalformedAssemblyTable(float.NaN);
+      var context = new TypesettingContext<TFont, TGlyph>(
+        (font, size) => new TFont(size), TestGlyphBoundsProvider.Instance,
+        TestGlyphFinder.Instance, table);
+      var latex = horizontal ? @"\overrightarrow{ABCDEFGHIJKLMNOPQRSTUVWXYZ}" : @"\left( \frac{1}{2} \right)";
+      Assert.Throws<InvalidCodePathException>(() => Typesetter.CreateLine(
+        AtomTests.LaTeXParserTest.ParseLaTeX(latex), _font, context, LineStyle.Display));
+    }
 
     static System.Action<IDisplay<TFont, TGlyph>?> TestList((int, int) range, double ascent, double descent, double width, double x, double y,
       LinePosition linePos, int indexInParent, params System.Action<IDisplay<TFont, TGlyph>>[] inspectors) => d => {
@@ -522,7 +568,7 @@ namespace CSharpMath.Core.DisplayTests {
       });
     [Fact]
     public void TestUnderAnnotation2() =>
-      TestOuter(@"\underbrace {xxxxx}_{y}", 5, 14, 39.6, 50, d => {
+      TestOuter(@"\underbrace {xxxxx}_{y}", 5, 14, 39.6, 60.24, d => {
         var under = Assert.IsType<UnderAnnotationDisplay<TFont, TGlyph>>(d);
         Assert.Equal(new PointF(), under.Position);
         var annotation = Assert.IsType<HorizontalGlyphConstructionDisplay<TFont, TGlyph>>(under.AnnotationGlyph);
@@ -530,7 +576,7 @@ namespace CSharpMath.Core.DisplayTests {
         Approximately.Equal(new PointF(0, -4), annotation.Position);
         Assert.False(annotation.HasScript);
         Assert.Equal(Range.NotFound, annotation.Range);
-        TestList(5, 14, 4, 50, 0, 0, LinePosition.Regular, Range.UndefinedInt,
+        TestList(5, 14, 4, 50, 5.12, 0, LinePosition.Regular, Range.UndefinedInt,
           d => {
             var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
             Assert.Equal(5, line.Atoms.Count);
@@ -539,7 +585,7 @@ namespace CSharpMath.Core.DisplayTests {
             Assert.Equal(new PointF(), line.Position);
             Assert.False(line.HasScript);
           })(under.Inner);
-        TestList(1, 9.8, 2.8, 7, 21.5, -36.8, LinePosition.Regular, Range.UndefinedInt,
+        TestList(1, 9.8, 2.8, 7, 26.62, -36.8, LinePosition.Regular, Range.UndefinedInt,
           d => {
             var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
             Assert.Single(line.Atoms);

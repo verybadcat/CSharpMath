@@ -11,11 +11,14 @@ namespace CSharpMath.Atom.Atoms {
     protected override MathAtom CloneInside(bool finalize) => new Group {
       InnerList = InnerList.Clone(finalize)
     };
+    public override bool Equals(object obj) =>
+      obj is Group other && EqualsAtom(other) && InnerList.EqualsList(other.InnerList);
+    public override int GetHashCode() => (base.GetHashCode(), InnerList).GetHashCode();
     /// <summary>Offsets every atom range of the inner list so group contents carry
     /// global indices starting at <paramref name="startIndex"/> (finalization only).</summary>
     internal void OffsetInnerRanges(int startIndex) {
       foreach (var atom in InnerList)
-        if (atom.IndexRange != Range.Zero && atom.IndexRange.Location < startIndex)
+        if (atom.IndexRange != Range.Zero && !atom.IndexRange.IsNotFound)
           atom.IndexRange = new Range(atom.IndexRange.Location + startIndex, atom.IndexRange.Length);
       // Recurse into nested containers.
       foreach (var atom in InnerList)

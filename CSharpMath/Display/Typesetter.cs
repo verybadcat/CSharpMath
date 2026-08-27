@@ -216,22 +216,18 @@ namespace CSharpMath.Display {
           case Group group:
             AddDisplayLine(false);
             // Spaced as Ordinary; lay out the sub-mlist with a fresh recursion so any
-            // interior style node is scoped to the group. The child displays are
-            // spliced straight into the parent so braces stay transparent for hit
-            // testing (TeX ordgroup semantics).
+            // interior style node is scoped to the group. Keep the nested ListDisplay
+            // as the group's composite nucleus so scripts use the complete box metrics.
             AddInterElementSpace(prevAtom, group);
             var groupInnerDisplay =
               CreateLine(group.InnerList, _font, _context, _style, _cramped);
-            foreach (var splicedDisplay in groupInnerDisplay.Displays) {
-              splicedDisplay.Position = splicedDisplay.Position.Plus(_currentPosition);
-              _displayAtoms.Add(splicedDisplay);
-            }
+            groupInnerDisplay.Position = _currentPosition;
+            groupInnerDisplay.SetRangeOverride(atom.IndexRange);
+            _displayAtoms.Add(groupInnerDisplay);
             _currentPosition.X += groupInnerDisplay.Width;
             if (atom.Subscript.IsNonEmpty() || atom.Superscript.IsNonEmpty()) {
               // Scripts attach after the whole group.
-              AddDisplayLine(true);
-              var line = _displayAtoms[_displayAtoms.Count - 1];
-              MakeScripts(atom, line, atom.IndexRange.Location, 0);
+              MakeScripts(atom, groupInnerDisplay, atom.IndexRange.Location, 0);
             }
             break;
           case Box box:
@@ -404,7 +400,7 @@ namespace CSharpMath.Display {
                 LargeDelimiter.DelimiterSize.Size3 => 2.047f,
                 _ => 2.470f
               }) * _styleFont.PointSize;
-              var display = FindGlyphForBoundary(large.Nucleus, height);
+              var display = FindGlyphForBoundary(large.Nucleus, height, large.IndexRange);
               display.Position = _currentPosition;
               _currentPosition.X += display.Width;
               _displayAtoms.Add(display);
@@ -690,8 +686,6 @@ namespace CSharpMath.Display {
         }
       }
 
-      // AMSMath \cfrac: numerator and denominator are always typeset in display
-      // style (not one step down like \frac), and the denominator is not cramped.
       float _NumeratorShiftUp(bool hasRule) =>
         (hasRule, _style) switch {
           (true, LineStyle.Display) => _mathTable.FractionNumeratorDisplayStyleShiftUp(_styleFont),
@@ -724,13 +718,10 @@ namespace CSharpMath.Display {
           ? _mathTable.FractionDelimiterDisplayStyleSize(_styleFont)
           : _mathTable.FractionDelimiterSize(_styleFont);
 
-      var fractionStyle =
-        fraction.IsContinuedFraction ? LineStyle.Display : _fractionStyle;
       var numeratorDisplay =
-          CreateLine(fraction.Numerator, _font, _context, fractionStyle, false);
+          CreateLine(fraction.Numerator, _font, _context, _fractionStyle, false);
       var denominatorDisplay =
-        CreateLine(fraction.Denominator, _font, _context, fractionStyle,
-          !fraction.IsContinuedFraction);
+        CreateLine(fraction.Denominator, _font, _context, _fractionStyle, true);
 
       if (fraction.IsContinuedFraction) {
         // Apply cfrac strut floors to the operand boxes *before* numeratorShiftUp
@@ -843,31 +834,32 @@ namespace CSharpMath.Display {
       var baseDisplay = CreateLine(stack.InnerList, _font, _context, _style, _cramped);
       float targetWidth = baseDisplay.Width;
 
-      IDisplay<TFont, TGlyph>? BuildRow(StackConstruction? construction) {
+      IDisplay<TFont, TGlyph>? BuildRow(StackConstruction? construction, bool over) {
         if (construction == null) return null;
         if (construction is StackConstruction.Extensible extensible) {
           return BuildHorizontalExtensibleDisplay(extensible.Glyph, targetWidth, range);
         }
         if (construction is StackConstruction.MathListRow mathList) {
-          return CreateLine(mathList.List, _font, _context, _scriptStyle, mathList.Cramped);
+          return CreateLine(mathList.List, _font, _context, _scriptStyle,
+            over ? _superscriptCramped : _subscriptCramped);
         }
         throw new InvalidCodePathException("Unknown stack construction kind");
       }
 
-      var overDisplay = BuildRow(stack.Over);
-      var underDisplay = BuildRow(stack.Under);
+      var overDisplay = BuildRow(stack.Over, true);
+      var underDisplay = BuildRow(stack.Under, false);
 
       // MathList rows use the operator-limit gap; stretchy rows use stretch-stack gaps.
       float overGap =
         stack.Over is StackConstruction.MathListRow && overDisplay != null
         ? Math.Max(_mathTable.UpperLimitGapMin(_styleFont),
                    _mathTable.UpperLimitBaselineRiseMin(_styleFont) - overDisplay.Descent)
-        : _mathTable.StretchStackTopShiftUp(_styleFont);
+        : _mathTable.StretchStackGapAboveMin(_styleFont);
       float underGap =
         stack.Under is StackConstruction.MathListRow && underDisplay != null
         ? Math.Max(_mathTable.LowerLimitGapMin(_styleFont),
                    _mathTable.LowerLimitBaselineDropMin(_styleFont) - underDisplay.Ascent)
-        : _mathTable.StretchStackBottomShiftDown(_styleFont);
+        : _mathTable.StretchStackGapBelowMin(_styleFont);
 
       float totalWidth = Math.Max(baseDisplay.Width,
         Math.Max(overDisplay?.Width ?? 0, underDisplay?.Width ?? 0));
@@ -904,7 +896,7 @@ namespace CSharpMath.Display {
       var variants = variantsEnumerable.ToArray();
       if (nVariants == 0) {
         // Assembly-only glyph: no preset variants, go straight to the assembly.
-        if (ConstructHorizontalGlyph(capGlyph, targetWidth, 0, 0) is IGlyphDisplay<TFont, TGlyph> assembledOnly) {
+        if (ConstructHorizontalGlyph(capGlyph, targetWidth, range) is IGlyphDisplay<TFont, TGlyph> assembledOnly) {
           return assembledOnly;
         }
         // No assembly either; render the bare glyph.
@@ -929,7 +921,7 @@ namespace CSharpMath.Display {
         return new GlyphDisplay<TFont, TGlyph>(bestGlyph, range, _styleFont, bestAscent, bestDescent, bestWidth);
       }
       // No variant covers the width; try the font-supplied horizontal assembly.
-      if (ConstructHorizontalGlyph(bestGlyph, targetWidth, bestAscent, bestDescent)
+      if (ConstructHorizontalGlyph(capGlyph, targetWidth, range)
           is IGlyphDisplay<TFont, TGlyph> assembled) {
         return assembled;
       }
@@ -965,16 +957,20 @@ namespace CSharpMath.Display {
     }
 
     private IGlyphDisplay<TFont, TGlyph> FindGlyphForBoundary(
-      string delimiter, float glyphHeight) {
+      string delimiter, float glyphHeight, Range? range = null) {
       var leftGlyph = _context.GlyphFinder.FindGlyphForCharacterAtIndex(_font, 0, delimiter);
       var glyph = FindGlyph(leftGlyph, glyphHeight,
         out float glyphAscent, out float glyphDescent, out float glyphWidth);
-      var glyphDisplay =
-        glyphAscent + glyphDescent < glyphHeight
-        && ConstructGlyph(leftGlyph, glyphHeight) is IGlyphDisplay<TFont, TGlyph> constructed
-        ? constructed
-        : new GlyphDisplay<TFont, TGlyph>
-          (glyph, Range.NotFound, _styleFont, glyphAscent, glyphDescent, glyphWidth);
+      var displayRange = range ?? Range.NotFound;
+      IGlyphDisplay<TFont, TGlyph> glyphDisplay;
+      if (glyphAscent + glyphDescent < glyphHeight
+        && ConstructGlyph(leftGlyph, glyphHeight) is GlyphConstructionDisplay<TFont, TGlyph> constructed) {
+        constructed.Range = displayRange;
+        glyphDisplay = constructed;
+      } else {
+        glyphDisplay = new GlyphDisplay<TFont, TGlyph>
+          (glyph, displayRange, _styleFont, glyphAscent, glyphDescent, glyphWidth);
+      }
       // Center the glyph on the axis
       var shiftDown =
         0.5f * (glyphDisplay.Ascent - glyphDisplay.Descent)
@@ -1003,7 +999,8 @@ namespace CSharpMath.Display {
       glyphDescent += lineShiftUp;
 
       var glyphDisplay =
-      innerListDisplay.Width > glyphWidth ? ConstructHorizontalGlyph(annotationSingleGlyph, innerListDisplay.Width, glyphAscent, glyphDescent) as IGlyphDisplay<TFont, TGlyph>
+      innerListDisplay.Width > glyphWidth ? ConstructHorizontalGlyph(annotationSingleGlyph,
+        innerListDisplay.Width, Range.NotFound) as IGlyphDisplay<TFont, TGlyph>
          :
         new GlyphDisplay<TFont, TGlyph>
           (glyph, Range.NotFound, _styleFont, glyphAscent, glyphDescent, glyphWidth);
@@ -1026,20 +1023,34 @@ namespace CSharpMath.Display {
       return new UnderAnnotationDisplay<TFont, TGlyph>(innerListDisplay, underListDisplay, glyphDisplay!, underListBasedDescent, _currentPosition);
     }
 
-    private HorizontalGlyphConstructionDisplay<TFont, TGlyph>? ConstructHorizontalGlyph(TGlyph glyph, float glyphWidth, float glyphAscent, float glyphDescent) {
+    private HorizontalGlyphConstructionDisplay<TFont, TGlyph>? ConstructHorizontalGlyph(
+      TGlyph glyph, float glyphWidth, Range range) {
       var parts = _mathTable.GetHorizontalGlyphAssembly(glyph, _styleFont);
       if (parts is null) return null;
+      var partList = parts.ToList();
+      if (partList.Count == 0) return null;
+      ValidateAssemblyParts(partList);
       var glyphs = new List<TGlyph>();
       var offsets = new List<float>();
-      float width = ConstructHorizontalGlyphWithParts(parts, glyphWidth, glyphs, offsets);
-      using var singleGlyph = new RentedArray<TGlyph>(glyphs[0]);
-      // descent:0 because it's up to the rendering to adjust the display glyph up or down by setting ShiftDown
+      float width = ConstructHorizontalGlyphWithParts(partList, glyphWidth, glyphs, offsets);
+      float glyphAscent = 0, glyphDescent = 0;
+      var bounds = _context.GlyphBoundsProvider
+        .GetBoundingRectsForGlyphs(_styleFont, glyphs, glyphs.Count);
+      foreach (var boundingBox in bounds) {
+        boundingBox.GetAscentDescentWidth(out var ascent, out var descent, out _);
+        glyphAscent = Math.Max(glyphAscent, ascent);
+        glyphDescent = Math.Max(glyphDescent, descent);
+      }
       return new HorizontalGlyphConstructionDisplay<TFont, TGlyph>
-        (glyphs, offsets, _styleFont, glyphAscent, glyphDescent, width) { Range = Range.NotFound };
+        (glyphs, offsets, _styleFont, glyphAscent, glyphDescent, width) { Range = range };
     }
 
     private float ConstructHorizontalGlyphWithParts(IEnumerable<GlyphPart<TGlyph>> parts,
       float glyphWidth, List<TGlyph> glyphs, List<float> offsets) {
+      var partList = parts.ToList();
+      var hasExtender = partList.Any(part => part.IsExtender);
+      float previousMinWidth = float.NegativeInfinity;
+      float previousMaxWidth = float.NegativeInfinity;
       for (int nExtenders = 0; ; nExtenders++) {
         glyphs.Clear();
         offsets.Clear();
@@ -1047,7 +1058,7 @@ namespace CSharpMath.Display {
         float minDistance = _mathTable.MinConnectorOverlap(_styleFont);
         float minOffset = 0;
         float maxDelta = float.MaxValue;
-        foreach (var part in parts) {
+        foreach (var part in partList) {
           var repeats = 1;
           if (part.IsExtender) {
             repeats = nExtenders;
@@ -1072,7 +1083,16 @@ namespace CSharpMath.Display {
         }
         float minWidth = minOffset + prevPart.FullAdvance;
         float maxWidth = minWidth + maxDelta * (glyphs.Count - 1);
-        if (minWidth >= maxWidth) {
+        if (!IsFinite(minWidth) || !IsFinite(maxWidth))
+          throw new InvalidCodePathException("Glyph assembly produced a non-finite width.");
+        if (nExtenders >= 3 && minWidth < glyphWidth
+          && !(minWidth > previousMinWidth || maxWidth > previousMaxWidth))
+          throw new InvalidCodePathException("Glyph assembly made no progress while adding extenders.");
+        previousMinWidth = minWidth;
+        previousMaxWidth = maxWidth;
+        if (!hasExtender && minWidth < glyphWidth)
+          throw new InvalidCodePathException("Glyph assembly has no extender for the requested size.");
+        if (minWidth >= glyphWidth) {
           // we are done
           return minWidth;
         }
@@ -1095,9 +1115,12 @@ namespace CSharpMath.Display {
     private GlyphConstructionDisplay<TFont, TGlyph>? ConstructGlyph(TGlyph glyph, float glyphHeight) {
       var parts = _mathTable.GetVerticalGlyphAssembly(glyph, _styleFont);
       if (parts is null) return null;
+      var partList = parts.ToList();
+      if (partList.Count == 0) return null;
+      ValidateAssemblyParts(partList);
       var glyphs = new List<TGlyph>();
       var offsets = new List<float>();
-      float height = ConstructGlyphWithParts(parts, glyphHeight, glyphs, offsets);
+      float height = ConstructGlyphWithParts(partList, glyphHeight, glyphs, offsets);
       using var singleGlyph = new RentedArray<TGlyph>(glyphs[0]);
       // descent:0 because it's up to the rendering to adjust the display glyph up or down by setting ShiftDown
       return new GlyphConstructionDisplay<TFont, TGlyph>
@@ -1107,6 +1130,10 @@ namespace CSharpMath.Display {
 
     private float ConstructGlyphWithParts(IEnumerable<GlyphPart<TGlyph>> parts,
       float glyphHeight, List<TGlyph> glyphs, List<float> offsets) {
+      var partList = parts.ToList();
+      var hasExtender = partList.Any(part => part.IsExtender);
+      float previousMinHeight = float.NegativeInfinity;
+      float previousMaxHeight = float.NegativeInfinity;
       for (int nExtenders = 0; ; nExtenders++) {
         glyphs.Clear();
         offsets.Clear();
@@ -1114,7 +1141,7 @@ namespace CSharpMath.Display {
         float minDistance = _mathTable.MinConnectorOverlap(_styleFont);
         float minOffset = 0;
         float maxDelta = float.MaxValue;
-        foreach (var part in parts) {
+        foreach (var part in partList) {
           var repeats = 1;
           if (part.IsExtender) {
             repeats = nExtenders;
@@ -1139,6 +1166,15 @@ namespace CSharpMath.Display {
         }
         float minHeight = minOffset + prevPart.FullAdvance;
         float maxHeight = minHeight + maxDelta * (glyphs.Count - 1);
+        if (!IsFinite(minHeight) || !IsFinite(maxHeight))
+          throw new InvalidCodePathException("Glyph assembly produced a non-finite height.");
+        if (nExtenders >= 3 && minHeight < glyphHeight
+          && !(minHeight > previousMinHeight || maxHeight > previousMaxHeight))
+          throw new InvalidCodePathException("Glyph assembly made no progress while adding extenders.");
+        previousMinHeight = minHeight;
+        previousMaxHeight = maxHeight;
+        if (!hasExtender && minHeight < glyphHeight)
+          throw new InvalidCodePathException("Glyph assembly has no extender for the requested size.");
         if (minHeight >= glyphHeight) {
           // we are done
           return minHeight;
@@ -1159,15 +1195,27 @@ namespace CSharpMath.Display {
       }
     }
 
+    private static void ValidateAssemblyParts(IReadOnlyCollection<GlyphPart<TGlyph>> parts) {
+      if (parts.Any(part => !IsFinite(part.FullAdvance) || part.FullAdvance < 0
+        || !IsFinite(part.StartConnectorLength) || part.StartConnectorLength < 0
+        || !IsFinite(part.EndConnectorLength) || part.EndConnectorLength < 0
+        || (part.IsExtender && !(part.FullAdvance > 0))))
+        throw new InvalidCodePathException("Glyph assembly contains invalid metrics.");
+    }
+    private static bool IsFinite(float value) => !float.IsNaN(value) && !float.IsInfinity(value);
+
     private TGlyph FindGlyph(TGlyph rawGlyph, float height,
       out float glyphAscent, out float glyphDescent, out float glyphWidth) {
       // in iosMath.
       glyphAscent = glyphDescent = glyphWidth = float.NaN;
       var (variants, nVariants) = _mathTable.GetVerticalVariantsForGlyph(rawGlyph);
       if (nVariants == 0) {
-        // No sized variants (assembly-only glyph): the glyph itself is its only
-        // variant so callers can rely on a non-empty result; the assembly path
-        // below then produces the actual construction.
+        using var rawGlyphArray = new RentedArray<TGlyph>(rawGlyph);
+        var rect = _context.GlyphBoundsProvider
+          .GetBoundingRectsForGlyphs(_styleFont, rawGlyphArray.Result, 1).Single();
+        rect.GetAscentDescentWidth(out glyphAscent, out glyphDescent, out _);
+        glyphWidth = _context.GlyphBoundsProvider
+          .GetAdvancesForGlyphs(_styleFont, rawGlyphArray.Result, 1).Total;
         return rawGlyph;
       }
       var rects =
@@ -1192,8 +1240,12 @@ namespace CSharpMath.Display {
       glyphAscent = glyphDescent = glyphWidth = float.NaN;
       var (variants, nVariants) = _mathTable.GetHorizontalVariantsForGlyph(rawGlyph);
       if (nVariants == 0) {
-        // No sized variants (assembly-only glyph): fall through to the horizontal
-        // glyph assembly instead of reading out of bounds.
+        using var rawGlyphArray = new RentedArray<TGlyph>(rawGlyph);
+        var rect = _context.GlyphBoundsProvider
+          .GetBoundingRectsForGlyphs(_styleFont, rawGlyphArray.Result, 1).Single();
+        rect.GetAscentDescentWidth(out glyphAscent, out glyphDescent, out _);
+        glyphWidth = _context.GlyphBoundsProvider
+          .GetAdvancesForGlyphs(_styleFont, rawGlyphArray.Result, 1).Total;
         return rawGlyph;
       }
       var rects =
@@ -1325,7 +1377,7 @@ namespace CSharpMath.Display {
         foreach (var ruleX in verticalRuleXs[boundary]) {
           ruledRowDisplays.Add(new RuleDisplay<TFont, TGlyph>(
             new PointF(ruleX, frameBot), frameBot < frameTop ? frameTop - frameBot : 0,
-            thickness, vertical: true, table.IndexRange));
+            thickness, vertical: true, Range.NotFound));
         }
       }
       int nRows = table.NRows;
@@ -1351,7 +1403,7 @@ namespace CSharpMath.Display {
             _ => y0 + (k % 2 == 0 ? 1 : -1) * ((k + 1) / 2) * (thickness + ruleGap), // symmetric
           };
           ruledRowDisplays.Add(new RuleDisplay<TFont, TGlyph>(
-            new PointF(0, yk), contentWidth, thickness, vertical: false, table.IndexRange));
+            new PointF(0, yk), contentWidth, thickness, vertical: false, Range.NotFound));
         }
       }
 

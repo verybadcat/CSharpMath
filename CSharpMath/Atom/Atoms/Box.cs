@@ -35,6 +35,18 @@ namespace CSharpMath.Atom.Atoms {
       HAlign = HAlign,
       StrikeStyle = StrikeStyle
     };
+    public override bool Equals(object obj) => obj is Box other
+      && EqualsAtom(other)
+      && InnerList.EqualsList(other.InnerList)
+      && KeepWidth == other.KeepWidth
+      && KeepHeight == other.KeepHeight
+      && KeepDepth == other.KeepDepth
+      && DrawChild == other.DrawChild
+      && HAlign == other.HAlign
+      && StrikeStyle == other.StrikeStyle;
+    public override int GetHashCode() =>
+      (base.GetHashCode(), InnerList, KeepWidth, KeepHeight, KeepDepth, DrawChild,
+        (HAlign, StrikeStyle)).GetHashCode();
     public override string DebugString =>
       new System.Text.StringBuilder(@"\box")
         .AppendInBracesOrEmptyBraces(InnerList.DebugString)

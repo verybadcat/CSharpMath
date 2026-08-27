@@ -362,48 +362,56 @@ namespace CSharpMath.Atom {
             // one-character argument slot (e.g. x^\over y); TeX rejects it too.
             if (parser.IsReadingOneCharField)
               return $@"\over cannot be used in a one-character argument; wrap it in braces, e.g. x^{{a \over b}}";
-            parser.GroupWasTransformedByStopCommand = true;
-            return parser.ReadUntil(stopChar).Bind(denominator =>
-              OkStop(new MathList(new Fraction(accumulate, denominator))));
+            return parser.ReadUntil(stopChar).Bind(denominator => {
+              parser.GroupWasTransformedByStopCommand = true;
+              return OkStop(new MathList(new Fraction(accumulate, denominator)));
+            });
           } },
         { @"\atop", (parser, accumulate, stopChar) => {
             if (parser.IsReadingOneCharField)
               return $@"\atop cannot be used in a one-character argument; wrap it in braces, e.g. x^{{a \atop b}}";
-            parser.GroupWasTransformedByStopCommand = true;
-            return parser.ReadUntil(stopChar).Bind(denominator =>
-              OkStop(new MathList(new Fraction(accumulate, denominator, false))));
+            return parser.ReadUntil(stopChar).Bind(denominator => {
+              parser.GroupWasTransformedByStopCommand = true;
+              return OkStop(new MathList(new Fraction(accumulate, denominator, false)));
+            });
           } },
         { @"\choose", (parser, accumulate, stopChar) => {
             if (parser.IsReadingOneCharField)
               return $@"\choose cannot be used in a one-character argument; wrap it in braces, e.g. x^{{a \choose b}}";
-            parser.GroupWasTransformedByStopCommand = true;
-            return parser.ReadUntil(stopChar).Bind(denominator =>
-              OkStop(new MathList(new Fraction(accumulate, denominator, false)
-                { LeftDelimiter = new Boundary("("), RightDelimiter = new Boundary(")") })));
+            return parser.ReadUntil(stopChar).Bind(denominator => {
+              parser.GroupWasTransformedByStopCommand = true;
+              return OkStop(new MathList(new Fraction(accumulate, denominator, false)
+                { LeftDelimiter = new Boundary("("), RightDelimiter = new Boundary(")") }));
+            });
           } },
         { @"\brack", (parser, accumulate, stopChar) => {
             if (parser.IsReadingOneCharField)
               return $@"\brack cannot be used in a one-character argument; wrap it in braces, e.g. x^{{a \brack b}}";
-            parser.GroupWasTransformedByStopCommand = true;
-            return parser.ReadUntil(stopChar).Bind(denominator =>
-              OkStop(new MathList(new Fraction(accumulate, denominator, false)
-                { LeftDelimiter = new Boundary("["), RightDelimiter = new Boundary("]") })));
+            return parser.ReadUntil(stopChar).Bind(denominator => {
+              parser.GroupWasTransformedByStopCommand = true;
+              return OkStop(new MathList(new Fraction(accumulate, denominator, false)
+                { LeftDelimiter = new Boundary("["), RightDelimiter = new Boundary("]") }));
+            });
           } },
         { @"\brace", (parser, accumulate, stopChar) => {
             if (parser.IsReadingOneCharField)
               return $@"\brace cannot be used in a one-character argument; wrap it in braces, e.g. x^{{a \brace b}}";
-            parser.GroupWasTransformedByStopCommand = true;
-            return parser.ReadUntil(stopChar).Bind(denominator =>
-              OkStop(new MathList(new Fraction(accumulate, denominator, false)
-                { LeftDelimiter = new Boundary("{"), RightDelimiter = new Boundary("}") })));
+            return parser.ReadUntil(stopChar).Bind(denominator => {
+              parser.GroupWasTransformedByStopCommand = true;
+              return OkStop(new MathList(new Fraction(accumulate, denominator, false)
+                { LeftDelimiter = new Boundary("{"), RightDelimiter = new Boundary("}") }));
+            });
           } },
         { @"\atopwithdelims", (parser, accumulate, stopChar) => {
-            parser.GroupWasTransformedByStopCommand = true;
+            if (parser.IsReadingOneCharField)
+              return @"\atopwithdelims cannot be used in a one-character argument; wrap it in braces";
             return parser.ReadDelimiter(@"atopwithdelims").Bind(left =>
               parser.ReadDelimiter(@"atopwithdelims").Bind(right =>
-                parser.ReadUntil(stopChar).Bind(denominator =>
-                  OkStop(new MathList(new Fraction(accumulate, denominator, false)
-                    { LeftDelimiter = left, RightDelimiter = right })))));
+                parser.ReadUntil(stopChar).Bind(denominator => {
+                  parser.GroupWasTransformedByStopCommand = true;
+                  return OkStop(new MathList(new Fraction(accumulate, denominator, false)
+                    { LeftDelimiter = left, RightDelimiter = right }));
+                })));
           } },
         { @"\right", (parser, accumulate, stopChar) => {
           while (parser.Environments.PeekOrDefault() is LaTeXParser.TableEnvironment table)
@@ -502,13 +510,16 @@ namespace CSharpMath.Atom {
       }
       return true;
     }
-    private static string SpliceTemplate(string template, IReadOnlyList<string> arguments) {
+    private static string SpliceTemplate(string template, IReadOnlyList<string> arguments,
+      FontStyle argumentStyle) {
       var output = new StringBuilder();
+      var styleCommand = FontStyles.SecondToFirst[argumentStyle];
       for (var i = 0; i < template.Length; i++) {
         if (template[i] != '#') { output.Append(template[i]); continue; }
         var next = template[++i];
         if (next == '#') output.Append('#');
-        else output.Append(arguments[next - '1']);
+        else output.Append('\\').Append(styleCommand).Append('{')
+          .Append(arguments[next - '1']).Append('}');
       }
       return output.ToString();
     }
@@ -528,8 +539,10 @@ namespace CSharpMath.Atom {
         if (rawError != null) return rawError;
         rawArguments.Add(raw);
       }
-      var expansionParser = new LaTeXParser(SpliceTemplate(def.template, rawArguments));
-      expansionParser.CurrentFontStyle = parser.CurrentFontStyle;
+      // Template text starts from default style; only substituted arguments inherit
+      // the invocation's style context.
+      var expansionParser = new LaTeXParser(
+        SpliceTemplate(def.template, rawArguments, parser.CurrentFontStyle));
       expansionParser.MacroExpansionDepth = parser.MacroExpansionDepth + 1;
       if (expansionParser.MacroExpansionDepth > 32) return Err($@"Macro expansion depth exceeded while expanding \{command}");
       var (rawExpansion, expansionError) = expansionParser.Build();
@@ -539,28 +552,6 @@ namespace CSharpMath.Atom {
     }
     internal static bool IsBuiltinMacro(string command) {
       lock (MacroRegistryLock) return MacroDefinitions.ContainsKey(command);
-    }
-
-    /// <summary>Reads a macro argument, erroring on EOF or a `}`/`^`/`_`/`&`/stop-command
-    /// where the argument should be. An empty `{}` is a valid empty argument.</summary>
-    private static Result<MathList> RequiredArgument(LaTeXParser parser) {
-      parser.SkipSpaces();
-      if (!parser.HasCharacters) {
-        return "Missing required argument at end of input";
-      }
-      switch (parser.PeekChar()) {
-        case '}' or '^' or '_' or '&':
-          return $@"Missing required argument before '{parser.PeekChar()}'";
-        case '\\':
-          var saveChar = parser.NextChar;
-          var command = parser.ReadCommandName();
-          parser.UndoTo(saveChar);
-          if (StopCommands.Contains(command)) {
-            return $@"Missing required argument before \{command}";
-          }
-          break;
-      }
-      return parser.ReadArgument();
     }
 
     /// <summary>Reads an atom's argument, tolerating EOF or an immediate closing brace
@@ -576,7 +567,8 @@ namespace CSharpMath.Atom {
     /// <summary>Every command that ends the enclosing list rather than producing an atom.
     /// None can begin a macro argument.</summary>
     private static readonly HashSet<string> StopCommands =
-      new HashSet<string> { "right", "over", "atop", "choose", "brack", "brace", @"\\", "cr", "end" };
+      new HashSet<string> { "right", "over", "atop", "atopwithdelims", "choose", "brack", "brace", @"\", "cr", "end" };
+    internal static bool IsStopCommand(string command) => StopCommands.Contains(command);
 
     public static bool PlaceholderBlinks { get; set; }
     public static Color? PlaceholderRestingColor { get; set; }

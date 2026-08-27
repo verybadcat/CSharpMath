@@ -135,6 +135,16 @@ namespace CSharpMath.Core.AtomTests {
       Assert.Equal(@"\stackrel{!}{=}", RoundTrip(@"\overset{!}{=}"));
       Assert.Equal(@"\stackbin{a}{+}", RoundTrip(@"\overset{a}{+}"));
     }
+    [Fact]
+    public void StackWithBothMathRowsSerializesWithoutDataLoss() {
+      var stack = new Stack {
+        InnerList = new MathList(new Variable("x")),
+        Over = new StackConstruction.MathListRow(new MathList(new Variable("a"))),
+        Under = new StackConstruction.MathListRow(new MathList(new Variable("b")))
+      };
+      Assert.Equal(@"\underset{b}{\overset{a}{x}}",
+        LaTeXParser.MathListToLaTeX(new MathList(stack)).ToString());
+    }
     #endregion
 
     #region Box family: phantom/smash/lap + cancel — iosMath 9f53483 + d49f251
@@ -255,6 +265,12 @@ namespace CSharpMath.Core.AtomTests {
       Assert.NotNull(new LaTeXParser(@"\mod").Build().Error);
       Assert.NotNull(new LaTeXParser(@"\pod").Build().Error);
     }
+    [Theory]
+    [InlineData(@"\begin{matrix}a\pmod\\b\end{matrix}")]
+    [InlineData(@"\left(\pmod\right)")]
+    [InlineData(@"x\pmod\\y")]
+    public void MacroArgumentsCannotConsumeEnclosingStopCommands(string latex) =>
+      Assert.NotNull(new LaTeXParser(latex).Build().Error);
     [Fact]
     public void AddMacroRegistersAndReplaces() {
       // iosMath b2b19a8: runtime macro registration, with replacement on re-register.
@@ -398,6 +414,22 @@ namespace CSharpMath.Core.AtomTests {
       Assert.NotEmpty(macro.Expansion());
     }
     [Fact]
+    public void MacroTemplateAndArgumentsKeepIndependentFontStyles() {
+      LaTeXSettings.AddMacro("styprobe", 1, "x#1");
+      var macro = Assert.IsType<Macro>(Assert.Single(ParseLaTeX(@"\mathbf{\styprobe{y}}")));
+      Assert.Collection(macro.Expansion(),
+        x => Assert.Equal(FontStyle.Default, x.FontStyle),
+        y => Assert.Equal(FontStyle.Bold, y.FontStyle));
+    }
+    [Fact]
+    public void MacroArgumentCannotMergeWithAdjacentTemplateControlWordText() {
+      LaTeXSettings.AddMacro("suffixprobe", 1, "#1x");
+      var macro = Assert.IsType<Macro>(Assert.Single(ParseLaTeX(@"\suffixprobe{\alpha}")));
+      Assert.Collection(macro.Expansion(),
+        alpha => Assert.Equal("\u03B1", alpha.Nucleus),
+        x => Assert.Equal("x", x.Nucleus));
+    }
+    [Fact]
     public void BmodStaysABinaryOperator() {
       // \bmod is a plain symbol table entry, not a macro. After finalize the leading
       // number fuses and the trailing number follows the binary op.
@@ -483,6 +515,10 @@ namespace CSharpMath.Core.AtomTests {
       Assert.NotNull(new LaTeXParser(@"\begin{alignedat} a & b \end{alignedat}").Build().Error);
     }
     [Fact]
+    public void AlignedatTrimsOuterArgumentWhitespace() =>
+      Assert.Null(new LaTeXParser(
+        @"\begin{alignedat}{ 2 }a&=b&c&=d\end{alignedat}").Build().Error);
+    [Fact]
     public void ArrayParsesVerticalLines() {
       var table = Assert.IsType<Table>(Assert.Single(
         ParseLaTeX(@"\begin{array}{|r|c|l|} 10 & = & 7 + 3 \end{array}")));
@@ -504,6 +540,14 @@ namespace CSharpMath.Core.AtomTests {
       Assert.Equal(2, table.NRows);
     }
     [Fact]
+    public void ArrayBottomHlineDoesNotCreateAnEmptyRow() {
+      const string input = @"\begin{array}{c}a\\ \hline\end{array}";
+      var table = Assert.IsType<Table>(Assert.Single(ParseLaTeX(input)));
+      Assert.Equal(1, table.NRows);
+      Assert.Equal(new[] { 0, 1 }, table.HorizontalLines);
+      Assert.Contains(@"a\\ \hline ", RoundTrip(input));
+    }
+    [Fact]
     public void HlineOutsideArrayIsError() {
       Assert.NotNull(new LaTeXParser(@"\hline a").Build().Error);
     }
@@ -511,6 +555,23 @@ namespace CSharpMath.Core.AtomTests {
     public void ArrayToleratesExtraCells() {
       // Pre-port behavior: extra cells are dropped rather than erroring.
       Assert.Null(new LaTeXParser(@"\begin{array}{c} a & b \end{array}").Build().Error);
+    }
+    [Theory]
+    [InlineData(@"\begin{array}{p}a\end{array}")]
+    [InlineData(@"\begin{array}{}a\end{array}")]
+    [InlineData(@"\begin{array}{||}a\end{array}")]
+    public void ArrayRejectsInvalidOrEmptyAlignment(string latex) =>
+      Assert.NotNull(new LaTeXParser(latex).Build().Error);
+    [Fact]
+    public void ArrayAlignmentIgnoresWhitespace() =>
+      Assert.Null(new LaTeXParser(@"\begin{array}{ | c | }a\end{array}").Build().Error);
+    [Fact]
+    public void TableEqualityIncludesRulesStylesAndLayoutState() {
+      MathAtom ruled = Assert.Single(ParseLaTeX(@"\begin{array}{c}\hline a\end{array}"));
+      MathAtom clone = ruled.Clone(false);
+      Assert.Equal(ruled, clone);
+      Assert.Equal(ruled.GetHashCode(), clone.GetHashCode());
+      Assert.NotEqual(ruled, Assert.Single(ParseLaTeX(@"\begin{array}{c}a\end{array}")));
     }
     #endregion
 
@@ -520,6 +581,59 @@ namespace CSharpMath.Core.AtomTests {
       var group = Assert.IsType<Group>(ParseLaTeX(@"5{3+4}")[1]);
       Assert.Equal(3, group.InnerList.Count);
       Assert.Equal("5{3+4}", RoundTrip(@"5{3+4}"));
+    }
+    [Fact]
+    public void SingleAtomGroupsRemainOrdDuringFinalization() {
+      var relation = ParseLaTeX(@"a{=}b").Clone(true);
+      Assert.IsType<Relation>(Assert.IsType<Group>(relation[1]).InnerList.Single());
+
+      var scopedStyle = ParseLaTeX(@"x{\scriptstyle}z").Clone(true);
+      Assert.IsType<Style>(Assert.IsType<Group>(scopedStyle[1]).InnerList.Single());
+    }
+    [Fact]
+    public void GroupInnerRangesAreTranslatedToGlobalIndices() {
+      var finalized = ParseLaTeX(@"a{b+c}d").Clone(true);
+      var group = Assert.IsType<Group>(finalized[1]);
+      Assert.Equal(new CSharpMath.Atom.Range(1, 3), group.IndexRange);
+      Assert.Equal(new[] { 1, 2, 3 }, group.InnerList.Select(atom => atom.IndexRange.Location));
+      Assert.Equal(4, finalized[2].IndexRange.Location);
+    }
+    [Fact]
+    public void PortedAtomsUseStructuralEqualityAndHashing() {
+      static MathAtom Only(string latex) => Assert.Single(ParseLaTeX(latex));
+      static void AssertCloneEqual(MathAtom atom) {
+        MathAtom clone = atom.Clone(false);
+        Assert.Equal(atom, clone);
+        Assert.Equal(atom.GetHashCode(), clone.GetHashCode());
+      }
+
+      var representativeAtoms = new[] {
+        Only(@"{x}"),
+        Only(@"\phantom{x}"),
+        Only(@"\overrightarrow{x}"),
+        Only(@"\pmod{n}"),
+        Only(@"\big("),
+        Only(@"\dfrac{x}{y}")
+      };
+      foreach (var atom in representativeAtoms) AssertCloneEqual(atom);
+
+      Assert.NotEqual(Only(@"{x}"), Only(@"{y}"));
+      Assert.NotEqual(Only(@"\phantom{x}"), Only(@"\phantom{y}"));
+      Assert.NotEqual(Only(@"\phantom{x}"), Only(@"\hphantom{x}"));
+      Assert.NotEqual(Only(@"\overrightarrow{x}"), Only(@"\overrightarrow{y}"));
+      Assert.NotEqual(Only(@"\overrightarrow{x}"), Only(@"\overleftarrow{x}"));
+      Assert.NotEqual(Only(@"\overset{a}{x}"), Only(@"\underset{a}{x}"));
+      Assert.NotEqual(Only(@"\pmod{n}"), Only(@"\mod{n}"));
+      Assert.NotEqual(Only(@"\big("), Only(@"\Big("));
+      Assert.NotEqual(Only(@"\bigl("), Only(@"\big("));
+      Assert.NotEqual(Only(@"\frac{x}{y}"), Only(@"\atop{x}{y}"));
+      Assert.NotEqual(Only(@"\dfrac{x}{y}"), Only(@"\tfrac{x}{y}"));
+      Assert.NotEqual(Only(@"\cfrac[l]{x}{y}"), Only(@"\cfrac[r]{x}{y}"));
+
+      // Equality must retain subtype dispatch through the public MathAtom interface.
+      MathAtom left = Only(@"\big(");
+      MathAtom right = Only(@"\Big(");
+      Assert.False(((IEquatable<MathAtom>)left).Equals(right));
     }
     [Fact]
     public void ScriptsAttachToWholeGroup() {
@@ -543,11 +657,24 @@ namespace CSharpMath.Core.AtomTests {
       Assert.True(frac.HasRule);
       Assert.Equal(@"\frac{a}{b}", RoundTrip(@"{a \over b}"));
     }
+    [Fact]
+    public void GeneralizedFractionMarkerDoesNotConsumeNestedDenominatorGroup() {
+      var fraction = Assert.IsType<Fraction>(Assert.Single(ParseLaTeX(@"{a \over {b+c}}")));
+      var denominatorGroup = Assert.IsType<Group>(Assert.Single(fraction.Denominator));
+      Assert.Equal(3, denominatorGroup.InnerList.Count);
+    }
+    [Fact]
+    public void GeneralizedFractionMarkerDoesNotLeakAcrossParserFrames() {
+      var list = ParseLaTeX(@"\left(a \over b\right){c+d}");
+      Assert.IsType<Inner>(list[0]);
+      Assert.IsType<Group>(list[1]);
+    }
     [Theory]
     [InlineData(@"x^\over y")]
     [InlineData(@"x_\over y")]
     [InlineData(@"x^\atop y")]
     [InlineData(@"x^\choose y")]
+    [InlineData(@"x^\atopwithdelims()y")]
     public void GeneralizedFractionInOneCharSlotIsError(string latex) {
       // iosMath 801af6f: \over/\atop/\choose/\brack/\brace in a one-character
       // argument slot must error, not silently swallow the rest of the input.

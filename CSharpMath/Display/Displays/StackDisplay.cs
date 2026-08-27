@@ -20,7 +20,21 @@ namespace CSharpMath.Display.Displays {
     public float Width { get; set; }
     public float Ascent { get; set; }
     public float Descent { get; set; }
-    public PointF Position { get; set; }
+    private PointF _position;
+    private readonly PointF _baseOffset;
+    private readonly PointF? _overOffset;
+    private readonly PointF? _underOffset;
+    public PointF Position {
+      get => _position;
+      set {
+        _position = value;
+        Base.Position = new PointF(value.X + _baseOffset.X, value.Y + _baseOffset.Y);
+        if (Over is { } over && _overOffset is { } overOffset)
+          over.Position = new PointF(value.X + overOffset.X, value.Y + overOffset.Y);
+        if (Under is { } under && _underOffset is { } underOffset)
+          under.Position = new PointF(value.X + underOffset.X, value.Y + underOffset.Y);
+      }
+    }
     public bool HasScript { get; set; }
     public Color? TextColor { get; set; }
     public void SetTextColorRecursive(Color? textColor) {
@@ -31,8 +45,12 @@ namespace CSharpMath.Display.Displays {
     }
     public Color? BackColor { get; set; }
     public StackDisplay(ListDisplay<TFont, TGlyph> baseDisplay,
-      IDisplay<TFont, TGlyph>? over, IDisplay<TFont, TGlyph>? under, Range range) =>
+      IDisplay<TFont, TGlyph>? over, IDisplay<TFont, TGlyph>? under, Range range) {
       (Base, Over, Under, Range) = (baseDisplay, over, under, range);
+      _baseOffset = baseDisplay.Position;
+      _overOffset = over?.Position;
+      _underOffset = under?.Position;
+    }
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
       this.DrawBackground(context);
       Base.Draw(context);

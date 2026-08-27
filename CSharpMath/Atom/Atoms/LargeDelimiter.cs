@@ -14,5 +14,9 @@ namespace CSharpMath.Atom.Atoms {
     public override bool ScriptsAllowed => true;
     protected override MathAtom CloneInside(bool finalize) => new LargeDelimiter(Nucleus, Size, MathClass);
     public new LargeDelimiter Clone(bool finalize) => (LargeDelimiter)base.Clone(finalize);
+    public override bool Equals(object obj) => obj is LargeDelimiter other
+      && EqualsAtom(other) && Size == other.Size && MathClass == other.MathClass;
+    public override int GetHashCode() =>
+      (base.GetHashCode(), Size, MathClass).GetHashCode();
   }
 }

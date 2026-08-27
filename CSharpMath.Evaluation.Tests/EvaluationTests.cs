@@ -115,6 +115,8 @@ namespace CSharpMath.EvaluationTests {
     [InlineData(@"a / b", @"\frac{a}{b}", @"\frac{a}{b}")]
     [InlineData(@"a\div b", @"\frac{a}{b}", @"\frac{a}{b}")]
     [InlineData(@"\frac ab", @"\frac{a}{b}", @"\frac{a}{b}")]
+    [InlineData(@"2\times{3+4}", @"2\left( 3+4\right) ", @"14")]
+    [InlineData(@"2{}3", @"2\cdot 3", @"6")]
     [InlineData(@"a + b + c", @"a+b+c", "a+b+c")]
     [InlineData(@"a + b - c", @"a+b-c", "a+b-c")]
     [InlineData(@"a + b \times c", @"a+bc", @"a+bc")]
@@ -506,6 +508,11 @@ namespace CSharpMath.EvaluationTests {
       Test(latex, converted, result);
       Test(latex.Replace('(', '[').Replace(')', ']'), converted, result);
     }
+    [Fact]
+    public void FixedSizeDelimitersEvaluateLikeOrdinaryBrackets() {
+      var result = Assert.IsType<Evaluation.MathItem.Entity>(ParseMath(@"\bigl(2+3\bigr)"));
+      Assert.Equal("5", result.Content.Simplify().Latexize());
+    }
     [Theory]
     [InlineData(@"\begin{matrix}1\end{matrix}", @"\left[ \begin{matrix}1\end{matrix}\right] ", @"1")]
     [InlineData(@"\begin{matrix}1&2\\3&4\end{matrix}", @"\left[ \begin{matrix}1&2\\ 3&4\end{matrix}\right] ", @"\left[ \begin{matrix}1&2\\ 3&4\end{matrix}\right] ")]
@@ -607,9 +614,9 @@ namespace CSharpMath.EvaluationTests {
     [InlineData(@"\degree x", "Missing left operand for °")]
     [InlineData(@"x+", "Missing right operand for +")]
     [InlineData(@"x-", "Missing right operand for \u2212")]
-    [InlineData(@"x\times", "Missing right operand for ×")]
-    [InlineData(@"x\div", "Missing right operand for ÷")]
-    [InlineData(@"x\dagger", "Unsupported Binary Operator †")]
+    [InlineData(@"x\times", "Unsupported Unary Operator ×")]
+    [InlineData(@"x\div", "Unsupported Unary Operator ÷")]
+    [InlineData(@"x\dagger", "Unsupported Unary Operator †")]
     [InlineData(@"+^2", "Superscripts are unsupported for Unary Operator +")]
     [InlineData(@"+_2", "Missing right operand for +")]
     [InlineData(@"+^21", "Superscripts are unsupported for Unary Operator +")]
@@ -732,18 +739,18 @@ namespace CSharpMath.EvaluationTests {
     [InlineData(@"1,,2,", "Missing left operand for comma")]
     [InlineData(@"1,2,,", "Missing left operand for comma")]
     [InlineData(@"\arcsin(1,2)", "Comma cannot be argument for arcsin")]
-    [InlineData(@"[5,6)\times", "Missing right operand for ×")]
+    [InlineData(@"[5,6)\times", "Unsupported Unary Operator ×")]
     [InlineData(@"\sqrt[{[)}]{}", "Unrecognized bracket pair [ )")]
     [InlineData(@"\sqrt[{[a,b]}]{}", "Missing radicand")]
     [InlineData(@"\cap", "Unsupported Unary Operator ∩")]
     [InlineData(@"\cap1", "Unsupported Unary Operator ∩")]
-    [InlineData(@"1\cap", "Missing right operand for ∩")]
+    [InlineData(@"1\cap", "Unsupported Unary Operator ∩")]
     [InlineData(@"\cup", "Unsupported Unary Operator ∪")]
     [InlineData(@"\cup1", "Unsupported Unary Operator ∪")]
-    [InlineData(@"1\cup", "Missing right operand for ∪")]
+    [InlineData(@"1\cup", "Unsupported Unary Operator ∪")]
     [InlineData(@"\setminus", "Unsupported Unary Operator ∖")]
     [InlineData(@"\setminus1", "Unsupported Unary Operator ∖")]
-    [InlineData(@"1\setminus", "Missing right operand for ∖")]
+    [InlineData(@"1\setminus", "Unsupported Unary Operator ∖")]
     [InlineData(@"^\complement", "Superscripts are unsupported for Ordinary")]
     [InlineData(@"_\complement", "Subscripts are unsupported for Ordinary")]
     [InlineData(@"1_\complement", "Subscripts are unsupported for Number 1")]
