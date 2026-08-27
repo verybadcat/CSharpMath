@@ -1,0 +1,6 @@
+CSharpMath.Editor.MathKeyboard<TFont, TGlyph>.HorizontalNavigationMode.get -> CSharpMath.Editor.MathKeyboardHorizontalNavigationMode
+CSharpMath.Editor.MathKeyboard<TFont, TGlyph>.HorizontalNavigationMode.set -> void
+CSharpMath.Editor.MathKeyboardHorizontalNavigationMode
+CSharpMath.Editor.MathKeyboardHorizontalNavigationMode.Exhaustive = 0 -> CSharpMath.Editor.MathKeyboardHorizontalNavigationMode
+CSharpMath.Editor.MathKeyboardHorizontalNavigationMode.VisualLower = 2 -> CSharpMath.Editor.MathKeyboardHorizontalNavigationMode
+CSharpMath.Editor.MathKeyboardHorizontalNavigationMode.VisualUpper = 1 -> CSharpMath.Editor.MathKeyboardHorizontalNavigationMode

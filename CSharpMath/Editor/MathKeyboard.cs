@@ -8,6 +8,16 @@ namespace CSharpMath.Editor {
   using Display.FrontEnd;
   using Atoms = Atom.Atoms;
 
+  /// <summary>Controls which vertically-related branch horizontal navigation enters.</summary>
+  public enum MathKeyboardHorizontalNavigationMode : byte {
+    /// <summary>Visit all branches in the historical structural order.</summary>
+    Exhaustive,
+    /// <summary>Prefer the upper branch and leave a compound from either branch.</summary>
+    VisualUpper,
+    /// <summary>Prefer the lower branch and leave a compound from either branch.</summary>
+    VisualLower
+  }
+
   public class MathKeyboard<TFont, TGlyph> : IDisposable where TFont : IFont<TGlyph> {
     protected Timer blinkTimer;
     public const double DefaultBlinkMilliseconds = 800;
@@ -22,6 +32,8 @@ namespace CSharpMath.Editor {
       blinkTimer.Start();
     }
     public bool ShouldDrawCaret => InsertionPositionHighlighted && !(MathList.AtomAt(_insertionIndex) is Atoms.Placeholder);
+    /// <summary>Gets or sets the horizontal navigation policy.</summary>
+    public MathKeyboardHorizontalNavigationMode HorizontalNavigationMode { get; set; }
     public void StartBlinking() => blinkTimer.Start();
     public void StopBlinking() => blinkTimer.Stop();
     protected TypesettingContext<TFont, TGlyph> Context { get; }
@@ -255,176 +267,124 @@ namespace CSharpMath.Editor {
           new Atoms.Inner(new Boundary(left), LaTeXSettings.PlaceholderList, new Boundary(right)),
           MathListSubIndexType.Inner);
 
-      void MoveCursorLeft() {
-        var prev = _insertionIndex.Previous;
-        switch (MathList.AtomAt(prev)) {
-          case var _ when prev is null:
-          case null: // At beginning of line
-            var levelDown = _insertionIndex.LevelDown();
-            switch (_insertionIndex.FinalSubIndexType) {
-              case null:
-                goto default;
-              case var _ when levelDown is null:
-                throw new InvalidCodePathException("Null levelDown despite non-None FinalSubIndexType");
-              case MathListSubIndexType.Superscript:
-                var scriptAtom = MathList.AtomAt(levelDown);
-                if (scriptAtom is null)
-                  throw new InvalidCodePathException("Invalid levelDown");
-                if (scriptAtom.Subscript.IsNonEmpty())
-                  _insertionIndex = levelDown.LevelUpWithSubIndex(MathListSubIndexType.Subscript, scriptAtom.Subscript.Count);
-                else
-                  goto case MathListSubIndexType.Subscript;
-                break;
-              case MathListSubIndexType.Subscript:
-                _insertionIndex = levelDown.LevelUpWithSubIndex(MathListSubIndexType.BetweenBaseAndScripts, 1);
-                break;
-              case MathListSubIndexType.BetweenBaseAndScripts:
-                if (MathList.AtomAt(levelDown) is Atoms.Radical rad && rad.Radicand.IsNonEmpty())
-                  _insertionIndex = levelDown.LevelUpWithSubIndex(MathListSubIndexType.Radicand, rad.Radicand.Count);
-                else if (MathList.AtomAt(levelDown) is Atoms.Fraction frac && frac.Denominator.IsNonEmpty())
-                  _insertionIndex = levelDown.LevelUpWithSubIndex(MathListSubIndexType.Denominator, frac.Denominator.Count);
-                else if (MathList.AtomAt(levelDown) is Atoms.Inner inner && inner.InnerList.IsNonEmpty())
-                  _insertionIndex = levelDown.LevelUpWithSubIndex(MathListSubIndexType.Inner, inner.InnerList.Count);
-                else goto case MathListSubIndexType.Radicand;
-                break;
-              case MathListSubIndexType.Radicand:
-                if (MathList.AtomAt(levelDown) is Atoms.Radical radDeg && radDeg.Degree.IsNonEmpty())
-                  _insertionIndex = levelDown.LevelUpWithSubIndex(MathListSubIndexType.Degree, radDeg.Degree.Count);
-                else
-                  goto case MathListSubIndexType.Denominator;
-                break;
-              case MathListSubIndexType.Denominator:
-                if (MathList.AtomAt(levelDown) is Atoms.Fraction fracNum && fracNum.Numerator.IsNonEmpty())
-                  _insertionIndex = levelDown.LevelUpWithSubIndex(MathListSubIndexType.Numerator, fracNum.Numerator.Count);
-                else
-                  goto default;
-                break;
-              case MathListSubIndexType.Degree:
-              case MathListSubIndexType.Numerator:
-              case MathListSubIndexType.Inner:
-              default:
-                _insertionIndex = levelDown ?? _insertionIndex;
-                break;
-            }
-            break;
-          case { Superscript: var s } when s.IsNonEmpty():
-            _insertionIndex = prev.LevelUpWithSubIndex(MathListSubIndexType.Superscript, s.Count);
-            break;
-          case { Subscript: var s } when s.IsNonEmpty():
-            _insertionIndex = prev.LevelUpWithSubIndex(MathListSubIndexType.Subscript, s.Count);
-            break;
-          case Atoms.Inner { InnerList: var l }:
-            _insertionIndex = prev.LevelUpWithSubIndex(MathListSubIndexType.Inner, l.Count);
-            break;
-          case Atoms.Radical { Radicand: var r }:
-            _insertionIndex = prev.LevelUpWithSubIndex(MathListSubIndexType.Radicand, r.Count);
-            break;
-          case Atoms.Fraction { Denominator: var d }:
-            _insertionIndex = prev.LevelUpWithSubIndex(MathListSubIndexType.Denominator, d.Count);
-            break;
-          default:
-            _insertionIndex = prev;
-            break;
-        }
-        if (_insertionIndex is null)
-          throw new InvalidOperationException($"{nameof(_insertionIndex)} is null.");
-        if (_insertionIndex.FinalSubIndexType is MathListSubIndexType.BetweenBaseAndScripts) {
-          var prevInd = _insertionIndex.LevelDown();
-          if (prevInd != null && MathList.AtomAt(prevInd) is Atoms.Placeholder)
-            _insertionIndex = prevInd;
-        } else if (MathList.AtomAt(_insertionIndex) is null
-                   && _insertionIndex?.Previous is MathListIndex previous) {
-          if (MathList.AtomAt(previous) is Atoms.Placeholder p && p.Superscript.IsEmpty() && p.Subscript.IsEmpty())
-            _insertionIndex = previous; // Skip right side of placeholders when end of line
-        }
-      }
-      void MoveCursorRight() {
-        if (_insertionIndex is null)
-          throw new InvalidOperationException($"{nameof(_insertionIndex)} is null.");
-        switch (MathList.AtomAt(_insertionIndex)) {
-          case null: // After Count
-            var levelDown = _insertionIndex.LevelDown();
-            var levelDownAtom = MathList.AtomAt(levelDown);
-            switch (_insertionIndex.FinalSubIndexType) {
-              case null:
-                goto default;
-              case var _ when levelDown is null:
-                throw new InvalidCodePathException("Null levelDown despite non-None FinalSubIndexType");
-              case var _ when levelDownAtom is null:
-                throw new InvalidCodePathException("Invalid levelDown");
-              case MathListSubIndexType.Degree:
-                if (levelDownAtom is Atoms.Radical)
-                  _insertionIndex = levelDown.LevelUpWithSubIndex(MathListSubIndexType.Radicand, 0);
-                else
-                  throw new SubIndexTypeMismatchException(nameof(Atoms.Radical), levelDown.AtomIndex);
-                break;
-              case MathListSubIndexType.Numerator:
-                if (levelDownAtom is Atoms.Fraction)
-                  _insertionIndex = levelDown.LevelUpWithSubIndex(MathListSubIndexType.Denominator, 0);
-                else
-                  throw new SubIndexTypeMismatchException(nameof(Atoms.Fraction), levelDown.AtomIndex);
-                break;
-              case MathListSubIndexType.Radicand:
-              case MathListSubIndexType.Denominator:
-              case MathListSubIndexType.Inner:
-                if (levelDownAtom.Superscript.IsNonEmpty() || levelDownAtom.Subscript.IsNonEmpty())
-                  _insertionIndex = levelDown.LevelUpWithSubIndex(MathListSubIndexType.BetweenBaseAndScripts, 1);
-                else
-                  goto default;
-                break;
-              case MathListSubIndexType.BetweenBaseAndScripts:
-                if (levelDownAtom.Subscript.IsNonEmpty())
-                  _insertionIndex = levelDown.LevelUpWithSubIndex(MathListSubIndexType.Subscript, 0);
-                else
-                  goto case MathListSubIndexType.Subscript;
-                break;
-              case MathListSubIndexType.Subscript:
-                if (levelDownAtom.Superscript.IsNonEmpty())
-                  _insertionIndex = levelDown.LevelUpWithSubIndex(MathListSubIndexType.Superscript, 0);
-                else
-                  goto default;
-                break;
-              case MathListSubIndexType.Superscript:
-              default:
-                _insertionIndex = levelDown?.Next ?? _insertionIndex;
-                break;
-            }
-            break;
-          case var a when _insertionIndex.FinalSubIndexType is MathListSubIndexType.BetweenBaseAndScripts:
-            levelDown = _insertionIndex.LevelDown();
-            if (levelDown is null)
-              throw new InvalidCodePathException
-                ("_insertionIndex.FinalSubIndexType is BetweenBaseAndScripts but levelDown is null");
-            _insertionIndex = levelDown.LevelUpWithSubIndex(
-              a.Subscript.IsNonEmpty() ? MathListSubIndexType.Subscript : MathListSubIndexType.Superscript, 0);
-            break;
-          case Atoms.Inner _:
-            _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListSubIndexType.Inner, 0);
-            break;
-          case Atoms.Fraction _:
-            _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListSubIndexType.Numerator, 0);
-            break;
-          case Atoms.Radical rad:
-            _insertionIndex = _insertionIndex.LevelUpWithSubIndex(
-              rad.Degree.IsNonEmpty() ? MathListSubIndexType.Degree : MathListSubIndexType.Radicand, 0);
-            break;
-          case var a when a.Superscript.IsNonEmpty() || a.Subscript.IsNonEmpty():
-            _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListSubIndexType.BetweenBaseAndScripts, 1);
-            break;
-          case Atoms.Placeholder _ when MathList.AtomAt(_insertionIndex.Next) is null:
-            // Skip right side of placeholders when end of line
-            goto case null;
-          default:
-            _insertionIndex = _insertionIndex.Next;
-            break;
-        }
-        if (_insertionIndex is null)
-          throw new InvalidOperationException($"{nameof(_insertionIndex)} is null.");
-        if (_insertionIndex.FinalSubIndexType is MathListSubIndexType.BetweenBaseAndScripts
-            && MathList.AtomAt(_insertionIndex.LevelDown()) is Atoms.Placeholder)
-          MoveCursorRight();
-      }
+      void MoveCursorHorizontal(bool right) {
+        // Horizontal navigation is a walk over the ordered branches of the
+        // adjacent compound atom.  Keeping this order in one place makes
+        // entry and exit exact inverses for every navigation policy.
+        static bool HasContent(MathList list) => list.IsNonEmpty();
+        static int Branches(MathAtom atom, MathKeyboardHorizontalNavigationMode mode,
+          Span<MathListSubIndexType> branches) {
+          var count = 0;
+          if (atom is Atoms.Inner inner)
+            branches[count++] = MathListSubIndexType.Inner;
+          else if (atom is Atoms.Fraction fraction) {
+            if (mode != MathKeyboardHorizontalNavigationMode.VisualLower)
+              branches[count++] = MathListSubIndexType.Numerator;
+            if (mode != MathKeyboardHorizontalNavigationMode.VisualUpper)
+              branches[count++] = MathListSubIndexType.Denominator;
+          } else if (atom is Atoms.Radical radical) {
+            if (HasContent(radical.Degree))
+              branches[count++] = MathListSubIndexType.Degree;
+            branches[count++] = MathListSubIndexType.Radicand;
+          }
 
+          var hasSub = HasContent(atom.Subscript);
+          var hasSuper = HasContent(atom.Superscript);
+          if (hasSub || hasSuper) {
+            // A placeholder's base-to-script seam is an implementation
+            // detail; it must not become an extra horizontal stop.
+            if (atom is not Atoms.Placeholder)
+              branches[count++] = MathListSubIndexType.BetweenBaseAndScripts;
+            if (mode == MathKeyboardHorizontalNavigationMode.Exhaustive) {
+              if (hasSub)
+                branches[count++] = MathListSubIndexType.Subscript;
+              if (hasSuper)
+                branches[count++] = MathListSubIndexType.Superscript;
+            } else {
+              var preferredSuper = mode == MathKeyboardHorizontalNavigationMode.VisualUpper;
+              if ((preferredSuper && hasSuper) || (!preferredSuper && !hasSub))
+                branches[count++] = MathListSubIndexType.Superscript;
+              else
+                branches[count++] = MathListSubIndexType.Subscript;
+            }
+          }
+          return count;
+        }
+
+        static MathList BranchList(MathAtom atom, MathListSubIndexType branch) => branch switch {
+          MathListSubIndexType.Superscript => atom.Superscript,
+          MathListSubIndexType.Subscript => atom.Subscript,
+          MathListSubIndexType.Numerator when atom is Atoms.Fraction fraction => fraction.Numerator,
+          MathListSubIndexType.Denominator when atom is Atoms.Fraction fraction => fraction.Denominator,
+          MathListSubIndexType.Radicand when atom is Atoms.Radical radical => radical.Radicand,
+          MathListSubIndexType.Degree when atom is Atoms.Radical radical => radical.Degree,
+          MathListSubIndexType.Inner when atom is Atoms.Inner inner => inner.InnerList,
+          _ => throw new InvalidCodePathException("Invalid horizontal navigation branch")
+        };
+
+        static MathListIndex Enter(MathListIndex owner, MathAtom atom,
+          MathListSubIndexType branch, bool atEnd) {
+          var index = branch == MathListSubIndexType.BetweenBaseAndScripts
+            ? 1 : atEnd ? BranchList(atom, branch).Count : 0;
+          return owner.LevelUpWithSubIndex(branch, index);
+        }
+
+        MathListIndex? Step(bool moveRight) {
+          var adjacent = moveRight ? MathList.AtomAt(_insertionIndex) : MathList.AtomAt(_insertionIndex.Previous);
+          var terminalPlaceholder = moveRight
+            && adjacent is Atoms.Placeholder {
+              Superscript: { Count: 0 }, Subscript: { Count: 0 }
+            }
+            && MathList.AtomAt(_insertionIndex.Next) is null;
+          if (adjacent is not null && !terminalPlaceholder) {
+            Span<MathListSubIndexType> branches = stackalloc MathListSubIndexType[5];
+            var branchCount = Branches(adjacent, HorizontalNavigationMode, branches);
+            if (branchCount == 0)
+              return moveRight ? _insertionIndex.Next : _insertionIndex.Previous;
+            var owner = moveRight ? _insertionIndex : _insertionIndex.Previous!;
+            return Enter(owner, adjacent, moveRight ? branches[0] : branches[branchCount - 1], !moveRight);
+          }
+
+          var ownerIndex = _insertionIndex.LevelDown();
+          if (ownerIndex is null)
+            return _insertionIndex; // root boundary
+          var ownerAtom = MathList.AtomAt(ownerIndex);
+          if (ownerAtom is null)
+            return _insertionIndex;
+          Span<MathListSubIndexType> branchesAtOwner = stackalloc MathListSubIndexType[5];
+          var branchCountAtOwner = Branches(ownerAtom, HorizontalNavigationMode, branchesAtOwner);
+          var currentType = _insertionIndex.FinalSubIndexType;
+          var currentBranch = -1;
+          for (var i = 0; i < branchCountAtOwner; i++)
+            if (branchesAtOwner[i] == currentType) {
+              currentBranch = i;
+              break;
+            }
+          var nextBranch = currentBranch + (moveRight ? 1 : -1);
+          if (currentBranch >= 0 && nextBranch >= 0 && nextBranch < branchCountAtOwner)
+            return Enter(ownerIndex, ownerAtom, branchesAtOwner[nextBranch], !moveRight);
+          return moveRight ? ownerIndex.Next : ownerIndex;
+        }
+
+        for (var attempts = 0; attempts < 4; attempts++) {
+          var next = Step(right);
+          if (next is null || next == _insertionIndex)
+            break;
+          _insertionIndex = next;
+          // Do not expose the seam after a terminal bare placeholder.
+          if (right && _insertionIndex.FinalSubIndexType == MathListSubIndexType.BetweenBaseAndScripts
+            && MathList.AtomAt(_insertionIndex.LevelDown()) is Atoms.Placeholder)
+            continue;
+          if (!right && MathList.AtomAt(_insertionIndex) is null
+            && _insertionIndex.Previous is { } previous
+            && MathList.AtomAt(previous) is Atoms.Placeholder {
+              Superscript: { Count: 0 }, Subscript: { Count: 0 }
+            }) {
+            _insertionIndex = previous;
+          }
+          break;
+        }
+      }
       void MoveCursorUp() {
         if (Display is null) RecreateDisplayFromMathList();
         if (MathList.AtomAt(_insertionIndex) is Atoms.Placeholder { Superscript: { Count: var superCount } } && superCount > 0) {
@@ -631,10 +591,10 @@ namespace CSharpMath.Editor {
           _insertionIndexCameFromVerticalNavigation = previousIndex != _insertionIndex;
           break;
         case MathKeyboardInput.Left:
-          MoveCursorLeft();
+          MoveCursorHorizontal(false);
           break;
         case MathKeyboardInput.Right:
-          MoveCursorRight();
+          MoveCursorHorizontal(true);
           break;
         case MathKeyboardInput.Backspace:
           DeleteBackwards();

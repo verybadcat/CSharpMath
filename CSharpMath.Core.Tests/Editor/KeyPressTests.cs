@@ -22,6 +22,118 @@ namespace CSharpMath.Core.EditorTests {
       keyboard.KeyPress(inputs);
       Assert.Equal(latex, keyboard.LaTeX);
     }
+    static void TestVisual(MathKeyboardHorizontalNavigationMode mode, string latex, params K[] inputs) {
+      var keyboard = VisualKeyboard(mode);
+      keyboard.KeyPress(inputs);
+      Assert.Equal(latex, keyboard.LaTeX);
+    }
+    static MathKeyboard<TestFont, TGlyph> VisualKeyboard(MathKeyboardHorizontalNavigationMode mode) =>
+      new(context, new TestFont(10)) { HorizontalNavigationMode = mode };
+
+    [Fact]
+    public void HorizontalNavigationDefaultsToExhaustive() {
+      var keyboard = new MathKeyboard<TestFont, TGlyph>(context, new TestFont());
+      Assert.Equal(MathKeyboardHorizontalNavigationMode.Exhaustive, keyboard.HorizontalNavigationMode);
+    }
+
+    [Fact]
+    public void VisualUpperFractionLeavesEitherRowAndReentersNumerator() =>
+      TestVisual(MathKeyboardHorizontalNavigationMode.VisualUpper, @"\frac{13}{2}",
+        K.D1, K.Slash, K.D2, K.Right, K.Left, K.D3);
+
+    [Fact]
+    public void VisualLowerFractionLeavesEitherRowAndReentersDenominator() =>
+      TestVisual(MathKeyboardHorizontalNavigationMode.VisualLower, @"\frac{1}{23}",
+        K.D1, K.Slash, K.D2, K.Right, K.Left, K.D3);
+
+    [Theory]
+    [InlineData(MathKeyboardHorizontalNavigationMode.VisualUpper, MathListSubIndexType.Numerator)]
+    [InlineData(MathKeyboardHorizontalNavigationMode.VisualLower, MathListSubIndexType.Denominator)]
+    public void VisualFractionEntryAndExitAreDirectional(
+      MathKeyboardHorizontalNavigationMode mode, MathListSubIndexType preferredBranch) {
+      var keyboard = VisualKeyboard(mode);
+      keyboard.KeyPress(K.D1, K.Slash, K.D2);
+      var fraction = Assert.IsType<CSharpMath.Atom.Atoms.Fraction>(Assert.Single(keyboard.MathList));
+      var branchCount = preferredBranch == MathListSubIndexType.Numerator
+        ? fraction.Numerator.Count : fraction.Denominator.Count;
+
+      keyboard.InsertionIndex = new(0);
+      keyboard.KeyPress(K.Right);
+      Assert.Equal(new MathListIndex(0).LevelUpWithSubIndex(preferredBranch, 0), keyboard.InsertionIndex);
+      keyboard.KeyPress(K.Left);
+      Assert.Equal(new MathListIndex(0), keyboard.InsertionIndex);
+
+      keyboard.InsertionIndex = new(1);
+      keyboard.KeyPress(K.Left);
+      Assert.Equal(new MathListIndex(0).LevelUpWithSubIndex(preferredBranch, branchCount), keyboard.InsertionIndex);
+      keyboard.KeyPress(K.Right);
+      Assert.Equal(new MathListIndex(1), keyboard.InsertionIndex);
+    }
+
+    [Theory]
+    [InlineData(MathKeyboardHorizontalNavigationMode.VisualUpper, MathListSubIndexType.Numerator, MathListSubIndexType.Denominator, K.Down)]
+    [InlineData(MathKeyboardHorizontalNavigationMode.VisualLower, MathListSubIndexType.Denominator, MathListSubIndexType.Numerator, K.Up)]
+    public void VisualFractionOtherRowRemainsReachableVertically(
+      MathKeyboardHorizontalNavigationMode mode, MathListSubIndexType preferredBranch,
+      MathListSubIndexType otherBranch, K verticalInput) {
+      var keyboard = VisualKeyboard(mode);
+      keyboard.KeyPress(K.D1, K.Slash, K.D2);
+      keyboard.InsertionIndex = new MathListIndex(0).LevelUpWithSubIndex(preferredBranch, 0);
+
+      keyboard.KeyPress(verticalInput);
+
+      Assert.Equal(otherBranch, keyboard.InsertionIndex.FinalSubIndexType);
+      keyboard.InsertionIndex = new MathListIndex(0).LevelUpWithSubIndex(otherBranch, 0);
+      keyboard.KeyPress(K.Left);
+      Assert.Equal(new MathListIndex(0), keyboard.InsertionIndex);
+    }
+
+    [Theory]
+    [InlineData(MathKeyboardHorizontalNavigationMode.VisualUpper, MathListSubIndexType.Superscript)]
+    [InlineData(MathKeyboardHorizontalNavigationMode.VisualLower, MathListSubIndexType.Subscript)]
+    public void VisualScriptPolicyChoosesPreferredScript(
+      MathKeyboardHorizontalNavigationMode mode, MathListSubIndexType preferredBranch) {
+      var keyboard = VisualKeyboard(mode);
+      keyboard.KeyPress(K.SmallX, K.Subscript, K.D2, K.Right, K.Power, K.D3);
+
+      keyboard.InsertionIndex = new(1);
+      keyboard.KeyPress(K.Left);
+
+      Assert.Equal(preferredBranch, keyboard.InsertionIndex.FinalSubIndexType);
+    }
+
+    [Theory]
+    [InlineData(MathKeyboardHorizontalNavigationMode.VisualUpper, K.Subscript, MathListSubIndexType.Subscript)]
+    [InlineData(MathKeyboardHorizontalNavigationMode.VisualLower, K.Power, MathListSubIndexType.Superscript)]
+    public void VisualScriptPolicyFallsBackToOnlyScript(
+      MathKeyboardHorizontalNavigationMode mode, K scriptInput, MathListSubIndexType availableBranch) {
+      var keyboard = VisualKeyboard(mode);
+      keyboard.KeyPress(K.SmallX, scriptInput, K.D2);
+      keyboard.InsertionIndex = new(1);
+
+      keyboard.KeyPress(K.Left);
+
+      Assert.Equal(availableBranch, keyboard.InsertionIndex.FinalSubIndexType);
+    }
+
+    [Theory]
+    [InlineData(MathKeyboardHorizontalNavigationMode.VisualUpper, MathListSubIndexType.Numerator, MathListSubIndexType.Superscript)]
+    [InlineData(MathKeyboardHorizontalNavigationMode.VisualLower, MathListSubIndexType.Denominator, MathListSubIndexType.Subscript)]
+    public void VisualCompoundRetainsIntrinsicAndScriptStages(
+      MathKeyboardHorizontalNavigationMode mode, MathListSubIndexType intrinsicBranch,
+      MathListSubIndexType scriptBranch) {
+      var keyboard = VisualKeyboard(mode);
+      keyboard.KeyPress(K.D1, K.Slash, K.D2, K.Right, K.Power, K.D3, K.Right, K.Subscript, K.D4);
+      var fraction = Assert.IsType<CSharpMath.Atom.Atoms.Fraction>(Assert.Single(keyboard.MathList));
+      var intrinsicCount = intrinsicBranch == MathListSubIndexType.Numerator
+        ? fraction.Numerator.Count : fraction.Denominator.Count;
+      keyboard.InsertionIndex = new MathListIndex(0).LevelUpWithSubIndex(intrinsicBranch, intrinsicCount);
+
+      keyboard.KeyPress(K.Right);
+      Assert.Equal(MathListSubIndexType.BetweenBaseAndScripts, keyboard.InsertionIndex.FinalSubIndexType);
+      keyboard.KeyPress(K.Right);
+      Assert.Equal(scriptBranch, keyboard.InsertionIndex.FinalSubIndexType);
+    }
     static void TestEvent(EventInteractor attach, EventInteractor detach, K[] inputs) {
       var keyboard = new MathKeyboard<TestFont, TGlyph>(context, new TestFont());
       Assert.Raises<EventArgs>(
