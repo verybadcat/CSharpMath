@@ -26,7 +26,7 @@ namespace CSharpMath.Rendering.BackEnd {
       Typefaces = localTypefaces.Select(typeface => {
         BackEnd.Typefaces.EnsureGlyphBounds(typeface);
         return typeface;
-      }).ToArray().Concat(GlobalTypefaces);
+      }).Concat(GlobalTypefaces);
       MathTypeface = Typefaces.First(t => t.HasMathTable());
       MathConsts = MathTypeface.MathConsts ?? throw new Atom.InvalidCodePathException(nameof(MathTypeface) + " doesn't have " + nameof(MathConsts));
     }
