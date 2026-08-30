@@ -62,9 +62,13 @@ namespace CSharpMath.Rendering.FrontEnd {
     public abstract ICanvas WrapCanvas(TCanvas canvas);
     public virtual RectangleF Measure(float textPainterCanvasWidth) {
       UpdateDisplay(textPainterCanvasWidth);
-      if (Display != null)
-        return new RectangleF(0, -Display.Ascent, Display.Width, Display.Ascent + Display.Descent);
-      else return RectangleF.Empty;
+      if (Display == null) return RectangleF.Empty;
+      if (!DisplayInkBounds.RequiresAggregateBounds(Display))
+        return new RectangleF(0, -Display.Ascent,
+          Display.Width, Display.Ascent + Display.Descent);
+      var horizontalBounds = DisplayInkBounds.Get(Display);
+      return new RectangleF(horizontalBounds.Left, -Display.Ascent,
+        horizontalBounds.Width, Display.Ascent + Display.Descent);
     }
     protected abstract void UpdateDisplayCore(float textPainterCanvasWidth);
     protected void UpdateDisplay(float textPainterCanvasWidth) {
@@ -118,9 +122,19 @@ namespace CSharpMath.Rendering.FrontEnd {
         canvas.DefaultColor = WrapColor(TextColor);
         canvas.CurrentColor = WrapColor(HighlightColor);
         canvas.CurrentStyle = PaintStyle;
-        var measure = Measure(canvas.Width);
-        canvas.FillRect(display.Position.X + measure.X, display.Position.Y - display.Descent,
-          measure.Width, measure.Height);
+        // The display has already been laid out by the caller. Calling the
+        // virtual Measure here would relayout TextPainter displays at the
+        // surface width and change their geometry while drawing.
+        var aggregateBounds = DisplayInkBounds.RequiresAggregateBounds(display);
+        var measure = aggregateBounds
+          ? DisplayInkBounds.Get(display)
+          : Measure(canvas.Width);
+        if (aggregateBounds)
+          canvas.FillRect(display.Position.X + measure.X, display.Position.Y + measure.Y,
+            measure.Width, measure.Height);
+        else
+          canvas.FillRect(display.Position.X + measure.X, display.Position.Y - display.Descent,
+            measure.Width, measure.Height);
         canvas.CurrentColor = null;
         static T? Nullable<T>(T nonnull) where T : struct => new T?(nonnull);
         display.Draw(new GraphicsContext(canvas,
@@ -131,5 +145,114 @@ namespace CSharpMath.Rendering.FrontEnd {
     }
     public Painter<TCanvas, TContent, TColor> ShallowClone() => (Painter<TCanvas, TContent, TColor>)MemberwiseClone();
     #endregion Methods
+  }
+
+  internal static class DisplayInkBounds {
+    public static RectangleF GetInk(IDisplay<Fonts, Glyph> display) => GetCore(display, false);
+    public static RectangleF Get(IDisplay<Fonts, Glyph> display) {
+      return GetCore(display, true);
+    }
+    public static RectangleF GetTypographic(IDisplay<Fonts, Glyph> display) =>
+      GetCore(display, true, true);
+    public static bool ExtendsOwnAdvance(IDisplay<Fonts, Glyph> display) {
+      var bounds = GetTypographic(display);
+      return bounds.Left < -0.01f || bounds.Right > display.Width + 0.01f;
+    }
+    public static bool RequiresAggregateBounds(IDisplay<Fonts, Glyph> display) {
+      if (!ContainsMultipleRows(display)) return false;
+      var bounds = GetTypographic(display);
+      return bounds.Left < -0.01f || bounds.Right > display.Width + 0.01f;
+    }
+    public static bool ContainsMultipleRows(IDisplay<Fonts, Glyph> display) {
+      if (display is Display.Displays.ListDisplay<Fonts, Glyph> list) {
+        var rows = list.Displays
+          .OfType<Display.Displays.ListDisplay<Fonts, Glyph>>()
+          .Where(row => row.LinePosition == Display.LinePosition.Regular)
+          .ToArray();
+        if (rows.Length > 1 && rows.Any(row =>
+          System.Math.Abs(row.Position.Y - rows[0].Position.Y) > 0.01f)) return true;
+        return list.Displays.Any(ContainsMultipleRows);
+      }
+      if (display is Display.Displays.TextLineDisplay<Fonts, Glyph> line)
+        return line.Runs.Any(ContainsMultipleRows);
+      if (display is Display.Displays.InnerDisplay<Fonts, Glyph> inner)
+        return ContainsMultipleRows(inner.Inner);
+      if (display is Display.Displays.FractionDisplay<Fonts, Glyph> fraction)
+        return ContainsMultipleRows(fraction.Numerator) || ContainsMultipleRows(fraction.Denominator);
+      if (display is Display.Displays.RadicalDisplay<Fonts, Glyph> radical)
+        return ContainsMultipleRows(radical.Radicand)
+          || (radical.Degree != null && ContainsMultipleRows(radical.Degree));
+      if (display is Display.Displays.AccentDisplay<Fonts, Glyph> accent)
+        return ContainsMultipleRows(accent.Accentee);
+      if (display is Display.Displays.LargeOpLimitsDisplay<Fonts, Glyph> limits)
+        return ContainsMultipleRows(limits.NucleusDisplay)
+          || (limits.UpperLimit != null && ContainsMultipleRows(limits.UpperLimit))
+          || (limits.LowerLimit != null && ContainsMultipleRows(limits.LowerLimit));
+      if (display is Display.Displays.OverOrUnderlineDisplay<Fonts, Glyph> overUnder)
+        return ContainsMultipleRows(overUnder.Inner);
+      if (display is Display.Displays.UnderAnnotationDisplay<Fonts, Glyph> annotation)
+        return ContainsMultipleRows(annotation.Inner) || ContainsMultipleRows(annotation.UnderList);
+      return false;
+    }
+    static RectangleF GetCore(IDisplay<Fonts, Glyph> display, bool includeOwn,
+      bool typographicOnly = false) {
+      if (display is Display.Displays.TextRunDisplay<Fonts, Glyph> run) {
+        if (typographicOnly) return display.DisplayBounds();
+        if (!includeOwn) return run.InkBounds;
+        var bounds = display.DisplayBounds();
+        return run.InkBounds.IsEmpty ? bounds : bounds.Union(run.InkBounds);
+      }
+      if (display is Display.Displays.TextLineDisplay<Fonts, Glyph> line) {
+        return WithChildren(line, line.Runs, false, includeOwn, false, typographicOnly);
+      }
+      if (display is Display.Displays.ListDisplay<Fonts, Glyph> list)
+        return WithChildren(list, list.Displays, false, includeOwn, false, typographicOnly);
+      if (display is Display.Displays.InnerDisplay<Fonts, Glyph> inner)
+        return WithChildren(inner, new IDisplay<Fonts, Glyph>[] { inner.Left, inner.Inner, inner.Right }.Where(d => d != null)!, includeOwn, includeOwn, true, typographicOnly);
+      if (display is Display.Displays.AccentDisplay<Fonts, Glyph> accent) {
+        var bounds = includeOwn ? display.DisplayBounds() : RectangleF.Empty;
+        var accentee = GetCore(accent.Accentee, includeOwn, typographicOnly);
+        if (!accentee.IsEmpty) {
+          var offset = new PointF(accent.Accentee.Position.X - accent.Position.X,
+                                  accent.Accentee.Position.Y - accent.Position.Y);
+          bounds = bounds.IsEmpty ? accentee.Plus(offset) : bounds.Union(accentee.Plus(offset));
+        }
+        var glyph = GetCore(accent.Accent, includeOwn, typographicOnly);
+        if (!glyph.IsEmpty)
+          bounds = bounds.IsEmpty ? glyph.Plus(accent.Accent.Position) : bounds.Union(glyph.Plus(accent.Accent.Position));
+        return bounds.IsEmpty && includeOwn ? display.DisplayBounds() : bounds;
+      }
+      if (display is Display.Displays.FractionDisplay<Fonts, Glyph> fraction)
+        return WithChildren(fraction, new[] { fraction.Numerator, fraction.Denominator }, includeOwn, includeOwn, true, typographicOnly);
+      if (display is Display.Displays.RadicalDisplay<Fonts, Glyph> radical)
+        return WithChildren(radical, new IDisplay<Fonts, Glyph>[] { radical.Radicand, radical.Degree }.Where(d => d != null)!, includeOwn, includeOwn, true, typographicOnly);
+      if (display is Display.Displays.LargeOpLimitsDisplay<Fonts, Glyph> limits)
+        return WithChildren(limits, new IDisplay<Fonts, Glyph>[] { limits.NucleusDisplay, limits.UpperLimit, limits.LowerLimit }.Where(d => d != null)!, includeOwn, includeOwn, true, typographicOnly);
+      if (display is Display.Displays.OverOrUnderlineDisplay<Fonts, Glyph> overUnder)
+        return WithChildren(overUnder, new[] { overUnder.Inner }, includeOwn, includeOwn, true, typographicOnly);
+      if (display is Display.Displays.UnderAnnotationDisplay<Fonts, Glyph> annotation)
+        return WithChildren(annotation, new IDisplay<Fonts, Glyph>[] { annotation.Inner, annotation.UnderList, annotation.AnnotationGlyph }.Where(d => d != null)!, includeOwn, includeOwn, true, typographicOnly);
+      return display.DisplayBounds();
+    }
+
+    static RectangleF WithChildren(IDisplay<Fonts, Glyph> display,
+      IEnumerable<IDisplay<Fonts, Glyph>?> children,
+      bool includeContainer, bool includeChildLayoutBounds,
+      bool normalizeChildPositions, bool typographicOnly = false) {
+      var bounds = includeContainer ? display.DisplayBounds() : RectangleF.Empty;
+      foreach (var child in children) {
+        if (child == null) continue;
+        var childBounds = GetCore(child, includeChildLayoutBounds, typographicOnly);
+        if (!childBounds.IsEmpty) {
+          var childPosition = normalizeChildPositions
+            ? new PointF(child.Position.X - display.Position.X,
+                         child.Position.Y - display.Position.Y)
+            : child.Position;
+          var positioned = childBounds.Plus(childPosition);
+          bounds = bounds.IsEmpty ? positioned : bounds.Union(positioned);
+        }
+      }
+      return bounds.IsEmpty && includeChildLayoutBounds ? display.DisplayBounds() : bounds;
+    }
   }
 }
