@@ -484,6 +484,26 @@ namespace CSharpMath.Rendering.Tests {
     }
 
     [Fact]
+    public void FusedOrdinaryRunAppliesEveryInternalItalicCorrection() {
+      var glyphs = Assert.Single(FirstLine("P2Q3").Runs).Run.GlyphInfos;
+
+      Assert.Equal(4, glyphs.Count);
+      Assert.Equal(FirstKern("P)"), glyphs[0].KernAfterGlyph, precision: 4);
+      Assert.Equal(0, glyphs[1].KernAfterGlyph);
+      Assert.Equal(FirstKern("Q)"), glyphs[2].KernAfterGlyph, precision: 4);
+      Assert.Equal(0, glyphs[3].KernAfterGlyph);
+    }
+
+    [Fact]
+    public void FusedInternalItalicCorrectionSurvivesScriptOnStraightSuccessor() {
+      var glyphs = Assert.Single(FirstLine("P2^3").Runs).Run.GlyphInfos;
+
+      Assert.Equal(2, glyphs.Count);
+      Assert.Equal(FirstKern("P)"), glyphs[0].KernAfterGlyph, precision: 4);
+      Assert.Equal(0, glyphs[1].KernAfterGlyph);
+    }
+
+    [Fact]
     public void OrdinaryItalicCorrectionIsAddedToExistingRule16Spacing() {
       var close = FirstKern(@"P)");
       var binary = FirstKern(@"P+Q");

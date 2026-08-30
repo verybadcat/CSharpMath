@@ -11,6 +11,15 @@ using TGlyph = System.Text.Rune;
 
 namespace CSharpMath.Core.DisplayTests {
   public class TypesetterTests {
+    private sealed class NonScalarAlignedGlyphFinder : IGlyphFinder<TFont, TGlyph> {
+      public TGlyph FindGlyphForCharacterAtIndex(TFont font, int index, string str) =>
+        TestGlyphFinder.Instance.FindGlyphForCharacterAtIndex(font, index, str);
+      public System.Collections.Generic.IEnumerable<TGlyph> FindGlyphs(TFont font, string str) =>
+        TestGlyphFinder.Instance.FindGlyphs(font, str).Take(1);
+      public TGlyph EmptyGlyph => TestGlyphFinder.Instance.EmptyGlyph;
+      public bool GlyphIsEmpty(TGlyph glyph) => TestGlyphFinder.Instance.GlyphIsEmpty(glyph);
+    }
+
     private sealed class MalformedAssemblyTable : JsonMathTable {
       private readonly float _advance, _connector;
       public MalformedAssemblyTable(float advance, float connector = 0) : base(
@@ -60,6 +69,38 @@ namespace CSharpMath.Core.DisplayTests {
       var latex = horizontal ? @"\overrightarrow{ABCDEFGHIJKLMNOPQRSTUVWXYZ}" : @"\left( \frac{1}{2} \right)";
       Assert.Throws<InvalidCodePathException>(() => Typesetter.CreateLine(
         AtomTests.LaTeXParserTest.ParseLaTeX(latex), _font, context, LineStyle.Display));
+    }
+
+    [Fact]
+    public void FusedMathAtomsRequireOneGlyphPerUnicodeScalar() {
+      var context = new TypesettingContext<TFont, TGlyph>(
+        (font, size) => new TFont(size), TestGlyphBoundsProvider.Instance,
+        new NonScalarAlignedGlyphFinder(), _context.MathTable);
+
+      var error = Assert.Throws<System.InvalidOperationException>(() => Typesetter.CreateLine(
+        AtomTests.LaTeXParserTest.ParseLaTeX("P2"), _font, context, LineStyle.Display));
+
+      Assert.Contains("one glyph per Unicode scalar", error.Message);
+    }
+
+    [Fact]
+    public void PublicInnerDisplayReflectsMutableInnerInkExtent() {
+      var child = new GlyphDisplay<TFont, TGlyph>(
+        new TGlyph('P'), Range.NotFound, _font, 1, 1, 10);
+      var inner = new ListDisplay<TFont, TGlyph>(new IDisplay<TFont, TGlyph>[] { child });
+      var right = new GlyphDisplay<TFont, TGlyph>(
+        new TGlyph(')'), Range.NotFound, _font, 1, 1, 2);
+      var display = new InnerDisplay<TFont, TGlyph>(inner, null, right, Range.NotFound);
+      display.Position = new PointF(5, 0);
+
+      Assert.Equal(12, display.Width);
+      Assert.Equal(15, right.Position.X);
+
+      child.Position = new PointF(20, 0);
+      display.Position = new PointF(5, 0);
+
+      Assert.Equal(32, display.Width);
+      Assert.Equal(35, right.Position.X);
     }
 
     static System.Action<IDisplay<TFont, TGlyph>?> TestList((int, int) range, double ascent, double descent, double width, double x, double y,
