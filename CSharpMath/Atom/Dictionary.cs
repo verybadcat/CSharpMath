@@ -84,23 +84,15 @@ namespace CSharpMath.Atom {
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     /// <summary>Finds the number of characters corresponding to a LaTeX command at the beginning of <see cref="char"/>s.</summary>
-    static int SplitCommand(ReadOnlySpan<char> chars) {
-      // Note on '@': https://stackoverflow.com/questions/29217603/extracting-all-latex-commands-from-a-latex-code-file#comment47075515_29218404
-      static bool IsEnglishAlphabetOrAt(char c) => 'A' <= c && c <= 'Z' || 'a' <= c && c <= 'z' || c == '@';
+    // Note on '@': https://stackoverflow.com/questions/29217603/extracting-all-latex-commands-from-a-latex-code-file#comment47075515_29218404
+    static bool IsEnglishAlphabetOrAt(char c) => 'A' <= c && c <= 'Z' || 'a' <= c && c <= 'z' || c == '@';
 
+    static int SplitCommand(ReadOnlySpan<char> chars) {
       System.Diagnostics.Debug.Assert(chars[0] == '\\');
       var splitIndex = 1;
       if (splitIndex < chars.Length)
         if (IsEnglishAlphabetOrAt(chars[splitIndex])) {
           do splitIndex++; while (splitIndex < chars.Length && IsEnglishAlphabetOrAt(chars[splitIndex]));
-          if (splitIndex < chars.Length)
-            switch (chars[splitIndex]) {
-              case '*':
-              case '=':
-              case '\'':
-                splitIndex++;
-                break;
-            }
         } else splitIndex++;
       return splitIndex;
     }
@@ -110,8 +102,11 @@ namespace CSharpMath.Atom {
       Result<(TValue Result, int SplitIndex)> TryLookupCommand(ReadOnlySpan<char> chars) {
         var splitIndex = SplitCommand(chars);
         var lookup = chars.Slice(0, splitIndex);
-        while (splitIndex < chars.Length && char.IsWhiteSpace(chars[splitIndex]))
-          splitIndex++;
+        // TeX discards the delimiter whitespace only after a control word. A control
+        // symbol (such as \=) leaves following whitespace for the normal parser.
+        if (chars.Length > 1 && IsEnglishAlphabetOrAt(chars[1]))
+          while (splitIndex < chars.Length && char.IsWhiteSpace(chars[splitIndex]))
+            splitIndex++;
         return commands.TryGetValue(lookup.ToString(), out var result)
                ? Result.Ok((result, splitIndex))
                : defaultParserForCommands(lookup);
