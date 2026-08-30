@@ -14,6 +14,12 @@ Never get slowed down by dying platforms (e.g. Silverlight).
 Transparency
 ------------
 New issues and pull requests should be responded in a short time.
-Use appropriate status labels when needed.
-Avoid having stale open issues without status labels.
-Always label resolutions to closed issues so future readers can know what happened.
+Keep issues for reproducible bugs and concrete, actionable work. Use Discussions for
+questions, ideas, and ongoing conversations that do not yet have an implementation
+scope.
+
+Use labels to classify the type, area, and impact of work, rather than to duplicate
+workflow state. Use draft pull requests for work in progress, milestones for release
+commitments, and native sub-issues and dependencies for larger efforts. When closing
+an issue without a merged change, choose the appropriate GitHub state reason so
+future readers can distinguish completed work from work that is not planned.
