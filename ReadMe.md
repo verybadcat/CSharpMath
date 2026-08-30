@@ -67,11 +67,19 @@ To get started, do something like this:
 
 ### 1. CSharpMath.SkiaSharp
 ```cs
-var painter = CSharpMath.SkiaSharp.MathPainter();
-painter.LaTeX = @"\frac\sqrt23";
-paiinter.Draw(someCanvas);
+using CSharpMath.SkiaSharp;
+using SkiaSharp;
+
+var painter = new MathPainter { LaTeX = @"\frac{\sqrt{2}}{3}" };
+
+// Render to an encoded image stream when you need a PNG (or another supported format).
+using var png = painter.DrawAsStream()
+  ?? throw new System.InvalidOperationException("Unable to create the image surface.");
+
+// If you already have an SKCanvas, draw directly into it instead:
+// painter.Draw(someCanvas, 0, 0);
 ```
-This is used by CSharpMath.Forms below.
+Use `DrawAsStream` for an encoded image; use `Draw` when the host application already owns an `SKCanvas`.
     
 ### 2. CSharpMath.Forms
 
@@ -174,8 +182,9 @@ Warning: There are still some rough edges on image rendering to be resolved, suc
 For SkiaSharp:
 ```cs
 using CSharpMath.SkiaSharp;
-var painter = new MathPainter { LaTeX = @"\frac23" }; // or TextPainter
-using var png = painter.DrawAsStream();
+var painter = new MathPainter { LaTeX = @"\frac{2}{3}" }; // or TextPainter
+using var png = painter.DrawAsStream()
+  ?? throw new System.InvalidOperationException("Unable to create the image surface.");
 // or painter.DrawAsStream(format: SkiaSharp.SKEncodedImageFormat.Jpeg) for JPEG
 // or painter.DrawAsStream(format: SkiaSharp.SKEncodedImageFormat.Gif) for GIF
 // or painter.DrawAsStream(format: SkiaSharp.SKEncodedImageFormat.Bmp) for BMP
