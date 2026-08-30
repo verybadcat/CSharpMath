@@ -11,6 +11,10 @@ namespace CSharpMath.Xaml.Tests {
   using Rendering.BackEnd;
   using Rendering.FrontEnd;
   using Rendering.Text;
+  interface ITestDiagnostics {
+    void Reset();
+    int Count(string name);
+  }
   public abstract class Test<TColor, TBindingMode, TProperty, TBaseView, TMathView, TTextView>
     where TBindingMode : struct, Enum
     where TMathView : TBaseView, ICSharpMathAPI<MathList, TColor>, new()
@@ -32,8 +36,18 @@ namespace CSharpMath.Xaml.Tests {
     protected abstract TBindingMode OneWayToSource { get; }
     protected abstract TBindingMode TwoWay { get; }
     protected abstract TView ParseFromXaml<TView>(string xaml) where TView : TBaseView, new();
+    protected abstract TBaseView CreateInstrumentedMathView();
     protected abstract void SetBindingContext(TBaseView view, object viewModel);
     protected abstract IDisposable SetBinding(TBaseView view, TProperty property, string viewModelProperty, TBindingMode bindingMode);
+    static void AssertUpdateCounts(TBaseView view, bool contentSource, Action update) {
+      var diagnostics = Assert.IsAssignableFrom<ITestDiagnostics>(view);
+      diagnostics.Reset();
+      update();
+      Assert.Equal(contentSource ? 1 : 0, diagnostics.Count("ContentToLaTeX"));
+      Assert.Equal(contentSource ? 0 : 1, diagnostics.Count("LaTeXToContent"));
+      Assert.Equal(1, diagnostics.Count("MeasureInvalidation"));
+      Assert.Equal(1, diagnostics.Count("VisualInvalidation"));
+    }
     IDisposable SetBinding<TView>(TView view, string propertyName, TBindingMode? bindingMode = null) where TView : TBaseView =>
       SetBinding(view,
         (TProperty)typeof(TView)
@@ -52,6 +66,9 @@ namespace CSharpMath.Xaml.Tests {
       }
       Test(new TMathView(), new MathList(new Atom.Atoms.Number("1")));
       Test(new TTextView(), (TextAtom)new TextAtom.Text("1"));
+      var countedView = CreateInstrumentedMathView();
+      var counted = Assert.IsAssignableFrom<ICSharpMathAPI<MathList, TColor>>(countedView);
+      AssertUpdateCounts(countedView, false, () => counted.LaTeX = "1");
     }
     [Fact]
     public void ContentUpdatesLaTeX() {
@@ -64,6 +81,33 @@ namespace CSharpMath.Xaml.Tests {
       }
       Test(new TMathView(), new MathList(new Atom.Atoms.Number("1")));
       Test(new TTextView(), (TextAtom)new TextAtom.Text("1"));
+      var countedView = CreateInstrumentedMathView();
+      var counted = Assert.IsAssignableFrom<ICSharpMathAPI<MathList, TColor>>(countedView);
+      AssertUpdateCounts(countedView, true, () => counted.Content = new MathList(new Atom.Atoms.Number("1")));
+    }
+    [Fact]
+    public void RepeatedContentUpdatesRemainNormalized() {
+      var view = new TMathView();
+      for (var i = 0; i < 8; i++) {
+        view.Content = new MathList(new Atom.Atoms.Number((i + 1).ToString()));
+        Assert.Equal((i + 1).ToString(), view.LaTeX);
+        Assert.Null(view.ErrorMessage);
+      }
+      var text = new TTextView();
+      for (var i = 0; i < 8; i++) {
+        text.LaTeX = "a b";
+        Assert.NotNull(text.Content);
+        Assert.Null(text.ErrorMessage);
+      }
+    }
+    [Fact]
+    public void ValidContentClearsPreviousError() {
+      var view = new TMathView();
+      view.LaTeX = @"\missingcommand";
+      Assert.NotNull(view.ErrorMessage);
+      view.Content = new MathList(new Atom.Atoms.Number("1"));
+      Assert.Null(view.ErrorMessage);
+      Assert.Equal("1", view.LaTeX);
     }
     [Fact]
     public void ContentIsBindable() {

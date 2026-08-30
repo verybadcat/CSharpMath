@@ -9,6 +9,9 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.15.8" />
+    <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Headless" Version="$(AvaloniaVersion)" />
     <ProjectReference Include="../CSharpMath.SkiaSharp/CSharpMath.SkiaSharp.csproj" />
+    <ProjectReference Include="../CSharpMath.Avalonia/CSharpMath.Avalonia.csproj" />
   </ItemGroup>
 </Project>
