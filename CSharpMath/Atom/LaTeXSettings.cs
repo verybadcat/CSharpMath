@@ -211,9 +211,12 @@ namespace CSharpMath.Atom {
                 @"\n" + command.Substring(1),
               _ => null
             };
-            if (negatedCommand is null || AtomForCommand(negatedCommand) is not Relation negated)
-              return Err($@"\not does not support relation {relation.Nucleus}");
-            return Ok(negated);
+            if (negatedCommand != null && AtomForCommand(negatedCommand) is Relation negated)
+              return Ok(negated);
+
+            // A combining long solidus is the generic representation for a
+            // relation without a dedicated Unicode/LaTeX negation.
+            return Ok(new Relation(relation.Nucleus + "\u0338"));
           }) },
         { @"\operatorname", (parser, accumulate, stopChar) => {
           if (!parser.ReadCharIfAvailable('{')) return "Expected {";

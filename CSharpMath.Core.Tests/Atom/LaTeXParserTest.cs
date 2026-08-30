@@ -120,13 +120,37 @@ namespace CSharpMath.Core.AtomTests {
     }
 
     [Fact]
-    public void NotReportsUnsupportedRelationWithSourcePosition() {
-      var (list, error) = LaTeXParser.MathListFromLaTeX(@"\not\approx");
+    public void NotUsesCombiningOverlayForUnsupportedRelation() {
+      var list = ParseLaTeX(@"\not\approx");
 
-      Assert.Null(list);
-      Assert.StartsWith("Error: \\not does not support relation ≈", error);
-      Assert.Contains("\n\\not\\approx\n", error);
-      Assert.Contains("↑ (pos ", error);
+      var relation = Assert.IsType<Relation>(Assert.Single(list));
+      Assert.Equal("≈\u0338", relation.Nucleus);
+      var serialized = LaTeXParser.MathListToLaTeX(list).ToString();
+      Assert.Equal(@"\not \approx ", serialized);
+      Assert.Equal(list, ParseLaTeX(serialized));
+    }
+
+    [Fact]
+    public void NotSerializesScriptsOnOuterRelation() {
+      var list = ParseLaTeX(@"\not\approx^2");
+
+      var relation = Assert.IsType<Relation>(Assert.Single(list));
+      Assert.Equal("≈\u0338", relation.Nucleus);
+      Assert.Equal("2", Assert.Single(relation.Superscript).Nucleus);
+      var serialized = LaTeXParser.MathListToLaTeX(list).ToString();
+      Assert.Equal(@"\not \approx ^2", serialized);
+      Assert.Equal(list, ParseLaTeX(serialized));
+    }
+
+    [Fact]
+    public void NotRepeatedNegationRoundTrips() {
+      var list = ParseLaTeX(@"\not\not=");
+
+      var relation = Assert.IsType<Relation>(Assert.Single(list));
+      Assert.Equal("≠\u0338", relation.Nucleus);
+      var serialized = LaTeXParser.MathListToLaTeX(list).ToString();
+      Assert.Equal(@"\not \neq ", serialized);
+      Assert.Equal(list, ParseLaTeX(serialized));
     }
 
     /// new[] { Base list }, new[] { Script of first atom }, new[] { Script of first atom inside script of first atom }

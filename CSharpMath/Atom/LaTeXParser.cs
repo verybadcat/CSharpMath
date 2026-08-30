@@ -679,6 +679,19 @@ namespace CSharpMath.Atom {
             MathListToLaTeX(r.InnerList, builder, currentFontStyle);
             builder.Append('}');
             break;
+          case Relation { Nucleus: { } nucleus }
+            when LaTeXSettings.CommandForAtom(atom) is null
+              && nucleus.Length > 0 && nucleus[nucleus.Length - 1] == '\u0338':
+            builder.Append(@"\not ");
+            var baseRelation = new Relation(nucleus.Substring(0, nucleus.Length - 1));
+            if (LaTeXSettings.CommandForAtom(baseRelation) is string baseCommand) {
+              builder.Append(baseCommand);
+              if (baseCommand.AsSpan().StartsWithInvariant(@"\"))
+                builder.Append(' ');
+            } else {
+              builder.Append(baseRelation.Nucleus);
+            }
+            break;
           case var _ when MathAtomToLaTeX(atom, builder, out _):
             break;
           case Atoms.Space space:
