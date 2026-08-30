@@ -14,11 +14,14 @@ namespace CSharpMath.Rendering.BackEnd {
     public const char GlyphNotFound = '□';
     public static GlyphFinder Instance { get; } = new GlyphFinder();
     public Glyph Lookup(Fonts fonts, int codepoint) {
-      foreach (var font in fonts) {
+      return Lookup(fonts.GetTypefacesSnapshot(), codepoint);
+    }
+    static Glyph Lookup(IEnumerable<Typeface> typefaces, int codepoint) {
+      foreach (var font in typefaces) {
         var g = font.GetGlyphIndex(codepoint);
         if (g != 0) return new Glyph(font, font.GetGlyph(g));
       }
-      return Lookup(fonts, GlyphNotFound);
+      return Lookup(typefaces, GlyphNotFound);
     }
     static bool IsOrdinary(FontStyle style) =>
       style is FontStyle.Roman or FontStyle.Bold or FontStyle.Italic or FontStyle.BoldItalic;
@@ -47,8 +50,8 @@ namespace CSharpMath.Rendering.BackEnd {
         result[pair.Key] = pair.Value;
       return result;
     }
-    Glyph LookupLocalStyle(Fonts fonts, int codepoint, FontStyle style) {
-      if (!fonts.LocalStyleTypefaces.TryGetValue(style, out var faces)) return Glyph.Empty;
+    Glyph LookupLocalStyle(IReadOnlyDictionary<FontStyle, IReadOnlyList<Typeface>> localStyles, int codepoint, FontStyle style) {
+      if (!localStyles.TryGetValue(style, out var faces)) return Glyph.Empty;
       foreach (var face in faces) {
         var glyph = face.GetGlyphIndex(codepoint);
         if (glyph != 0) return new Glyph(face, face.GetGlyph(glyph));
@@ -57,12 +60,15 @@ namespace CSharpMath.Rendering.BackEnd {
     }
     /// <summary>Find ordinary text glyphs in a matching local family before applying mathematical Unicode styling.</summary>
     internal System.Collections.Generic.IEnumerable<Glyph> FindGlyphs(Fonts fonts, string str, FontStyle style) {
+      var localTypefaces = fonts.GetLocalTypefacesSnapshot();
+      var typefaces = fonts.GetTypefacesSnapshot(localTypefaces);
+      var localStyles = BuildLocalStyleLookup(localTypefaces);
       var styled = Display.UnicodeFontChanger.ChangeFont(str, style);
       var sourceCodepoints = Typography.OpenFont.StringUtils.GetCodepoints(str.ToCharArray()).ToArray();
       var styledCodepoints = Typography.OpenFont.StringUtils.GetCodepoints(styled.ToCharArray()).ToArray();
       for (var i = 0; i < sourceCodepoints.Length; i++) {
-        var local = IsOrdinary(style) ? LookupLocalStyle(fonts, sourceCodepoints[i], style) : Glyph.Empty;
-        yield return local.IsEmpty ? Lookup(fonts, styledCodepoints[i]) : local;
+        var local = IsOrdinary(style) ? LookupLocalStyle(localStyles, sourceCodepoints[i], style) : Glyph.Empty;
+        yield return local.IsEmpty ? Lookup(typefaces, styledCodepoints[i]) : local;
       }
     }
     public int GetCodepoint(string str, int index) =>
@@ -77,9 +83,11 @@ namespace CSharpMath.Rendering.BackEnd {
       : str[index];
     public Glyph FindGlyphForCharacterAtIndex(Fonts fonts, int index, string str) =>
       Lookup(fonts, GetCodepoint(str, index));
-    public System.Collections.Generic.IEnumerable<Glyph> FindGlyphs(Fonts fonts, string str) =>
-      Typography.OpenFont.StringUtils.GetCodepoints(str.ToCharArray())
-      .Select(c => Lookup(fonts, c));
+    public System.Collections.Generic.IEnumerable<Glyph> FindGlyphs(Fonts fonts, string str) {
+      var typefaces = fonts.GetTypefacesSnapshot();
+      return Typography.OpenFont.StringUtils.GetCodepoints(str.ToCharArray())
+        .Select(c => Lookup(typefaces, c));
+    }
     public bool GlyphIsEmpty(Glyph glyph) => glyph.IsEmpty;
     public Glyph EmptyGlyph => Glyph.Empty;
   }

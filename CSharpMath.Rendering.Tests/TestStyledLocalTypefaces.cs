@@ -23,6 +23,26 @@ namespace CSharpMath.Rendering.Tests {
       }
       System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
     }
+    sealed class CountingTypefaceCollection : ICollection<Typeface> {
+      readonly List<Typeface> _faces;
+      public CountingTypefaceCollection(params Typeface[] faces) => _faces = new List<Typeface>(faces);
+      public int CaptureCount { get; private set; }
+      public int Count => _faces.Count;
+      public bool IsReadOnly => false;
+      public void Add(Typeface item) => _faces.Add(item);
+      public void Clear() => _faces.Clear();
+      public bool Contains(Typeface item) => _faces.Contains(item);
+      public void CopyTo(Typeface[] array, int arrayIndex) {
+        CaptureCount++;
+        _faces.CopyTo(array, arrayIndex);
+      }
+      public bool Remove(Typeface item) => _faces.Remove(item);
+      public IEnumerator<Typeface> GetEnumerator() {
+        CaptureCount++;
+        return _faces.GetEnumerator();
+      }
+      System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
+    }
     static string FontPath(string fileName) => Path.GetFullPath(Path.Combine(
       TestRenderingFixture.ThisDirectory.FullName, "..", "Typography", "Demo", "Windows", "TestFonts", fileName));
     static Typeface Read(string fileName) {
@@ -100,6 +120,36 @@ namespace CSharpMath.Rendering.Tests {
         new TextAtom.Style(new TextAtom.Text("A"), FontStyle.Bold), fonts, float.PositiveInfinity).relative;
       var glyph = ((TextRunDisplay<Fonts, RenderingGlyph>)display.Displays.Single()).Run.Glyphs.Single();
       Assert.Same(bold, glyph.Typeface);
+    }
+    [Fact]
+    public void ReflectsMutableCollectionTypefaceAdditionsAndRemovals() {
+      var regular = Read("Arimo-Regular.ttf");
+      var bold = Read("Arimo-Bold.ttf");
+      var localFaces = new List<Typeface> { regular };
+      var fonts = new Fonts(localFaces, 20);
+      static Typeface FindTypeface(Fonts fonts) {
+        var display = TextTypesetter.Layout(
+          new TextAtom.Style(new TextAtom.Text("A"), FontStyle.Bold), fonts, float.PositiveInfinity).relative;
+        return ((TextRunDisplay<Fonts, RenderingGlyph>)display.Displays.Single()).Run.Glyphs.Single().Typeface;
+      }
+      Assert.NotSame(bold, FindTypeface(fonts));
+      localFaces.Add(bold);
+      Assert.Same(bold, FindTypeface(fonts));
+      localFaces.Remove(bold);
+      Assert.NotSame(bold, FindTypeface(fonts));
+    }
+    [Fact]
+    public void CapturesMutableCollectionOncePerStyledFindGlyphs() {
+      var regular = Read("Arimo-Regular.ttf");
+      var bold = Read("Arimo-Bold.ttf");
+      var source = new CountingTypefaceCollection(regular, bold);
+      var fonts = new Fonts(source, 20);
+      var captureCountBeforeFind = source.CaptureCount;
+      var display = TextTypesetter.Layout(
+        new TextAtom.Style(new TextAtom.Text("A"), FontStyle.Bold), fonts, float.PositiveInfinity).relative;
+      var glyph = ((TextRunDisplay<Fonts, RenderingGlyph>)display.Displays.Single()).Run.Glyphs.Single();
+      Assert.Same(bold, glyph.Typeface);
+      Assert.Equal(captureCountBeforeFind + 1, source.CaptureCount);
     }
   }
 }
