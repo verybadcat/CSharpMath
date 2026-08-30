@@ -234,11 +234,12 @@ namespace CSharpMath.Uno {
           _origin = point.Position;
       };
     }
-    // TODO: How to stop a horizontally overflowing line for TextView from affecting line breaking for later lines, without breaking horizontal scrolling for MathView?
-    // Avalonia and MAUI don't exhibit this behavior.
+    // TextPainter wraps against the content box. Keep Uno's desired-size query
+    // on that same constraint so a padded TextView cannot lay out at the full
+    // viewport width and then clip its centered lines during drawing.
     protected override Windows.Foundation.Size MeasureOverride(Windows.Foundation.Size availableSize) =>
-      Painter.Measure((float)availableSize.Width) is { } rect
-      ? new Windows.Foundation.Size(rect.Width, rect.Height)
+      Painter.Measure(ConstrainedTextLayout.ContentWidth(availableSize.Width, Padding.Left, Padding.Right)) is { } rect
+      ? new Windows.Foundation.Size(rect.Width + Padding.Left + Padding.Right, rect.Height)
       : base.MeasureOverride(availableSize);
     readonly struct ReadOnlyProperty<
       [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] TThis,
@@ -262,7 +263,19 @@ namespace CSharpMath.Uno {
 #endif
 #endif
       var padding = Padding;
-      Painter.Draw(canvas, TextAlignment, new(left: (float)padding.Left, top: (float)padding.Top, right: (float)padding.Right, bottom: (float)padding.Bottom), DisplacementX, DisplacementY);
+#if Uno
+      var painterPadding = new Thickness((float)padding.Left, (float)padding.Top,
+        (float)padding.Right, (float)padding.Bottom);
+      // TextPainter's finite-region overload is the only path that can keep
+      // centered ink inside the rendered view. MathPainter retains its legacy
+      // alignment contract. The concrete type check avoids selecting the
+      // overload through reflection; the Uno draw hook has no RectangleF API.
+      if (Painter is TextPainter textPainter)
+        textPainter.Draw(canvas, new RectangleF(0, 0, (float)ActualWidth, (float)ActualHeight),
+          TextAlignment, painterPadding, DisplacementX, DisplacementY);
+      else
+#endif
+        Painter.Draw(canvas, TextAlignment, new(left: (float)padding.Left, top: (float)padding.Top, right: (float)padding.Right, bottom: (float)padding.Bottom), DisplacementX, DisplacementY);
     }
     /// <summary>Requires touch events to be enabled in SkiaSharp/Xamarin.Forms</summary>
     public bool EnablePanning { get => (bool)GetValue(EnablePanningProperty)!; set => SetValue(EnablePanningProperty, value); }

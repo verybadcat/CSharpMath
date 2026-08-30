@@ -40,15 +40,27 @@ namespace CSharpMath.Rendering.FrontEnd {
     public override void Draw(TCanvas canvas,
         TextAlignment alignment = TextAlignment.TopLeft, Thickness padding = default,
         float offsetX = 0, float offsetY = 0) =>
-      DrawCore(canvas, null, alignment, padding, offsetX, offsetY);
+      DrawCore(canvas, null, null, alignment, padding, offsetX, offsetY, false);
+    public void Draw(TCanvas canvas, RectangleF region,
+      TextAlignment alignment = TextAlignment.TopLeft, Thickness padding = default,
+      float offsetX = 0, float offsetY = 0) =>
+      DrawCore(canvas, region.Width, region.Height, alignment, padding,
+        region.X + offsetX, region.Y + offsetY, true);
     public void Draw(TCanvas canvas, float top, float left, float right) =>
-      DrawCore(canvas, right - left, TextAlignment.TopLeft, default, left, top);
+      DrawCore(canvas, right - left, null, TextAlignment.TopLeft, default, left, top, false);
     public void Draw(TCanvas canvas, PointF position, float width) =>
-      DrawCore(canvas, width, TextAlignment.TopLeft, default, position.X, position.Y);
-    private void DrawCore(TCanvas canvas, float? width, TextAlignment alignment,
-      Thickness padding, float offsetX, float offsetY) {
+      DrawCore(canvas, width, null, TextAlignment.TopLeft, default, position.X, position.Y, false);
+    private void DrawCore(TCanvas canvas, float? width, float? height, TextAlignment alignment,
+      Thickness padding, float offsetX, float offsetY, bool constrainCenteredInk) {
       var c = WrapCanvas(canvas);
-      UpdateDisplay(width ?? c.Width);
+      var regionWidth = width ?? c.Width;
+      // The public legacy overloads intentionally retain their original
+      // geometry. Only the explicit finite region opts into constrained text.
+      var constrained = constrainCenteredInk && !float.IsInfinity(regionWidth) && !float.IsNaN(regionWidth);
+      var layoutWidth = constrained
+        ? ConstrainedTextLayout.ContentWidth(regionWidth, padding.Left, padding.Right)
+        : regionWidth;
+      UpdateDisplay(layoutWidth);
       if (ErrorMessage == null) {
         _relativeXCoordDisplay.Position =
           _relativeXCoordDisplay.Position.Plus(IPainterExtensions.GetDisplayPosition(
@@ -56,7 +68,7 @@ namespace CSharpMath.Rendering.FrontEnd {
             System.Math.Max(_relativeXCoordDisplay.Ascent, _absoluteXCoordDisplay.Ascent),
             System.Math.Max(_relativeXCoordDisplay.Descent, _absoluteXCoordDisplay.Descent),
             FontSize, width ?? c.Width,
-            c.Height, alignment, padding, offsetX, offsetY
+            height ?? c.Height, alignment, padding, offsetX, offsetY
           ));
         var adjustedCanvasWidth =
           float.IsInfinity(c.Width) || float.IsNaN(c.Width)
@@ -65,23 +77,68 @@ namespace CSharpMath.Rendering.FrontEnd {
           : c.Width;
         // https://github.com/verybadcat/CSharpMath/issues/123
         // Take into account padding, offset etc. on both sides
-        adjustedCanvasWidth -= _relativeXCoordDisplay.Position.X * 2;
-        float Δx = 0;
-        var y = float.NegativeInfinity;
-        var leftRightFlags = alignment & (TextAlignment.Left | TextAlignment.Right);
-        if (leftRightFlags != TextAlignment.Left)
-          foreach (var relDisplay in _relativeXCoordDisplay.Displays.Reverse()) {
-            if (relDisplay.Position.Y > y) {
-              y = relDisplay.Position.Y;
-              var rightSpace = adjustedCanvasWidth - (relDisplay.Position.X + relDisplay.Width);
-              Δx = leftRightFlags switch {
-                TextAlignment.Center => rightSpace / 2,
-                TextAlignment.Right => rightSpace,
-                _ => throw new Atom.InvalidCodePathException("The left flag has been set. This foreach loop should have been skipped.")
-              };
+        if (!constrained) {
+          adjustedCanvasWidth -= _relativeXCoordDisplay.Position.X * 2;
+          float Δx = 0;
+          var y = float.NegativeInfinity;
+          var leftRightFlags = alignment & (TextAlignment.Left | TextAlignment.Right);
+          if (leftRightFlags != TextAlignment.Left)
+            foreach (var relDisplay in _relativeXCoordDisplay.Displays.Reverse()) {
+              if (relDisplay.Position.Y > y) {
+                y = relDisplay.Position.Y;
+                var rightSpace = adjustedCanvasWidth - (relDisplay.Position.X + relDisplay.Width);
+                Δx = leftRightFlags switch {
+                  TextAlignment.Center => rightSpace / 2,
+                  TextAlignment.Right => rightSpace,
+                  _ => throw new Atom.InvalidCodePathException("The left flag has been set. This foreach loop should have been skipped.")
+                };
+              }
+              relDisplay.Position = new PointF(relDisplay.Position.X + Δx, y);
             }
-            relDisplay.Position = new PointF(relDisplay.Position.X + Δx, y);
-          }
+        } else {
+          var contentLeft = regionWidth == float.PositiveInfinity || float.IsNaN(regionWidth)
+            ? _relativeXCoordDisplay.Position.X
+            : offsetX + padding.Left;
+          var contentRight = regionWidth == float.PositiveInfinity || float.IsNaN(regionWidth)
+            ? adjustedCanvasWidth + contentLeft
+            : offsetX + regionWidth - padding.Right;
+          // GetDisplayPosition has already placed the outer display using
+          // typographic centering. Derive the same local right-space formula
+          // used by the legacy path so the constrained path does not center
+          // that outer display a second time.
+          var blockWidth = System.Math.Max(_relativeXCoordDisplay.Width, _absoluteXCoordDisplay.Width);
+          float Δx = 0;
+          var y = float.NegativeInfinity;
+          var leftRightFlags = alignment & (TextAlignment.Left | TextAlignment.Right);
+          if (leftRightFlags != TextAlignment.Left)
+            foreach (var relDisplay in _relativeXCoordDisplay.Displays.Reverse()) {
+              if (relDisplay.Position.Y > y) {
+                y = relDisplay.Position.Y;
+                var rightSpace = blockWidth - (relDisplay.Position.X + relDisplay.Width);
+                var oldShift = rightSpace / 2;
+                if (leftRightFlags == TextAlignment.Center) {
+                  var lineDisplays = _relativeXCoordDisplay.Displays.Where(d => d.Position.Y == y).ToArray();
+                  var minInk = lineDisplays.Min(d => TextDisplayBounds.InkBounds(d).Left + d.Position.X + _relativeXCoordDisplay.Position.X);
+                  var maxInk = lineDisplays.Max(d => TextDisplayBounds.InkBounds(d).Right + d.Position.X + _relativeXCoordDisplay.Position.X);
+                  Δx = CenterShift(oldShift, minInk, maxInk, contentLeft, contentRight);
+                } else if (leftRightFlags == TextAlignment.Right) {
+                  Δx = rightSpace;
+                } else {
+                  throw new Atom.InvalidCodePathException("The left flag has been set. This foreach loop should have been skipped.");
+                }
+              }
+              relDisplay.Position = new PointF(relDisplay.Position.X + Δx, y);
+            }
+        }
+        static float CenterShift(float oldShift, float minInk, float maxInk,
+          float contentLeft, float contentRight) {
+          if (minInk + oldShift >= contentLeft && maxInk + oldShift <= contentRight)
+            return oldShift;
+          if (maxInk - minInk > contentRight - contentLeft)
+            return oldShift;
+          return System.Math.Max(contentLeft - minInk, System.Math.Min(contentRight - maxInk,
+            (contentLeft + contentRight - minInk - maxInk) / 2));
+        }
         //offsetY is already included in _relativeXCoordDisplay.Position,
         //no need to add it again below
         _absoluteXCoordDisplay.Position =

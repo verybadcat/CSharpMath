@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace CSharpMath.Rendering.Text {
   using Display = Display.IDisplay<BackEnd.Fonts, BackEnd.Glyph>;
@@ -33,6 +34,20 @@ namespace CSharpMath.Rendering.Text {
       verticalAdvance += Descent;
       if (appendLineGap) verticalAdvance += GapAfterLine;
       Ascent = Descent = Width = GapAfterLine = 0;
+    }
+  }
+  internal static class TextDisplayBounds {
+    public static RectangleF InkBounds(Display display) {
+      if (display is global::CSharpMath.Display.Displays.TextRunDisplay<BackEnd.Fonts, BackEnd.Glyph> run) return run.InkBounds;
+      if (display is global::CSharpMath.Display.Displays.ListDisplay<BackEnd.Fonts, BackEnd.Glyph> list) {
+        var bounds = RectangleF.Empty;
+        foreach (var child in list.Displays) {
+          var childBounds = InkBounds(child);
+          if (!childBounds.IsEmpty) bounds = bounds.IsEmpty ? childBounds.Plus(child.Position) : bounds.Union(childBounds.Plus(child.Position));
+        }
+        return bounds;
+      }
+      return display.DisplayBounds();
     }
   }
 }
