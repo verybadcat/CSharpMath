@@ -402,5 +402,81 @@ namespace CSharpMath.Core.EditorTests {
       T(@"\frac{\lim _{x\rightarrow 2}}{■}", K.LimitWithBase, K.SmallX, K.RightArrow, K.D2, K.Right, K.Slash),
     ]
     public void Slash(string latex, params K[] inputs) => Test(latex, inputs);
+
+    [Theory]
+    [T(@"\log ", K.SmallL, K.SmallO, K.SmallG)]
+    [T(@"\ln ", K.SmallL, K.SmallN)]
+    [T(@"\exp ", K.SmallE, K.SmallX, K.SmallP)]
+    [T(@"\sin ", K.SmallS, K.SmallI, K.SmallN)]
+    [T(@"\cos ", K.SmallC, K.SmallO, K.SmallS)]
+    [T(@"\tan ", K.SmallT, K.SmallA, K.SmallN)]
+    [T(@"\sinh ", K.SmallS, K.SmallI, K.SmallN, K.SmallH)]
+    [T(@"\cosh ", K.SmallC, K.SmallO, K.SmallS, K.SmallH)]
+    [T(@"\tanh ", K.SmallT, K.SmallA, K.SmallN, K.SmallH)]
+    [T(@"\sec ", K.SmallS, K.SmallE, K.SmallC)]
+    [T(@"\csc ", K.SmallC, K.SmallS, K.SmallC)]
+    [T(@"\csc ", K.SmallC, K.SmallO, K.SmallS, K.SmallE, K.SmallC)]
+    [T(@"\cot ", K.SmallC, K.SmallO, K.SmallT)]
+    [T(@"\arcsin ", K.SmallA, K.SmallR, K.SmallC, K.SmallS, K.SmallI, K.SmallN)]
+    public void TypedFunctions(string latex, params K[] inputs) => Test(latex, inputs);
+
+    [Fact]
+    public void TypedFunctionDoesNotRewriteLongerIdentifier() {
+      Test(@"sinx", new[] { K.SmallS, K.SmallI, K.SmallN, K.SmallX });
+    }
+
+    [Fact]
+    public void BackspaceExpandsFunctionAndDeletesLastLetter() {
+      Test(@"si", new[] { K.SmallS, K.SmallI, K.SmallN, K.Backspace });
+    }
+
+    [Fact]
+    public void MovingIntoTypedFunctionMakesItsLettersEditable() {
+      Test(@"sicn", new[] { K.SmallS, K.SmallI, K.SmallN, K.Left, K.SmallC });
+    }
+
+    [Fact]
+    public void TypedFunctionInFraction() {
+      Test(@"\frac{\sin }{■}", new[] { K.SmallS, K.SmallI, K.SmallN, K.Slash });
+    }
+
+    [Fact]
+    public void TypedFunctionInScript() {
+      Test(@"1^{\cos }", new[] { K.D1, K.Power, K.SmallC, K.SmallO, K.SmallS });
+    }
+
+    [Fact]
+    public void TypedFunctionInRadical() {
+      Test(@"\sqrt{\tan }", new[] { K.SquareRoot, K.SmallT, K.SmallA, K.SmallN });
+    }
+
+    [Fact]
+    public void TypedFunctionInInner() {
+      Test(@"\left( \cot \right) ", new[] { K.BothRoundBrackets, K.SmallC, K.SmallO, K.SmallT });
+    }
+
+    [Fact]
+    public void DedicatedFunctionFollowedByLetterStaysAnOperator() {
+      Test(@"\sin x", new[] { K.Sine, K.SmallX });
+    }
+
+    [Fact]
+    public void DedicatedFunctionBackspaceRemovesTheOperator() {
+      Test(@"", new[] { K.Sine, K.Backspace });
+    }
+
+    [Fact]
+    public void DedicatedFunctionLeftMovementDoesNotUnfoldIt() {
+      Test(@"c\sin ", new[] { K.Sine, K.Left, K.SmallC });
+    }
+
+    [Fact]
+    public void MovingRightIntoTypedFunctionPlacesCaretInside() {
+      var keyboard = new MathKeyboard<TestFont, TGlyph>(context, new TestFont());
+      keyboard.KeyPress(K.SmallS, K.SmallI, K.SmallN);
+      keyboard.InsertionIndex = new MathListIndex(0);
+      keyboard.KeyPress(K.Right, K.SmallX);
+      Assert.Equal(@"sxin", keyboard.LaTeX);
+    }
   }
 }

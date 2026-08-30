@@ -2,6 +2,7 @@ namespace CSharpMath.Editor {
   using System;
   using System.Collections.Generic;
   using System.Drawing;
+  using System.Runtime.CompilerServices;
   using System.Timers;
   using Atom;
   using Display;
@@ -62,6 +63,10 @@ namespace CSharpMath.Editor {
     public MathList MathList { get; } = [];
     public string LaTeX => LaTeXParser.MathListToLaTeX(MathList).ToString();
     private MathListIndex _insertionIndex = new(0);
+    // ConditionalWeakTable uses reference identity and does not retain operators
+    // after their enclosing math list has been removed.
+    readonly ConditionalWeakTable<MathAtom, object> _typedFunctions = new();
+    bool IsTypedFunction(MathAtom atom) => _typedFunctions.TryGetValue(atom, out _);
     public MathListIndex InsertionIndex {
       get => _insertionIndex;
       set {
@@ -176,6 +181,13 @@ namespace CSharpMath.Editor {
           MathListSubIndexType.Inner);
 
       void MoveCursorLeft() {
+        if (_insertionIndex.Previous is MathListIndex functionIndex &&
+            MathList.AtomAt(functionIndex) is Atoms.LargeOperator functionOperator && IsTypedFunction(functionOperator) &&
+            TryTypedFunctionName(functionOperator, out var functionName)) {
+          ExpandFunction(functionIndex, functionName, removeLastLetter: false);
+          MoveCursorLeft();
+          return;
+        }
         var prev = _insertionIndex.Previous;
         switch (MathList.AtomAt(prev)) {
           case var _ when prev is null:
@@ -261,6 +273,14 @@ namespace CSharpMath.Editor {
       void MoveCursorRight() {
         if (_insertionIndex is null)
           throw new InvalidOperationException($"{nameof(_insertionIndex)} is null.");
+        if (MathList.AtomAt(_insertionIndex) is Atoms.LargeOperator functionOperator && IsTypedFunction(functionOperator) &&
+            TryTypedFunctionName(functionOperator, out var functionName)) {
+          var functionIndex = _insertionIndex;
+          ExpandFunction(functionIndex, functionName, removeLastLetter: false);
+          _insertionIndex = ReplaceLeafIndex(_insertionIndex, functionIndex.FinalIndex);
+          MoveCursorRight();
+          return;
+        }
         switch (MathList.AtomAt(_insertionIndex)) {
           case null: // After Count
             var levelDown = _insertionIndex.LevelDown();
@@ -348,7 +368,117 @@ namespace CSharpMath.Editor {
       void DeleteBackwards() {
         // delete the last atom from the list
         if (HasText && _insertionIndex.Previous is MathListIndex previous)
-          _insertionIndex = MathList.RemoveAt(previous);
+          if (MathList.AtomAt(previous) is Atoms.LargeOperator op && IsTypedFunction(op) && TryTypedFunctionName(op, out var functionName))
+            ExpandFunction(previous, functionName, removeLastLetter: true);
+          else
+            _insertionIndex = MathList.RemoveAt(previous);
+      }
+
+      // A function typed as ordinary letters is promoted to the same operator atom
+      // used by the corresponding keyboard button.  Promotion is deliberately
+      // local to the current list, so it also works inside fractions, scripts and
+      // other inner lists.
+      MathList CurrentList() {
+        MathList Find(MathList list, MathListIndex index) {
+          if (index.SubIndexInfo is not { } info) return list;
+          var atom = list[index.AtomIndex];
+          var child = info.SubIndexType switch {
+            MathListSubIndexType.Superscript => atom.Superscript,
+            MathListSubIndexType.Subscript => atom.Subscript,
+            MathListSubIndexType.Numerator => ((Atoms.Fraction)atom).Numerator,
+            MathListSubIndexType.Denominator => ((Atoms.Fraction)atom).Denominator,
+            MathListSubIndexType.Radicand => ((Atoms.Radical)atom).Radicand,
+            MathListSubIndexType.Degree => ((Atoms.Radical)atom).Degree,
+            MathListSubIndexType.Inner => ((Atoms.Inner)atom).InnerList,
+            MathListSubIndexType.BetweenBaseAndScripts => list,
+            _ => throw new InvalidCodePathException("Unknown math list sub-index")
+          };
+          return Find(child, info.SubIndex);
+        }
+        return Find(MathList, _insertionIndex);
+      }
+      static MathListIndex ReplaceLeafIndex(MathListIndex index, int leafIndex) =>
+        index.SubIndexInfo is null
+          ? new(leafIndex)
+          : new(index.AtomIndex, (index.SubIndexInfo.Value.SubIndexType,
+              ReplaceLeafIndex(index.SubIndexInfo.Value.SubIndex, leafIndex)));
+      static string? TypedFunctionCommand(string text) => text switch {
+        "log" => @"\log",
+        "ln" => @"\ln",
+        "exp" => @"\exp",
+        "sin" => @"\sin",
+        "cos" => @"\cos",
+        "tan" => @"\tan",
+        "sinh" => @"\sinh",
+        "cosh" => @"\cosh",
+        "tanh" => @"\tanh",
+        "sec" => @"\sec",
+        "csc" => @"\csc",
+        "cosec" => @"\csc",
+        "cot" => @"\cot",
+        "arcsin" => @"\arcsin",
+        "arccos" => @"\arccos",
+        "arctan" => @"\arctan",
+        "arccot" => @"\arccot",
+        "arcsec" => @"\arcsec",
+        "arccsc" => @"\arccsc",
+        _ => null
+      };
+      static bool TryTypedFunctionName(MathAtom atom, out string name) {
+        name = LaTeXSettings.CommandForAtom(atom) switch {
+          @"\log" => "log",
+          @"\ln" => "ln",
+          @"\exp" => "exp",
+          @"\sin" => "sin",
+          @"\cos" => "cos",
+          @"\tan" => "tan",
+          @"\sinh" => "sinh",
+          @"\cosh" => "cosh",
+          @"\tanh" => "tanh",
+          @"\sec" => "sec",
+          @"\csc" => "csc",
+          @"\cot" => "cot",
+          @"\arcsin" => "arcsin",
+          @"\arccos" => "arccos",
+          @"\arctan" => "arctan",
+          @"\arccot" => "arccot",
+          @"\arcsec" => "arcsec",
+          @"\arccsc" => "arccsc",
+          _ => null
+        } ?? "";
+        return name.Length != 0;
+      }
+      void ExpandFunction(MathListIndex operatorIndex, string name, bool removeLastLetter) {
+        var list = CurrentList();
+        var start = operatorIndex.FinalIndex;
+        var atom = list[start];
+        _typedFunctions.Remove(atom);
+        list.RemoveAt(start);
+        var letters = name.Substring(0, removeLastLetter ? name.Length - 1 : name.Length);
+        for (var i = 0; i < letters.Length; i++)
+          list.Insert(start + i, new Atoms.Variable(letters[i].ToString()));
+        _insertionIndex = ReplaceLeafIndex(_insertionIndex, start + letters.Length);
+      }
+      void ExpandPreviousFunction() {
+        if (_insertionIndex.Previous is MathListIndex previous &&
+            MathList.AtomAt(previous) is Atoms.LargeOperator op && IsTypedFunction(op) && TryTypedFunctionName(op, out var name))
+          ExpandFunction(previous, name, removeLastLetter: false);
+      }
+      void RecognizeTypedFunction() {
+        var list = CurrentList();
+        var end = _insertionIndex.FinalIndex;
+        var start = end;
+        const int maxFunctionNameLength = 7;
+        while (start > 0 && end - start < maxFunctionNameLength && list[start - 1] is Atoms.Variable) start--;
+        if (start > 0 && list[start - 1] is Atoms.Variable) return;
+        if (start == end) return;
+        var text = string.Concat(list.Atoms.GetRange(start, end - start).ConvertAll(a => a.Nucleus));
+        var command = TypedFunctionCommand(text);
+        if (command is null || LaTeXSettings.AtomForCommand(command) is not { } atom) return;
+        list.RemoveAtoms(start, end - start);
+        list.Insert(start, atom);
+        _typedFunctions.Add(atom, new object());
+        _insertionIndex = ReplaceLeafIndex(_insertionIndex, start + 1);
       }
 
       static bool IsPlaceholderList(MathList ml) => ml.Count == 1 && ml[0] is Atoms.Placeholder;
@@ -727,8 +857,10 @@ namespace CSharpMath.Editor {
         case MathKeyboardInput.SmallX:
         case MathKeyboardInput.SmallY:
         case MathKeyboardInput.SmallZ:
+          ExpandPreviousFunction();
           InsertAtom(LaTeXSettings.AtomForCommand(new string((char)input, 1))
             ?? throw new InvalidCodePathException($"{nameof(LaTeXSettings.AtomForCommand)} returned null for {input}"));
+          RecognizeTypedFunction();
           break;
         case MathKeyboardInput.Alpha:
         case MathKeyboardInput.Beta:
