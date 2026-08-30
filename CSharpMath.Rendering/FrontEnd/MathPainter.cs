@@ -25,7 +25,16 @@ namespace CSharpMath.Rendering.FrontEnd {
     public override void Draw(TCanvas canvas, TextAlignment alignment = TextAlignment.Center, Thickness padding = default, float offsetX = 0, float offsetY = 0) {
       var c = WrapCanvas(canvas);
       UpdateDisplay(float.NaN);
-      DrawCore(c, Display, Display == null ? new PointF?() : IPainterExtensions.GetDisplayPosition(Display.Width, Display.Ascent, Display.Descent, FontSize, c.Width, c.Height, alignment, padding, offsetX, offsetY));
+      if (Display is not { } display) {
+        DrawCore(c, null);
+        return;
+      }
+      var aggregate = DisplayInkBounds.RequiresAggregateBounds(display);
+      var bounds = aggregate ? DisplayInkBounds.Get(display) : display.DisplayBounds();
+      var position = IPainterExtensions.GetDisplayPosition(
+        aggregate ? bounds.Width : display.Width, display.Ascent, display.Descent, FontSize,
+        c.Width, c.Height, alignment, padding, offsetX, offsetY);
+      DrawCore(c, display, aggregate ? new PointF(position.X - bounds.X, position.Y) : position);
     }
     public void Draw(TCanvas canvas, float x, float y) {
       var c = WrapCanvas(canvas);

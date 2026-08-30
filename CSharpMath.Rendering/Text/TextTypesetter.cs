@@ -75,10 +75,7 @@ namespace CSharpMath.Rendering.Text {
             var lastLineWidth = line.Width;
             BreakLine(line, displayList, displayMathList, false);
             display = Typesetter.CreateLine(m.Content, fonts, TypesettingContext.Instance, LineStyle.Display);
-            var displayX = IPainterExtensions.GetDisplayPosition
-              (display.Width, display.Ascent, display.Descent,
-               fonts.PointSize, canvasWidth, float.NaN,
-               TextAlignment.Top, default, default, default).X;
+            var displayX = CenteredDisplayX(display, fonts.PointSize, canvasWidth);
             //\because When displayList.LastOrDefault() is null,
             //the false condition is selected
             //\therefore Append abovedisplayshortskip which defaults
@@ -200,20 +197,34 @@ namespace CSharpMath.Rendering.Text {
       BreakLine(globalLine, relativePositionList, absolutePositionList); //remember to finalize the last line
       var adjustedCanvasWidth =
         float.IsInfinity(canvasWidth) || float.IsNaN(canvasWidth)
-        ? Math.Max(relativePositionList.CollectionWidth(),
-                   absolutePositionList.IsNonEmpty() ? absolutePositionList.Max(d => d.Width) : 0)
+        ? Math.Max(InkWidth(new Display(relativePositionList)),
+                   absolutePositionList.IsNonEmpty() ? absolutePositionList.Max(InkWidth) : 0)
         : canvasWidth;
       if (float.IsInfinity(canvasWidth) || float.IsNaN(canvasWidth))
         // In this case X of every display in absolutePositionList will be Infinity or NaN
         // Use max(width of relativePositionList, width of absolutePositionList) as canvasWidth instead
         foreach (var absDisplay in absolutePositionList)
           absDisplay.Position = new System.Drawing.PointF(
-            IPainterExtensions.GetDisplayPosition
-              (absDisplay.Width, absDisplay.Ascent, absDisplay.Descent,
-               inputFont.PointSize, adjustedCanvasWidth, float.NaN,
-               TextAlignment.Top, default, default, default).X,
+            CenteredDisplayX(absDisplay, inputFont.PointSize, adjustedCanvasWidth),
             absDisplay.Position.Y);
       return (new Display(relativePositionList), new Display(absolutePositionList));
+
+      static RectangleF InkBounds(IDisplay<Fonts, Glyph> display) {
+        var aggregateLayout = DisplayInkBounds.GetTypographic(display);
+        if (!DisplayInkBounds.ContainsMultipleRows(display)
+          || (aggregateLayout.Left >= -0.01f && aggregateLayout.Right <= display.Width + 0.01f))
+          return display.DisplayBounds();
+        var bounds = DisplayInkBounds.Get(display);
+        return bounds.IsEmpty ? display.DisplayBounds() : bounds;
+      }
+      static float InkWidth(IDisplay<Fonts, Glyph> display) => InkBounds(display).Width;
+      static float CenteredDisplayX(IDisplay<Fonts, Glyph> display, float fontSize, float width) {
+        var bounds = InkBounds(display);
+        return IPainterExtensions.GetDisplayPosition
+          (bounds.Width, display.Ascent, display.Descent,
+           fontSize, width, float.NaN,
+           TextAlignment.Top, default, default, default).X - bounds.Left;
+      }
     }
   }
 }

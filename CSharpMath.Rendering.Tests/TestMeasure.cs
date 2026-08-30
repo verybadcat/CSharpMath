@@ -12,13 +12,17 @@ namespace CSharpMath.Rendering.Tests {
       public float Descent => 3;
       public float Width => 10;
 
-      public PointF Position { get => PointF.Empty; set => throw new NotImplementedException(); }
+      public virtual PointF Position { get => PointF.Empty; set => throw new NotImplementedException(); }
       public Atom.Range Range => throw new NotImplementedException();
       public Color? TextColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
       public Color? BackColor { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
       public bool HasScript { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
       public void Draw(IGraphicsContext<Fonts, Glyph> context) => throw new NotImplementedException();
       public void SetTextColorRecursive(Color? textColor) => throw new NotImplementedException();
+    }
+    sealed class PositionedD : D {
+      PointF _position;
+      public override PointF Position { get => _position; set => _position = value; }
     }
     class DKeyboard : Editor.MathKeyboard<Fonts, Glyph> {
       public DKeyboard() : base(TypesettingContext.Instance, new Fonts(Enumerable.Empty<Typography.OpenFont.Typeface>(), 0.0f)) =>
@@ -27,11 +31,13 @@ namespace CSharpMath.Rendering.Tests {
     class DRenderingMath : SkiaSharp.MathPainter {
       public DRenderingMath() =>
         Display = new Display.Displays.ListDisplay<Fonts, Glyph>(new[] { new D() });
+      public void SetTestDisplay(Display.IDisplay<Fonts, Glyph> display) => Display = display;
       protected override void UpdateDisplayCore(float unused) { }
     }
     class DRenderingText : SkiaSharp.TextPainter {
       public DRenderingText() =>
         Display = new Display.Displays.ListDisplay<Fonts, Glyph>(new[] { new D() });
+      public void SetTestDisplay(Display.IDisplay<Fonts, Glyph> display) => Display = display;
       protected override void UpdateDisplayCore(float canvasWidth) { }
     }
     class DRenderingKeyboard : FrontEnd.MathKeyboard {
@@ -56,6 +62,28 @@ namespace CSharpMath.Rendering.Tests {
       Assert.Equal(new RectangleF(0, -12, 10, 15), new DRenderingMath().Measure());
       Assert.Equal(new RectangleF(0, -12, 10, 15), new DRenderingText().Measure(float.NaN));
       Assert.Equal(new RectangleF(0, -12, 10, 15), new DRenderingKeyboard().Measure);
+    }
+
+    [Fact]
+    public void RenderingMeasure_RecursivelyUnionsPositionedRows() {
+      var left = new PositionedD { Position = new PointF(-4, 0) };
+      var right = new PositionedD { Position = new PointF(12, 0) };
+      var painter = new DRenderingText();
+      painter.SetTestDisplay(new Display.Displays.ListDisplay<Fonts, Glyph>(new Display.IDisplay<Fonts, Glyph>[] {
+        new Display.Displays.ListDisplay<Fonts, Glyph>(new Display.IDisplay<Fonts, Glyph>[] { left }),
+        new Display.Displays.ListDisplay<Fonts, Glyph>(new Display.IDisplay<Fonts, Glyph>[] { right }) {
+          Position = new PointF(0, -20)
+        }
+      }));
+      Assert.Equal(new RectangleF(-4, -12, 26, 35), painter.Measure(float.NaN));
+      var mathPainter = new DRenderingMath();
+      mathPainter.SetTestDisplay(new Display.Displays.ListDisplay<Fonts, Glyph>(new Display.IDisplay<Fonts, Glyph>[] {
+        new Display.Displays.ListDisplay<Fonts, Glyph>(new Display.IDisplay<Fonts, Glyph>[] { left }),
+        new Display.Displays.ListDisplay<Fonts, Glyph>(new Display.IDisplay<Fonts, Glyph>[] { right }) {
+          Position = new PointF(0, -20)
+        }
+      }));
+      Assert.Equal(new RectangleF(-4, -12, 26, 35), mathPainter.Measure());
     }
   }
 }
