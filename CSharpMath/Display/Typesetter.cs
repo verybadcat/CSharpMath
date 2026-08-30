@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using CSharpMath.Atom;
 using CSharpMath.Atom.Atoms;
 using CSharpMath.Display.Displays;
@@ -105,6 +106,11 @@ namespace CSharpMath.Display {
     internal readonly AttributedString<TFont, TGlyph> _currentLine;
     internal Range _currentLineIndexRange = Range.NotFound;
     internal readonly List<MathAtom> _currentAtoms = new List<MathAtom>();
+    private MathAtom? _trailingCorrectionAtom;
+    private float _pendingTrailingCorrection;
+    private GlyphInfo<TGlyph>? _correctedTrailingGlyph;
+    private readonly Dictionary<MathAtom, IDisplay<TFont, TGlyph>> _ownedDisplays =
+      new(ReferenceComparer.Instance);
     internal const int _delimiterFactor = 901;
     internal const int _delimiterShortfallPoints = 5;
     private LineStyle _scriptStyle => _style switch {
@@ -158,6 +164,8 @@ namespace CSharpMath.Display {
           // style: the fused run is stamped with a single face (iosMath 76fd773).
           if (newAtom is Ordinary && prevAtom is Ordinary o && o.Superscript.IsEmpty() && o.Subscript.IsEmpty()
             && o.FontStyle == newAtom.FontStyle) {
+            // Internal slanted-to-straight boundaries (for example P2 or PΑ)
+            // are corrected after the fused run is glyph-mapped.
             prevAtom.Fuse(newAtom);
             // skip the current node as we fused it
             continue;
@@ -175,6 +183,21 @@ namespace CSharpMath.Display {
     private void CreateDisplayAtoms(List<MathAtom> preprocessedAtoms) {
       MathAtom? prevAtom = null;
       foreach (var atom in preprocessedAtoms) {
+        if (prevAtom != null) {
+          if (atom is Style or Comment)
+            CaptureTrailingItalicCorrection(prevAtom);
+          else if (atom is Space) {
+            // Explicit math space is a real inter-display gap, not an
+            // implicit successor boundary.
+            _pendingTrailingCorrection = 0;
+          } else if (_pendingTrailingCorrection != 0) {
+            if (SuccessorIsStraight(atom))
+              _currentPosition.X += _pendingTrailingCorrection;
+            _pendingTrailingCorrection = 0;
+          } else {
+            ApplyTrailingItalicCorrection(prevAtom, atom);
+          }
+        }
         switch (atom) {
           case Number _:
           case Variable _:
@@ -203,6 +226,7 @@ namespace CSharpMath.Display {
             colorDisplay.Position = _currentPosition;
             _currentPosition.X += colorDisplay.Width;
             _displayAtoms.Add(colorDisplay);
+            RememberDisplay(atom, colorDisplay);
             break;
           case ColorBox colorBox:
             AddDisplayLine(false);
@@ -212,6 +236,7 @@ namespace CSharpMath.Display {
             colorDisplay.Position = _currentPosition;
             _currentPosition.X += colorDisplay.Width;
             _displayAtoms.Add(colorDisplay);
+            RememberDisplay(atom, colorDisplay);
             break;
           case Group group:
             AddDisplayLine(false);
@@ -224,6 +249,7 @@ namespace CSharpMath.Display {
             groupInnerDisplay.Position = _currentPosition;
             groupInnerDisplay.SetRangeOverride(atom.IndexRange);
             _displayAtoms.Add(groupInnerDisplay);
+            RememberDisplay(atom, groupInnerDisplay);
             _currentPosition.X += groupInnerDisplay.Width;
             if (atom.Subscript.IsNonEmpty() || atom.Superscript.IsNonEmpty()) {
               // Scripts attach after the whole group.
@@ -243,6 +269,7 @@ namespace CSharpMath.Display {
               Position = _currentPosition
             };
             _displayAtoms.Add(boxDisplay);
+            RememberDisplay(atom, boxDisplay);
             _currentPosition.X += boxDisplay.Width;
             if (atom.Subscript.IsNonEmpty() || atom.Superscript.IsNonEmpty()) {
               MakeScripts(atom, boxDisplay, atom.IndexRange.Location, 0);
@@ -297,6 +324,7 @@ namespace CSharpMath.Display {
             innerDisplay.Position = _currentPosition;
             _currentPosition.X += innerDisplay.Width;
             _displayAtoms.Add(innerDisplay);
+            RememberDisplay(atom, innerDisplay);
             if (atom.Subscript.IsNonEmpty() || atom.Superscript.IsNonEmpty()) {
               MakeScripts(atom, innerDisplay, atom.IndexRange.Location, 0);
             }
@@ -420,16 +448,22 @@ namespace CSharpMath.Display {
                   InterElementSpaces.Get(Typesetter.SpacingAtom(prevAtom), Typesetter.SpacingAtom(atom), _style, _styleFont, _mathTable);
                 if (_currentLine.Length > 0) {
                   if (interElementSpace > 0) {
-                    _currentLine.Runs.Last().GlyphInfos.Last().KernAfterGlyph = interElementSpace;
+                    // Rule 16 spacing and Rule 17 italic correction share the
+                    // same inter-glyph kern slot; preserve both contributions.
+                    _currentLine.Runs.Last().GlyphInfos.Last().KernAfterGlyph += interElementSpace;
                   }
                 } else {
                   _currentPosition.X += interElementSpace;
                 }
               }
               var nucleusText = atom.Nucleus;
-              var glyphs = _context.GlyphFinder.FindGlyphs(_font, nucleusText);
               var current = new AttributedGlyphRun<TFont, TGlyph>(
-                nucleusText, glyphs, _font, atom is Placeholder, (atom as Placeholder)?.Color);
+                nucleusText, _context.GlyphFinder.FindGlyphs(_font, nucleusText), _font,
+                atom is Placeholder, (atom as Placeholder)?.Color);
+              if (atom.FusedAtoms is { Count: > 1 }
+                && current.GlyphInfos.Count != UnicodeScalarCount(nucleusText))
+                throw new InvalidOperationException(
+                  "Math glyph lookup must return one glyph per Unicode scalar for fused atoms.");
               _currentLine.AppendGlyphRun(current);
               if (_currentLineIndexRange.Location == Range.UndefinedInt)
                 _currentLineIndexRange = atom.IndexRange;
@@ -440,6 +474,7 @@ namespace CSharpMath.Display {
                 _currentAtoms.AddRange(atom.FusedAtoms);
               else
                 _currentAtoms.Add(atom);
+              ApplyFusedInternalItalicCorrections(atom, current);
               if (atom.Subscript.IsNonEmpty() || atom.Superscript.IsNonEmpty()) {
                 var line = AddDisplayLine(true);
                 if (line is null) throw new InvalidCodePathException("evenIfLengthIsZero not respected");
@@ -600,6 +635,162 @@ namespace CSharpMath.Display {
         prev != null ? InterElementSpaces.Get(Typesetter.SpacingAtom(prev), Typesetter.SpacingAtom(current), _style, _styleFont, _mathTable)
         : _spaced ? InterElementSpaces.Get(new Open(""), Typesetter.SpacingAtom(current), _style, _styleFont, _mathTable)
         : 0;
+
+    private void ApplyTrailingItalicCorrection(MathAtom atom, MathAtom successor) {
+      if (ReferenceEquals(_trailingCorrectionAtom, atom))
+        return;
+      _trailingCorrectionAtom = atom;
+      if (!SuccessorIsStraight(successor))
+        return;
+      if (FindOwnedLastGlyph(atom) is not { } last || ReferenceEquals(_correctedTrailingGlyph, last.Glyph))
+        return;
+      var correction = ApplyCorrection(last);
+      // Composite atoms have already been emitted and advanced the outer
+      // cursor.  Their nested glyph kern affects drawing only, so account for
+      // the same correction in the outer successor position exactly once.
+      if (!IsSimpleTrailingAtom(atom))
+        _currentPosition.X += correction;
+    }
+
+    private void CaptureTrailingItalicCorrection(MathAtom atom) {
+      if (ReferenceEquals(_trailingCorrectionAtom, atom))
+        return;
+      _trailingCorrectionAtom = atom;
+      if (FindOwnedLastGlyph(atom) is { } last)
+        _pendingTrailingCorrection += _mathTable.GetItalicCorrection(last.Run.Font, last.Glyph.Glyph);
+    }
+
+    private float ApplyCorrection((AttributedGlyphRun<TFont, TGlyph> Run, GlyphInfo<TGlyph> Glyph) last) {
+      if (ReferenceEquals(_correctedTrailingGlyph, last.Glyph)) return 0;
+      var correction = _mathTable.GetItalicCorrection(last.Run.Font, last.Glyph.Glyph);
+      if (correction != 0) last.Glyph.KernAfterGlyph += correction;
+      _correctedTrailingGlyph = last.Glyph;
+      return correction;
+    }
+
+    private (AttributedGlyphRun<TFont, TGlyph> Run, GlyphInfo<TGlyph> Glyph)? FindOwnedLastGlyph(MathAtom wrapper) {
+      var atom = ResolveTrailingAtom(wrapper);
+      if (atom is null
+        || wrapper.Subscript.IsNonEmpty() || wrapper.Superscript.IsNonEmpty()
+        || atom.Subscript.IsNonEmpty() || atom.Superscript.IsNonEmpty()) return null;
+      // Simple predecessors are emitted into the current text line.  The
+      // preprocessor may have fused/replaced their atom, so line ownership is
+      // intentionally structural rather than reference-based.
+      if (IsSimpleTrailingAtom(wrapper)
+        && _currentLine.Length > 0
+        && _currentLine.Runs.LastOrDefault()?.GlyphInfos.LastOrDefault() is { } current)
+        return (_currentLine.Runs.Last(), current);
+      // Composite ownership is scoped to the wrapper's own produced display.
+      // Nested preprocessing creates fresh atom instances; FindLastGlyph must
+      // therefore inspect display shape, not atom identity.
+      return _ownedDisplays.TryGetValue(wrapper, out var owned) ? FindLastGlyph(owned) : null;
+    }
+
+    private void RememberDisplay(MathAtom atom, IDisplay<TFont, TGlyph> display) =>
+      _ownedDisplays[atom] = display;
+
+    private sealed class ReferenceComparer : IEqualityComparer<MathAtom> {
+      internal static readonly ReferenceComparer Instance = new();
+      public bool Equals(MathAtom? x, MathAtom? y) => ReferenceEquals(x, y);
+      public int GetHashCode(MathAtom obj) => RuntimeHelpers.GetHashCode(obj);
+    }
+
+    private static MathAtom? ResolveTrailingAtom(MathAtom atom) => atom switch {
+      Variable or Number or UnaryOperator or Ordinary => atom,
+      Colored colored => LastVisibleAtom(colored.InnerList),
+      ColorBox colorBox => LastVisibleAtom(colorBox.InnerList),
+      Group group => LastVisibleAtom(group.InnerList),
+      Box box => LastVisibleAtom(box.InnerList),
+      Inner inner when inner.LeftBoundary == Boundary.Empty && inner.RightBoundary == Boundary.Empty
+        => LastVisibleAtom(inner.InnerList),
+      _ => null
+    };
+
+    private static MathAtom? LastVisibleAtom(MathList list) {
+      for (var i = list.Atoms.Count - 1; i >= 0; i--)
+        if (list.Atoms[i] is not (Comment or Space or Style))
+          return ResolveTrailingAtom(list.Atoms[i]);
+      return null;
+    }
+
+    private static bool IsSimpleTrailingAtom(MathAtom atom) =>
+      atom is Variable or Number or UnaryOperator or Ordinary;
+
+    private static (AttributedGlyphRun<TFont, TGlyph> Run, GlyphInfo<TGlyph> Glyph)? FindLastGlyph(
+      IDisplay<TFont, TGlyph> display) {
+      switch (display) {
+        case TextLineDisplay<TFont, TGlyph> line:
+          for (var i = line.Runs.Count - 1; i >= 0; i--)
+            if (line.Runs[i].Run.GlyphInfos.LastOrDefault() is { } glyph)
+              return (line.Runs[i].Run, glyph);
+          break;
+        case ListDisplay<TFont, TGlyph> list when list.LinePosition == LinePosition.Regular:
+          for (var i = list.Displays.Count - 1; i >= 0; i--)
+            if (FindLastGlyph(list.Displays[i]) is { } found) return found;
+          break;
+        case BoxDisplay<TFont, TGlyph> box when box.DrawChild:
+          return FindLastGlyph(box.Child);
+        case InnerDisplay<TFont, TGlyph> inner:
+          return FindLastGlyph(inner.Inner);
+      }
+      return null;
+    }
+
+    private static bool SuccessorIsStraight(MathAtom atom) {
+      if (atom is Ordinary)
+        return !IsSlantedOrdinary(LastFusedAtom(atom));
+      if (atom is BinaryOperator or Relation or Punctuation or Open or Close or LargeDelimiter or LargeOperator)
+        return true;
+      if (atom is Colored colored) return FirstVisibleIsStraight(colored.InnerList);
+      if (atom is ColorBox colorBox) return FirstVisibleIsStraight(colorBox.InnerList);
+      if (atom is Group group) return FirstVisibleIsStraight(group.InnerList);
+      if (atom is Inner inner)
+        return inner.LeftBoundary.Nucleus?.Length > 0 || FirstVisibleIsStraight(inner.InnerList);
+      return false;
+    }
+
+    private static bool IsSlantedOrdinary(MathAtom atom) {
+      if (atom.FontStyle is FontStyle.Italic or FontStyle.BoldItalic or FontStyle.Caligraphic)
+        return true;
+      if (atom.FontStyle != FontStyle.Default || string.IsNullOrEmpty(atom.Nucleus)) return false;
+      var codePoint = char.ConvertToUtf32(atom.Nucleus, 0);
+      return codePoint == 0x210E
+        || codePoint is >= 0x1D434 and <= 0x1D467
+        or >= 0x1D44E and <= 0x1D481
+        or >= 0x1D6E2 and <= 0x1D715
+        or >= 0x1D716 and <= 0x1D71B
+        or >= 0x1D468 and <= 0x1D49B
+        or >= 0x1D71C and <= 0x1D755;
+    }
+
+    private static MathAtom LastFusedAtom(MathAtom atom) =>
+      atom.FusedAtoms is { Count: > 0 } fused ? fused[fused.Count - 1] : atom;
+
+    private void ApplyFusedInternalItalicCorrections(
+      MathAtom atom, AttributedGlyphRun<TFont, TGlyph> run) {
+      if (atom.FusedAtoms is not { Count: > 1 } fused) return;
+      var glyphIndex = 0;
+      for (var i = 0; i < fused.Count - 1; i++) {
+        glyphIndex += UnicodeScalarCount(fused[i].Nucleus);
+        if (!IsSlantedOrdinary(fused[i]) || IsSlantedOrdinary(fused[i + 1])) continue;
+        if (glyphIndex > 0 && glyphIndex <= run.GlyphInfos.Count) {
+          var glyph = run.GlyphInfos[glyphIndex - 1];
+          glyph.KernAfterGlyph += _mathTable.GetItalicCorrection(run.Font, glyph.Glyph);
+        }
+      }
+    }
+
+    private static int UnicodeScalarCount(string text) {
+      var count = 0;
+      for (var i = 0; i < text.Length; i++, count++)
+        if (char.IsHighSurrogate(text[i]) && i + 1 < text.Length && char.IsLowSurrogate(text[i + 1])) i++;
+      return count;
+    }
+
+    private static bool FirstVisibleIsStraight(MathList list) =>
+      list.Atoms.FirstOrDefault(atom => atom is not (Comment or Space or Style)) is { } atom
+      && SuccessorIsStraight(atom);
+
     internal TextLineDisplay<TFont, TGlyph>? AddDisplayLine(bool evenIfLengthIsZero) {
       if (evenIfLengthIsZero || (_currentLine != null && _currentLine.Length > 0)) {
         _currentLine.SetFont(_styleFont);
@@ -953,7 +1144,11 @@ namespace CSharpMath.Display {
         inner.RightBoundary is Boundary { Nucleus: var right } && right?.Length > 0
         ? FindGlyphForBoundary(right, glyphHeight)
         : null;
-      return new InnerDisplay<TFont, TGlyph>(innerListDisplay, leftGlyph, rightGlyph, range);
+      // This nested layout is complete. Cache its local ink-aware advance so
+      // later width/position queries do not repeatedly traverse the tree.
+      var innerAdvance = Math.Max(innerListDisplay.Width, innerListDisplay.InkWidth());
+      return new InnerDisplay<TFont, TGlyph>(
+        innerListDisplay, leftGlyph, rightGlyph, range, innerAdvance);
     }
 
     private IGlyphDisplay<TFont, TGlyph> FindGlyphForBoundary(
