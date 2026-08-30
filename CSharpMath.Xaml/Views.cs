@@ -275,7 +275,7 @@ namespace CSharpMath.Uno {
           TextAlignment, painterPadding, DisplacementX, DisplacementY);
       else
 #endif
-        Painter.Draw(canvas, TextAlignment, new(left: (float)padding.Left, top: (float)padding.Top, right: (float)padding.Right, bottom: (float)padding.Bottom), DisplacementX, DisplacementY);
+      Painter.Draw(canvas, TextAlignment, new(left: (float)padding.Left, top: (float)padding.Top, right: (float)padding.Right, bottom: (float)padding.Bottom), DisplacementX, DisplacementY);
     }
     /// <summary>Requires touch events to be enabled in SkiaSharp/Xamarin.Forms</summary>
     public bool EnablePanning { get => (bool)GetValue(EnablePanningProperty)!; set => SetValue(EnablePanningProperty, value); }
