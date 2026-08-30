@@ -1,0 +1,27 @@
+name: Outdated information
+description: Report documentation or examples that need updating.
+title: "[Docs]: "
+labels:
+  - Type/Housekeeping
+  - Area/Documentation
+body:
+  - type: input
+    id: location
+    attributes:
+      label: Where is the outdated information?
+      description: Link to the documentation, example, or source file.
+    validations:
+      required: true
+  - type: textarea
+    id: update
+    attributes:
+      label: What should be updated?
+    validations:
+      required: true
+  - type: input
+    id: tested_revision
+    attributes:
+      label: Tested revision
+      description: Revision where you observed the outdated information.
+    validations:
+      required: true

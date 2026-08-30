@@ -1,0 +1,54 @@
+name: New platform
+description: Suggest support for a new platform.
+title: "[Platform]: "
+labels:
+  - Type/Platform
+body:
+  - type: markdown
+    attributes:
+      value: For exploratory platform ideas or early brainstorming, use [Ideas Discussions](https://github.com/verybadcat/CSharpMath/discussions/new?category=ideas). Use this form for a concrete support proposal.
+  - type: input
+    id: platform
+    attributes:
+      label: Platform
+    validations:
+      required: true
+  - type: textarea
+    id: current_behavior
+    attributes:
+      label: Current support behavior and evidence
+      description: Explain what currently works or fails and provide logs, links, or a minimal example.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Concrete implementation scope
+      description: Describe the packages, APIs, CI, or platform-specific work needed.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance criteria
+      description: List observable outcomes that would show support is complete.
+    validations:
+      required: true
+  - type: textarea
+    id: testing_expectations
+    attributes:
+      label: Testing expectations
+      description: Describe the tests, devices, or CI checks needed.
+    validations:
+      required: true
+  - type: input
+    id: tested_revision
+    attributes:
+      label: Tested revision
+      description: Revision used to assess current support.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
