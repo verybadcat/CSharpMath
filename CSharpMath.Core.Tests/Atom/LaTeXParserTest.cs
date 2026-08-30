@@ -52,6 +52,7 @@ namespace CSharpMath.Core.AtomTests {
     [InlineData(@"\pi+\theta\geq 3", new[] { typeof(Variable), typeof(BinaryOperator), typeof(Variable), typeof(Relation), typeof(Number) }, @"\pi +\theta \geq 3")]
     // aliases
     [InlineData(@"\pi\ne 5 \land 3", new[] { typeof(Variable), typeof(Relation), typeof(Number), typeof(BinaryOperator), typeof(Number) }, @"\pi \neq 5\wedge 3")]
+    [InlineData(@"\udots", new[] { typeof(Ordinary) }, @"\udots ")]
     // control space
     [InlineData(@"x \ y", new[] { typeof(Variable), typeof(Ordinary), typeof(Variable) }, @"x\  y")]
     // spacing
@@ -94,6 +95,22 @@ namespace CSharpMath.Core.AtomTests {
       Assert.IsType<LargeOperator>(list[0]);
       Assert.IsType<BinaryOperator>(list[1]);
       Assert.Equal(@"\sin *", LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+
+    [Fact]
+    public void TestUdotsPreservesOrdinaryNucleusInScriptsAndTables() {
+      var direct = Assert.IsType<Ordinary>(ParseLaTeX(@"\udots").Atoms[0]);
+      Assert.Equal("\u22F0", direct.Nucleus);
+      Assert.Equal(@"\udots ", LaTeXParser.MathListToLaTeX(new MathList(direct)).ToString());
+
+      var scripted = Assert.IsType<Ordinary>(ParseLaTeX(@"\udots^a_b").Atoms[0]);
+      Assert.Equal("\u22F0", scripted.Nucleus);
+      Assert.NotNull(scripted.Superscript);
+      Assert.NotNull(scripted.Subscript);
+
+      var matrix = Assert.IsType<Table>(ParseLaTeX(@"\begin{matrix}\udots&x\\y&\udots\end{matrix}").Atoms[0]);
+      Assert.Equal("\u22F0", matrix.Cells[0][0].Atoms.OfType<Ordinary>().Single().Nucleus);
+      Assert.Equal("\u22F0", matrix.Cells[1][1].Atoms.OfType<Ordinary>().Single().Nucleus);
     }
 
     /// new[] { Base list }, new[] { Script of first atom }, new[] { Script of first atom inside script of first atom }
