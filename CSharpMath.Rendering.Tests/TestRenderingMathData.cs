@@ -41,6 +41,8 @@ namespace CSharpMath.Rendering.Tests {
     // iosMath c9afaad: the correction of a script base must come from the face that
     // drew its nucleus; \mathit digits keep their upright face, so 1^2 must not shift.
     public const string ItalicCorrectionStyles = @"1\mathit{2}^3 x_\ell \mathrm{P}^2 \mathbf{f}_1";
+    // Regression fixture for ordinary italic correction before a matrix's right delimiter.
+    public const string Issue32MatrixRightDelimiter = @"\left(\begin{pmatrix}P & Q \\ R & S\end{pmatrix}\right)";
     // Ruled arrays must honour the column alignment spec: cells sit at shared
     // offsets, then r/c/l shifts are applied within the full column width.
     public const string RuledArrayAlignment = @"\begin{array}{|r|c|} 1 & 2 \\ 1000 & x \end{array}";

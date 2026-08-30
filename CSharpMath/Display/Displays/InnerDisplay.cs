@@ -22,7 +22,11 @@ namespace CSharpMath.Display.Displays {
 
     public float Ascent => System.Math.Max(Left?.Ascent ?? 0, System.Math.Max(Right?.Ascent ?? 0, Inner.Ascent));
     public float Descent => System.Math.Max(Left?.Descent ?? 0, System.Math.Max(Right?.Descent ?? 0, Inner.Descent));
-    public float Width => (Left?.Width ?? 0) + Inner.Width + (Right?.Width ?? 0);
+    // InkWidth is expressed in the display's current coordinate space.  Use
+    // the extent relative to Inner's origin so positioning this composite does
+    // not accidentally turn an absolute X coordinate into extra advance.
+    private float InnerAdvance => System.Math.Max(Inner.Width, Inner.InkWidth());
+    public float Width => (Left?.Width ?? 0) + InnerAdvance + (Right?.Width ?? 0);
 
     public Range Range { get; }
 
@@ -36,7 +40,7 @@ namespace CSharpMath.Display.Displays {
           Inner.Position = new PointF(value.X + l.Width, value.Y);
         } else Inner.Position = value;
         if (Right is { } r)
-          r.Position = new PointF(Inner.Position.X + Inner.Width, value.Y);
+          r.Position = new PointF(Inner.Position.X + InnerAdvance, value.Y);
       }
     }
     public bool HasScript { get; set; }

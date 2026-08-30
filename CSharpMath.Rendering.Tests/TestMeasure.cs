@@ -292,6 +292,142 @@ namespace CSharpMath.Rendering.Tests {
       Assert.Equal(advance, display.Width);
     }
 
+    [Fact]
+    public void OrdinaryItalicCorrectionIsAppliedBeforeCloseAtom() {
+      static Display.Displays.TextLineDisplay<Fonts, Glyph> Line(string latex) {
+        var painter = new SkiaSharp.MathPainter { LaTeX = latex };
+        painter.Measure();
+        var root = Assert.IsType<Display.Displays.ListDisplay<Fonts, Glyph>>(painter.Display);
+        return Assert.IsType<Display.Displays.TextLineDisplay<Fonts, Glyph>>(Assert.Single(root.Displays));
+      }
+
+      var line = Line(@"P)");
+      var run = Assert.Single(line.Runs).Run;
+      Assert.Equal(2, run.GlyphInfos.Count);
+      Assert.NotEqual(0, run.GlyphInfos[0].KernAfterGlyph);
+      Assert.Equal(0, run.GlyphInfos[1].KernAfterGlyph);
+    }
+
+    [Fact]
+    public void OrdinaryItalicCorrectionSurvivesStyledRunBoundary() {
+      static Display.Displays.TextLineDisplay<Fonts, Glyph> Line(string latex) {
+        var painter = new SkiaSharp.MathPainter { LaTeX = latex };
+        painter.Measure();
+        var root = Assert.IsType<Display.Displays.ListDisplay<Fonts, Glyph>>(painter.Display);
+        return Assert.IsType<Display.Displays.TextLineDisplay<Fonts, Glyph>>(Assert.Single(root.Displays));
+      }
+
+      var run = Assert.Single(Line(@"\mathit{P}\mathrm{Q})").Runs).Run;
+      var withoutClose = Assert.Single(Line(@"\mathit{P}\mathrm{Q}").Runs).Run;
+      Assert.Equal(3, run.GlyphInfos.Count);
+      Assert.Equal(2, withoutClose.GlyphInfos.Count);
+      Assert.Equal(withoutClose.GlyphInfos[0].KernAfterGlyph, run.GlyphInfos[0].KernAfterGlyph);
+      Assert.Equal(0, run.GlyphInfos[2].KernAfterGlyph);
+    }
+
+    [Fact]
+    public void UprightFusedRunSuppressesInteriorCorrection() {
+      var painter = new SkiaSharp.MathPainter { LaTeX = @"\mathrm{PQ}" };
+      painter.Measure();
+      var root = Assert.IsType<Display.Displays.ListDisplay<Fonts, Glyph>>(painter.Display);
+      var line = Assert.IsType<Display.Displays.TextLineDisplay<Fonts, Glyph>>(Assert.Single(root.Displays));
+      var glyphs = Assert.Single(line.Runs).Run.GlyphInfos;
+      Assert.Equal(2, glyphs.Count);
+      Assert.Equal(0, glyphs[0].KernAfterGlyph);
+    }
+
+    [Fact]
+    public void OrdinaryItalicCorrectionAccumulatesWithBinarySpacing() {
+      static Display.Displays.TextLineDisplay<Fonts, Glyph> Line(string latex) {
+        var painter = new SkiaSharp.MathPainter { LaTeX = latex };
+        painter.Measure();
+        var root = Assert.IsType<Display.Displays.ListDisplay<Fonts, Glyph>>(painter.Display);
+        return Assert.IsType<Display.Displays.TextLineDisplay<Fonts, Glyph>>(Assert.Single(root.Displays));
+      }
+
+      var close = Line(@"P)").Runs.Single().Run.GlyphInfos[0].KernAfterGlyph;
+      var binary = Line(@"P+Q").Runs.Single().Run.GlyphInfos[0].KernAfterGlyph;
+      var font = new Fonts(Array.Empty<Typography.OpenFont.Typeface>(), FrontEnd.PainterConstants.DefaultFontSize);
+      var binarySpacing = 4 * MathTable.Instance.MuUnit(font);
+      Assert.Equal(close + binarySpacing, binary, precision: 4);
+    }
+
+    [Fact]
+    public void ScriptedFinalGlyphIsCorrectedOnlyByScriptLayout() {
+      var painter = new SkiaSharp.MathPainter { LaTeX = @"P^2" };
+      painter.Measure();
+      var root = Assert.IsType<Display.Displays.ListDisplay<Fonts, Glyph>>(painter.Display);
+      var line = Assert.IsType<Display.Displays.TextLineDisplay<Fonts, Glyph>>(
+        root.Displays.Single(display => display is Display.Displays.TextLineDisplay<Fonts, Glyph>));
+      Assert.Equal(0, Assert.Single(line.Runs).Run.GlyphInfos[0].KernAfterGlyph);
+      Assert.Single(root.Displays.OfType<Display.Displays.ListDisplay<Fonts, Glyph>>(),
+        display => display.LinePosition == Display.LinePosition.Superscript);
+    }
+
+    [Fact]
+    public void LargeOperatorItalicCorrectionIsIsolatedFromFollowingRun() {
+      var painter = new SkiaSharp.MathPainter { LaTeX = @"\sum P" };
+      painter.Measure();
+      var root = Assert.IsType<Display.Displays.ListDisplay<Fonts, Glyph>>(painter.Display);
+      Assert.Contains(root.Displays, display => display is Display.Displays.GlyphDisplay<Fonts, Glyph>);
+      var line = Assert.Single(root.Displays.OfType<Display.Displays.TextLineDisplay<Fonts, Glyph>>());
+      Assert.Single(line.Runs);
+      Assert.Single(line.Runs[0].Run.GlyphInfos);
+    }
+
+    [Theory]
+    [InlineData(@"P\sum")]
+    public void ItalicCorrectionSurvivesCompositeFollowingAtom(string latex) {
+      static float FirstKern(string source) {
+        var painter = new SkiaSharp.MathPainter { LaTeX = source };
+        painter.Measure();
+        var root = Assert.IsType<Display.Displays.ListDisplay<Fonts, Glyph>>(painter.Display);
+        var line = Assert.Single(root.Displays.OfType<Display.Displays.TextLineDisplay<Fonts, Glyph>>());
+        return Assert.Single(line.Runs).Run.GlyphInfos[0].KernAfterGlyph;
+      }
+
+      Assert.Equal(FirstKern(@"P)"), FirstKern(latex), precision: 4);
+    }
+
+    [Theory]
+    [InlineData(@"P\quad")]
+    [InlineData(@"P\displaystyle")]
+    public void NonDisplayingTerminalAtomDoesNotApplyItalicCorrection(string latex) {
+      static float Width(string source) {
+        var painter = new SkiaSharp.MathPainter { LaTeX = source };
+        painter.Measure();
+        return painter.Display!.Width;
+      }
+
+      Assert.Equal(Width("P"), Width(latex), precision: 4);
+    }
+
+    [Theory]
+    [InlineData(@"P\displaystyle )")]
+    public void NonDisplayingAtomPreservesPendingItalicCorrection(string latex) {
+      static float FirstKern(string source) {
+        var painter = new SkiaSharp.MathPainter { LaTeX = source };
+        painter.Measure();
+        var root = Assert.IsType<Display.Displays.ListDisplay<Fonts, Glyph>>(painter.Display);
+        var line = Assert.Single(root.Displays.OfType<Display.Displays.TextLineDisplay<Fonts, Glyph>>());
+        return Assert.Single(line.Runs).Run.GlyphInfos[0].KernAfterGlyph;
+      }
+      static float Gap(string source) {
+        var painter = new SkiaSharp.MathPainter { LaTeX = source };
+        painter.Measure();
+        var root = Assert.IsType<Display.Displays.ListDisplay<Fonts, Glyph>>(painter.Display);
+        var lines = root.Displays.OfType<Display.Displays.TextLineDisplay<Fonts, Glyph>>().ToArray();
+        Assert.Equal(2, lines.Length);
+        return lines[1].Position.X - (lines[0].Position.X + lines[0].Width);
+      }
+
+      var correction = FirstKern(@"P)");
+      if (latex.Contains(@"\quad"))
+        Assert.Equal(Gap(@"Q\quad Q") + correction, Gap(latex), precision: 4);
+      else
+        Assert.Equal(correction, Gap(latex), precision: 4);
+    }
+
     [Theory]
     [InlineData(FrontEnd.TextAlignment.Center)]
     [InlineData(FrontEnd.TextAlignment.Right)]
@@ -308,6 +444,121 @@ namespace CSharpMath.Rendering.Tests {
         : (100 - display.InkWidth()) / 2;
       Assert.Equal(expected, x, precision: 4);
       Assert.True(display.Width < display.InkWidth());
+    }
+
+    static Display.Displays.TextLineDisplay<Fonts, Glyph> FirstLine(string latex) {
+      var painter = new SkiaSharp.MathPainter { LaTeX = latex };
+      painter.Measure();
+      static Display.Displays.TextLineDisplay<Fonts, Glyph>? Find(Display.IDisplay<Fonts, Glyph> display) {
+        if (display is Display.Displays.TextLineDisplay<Fonts, Glyph> line) return line;
+        if (display is Display.Displays.ListDisplay<Fonts, Glyph> list)
+          return list.Displays.Select(Find).FirstOrDefault(line => line != null);
+        if (display is Display.Displays.BoxDisplay<Fonts, Glyph> box)
+          return Find(box.Child);
+        if (display is Display.Displays.InnerDisplay<Fonts, Glyph> inner)
+          return Find(inner.Inner);
+        return null;
+      }
+
+      return Find(painter.Display!)!;
+    }
+
+    static float FirstKern(string latex) =>
+      Assert.Single(FirstLine(latex).Runs).Run.GlyphInfos[0].KernAfterGlyph;
+
+    [Theory]
+    [InlineData(@"P)")]
+    [InlineData(@"P2")]
+    [InlineData("PΑ")]
+    public void OrdinaryItalicCorrectionHandlesStraightUnicodeSuccessors(string latex) {
+      Assert.Equal(FirstKern(@"P)"), FirstKern(latex), precision: 4);
+      Assert.NotEqual(0, FirstKern(latex));
+    }
+
+    [Theory]
+    [InlineData(@"Ph")]
+    [InlineData("P\U0001D452")] // mathematical italic small e
+    [InlineData("P\U0001D468")] // mathematical bold italic capital A
+    public void OrdinaryItalicCorrectionDoesNotSeparateSlantedUnicodeSuccessors(string latex) {
+      Assert.Equal(0, FirstKern(latex));
+    }
+
+    [Fact]
+    public void OrdinaryItalicCorrectionIsAddedToExistingRule16Spacing() {
+      var close = FirstKern(@"P)");
+      var binary = FirstKern(@"P+Q");
+      var font = new Fonts(Array.Empty<Typography.OpenFont.Typeface>(), FrontEnd.PainterConstants.DefaultFontSize);
+      Assert.Equal(close + 4 * MathTable.Instance.MuUnit(font), binary, precision: 4);
+    }
+
+    [Theory]
+    [InlineData(@"P^2)")]
+    [InlineData(@"P_2)")]
+    [InlineData(@"{P Q}^2)")]
+    [InlineData(@"\boxed{P}2")]
+    [InlineData(@"P\frac{2}{3}")]
+    [InlineData(@"P\begin{array}{c}2\\3\end{array}")]
+    public void ScriptAndCompositePredecessorsDoNotDuplicateItalicCorrection(string latex) {
+      var painter = new SkiaSharp.MathPainter { LaTeX = latex };
+      Assert.Null(Record.Exception(() => painter.Measure()));
+      var line = FirstLine(latex);
+      Assert.All(line.Runs.SelectMany(run => run.Run.GlyphInfos), glyph =>
+        Assert.InRange(glyph.KernAfterGlyph, 0, FirstKern(@"P)")));
+    }
+
+    [Theory]
+    [InlineData(@"\color{red}{P})")]
+    [InlineData(@"{P})")]
+    public void WrapperBoundariesRetainSingleTrailingItalicCorrection(string latex) {
+      var painter = new SkiaSharp.MathPainter { LaTeX = latex };
+      painter.Measure();
+      Assert.Equal(MeasureWidth(@"P)"), painter.Display!.Width, precision: 4);
+    }
+
+    [Fact]
+    public void ColorBoxBoundaryIncludesItsPaddingOnce() {
+      var painter = new SkiaSharp.MathPainter { LaTeX = @"\colorbox{red}{P})" };
+      painter.Measure();
+      Assert.Equal(MeasureWidth(@"P)"), painter.Display!.Width, precision: 4);
+      Assert.True(painter.Display.InkWidth() >= painter.Display.Width);
+    }
+
+    [Theory]
+    [InlineData(@"\left.P\right)")]
+    [InlineData(@"\left(P\right)")]
+    public void InnerBoundariesIncludeTheRightDelimiterAfterTheNestedContent(string latex) {
+      var painter = new SkiaSharp.MathPainter { LaTeX = latex };
+      painter.Measure();
+      Assert.True(painter.Display!.Width > MeasureWidth("P"));
+      Assert.True(painter.Display.InkWidth() >= painter.Display.Width);
+    }
+
+    static float MeasureWidth(string latex) {
+      var painter = new SkiaSharp.MathPainter { LaTeX = latex };
+      return painter.Measure().Width;
+    }
+
+    [Fact]
+    public void ItalicCorrectionPreservesPrecedingAdvanceAndNestedMatrixPlacement() {
+      var simple = new SkiaSharp.MathPainter { LaTeX = @"QP)" };
+      var matrix = new SkiaSharp.MathPainter { LaTeX = @"\begin{pmatrix}P)\\Q\end{pmatrix}" };
+      simple.Measure();
+      matrix.Measure();
+      Assert.True(simple.Display!.Width > new SkiaSharp.MathPainter { LaTeX = @"P)" }.Measure().Width);
+      var matrixDisplay = matrix.Display!;
+      Assert.True(matrixDisplay.InkWidth() >= matrixDisplay.Width);
+      Assert.True(matrixDisplay.Width > 0);
+    }
+
+    [Theory]
+    [InlineData(@"P")]
+    [InlineData(@"\left.P\right)")]
+    [InlineData(@"\begin{pmatrix}P&Q\\R&S\end{pmatrix}")]
+    public void TerminalInkExtentNeverShrinksTheAdvance(string latex) {
+      var painter = new SkiaSharp.MathPainter { LaTeX = latex };
+      painter.Measure();
+      Assert.NotNull(painter.Display);
+      Assert.True(painter.Display!.InkWidth() >= painter.Display.Width);
     }
   }
 }
