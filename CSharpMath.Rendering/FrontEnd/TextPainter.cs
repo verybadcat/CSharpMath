@@ -41,11 +41,13 @@ namespace CSharpMath.Rendering.FrontEnd {
         TextAlignment alignment = TextAlignment.TopLeft, Thickness padding = default,
         float offsetX = 0, float offsetY = 0) =>
       DrawCore(canvas, null, null, alignment, padding, offsetX, offsetY, false);
+#pragma warning disable RS0026 // RectangleF is a required, disambiguating second parameter.
     public void Draw(TCanvas canvas, RectangleF region,
       TextAlignment alignment = TextAlignment.TopLeft, Thickness padding = default,
       float offsetX = 0, float offsetY = 0) =>
       DrawCore(canvas, region.Width, region.Height, alignment, padding,
         region.X + offsetX, region.Y + offsetY, true);
+#pragma warning restore RS0026
     public void Draw(TCanvas canvas, float top, float left, float right) =>
       DrawCore(canvas, right - left, null, TextAlignment.TopLeft, default, left, top, false);
     public void Draw(TCanvas canvas, PointF position, float width) =>
