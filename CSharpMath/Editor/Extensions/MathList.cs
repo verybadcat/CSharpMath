@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 
 namespace CSharpMath.Editor {
@@ -155,6 +156,126 @@ namespace CSharpMath.Editor {
         if (self.AtomAt(index) is null)
           self.InsertAndAdvance(index, LaTeXSettings.Placeholder, null);
       return index;
+    }
+
+    static bool IsPlaceholderOnly(MathList list) =>
+      list.Count == 1 && list[0] is Atoms.Placeholder {
+        Subscript.Count: 0,
+        Superscript.Count: 0
+      };
+
+    static MathList ChildList(MathAtom atom, MathListSubIndexType type) => type switch {
+      MathListSubIndexType.Numerator => ((Atoms.Fraction)atom).Numerator,
+      MathListSubIndexType.Denominator => ((Atoms.Fraction)atom).Denominator,
+      MathListSubIndexType.Degree => ((Atoms.Radical)atom).Degree,
+      MathListSubIndexType.Radicand => ((Atoms.Radical)atom).Radicand,
+      MathListSubIndexType.Inner => ((Atoms.Inner)atom).InnerList,
+      MathListSubIndexType.Subscript => atom.Subscript,
+      MathListSubIndexType.Superscript => atom.Superscript,
+      _ => throw new ArgumentOutOfRangeException(nameof(type))
+    };
+
+    static List<MathAtom> ContentOf(MathList list) =>
+      IsPlaceholderOnly(list) ? new List<MathAtom>() : new List<MathAtom>(list.Atoms);
+
+    static void InsertAll(MathList list, int index, List<MathAtom> atoms) {
+      for (var i = 0; i < atoms.Count; i++) list.Insert(index + i, atoms[i]);
+    }
+
+    /// <summary>
+    /// Removes a placeholder at the caret and moves its script contents into the containing list.
+    /// The returned caret stays before the moved content.
+    /// </summary>
+    internal static MathListIndex RemovePlaceholderAtCaret(this MathList self, MathListIndex index) {
+      if (index.AtomIndex < 0 || index.AtomIndex >= self.Count)
+        throw new IndexOutOfRangeException(nameof(index));
+      if (index.SubIndexInfo is var (type, childIndex)) {
+        var atom = self[index.AtomIndex];
+        var child = ChildList(atom, type);
+        var childResult = child.RemovePlaceholderAtCaret(childIndex);
+        if (child.IsEmpty()) {
+          child.Add(LaTeXSettings.Placeholder);
+          childResult = new(0);
+        }
+        return childResult.Wrap(index.AtomIndex, type);
+      }
+      if (self[index.AtomIndex] is not Atoms.Placeholder placeholder)
+        throw new InvalidOperationException("Expected a placeholder at the caret");
+      var replacement = ContentOf(placeholder.Subscript);
+      replacement.AddRange(ContentOf(placeholder.Superscript));
+      self.RemoveAt(index.AtomIndex);
+      InsertAll(self, index.AtomIndex, replacement);
+      return new(index.AtomIndex);
+    }
+
+    /// <summary>
+    /// Simplifies the innermost structure whose field begins at <paramref name="index"/>.
+    /// Content before that field remains before the returned caret; the field and later
+    /// sibling content remain after it.
+    /// </summary>
+    internal static MathListIndex SimplifyContainingAtBeginning(this MathList self, MathListIndex index) {
+      if (index.SubIndexInfo is not var (type, childIndex))
+        throw new ArgumentException("The caret is not inside a structured field", nameof(index));
+      if (index.AtomIndex < 0 || index.AtomIndex >= self.Count)
+        throw new IndexOutOfRangeException(nameof(index));
+      var atom = self[index.AtomIndex];
+      var child = ChildList(atom, type);
+      if (childIndex.SubIndexInfo is not null) {
+        var childResult = child.SimplifyContainingAtBeginning(childIndex);
+        if (child.IsEmpty()) {
+          child.Add(LaTeXSettings.Placeholder);
+          childResult = new(0);
+        }
+        return childResult.Wrap(index.AtomIndex, type);
+      }
+      if (childIndex.AtomIndex != 0)
+        throw new ArgumentException("The caret is not at the beginning of its field", nameof(index));
+
+      if (type is MathListSubIndexType.Subscript or MathListSubIndexType.Superscript) {
+        var moved = ContentOf(child);
+        child.Clear();
+        if (atom is Atoms.LargeOperator) {
+          var subscript = type == MathListSubIndexType.Subscript ? moved : ContentOf(atom.Subscript);
+          var superscript = type == MathListSubIndexType.Superscript ? moved : ContentOf(atom.Superscript);
+          var replacement = new List<MathAtom>(subscript);
+          var caretOffset = type == MathListSubIndexType.Subscript ? 0 : replacement.Count;
+          replacement.AddRange(superscript);
+          self.RemoveAt(index.AtomIndex);
+          InsertAll(self, index.AtomIndex, replacement);
+          return new(index.AtomIndex + caretOffset);
+        }
+        var other = type == MathListSubIndexType.Subscript ? atom.Superscript : atom.Subscript;
+        if (atom is Atoms.Placeholder && other.IsEmpty()) {
+          self.RemoveAt(index.AtomIndex);
+          InsertAll(self, index.AtomIndex, moved);
+          return new(index.AtomIndex);
+        }
+        InsertAll(self, index.AtomIndex + 1, moved);
+        return new(index.AtomIndex + 1);
+      }
+
+      if (atom is not IMathListContainer container)
+        throw new SubIndexTypeMismatchException(type.ToString(), index.AtomIndex);
+      var replacementAtoms = new List<MathAtom>();
+      var caretOffsetInReplacement = -1;
+      foreach (var innerList in container.InnerLists) {
+        if (ReferenceEquals(innerList, child)) caretOffsetInReplacement = replacementAtoms.Count;
+        replacementAtoms.AddRange(ContentOf(innerList));
+      }
+      if (caretOffsetInReplacement < 0)
+        throw new InvalidOperationException("The selected field is not owned by its container");
+      if (replacementAtoms.Count > 0) {
+        replacementAtoms[replacementAtoms.Count - 1].Subscript.Append(atom.Subscript);
+        replacementAtoms[replacementAtoms.Count - 1].Superscript.Append(atom.Superscript);
+      } else if (atom.Subscript.IsNonEmpty() || atom.Superscript.IsNonEmpty()) {
+        var placeholder = LaTeXSettings.Placeholder;
+        placeholder.Subscript.Append(atom.Subscript);
+        placeholder.Superscript.Append(atom.Superscript);
+        replacementAtoms.Add(placeholder);
+      }
+      self.RemoveAt(index.AtomIndex);
+      InsertAll(self, index.AtomIndex, replacementAtoms);
+      return new(index.AtomIndex + caretOffsetInReplacement);
     }
 
     public static void RemoveAtoms(this MathList self, MathListRange? nullableRange) {

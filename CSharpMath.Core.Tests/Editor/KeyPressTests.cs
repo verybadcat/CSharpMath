@@ -1,7 +1,9 @@
 using System;
 using System.Linq;
+using CSharpMath.Atom;
 using CSharpMath.Display.FrontEnd;
 using Xunit;
+using Atoms = CSharpMath.Atom.Atoms;
 using EventInteractor = System.Action<CSharpMath.Editor.MathKeyboard<CSharpMath.Core.BackEnd.TestFont, System.Text.Rune>, System.EventHandler>;
 using K = CSharpMath.Editor.MathKeyboardInput;
 using T = Xunit.InlineDataAttribute;
@@ -231,12 +233,27 @@ namespace CSharpMath.Core.EditorTests {
       T(@"", K.Backspace, K.Backspace, K.Backspace, K.Backspace, K.Backspace),
       T(@"1", K.D1, K.D2, K.Backspace),
       T(@"x^2", K.SmallX, K.Power, K.D2, K.D1, K.Backspace),
-      T(@"y_{3_4}", K.SmallY, K.Subscript, K.D3, K.Subscript, K.Backspace, K.Backspace, K.D4, K.D5, K.Backspace),
-      T(@"5^■", K.D5, K.Power, K.Iota, K.Kappa, K.SmallEta, K.Backspace, K.Backspace, K.Backspace, K.Backspace),
-      T(@"\frac{■}{\square }", K.Fraction, K.Backspace),
+      // Once the last script atom has become a placeholder, another Backspace
+      // simplifies that empty script rather than leaving it stranded.
+      T(@"y_4", K.SmallY, K.Subscript, K.D3, K.Subscript, K.Backspace, K.Backspace, K.D4, K.D5, K.Backspace),
+      T(@"5", K.D5, K.Power, K.Iota, K.Kappa, K.SmallEta, K.Backspace, K.Backspace, K.Backspace, K.Backspace),
+      T(@"", K.Fraction, K.Backspace),
       T(@"", K.VerticalBar, K.VerticalBar, K.Backspace, K.Backspace, K.Backspace)
     ]
     public void Backspace(string latex, params K[] inputs) => Test(latex, inputs);
+
+    // An empty field is structural: deleting it removes its owner rather than leaving a
+    // placeholder behind. Non-empty sibling fields are flattened into the surrounding list.
+    [Theory,
+      T(@"", K.SquareRoot, K.Backspace),
+      T(@"", K.NthRoot, K.Backspace),
+      T(@"", K.BothRoundBrackets, K.Backspace),
+      T(@"3", K.Slash, K.D3, K.Left, K.Left, K.Backspace, K.Backspace),
+      T(@"", K.LimitWithBase, K.Backspace),
+      T(@"", K.Power, K.Backspace),
+      T(@"", K.Subscript, K.Backspace),
+    ]
+    public void BackspaceSimplifiesEmptyPlaceholder(string latex, params K[] inputs) => Test(latex, inputs);
 
     [
       Theory,
@@ -249,7 +266,9 @@ namespace CSharpMath.Core.EditorTests {
       T(@"\sqrt[■]{\square }", K.NthRoot, K.SmallA, K.Backspace),
       T(@"\sqrt{■}", K.SquareRoot, K.SmallA, K.Backspace),
       T(@"\frac{1}{■}", K.Slash, K.D6, K.Backspace),
-      T(@"■_5", K.Subscript, K.D5, K.Left, K.Left, K.Backspace, K.X, K.Left, K.Left, K.Left, K.Backspace),
+      // The first Backspace is before a scripted placeholder owner, so its non-empty
+      // subscript is flattened before X is inserted; it no longer leaves ■_5 behind.
+      T(@"X5", K.Subscript, K.D5, K.Left, K.Left, K.Backspace, K.X, K.Left, K.Left, K.Left, K.Backspace),
       T(@"7+1^X", K.D7, K.Plus, K.D1, K.D2, K.Power, K.X, K.Left, K.Left, K.Backspace),
       T(@"7.^X", K.D7, K.Decimal, K.D1, K.Power, K.X, K.Left, K.Left, K.Backspace),
       T(@"7+■^X", K.D7, K.Plus, K.D1, K.Power, K.X, K.Left, K.Left, K.Backspace),
@@ -275,6 +294,114 @@ namespace CSharpMath.Core.EditorTests {
       T(@"■_{\square }", K.ProductLowerLimit, K.Left, K.Backspace),
     ]
     public void LeftRightBackspace(string latex, params K[] inputs) => Test(latex, inputs);
+
+    // Regression matrix for deleting at container boundaries and then continuing to type.
+    [Theory,
+      T(@".\frac{\square }{\square }", K.Fraction, K.Left, K.Backspace, K.Decimal),
+      T(@".\sqrt{\square }", K.SquareRoot, K.Left, K.Backspace, K.Decimal),
+      T(@".\sqrt[\square ]{\square }", K.NthRoot, K.Left, K.Backspace, K.Decimal),
+      T(@".\left( \square \right) ", K.BothRoundBrackets, K.Left, K.Backspace, K.Decimal),
+      T(@".", K.Power, K.Left, K.Backspace, K.Decimal),
+      T(@".", K.Subscript, K.Left, K.Backspace, K.Decimal),
+      T(@"a.", K.SmallA, K.Fraction, K.Right, K.Backspace, K.Decimal),
+      T(@"a.", K.SmallA, K.SquareRoot, K.Right, K.Backspace, K.Decimal),
+      T(@"a.", K.SmallA, K.NthRoot, K.Right, K.Backspace, K.Decimal),
+      T(@"a.", K.SmallA, K.BothRoundBrackets, K.Right, K.Backspace, K.Decimal),
+      T(@".", K.Fraction, K.Right, K.Right, K.Backspace, K.Decimal),
+      T(@".", K.NthRoot, K.Right, K.Right, K.Backspace, K.Decimal),
+      T(@".bcd", K.Fraction, K.SmallB, K.SmallC, K.SmallD, K.Left, K.Left, K.Left, K.Backspace, K.Decimal),
+      T(@".bcd", K.SquareRoot, K.SmallB, K.SmallC, K.SmallD, K.Left, K.Left, K.Left, K.Backspace, K.Decimal),
+      T(@".bcd", K.NthRoot, K.SmallB, K.SmallC, K.SmallD, K.Left, K.Left, K.Left, K.Backspace, K.Decimal),
+      T(@".bcd", K.BothRoundBrackets, K.SmallB, K.SmallC, K.SmallD, K.Left, K.Left, K.Left, K.Backspace, K.Decimal),
+      T(@"a.bcd", K.SmallA, K.Fraction, K.SmallB, K.SmallC, K.SmallD, K.Left, K.Left, K.Left, K.Backspace, K.Decimal),
+      T(@"a.bcd", K.SmallA, K.SquareRoot, K.SmallB, K.SmallC, K.SmallD, K.Left, K.Left, K.Left, K.Backspace, K.Decimal),
+      T(@".456", K.Subscript, K.D4, K.D5, K.D6, K.Left, K.Left, K.Left, K.Left, K.Backspace, K.Decimal),
+      T(@".789", K.Power, K.D7, K.D8, K.D9, K.Left, K.Left, K.Left, K.Left, K.Backspace, K.Decimal),
+      T(@"X^{\square }", K.X, K.Power, K.Right, K.Subscript, K.Backspace),
+      T(@"X_{\square }", K.X, K.Subscript, K.Right, K.Power, K.Backspace),
+      T(@"X^Z", K.X, K.Power, K.Z, K.Right, K.Subscript, K.Backspace),
+      T(@"X_Y", K.X, K.Subscript, K.Y, K.Right, K.Power, K.Backspace),
+      T(@"3", K.Slash, K.D3, K.Left, K.Left, K.Backspace, K.Backspace),
+      T(@"", K.Fraction, K.Backspace, K.Backspace, K.Backspace),
+      T(@"", K.SquareRoot, K.Backspace, K.Backspace),
+      T(@"", K.BothRoundBrackets, K.Backspace, K.Backspace),
+      T(@"3", K.Fraction, K.Right, K.D3, K.Left, K.Left, K.Backspace, K.Backspace),
+      T(@".x", K.Fraction, K.SmallX, K.Left, K.Backspace, K.Decimal),
+      T(@".x", K.SquareRoot, K.SmallX, K.Left, K.Backspace, K.Decimal),
+      T(@".x", K.BothRoundBrackets, K.SmallX, K.Left, K.Backspace, K.Decimal),
+    ]
+    public void BackspaceContainerRegressionMatrix(string latex, params K[] inputs) => Test(latex, inputs);
+
+    [Theory,
+      // Deleting the empty upper limit places the caret after the preserved lower limit.
+      T(@"4X", K.IntegralBothLimits, K.D4, K.Right, K.Backspace, K.X),
+    ]
+    public void BackspacePreservesOppositeLimitAndCaretOrder(string latex, params K[] inputs) => Test(latex, inputs);
+
+    [Fact]
+    public void BackspacePreservesUpperLimitBeforeCaret() {
+      var keyboard = new MathKeyboard<TestFont, TGlyph>(context, new TestFont());
+      keyboard.KeyPress(K.SummationBothLimits, K.Right, K.D7);
+      // Keyboard navigation deliberately skips around active placeholders; set the
+      // exact lower-field boundary whose deletion semantics this test exercises.
+      keyboard.InsertionIndex = new MathListIndex(0)
+        .LevelUpWithSubIndex(MathListSubIndexType.Subscript, 0);
+
+      keyboard.KeyPress(K.Backspace);
+
+      Assert.Equal(new MathListIndex(0), keyboard.InsertionIndex);
+      keyboard.KeyPress(K.X);
+      Assert.Equal("X7", keyboard.LaTeX);
+    }
+
+    [Fact]
+    public void BackspaceSimplifiesNestedContainerAtWrappedCaret() {
+      var innerFraction = new Atoms.Fraction(
+        new MathList(new Atoms.Number("1"), new Atoms.Number("2")),
+        new MathList(new Atoms.Number("3"), new Atoms.Number("4")));
+      var outerFraction = new Atoms.Fraction(
+        new MathList(new Atoms.Variable("a"), innerFraction, new Atoms.Variable("e")),
+        new MathList(new Atoms.Variable("z")));
+      var keyboard = new MathKeyboard<TestFont, TGlyph>(context, new TestFont());
+      keyboard.MathList.Add(outerFraction);
+      keyboard.InsertionIndex = new MathListIndex(0)
+        .LevelUpWithSubIndex(MathListSubIndexType.Numerator, 1)
+        .LevelUpWithSubIndex(MathListSubIndexType.Denominator, 0);
+
+      keyboard.KeyPress(K.Backspace);
+
+      Assert.Equal(
+        new MathListIndex(0).LevelUpWithSubIndex(MathListSubIndexType.Numerator, 3),
+        keyboard.InsertionIndex);
+      keyboard.KeyPress(K.X);
+      Assert.Equal(@"\frac{a12X34e}{z}", keyboard.LaTeX);
+    }
+
+    [Fact]
+    public void BackspaceTransfersContainerScriptsToLastReplacement() {
+      var fraction = new Atoms.Fraction(
+        new MathList(new Atoms.Variable("a"), new Atoms.Variable("b")),
+        new MathList(new Atoms.Variable("c"), new Atoms.Variable("d")));
+      fraction.Subscript.Append(new MathList(new Atoms.Variable("e"), new Atoms.Variable("f")));
+      fraction.Superscript.Append(new MathList(new Atoms.Variable("g"), new Atoms.Variable("h")));
+      var keyboard = new MathKeyboard<TestFont, TGlyph>(context, new TestFont());
+      keyboard.MathList.Add(fraction);
+      keyboard.InsertionIndex = new MathListIndex(0)
+        .LevelUpWithSubIndex(MathListSubIndexType.Denominator, 0);
+
+      keyboard.KeyPress(K.Backspace);
+
+      Assert.Equal(new MathListIndex(2), keyboard.InsertionIndex);
+      keyboard.KeyPress(K.X);
+      Assert.Equal(@"abXcd_{ef}^{gh}", keyboard.LaTeX);
+      var last = keyboard.MathList[keyboard.MathList.Count - 1];
+      Assert.Equal(new[] { "e", "f" }, last.Subscript.Select(atom => atom.Nucleus));
+      Assert.Equal(new[] { "g", "h" }, last.Superscript.Select(atom => atom.Nucleus));
+      Assert.All(keyboard.MathList.Take(keyboard.MathList.Count - 1), atom => {
+        Assert.Empty(atom.Subscript);
+        Assert.Empty(atom.Superscript);
+      });
+    }
 
     [Theory, T(@"\square ^■", K.Power), T(@"\square _■", K.Subscript)]
     public void ScriptsAtBeginningOfLine(string latex, params K[] inputs) => Test(latex, inputs);
