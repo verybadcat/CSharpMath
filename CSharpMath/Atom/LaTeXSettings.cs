@@ -193,6 +193,28 @@ namespace CSharpMath.Atom {
               Ok(new RaiseBox(raise, innerList)));
           });
         } },
+        { @"\not", (parser, accumulate, stopChar) =>
+          parser.ReadArgument().Bind(target => {
+            if (target.Count != 1 || target[0] is not Relation relation
+                || relation.Subscript.IsNonEmpty() || relation.Superscript.IsNonEmpty())
+              return Err(@"\not must be followed by a relation");
+
+            // Resolve the negation through the symbol table so the resulting atom
+            // remains a normal relation and serializes back to canonical LaTeX.
+            var command = CommandForAtom(relation);
+            var negatedCommand = command switch {
+              "=" => @"\neq",
+              "<" => @"\nless",
+              ">" => @"\ngtr",
+              @"\in" => @"\notin",
+              _ when command is { Length: > 1 } && command[0] == '\\' =>
+                @"\n" + command.Substring(1),
+              _ => null
+            };
+            if (negatedCommand is null || AtomForCommand(negatedCommand) is not Relation negated)
+              return Err($@"\not does not support relation {relation.Nucleus}");
+            return Ok(negated);
+          }) },
         { @"\operatorname", (parser, accumulate, stopChar) => {
           if (!parser.ReadCharIfAvailable('{')) return "Expected {";
           // An operator name is a word, so letters -- but a letter may be written as a command:

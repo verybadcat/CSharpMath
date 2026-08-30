@@ -96,6 +96,39 @@ namespace CSharpMath.Core.AtomTests {
       Assert.Equal(@"\sin *", LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
+    [Theory]
+    [InlineData(@"\not=", "≠", @"\neq ")]
+    [InlineData(@"\not<", "≮", @"\nless ")]
+    [InlineData(@"\not\leq", "≰", @"\nleq ")]
+    [InlineData(@"\not\in", "∉", @"\notin ")]
+    public void NotNegatesRelation(string input, string nucleus, string output) {
+      var list = ParseLaTeX(input);
+
+      var relation = Assert.IsType<Relation>(Assert.Single(list));
+      Assert.Equal(nucleus, relation.Nucleus);
+      Assert.Equal(output, LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+
+    [Theory]
+    [InlineData(@"\not x")]
+    [InlineData(@"\not\frac12")]
+    public void NotRejectsNonRelation(string input) {
+      var parser = new LaTeXParser(input);
+      var (_, error) = parser.Build();
+
+      Assert.Contains(@"\not must be followed by a relation", error);
+    }
+
+    [Fact]
+    public void NotReportsUnsupportedRelationWithSourcePosition() {
+      var (list, error) = LaTeXParser.MathListFromLaTeX(@"\not\approx");
+
+      Assert.Null(list);
+      Assert.StartsWith("Error: \\not does not support relation ≈", error);
+      Assert.Contains("\n\\not\\approx\n", error);
+      Assert.Contains("↑ (pos ", error);
+    }
+
     /// new[] { Base list }, new[] { Script of first atom }, new[] { Script of first atom inside script of first atom }
     [Theory]
     [InlineData("x^2", "x^2", new[] { typeof(Variable) }, new[] { typeof(Number) })]
