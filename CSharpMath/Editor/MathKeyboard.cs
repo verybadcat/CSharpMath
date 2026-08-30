@@ -613,6 +613,9 @@ namespace CSharpMath.Editor {
         case MathKeyboardInput.PartialDifferential:
           InsertSymbolName(@"\partial");
           break;
+        case MathKeyboardInput.Differential:
+          InsertAtom(new Atoms.Variable("d") { FontStyle = FontStyle.Roman });
+          break;
         case MathKeyboardInput.NotEquals:
           InsertSymbolName(@"\neq");
           break;

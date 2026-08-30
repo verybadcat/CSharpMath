@@ -1,5 +1,7 @@
 using System;
 using System.Linq;
+using CSharpMath.Atom;
+using CSharpMath.Atom.Atoms;
 using CSharpMath.Display.FrontEnd;
 using Xunit;
 using EventInteractor = System.Action<CSharpMath.Editor.MathKeyboard<CSharpMath.Core.BackEnd.TestFont, System.Text.Rune>, System.EventHandler>;
@@ -61,6 +63,10 @@ namespace CSharpMath.Core.EditorTests {
         K.Comma, K.Factorial, K.Infinity, K.Angle, K.Degree, K.VerticalBar, K.Logarithm, K.NaturalLogarithm),
       T(@"''\partial \leftarrow \uparrow \rightarrow \downarrow \  ",
         K.Prime, K.Prime, K.PartialDifferential, K.LeftArrow, K.UpArrow, K.RightArrow, K.DownArrow, K.Space),
+      T(@"\mathrm{d}", K.Differential),
+      T(@"\mathrm{d}x", K.Differential, K.SmallX),
+      T(@"\int f(x)\  \mathrm{d}x", K.Integral, K.SmallF, K.LeftRoundBracket, K.SmallX,
+        K.RightRoundBracket, K.Space, K.Differential, K.SmallX),
       //Relations
       T(@"=\neq <\leq >\geq ", K.Equals, K.NotEquals, K.LessThan, K.LessOrEquals, K.GreaterThan, K.GreaterOrEquals),
       //Capital English alphabets
@@ -151,6 +157,16 @@ namespace CSharpMath.Core.EditorTests {
       T(@"\prod _{\square _2}", K.ProductLowerLimit, K.Subscript, K.D2),
     ]
     public void AtomInput(string latex, params K[] inputs) => Test(latex, inputs);
+
+    [Fact]
+    public void DifferentialInThinSpaceIntegralSerializesUpright() {
+      var (list, error) = new LaTeXParser(@"\int f(x)\,").Build();
+      Assert.Null(error);
+      Assert.NotNull(list);
+      list!.Add(new Variable("d") { FontStyle = FontStyle.Roman });
+      list.Add(new Variable("x"));
+      Assert.Equal(@"\int f(x)\, \mathrm{d}x", LaTeXParser.MathListToLaTeX(list).ToString());
+    }
 
     [
       Theory,

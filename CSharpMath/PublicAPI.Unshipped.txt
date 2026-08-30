@@ -1,0 +1,1 @@
+CSharpMath.Editor.MathKeyboardInput.Differential = 8526 -> CSharpMath.Editor.MathKeyboardInput

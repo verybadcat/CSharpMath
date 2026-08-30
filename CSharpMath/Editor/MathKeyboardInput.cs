@@ -13,6 +13,8 @@ namespace CSharpMath.Editor {
     Ratio = ':', Percentage = '%', Comma = ',', Semicolon = ';', Factorial = '!',
     Infinity = '∞', Angle = '∠', Degree = '°', VerticalBar = '|',
     Logarithm = '㏒', NaturalLogarithm = '㏑', Prime = '\'', PartialDifferential = '∂',
+    /// <summary>An upright differential d.</summary>
+    Differential = 'ⅆ',
     LeftArrow = '←', UpArrow = '↑', RightArrow = '→', DownArrow = '↓', Space = ' ',
 
     // More complicated operators
