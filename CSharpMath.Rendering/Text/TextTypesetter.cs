@@ -104,7 +104,7 @@ namespace CSharpMath.Rendering.Text {
             }
           case TextAtom.Text t:
             var content = UnicodeFontChanger.ChangeFont(t.Content, style);
-            var glyphs = GlyphFinder.Instance.FindGlyphs(fonts, content);
+            var glyphs = GlyphFinder.Instance.FindGlyphs(fonts, t.Content, style).ToList();
             //Calling Select(g => g.Typeface).Distinct() speeds up query up to 10 times,
             //Calling Max(Func<,>) instead of Select(Func<,>).Max() speeds up query 2 times
             var typefaces = glyphs.Select(g => g.Typeface).Distinct().ToList();

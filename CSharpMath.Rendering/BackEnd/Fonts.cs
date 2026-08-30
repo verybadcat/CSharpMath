@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using CSharpMath.Atom;
 using Typography.OpenFont;
 using Typography.OpenFont.Extensions;
 
@@ -24,12 +25,17 @@ namespace CSharpMath.Rendering.BackEnd {
     }
     public Fonts(IEnumerable<Typeface> localTypefaces, float pointSize) {
       PointSize = pointSize;
-      Typefaces = localTypefaces.Concat(GlobalTypefaces);
+      var localSnapshot = (localTypefaces ?? Enumerable.Empty<Typeface>()).ToArray();
+      LocalTypefaces = localSnapshot;
+      LocalStyleTypefaces = GlyphFinder.BuildLocalStyleLookup(localSnapshot);
+      Typefaces = localSnapshot.Concat(GlobalTypefaces);
       MathTypeface = Typefaces.First(t => t.HasMathTable());
       MathConsts = MathTypeface.MathConsts ?? throw new Atom.InvalidCodePathException(nameof(MathTypeface) + " doesn't have " + nameof(MathConsts));
     }
     public static readonly Typefaces GlobalTypefaces = GetGlobalTypefaces();
     public float PointSize { get; }
+    internal IEnumerable<Typeface> LocalTypefaces { get; }
+    internal IReadOnlyDictionary<FontStyle, IReadOnlyList<Typeface>> LocalStyleTypefaces { get; }
     public IEnumerable<Typeface> Typefaces { get; }
     public Typeface MathTypeface { get; }
     public Typography.OpenFont.MathGlyphs.MathConstants MathConsts { get; }

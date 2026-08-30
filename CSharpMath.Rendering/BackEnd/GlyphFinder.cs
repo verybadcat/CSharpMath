@@ -1,4 +1,9 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using CSharpMath.Atom;
+using Typography.OpenFont;
+using Typography.OpenFont.Extensions;
 
 namespace CSharpMath.Rendering.BackEnd {
   public class GlyphFinder : Display.FrontEnd.IGlyphFinder<Fonts, Glyph> {
@@ -14,6 +19,51 @@ namespace CSharpMath.Rendering.BackEnd {
         if (g != 0) return new Glyph(font, font.GetGlyph(g));
       }
       return Lookup(fonts, GlyphNotFound);
+    }
+    static bool IsOrdinary(FontStyle style) =>
+      style is FontStyle.Roman or FontStyle.Bold or FontStyle.Italic or FontStyle.BoldItalic;
+    static FontStyle? GetOrdinaryStyle(Typeface typeface) {
+      var translated = typeface.TranslateOS2FontStyle();
+      var bold = (translated & TranslatedOS2FontStyle.BOLD) != 0;
+      var italic = (translated & (TranslatedOS2FontStyle.ITALIC | TranslatedOS2FontStyle.OBLIQUE)) != 0;
+      return bold && italic ? FontStyle.BoldItalic
+        : bold ? FontStyle.Bold
+        : italic ? FontStyle.Italic
+        : FontStyle.Roman;
+    }
+    internal static IReadOnlyDictionary<FontStyle, IReadOnlyList<Typeface>> BuildLocalStyleLookup(
+      IReadOnlyList<Typeface> localTypefaces) {
+      var result = new Dictionary<FontStyle, IReadOnlyList<Typeface>>();
+      var byStyle = new Dictionary<FontStyle, List<Typeface>>();
+      foreach (var family in localTypefaces.GroupBy(t => t.Name, StringComparer.OrdinalIgnoreCase)) {
+        foreach (var face in family) {
+          var style = GetOrdinaryStyle(face).GetValueOrDefault();
+          if (!byStyle.TryGetValue(style, out var faces))
+            byStyle[style] = faces = new List<Typeface>();
+          faces.Add(face);
+        }
+      }
+      foreach (var pair in byStyle)
+        result[pair.Key] = pair.Value;
+      return result;
+    }
+    Glyph LookupLocalStyle(Fonts fonts, int codepoint, FontStyle style) {
+      if (!fonts.LocalStyleTypefaces.TryGetValue(style, out var faces)) return Glyph.Empty;
+      foreach (var face in faces) {
+        var glyph = face.GetGlyphIndex(codepoint);
+        if (glyph != 0) return new Glyph(face, face.GetGlyph(glyph));
+      }
+      return Glyph.Empty;
+    }
+    /// <summary>Find ordinary text glyphs in a matching local family before applying mathematical Unicode styling.</summary>
+    internal System.Collections.Generic.IEnumerable<Glyph> FindGlyphs(Fonts fonts, string str, FontStyle style) {
+      var styled = Display.UnicodeFontChanger.ChangeFont(str, style);
+      var sourceCodepoints = Typography.OpenFont.StringUtils.GetCodepoints(str.ToCharArray()).ToArray();
+      var styledCodepoints = Typography.OpenFont.StringUtils.GetCodepoints(styled.ToCharArray()).ToArray();
+      for (var i = 0; i < sourceCodepoints.Length; i++) {
+        var local = IsOrdinary(style) ? LookupLocalStyle(fonts, sourceCodepoints[i], style) : Glyph.Empty;
+        yield return local.IsEmpty ? Lookup(fonts, styledCodepoints[i]) : local;
+      }
     }
     public int GetCodepoint(string str, int index) =>
       index + 1 < str.Length
