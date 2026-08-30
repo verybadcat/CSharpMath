@@ -1,8 +1,23 @@
-blank_issues_enabled: true
+blank_issues_enabled: false
 contact_links:
+  - name: Ask a question (Q&A)
+    url: https://github.com/verybadcat/CSharpMath/discussions/new?category=q-a
+    about: Ask usage and support questions in the Q&A discussion category.
+  - name: Suggest an idea
+    url: https://github.com/verybadcat/CSharpMath/discussions/new?category=ideas
+    about: Share exploratory ideas and early proposals in Ideas.
+  - name: Start a general discussion
+    url: https://github.com/verybadcat/CSharpMath/discussions/new?category=general
+    about: Discuss topics that do not fit the other categories in General.
+  - name: Show and tell
+    url: https://github.com/verybadcat/CSharpMath/discussions/new?category=show-and-tell
+    about: Share projects, examples, and things you built with CSharpMath.
+  - name: Report a security vulnerability
+    url: https://github.com/verybadcat/CSharpMath/security/policy
+    about: Read the security policy before reporting a vulnerability; do not disclose details publicly.
   - name: Issue with AngouriMath
-    url:  https://github.com/asc-community/AngouriMath/issues/new/choose
+    url: https://github.com/asc-community/AngouriMath/issues/new/choose
     about: Please open issues relating to AngouriMath in asc-community/AngouriMath.
   - name: Issue with Typography
-    url:  https://github.com/LayoutFarm/Typography/issues/new/choose
+    url: https://github.com/LayoutFarm/Typography/issues/new/choose
     about: Please open issues relating to Typography in LayoutFarm/Typography.

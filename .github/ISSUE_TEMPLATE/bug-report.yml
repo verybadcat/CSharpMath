@@ -1,0 +1,55 @@
+name: Bug report
+description: Report a reproducible problem in CSharpMath.
+title: "[Bug]: "
+labels:
+  - Type/Bug
+body:
+  - type: markdown
+    attributes:
+      value: Please search existing issues before filing a new report. For security vulnerabilities, follow [the security policy](https://github.com/verybadcat/CSharpMath/security/policy) instead of posting details here.
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the problem and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: List the smallest set of steps that reliably demonstrates the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: example
+    attributes:
+      label: Minimal C# example
+      description: If applicable, provide a minimal complete example.
+      render: csharp
+  - type: input
+    id: version
+    attributes:
+      label: Package version or commit
+      placeholder: "e.g. 0.0.0 or a2315b4"
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Platform and device
+      placeholder: "e.g. CSharpMath.Maui on Android, CSharpMath.Avalonia on Windows, or CSharpMath.SkiaSharp"
+    validations:
+      required: true
+  - type: input
+    id: tested_revision
+    attributes:
+      label: Tested revision
+      description: Commit, branch, or release used when testing.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add logs, screenshots, or other relevant details.

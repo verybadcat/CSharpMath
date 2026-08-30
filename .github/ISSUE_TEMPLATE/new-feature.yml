@@ -1,0 +1,50 @@
+name: Feature request
+description: Suggest an improvement to CSharpMath.
+title: "[Feature]: "
+labels:
+  - Type/Enhancement
+body:
+  - type: markdown
+    attributes:
+      value: For exploratory ideas or early brainstorming, please use [Discussions](https://github.com/verybadcat/CSharpMath/discussions). Use this form for a concrete, actionable change.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance criteria
+      description: List the observable outcomes that would show this request is complete.
+    validations:
+      required: true
+  - type: textarea
+    id: out_of_scope
+    attributes:
+      label: Out of scope
+      description: Note related changes or behaviors this request does not cover.
+    validations:
+      required: true
+  - type: textarea
+    id: testing_notes
+    attributes:
+      label: Testing notes
+      description: Explain how the change could be tested or what cases it must cover.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
