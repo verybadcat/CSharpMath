@@ -4,9 +4,9 @@ namespace CSharpMath.Rendering.Tests {
   using System.Drawing;
   using System.Linq;
   using BackEnd;
-  using CSharpMath.Display.FrontEnd;
-  using CSharpMath.Display.Displays;
   using CSharpMath.Display;
+  using CSharpMath.Display.Displays;
+  using CSharpMath.Display.FrontEnd;
   using CSharpMath.Editor;
   using CSharpMath.Rendering.FrontEnd;
   using Xunit;
