@@ -71,6 +71,11 @@ namespace CSharpMath.Rendering.Tests {
     [Theory, ClassData(typeof(TestRenderingMathData))]
     public void MathDisplay(string file, string latex) =>
       Run(file, latex, new TMathPainter { LineStyle = Atom.LineStyle.Display });
+    [Fact]
+    public void Issue32MatrixRightDelimiterDisplay() =>
+      Run("Issue32MatrixRightDelimiter",
+        @"\left(\begin{pmatrix}P & Q \\ R & S\end{pmatrix}\right)",
+        new TMathPainter { LineStyle = Atom.LineStyle.Display }, folder: "MathDisplay");
     [Theory, ClassData(typeof(TestRenderingMathData))]
     public void MathInline(string file, string latex) =>
       Run(file, latex, new TMathPainter { LineStyle = Atom.LineStyle.Text });

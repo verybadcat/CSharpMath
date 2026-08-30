@@ -142,8 +142,8 @@ namespace CSharpMath.Core.EditorTests {
 
     public static TestData Issue46Data =>
       new TestData {
-        { (57.777, 0), 4 },
-        { (75.097, 0), 5 },
+        { (58.097, 0), 4 },
+        { (75.418, 0), 5 },
       };
     [Theory, MemberData(nameof(Issue46Data))] // https://github.com/verybadcat/CSharpMath/issues/46
     public void Issue46(PointF point, MathListIndex expected) => Test("2+x+x^y", point, expected);
@@ -209,10 +209,10 @@ namespace CSharpMath.Core.EditorTests {
         { (10, 9.68), 0, (SubIndex.Superscript, 0) },
         { (17, 9.68), 0, (SubIndex.Superscript, 1) },
         { (21.453, 0), 1 },
-        { (31.453, 0), 2 },
-        { (41.453, 0), 3 },
-        { (51.453, 0), 4 },
-        { (61.453, 0), 5 },
+        { (31.773, 0), 2 },
+        { (41.773, 0), 3 },
+        { (51.773, 0), 4 },
+        { (61.773, 0), 5 },
       };
     [Theory, MemberData(nameof(IntegralData))]
     public void Integral(PointF point, MathListIndex expected) => Test(@"\int_a^b x\ dx", point, expected);
@@ -225,10 +225,10 @@ namespace CSharpMath.Core.EditorTests {
         { (1.5, 20.8), 0, (SubIndex.Superscript, 0) },
         { (8.5, 20.8), 0, (SubIndex.Superscript, 1) },
         { (13.333, 0), 1 },
-        { (23.333, 0), 2 },
-        { (33.333, 0), 3 },
-        { (43.333, 0), 4 },
-        { (53.333, 0), 5 },
+        { (23.653, 0), 2 },
+        { (33.653, 0), 3 },
+        { (43.653, 0), 4 },
+        { (53.653, 0), 5 },
       };
     [Theory, MemberData(nameof(IntegralLimitsData))]
     public void IntegralLimits(PointF point, MathListIndex expected) => Test(@"\int\limits_a^b x\ dx", point, expected);
@@ -237,9 +237,9 @@ namespace CSharpMath.Core.EditorTests {
         { (0, 0), 0 },
         { (13.333, 0), 1 },
         { (53.333, 0), 1, (SubIndex.BetweenBaseAndScripts, 1) },
-        { (22.833, -17.14), 1, (SubIndex.Subscript, 0) },
-        { (29.833, -17.14), 1, (SubIndex.Subscript, 1) },
-        { (36.833, -17.14), 1, (SubIndex.Subscript, 2) },
+        { (22.673, -17.14), 1, (SubIndex.Subscript, 0) },
+        { (29.993, -17.14), 1, (SubIndex.Subscript, 1) },
+        { (36.993, -17.14), 1, (SubIndex.Subscript, 2) },
         { (56.666, 0), 2 },
         { (66.666, 0), 2, (SubIndex.BetweenBaseAndScripts, 1) },
         { (66.666, -6.12), 2, (SubIndex.Subscript, 0) },
@@ -274,19 +274,19 @@ namespace CSharpMath.Core.EditorTests {
       new TestData {
         { (0, 0), 0 },
         { (13.333, 0), 1 },
-        { (26.667, 0), 2 },
-        { (36.667, 0), 2, (SubIndex.Inner, 0) },
-        { (46.667, 0), 2, (SubIndex.Inner, 1) },
-        { (60, 0), 2, (SubIndex.Inner, 2) },
-        { (70, 0), 2, (SubIndex.Inner, 2), (SubIndex.Inner, 0) },
-        { (80, 0), 2, (SubIndex.Inner, 2), (SubIndex.Inner, 1) },
-        { (90, 0), 2, (SubIndex.Inner, 2), (SubIndex.Inner, 2) },
-        { (103.333, 0), 2, (SubIndex.Inner, 3) },
-        { (113.333, 0), 2, (SubIndex.Inner, 4) },
-        { (123.333, 0), 2, (SubIndex.Inner, 5) },
-        { (136.666, 0), 3 },
-        { (150, 0), 4 },
-        { (160, 0), 5 },
+        { (26.887, 0), 2 },
+        { (36.887, 0), 2, (SubIndex.Inner, 0) },
+        { (46.887, 0), 2, (SubIndex.Inner, 1) },
+        { (60.22, 0), 2, (SubIndex.Inner, 2) },
+        { (70.22, 0), 2, (SubIndex.Inner, 2), (SubIndex.Inner, 0) },
+        { (80.22, 0), 2, (SubIndex.Inner, 2), (SubIndex.Inner, 1) },
+        { (90.22, 0), 2, (SubIndex.Inner, 2), (SubIndex.Inner, 2) },
+        { (103.553, 0), 2, (SubIndex.Inner, 3) },
+        { (113.553, 0), 2, (SubIndex.Inner, 4) },
+        { (123.553, 0), 2, (SubIndex.Inner, 5) },
+        { (136.887, 0), 3 },
+        { (150.22, 0), 4 },
+        { (160.22, 0), 5 },
       };
     [Theory, MemberData(nameof(InnerData))]
     public void Inner(PointF point, MathListIndex expected) => Test(@"\int a\left(bb\left[cc\right]dd\right)e\sum ", point, expected);

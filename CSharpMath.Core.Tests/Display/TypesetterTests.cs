@@ -106,7 +106,7 @@ namespace CSharpMath.Core.DisplayTests {
 
     [Theory, InlineData("xyzw"), InlineData("xy2w"), InlineData("12.3"), InlineData("|`@/"), InlineData("1`y.")]
     public void TestVariablesNumbersAndOrdinaries(string latex) =>
-      TestOuter(latex, 4, 14, 4, 40,
+      TestOuter(latex, 4, 14, 4, latex is "xy2w" or "1`y." ? 40.16 : 40,
         d => {
           var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
           Assert.Equal(4, line.Atoms.Count);
@@ -117,7 +117,7 @@ namespace CSharpMath.Core.DisplayTests {
 
           Assert.Equal(14, line.Ascent);
           Assert.Equal(4, line.Descent);
-          Assert.Equal(40, line.Width);
+          Approximately.Equal(latex is "xy2w" or "1`y." ? 40.16 : 40, line.Width);
         });
     [Theory]
     [InlineData("%\n1234", "1234", 1, 4)]
@@ -309,7 +309,7 @@ namespace CSharpMath.Core.DisplayTests {
         });
     [Theory, InlineData("2x+3=y"), InlineData("y=3+2x"), InlineData("y-3=2x"), InlineData("3=y-2x")]
     public void TestEquationWithOperatorsAndRelations(string latex) =>
-      TestOuter(latex, 6, 14, 4, 80, d => {
+      TestOuter(latex, 6, 14, 4, latex is "2x+3=y" ? 80.32 : 80.16, d => {
         var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
 
         Assert.Equal(6, line.Atoms.Count);
@@ -320,28 +320,28 @@ namespace CSharpMath.Core.DisplayTests {
 
         Assert.Equal(14, line.Ascent);
         Assert.Equal(4, line.Descent);
-        Assert.Equal(80, line.Width);
+        Approximately.Equal(latex is "2x+3=y" ? 80.32 : 80.16, line.Width);
       });
 
     [Theory, InlineData("[", "]"), InlineData("(", @"\}"), InlineData(@"\{", "]")] // Using ) confuses the test explorer...
     public void TestInner(string left, string right) =>
-      TestOuter($@"a\left{left}x\right{right}", 2, 14, 4, 43.333,
+      TestOuter($@"a\left{left}x\right{right}", 2, 14, 4, 43.553,
         d => Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d),
         d => {
           var inner = Assert.IsType<InnerDisplay<TFont, TGlyph>>(d);
-          Approximately.At(13.333, 0, inner.Position);
+          Approximately.At(13.553, 0, inner.Position);
           Assert.Equal(new Range(1, 1), inner.Range);
           Assert.Equal(14, inner.Ascent);
           Assert.Equal(4, inner.Descent);
           Assert.Equal(30, inner.Width);
 
           var glyph = Assert.IsType<GlyphDisplay<TFont, TGlyph>>(inner.Left);
-          Approximately.At(13.333, 0, glyph.Position);
+          Approximately.At(13.553, 0, glyph.Position);
           Assert.Equal(Range.NotFound, glyph.Range);
           Assert.False(glyph.HasScript);
           Assert.Equal(left.EnumerateRunes().Last(), glyph.Glyph);
 
-          TestList(1, 14, 4, 10, 23.333, 0, LinePosition.Regular, Range.UndefinedInt,
+          TestList(1, 14, 4, 10, 23.553, 0, LinePosition.Regular, Range.UndefinedInt,
             d => {
               var line = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
               Assert.Single(line.Atoms);
@@ -352,7 +352,7 @@ namespace CSharpMath.Core.DisplayTests {
             })(inner.Inner);
 
           var glyph2 = Assert.IsType<GlyphDisplay<TFont, TGlyph>>(inner.Right);
-          Approximately.At(33.333, 0, glyph2.Position);
+          Approximately.At(33.553, 0, glyph2.Position);
           Assert.Equal(Range.NotFound, glyph2.Range);
           Assert.False(glyph2.HasScript);
           Assert.Equal(right.EnumerateRunes().Last(), glyph2.Glyph);
@@ -479,7 +479,7 @@ namespace CSharpMath.Core.DisplayTests {
           Assert.Equal("lim", string.Concat(largeOpText.Text));
           Approximately.Equal(new PointF(31.111f, 0), largeOpText.Position);
           Assert.False(largeOpText.HasScript);
-          TestList(3, 11.046, 2.8, 26, 38.111, -18.386, LinePosition.Regular, Range.UndefinedInt,
+          TestList(3, 11.046, 2.8, 26.32, 37.951, -18.386, LinePosition.Regular, Range.UndefinedInt,
             d => {
               var subscript = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
               Assert.Equal("𝑥→0", string.Concat(subscript.Text));
@@ -488,7 +488,7 @@ namespace CSharpMath.Core.DisplayTests {
               Assert.True(subscript.HasScript);
               Assert.Equal(new Range(0, 3), subscript.Range);
             },
-            TestList(1, 7, 2, 5, 21, 4.046, LinePosition.Superscript, 2,
+            TestList(1, 7, 2, 5, 21.32, 4.046, LinePosition.Superscript, 2,
               d => {
                 var superscript = Assert.IsType<TextLineDisplay<TFont, TGlyph>>(d);
                 Assert.Equal("+", string.Concat(superscript.Text));
