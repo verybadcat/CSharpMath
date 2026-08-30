@@ -66,18 +66,18 @@ namespace CSharpMath.Core.AtomTests {
 
     /// new[] { Base list }, new[] { Script of first atom }, new[] { Script of first atom inside script of first atom }
     [Theory]
-    [InlineData("x^2", "x^2", new[] { typeof(Variable) }, new[] { typeof(Number) })]
-    [InlineData("x^23", "x^23", new[] { typeof(Variable), typeof(Number) }, new[] { typeof(Number) })]
+    [InlineData("x^2", "x^{2}", new[] { typeof(Variable) }, new[] { typeof(Number) })]
+    [InlineData("x^23", "x^{2}3", new[] { typeof(Variable), typeof(Number) }, new[] { typeof(Number) })]
     [InlineData("x^{23}", "x^{23}", new[] { typeof(Variable) }, new[] { typeof(Number), typeof(Number) })]
-    [InlineData("x^2^3", "x^2{}^3", new[] { typeof(Variable), typeof(Ordinary) }, new[] { typeof(Number) })]
-    [InlineData("x^^3", "x^{{}^3}", new[] { typeof(Variable) }, new[] { typeof(Ordinary) }, new[] { typeof(Number) })]
-    [InlineData("x^{2^3}", "x^{2^3}", new[] { typeof(Variable) }, new[] { typeof(Number) }, new[] { typeof(Number) })]
-    [InlineData("x^{^2*}", "x^{{}^2*}", new[] { typeof(Variable) }, new[] { typeof(Ordinary), typeof(BinaryOperator) }, new[] { typeof(Number) })]
-    [InlineData("^2", "{}^2", new[] { typeof(Ordinary) }, new[] { typeof(Number) })]
-    [InlineData("^{^3}", "{}^{{}^3}", new[] { typeof(Ordinary), }, new[] { typeof(Ordinary) }, new[] { typeof(Number) })]
-    [InlineData("^^3", "{}^{{}^3}", new[] { typeof(Ordinary), }, new[] { typeof(Ordinary) }, new[] { typeof(Number) })]
-    [InlineData("{}^2", "{}^2", new[] { typeof(Ordinary) }, new[] { typeof(Number) })]
-    [InlineData("5{x}^2", "5x^2", new[] { typeof(Number), typeof(Variable) }, new Type[] { })]
+    [InlineData("x^2^3", "x^{2}{}^{3}", new[] { typeof(Variable), typeof(Ordinary) }, new[] { typeof(Number) })]
+    [InlineData("x^^3", "x^{{}^{3}}", new[] { typeof(Variable) }, new[] { typeof(Ordinary) }, new[] { typeof(Number) })]
+    [InlineData("x^{2^3}", "x^{2^{3}}", new[] { typeof(Variable) }, new[] { typeof(Number) }, new[] { typeof(Number) })]
+    [InlineData("x^{^2*}", "x^{{}^{2}*}", new[] { typeof(Variable) }, new[] { typeof(Ordinary), typeof(BinaryOperator) }, new[] { typeof(Number) })]
+    [InlineData("^2", "{}^{2}", new[] { typeof(Ordinary) }, new[] { typeof(Number) })]
+    [InlineData("^{^3}", "{}^{{}^{3}}", new[] { typeof(Ordinary), }, new[] { typeof(Ordinary) }, new[] { typeof(Number) })]
+    [InlineData("^^3", "{}^{{}^{3}}", new[] { typeof(Ordinary), }, new[] { typeof(Ordinary) }, new[] { typeof(Number) })]
+    [InlineData("{}^2", "{}^{2}", new[] { typeof(Ordinary) }, new[] { typeof(Number) })]
+    [InlineData("5{x}^2", "5x^{2}", new[] { typeof(Number), typeof(Variable) }, new Type[] { })]
     public void TestScript(string input, string output, params Type[][] atomTypes) {
       RunScriptTest(input, atom => atom.Superscript, atomTypes, output);
       RunScriptTest(input.Replace('^', '_'), atom => atom.Subscript, atomTypes, output.Replace('^', '_'));
@@ -298,9 +298,9 @@ namespace CSharpMath.Core.AtomTests {
       // nested
       InlineData(@"\left[ 2 + \left|\frac{-x}{2}\right| \right]", new[] { typeof(Inner) }, new[] { typeof(Number), typeof(BinaryOperator), typeof(Inner) }, @"[", @"]", @"\left[ 2+\left| \frac{-x}{2}\right| \right] "),
       // With scripts
-      InlineData(@"\left( 2 \right)^2", new[] { typeof(Inner) }, new[] { typeof(Number) }, @"(", @")", @"\left( 2\right) ^2"),
+      InlineData(@"\left( 2 \right)^2", new[] { typeof(Inner) }, new[] { typeof(Number) }, @"(", @")", @"\left( 2\right) ^{2}"),
       // Scripts on left
-      InlineData(@"\left(^2 \right )", new[] { typeof(Inner) }, new[] { typeof(Ordinary) }, @"(", @")", @"\left( {}^2\right) "),
+      InlineData(@"\left(^2 \right )", new[] { typeof(Inner) }, new[] { typeof(Ordinary) }, @"(", @")", @"\left( {}^{2}\right) "),
       // Dot
       InlineData(@"\left( 2 \right.", new[] { typeof(Inner) }, new[] { typeof(Number) }, @"(", null, @"\left( 2\right. "),
       // Dot both sides
@@ -964,7 +964,7 @@ namespace CSharpMath.Core.AtomTests {
           );
         })
       );
-      Assert.Equal(@"\begin{array}{lr}x^2&\: x<0\\ x^3&\: x\geq 0\end{array}", LaTeXParser.MathListToLaTeX(list).ToString());
+      Assert.Equal(@"\begin{array}{lr}x^{2}&\: x<0\\ x^{3}&\: x\geq 0\end{array}", LaTeXParser.MathListToLaTeX(list).ToString());
     }
     [Fact]
     public void TestCases() {
@@ -1001,7 +1001,7 @@ namespace CSharpMath.Core.AtomTests {
           );
         })
       );
-      Assert.Equal(@"\left\{ \, \begin{array}{l}\textstyle y=x^2-x+3\\ \textstyle y=x^2+\sqrt{x}-\frac{2}{x}\end{array}\right. ", LaTeXParser.MathListToLaTeX(list).ToString());
+      Assert.Equal(@"\left\{ \, \begin{array}{l}\textstyle y=x^{2}-x+3\\ \textstyle y=x^{2}+\sqrt{x}-\frac{2}{x}\end{array}\right. ", LaTeXParser.MathListToLaTeX(list).ToString());
     }
     [Fact]
     public void TestCases2() {
@@ -1050,7 +1050,7 @@ namespace CSharpMath.Core.AtomTests {
           );
         })
       );
-      Assert.Equal(@"\left\{ \, \begin{array}{ll}\textstyle y=x^2-x+3&\textstyle \mathrm{for\  }x\leq 0\\ \textstyle y=x^2+\sqrt{x}-\frac{2}{x}&\textstyle \mathrm{for\  }x>0\end{array}\right. ", LaTeXParser.MathListToLaTeX(list).ToString());
+      Assert.Equal(@"\left\{ \, \begin{array}{ll}\textstyle y=x^{2}-x+3&\textstyle \mathrm{for\  }x\leq 0\\ \textstyle y=x^{2}+\sqrt{x}-\frac{2}{x}&\textstyle \mathrm{for\  }x>0\end{array}\right. ", LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
     [Fact]
@@ -1165,7 +1165,7 @@ namespace CSharpMath.Core.AtomTests {
           Assert.Collection(op.Subscript, CheckAtom<Variable>("a"));
         })
       );
-      Assert.Equal(@"\int _a^b", LaTeXParser.MathListToLaTeX(list).ToString());
+      Assert.Equal(@"\int _{a}^{b}", LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
     [Fact]
@@ -1185,7 +1185,7 @@ namespace CSharpMath.Core.AtomTests {
         }),
         CheckAtom<Variable>("f")
       );
-      Assert.Equal(@"\int _wdf=\int _{\partial w}f", LaTeXParser.MathListToLaTeX(list).ToString());
+      Assert.Equal(@"\int _{w}df=\int _{\partial w}f", LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
     [Theory]
