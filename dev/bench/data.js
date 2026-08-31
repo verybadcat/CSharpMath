@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1788153959374,
+  "lastUpdate": 1788179248898,
   "repoUrl": "https://github.com/verybadcat/CSharpMath",
   "entries": {
     "CSharpMath.Rendering.Benchmarks": [
@@ -4140,6 +4140,96 @@ window.BENCHMARK_DATA = {
             "value": 2951042.2991071427,
             "unit": "ns",
             "range": "± 38014.312266772366"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "hadrianwttang@outlook.com",
+            "name": "Hadrian Tang",
+            "username": "Happypig375"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "d7782fd32e544d1fe18fab0db0bb3b3e47128bce",
+          "message": "Support the \\\\not relation command (#280)\n\n* feat(parser): support not relation command\n\n* feat(parser): support generic not relation overlays\n\n* test(rendering): cover not relation command\n\n* test(rendering): add not relation baselines\n\n* test(rendering): cover generic not overlay\n\n* fix(parser): complete not relation negation handling",
+          "timestamp": "2026-08-31T20:21:40+08:00",
+          "tree_id": "53b102c7241ad316f1cdcf6b2036f12c842c8f52",
+          "url": "https://github.com/verybadcat/CSharpMath/commit/d7782fd32e544d1fe18fab0db0bb3b3e47128bce"
+        },
+        "date": 1788179244591,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.AllConstantValues",
+            "value": 619152892.8571428,
+            "unit": "ns",
+            "range": "± 5318296.71438636"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cases\")",
+            "value": 2687335.3359375,
+            "unit": "ns",
+            "range": "± 69154.3199630515"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Color\")",
+            "value": 844806.0477120535,
+            "unit": "ns",
+            "range": "± 6128.134422753105"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Commands\")",
+            "value": 305638.1510416667,
+            "unit": "ns",
+            "range": "± 1457.6695232546424"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Cyrillic\")",
+            "value": 2730024.1071428573,
+            "unit": "ns",
+            "range": "± 19273.958488140903"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"ErrorMissingArgument\")",
+            "value": 1589879.673549107,
+            "unit": "ns",
+            "range": "± 10007.297489586916"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"Matrix\")",
+            "value": 1403839.9489182692,
+            "unit": "ns",
+            "range": "± 15271.841151202723"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuadraticFormula\")",
+            "value": 625623.9192708334,
+            "unit": "ns",
+            "range": "± 7044.884948980984"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"QuarticSolutions\")",
+            "value": 124148365,
+            "unit": "ns",
+            "range": "± 1683306.5420050928"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"TangentPeriodShift\")",
+            "value": 737993.896484375,
+            "unit": "ns",
+            "range": "± 5439.639479596474"
+          },
+          {
+            "name": "CSharpMath.Rendering.Benchmarks.Program.IndividualTests(key: \"VectorProjection\")",
+            "value": 2943132.5657894737,
+            "unit": "ns",
+            "range": "± 65396.59603024027"
           }
         ]
       }
