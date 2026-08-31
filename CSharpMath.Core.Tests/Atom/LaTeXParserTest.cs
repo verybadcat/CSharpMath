@@ -1665,5 +1665,87 @@ a{LowSurrogate}a
         Assert.Equal(expected.Replace("\r", null), actual);
       }
     }
+    [Theory]
+    [InlineData("plain", 0, (int)LaTeXTokenKind.RawText, 0, 5, "plain")]
+    [InlineData("x \r\n", 1, (int)LaTeXTokenKind.Whitespace, 1, 3, " \r\n")]
+    [InlineData("\\", 0, (int)LaTeXTokenKind.ControlSymbol, 0, 1, "\\")]
+    [InlineData(@"\alpha+", 0, (int)LaTeXTokenKind.ControlWord, 0, 6, @"\alpha")]
+    [InlineData(@"\@name!", 0, (int)LaTeXTokenKind.ControlSymbol, 0, 2, @"\@")]
+    [InlineData(@"\%", 0, (int)LaTeXTokenKind.ControlSymbol, 0, 2, @"\%")]
+    [InlineData("{", 0, (int)LaTeXTokenKind.GroupOpen, 0, 1, "{")]
+    [InlineData("}", 0, (int)LaTeXTokenKind.GroupClose, 0, 1, "}")]
+    [InlineData("$", 0, (int)LaTeXTokenKind.InlineMathDelimiter, 0, 1, "$")]
+    [InlineData("$$", 0, (int)LaTeXTokenKind.DisplayMathDelimiter, 0, 2, "$$")]
+    [InlineData("$$$$", 0, (int)LaTeXTokenKind.InvalidDollarRun, 0, 4, "$$$$")]
+    [InlineData("\U0001F600\\alpha", 2, (int)LaTeXTokenKind.ControlWord, 2, 6, @"\alpha")]
+    public void SharedLexerReadAtPreservesUtf16Spans(string source, int offset,
+        int kind, int start, int length, string text) {
+      var token = LaTeXTokenizer.ReadAt(source, offset);
+
+      Assert.Equal((LaTeXTokenKind)kind, token.Kind);
+      Assert.Equal(start, token.Start);
+      Assert.Equal(length, token.Length);
+      Assert.Equal(start + length, token.End);
+      Assert.Equal(text, token.Text);
+      Assert.Same(source, token.Source);
+    }
+
+    [Theory]
+    [InlineData("\\", 1)]
+    [InlineData(@"\@name+", 2)]
+    [InlineData(@"\alpha@beta+", 6)]
+    [InlineData(@"\alpha**", 6)]
+    [InlineData(@"\alpha==", 6)]
+    [InlineData(@"\alpha''", 6)]
+    [InlineData(@"\@*'", 2)]
+    [InlineData(@"\*alpha", 2)]
+    public void SharedLexerUsesTeXControlSequenceBoundaries(string source, int expectedLength) =>
+      Assert.Equal(expectedLength, LaTeXTokenizer.ReadCommandLength(source.AsSpan()));
+
+    [Fact]
+    public void SharedLexerTokenizeIteratesEveryUtf16CodeUnit() {
+      var source = "\U0001F600raw \t\\@cmd*\\${}$$ $$$\\";
+      var expected = new[] {
+        (LaTeXTokenKind.RawText, 0, 5, "\U0001F600raw"),
+        (LaTeXTokenKind.Whitespace, 5, 2, " \t"),
+        (LaTeXTokenKind.ControlSymbol, 7, 2, @"\@"),
+        (LaTeXTokenKind.RawText, 9, 4, "cmd*"),
+        (LaTeXTokenKind.ControlSymbol, 13, 2, @"\$"),
+        (LaTeXTokenKind.GroupOpen, 15, 1, "{"),
+        (LaTeXTokenKind.GroupClose, 16, 1, "}"),
+        (LaTeXTokenKind.DisplayMathDelimiter, 17, 2, "$$"),
+        (LaTeXTokenKind.Whitespace, 19, 1, " "),
+        (LaTeXTokenKind.InvalidDollarRun, 20, 3, "$$$"),
+        (LaTeXTokenKind.ControlSymbol, 23, 1, "\\"),
+      };
+
+      var tokens = LaTeXTokenizer.Tokenize(source);
+
+      Assert.Equal(expected.Length, tokens.Count);
+      var nextStart = 0;
+      for (var i = 0; i < tokens.Count; i++) {
+        var token = tokens[i];
+        Assert.Equal(expected[i].Item1, token.Kind);
+        Assert.Equal(expected[i].Item2, token.Start);
+        Assert.Equal(expected[i].Item3, token.Length);
+        Assert.Equal(expected[i].Item4, token.Text);
+        Assert.Equal(nextStart, token.Start);
+        nextStart = token.End;
+      }
+      Assert.Equal(source.Length, nextStart);
+      Assert.Empty(LaTeXTokenizer.Tokenize(string.Empty));
+    }
+
+    [Fact]
+    public void MathParserPreservesEscapedDollarBracesAndNestedGroups() {
+      var list = ParseLaTeX(@"x{{\$\{\alpha\}}}");
+
+      Assert.Collection(list,
+        CheckAtom<Variable>("x"),
+        CheckAtom<Ordinary>("$"),
+        CheckAtom<Open>("{"),
+        CheckAtom<Variable>("α"),
+        CheckAtom<Close>("}"));
+    }
   }
 }

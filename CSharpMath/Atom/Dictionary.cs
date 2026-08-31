@@ -93,15 +93,7 @@ namespace CSharpMath.Atom {
     // https://tug.org/texinfohtml/latex2e.html#g_t_005cmakeatletter_0026-_005cmakeatother
     static bool IsAsciiLetter(char c) => 'A' <= c && c <= 'Z' || 'a' <= c && c <= 'z';
 
-    static int SplitCommand(ReadOnlySpan<char> chars) {
-      System.Diagnostics.Debug.Assert(chars[0] == '\\');
-      var splitIndex = 1;
-      if (splitIndex < chars.Length)
-        if (IsAsciiLetter(chars[splitIndex])) {
-          do splitIndex++; while (splitIndex < chars.Length && IsAsciiLetter(chars[splitIndex]));
-        } else splitIndex++;
-      return splitIndex;
-    }
+    static int SplitCommand(ReadOnlySpan<char> chars) => LaTeXTokenizer.ReadCommandLength(chars);
     /// <summary>Tries to find a command at the beginning of <see cref="char"/>s, returning the
     /// <typeparamref name="TValue"/> corresponding to the command Key, and the length of the command.</summary>
     public Result<(TValue Result, int SplitIndex)> TryLookup(ReadOnlySpan<char> chars) {

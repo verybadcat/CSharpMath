@@ -43,7 +43,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
       if (string.IsNullOrEmpty(latexSource))
         return new TextAtom.List(Array.Empty<TextAtom>());
       int endAt = 0;
-      bool? displayMath = null;
+      var mode = LaTeXMode.Text;
       var mathLaTeX = new StringBuilder();
       bool backslashEscape = false;
       bool afterCommand = false; // ignore spaces after command
@@ -60,42 +60,28 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
         breaker.AddBreakingEngine(engine);
       breaker.BreakWords(latexSource);
 
+      Result TransitionMathMode(LaTeXModeBoundary boundary, int mathEndAt, ref int errorEndAt, TextAtomListBuilder atoms) {
+        var currentMode = mode;
+        if (LaTeXModeTransition.TryTransition(currentMode, boundary, out var nextMode) is string error)
+          return error;
+        if (currentMode != LaTeXMode.Text && nextMode == LaTeXMode.Text) {
+          if (atoms.Math(mathLaTeX.ToString(), currentMode == LaTeXMode.DisplayMath, mathEndAt, ref errorEndAt).Error is string mathError)
+            return mathError;
+          mathLaTeX.Clear();
+        }
+        mode = nextMode;
+        return Ok();
+      }
       Result CheckDollarCount(int startAt, ref int endAt, TextAtomListBuilder atoms) {
         switch (dollarCount) {
           case 0:
             break;
           case 1:
             dollarCount = 0;
-            switch (displayMath) {
-              case true:
-                return "Cannot close display math mode with $";
-              case false:
-                if (atoms.Math(mathLaTeX.ToString(), false, startAt, ref endAt).Error is string error)
-                  return error;
-                mathLaTeX.Clear();
-                displayMath = null;
-                break;
-              case null:
-                displayMath = false;
-                break;
-            }
-            break;
+            return TransitionMathMode(LaTeXModeBoundary.InlineDollar, startAt, ref endAt, atoms);
           case 2:
             dollarCount = 0;
-            switch (displayMath) {
-              case true:
-                if (atoms.Math(mathLaTeX.ToString(), true, startAt - 1, ref endAt).Error is string error)
-                  return error;
-                mathLaTeX.Clear();
-                displayMath = null;
-                break;
-              case false:
-                return "Cannot close inline math mode with $$";
-              case null:
-                displayMath = true;
-                break;
-            }
-            break;
+            return TransitionMathMode(LaTeXModeBoundary.DisplayDollar, startAt - 1, ref endAt, atoms);
           default:
             return "Invalid number of $: " + dollarCount;
         }
@@ -125,6 +111,13 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
             var argAtoms = new TextAtomListBuilder();
             return BuildBreakList(latexInput, argAtoms, ++i, true, '\0')
               .Bind(index => { i = index; return argAtoms.Build(); });
+          }
+          var sharedCommandEnd = endAt;
+          var sharedCommandName = textSection.ToString();
+          if (backslashEscape && startAt > 0 && latexSource[startAt - 1] == '\\') {
+            var sharedCommand = LaTeXTokenizer.ReadAt(latexSource, startAt - 1);
+            sharedCommandName = latexSource.Substring(startAt, sharedCommand.Length - 1);
+            sharedCommandEnd = sharedCommand.End;
           }
           SpanResult<char> ReadArgumentString(ReadOnlySpan<char> latexInput, ref ReadOnlySpan<char> section) {
             afterCommand = false;
@@ -157,7 +150,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
           atoms.TextLength = startAt;
           if (textSection.Is('$')) {
             if (backslashEscape)
-              if (displayMath != null) mathLaTeX.Append(@"\$");
+              if (mode != LaTeXMode.Text) mathLaTeX.Append(@"\$");
               else atoms.Text("$");
             else {
               dollarCount++;
@@ -166,8 +159,9 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
             backslashEscape = false;
           } else {
             { if (CheckDollarCount(startAt, ref endAt, atoms).Error is string error) return error; }
-            switch (backslashEscape, displayMath) {
-              case (false, { }):
+            switch (backslashEscape, mode) {
+              case (false, LaTeXMode.InlineMath):
+              case (false, LaTeXMode.DisplayMath):
                 //Unescaped text section, inside display/inline math mode
                 switch (textSection) {
                   case var _ when textSection.Is('$'):
@@ -181,7 +175,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                 }
                 afterCommand = false;
                 break;
-              case (false, null):
+              case (false, LaTeXMode.Text):
                 //Unescaped text section, not inside display/inline math mode
                 switch (textSection) {
                   case var _ when stopChar > 0 && textSection[0] == stopChar:
@@ -245,50 +239,27 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                 }
                 afterCommand = false;
                 break;
-              case (true, { }):
+              case (true, LaTeXMode.InlineMath):
+              case (true, LaTeXMode.DisplayMath):
                 //Escaped text section but in inline/display math mode
                 switch (textSection) {
                   case var _ when textSection.Is('$'):
                     throw new InvalidCodePathException("The $ case should have been accounted for.");
                   case var _ when textSection.Is('('):
-                    return displayMath switch {
-                      true => "Cannot open inline math mode in display math mode",
-                      false => "Cannot open inline math mode in inline math mode",
-                      null => throw new InvalidCodePathException("displayMath is null. This switch should not be hit."),
-                    };
+                    if (TransitionMathMode(LaTeXModeBoundary.InlineCommandOpen, startAt, ref endAt, atoms).Error is string inlineOpenError)
+                      return inlineOpenError;
+                    break;
                   case var _ when textSection.Is(')'):
-                    switch (displayMath) {
-                      case true:
-                        return "Cannot close inline math mode in display math mode";
-                      case false:
-                        if (atoms.Math(mathLaTeX.ToString(), false, startAt, ref endAt).Error is string mathError)
-                          return mathError;
-                        mathLaTeX.Clear();
-                        displayMath = null;
-                        break;
-                      case null:
-                        throw new InvalidCodePathException("displayMath is null. This switch should not be hit.");
-                    }
+                    if (TransitionMathMode(LaTeXModeBoundary.InlineCommandClose, startAt, ref endAt, atoms).Error is string inlineError)
+                      return inlineError;
                     break;
                   case var _ when textSection.Is('['):
-                    return displayMath switch {
-                      true => "Cannot open display math mode in display math mode",
-                      false => "Cannot open display math mode in inline math mode",
-                      null => throw new InvalidCodePathException("displayMath is null. This switch should not be hit."),
-                    };
+                    if (TransitionMathMode(LaTeXModeBoundary.DisplayCommandOpen, startAt, ref endAt, atoms).Error is string displayOpenError)
+                      return displayOpenError;
+                    break;
                   case var _ when textSection.Is(']'):
-                    switch (displayMath) {
-                      case true:
-                        if (atoms.Math(mathLaTeX.ToString(), true, startAt, ref endAt).Error is string mathError)
-                          return mathError;
-                        mathLaTeX.Clear();
-                        displayMath = null;
-                        break;
-                      case false:
-                        return "Cannot close display math mode in inline math mode";
-                      default:
-                        throw new InvalidCodePathException("displayMath is null. This switch should not be hit.");
-                    }
+                    if (TransitionMathMode(LaTeXModeBoundary.DisplayCommandClose, startAt, ref endAt, atoms).Error is string displayError)
+                      return displayError;
                     break;
                   default:
                     mathLaTeX.Append('\\').Append(textSection);
@@ -296,23 +267,29 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                 }
                 backslashEscape = false;
                 break;
-              case (true, null):
+              case (true, LaTeXMode.Text):
                 //Escaped text section and not in inline/display math mode
                 afterCommand = true;
-                switch (textSection.ToString()) {
+                switch (sharedCommandName) {
                   case var _ when wordKind == WordKind.Whitespace: //control space
                     atoms.ControlSpace();
                     break;
                   case "(":
-                    displayMath = false;
+                    if (TransitionMathMode(LaTeXModeBoundary.InlineCommandOpen, startAt, ref endAt, atoms).Error is string inlineOpenError)
+                      return inlineOpenError;
                     break;
                   case ")":
-                    return "Cannot close inline math mode outside of math mode";
+                    if (TransitionMathMode(LaTeXModeBoundary.InlineCommandClose, startAt, ref endAt, atoms).Error is string inlineCloseError)
+                      return inlineCloseError;
+                    break;
                   case "[":
-                    displayMath = true;
+                    if (TransitionMathMode(LaTeXModeBoundary.DisplayCommandOpen, startAt, ref endAt, atoms).Error is string displayOpenError)
+                      return displayOpenError;
                     break;
                   case "]":
-                    return "Cannot close display math mode outside of math mode";
+                    if (TransitionMathMode(LaTeXModeBoundary.DisplayCommandClose, startAt, ref endAt, atoms).Error is string displayCloseError)
+                      return displayCloseError;
+                    break;
                   case "\\":
                     atoms.Break();
                     break;
@@ -416,9 +393,8 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                     atoms.Text(replaceResult);
                     break;
                   case var command:
-                    if (displayMath != null) mathLaTeX.Append(command); //don't eat the command when parsing math
-                    else return $@"Invalid command \{command}";
-                    break;
+                    endAt = sharedCommandEnd;
+                    return $@"Invalid command \{command}";
                 }
                 backslashEscape = false;
                 break;
@@ -435,7 +411,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
       if (error != null) return LaTeXParser.HelpfulErrorMessage(error, latexSource, endAt);
       error = CheckDollarCount(latexSource.Length, ref endAt, globalAtoms).Error;
       if (error != null) return LaTeXParser.HelpfulErrorMessage(error, latexSource, endAt);
-      if (displayMath != null) return LaTeXParser.HelpfulErrorMessage("Math mode was not terminated", latexSource, endAt);
+      if (mode != LaTeXMode.Text) return LaTeXParser.HelpfulErrorMessage("Math mode was not terminated", latexSource, endAt);
       return globalAtoms.Build();
     }
     public static StringBuilder TextAtomToLaTeX(TextAtom atom, StringBuilder? b = null) {
