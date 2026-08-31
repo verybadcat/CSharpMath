@@ -346,6 +346,20 @@ namespace CSharpMath.Editor {
       }
 
       void DeleteBackwards() {
+        // A placeholder can itself own scripts. Remove that nearest owner before
+        // considering any structure that contains the placeholder.
+        if (MathList.AtomAt(_insertionIndex) is Atoms.Placeholder placeholder
+            && (placeholder.Subscript.IsNonEmpty() || placeholder.Superscript.IsNonEmpty())) {
+          _insertionIndex = MathList.RemovePlaceholderAtCaret(_insertionIndex);
+          return;
+        }
+        // At the beginning of a nested field, Backspace removes that field's owner
+        // and keeps the caret at the same logical boundary in the parent list.
+        if (_insertionIndex.Previous is null && _insertionIndex.SubIndexInfo is not null
+            && _insertionIndex.FinalSubIndexType is not MathListSubIndexType.BetweenBaseAndScripts) {
+          _insertionIndex = MathList.SimplifyContainingAtBeginning(_insertionIndex);
+          return;
+        }
         // delete the last atom from the list
         if (HasText && _insertionIndex.Previous is MathListIndex previous)
           _insertionIndex = MathList.RemoveAt(previous);
