@@ -159,6 +159,12 @@ namespace CSharpMath.Atom {
           parser.ReadArgument().Bind(numerator =>
             parser.ReadArgument().Bind(denominator =>
               Ok(new Fraction(numerator, denominator)))) },
+        { @"\longdiv", (parser, accumulate, stopChar) =>
+          parser.ReadLongDivisionOperand("numerator").Bind(numerator =>
+            parser.ReadLongDivisionOperand("denominator").Bind(denominator => {
+              try { return Ok(new LongDivision(numerator, denominator)); }
+              catch (ArgumentException e) { return Err("\\longdiv: " + e.Message); }
+            })) },
         { @"\binom", (parser, accumulate, stopChar) =>
           parser.ReadArgument().Bind(numerator =>
             parser.ReadArgument().Bind(denominator =>

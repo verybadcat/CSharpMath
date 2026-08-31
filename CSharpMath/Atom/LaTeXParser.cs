@@ -43,6 +43,17 @@ namespace CSharpMath.Atom {
       : NextChar--;
     public bool HasCharacters => NextChar < Chars.Length;
     public Result<MathList> ReadArgument(MathList? appendTo = null) => BuildInternal(true, r: appendTo);
+    internal Result<string> ReadLongDivisionOperand(string name) {
+      if (!ReadCharIfAvailable('{')) return new Result<string>("\\longdiv: missing {" + name);
+      var start = NextChar; var depth = 1;
+      while (HasCharacters && depth > 0) { var c = ReadChar(); if (c == '{') depth++; else if (c == '}') depth--; }
+      if (depth != 0) return new Result<string>("\\longdiv: missing } for " + name);
+      var value = Chars.Substring(start, NextChar - start - 1).Trim();
+      if (value.Length == 0 || value.Any(c => c < '0' || c > '9')) return new Result<string>("\\longdiv: " + name + " must be a nonnegative decimal integer");
+      if (value.Length > Atoms.LongDivision.MaxDigits) return new Result<string>("\\longdiv: " + name + " exceeds " + Atoms.LongDivision.MaxDigits + " digits");
+      if (value.All(c => c == '0') && name == "denominator") return new Result<string>("\\longdiv: denominator must not be zero");
+      return Result.Ok(value);
+    }
     public Result<MathList?> ReadArgumentOptional(MathList? appendTo = null) =>
       ReadCharIfAvailable('[')
       ? BuildInternal(false, ']', r: appendTo).Bind(mathList => (MathList?)mathList)
@@ -608,6 +619,9 @@ namespace CSharpMath.Atom {
                 .Append(table.Environment)
                 .Append('}');
             }
+            break;
+          case LongDivision division:
+            builder.Append(@"\longdiv{").Append(division.Numerator).Append("}{").Append(division.Denominator).Append('}');
             break;
           case Overline over:
             builder.Append(@"\overline{");
