@@ -1,9 +1,10 @@
 using System.Drawing;
+using System.Linq;
 using CSharpMath.Atom;
 
 namespace CSharpMath.Display.Displays {
   using FrontEnd;
-  public class GlyphDisplay<TFont, TGlyph> : IGlyphDisplay<TFont, TGlyph>
+  public class GlyphDisplay<TFont, TGlyph> : IGlyphDisplay<TFont, TGlyph>, IInkDisplay
     where TFont : IFont<TGlyph> {
 
     readonly float _ascent;
@@ -11,6 +12,7 @@ namespace CSharpMath.Display.Displays {
     public float Ascent => _ascent - ShiftDown;
     public float Descent => _descent + ShiftDown;
     public float Width { get; }
+    public float InkWidth { get; }
     public Range Range { get; }
     public PointF Position { get; set; }
     public bool HasScript { get; set; }
@@ -25,6 +27,12 @@ namespace CSharpMath.Display.Displays {
       _ascent = ascent;
       _descent = descent;
       Width = width;
+      InkWidth = GetInkWidth(glyph, font, width);
+    }
+    static float GetInkWidth(TGlyph glyph, TFont font, float width) {
+      if (font is IFontGlyphBounds<TGlyph> bounds)
+        return System.Math.Max(width, bounds.GetBoundingRects(new[] { glyph }).FirstOrDefault().Right);
+      return width;
     }
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
       this.DrawBackground(context);

@@ -63,7 +63,9 @@ namespace CSharpMath.Rendering.FrontEnd {
     public virtual RectangleF Measure(float textPainterCanvasWidth) {
       UpdateDisplay(textPainterCanvasWidth);
       if (Display != null)
-        return new RectangleF(0, -Display.Ascent, Display.Width, Display.Ascent + Display.Descent);
+        // ICanvas exposes no device/backing scale, so pixel-grid rounding from
+        // iosMath's UIView/NSView implementation is intentionally not applicable here.
+        return new RectangleF(0, -Display.Ascent, Display.InkWidth(), Display.Ascent + Display.Descent);
       else return RectangleF.Empty;
     }
     protected abstract void UpdateDisplayCore(float textPainterCanvasWidth);

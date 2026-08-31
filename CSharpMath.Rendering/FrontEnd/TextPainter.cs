@@ -52,16 +52,16 @@ namespace CSharpMath.Rendering.FrontEnd {
       if (ErrorMessage == null) {
         _relativeXCoordDisplay.Position =
           _relativeXCoordDisplay.Position.Plus(IPainterExtensions.GetDisplayPosition(
-            System.Math.Max(_relativeXCoordDisplay.Width, _absoluteXCoordDisplay.Width),
+            System.Math.Max(_relativeXCoordDisplay.InkWidth(), _absoluteXCoordDisplay.InkWidth()),
             System.Math.Max(_relativeXCoordDisplay.Ascent, _absoluteXCoordDisplay.Ascent),
             System.Math.Max(_relativeXCoordDisplay.Descent, _absoluteXCoordDisplay.Descent),
             FontSize, width ?? c.Width,
             c.Height, alignment, padding, offsetX, offsetY
           ));
         var adjustedCanvasWidth =
-          float.IsInfinity(c.Width) || float.IsNaN(c.Width)
-          ? System.Math.Max(_relativeXCoordDisplay.Displays.CollectionWidth(),
-            _absoluteXCoordDisplay.Displays.IsNonEmpty() ? _absoluteXCoordDisplay.Displays.Max(d => d.Width) : 0)
+            float.IsInfinity(c.Width) || float.IsNaN(c.Width)
+          ? System.Math.Max(_relativeXCoordDisplay.InkWidth(),
+            _absoluteXCoordDisplay.Displays.IsNonEmpty() ? _absoluteXCoordDisplay.Displays.Max(d => d.InkWidth()) : 0)
           : c.Width;
         // https://github.com/verybadcat/CSharpMath/issues/123
         // Take into account padding, offset etc. on both sides
@@ -73,7 +73,7 @@ namespace CSharpMath.Rendering.FrontEnd {
           foreach (var relDisplay in _relativeXCoordDisplay.Displays.Reverse()) {
             if (relDisplay.Position.Y > y) {
               y = relDisplay.Position.Y;
-              var rightSpace = adjustedCanvasWidth - (relDisplay.Position.X + relDisplay.Width);
+              var rightSpace = adjustedCanvasWidth - (relDisplay.Position.X + relDisplay.InkWidth());
               Δx = leftRightFlags switch {
                 TextAlignment.Center => rightSpace / 2,
                 TextAlignment.Right => rightSpace,

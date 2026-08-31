@@ -183,7 +183,7 @@ namespace CSharpMath.Core.AtomTests {
         );
         Assert.Collection(list.Atoms[2].Subscript,
           CheckAtomNucleusAndRange<Number>("15", 0, 2),
-          CheckAtomNucleusAndRange<BinaryOperator>("\u2212", 2, 1)
+          CheckAtomNucleusAndRange<UnaryOperator>("\u2212", 2, 1)
         );
         var fraction = Assert.IsType<Fraction>(list.Atoms[9]);
         Assert.Collection(fraction.Numerator,

@@ -16,10 +16,10 @@ namespace CSharpMath.Atom {
     }
     public virtual string DebugString =>
       new StringBuilder(Nucleus).AppendDebugStringOfScripts(this).ToString();
-    public string Nucleus { get; set; }
+    public virtual string Nucleus { get; set; }
     public MathList Superscript { get; private set; }
     public MathList Subscript { get; private set; }
-    public FontStyle FontStyle { get; set; }
+    public virtual FontStyle FontStyle { get; set; }
     /// <summary>Defaults to zero, only has a value after finalization</summary>
     public Range IndexRange { get; set; }
 
@@ -87,7 +87,9 @@ namespace CSharpMath.Atom {
       Superscript.NullCheckingStructuralEquality(otherAtom.Superscript) &&
       Subscript.NullCheckingStructuralEquality(otherAtom.Subscript);
     public override bool Equals(object obj) => obj is MathAtom a && EqualsAtom(a);
-    bool IEquatable<MathAtom>.Equals(MathAtom otherAtom) => EqualsAtom(otherAtom);
+    // Dispatch through the virtual object overload so callers holding atoms through
+    // IEquatable<MathAtom> still observe each subtype's structural state.
+    bool IEquatable<MathAtom>.Equals(MathAtom otherAtom) => Equals(otherAtom);
     public override int GetHashCode() => (Superscript, Subscript, Nucleus).GetHashCode();
   }
 }

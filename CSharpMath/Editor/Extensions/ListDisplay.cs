@@ -71,10 +71,12 @@ namespace CSharpMath.Editor {
 
       var index = displayWithPoint.IndexForPoint(context, translatedPoint);
       if (displayWithPoint is ListDisplay<TFont, TGlyph> closestLine) {
-        if (closestLine.LinePosition is LinePosition.Regular)
-          throw new ArgumentException(nameof(ListDisplay<TFont, TGlyph>) + " with " +
-            nameof(ListDisplay<TFont, TGlyph>.LinePosition) + " " + nameof(LinePosition.Regular) +
-            $" inside a {nameof(ListDisplay<TFont, TGlyph>)} - shouldn't happen", nameof(self));
+        if (closestLine.LinePosition is LinePosition.Regular) {
+          // A brace group renders as a nested regular ListDisplay. Its children carry
+          // global atom indices and the inner call already translated the point by the
+          // group's position, so the result needs no wrapping.
+          return closestLine.IndexForPoint(context, translatedPoint);
+        }
         // This is a subscript or a superscript, return the right type of subindex
         var indexType =
           closestLine.LinePosition is LinePosition.Subscript
@@ -100,7 +102,7 @@ namespace CSharpMath.Editor {
       if (index is null) return null;
 
       PointF? position;
-      if (index.AtomIndex == self.Range.End) {
+      if (index.AtomIndex == self.Range.End && self.SubDisplayForIndex(index) is null) {
         // Special case the edge of the range
         position = new PointF(self.Width, 0);
       } else if (self.Range.Contains(index.AtomIndex) && self.SubDisplayForIndex(index) is { } display)
@@ -109,6 +111,9 @@ namespace CSharpMath.Editor {
           null => display.PointForIndex(context, index),
           (_, var subIndex) => display.PointForIndex(context, subIndex) // Recurse
         };
+      else if (SubDisplayForGroup(self, index) is { } groupDisplay)
+        // A brace group renders as a nested regular ListDisplay; descend into it.
+        position = groupDisplay.PointForIndex(context, index);
       else
         // Outside the range
         return null;
@@ -120,6 +125,18 @@ namespace CSharpMath.Editor {
       } else
         // We didn't find the position
         return null;
+    }
+
+    /// <summary>Finds the nested regular ListDisplay (a brace group) whose range contains
+    /// the index, so PointForIndex can see through group wrappers.</summary>
+    private static ListDisplay<TFont, TGlyph>? SubDisplayForGroup<TFont, TGlyph>
+      (ListDisplay<TFont, TGlyph> self, MathListIndex index) where TFont : IFont<TGlyph> {
+      if (!self.Range.Contains(index.AtomIndex)) return null;
+      foreach (var display in self.Displays)
+        if (display is ListDisplay<TFont, TGlyph> { LinePosition: LinePosition.Regular } nested
+            && nested.Range.Contains(index.AtomIndex))
+          return nested;
+      return null;
     }
 
     public static void HighlightCharacterAt<TFont, TGlyph>(this ListDisplay<TFont, TGlyph> self,

@@ -26,16 +26,31 @@ namespace CSharpMath.Display.Displays {
       LinePosition = LinePosition.Regular;
       IndexInParent = int.MinValue;
     }
-    public float Ascent => Displays.CollectionAscent();
-    public float Descent => Displays.CollectionDescent();
+    public float Ascent => _ascentOverride ?? Displays.CollectionAscent();
+    public float Descent => _descentOverride ?? Displays.CollectionDescent();
     public PointF Position { get; set; }
+    private float? _ascentOverride;
+    private float? _descentOverride;
+    private float? _widthOverride;
+    /// <summary>Overrides the metrics computed from the child displays (used by the
+    /// \cfrac thinspace wrapper, whose padding is not part of any child).</summary>
+    public void SetOverrideMetrics(float ascent, float descent, float width) {
+      _ascentOverride = ascent;
+      _descentOverride = descent;
+      _widthOverride = width;
+    }
 
     public Range Range =>
-      Range.Combine(
+      _rangeOverride
+      ?? Range.Combine(
         Displays
         .Where(d => !(d is ListDisplay<TFont, TGlyph> ld && ld.LinePosition != LinePosition.Regular))
         .Select(d => d.Range));
-    public float Width => Displays.CollectionWidth();
+    private Range? _rangeOverride;
+    /// <summary>Overrides the combined range of the child displays (used for ruled rows,
+    /// where the row range must exclude script-positioned children).</summary>
+    public void SetRangeOverride(Range range) => _rangeOverride = range;
+    public float Width => _widthOverride ?? Displays.CollectionWidth();
     public void Draw(IGraphicsContext<TFont, TGlyph> context) {
       this.DrawBackground(context);
       context.SaveState();

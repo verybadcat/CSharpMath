@@ -1,0 +1,214 @@
+#nullable enable
+abstract CSharpMath.Display.FrontEnd.FontMathTable<TFont, TGlyph>.StretchStackBottomShiftDown(TFont font) -> float
+abstract CSharpMath.Display.FrontEnd.FontMathTable<TFont, TGlyph>.StretchStackGapAboveMin(TFont font) -> float
+abstract CSharpMath.Display.FrontEnd.FontMathTable<TFont, TGlyph>.StretchStackGapBelowMin(TFont font) -> float
+abstract CSharpMath.Display.FrontEnd.FontMathTable<TFont, TGlyph>.StretchStackTopShiftUp(TFont font) -> float
+CSharpMath.Atom.Atoms.Box
+CSharpMath.Atom.Atoms.Box.Box() -> void
+CSharpMath.Atom.Atoms.Box.Clone(bool finalize) -> CSharpMath.Atom.Atoms.Box!
+CSharpMath.Atom.Atoms.Box.DrawChild.get -> bool
+CSharpMath.Atom.Atoms.Box.DrawChild.set -> void
+CSharpMath.Atom.Atoms.Box.HAlign.get -> CSharpMath.Atom.Atoms.BoxHAlign
+CSharpMath.Atom.Atoms.Box.HAlign.set -> void
+CSharpMath.Atom.Atoms.Box.InnerList.get -> CSharpMath.Atom.MathList!
+CSharpMath.Atom.Atoms.Box.InnerList.set -> void
+CSharpMath.Atom.Atoms.Box.KeepDepth.get -> bool
+CSharpMath.Atom.Atoms.Box.KeepDepth.set -> void
+CSharpMath.Atom.Atoms.Box.KeepHeight.get -> bool
+CSharpMath.Atom.Atoms.Box.KeepHeight.set -> void
+CSharpMath.Atom.Atoms.Box.KeepWidth.get -> bool
+CSharpMath.Atom.Atoms.Box.KeepWidth.set -> void
+CSharpMath.Atom.Atoms.Box.StrikeStyle.get -> CSharpMath.Atom.Atoms.StrikeStyle
+CSharpMath.Atom.Atoms.Box.StrikeStyle.set -> void
+CSharpMath.Atom.Atoms.BoxHAlign
+CSharpMath.Atom.Atoms.BoxHAlign.Center = 1 -> CSharpMath.Atom.Atoms.BoxHAlign
+CSharpMath.Atom.Atoms.BoxHAlign.Left = 0 -> CSharpMath.Atom.Atoms.BoxHAlign
+CSharpMath.Atom.Atoms.BoxHAlign.Right = 2 -> CSharpMath.Atom.Atoms.BoxHAlign
+CSharpMath.Atom.Atoms.Fraction.IsContinuedFraction.get -> bool
+CSharpMath.Atom.Atoms.Fraction.IsContinuedFraction.set -> void
+CSharpMath.Atom.Atoms.Fraction.NumeratorAlignment.get -> CSharpMath.Atom.Atoms.FractionAlignment
+CSharpMath.Atom.Atoms.Fraction.NumeratorAlignment.set -> void
+CSharpMath.Atom.Atoms.Fraction.StyleOverride.get -> CSharpMath.Atom.Atoms.FractionStyle
+CSharpMath.Atom.Atoms.Fraction.StyleOverride.set -> void
+CSharpMath.Atom.Atoms.FractionAlignment
+CSharpMath.Atom.Atoms.FractionAlignment.Center = 0 -> CSharpMath.Atom.Atoms.FractionAlignment
+CSharpMath.Atom.Atoms.FractionAlignment.Left = 1 -> CSharpMath.Atom.Atoms.FractionAlignment
+CSharpMath.Atom.Atoms.FractionAlignment.Right = 2 -> CSharpMath.Atom.Atoms.FractionAlignment
+CSharpMath.Atom.Atoms.FractionStyle
+CSharpMath.Atom.Atoms.FractionStyle.Auto = 0 -> CSharpMath.Atom.Atoms.FractionStyle
+CSharpMath.Atom.Atoms.FractionStyle.Display = 1 -> CSharpMath.Atom.Atoms.FractionStyle
+CSharpMath.Atom.Atoms.FractionStyle.Text = 2 -> CSharpMath.Atom.Atoms.FractionStyle
+CSharpMath.Atom.Atoms.Group
+CSharpMath.Atom.Atoms.Group.Clone(bool finalize) -> CSharpMath.Atom.Atoms.Group!
+CSharpMath.Atom.Atoms.Group.Group() -> void
+CSharpMath.Atom.Atoms.Group.InnerList.get -> CSharpMath.Atom.MathList!
+CSharpMath.Atom.Atoms.Group.InnerList.set -> void
+CSharpMath.Atom.Atoms.Macro
+CSharpMath.Atom.Atoms.Macro.Clone(bool finalize) -> CSharpMath.Atom.Atoms.Macro!
+CSharpMath.Atom.Atoms.Macro.Command.get -> string!
+CSharpMath.Atom.Atoms.Macro.Expansion() -> CSharpMath.Atom.MathList!
+CSharpMath.Atom.Atoms.Stack
+CSharpMath.Atom.Atoms.Stack.Clone(bool finalize) -> CSharpMath.Atom.Atoms.Stack!
+CSharpMath.Atom.Atoms.Stack.DisplayClassType.get -> System.Type!
+CSharpMath.Atom.Atoms.Stack.DisplayClassType.set -> void
+CSharpMath.Atom.Atoms.Stack.InnerList.get -> CSharpMath.Atom.MathList!
+CSharpMath.Atom.Atoms.Stack.InnerList.set -> void
+CSharpMath.Atom.Atoms.Stack.Over.get -> CSharpMath.Atom.Atoms.StackConstruction?
+CSharpMath.Atom.Atoms.Stack.Over.set -> void
+CSharpMath.Atom.Atoms.Stack.Stack() -> void
+CSharpMath.Atom.Atoms.Stack.Under.get -> CSharpMath.Atom.Atoms.StackConstruction?
+CSharpMath.Atom.Atoms.Stack.Under.set -> void
+CSharpMath.Atom.Atoms.StackConstruction
+CSharpMath.Atom.Atoms.StackConstruction.Clone(bool finalize) -> CSharpMath.Atom.Atoms.StackConstruction!
+CSharpMath.Atom.Atoms.StackConstruction.Extensible
+CSharpMath.Atom.Atoms.StackConstruction.Extensible.Extensible(string! glyph) -> void
+CSharpMath.Atom.Atoms.StackConstruction.Extensible.Glyph.get -> string!
+CSharpMath.Atom.Atoms.StackConstruction.MathListRow
+CSharpMath.Atom.Atoms.StackConstruction.MathListRow.List.get -> CSharpMath.Atom.MathList!
+CSharpMath.Atom.Atoms.StackConstruction.MathListRow.MathListRow(CSharpMath.Atom.MathList! list) -> void
+CSharpMath.Atom.Atoms.StrikeStyle
+CSharpMath.Atom.Atoms.StrikeStyle.Backward = 2 -> CSharpMath.Atom.Atoms.StrikeStyle
+CSharpMath.Atom.Atoms.StrikeStyle.Cross = 3 -> CSharpMath.Atom.Atoms.StrikeStyle
+CSharpMath.Atom.Atoms.StrikeStyle.Forward = 1 -> CSharpMath.Atom.Atoms.StrikeStyle
+CSharpMath.Atom.Atoms.StrikeStyle.Horizontal = 4 -> CSharpMath.Atom.Atoms.StrikeStyle
+CSharpMath.Atom.Atoms.StrikeStyle.None = 0 -> CSharpMath.Atom.Atoms.StrikeStyle
+CSharpMath.Atom.Atoms.Table.CellStyle.get -> CSharpMath.Atom.LineStyle?
+CSharpMath.Atom.Atoms.Table.CellStyle.set -> void
+CSharpMath.Atom.Atoms.Table.HorizontalLines.get -> System.Collections.Generic.List<int>!
+CSharpMath.Atom.Atoms.Table.HorizontalLines.set -> void
+CSharpMath.Atom.Atoms.Table.VerticalLines.get -> System.Collections.Generic.List<int>!
+CSharpMath.Atom.Atoms.Table.VerticalLines.set -> void
+CSharpMath.Atom.LaTeXParser.IsReadingOneCharField.get -> bool
+CSharpMath.Atom.LaTeXParser.PeekChar() -> char
+CSharpMath.Atom.LaTeXParser.ReadCommandName() -> string!
+CSharpMath.Atom.LaTeXParser.TableEnvironment.Argument.get -> string?
+CSharpMath.Atom.LaTeXParser.TableEnvironment.Argument.set -> void
+CSharpMath.Atom.LaTeXParser.TableEnvironment.HorizontalLines.get -> System.Collections.Generic.List<int>!
+CSharpMath.Atom.LaTeXParser.UndoTo(int position) -> void
+CSharpMath.Display.Displays.BoxDisplay<TFont, TGlyph>
+CSharpMath.Display.Displays.BoxDisplay<TFont, TGlyph>.Ascent.get -> float
+CSharpMath.Display.Displays.BoxDisplay<TFont, TGlyph>.Ascent.set -> void
+CSharpMath.Display.Displays.BoxDisplay<TFont, TGlyph>.BackColor.get -> System.Drawing.Color?
+CSharpMath.Display.Displays.BoxDisplay<TFont, TGlyph>.BackColor.set -> void
+CSharpMath.Display.Displays.BoxDisplay<TFont, TGlyph>.BoxDisplay(CSharpMath.Display.Displays.ListDisplay<TFont, TGlyph>! child, bool keepWidth, bool keepHeight, bool keepDepth, bool drawChild, CSharpMath.Atom.Atoms.BoxHAlign hAlign, CSharpMath.Atom.Atoms.StrikeStyle strikeStyle, float strikeThickness, float strikeVerticalOffset, CSharpMath.Atom.Range range) -> void
+CSharpMath.Display.Displays.BoxDisplay<TFont, TGlyph>.Child.get -> CSharpMath.Display.Displays.ListDisplay<TFont, TGlyph>!
+CSharpMath.Display.Displays.BoxDisplay<TFont, TGlyph>.Descent.get -> float
+CSharpMath.Display.Displays.BoxDisplay<TFont, TGlyph>.Descent.set -> void
+CSharpMath.Display.Displays.BoxDisplay<TFont, TGlyph>.Draw(CSharpMath.Display.FrontEnd.IGraphicsContext<TFont, TGlyph>! context) -> void
+CSharpMath.Display.Displays.BoxDisplay<TFont, TGlyph>.DrawChild.get -> bool
+CSharpMath.Display.Displays.BoxDisplay<TFont, TGlyph>.HAlign.get -> CSharpMath.Atom.Atoms.BoxHAlign
+CSharpMath.Display.Displays.BoxDisplay<TFont, TGlyph>.HasScript.get -> bool
+CSharpMath.Display.Displays.BoxDisplay<TFont, TGlyph>.HasScript.set -> void
+CSharpMath.Display.Displays.BoxDisplay<TFont, TGlyph>.KeepWidth.get -> bool
+CSharpMath.Display.Displays.BoxDisplay<TFont, TGlyph>.Position.get -> System.Drawing.PointF
+CSharpMath.Display.Displays.BoxDisplay<TFont, TGlyph>.Position.set -> void
+CSharpMath.Display.Displays.BoxDisplay<TFont, TGlyph>.Range.get -> CSharpMath.Atom.Range
+CSharpMath.Display.Displays.BoxDisplay<TFont, TGlyph>.SetTextColorRecursive(System.Drawing.Color? textColor) -> void
+CSharpMath.Display.Displays.BoxDisplay<TFont, TGlyph>.StrikeStyle.get -> CSharpMath.Atom.Atoms.StrikeStyle
+CSharpMath.Display.Displays.BoxDisplay<TFont, TGlyph>.StrikeThickness.get -> float
+CSharpMath.Display.Displays.BoxDisplay<TFont, TGlyph>.StrikeVerticalOffset.get -> float
+CSharpMath.Display.Displays.BoxDisplay<TFont, TGlyph>.TextColor.get -> System.Drawing.Color?
+CSharpMath.Display.Displays.BoxDisplay<TFont, TGlyph>.TextColor.set -> void
+CSharpMath.Display.Displays.BoxDisplay<TFont, TGlyph>.Width.get -> float
+CSharpMath.Display.Displays.BoxDisplay<TFont, TGlyph>.Width.set -> void
+CSharpMath.Display.Displays.FractionDisplay<TFont, TGlyph>.NumeratorAlignment.get -> CSharpMath.Atom.Atoms.FractionAlignment
+CSharpMath.Display.Displays.FractionDisplay<TFont, TGlyph>.NumeratorAlignment.set -> void
+CSharpMath.Display.Displays.ListDisplay<TFont, TGlyph>.SetOverrideMetrics(float ascent, float descent, float width) -> void
+CSharpMath.Display.Displays.ListDisplay<TFont, TGlyph>.SetRangeOverride(CSharpMath.Atom.Range range) -> void
+CSharpMath.Display.Displays.RuleDisplay<TFont, TGlyph>
+CSharpMath.Display.Displays.RuleDisplay<TFont, TGlyph>.Ascent.get -> float
+CSharpMath.Display.Displays.RuleDisplay<TFont, TGlyph>.Ascent.set -> void
+CSharpMath.Display.Displays.RuleDisplay<TFont, TGlyph>.BackColor.get -> System.Drawing.Color?
+CSharpMath.Display.Displays.RuleDisplay<TFont, TGlyph>.BackColor.set -> void
+CSharpMath.Display.Displays.RuleDisplay<TFont, TGlyph>.Descent.get -> float
+CSharpMath.Display.Displays.RuleDisplay<TFont, TGlyph>.Descent.set -> void
+CSharpMath.Display.Displays.RuleDisplay<TFont, TGlyph>.Draw(CSharpMath.Display.FrontEnd.IGraphicsContext<TFont, TGlyph>! context) -> void
+CSharpMath.Display.Displays.RuleDisplay<TFont, TGlyph>.HasScript.get -> bool
+CSharpMath.Display.Displays.RuleDisplay<TFont, TGlyph>.HasScript.set -> void
+CSharpMath.Display.Displays.RuleDisplay<TFont, TGlyph>.Position.get -> System.Drawing.PointF
+CSharpMath.Display.Displays.RuleDisplay<TFont, TGlyph>.Position.set -> void
+CSharpMath.Display.Displays.RuleDisplay<TFont, TGlyph>.Range.get -> CSharpMath.Atom.Range
+CSharpMath.Display.Displays.RuleDisplay<TFont, TGlyph>.RuleDisplay(System.Drawing.PointF centreLineStart, float length, float thickness, bool vertical, CSharpMath.Atom.Range range) -> void
+CSharpMath.Display.Displays.RuleDisplay<TFont, TGlyph>.SetTextColorRecursive(System.Drawing.Color? textColor) -> void
+CSharpMath.Display.Displays.RuleDisplay<TFont, TGlyph>.TextColor.get -> System.Drawing.Color?
+CSharpMath.Display.Displays.RuleDisplay<TFont, TGlyph>.TextColor.set -> void
+CSharpMath.Display.Displays.RuleDisplay<TFont, TGlyph>.Width.get -> float
+CSharpMath.Display.Displays.RuleDisplay<TFont, TGlyph>.Width.set -> void
+CSharpMath.Display.Displays.StackDisplay<TFont, TGlyph>
+CSharpMath.Display.Displays.StackDisplay<TFont, TGlyph>.Ascent.get -> float
+CSharpMath.Display.Displays.StackDisplay<TFont, TGlyph>.Ascent.set -> void
+CSharpMath.Display.Displays.StackDisplay<TFont, TGlyph>.BackColor.get -> System.Drawing.Color?
+CSharpMath.Display.Displays.StackDisplay<TFont, TGlyph>.BackColor.set -> void
+CSharpMath.Display.Displays.StackDisplay<TFont, TGlyph>.Base.get -> CSharpMath.Display.Displays.ListDisplay<TFont, TGlyph>!
+CSharpMath.Display.Displays.StackDisplay<TFont, TGlyph>.Descent.get -> float
+CSharpMath.Display.Displays.StackDisplay<TFont, TGlyph>.Descent.set -> void
+CSharpMath.Display.Displays.StackDisplay<TFont, TGlyph>.Draw(CSharpMath.Display.FrontEnd.IGraphicsContext<TFont, TGlyph>! context) -> void
+CSharpMath.Display.Displays.StackDisplay<TFont, TGlyph>.HasScript.get -> bool
+CSharpMath.Display.Displays.StackDisplay<TFont, TGlyph>.HasScript.set -> void
+CSharpMath.Display.Displays.StackDisplay<TFont, TGlyph>.Over.get -> CSharpMath.Display.IDisplay<TFont, TGlyph>?
+CSharpMath.Display.Displays.StackDisplay<TFont, TGlyph>.Position.get -> System.Drawing.PointF
+CSharpMath.Display.Displays.StackDisplay<TFont, TGlyph>.Position.set -> void
+CSharpMath.Display.Displays.StackDisplay<TFont, TGlyph>.Range.get -> CSharpMath.Atom.Range
+CSharpMath.Display.Displays.StackDisplay<TFont, TGlyph>.SetTextColorRecursive(System.Drawing.Color? textColor) -> void
+CSharpMath.Display.Displays.StackDisplay<TFont, TGlyph>.StackDisplay(CSharpMath.Display.Displays.ListDisplay<TFont, TGlyph>! baseDisplay, CSharpMath.Display.IDisplay<TFont, TGlyph>? over, CSharpMath.Display.IDisplay<TFont, TGlyph>? under, CSharpMath.Atom.Range range) -> void
+CSharpMath.Display.Displays.StackDisplay<TFont, TGlyph>.TextColor.get -> System.Drawing.Color?
+CSharpMath.Display.Displays.StackDisplay<TFont, TGlyph>.TextColor.set -> void
+CSharpMath.Display.Displays.StackDisplay<TFont, TGlyph>.Under.get -> CSharpMath.Display.IDisplay<TFont, TGlyph>?
+CSharpMath.Display.Displays.StackDisplay<TFont, TGlyph>.Width.get -> float
+CSharpMath.Display.Displays.StackDisplay<TFont, TGlyph>.Width.set -> void
+override CSharpMath.Atom.Atoms.Box.DebugString.get -> string!
+override CSharpMath.Atom.Atoms.Box.Equals(object! obj) -> bool
+override CSharpMath.Atom.Atoms.Box.GetHashCode() -> int
+override CSharpMath.Atom.Atoms.Box.ScriptsAllowed.get -> bool
+override CSharpMath.Atom.Atoms.Group.DebugString.get -> string!
+override CSharpMath.Atom.Atoms.Group.Equals(object! obj) -> bool
+override CSharpMath.Atom.Atoms.Group.GetHashCode() -> int
+override CSharpMath.Atom.Atoms.Group.ScriptsAllowed.get -> bool
+override CSharpMath.Atom.Atoms.Macro.DebugString.get -> string!
+override CSharpMath.Atom.Atoms.Macro.Equals(object! obj) -> bool
+override CSharpMath.Atom.Atoms.Macro.GetHashCode() -> int
+override CSharpMath.Atom.Atoms.Macro.ScriptsAllowed.get -> bool
+override CSharpMath.Atom.Atoms.Stack.DebugString.get -> string!
+override CSharpMath.Atom.Atoms.Stack.Equals(object! obj) -> bool
+override CSharpMath.Atom.Atoms.Stack.GetHashCode() -> int
+override CSharpMath.Atom.Atoms.Stack.ScriptsAllowed.get -> bool
+override CSharpMath.Display.Displays.BoxDisplay<TFont, TGlyph>.ToString() -> string!
+override CSharpMath.Display.Displays.RuleDisplay<TFont, TGlyph>.ToString() -> string!
+override CSharpMath.Display.Displays.StackDisplay<TFont, TGlyph>.ToString() -> string!
+static CSharpMath.Atom.LaTeXSettings.AddMacro(string! name, int argumentCount, string! template) -> void
+CSharpMath.Atom.Atoms.LargeDelimiter
+CSharpMath.Atom.Atoms.LargeDelimiter.Clone(bool finalize) -> CSharpMath.Atom.Atoms.LargeDelimiter!
+CSharpMath.Atom.Atoms.LargeDelimiter.DelimiterSize
+CSharpMath.Atom.Atoms.LargeDelimiter.DelimiterSize.Size1 = 1 -> CSharpMath.Atom.Atoms.LargeDelimiter.DelimiterSize
+CSharpMath.Atom.Atoms.LargeDelimiter.DelimiterSize.Size2 = 2 -> CSharpMath.Atom.Atoms.LargeDelimiter.DelimiterSize
+CSharpMath.Atom.Atoms.LargeDelimiter.DelimiterSize.Size3 = 3 -> CSharpMath.Atom.Atoms.LargeDelimiter.DelimiterSize
+CSharpMath.Atom.Atoms.LargeDelimiter.DelimiterSize.Size4 = 4 -> CSharpMath.Atom.Atoms.LargeDelimiter.DelimiterSize
+CSharpMath.Atom.Atoms.LargeDelimiter.LargeDelimiter(string! nucleus, CSharpMath.Atom.Atoms.LargeDelimiter.DelimiterSize size, System.Type! mathClass) -> void
+CSharpMath.Atom.Atoms.LargeDelimiter.MathClass.get -> System.Type!
+CSharpMath.Atom.Atoms.LargeDelimiter.Size.get -> CSharpMath.Atom.Atoms.LargeDelimiter.DelimiterSize
+CSharpMath.Atom.Atoms.Macro.Arguments.get -> System.Collections.Generic.IReadOnlyList<string!>!
+CSharpMath.Display.Displays.GlyphConstructionDisplay<TFont, TGlyph>.InkWidth.get -> float
+CSharpMath.Display.Displays.GlyphDisplay<TFont, TGlyph>.InkWidth.get -> float
+CSharpMath.Display.Displays.HorizontalGlyphConstructionDisplay<TFont, TGlyph>.InkWidth.get -> float
+CSharpMath.Display.Displays.TextRunDisplay<TFont, TGlyph>.InkWidth.get -> float
+CSharpMath.Display.FrontEnd.IFontGlyphBounds<TGlyph>
+CSharpMath.Display.FrontEnd.IFontGlyphBounds<TGlyph>.GetAdvances(System.Collections.Generic.IEnumerable<TGlyph>! glyphs) -> System.Collections.Generic.IEnumerable<float>!
+CSharpMath.Display.FrontEnd.IFontGlyphBounds<TGlyph>.GetBoundingRects(System.Collections.Generic.IEnumerable<TGlyph>! glyphs) -> System.Collections.Generic.IEnumerable<System.Drawing.RectangleF>!
+CSharpMath.Display.IInkDisplay
+CSharpMath.Display.IInkDisplay.InkWidth.get -> float
+override CSharpMath.Atom.Atoms.LargeDelimiter.ScriptsAllowed.get -> bool
+override CSharpMath.Atom.Atoms.LargeDelimiter.Equals(object! obj) -> bool
+override CSharpMath.Atom.Atoms.LargeDelimiter.GetHashCode() -> int
+override CSharpMath.Atom.Atoms.Style.FontStyle.get -> CSharpMath.Atom.FontStyle
+override CSharpMath.Atom.Atoms.Style.FontStyle.set -> void
+override CSharpMath.Atom.Atoms.Style.Nucleus.get -> string!
+override CSharpMath.Atom.Atoms.Style.Nucleus.set -> void
+static CSharpMath.Extensions.InkWidth<TFont, TGlyph>(this CSharpMath.Display.IDisplay<TFont, TGlyph>! display) -> float
+virtual CSharpMath.Atom.MathAtom.FontStyle.get -> CSharpMath.Atom.FontStyle
+virtual CSharpMath.Atom.MathAtom.FontStyle.set -> void
+virtual CSharpMath.Atom.MathAtom.Nucleus.get -> string!
+virtual CSharpMath.Atom.MathAtom.Nucleus.set -> void
+*REMOVED*CSharpMath.Atom.MathAtom.FontStyle.get -> CSharpMath.Atom.FontStyle
+*REMOVED*CSharpMath.Atom.MathAtom.FontStyle.set -> void
+*REMOVED*CSharpMath.Atom.MathAtom.Nucleus.get -> string!
+*REMOVED*CSharpMath.Atom.MathAtom.Nucleus.set -> void

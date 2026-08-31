@@ -78,8 +78,8 @@ namespace CSharpMath.Atom {
         { @"\rfloor", new Boundary("⌋") },
         { @"\lceil", new Boundary("⌈") },
         { @"\rceil", new Boundary("⌉") },
-        { @"<", @"\langle", new Boundary("〈") },
-        { @">", @"\rangle", new Boundary("〉") },
+        { @"<", @"\langle", new Boundary("\u2329") },
+        { @">", @"\rangle", new Boundary("\u232A") },
         { @"/", new Boundary("/") },
         { @"\\", @"backslash", new Boundary("\\") },
         { @"|", @"\vert", new Boundary("|") },
@@ -156,19 +156,22 @@ namespace CSharpMath.Atom {
           return Ok(new Comment(parser.Chars.Substring(index, length)));
         } },
         { @"\frac", (parser, accumulate, stopChar) =>
-          parser.ReadArgument().Bind(numerator =>
-            parser.ReadArgument().Bind(denominator =>
-              Ok(new Fraction(numerator, denominator)))) },
+          LaTeXParser.FractionMacro(parser, "frac") },
         { @"\binom", (parser, accumulate, stopChar) =>
-          parser.ReadArgument().Bind(numerator =>
-            parser.ReadArgument().Bind(denominator =>
-              Ok(new Fraction(numerator, denominator, false) {
-                LeftDelimiter = new Boundary("("),
-                RightDelimiter = new Boundary(")")
-              }))) },
+          LaTeXParser.FractionMacro(parser, "binom") },
+        { @"\dfrac", (parser, accumulate, stopChar) =>
+          LaTeXParser.FractionMacro(parser, "dfrac") },
+        { @"\tfrac", (parser, accumulate, stopChar) =>
+          LaTeXParser.FractionMacro(parser, "tfrac") },
+        { @"\dbinom", (parser, accumulate, stopChar) =>
+          LaTeXParser.FractionMacro(parser, "dbinom") },
+        { @"\tbinom", (parser, accumulate, stopChar) =>
+          LaTeXParser.FractionMacro(parser, "tbinom") },
+        { @"\cfrac", (parser, accumulate, stopChar) =>
+          LaTeXParser.FractionMacro(parser, "cfrac") },
         { @"\sqrt", (parser, accumulate, stopChar) =>
           parser.ReadArgumentOptional().Bind(degree =>
-            parser.ReadArgument().Bind(radicand =>
+            LaTeXSettings.TolerantArgument(parser).Bind(radicand =>
               Ok(new Radical(degree ?? new MathList(), radicand)))) },
         { @"\left", (parser, accumulate, stopChar) =>
           parser.ReadDelimiter("left").Bind(left => {
@@ -182,6 +185,37 @@ namespace CSharpMath.Atom {
               return Ok(new Inner(left, innerList, right));
             });
           }) },
+        #region Over/under stack commands
+        { @"\overrightarrow", (parser, accumulate, stopChar) => LaTeXParser.StackAtomForCommand(parser, "overrightarrow") },
+        { @"\overleftarrow", (parser, accumulate, stopChar) => LaTeXParser.StackAtomForCommand(parser, "overleftarrow") },
+        { @"\overleftrightarrow", (parser, accumulate, stopChar) => LaTeXParser.StackAtomForCommand(parser, "overleftrightarrow") },
+        { @"\underrightarrow", (parser, accumulate, stopChar) => LaTeXParser.StackAtomForCommand(parser, "underrightarrow") },
+        { @"\underleftarrow", (parser, accumulate, stopChar) => LaTeXParser.StackAtomForCommand(parser, "underleftarrow") },
+        { @"\underleftrightarrow", (parser, accumulate, stopChar) => LaTeXParser.StackAtomForCommand(parser, "underleftrightarrow") },
+        { @"\overbrace", (parser, accumulate, stopChar) => LaTeXParser.StackAtomForCommand(parser, "overbrace") },
+        // \underbrace stays registered as an UnderAnnotation symbol below.
+        { @"\overset", (parser, accumulate, stopChar) => LaTeXParser.StackAtomForCommand(parser, "overset") },
+        { @"\underset", (parser, accumulate, stopChar) => LaTeXParser.StackAtomForCommand(parser, "underset") },
+        { @"\stackrel", (parser, accumulate, stopChar) => LaTeXParser.StackAtomForCommand(parser, "stackrel") },
+        { @"\stackbin", (parser, accumulate, stopChar) => LaTeXParser.StackAtomForCommand(parser, "stackbin") },
+        #endregion
+        #region Box commands: phantom/smash/lap + cancel family
+        { @"\phantom", (parser, accumulate, stopChar) => LaTeXParser.BoxAtomForCommand(parser, "phantom") },
+        { @"\hphantom", (parser, accumulate, stopChar) => LaTeXParser.BoxAtomForCommand(parser, "hphantom") },
+        { @"\vphantom", (parser, accumulate, stopChar) => LaTeXParser.BoxAtomForCommand(parser, "vphantom") },
+        { @"\mathstrut", (parser, accumulate, stopChar) => LaTeXParser.BoxAtomForCommand(parser, "mathstrut") },
+        { @"\smash", (parser, accumulate, stopChar) => LaTeXParser.BoxAtomForCommand(parser, "smash") },
+        { @"\llap", (parser, accumulate, stopChar) => LaTeXParser.BoxAtomForCommand(parser, "llap") },
+        { @"\rlap", (parser, accumulate, stopChar) => LaTeXParser.BoxAtomForCommand(parser, "rlap") },
+        { @"\clap", (parser, accumulate, stopChar) => LaTeXParser.BoxAtomForCommand(parser, "clap") },
+        { @"\mathllap", (parser, accumulate, stopChar) => LaTeXParser.BoxAtomForCommand(parser, "mathllap") },
+        { @"\mathrlap", (parser, accumulate, stopChar) => LaTeXParser.BoxAtomForCommand(parser, "mathrlap") },
+        { @"\mathclap", (parser, accumulate, stopChar) => LaTeXParser.BoxAtomForCommand(parser, "mathclap") },
+        { @"\cancel", (parser, accumulate, stopChar) => LaTeXParser.BoxAtomForCommand(parser, "cancel") },
+        { @"\bcancel", (parser, accumulate, stopChar) => LaTeXParser.BoxAtomForCommand(parser, "bcancel") },
+        { @"\xcancel", (parser, accumulate, stopChar) => LaTeXParser.BoxAtomForCommand(parser, "xcancel") },
+        { @"\sout", (parser, accumulate, stopChar) => LaTeXParser.BoxAtomForCommand(parser, "sout") },
+        #endregion
         { @"\overline", (parser, accumulate, stopChar) =>
           parser.ReadArgument().Bind(mathList => Ok(new Overline(mathList))) },
         { @"\underline", (parser, accumulate, stopChar) =>
@@ -192,7 +226,12 @@ namespace CSharpMath.Atom {
         { @"\begin", (parser, accumulate, stopChar) =>
           parser.ReadEnvironment().Bind(env =>
             parser.ReadTable(env, null, false, stopChar)).Bind(Ok) },
+        // \color and its 2-argument alias \textcolor
         { @"\color", (parser, accumulate, stopChar) =>
+          parser.ReadColor().Bind(
+            color => parser.ReadArgument().Bind(
+            colored => Ok(new Colored(color, colored)))) },
+        { @"\textcolor", (parser, accumulate, stopChar) =>
           parser.ReadColor().Bind(
             color => parser.ReadArgument().Bind(
             colored => Ok(new Colored(color, colored)))) },
@@ -202,15 +241,24 @@ namespace CSharpMath.Atom {
             colored => Ok(new ColorBox(color, colored)))) },
         { @"\prime", (parser, accumulate, stopChar) =>
           Err(@"\prime won't be supported as Unicode has no matching character. Use ' instead.") },
+        #region Spacing commands: kern/hspace/skip family
         { @"\kern", (parser, accumulate, stopChar) =>
-          parser.TextMode ? parser.ReadSpace().Bind(kern => Ok(new Space(kern))) : @"\kern is not allowed in math mode" },
+          parser.ReadSpace().Bind(kern => Ok(new Space(kern))) },
         { @"\hskip", (parser, accumulate, stopChar) =>
 //TODO \hskip and \mskip: Implement plus and minus for expansion
-          parser.TextMode ? parser.ReadSpace().Bind(skip => Ok(new Space(skip))) : @"\hskip is not allowed in math mode" },
+          parser.ReadSpace().Bind(skip => Ok(new Space(skip))) },
+        { @"\hspace", (parser, accumulate, stopChar) => {
+          if (!parser.ReadCharIfAvailable('{')) return "Expected {";
+          return parser.ReadSpace().Bind(space => {
+            if (!parser.ReadCharIfAvailable('}')) return "Expected }";
+            return Ok(new Space(space));
+          });
+        } },
         { @"\mkern", (parser, accumulate, stopChar) =>
           !parser.TextMode ? parser.ReadSpace().Bind(kern => Ok(new Space(kern))) : @"\mkern is not allowed in text mode" },
         { @"\mskip", (parser, accumulate, stopChar) =>
           !parser.TextMode ? parser.ReadSpace().Bind(skip => Ok(new Space(skip))) : @"\mskip is not allowed in text mode" },
+        #endregion
         { @"\raisebox", (parser, accumulate, stopChar) => {
           if (!parser.ReadCharIfAvailable('{')) return "Expected {";
           return parser.ReadSpace().Bind(raise => {
@@ -299,15 +347,39 @@ namespace CSharpMath.Atom {
           return parser.ReadArgument(prevAtom.Subscript).Bind(_ => Ok(null));
         } },
         { @"{", (parser, accumulate, stopChar) => {
+            System.Func<MathList, Result<(MathAtom?, MathList?)>> wrapOrFlatten = sublist => {
+              if (parser.Environments.PeekOrDefault() is LaTeXParser.TableEnvironment { Name: null }) {
+                // \\ or \cr which do not have a corresponding \end
+                var oldEnv = parser.Environments.Pop();
+                parser.Environments.Push(oldEnv);
+                return LaTeXSettings.OkStyled(sublist);
+              }
+              if (parser.GroupWasTransformedByStopCommand) {
+                // A group-transformation command (\over/\atop/…) fired inside this
+                // group: the fraction replaces the group (TeX behavior), no wrapping.
+                // (The getter reads-and-clears, so an inner transform never leaks
+                // into an enclosing group's decision.)
+                return LaTeXSettings.OkStyled(sublist);
+              }
+              if (parser.IsReadingOneCharField) {
+                // Field brace (^{…}, _{…}, \frac{…}, command argument): the {…} *is*
+                // the field. Flatten and return it as the field.
+                return LaTeXSettings.OkStyled(sublist);
+              }
+              // Grouping brace in the main list: wrap as an Ord subformula so style
+              // nodes are scoped, scripts target the whole group, and Bin/Ord
+              // reclassification stops at the brace boundary.
+              return Ok(new Group { InnerList = sublist });
+            };
             if (parser.Environments.PeekOrDefault() is LaTeXParser.TableEnvironment { Name: null }) {
               // \\ or \cr which do not have a corresponding \end
               var oldEnv = parser.Environments.Pop();
               return parser.ReadUntil('}').Bind(sublist => {
                 parser.Environments.Push(oldEnv);
-                return OkStyled(sublist);
+                return wrapOrFlatten(sublist);
               });
             } else {
-              return parser.ReadUntil('}').Bind(OkStyled);
+              return parser.ReadUntil('}').Bind(wrapOrFlatten);
             }
         } },
         { @"}", (parser, accumulate, stopChar) => "Missing opening brace" },
@@ -329,26 +401,62 @@ namespace CSharpMath.Atom {
           parser.Environments.PeekOrDefault() is LaTeXParser.TableEnvironment
           ? OkStop(accumulate)
           : parser.ReadTable(null, accumulate, false, stopChar).Bind(table => OkStop(new MathList(table))) },
-        { @"\over", (parser, accumulate, stopChar) =>
-          parser.ReadUntil(stopChar).Bind(denominator =>
-            OkStop(new MathList(new Fraction(accumulate, denominator)))) },
-        { @"\atop", (parser, accumulate, stopChar) =>
-          parser.ReadUntil(stopChar).Bind(denominator =>
-            OkStop(new MathList(new Fraction(accumulate, denominator, false)))) },
-        { @"\choose", (parser, accumulate, stopChar) =>
-          parser.ReadUntil(stopChar).Bind(denominator =>
-            OkStop(new MathList(new Fraction(accumulate, denominator, false) { LeftDelimiter = new Boundary("("), RightDelimiter = new Boundary(")") }))) },
-        { @"\brack", (parser, accumulate, stopChar) =>
-          parser.ReadUntil(stopChar).Bind(denominator =>
-            OkStop(new MathList(new Fraction(accumulate, denominator, false) { LeftDelimiter = new Boundary("["), RightDelimiter = new Boundary("]") }))) },
-        { @"\brace", (parser, accumulate, stopChar) =>
-          parser.ReadUntil(stopChar).Bind(denominator =>
-            OkStop(new MathList(new Fraction(accumulate, denominator, false) { LeftDelimiter = new Boundary("{"), RightDelimiter = new Boundary("}") }))) },
-        { @"\atopwithdelims", (parser, accumulate, stopChar) =>
-          parser.ReadDelimiter(@"atopwithdelims").Bind(left =>
-            parser.ReadDelimiter(@"atopwithdelims").Bind(right =>
-              parser.ReadUntil(stopChar).Bind(denominator =>
-                OkStop(new MathList(new Fraction(accumulate, denominator, false) { LeftDelimiter = left, RightDelimiter = right }))))) },
+        { @"\over", (parser, accumulate, stopChar) => {
+            // iosMath 801af6f: \over/\atop/\choose/\brack/\brace are illegal in a
+            // one-character argument slot (e.g. x^\over y); TeX rejects it too.
+            if (parser.IsReadingOneCharField)
+              return $@"\over cannot be used in a one-character argument; wrap it in braces, e.g. x^{{a \over b}}";
+            return parser.ReadUntil(stopChar).Bind(denominator => {
+              parser.GroupWasTransformedByStopCommand = true;
+              return OkStop(new MathList(new Fraction(accumulate, denominator)));
+            });
+          } },
+        { @"\atop", (parser, accumulate, stopChar) => {
+            if (parser.IsReadingOneCharField)
+              return $@"\atop cannot be used in a one-character argument; wrap it in braces, e.g. x^{{a \atop b}}";
+            return parser.ReadUntil(stopChar).Bind(denominator => {
+              parser.GroupWasTransformedByStopCommand = true;
+              return OkStop(new MathList(new Fraction(accumulate, denominator, false)));
+            });
+          } },
+        { @"\choose", (parser, accumulate, stopChar) => {
+            if (parser.IsReadingOneCharField)
+              return $@"\choose cannot be used in a one-character argument; wrap it in braces, e.g. x^{{a \choose b}}";
+            return parser.ReadUntil(stopChar).Bind(denominator => {
+              parser.GroupWasTransformedByStopCommand = true;
+              return OkStop(new MathList(new Fraction(accumulate, denominator, false)
+                { LeftDelimiter = new Boundary("("), RightDelimiter = new Boundary(")") }));
+            });
+          } },
+        { @"\brack", (parser, accumulate, stopChar) => {
+            if (parser.IsReadingOneCharField)
+              return $@"\brack cannot be used in a one-character argument; wrap it in braces, e.g. x^{{a \brack b}}";
+            return parser.ReadUntil(stopChar).Bind(denominator => {
+              parser.GroupWasTransformedByStopCommand = true;
+              return OkStop(new MathList(new Fraction(accumulate, denominator, false)
+                { LeftDelimiter = new Boundary("["), RightDelimiter = new Boundary("]") }));
+            });
+          } },
+        { @"\brace", (parser, accumulate, stopChar) => {
+            if (parser.IsReadingOneCharField)
+              return $@"\brace cannot be used in a one-character argument; wrap it in braces, e.g. x^{{a \brace b}}";
+            return parser.ReadUntil(stopChar).Bind(denominator => {
+              parser.GroupWasTransformedByStopCommand = true;
+              return OkStop(new MathList(new Fraction(accumulate, denominator, false)
+                { LeftDelimiter = new Boundary("{"), RightDelimiter = new Boundary("}") }));
+            });
+          } },
+        { @"\atopwithdelims", (parser, accumulate, stopChar) => {
+            if (parser.IsReadingOneCharField)
+              return @"\atopwithdelims cannot be used in a one-character argument; wrap it in braces";
+            return parser.ReadDelimiter(@"atopwithdelims").Bind(left =>
+              parser.ReadDelimiter(@"atopwithdelims").Bind(right =>
+                parser.ReadUntil(stopChar).Bind(denominator => {
+                  parser.GroupWasTransformedByStopCommand = true;
+                  return OkStop(new MathList(new Fraction(accumulate, denominator, false)
+                    { LeftDelimiter = left, RightDelimiter = right }));
+                })));
+          } },
         { @"\right", (parser, accumulate, stopChar) => {
           while (parser.Environments.PeekOrDefault() is LaTeXParser.TableEnvironment table)
             if (table.Name is null) {
@@ -390,6 +498,122 @@ namespace CSharpMath.Atom {
       };
     public static MathAtom Times => new BinaryOperator("×");
     public static MathAtom Divide => new BinaryOperator("÷");
+
+    /// <summary>Built-in macros: command name → (argument count, LaTeX template with
+    /// #N placeholders). Each entry is amsmath's inline expansion. Populated once at
+    /// startup; <see cref="AddMacro"/> mutates it and must not race a live parse.</summary>
+    private static readonly Dictionary<string, (int argc, string template)>
+      MacroDefinitions = new Dictionary<string, (int, string)> {
+        // amsmath's exact inline expansion. Not reproduced is the \if@display switch
+        // to an 18mu leading gap, because a macro expands at parse time before the
+        // render style is known.
+        ["pmod"] = (1, @"\mkern8mu(\mathrm{mod}\mkern6mu#1)"),
+        ["mod"] = (1, @"\mkern12mu\mathrm{mod}\mkern6mu#1"),
+        ["pod"] = (1, @"\mkern8mu(#1)"),
+        // amsmath pads all three with \; on both sides; a bare arrow alias renders tighter.
+        ["implies"] = (0, @"\;\Longrightarrow\;"),
+        ["impliedby"] = (0, @"\;\Longleftarrow\;"),
+        ["iff"] = (0, @"\;\Longleftrightarrow\;"),
+        ["idotsint"] = (0, @"\int\cdots\int"),
+        // amsmath builds these out of \mathop which we have no command for; the symbol
+        // is right but scripts land to the side instead of centred underneath.
+        ["varliminf"] = (0, @"\underline{\lim}"),
+        ["varlimsup"] = (0, @"\overline{\lim}"),
+        ["varinjlim"] = (0, @"\underrightarrow{\lim}"),
+        ["varprojlim"] = (0, @"\underleftarrow{\lim}"),
+      };
+    private static readonly object MacroRegistryLock = new object();
+
+    /// <summary>Defines a macro: a command that expands to <paramref name="template"/>
+    /// with <c>#1</c>…<c>#9</c> replaced by the arguments it is invoked with. Macros are
+    /// looked up before every other command table, so registering a name that already
+    /// exists — a macro or a built-in command — shadows it. Re-registering the same
+    /// name replaces the definition. Carries the same setup-time contract as the
+    /// symbol tables: do not call this while parsing on another thread.</summary>
+    public static void AddMacro(string name, int argumentCount, string template) {
+      if (name == null) throw new ArgumentNullException(nameof(name));
+      if (template == null) throw new ArgumentNullException(nameof(template));
+      if (argumentCount < 0 || argumentCount > 9)
+        throw new ArgumentException($@"\{name} declares {argumentCount} arguments; a macro can take at most 9", nameof(argumentCount));
+      if (!TemplateReferencesOnlyArgumentsUpTo(template, argumentCount))
+        throw new ArgumentException(
+          $@"Template for \{name} references an argument beyond its {argumentCount} declared argument(s): {template}",
+          nameof(template));
+      lock (MacroRegistryLock) MacroDefinitions[name] = (argumentCount, template);
+    }
+
+    /// <summary>Whether every #N reference in the template names an argument within the declared arity.</summary>
+    static bool TemplateReferencesOnlyArgumentsUpTo(string templateString, int argumentCount) {
+      for (int i = 0; i < templateString.Length; i++) {
+        if (templateString[i] != '#') continue;
+        if (i + 1 >= templateString.Length) return false;
+        char digit = templateString[i + 1];
+        if (digit == '#') { i++; continue; }
+        if (digit < '1' || digit > '9' || digit - '0' > argumentCount) return false;
+        i++;
+      }
+      return true;
+    }
+    private static string SpliceTemplate(string template, IReadOnlyList<string> arguments,
+      FontStyle argumentStyle) {
+      var output = new StringBuilder();
+      var styleCommand = FontStyles.SecondToFirst[argumentStyle];
+      for (var i = 0; i < template.Length; i++) {
+        if (template[i] != '#') { output.Append(template[i]); continue; }
+        var next = template[++i];
+        if (next == '#') output.Append('#');
+        else output.Append('\\').Append(styleCommand).Append('{')
+          .Append(arguments[next - '1']).Append('}');
+      }
+      return output.ToString();
+    }
+
+    internal static Result<(MathAtom? Atom, MathList? Return)> MacroAtomForCommand(
+      LaTeXParser parser, string command) {
+      (int argc, string template) def;
+      lock (MacroRegistryLock) {
+        if (!MacroDefinitions.TryGetValue(command, out def)) return Ok(null);
+      }
+      if (def.template == null) {
+        return Ok(null);
+      }
+      var rawArguments = new List<string>();
+      for (int i = 0; i < def.argc; i++) {
+        var (raw, rawError) = parser.ReadRawArgument();
+        if (rawError != null) return rawError;
+        rawArguments.Add(raw);
+      }
+      // Template text starts from default style; only substituted arguments inherit
+      // the invocation's style context.
+      var expansionParser = new LaTeXParser(
+        SpliceTemplate(def.template, rawArguments, parser.CurrentFontStyle));
+      expansionParser.MacroExpansionDepth = parser.MacroExpansionDepth + 1;
+      if (expansionParser.MacroExpansionDepth > 32) return Err($@"Macro expansion depth exceeded while expanding \{command}");
+      var (rawExpansion, expansionError) = expansionParser.Build();
+      if (expansionError != null || rawExpansion == null)
+        return Err($@"Expansion of \{command} failed to parse: {expansionError}");
+      return Ok(new Atoms.Macro(command, rawArguments, rawExpansion));
+    }
+    internal static bool IsBuiltinMacro(string command) {
+      lock (MacroRegistryLock) return MacroDefinitions.ContainsKey(command);
+    }
+
+    /// <summary>Reads an atom's argument, tolerating EOF or an immediate closing brace
+    /// by yielding an empty list (iosMath da9abdd: a lone \sqrt must not crash).</summary>
+    internal static Result<MathList> TolerantArgument(LaTeXParser parser) {
+      parser.SkipSpaces();
+      if (!parser.HasCharacters || parser.PeekChar() == '}') {
+        return new Result<MathList>(new MathList());
+      }
+      return parser.ReadArgument();
+    }
+
+    /// <summary>Every command that ends the enclosing list rather than producing an atom.
+    /// None can begin a macro argument.</summary>
+    private static readonly HashSet<string> StopCommands =
+      new HashSet<string> { "right", "over", "atop", "atopwithdelims", "choose", "brack", "brace", @"\", "cr", "end" };
+    internal static bool IsStopCommand(string command) => StopCommands.Contains(command);
+
     public static bool PlaceholderBlinks { get; set; }
     public static Color? PlaceholderRestingColor { get; set; }
     public static Color? PlaceholderActiveColor { get; set; }
@@ -433,6 +657,13 @@ namespace CSharpMath.Atom {
       if (hexOrName == null) return null;
       if (hexOrName.StartsWith("#", StringComparison.Ordinal)) {
         var hex = hexOrName.Substring(1);
+        // Expand the CSS 3-digit shorthand #RGB to #RRGGBB (e.g. "f00" to "ff0000").
+        if (hex.Length == 3) {
+          hex = string.Concat(
+            hex[0].ToStringInvariant(), hex[0],
+            hex[1].ToStringInvariant(), hex[1],
+            hex[2].ToStringInvariant(), hex[2]);
+        }
         return
           (hex.Length, int.TryParse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var i)) switch {
             (8, true) => Color.FromArgb(i),
@@ -508,6 +739,10 @@ namespace CSharpMath.Atom {
         { @"\diameter", new Ordinary("\u2300") },
         { @"\npreccurlyeq", new Relation("⋠") },
         { @"\nsucccurlyeq", new Relation("⋡") },
+        // Aliases from the amssymb batch (iosMath 48f6fca)
+        { @"\restriction", new Relation("↾") }, // alias of \upharpoonright
+        { @"\dotsc", new Punctuation("…") }, // alias of \ldots
+        { @"\dotsm", new Ordinary("⋯") }, // alias of \cdots
         { @"\iint", new LargeOperator("∬", false) },
         { @"\iiint", new LargeOperator("∭", false) },
         { @"\iiiint", new LargeOperator("⨌", false) },
@@ -564,8 +799,8 @@ namespace CSharpMath.Atom {
         { @"\rceil", new Close("⌉") },
         { @"\lfloor", new Open("⌊") },
         { @"\rfloor", new Close("⌋") },
-        { @"\langle", new Open("〈") },
-        { @"\rangle", new Close("〉") },
+        { @"\langle", new Open("\u2329") },
+        { @"\rangle", new Close("\u232A") },
         { @"\lgroup", new Open("⟮") },
         { @"\rgroup", new Close("⟯") },
         { @"\ulcorner", new Open("⌜") },
@@ -586,6 +821,13 @@ namespace CSharpMath.Atom {
         { @"\enspace", new Space(Length.EmWidth / 2) },
         { @"\quad", new Space(Length.EmWidth) },
         { @"\qquad", new Space(Length.EmWidth * 2) },
+        // amsmath's named spacing forms (the stretch components are dropped).
+        { @"\thinspace", new Space(Length.ShortSpace) },
+        { @"\medspace", new Space(Length.MediumSpace) },
+        { @"\thickspace", new Space(Length.LongSpace) },
+        { @"\negthinspace", new Space(-Length.ShortSpace) },
+        { @"\negmedspace", new Space(-Length.MediumSpace) },
+        { @"\negthickspace", new Space(-Length.LongSpace) },
         { @"\displaystyle", new Style(LineStyle.Display) },
         { @"\textstyle", new Style(LineStyle.Text) },
         { @"\scriptstyle", new Style(LineStyle.Script) },
@@ -820,8 +1062,8 @@ namespace CSharpMath.Atom {
         { @"=", new Relation("=") },
         { @"\vdash", new Relation("⊢") },
         { @"\dashv", new Relation("⊣") },
-        { @"<", new Relation("<") },
-        { @">", new Relation(">") },
+        { @"<", @"\lt", new Relation("<") },
+        { @">", @"\gt", new Relation(">") },
         { @":", new Relation("∶") }, // Colon is a ratio. Regular colon is \colon
         
         // Table 9: Punctuation Symbols
@@ -978,14 +1220,12 @@ namespace CSharpMath.Atom {
         // Table 17: Some Other Constructions
         { @"\widehat", new Accent("\u0302") },
         { @"\widetilde", new Accent("\u0303") },
-        { @"\underbrace", new UnderAnnotation("\u23df", new MathList())},
-        // TODO: implement \overleftarrow, \overrightarrow, \overbrace, \underbrace
+        { @"\underbrace", new UnderAnnotation("\u23df", new MathList())}, // _ attaches an under-list (pre-port behavior)
+        // \overbrace and the other over/under commands are handled by the Stack atom
+        // handlers above (iosMath 43626a4).
+        // TODO: implement \overleftarrow, \overrightarrow
         // \overleftarrow{}
         // \overrightarrow{}
-        // \overline{}
-        // \underline{}
-        // \overbrace{}
-        // \underbrace{}
         // \sqrt{}
         // \sqrt[]{}
         { @"'", new Ordinary("′") },

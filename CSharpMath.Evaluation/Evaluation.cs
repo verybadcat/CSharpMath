@@ -78,8 +78,46 @@ namespace CSharpMath {
     }
     public static MathList Visualize(MathItem entity) =>
       LaTeXParser.MathListFromLaTeX(entity.Latexise())
-      // CSharpMath must handle all LaTeX coming from AngouriMath or a bug is present!
-      .Match(list => list, e => throw new InvalidCodePathException(e));
+      // AngouriMath's Latexise emits braces around every compound ({\sin x}^{1});
+      // dissolve them so the visual output stays identical to the pre-grouping
+      // parser. Grouping remains available for user-authored LaTeX.
+      .Match(list => DissolveGroups(list.Clone(true)), e => throw new InvalidCodePathException(e));
+
+    /// <summary>Recursively removes Group wrappers: their content is spliced inline.
+    /// Scripts attached to a group are hoisted onto its last inner atom.</summary>
+    static MathList DissolveGroups(MathList list) {
+      var result = new MathList();
+      foreach (var atom in list) {
+        if (atom is Atoms.Group group) {
+          var inner = DissolveGroups(group.InnerList);
+          if ((group.Superscript.IsNonEmpty() || group.Subscript.IsNonEmpty())
+            && inner.LastOrDefault() is { } last && last.ScriptsAllowed) {
+            last.Superscript.Append(DissolveGroups(group.Superscript));
+            last.Subscript.Append(DissolveGroups(group.Subscript));
+          }
+          result.Append(inner);
+        } else {
+          if (atom.Superscript.IsNonEmpty()) {
+            var superscript = DissolveGroups(atom.Superscript);
+            atom.Superscript.Clear();
+            atom.Superscript.Append(superscript);
+          }
+          if (atom.Subscript.IsNonEmpty()) {
+            var subscript = DissolveGroups(atom.Subscript);
+            atom.Subscript.Clear();
+            atom.Subscript.Append(subscript);
+          }
+          if (atom is IMathListContainer container)
+            foreach (var subList in container.InnerLists) {
+              var flattened = DissolveGroups(subList);
+              subList.Clear();
+              subList.Append(flattened);
+            }
+          result.Add(atom);
+        }
+      }
+      return result;
+    }
     public static Result<MathItem> Evaluate(MathList mathList) =>
       Transform(mathList.Clone(true)).Bind(result => result is { } r ? Result.Ok(r) : Result.Err("There is nothing to evaluate"));
     static Result<MathItem?> Transform(MathList mathList) {
@@ -208,6 +246,24 @@ namespace CSharpMath {
         switch (atom) {
           case Atoms.Placeholder _:
             return "Placeholders should be filled";
+          // A brace group is an Ord subformula: evaluate its content in place and
+          // splice the result so grouping stays transparent (iosMath 086d345).
+          case Atoms.Group group: {
+              if (group.InnerList.Count == 0) {
+                if (group.Superscript.Count > 0 || group.Subscript.Count > 0)
+                  return "Empty group cannot carry scripts";
+                continue;
+              }
+              var innerList = new MathList(group.InnerList.Select(a => a.Clone(true)));
+              int j = 0;
+              var (groupResult, groupError) = Transform(innerList, ref j, Precedence.DefaultContext)
+                .Bind(r => r is { } item ? Result.Ok(item) : Result.Err("Empty group"));
+              if (groupError != null) return groupError;
+              if (j < innerList.Count - 1) return "Unable to evaluate entire group";
+              @this = groupResult;
+              subscriptAllowed = true;
+              goto handleThis;
+            }
           case Atoms.Number { Subscript: [Atoms.Number numericBase] } n:
             if (int.TryParse(numericBase.Nucleus, out var @base)) {
               try { @this = MathS.FromBaseN(atom.Nucleus, @base); } catch (Exception e) { return e.Message; }
@@ -764,7 +820,9 @@ namespace CSharpMath {
               }
             @this = MathS.Piecewise(caseElements);
             goto handleThis;
-          case Atoms.Open { Nucleus: var opening }:
+          case { Nucleus: var opening } when atom is Atoms.Open
+            || atom is Atoms.LargeDelimiter { MathClass: var openingClass }
+              && openingClass == typeof(Atoms.Open):
             if (atom.Superscript.Count > 0)
               return "Superscripts are unsupported for Open Bracket " + opening;
             if (!OpenBracketInfo.TryGetValue(opening, out var bracketInfo))
@@ -776,7 +834,10 @@ namespace CSharpMath {
             if (HandleSuperscript(ref @this, ref i, mathList[i].Superscript).Error is { } superscriptError)
               return superscriptError;
             goto handleThis;
-          case Atoms.Close { Nucleus: var rightBracket, Superscript: var super, Subscript: var sub }:
+          case { Nucleus: var rightBracket, Superscript: var super, Subscript: var sub }
+            when atom is Atoms.Close
+              || atom is Atoms.LargeDelimiter { MathClass: var closingClass }
+                && closingClass == typeof(Atoms.Close):
             if (sub.Count > 0) return "Subscripts are unsupported for Close " + rightBracket;
             if (!ContextInfo.TryGetValue(prec, out var contextInfo))
               switch (prec) {

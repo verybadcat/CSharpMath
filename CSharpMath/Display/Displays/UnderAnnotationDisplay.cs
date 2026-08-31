@@ -41,7 +41,8 @@ public class UnderAnnotationDisplay<TFont, TGlyph> : IDisplay<TFont, TGlyph>
       return max;
     }
   }
-  public float Width => Inner.Width;
+  public float Width => System.Math.Max(Inner.Width,
+    System.Math.Max(AnnotationGlyph.Width, UnderList?.Width ?? 0));
   public Range Range => Inner.Range;
   public PointF Position {
     get => field;

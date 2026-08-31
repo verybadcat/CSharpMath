@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using CSharpMath.Atom;
 using CSharpMath.Display;
 using CSharpMath.Display.FrontEnd;
 using Newtonsoft.Json.Linq;
@@ -138,27 +139,22 @@ namespace CSharpMath.Core.BackEnd {
     private const string _extenderKey = "extender";
     private const string _glyphKey = "glyph";
     public override IEnumerable<GlyphPart<TGlyph>>? GetVerticalGlyphAssembly(TGlyph rawGlyph, TFont font) =>
-      _vAssemblyTable[GlyphNameProvider.GetGlyphName(rawGlyph)]?[_assemblyPartsKey] is JArray parts
-      ? parts.Select(partInfo =>
-        new GlyphPart<TGlyph>(
-          GlyphNameProvider.GetGlyph(partInfo[_glyphKey]!.Value<string>()!),
-          FontUnitsToPt(font, partInfo[_advanceKey]!.Value<int>()),
-          FontUnitsToPt(font, partInfo[_startConnectorKey]!.Value<int>()),
-          FontUnitsToPt(font, partInfo[_endConnectorKey]!.Value<int>()),
-          partInfo[_extenderKey]!.Value<bool>()))
-      // Should have been defined, but let's return null
-      : null;
+      GetAssembly(_vAssemblyTable, rawGlyph, font);
     public override IEnumerable<GlyphPart<TGlyph>>? GetHorizontalGlyphAssembly(TGlyph rawGlyph, TFont font) =>
-      _hAssemblyTable[GlyphNameProvider.GetGlyphName(rawGlyph)]?[_assemblyPartsKey] is JArray parts
-      ? parts.Select(partInfo =>
-        new GlyphPart<TGlyph>(
-          GlyphNameProvider.GetGlyph(partInfo[_glyphKey]!.Value<string>()!),
-          FontUnitsToPt(font, partInfo[_advanceKey]!.Value<int>()),
-          FontUnitsToPt(font, partInfo[_startConnectorKey]!.Value<int>()),
-          FontUnitsToPt(font, partInfo[_endConnectorKey]!.Value<int>()),
-          partInfo[_extenderKey]!.Value<bool>()))
-      // Should have been defined, but let's return null
-      : null;
+      GetAssembly(_hAssemblyTable, rawGlyph, font);
+    private IEnumerable<GlyphPart<TGlyph>>? GetAssembly(JObject table, TGlyph rawGlyph, TFont font) {
+      if (table[GlyphNameProvider.GetGlyphName(rawGlyph)]?[_assemblyPartsKey] is not JArray parts)
+        return null; // Should have been defined, but let's return null
+      var assembly = parts.Select(partInfo => new GlyphPart<TGlyph>(
+        GlyphNameProvider.GetGlyph(partInfo[_glyphKey]!.Value<string>()!),
+        FontUnitsToPt(font, partInfo[_advanceKey]!.Value<int>()),
+        FontUnitsToPt(font, partInfo[_startConnectorKey]!.Value<int>()),
+        FontUnitsToPt(font, partInfo[_endConnectorKey]!.Value<int>()),
+        partInfo[_extenderKey]!.Value<bool>())).ToList();
+      if (assembly.Any(part => part.IsExtender && !(part.FullAdvance > 0)))
+        throw new InvalidCodePathException("Glyph assembly extenders must have a positive full advance.");
+      return assembly;
+    }
     public override float MinConnectorOverlap(TFont font) => ConstantFromTable(font, nameof(MinConnectorOverlap));
 
     private const string VerticalVariantsKey = "v_variants";
@@ -205,6 +201,14 @@ namespace CSharpMath.Core.BackEnd {
 
     public override float LowerLimitBaselineDropMin(TFont font) =>
       ConstantFromTable(font, nameof(LowerLimitBaselineDropMin));
+    public override float StretchStackTopShiftUp(TFont font) =>
+      ConstantFromTable(font, nameof(StretchStackTopShiftUp));
+    public override float StretchStackBottomShiftDown(TFont font) =>
+      ConstantFromTable(font, nameof(StretchStackBottomShiftDown));
+    public override float StretchStackGapAboveMin(TFont font) =>
+      ConstantFromTable(font, nameof(StretchStackGapAboveMin));
+    public override float StretchStackGapBelowMin(TFont font) =>
+      ConstantFromTable(font, nameof(StretchStackGapBelowMin));
     #region overline/underline
     public override float UnderbarVerticalGap(TFont font) =>
       ConstantFromTable(font, nameof(UnderbarVerticalGap));

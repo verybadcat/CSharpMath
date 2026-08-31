@@ -99,6 +99,10 @@ namespace CSharpMath.Rendering.BackEnd {
     public override float SuperscriptShiftUpCramped(Fonts fonts) => ReadRecord(fonts.MathConsts.SuperscriptShiftUpCramped, fonts);
     public override float UpperLimitBaselineRiseMin(Fonts fonts) => ReadRecord(fonts.MathConsts.UpperLimitBaselineRiseMin, fonts);
     public override float UpperLimitGapMin(Fonts fonts) => ReadRecord(fonts.MathConsts.UpperLimitGapMin, fonts);
+    public override float StretchStackTopShiftUp(Fonts fonts) => ReadRecord(fonts.MathConsts.StretchStackTopShiftUp, fonts);
+    public override float StretchStackBottomShiftDown(Fonts fonts) => ReadRecord(fonts.MathConsts.StretchStackBottomShiftDown, fonts);
+    public override float StretchStackGapAboveMin(Fonts fonts) => ReadRecord(fonts.MathConsts.StretchStackGapAboveMin, fonts);
+    public override float StretchStackGapBelowMin(Fonts fonts) => ReadRecord(fonts.MathConsts.StretchStackGapBelowMin, fonts);
     public override float UnderbarVerticalGap(Fonts fonts) => ReadRecord(fonts.MathConsts.UnderbarVerticalGap, fonts);
     public override float AccentBaseHeight(Fonts fonts) => ReadRecord(fonts.MathConsts.AccentBaseHeight, fonts);
     public override float GetTopAccentAdjustment(Fonts fonts, Glyph glyph) =>

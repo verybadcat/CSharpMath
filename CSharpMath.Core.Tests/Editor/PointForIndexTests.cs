@@ -16,6 +16,30 @@ namespace CSharpMath.Core.EditorTests {
         s => throw new Xunit.Sdk.XunitException(s)
       );
 
+    [Theory]
+    [InlineData(@"a\phantom{x}b")]
+    [InlineData(@"a\overset{x}{c}b")]
+    [InlineData(@"a\bigl(b")]
+    public void CompositeAtomsExposeCaretAndHitTestBoundaries(string latex) {
+      var display = TestTypesettingContext.CreateDisplay(latex).Match(
+        value => value, error => throw new Xunit.Sdk.XunitException(error));
+      var before = display.PointForIndex(TestTypesettingContext.Instance, new MathListIndex(1));
+      var after = display.PointForIndex(TestTypesettingContext.Instance, new MathListIndex(2));
+      Assert.NotNull(before);
+      Assert.NotNull(after);
+      var midpoint = new PointF((before.Value.X + after.Value.X) / 2,
+        (before.Value.Y + after.Value.Y) / 2);
+      Assert.NotNull(display.IndexForPoint(TestTypesettingContext.Instance, midpoint));
+    }
+
+    [Fact]
+    public void DecorativeArrayRulesDoNotInterceptCaretRouting() {
+      var display = TestTypesettingContext.CreateDisplay(
+        @"\begin{array}{|c|}\hline a\\\hline\end{array}").Match(
+          value => value, error => throw new Xunit.Sdk.XunitException(error));
+      Assert.NotNull(display.PointForIndex(TestTypesettingContext.Instance, new MathListIndex(0)));
+    }
+
     public static TestData FractionData =>
       new TestData {
         { (0,0), 0 },
@@ -93,18 +117,26 @@ namespace CSharpMath.Core.EditorTests {
       };
     [Theory, MemberData(nameof(ExponentData))]
     public void Exponent(PointF point, MathListIndex expected) => Test("2^3", point, expected);
-    public static TestData ExponentsData =>
-      new TestData {
-        { (0, 0), 0 },
-        { (10, 0), 0, (SubIndex.BetweenBaseAndScripts, 1) },
-        { (10, -4.94), 0, (SubIndex.Subscript, 0) },
-        { (17, -4.94), 0, (SubIndex.Subscript, 1) },
-        { (18.12, 0), 1 },
-        { (28.12, 0), 1, (SubIndex.BetweenBaseAndScripts, 1) },
-        { (28.12, -4.94), 1, (SubIndex.Subscript, 0) },
-        { (35.12, -4.94), 1, (SubIndex.Subscript, 1) },
-        { (35.12, 0), 2 },
-      };
+    public static TestData ExponentsData {
+      get {
+        // {2_3}{3_2}: braces are Ord groups now — the groups render transparently
+        // (their displays are spliced into the parent), but atoms inside a group do
+        // not fuse across the brace boundary, so each glyph carries its own italic
+        // correction and the pen advances by 1.12pt per boundary.
+        var data = new TestData {
+          { (0, 0), 0 },
+          { (10, 0), 0, (SubIndex.BetweenBaseAndScripts, 1) },
+          { (10, -4.94), 0, (SubIndex.Subscript, 0) },
+          { (17, -4.94), 0, (SubIndex.Subscript, 1) },
+          { (17, 0), 1 },
+          { (27, 0), 1, (SubIndex.BetweenBaseAndScripts, 1) },
+          { (27, -4.94), 1, (SubIndex.Subscript, 0) },
+          { (34, -4.94), 1, (SubIndex.Subscript, 1) },
+          { (34, 0), 2 },
+        };
+        return data;
+      }
+    }
     [Theory, MemberData(nameof(ExponentsData))]
     public void Subscripts(PointF point, MathListIndex expected) => Test("{2_3}{3_2}", point, expected);
 

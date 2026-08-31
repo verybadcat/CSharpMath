@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using Typography.OpenFont;
 using Typography.OpenFont.Extensions;
 
 namespace CSharpMath.Rendering.BackEnd {
-  public class Fonts : Display.FrontEnd.IFont<Glyph>, IEnumerable<Typeface> {
+  public class Fonts : Display.FrontEnd.IFont<Glyph>, Display.FrontEnd.IFontGlyphBounds<Glyph>, IEnumerable<Typeface> {
     static Typefaces GetGlobalTypefaces() {
       var reader = new OpenFontReader();
       Typeface LoadFont(string fileName) {
@@ -33,6 +34,14 @@ namespace CSharpMath.Rendering.BackEnd {
     public IEnumerable<Typeface> Typefaces { get; }
     public Typeface MathTypeface { get; }
     public Typography.OpenFont.MathGlyphs.MathConstants MathConsts { get; }
+    public IEnumerable<RectangleF> GetBoundingRects(IEnumerable<Glyph> glyphs) {
+      var glyphList = glyphs as IReadOnlyCollection<Glyph> ?? glyphs.ToList();
+      return GlyphBoundsProvider.Instance.GetBoundingRectsForGlyphs(this, glyphList, glyphList.Count);
+    }
+    public IEnumerable<float> GetAdvances(IEnumerable<Glyph> glyphs) {
+      var glyphList = glyphs as IReadOnlyCollection<Glyph> ?? glyphs.ToList();
+      return GlyphBoundsProvider.Instance.GetAdvancesForGlyphs(this, glyphList, glyphList.Count).Advances;
+    }
     public IEnumerator<Typeface> GetEnumerator() => Typefaces.GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => Typefaces.GetEnumerator();
   }

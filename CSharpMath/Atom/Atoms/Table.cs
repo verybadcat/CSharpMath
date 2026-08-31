@@ -13,6 +13,9 @@ namespace CSharpMath.Atom.Atoms {
       InterColumnSpacing = InterColumnSpacing,
       InterRowAdditionalSpacing = InterRowAdditionalSpacing,
       Environment = Environment,
+      CellStyle = CellStyle,
+      VerticalLines = VerticalLines.ToList(),
+      HorizontalLines = HorizontalLines.ToList(),
       Alignments = Alignments.ToList(),
       Cells = new List<List<MathList>>(Cells.Select(list =>
         new List<MathList>(list.Select(sublist => sublist.Clone(finalize)))))
@@ -29,6 +32,17 @@ namespace CSharpMath.Atom.Atoms {
     /// Additional spacing between rows in jots (one jot is 0.3 times font size).
     /// </summary>
     public float InterRowAdditionalSpacing { get; set; }
+    /// <summary>The line style every cell of this table renders in, or null to
+    /// inherit the surrounding style (aligned/gather/eqnarray/alignedat).</summary>
+    public LineStyle? CellStyle { get; set; }
+    /// <summary>The number of `|` vertical rules at each column boundary (array
+    /// environment). Length NColumns+1: index 0 = before column 0 … NColumns = after the
+    /// last column. Empty for every non-array environment.</summary>
+    public List<int> VerticalLines { get; set; } = new List<int>();
+    /// <summary>The number of `\hline` horizontal rules at each row boundary (array
+    /// environment). Length NRows+1: index 0 = above row 0 … NRows = below the last
+    /// row. Empty for every non-array environment.</summary>
+    public List<int> HorizontalLines { get; set; } = new List<int>();
     /// <summary>The name of the environment that this table denotes</summary>
     public string? Environment { get; set; }
     /// <summary>Number of rows</summary>
@@ -48,11 +62,27 @@ namespace CSharpMath.Atom.Atoms {
       Alignments.Count <= columnIndex ? ColumnAlignment.Center : Alignments[columnIndex];
     public bool EqualsTable(Table otherTable) =>
         EqualsAtom(otherTable) &&
-        NRows == otherTable.NRows &&
         Cells.SequenceEqual(otherTable.Cells, (c1, c2) => c1.SequenceEqual(c2)) &&
-        Alignments.SequenceEqual(otherTable.Alignments);
+        Alignments.SequenceEqual(otherTable.Alignments) &&
+        InterColumnSpacing == otherTable.InterColumnSpacing &&
+        InterRowAdditionalSpacing == otherTable.InterRowAdditionalSpacing &&
+        CellStyle == otherTable.CellStyle &&
+        VerticalLines.SequenceEqual(otherTable.VerticalLines) &&
+        HorizontalLines.SequenceEqual(otherTable.HorizontalLines) &&
+        Environment == otherTable.Environment;
     public override bool Equals(object obj) => obj is Table t ? EqualsTable(t) : false;
     public override int GetHashCode() =>
-      (base.GetHashCode(), Cells, Alignments).GetHashCode();
+      (base.GetHashCode(), NestedSequenceHash(Cells), SequenceHash(Alignments),
+        InterColumnSpacing, InterRowAdditionalSpacing, CellStyle,
+        (SequenceHash(VerticalLines), SequenceHash(HorizontalLines), Environment)).GetHashCode();
+    private static int NestedSequenceHash(IEnumerable<IEnumerable<MathList>> rows) =>
+      SequenceHash(rows.Select(SequenceHash));
+    private static int SequenceHash<T>(IEnumerable<T> items) {
+      unchecked {
+        var hash = 17;
+        foreach (var item in items) hash = hash * 31 + (item?.GetHashCode() ?? 0);
+        return hash;
+      }
+    }
   }
 }
