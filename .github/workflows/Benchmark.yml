@@ -14,6 +14,13 @@ jobs:
       with:
         dotnet-version: '10.x'
     - run: dotnet run -p CSharpMath.Rendering.Benchmarks
+    - name: Font profile smoke
+      run: dotnet run -c Release --project CSharpMath.Rendering.Benchmarks/CSharpMath.Rendering.Benchmarks.csproj -- --font-profile --font-profile-smoke --font-profile-output .fontprofile/font-profile-smoke.json
+    - name: Store font profile smoke
+      uses: actions/upload-artifact@v4
+      with:
+        name: font-profile-smoke
+        path: .fontprofile/font-profile-smoke.json
     - name: Store benchmark result
       uses: benchmark-action/github-action-benchmark@v1
       with:

@@ -16,6 +16,23 @@ CSharpMath is a C# port of the wonderful <a href="https://github.com/kostub/iosM
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/verybadcat/CSharpMath.svg)](http://isitmaintained.com/project/verybadcat/CSharpMath "Average time to resolve an issue") [![Percentage of issues still open](http://isitmaintained.com/badge/open/verybadcat/CSharpMath.svg)](http://isitmaintained.com/project/verybadcat/CSharpMath "Percentage of issues still open") [![Issues welcome](https://img.shields.io/badge/issues-welcome-success)](https://github.com/verybadcat/CSharpMath/issues) [![Pull Requests welcome](https://img.shields.io/badge/pull_requests-welcome-success)](https://github.com/verybadcat/CSharpMath/issues) [![❤](https://img.shields.io/badge/made%20with-%e2%9d%a4-ff69b4.svg)](https://www.youtube.com/watch?v=dQw4w9WgXcQ "")
 
 [NuGet]: https://www.nuget.org/packages/CSharpMath/
+
+### Font startup profiling
+
+The rendering benchmark project provides an opt-in, artifact-only profile outside BenchmarkDotNet.
+Each cold sample is a fresh child process; JSON contains raw wall time, managed allocations,
+retained managed bytes after forced GC, GC counts, exact font-byte SHA-256/table inventories, and errors:
+
+```text
+dotnet run -c Release -p CSharpMath.Rendering.Benchmarks -- --font-profile --font-profile-smoke
+dotnet run -c Release -p CSharpMath.Rendering.Benchmarks -- --font-profile --font-profile-samples 5 --font-profile-iterations 50 --font-profile-batches 5
+```
+
+Set `CSHARP_MATH_FONT_PROFILE_OUTPUT` (or `--font-profile-output`) to choose the JSON path. The
+tracked Comic Neue test asset is copied to benchmark output and exercised through `LocalTypeface`.
+The smoke mode checks schema, hashes, table coverage, and errors; it has no performance threshold.
+For interpretation and how the artifact informs issues #107/#191, see
+`CSharpMath.Rendering.Benchmarks/FontProfiling.md`. Profile artifacts are for manual comparison.
 [NuGet-pre]: https://www.nuget.org/packages/CSharpMath/absoluteLatest
 [GitHub]: https://github.com/verybadcat/CSharpMath/releases/latest
 [GitHub-pre]: https://github.com/verybadcat/CSharpMath/releases
