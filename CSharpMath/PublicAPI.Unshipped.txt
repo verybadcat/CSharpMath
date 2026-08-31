@@ -1,0 +1,23 @@
+#nullable enable
+CSharpMath.Atom.Atoms.LongDivisionStep
+CSharpMath.Atom.Atoms.LongDivisionStep.LongDivisionStep(string! partialDividend, int quotientDigit, string! product, string! remainder, char broughtDownDigit, int decimalColumn) -> void
+CSharpMath.Atom.Atoms.LongDivisionStep.PartialDividend.get -> string!
+CSharpMath.Atom.Atoms.LongDivisionStep.QuotientDigit.get -> int
+CSharpMath.Atom.Atoms.LongDivisionStep.Product.get -> string!
+CSharpMath.Atom.Atoms.LongDivisionStep.Remainder.get -> string!
+CSharpMath.Atom.Atoms.LongDivisionStep.BroughtDownDigit.get -> char
+CSharpMath.Atom.Atoms.LongDivisionStep.DecimalColumn.get -> int
+CSharpMath.Atom.Atoms.LongDivision
+CSharpMath.Atom.Atoms.LongDivision.LongDivision(string! numerator, string! denominator) -> void
+const CSharpMath.Atom.Atoms.LongDivision.MaxDigits = 28 -> int
+CSharpMath.Atom.Atoms.LongDivision.Numerator.get -> string!
+CSharpMath.Atom.Atoms.LongDivision.Denominator.get -> string!
+CSharpMath.Atom.Atoms.LongDivision.QuotientText.get -> string!
+CSharpMath.Atom.Atoms.LongDivision.Remainder.get -> string!
+CSharpMath.Atom.Atoms.LongDivision.Steps.get -> System.Collections.Generic.IReadOnlyList<CSharpMath.Atom.Atoms.LongDivisionStep!>!
+CSharpMath.Atom.Atoms.LongDivision.InnerLists.get -> System.Collections.Generic.IEnumerable<CSharpMath.Atom.MathList!>!
+override CSharpMath.Atom.Atoms.LongDivision.ScriptsAllowed.get -> bool
+CSharpMath.Atom.Atoms.LongDivision.Clone(bool finalize) -> CSharpMath.Atom.Atoms.LongDivision!
+override CSharpMath.Atom.Atoms.LongDivision.DebugString.get -> string!
+override CSharpMath.Atom.Atoms.LongDivision.Equals(object! obj) -> bool
+override CSharpMath.Atom.Atoms.LongDivision.GetHashCode() -> int

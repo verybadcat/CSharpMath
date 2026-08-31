@@ -32,6 +32,10 @@ namespace CSharpMath.Rendering.Tests {
     public const string FunctionDomainCodomain = @"f\colon\mathbb N\rightarrow\mathbb N";
 
     public const string IntPlusFraction = @"1+\frac23";
+    public const string LongDivisionRemainder = @"\longdiv{12345}{13}";
+    public const string LongDivisionInternalZero = @"\longdiv{1005}{5}";
+    public const string LongDivisionExact = @"\longdiv{81}{3}";
+    public const string LongDivisionShort = @"\longdiv{3}{5}";
     public const string Integral = @"\int_{0}^{\infty}e^x \,dx=\oint_0^{\Delta}5\Gamma";
     public const string IntegralColorBoxCorrect = @"\colorbox{red}{\int^\colorbox{yellow}\infty_\colorbox{purple}{-\infty}}\colorbox{green}x\ \colorbox{blue}{dx}";
     public const string IntegralColorBoxWrong = @"\colorbox{red}\int^\colorbox{yellow}\infty_\colorbox{purple}{-\infty}\colorbox{green}x\ \colorbox{blue}{dx}";

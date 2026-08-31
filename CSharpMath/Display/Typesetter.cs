@@ -311,6 +311,13 @@ namespace CSharpMath.Display {
             _displayAtoms.Add(tableDisplay);
             _currentPosition.X += tableDisplay.Width;
             break;
+          case LongDivision division:
+            AddDisplayLine(false);
+            AddInterElementSpace(prevAtom, division);
+            var divisionDisplay = MakeTable(division.CreateLayout());
+            _displayAtoms.Add(divisionDisplay);
+            _currentPosition.X += divisionDisplay.Width;
+            break;
           case LargeOperator op:
             AddDisplayLine(false);
             AddInterElementSpace(prevAtom, op);
