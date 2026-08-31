@@ -9,6 +9,12 @@ using Avalonia.Media;
 
 namespace CSharpMath.Xaml.Tests {
   using Avalonia;
+  public class InstrumentedMathView : MathView, ITestDiagnostics {
+    readonly Dictionary<string, int> counts = new();
+    internal override void OnDiagnostic(string name) => counts[name] = counts.GetValueOrDefault(name) + 1;
+    public void Reset() => counts.Clear();
+    public int Count(string name) => counts.GetValueOrDefault(name);
+  }
   public class TestAvalonia
     : Test<Color, BindingMode, AvaloniaProperty, Control, MathView, TextView> {
     protected override Display.IDisplay<Rendering.BackEnd.Fonts, Rendering.BackEnd.Glyph> GetDisplay(Control control) {
@@ -27,6 +33,7 @@ namespace CSharpMath.Xaml.Tests {
     protected override BindingMode Default => BindingMode.Default;
     protected override BindingMode OneWayToSource => BindingMode.OneWayToSource;
     protected override BindingMode TwoWay => BindingMode.TwoWay;
+    protected override Control CreateInstrumentedMathView() => new InstrumentedMathView();
     protected override TView ParseFromXaml<TView>(string xaml) => AvaloniaRuntimeXamlLoader.Parse<TView>(xaml);
     protected override IDisposable SetBinding(Control view, AvaloniaProperty property, string viewModelProperty, BindingMode bindingMode) =>
       view.Bind(property, new Binding(viewModelProperty) { Mode = bindingMode });

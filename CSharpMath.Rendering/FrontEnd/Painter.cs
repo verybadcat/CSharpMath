@@ -50,7 +50,7 @@ namespace CSharpMath.Rendering.FrontEnd {
     Atom.LineStyle __style = Atom.LineStyle.Display;
     public Atom.LineStyle LineStyle { get => __style; set { __style = value; SetRedisplay(); } }
     TContent? __content;
-    public TContent? Content { get => __content; set { __content = value; SetRedisplay(); } }
+    public TContent? Content { get => __content; set { __content = value; ErrorMessage = null; SetRedisplay(); } }
     public string? LaTeX { get => Content is null ? "" : ContentToLaTeX(Content); set => (Content, ErrorMessage) = LaTeXToContent(value ?? ""); }
     #endregion Redisplaying properties
 

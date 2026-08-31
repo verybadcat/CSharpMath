@@ -40,6 +40,12 @@ using XProperty = Microsoft.UI.Xaml.DependencyProperty;
 using MathPainter = CSharpMath.SkiaSharp.MathPainter;
 using TextPainter = CSharpMath.SkiaSharp.TextPainter;
 namespace CSharpMath.Uno {
+#endif
+#if Uno
+  internal static class UnoPropertySynchronization {
+    internal static bool ShouldAssignCounterpart(object? localValue) =>
+      localValue is not Microsoft.UI.Xaml.Data.BindingExpression;
+  }
   [Microsoft.UI.Xaml.Markup.ContentProperty(Name = nameof(LaTeX))]
 #endif
   public partial class BaseView<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] TPainter,
@@ -47,6 +53,9 @@ namespace CSharpMath.Uno {
   TContent> : XInheritControl, ICSharpMathAPI<TContent, XColor>
     where TPainter : Painter<XCanvas, TContent, XCanvasColor>, new() where TContent : class {
     public TPainter Painter { get; } = new TPainter();
+    bool _synchronizingProperties;
+    // Internal test seam; production views do not carry diagnostic state.
+    internal virtual void OnDiagnostic(string _) { }
 
     protected static readonly TPainter staticPainter = new TPainter();
 
@@ -65,8 +74,8 @@ namespace CSharpMath.Uno {
         GlyphBoxColorProperty = CreateProperty<BaseView<TPainter, TContent>, (XColor glyph, XColor textRun)?>(nameof(GlyphBoxColor), false,
           p => p.GlyphBoxColor is var (glyph, textRun) ? Nullable((XCanvasColorToXColor(glyph), XCanvasColorToXColor(textRun))) : null,
           (p, v) => p.GlyphBoxColor = v is var (glyph, textRun) ? Nullable((XColorToXCanvasColor(glyph), XColorToXCanvasColor(textRun))) : null),
-        ContentProperty = CreateProperty<BaseView<TPainter, TContent>, TContent?>(nameof(Content), true, p => p.Content, (p, v) => p.Content = v, (b, v) => { if (b.Painter.ErrorMessage == null) b.LaTeX = b.Painter.LaTeX; }),
-        LaTeXProperty = CreateProperty<BaseView<TPainter, TContent>, string?>(nameof(LaTeX), true, p => p.LaTeX, (p, v) => p.LaTeX = v, (b, v) => (b.Content, b.ErrorMessage) = (b.Painter.Content, b.Painter.ErrorMessage)),
+        ContentProperty = CreateProperty<BaseView<TPainter, TContent>, TContent?>(nameof(Content), true, p => p.Content, (p, v) => p.Content = v, SynchronizeFromContent),
+        LaTeXProperty = CreateProperty<BaseView<TPainter, TContent>, string?>(nameof(LaTeX), true, p => p.LaTeX, (p, v) => p.LaTeX = v, SynchronizeFromLaTeX),
         DisplayErrorInlineProperty = CreateProperty<BaseView<TPainter, TContent>, bool>(nameof(DisplayErrorInline), true, p => p.DisplayErrorInline, (p, v) => p.DisplayErrorInline = v),
         FontSizeProperty = CreateProperty<BaseView<TPainter, TContent>, float>(nameof(FontSize), true, p => p.FontSize, (p, v) => p.FontSize = v),
         ErrorFontSizeProperty = CreateProperty<BaseView<TPainter, TContent>, float?>(nameof(ErrorFontSize), true, p => p.ErrorFontSize, (p, v) => p.ErrorFontSize = v),
@@ -97,13 +106,20 @@ namespace CSharpMath.Uno {
         where TThis : BaseView<TPainter, TContent> {
         var defaultValue = defaultValueGet(staticPainter);
         void PropertyChanged(TThis @this, object? newValue) {
+          // Counterpart updates only mirror the already-updated painter state;
+          // they must not parse/serialize it a second time or invalidate twice.
+          if (@this._synchronizingProperties) return;
           // We need to support nullable classes and structs, so we cannot forbid null here
           // So this use of the null-forgiving operator should be blamed on non-generic PropertyChanged handlers
           var @new = (TValue)newValue!;
+          @this.OnDiagnostic(propertyName == nameof(Content) ? "ContentToLaTeX" : propertyName == nameof(LaTeX) ? "LaTeXToContent" : propertyName);
           propertySet(@this.Painter, @new);
-          if (affectsMeasure) @this.InvalidateMeasure();
+          if (affectsMeasure) @this.InvalidateMeasureTracked();
 #if Avalonia
-          updateOtherProperty?.Invoke(@this, @new); // Re-assign LaTeX from Content or vice versa
+          @this._synchronizingProperties = true;
+          try { updateOtherProperty?.Invoke(@this, @new); } // Re-assign LaTeX from Content or vice versa
+          finally { @this._synchronizingProperties = false; }
+          @this.OnDiagnostic("VisualInvalidation");
           @this.InvalidateVisual();
         }
         var prop = XProperty.Register<TThis, TValue>(propertyName, defaultValue);
@@ -111,6 +127,19 @@ namespace CSharpMath.Uno {
         return prop;
       }
       static string GetPropertyName(XProperty prop) => prop.Name;
+    }
+    static void SynchronizeFromContent(BaseView<TPainter, TContent> view, TContent? _) {
+      if (view.Painter.ErrorMessage == null) view.SetSynchronizedValue(LaTeXProperty, view.Painter.LaTeX);
+      view.ErrorMessage = view.Painter.ErrorMessage;
+    }
+    static void SynchronizeFromLaTeX(BaseView<TPainter, TContent> view, string? _) {
+      if (view.Painter.ErrorMessage == null) view.SetSynchronizedValue(LaTeXProperty, view.Painter.LaTeX);
+      view.SetSynchronizedValue(ContentProperty, view.Painter.Content);
+      view.ErrorMessage = view.Painter.ErrorMessage;
+    }
+    void InvalidateMeasureTracked() { OnDiagnostic("MeasureInvalidation"); InvalidateMeasure(); }
+    void SetSynchronizedValue(XProperty property, object? value) {
+      SetValue(property, value);
     }
     public BaseView() {
       // Respect built-in styles
@@ -163,7 +192,10 @@ namespace CSharpMath.Uno {
       base.Render(context);
       var canvas = new XCanvas(context, Bounds.Size);
 #elif Maui
-          updateOtherProperty?.Invoke(@this, @new); // Re-assign LaTeX from Content or vice versa
+          @this._synchronizingProperties = true;
+          try { updateOtherProperty?.Invoke(@this, @new); } // Re-assign LaTeX from Content or vice versa
+          finally { @this._synchronizingProperties = false; }
+          @this.OnDiagnostic("VisualInvalidation");
           @this.Invalidate();
         }
         return XProperty.Create(propertyName, typeof(TValue), typeof(TThis), defaultValue,
@@ -171,6 +203,17 @@ namespace CSharpMath.Uno {
       }
       static string GetPropertyName(XProperty prop) => prop.PropertyName;
     }
+    static void SynchronizeFromContent(BaseView<TPainter, TContent> view, TContent? _) {
+      if (view.Painter.ErrorMessage == null) view.SetSynchronizedValue(LaTeXProperty, view.Painter.LaTeX);
+      view.ErrorMessage = view.Painter.ErrorMessage;
+    }
+    static void SynchronizeFromLaTeX(BaseView<TPainter, TContent> view, string? _) {
+      if (view.Painter.ErrorMessage == null) view.SetSynchronizedValue(LaTeXProperty, view.Painter.LaTeX);
+      view.SetSynchronizedValue(ContentProperty, view.Painter.Content);
+      view.ErrorMessage = view.Painter.ErrorMessage;
+    }
+    void InvalidateMeasureTracked() { OnDiagnostic("MeasureInvalidation"); InvalidateMeasure(); }
+    void SetSynchronizedValue(XProperty property, object? value) => SetValue(property, value);
     protected override Microsoft.Maui.Graphics.Size MeasureOverride(double widthConstraint, double heightConstraint) =>
       Painter.Measure((float)widthConstraint) is { } rect
       ? new(Math.Min(rect.Width, widthConstraint), Math.Min(rect.Height, heightConstraint)) // We can't allocate too big of a GraphicsView on MAUI Windows.
@@ -208,13 +251,33 @@ namespace CSharpMath.Uno {
       // dirtyRect may be larger than Width and Height on Windows which leads to incorrect alignments
       var canvas = (rawCanvas, new Microsoft.Maui.Graphics.SizeF((float)Width, (float)Height));
 #elif Uno
-          // Uno/WinUI bindings are gone when a property is assigned unlike Avalonia and MAUI, so we omit updateOtherProperty.
+          // Keep the same guarded counterpart update on Uno/WinUI.  The guard
+          // prevents a second painter conversion; SetValue is the dependency
+          // property value update used by Uno for this control's properties.
+          @this._synchronizingProperties = true;
+          try { updateOtherProperty?.Invoke(@this, @new); }
+          finally { @this._synchronizingProperties = false; }
+          @this.OnDiagnostic("VisualInvalidation");
           @this.Invalidate();
         }
         return XProperty.Register(propertyName, typeof(TValue), typeof(TThis),
           new Microsoft.UI.Xaml.PropertyMetadata(defaultValue, (b, n) => PropertyChanged((TThis)b, n.NewValue)));
       }
       static string GetPropertyName(XProperty prop) => ""; // unsupported :(
+    }
+    static void SynchronizeFromContent(BaseView<TPainter, TContent> view, TContent? _) {
+      if (view.Painter.ErrorMessage == null) view.SetSynchronizedValue(LaTeXProperty, view.Painter.LaTeX);
+      view.ErrorMessage = view.Painter.ErrorMessage;
+    }
+    static void SynchronizeFromLaTeX(BaseView<TPainter, TContent> view, string? _) {
+      if (view.Painter.ErrorMessage == null) view.SetSynchronizedValue(LaTeXProperty, view.Painter.LaTeX);
+      view.SetSynchronizedValue(ContentProperty, view.Painter.Content);
+      view.ErrorMessage = view.Painter.ErrorMessage;
+    }
+    void InvalidateMeasureTracked() { OnDiagnostic("MeasureInvalidation"); InvalidateMeasure(); }
+    void SetSynchronizedValue(XProperty property, object? value) {
+      if (!UnoPropertySynchronization.ShouldAssignCounterpart(ReadLocalValue(property))) return;
+      SetValue(property, value);
     }
     public BaseView() {
       PointerPressed += (sender, e) => {

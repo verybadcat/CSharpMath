@@ -9,6 +9,13 @@ namespace CSharpMath.Xaml.Tests {
   using Maui;
   using Microsoft.Maui.Controls.Xaml;
 
+  public class InstrumentedMauiMathView : MathView, ITestDiagnostics {
+    readonly Dictionary<string, int> counts = new();
+    internal override void OnDiagnostic(string name) => counts[name] = counts.GetValueOrDefault(name) + 1;
+    public void Reset() => counts.Clear();
+    public int Count(string name) => counts.GetValueOrDefault(name);
+  }
+
   public class TestMaui
     : Test<Color, BindingMode, BindableProperty, GraphicsView, MathView, TextView> {
 
@@ -57,6 +64,7 @@ namespace CSharpMath.Xaml.Tests {
     protected override BindingMode Default => BindingMode.Default;
     protected override BindingMode OneWayToSource => BindingMode.OneWayToSource;
     protected override BindingMode TwoWay => BindingMode.TwoWay;
+    protected override GraphicsView CreateInstrumentedMathView() => new InstrumentedMauiMathView();
     protected override TView ParseFromXaml<TView>(string xaml) {
       var view = new TView();
       view.LoadFromXaml(xaml);

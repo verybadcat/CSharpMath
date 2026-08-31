@@ -367,6 +367,10 @@ Dependency|Used by|License
 
 [@FoggyFinder](https://github.com/FoggyFinder)
 
+### Rendering update benchmarks
+
+`CSharpMath.Rendering.Benchmarks` includes a `ViewUpdateChurnBenchmarks` benchmark for the representative `x_1 = 1.234e50` input. It compares repeated LaTeX assignment, repeated content assignment, and measuring a persistent painter after one initial assignment at 100 and 1000 iterations. Run it in Release with BenchmarkDotNet and inspect the generated report; timings are intentionally not recorded here because they depend on the machine and renderer. For high-frequency updates, prefer reusing a parsed content object or painter when the input source permits it.
+
 Thanks for reading.
 <!--
 The roadmap isn't happening bois
