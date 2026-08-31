@@ -16,7 +16,13 @@ namespace CSharpMath.Editor {
     ///<summary>The subindex indexes into the degree (only valid for radicals)</summary>
     Degree,
     ///<summary>The subindex indexes into the inner list (only valid for inners)</summary>
-    Inner
+    Inner,
+    /// <summary>The subindex selects a row in a table.</summary>
+    TableRow,
+    /// <summary>The subindex selects a cell in a table row.</summary>
+    TableColumn,
+    /// <summary>The subindex is the caret index within a table cell.</summary>
+    TableCell
   }
 
   /** <summary>
@@ -35,6 +41,11 @@ namespace CSharpMath.Editor {
 * The level of an index is the number of nodes in the LinkedList to get to the final path.
 * </summary>*/
   public record class MathListIndex(int AtomIndex, (MathListSubIndexType SubIndexType, MathListIndex SubIndex)? SubIndexInfo = null) {
+    /// <summary>Creates an index into a table cell while retaining its row and column.</summary>
+    public MathListIndex TableCell(int row, int column, MathListIndex cellIndex) =>
+      new(AtomIndex, (MathListSubIndexType.TableRow,
+        new(row, (MathListSubIndexType.TableColumn,
+          new(column, (MathListSubIndexType.TableCell, cellIndex))))));
     /// <summary>
     /// Creates a new MathListIndex that represents a subindex within this list, wrapped at the specified outer atom
     /// index and subindex type.

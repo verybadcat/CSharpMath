@@ -385,7 +385,73 @@ namespace CSharpMath.Editor {
           break;
         }
       }
+      // Tables use an explicit row/column path; this keeps vertical movement
+      // independent of the display tree (which may contain empty cells).
+      static MathList? ChildList(MathAtom atom, MathListSubIndexType type) => type switch {
+        MathListSubIndexType.Superscript => atom.Superscript,
+        MathListSubIndexType.Subscript => atom.Subscript,
+        MathListSubIndexType.Numerator when atom is Atoms.Fraction f => f.Numerator,
+        MathListSubIndexType.Denominator when atom is Atoms.Fraction f => f.Denominator,
+        MathListSubIndexType.Radicand when atom is Atoms.Radical r => r.Radicand,
+        MathListSubIndexType.Degree when atom is Atoms.Radical r => r.Degree,
+        MathListSubIndexType.Inner when atom is Atoms.Inner i => i.InnerList,
+        _ => null,
+      };
+
+      MathListIndex FindTable(MathList list, MathListIndex index, bool down, out bool handled) {
+        handled = false;
+        if (index.AtomIndex < 0 || index.AtomIndex >= list.Count || index.SubIndexInfo is not { } info)
+          return index;
+        var atom = list[index.AtomIndex];
+        if (info.SubIndexType == MathListSubIndexType.TableRow
+          && atom is Atoms.Table table
+          && info.SubIndex.SubIndexInfo is (MathListSubIndexType.TableColumn, var column)
+          && column.SubIndexInfo is (MathListSubIndexType.TableCell, var cell)) {
+          if (info.SubIndex.AtomIndex < 0 || info.SubIndex.AtomIndex >= table.Cells.Count
+            || column.AtomIndex < 0 || column.AtomIndex >= table.Cells[info.SubIndex.AtomIndex].Count) {
+            handled = true;
+            return index;
+          }
+          // Prefer a nested table in the current cell, retaining this complete prefix.
+          var cellResult = FindTable(table.Cells[info.SubIndex.AtomIndex][column.AtomIndex], cell, down, out handled);
+          if (handled)
+            return new(index.AtomIndex, (info.SubIndexType,
+              new(info.SubIndex.AtomIndex, (MathListSubIndexType.TableColumn,
+                new(column.AtomIndex, (MathListSubIndexType.TableCell, cellResult))))));
+          var row = info.SubIndex.AtomIndex;
+          var sourceColumn = column.AtomIndex;
+          var targetRow = row + (down ? 1 : -1);
+          while (targetRow >= 0 && targetRow < table.NRows && table.Cells[targetRow].Count == 0)
+            targetRow += down ? 1 : -1;
+          if (targetRow < 0 || targetRow >= table.NRows) { handled = true; return index; }
+          var targetColumn = Math.Min(sourceColumn, table.Cells[targetRow].Count - 1);
+          var targetCell = table.Cells[targetRow][targetColumn];
+          var targetCaret = Math.Max(0, Math.Min(cell.AtomIndex, targetCell.Count));
+          var candidate = new MathListIndex(index.AtomIndex).TableCell(targetRow, targetColumn, new MathListIndex(targetCaret));
+          // Older display backends do not yet expose table row paths to PointForIndex;
+          // retain the deterministic caret fallback when that seam cannot resolve one.
+          try {
+            var sourcePoint = ClosestPointToIndex(index);
+            if (sourcePoint is PointF point && ClosestPointToIndex(candidate) is PointF)
+              candidate = VerticalIndexAtPoint(candidate, point) ?? candidate;
+          } catch (ArgumentOutOfRangeException) {
+            // The model path remains valid even when the display path is not indexed.
+          }
+          handled = true;
+          return candidate;
+        }
+        var child = ChildList(atom, info.SubIndexType);
+        if (child is null) return index;
+        var nested = FindTable(child, info.SubIndex, down, out handled);
+        return handled ? new(index.AtomIndex, (info.SubIndexType, nested)) : index;
+      }
+      bool MoveCursorInTable(bool down) {
+        var result = FindTable(MathList, _insertionIndex, down, out var handled);
+        if (handled) _insertionIndex = result;
+        return handled;
+      }
       void MoveCursorUp() {
+        if (MoveCursorInTable(false)) return;
         if (Display is null) RecreateDisplayFromMathList();
         if (MathList.AtomAt(_insertionIndex) is Atoms.Placeholder { Superscript: { Count: var superCount } } && superCount > 0) {
           _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListSubIndexType.Superscript, 0);
@@ -455,6 +521,7 @@ namespace CSharpMath.Editor {
         }
       }
       void MoveCursorDown() {
+        if (MoveCursorInTable(true)) return;
         if (Display is null) RecreateDisplayFromMathList();
         if (MathList.AtomAt(_insertionIndex) is Atoms.Placeholder { Subscript: { Count: var subCount } } && subCount > 0) {
           _insertionIndex = _insertionIndex.LevelUpWithSubIndex(MathListSubIndexType.Subscript, 0);

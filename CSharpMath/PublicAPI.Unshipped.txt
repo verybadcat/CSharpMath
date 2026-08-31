@@ -4,3 +4,7 @@ CSharpMath.Editor.MathKeyboardHorizontalNavigationMode
 CSharpMath.Editor.MathKeyboardHorizontalNavigationMode.Exhaustive = 0 -> CSharpMath.Editor.MathKeyboardHorizontalNavigationMode
 CSharpMath.Editor.MathKeyboardHorizontalNavigationMode.VisualLower = 2 -> CSharpMath.Editor.MathKeyboardHorizontalNavigationMode
 CSharpMath.Editor.MathKeyboardHorizontalNavigationMode.VisualUpper = 1 -> CSharpMath.Editor.MathKeyboardHorizontalNavigationMode
+CSharpMath.Editor.MathListSubIndexType.TableRow = 8 -> CSharpMath.Editor.MathListSubIndexType
+CSharpMath.Editor.MathListSubIndexType.TableColumn = 9 -> CSharpMath.Editor.MathListSubIndexType
+CSharpMath.Editor.MathListSubIndexType.TableCell = 10 -> CSharpMath.Editor.MathListSubIndexType
+CSharpMath.Editor.MathListIndex.TableCell(int row, int column, CSharpMath.Editor.MathListIndex! cellIndex) -> CSharpMath.Editor.MathListIndex!
