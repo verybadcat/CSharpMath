@@ -266,7 +266,7 @@
             <f:MathInputButton Input="ProductBothLimits" Grid.Row="2" Grid.Column="4" Keyboard="{StaticResource Keyboard}"/>
             <f:MathInputButton Input="Space" Grid.Row="3" Grid.Column="1" Keyboard="{StaticResource Keyboard}"/>
             <f:MathInputButton Input="Up" Grid.Row="3" Grid.Column="2" Keyboard="{StaticResource Keyboard}"/>
-            <f:MathInputButton Input="Up" Grid.Row="3" Grid.Column="3" Keyboard="{StaticResource Keyboard}"/>
+            <f:MathInputButton Input="Differential" Grid.Row="3" Grid.Column="3" Keyboard="{StaticResource Keyboard}"/>
             <f:MathInputButton Input="Up" Grid.Row="3" Grid.Column="4" Keyboard="{StaticResource Keyboard}"/>
             <f:MathInputButton StyleClass="Back"/>
             <f:ImageSourceMathInputButton StyleClass="Clear"/>
