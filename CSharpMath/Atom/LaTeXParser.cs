@@ -681,9 +681,11 @@ namespace CSharpMath.Atom {
             break;
           case Relation { Nucleus: { } nucleus }
             when LaTeXSettings.CommandForAtom(atom) is null
-              && nucleus.Length > 0 && nucleus[nucleus.Length - 1] == '\u0338':
+              && nucleus.Normalize(NormalizationForm.FormD) is { } decomposed
+              && decomposed.Length > 0 && decomposed[decomposed.Length - 1] == '\u0338':
             builder.Append(@"\not ");
-            var baseRelation = new Relation(nucleus.Substring(0, nucleus.Length - 1));
+            var baseRelation = new Relation(
+              decomposed.Substring(0, decomposed.Length - 1).Normalize(NormalizationForm.FormC));
             if (LaTeXSettings.CommandForAtom(baseRelation) is string baseCommand) {
               builder.Append(baseCommand);
               if (baseCommand.AsSpan().StartsWithInvariant(@"\"))

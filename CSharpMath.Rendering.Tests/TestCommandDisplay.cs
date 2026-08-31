@@ -26,10 +26,10 @@ namespace CSharpMath.Rendering.Tests {
       Assert.Contains(typefaces, font => font.GetGlyphIndex(ch.Value) != 0);
 
     [Fact]
-    public void NotApproximatelyOverlaysApproximately() {
+    public void NotProportionalToOverlaysProportionalTo() {
       var fonts = new Fonts(Array.Empty<Typography.OpenFont.Typeface>(), 20);
-      var negatedLine = Assert.Single(ParseLine(@"\not\approx", fonts).Displays);
-      var baseLine = Assert.Single(ParseLine(@"\approx", fonts).Displays);
+      var negatedLine = Assert.Single(ParseLine(@"\not\propto", fonts).Displays);
+      var baseLine = Assert.Single(ParseLine(@"\propto", fonts).Displays);
       Assert.IsType<TextLineDisplay<Fonts, Glyph>>(negatedLine);
       Assert.IsType<TextLineDisplay<Fonts, Glyph>>(baseLine);
       var negatedTextLine = (TextLineDisplay<Fonts, Glyph>)negatedLine;
@@ -38,7 +38,7 @@ namespace CSharpMath.Rendering.Tests {
       Assert.Single(baseTextLine.Runs);
       Assert.Equal(2, negatedRun.Run.Length);
 
-      var expectedBase = GlyphFinder.Instance.Lookup(fonts, 0x2248);
+      var expectedBase = GlyphFinder.Instance.Lookup(fonts, 0x221D);
       var expectedOverlay = GlyphFinder.Instance.Lookup(fonts, 0x0338);
       Assert.Equal(expectedBase.Info.GlyphIndex, negatedRun.Run.GlyphInfos[0].Glyph.Info.GlyphIndex);
       Assert.Same(expectedBase.Typeface, negatedRun.Run.GlyphInfos[0].Glyph.Typeface);

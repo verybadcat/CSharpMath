@@ -99,8 +99,45 @@ namespace CSharpMath.Core.AtomTests {
     [Theory]
     [InlineData(@"\not=", "≠", @"\neq ")]
     [InlineData(@"\not<", "≮", @"\nless ")]
+    [InlineData(@"\not>", "≯", @"\ngtr ")]
     [InlineData(@"\not\leq", "≰", @"\nleq ")]
+    [InlineData(@"\not\le", "≰", @"\nleq ")]
+    [InlineData(@"\not\leqslant", "⩽\u0338", @"\nleqslant ")]
+    [InlineData(@"\not\leqq", "≦\u0338", @"\nleqq ")]
     [InlineData(@"\not\in", "∉", @"\notin ")]
+    [InlineData(@"\not\geq", "≱", @"\ngeq ")]
+    [InlineData(@"\not\ge", "≱", @"\ngeq ")]
+    [InlineData(@"\not\geqslant", "⩾\u0338", @"\ngeqslant ")]
+    [InlineData(@"\not\geqq", "≧\u0338", @"\ngeqq ")]
+    [InlineData(@"\not\prec", "⊀", @"\nprec ")]
+    [InlineData(@"\not\preceq", "⪯\u0338", @"\npreceq ")]
+    [InlineData(@"\not\preccurlyeq", "⋠", @"\npreccurlyeq ")]
+    [InlineData(@"\not\sim", "≁", @"\nsim ")]
+    [InlineData(@"\not\mid", "∤", @"\nshortmid ")]
+    [InlineData(@"\not\shortmid", "∤", @"\nshortmid ")]
+    [InlineData(@"\not\vdash", "⊬", @"\nvdash ")]
+    [InlineData(@"\not\vDash", "⊭", @"\nvDash ")]
+    [InlineData(@"\not\Vdash", "⊮", @"\nVdash ")]
+    [InlineData(@"\not\subseteq", "⊈", @"\nsubseteq ")]
+    [InlineData(@"\not\supseteq", "⊉", @"\nsupseteq ")]
+    [InlineData(@"\not\succ", "⊁", @"\nsucc ")]
+    [InlineData(@"\not\succeq", "⪰\u0338", @"\nsucceq ")]
+    [InlineData(@"\not\succcurlyeq", "⋡", @"\nsucccurlyeq ")]
+    [InlineData(@"\not\parallel", "∦", @"\nshortparallel ")]
+    [InlineData(@"\not\shortparallel", "∦", @"\nshortparallel ")]
+    [InlineData(@"\not\vartriangleleft", "⋪", @"\ntriangleleft ")]
+    [InlineData(@"\not\trianglelefteq", "⋬", @"\ntrianglelefteq ")]
+    [InlineData(@"\not\vartriangleright", "⋫", @"\ntriangleright ")]
+    [InlineData(@"\not\trianglerighteq", "⋭", @"\ntrianglerighteq ")]
+    [InlineData(@"\not\cong", "≇", @"\ncong ")]
+    [InlineData(@"\not\gets", "↚", @"\nleftarrow ")]
+    [InlineData(@"\not\leftarrow", "↚", @"\nleftarrow ")]
+    [InlineData(@"\not\Leftarrow", "⇍", @"\nLeftarrow ")]
+    [InlineData(@"\not\rightarrow", "↛", @"\nrightarrow ")]
+    [InlineData(@"\not\to", "↛", @"\nrightarrow ")]
+    [InlineData(@"\not\Rightarrow", "⇏", @"\nRightarrow ")]
+    [InlineData(@"\not\leftrightarrow", "↮", @"\nleftrightarrow ")]
+    [InlineData(@"\not\Leftrightarrow", "⇎", @"\nLeftrightarrow ")]
     public void NotNegatesRelation(string input, string nucleus, string output) {
       var list = ParseLaTeX(input);
 
@@ -119,26 +156,40 @@ namespace CSharpMath.Core.AtomTests {
       Assert.Contains(@"\not must be followed by a relation", error);
     }
 
-    [Fact]
-    public void NotUsesCombiningOverlayForUnsupportedRelation() {
-      var list = ParseLaTeX(@"\not\approx");
+    [Theory]
+    [InlineData(@"\not\approx", "≉", @"\not \approx ")]
+    [InlineData(@"\not\equiv", "≢", @"\not \equiv ")]
+    [InlineData(@"\not\subset", "⊄", @"\not \subset ")]
+    [InlineData(@"\not\ni", "∌", @"\not \ni ")]
+    public void NotUsesUnicodePrecomposedNegationWhenAvailable(string input, string nucleus, string output) {
+      var list = ParseLaTeX(input);
 
       var relation = Assert.IsType<Relation>(Assert.Single(list));
-      Assert.Equal("≈\u0338", relation.Nucleus);
+      Assert.Equal(nucleus, relation.Nucleus);
       var serialized = LaTeXParser.MathListToLaTeX(list).ToString();
-      Assert.Equal(@"\not \approx ", serialized);
+      Assert.Equal(output, serialized);
+      Assert.Equal(list, ParseLaTeX(serialized));
+    }
+
+    [Fact]
+    public void NotUsesCombiningOverlayWhenNoPrecomposedNegationExists() {
+      var list = ParseLaTeX(@"\not\propto");
+      var relation = Assert.IsType<Relation>(Assert.Single(list));
+      Assert.Equal("∝\u0338", relation.Nucleus);
+      var serialized = LaTeXParser.MathListToLaTeX(list).ToString();
+      Assert.Equal(@"\not \propto ", serialized);
       Assert.Equal(list, ParseLaTeX(serialized));
     }
 
     [Fact]
     public void NotSerializesScriptsOnOuterRelation() {
-      var list = ParseLaTeX(@"\not\approx^2");
+      var list = ParseLaTeX(@"\not\propto^2");
 
       var relation = Assert.IsType<Relation>(Assert.Single(list));
-      Assert.Equal("≈\u0338", relation.Nucleus);
+      Assert.Equal("∝\u0338", relation.Nucleus);
       Assert.Equal("2", Assert.Single(relation.Superscript).Nucleus);
       var serialized = LaTeXParser.MathListToLaTeX(list).ToString();
-      Assert.Equal(@"\not \approx ^2", serialized);
+      Assert.Equal(@"\not \propto ^2", serialized);
       Assert.Equal(list, ParseLaTeX(serialized));
     }
 
