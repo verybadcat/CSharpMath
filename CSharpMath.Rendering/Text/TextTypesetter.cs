@@ -108,8 +108,13 @@ namespace CSharpMath.Rendering.Text {
               line.Add(display, ascender, -rawDescender, lineGap);
             }
           case TextAtom.Text t:
-            var content = UnicodeFontChanger.ChangeFont(t.Content, style.ToFontStyleForText());
-            var glyphs = GlyphFinder.Instance.FindGlyphs(fonts, content);
+            // Glyph fallback may use legacy mathematical Unicode, but the attributed run must
+            // retain the original source UTF-16 so editor clusters and hit testing remain valid.
+            var renderingStyle = style.ToFontStyleForText();
+            var content = t.Content;
+            var glyphs = (fonts.UsesDescriptors
+              ? GlyphFinder.Instance.FindGlyphs(fonts, t.Content, style)
+              : GlyphFinder.Instance.FindGlyphs(fonts, t.Content, renderingStyle)).ToList();
             //Calling Select(g => g.Typeface).Distinct() speeds up query up to 10 times,
             //Calling Max(Func<,>) instead of Select(Func<,>).Max() speeds up query 2 times
             var typefaces = glyphs.Select(g => g.Typeface).Distinct().ToList();

@@ -46,6 +46,7 @@ namespace CSharpMath.Rendering.FrontEnd {
     /// <summary>Unit of measure: points</summary>
     public float FontSize { get => Fonts.PointSize; set { Fonts = new Fonts(Fonts, value); SetRedisplay(); } }
     IEnumerable<Typeface> __localTypefaces = Array.Empty<Typeface>();
+    /// <inheritdoc cref="ICSharpMathAPI{TContent, TColor}.LocalTypefaces" />
     public IEnumerable<Typeface> LocalTypefaces { get => __localTypefaces; set { Fonts = new Fonts(value, FontSize); __localTypefaces = value; SetRedisplay(); } }
     Atom.LineStyle __style = Atom.LineStyle.Display;
     public Atom.LineStyle LineStyle { get => __style; set { __style = value; SetRedisplay(); } }
