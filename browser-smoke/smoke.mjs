@@ -67,6 +67,15 @@ await page.waitForFunction(previous => {
 }, resized.signature, { timeout: 10000 });
 const multiline = await readCanvas();
 if (!multiline.nonWhite || multiline.signature === resized.signature) throw new Error('multiline input did not change rendered pixels after resize');
-await page.goto(`${base}/missing`); await page.goto(base); await page.locator('canvas').waitFor({ state: 'visible' });
+await page.goto('about:blank');
+await page.goto(base, { waitUntil: 'networkidle' });
+await page.locator('canvas').waitFor({ state: 'visible' });
+await page.waitForFunction(() => {
+  const c = document.querySelector('canvas'), ctx = c?.getContext('2d'); if (!ctx) return false;
+  const data = ctx.getImageData(0, 0, c.width, c.height).data;
+  for (let i = 0; i < data.length; i += 4)
+    if (data[i + 3] > 0 && (data[i] < 245 || data[i + 1] < 245 || data[i + 2] < 245)) return true;
+  return false;
+}, null, { timeout: 30000 });
 if (errors.length) throw new Error(`browser errors: ${errors.join('; ')}`);
 console.log(JSON.stringify({ dpr: 2, first, valid, multiline, resized: [before, after], status: 'pass' })); await browser.close();
