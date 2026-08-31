@@ -28,7 +28,7 @@
     surface.Canvas.Clear(global::SkiaSharp.SKColors.White);
     painter.LaTeX = latex;
     error = painter.ErrorMessage;
-    if (painter.Display is not null) painter.Draw(surface.Canvas, CSharpMath.Rendering.FrontEnd.TextAlignment.Center);
+    painter.Draw(surface.Canvas, CSharpMath.Rendering.FrontEnd.TextAlignment.Center);
   }
 
   private void Reset() { state.Reset(); latex = state.Latex; error = null; canvas?.Invalidate(); }
