@@ -10,6 +10,8 @@ namespace CSharpMath.Core.AtomTests {
     static string CellText(MathList cell) => cell.Count == 0 ? "" : cell[0] switch {
       Number number => number.Nucleus,
       Underline underline => CellText(underline.InnerList),
+      Overline overline => CellText(overline.InnerList),
+      Inner inner => CellText(inner.InnerList),
       _ => cell.DebugString
     };
     static LongDivision Parse(string source) {
@@ -101,10 +103,20 @@ namespace CSharpMath.Core.AtomTests {
       var layout = (Table)typeof(LongDivision).GetMethod("CreateLayout", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(atom, null)!;
       var dividend = layout.Cells[1][1];
       var inner = Assert.IsType<Inner>(dividend[0]);
-      Assert.Equal("⟌", inner.LeftBoundary.Nucleus);
-      Assert.IsType<Underline>(inner.InnerList[0]);
+      Assert.Equal(")", inner.LeftBoundary.Nucleus);
+      Assert.Equal(Boundary.Empty, inner.RightBoundary);
+      Assert.IsType<Overline>(inner.InnerList[0]);
       Assert.Equal("949", CellText(layout.Cells[0][1]));
+      Assert.Equal(ColumnAlignment.Right, layout.GetAlignment(1));
       Assert.Equal(1, layout.Cells.Count(row => row.Any(cell => CellText(cell) == atom.Remainder)));
+    }
+
+    [Fact]
+    public void LayoutPreservesProductPlaceValuesAndRunningTotals() {
+      var atom = new LongDivision("12345", "13");
+      var layout = (Table)typeof(LongDivision).GetMethod("CreateLayout", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(atom, null)!;
+      Assert.Equal(new[] { "949", "12345", "11700", "645", "520", "125", "117", "8" },
+        layout.Cells.Select(row => CellText(row[1])));
     }
 
     [Fact]
@@ -113,7 +125,21 @@ namespace CSharpMath.Core.AtomTests {
       Assert.Contains(atom.Steps, step => step.QuotientDigit == 0);
       var layout = (Table)typeof(LongDivision).GetMethod("CreateLayout", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(atom, null)!;
       Assert.Equal("201", CellText(layout.Cells[0][1]));
+      Assert.Equal(new[] { "201", "1005", "1000", "5", "5", "0" },
+        layout.Cells.Select(row => CellText(row[1])));
       Assert.Equal(1, layout.Cells.Skip(2).Count(row => row.Any(cell => CellText(cell) == "0")));
+    }
+
+    [Theory]
+    [InlineData("81", "3", new[] { "27", "81", "60", "21", "21", "0" })]
+    [InlineData("3", "5", new[] { "0", "3", "3" })]
+    [InlineData("0", "7", new[] { "0", "0", "0" })]
+    [InlineData("86491", "94", new[] { "920", "86491", "84600", "1891", "1880", "11" })]
+    public void LayoutShowsExactlyOneFinalRemainder(string numerator, string denominator, string[] expected) {
+      var atom = new LongDivision(numerator, denominator);
+      var layout = (Table)typeof(LongDivision).GetMethod("CreateLayout", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(atom, null)!;
+      Assert.Equal(expected, layout.Cells.Select(row => CellText(row[1])));
+      Assert.Equal(atom.Remainder, CellText(layout.Cells.Last()[1]));
     }
   }
 }

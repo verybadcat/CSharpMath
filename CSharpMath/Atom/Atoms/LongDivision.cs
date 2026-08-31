@@ -44,10 +44,31 @@ namespace CSharpMath.Atom.Atoms {
       return result.AsReadOnly();
     }
     internal Table CreateLayout() {
-      var table = new Table { InterColumnSpacing = 1, InterRowAdditionalSpacing = 1 }; table.SetCell(Digits(QuotientText), 0, 1); table.SetCell(Digits(Denominator), 1, 0); table.SetCell(new MathList(new Inner(new Boundary("⟌"), new MathList(new Underline(Digits(Numerator))), Boundary.Empty)), 1, 1); table.SetAlignment(ColumnAlignment.Right, 0); table.SetAlignment(ColumnAlignment.Left, 1);
-      var d = BigInteger.Parse(Denominator, CultureInfo.InvariantCulture); var running = BigInteger.Zero; var row = 2;
-      for (int i = 0; i < Numerator.Length; i++) { running = running * 10 + (Numerator[i] - '0'); if (running < d) continue; var product = (running / d) * d; table.SetCell(new MathList(new Underline(Digits(product.ToString(CultureInfo.InvariantCulture)))), row++, 1); running -= product; if (i < Numerator.Length - 1) table.SetCell(Digits(running.ToString(CultureInfo.InvariantCulture)), row++, 1); }
-      if (row == 2 || Remainder != "0") table.SetCell(Digits(Remainder), row, 1); return table;
+      var table = new Table { InterColumnSpacing = 1, InterRowAdditionalSpacing = 1 };
+      table.SetCell(Digits(QuotientText), 0, 1);
+      table.SetCell(Digits(Denominator), 1, 0);
+      table.SetCell(new MathList(new Inner(
+        new Boundary(")"),
+        new MathList(new Overline(Digits(Numerator))),
+        Boundary.Empty)), 1, 1);
+      table.SetAlignment(ColumnAlignment.Right, 0);
+      table.SetAlignment(ColumnAlignment.Right, 1);
+
+      var row = 2;
+      foreach (var step in Steps.Where(step => step.QuotientDigit > 0)) {
+        var trailingZeroes = new string('0', Numerator.Length - step.DecimalColumn - 1);
+        var product = step.Product + trailingZeroes;
+        table.SetCell(new MathList(new Underline(Digits(product))), row++, 1);
+
+        // Bring down every remaining dividend digit so place value is retained.
+        var runningText = step.Remainder + Numerator.Substring(step.DecimalColumn + 1);
+        var running = BigInteger.Parse(runningText, CultureInfo.InvariantCulture)
+          .ToString(CultureInfo.InvariantCulture);
+        table.SetCell(Digits(running), row++, 1);
+      }
+      if (!Steps.Any(step => step.QuotientDigit > 0))
+        table.SetCell(Digits(Remainder), row, 1);
+      return table;
     }
     public IEnumerable<MathList> InnerLists => CreateLayout().Cells.SelectMany(r => r);
     public override bool ScriptsAllowed => false;
