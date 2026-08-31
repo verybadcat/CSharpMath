@@ -64,6 +64,38 @@ namespace CSharpMath.Core.AtomTests {
       Assert.Equal(output, LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
+    [Fact]
+    public void ControlWordDoesNotConsumeFollowingPunctuation() {
+      var list = ParseLaTeX(@"\sin'");
+
+      Assert.Collection(list,
+        CheckAtom<LargeOperator>("sin"),
+        CheckAtom<Ordinary>("′"));
+      Assert.Equal(@"\sin '", LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+
+    [Theory]
+    [InlineData(@"\mu=")]
+    [InlineData(@"\Delta=")]
+    public void ControlWordDoesNotConsumeFollowingRelation(string input) {
+      var list = ParseLaTeX(input);
+
+      Assert.Equal(2, list.Atoms.Count);
+      Assert.IsType<Variable>(list[0]);
+      Assert.IsType<Relation>(list[1]);
+      Assert.Equal(input.Replace("=", " ="), LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+
+    [Fact]
+    public void ControlWordDoesNotConsumeFollowingStar() {
+      var list = ParseLaTeX(@"\sin*");
+
+      Assert.Equal(2, list.Atoms.Count);
+      Assert.IsType<LargeOperator>(list[0]);
+      Assert.IsType<BinaryOperator>(list[1]);
+      Assert.Equal(@"\sin *", LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+
     /// new[] { Base list }, new[] { Script of first atom }, new[] { Script of first atom inside script of first atom }
     [Theory]
     [InlineData("x^2", "x^2", new[] { typeof(Variable) }, new[] { typeof(Number) })]

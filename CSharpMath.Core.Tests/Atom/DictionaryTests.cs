@@ -1,8 +1,87 @@
+using System;
 using CSharpMath.Atom;
 using Xunit;
 
 namespace CSharpMath.Core.AtomTests {
   public class DictionaryTests {
+    [Theory]
+    [InlineData(@"\sin'", 4)]
+    [InlineData(@"\mu=", 3)]
+    [InlineData(@"\Delta=", 6)]
+    [InlineData(@"\@foo=", 2)]
+    [InlineData(@"\foo@bar=", 4)]
+    [InlineData(@"\=x", 2)]
+    [InlineData(@"\= x", 2)]
+    [InlineData(@"\sin*", 4)]
+    public void CommandLookupUsesTeXControlSequenceBoundary(string input, int expectedSplitIndex) {
+      var dictionary = new LaTeXCommandDictionary<int>(
+        consume => Result.Err("default parser: " + consume.ToString()),
+        consume => Result.Err("default command parser: " + consume.ToString())) {
+        { @"\sin", 1 },
+        { @"\mu", 2 },
+        { @"\Delta", 3 },
+        { @"\@", 4 },
+        { @"\foo", 6 },
+        { @"\=", 5 }
+      };
+
+      var ((result, splitIndex), error) = dictionary.TryLookup(input.AsSpan());
+      Assert.Null(error);
+      Assert.Equal(expectedSplitIndex, splitIndex);
+      Assert.NotEqual(0, result);
+    }
+
+    [Fact]
+    public void CommandLookupConsumesWhitespaceAfterControlWord() {
+      var dictionary = new LaTeXCommandDictionary<int>(
+        _ => Result.Err("default parser"), _ => Result.Err("default command parser")) {
+        { @"\sin", 1 }
+      };
+
+      var ((result, splitIndex), error) = dictionary.TryLookup((@"\sin   x").AsSpan());
+      Assert.Null(error);
+      Assert.Equal(7, splitIndex);
+      Assert.Equal(1, result);
+    }
+
+    [Fact]
+    public void CommandLookupLeavesWhitespaceAfterControlSymbol() {
+      var dictionary = new LaTeXCommandDictionary<int>(
+        _ => Result.Err("default parser"), _ => Result.Err("default command parser")) {
+        { @"\@", 1 }
+      };
+
+      var ((result, splitIndex), error) = dictionary.TryLookup((@"\@   x").AsSpan());
+      Assert.Null(error);
+      Assert.Equal(1, result);
+      Assert.Equal(2, splitIndex);
+    }
+
+    [Theory]
+    [InlineData(@"\@")]
+    [InlineData(@"\foo")]
+    public void CommandRegistrationAcceptsReachableKeys(string key) {
+      var dictionary = new LaTeXCommandDictionary<int>(
+        _ => Result.Err("default parser"), _ => Result.Err("default command parser")) {
+        { key, 1 }
+      };
+
+      var ((result, splitIndex), error) = dictionary.TryLookup(key.AsSpan());
+      Assert.Null(error);
+      Assert.Equal(1, result);
+      Assert.Equal(key.Length, splitIndex);
+    }
+
+    [Theory]
+    [InlineData(@"\@foo")]
+    [InlineData(@"\foo@bar")]
+    public void CommandRegistrationRejectsKeysBeyondControlSequenceBoundary(string key) {
+      Assert.Throws<ArgumentException>(() => new LaTeXCommandDictionary<int>(
+        _ => Result.Err("default parser"), _ => Result.Err("default command parser")) {
+          { key, 1 }
+        });
+    }
+
     private AliasBiDictionary<string, int> InitTestDict() =>
       new AliasBiDictionary<string, int> {
         { "0", 0 },

@@ -65,7 +65,7 @@ namespace CSharpMath.Atom {
       this.defaultParserForCommands = defaultParserForCommands;
       Added += (key, value) => {
         if (key.AsSpan().StartsWithInvariant(@"\"))
-          if (SplitCommand(key.AsSpan()) != key.Length - 1)
+          if (SplitCommand(key.AsSpan()) == key.Length)
             commands.Add(key, value);
           else throw new ArgumentException("Key is unreachable: " + key, nameof(key));
         else nonCommands.Add((key, value));
@@ -84,23 +84,21 @@ namespace CSharpMath.Atom {
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     /// <summary>Finds the number of characters corresponding to a LaTeX command at the beginning of <see cref="char"/>s.</summary>
-    static int SplitCommand(ReadOnlySpan<char> chars) {
-      // Note on '@': https://stackoverflow.com/questions/29217603/extracting-all-latex-commands-from-a-latex-code-file#comment47075515_29218404
-      static bool IsEnglishAlphabetOrAt(char c) => 'A' <= c && c <= 'Z' || 'a' <= c && c <= 'z' || c == '@';
+    // LaTeX2e defines a control word as a backslash followed by letters and a
+    // control symbol as a backslash followed by one non-letter. In the normal
+    // document catcode regime, '@' is not a letter; it becomes one only while
+    // makeatletter is in effect. CSharpMath does not track catcodes, so use the
+    // ordinary document boundary here.
+    // https://tug.org/texinfohtml/latex2e.html#Control-sequence_002c-control-word-and-control-symbol
+    // https://tug.org/texinfohtml/latex2e.html#g_t_005cmakeatletter_0026-_005cmakeatother
+    static bool IsAsciiLetter(char c) => 'A' <= c && c <= 'Z' || 'a' <= c && c <= 'z';
 
+    static int SplitCommand(ReadOnlySpan<char> chars) {
       System.Diagnostics.Debug.Assert(chars[0] == '\\');
       var splitIndex = 1;
       if (splitIndex < chars.Length)
-        if (IsEnglishAlphabetOrAt(chars[splitIndex])) {
-          do splitIndex++; while (splitIndex < chars.Length && IsEnglishAlphabetOrAt(chars[splitIndex]));
-          if (splitIndex < chars.Length)
-            switch (chars[splitIndex]) {
-              case '*':
-              case '=':
-              case '\'':
-                splitIndex++;
-                break;
-            }
+        if (IsAsciiLetter(chars[splitIndex])) {
+          do splitIndex++; while (splitIndex < chars.Length && IsAsciiLetter(chars[splitIndex]));
         } else splitIndex++;
       return splitIndex;
     }
@@ -110,8 +108,11 @@ namespace CSharpMath.Atom {
       Result<(TValue Result, int SplitIndex)> TryLookupCommand(ReadOnlySpan<char> chars) {
         var splitIndex = SplitCommand(chars);
         var lookup = chars.Slice(0, splitIndex);
-        while (splitIndex < chars.Length && char.IsWhiteSpace(chars[splitIndex]))
-          splitIndex++;
+        // TeX discards the delimiter whitespace only after a control word. A control
+        // symbol (such as \=) leaves following whitespace for the normal parser.
+        if (chars.Length > 1 && IsAsciiLetter(chars[1]))
+          while (splitIndex < chars.Length && char.IsWhiteSpace(chars[splitIndex]))
+            splitIndex++;
         return commands.TryGetValue(lookup.ToString(), out var result)
                ? Result.Ok((result, splitIndex))
                : defaultParserForCommands(lookup);
