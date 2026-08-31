@@ -21,6 +21,28 @@ no startup behavior. The #293 cold-process methodology (fresh process,
 first-render timing, allocated/retained managed bytes) carries to #321 for the
 runtime decoder comparison.
 
+The `CMR1` renderer-record schema is a separate versioned envelope. Its fixed
+little-endian header is followed by a sorted directory of fixed-width records;
+each record contains an explicit offset, byte length, and logical count. Readers
+reject unknown schema/byte order, out-of-range or overlapping sections,
+truncation, source-hash drift, and trailing bytes. Schema versions are not
+silently upgraded: an incompatible layout requires a new schema number.
+Binary and generated-C# prototypes are serialized from the same immutable
+logical model, with ordinal face and section ordering. Counts and lengths are
+capped before allocation. The codec uses only BCL APIs and fixed records, with
+no reflection or dynamic code, so it is AOT/trimming-safe; applications using
+linker trimming should preserve the codec entry points.
+
+Generation keeps legacy `.csmfont` artifacts and can emit `.csmrecord` CMR1
+artifacts plus `BundledFontPrototype.g.cs`; these are build/measurement inputs,
+never runtime inputs. `verify` accepts an optional prototype directory and
+compares its complete immutable file set with fresh temporary regeneration.
+Source inputs are capped at 16 MiB, records at 128 MiB, and directories at
+4096 sections before allocation; offset arithmetic is checked.
+The current CMR1 logical model intentionally contains only the face identity
+(`NAME`) and source hash; font tables and rendering payloads are deferred to
+later schema work.
+
 Example:
 
 ```text
