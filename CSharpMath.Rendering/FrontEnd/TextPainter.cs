@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Text;
 
 namespace CSharpMath.Rendering.FrontEnd {
   using BackEnd;
@@ -15,6 +17,85 @@ namespace CSharpMath.Rendering.FrontEnd {
   public abstract class TextPainter<TCanvas, TColor> : Painter<TCanvas, TextAtom, TColor> {
     public const float DefaultCanvasWidth = 2000f;
     public override IDisplay<Fonts, Glyph>? Display { get; protected set; }
+
+    TextDirection _textDirection = TextDirection.LeftToRight;
+
+    /// <summary>Gets or sets the base direction used by <see cref="BidiParagraphs"/>.</summary>
+    /// <remarks>
+    /// The default is <see cref="Text.TextDirection.LeftToRight"/> for compatibility. This setting
+    /// is independent of the <see cref="TextAlignment"/> supplied to drawing methods. It currently
+    /// changes ordering metadata only; drawing remains in logical order.
+    /// </remarks>
+    public TextDirection TextDirection {
+      get => _textDirection;
+      set => _textDirection = BidiParagraph.ValidateDirection(value);
+    }
+
+    /// <summary>
+    /// Gets freshly resolved paragraphs for a synthetic logical-text projection of <see cref="Content"/>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Every paragraph and run index is a global UTF-16 offset into that projection. It is not an
+    /// index into the LaTeX source or the <see cref="TextAtom"/> tree.
+    /// </para>
+    /// <para>
+    /// <see cref="TextAtom.List"/> concatenates child projections in logical order.
+    /// <see cref="TextAtom.Style"/>, <see cref="TextAtom.Size"/>, <see cref="TextAtom.Colored"/>, and
+    /// <see cref="TextAtom.Accent"/> recursively project their content. Both
+    /// <see cref="TextAtom.Space"/> and <see cref="TextAtom.ControlSpace"/> project to U+0020;
+    /// <see cref="TextAtom.Newline"/> projects to CRLF; and <see cref="TextAtom.Math"/> projects to
+    /// U+FFFC OBJECT REPLACEMENT CHARACTER. Comments, null content, and unknown atom types are
+    /// omitted.
+    /// </para>
+    /// <para>
+    /// The returned graph is an immutable snapshot and is recomputed on every access. Resolved
+    /// levels come from the already-vendored Typography.TextBreak.SheenBidi implementation.
+    /// Visual reordering and shaping are deferred to issues #290 and #291.
+    /// </para>
+    /// </remarks>
+    public IReadOnlyList<BidiParagraph> BidiParagraphs =>
+      BidiResolver.ResolveParagraphs(ContentToBidiText(Content), TextDirection);
+
+    static string ContentToBidiText(TextAtom? atom) {
+      var result = new StringBuilder();
+      AppendBidiText(result, atom);
+      return result.ToString();
+    }
+
+    static void AppendBidiText(StringBuilder result, TextAtom? atom) {
+      switch (atom) {
+        case TextAtom.Text text:
+          result.Append(text.Content);
+          break;
+        case TextAtom.Newline:
+          result.Append("\r\n");
+          break;
+        case TextAtom.Space:
+        case TextAtom.ControlSpace:
+          result.Append(' ');
+          break;
+        case TextAtom.Math:
+          result.Append('\uFFFC');
+          break;
+        case TextAtom.Style style:
+          AppendBidiText(result, style.Content);
+          break;
+        case TextAtom.Size size:
+          AppendBidiText(result, size.Content);
+          break;
+        case TextAtom.Colored colored:
+          AppendBidiText(result, colored.Content);
+          break;
+        case TextAtom.Accent accent:
+          AppendBidiText(result, accent.Content);
+          break;
+        case TextAtom.List list:
+          foreach (var child in list.Content)
+            AppendBidiText(result, child);
+          break;
+      }
+    }
 
     //display maths should always be center-aligned regardless of parameter for Draw()
     //so special case them into _absoluteXCoordDisplay instead of using _relativeXCoordDisplay

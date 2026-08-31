@@ -1,0 +1,26 @@
+#nullable enable
+CSharpMath.Rendering.Text.BidiParagraph
+CSharpMath.Rendering.Text.BidiParagraph.BidiParagraph(string! text, CSharpMath.Rendering.Text.TextDirection direction = CSharpMath.Rendering.Text.TextDirection.Auto) -> void
+CSharpMath.Rendering.Text.BidiParagraph.BaseLevel.get -> byte
+CSharpMath.Rendering.Text.BidiParagraph.Direction.get -> CSharpMath.Rendering.Text.TextDirection
+CSharpMath.Rendering.Text.BidiParagraph.Length.get -> int
+CSharpMath.Rendering.Text.BidiParagraph.LogicalStart.get -> int
+CSharpMath.Rendering.Text.BidiParagraph.Runs.get -> System.Collections.Generic.IReadOnlyList<CSharpMath.Rendering.Text.TextRun!>!
+CSharpMath.Rendering.Text.BidiParagraph.Separator.get -> string!
+CSharpMath.Rendering.Text.BidiParagraph.Text.get -> string!
+CSharpMath.Rendering.Text.BidiResolver
+static CSharpMath.Rendering.Text.BidiResolver.ResolveParagraphs(string! text, CSharpMath.Rendering.Text.TextDirection direction = CSharpMath.Rendering.Text.TextDirection.Auto) -> System.Collections.Generic.IReadOnlyList<CSharpMath.Rendering.Text.BidiParagraph!>!
+CSharpMath.Rendering.Text.TextDirection
+CSharpMath.Rendering.Text.TextDirection.Auto = 0 -> CSharpMath.Rendering.Text.TextDirection
+CSharpMath.Rendering.Text.TextDirection.LeftToRight = 1 -> CSharpMath.Rendering.Text.TextDirection
+CSharpMath.Rendering.Text.TextDirection.RightToLeft = 2 -> CSharpMath.Rendering.Text.TextDirection
+CSharpMath.Rendering.Text.TextRun
+CSharpMath.Rendering.Text.TextRun.TextRun(int logicalStart, int length, byte embeddingLevel) -> void
+CSharpMath.Rendering.Text.TextRun.EmbeddingLevel.get -> byte
+CSharpMath.Rendering.Text.TextRun.IsRightToLeft.get -> bool
+CSharpMath.Rendering.Text.TextRun.Length.get -> int
+CSharpMath.Rendering.Text.TextRun.LogicalStart.get -> int
+CSharpMath.Rendering.Text.TextRun.Start.get -> int
+CSharpMath.Rendering.FrontEnd.TextPainter<TCanvas, TColor>.TextDirection.get -> CSharpMath.Rendering.Text.TextDirection
+CSharpMath.Rendering.FrontEnd.TextPainter<TCanvas, TColor>.TextDirection.set -> void
+CSharpMath.Rendering.FrontEnd.TextPainter<TCanvas, TColor>.BidiParagraphs.get -> System.Collections.Generic.IReadOnlyList<CSharpMath.Rendering.Text.BidiParagraph!>!
