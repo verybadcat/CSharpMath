@@ -96,6 +96,8 @@
   <Project Path="CSharpMath.Rendering.Benchmarks/CSharpMath.Rendering.Benchmarks.csproj">
     <BuildType Solution="Not.Uno.Example|*" Project="Release" />
   </Project>
+  <Project Path="CSharpMath.FontGenerator/CSharpMath.FontGenerator.csproj" />
+  <Project Path="CSharpMath.FontGenerator.Tests/CSharpMath.FontGenerator.Tests.csproj" />
   <Project Path="CSharpMath.Rendering.Tests/CSharpMath.Rendering.Tests.csproj">
     <BuildType Solution="Not.Uno.Example|*" Project="Release" />
   </Project>

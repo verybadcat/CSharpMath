@@ -1,0 +1,46 @@
+name: Verify generated font artifacts
+
+on:
+  push:
+    paths:
+    - CSharpMath.FontGenerator/**
+    - CSharpMath.FontGenerator.Tests/**
+    - CSharpMath.Rendering/Generated Fonts/**
+    - CSharpMath.Rendering/Reference Fonts/**
+    - .github/workflows/FontArtifacts.yml
+  pull_request:
+    paths:
+    - CSharpMath.FontGenerator/**
+    - CSharpMath.FontGenerator.Tests/**
+    - CSharpMath.Rendering/Generated Fonts/**
+    - CSharpMath.Rendering/Reference Fonts/**
+    - .github/workflows/FontArtifacts.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7
+    - uses: actions/setup-dotnet@v6
+      with:
+        dotnet-version: 10.x
+    - name: Restore generator tests
+      run: dotnet restore CSharpMath.FontGenerator.Tests/CSharpMath.FontGenerator.Tests.csproj
+    - name: Build and test generator
+      run: dotnet test CSharpMath.FontGenerator.Tests/CSharpMath.FontGenerator.Tests.csproj --configuration Release --no-restore
+    - name: Verify checked-in source and payload hashes
+      run: >-
+        dotnet run --project CSharpMath.FontGenerator/CSharpMath.FontGenerator.csproj
+        --configuration Release --no-restore --
+        verify "CSharpMath.Rendering/Reference Fonts" "CSharpMath.Rendering/Generated Fonts"
+    - name: Regenerate artifacts
+      run: >-
+        dotnet run --project CSharpMath.FontGenerator/CSharpMath.FontGenerator.csproj
+        --configuration Release --no-restore --
+        generate "CSharpMath.Rendering/Reference Fonts" "$RUNNER_TEMP/csharpmath-fonts"
+    - name: Require byte-for-byte deterministic output
+      shell: bash
+      run: diff --recursive --unified "CSharpMath.Rendering/Generated Fonts" "$RUNNER_TEMP/csharpmath-fonts"
