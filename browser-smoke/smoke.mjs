@@ -9,26 +9,36 @@ const canvas = page.locator('canvas'); await canvas.waitFor({ state: 'visible' }
 await page.waitForFunction(() => { const c = document.querySelector('canvas'); return c && c.width > 0 && c.height > 0; });
 const readCanvas = () => canvas.evaluate(c => {
   const ctx = c.getContext('2d');
-  if (!ctx) return { width: c.width, height: c.height, css: [c.clientWidth, c.clientHeight], nonWhite: false, signature: '' };
+  if (!ctx) return { width: c.width, height: c.height, css: [c.clientWidth, c.clientHeight], dpr: window.devicePixelRatio, nonWhite: false, signature: '' };
   const data = ctx.getImageData(0, 0, c.width, c.height).data;
   let nonWhite = false, dark = 0, signature = 0;
   for (let i = 0; i < data.length; i += 4) {
     if (data[i + 3] > 0 && (data[i] < 245 || data[i + 1] < 245 || data[i + 2] < 245)) nonWhite = true, dark++;
     if (i % 16 === 0) signature = (signature * 31 + data[i] + data[i + 1] * 3 + data[i + 2] * 7) >>> 0;
   }
-  return { width: c.width, height: c.height, css: [c.clientWidth, c.clientHeight], nonWhite, dark, signature };
+  return { width: c.width, height: c.height, css: [c.clientWidth, c.clientHeight], dpr: window.devicePixelRatio, nonWhite, dark, signature };
 });
-await page.waitForFunction(() => { const c = document.querySelector('canvas'); return c && c.width === c.clientWidth && c.height === c.clientHeight; }, { timeout: 10000 });
+await page.waitForFunction(() => {
+  const c = document.querySelector('canvas'), dpr = window.devicePixelRatio || 1;
+  return c && Math.abs(c.width - c.clientWidth * dpr) <= 1 && Math.abs(c.height - c.clientHeight * dpr) <= 1;
+}, null, { timeout: 10000 });
 const first = await readCanvas();
 console.log(JSON.stringify({first, errors}));
-if (!first.nonWhite || !first.width || !first.height || first.width !== first.css[0] || first.height !== first.css[1]) throw new Error('initial canvas was blank, uninitialized, or dimensions did not match CSS');
+const hasScaledBackingStore = sample => Math.abs(sample.width - sample.css[0] * sample.dpr) <= 1 && Math.abs(sample.height - sample.css[1] * sample.dpr) <= 1;
+if (!first.nonWhite || !first.width || !first.height || !hasScaledBackingStore(first)) throw new Error('initial canvas was blank, uninitialized, or did not use a DPR-scaled backing store');
 await page.locator('#latex').fill('\\notacommand{'); await page.locator('#formula-error').waitFor({ state: 'visible' });
 await page.locator('#latex').fill('x^2 + y^2 = z^2'); await page.waitForTimeout(300);
 await page.waitForFunction(previous => { const c = document.querySelector('canvas'), ctx = c?.getContext('2d'); if (!ctx) return false; const d = ctx.getImageData(0, 0, c.width, c.height).data; return d.some((v, i) => i % 4 === 3 && v > 0) && c.width > 0; }, first);
 const valid = await readCanvas();
 if (!valid.nonWhite || valid.signature === first.signature) throw new Error('valid input did not change rendered pixels');
-const before = valid.width; await page.setViewportSize({ width: 700, height: 800 }); await page.waitForTimeout(500); const resized = await readCanvas(); const after = resized.width;
-if (!resized.nonWhite || before === after || resized.width !== resized.css[0] || resized.height !== resized.css[1]) throw new Error(`canvas did not respond to resize, was blank, or dimensions mismatched (${before} -> ${after})`);
+const before = valid.width;
+await page.setViewportSize({ width: 700, height: 800 });
+await page.waitForFunction(previousCssWidth => {
+  const c = document.querySelector('canvas'), dpr = window.devicePixelRatio || 1;
+  return c && c.clientWidth !== previousCssWidth && Math.abs(c.width - c.clientWidth * dpr) <= 1 && Math.abs(c.height - c.clientHeight * dpr) <= 1;
+}, valid.css[0], { timeout: 10000 });
+const resized = await readCanvas(); const after = resized.width;
+if (!resized.nonWhite || before === after || !hasScaledBackingStore(resized)) throw new Error(`canvas did not respond to resize, was blank, or did not use a DPR-scaled backing store (${before} -> ${after})`);
 await page.locator('#latex').fill('\\frac{1}{2}\\\\\\int_0^1 x dx');
 await page.waitForFunction(previous => {
   const c = document.querySelector('canvas'), ctx = c?.getContext('2d'); if (!ctx) return false;
