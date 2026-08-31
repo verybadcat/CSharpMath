@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Specialized;
 using System.Drawing;
+using CSharpMath;
 using CSharpMath.Display;
 using Typography.OpenFont;
 
@@ -62,9 +63,13 @@ namespace CSharpMath.Rendering.FrontEnd {
     public abstract ICanvas WrapCanvas(TCanvas canvas);
     public virtual RectangleF Measure(float textPainterCanvasWidth) {
       UpdateDisplay(textPainterCanvasWidth);
-      if (Display != null)
-        return new RectangleF(0, -Display.Ascent, Display.Width, Display.Ascent + Display.Descent);
-      else return RectangleF.Empty;
+      if (Display != null) {
+        if (!Display.HasJoinRel())
+          return new RectangleF(0, -Display.Ascent, Display.Width, Display.Ascent + Display.Descent);
+        var inkBounds = Display.InkBounds();
+        return new RectangleF(inkBounds.Left, -Display.Ascent,
+          inkBounds.Right - inkBounds.Left, Display.Ascent + Display.Descent);
+      } else return RectangleF.Empty;
     }
     protected abstract void UpdateDisplayCore(float textPainterCanvasWidth);
     protected void UpdateDisplay(float textPainterCanvasWidth) {

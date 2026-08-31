@@ -183,6 +183,9 @@ namespace CSharpMath.Atom {
           parser.TextMode ? parser.ReadSpace().Bind(skip => Ok(new Space(skip))) : @"\hskip is not allowed in math mode" },
         { @"\mkern", (parser, accumulate, stopChar) =>
           !parser.TextMode ? parser.ReadSpace().Bind(kern => Ok(new Space(kern))) : @"\mkern is not allowed in text mode" },
+        { @"\mathrel", (parser, accumulate, stopChar) =>
+          parser.ReadArgument().Bind(innerList => Ok(new MathRel(innerList))) },
+        { @"\joinrel", (parser, accumulate, stopChar) => Ok(new JoinRel()) },
         { @"\mskip", (parser, accumulate, stopChar) =>
           !parser.TextMode ? parser.ReadSpace().Bind(skip => Ok(new Space(skip))) : @"\mskip is not allowed in text mode" },
         { @"\raisebox", (parser, accumulate, stopChar) => {

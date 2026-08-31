@@ -65,6 +65,87 @@ namespace CSharpMath {
       displays.IsNonEmpty()
       ? displays.Max(d => d.Position.X + d.Width) - displays.Min(d => d.Position.X)
       : 0;
+    internal static (float Left, float Right) InkBounds<TFont, TGlyph>
+      (this IDisplay<TFont, TGlyph> display) where TFont : IFont<TGlyph> {
+      if (display is Display.Displays.ListDisplay<TFont, TGlyph> list && list.Displays.IsNonEmpty()) {
+        var bounds = list.Displays.Select(d => {
+          var child = d.InkBounds();
+          return (Left: d.Position.X + child.Left, Right: d.Position.X + child.Right);
+        });
+        return (bounds.Min(b => b.Left), bounds.Max(b => b.Right));
+      }
+      IEnumerable<(float Left, float Right)> Children() {
+        float Offset(IDisplay<TFont, TGlyph> child) => child.Position.X - display.Position.X;
+        (float Left, float Right) At(IDisplay<TFont, TGlyph> child) {
+          var b = child.InkBounds();
+          var x = Offset(child);
+          return (x + b.Left, x + b.Right);
+        }
+        switch (display) {
+          case Display.Displays.InnerDisplay<TFont, TGlyph> inner:
+            if (inner.Left is { } left) yield return (left.Position.X - display.Position.X, left.Position.X - display.Position.X + left.Width);
+            yield return At(inner.Inner);
+            if (inner.Right is { } right) yield return (right.Position.X - display.Position.X, right.Position.X - display.Position.X + right.Width);
+            break;
+          case Display.Displays.FractionDisplay<TFont, TGlyph> fraction:
+            yield return At(fraction.Numerator); yield return At(fraction.Denominator);
+            yield return (0, fraction.Width); break;
+          case Display.Displays.RadicalDisplay<TFont, TGlyph> radical:
+            yield return At(radical.Radicand);
+            if (radical.Degree is { } degree) yield return At(degree);
+            yield return (0, radical.Width); break;
+          case Display.Displays.AccentDisplay<TFont, TGlyph> accent:
+            yield return At(accent.Accentee);
+            yield return (accent.Accent.Position.X, accent.Accent.Position.X + accent.Accent.Width); break;
+          case Display.Displays.UnderAnnotationDisplay<TFont, TGlyph> under:
+            yield return At(under.Inner);
+            if (under.UnderList is { } list2) yield return At(list2);
+            yield return (under.AnnotationGlyph.Position.X, under.AnnotationGlyph.Position.X + under.AnnotationGlyph.Width); break;
+          case Display.Displays.OverOrUnderlineDisplay<TFont, TGlyph> over:
+            yield return At(over.Inner);
+            // The horizontal rule is owned by the wrapper, not Inner.
+            yield return (over.Position.X - display.Position.X,
+              over.Position.X - display.Position.X + over.Width);
+            break;
+          case Display.Displays.LargeOpLimitsDisplay<TFont, TGlyph> limits:
+            yield return At(limits.NucleusDisplay);
+            if (limits.UpperLimit is { } upper) yield return At(upper);
+            if (limits.LowerLimit is { } lower) yield return At(lower);
+            // Include the wrapper's logical advance as well as child ink.
+            yield return (0, limits.Width);
+            break;
+        }
+      }
+      var children = Children().ToArray();
+      if (children.Length > 0)
+        return (children.Min(b => b.Left), children.Max(b => b.Right));
+      return (0, display.Width);
+    }
+    internal static bool HasJoinRel<TFont, TGlyph>(this IDisplay<TFont, TGlyph> display)
+      where TFont : IFont<TGlyph> {
+      switch (display) {
+        case Display.Displays.ListDisplay<TFont, TGlyph> list:
+          return list.HasJoinRelDescendant;
+        case Display.Displays.InnerDisplay<TFont, TGlyph> inner:
+          return inner.Inner.HasJoinRel() || (inner.Left?.HasJoinRel() ?? false) || (inner.Right?.HasJoinRel() ?? false);
+        case Display.Displays.FractionDisplay<TFont, TGlyph> fraction:
+          return fraction.Numerator.HasJoinRel() || fraction.Denominator.HasJoinRel();
+        case Display.Displays.RadicalDisplay<TFont, TGlyph> radical:
+          return radical.Radicand.HasJoinRel() || (radical.Degree?.HasJoinRel() ?? false);
+        case Display.Displays.AccentDisplay<TFont, TGlyph> accent:
+          return accent.Accentee.HasJoinRel();
+        case Display.Displays.OverOrUnderlineDisplay<TFont, TGlyph> over:
+          return over.Inner.HasJoinRel();
+        case Display.Displays.UnderAnnotationDisplay<TFont, TGlyph> under:
+          return under.Inner.HasJoinRel() || (under.UnderList?.HasJoinRel() ?? false);
+        case Display.Displays.LargeOpLimitsDisplay<TFont, TGlyph> limits:
+          return limits.NucleusDisplay.HasJoinRel()
+            || (limits.UpperLimit?.HasJoinRel() ?? false)
+            || (limits.LowerLimit?.HasJoinRel() ?? false);
+        default:
+          return false;
+      }
+    }
     public static PointF Plus(this PointF point1, PointF point2) =>
       new PointF(point1.X + point2.X, point1.Y + point2.Y);
     public static bool Is(this ReadOnlySpan<char> span, char c) =>

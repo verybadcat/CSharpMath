@@ -72,7 +72,7 @@ namespace CSharpMath.Atom {
             n.Fuse(newNode);
             continue; // do not add the new node; we fused it instead.
           }
-          if (newNode is not (Comment or Space or Style)) prevDisplayedIndex = newList.Count; // Corresponds to atom types that use continue; in Typesetter.CreateLine
+          if (newNode is not (Comment or Space or Style or JoinRel)) prevDisplayedIndex = newList.Count; // Corresponds to atom types that use continue; in Typesetter.CreateLine
           newList.Add(newNode);
           prevNode = newNode;
         }

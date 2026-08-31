@@ -36,6 +36,8 @@ namespace CSharpMath.Display {
           Atoms.LargeOperator _ => 1,
           Atoms.BinaryOperator _ => 2,
           Atoms.Relation _ => 3,
+          Atoms.MathRel _ => 3,
+          Atoms.JoinRel _ => 3,
           Atoms.Open _ => 4,
           Atoms.Close _ => 5,
           Atoms.Punctuation _ => 6,
