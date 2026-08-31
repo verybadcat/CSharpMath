@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+  <PropertyGroup>
+    <!-- Standalone Blazor WebAssembly uses net10.0 with the browser-wasm runtime. -->
+    <TargetFramework>net10.0</TargetFramework>
+    <RuntimeIdentifier>browser-wasm</RuntimeIdentifier>
+    <RootNamespace>CSharpMath.Blazor.Example</RootNamespace>
+    <AssemblyName>CSharpMath.Blazor.Example</AssemblyName>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <!-- Link SkiaSharp native WebAssembly assets for the interpreter build. -->
+    <WasmBuildNative>true</WasmBuildNative>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CSharpMath.SkiaSharp\CSharpMath.SkiaSharp.csproj" />
+    <PackageReference Include="SkiaSharp.Views.Blazor" Version="3.119.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.0" />
+  </ItemGroup>
+</Project>

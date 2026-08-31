@@ -1,0 +1,5 @@
+{
+  "private": true,
+  "scripts": { "smoke": "node smoke.mjs" },
+  "devDependencies": { "@playwright/test": "1.52.0" }
+}

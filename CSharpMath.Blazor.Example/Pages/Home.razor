@@ -1,0 +1,36 @@
+@page "/"
+@using CSharpMath.SkiaSharp
+@using global::SkiaSharp.Views.Blazor
+<PageTitle>CSharpMath Blazor example</PageTitle>
+
+<h1>CSharpMath in Blazor</h1>
+<p>Edit the LaTeX below. The canvas resizes with its container and redraws after every change.</p>
+<div class="editor-grid">
+  <label for="latex">LaTeX</label>
+  <textarea id="latex" @bind="latex" @bind:event="oninput" @bind:after="Invalidate" rows="6" aria-describedby="formula-error"></textarea>
+  <button @onclick="Reset">Reset example</button>
+  <div class="math-canvas" role="img" aria-label="Rendered LaTeX formula" aria-describedby="formula-text">
+    <SKCanvasView class="formula-canvas" @ref="canvas" OnPaintSurface="PaintSurface" IgnorePixelScaling="true" />
+  </div>
+  <span id="formula-text" class="sr-only">LaTeX formula: @latex</span>
+</div>
+@if (!string.IsNullOrWhiteSpace(error)) { <p id="formula-error" class="error" role="alert" aria-live="assertive">@error</p> }
+
+@code {
+  private readonly FormulaEditorState state = new();
+  private string latex { get => state.Latex; set => state.SetLatex(value); }
+  private string? error;
+  private SKCanvasView? canvas;
+  private MathPainter painter = new() { FontSize = 24, LineStyle = CSharpMath.Atom.LineStyle.Display };
+
+  private void PaintSurface(global::SkiaSharp.Views.Blazor.SKPaintSurfaceEventArgs args) {
+    var surface = args.Surface;
+    surface.Canvas.Clear(global::SkiaSharp.SKColors.White);
+    painter.LaTeX = latex;
+    error = painter.ErrorMessage;
+    if (painter.Display is not null) painter.Draw(surface.Canvas, CSharpMath.Rendering.FrontEnd.TextAlignment.Center);
+  }
+
+  private void Reset() { state.Reset(); latex = state.Latex; error = null; canvas?.Invalidate(); }
+  private void Invalidate() { painter.LaTeX = latex; error = painter.ErrorMessage; canvas?.Invalidate(); }
+}
