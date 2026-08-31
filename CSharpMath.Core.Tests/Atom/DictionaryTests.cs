@@ -8,7 +8,8 @@ namespace CSharpMath.Core.AtomTests {
     [InlineData(@"\sin'", 4)]
     [InlineData(@"\mu=", 3)]
     [InlineData(@"\Delta=", 6)]
-    [InlineData(@"\@foo=", 5)]
+    [InlineData(@"\@foo=", 2)]
+    [InlineData(@"\foo@bar=", 4)]
     [InlineData(@"\=x", 2)]
     [InlineData(@"\= x", 2)]
     [InlineData(@"\sin*", 4)]
@@ -19,7 +20,8 @@ namespace CSharpMath.Core.AtomTests {
         { @"\sin", 1 },
         { @"\mu", 2 },
         { @"\Delta", 3 },
-        { @"\@foo", 4 },
+        { @"\@", 4 },
+        { @"\foo", 6 },
         { @"\=", 5 }
       };
 
@@ -40,6 +42,44 @@ namespace CSharpMath.Core.AtomTests {
       Assert.Null(error);
       Assert.Equal(7, splitIndex);
       Assert.Equal(1, result);
+    }
+
+    [Fact]
+    public void CommandLookupLeavesWhitespaceAfterControlSymbol() {
+      var dictionary = new LaTeXCommandDictionary<int>(
+        _ => Result.Err("default parser"), _ => Result.Err("default command parser")) {
+        { @"\@", 1 }
+      };
+
+      var ((result, splitIndex), error) = dictionary.TryLookup((@"\@   x").AsSpan());
+      Assert.Null(error);
+      Assert.Equal(1, result);
+      Assert.Equal(2, splitIndex);
+    }
+
+    [Theory]
+    [InlineData(@"\@")]
+    [InlineData(@"\foo")]
+    public void CommandRegistrationAcceptsReachableKeys(string key) {
+      var dictionary = new LaTeXCommandDictionary<int>(
+        _ => Result.Err("default parser"), _ => Result.Err("default command parser")) {
+        { key, 1 }
+      };
+
+      var ((result, splitIndex), error) = dictionary.TryLookup(key.AsSpan());
+      Assert.Null(error);
+      Assert.Equal(1, result);
+      Assert.Equal(key.Length, splitIndex);
+    }
+
+    [Theory]
+    [InlineData(@"\@foo")]
+    [InlineData(@"\foo@bar")]
+    public void CommandRegistrationRejectsKeysBeyondControlSequenceBoundary(string key) {
+      Assert.Throws<ArgumentException>(() => new LaTeXCommandDictionary<int>(
+        _ => Result.Err("default parser"), _ => Result.Err("default command parser")) {
+          { key, 1 }
+        });
     }
 
     private AliasBiDictionary<string, int> InitTestDict() =>
