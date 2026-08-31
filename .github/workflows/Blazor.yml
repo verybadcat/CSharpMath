@@ -1,0 +1,49 @@
+permissions:
+  contents: read
+name: Blazor example
+on:
+  push:
+    branches: [master]
+  pull_request:
+    paths:
+      - CSharpMath.Blazor.Example/**
+      - CSharpMath.Blazor.Example.Tests/**
+      - CSharpMath/**
+      - CSharpMath.SkiaSharp/**
+      - CSharpMath.Rendering/**
+      - .github/workflows/Blazor.yml
+      - CSharpMath.slnx
+      - Directory.Build.props
+      - Directory.Build.targets
+      - global.json
+      - Typography/**
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with: { submodules: recursive }
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with: { dotnet-version: 10.0.x }
+      - run: dotnet workload install wasm-tools --skip-manifest-update
+      - run: dotnet test CSharpMath.Blazor.Example.Tests/CSharpMath.Blazor.Example.Tests.csproj --configuration Release
+      - run: dotnet publish CSharpMath.Blazor.Example/CSharpMath.Blazor.Example.csproj --configuration Release --output "$RUNNER_TEMP/csharpmath-blazor"
+      - name: Install pinned browser smoke dependencies
+        working-directory: browser-smoke
+        run: npm ci --ignore-scripts
+      - name: Install Chromium
+        working-directory: browser-smoke
+        run: npx playwright install --with-deps chromium
+      - name: Serve and run browser smoke
+        shell: bash
+        run: |
+          python3 -m http.server 4173 --directory "$RUNNER_TEMP/csharpmath-blazor/wwwroot" >"$RUNNER_TEMP/blazor-server.log" 2>&1 &
+          server=$!
+          trap "kill $server" EXIT
+          npm --prefix browser-smoke run smoke
+      - name: Verify browser assets
+        shell: pwsh
+        run: |
+          $root = Join-Path "$env:RUNNER_TEMP/csharpmath-blazor" "wwwroot"
+          $required = @('_framework/blazor.webassembly.js', '_framework/dotnet.native*.wasm', '_framework/*SkiaSharp*.wasm', '_content/SkiaSharp.Views.Blazor/SKHtmlCanvas.js')
+          foreach ($pattern in $required) { if (-not (Get-ChildItem (Join-Path $root $pattern) -ErrorAction SilentlyContinue)) { throw "Missing published asset: $pattern" } }

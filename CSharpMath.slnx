@@ -79,6 +79,12 @@
     <Project Path="CSharpMath.SkiaSharp.Example/CSharpMath.SkiaSharp.Example.csproj">
       <BuildType Solution="Not.Uno.Example|*" Project="Release" />
     </Project>
+    <Project Path="CSharpMath.Blazor.Example/CSharpMath.Blazor.Example.csproj">
+      <BuildType Solution="Not.Uno.Example|*" Project="Release" />
+    </Project>
+    <Project Path="CSharpMath.Blazor.Example.Tests/CSharpMath.Blazor.Example.Tests.csproj">
+      <BuildType Solution="Not.Uno.Example|*" Project="Release" />
+    </Project>
     <Project Path="CSharpMath.Uno/CSharpMath.Uno.csproj">
       <BuildType Solution="Not.Uno.Example|*" Project="Release" />
     </Project>

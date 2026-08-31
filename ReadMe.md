@@ -390,3 +390,18 @@ Shhh... Don't tell anybody!
 0.4.0: Math evaluation??
 0.5.0: Handwritten math recognition???
 -->
+
+## Blazor WebAssembly
+
+`CSharpMath.Blazor.Example` is a standalone browser-WASM sample. It owns the canvas lifecycle while `MathPainter` owns parsing, measuring, and drawing:
+
+```xml
+<PackageReference Include="CSharpMath.SkiaSharp" Version="3.119.4" />
+<PackageReference Include="SkiaSharp.Views.Blazor" Version="3.119.4" />
+```
+
+Use `Microsoft.NET.Sdk.BlazorWebAssembly`, target `net10.0`, and set `RuntimeIdentifier` to `browser-wasm`. The sample uses the package's `SKCanvasView` size/DPI watchers and invalidates it after editor changes. Invalid LaTeX remains visible as an error message, and the default demonstrates a multiline formula.
+
+The normal build uses the interpreter, avoiding the download and build cost of AOT. `dotnet publish -p:RunAOTCompilation=true` can be used when faster steady-state execution is worth a substantially larger download and longer publish; AOT is a publish-time choice, not required for development. The generated `wwwroot` can be served by any static host with SPA fallback to `index.html` (including correct MIME types for `.wasm`).
+
+This sample is specifically standalone Blazor WebAssembly. Blazor Server is not tested or packaged here: it may be possible to host the component in a Server app, but browser-WASM Skia assets, canvas initialization, latency, and server-side rendering constraints require a separate integration test before claiming support.

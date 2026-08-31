@@ -1,0 +1,6 @@
+h1 { color: #512bd4; }
+.editor-grid { display: grid; gap: .75rem; }
+textarea { font: 1rem ui-monospace, monospace; width: 100%; box-sizing: border-box; }
+.math-canvas { min-height: 180px; width: 100%; border: 1px solid #d5d5d5; background: white; }
+.error { color: #b00020; white-space: pre-wrap; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
