@@ -318,6 +318,14 @@ namespace CSharpMath.Display {
             _displayAtoms.Add(divisionDisplay);
             _currentPosition.X += divisionDisplay.Width;
             break;
+          case LongDivisionHeader header:
+            AddDisplayLine(false);
+            AddInterElementSpace(prevAtom, header);
+            var headerDisplay = MakeLongDivisionHeader(header);
+            headerDisplay.Position = _currentPosition;
+            _displayAtoms.Add(headerDisplay);
+            _currentPosition.X += headerDisplay.Width;
+            break;
           case LargeOperator op:
             AddDisplayLine(false);
             AddInterElementSpace(prevAtom, op);
@@ -725,6 +733,25 @@ namespace CSharpMath.Display {
         ? FindGlyphForBoundary(right, glyphHeight)
         : null;
       return new InnerDisplay<TFont, TGlyph>(innerListDisplay, leftGlyph, rightGlyph, range);
+    }
+
+    private LongDivisionHeaderDisplay<TFont, TGlyph> MakeLongDivisionHeader(LongDivisionHeader header) {
+      var inner = new Inner(new Boundary(")"), header.Dividend, Boundary.Empty);
+      var innerDisplay = MakeInner(inner, header.IndexRange);
+      var dividend = innerDisplay.Inner;
+      var delimiter = innerDisplay.Left ?? throw new InvalidCodePathException("Long division delimiter was not created.");
+      var spacing = 2 * _mathTable.MuUnit(_styleFont);
+      var thickness = _mathTable.OverbarRuleThickness(_styleFont);
+      var lineShiftUp = dividend.Ascent + _mathTable.OverbarVerticalGap(_font)
+        + thickness + _mathTable.OverbarExtraAscender(_font);
+      // Raise the delimiter independently until its ink bounds meet the center
+      // of the rule. The half-rule overlap keeps the junction closed after
+      // rasterization, as CTAN's smashed and raised \big) does.
+      var delimiterTop = delimiter.Ascent + delimiter.Position.Y;
+      delimiter.Position = new PointF(0, lineShiftUp - delimiterTop);
+      dividend.Position = new PointF(delimiter.Width + spacing, 0);
+      return new LongDivisionHeaderDisplay<TFont, TGlyph>(dividend, delimiter,
+        lineShiftUp, thickness, header.IndexRange);
     }
 
     private IGlyphDisplay<TFont, TGlyph> FindGlyphForBoundary(

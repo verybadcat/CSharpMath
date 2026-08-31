@@ -12,6 +12,7 @@ namespace CSharpMath.Core.AtomTests {
       Underline underline => CellText(underline.InnerList),
       Overline overline => CellText(overline.InnerList),
       Inner inner => CellText(inner.InnerList),
+      IMathListContainer container => CellText(Assert.Single(container.InnerLists)),
       _ => cell.DebugString
     };
     static LongDivision Parse(string source) {
@@ -102,11 +103,9 @@ namespace CSharpMath.Core.AtomTests {
       var atom = new LongDivision("12345", "13");
       var layout = (Table)typeof(LongDivision).GetMethod("CreateLayout", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(atom, null)!;
       var dividend = layout.Cells[1][1];
-      var overline = Assert.IsType<Overline>(dividend[0]);
-      var inner = Assert.IsType<Inner>(overline.InnerList[0]);
-      Assert.Equal(")", inner.LeftBoundary.Nucleus);
-      Assert.Equal(Boundary.Empty, inner.RightBoundary);
-      var digits = Assert.IsType<Number>(inner.InnerList[0]);
+      Assert.Equal("LongDivisionHeader", dividend[0].GetType().Name);
+      var header = Assert.IsAssignableFrom<IMathListContainer>(dividend[0]);
+      var digits = Assert.IsType<Number>(Assert.Single(Assert.Single(header.InnerLists)));
       Assert.Equal("12345", digits.Nucleus);
       Assert.Equal("949", CellText(layout.Cells[0][1]));
       Assert.Equal(ColumnAlignment.Right, layout.GetAlignment(1));

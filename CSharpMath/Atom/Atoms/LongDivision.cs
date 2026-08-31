@@ -47,10 +47,7 @@ namespace CSharpMath.Atom.Atoms {
       var table = new Table { InterColumnSpacing = 1, InterRowAdditionalSpacing = 1 };
       table.SetCell(Digits(QuotientText), 0, 1);
       table.SetCell(Digits(Denominator), 1, 0);
-      table.SetCell(new MathList(new Overline(new MathList(new Inner(
-        new Boundary(")"),
-        Digits(Numerator),
-        Boundary.Empty)))), 1, 1);
+      table.SetCell(new MathList(new LongDivisionHeader(Digits(Numerator))), 1, 1);
       table.SetAlignment(ColumnAlignment.Right, 0);
       table.SetAlignment(ColumnAlignment.Right, 1);
 
@@ -77,5 +74,16 @@ namespace CSharpMath.Atom.Atoms {
     public override string DebugString => $@"\longdiv{{{Numerator}}}{{{Denominator}}}";
     public override bool Equals(object obj) => obj is LongDivision d && EqualsAtom(d) && Numerator == d.Numerator && Denominator == d.Denominator;
     public override int GetHashCode() => (base.GetHashCode(), Numerator, Denominator).GetHashCode();
+  }
+
+  // The long-division bar and closing delimiter have a font-specific junction
+  // which cannot be represented by a generic Overline around an Inner.
+  internal sealed class LongDivisionHeader : MathAtom, IMathListContainer {
+    internal MathList Dividend { get; }
+    internal LongDivisionHeader(MathList dividend) => Dividend = dividend ?? throw new ArgumentNullException(nameof(dividend));
+    public IEnumerable<MathList> InnerLists => new[] { Dividend };
+    public override bool ScriptsAllowed => false;
+    protected override MathAtom CloneInside(bool finalize) => new LongDivisionHeader(Dividend.Clone(finalize));
+    public override string DebugString => $@"\longdivheader{{{Dividend.DebugString}}}";
   }
 }
