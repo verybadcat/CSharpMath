@@ -710,12 +710,8 @@ namespace CSharpMath.Atom {
           (StringBuilder builder, MathList script, char scriptChar, FontStyle currentFontStyle) {
           if (script.IsNonEmpty()) {
             builder.Append(scriptChar).Append('{');
-            var lengthBeforeScript = builder.Length;
             MathListToLaTeX(script, builder, currentFontStyle);
-            if (lengthBeforeScript + 1 == builder.Length)
-              builder.Remove(lengthBeforeScript - 1, 1); // Remove { if script is only 1 char
-            else
-              builder.Append('}');
+            builder.Append('}');
           }
         }
         AppendScript(builder, atom.Subscript, '_', currentFontStyle);
@@ -725,6 +721,10 @@ namespace CSharpMath.Atom {
         builder.Append('}');
       }
     }
+    /// <summary>
+    /// Serializes a math list using the canonical CSharpMath LaTeX form. Script
+    /// operands are always enclosed in braces, including single-atom operands.
+    /// </summary>
     public static StringBuilder MathListToLaTeX(MathList mathList, StringBuilder? sb = null) {
       sb ??= new StringBuilder();
       MathListToLaTeX(mathList, sb, FontStyle.Default);
