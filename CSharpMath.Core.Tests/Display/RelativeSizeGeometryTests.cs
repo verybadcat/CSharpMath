@@ -1,8 +1,8 @@
 using CSharpMath.Atom;
-using CSharpMath.Display;
-using CSharpMath.Core.BackEnd;
-using Xunit;
 using CSharpMath.Core.AtomTests;
+using CSharpMath.Core.BackEnd;
+using CSharpMath.Display;
+using Xunit;
 
 namespace CSharpMath.Core.DisplayTests {
   public class RelativeSizeGeometryTests {
