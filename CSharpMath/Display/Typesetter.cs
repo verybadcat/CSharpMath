@@ -215,8 +215,10 @@ namespace CSharpMath.Display {
             var displayRad = MakeRadical(rad.Radicand, rad.IndexRange);
             if (rad.Degree.IsNonEmpty()) {
               // add the degree to the radical
+              var degreeBaseFont = _context.MathFontCloner.Invoke(
+                _baseFont, _mathTable.GetStyleSize(_style, _baseFont));
               displayRad.SetDegree(
-                CreateLine(rad.Degree, _baseFont, _context, LineStyle.Script, false),
+                CreateLine(rad.Degree, degreeBaseFont, _context, LineStyle.Script, false),
                 _styleFont, _mathTable);
             }
             _displayAtoms.Add(displayRad);

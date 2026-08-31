@@ -1,6 +1,6 @@
 using System;
-  using System.Collections.Generic;
-  using System.Collections.ObjectModel;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -13,7 +13,8 @@ namespace CSharpMath.Atom {
     public static IReadOnlyDictionary<string, float> RelativeSizes { get; } = new ReadOnlyDictionary<string, float>(new Dictionary<string, float> {
       ["tiny"] = .5f, ["scriptsize"] = .7f, ["footnotesize"] = .8f, ["small"] = .9f,
       ["normalsize"] = 1, ["large"] = 1.2f, ["Large"] = 1.44f, ["LARGE"] = 1.728f,
-      ["huge"] = 2.074f, ["Huge"] = 2.488f });
+      ["huge"] = 2.074f, ["Huge"] = 2.488f
+    });
     static readonly Dictionary<Boundary, string> boundaryDelimitersReverse = new Dictionary<Boundary, string>();
     public static IReadOnlyDictionary<Boundary, string> BoundaryDelimitersReverse => boundaryDelimitersReverse;
     public static LaTeXCommandDictionary<Boundary> BoundaryDelimiters { get; } =
@@ -1199,7 +1200,8 @@ namespace CSharpMath.Atom {
         ["footnotesize"] = RelativeSizeDeclaration.FootnoteSize, ["small"] = RelativeSizeDeclaration.Small,
         ["normalsize"] = RelativeSizeDeclaration.NormalSize, ["large"] = RelativeSizeDeclaration.Large,
         ["Large"] = RelativeSizeDeclaration.Large2, ["LARGE"] = RelativeSizeDeclaration.Large3,
-        ["huge"] = RelativeSizeDeclaration.Huge, ["Huge"] = RelativeSizeDeclaration.Huge2 };
+        ["huge"] = RelativeSizeDeclaration.Huge, ["Huge"] = RelativeSizeDeclaration.Huge2
+      };
     internal static IReadOnlyDictionary<RelativeSizeDeclaration, string> RelativeSizeNames { get; } =
       RelativeSizeDeclarations.ToDictionary(p => p.Value, p => p.Key);
     internal static float RelativeSizeMagnification(RelativeSizeDeclaration declaration) =>

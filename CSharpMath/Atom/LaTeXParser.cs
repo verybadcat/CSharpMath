@@ -96,8 +96,7 @@ namespace CSharpMath.Atom {
               CurrentRelativeSize = savedRelativeSize;
               PendingRelativeSize = savedPendingRelativeSize;
               return r;
-            }
-            else continue;
+            } else continue;
           case (null, { } @return): // Environment ender
             CurrentRelativeSize = savedRelativeSize;
             PendingRelativeSize = savedPendingRelativeSize;
