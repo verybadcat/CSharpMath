@@ -69,8 +69,7 @@ namespace CSharpMath.Rendering.FrontEnd {
         var inkBounds = Display.InkBounds();
         return new RectangleF(inkBounds.Left, -Display.Ascent,
           inkBounds.Right - inkBounds.Left, Display.Ascent + Display.Descent);
-        }
-      else return RectangleF.Empty;
+      } else return RectangleF.Empty;
     }
     protected abstract void UpdateDisplayCore(float textPainterCanvasWidth);
     protected void UpdateDisplay(float textPainterCanvasWidth) {
