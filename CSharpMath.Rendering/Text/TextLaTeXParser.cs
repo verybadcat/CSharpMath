@@ -403,7 +403,13 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                         out var fontStyle): {
                       int tmp_commandLength = textStyle.Length;
                       if (ReadArgumentAtom(latex)
-                        .Bind(builtContent => atoms.Style(builtContent, fontStyle))
+                        .Bind(builtContent => {
+                          if (textStyle == "textnormal")
+                            atoms.Style(builtContent, new TextStyleChange(
+                              FontFamily.Roman, FontWeight.Regular, FontPosture.Upright, FontCapitals.Normal));
+                          else
+                            atoms.Style(builtContent, fontStyle);
+                        })
                         .Error is string error)
                         return error;
                       break;
@@ -487,11 +493,38 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
           b.Append('\\').Append(TextLaTeXSettings.PredefinedAccents.SecondToFirst[a.AccentChar]).Append('{');
           return TextAtomToLaTeX(a.Content, b).Append('}');
         case TextAtom.Style t:
-          b.Append('\\')
-            .Append(LaTeXSettings.FontStyles.SecondToFirst[t.FontStyle] is var style && style.StartsWith("math")
-                    ? style.Replace("math", "text") : style)
-            .Append('{');
-          return TextAtomToLaTeX(t.Content, b).Append('}');
+          var change = t.StyleChange;
+          if (change.Posture == Atom.FontPosture.Slanted || change.Capitals == Atom.FontCapitals.SmallCapitals)
+            throw new InvalidOperationException("Slanted and small-capitals serialization is deferred to #300.");
+          var wrappers = new System.Collections.Generic.List<string>();
+          // The text parser represents \textnormal as an explicit Roman,
+          // regular, upright, normal reset. Emit its canonical single command,
+          // rather than nesting three equivalent reset commands.
+          if (change.Family == Atom.FontFamily.Roman
+              && change.Weight == Atom.FontWeight.Regular
+              && change.Posture == Atom.FontPosture.Upright
+              && change.Capitals == Atom.FontCapitals.Normal) {
+            b.Append(@"\textrm{");
+            TextAtomToLaTeX(t.Content, b);
+            return b.Append('}');
+          }
+          if (change.Family is { } family)
+            wrappers.Add(family == Atom.FontFamily.Default ? "textrm" : family switch {
+              Atom.FontFamily.Roman => "textrm",
+              Atom.FontFamily.SansSerif => "textsf",
+              Atom.FontFamily.Monospace => "texttt",
+              Atom.FontFamily.Calligraphic => "textcal",
+              Atom.FontFamily.Fraktur => "textfrak",
+              Atom.FontFamily.Blackboard => "textbb",
+              _ => throw new InvalidCodePathException("Unknown semantic font family.")
+            });
+          if (change.Weight is { } weight)
+            wrappers.Add(weight == Atom.FontWeight.Bold ? "textbf" : "textrm");
+          if (change.Posture is { } posture)
+            wrappers.Add(posture == Atom.FontPosture.Italic ? "textit" : "textrm");
+          foreach (var wrapper in wrappers) b.Append('\\').Append(wrapper).Append('{');
+          TextAtomToLaTeX(t.Content, b);
+          return b.Append('}', wrappers.Count);
         case TextAtom.Size z:
           b.Append(@"\fontsize{").Append(z.PointSize).Append("}{");
           return TextAtomToLaTeX(z.Content, b).Append('}');

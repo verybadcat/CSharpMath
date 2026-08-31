@@ -7,5 +7,8 @@ namespace CSharpMath.Atom.Atoms {
     public Ordinary ToOrdinary(
       System.Func<string, FontStyle, string> fontChanger) =>
       ApplyCommonPropertiesOn(false, new Ordinary(fontChanger(Nucleus, FontStyle)));
+    internal Ordinary ToOrdinary(
+      System.Func<string, TextStyle, string> fontChanger) =>
+      ApplyCommonPropertiesOn(false, new Ordinary(fontChanger(Nucleus, TextStyle)));
   }
 }

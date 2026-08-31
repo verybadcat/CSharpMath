@@ -122,10 +122,61 @@ namespace CSharpMath.Rendering.Text.Tests {
       var input = @"\textnormal abc";
       var atom = Parse(input);
       Assert.Equal(new TextAtom.List(new TextAtom[] {
-        new TextAtom.Style(new TextAtom.Text("a"), Atom.FontStyle.Roman),
+        new TextAtom.Style(new TextAtom.Text("a"), new Atom.TextStyleChange(
+          Atom.FontFamily.Roman, Atom.FontWeight.Regular, Atom.FontPosture.Upright, Atom.FontCapitals.Normal)),
         new TextAtom.Text("bc"),
       }), atom);
       Assert.Equal(@"\textrm{a}bc", TextLaTeXParser.TextAtomToLaTeX(atom).ToString());
+    }
+    [Fact]
+    public void NestedStylesComposeOnlyTheirOwnAxes() {
+      const string input = @"\textsf{\textbf{\textit{x}}y}z";
+      var root = Assert.IsType<TextAtom.List>(Parse(input));
+      var sans = Assert.IsType<TextAtom.Style>(root.Content[0]);
+      var sansContent = Assert.IsType<TextAtom.List>(sans.Content);
+      var bold = Assert.IsType<TextAtom.Style>(sansContent.Content[0]);
+      var italic = Assert.IsType<TextAtom.Style>(bold.Content);
+      var text = Assert.IsType<TextAtom.Text>(italic.Content);
+
+      var normal = Atom.TextStyle.Default.WithFamily(Atom.FontFamily.Roman);
+      var sansStyle = sans.StyleChange.ApplyTo(normal);
+      var boldStyle = bold.StyleChange.ApplyTo(sansStyle);
+      var italicStyle = italic.StyleChange.ApplyTo(boldStyle);
+      Assert.Equal(Atom.FontFamily.SansSerif, italicStyle.Family);
+      Assert.Equal(Atom.FontWeight.Bold, italicStyle.Weight);
+      Assert.Equal(Atom.FontPosture.Italic, italicStyle.Posture);
+      Assert.Equal("x", text.Content);
+      Assert.Equal(input, TextLaTeXParser.TextAtomToLaTeX(root).ToString());
+    }
+    [Fact]
+    public void SlantedSmallCapRequestPreservesSourceAndStructuralEquality() {
+      var change = new Atom.TextStyleChange(null, null,
+        Atom.FontPosture.Slanted, Atom.FontCapitals.SmallCapitals);
+      var styled = new TextAtom.Style(new TextAtom.Text("lowercase"), change);
+      var same = new TextAtom.Style(new TextAtom.Text("lowercase"), change);
+      var italic = new TextAtom.Style(new TextAtom.Text("lowercase"),
+        new Atom.TextStyleChange(null, null, Atom.FontPosture.Italic, Atom.FontCapitals.SmallCapitals));
+
+      Assert.Equal(styled, same);
+      Assert.NotEqual(styled, italic);
+      Assert.Equal("lowercase", Assert.IsType<TextAtom.Text>(styled.Content).Content);
+      Assert.Equal(Atom.FontPosture.Slanted, styled.StyleChange.Posture);
+      Assert.Equal(Atom.FontCapitals.SmallCapitals, styled.StyleChange.Capitals);
+    }
+
+    [Fact]
+    public void MultiAxisStyleSerializesWithoutLegacyProjectionLoss() {
+      var change = new Atom.TextStyleChange(
+        Atom.FontFamily.SansSerif, Atom.FontWeight.Bold, Atom.FontPosture.Italic, null);
+      var atom = new TextAtom.Style(new TextAtom.Text("x"), change);
+      Assert.Equal(@"\textsf{\textbf{\textit{x}}}", TextLaTeXParser.TextAtomToLaTeX(atom).ToString());
+    }
+
+    [Fact]
+    public void UnsupportedTextAxesFailSerializationExplicitly() {
+      var atom = new TextAtom.Style(new TextAtom.Text("x"), new Atom.TextStyleChange(
+        null, null, Atom.FontPosture.Slanted, Atom.FontCapitals.SmallCapitals));
+      Assert.Throws<InvalidOperationException>(() => TextLaTeXParser.TextAtomToLaTeX(atom));
     }
     [Theory]
     [InlineData(@"\! ", -3, true)]

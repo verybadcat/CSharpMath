@@ -43,6 +43,7 @@ namespace CSharpMath.Rendering.Text {
     }
     public void Space(Atom.Length space) => Add(new TextAtom.Space(space));
     public void Style(TextAtom atom, Atom.FontStyle style) => Add(new TextAtom.Style(atom, style));
+    public void Style(TextAtom atom, Atom.TextStyleChange styleChange) => Add(new TextAtom.Style(atom, styleChange));
     public void Size(TextAtom atom, float fontSize) => Add(new TextAtom.Size(atom, fontSize));
     public void Color(TextAtom atom, Color color) => Add(new TextAtom.Colored(atom, color));
     public Atom.Result Math(string mathLaTeX, bool displayStyle, int startAt, ref int endAt) {
