@@ -60,17 +60,85 @@ namespace CSharpMath.Rendering.BackEnd {
     }
     /// <summary>Find ordinary text glyphs in a matching local family before applying mathematical Unicode styling.</summary>
     internal System.Collections.Generic.IEnumerable<Glyph> FindGlyphs(Fonts fonts, string str, FontStyle style) {
-      var localTypefaces = fonts.GetLocalTypefacesSnapshot();
-      var typefaces = fonts.GetTypefacesSnapshot(localTypefaces);
-      var localStyles = BuildLocalStyleLookup(localTypefaces);
+      var snapshot = fonts.CaptureSnapshot();
+      var localStyles = BuildLocalStyleLookup(snapshot.LocalTypefaces);
       var styled = Display.UnicodeFontChanger.ChangeFont(str, style);
       var sourceCodepoints = Typography.OpenFont.StringUtils.GetCodepoints(str.ToCharArray()).ToArray();
       var styledCodepoints = Typography.OpenFont.StringUtils.GetCodepoints(styled.ToCharArray()).ToArray();
       for (var i = 0; i < sourceCodepoints.Length; i++) {
         var local = IsOrdinary(style) ? LookupLocalStyle(localStyles, sourceCodepoints[i], style) : Glyph.Empty;
-        yield return local.IsEmpty ? Lookup(typefaces, styledCodepoints[i]) : local;
+        yield return local.IsEmpty ? Lookup(snapshot.Typefaces, styledCodepoints[i]) : local;
       }
     }
+    internal System.Collections.Generic.IEnumerable<Glyph> FindGlyphs(Fonts fonts, string str, TextStyle semanticStyle) {
+      var snapshot = fonts.CaptureSnapshot();
+      var descriptors = snapshot.Descriptors;
+      var localTypefaces = snapshot.LocalTypefaces;
+      var typefaces = snapshot.Typefaces;
+      var localStyles = BuildLocalStyleLookup(localTypefaces);
+      // Slanted is never approximated with mathematical italic. If no slanted face exists,
+      // retry the same family/weight as upright before using the legacy Unicode fallback.
+      var fallbackSemanticStyle = semanticStyle.Posture == FontPosture.Slanted
+        ? semanticStyle.WithPosture(FontPosture.Upright) : semanticStyle;
+      var legacyStyle = fallbackSemanticStyle.ToFontStyle();
+      var styled = Display.UnicodeFontChanger.ChangeFont(str, legacyStyle);
+      var sourceCodepoints = Typography.OpenFont.StringUtils.GetCodepoints(str.ToCharArray()).ToArray();
+      var styledCodepoints = Typography.OpenFont.StringUtils.GetCodepoints(styled.ToCharArray()).ToArray();
+      for (var i = 0; i < sourceCodepoints.Length; i++) {
+        var found = false;
+        var matchingDescriptors = snapshot.LocalDescriptors.Where(d => Matches(d, semanticStyle));
+        if (semanticStyle.Posture == FontPosture.Slanted)
+          matchingDescriptors = matchingDescriptors.Concat(
+            snapshot.LocalDescriptors.Where(d => Matches(d, fallbackSemanticStyle)));
+        matchingDescriptors = matchingDescriptors.Concat(
+          snapshot.LocalDescriptors.Where(d => d.Family == styleFamily(semanticStyle) &&
+            d.Weight == semanticStyle.Weight &&
+            (semanticStyle.Posture != FontPosture.Slanted || d.Posture != FontPosture.Italic)));
+        matchingDescriptors = matchingDescriptors.Concat(snapshot.LocalDescriptors
+          .Where(d => semanticStyle.Posture != FontPosture.Slanted || d.Posture != FontPosture.Italic));
+        foreach (var descriptor in matchingDescriptors) {
+          var face = semanticStyle.Capitals == FontCapitals.SmallCapitals
+            ? descriptor.SmallCapitalsTypeface ?? descriptor.Typeface : descriptor.Typeface;
+          if (semanticStyle.Capitals == FontCapitals.SmallCapitals &&
+              descriptor.SmallCapitalsGlyphMap.TryGetValue(sourceCodepoints[i], out var mapped)) {
+            yield return new Glyph(face, face.GetGlyph(mapped));
+            found = true;
+            break;
+          }
+          var glyphIndex = face.GetGlyphIndex(sourceCodepoints[i]);
+          if (glyphIndex != 0) {
+            yield return new Glyph(face, face.GetGlyph(glyphIndex));
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          foreach (var descriptor in descriptors.Skip(snapshot.LocalDescriptors.Length)
+            .Where(d => Matches(d, semanticStyle) || Matches(d, fallbackSemanticStyle))) {
+            var face = semanticStyle.Capitals == FontCapitals.SmallCapitals
+              ? descriptor.SmallCapitalsTypeface ?? descriptor.Typeface : descriptor.Typeface;
+            var glyphIndex = face.GetGlyphIndex(sourceCodepoints[i]);
+            if (glyphIndex != 0) {
+              yield return new Glyph(face, face.GetGlyph(glyphIndex));
+              found = true;
+              break;
+            }
+          }
+        }
+        if (!found) {
+          var local = IsOrdinary(legacyStyle) ? LookupLocalStyle(localStyles, sourceCodepoints[i], legacyStyle) : Glyph.Empty;
+          yield return local.IsEmpty ? Lookup(typefaces, styledCodepoints[i]) : local;
+        }
+      }
+      static FontFamily styleFamily(TextStyle style) => style.Family == FontFamily.Default
+        ? FontFamily.Roman : style.Family;
+    }
+    static bool Matches(TypefaceDescriptor descriptor, TextStyle style) =>
+      (descriptor.Family == style.Family ||
+       descriptor.Family == FontFamily.Default && style.Family == FontFamily.Roman ||
+       descriptor.Family == FontFamily.Roman && style.Family == FontFamily.Default) &&
+      descriptor.Weight == style.Weight && descriptor.Posture == style.Posture &&
+      (style.Capitals == FontCapitals.Normal || descriptor.SmallCapitalsTypeface != null || descriptor.SmallCapitalsGlyphMap.Count != 0);
     public int GetCodepoint(string str, int index) =>
       index + 1 < str.Length
       && char.IsHighSurrogate(str[index])

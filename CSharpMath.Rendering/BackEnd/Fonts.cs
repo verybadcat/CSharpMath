@@ -26,6 +26,11 @@ namespace CSharpMath.Rendering.BackEnd {
     readonly IEnumerable<Typeface> localTypefaceSource;
     readonly Typeface[] localTypefaceSnapshot;
     readonly bool localTypefacesAreMutableCollection;
+    readonly IEnumerable<TypefaceDescriptor> localDescriptorSource;
+    readonly TypefaceDescriptor[] localDescriptorSnapshot;
+    readonly bool localDescriptorsAreMutableCollection;
+    readonly bool hasDescriptors;
+    internal bool UsesDescriptors => hasDescriptors;
     internal IEnumerable<Typeface> LocalTypefaceSource => localTypefaceSource;
     // Collection mutations are observed between rendering operations; callers must not mutate
     // a collection concurrently with rendering.
@@ -34,9 +39,39 @@ namespace CSharpMath.Rendering.BackEnd {
       : localTypefaceSnapshot;
     internal Typeface[] GetTypefacesSnapshot() => GetLocalTypefacesSnapshot().Concat(GlobalTypefaces).ToArray();
     internal Typeface[] GetTypefacesSnapshot(Typeface[] localTypefaces) => localTypefaces.Concat(GlobalTypefaces).ToArray();
+    internal FontSnapshot CaptureSnapshot() {
+      if (hasDescriptors) {
+        // Enumerate a mutable descriptor source exactly once; all derived arrays come from it.
+        var localDescriptors = (localDescriptorsAreMutableCollection
+          ? localDescriptorSource.ToArray() : localDescriptorSnapshot).ToArray();
+        ValidateDescriptors(localDescriptors, nameof(localDescriptorSource));
+        return new FontSnapshot(localDescriptors, localDescriptors.Select(d => d.Typeface).ToArray(),
+          GlobalTypefaces.ToArray());
+      }
+      var localTypefaces = GetLocalTypefacesSnapshot();
+      return new FontSnapshot(System.Array.Empty<TypefaceDescriptor>(), localTypefaces,
+        GlobalTypefaces.ToArray());
+    }
+    internal TypefaceDescriptor[] GetDescriptorsSnapshot() {
+      if (!hasDescriptors) return System.Array.Empty<TypefaceDescriptor>();
+      var local = localDescriptorsAreMutableCollection
+        ? localDescriptorSource.ToArray() : localDescriptorSnapshot;
+      ValidateDescriptors(local, nameof(localDescriptorSource));
+      return local.Concat(GlobalTypefaces.Select(TypefaceDescriptor.Adapt)).ToArray();
+    }
     public Fonts(IEnumerable<Typeface> localTypefaces, float pointSize) {
       PointSize = pointSize;
+      hasDescriptors = false;
+      localDescriptorSource = null;
+      localDescriptorSnapshot = null;
+      localDescriptorsAreMutableCollection = false;
       if (localTypefaces is Fonts fonts) {
+        hasDescriptors = fonts.hasDescriptors;
+        if (hasDescriptors) {
+          localDescriptorSource = fonts.localDescriptorSource;
+          localDescriptorSnapshot = fonts.localDescriptorSnapshot;
+          localDescriptorsAreMutableCollection = fonts.localDescriptorsAreMutableCollection;
+        }
         localTypefaceSource = fonts.LocalTypefaceSource;
         localTypefaceSnapshot = fonts.localTypefaceSnapshot;
         localTypefacesAreMutableCollection = fonts.localTypefacesAreMutableCollection;
@@ -52,6 +87,41 @@ namespace CSharpMath.Rendering.BackEnd {
       MathTypeface = GetTypefacesSnapshot().First(t => t.HasMathTable());
       MathConsts = MathTypeface.MathConsts ?? throw new Atom.InvalidCodePathException(nameof(MathTypeface) + " doesn't have " + nameof(MathConsts));
     }
+    Fonts(IEnumerable<TypefaceDescriptor> descriptors, float pointSize) {
+      PointSize = pointSize;
+      hasDescriptors = true;
+      if (descriptors is ICollection<TypefaceDescriptor> || descriptors is IReadOnlyCollection<TypefaceDescriptor>) {
+        localDescriptorSource = descriptors ?? Enumerable.Empty<TypefaceDescriptor>();
+        localDescriptorSnapshot = null;
+        localDescriptorsAreMutableCollection = true;
+      } else {
+        localDescriptorSnapshot = (descriptors ?? Enumerable.Empty<TypefaceDescriptor>()).ToArray();
+        ValidateDescriptors(localDescriptorSnapshot, nameof(descriptors));
+        localDescriptorSource = localDescriptorSnapshot;
+        localDescriptorsAreMutableCollection = false;
+      }
+      if (localDescriptorsAreMutableCollection) {
+        localTypefaceSnapshot = null;
+        localTypefaceSource = localDescriptorSource.Select(d => d.Typeface);
+        localTypefacesAreMutableCollection = true;
+      } else {
+        localTypefaceSnapshot = localDescriptorSnapshot.Select(d => d.Typeface).ToArray();
+        localTypefaceSource = localTypefaceSnapshot;
+        localTypefacesAreMutableCollection = false;
+      }
+      MathTypeface = GetDescriptorsSnapshot().Select(d => d.Typeface).First(t => t.HasMathTable());
+      MathConsts = MathTypeface.MathConsts ?? throw new Atom.InvalidCodePathException(nameof(MathTypeface) + " doesn't have " + nameof(MathConsts));
+    }
+    static void ValidateDescriptors(IEnumerable<TypefaceDescriptor> descriptors, string parameterName) {
+      if (descriptors == null) throw new System.ArgumentNullException(parameterName);
+      if (descriptors.Any(d => d == null))
+        throw new System.ArgumentException("Descriptor collections cannot contain null elements.", parameterName);
+    }
+    /// <summary>Creates a font collection with explicit semantic typeface metadata.</summary>
+    public static Fonts FromDescriptors(IEnumerable<TypefaceDescriptor> descriptors, float pointSize) =>
+      descriptors == null
+        ? throw new System.ArgumentNullException(nameof(descriptors))
+        : new Fonts(descriptors, pointSize);
     public static readonly Typefaces GlobalTypefaces = GetGlobalTypefaces();
     public float PointSize { get; }
     public IEnumerable<Typeface> Typefaces => GetTypefacesSnapshot();

@@ -510,9 +510,12 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
           }
           if (change.Family is { } family)
             wrappers.Add(family == Atom.FontFamily.Default ? "textrm" : family switch {
-              Atom.FontFamily.Roman => "textrm", Atom.FontFamily.SansSerif => "textsf",
-              Atom.FontFamily.Monospace => "texttt", Atom.FontFamily.Calligraphic => "textcal",
-              Atom.FontFamily.Fraktur => "textfrak", Atom.FontFamily.Blackboard => "textbb",
+              Atom.FontFamily.Roman => "textrm",
+              Atom.FontFamily.SansSerif => "textsf",
+              Atom.FontFamily.Monospace => "texttt",
+              Atom.FontFamily.Calligraphic => "textcal",
+              Atom.FontFamily.Fraktur => "textfrak",
+              Atom.FontFamily.Blackboard => "textbb",
               _ => throw new InvalidCodePathException("Unknown semantic font family.")
             });
           if (change.Weight is { } weight)

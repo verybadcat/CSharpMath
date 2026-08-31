@@ -9,3 +9,16 @@ CSharpMath.Rendering.Text.TextAtomListBuilder.Style(CSharpMath.Rendering.Text.Te
 override CSharpMath.Rendering.Text.TextAtom.RelativeSize.SingleChar(CSharpMath.Atom.FontStyle style) -> int?
 override CSharpMath.Rendering.Text.TextAtom.RelativeSize.Equals(CSharpMath.Rendering.Text.TextAtom! atom) -> bool
 override CSharpMath.Rendering.Text.TextAtom.RelativeSize.GetHashCode() -> int
+CSharpMath.Rendering.BackEnd.TypefaceDescriptor
+CSharpMath.Rendering.BackEnd.TypefaceDescriptor.TypefaceDescriptor(Typography.OpenFont.Typeface! typeface, CSharpMath.Atom.FontFamily family, CSharpMath.Atom.FontWeight weight, CSharpMath.Atom.FontPosture posture, Typography.OpenFont.Typeface! smallCapitalsTypeface = null, System.Collections.Generic.IReadOnlyDictionary<int, ushort>! smallCapitalsGlyphMap = null, System.Collections.Generic.IEnumerable<string!>! supportedFeatures = null) -> void
+CSharpMath.Rendering.BackEnd.TypefaceDescriptor.Typeface.get -> Typography.OpenFont.Typeface!
+CSharpMath.Rendering.BackEnd.TypefaceDescriptor.Family.get -> CSharpMath.Atom.FontFamily
+CSharpMath.Rendering.BackEnd.TypefaceDescriptor.Weight.get -> CSharpMath.Atom.FontWeight
+CSharpMath.Rendering.BackEnd.TypefaceDescriptor.Posture.get -> CSharpMath.Atom.FontPosture
+CSharpMath.Rendering.BackEnd.TypefaceDescriptor.SmallCapitalsTypeface.get -> Typography.OpenFont.Typeface!
+CSharpMath.Rendering.BackEnd.TypefaceDescriptor.SmallCapitalsGlyphMap.get -> System.Collections.Generic.IReadOnlyDictionary<int, ushort>!
+CSharpMath.Rendering.BackEnd.TypefaceDescriptor.SupportedFeatures.get -> System.Collections.Generic.IReadOnlyCollection<string!>!
+override CSharpMath.Rendering.BackEnd.TypefaceDescriptor.Equals(object! obj) -> bool
+override CSharpMath.Rendering.BackEnd.TypefaceDescriptor.GetHashCode() -> int
+CSharpMath.Rendering.BackEnd.TypefaceDescriptor.Equals(CSharpMath.Rendering.BackEnd.TypefaceDescriptor! other) -> bool
+static CSharpMath.Rendering.BackEnd.Fonts.FromDescriptors(System.Collections.Generic.IEnumerable<CSharpMath.Rendering.BackEnd.TypefaceDescriptor!>! descriptors, float pointSize) -> CSharpMath.Rendering.BackEnd.Fonts!
