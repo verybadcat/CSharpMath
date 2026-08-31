@@ -205,7 +205,7 @@ namespace CSharpMath.Editor {
     }
 
     public static MathAtom? AtomAt(this MathList self, MathListIndex? index) {
-      if (index is null || index.AtomIndex >= self.Atoms.Count) return null;
+      if (index is null || index.AtomIndex < 0 || index.AtomIndex >= self.Atoms.Count) return null;
       var atom = self.Atoms[index.AtomIndex];
       return index.SubIndexInfo switch {
         null => atom,
@@ -217,6 +217,13 @@ namespace CSharpMath.Editor {
         (MathListSubIndexType.Numerator, var subIndex) => atom is Atoms.Fraction frac ? frac.Numerator.AtomAt(subIndex) : null,
         (MathListSubIndexType.Denominator, var subIndex) => atom is Atoms.Fraction frac ? frac.Denominator.AtomAt(subIndex) : null,
         (MathListSubIndexType.Inner, var subIndex) => atom is Atoms.Inner inner ? inner.InnerList.AtomAt(subIndex) : null,
+        (MathListSubIndexType.TableRow, var rowIndex) => atom is Atoms.Table table
+          && rowIndex.AtomIndex >= 0 && rowIndex.AtomIndex < table.Cells.Count
+          && rowIndex.SubIndexInfo is (MathListSubIndexType.TableColumn, var columnIndex)
+          && columnIndex.AtomIndex >= 0 && columnIndex.AtomIndex < table.Cells[rowIndex.AtomIndex].Count
+          && columnIndex.SubIndexInfo is (MathListSubIndexType.TableCell, var cellIndex)
+          ? table.Cells[rowIndex.AtomIndex][columnIndex.AtomIndex].AtomAt(cellIndex)
+          : null,
         (var type, _) => throw new ArgumentOutOfRangeException(nameof(index), type, "Index type out of valid range."),
       };
     }

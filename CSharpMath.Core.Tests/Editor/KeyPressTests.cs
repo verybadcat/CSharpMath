@@ -619,5 +619,57 @@ namespace CSharpMath.Core.EditorTests {
       Assert.Equal("1^■", keyboard.LaTeX);
     }
 
+    [Fact]
+    public void TableIndexRetainsRowAndColumnAndMovesVertically() {
+      var table = new CSharpMath.Atom.Atoms.Table();
+      table.SetCell(new CSharpMath.Atom.MathList(new CSharpMath.Atom.Atoms.Number("12")), 0, 0);
+      table.SetCell(new CSharpMath.Atom.MathList(new CSharpMath.Atom.Atoms.Number("3")), 1, 0);
+      var keyboard = new MathKeyboard<TestFont, TGlyph>(context, new TestFont(10));
+      keyboard.MathList.Add(table);
+      var atom = new MathListIndex(0).TableCell(0, 0, new MathListIndex(0));
+      var first = new MathListIndex(0).TableCell(0, 0, new MathListIndex(1));
+      Assert.IsType<CSharpMath.Atom.Atoms.Number>(keyboard.MathList.AtomAt(atom));
+      keyboard.InsertionIndex = first;
+      keyboard.KeyPress(K.Down);
+      Assert.Equal(new MathListIndex(0).TableCell(1, 0, new MathListIndex(1)), keyboard.InsertionIndex);
+      keyboard.KeyPress(K.Up);
+      Assert.Equal(first, keyboard.InsertionIndex);
+    }
+
+    [Fact]
+    public void TableNavigationSkipsMissingRowsAndStopsAtBoundaries() {
+      var table = new CSharpMath.Atom.Atoms.Table();
+      table.SetCell(new CSharpMath.Atom.MathList(new CSharpMath.Atom.Atoms.Number("1")), 0, 0);
+      table.SetCell(new CSharpMath.Atom.MathList(new CSharpMath.Atom.Atoms.Number("2")), 2, 0);
+      var keyboard = new MathKeyboard<TestFont, TGlyph>(context, new TestFont(10));
+      keyboard.MathList.Add(table);
+      var first = new MathListIndex(0).TableCell(0, 0, new MathListIndex(0));
+      keyboard.InsertionIndex = first;
+      keyboard.KeyPress(K.Up);
+      Assert.Equal(first, keyboard.InsertionIndex);
+      keyboard.KeyPress(K.Down);
+      var last = new MathListIndex(0).TableCell(2, 0, new MathListIndex(0));
+      Assert.Equal(last, keyboard.InsertionIndex);
+      keyboard.KeyPress(K.Up);
+      Assert.Equal(first, keyboard.InsertionIndex);
+    }
+
+    [Fact]
+    public void TableNavigationComposesWithFractionPathAndSkipsEmptyRows() {
+      var table = new CSharpMath.Atom.Atoms.Table();
+      table.SetCell(new CSharpMath.Atom.MathList(new CSharpMath.Atom.Atoms.Number("1")), 0, 0);
+      table.SetCell(new CSharpMath.Atom.MathList(new CSharpMath.Atom.Atoms.Number("2")), 2, 0);
+      var fraction = new CSharpMath.Atom.Atoms.Fraction(
+        new CSharpMath.Atom.MathList(table), new CSharpMath.Atom.MathList());
+      var keyboard = new MathKeyboard<TestFont, TGlyph>(context, new TestFont(10));
+      keyboard.MathList.Add(fraction);
+      var tableIndex = new MathListIndex(0).TableCell(0, 0, new MathListIndex(0));
+      var nestedIndex = tableIndex.Wrap(0, MathListSubIndexType.Numerator);
+      Assert.IsType<CSharpMath.Atom.Atoms.Number>(keyboard.MathList.AtomAt(nestedIndex));
+      keyboard.InsertionIndex = nestedIndex;
+      keyboard.KeyPress(K.Down);
+      Assert.Equal(new MathListIndex(0).TableCell(2, 0, new MathListIndex(0)).Wrap(0, MathListSubIndexType.Numerator), keyboard.InsertionIndex);
+    }
+
   }
 }
