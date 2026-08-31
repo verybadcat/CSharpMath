@@ -14,7 +14,6 @@ namespace CSharpMath.Rendering.BackEnd {
           .GetManifestResourceStream($"CSharpMath.Rendering.Reference_Fonts.{fileName}")
         );
         if (typeface == null) throw new Atom.InvalidCodePathException("Invalid predefined font!");
-        typeface.UpdateAllCffGlyphBounds();
         return typeface;
       }
       var globalTypefaces = new Typefaces(LoadFont("latinmodern-math.otf"));
@@ -24,7 +23,10 @@ namespace CSharpMath.Rendering.BackEnd {
     }
     public Fonts(IEnumerable<Typeface> localTypefaces, float pointSize) {
       PointSize = pointSize;
-      Typefaces = localTypefaces.Concat(GlobalTypefaces);
+      Typefaces = localTypefaces.Select(typeface => {
+        BackEnd.Typefaces.EnsureGlyphBounds(typeface);
+        return typeface;
+      }).Concat(GlobalTypefaces);
       MathTypeface = Typefaces.First(t => t.HasMathTable());
       MathConsts = MathTypeface.MathConsts ?? throw new Atom.InvalidCodePathException(nameof(MathTypeface) + " doesn't have " + nameof(MathConsts));
     }
