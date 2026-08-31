@@ -19,6 +19,7 @@ namespace CSharpMath.Display.Displays {
     ///<summary>A display representing the right delimiter.
     ///Its position is relative to the parent and is not treated as a sub-display.</summary>
     public IGlyphDisplay<TFont, TGlyph>? Right { get; }
+    internal int MiddleBoundariesCount { get; set; }
 
     public float Ascent => System.Math.Max(Left?.Ascent ?? 0, System.Math.Max(Right?.Ascent ?? 0, Inner.Ascent));
     public float Descent => System.Math.Max(Left?.Descent ?? 0, System.Math.Max(Right?.Descent ?? 0, Inner.Descent));

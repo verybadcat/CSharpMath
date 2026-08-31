@@ -1633,5 +1633,67 @@ a{LowSurrogate}a
         Assert.Equal(expected.Replace("\r", null), actual);
       }
     }
+
+    [Fact]
+    public void MiddleDelimiterSplitsInnerAndRoundTrips() {
+      var list = ParseLaTeX(@"\left\{a\middle|b\right\}");
+      var inner = Assert.IsType<Inner>(Assert.Single(list));
+      Assert.Equal(2, inner.Segments.Count);
+      Assert.Equal("|", Assert.Single(inner.MiddleBoundaries).Nucleus);
+      Assert.Equal(@"\left\{ a\middle| b\right\} ",
+        LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+
+    [Fact]
+    public void MiddleDelimiterOutsideInnerIsRejected() {
+      var (_, error) = LaTeXParser.MathListFromLaTeX(@"a\middle|b");
+      Assert.NotNull(error);
+      Assert.Contains("Missing \\left", error);
+    }
+
+    [Theory]
+    [InlineData(@"\left(a\middle|b\middle|c\right)", 3, 2)]
+    [InlineData(@"\left.\frac{a}{b}\middle.\begin{matrix}x\\y\end{matrix}\right.", 2, 1)]
+    [InlineData(@"\left(\left\{a\middle|b\right\}\middle|c\right)", 2, 1)]
+    [InlineData(@"\left. a\middle. b\right.", 2, 1)]
+    public void MiddleDelimiterSupportsMultipleNestedNullAndCompositeSegments(string input,
+      int segmentCount, int middleCount) {
+      var parsed = ParseLaTeX(input);
+      var inner = Assert.IsType<Inner>(Assert.Single(parsed));
+      Assert.Equal(segmentCount, inner.Segments.Count);
+      Assert.Equal(middleCount, inner.MiddleBoundaries.Count);
+      Assert.Equal(segmentCount, ((IMathListContainer)inner).InnerLists.Count());
+      var roundTrip = LaTeXParser.MathListToLaTeX(new MathList(inner)).ToString();
+      var reparsed = Assert.IsType<Inner>(Assert.Single(ParseLaTeX(roundTrip)));
+      Assert.Equal(inner, reparsed);
+    }
+
+    [Fact]
+    public void MiddleDelimiterErrorsIdentifySourceAndMissingRight() {
+      var (_, unsupported) = LaTeXParser.MathListFromLaTeX(@"\left(a\middle\bogus b\right)");
+      Assert.NotNull(unsupported);
+      Assert.Contains("pos", unsupported);
+      var (_, missingRight) = LaTeXParser.MathListFromLaTeX(@"\left(a\middle|b");
+      Assert.Contains("Missing \\right", missingRight);
+      var (_, missingDelimiter) = LaTeXParser.MathListFromLaTeX(@"\left(a\middle");
+      Assert.Contains("Missing delimiter", missingDelimiter);
+    }
+
+    [Fact]
+    public void MiddleDelimiterInnerConstructorEnforcesInvariantAndSnapshots() {
+      Assert.Throws<ArgumentException>(() => new Inner(Boundary.Empty,
+        new[] { new MathList() }, new[] { new Boundary("|") }, Boundary.Empty));
+      var segments = new List<MathList> { new MathList(), new MathList(new Number("2")) };
+      var middles = new List<Boundary> { new Boundary("|") };
+      var inner = new Inner(Boundary.Empty, segments, middles, Boundary.Empty);
+      segments.Clear();
+      middles.Clear();
+      Assert.Equal(2, inner.Segments.Count);
+      Assert.Equal(inner, inner.Clone(true));
+      Assert.Throws<NotSupportedException>(() => ((IList<MathList>)inner.Segments).Add(new MathList()));
+      Assert.Throws<NotSupportedException>(() => ((IList<Boundary>)inner.MiddleBoundaries).Clear());
+      var set = new HashSet<Inner> { inner };
+      Assert.Contains(inner.Clone(true), set);
+    }
   }
 }

@@ -63,6 +63,8 @@ namespace CSharpMath.Editor {
         case (MathListSubIndexType.Inner, var subIndex)
           when self.Atoms[index.AtomIndex] is Atoms.Inner inner ? true
                : throw new SubIndexTypeMismatchException(nameof(Atoms.Inner), index.AtomIndex):
+          if (inner.MiddleBoundaries.Count > 0)
+            throw new NotSupportedException("Editing multi-segment inner atoms is not supported.");
           return inner.InnerList.InsertAndAdvance(subIndex, atom, advanceType).Wrap(index.AtomIndex, MathListSubIndexType.Inner);
         case (var type, _):
           throw new ArgumentOutOfRangeException(nameof(index), type, "Index type out of valid range.");
@@ -145,6 +147,8 @@ namespace CSharpMath.Editor {
         case (MathListSubIndexType.Inner, var subIndex)
           when self.Atoms[index.AtomIndex] is Atoms.Inner inner ? true
                : throw new SubIndexTypeMismatchException(nameof(Atoms.Inner), index.AtomIndex):
+          if (inner.MiddleBoundaries.Count > 0)
+            throw new NotSupportedException("Editing multi-segment inner atoms is not supported.");
           index = inner.InnerList.RemoveAt(subIndex).Wrap(index.AtomIndex, MathListSubIndexType.Inner);
           break;
         case (var type, _):
@@ -199,6 +203,8 @@ namespace CSharpMath.Editor {
         case (MathListSubIndexType.Inner, _)
           when self.Atoms[start.AtomIndex] is Atoms.Inner inner ? true
                : throw new SubIndexTypeMismatchException(nameof(Atoms.Inner), start.AtomIndex):
+          if (inner.MiddleBoundaries.Count > 0)
+            throw new NotSupportedException("Editing multi-segment inner atoms is not supported.");
           inner.InnerList.RemoveAtoms(range.SubIndexRange);
           break;
       }
@@ -216,7 +222,7 @@ namespace CSharpMath.Editor {
         (MathListSubIndexType.Radicand, var subIndex) => atom is Atoms.Radical radical ? radical.Radicand.AtomAt(subIndex) : null,
         (MathListSubIndexType.Numerator, var subIndex) => atom is Atoms.Fraction frac ? frac.Numerator.AtomAt(subIndex) : null,
         (MathListSubIndexType.Denominator, var subIndex) => atom is Atoms.Fraction frac ? frac.Denominator.AtomAt(subIndex) : null,
-        (MathListSubIndexType.Inner, var subIndex) => atom is Atoms.Inner inner ? inner.InnerList.AtomAt(subIndex) : null,
+        (MathListSubIndexType.Inner, var subIndex) => atom is Atoms.Inner { MiddleBoundaries.Count: 0 } inner ? inner.InnerList.AtomAt(subIndex) : null,
         (var type, _) => throw new ArgumentOutOfRangeException(nameof(index), type, "Index type out of valid range."),
       };
     }

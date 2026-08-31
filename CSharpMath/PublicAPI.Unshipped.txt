@@ -1,0 +1,5 @@
+CSharpMath.Atom.Atoms.Inner.Inner(CSharpMath.Atom.Boundary left, System.Collections.Generic.IReadOnlyList<CSharpMath.Atom.MathList!>! segments, System.Collections.Generic.IReadOnlyList<CSharpMath.Atom.Boundary>! middleBoundaries, CSharpMath.Atom.Boundary right) -> void
+CSharpMath.Atom.Atoms.Inner.MiddleBoundaries.get -> System.Collections.Generic.IReadOnlyList<CSharpMath.Atom.Boundary>!
+CSharpMath.Atom.Atoms.Inner.Segments.get -> System.Collections.Generic.IReadOnlyList<CSharpMath.Atom.MathList!>!
+CSharpMath.Atom.LaTeXParser.InnerEnvironment.MiddleBoundaries.get -> System.Collections.Generic.List<CSharpMath.Atom.Boundary>!
+CSharpMath.Atom.LaTeXParser.InnerEnvironment.Segments.get -> System.Collections.Generic.List<CSharpMath.Atom.MathList!>!

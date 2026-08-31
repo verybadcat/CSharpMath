@@ -146,15 +146,28 @@ namespace CSharpMath.Atom {
               Ok(new Radical(degree ?? new MathList(), radicand)))) },
         { @"\left", (parser, accumulate, stopChar) =>
           parser.ReadDelimiter("left").Bind(left => {
-            parser.Environments.Push(new LaTeXParser.InnerEnvironment());
-            return parser.ReadUntil(stopChar).Bind(innerList => {
-              if (!(parser.Environments.PeekOrDefault() is
-                LaTeXParser.InnerEnvironment { RightBoundary: { } right })) {
+            var environment = new LaTeXParser.InnerEnvironment();
+            parser.Environments.Push(environment);
+            var completed = false;
+            try {
+              while (true) {
+                var result = parser.ReadUntil(stopChar);
+                if (result.Error != null) return result.Error;
+                environment.Segments.Add(result._value);
+                if (environment.RightBoundary is Boundary right) {
+                  parser.Environments.Pop();
+                  completed = true;
+                  return Ok(new Inner(left, environment.Segments.ToArray(),
+                    environment.MiddleBoundaries.ToArray(), right));
+                }
+                if (environment.MiddleBoundaries.Count == environment.Segments.Count)
+                  continue;
                 return Err($@"Missing \right for \left with delimiter {left}");
               }
-              parser.Environments.Pop();
-              return Ok(new Inner(left, innerList, right));
-            });
+            } finally {
+              if (!completed && parser.Environments.PeekOrDefault() == environment)
+                parser.Environments.Pop();
+            }
           }) },
         { @"\overline", (parser, accumulate, stopChar) =>
           parser.ReadArgument().Bind(mathList => Ok(new Overline(mathList))) },
@@ -319,6 +332,14 @@ namespace CSharpMath.Atom {
           var (boundary, error) = parser.ReadDelimiter("right");
           if (error != null) return error;
           inner.RightBoundary = boundary;
+          return OkStop(accumulate);
+        } },
+        { @"\middle", (parser, accumulate, stopChar) => {
+          if (!(parser.Environments.PeekOrDefault() is LaTeXParser.InnerEnvironment inner))
+            return "Missing \\left";
+          var (boundary, error) = parser.ReadDelimiter("middle");
+          if (error != null) return error;
+          inner.MiddleBoundaries.Add(boundary);
           return OkStop(accumulate);
         } },
         { @"\\", @"\cr", (parser, accumulate, stopChar) => {
