@@ -200,6 +200,23 @@ namespace CSharpMath.Atom {
         { @"\begin", (parser, accumulate, stopChar) =>
           parser.ReadEnvironment().Bind(env =>
             parser.ReadTable(env, null, false, stopChar)).Bind(Ok) },
+        { @"\multicolumn", (parser, accumulate, stopChar) => {
+          var environment = parser.Environments.PeekOrDefault() as LaTeXParser.TableEnvironment;
+          if (environment?.Name is not ("array" or "matrix" or "pmatrix" or "bmatrix" or "Bmatrix" or "vmatrix" or "Vmatrix"))
+            return @"\multicolumn is only valid inside an array or matrix";
+          var (countText, countError) = parser.ReadRawArgument();
+          if (countError != null || !int.TryParse(countText, out var count) || count < 1)
+            return @"\multicolumn requires a positive span count";
+          var (spec, specError) = parser.ReadRawArgument();
+          if (specError != null || string.IsNullOrWhiteSpace(spec) || spec.Any(c => c is not ('l' or 'c' or 'r' or '|')) || !spec.Any(c => c is 'l' or 'c' or 'r'))
+            return @"\multicolumn requires an l, c, or r alignment specification";
+          var alignment = spec.First(c => c is 'l' or 'c' or 'r') switch {
+            'l' => ColumnAlignment.Left,
+            'c' => ColumnAlignment.Center,
+            _ => ColumnAlignment.Right
+          };
+          return parser.ReadArgument().Bind(content => ((MathAtom?)new MulticolumnAtom(count, alignment, content, spec), (MathList?)null));
+        } },
         // \color and its 2-argument alias \textcolor
         { @"\color", (parser, accumulate, stopChar) =>
           parser.ReadColor().Bind(

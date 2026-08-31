@@ -1274,8 +1274,26 @@ namespace CSharpMath.Display {
         r.Add(colDispalys);
         for (int i = 0; i < row.Count; i++) {
           var disp = CreateLine(row[i], _font, _context, cellStyle, false);
-          columnWidths[i] = Math.Max(disp.Width, columnWidths[i]);
+          var column = row.Take(i).Select((_, j) => table.GetColumnSpan(r.Count - 1, j)).Sum();
+          var span = table.GetColumnSpan(r.Count - 1, i);
+          if (span == 1) columnWidths[column] = Math.Max(disp.Width, columnWidths[column]);
           colDispalys.Add(disp);
+        }
+      }
+      // A spanning cell may be the only contributor to one or more logical
+      // columns. Allocate its excess width across those columns so the frame
+      // remains wide enough and inter-column spacing is counted exactly once.
+      for (var rowIndex = 0; rowIndex < r.Count; rowIndex++) {
+        var column = 0;
+        for (var cell = 0; cell < r[rowIndex].Count; cell++) {
+          var span = table.GetColumnSpan(rowIndex, cell);
+          if (span > 1 && column + span <= columnWidths.Length) {
+            var spacing = (span - 1) * table.InterColumnSpacing * CellStyleFontSize(table) / 18f;
+            var excess = r[rowIndex][cell].Width - (Enumerable.Range(column, span).Sum(c => columnWidths[c]) + spacing);
+            if (excess > 0)
+              for (var c = column; c < column + span; c++) columnWidths[c] += excess / span;
+          }
+          column += span;
         }
       }
       return r;
@@ -1305,8 +1323,8 @@ namespace CSharpMath.Display {
       List<List<float>>? verticalRuleXs = null;
       if (!hasRules) {
         var rowDisplays = new List<ListDisplay<TFont, TGlyph>>();
-        foreach (var row in displays) {
-          rowDisplays.Add(MakeRowWithColumns(row, table, columnWidths));
+        for (var rowIndex = 0; rowIndex < displays.Count; rowIndex++) {
+          rowDisplays.Add(MakeRowWithColumns(displays[rowIndex], table, columnWidths, rowIndex));
         }
         // position all the rows
         PositionRows(rowDisplays, table);
@@ -1324,6 +1342,21 @@ namespace CSharpMath.Display {
       float padding = rulePaddingMultiplier * _styleFont.PointSize;
       float ruleGap = ruleGapMultiplier * _styleFont.PointSize;
       float cellStyleMuUnit = CellStyleFontSize(table) / 18f;
+      var suppressedBoundaries = new HashSet<int>();
+      for (var row = 0; row < table.Cells.Count; row++) {
+        var column = 0;
+        for (var cell = 0; cell < table.Cells[row].Count; cell++) {
+          var span = table.GetColumnSpan(row, cell);
+          if (span > 1) {
+            var specification = table.SpanSpecifications.Count > row && table.SpanSpecifications[row].Count > cell
+              ? table.SpanSpecifications[row][cell] ?? "" : "";
+            for (var boundary = column + 1; boundary < column + span; boundary++) suppressedBoundaries.Add(boundary);
+            if (!specification.StartsWith("|", StringComparison.Ordinal)) suppressedBoundaries.Add(column);
+            if (!specification.EndsWith("|", StringComparison.Ordinal)) suppressedBoundaries.Add(column + span);
+          }
+          column += span;
+        }
+      }
 
       columnOffsets = new float[nColumns];
       verticalRuleXs = new List<List<float>>();
@@ -1331,7 +1364,7 @@ namespace CSharpMath.Display {
       for (int boundary = 0; boundary <= nColumns; boundary++) {
         float gapBase = boundary == 0 || boundary == nColumns
           ? 0 : table.InterColumnSpacing * cellStyleMuUnit;
-        int count = boundary < table.VerticalLines.Count ? table.VerticalLines[boundary] : 0;
+        int count = suppressedBoundaries.Contains(boundary) ? 0 : boundary < table.VerticalLines.Count ? table.VerticalLines[boundary] : 0;
         var ruleXs = new List<float>();
         if (count > 0) {
           // No padding outside the outermost rules so they sit flush at the box edges.
@@ -1355,8 +1388,8 @@ namespace CSharpMath.Display {
       float contentWidth = x;
 
       var ruledRowDisplays = new List<IDisplay<TFont, TGlyph>>();
-      foreach (var row in displays) {
-        ruledRowDisplays.Add(MakeRuledRowWithColumns(row, table, columnWidths, columnOffsets));
+      for (var rowIndex = 0; rowIndex < displays.Count; rowIndex++) {
+        ruledRowDisplays.Add(MakeRuledRowWithColumns(displays[rowIndex], table, columnWidths, columnOffsets, rowIndex));
       }
 
       // position all the rows
@@ -1414,22 +1447,27 @@ namespace CSharpMath.Display {
 
     /// <summary>Like MakeRowWithColumns but using precomputed shared column offsets.</summary>
     private ListDisplay<TFont, TGlyph> MakeRuledRowWithColumns(
-      List<ListDisplay<TFont, TGlyph>> row, Table table, float[] columnWidths, float[] columnOffsets) {
+      List<ListDisplay<TFont, TGlyph>> row, Table table, float[] columnWidths, float[] columnOffsets, int rowIndex) {
       Range rowRange = Range.NotFound;
+      var column = 0;
       for (int i = 0; i < row.Count; i++) {
         var entry = row[i];
-        var alignment = table.GetAlignment(i);
-        var cellPosition = columnOffsets[i];
+        var span = table.GetColumnSpan(rowIndex, i);
+        var width = Enumerable.Range(column, span).Sum(c => columnWidths[c])
+          + (span - 1) * table.InterColumnSpacing * CellStyleFontSize(table) / 18f;
+        var alignment = table.GetSpanAlignment(rowIndex, i) ?? table.GetAlignment(column);
+        var cellPosition = columnOffsets[column];
         switch (alignment) {
           case ColumnAlignment.Right:
-            cellPosition += (columnWidths[i] - entry.Width);
+            cellPosition += width - entry.Width;
             break;
           case ColumnAlignment.Center:
-            cellPosition += (columnWidths[i] - entry.Width) / 2;
+            cellPosition += (width - entry.Width) / 2;
             break;
         }
         entry.Position = new PointF(cellPosition, 0);
         rowRange += entry.Range;
+        column += span;
       }
       var ruled = new ListDisplay<TFont, TGlyph>(row.ToArray());
       if (rowRange != Range.NotFound) {
@@ -1439,14 +1477,17 @@ namespace CSharpMath.Display {
     }
 
     private ListDisplay<TFont, TGlyph> MakeRowWithColumns
-      (List<ListDisplay<TFont, TGlyph>> row, Table table, float[] columnWidths) {
+      (List<ListDisplay<TFont, TGlyph>> row, Table table, float[] columnWidths, int rowIndex) {
       float columnStart = 0;
+      var column = 0;
       Range rowRange = Range.NotFound;
       float cellStyleMuUnit = CellStyleFontSize(table) / 18f;
       for (int i = 0; i < row.Count; i++) {
         var entry = row[i];
-        float columnWidth = columnWidths[i];
-        var alignment = table.GetAlignment(i);
+        var span = table.GetColumnSpan(rowIndex, i);
+        float columnWidth = Enumerable.Range(column, span).Sum(c => columnWidths[c])
+          + (span - 1) * table.InterColumnSpacing * cellStyleMuUnit;
+        var alignment = table.GetSpanAlignment(rowIndex, i) ?? table.GetAlignment(column);
         var cellPosition = columnStart;
         switch (alignment) {
           case ColumnAlignment.Right:
@@ -1458,7 +1499,8 @@ namespace CSharpMath.Display {
         }
         entry.Position = new PointF(cellPosition, 0);
         rowRange += entry.Range;
-        columnStart += (columnWidth + table.InterColumnSpacing * cellStyleMuUnit);
+        columnStart += columnWidth + table.InterColumnSpacing * cellStyleMuUnit;
+        column += span;
       }
       return new ListDisplay<TFont, TGlyph>(row.ToArray());
     }
