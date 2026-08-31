@@ -15,7 +15,7 @@ jobs:
         dotnet-version: '10.x'
     - run: dotnet run -p CSharpMath.Rendering.Benchmarks
     - name: Font profile smoke
-      run: dotnet run -c Release -p CSharpMath.Rendering.Benchmarks -- --font-profile --font-profile-smoke --font-profile-output .fontprofile/font-profile-smoke.json
+      run: dotnet run -c Release --project CSharpMath.Rendering.Benchmarks/CSharpMath.Rendering.Benchmarks.csproj -- --font-profile --font-profile-smoke --font-profile-output .fontprofile/font-profile-smoke.json
     - name: Store font profile smoke
       uses: actions/upload-artifact@v4
       with:
