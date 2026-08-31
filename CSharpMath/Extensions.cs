@@ -101,12 +101,50 @@ namespace CSharpMath {
             yield return At(under.Inner);
             if (under.UnderList is { } list2) yield return At(list2);
             yield return (under.AnnotationGlyph.Position.X, under.AnnotationGlyph.Position.X + under.AnnotationGlyph.Width); break;
+          case Display.Displays.OverOrUnderlineDisplay<TFont, TGlyph> over:
+            yield return At(over.Inner);
+            // The horizontal rule is owned by the wrapper, not Inner.
+            yield return (over.Position.X - display.Position.X,
+              over.Position.X - display.Position.X + over.Width);
+            break;
+          case Display.Displays.LargeOpLimitsDisplay<TFont, TGlyph> limits:
+            yield return At(limits.NucleusDisplay);
+            if (limits.UpperLimit is { } upper) yield return At(upper);
+            if (limits.LowerLimit is { } lower) yield return At(lower);
+            // Include the wrapper's logical advance as well as child ink.
+            yield return (0, limits.Width);
+            break;
         }
       }
       var children = Children().ToArray();
       if (children.Length > 0)
         return (children.Min(b => b.Left), children.Max(b => b.Right));
       return (0, display.Width);
+    }
+    internal static bool HasJoinRel<TFont, TGlyph>(this IDisplay<TFont, TGlyph> display)
+      where TFont : IFont<TGlyph> {
+      switch (display) {
+        case Display.Displays.ListDisplay<TFont, TGlyph> list:
+          return list.HasJoinRelDescendant;
+        case Display.Displays.InnerDisplay<TFont, TGlyph> inner:
+          return inner.Inner.HasJoinRel() || (inner.Left?.HasJoinRel() ?? false) || (inner.Right?.HasJoinRel() ?? false);
+        case Display.Displays.FractionDisplay<TFont, TGlyph> fraction:
+          return fraction.Numerator.HasJoinRel() || fraction.Denominator.HasJoinRel();
+        case Display.Displays.RadicalDisplay<TFont, TGlyph> radical:
+          return radical.Radicand.HasJoinRel() || (radical.Degree?.HasJoinRel() ?? false);
+        case Display.Displays.AccentDisplay<TFont, TGlyph> accent:
+          return accent.Accentee.HasJoinRel();
+        case Display.Displays.OverOrUnderlineDisplay<TFont, TGlyph> over:
+          return over.Inner.HasJoinRel();
+        case Display.Displays.UnderAnnotationDisplay<TFont, TGlyph> under:
+          return under.Inner.HasJoinRel() || (under.UnderList?.HasJoinRel() ?? false);
+        case Display.Displays.LargeOpLimitsDisplay<TFont, TGlyph> limits:
+          return limits.NucleusDisplay.HasJoinRel()
+            || (limits.UpperLimit?.HasJoinRel() ?? false)
+            || (limits.LowerLimit?.HasJoinRel() ?? false);
+        default:
+          return false;
+      }
     }
     public static PointF Plus(this PointF point1, PointF point2) =>
       new PointF(point1.X + point2.X, point1.Y + point2.Y);

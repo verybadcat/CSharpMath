@@ -26,13 +26,16 @@ namespace CSharpMath.Rendering.FrontEnd {
     public override void Draw(TCanvas canvas, TextAlignment alignment = TextAlignment.Center, Thickness padding = default, float offsetX = 0, float offsetY = 0) {
       var c = WrapCanvas(canvas);
       UpdateDisplay(float.NaN);
-      var position = Display == null ? new PointF?() : GetAlignedPosition(c, alignment, padding, offsetX, offsetY);
+      var position = Display == null ? new PointF?() : Display.HasJoinRel()
+        ? GetAlignedPosition(c, alignment, padding, offsetX, offsetY)
+        : IPainterExtensions.GetDisplayPosition(Display.Width, Display.Ascent, Display.Descent,
+          FontSize, c.Width, c.Height, alignment, padding, offsetX, offsetY);
       DrawCore(c, Display, position);
     }
     public void Draw(TCanvas canvas, float x, float y) {
       var c = WrapCanvas(canvas);
       UpdateDisplay(float.NaN);
-      var inkLeft = Display?.InkBounds().Left ?? 0;
+      var inkLeft = Display?.HasJoinRel() == true ? Display.InkBounds().Left : 0;
       DrawCore(c, Display, new PointF(x - inkLeft, -y)); // x is the ink bounding-box origin; invert the canvas
     }
     private PointF GetAlignedPosition(ICanvas canvas, TextAlignment alignment, Thickness padding,

@@ -21,10 +21,20 @@ namespace CSharpMath.Display.Displays {
     /// <summary>For a subscript or superscript, this is the index in the
     /// parent list. For a regular list, it is int.MinValue.</summary>
     public int IndexInParent { get; set; }
+    /// <summary>Internal provenance marker for JoinRel-aware ink normalization.</summary>
+    internal bool HasJoinRelDirect { get; set; }
+    internal bool HasJoinRelDescendant { get; set; }
     public ListDisplay(IReadOnlyList<IDisplay<TFont, TGlyph>> displays) {
-      Displays = displays;
+      // Take a snapshot: provenance, width, and drawing must continue to
+      // describe the same children even when the caller supplied a mutable
+      // IReadOnlyList such as List<T>.
+      Displays = System.Array.AsReadOnly(displays.ToArray());
       LinePosition = LinePosition.Regular;
       IndexInParent = int.MinValue;
+      // Children are fully constructed before their containing list. Cache
+      // provenance here so manually composed lists and table containers are
+      // covered without a later Measure/Draw traversal.
+      HasJoinRelDescendant = Displays.Any(d => d.HasJoinRel());
       LogicalWidth = displays.CollectionWidth();
     }
     public float Ascent => Displays.CollectionAscent();

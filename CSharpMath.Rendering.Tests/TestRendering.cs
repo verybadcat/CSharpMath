@@ -129,6 +129,39 @@ namespace CSharpMath.Rendering.Tests {
       Assert.Equal(plain, joined);
     }
 
+    [Theory]
+    [InlineData(TextAlignment.TopLeft)]
+    [InlineData(TextAlignment.Top)]
+    [InlineData(TextAlignment.TopRight)]
+    public void TextPainterJoinRelInkSurvivesTextTypesetterRoots(TextAlignment alignment) {
+      const float canvasWidth = 240;
+      var painter = new TTextPainter { LaTeX = "prefix $\\joinrel x$ suffix" };
+      Assert.Null(painter.ErrorMessage);
+      var measure = painter.Measure(canvasWidth);
+      Assert.True(measure.Width > 0 && measure.Height > 0);
+      Assert.True(measure.Width >= painter.Display!.Width);
+
+      using var stream = new MemoryStream();
+      DrawToStream(painter, stream, canvasWidth, alignment);
+      stream.Position = 0;
+      using var bitmap = SKBitmap.Decode(stream);
+      Assert.NotNull(bitmap);
+      var pixels = Enumerable.Range(0, bitmap!.Width)
+        .SelectMany(x => Enumerable.Range(0, bitmap.Height).Select(y => (x, y)))
+        .Where(p => bitmap.GetPixel(p.x, p.y).Alpha > 0)
+        .ToArray();
+      Assert.NotEmpty(pixels);
+      Assert.InRange(pixels.Min(p => p.x), 0, bitmap.Width - 1);
+      Assert.InRange(pixels.Max(p => p.x), 0, bitmap.Width - 1);
+    }
+
+    [Fact]
+    public void TextPainterWithoutJoinRelKeepsLegacyMeasuredWidth() {
+      var painter = new TTextPainter { LaTeX = "prefix $x$ suffix" };
+      var measure = painter.Measure(240);
+      Assert.Equal(painter.Display!.Width, measure.Width);
+    }
+
     private void DrawToStreamForContract(TMathPainter painter, Stream stream) =>
       DrawToStream(painter, stream, 1000, TextAlignment.TopLeft);
     [Theory, ClassData(typeof(TestRenderingTextData))]

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using CSharpMath.Atom;
@@ -66,6 +67,48 @@ namespace CSharpMath.Core.DisplayTests {
       var display = Typesetter.CreateLine(AtomTests.LaTeXParserTest.ParseLaTeX(@"\mathrel{\joinrel x}"), _font, _context, LineStyle.Display);
       Approximately.Equal(6.6666667, display.LogicalWidth);
       Assert.True(display.Width >= display.LogicalWidth);
+    }
+
+    [Fact]
+    public void JoinRelInkIsPreservedThroughOverlineWrapper() {
+      var display = ParseLaTeXToDisplay(@"\overline{\joinrel x}");
+      Assert.Contains(display.Displays, d => d is OverOrUnderlineDisplay<TFont, TGlyph>);
+      Assert.True(display.InkLeft < 0);
+    }
+
+    [Fact]
+    public void JoinRelInkIsPreservedThroughLargeOperatorLimits() {
+      var display = ParseLaTeXToDisplay(@"\sum\limits_{\joinrel x}");
+      Assert.Contains(display.Displays, d => d is LargeOpLimitsDisplay<TFont, TGlyph>);
+      Assert.True(display.InkLeft < 0);
+    }
+
+    [Fact]
+    public void JoinRelInkIsPreservedThroughTableContainer() {
+      var display = ParseLaTeXToDisplay(@"\begin{matrix}\joinrel x & y\\ z & w\end{matrix}");
+      Assert.True(display.HasJoinRel());
+      Assert.True(display.InkLeft < 0);
+    }
+
+    [Fact]
+    public void ListDisplaySnapshotsMutableChildrenForGeometryAndProvenance() {
+      var joined = Typesetter.CreateLine(AtomTests.LaTeXParserTest.ParseLaTeX(@"\joinrel x"), _font, _context, LineStyle.Display);
+      var ordinary = Typesetter.CreateLine(AtomTests.LaTeXParserTest.ParseLaTeX("x"), _font, _context, LineStyle.Display);
+      var children = new List<IDisplay<TFont, TGlyph>> { joined };
+      var snapshot = new ListDisplay<TFont, TGlyph>(children);
+      var width = snapshot.Width;
+
+      children[0] = ordinary;
+      children.Add(ordinary);
+
+      Assert.Single(snapshot.Displays);
+      Assert.Same(joined, snapshot.Displays[0]);
+      Approximately.Equal(width, snapshot.Width);
+      Assert.True(snapshot.HasJoinRel());
+      Assert.False(snapshot.Displays is System.Array);
+      Assert.False(snapshot.Displays is List<IDisplay<TFont, TGlyph>>);
+      var readOnlyView = Assert.IsAssignableFrom<IList<IDisplay<TFont, TGlyph>>>(snapshot.Displays);
+      Assert.Throws<System.NotSupportedException>(() => readOnlyView[0] = ordinary);
     }
     internal static ListDisplay<TFont, TGlyph> ParseLaTeXToDisplay(string latex) =>
       Typesetter.CreateLine(AtomTests.LaTeXParserTest.ParseLaTeX(latex), _font, _context, LineStyle.Display);

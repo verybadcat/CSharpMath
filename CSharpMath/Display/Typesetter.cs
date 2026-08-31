@@ -158,10 +158,14 @@ namespace CSharpMath.Display {
       }
       var typesetter = new Typesetter<TFont, TGlyph>(font, context, style, cramped, spaced);
       typesetter.CreateDisplayAtoms(_PreprocessMathList());
-      var listDisplay = new ListDisplay<TFont, TGlyph>(typesetter._displayAtoms.ToArray());
+      var listDisplay = new ListDisplay<TFont, TGlyph>(typesetter._displayAtoms.ToArray()) {
+        HasJoinRelDirect = typesetter._hasJoinRel,
+        HasJoinRelDescendant = typesetter._hasJoinRel || typesetter._displayAtoms.Any(d => d.HasJoinRel())
+      };
       listDisplay.LogicalWidth = typesetter._currentPosition.X;
       return listDisplay;
     }
+    private bool _hasJoinRel;
     private void CreateDisplayAtoms(List<MathAtom> preprocessedAtoms) {
       MathAtom? prevAtom = null;
       foreach (var atom in preprocessedAtoms) {
@@ -177,6 +181,7 @@ namespace CSharpMath.Display {
             _currentPosition.X += space.ActualLength(_mathTable, _font);
             continue;
           case JoinRel joinRel:
+            _hasJoinRel = true;
             AddDisplayLine(false);
             if (joinRel.Superscript.IsNonEmpty() || joinRel.Subscript.IsNonEmpty()) {
               var scriptAnchor = AddDisplayLine(true);

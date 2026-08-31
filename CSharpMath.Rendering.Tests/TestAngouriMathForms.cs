@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
-using Xunit;
 using SkiaSharp;
+using Xunit;
 
 namespace CSharpMath.Rendering.Tests {
   /// <summary>
@@ -45,6 +45,15 @@ namespace CSharpMath.Rendering.Tests {
       Assert.True(wrapped.Width > 0 && wrapped.Height > 0);
       Assert.True(relation.Width > 0 && relation.Height > 0);
       Assert.Null(new SkiaSharp.MathPainter { LaTeX = @"\mathrel{\left( x\right)}" }.ErrorMessage);
+    }
+
+    [Fact]
+    public void UnaffectedMathKeepsLegacyMeasureOriginAndAdvance() {
+      var relation = Measure("a=b");
+      var wrapped = Measure(@"\mathrel{x+y}");
+      Assert.Equal(0, relation.X);
+      Assert.Equal(0, wrapped.X);
+      Assert.True(relation.Width > 0 && wrapped.Width > 0);
     }
 
     [Theory]
