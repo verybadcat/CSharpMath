@@ -17,6 +17,11 @@ namespace CSharpMath.Rendering.FrontEnd {
     #region Display-recreating properties
     /// <summary>Unit of measure: points</summary>
     float FontSize { get; set; }
+    /// <summary>
+    /// Local typefaces used during rendering. Collection mutations between render operations are
+    /// observed; callers must not mutate a collection concurrently with rendering. Non-collection
+    /// enumerables are materialized once.
+    /// </summary>
     System.Collections.Generic.IEnumerable<Typeface> LocalTypefaces { get; set; }
     Atom.LineStyle LineStyle { get; set; }
     TContent? Content { get; set; }

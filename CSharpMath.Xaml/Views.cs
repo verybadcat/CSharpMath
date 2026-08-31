@@ -289,6 +289,7 @@ namespace CSharpMath.Uno {
     /// <summary>Unit of measure: points; Defaults to <see cref="FontSize"/>.</summary>
     public float? ErrorFontSize { get => (float?)GetValue(ErrorFontSizeProperty); set => SetValue(ErrorFontSizeProperty, value); }
     public static readonly XProperty ErrorFontSizeProperty;
+    /// <inheritdoc cref="CSharpMath.Rendering.FrontEnd.ICSharpMathAPI{TContent, TColor}.LocalTypefaces" />
     public IEnumerable<Typeface> LocalTypefaces { get => (IEnumerable<Typeface>)GetValue(LocalTypefacesProperty)!; set => SetValue(LocalTypefacesProperty, value); }
     public static readonly XProperty LocalTypefacesProperty;
     public XColor TextColor { get => (XColor)GetValue(TextColorProperty)!; set => SetValue(TextColorProperty, value); }
