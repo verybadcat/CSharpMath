@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using CSharpMath.Atom;
 using Typography.OpenFont;
 using Typography.OpenFont.Extensions;
@@ -8,6 +9,7 @@ using Typography.OpenFont.Extensions;
 namespace CSharpMath.Rendering.BackEnd {
   public class GlyphFinder : Display.FrontEnd.IGlyphFinder<Fonts, Glyph> {
     private GlyphFinder() { }
+    static readonly ConditionalWeakTable<Typeface, object> GlyphIndexLocks = new ConditionalWeakTable<Typeface, object>();
     //http://unicode.org/charts/PDF/U25A0.pdf
     //U+25A1 WHITE SQUARE may be used to represent a missing ideograph
     //The glyph of this character is in the Latin Modern Math font
@@ -18,10 +20,14 @@ namespace CSharpMath.Rendering.BackEnd {
     }
     static Glyph Lookup(IEnumerable<Typeface> typefaces, int codepoint) {
       foreach (var font in typefaces) {
-        var g = font.GetGlyphIndex(codepoint);
+        var g = GetGlyphIndex(font, codepoint);
         if (g != 0) return new Glyph(font, font.GetGlyph(g));
       }
       return Lookup(typefaces, GlyphNotFound);
+    }
+    static ushort GetGlyphIndex(Typeface typeface, int codepoint) {
+      lock (GlyphIndexLocks.GetValue(typeface, _ => new object()))
+        return typeface.GetGlyphIndex(codepoint);
     }
     static bool IsOrdinary(FontStyle style) =>
       style is FontStyle.Roman or FontStyle.Bold or FontStyle.Italic or FontStyle.BoldItalic;
@@ -53,7 +59,7 @@ namespace CSharpMath.Rendering.BackEnd {
     Glyph LookupLocalStyle(IReadOnlyDictionary<FontStyle, IReadOnlyList<Typeface>> localStyles, int codepoint, FontStyle style) {
       if (!localStyles.TryGetValue(style, out var faces)) return Glyph.Empty;
       foreach (var face in faces) {
-        var glyph = face.GetGlyphIndex(codepoint);
+        var glyph = GetGlyphIndex(face, codepoint);
         if (glyph != 0) return new Glyph(face, face.GetGlyph(glyph));
       }
       return Glyph.Empty;
@@ -105,7 +111,7 @@ namespace CSharpMath.Rendering.BackEnd {
             found = true;
             break;
           }
-          var glyphIndex = face.GetGlyphIndex(sourceCodepoints[i]);
+          var glyphIndex = GetGlyphIndex(face, sourceCodepoints[i]);
           if (glyphIndex != 0) {
             yield return new Glyph(face, face.GetGlyph(glyphIndex));
             found = true;
@@ -117,7 +123,7 @@ namespace CSharpMath.Rendering.BackEnd {
             .Where(d => Matches(d, semanticStyle) || Matches(d, fallbackSemanticStyle))) {
             var face = semanticStyle.Capitals == FontCapitals.SmallCapitals
               ? descriptor.SmallCapitalsTypeface ?? descriptor.Typeface : descriptor.Typeface;
-            var glyphIndex = face.GetGlyphIndex(sourceCodepoints[i]);
+            var glyphIndex = GetGlyphIndex(face, sourceCodepoints[i]);
             if (glyphIndex != 0) {
               yield return new Glyph(face, face.GetGlyph(glyphIndex));
               found = true;
