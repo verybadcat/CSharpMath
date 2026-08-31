@@ -871,8 +871,9 @@ namespace CSharpMath.Atom {
                 table.SetColumnSpan(r, c, multi.Span, multi.Alignment, multi.Specification);
                 logicalColumn += multi.Span - 1;
               }
-              if (logicalColumn > declaredColumns)
-                return @"Array row contains more cells than its declared columns";
+              // Preserve the historical array behavior: ordinary cells beyond
+              // the declared specification are tolerated and dropped by the
+              // renderer.  Multicolumn spans remain strictly validated above.
             }
             // Note: rows may declare fewer/more cells than the spec; extra cells are
             // dropped and missing ones render empty, matching pre-port behavior.
