@@ -47,10 +47,10 @@ namespace CSharpMath.Atom.Atoms {
       var table = new Table { InterColumnSpacing = 1, InterRowAdditionalSpacing = 1 };
       table.SetCell(Digits(QuotientText), 0, 1);
       table.SetCell(Digits(Denominator), 1, 0);
-      table.SetCell(new MathList(new Inner(
+      table.SetCell(new MathList(new Overline(new MathList(new Inner(
         new Boundary(")"),
-        new MathList(new Overline(Digits(Numerator))),
-        Boundary.Empty)), 1, 1);
+        Digits(Numerator),
+        Boundary.Empty)))), 1, 1);
       table.SetAlignment(ColumnAlignment.Right, 0);
       table.SetAlignment(ColumnAlignment.Right, 1);
 

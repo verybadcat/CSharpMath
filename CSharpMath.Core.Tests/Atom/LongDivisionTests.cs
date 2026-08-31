@@ -102,10 +102,12 @@ namespace CSharpMath.Core.AtomTests {
       var atom = new LongDivision("12345", "13");
       var layout = (Table)typeof(LongDivision).GetMethod("CreateLayout", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(atom, null)!;
       var dividend = layout.Cells[1][1];
-      var inner = Assert.IsType<Inner>(dividend[0]);
+      var overline = Assert.IsType<Overline>(dividend[0]);
+      var inner = Assert.IsType<Inner>(overline.InnerList[0]);
       Assert.Equal(")", inner.LeftBoundary.Nucleus);
       Assert.Equal(Boundary.Empty, inner.RightBoundary);
-      Assert.IsType<Overline>(inner.InnerList[0]);
+      var digits = Assert.IsType<Number>(inner.InnerList[0]);
+      Assert.Equal("12345", digits.Nucleus);
       Assert.Equal("949", CellText(layout.Cells[0][1]));
       Assert.Equal(ColumnAlignment.Right, layout.GetAlignment(1));
       Assert.Equal(1, layout.Cells.Count(row => row.Any(cell => CellText(cell) == atom.Remainder)));
