@@ -9,6 +9,32 @@ namespace CSharpMath.Atom {
   using Atoms;
   //https://mirror.hmc.edu/ctan/macros/latex/contrib/unicode-math/unimath-symbols.pdf
   public static class LaTeXSettings {
+    // Unlike LaTeX, where \not is a relation glyph that overstrikes the next
+    // atom (see the kernel's \neq/\ne definitions and \not declaration:
+    // https://github.com/latex3/latex2e/blob/develop/base/fontdef.dtx#L1122-L1128,
+    // https://github.com/latex3/latex2e/blob/develop/base/fontdef.dtx#L1167-L1170),
+    // CSharpMath consumes one Relation and chooses the best Unicode negation.
+    // This follows UTR #25's preference for precomposed operators, using U+0338
+    // only when no precomposed form exists: https://www.unicode.org/reports/tr25/.
+    static readonly IReadOnlyDictionary<string, string> NegatedRelationCommands =
+      new Dictionary<string, string> {
+        ["="] = @"\neq", ["<"] = @"\nless", [">"] = @"\ngtr",
+        [@"\in"] = @"\notin", [@"\leq"] = @"\nleq", [@"\leqslant"] = @"\nleqslant",
+        [@"\leqq"] = @"\nleqq", [@"\prec"] = @"\nprec", [@"\preceq"] = @"\npreceq",
+        [@"\preccurlyeq"] = @"\npreccurlyeq",
+        [@"\sim"] = @"\nsim", [@"\mid"] = @"\nmid", [@"\shortmid"] = @"\nshortmid",
+        [@"\vdash"] = @"\nvdash", [@"\vDash"] = @"\nvDash", [@"\Vdash"] = @"\nVdash",
+        [@"\vartriangleleft"] = @"\ntriangleleft", [@"\trianglelefteq"] = @"\ntrianglelefteq",
+        [@"\subseteq"] = @"\nsubseteq", [@"\geq"] = @"\ngeq", [@"\geqslant"] = @"\ngeqslant",
+        [@"\geqq"] = @"\ngeqq", [@"\succ"] = @"\nsucc", [@"\succeq"] = @"\nsucceq",
+        [@"\succcurlyeq"] = @"\nsucccurlyeq",
+        [@"\parallel"] = @"\nparallel", [@"\shortparallel"] = @"\nshortparallel",
+        [@"\vartriangleright"] = @"\ntriangleright", [@"\trianglerighteq"] = @"\ntrianglerighteq",
+        [@"\supseteq"] = @"\nsupseteq", [@"\cong"] = @"\ncong",
+        [@"\leftarrow"] = @"\nleftarrow", [@"\Leftarrow"] = @"\nLeftarrow",
+        [@"\rightarrow"] = @"\nrightarrow", [@"\Rightarrow"] = @"\nRightarrow",
+        [@"\leftrightarrow"] = @"\nleftrightarrow", [@"\Leftrightarrow"] = @"\nLeftrightarrow",
+      };
     static readonly Dictionary<Boundary, string> boundaryDelimitersReverse = new Dictionary<Boundary, string>();
     public static IReadOnlyDictionary<Boundary, string> BoundaryDelimitersReverse => boundaryDelimitersReverse;
     public static LaTeXCommandDictionary<Boundary> BoundaryDelimiters { get; } =
@@ -193,6 +219,24 @@ namespace CSharpMath.Atom {
               Ok(new RaiseBox(raise, innerList)));
           });
         } },
+        { @"\not", (parser, accumulate, stopChar) =>
+          parser.ReadArgument().Bind(target => {
+            if (target.Count != 1 || target[0] is not Relation relation
+                || relation.Subscript.IsNonEmpty() || relation.Superscript.IsNonEmpty())
+              return Err(@"\not must be followed by a relation");
+
+            // Prefer an explicit, semantically exact named negation. In particular,
+            // do not infer names such as \lneq or \lnapprox: those are refinements,
+            // not simply \not applied to the positive relation.
+            var command = CommandForAtom(relation);
+            if (command != null && NegatedRelationCommands.TryGetValue(command, out var negatedCommand)
+                && AtomForCommand(negatedCommand) is Relation negated)
+              return Ok(negated);
+
+            // UTR #25 recommends a precomposed operator where Unicode provides
+            // one, and the combining long solidus otherwise.
+            return Ok(new Relation((relation.Nucleus + "\u0338").Normalize(NormalizationForm.FormC)));
+          }) },
         { @"\operatorname", (parser, accumulate, stopChar) => {
           if (!parser.ReadCharIfAvailable('{')) return "Expected {";
           // An operator name is a word, so letters -- but a letter may be written as a command:

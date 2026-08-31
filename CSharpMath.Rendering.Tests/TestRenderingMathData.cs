@@ -74,6 +74,9 @@ c\alpha + d\gamma & c\beta + d \delta
     //public const string MiddleDelimiter = @"A = \left\{ \frac{x_i}{i} \middle| i\in \mathcal{I} \right\}";
 
     public const string Nothing = @"";
+    public const string NotEquals = @"\not=";
+    public const string NotApproximately = @"\not\approx";
+    public const string NotProportionalTo = @"\not\propto";
     public const string Overline = @"\overline{Overline}";
     public const string Pi = @"\pi";
     public const string Phi = @"\phi";
