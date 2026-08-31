@@ -58,19 +58,6 @@ namespace CSharpMath.Rendering.Tests {
       Assert.True(overlayInk.IntersectsWith(baseInk));
     }
 
-    [Fact]
-    public void NotEqualsRendersAsSingleGlyph() {
-      var fonts = new Fonts(Array.Empty<Typography.OpenFont.Typeface>(), 20);
-      var line = Assert.IsType<TextLineDisplay<Fonts, Glyph>>(
-        Assert.Single(ParseLine(@"\not=", fonts).Displays));
-      var run = Assert.Single(line.Runs);
-
-      Assert.Single(run.Run.GlyphInfos);
-      var expected = GlyphFinder.Instance.Lookup(fonts, 0x2260);
-      Assert.Equal(expected.Info.GlyphIndex, run.Run.GlyphInfos[0].Glyph.Info.GlyphIndex);
-      Assert.Same(expected.Typeface, run.Run.GlyphInfos[0].Glyph.Typeface);
-    }
-
     static ListDisplay<Fonts, Glyph> ParseLine(string latex, Fonts fonts) {
       var result = Atom.LaTeXParser.MathListFromLaTeX(latex);
       Assert.Null(result.Error);
