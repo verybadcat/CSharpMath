@@ -8,6 +8,19 @@ using CSharpMath.Display.Displays;
 using CSharpMath.Display.FrontEnd;
 
 namespace CSharpMath.Display {
+  internal static class TextStyleProjection {
+    internal static FontStyle ToFontStyleForText(TextStyle style) {
+      if (style.Family == FontFamily.Roman &&
+          (style.Weight != FontWeight.Regular || style.Posture != FontPosture.Upright))
+        return (style.Weight, style.Posture) switch {
+          (FontWeight.Bold, FontPosture.Upright) => FontStyle.Bold,
+          (FontWeight.Regular, FontPosture.Italic or FontPosture.Slanted) => FontStyle.Italic,
+          (FontWeight.Bold, _) => FontStyle.BoldItalic,
+          _ => FontStyle.Roman
+        };
+      return style.ToFontStyle();
+    }
+  }
   public static class Typesetter {
     public static ListDisplay<TFont, TGlyph> CreateLine<TFont, TGlyph>
       (MathList list, TFont font, TypesettingContext<TFont, TGlyph> context, LineStyle style)
@@ -139,8 +152,10 @@ namespace CSharpMath.Display {
           // These are not a TeX type nodes. TeX does this during parsing the input.
           // switch to using the font specified in the atom and convert it to ordinary
           var newAtom = atom switch {
-            Variable v => v.ToOrdinary(UnicodeFontChanger.ChangeFont),
-            Number n => n.ToOrdinary(UnicodeFontChanger.ChangeFont),
+            Variable v => v.ToOrdinary((content, textStyle) =>
+              UnicodeFontChanger.ChangeFont(content, TextStyleProjection.ToFontStyleForText(textStyle))),
+            Number n => n.ToOrdinary((content, textStyle) =>
+              UnicodeFontChanger.ChangeFont(content, TextStyleProjection.ToFontStyleForText(textStyle))),
             // TeX treats unary operators as Ordinary. So will we.
             UnaryOperator u => u.ToOrdinary(),
             _ => atom

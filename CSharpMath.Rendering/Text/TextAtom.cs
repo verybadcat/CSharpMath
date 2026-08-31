@@ -3,10 +3,23 @@ using System.Linq;
 
 namespace CSharpMath.Rendering.Text {
   using Atom;
+  static class TextStyleProjection {
+    internal static FontStyle ToFontStyleForText(this TextStyle style) {
+      if (style.Family == FontFamily.Roman &&
+          (style.Weight != FontWeight.Regular || style.Posture != FontPosture.Upright))
+        return (style.Weight, style.Posture) switch {
+          (FontWeight.Bold, FontPosture.Upright) => FontStyle.Bold,
+          (FontWeight.Regular, FontPosture.Italic or FontPosture.Slanted) => FontStyle.Italic,
+          (FontWeight.Bold, _) => FontStyle.BoldItalic,
+          _ => FontStyle.Roman
+        };
+      return style.ToFontStyle();
+    }
+  }
   //Base type
   public abstract class TextAtom : System.IEquatable<TextAtom> {
     public abstract int? SingleChar(FontStyle style);
-    internal virtual int? SingleChar(TextStyle style) => SingleChar(style.ToFontStyle());
+    internal virtual int? SingleChar(TextStyle style) => SingleChar(style.ToFontStyleForText());
     public abstract bool Equals(TextAtom a);
     public override bool Equals(object obj) => obj is TextAtom a && Equals(a);
     public abstract override int GetHashCode();
