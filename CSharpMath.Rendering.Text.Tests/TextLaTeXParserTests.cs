@@ -503,5 +503,32 @@ $$$$
       Assert.Null(atom);
       Assert.Equal(expected.Replace("\r", null), actual);
     }
+
+    [Theory]
+    [InlineData(@"\@name", @"\@", 3)]
+    [InlineData(@"\notacommand@beta", @"\notacommand", 13)]
+    [InlineData(@"\notacommand*", @"\notacommand", 13)]
+    [InlineData(@"\notacommand=", @"\notacommand", 13)]
+    [InlineData(@"\notacommand'", @"\notacommand", 13)]
+    public void TextParserReportsSharedControlSequenceBoundariesAtNonzeroOffsets(
+        string inputCommand, string expectedCommand, int position) {
+      var source = "x" + inputCommand + "+";
+
+      var (atom, error) = TextLaTeXParser.TextAtomFromLaTeX(source);
+
+      Assert.Null(atom);
+      Assert.Equal($"Error: Invalid command {expectedCommand}\n{source}\n{new string(' ', position - 1)}\u2191 (pos {position})", error);
+    }
+
+    [Theory]
+    [InlineData(@"x\alpha@beta+", @"x\alpha @beta+")]
+    [InlineData(@"x\alpha*+", @"x\alpha *+")]
+    [InlineData(@"x\alpha=+", @"x\alpha =+")]
+    [InlineData(@"x\alpha'+", @"x\alpha '+")]
+    public void TextParserLeavesControlWordSuffixesForText(string source, string expected) {
+      var atom = Parse(source);
+
+      Assert.Equal(expected, TextLaTeXParser.TextAtomToLaTeX(atom).ToString());
+    }
   }
 }
