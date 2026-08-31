@@ -591,6 +591,7 @@ namespace CSharpMath.Atom {
         { @"\dag", new Ordinary("†") },
         { @"\ddag", new Ordinary("‡") },
         { @"\dots", new Ordinary("…") },
+        { @"\udots", new Ordinary("⋰") },
         { @"\pounds", new Ordinary("£") },
         // \{ is defined in Table 1
         // \} is defined in Table 1
