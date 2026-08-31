@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "byteOrder": "little",
+  "format": "CSMF1",
+  "shaping": "GSUB/GPOS intentionally excluded; CSharpMath does not shape text with them.",
+  "fonts": [
+    {
+      "Source": "AMS-Capital-Blackboard-Bold.otf",
+      "Output": "AMS-Capital-Blackboard-Bold.csmfont",
+      "SourceSha256": "9578b5b9c86e6ab03846080b9d6fa4f7bc6b3044ac15604b8e7bfd4330295dda",
+      "SourceBytes": 8716,
+      "GeneratedBytes": 5417
+    },
+    {
+      "Source": "cyrillic-modern-nmr10.otf",
+      "Output": "cyrillic-modern-nmr10.csmfont",
+      "SourceSha256": "5b8e360154685a1117e7f93542b89d5263db58f41a40d6df8f131c5fe5032c0c",
+      "SourceBytes": 44292,
+      "GeneratedBytes": 23348
+    },
+    {
+      "Source": "latinmodern-math.otf",
+      "Output": "latinmodern-math.csmfont",
+      "SourceSha256": "6075562b771f8b82f0c179e363389684f2dd09de30038269e2628e504bd7be0f",
+      "SourceBytes": 733736,
+      "GeneratedBytes": 386896
+    }
+  ]
+}
