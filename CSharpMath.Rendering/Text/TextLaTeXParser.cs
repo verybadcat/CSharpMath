@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using Typography.TextBreak;
 
@@ -8,6 +9,107 @@ namespace CSharpMath.Rendering.Text {
   using Atom;
   using static CSharpMath.Atom.Result;
   public static class TextLaTeXParser {
+    // Typography.TextBreak historically emits a break for every letter outside
+    // its built-in Latin ranges.  Coalesce those breaks here using the Unicode
+    // categories supplied by .NET, while retaining the break opportunities for
+    // CJK ideographs (which are intentionally breakable between characters).
+    static void CoalesceUnicodeWordBreaks(string text, List<BreakAtInfo> breakList) {
+      for (int i = breakList.Count - 1; i >= 0; i--) {
+        int boundary = breakList[i].breakAt;
+        if (boundary <= 0 || boundary >= text.Length || !KeepUnicodeSequenceTogether(text, boundary))
+          continue;
+        breakList.RemoveAt(i);
+      }
+    }
+
+    static bool KeepUnicodeSequenceTogether(string text, int boundary) {
+      int beforeAt = boundary - 1;
+      if (char.IsLowSurrogate(text[beforeAt])) beforeAt--;
+      int afterAt = boundary;
+      // Typography never intentionally breaks a surrogate pair.  Do not
+      // manufacture a new decision at a half-surrogate if malformed input does
+      // reach this layer.
+      if (char.IsLowSurrogate(text[afterAt])) return false;
+      UnicodeCategory before = CharUnicodeInfo.GetUnicodeCategory(text, beforeAt);
+      UnicodeCategory after = CharUnicodeInfo.GetUnicodeCategory(text, afterAt);
+      bool beforeMark = before is UnicodeCategory.NonSpacingMark
+        or UnicodeCategory.SpacingCombiningMark or UnicodeCategory.EnclosingMark;
+      bool afterMark = after is UnicodeCategory.NonSpacingMark
+        or UnicodeCategory.SpacingCombiningMark or UnicodeCategory.EnclosingMark;
+      if (afterMark)
+        // UAX #14 LB9: combining marks inherit the line-break class of the
+        // preceding base. Walk over the complete mark run, not just one mark.
+        return IsLetterScalar(text, FindBaseScalarStart(text, beforeAt));
+      if (beforeMark && IsLetterScalar(text, afterAt))
+        return CanCoalesceLetter(text, FindBaseScalarStart(text, beforeAt))
+          && CanCoalesceLetter(text, afterAt);
+      return CanCoalesceLetter(text, beforeAt) && CanCoalesceLetter(text, afterAt);
+    }
+
+    static int FindPreviousScalarStart(string text, int scalarEndAt) =>
+      scalarEndAt > 0 && char.IsLowSurrogate(text[scalarEndAt])
+        ? scalarEndAt - 1 : scalarEndAt;
+
+    static int FindBaseScalarStart(string text, int scalarAt) {
+      int candidate = scalarAt;
+      while (candidate >= 0) {
+        UnicodeCategory category = CharUnicodeInfo.GetUnicodeCategory(text, candidate);
+        if (category is not (UnicodeCategory.NonSpacingMark
+          or UnicodeCategory.SpacingCombiningMark or UnicodeCategory.EnclosingMark))
+          return candidate;
+        candidate = FindPreviousScalarStart(text, candidate - 1);
+      }
+      return scalarAt;
+    }
+
+    static bool IsLetterScalar(string text, int scalarAt) {
+      UnicodeCategory category = CharUnicodeInfo.GetUnicodeCategory(text, scalarAt);
+      return category is UnicodeCategory.UppercaseLetter
+        or UnicodeCategory.LowercaseLetter or UnicodeCategory.TitlecaseLetter
+        or UnicodeCategory.ModifierLetter or UnicodeCategory.OtherLetter;
+    }
+
+    static bool CanCoalesceLetter(string text, int scalarAt) {
+      if (!IsLetterScalar(text, scalarAt)) return false;
+      // Typography's range metadata identifies scripts whose line breaking is
+      // dictionary- or character-based (Thai, CJK, kana, Hangul, etc.).  For
+      // ranges it does not know (notably Cyrillic), Unicode letters form words.
+      if (char.ConvertToUtf32(text, scalarAt) is int codepoint
+          && TryGetUnicodeRangeInfo(codepoint, out var range))
+        return !IsComplexBreakableRange(range.Name);
+      return true;
+    }
+
+    static bool TryGetUnicodeRangeInfo(int codepoint, out Typography.OpenFont.UnicodeRangeInfo range) {
+      if (UnicodeRangeFinder.GetUniCodeRangeFor(codepoint, out range, out _)) return true;
+      return Unicode13RangeInfoList.TryGetUnicodeRangeInfo(codepoint, out range);
+    }
+
+    static bool IsComplexBreakableRange(string name) =>
+      name.StartsWith("Thai", StringComparison.Ordinal)
+      || name.StartsWith("Lao", StringComparison.Ordinal)
+      || name.StartsWith("Khmer", StringComparison.Ordinal)
+      || name.StartsWith("Myanmar", StringComparison.Ordinal)
+      || name.StartsWith("CJK", StringComparison.Ordinal)
+      || name.StartsWith("Hiragana", StringComparison.Ordinal)
+      || name.StartsWith("Katakana", StringComparison.Ordinal)
+      || name.StartsWith("Hangul", StringComparison.Ordinal)
+      || name.StartsWith("Arabic", StringComparison.Ordinal)
+      || name.StartsWith("Hebrew", StringComparison.Ordinal)
+      || name.StartsWith("Devanagari", StringComparison.Ordinal)
+      || name.StartsWith("Bengali", StringComparison.Ordinal)
+      || name.StartsWith("Gurmukhi", StringComparison.Ordinal)
+      || name.StartsWith("Gujarati", StringComparison.Ordinal)
+      || name.StartsWith("Oriya", StringComparison.Ordinal)
+      || name.StartsWith("Tamil", StringComparison.Ordinal)
+      || name.StartsWith("Telugu", StringComparison.Ordinal)
+      || name.StartsWith("Kannada", StringComparison.Ordinal)
+      || name.StartsWith("Malayalam", StringComparison.Ordinal)
+      || name.StartsWith("Sinhala", StringComparison.Ordinal)
+      || name.StartsWith("Tibetan", StringComparison.Ordinal)
+      || name.StartsWith("Syriac", StringComparison.Ordinal)
+      || name.StartsWith("Ethiopic", StringComparison.Ordinal);
+
     /* //Paste this into the C# Interactive, fill <username> yourself
 #r "C:/Users/<username>/source/repos/CSharpMath/Typography/Build/NetStandard/Typography.TextBreak/bin/Debug/netstandard1.3/Typography.TextBreak.dll"
 using Typography.TextBreak;
@@ -59,6 +161,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
       foreach (var engine in AdditionalBreakingEngines)
         breaker.AddBreakingEngine(engine);
       breaker.BreakWords(latexSource);
+      CoalesceUnicodeWordBreaks(latexSource, breakList);
 
       Result CheckDollarCount(int startAt, ref int endAt, TextAtomListBuilder atoms) {
         switch (dollarCount) {

@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CSharpMath.Display.Displays;
+using CSharpMath.Rendering.BackEnd;
+using CSharpMath.Rendering.Text;
 using Xunit;
 
 namespace CSharpMath.Rendering.Text.Tests {
@@ -44,6 +47,82 @@ namespace CSharpMath.Rendering.Text.Tests {
         ? (TextAtom)new TextAtom.Text(text[0])
         : new TextAtom.List(text.Select(t => new TextAtom.Text(t)).ToArray()), atom);
       Assert.Equal(input, TextLaTeXParser.TextAtomToLaTeX(atom).ToString());
+    }
+
+    [Theory]
+    [InlineData("caf\u00E9")]
+    [InlineData("\u0421\u043B\u043E\u0432\u043E")]
+    [InlineData("e\u0301clair")]
+    [InlineData("e\u0301\u0327\u0308clair")]
+    public void UnicodeLettersAndCombiningMarksStayInOneWord(string word) {
+      Assert.Equal(new TextAtom.Text(word), Parse(word));
+    }
+
+    [Fact]
+    public void CjkCharactersRemainIndividuallyBreakable() {
+      Assert.Equal(
+        new TextAtom.List(new TextAtom[] {
+          new TextAtom.Text("\u4E2D"), new TextAtom.Text("\u6587")
+        }), Parse("\u4E2D\u6587"));
+    }
+
+    [Theory]
+    [InlineData("a\u200Bb")] // ZERO WIDTH SPACE: break opportunity
+    [InlineData("a\u00ADb")] // SOFT HYPHEN: conditional break opportunity
+    [InlineData("a\u2060b")] // WORD JOINER: no break opportunity
+    [InlineData("a\u200Db")] // ZERO WIDTH JOINER: format control
+    public void FormatControlsRoundTripWithoutBeingGlued(string input) {
+      Assert.Equal(input, TextLaTeXParser.TextAtomToLaTeX(Parse(input)).ToString());
+    }
+
+    [Fact]
+    public void SupplementaryLettersRemainWholeScalars() {
+      const string supplementaryLetter = "\U00010400\U00010401";
+      Assert.Equal(new TextAtom.Text(supplementaryLetter), Parse(supplementaryLetter));
+    }
+
+    [Theory]
+    [InlineData("\u0E01\u0E02")] // Thai
+    [InlineData("\u1780\u1781")] // Khmer
+    [InlineData("\u1000\u1001")] // Myanmar
+    public void ComplexScriptsRetainTypographyBreakOpportunities(string input) {
+      Assert.Equal(
+        new TextAtom.List(input.Select(c => (TextAtom)new TextAtom.Text(c.ToString())).ToArray()),
+        Parse(input));
+    }
+
+    [Theory]
+    [InlineData("e\u0301\u0E01")] // Latin + combining mark + Thai
+    [InlineData("e\u0301\u1780")] // Latin + combining mark + Khmer
+    [InlineData("e\u0301\u4E2D")] // Latin + combining mark + CJK
+    public void CombiningMarksDoNotGlueAcrossScriptBoundaries(string input) {
+      Assert.Equal(
+        new TextAtom.List(new TextAtom[] {
+          new TextAtom.Text(input.Substring(0, 2)),
+          new TextAtom.Text(input.Substring(2))
+        }), Parse(input));
+    }
+
+    [Fact]
+    public void PunctuationAndLongWordsKeepTheirExistingBoundaries() {
+      const string longWord = "supercalifragilisticexpialidocious";
+      Assert.Equal(
+        new TextAtom.List(new TextAtom[] {
+          new TextAtom.Text(longWord + ","), new TextAtom.Text("next")
+        }), Parse(longWord + ",next"));
+    }
+
+    [Theory]
+    [InlineData("caf\u00E9 next", "caf\u00E9")]
+    [InlineData("\u0421\u043B\u043E\u0432\u043E next", "\u0421\u043B\u043E\u0432\u043E")]
+    [InlineData("e\u0301clair next", "e\u0301clair")]
+    [InlineData("supercalifragilisticexpialidocious next", "supercalifragilisticexpialidocious")]
+    public void ConstrainedLayoutDoesNotSplitUnbreakableWords(string input, string word) {
+      var (relative, _) = TextTypesetter.Layout(
+        Parse(input), new Fonts(Array.Empty<Typography.OpenFont.Typeface>(), 12), 20);
+      Assert.Contains(
+        relative.Displays.OfType<TextRunDisplay<Fonts, Glyph>>(),
+        display => display.Run.Text.ToString() == word);
     }
     [Theory]
     [InlineData(@"a\alpha a", @"a\alpha a", "a", "α", "a")]
