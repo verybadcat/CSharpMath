@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with: { submodules: recursive }
-      - uses: actions/setup-dotnet@d4c94342e560b34958eacfc5d055d21461ed1c5c # v4
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
         with: { dotnet-version: 10.0.x }
       - run: dotnet workload install wasm-tools --skip-manifest-update
       - run: dotnet test CSharpMath.Blazor.Example.Tests/CSharpMath.Blazor.Example.Tests.csproj --configuration Release
