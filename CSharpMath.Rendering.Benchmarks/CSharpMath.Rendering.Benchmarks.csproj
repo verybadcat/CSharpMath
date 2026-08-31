@@ -4,6 +4,7 @@
     <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="..\CSharpMath.Rendering.Tests\ComicNeue_Bold.otf" Link="ComicNeue_Bold.otf" CopyToOutputDirectory="PreserveNewest" />
     <Compile Include="..\CSharpMath.Rendering.Tests\TestRenderingMathData.cs" Link="TestRenderingMathData.cs" />
     <Compile Include="..\CSharpMath.Rendering.Tests\TestRenderingSharedData.cs" Link="TestRenderingSharedData.cs" />
   </ItemGroup>
