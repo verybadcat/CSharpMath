@@ -15,12 +15,25 @@ namespace CSharpMath.Display.Displays {
       Range = range;
       Width = context.GlyphBoundsProvider.GetTypographicWidth(font, run);
       // Compute ascent and descent
-      var rects =
-        context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(font, Run.Glyphs, Run.GlyphInfos.Count);
+      var rects = context.GlyphBoundsProvider.GetBoundingRectsForGlyphs(
+        font, Run.Glyphs, Run.GlyphInfos.Count).ToArray();
       Ascent = rects.IsEmpty() ? 0 : rects.Max(rect => rect.Bottom); // Convert to non-flipped naming here, 
       Descent = rects.IsEmpty() ? 0 : rects.Max(rect => -rect.Y);
+      var advances = context.GlyphBoundsProvider.GetAdvancesForGlyphs(
+        font, Run.Glyphs, Run.GlyphInfos.Count).Advances.ToArray();
+      var x = 0f;
+      var ink = RectangleF.Empty;
+      for (var i = 0; i < Run.GlyphInfos.Count; i++) {
+        var glyph = Run.GlyphInfos[i];
+        var rect = rects[i];
+        var positioned = new RectangleF(x + rect.X, rect.Y, rect.Width, rect.Height);
+        if (!rect.IsEmpty) ink = ink.IsEmpty ? positioned : ink.Union(positioned);
+        x += advances[i] + glyph.KernAfterGlyph;
+      }
+      InkBounds = ink;
     }
     public AttributedGlyphRun<TFont, TGlyph> Run { get; }
+    internal RectangleF InkBounds { get; }
 
     public Range Range { get; }
     public float Width { get; }

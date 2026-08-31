@@ -1,0 +1,1 @@
+CSharpMath.Rendering.FrontEnd.TextPainter<TCanvas, TColor>.Draw(TCanvas canvas, System.Drawing.RectangleF region, CSharpMath.Rendering.FrontEnd.TextAlignment alignment = CSharpMath.Rendering.FrontEnd.TextAlignment.TopLeft, CSharpMath.Rendering.FrontEnd.Thickness padding = default(CSharpMath.Rendering.FrontEnd.Thickness), float offsetX = 0, float offsetY = 0) -> void
