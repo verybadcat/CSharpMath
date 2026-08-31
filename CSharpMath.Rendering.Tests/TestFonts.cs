@@ -97,6 +97,18 @@ namespace CSharpMath.Rendering.Tests {
     }
 
     [Fact]
+    public void ExistingFontsSeeLateMutationOfCallerOwnedLocalList() {
+      var first = Fonts.GlobalTypefaces.First();
+      var second = Fonts.GlobalTypefaces.Skip(1).First();
+      var locals = new List<Typeface> { first };
+      var painter = new ProbePainter { LocalTypefaces = locals };
+      Assert.Same(first, painter.LocalTypefaces.Single());
+      locals[0] = second;
+      Assert.Same(second, painter.LocalTypefaces.Single());
+      Assert.Same(second, painter.CurrentFonts.Typefaces.First());
+    }
+
+    [Fact]
     public void ComicNeueLocalTypefaceRemainsUsableAcrossResizeAndSwitchCycles() {
       var path = Path.Combine(TestRenderingFixture.ThisDirectory.FullName, "ComicNeue_Bold.otf");
       using var stream = File.OpenRead(path);

@@ -81,7 +81,7 @@ namespace CSharpMath.Rendering.FrontEnd {
       UpdateDisplayCore(textPainterCanvasWidth);
       if (Display == null && DisplayErrorInline && ErrorMessage != null) {
         var font = Fonts;
-        if (ErrorFontSize is { } errorSize) font = new Fonts(font, errorSize);
+        if (ErrorFontSize is { } errorSize) font = Fonts.Resize(font, errorSize);
         var errorLines = ErrorMessage.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
         var runs = new List<Display.Displays.TextRunDisplay<Fonts, Glyph>>();
         float y = 0;
