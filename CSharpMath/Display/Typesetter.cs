@@ -149,6 +149,7 @@ namespace CSharpMath.Display {
           // combine ordinary atoms together
           if (newAtom is Ordinary && prevAtom is Ordinary o &&
               o.RelativeSize == newAtom.RelativeSize &&
+              o.TextStyle.Equals(newAtom.TextStyle) &&
               o.Superscript.IsEmpty() && o.Subscript.IsEmpty()) {
             prevAtom.Fuse(newAtom);
             // skip the current node as we fused it

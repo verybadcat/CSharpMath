@@ -6,6 +6,7 @@ namespace CSharpMath.Rendering.Text {
   //Base type
   public abstract class TextAtom : System.IEquatable<TextAtom> {
     public abstract int? SingleChar(FontStyle style);
+    internal virtual int? SingleChar(TextStyle style) => SingleChar(style.ToFontStyle());
     public abstract bool Equals(TextAtom a);
     public override bool Equals(object obj) => obj is TextAtom a && Equals(a);
     public abstract override int GetHashCode();
@@ -47,6 +48,7 @@ namespace CSharpMath.Rendering.Text {
       public TextAtom Content { get; }
       public string AccentChar { get; }
       public override int? SingleChar(FontStyle style) => Content.SingleChar(style);
+      internal override int? SingleChar(TextStyle style) => Content.SingleChar(style);
       public override bool Equals(TextAtom atom) => atom is Accent a && a.AccentChar == AccentChar && a.Content.Equals(Content);
       public override int GetHashCode() => (AccentChar, Content).GetHashCode();
     }
@@ -60,23 +62,32 @@ namespace CSharpMath.Rendering.Text {
       public override int GetHashCode() => (DisplayStyle, Content).GetHashCode();
     }
     public sealed class Style : TextAtom {
-      public Style(TextAtom content, FontStyle style) =>
-        (Content, FontStyle) =
-          (content, style == FontStyle.Default
-           //FontStyle.Default is FontStyle.Italic, FontStyle.Roman is no change to characters
-           ? FontStyle.Roman
-           : style);
+      readonly FontStyle legacyFontStyle;
+      public Style(TextAtom content, FontStyle style) {
+        Content = content;
+        legacyFontStyle = style == FontStyle.Default ? FontStyle.Roman : style;
+        StyleChange = TextStyleChange.FromFontStyleCommand(
+          style == FontStyle.Default ? FontStyle.Roman : style);
+      }
+      public Style(TextAtom content, TextStyleChange styleChange) {
+        Content = content;
+        StyleChange = styleChange;
+        legacyFontStyle = styleChange.ApplyTo(TextStyle.Default).ToFontStyle();
+      }
       public TextAtom Content { get; }
-      public FontStyle FontStyle { get; }
-      public override int? SingleChar(FontStyle style) => Content.SingleChar(FontStyle);
-      public override bool Equals(TextAtom atom) => atom is Style s && s.FontStyle == FontStyle && s.Content.Equals(Content);
-      public override int GetHashCode() => (FontStyle, Content).GetHashCode();
+      public FontStyle FontStyle => legacyFontStyle;
+      public TextStyleChange StyleChange { get; }
+      public override int? SingleChar(FontStyle style) => SingleChar(TextStyle.FromFontStyle(style));
+      internal override int? SingleChar(TextStyle style) => Content.SingleChar(StyleChange.ApplyTo(style));
+      public override bool Equals(TextAtom atom) => atom is Style s && s.StyleChange.Equals(StyleChange) && s.Content.Equals(Content);
+      public override int GetHashCode() => (StyleChange, Content).GetHashCode();
     }
     public sealed class Size : TextAtom {
       public Size(TextAtom content, float pointSize) => (Content, PointSize) = (content, pointSize);
       public TextAtom Content { get; }
       public float PointSize { get; }
       public override int? SingleChar(FontStyle style) => Content.SingleChar(style);
+      internal override int? SingleChar(TextStyle style) => Content.SingleChar(style);
       public override bool Equals(TextAtom atom) => atom is Size s && s.PointSize == PointSize && s.Content.Equals(Content);
       public override int GetHashCode() => (PointSize, Content).GetHashCode();
     }
@@ -92,6 +103,7 @@ namespace CSharpMath.Rendering.Text {
       public string Declaration { get; }
       public float Magnification { get; }
       public override int? SingleChar(FontStyle style) => Content.SingleChar(style);
+      internal override int? SingleChar(TextStyle style) => Content.SingleChar(style);
       public override bool Equals(TextAtom atom) => atom is RelativeSize s && s.Declaration == Declaration &&
         s.Magnification == Magnification && s.Content.Equals(Content);
       public override int GetHashCode() => (Declaration, Magnification, Content).GetHashCode();
@@ -101,6 +113,7 @@ namespace CSharpMath.Rendering.Text {
       public TextAtom Content { get; }
       public System.Drawing.Color Colour { get; }
       public override int? SingleChar(FontStyle style) => Content.SingleChar(style);
+      internal override int? SingleChar(TextStyle style) => Content.SingleChar(style);
       public override bool Equals(TextAtom atom) => atom is Colored c && c.Colour == Colour && c.Content.Equals(Content);
       public override int GetHashCode() => (Colour, Content).GetHashCode();
     }
@@ -108,6 +121,8 @@ namespace CSharpMath.Rendering.Text {
       public List(IReadOnlyList<TextAtom> content) => Content = content;
       public IReadOnlyList<TextAtom> Content { get; }
       public override int? SingleChar(FontStyle style) =>
+        Content.Count == 1 ? Content[0].SingleChar(style) : null;
+      internal override int? SingleChar(TextStyle style) =>
         Content.Count == 1 ? Content[0].SingleChar(style) : null;
       public override bool Equals(TextAtom atom) =>
         atom is List l

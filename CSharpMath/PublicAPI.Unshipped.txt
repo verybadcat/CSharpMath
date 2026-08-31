@@ -1,1 +1,53 @@
+CSharpMath.Atom.FontCapitals
+CSharpMath.Atom.FontCapitals.Normal = 0 -> CSharpMath.Atom.FontCapitals
+CSharpMath.Atom.FontCapitals.SmallCapitals = 1 -> CSharpMath.Atom.FontCapitals
+CSharpMath.Atom.FontFamily
+CSharpMath.Atom.FontFamily.Blackboard = 6 -> CSharpMath.Atom.FontFamily
+CSharpMath.Atom.FontFamily.Calligraphic = 4 -> CSharpMath.Atom.FontFamily
+CSharpMath.Atom.FontFamily.Default = 0 -> CSharpMath.Atom.FontFamily
+CSharpMath.Atom.FontFamily.Fraktur = 5 -> CSharpMath.Atom.FontFamily
+CSharpMath.Atom.FontFamily.Monospace = 3 -> CSharpMath.Atom.FontFamily
+CSharpMath.Atom.FontFamily.Roman = 1 -> CSharpMath.Atom.FontFamily
+CSharpMath.Atom.FontFamily.SansSerif = 2 -> CSharpMath.Atom.FontFamily
+CSharpMath.Atom.FontPosture
+CSharpMath.Atom.FontPosture.Italic = 1 -> CSharpMath.Atom.FontPosture
+CSharpMath.Atom.FontPosture.Slanted = 2 -> CSharpMath.Atom.FontPosture
+CSharpMath.Atom.FontPosture.Upright = 0 -> CSharpMath.Atom.FontPosture
+CSharpMath.Atom.FontWeight
+CSharpMath.Atom.FontWeight.Bold = 1 -> CSharpMath.Atom.FontWeight
+CSharpMath.Atom.FontWeight.Regular = 0 -> CSharpMath.Atom.FontWeight
+CSharpMath.Atom.LaTeXParser.CurrentTextStyle.get -> CSharpMath.Atom.TextStyle
+CSharpMath.Atom.LaTeXParser.CurrentTextStyle.set -> void
+CSharpMath.Atom.MathAtom.TextStyle.get -> CSharpMath.Atom.TextStyle
+CSharpMath.Atom.MathAtom.TextStyle.set -> void
+CSharpMath.Atom.TextStyle
+CSharpMath.Atom.TextStyle.Capitals.get -> CSharpMath.Atom.FontCapitals
+CSharpMath.Atom.TextStyle.Equals(CSharpMath.Atom.TextStyle other) -> bool
+CSharpMath.Atom.TextStyle.Family.get -> CSharpMath.Atom.FontFamily
+CSharpMath.Atom.TextStyle.Posture.get -> CSharpMath.Atom.FontPosture
+CSharpMath.Atom.TextStyle.TextStyle() -> void
+CSharpMath.Atom.TextStyle.TextStyle(CSharpMath.Atom.FontFamily family, CSharpMath.Atom.FontWeight weight, CSharpMath.Atom.FontPosture posture, CSharpMath.Atom.FontCapitals capitals) -> void
+CSharpMath.Atom.TextStyle.ToFontStyle() -> CSharpMath.Atom.FontStyle
+CSharpMath.Atom.TextStyle.TryGetFontStyle(out CSharpMath.Atom.FontStyle style) -> bool
+CSharpMath.Atom.TextStyle.Weight.get -> CSharpMath.Atom.FontWeight
+CSharpMath.Atom.TextStyle.WithCapitals(CSharpMath.Atom.FontCapitals capitals) -> CSharpMath.Atom.TextStyle
+CSharpMath.Atom.TextStyle.WithFamily(CSharpMath.Atom.FontFamily family) -> CSharpMath.Atom.TextStyle
+CSharpMath.Atom.TextStyle.WithPosture(CSharpMath.Atom.FontPosture posture) -> CSharpMath.Atom.TextStyle
+CSharpMath.Atom.TextStyle.WithWeight(CSharpMath.Atom.FontWeight weight) -> CSharpMath.Atom.TextStyle
+CSharpMath.Atom.TextStyleChange
+CSharpMath.Atom.TextStyleChange.ApplyTo(CSharpMath.Atom.TextStyle style) -> CSharpMath.Atom.TextStyle
+CSharpMath.Atom.TextStyleChange.Capitals.get -> CSharpMath.Atom.FontCapitals?
+CSharpMath.Atom.TextStyleChange.Equals(CSharpMath.Atom.TextStyleChange other) -> bool
+CSharpMath.Atom.TextStyleChange.Family.get -> CSharpMath.Atom.FontFamily?
+CSharpMath.Atom.TextStyleChange.Posture.get -> CSharpMath.Atom.FontPosture?
+CSharpMath.Atom.TextStyleChange.TextStyleChange() -> void
+CSharpMath.Atom.TextStyleChange.TextStyleChange(CSharpMath.Atom.FontFamily? family, CSharpMath.Atom.FontWeight? weight, CSharpMath.Atom.FontPosture? posture, CSharpMath.Atom.FontCapitals? capitals) -> void
+CSharpMath.Atom.TextStyleChange.Weight.get -> CSharpMath.Atom.FontWeight?
+override CSharpMath.Atom.TextStyle.Equals(object! obj) -> bool
+override CSharpMath.Atom.TextStyle.GetHashCode() -> int
+override CSharpMath.Atom.TextStyleChange.Equals(object! obj) -> bool
+override CSharpMath.Atom.TextStyleChange.GetHashCode() -> int
 static CSharpMath.Atom.LaTeXSettings.RelativeSizes.get -> System.Collections.Generic.IReadOnlyDictionary<string!, float>!
+static CSharpMath.Atom.TextStyle.Default.get -> CSharpMath.Atom.TextStyle
+static CSharpMath.Atom.TextStyle.FromFontStyle(CSharpMath.Atom.FontStyle style) -> CSharpMath.Atom.TextStyle
+static CSharpMath.Atom.TextStyleChange.FromFontStyleCommand(CSharpMath.Atom.FontStyle style) -> CSharpMath.Atom.TextStyleChange

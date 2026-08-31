@@ -29,13 +29,18 @@ namespace CSharpMath.Atom {
     public string Chars { get; }
     public int NextChar { get; private set; }
     public bool TextMode { get; set; } //_spacesAllowed in iosMath
-    public FontStyle CurrentFontStyle { get; set; }
+    TextStyle currentTextStyle;
+    public FontStyle CurrentFontStyle {
+      get => currentTextStyle.ToFontStyle();
+      set => currentTextStyle = TextStyle.FromFontStyle(value);
+    }
+    public TextStyle CurrentTextStyle { get => currentTextStyle; set => currentTextStyle = value; }
     internal RelativeSizeDeclaration CurrentRelativeSize { get; set; }
     internal RelativeSizeDeclaration PendingRelativeSize { get; set; }
     public Stack<IEnvironment> Environments { get; } = new Stack<IEnvironment>();
     public LaTeXParser(string str) {
       Chars = str;
-      CurrentFontStyle = FontStyle.Default;
+      CurrentTextStyle = TextStyle.Default;
     }
     public Result<MathList> Build() => BuildInternal(false);
     public char ReadChar() => Chars[NextChar++];
@@ -107,7 +112,7 @@ namespace CSharpMath.Atom {
             atom = resultAtom;
             break;
         }
-        atom.FontStyle = CurrentFontStyle;
+        atom.TextStyle = CurrentTextStyle;
         atom.RelativeSize = CurrentRelativeSize;
         atom.RelativeSizeDeclared = PendingRelativeSize != RelativeSizeDeclaration.None;
         PendingRelativeSize = RelativeSizeDeclaration.None;
@@ -493,7 +498,7 @@ namespace CSharpMath.Atom {
       : delimiter.Nucleus ?? "";
 
     private static void MathListToLaTeX
-      (MathList mathList, StringBuilder builder, FontStyle outerFontStyle) {
+      (MathList mathList, StringBuilder builder, TextStyle outerFontStyle) {
       var currentRelativeSize = RelativeSizeDeclaration.None;
       bool MathAtomToLaTeX(MathAtom atom, StringBuilder builder,
 #if !NETSTANDARD2_0 && !NET45
@@ -516,21 +521,57 @@ namespace CSharpMath.Atom {
         return false;
       }
 
+      static int AppendStyleCommands(StringBuilder builder, TextStyle outerStyle, TextStyle style) {
+        if (style.Posture == FontPosture.Slanted || style.Capitals != FontCapitals.Normal)
+          throw new InvalidOperationException("Slanted and small-capital serialization is introduced with their LaTeX command integration.");
+        var opened = 0;
+        if (!outerStyle.Equals(TextStyle.Default)) {
+          builder.Append(@"\mathnormal{");
+          opened++;
+        }
+        if (style.TryGetFontStyle(out var legacyStyle)) {
+          if (legacyStyle != FontStyle.Default) {
+            builder.Append('\\').Append(LaTeXSettings.FontStyles.SecondToFirst[legacyStyle]).Append('{');
+            opened++;
+          }
+          return opened;
+        }
+        if (style.Family != FontFamily.Default) {
+          var familyStyle = style.Family switch {
+            FontFamily.Roman => FontStyle.Roman,
+            FontFamily.SansSerif => FontStyle.SansSerif,
+            FontFamily.Monospace => FontStyle.Typewriter,
+            FontFamily.Calligraphic => FontStyle.Caligraphic,
+            FontFamily.Fraktur => FontStyle.Fraktur,
+            FontFamily.Blackboard => FontStyle.Blackboard,
+            _ => throw new InvalidCodePathException("Unknown semantic font family.")
+          };
+          builder.Append('\\').Append(LaTeXSettings.FontStyles.SecondToFirst[familyStyle]).Append('{');
+          opened++;
+        }
+        if (style.Weight == FontWeight.Bold) {
+          builder.Append(@"\mathbf{");
+          opened++;
+        }
+        if (style.Posture == FontPosture.Italic) {
+          builder.Append(@"\mathit{");
+          opened++;
+        }
+        return opened;
+      }
+
       if (mathList is null) throw new ArgumentNullException(nameof(mathList));
       if (mathList.IsEmpty()) return;
       var currentFontStyle = outerFontStyle;
+      var openStyleGroups = 0;
       foreach (var atom in mathList) {
-        if (currentFontStyle != atom.FontStyle) {
-          if (currentFontStyle != outerFontStyle) {
-            // close the previous font style
-            builder.Append('}');
-          }
-          if (atom.FontStyle != outerFontStyle) {
-            // open a new font style
-            builder.Append('\\').Append(LaTeXSettings.FontStyles.SecondToFirst[atom.FontStyle]).Append('{');
-          }
+        if (!currentFontStyle.Equals(atom.TextStyle)) {
+          builder.Append('}', openStyleGroups);
+          openStyleGroups = atom.TextStyle.Equals(outerFontStyle)
+            ? 0
+            : AppendStyleCommands(builder, outerFontStyle, atom.TextStyle);
         }
-        currentFontStyle = atom.FontStyle;
+        currentFontStyle = atom.TextStyle;
         switch (atom) {
           case Comment { Nucleus: var comment }:
             builder.Append('%').Append(comment).Append('\n');
@@ -736,7 +777,7 @@ namespace CSharpMath.Atom {
             break;
         }
         static void AppendScript
-          (StringBuilder builder, MathList script, char scriptChar, FontStyle currentFontStyle) {
+          (StringBuilder builder, MathList script, char scriptChar, TextStyle currentFontStyle) {
           if (script.IsNonEmpty()) {
             builder.Append(scriptChar).Append('{');
             var lengthBeforeScript = builder.Length;
@@ -750,13 +791,11 @@ namespace CSharpMath.Atom {
         AppendScript(builder, atom.Subscript, '_', currentFontStyle);
         AppendScript(builder, atom.Superscript, '^', currentFontStyle);
       }
-      if (currentFontStyle != outerFontStyle) {
-        builder.Append('}');
-      }
+      builder.Append('}', openStyleGroups);
     }
     public static StringBuilder MathListToLaTeX(MathList mathList, StringBuilder? sb = null) {
       sb ??= new StringBuilder();
-      MathListToLaTeX(mathList, sb, FontStyle.Default);
+      MathListToLaTeX(mathList, sb, TextStyle.Default);
       return sb;
     }
   }

@@ -6,3 +6,6 @@ CSharpMath.Rendering.Text.TextAtom.RelativeSize.Magnification.get -> float
 override CSharpMath.Rendering.Text.TextAtom.RelativeSize.SingleChar(CSharpMath.Atom.FontStyle style) -> int?
 override CSharpMath.Rendering.Text.TextAtom.RelativeSize.Equals(CSharpMath.Rendering.Text.TextAtom! atom) -> bool
 override CSharpMath.Rendering.Text.TextAtom.RelativeSize.GetHashCode() -> int
+CSharpMath.Rendering.Text.TextAtom.Style.Style(CSharpMath.Rendering.Text.TextAtom! content, CSharpMath.Atom.TextStyleChange styleChange) -> void
+CSharpMath.Rendering.Text.TextAtom.Style.StyleChange.get -> CSharpMath.Atom.TextStyleChange
+CSharpMath.Rendering.Text.TextAtomListBuilder.Style(CSharpMath.Rendering.Text.TextAtom! atom, CSharpMath.Atom.TextStyleChange styleChange) -> void

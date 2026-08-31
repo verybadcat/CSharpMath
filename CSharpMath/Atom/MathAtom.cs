@@ -22,7 +22,12 @@ namespace CSharpMath.Atom {
     public string Nucleus { get; set; }
     public MathList Superscript { get; private set; }
     public MathList Subscript { get; private set; }
-    public FontStyle FontStyle { get; set; }
+    TextStyle textStyle;
+    public FontStyle FontStyle {
+      get => textStyle.ToFontStyle();
+      set => textStyle = TextStyle.FromFontStyle(value);
+    }
+    public TextStyle TextStyle { get => textStyle; set => textStyle = value; }
     RelativeSizeDeclaration relativeSize;
     internal RelativeSizeDeclaration RelativeSize {
       get => relativeSize;
@@ -58,7 +63,7 @@ namespace CSharpMath.Atom {
       newAtom.Superscript = Superscript.Clone(finalize);
       newAtom.Subscript = Subscript.Clone(finalize);
       newAtom.IndexRange = IndexRange;
-      newAtom.FontStyle = FontStyle;
+      newAtom.TextStyle = TextStyle;
       newAtom.RelativeSize = RelativeSize;
       newAtom.RelativeSizeDeclared = RelativeSizeDeclared;
       return newAtom;
@@ -100,11 +105,11 @@ namespace CSharpMath.Atom {
         LaTeXSettings.RelativeSizeMagnification(otherAtom.RelativeSize) &&
       GetType() == otherAtom.GetType() &&
       //IndexRange == otherAtom.IndexRange &&
-      //FontStyle == otherAtom.FontStyle &&
+      TextStyle.Equals(otherAtom.TextStyle) &&
       Superscript.NullCheckingStructuralEquality(otherAtom.Superscript) &&
       Subscript.NullCheckingStructuralEquality(otherAtom.Subscript);
     public override bool Equals(object obj) => obj is MathAtom a && EqualsAtom(a);
     bool IEquatable<MathAtom>.Equals(MathAtom otherAtom) => EqualsAtom(otherAtom);
-    public override int GetHashCode() => (Superscript, Subscript, Nucleus, LaTeXSettings.RelativeSizeMagnification(RelativeSize)).GetHashCode();
+    public override int GetHashCode() => (Superscript, Subscript, Nucleus, TextStyle, LaTeXSettings.RelativeSizeMagnification(RelativeSize)).GetHashCode();
   }
 }

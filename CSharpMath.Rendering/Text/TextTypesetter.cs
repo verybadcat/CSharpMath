@@ -39,7 +39,7 @@ namespace CSharpMath.Rendering.Text {
         TextLayoutLineBuilder line,
         List<IDisplay<Fonts, Glyph>> displayList,
         List<IDisplay<Fonts, Glyph>> displayMathList,
-        FontStyle style,
+        TextStyle style,
         Color? color
       ) {
 
@@ -52,7 +52,7 @@ namespace CSharpMath.Rendering.Text {
             break;
           case TextAtom.Style st:
             AddDisplaysWithLineBreaks
-              (st.Content, fonts, line, displayList, displayMathList, st.FontStyle, color);
+              (st.Content, fonts, line, displayList, displayMathList, st.StyleChange.ApplyTo(style), color);
             break;
           case TextAtom.Size sz:
             AddDisplaysWithLineBreaks
@@ -108,7 +108,7 @@ namespace CSharpMath.Rendering.Text {
               line.Add(display, ascender, -rawDescender, lineGap);
             }
           case TextAtom.Text t:
-            var content = UnicodeFontChanger.ChangeFont(t.Content, style);
+            var content = UnicodeFontChanger.ChangeFont(t.Content, style.ToFontStyle());
             var glyphs = GlyphFinder.Instance.FindGlyphs(fonts, content);
             //Calling Select(g => g.Typeface).Distinct() speeds up query up to 10 times,
             //Calling Max(Func<,>) instead of Select(Func<,>).Max() speeds up query 2 times
@@ -199,7 +199,7 @@ namespace CSharpMath.Rendering.Text {
         globalLine,
         relativePositionList,
         absolutePositionList,
-        FontStyle.Roman /*FontStyle.Default is FontStyle.Italic, FontStyle.Roman is no change to characters*/,
+        TextStyle.Default.WithFamily(FontFamily.Roman),
         null
       );
       BreakLine(globalLine, relativePositionList, absolutePositionList); //remember to finalize the last line

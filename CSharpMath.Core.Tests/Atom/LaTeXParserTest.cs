@@ -1108,10 +1108,14 @@ namespace CSharpMath.Core.AtomTests {
     public void TestFontRecursive(string input) {
       var list = ParseLaTeX(input);
       Assert.Collection(list,
-        CheckAtom<Variable>("x", variable => Assert.Equal(FontStyle.Roman, variable.FontStyle)),
+        CheckAtom<Variable>("x", variable => {
+          Assert.Equal(FontStyle.Roman, variable.FontStyle);
+          Assert.Equal(FontFamily.Roman, variable.TextStyle.Family);
+          Assert.Equal(FontPosture.Italic, variable.TextStyle.Posture);
+        }),
         CheckAtom<Variable>("y", variable => Assert.Equal(FontStyle.Default, variable.FontStyle))
       );
-      Assert.Equal(@"\mathrm{x}y", LaTeXParser.MathListToLaTeX(list).ToString());
+      Assert.Equal(@"\mathrm{\mathit{x}}y", LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
     [Fact]

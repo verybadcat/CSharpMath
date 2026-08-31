@@ -364,19 +364,19 @@ namespace CSharpMath.Atom {
       new AliasBiDictionary<string, FontStyle>((command, fontStyle) => {
         Commands.Add(@"\" + command, (parser, accumulate, stopChar) => {
           var oldSpacesAllowed = parser.TextMode;
-          var oldFontStyle = parser.CurrentFontStyle;
+          var oldTextStyle = parser.CurrentTextStyle;
           parser.TextMode = command == "text";
-          parser.CurrentFontStyle = fontStyle;
+          parser.CurrentTextStyle = TextStyleChange.FromFontStyleCommand(fontStyle).ApplyTo(parser.CurrentTextStyle);
           var readsToEnd =
             !command.AsSpan().StartsWithInvariant("math")
             && !command.AsSpan().StartsWithInvariant("text");
-          return (readsToEnd ? parser.ReadUntil(stopChar, accumulate) : parser.ReadArgument()).Bind(r => {
-            parser.CurrentFontStyle = oldFontStyle;
-            parser.TextMode = oldSpacesAllowed;
-            if (readsToEnd)
-              return OkStop(accumulate);
-            else return OkStyled(r);
-          });
+          var result = readsToEnd ? parser.ReadUntil(stopChar, accumulate) : parser.ReadArgument();
+          parser.CurrentTextStyle = oldTextStyle;
+          parser.TextMode = oldSpacesAllowed;
+          if (result.Error is string error) return error;
+          if (readsToEnd) return OkStop(accumulate);
+          var (styled, _) = result;
+          return OkStyled(styled);
         });
       }) {
         { "mathnormal", FontStyle.Default },
@@ -453,6 +453,9 @@ namespace CSharpMath.Atom {
       var atomWithoutScripts = atom.Clone(false);
       atomWithoutScripts.Superscript.Clear();
       atomWithoutScripts.Subscript.Clear();
+      // Style is serialized by LaTeXParser around the symbol command and is not
+      // part of a predefined symbol's identity.
+      atomWithoutScripts.TextStyle = TextStyle.Default;
       if (atomWithoutScripts is IMathListContainer container)
         foreach (var list in container.InnerLists)
           list.Clear();
