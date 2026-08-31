@@ -1,6 +1,6 @@
 ## Summary
 
-<!-- What changes, and why? Keep this focused on behavior a reviewer can verify. -->
+<!-- Use a concise title and give a simple description of what changes and why. Keep this focused on behavior a reviewer can verify. -->
 
 ## Related issue
 
@@ -10,10 +10,14 @@
 
 <!-- List the focused tests and broader checks you ran. Include new or updated rendering baselines when applicable. -->
 
-## Compatibility and maintenance cost
+## Added code and maintenance
 
-<!-- Note public API, rendering, serialization, platform, migration, added-code, or ongoing-complexity effects. Write "None" when there are none. -->
+<!-- Disclose added code, complexity, and ongoing maintenance. Note public API, rendering, serialization, platform, or migration effects. Write "None" when there are none. -->
 
 ## Review
 
-<!-- Name any human or automated review beyond routine GitHub checks, and summarize material findings or follow-up fixes. -->
+<!-- Name the automated or AI review actually used (do not assume GitHub Copilot is available), and summarize findings and fixes. Write "None" when none was used. -->
+
+## Human judgment
+
+<!-- Flag whether human judgment is needed for feature fit, security, public API, or maintainability. Explain briefly, or write "No". -->

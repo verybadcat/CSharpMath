@@ -23,3 +23,17 @@ workflow state. Use draft pull requests for work in progress, milestones for rel
 commitments, and native sub-issues and dependencies for larger efforts. When closing
 an issue without a merged change, choose the appropriate GitHub state reason so
 future readers can distinguish completed work from work that is not planned.
+
+Review policy
+-------------
+Core changes are changes to CSharpMath core/editor, CSharpMath.Rendering,
+CSharpMath.SkiaSharp, their corresponding tests, or cross-cutting build, release,
+review, or security infrastructure. Core changes require human review.
+
+Periphery includes symbolic algebra/Evaluation, other platform frontends and adapters,
+examples, benchmarks, and isolated tests for those areas. A periphery change may
+proceed without human GitHub review only when relevant CI is green, a satisfactory
+independent LLM review has no unresolved findings, and it does not involve core code,
+a public API, security, release, or another cross-cutting concern. Humans decide
+significant feature-fit and maintainability questions and remain important for obvious
+or security mistakes.

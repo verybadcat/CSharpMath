@@ -1,0 +1,28 @@
+# CODEOWNERS requests review from verified write-access owners for core changes.
+# Repository rules determine whether an approval is enforced.
+
+/CSharpMath/ @Happypig375 @charlesroddie @FoggyFinder
+/CSharpMath.Core.Tests/ @Happypig375 @charlesroddie @FoggyFinder
+/CSharpMath.Rendering/ @Happypig375 @charlesroddie @FoggyFinder
+/CSharpMath.Rendering.Tests/ @Happypig375 @charlesroddie @FoggyFinder
+/CSharpMath.Rendering.Tests.FSharp/ @Happypig375 @charlesroddie @FoggyFinder
+/CSharpMath.Rendering.Text.Tests/ @Happypig375 @charlesroddie @FoggyFinder
+/CSharpMath.SkiaSharp/ @Happypig375 @charlesroddie @FoggyFinder
+
+# Cross-cutting solution, build, workflow, review, and security policy files.
+/CSharpMath.slnx @Happypig375 @charlesroddie @FoggyFinder
+/global.json @Happypig375 @charlesroddie @FoggyFinder
+/.editorconfig @Happypig375 @charlesroddie @FoggyFinder
+/NuGet.Config @Happypig375 @charlesroddie @FoggyFinder
+/.gitmodules @Happypig375 @charlesroddie @FoggyFinder
+/.gitattributes @Happypig375 @charlesroddie @FoggyFinder
+/Directory.Build.props @Happypig375 @charlesroddie @FoggyFinder
+/Directory.Build.targets @Happypig375 @charlesroddie @FoggyFinder
+/.github/release-drafter.yml @Happypig375 @charlesroddie @FoggyFinder
+/.github/workflows/ @Happypig375 @charlesroddie @FoggyFinder
+/.github/CODEOWNERS @Happypig375 @charlesroddie @FoggyFinder
+/.github/PULL_REQUEST_TEMPLATE.md @Happypig375 @charlesroddie @FoggyFinder
+/AGENTS.md @Happypig375 @charlesroddie @FoggyFinder
+/Contributing.md @Happypig375 @charlesroddie @FoggyFinder
+/SECURITY.md @Happypig375 @charlesroddie @FoggyFinder
+/ReleaseProcedure.txt @Happypig375 @charlesroddie @FoggyFinder
