@@ -44,9 +44,19 @@ namespace CSharpMath.Rendering.FrontEnd {
     protected abstract void SetRedisplay();
     protected Fonts Fonts { get; private set; } = new Fonts(Array.Empty<Typeface>(), DefaultFontSize);
     /// <summary>Unit of measure: points</summary>
-    public float FontSize { get => Fonts.PointSize; set { Fonts = new Fonts(Fonts, value); SetRedisplay(); } }
+    public float FontSize { get => Fonts.PointSize; set { Fonts = Fonts.Resize(Fonts, value); SetRedisplay(); } }
     IEnumerable<Typeface> __localTypefaces = Array.Empty<Typeface>();
-    public IEnumerable<Typeface> LocalTypefaces { get => __localTypefaces; set { Fonts = new Fonts(value, FontSize); __localTypefaces = value; SetRedisplay(); } }
+    public IEnumerable<Typeface> LocalTypefaces {
+      get => __localTypefaces;
+      set {
+        var fonts = new Fonts(value, FontSize);
+        Fonts = fonts;
+        // Expose the stable snapshot, rather than retaining a caller-owned
+        // lazy/single-use enumerable.
+        __localTypefaces = fonts.LocalTypefacesSnapshot;
+        SetRedisplay();
+      }
+    }
     Atom.LineStyle __style = Atom.LineStyle.Display;
     public Atom.LineStyle LineStyle { get => __style; set { __style = value; SetRedisplay(); } }
     TContent? __content;
