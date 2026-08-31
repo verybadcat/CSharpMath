@@ -25,10 +25,14 @@ namespace CSharpMath.Display.Displays {
       Displays = displays;
       LinePosition = LinePosition.Regular;
       IndexInParent = int.MinValue;
+      LogicalWidth = displays.CollectionWidth();
     }
     public float Ascent => Displays.CollectionAscent();
     public float Descent => Displays.CollectionDescent();
     public PointF Position { get; set; }
+    internal float LogicalWidth { get; set; }
+    internal float InkLeft => this.InkBounds().Left;
+    internal float InkRight => this.InkBounds().Right;
 
     public Range Range =>
       Range.Combine(

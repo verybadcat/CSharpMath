@@ -1,0 +1,13 @@
+CSharpMath.Atom.Atoms.JoinRel
+CSharpMath.Atom.Atoms.JoinRel.Clone(bool finalize) -> CSharpMath.Atom.Atoms.JoinRel!
+CSharpMath.Atom.Atoms.JoinRel.JoinRel() -> void
+CSharpMath.Atom.Atoms.MathRel
+CSharpMath.Atom.Atoms.MathRel.Clone(bool finalize) -> CSharpMath.Atom.Atoms.MathRel!
+CSharpMath.Atom.Atoms.MathRel.InnerList.get -> CSharpMath.Atom.MathList!
+CSharpMath.Atom.Atoms.MathRel.MathRel(CSharpMath.Atom.MathList! innerList) -> void
+override CSharpMath.Atom.Atoms.JoinRel.DebugString.get -> string!
+override CSharpMath.Atom.Atoms.JoinRel.ScriptsAllowed.get -> bool
+override CSharpMath.Atom.Atoms.MathRel.DebugString.get -> string!
+override CSharpMath.Atom.Atoms.MathRel.Equals(object! obj) -> bool
+override CSharpMath.Atom.Atoms.MathRel.GetHashCode() -> int
+override CSharpMath.Atom.Atoms.MathRel.ScriptsAllowed.get -> bool

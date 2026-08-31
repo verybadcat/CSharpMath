@@ -1,4 +1,5 @@
 using System.Drawing;
+using CSharpMath;
 
 namespace CSharpMath.Rendering.FrontEnd {
   using System.Runtime;
@@ -25,12 +26,22 @@ namespace CSharpMath.Rendering.FrontEnd {
     public override void Draw(TCanvas canvas, TextAlignment alignment = TextAlignment.Center, Thickness padding = default, float offsetX = 0, float offsetY = 0) {
       var c = WrapCanvas(canvas);
       UpdateDisplay(float.NaN);
-      DrawCore(c, Display, Display == null ? new PointF?() : IPainterExtensions.GetDisplayPosition(Display.Width, Display.Ascent, Display.Descent, FontSize, c.Width, c.Height, alignment, padding, offsetX, offsetY));
+      var position = Display == null ? new PointF?() : GetAlignedPosition(c, alignment, padding, offsetX, offsetY);
+      DrawCore(c, Display, position);
     }
     public void Draw(TCanvas canvas, float x, float y) {
       var c = WrapCanvas(canvas);
       UpdateDisplay(float.NaN);
-      DrawCore(c, Display, new PointF(x, -y)); // Invert the canvas
+      var inkLeft = Display?.InkBounds().Left ?? 0;
+      DrawCore(c, Display, new PointF(x - inkLeft, -y)); // x is the ink bounding-box origin; invert the canvas
+    }
+    private PointF GetAlignedPosition(ICanvas canvas, TextAlignment alignment, Thickness padding,
+      float offsetX, float offsetY) {
+      var bounds = Display!.InkBounds();
+      var aligned = IPainterExtensions.GetDisplayPosition(
+        bounds.Right - bounds.Left, Display.Ascent, Display.Descent, FontSize,
+        canvas.Width, canvas.Height, alignment, padding, offsetX, offsetY);
+      return new PointF(aligned.X - bounds.Left, aligned.Y);
     }
     /// <summary>
     /// Directly draw the given <paramref name="display"/>. Repositions the <paramref name="display"/>.

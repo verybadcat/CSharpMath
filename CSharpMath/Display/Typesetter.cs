@@ -158,7 +158,9 @@ namespace CSharpMath.Display {
       }
       var typesetter = new Typesetter<TFont, TGlyph>(font, context, style, cramped, spaced);
       typesetter.CreateDisplayAtoms(_PreprocessMathList());
-      return new ListDisplay<TFont, TGlyph>(typesetter._displayAtoms.ToArray());
+      var listDisplay = new ListDisplay<TFont, TGlyph>(typesetter._displayAtoms.ToArray());
+      listDisplay.LogicalWidth = typesetter._currentPosition.X;
+      return listDisplay;
     }
     private void CreateDisplayAtoms(List<MathAtom> preprocessedAtoms) {
       MathAtom? prevAtom = null;
@@ -173,6 +175,17 @@ namespace CSharpMath.Display {
           case Space space:
             AddDisplayLine(false);
             _currentPosition.X += space.ActualLength(_mathTable, _font);
+            continue;
+          case JoinRel joinRel:
+            AddDisplayLine(false);
+            if (joinRel.Superscript.IsNonEmpty() || joinRel.Subscript.IsNonEmpty()) {
+              var scriptAnchor = AddDisplayLine(true);
+              if (scriptAnchor is null) throw new InvalidCodePathException("script anchor was not created");
+              var logicalPosition = _currentPosition.X;
+              MakeScripts(joinRel, scriptAnchor, joinRel.IndexRange.Location, 0);
+              _currentPosition.X = logicalPosition;
+            }
+            _currentPosition.X -= 3 * _mathTable.MuUnit(_styleFont);
             continue;
           case Style style:
             // stash the existing layout
@@ -243,6 +256,17 @@ namespace CSharpMath.Display {
             if (atom.Subscript.IsNonEmpty() || atom.Superscript.IsNonEmpty()) {
               MakeScripts(atom, innerDisplay, atom.IndexRange.Location, 0);
             }
+            break;
+          case MathRel mathRel:
+            AddDisplayLine(false);
+            AddInterElementSpace(prevAtom, mathRel);
+            var mathRelDisplay = CreateLine(mathRel.InnerList, _font, _context, _style, _cramped);
+            mathRelDisplay.Position = _currentPosition;
+            _currentPosition.X += mathRelDisplay is ListDisplay<TFont, TGlyph> nestedMathRel
+              ? nestedMathRel.LogicalWidth : mathRelDisplay.Width;
+            _displayAtoms.Add(mathRelDisplay);
+            if (atom.Subscript.IsNonEmpty() || atom.Superscript.IsNonEmpty())
+              MakeScripts(atom, mathRelDisplay, atom.IndexRange.Location, 0);
             break;
           case Underline underline:
             AddDisplayLine(false);

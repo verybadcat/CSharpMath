@@ -96,6 +96,61 @@ namespace CSharpMath.Core.AtomTests {
       Assert.Equal(@"\sin *", LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
+    [Fact]
+    public void MathRelAndJoinRelAreStructuralAndRoundTrip() {
+      var list = ParseLaTeX(@"a\mathrel{|}\joinrel=b");
+      Assert.Collection(list,
+        atom => Assert.IsType<Variable>(atom),
+        atom => {
+          var rel = Assert.IsType<MathRel>(atom);
+          Assert.Collection(rel.InnerList, inner => Assert.IsType<Ordinary>(inner));
+        },
+        atom => Assert.IsType<JoinRel>(atom),
+        atom => Assert.IsType<Relation>(atom),
+        atom => Assert.IsType<Variable>(atom));
+      Assert.Equal(@"a\mathrel{|}\joinrel =b", LaTeXParser.MathListToLaTeX(list).ToString());
+      var reparsed = ParseLaTeX(LaTeXParser.MathListToLaTeX(list).ToString());
+      Assert.True(list.NullCheckingStructuralEquality(reparsed));
+    }
+
+    [Theory]
+    [InlineData(@"\mathrel{", "Missing closing brace")]
+    public void MathRelReportsMalformedArguments(string input, string expected) {
+      var (_, error) = new LaTeXParser(input).Build();
+      Assert.Equal(expected, error);
+    }
+
+    [Fact]
+    public void MathRelPreservesNestedContentAndScripts() {
+      var list = ParseLaTeX(@"\mathrel{\left( x^2 \right)}_i");
+      var rel = Assert.IsType<MathRel>(Assert.Single(list));
+      Assert.Single(rel.Subscript);
+      var inner = Assert.IsType<Inner>(Assert.Single(rel.InnerList));
+      Assert.Equal("(", inner.LeftBoundary.Nucleus);
+      Assert.Equal(")", inner.RightBoundary.Nucleus);
+      var canonical = LaTeXParser.MathListToLaTeX(list).ToString();
+      Assert.True(list.NullCheckingStructuralEquality(ParseLaTeX(canonical)));
+    }
+
+    [Fact]
+    public void JoinRelIsNotADisplayedNodeDuringCloneNormalization() {
+      var list = ParseLaTeX(@"a+\joinrel=b").Clone(true);
+      Assert.Collection(list,
+        atom => Assert.IsType<Variable>(atom),
+        atom => Assert.IsType<UnaryOperator>(atom),
+        atom => Assert.IsType<JoinRel>(atom),
+        atom => Assert.IsType<Relation>(atom),
+        atom => Assert.IsType<Variable>(atom));
+    }
+
+    [Fact]
+    public void JoinRelPreservesScriptsStructurally() {
+      var list = ParseLaTeX(@"\joinrel^x");
+      var join = Assert.IsType<JoinRel>(Assert.Single(list));
+      Assert.Single(join.Superscript);
+      Assert.True(list.NullCheckingStructuralEquality(ParseLaTeX(LaTeXParser.MathListToLaTeX(list).ToString())));
+    }
+
     /// new[] { Base list }, new[] { Script of first atom }, new[] { Script of first atom inside script of first atom }
     [Theory]
     [InlineData("x^2", "x^2", new[] { typeof(Variable) }, new[] { typeof(Number) })]

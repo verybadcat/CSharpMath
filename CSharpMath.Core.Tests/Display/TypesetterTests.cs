@@ -10,6 +10,63 @@ using TGlyph = System.Text.Rune;
 
 namespace CSharpMath.Core.DisplayTests {
   public class TypesetterTests {
+    [Theory]
+    [InlineData(LineStyle.Display)]
+    [InlineData(LineStyle.Text)]
+    [InlineData(LineStyle.Script)]
+    [InlineData(LineStyle.ScriptScript)]
+    public void JoinRelContributesExactlyNegativeThreeMu(LineStyle style) {
+      var plain = Typesetter.CreateLine(AtomTests.LaTeXParserTest.ParseLaTeX("xx"), _font, _context, style);
+      var joined = Typesetter.CreateLine(AtomTests.LaTeXParserTest.ParseLaTeX(@"x\joinrel x"), _font, _context, style);
+      var styleFont = new TFont(_context.MathTable.GetStyleSize(style, _font));
+      Approximately.Equal(-3 * _context.MathTable.MuUnit(styleFont), joined.Width - plain.Width);
+    }
+
+    [Fact]
+    public void MathRelGetsRelationSpacingExactlyOnceAndKeepsInternalLayout() {
+      var ordinary = Typesetter.CreateLine(AtomTests.LaTeXParserTest.ParseLaTeX("a=b"), _font, _context, LineStyle.Display);
+      var wrapped = Typesetter.CreateLine(AtomTests.LaTeXParserTest.ParseLaTeX(@"a\mathrel{x}b"), _font, _context, LineStyle.Display);
+      Approximately.Equal(ordinary.Width, wrapped.Width);
+      var inner = Typesetter.CreateLine(AtomTests.LaTeXParserTest.ParseLaTeX("x+y"), _font, _context, LineStyle.Display);
+      var wrappedInner = Typesetter.CreateLine(AtomTests.LaTeXParserTest.ParseLaTeX(@"\mathrel{x+y}"), _font, _context, LineStyle.Display);
+      Approximately.Equal(inner.Width, wrappedInner.Width);
+    }
+
+    [Fact]
+    public void MathRelAtFormulaBoundaryAndWithScriptsRemainsMeasured() {
+      var standalone = Typesetter.CreateLine(AtomTests.LaTeXParserTest.ParseLaTeX(@"\mathrel{x}"), _font, _context, LineStyle.Display);
+      var x = Typesetter.CreateLine(AtomTests.LaTeXParserTest.ParseLaTeX("x"), _font, _context, LineStyle.Display);
+      Approximately.Equal(x.Width, standalone.Width);
+      var scripted = Typesetter.CreateLine(AtomTests.LaTeXParserTest.ParseLaTeX(@"\mathrel{x}^2"), _font, _context, LineStyle.Display);
+      Assert.Contains(scripted.Displays, d => d.HasScript);
+      Assert.True(scripted.Width >= standalone.Width);
+    }
+
+    [Fact]
+    public void JoinRelScriptHasAVisibleScriptAnchor() {
+      var display = Typesetter.CreateLine(AtomTests.LaTeXParserTest.ParseLaTeX(@"\joinrel^x"), _font, _context, LineStyle.Display);
+      Assert.Contains(display.Displays, d => d.HasScript);
+      Assert.True(display.Width > 0);
+    }
+
+    [Theory]
+    [InlineData(@"\joinrel x", 6.6666667f)]
+    [InlineData(@"x\joinrel", 6.6666667f)]
+    [InlineData(@"\joinrel", -3.3333333f)]
+    public void JoinRelKeepsLogicalAdvanceAtBoundaries(string latex, float expectedLogicalWidth) {
+      var display = Typesetter.CreateLine(AtomTests.LaTeXParserTest.ParseLaTeX(latex), _font, _context, LineStyle.Display);
+      Approximately.Equal(expectedLogicalWidth, display.LogicalWidth);
+      Assert.True(display.Width >= 0);
+      if (latex == @"\joinrel x")
+        Approximately.Equal(-10f / 3f, display.InkLeft);
+    }
+
+    [Fact]
+    public void NestedMathRelPropagatesJoinRelLogicalAdvance() {
+      var display = Typesetter.CreateLine(AtomTests.LaTeXParserTest.ParseLaTeX(@"\mathrel{\joinrel x}"), _font, _context, LineStyle.Display);
+      Approximately.Equal(6.6666667, display.LogicalWidth);
+      Assert.True(display.Width >= display.LogicalWidth);
+    }
     internal static ListDisplay<TFont, TGlyph> ParseLaTeXToDisplay(string latex) =>
       Typesetter.CreateLine(AtomTests.LaTeXParserTest.ParseLaTeX(latex), _font, _context, LineStyle.Display);
 

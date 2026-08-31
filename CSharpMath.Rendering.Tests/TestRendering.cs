@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SkiaSharp;
 using Xunit;
 
 namespace CSharpMath.Rendering.Tests {
@@ -74,6 +75,62 @@ namespace CSharpMath.Rendering.Tests {
     [Theory, ClassData(typeof(TestRenderingMathData))]
     public void MathInline(string file, string latex) =>
       Run(file, latex, new TMathPainter { LineStyle = Atom.LineStyle.Text });
+
+    [Theory]
+    [InlineData(@"\joinrel x")]
+    [InlineData(@"x\joinrel")]
+    [InlineData(@"\mathrel{\left(\joinrel x\right)}")]
+    [InlineData(@"\bar{\joinrel x}")]
+    public void JoinRelInkFitsInMeasuredImage(string latex) {
+      var painter = new TMathPainter { LaTeX = latex };
+      Assert.Null(painter.ErrorMessage);
+      var measure = painter.Measure(1000);
+      Assert.True(measure.Width > 0 && measure.Height > 0);
+
+      using var stream = new MemoryStream();
+      DrawToStream(painter, stream, 1000, TextAlignment.TopLeft);
+      stream.Position = 0;
+      using var bitmap = SKBitmap.Decode(stream);
+      Assert.NotNull(bitmap);
+      var pixels = Enumerable.Range(0, bitmap.Width)
+        .SelectMany(x => Enumerable.Range(0, bitmap.Height).Select(y => (x, y)))
+        .Where(p => bitmap.GetPixel(p.x, p.y).Alpha > 0)
+        .ToArray();
+      Assert.NotEmpty(pixels);
+      Assert.InRange(pixels.Min(p => p.x), 0, bitmap.Width - 1);
+      Assert.InRange(pixels.Max(p => p.x), 0, bitmap.Width - 1);
+      Assert.InRange(pixels.Min(p => p.y), 0, bitmap.Height - 1);
+      Assert.InRange(pixels.Max(p => p.y), 0, bitmap.Height - 1);
+      // DrawAsStream/DrawAsPng use the measured dimensions cast to int (floor).
+      Assert.Equal(Math.Max(1, (int)measure.Width), bitmap.Width);
+      Assert.Equal(Math.Max(1, (int)measure.Height), bitmap.Height);
+    }
+
+    [Theory]
+    [InlineData(@"\joinrel x")]
+    [InlineData(@"x\joinrel")]
+    public void BoundaryJoinRelHasSameRasterAsPlainX(string latex) {
+      (int width, int height, int left, int right, int top, int bottom) Render(string source) {
+        var painter = new TMathPainter { LaTeX = source };
+        using var stream = new MemoryStream();
+        DrawToStreamForContract(painter, stream);
+        stream.Position = 0;
+        using var bitmap = SKBitmap.Decode(stream);
+        Assert.NotNull(bitmap);
+        var pixels = Enumerable.Range(0, bitmap!.Width)
+          .SelectMany(x => Enumerable.Range(0, bitmap.Height).Select(y => (x, y)))
+          .Where(p => bitmap.GetPixel(p.x, p.y).Alpha > 0).ToArray();
+        Assert.NotEmpty(pixels);
+        return (bitmap.Width, bitmap.Height, pixels.Min(p => p.x), pixels.Max(p => p.x),
+          pixels.Min(p => p.y), pixels.Max(p => p.y));
+      }
+      var plain = Render("x");
+      var joined = Render(latex);
+      Assert.Equal(plain, joined);
+    }
+
+    private void DrawToStreamForContract(TMathPainter painter, Stream stream) =>
+      DrawToStream(painter, stream, 1000, TextAlignment.TopLeft);
     [Theory, ClassData(typeof(TestRenderingTextData))]
     public void TextLeft(string file, string latex) =>
       Run(file, latex, new TTextPainter());

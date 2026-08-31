@@ -557,6 +557,14 @@ namespace CSharpMath.Atom {
             MathListToLaTeX(list, builder, currentFontStyle);
             builder.Append(@"\right").Append(BoundaryToLaTeX(right)).Append(' ');
             break;
+          case MathRel rel:
+            builder.Append(@"\mathrel{");
+            MathListToLaTeX(rel.InnerList, builder, currentFontStyle);
+            builder.Append('}');
+            break;
+          case JoinRel:
+            builder.Append(@"\joinrel ");
+            break;
           case Table table:
             if (table.Environment != null) {
               builder.Append(@"\begin{" + table.Environment + "}");
