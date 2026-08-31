@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CSharpMath.Display;
+using CSharpMath.Display.Displays;
+using CSharpMath.Rendering.BackEnd;
 using Xunit;
 
 namespace CSharpMath.Rendering.Tests {
@@ -68,12 +71,73 @@ namespace CSharpMath.Rendering.Tests {
     protected abstract double FileSizeTolerance { get; }
     protected abstract void DrawToStream<TContent>(Painter<TCanvas, TContent, TColor> painter,
       Stream stream, float textPainterCanvasWidth, TextAlignment alignment) where TContent : class;
+    private static InnerDisplay<Fonts, Glyph>? FindInner(IDisplay<Fonts, Glyph> display) => display switch {
+      InnerDisplay<Fonts, Glyph> inner when inner.Inner.Displays.Count > 1
+        && (inner.Inner.Displays.Any(d => d is GlyphDisplay<Fonts, Glyph>)
+          || inner.Inner.Displays.Any(d => d is ListDisplay<Fonts, Glyph>)) => inner,
+      InnerDisplay<Fonts, Glyph> inner => FindInner(inner.Inner),
+      ListDisplay<Fonts, Glyph> list => list.Displays.Select(FindInner).FirstOrDefault(i => i != null),
+      _ => null
+    };
+    private static InnerDisplay<Fonts, Glyph>? FindAnyInner(IDisplay<Fonts, Glyph> display) => display switch {
+      InnerDisplay<Fonts, Glyph> inner => inner,
+      ListDisplay<Fonts, Glyph> list => list.Displays.Select(FindAnyInner).FirstOrDefault(i => i != null),
+      _ => null
+    };
     [Theory, ClassData(typeof(TestRenderingMathData))]
     public void MathDisplay(string file, string latex) =>
       Run(file, latex, new TMathPainter { LineStyle = Atom.LineStyle.Display });
     [Theory, ClassData(typeof(TestRenderingMathData))]
     public void MathInline(string file, string latex) =>
       Run(file, latex, new TMathPainter { LineStyle = Atom.LineStyle.Text });
+
+    [Theory]
+    [InlineData(Atom.LineStyle.Display)]
+    [InlineData(Atom.LineStyle.Text)]
+    [InlineData(Atom.LineStyle.Script)]
+    public void MiddleDelimiterRenderingSmoke(Atom.LineStyle lineStyle) {
+      // Inspect the backend display tree and independently resolved delimiter glyphs.
+      foreach (var latex in new[] {
+        @"\left\{\frac{x_i}{i}\middle|i\in\mathcal{I}\right\}",
+        @"\left. a\middle|b\right.",
+        @"\left. a\middle. b\right.",
+        @"\left( a\middle|b\middle\Vert c\right)",
+        @"\left\{\left[\frac{a}{b}\middle|\begin{pmatrix}x&y\\z&w\end{pmatrix}\right]\right\}",
+        @"\left(\middle|x\right)^2"
+      }) {
+        var painter = new TMathPainter { LineStyle = lineStyle, LaTeX = latex };
+        var measure = painter.Measure();
+        Assert.True(measure.Width > 0 && measure.Height > 0, latex);
+        var inner = Assert.IsType<InnerDisplay<Fonts, Glyph>>(FindInner(painter.Display!));
+        var parts = inner.Inner.Displays;
+        if (latex.Contains(@"\middle.")) {
+          Assert.Equal(2, parts.Count);
+          Assert.DoesNotContain(parts, part => part is GlyphDisplay<Fonts, Glyph>);
+        } else {
+          Assert.Contains(parts, part => part is GlyphDisplay<Fonts, Glyph>);
+        }
+        if (latex.Contains(@"\middle|b\middle\Vert")) {
+          var middles = parts.OfType<GlyphDisplay<Fonts, Glyph>>().ToArray();
+          Assert.Equal(2, middles.Length);
+          var barPainter = new TMathPainter { LineStyle = lineStyle, LaTeX = @"\left|a\right|" };
+          _ = barPainter.Measure();
+          var bar = Assert.IsType<InnerDisplay<Fonts, Glyph>>(FindAnyInner(barPainter.Display!));
+          var vertPainter = new TMathPainter { LineStyle = lineStyle, LaTeX = @"\left\|a\right\|" };
+          _ = vertPainter.Measure();
+          var vert = Assert.IsType<InnerDisplay<Fonts, Glyph>>(FindAnyInner(vertPainter.Display!));
+          Assert.Equal(bar.Left!.GetType(), middles[0].GetType());
+          Assert.Equal(vert.Left!.GetType(), middles[1].GetType());
+          Assert.Equal(((GlyphDisplay<Fonts, Glyph>)bar.Left).Glyph.Info.GlyphIndex, middles[0].Glyph.Info.GlyphIndex);
+          Assert.Equal(((GlyphDisplay<Fonts, Glyph>)vert.Left).Glyph.Info.GlyphIndex, middles[1].Glyph.Info.GlyphIndex);
+          var outerExtent = Math.Max(inner.Left!.Ascent + inner.Left.Descent, inner.Right!.Ascent + inner.Right.Descent);
+          Assert.All(middles, glyph => Assert.InRange(glyph.Ascent + glyph.Descent, outerExtent * 0.75f, outerExtent * 1.25f));
+          Assert.All(middles, glyph => Assert.True(glyph.Ascent + glyph.Descent > 0));
+          Assert.InRange(Math.Abs(middles[0].ShiftDown - middles[1].ShiftDown), 0, 1e-4f);
+          Assert.InRange(Math.Abs(inner.Left!.ShiftDown - middles[0].ShiftDown), 0, 1e-4f);
+          Assert.InRange(Math.Abs(inner.Right!.ShiftDown - middles[1].ShiftDown), 0, 1e-4f);
+        }
+      }
+    }
     [Theory, ClassData(typeof(TestRenderingTextData))]
     public void TextLeft(string file, string latex) =>
       Run(file, latex, new TTextPainter());

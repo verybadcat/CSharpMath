@@ -311,6 +311,43 @@ namespace CSharpMath.Core.DisplayTests {
           Assert.False(glyph2.HasScript);
           Assert.Equal(right.EnumerateRunes().Last(), glyph2.Glyph);
         });
+
+    [Theory]
+    [InlineData(LineStyle.Display)]
+    [InlineData(LineStyle.Text)]
+    [InlineData(LineStyle.Script)]
+    public void TestMiddleDelimitersShareExtentAndRetainAssemblies(LineStyle style) {
+      var line = Typesetter.CreateLine(
+        AtomTests.LaTeXParserTest.ParseLaTeX(
+          @"\left\{\frac{1}{2}\middle|\begin{matrix}x\\y\end{matrix}\middle\Vert z\right\}^2"),
+        _font, _context, style);
+      var inner = line.Displays.OfType<InnerDisplay<TFont, TGlyph>>().Single();
+      Assert.True(inner.HasScript);
+      Assert.Equal(5, inner.Inner.Displays.Count);
+      var middle = Assert.IsType<GlyphDisplay<TFont, TGlyph>>(inner.Inner.Displays[1]);
+      var middle2 = Assert.IsType<GlyphDisplay<TFont, TGlyph>>(inner.Inner.Displays[3]);
+      Assert.Equal('|', middle.Glyph.ToString()[0]);
+      Assert.Equal('‖', middle2.Glyph.ToString()[0]);
+      Assert.NotEqual(middle.Glyph, middle2.Glyph);
+      Assert.NotEqual(0, middle.Ascent + middle.Descent);
+      Assert.NotEqual(0, middle2.Ascent + middle2.Descent);
+      Assert.True(inner.Ascent >= inner.Inner.Ascent);
+      Assert.True(inner.Descent >= inner.Inner.Descent);
+      Assert.NotNull(inner.Left);
+      Assert.NotNull(inner.Right);
+      Assert.True(inner.Left.Ascent + inner.Left.Descent > 0);
+      Assert.True(inner.Right.Ascent + inner.Right.Descent > 0);
+      var outerExtent = System.Math.Max(inner.Left.Ascent + inner.Left.Descent, inner.Right.Ascent + inner.Right.Descent);
+      Assert.InRange(middle.Ascent + middle.Descent, outerExtent * .75f, outerExtent * 1.25f);
+      Assert.InRange(middle2.Ascent + middle2.Descent, outerExtent * .75f, outerExtent * 1.25f);
+      var nullMiddle = Typesetter.CreateLine(
+        AtomTests.LaTeXParserTest.ParseLaTeX(@"\left. a\middle. b\right."),
+        _font, _context, style).Displays.OfType<InnerDisplay<TFont, TGlyph>>().Single();
+      Assert.Equal(2, nullMiddle.Inner.Displays.Count);
+      Assert.DoesNotContain(nullMiddle.Inner.Displays, d => d is GlyphDisplay<TFont, TGlyph>);
+      // All parts are laid out in one shared group coordinate system.
+      Assert.Equal(inner.Inner.Position.Y, middle.Position.Y);
+    }
     [Theory, InlineData("\\sqrt2", "", "2"), InlineData("\\sqrt[3]2", "3", "2")]
     public void TestRadical(string latex, string degree, string radicand) =>
       TestOuter(latex, 1, 18.56, 4, degree.IsEmpty() ? 20 : 21.44, d => {

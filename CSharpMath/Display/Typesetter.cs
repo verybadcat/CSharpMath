@@ -232,7 +232,8 @@ namespace CSharpMath.Display {
             AddDisplayLine(false);
             AddInterElementSpace(prevAtom, inner);
             IDisplay<TFont, TGlyph> innerDisplay;
-            if (inner.LeftBoundary != Boundary.Empty || inner.RightBoundary != Boundary.Empty) {
+            if (inner.LeftBoundary != Boundary.Empty || inner.RightBoundary != Boundary.Empty
+                || inner.MiddleBoundaries.Count > 0) {
               innerDisplay = MakeInner(inner, atom.IndexRange);
             } else {
               innerDisplay = CreateLine(inner.InnerList, _font, _context, _style, _cramped);
@@ -694,19 +695,38 @@ namespace CSharpMath.Display {
     }
 
     private InnerDisplay<TFont, TGlyph> MakeInner(Inner inner, Range range) {
-      if (inner.LeftBoundary == Boundary.Empty && inner.RightBoundary == Boundary.Empty) {
+      if (inner.LeftBoundary == Boundary.Empty && inner.RightBoundary == Boundary.Empty
+          && inner.MiddleBoundaries.Count == 0) {
         throw new InvalidCodePathException("Inner should have a boundary to call this function.");
       }
       var innerListDisplay = CreateLine(inner.InnerList, _font, _context, _style, _cramped, true);
+      List<ListDisplay<TFont, TGlyph>> segmentDisplays = new List<ListDisplay<TFont, TGlyph>> { innerListDisplay };
+      if (inner.MiddleBoundaries.Count > 0)
+        for (var i = 1; i < inner.Segments.Count; i++)
+          segmentDisplays.Add(CreateLine(inner.Segments[i], _font, _context, _style, _cramped, true));
       float axisHeight = _mathTable.AxisHeight(_styleFont);
       // delta is the max distance from the axis.
       float delta =
-        Math.Max(innerListDisplay.Ascent - axisHeight, innerListDisplay.Descent + axisHeight);
+        Math.Max(segmentDisplays.Max(d => d.Ascent) - axisHeight,
+          segmentDisplays.Max(d => d.Descent) + axisHeight);
       var d1 = delta / 500 * _delimiterFactor; // This represents atleast 90% of the formula
       float d2 = 2 * delta - _delimiterShortfallPoints; // This represents a shortfall of 5pt
       // The size of the delimiter glyph should cover at least 90% of the formula or
       // be at most 5pt short.
       float glyphHeight = Math.Max(d1, d2);
+
+      if (inner.MiddleBoundaries.Count > 0) {
+        var displays = new List<IDisplay<TFont, TGlyph>>();
+        for (var i = 0; i < inner.Segments.Count; i++) {
+          if (i > 0) {
+            var middle = inner.MiddleBoundaries[i - 1];
+            if (middle.Nucleus?.Length > 0)
+              displays.Add(FindGlyphForBoundary(middle.Nucleus, glyphHeight));
+          }
+          displays.Add(segmentDisplays[i]);
+        }
+        innerListDisplay = new ListDisplay<TFont, TGlyph>(displays);
+      }
 
       var leftGlyph =
         inner.LeftBoundary is Boundary { Nucleus: var left } && left?.Length > 0
@@ -717,7 +737,10 @@ namespace CSharpMath.Display {
         inner.RightBoundary is Boundary { Nucleus: var right } && right?.Length > 0
         ? FindGlyphForBoundary(right, glyphHeight)
         : null;
-      return new InnerDisplay<TFont, TGlyph>(innerListDisplay, leftGlyph, rightGlyph, range);
+      var result = new InnerDisplay<TFont, TGlyph>(innerListDisplay, leftGlyph, rightGlyph, range) {
+        MiddleBoundariesCount = inner.MiddleBoundaries.Count
+      };
+      return result;
     }
 
     private IGlyphDisplay<TFont, TGlyph> FindGlyphForBoundary(

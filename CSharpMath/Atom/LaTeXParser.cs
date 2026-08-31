@@ -24,6 +24,8 @@ namespace CSharpMath.Atom {
     }
     public class InnerEnvironment : IEnvironment {
       public Boundary? RightBoundary { get; set; }
+      public List<MathList> Segments { get; } = new List<MathList>();
+      public List<Boundary> MiddleBoundaries { get; } = new List<Boundary>();
     }
 #pragma warning restore CA1034 // Nested types should not be visible
     public string Chars { get; }
@@ -538,6 +540,18 @@ namespace CSharpMath.Atom {
             builder.Append('{');
             MathListToLaTeX(radical.Radicand, builder, currentFontStyle);
             builder.Append('}');
+            break;
+          case Inner {
+            MiddleBoundaries.Count: > 0, LeftBoundary: var left,
+            Segments: var segments, RightBoundary: var right
+          }:
+            builder.Append(@"\left").Append(BoundaryToLaTeX(left)).Append(' ');
+            for (var i = 0; i < segments.Count; i++) {
+              MathListToLaTeX(segments[i], builder, currentFontStyle);
+              if (i < segments.Count - 1)
+                builder.Append(@"\middle").Append(BoundaryToLaTeX(((Inner)atom).MiddleBoundaries[i])).Append(' ');
+            }
+            builder.Append(@"\right").Append(BoundaryToLaTeX(right)).Append(' ');
             break;
           case Inner { LeftBoundary: { Nucleus: null }, InnerList: var list, RightBoundary: { Nucleus: null } }:
             MathListToLaTeX(list, builder, currentFontStyle);
