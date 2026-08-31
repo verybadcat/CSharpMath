@@ -15,6 +15,7 @@ namespace CSharpMath.Rendering.Tests {
     public const string BraSum = @"\frac{1}{\sqrt{2^n}} \sum_{i=0}^{2^n-1} \Bra{i}";
 
     public const string Cases = @" w \equiv \begin{cases} 0 & \text{for}\ c = d = 0\\ \sqrt{|c|}\,\sqrt{\frac{1+\sqrt{1+(d/c)^2}}{2}} &\text{for}\ |c| \geq |d|\\ \sqrt{|d|}\,\sqrt{\frac{|c/d| + \sqrt{1+(c/d)^2}}{2}} &\text{for}\ |c|<|d| \end{cases}";
+    public const string Issue205NestedTextMath = @"f(n) = \begin{cases} n/2, & \text{if $n$ is even} \\ 3n+1, & \text{if $n$ is odd} \end{cases}";
     public const string Choose = @"{6 \choose x}";
     public const string Commands = @"5\times(-2 \div 1) = -10";
 

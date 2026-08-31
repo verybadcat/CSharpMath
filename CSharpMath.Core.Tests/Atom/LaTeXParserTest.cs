@@ -1297,6 +1297,71 @@ namespace CSharpMath.Core.AtomTests {
     }
 
     [Fact]
+    public void TestInlineMathInsideText() {
+      var list = ParseLaTeX(@"\text{before $x+1$ after}");
+      Assert.Equal(FontStyle.Roman, list[0].FontStyle);
+      Assert.Equal(FontStyle.Default, list[7].FontStyle);
+      Assert.Equal(FontStyle.Default, list[8].FontStyle);
+      Assert.Equal(FontStyle.Default, list[9].FontStyle);
+      Assert.Equal(FontStyle.Roman, list[10].FontStyle);
+      Assert.Equal(@"\mathrm{before\  }x+1\mathrm{\  after}", LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+
+    [Fact]
+    public void TestEscapedDollarInsideTextIsLiteralAndRoundTrips() {
+      var list = ParseLaTeX(@"\text{price \$5}");
+      Assert.Contains(list, atom => atom is Ordinary { Nucleus: "$" });
+      var serialized = LaTeXParser.MathListToLaTeX(list).ToString();
+      Assert.Contains(@"\$", serialized);
+      Assert.Equal(list, ParseLaTeX(serialized));
+    }
+
+    [Fact]
+    public void TestTextInlineMathCommandsBracesScriptsAndEscapedDollarRoundTrip() {
+      var input = @"\text{cases: $\frac{n^{2}}{2}$, \mathbf{Roman} and \$ literal}";
+      var list = ParseLaTeX(input);
+      var serialized = LaTeXParser.MathListToLaTeX(list).ToString();
+      Assert.Equal(list, ParseLaTeX(serialized));
+    }
+
+    [Fact]
+    public void TestIssue205CasesRoundTrip() {
+      var input = @"f(n) = \begin{cases} n/2, & \text{if $n$ is even} \\ 3n+1, & \text{if $n$ is odd} \end{cases}";
+      var list = ParseLaTeX(input);
+      Assert.Equal(list, ParseLaTeX(LaTeXParser.MathListToLaTeX(list).ToString()));
+    }
+
+    [Fact]
+    public void TestUnbalancedInlineMathInsideTextReportsSourcePosition() {
+      var input = @"\text{before $x after}";
+      var builder = new LaTeXParser(input);
+      var (list, error) = builder.Build();
+      Assert.Null(list);
+      Assert.Contains("Expected character not found: $", error);
+      Assert.Equal(input.Length - 1, builder.NextChar);
+      Assert.EndsWith($"↑ (pos {input.Length - 1})", LaTeXParser.HelpfulErrorMessage(error!, input, builder.NextChar));
+    }
+
+    [Fact]
+    public void TestTextStateIsRestoredWhenTextArgumentFails() {
+      var builder = new LaTeXParser(@"\text{bad \notacommand}");
+      var (_, error) = builder.Build();
+      Assert.NotNull(error);
+      Assert.False(builder.TextMode);
+      Assert.Equal(FontStyle.Default, builder.CurrentFontStyle);
+    }
+
+    [Theory]
+    [InlineData(@"\text{a $$ b}")]
+    [InlineData(@"\text{a $$$ b}")]
+    public void TestDisplayDollarDelimitersInsideTextAreRejected(string input) {
+      var builder = new LaTeXParser(input);
+      var (_, error) = builder.Build();
+      Assert.Contains("Display math delimiters $$ are not allowed inside text", error);
+      Assert.Equal(input.IndexOf("$$", StringComparison.Ordinal) + 1, builder.NextChar);
+    }
+
+    [Fact]
     public void TestScriptOrdering() {
       var list = ParseLaTeX(@"\int_a^b");
       Assert.Collection(list,

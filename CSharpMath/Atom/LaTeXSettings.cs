@@ -408,9 +408,14 @@ namespace CSharpMath.Atom {
           var readsToEnd =
             !command.AsSpan().StartsWithInvariant("math")
             && !command.AsSpan().StartsWithInvariant("text");
-          return (readsToEnd ? parser.ReadUntil(stopChar, accumulate) : parser.ReadArgument()).Bind(r => {
+          Result<MathList> result;
+          try {
+            result = readsToEnd ? parser.ReadUntil(stopChar, accumulate) : parser.ReadArgument();
+          } finally {
             parser.CurrentFontStyle = oldFontStyle;
             parser.TextMode = oldSpacesAllowed;
+          }
+          return result.Bind(r => {
             if (readsToEnd)
               return OkStop(accumulate);
             else return OkStyled(r);

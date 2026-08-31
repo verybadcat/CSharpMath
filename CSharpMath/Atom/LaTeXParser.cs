@@ -60,6 +60,28 @@ namespace CSharpMath.Atom {
       r ??= new MathList();
       MathAtom? prevAtom = null;
       while (HasCharacters) {
+        if (TextMode && Chars[NextChar] == '$') {
+          NextChar++;
+          if (HasCharacters && Chars[NextChar] == '$')
+            return "Display math delimiters $$ are not allowed inside text";
+          var oldTextMode = TextMode;
+          var oldFontStyle = CurrentFontStyle;
+          TextMode = false;
+          CurrentFontStyle = FontStyle.Default;
+          Result<MathList> inlineMath;
+          try {
+            inlineMath = BuildInternal(false, '$');
+          } finally {
+            TextMode = oldTextMode;
+            CurrentFontStyle = oldFontStyle;
+          }
+          if (inlineMath.Error is string inlineError) return inlineError;
+          r.Append(inlineMath.Match(value => value, _ => throw new InvalidCodePathException("Inline math unexpectedly failed")));
+          prevAtom = r.Atoms.LastOrDefault();
+          continue;
+        }
+        if (stopChar == '$' && Chars[NextChar] == '}')
+          return "Expected character not found: $";
         MathAtom? atom = null;
         if (Chars[NextChar] == stopChar && stopChar > '\0') {
           NextChar++;
@@ -716,6 +738,9 @@ namespace CSharpMath.Atom {
             break;
           case { Nucleus: "\u2212" }:
             builder.Append('-');
+            break;
+          case { Nucleus: "$" }:
+            builder.Append(@"\$");
             break;
           case { Nucleus: var aNucleus }:
             builder.Append(aNucleus);
