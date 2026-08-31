@@ -81,7 +81,8 @@ namespace CSharpMath.Display {
     }
   }
   public class Typesetter<TFont, TGlyph> where TFont : IFont<TGlyph> {
-    internal readonly TFont _font;
+    internal TFont _font;
+    readonly TFont _baseFont;
     internal readonly TypesettingContext<TFont, TGlyph> _context;
     internal readonly FontMathTable<TFont, TGlyph> _mathTable;
     internal TFont _styleFont;
@@ -114,6 +115,7 @@ namespace CSharpMath.Display {
     internal Typesetter(TFont font, TypesettingContext<TFont, TGlyph> context,
       LineStyle style, bool cramped, bool spaced) {
       _font = font;
+      _baseFont = font;
       _context = context;
       _mathTable = context.MathTable;
       _style = style;
@@ -145,7 +147,9 @@ namespace CSharpMath.Display {
           };
           // This is Rule 14 to merge ordinary characters.
           // combine ordinary atoms together
-          if (newAtom is Ordinary && prevAtom is Ordinary o && o.Superscript.IsEmpty() && o.Subscript.IsEmpty()) {
+          if (newAtom is Ordinary && prevAtom is Ordinary o &&
+              o.RelativeSize == newAtom.RelativeSize &&
+              o.Superscript.IsEmpty() && o.Subscript.IsEmpty()) {
             prevAtom.Fuse(newAtom);
             // skip the current node as we fused it
             continue;
@@ -163,6 +167,10 @@ namespace CSharpMath.Display {
     private void CreateDisplayAtoms(List<MathAtom> preprocessedAtoms) {
       MathAtom? prevAtom = null;
       foreach (var atom in preprocessedAtoms) {
+        var magnification = LaTeXSettings.RelativeSizeMagnification(atom.RelativeSize);
+        _font = magnification == 1 ? _baseFont :
+          _context.MathFontCloner.Invoke(_baseFont, _baseFont.PointSize * magnification);
+        _styleFont = _context.MathFontCloner.Invoke(_font, _mathTable.GetStyleSize(_style, _font));
         switch (atom) {
           case Number _:
           case Variable _:
@@ -186,7 +194,7 @@ namespace CSharpMath.Display {
           case Colored colored:
             AddDisplayLine(false);
             AddInterElementSpace(prevAtom, colored);
-            var colorDisplay = CreateLine(colored.InnerList, _font, _context, _style, false);
+            var colorDisplay = CreateLine(colored.InnerList, _baseFont, _context, _style, false);
             colorDisplay.SetTextColorRecursive(colored.Color);
             colorDisplay.Position = _currentPosition;
             _currentPosition.X += colorDisplay.Width;
@@ -195,7 +203,7 @@ namespace CSharpMath.Display {
           case ColorBox colorBox:
             AddDisplayLine(false);
             AddInterElementSpace(prevAtom, colorBox);
-            colorDisplay = CreateLine(colorBox.InnerList, _font, _context, _style, false);
+            colorDisplay = CreateLine(colorBox.InnerList, _baseFont, _context, _style, false);
             colorDisplay.BackColor = colorBox.Color;
             colorDisplay.Position = _currentPosition;
             _currentPosition.X += colorDisplay.Width;
@@ -208,7 +216,7 @@ namespace CSharpMath.Display {
             if (rad.Degree.IsNonEmpty()) {
               // add the degree to the radical
               displayRad.SetDegree(
-                CreateLine(rad.Degree, _styleFont, _context, LineStyle.Script, false),
+                CreateLine(rad.Degree, _baseFont, _context, LineStyle.Script, false),
                 _styleFont, _mathTable);
             }
             _displayAtoms.Add(displayRad);
@@ -235,7 +243,7 @@ namespace CSharpMath.Display {
             if (inner.LeftBoundary != Boundary.Empty || inner.RightBoundary != Boundary.Empty) {
               innerDisplay = MakeInner(inner, atom.IndexRange);
             } else {
-              innerDisplay = CreateLine(inner.InnerList, _font, _context, _style, _cramped);
+              innerDisplay = CreateLine(inner.InnerList, _baseFont, _context, _style, _cramped);
             }
             innerDisplay.Position = _currentPosition;
             _currentPosition.X += innerDisplay.Width;
@@ -248,7 +256,7 @@ namespace CSharpMath.Display {
             AddDisplayLine(false);
             AddInterElementSpace(prevAtom, underline);
             var innerListDisplay = Typesetter<TFont, TGlyph>.CreateLine
-              (underline.InnerList, _font, _context, _style, _cramped);
+              (underline.InnerList, _baseFont, _context, _style, _cramped);
             var underlineDisplay =
               new OverOrUnderlineDisplay<TFont, TGlyph>(innerListDisplay, _currentPosition) {
                 LineShiftUp = -(innerListDisplay.Descent + _mathTable.UnderbarVerticalGap(_styleFont)),
@@ -265,7 +273,7 @@ namespace CSharpMath.Display {
             AddDisplayLine(false);
             AddInterElementSpace(prevAtom, overline);
             innerListDisplay = Typesetter<TFont, TGlyph>.CreateLine
-              (overline.InnerList, _font, _context, _style, true);
+              (overline.InnerList, _baseFont, _context, _style, true);
             var overlineDisplay =
               new OverOrUnderlineDisplay<TFont, TGlyph>(innerListDisplay, _currentPosition) {
                 LineShiftUp = innerListDisplay.Ascent + _mathTable.OverbarVerticalGap(_font)
@@ -320,7 +328,7 @@ namespace CSharpMath.Display {
           case RaiseBox raiseBox:
             AddDisplayLine(false);
             var raisedDisplay =
-              CreateLine(raiseBox.InnerList, _font, _context, _style, false);
+              CreateLine(raiseBox.InnerList, _baseFont, _context, _style, false);
             var raisedPosition = _currentPosition;
             raisedPosition.Y += raiseBox.Raise.ActualLength(_mathTable, _font);
             raisedDisplay.Position = raisedPosition;
@@ -394,7 +402,7 @@ namespace CSharpMath.Display {
 
     private IDisplay<TFont, TGlyph> MakeAccent(Accent accent) {
       var accentee =
-        CreateLine(accent.InnerList, _font, _context, _style, true);
+        CreateLine(accent.InnerList, _baseFont, _context, _style, true);
       if (accent.Nucleus.Length == 0) {
         //no accent
         return accentee;
@@ -420,7 +428,7 @@ namespace CSharpMath.Display {
           // Note: Latex adjusts the heights in case the height of the char is different
           // in non-cramped mode. However this shouldn't be the case since cramping
           // only affects fractions and superscripts. We skip adjusting the heights.
-          accentee = CreateLine(accent.InnerList, _font, _context, _style, _cramped);
+          accentee = CreateLine(accent.InnerList, _baseFont, _context, _style, _cramped);
         }
       }
 
@@ -454,7 +462,7 @@ namespace CSharpMath.Display {
         if (atom.Subscript.IsEmpty())
           throw new InvalidCodePathException
             ($"MakeScripts was called when both supercript and subscript of atom were null.");
-        var subscript = CreateLine(atom.Subscript, _font, _context, _scriptStyle, _subscriptCramped);
+        var subscript = CreateLine(atom.Subscript, _baseFont, _context, _scriptStyle, _subscriptCramped);
         subscript.LinePosition = LinePosition.Subscript;
         subscript.IndexInParent = index;
         subscriptShiftDown =
@@ -469,7 +477,7 @@ namespace CSharpMath.Display {
 
       // If we get here, superscript is not null
       var superscript =
-        CreateLine(atom.Superscript, _font, _context, _scriptStyle, _superscriptCramped);
+        CreateLine(atom.Superscript, _baseFont, _context, _scriptStyle, _superscriptCramped);
       superscript.LinePosition = LinePosition.Superscript;
       superscript.IndexInParent = index;
       superscriptShiftUp = Math.Max(superscriptShiftUp, _superscriptShiftUp);
@@ -482,7 +490,7 @@ namespace CSharpMath.Display {
         return;
       }
       // If we get here, we have both a superscript and a subscript.
-      var subscriptB = CreateLine(atom.Subscript, _font, _context, _scriptStyle, _subscriptCramped);
+      var subscriptB = CreateLine(atom.Subscript, _baseFont, _context, _scriptStyle, _subscriptCramped);
       subscriptB.LinePosition = LinePosition.Subscript;
       subscriptB.IndexInParent = index;
       subscriptShiftDown = Math.Max(subscriptShiftDown, _mathTable.SubscriptShiftDown(_styleFont));
@@ -548,7 +556,7 @@ namespace CSharpMath.Display {
           : new GlyphDisplay<TFont, TGlyph>
             (glyph, Range.NotFound, _styleFont, glyphAscent, glyphDescent, glyphWidth);
       }
-      var innerDisplay = CreateLine(radicand, _font, _context, _style, true);
+      var innerDisplay = CreateLine(radicand, _baseFont, _context, _style, true);
       var radicalVerticalGap =
         _style == LineStyle.Display
         ? _mathTable.RadicalDisplayStyleVerticalGap(_styleFont)
@@ -622,9 +630,9 @@ namespace CSharpMath.Display {
           : _mathTable.FractionDelimiterSize(_styleFont);
 
       var numeratorDisplay =
-          CreateLine(fraction.Numerator, _font, _context, _fractionStyle, false);
+          CreateLine(fraction.Numerator, _baseFont, _context, _fractionStyle, false);
       var denominatorDisplay =
-        CreateLine(fraction.Denominator, _font, _context, _fractionStyle, true);
+        CreateLine(fraction.Denominator, _baseFont, _context, _fractionStyle, true);
 
       var numeratorShiftUp = _NumeratorShiftUp(fraction.HasRule);
       var denominatorShiftDown = _DenominatorShiftDown(fraction.HasRule);
@@ -697,7 +705,7 @@ namespace CSharpMath.Display {
       if (inner.LeftBoundary == Boundary.Empty && inner.RightBoundary == Boundary.Empty) {
         throw new InvalidCodePathException("Inner should have a boundary to call this function.");
       }
-      var innerListDisplay = CreateLine(inner.InnerList, _font, _context, _style, _cramped, true);
+      var innerListDisplay = CreateLine(inner.InnerList, _baseFont, _context, _style, _cramped, true);
       float axisHeight = _mathTable.AxisHeight(_styleFont);
       // delta is the max distance from the axis.
       float delta =
@@ -741,11 +749,11 @@ namespace CSharpMath.Display {
 
     private UnderAnnotationDisplay<TFont, TGlyph> MakeUnderAnnotation(UnderAnnotation underAnnotation, Range range) {
 
-      var innerListDisplay = CreateLine(underAnnotation.InnerList, _font, _context, _style, _cramped, true);
+      var innerListDisplay = CreateLine(underAnnotation.InnerList, _baseFont, _context, _style, _cramped, true);
 
       ListDisplay<TFont, TGlyph>? underListDisplay = null;
       if (underAnnotation.UnderList is { Count: > 0 }) {
-        underListDisplay = CreateLine(underAnnotation.UnderList, _font, _context, _scriptStyle, _subscriptCramped, true);
+        underListDisplay = CreateLine(underAnnotation.UnderList, _baseFont, _context, _scriptStyle, _subscriptCramped, true);
       }
 
       float axisHeight = _mathTable.AxisHeight(_styleFont);
@@ -963,7 +971,7 @@ namespace CSharpMath.Display {
         var colDispalys = new List<ListDisplay<TFont, TGlyph>>();
         r.Add(colDispalys);
         for (int i = 0; i < row.Count; i++) {
-          var disp = CreateLine(row[i], _font, _context, _style, false);
+          var disp = CreateLine(row[i], _baseFont, _context, _style, false);
           columnWidths[i] = Math.Max(disp.Width, columnWidths[i]);
           colDispalys.Add(disp);
         }
@@ -1104,11 +1112,11 @@ namespace CSharpMath.Display {
         ListDisplay<TFont, TGlyph>? subscript = null;
         if (op.Superscript.IsNonEmpty()) {
           superscript =
-            CreateLine(op.Superscript, _font, _context, _scriptStyle, _superscriptCramped);
+            CreateLine(op.Superscript, _baseFont, _context, _scriptStyle, _superscriptCramped);
         }
         if (op.Subscript.IsNonEmpty()) {
           subscript =
-            CreateLine(op.Subscript, _font, _context, _scriptStyle, _subscriptCramped);
+            CreateLine(op.Subscript, _baseFont, _context, _scriptStyle, _subscriptCramped);
         }
         var opsDisplay = new LargeOpLimitsDisplay<TFont, TGlyph>(
           display,

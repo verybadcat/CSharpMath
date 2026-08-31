@@ -30,6 +30,8 @@ namespace CSharpMath.Atom {
     public int NextChar { get; private set; }
     public bool TextMode { get; set; } //_spacesAllowed in iosMath
     public FontStyle CurrentFontStyle { get; set; }
+    internal RelativeSizeDeclaration CurrentRelativeSize { get; set; }
+    internal RelativeSizeDeclaration PendingRelativeSize { get; set; }
     public Stack<IEnvironment> Environments { get; } = new Stack<IEnvironment>();
     public LaTeXParser(string str) {
       Chars = str;
@@ -58,32 +60,47 @@ namespace CSharpMath.Atom {
         throw new InvalidCodePathException("Cannot set both oneCharOnly and stopChar");
       }
       r ??= new MathList();
+      var savedRelativeSize = CurrentRelativeSize;
+      var savedPendingRelativeSize = PendingRelativeSize;
       MathAtom? prevAtom = null;
       while (HasCharacters) {
         MathAtom? atom = null;
         if (Chars[NextChar] == stopChar && stopChar > '\0') {
           NextChar++;
+          CurrentRelativeSize = savedRelativeSize;
+          PendingRelativeSize = savedPendingRelativeSize;
           return r;
         }
         var ((handler, splitIndex), error) = LaTeXSettings.Commands.TryLookup(Chars.AsSpan(NextChar));
         if (error != null) {
           NextChar++; // Point to the start of the erroneous command
+          CurrentRelativeSize = savedRelativeSize;
+          PendingRelativeSize = savedPendingRelativeSize;
           return error;
         }
         NextChar += splitIndex;
 
         (MathAtom?, MathList?) handlerResult;
         (handlerResult, error) = handler(this, r, stopChar);
-        if (error != null) return error;
+        if (error != null) {
+          CurrentRelativeSize = savedRelativeSize;
+          PendingRelativeSize = savedPendingRelativeSize;
+          return error;
+        }
 
         switch (handlerResult) {
           case ( { } /* dummy */, { } atoms): // Atoms producer (pre-styled)
             r.Append(atoms);
             prevAtom = r.Atoms.LastOrDefault();
-            if (oneCharOnly)
+            if (oneCharOnly) {
+              CurrentRelativeSize = savedRelativeSize;
+              PendingRelativeSize = savedPendingRelativeSize;
               return r;
+            }
             else continue;
           case (null, { } @return): // Environment ender
+            CurrentRelativeSize = savedRelativeSize;
+            PendingRelativeSize = savedPendingRelativeSize;
             return @return;
           case (null, null): // Atom modifier
             continue;
@@ -92,12 +109,19 @@ namespace CSharpMath.Atom {
             break;
         }
         atom.FontStyle = CurrentFontStyle;
+        atom.RelativeSize = CurrentRelativeSize;
+        atom.RelativeSizeDeclared = PendingRelativeSize != RelativeSizeDeclaration.None;
+        PendingRelativeSize = RelativeSizeDeclaration.None;
         r.Add(atom);
         prevAtom = atom;
         if (oneCharOnly) {
+          CurrentRelativeSize = savedRelativeSize;
+          PendingRelativeSize = savedPendingRelativeSize;
           return r; // we consumed our character.
         }
       }
+      CurrentRelativeSize = savedRelativeSize;
+      PendingRelativeSize = savedPendingRelativeSize;
       return stopChar switch {
         '\0' => r,
         '}' => "Missing closing brace",
@@ -471,11 +495,17 @@ namespace CSharpMath.Atom {
 
     private static void MathListToLaTeX
       (MathList mathList, StringBuilder builder, FontStyle outerFontStyle) {
-      static bool MathAtomToLaTeX(MathAtom atom, StringBuilder builder,
+      var currentRelativeSize = RelativeSizeDeclaration.None;
+      bool MathAtomToLaTeX(MathAtom atom, StringBuilder builder,
 #if !NETSTANDARD2_0 && !NET45
         [System.Diagnostics.CodeAnalysis.NotNullWhen(true)]
 #endif
         out string? command) {
+        if (atom.RelativeSizeDeclared || atom.RelativeSize != currentRelativeSize) {
+          builder.Append('\\').Append(atom.RelativeSize == RelativeSizeDeclaration.None
+            ? "normalsize" : LaTeXSettings.RelativeSizeNames[atom.RelativeSize]).Append(' ');
+          currentRelativeSize = atom.RelativeSize;
+        }
         if (LaTeXSettings.CommandForAtom(atom) is string name) {
           command = name;
           builder.Append(name);
