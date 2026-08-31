@@ -80,6 +80,22 @@ namespace CSharpMath.Rendering.Text {
       public override bool Equals(TextAtom atom) => atom is Size s && s.PointSize == PointSize && s.Content.Equals(Content);
       public override int GetHashCode() => (PointSize, Content).GetHashCode();
     }
+    public sealed class RelativeSize : TextAtom {
+      public RelativeSize(TextAtom content, string declaration) {
+        if (!TextLaTeXSettings.RelativeSizes.ContainsKey(declaration))
+          throw new System.ArgumentException("Unknown relative size declaration", nameof(declaration));
+        Content = content;
+        Declaration = declaration;
+        Magnification = TextLaTeXSettings.RelativeSizes[declaration];
+      }
+      public TextAtom Content { get; }
+      public string Declaration { get; }
+      public float Magnification { get; }
+      public override int? SingleChar(FontStyle style) => Content.SingleChar(style);
+      public override bool Equals(TextAtom atom) => atom is RelativeSize s && s.Declaration == Declaration &&
+        s.Magnification == Magnification && s.Content.Equals(Content);
+      public override int GetHashCode() => (Declaration, Magnification, Content).GetHashCode();
+    }
     public sealed class Colored : TextAtom {
       public Colored(TextAtom content, System.Drawing.Color colour) => (Content, Colour) = (content, colour);
       public TextAtom Content { get; }

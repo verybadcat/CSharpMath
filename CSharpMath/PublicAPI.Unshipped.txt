@@ -1,0 +1,1 @@
+static CSharpMath.Atom.LaTeXSettings.RelativeSizes.get -> System.Collections.Generic.IReadOnlyDictionary<string!, float>!

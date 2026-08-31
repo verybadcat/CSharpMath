@@ -5,7 +5,28 @@ using System.Drawing;
 namespace CSharpMath.Rendering.Text {
   public class TextAtomListBuilder : IReadOnlyList<TextAtom> {
     readonly List<TextAtom> _list = new List<TextAtom>();
+    string? declaration;
+    float magnification = 1;
+    int runStart = -1;
     private void Add(TextAtom atom) => _list.Add(atom);
+    void CloseRun() {
+      if (runStart >= 0 && runStart < _list.Count) {
+        var content = _list.GetRange(runStart, _list.Count - runStart);
+        _list.RemoveRange(runStart, _list.Count - runStart);
+        _list.Add(new TextAtom.RelativeSize(BuildList(content), declaration!));
+      }
+      runStart = -1;
+    }
+    static TextAtom BuildList(List<TextAtom> content) => content.Count == 1 ? content[0] : new TextAtom.List(content);
+    internal void RelativeSize(string name, float ratio) {
+      CloseRun(); declaration = name; magnification = ratio; runStart = _list.Count;
+    }
+    internal string? RelativeDeclaration => declaration;
+    internal float RelativeMagnification => magnification;
+    internal void RestoreRelativeSize(string? name, float ratio) {
+      CloseRun(); declaration = name; magnification = ratio;
+      if (name != null) runStart = _list.Count;
+    }
     public void ControlSpace() => Add(new TextAtom.ControlSpace());
     public void Accent(TextAtom atom, string accent) => Add(new TextAtom.Accent(atom, accent));
     public void Text(string text) {
@@ -38,7 +59,7 @@ namespace CSharpMath.Rendering.Text {
     public void List(IReadOnlyList<TextAtom> textAtoms) => Add(new TextAtom.List(textAtoms));
     public void Break() => Add(new TextAtom.Newline());
     public void Comment(string comment) => Add(new TextAtom.Comment(comment));
-    public TextAtom Build() => _list.Count == 1 ? _list[0] : new TextAtom.List(this);
+    public TextAtom Build() { CloseRun(); return _list.Count == 1 ? _list[0] : new TextAtom.List(this); }
     public int TextLength { get; set; } = 0;
     [System.Diagnostics.CodeAnalysis.DisallowNull] // setter value cannot be null
     public TextAtom? Last { get => Count == 0 ? null : _list[Count - 1]; set => _list[Count - 1] = value; }

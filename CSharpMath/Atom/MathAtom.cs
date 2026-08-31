@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace CSharpMath.Atom {
+  internal enum RelativeSizeDeclaration {
+    None, Tiny, ScriptSize, FootnoteSize, Small, NormalSize, Large, Large2, Large3, Huge, Huge2
+  }
   public abstract class MathAtom : IMathObject, IEquatable<MathAtom> {
     public string TypeName {
       get {
@@ -20,6 +23,16 @@ namespace CSharpMath.Atom {
     public MathList Superscript { get; private set; }
     public MathList Subscript { get; private set; }
     public FontStyle FontStyle { get; set; }
+    RelativeSizeDeclaration relativeSize;
+    internal RelativeSizeDeclaration RelativeSize {
+      get => relativeSize;
+      set {
+        if (value < RelativeSizeDeclaration.None || value > RelativeSizeDeclaration.Huge2)
+          throw new ArgumentOutOfRangeException(nameof(value));
+        relativeSize = value;
+      }
+    }
+    internal bool RelativeSizeDeclared { get; set; }
     /// <summary>Defaults to zero, only has a value after finalization</summary>
     public Range IndexRange { get; set; }
 
@@ -46,6 +59,8 @@ namespace CSharpMath.Atom {
       newAtom.Subscript = Subscript.Clone(finalize);
       newAtom.IndexRange = IndexRange;
       newAtom.FontStyle = FontStyle;
+      newAtom.RelativeSize = RelativeSize;
+      newAtom.RelativeSizeDeclared = RelativeSizeDeclared;
       return newAtom;
     }
     public MathAtom Clone(bool finalize) =>
@@ -81,6 +96,8 @@ namespace CSharpMath.Atom {
       TypeName + " " + DebugString;
     public bool EqualsAtom(MathAtom otherAtom) =>
       Nucleus == otherAtom.Nucleus &&
+      LaTeXSettings.RelativeSizeMagnification(RelativeSize) ==
+        LaTeXSettings.RelativeSizeMagnification(otherAtom.RelativeSize) &&
       GetType() == otherAtom.GetType() &&
       //IndexRange == otherAtom.IndexRange &&
       //FontStyle == otherAtom.FontStyle &&
@@ -88,6 +105,6 @@ namespace CSharpMath.Atom {
       Subscript.NullCheckingStructuralEquality(otherAtom.Subscript);
     public override bool Equals(object obj) => obj is MathAtom a && EqualsAtom(a);
     bool IEquatable<MathAtom>.Equals(MathAtom otherAtom) => EqualsAtom(otherAtom);
-    public override int GetHashCode() => (Superscript, Subscript, Nucleus).GetHashCode();
+    public override int GetHashCode() => (Superscript, Subscript, Nucleus, LaTeXSettings.RelativeSizeMagnification(RelativeSize)).GetHashCode();
   }
 }

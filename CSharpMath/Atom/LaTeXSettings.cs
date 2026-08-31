@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -9,6 +10,11 @@ namespace CSharpMath.Atom {
   using Atoms;
   //https://mirror.hmc.edu/ctan/macros/latex/contrib/unicode-math/unimath-symbols.pdf
   public static class LaTeXSettings {
+    public static IReadOnlyDictionary<string, float> RelativeSizes { get; } = new ReadOnlyDictionary<string, float>(new Dictionary<string, float> {
+      ["tiny"] = .5f, ["scriptsize"] = .7f, ["footnotesize"] = .8f, ["small"] = .9f,
+      ["normalsize"] = 1, ["large"] = 1.2f, ["Large"] = 1.44f, ["LARGE"] = 1.728f,
+      ["huge"] = 2.074f, ["Huge"] = 2.488f
+    });
     static readonly Dictionary<Boundary, string> boundaryDelimitersReverse = new Dictionary<Boundary, string>();
     public static IReadOnlyDictionary<Boundary, string> BoundaryDelimitersReverse => boundaryDelimitersReverse;
     public static LaTeXCommandDictionary<Boundary> BoundaryDelimiters { get; } =
@@ -1188,5 +1194,25 @@ namespace CSharpMath.Atom {
         // { @"\supsetneqq", new Relation("⫌") }, // Glyph not in Latin Modern Math
         // \varsupsetneqq -> ⫌ + U+FE00 (Variation Selector 1) Not dealing with variation selectors, thank you very much
       };
+    internal static IReadOnlyDictionary<string, RelativeSizeDeclaration> RelativeSizeDeclarations { get; } =
+      new Dictionary<string, RelativeSizeDeclaration> {
+        ["tiny"] = RelativeSizeDeclaration.Tiny, ["scriptsize"] = RelativeSizeDeclaration.ScriptSize,
+        ["footnotesize"] = RelativeSizeDeclaration.FootnoteSize, ["small"] = RelativeSizeDeclaration.Small,
+        ["normalsize"] = RelativeSizeDeclaration.NormalSize, ["large"] = RelativeSizeDeclaration.Large,
+        ["Large"] = RelativeSizeDeclaration.Large2, ["LARGE"] = RelativeSizeDeclaration.Large3,
+        ["huge"] = RelativeSizeDeclaration.Huge, ["Huge"] = RelativeSizeDeclaration.Huge2
+      };
+    internal static IReadOnlyDictionary<RelativeSizeDeclaration, string> RelativeSizeNames { get; } =
+      RelativeSizeDeclarations.ToDictionary(p => p.Value, p => p.Key);
+    internal static float RelativeSizeMagnification(RelativeSizeDeclaration declaration) =>
+      declaration == RelativeSizeDeclaration.None ? 1 : RelativeSizes[RelativeSizeNames[declaration]];
+    static LaTeXSettings() {
+      foreach (var pair in RelativeSizeDeclarations)
+        Commands.Add(@"\" + pair.Key, (parser, accumulate, stopChar) => {
+          parser.CurrentRelativeSize = pair.Value;
+          parser.PendingRelativeSize = pair.Value;
+          return Ok(null);
+        });
+    }
   }
 }

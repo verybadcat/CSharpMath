@@ -1,6 +1,9 @@
 namespace CSharpMath.Rendering.Text {
+  using System.Collections.Generic;
   using CSharpMath.Atom;
-  public static class TextLaTeXSettings {
+  public static partial class TextLaTeXSettings {
+    internal static IReadOnlyDictionary<string, float> RelativeSizes => CSharpMath.Atom.LaTeXSettings.RelativeSizes;
+
     public static AliasBiDictionary<string, string> PredefinedTextSymbols { get; } =
       new AliasBiDictionary<string, string> {
         /*Ten special characters and their commands:

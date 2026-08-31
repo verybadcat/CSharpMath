@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SkiaSharp;
 using Xunit;
 
 namespace CSharpMath.Rendering.Tests {
@@ -68,6 +69,67 @@ namespace CSharpMath.Rendering.Tests {
     protected abstract double FileSizeTolerance { get; }
     protected abstract void DrawToStream<TContent>(Painter<TCanvas, TContent, TColor> painter,
       Stream stream, float textPainterCanvasWidth, TextAlignment alignment) where TContent : class;
+
+    // These checks deliberately inspect the produced pixels instead of comparing snapshots.
+    // They are inherited by both frontends, which catches frontend-specific scaling regressions.
+    protected (int left, int top, int right, int bottom) RenderedAlphaBounds(string latex) {
+      using var stream = new MemoryStream();
+      var painter = new TTextPainter { FontSize = 40, LaTeX = latex };
+      painter.HighlightColor = painter.UnwrapColor(System.Drawing.Color.Transparent);
+      DrawToStream(painter, stream, 1000, TextAlignment.TopLeft);
+      Assert.Null(painter.ErrorMessage);
+      stream.Position = 0;
+      return DecodeAlphaBounds(stream);
+    }
+
+    protected (int left, int top, int right, int bottom) RenderedMathAlphaBounds(string latex) {
+      using var stream = new MemoryStream();
+      var painter = new TMathPainter { FontSize = 40, LaTeX = latex, LineStyle = Atom.LineStyle.Display };
+      painter.HighlightColor = painter.UnwrapColor(System.Drawing.Color.Transparent);
+      DrawToStream(painter, stream, 1000, TextAlignment.TopLeft);
+      Assert.Null(painter.ErrorMessage);
+      stream.Position = 0;
+      return DecodeAlphaBounds(stream);
+    }
+
+    static (int left, int top, int right, int bottom) DecodeAlphaBounds(Stream stream) {
+      using var bitmap = SKBitmap.Decode(stream);
+      Assert.NotNull(bitmap);
+      var left = bitmap.Width; var top = bitmap.Height; var right = -1; var bottom = -1;
+      for (var y = 0; y < bitmap.Height; y++) for (var x = 0; x < bitmap.Width; x++)
+        if (bitmap.GetPixel(x, y).Alpha > 10) {
+          left = Math.Min(left, x); top = Math.Min(top, y);
+          right = Math.Max(right, x); bottom = Math.Max(bottom, y);
+        }
+      Assert.True(right >= left && bottom >= top, "Rendered output has no occupied pixels.");
+      return (left, top, right, bottom);
+    }
+
+    [Fact]
+    public void RelativeSizePixelsChangeInExpectedDirection() {
+      var plain = RenderedAlphaBounds("a");
+      var small = RenderedAlphaBounds(@"\small a");
+      var large = RenderedAlphaBounds(@"\large a");
+      Assert.True(large.right - large.left > plain.right - plain.left);
+      Assert.True(small.right - small.left < plain.right - plain.left);
+      Assert.True(large.bottom - large.top > plain.bottom - plain.top);
+    }
+
+    [Fact]
+    public void RelativeSizeGroupedTransitionsRenderWithoutErrors() {
+      var plain = RenderedAlphaBounds("abc");
+      var bounds = RenderedAlphaBounds(@"{\small a}b{\large c}");
+      Assert.True(bounds.right > bounds.left && bounds.bottom > bounds.top);
+      Assert.True(bounds.right - bounds.left > plain.right - plain.left);
+    }
+
+    [Fact]
+    public void RelativeSizeNestedCompoundFormulaRendersWithoutErrors() {
+      var plain = RenderedMathAlphaBounds(@"\frac{\sqrt{x^2}}{y}");
+      var large = RenderedMathAlphaBounds(@"\large \frac{\sqrt{x^2}}{y}");
+      Assert.True(large.right - large.left > plain.right - plain.left);
+      Assert.True(large.bottom - large.top > plain.bottom - plain.top);
+    }
     [Theory, ClassData(typeof(TestRenderingMathData))]
     public void MathDisplay(string file, string latex) =>
       Run(file, latex, new TMathPainter { LineStyle = Atom.LineStyle.Display });

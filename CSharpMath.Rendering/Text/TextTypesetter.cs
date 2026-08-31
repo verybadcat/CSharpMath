@@ -59,6 +59,11 @@ namespace CSharpMath.Rendering.Text {
               (sz.Content, new Fonts(fonts, sz.PointSize), line, displayList,
                displayMathList, style, color);
             break;
+          case TextAtom.RelativeSize rs:
+            AddDisplaysWithLineBreaks(rs.Content,
+              new Fonts(fonts, inputFont.PointSize * rs.Magnification), line, displayList,
+              displayMathList, style, color);
+            break;
           case TextAtom.Colored c:
             AddDisplaysWithLineBreaks
               (c.Content, fonts, line, displayList, displayMathList, style, c.Colour);

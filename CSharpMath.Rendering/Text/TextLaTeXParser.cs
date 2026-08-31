@@ -103,6 +103,8 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
       }
       Result<int> BuildBreakList(ReadOnlySpan<char> latex, TextAtomListBuilder atoms,
           int i, bool oneCharOnly, char stopChar) {
+        var savedDeclaration = atoms.RelativeDeclaration;
+        var savedMagnification = atoms.RelativeMagnification;
         void ParagraphBreak() {
           atoms.Break();
           atoms.Space(Length.ParagraphIndent);
@@ -185,6 +187,7 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                 //Unescaped text section, not inside display/inline math mode
                 switch (textSection) {
                   case var _ when stopChar > 0 && textSection[0] == stopChar:
+                    atoms.RestoreRelativeSize(savedDeclaration, savedMagnification);
                     return Ok(i);
                   case var _ when textSection.Is('$'):
                     throw new InvalidCodePathException("The $ case should have been accounted for.");
@@ -372,6 +375,9 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
                       atoms.Size(resizedContent, fontSize);
                       break;
                     }
+                  case var relative when TextLaTeXSettings.RelativeSizes.TryGetValue(relative, out var ratio):
+                    atoms.RelativeSize(relative, ratio);
+                    break;
                   case "color": {
                       var (color, error) = ReadColor(latex, ref textSection);
                       if (error != null) return error;
@@ -428,7 +434,10 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
           if (oneCharOnly) return Ok(i);
         }
         if (backslashEscape) return @"Invalid command \";
-        if (stopChar > 0) return stopChar == '}' ? "Expected }, unbalanced braces" : $@"Expected {stopChar}";
+        if (stopChar > 0) {
+          atoms.RestoreRelativeSize(savedDeclaration, savedMagnification);
+          return stopChar == '}' ? "Expected }, unbalanced braces" : $@"Expected {stopChar}";
+        }
         return Ok(i);
       }
       var error = BuildBreakList(latexSource.AsSpan(), globalAtoms, 0, false, '\0').Error;
@@ -485,6 +494,9 @@ BreakText(@"Here are some text $1 + 12 \frac23 \sqrt4$ $$Display$$ text")
           return TextAtomToLaTeX(t.Content, b).Append('}');
         case TextAtom.Size z:
           b.Append(@"\fontsize{").Append(z.PointSize).Append("}{");
+          return TextAtomToLaTeX(z.Content, b).Append('}');
+        case TextAtom.RelativeSize z:
+          b.Append('\\').Append(z.Declaration).Append('{');
           return TextAtomToLaTeX(z.Content, b).Append('}');
         case TextAtom.Colored c:
           b.Append(@"\color{");
