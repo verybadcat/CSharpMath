@@ -212,3 +212,11 @@ virtual CSharpMath.Atom.MathAtom.Nucleus.set -> void
 *REMOVED*CSharpMath.Atom.MathAtom.FontStyle.set -> void
 *REMOVED*CSharpMath.Atom.MathAtom.Nucleus.get -> string!
 *REMOVED*CSharpMath.Atom.MathAtom.Nucleus.set -> void
+CSharpMath.Atom.Atoms.Table.ColumnSpans.get -> System.Collections.Generic.List<System.Collections.Generic.List<int>!>!
+CSharpMath.Atom.Atoms.Table.ColumnSpans.set -> void
+CSharpMath.Atom.Atoms.Table.SpanAlignments.get -> System.Collections.Generic.List<System.Collections.Generic.List<CSharpMath.Atom.ColumnAlignment?>!>!
+CSharpMath.Atom.Atoms.Table.SpanAlignments.set -> void
+CSharpMath.Atom.Atoms.Table.SpanSpecifications.get -> System.Collections.Generic.List<System.Collections.Generic.List<string?>!>!
+CSharpMath.Atom.Atoms.Table.SpanSpecifications.set -> void
+CSharpMath.Atom.Atoms.Table.GetColumnSpan(int row, int column) -> int
+CSharpMath.Atom.Atoms.Table.GetSpanAlignment(int row, int column) -> CSharpMath.Atom.ColumnAlignment?

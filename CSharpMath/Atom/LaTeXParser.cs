@@ -812,6 +812,15 @@ namespace CSharpMath.Atom {
         case var _ when _matrixEnvironments.TryGetValue(name, out var delimiters):
           table.Environment = "matrix"; // TableEnvironment is set to matrix as delimiters are converted to latex outside the table.
           table.InterColumnSpacing = 18;
+          for (var r = 0; r < table.Cells.Count; r++) {
+            var logicalColumn = 0;
+            for (var c = 0; c < table.Cells[r].Count; c++, logicalColumn++)
+              if (table.Cells[r][c].Count == 1 && table.Cells[r][c][0] is MulticolumnAtom multi) {
+                table.Cells[r][c] = multi.Content;
+                table.SetColumnSpan(r, c, multi.Span, multi.Alignment, multi.Specification);
+                logicalColumn += multi.Span - 1;
+              }
+          }
           // All the cells render in textstyle, stored on the table rather than per-cell.
           table.CellStyle = LineStyle.Text;
           return delimiters switch {
@@ -850,6 +859,20 @@ namespace CSharpMath.Atom {
                   vLines[vLines.Count - 1]++;
                   break;
               }
+            }
+            var declaredColumns = table.Alignments.Count;
+            for (var r = 0; r < table.Cells.Count; r++) {
+              var logicalColumn = 0;
+              for (var c = 0; c < table.Cells[r].Count; c++, logicalColumn++) {
+                if (table.Cells[r][c].Count != 1 || table.Cells[r][c][0] is not MulticolumnAtom multi) continue;
+                if (multi.Span > declaredColumns - logicalColumn)
+                  return @"\multicolumn span exceeds the array column count or overlaps another cell";
+                table.Cells[r][c] = multi.Content;
+                table.SetColumnSpan(r, c, multi.Span, multi.Alignment, multi.Specification);
+                logicalColumn += multi.Span - 1;
+              }
+              if (logicalColumn > declaredColumns)
+                return @"Array row contains more cells than its declared columns";
             }
             // Note: rows may declare fewer/more cells than the spec; extra cells are
             // dropped and missing ones render empty, matching pre-port behavior.
@@ -1275,6 +1298,13 @@ namespace CSharpMath.Atom {
               }
               for (int j = 0; j < row.Count; j++) {
                 var cell = row[j];
+                var span = table.GetColumnSpan(i, j);
+                if (span > 1) {
+                  var spec = table.SpanSpecifications.Count > i && table.SpanSpecifications[i].Count > j
+                    ? table.SpanSpecifications[i][j] : null;
+                  builder.Append(@"\multicolumn{").Append(span).Append("}{")
+                    .Append(spec ?? table.GetAlignment(j).ToString().ToLowerInvariant()).Append("}{");
+                }
                 if (table.Environment == "matrix"
                     && cell.Count >= 1
                     && cell[0] is Style) {
@@ -1303,6 +1333,7 @@ namespace CSharpMath.Atom {
                   cell = cell.Slice(1, cell.Count - 1);
                 }
                 MathListToLaTeX(cell, builder, currentFontStyle);
+                if (span > 1) builder.Append('}');
                 if (j < row.Count - 1) {
                   builder.Append('&');
                 }
