@@ -42,6 +42,8 @@ namespace CSharpMath.Core.AtomTests {
     [InlineData(".", new[] { typeof(Number) }, ".")]
     [InlineData("(", new[] { typeof(Open) }, "(")]
     [InlineData(")", new[] { typeof(Close) }, ")")]
+    [InlineData(@"\lbrack", new[] { typeof(Open) }, "[")]
+    [InlineData(@"\rbrack", new[] { typeof(Close) }, "]")]
     [InlineData(",", new[] { typeof(Punctuation) }, ",")]
     [InlineData("?!", new[] { typeof(Punctuation), typeof(Punctuation) }, "?!")]
     [InlineData("=", new[] { typeof(Relation) }, "=")]
@@ -427,6 +429,7 @@ namespace CSharpMath.Core.AtomTests {
       InlineData(@"\left ( 2 \right )", new[] { typeof(Inner) }, new[] { typeof(Number) }, @"(", @")", @"\left( 2\right) "),
       // commands
       InlineData(@"\left\{ 2 \right\}", new[] { typeof(Inner) }, new[] { typeof(Number) }, @"{", @"}", @"\left\{ 2\right\} "),
+      InlineData(@"\left\lbrack 2 \right\rbrack", new[] { typeof(Inner) }, new[] { typeof(Number) }, @"[", @"]", @"\left[ 2\right] "),
       // complex commands
       InlineData(@"\left\langle x \right\rangle", new[] { typeof(Inner) }, new[] { typeof(Variable) }, "\u2329", "\u232A", @"\left< x\right> "),
       // bars
@@ -459,6 +462,27 @@ namespace CSharpMath.Core.AtomTests {
         Assert.Equal(rightBoundary, inner.RightBoundary.Nucleus);
       })(list[Array.IndexOf(expectedOutputTypes, typeof(Inner))]);
       Assert.Equal(expectedLatex, LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+
+    [Theory]
+    [InlineData(@"[x]", @"\lbrack x\rbrack")]
+    [InlineData(@"[x^2]", @"\lbrack x^2\rbrack")]
+    [InlineData(@"{[x]}^2", @"{\lbrack x\rbrack}^2")]
+    [InlineData(@"\left[x+\left[y\right]\right]", @"\left\lbrack x+\left\lbrack y\right\rbrack\right\rbrack")]
+    [InlineData(@"\left[x\right.", @"\left\lbrack x\right.")]
+    [InlineData(@"\left.x\right]", @"\left.x\right\rbrack")]
+    public void BracketAliasesHaveLiteralStructuralModel(string literal, string alias) {
+      var literalList = ParseLaTeX(literal);
+      var aliasList = ParseLaTeX(alias);
+      Assert.Equal(literalList, aliasList);
+      Assert.Equal(LaTeXParser.MathListToLaTeX(literalList).ToString(),
+        LaTeXParser.MathListToLaTeX(aliasList).ToString());
+    }
+
+    [Fact]
+    public void UnclosedAliasLeftReportsMissingRight() {
+      var (_, error) = new LaTeXParser(@"\left\lbrack x").Build();
+      Assert.Contains(@"Missing \right for \left with delimiter [", error);
     }
 
     [Theory]
