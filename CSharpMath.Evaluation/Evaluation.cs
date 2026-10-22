@@ -82,6 +82,17 @@ namespace CSharpMath {
       .Match(list => list, e => throw new InvalidCodePathException(e));
     public static Result<MathItem> Evaluate(MathList mathList) =>
       Transform(mathList.Clone(true)).Bind(result => result is { } r ? Result.Ok(r) : Result.Err("There is nothing to evaluate"));
+    /// <summary>Whether <paramref name="atom"/> is the "(mod m)" that \pmod{m} produces, and m if so.</summary>
+    static bool IsModulus(MathAtom atom, out MathList modulus) {
+      if (atom is Atoms.Inner {
+            LeftBoundary.Nucleus: "(", RightBoundary.Nucleus: ")",
+            InnerList: [Atoms.LargeOperator { Nucleus: "mod" }, ..] inner }) {
+        modulus = new MathList(inner.Skip(1));
+        return true;
+      }
+      modulus = new MathList();
+      return false;
+    }
     static Result<MathItem?> Transform(MathList mathList) {
       int i = 0;
       return Transform(mathList, ref i, Precedence.DefaultContext);
@@ -699,6 +710,30 @@ namespace CSharpMath {
             handlePrecedence = Precedence.Comparison;
             handleBinary = (x, y) => MathS.Negation(new Entity.Equalsf(x, y));
             goto handleBinary;
+          // AngouriMath's congruence, a ≡ b (mod m), written a \equiv b \pmod{m}.
+          case Atoms.Relation { Nucleus: "≡" }:
+            if (atom.Superscript is not [] || atom.Subscript is not [])
+              return "Scripts are unsupported for Relation ≡";
+            if (prec >= Precedence.Comparison) {
+              i--;
+              return prev;
+            }
+            if (prev is null) return "Missing left side for ≡";
+            i++;
+            (next, error) = Transform(mathList, ref i, Precedence.Comparison);
+            if (error != null) return error;
+            (var congruent, error) = prev.AsEntity("left side of ≡");
+            if (error != null) return error;
+            (var to, error) = next.AsEntity("right side of ≡");
+            if (error != null) return error;
+            if (i + 1 >= mathList.Count || !IsModulus(mathList[i + 1], out var modulusList))
+              return @"≡ is read as a congruence, so its right side must be followed by \pmod";
+            i++;
+            (var modulus, error) = Transform(modulusList).Bind(m => m.AsEntity("modulus of ≡"));
+            if (error != null) return error;
+            @this = MathS.NumberTheory.Congruent(congruent, to, modulus);
+            prev = null; // We used up prev, don't keep it
+            goto handleThis;
           case Atoms.Relation { Nucleus: "<" }:
             handlePrecedence = Precedence.Comparison;
             handleBinary = (x, y) => new Entity.Lessf(x, y);
@@ -803,6 +838,12 @@ namespace CSharpMath {
             if (InnerHandlers.TryGetValue((contextInfo.KnownOpening, rightBracket), out var handler))
               return handler(prev).Bind(x => (MathItem?)x);
             else return $"Unrecognized bracket pair {contextInfo.KnownOpening} {rightBracket}";
+          // "(mod m)", which \pmod produces: it ends the right side of a congruence the way a comparison would,
+          // and the ≡ case below reads it as the modulus rather than letting it multiply onto that side.
+          case Atoms.Inner pmod when IsModulus(pmod, out _):
+            if (prec < Precedence.Comma) return @"\pmod is read only after the right side of ≡";
+            i--;
+            return prev;
           case Atoms.Inner { LeftBoundary.Nucleus: var left, InnerList: var inner, RightBoundary.Nucleus: var right }:
             (@this, error) = Transform(inner);
             if (error != null) return error;

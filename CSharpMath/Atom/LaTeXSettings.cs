@@ -264,6 +264,16 @@ namespace CSharpMath.Atom {
           if (!parser.ReadCharIfAvailable('}')) return "Expected }";
           return Ok(new LargeOperator(operatorname.ToString(), null));
         } },
+        // \pmod{m} is LaTeX's "(mod m)", set off by a quad from what precedes it. AngouriMath emits it
+        // for its congruence node, `a \equiv b \pmod{m}`. It is built from atoms that already lay out,
+        // as \Bra and \Ket are: the space, then a parenthesised list opening with the operator name.
+        { @"\pmod", (parser, accumulate, stopChar) =>
+          parser.ReadArgument().Bind(modulus => {
+            accumulate.Add(new Space(Length.EmWidth));
+            var inner = new MathList(new LargeOperator("mod", null));
+            inner.Append(modulus);
+            return Ok(new Inner(new Boundary("("), inner, new Boundary(")")));
+          }) },
         // Bra and Ket implementations are derived from Donald Arseneau's braket LaTeX package.
         // See: https://www.ctan.org/pkg/braket
         { @"\Bra", (parser, accumulate, stopChar) =>

@@ -19,6 +19,7 @@ namespace CSharpMath.Rendering.Tests {
     [InlineData(@"x\bmod y")]
     [InlineData(@"\operatorname{φ}\left( x\right) ")]
     [InlineData(@"\operatorname{φ}\left( x\bmod y\right) ")]
+    [InlineData(@"x\equiv y\pmod{z}")]
     public void TheyLayOut(string latex) {
       var measured = Measure(latex);
       Assert.True(measured.Width > 0, $"zero width for {latex}");
@@ -33,5 +34,12 @@ namespace CSharpMath.Rendering.Tests {
     [Fact]
     public void ModuloTakesUpRoom() =>
       Assert.True(Measure(@"x\bmod y").Width > Measure(@"xy").Width * 2);
+
+    /// <summary>
+    /// <c>\pmod{z}</c> is a quad, the parentheses, "mod" and z, so it is wider than the quad and z alone.
+    /// </summary>
+    [Fact]
+    public void ParenthesisedModuloTakesUpRoom() =>
+      Assert.True(Measure(@"y\pmod{z}").Width > Measure(@"y\quad z").Width + Measure(@"xy").Width);
   }
 }

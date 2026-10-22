@@ -1469,6 +1469,30 @@ namespace CSharpMath.Core.AtomTests {
       Assert.Equal(@"x\bmod y", LaTeXParser.MathListToLaTeX(list).ToString());
     }
 
+    /// <summary>
+    /// <c>\pmod{m}</c> is a quad, then "(mod m)": the operator name and the modulus inside parentheses.
+    /// </summary>
+    [Fact]
+    public void TestParenthesisedModulo() {
+      var list = ParseLaTeX(@"x\equiv y\pmod{z}");
+      Assert.Collection(list,
+        CheckAtom<Variable>("x"),
+        CheckAtom<Relation>("≡"),
+        CheckAtom<Variable>("y"),
+        CheckAtom<Space>("", space => {
+          Assert.Equal(Length.EmWidth.Amount, space.Length);
+          Assert.Equal(Length.EmWidth.IsMu, space.IsMu);
+        }),
+        CheckAtom<Inner>("", inner => {
+          Assert.Equal(new Boundary("("), inner.LeftBoundary);
+          Assert.Equal(new Boundary(")"), inner.RightBoundary);
+          Assert.Collection(inner.InnerList,
+            CheckAtom<LargeOperator>("mod"),
+            CheckAtom<Variable>("z"));
+        }));
+      Assert.Equal(@"x\equiv y\quad \left( \operatorname{mod} z\right) ", LaTeXParser.MathListToLaTeX(list).ToString());
+    }
+
     [Theory]
     [InlineData(@"\TeX")]
     [InlineData(@"\left.\mathrm{T\! \raisebox{-4.5mu}{E}\mkern-2.25muX}\right.")]
